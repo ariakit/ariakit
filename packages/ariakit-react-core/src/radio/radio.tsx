@@ -46,7 +46,7 @@ function isNativeRadio(tagName?: string, type?: string) {
 
 /**
  * Returns props to create a `Radio` component.
- * @see https://ariakit.org/components/radio
+ * @see https://ariakit.com/components/radio
  * @example
  * ```jsx
  * const store = useRadioStore();
@@ -59,7 +59,7 @@ function isNativeRadio(tagName?: string, type?: string) {
  */
 export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   store,
-  name,
+  name: nameProp,
   value,
   checked,
   ...props
@@ -74,6 +74,12 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     store,
     (state) => checked ?? getIsChecked(value, state?.value),
   );
+
+  // Use the store's id as the default name to ensure radios in different
+  // groups have unique names. This prevents the browser from treating all
+  // radios as a single group. See https://github.com/ariakit/ariakit/issues/3833
+  const storeId = useStoreState(store, (state) => state?.id);
+  const name = nameProp ?? storeId;
 
   // When the radio store has a default value, we need to update the active id
   // to point to the checked element, otherwise it'll be the first item in the
@@ -153,11 +159,11 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   });
 
   props = {
-    id,
     role: !nativeRadio ? "radio" : undefined,
     type: nativeRadio ? "radio" : undefined,
     "aria-checked": isChecked,
     ...props,
+    id,
     ref: useMergeRefs(ref, props.ref),
     onChange,
     onClick,
@@ -180,8 +186,8 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
 
 /**
  * Renders a radio button element that's typically wrapped in a
- * [`RadioGroup`](https://ariakit.org/reference/radio-group) component.
- * @see https://ariakit.org/components/radio
+ * [`RadioGroup`](https://ariakit.com/reference/radio-group) component.
+ * @see https://ariakit.com/components/radio
  * @example
  * ```jsx {3-4}
  * <RadioProvider>
@@ -199,14 +205,15 @@ export const Radio = memo(
   }),
 );
 
-export interface RadioOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T> {
+export interface RadioOptions<
+  T extends ElementType = TagName,
+> extends CompositeItemOptions<T> {
   /**
    * Object returned by the
-   * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook. If
+   * [`useRadioStore`](https://ariakit.com/reference/use-radio-store) hook. If
    * not provided, the closest
-   * [`RadioGroup`](https://ariakit.org/reference/radio-group) or
-   * [`RadioProvider`](https://ariakit.org/reference/radio-provider) components'
+   * [`RadioGroup`](https://ariakit.com/reference/radio-group) or
+   * [`RadioProvider`](https://ariakit.com/reference/radio-provider) components'
    * context will be used.
    */
   store?: RadioStore;
@@ -214,8 +221,8 @@ export interface RadioOptions<T extends ElementType = TagName>
    * The value of the radio button.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
-   * - [MenuItemRadio](https://ariakit.org/examples/menu-item-radio)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
+   * - [MenuItemRadio](https://ariakit.com/examples/menu-item-radio)
    */
   value: string | number;
   /**
@@ -225,7 +232,7 @@ export interface RadioOptions<T extends ElementType = TagName>
   /**
    * Determines if the radio button is checked. Using this prop will make the
    * radio button controlled and override the
-   * [`value`](https://ariakit.org/reference/radio-provider#value) state.
+   * [`value`](https://ariakit.com/reference/radio-provider#value) state.
    */
   checked?: boolean;
   /**

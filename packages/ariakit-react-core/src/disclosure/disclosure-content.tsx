@@ -57,7 +57,7 @@ export function isHidden(
 
 /**
  * Returns props to create a `DislosureContent` component.
- * @see https://ariakit.org/components/disclosure
+ * @see https://ariakit.com/components/disclosure
  * @example
  * ```jsx
  * const store = useDisclosureStore();
@@ -87,6 +87,7 @@ export const useDisclosureContent = createHook<
   const animated = useStoreState(store, "animated");
   const contentElement = useStoreState(store, "contentElement");
   const otherElement = useStoreState(store.disclosure, "contentElement");
+  const hasClosedRef = useRef(false);
 
   // This is a workaround to avoid the content element from being reset to null
   // on fast refresh.
@@ -111,7 +112,22 @@ export const useDisclosureContent = createHook<
   }, [store]);
 
   useSafeLayoutEffect(() => {
-    if (!animated) return;
+    if (!animated) {
+      // When animation detection has disabled animations (e.g., no CSS
+      // transition was detected on the content element), manage data-enter
+      // so wrapper elements using :has([data-enter]) work correctly even
+      // when the content element itself has no transitions.
+      if (!open) {
+        hasClosedRef.current = true;
+        setTransition(null);
+      } else if (hasClosedRef.current) {
+        // On reopen after animation detection disabled animations, restore
+        // data-enter so enter styles are re-applied.
+        hasClosedRef.current = false;
+        setTransition("enter");
+      }
+      return;
+    }
     // When the disclosure content element is rendered in a portal, we need to
     // wait for the portal to be mounted and connected to the DOM before we
     // can start the animation.
@@ -185,8 +201,9 @@ export const useDisclosureContent = createHook<
     // If the timeout is zero, there's no animation or transition, either
     // because they weren't defined in the CSS or the duration was explicitly
     // set to zero. In this scenario, we can halt the animation right away
-    // and, if we're entering, we can set the animatedRef to false to bypass
-    // the leave animation.
+    // and, if we're entering, we can set the animated state to false so
+    // the element unmounts immediately on close without waiting for a
+    // leave animation.
     if (!timeout) {
       if (transition === "enter") {
         store.setState("animated", false);
@@ -222,12 +239,12 @@ export const useDisclosureContent = createHook<
   }, [hidden, styleProp]);
 
   props = {
-    id,
     "data-open": open || undefined,
     "data-enter": transition === "enter" || undefined,
     "data-leave": transition === "leave" || undefined,
     hidden,
     ...props,
+    id,
     ref: useMergeRefs(id ? store.setContentElement : null, ref, props.ref),
     style,
   };
@@ -244,8 +261,8 @@ const DisclosureContentImpl = forwardRef(function DisclosureContentImpl(
 
 /**
  * Renders an element that can be shown or hidden by a
- * [`Disclosure`](https://ariakit.org/components/disclosure) component.
- * @see https://ariakit.org/components/disclosure
+ * [`Disclosure`](https://ariakit.com/components/disclosure) component.
+ * @see https://ariakit.com/components/disclosure
  * @example
  * ```jsx {3}
  * <DisclosureProvider>
@@ -268,35 +285,36 @@ export const DisclosureContent = forwardRef(function DisclosureContent({
   return <DisclosureContentImpl {...props} />;
 });
 
-export interface DisclosureContentOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface DisclosureContentOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
-   * [`useDisclosureStore`](https://ariakit.org/reference/use-disclosure-store)
+   * [`useDisclosureStore`](https://ariakit.com/reference/use-disclosure-store)
    * hook. If not provided, the closest
-   * [`DisclosureProvider`](https://ariakit.org/reference/disclosure-provider)
+   * [`DisclosureProvider`](https://ariakit.com/reference/disclosure-provider)
    * component's context will be used.
    */
   store?: DisclosureStore;
   /**
    * Determines whether the content element should remain visible even when the
-   * [`open`](https://ariakit.org/reference/disclosure-provider#open) state is
+   * [`open`](https://ariakit.com/reference/disclosure-provider#open) state is
    * `false`. If this prop is set to `true`, the `hidden` prop and the `display:
    * none` style will not be applied, unless explicitly set otherwise.
    *
    * This prop is particularly useful when using third-party animation libraries
-   * such as Framer Motion or React Spring, where the element needs to be
+   * such as Motion or React Spring, where the element needs to be
    * visible for exit animations to work.
    *
    * Live examples:
-   * - [Dialog with Framer
-   *   Motion](https://ariakit.org/examples/dialog-framer-motion)
-   * - [Menu with Framer
-   *   Motion](https://ariakit.org/examples/menu-framer-motion)
-   * - [Tooltip with Framer
-   *   Motion](https://ariakit.org/examples/tooltip-framer-motion)
+   * - [Dialog with
+   *   Motion](https://ariakit.com/examples/dialog-framer-motion)
+   * - [Menu with
+   *   Motion](https://ariakit.com/examples/menu-framer-motion)
+   * - [Tooltip with
+   *   Motion](https://ariakit.com/examples/tooltip-framer-motion)
    * - [Dialog with details &
-   *   summary](https://ariakit.org/examples/dialog-details)
+   *   summary](https://ariakit.com/examples/dialog-details)
    * @default false
    */
   alwaysVisible?: boolean;
@@ -305,14 +323,14 @@ export interface DisclosureContentOptions<_T extends ElementType = TagName>
    * the DOM when it's hidden.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    * - [Combobox with integrated
-   *   filter](https://ariakit.org/examples/combobox-filtering-integrated)
+   *   filter](https://ariakit.com/examples/combobox-filtering-integrated)
    * - [Textarea with inline
-   *   Combobox](https://ariakit.org/examples/combobox-textarea)
-   * - [Standalone Popover](https://ariakit.org/examples/popover-standalone)
-   * - [Animated Select](https://ariakit.org/examples/select-animated)
-   * - [Multi-Select](https://ariakit.org/examples/select-multiple)
+   *   Combobox](https://ariakit.com/examples/combobox-textarea)
+   * - [Standalone Popover](https://ariakit.com/examples/popover-standalone)
+   * - [Animated Select](https://ariakit.com/examples/select-animated)
+   * - [Multi-Select](https://ariakit.com/examples/select-multiple)
    * @default false
    */
   unmountOnHide?: boolean;

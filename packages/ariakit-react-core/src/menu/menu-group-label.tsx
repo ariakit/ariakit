@@ -12,7 +12,7 @@ type TagName = typeof TagName;
  * Returns props to create a `MenuGroupLabel` component. This hook must be used
  * in a component that's wrapped with `MenuGroup` so the `aria-labelledby` prop
  * is properly set on the menu group element.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * // This component must be wrapped with MenuGroup
@@ -29,9 +29,9 @@ export const useMenuGroupLabel = createHook<TagName, MenuGroupLabelOptions>(
 
 /**
  * Renders a label in a menu group. This component should be wrapped with
- * [`MenuGroup`](https://ariakit.org/reference/menu-group) so the
+ * [`MenuGroup`](https://ariakit.com/reference/menu-group) so the
  * `aria-labelledby` is correctly set on the group element.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {5}
  * <MenuProvider>
@@ -53,13 +53,14 @@ export const MenuGroupLabel = forwardRef(function MenuGroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuGroupLabelOptions<T extends ElementType = TagName>
-  extends CompositeGroupLabelOptions<T> {
+export interface MenuGroupLabelOptions<
+  T extends ElementType = TagName,
+> extends CompositeGroupLabelOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.com/reference/menu) or
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
    */
   store?: MenuStore;

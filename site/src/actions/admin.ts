@@ -7,9 +7,9 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { ActionError, defineAction } from "astro:actions";
 import type { APIContext } from "astro";
-import type Stripe from "stripe";
+import { ActionError, defineAction } from "astro:actions";
+import type { Stripe } from "stripe";
 import { z } from "zod";
 import { getUser, isAdmin } from "#app/lib/auth.ts";
 import {
@@ -30,6 +30,7 @@ import {
   createSalePromo,
   expanded,
   getPlusPriceKey,
+  getPromotionCoupon,
   getStripeClient,
   isSalePromo,
   parsePlusPriceKey,
@@ -221,17 +222,22 @@ async function syncPromos(context: APIContext) {
   for await (const promo of stripe.promotionCodes.list({
     active: true,
     limit: 100,
-    expand: ["data.customer"],
+    expand: ["data.customer", "data.promotion.coupon"],
   })) {
+    const coupon = getPromotionCoupon(promo);
+    if (!coupon) {
+      logger.warn("Promo %s has no expanded coupon", promo.id);
+      continue;
+    }
     if (!promo.active) continue;
-    if (!promo.coupon.valid) continue;
-    if (promo.coupon.deleted) continue;
-    if (!isSalePromo(promo.coupon) && !promo.customer) {
+    if (coupon.deleted) continue;
+    if (!coupon.valid) continue;
+    if (!isSalePromo(coupon) && !promo.customer) {
       logger.warn("Promo %s is not a plus sale", promo.id);
       await deletePromo(context, promo.id);
       continue;
     }
-    if (!promo.coupon.percent_off) {
+    if (!coupon.percent_off) {
       logger.warn("Promo %s has no percent off", promo.id);
       await deletePromo(context, promo.id);
       continue;
@@ -267,15 +273,15 @@ async function syncPromos(context: APIContext) {
         continue;
       }
     }
-    const products = promo.coupon.applies_to?.products ?? [];
+    const products = coupon.applies_to?.products ?? [];
     promos.push(promo);
     await putPromo(context, {
       id: promo.id,
       type: user ? "customer" : "sale",
       user: user ? objectId(user) : null,
       products,
-      expiresAt: promo.expires_at ?? promo.coupon.redeem_by,
-      percentOff: promo.coupon.percent_off,
+      expiresAt: promo.expires_at ?? coupon.redeem_by,
+      percentOff: coupon.percent_off,
       timesRedeemed: promo.times_redeemed,
       maxRedemptions: promo.max_redemptions,
     });

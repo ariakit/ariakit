@@ -33,7 +33,7 @@ function isController(
 
 /**
  * Returns props to create a `ComboboxPopover` component.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore();
@@ -150,7 +150,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
  * Renders a combobox popover. The `role` prop is set to `listbox` by default,
  * but can be overriden by any other valid combobox popup role (`listbox`,
  * `menu`, `tree`, `grid` or `dialog`).
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {3-7}
  * <ComboboxProvider>
@@ -172,8 +172,7 @@ export const ComboboxPopover = createDialogComponent(
 );
 
 export interface ComboboxPopoverOptions<T extends ElementType = TagName>
-  extends ComboboxListOptions<T>,
-    Omit<PopoverOptions<T>, "store"> {}
+  extends ComboboxListOptions<T>, Omit<PopoverOptions<T>, "store"> {}
 
 export type ComboboxPopoverProps<T extends ElementType = TagName> = Props<
   T,

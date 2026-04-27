@@ -65,11 +65,11 @@ function getSectionsFromData(data: Reference) {
 
 function getInertSections(
   sections: ReferenceSectionContent[],
-  isInert: boolean
+  isInert: boolean,
 ) {
   if (!isInert) return sections;
   const firstWithItems = sections.find(
-    (s) => (s.items && s.items.length > 0) || s.id === "return-value"
+    (s) => (s.items && s.items.length > 0) || s.id === "return-value",
   );
   if (!firstWithItems) return [];
   if (firstWithItems.items && firstWithItems.items.length > 0) {
@@ -122,7 +122,7 @@ const sections = getSectionsFromData(data);
 const sectionsToRender = getInertSections(sections, inert);
 const hasSectionsToRender = !!sectionsToRender.length;
 const headings = getHeadingsFromSections(
-  compact ? sections.map((s) => ({ ...s, items: [] })) : sections
+  compact ? sections.map((s) => ({ ...s, items: [] })) : sections,
 );
 const storeStateCodeExamplesHtml = [
   `<code class="language-tsx">const value = ak.useStoreState(store, "key");</code>`,
@@ -202,7 +202,7 @@ function canRenderSeparator(sectionDiff: number, itemDiff: number) {
                         <ContentParagraph class="grid gap-2">
                           {section.items.map((item) => (
                             <ContentLink
-                              className="block w-full [&_code]:block hover:ak-layer-pop bg-transparent!"
+                              className="block w-full [&_code]:block ak-layer hover:ak-layer-6"
                               href={getReferencePath({
                                 reference,
                                 item: item.id,
@@ -239,7 +239,7 @@ function canRenderSeparator(sectionDiff: number, itemDiff: number) {
                               <ContentParagraph class="grid gap-2">
                                 {section.items.map((item) => (
                                   <ContentLink
-                                    className="block w-full [&_code]:block hover:ak-layer-pop bg-transparent!"
+                                    className="block w-full [&_code]:block ak-layer hover:ak-layer-6"
                                     href={getReferencePath({
                                       reference,
                                       item: item.id,
@@ -263,7 +263,7 @@ function canRenderSeparator(sectionDiff: number, itemDiff: number) {
                               <ReferenceItem reference={reference} {...item} />
                               {canRenderSeparator(
                                 a.length - i,
-                                b.length - j
+                                b.length - j,
                               ) && <ContentSeparator />}
                             </Fragment>
                           ))}

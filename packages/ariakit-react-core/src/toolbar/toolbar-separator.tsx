@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ToolbarSeparator` component.
- * @see https://ariakit.org/components/toolbar
+ * @see https://ariakit.com/components/toolbar
  * @example
  * ```jsx
  * const store = useToolbarStore();
@@ -34,8 +34,8 @@ export const useToolbarSeparator = createHook<TagName, ToolbarSeparatorOptions>(
 
 /**
  * Renders a divider between
- * [`ToolbarItem`](https://ariakit.org/reference/toolbar-item) elements.
- * @see https://ariakit.org/components/toolbar
+ * [`ToolbarItem`](https://ariakit.com/reference/toolbar-item) elements.
+ * @see https://ariakit.com/components/toolbar
  * @example
  * ```jsx {3}
  * <Toolbar>
@@ -52,13 +52,14 @@ export const ToolbarSeparator = forwardRef(function ToolbarSeparator(
   return createElement(TagName, htmlProps);
 });
 
-export interface ToolbarSeparatorOptions<T extends ElementType = TagName>
-  extends CompositeSeparatorOptions<T> {
+export interface ToolbarSeparatorOptions<
+  T extends ElementType = TagName,
+> extends CompositeSeparatorOptions<T> {
   /**
    * Object returned by the
-   * [`useToolbarStore`](https://ariakit.org/reference/use-toolbar-store) hook.
+   * [`useToolbarStore`](https://ariakit.com/reference/use-toolbar-store) hook.
    * If not provided, the closest
-   * [`Toolbar`](https://ariakit.org/reference/toolbar) component's context will
+   * [`Toolbar`](https://ariakit.com/reference/toolbar) component's context will
    * be used.
    */
   store?: ToolbarStore;

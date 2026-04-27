@@ -14,7 +14,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `DialogDisclosure` component.
- * @see https://ariakit.org/components/dialog
+ * @see https://ariakit.com/components/dialog
  * @example
  * ```jsx
  * const store = useDialogStore();
@@ -49,8 +49,8 @@ export const useDialogDisclosure = createHook<TagName, DialogDisclosureOptions>(
 
 /**
  * Renders a button that toggles the visibility of a
- * [`Dialog`](https://ariakit.org/reference/dialog) component when clicked.
- * @see https://ariakit.org/components/dialog
+ * [`Dialog`](https://ariakit.com/reference/dialog) component when clicked.
+ * @see https://ariakit.com/components/dialog
  * @example
  * ```jsx {2}
  * <DialogProvider>
@@ -66,13 +66,14 @@ export const DialogDisclosure = forwardRef(function DialogDisclosure(
   return createElement(TagName, htmlProps);
 });
 
-export interface DialogDisclosureOptions<T extends ElementType = TagName>
-  extends DisclosureOptions<T> {
+export interface DialogDisclosureOptions<
+  T extends ElementType = TagName,
+> extends DisclosureOptions<T> {
   /**
    * Object returned by the
-   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
+   * [`useDialogStore`](https://ariakit.com/reference/use-dialog-store) hook. If
    * not provided, the closest
-   * [`DialogProvider`](https://ariakit.org/reference/dialog-provider)
+   * [`DialogProvider`](https://ariakit.com/reference/dialog-provider)
    * component's context will be used.
    */
   store?: DialogStore;

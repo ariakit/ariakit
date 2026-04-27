@@ -8,9 +8,9 @@ import { useFormStore } from "./form-store.ts";
 type Values = FormStoreValues;
 
 /**
- * Provides a form store to [Form](https://ariakit.org/components/form)
+ * Provides a form store to [Form](https://ariakit.com/components/form)
  * components.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * <FormProvider defaultValues={{ email: "" }}>
@@ -42,7 +42,8 @@ export function FormProvider(props: FormProviderProps = {}) {
   );
 }
 
-export interface FormProviderProps<T extends Values = Values>
-  extends FormStoreProps<T> {
+export interface FormProviderProps<
+  T extends Values = Values,
+> extends FormStoreProps<T> {
   children?: ReactNode;
 }

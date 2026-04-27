@@ -2,8 +2,10 @@ import * as Ariakit from "@ariakit/react";
 import type { ComponentPropsWithoutRef } from "react";
 import { forwardRef, useEffect } from "react";
 
-export interface ComboboxProps
-  extends Omit<ComponentPropsWithoutRef<"input">, "onChange"> {
+export interface ComboboxProps extends Omit<
+  ComponentPropsWithoutRef<"input">,
+  "onChange"
+> {
   label?: string;
   value?: string;
   onChange?: (value: string) => void;

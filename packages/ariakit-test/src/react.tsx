@@ -5,8 +5,10 @@ import { flushMicrotasks, nextFrame, wrapAsync } from "./__utils.ts";
 
 export * from "./index.ts";
 
-export interface RenderOptions
-  extends Omit<ReactTestingLibrary.RenderOptions, "queries"> {
+export interface RenderOptions extends Omit<
+  ReactTestingLibrary.RenderOptions,
+  "queries"
+> {
   strictMode?: boolean;
 }
 
@@ -33,6 +35,7 @@ export async function render(ui: ReactNode, options?: RenderOptions) {
   return wrapRender(() => {
     const { unmount, rerender } = ReactTestingLibrary.render(ui, {
       ...options,
+      // @ts-ignore - We have mismatching types between React and React Testing Library, so we need to ignore this error.
       wrapper,
     });
     return {

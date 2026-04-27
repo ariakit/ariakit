@@ -4,6 +4,7 @@
 .cache
 dist
 test-results
+.perf-results
 playwright-report
 .types
 .playwright
@@ -38,6 +39,12 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+.typescript
 
 # generated types
 .astro/
+worker-configuration.d.ts
+
+# claude code
+.claude/worktrees
+.claude/scheduled_tasks.lock

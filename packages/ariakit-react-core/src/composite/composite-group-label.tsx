@@ -12,7 +12,7 @@ type TagName = typeof TagName;
  * Returns props to create a `CompositeGroupLabel` component. This hook must be
  * used in a component that's wrapped with `CompositeGroup` so the
  * `aria-labelledby` prop is properly set on the composite group element.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * // This component must be wrapped with CompositeGroup
@@ -30,9 +30,9 @@ export const useCompositeGroupLabel = createHook<
 
 /**
  * Renders a label in a composite group. This component must be wrapped with
- * [`CompositeGroup`](https://ariakit.org/reference/composite-group) so the
+ * [`CompositeGroup`](https://ariakit.com/reference/composite-group) so the
  * `aria-labelledby` prop is properly set on the group element.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx {4}
  * <CompositeProvider>
@@ -53,14 +53,15 @@ export const CompositeGroupLabel = forwardRef(function CompositeGroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeGroupLabelOptions<T extends ElementType = TagName>
-  extends GroupLabelOptions<T> {
+export interface CompositeGroupLabelOptions<
+  T extends ElementType = TagName,
+> extends GroupLabelOptions<T> {
   /**
    * Object returned by the
-   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * [`useCompositeStore`](https://ariakit.com/reference/use-composite-store)
    * hook. If not provided, the closest
-   * [`Composite`](https://ariakit.org/reference/composite) or
-   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * [`Composite`](https://ariakit.com/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
    */
   store?: CompositeStore;

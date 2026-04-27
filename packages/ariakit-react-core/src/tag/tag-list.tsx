@@ -23,7 +23,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `TagList` component.
- * @see https://ariakit.org/components/tag
+ * @see https://ariakit.com/components/tag
  * @example
  * ```jsx
  * const props = useTagList();
@@ -73,10 +73,10 @@ export const useTagList = createHook<TagName, TagListOptions>(
       const shiftZ = (event.shiftKey && z) || (pc && event.key === "y");
       if (mod && shiftZ) {
         event.preventDefault();
-        UndoManager.redo();
+        void UndoManager.redo();
       } else if (mod && z) {
         event.preventDefault();
-        UndoManager.undo();
+        void UndoManager.undo();
       }
     });
 
@@ -129,7 +129,9 @@ export const useTagList = createHook<TagName, TagListOptions>(
           aria-live="polite"
           aria-relevant="all"
           aria-atomic
-          aria-labelledby={labelId}
+          aria-labelledby={
+            listboxProps["aria-label"] != null ? undefined : labelId
+          }
           aria-orientation={orientation}
           aria-owns={itemIds.join(" ")}
           {...listboxProps}
@@ -149,14 +151,14 @@ export const useTagList = createHook<TagName, TagListOptions>(
 );
 
 /**
- * Renders a wrapper for [`Tag`](https://ariakit.org/reference/tag) and
- * [`TagInput`](https://ariakit.org/reference/tag-input) components. This
+ * Renders a wrapper for [`Tag`](https://ariakit.com/reference/tag) and
+ * [`TagInput`](https://ariakit.com/reference/tag-input) components. This
  * component is typically styled as an input field.
  *
- * The [`TagListLabel`](https://ariakit.org/reference/tag-list-label) component
+ * The [`TagListLabel`](https://ariakit.com/reference/tag-list-label) component
  * can be used to provide an accessible name for the listbox element that owns
  * the tags.
- * @see https://ariakit.org/components/tag
+ * @see https://ariakit.com/components/tag
  * @example
  * ```jsx {3-15}
  * <TagProvider>
@@ -182,13 +184,14 @@ export const TagList = forwardRef(function TagList(props: TagListProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface TagListOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T> {
+export interface TagListOptions<
+  T extends ElementType = TagName,
+> extends CompositeOptions<T> {
   /**
    * Object returned by the
-   * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not
+   * [`useTagStore`](https://ariakit.com/reference/use-tag-store) hook. If not
    * provided, the closest
-   * [`TagProvider`](https://ariakit.org/reference/tag-provider) component's
+   * [`TagProvider`](https://ariakit.com/reference/tag-provider) component's
    * context will be used.
    */
   store?: TagStore;

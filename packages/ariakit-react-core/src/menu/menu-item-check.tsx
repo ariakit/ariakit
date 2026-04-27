@@ -12,7 +12,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuItemCheck` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const props = useMenuItemCheck({ checked: true });
@@ -30,15 +30,15 @@ export const useMenuItemCheck = createHook<TagName, MenuItemCheckOptions>(
 
 /**
  * Renders a checkmark icon when the
- * [`checked`](https://ariakit.org/reference/menu-item-check#checked) prop is
+ * [`checked`](https://ariakit.com/reference/menu-item-check#checked) prop is
  * `true`. The icon can be overridden by providing a different one as children.
  *
  * When rendered inside
- * [`MenuItemCheckbox`](https://ariakit.org/reference/menu-item-checkbox) or
- * [`MenuItemRadio`](https://ariakit.org/reference/menu-item-radio) components,
- * the [`checked`](https://ariakit.org/reference/menu-item-check#checked) prop
+ * [`MenuItemCheckbox`](https://ariakit.com/reference/menu-item-checkbox) or
+ * [`MenuItemRadio`](https://ariakit.com/reference/menu-item-radio) components,
+ * the [`checked`](https://ariakit.com/reference/menu-item-check#checked) prop
  * is automatically derived from the context.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {5,9}
  * <MenuProvider defaultValues={{ apple: true, orange: false }}>
@@ -63,11 +63,12 @@ export const MenuItemCheck = forwardRef(function MenuItemCheck(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuItemCheckOptions<T extends ElementType = TagName>
-  extends Omit<CheckboxCheckOptions<T>, "store"> {
+export interface MenuItemCheckOptions<
+  T extends ElementType = TagName,
+> extends Omit<CheckboxCheckOptions<T>, "store"> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook.
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook.
    */
   store?: MenuStore;
 }

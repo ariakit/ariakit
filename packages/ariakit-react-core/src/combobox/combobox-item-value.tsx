@@ -72,12 +72,14 @@ function splitValue(itemValue?: string | null, userValue?: string | string[]) {
     ),
   );
 
-  if (!offsets.length) {
+  const firstEntry = offsets[0];
+
+  if (!firstEntry) {
     parts.push(span(itemValue, true));
     return parts;
   }
 
-  const [firstOffset] = offsets[0]!;
+  const [firstOffset] = firstEntry;
 
   const values = [
     itemValue.slice(0, firstOffset),
@@ -103,7 +105,7 @@ function splitValue(itemValue?: string | null, userValue?: string | string[]) {
  * and returned as the children prop. The portions of the value that correspond
  * to the store value will have a `data-user-value` attribute. The other
  * portions will have a `data-autocomplete-value` attribute.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore({ value: "p" });
@@ -148,21 +150,21 @@ export const useComboboxItemValue = createHook<
  * Renders a `span` element with the combobox item value as children. The value
  * is split into span elements. Portions of the value matching the user input
  * will have a
- * [`data-user-value`](https://ariakit.org/guide/styling#data-user-value)
+ * [`data-user-value`](https://ariakit.com/guide/styling#data-user-value)
  * attribute, while the rest will have a
- * [`data-autocomplete-value`](https://ariakit.org/guide/styling#data-autocomplete-value)
+ * [`data-autocomplete-value`](https://ariakit.com/guide/styling#data-autocomplete-value)
  * attribute.
  *
  * The item value is automatically set to the value of the closest
- * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) component's
- * [`value`](https://ariakit.org/reference/combobox-item#value) prop. The user
+ * [`ComboboxItem`](https://ariakit.com/reference/combobox-item) component's
+ * [`value`](https://ariakit.com/reference/combobox-item#value) prop. The user
  * input value is automatically set to the combobox store's
- * [`value`](https://ariakit.org/reference/use-combobox-store#value) state. Both
+ * [`value`](https://ariakit.com/reference/use-combobox-store#value) state. Both
  * values can be overridden by providing the
- * [`value`](https://ariakit.org/reference/combobox-item-value#value) and
- * [`userValue`](https://ariakit.org/reference/combobox-item-value#uservalue)
+ * [`value`](https://ariakit.com/reference/combobox-item-value#value) and
+ * [`userValue`](https://ariakit.com/reference/combobox-item-value#uservalue)
  * props, respectively.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {5} "value"
  * <ComboboxProvider value="p">
@@ -190,21 +192,22 @@ export const ComboboxItemValue = forwardRef(function ComboboxItemValue(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxItemValueOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface ComboboxItemValueOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
-   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * [`ComboboxList`](https://ariakit.com/reference/combobox-list) or
+   * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
    * components' context will be used.
    */
   store?: ComboboxStore;
   /**
    * The current combobox item value. If not provided, the parent
-   * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) component's
-   * [`value`](https://ariakit.org/reference/combobox-item#value) prop will be
+   * [`ComboboxItem`](https://ariakit.com/reference/combobox-item) component's
+   * [`value`](https://ariakit.com/reference/combobox-item#value) prop will be
    * used.
    *
    * This is the value rendered by the component. It can be customized to
@@ -213,7 +216,7 @@ export interface ComboboxItemValueOptions<_T extends ElementType = TagName>
   value?: string;
   /**
    * The current user input value. If not provided, the combobox store's
-   * [`value`](https://ariakit.org/reference/use-combobox-store#value) state
+   * [`value`](https://ariakit.com/reference/use-combobox-store#value) state
    * will be used.
    *
    * This is the value used to highlight the matching portions of the item

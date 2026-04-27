@@ -36,7 +36,7 @@ function getFirstInvalidField(items: FormStoreState["items"]) {
 
 /**
  * Returns props to create a `Form` component.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore();
@@ -77,7 +77,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
   useUpdateEffect(() => {
     if (!validateOnChange) return;
     if (values === defaultValues) return;
-    store?.validate();
+    void store?.validate();
   }, [validateOnChange, values, defaultValues, store]);
 
   useEffect(() => {
@@ -99,6 +99,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
     if (isTextField(element)) {
       element.select();
     }
+    // oxlint-disable-next-line exhaustive-deps
   }, [autoFocusOnSubmit, submitFailed, items]);
 
   const onSubmitProp = props.onSubmit;
@@ -107,7 +108,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
     onSubmitProp?.(event);
     if (event.defaultPrevented) return;
     event.preventDefault();
-    store?.submit();
+    void store?.submit();
     if (!autoFocusOnSubmit) return;
     setShouldFocusOnSubmit(true);
   });
@@ -120,7 +121,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
     if (!validateOnBlur) return;
     if (!store) return;
     if (!isField(event.target, store.getState().items)) return;
-    store.validate();
+    void store.validate();
   });
 
   const onResetProp = props.onReset;
@@ -159,22 +160,22 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
 
 /**
  * Renders a form element and provides a [form
- * store](https://ariakit.org/reference/use-form-store) to its controls.
+ * store](https://ariakit.com/reference/use-form-store) to its controls.
  *
  * The form is automatically validated on change and on blur. This behavior can
  * be disabled with the
- * [`validateOnChange`](https://ariakit.org/reference/form#validateonchange) and
- * [`validateOnBlur`](https://ariakit.org/reference/form#validateonblur) props.
+ * [`validateOnChange`](https://ariakit.com/reference/form#validateonchange) and
+ * [`validateOnBlur`](https://ariakit.com/reference/form#validateonblur) props.
  *
  * When the form is submitted with errors, the first invalid field is
  * automatically focused thanks to the
- * [`autoFocusOnSubmit`](https://ariakit.org/reference/form#autofocusonsubmit)
+ * [`autoFocusOnSubmit`](https://ariakit.com/reference/form#autofocusonsubmit)
  * prop. If it's successful, the
- * [`resetOnSubmit`](https://ariakit.org/reference/form#resetonsubmit) prop
+ * [`resetOnSubmit`](https://ariakit.com/reference/form#resetonsubmit) prop
  * ensures the form is reset to its initial values as defined by the
- * [`defaultValues`](https://ariakit.org/reference/use-form-store#defaultvalues)
- * option on the [store](https://ariakit.org/reference/use-form-store).
- * @see https://ariakit.org/components/form
+ * [`defaultValues`](https://ariakit.com/reference/use-form-store#defaultvalues)
+ * option on the [store](https://ariakit.com/reference/use-form-store).
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {5-8}
  * const form = useFormStore({
@@ -195,17 +196,17 @@ export const Form = forwardRef(function Form(props: FormProps) {
 export interface FormOptions<_T extends ElementType = TagName> extends Options {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
+   * [`useFormStore`](https://ariakit.com/reference/use-form-store) hook. If not
    * provided, the closest
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) component's
+   * [`FormProvider`](https://ariakit.com/reference/form-provider) component's
    * context will be used.
    */
   store?: FormStore;
   /**
    * Determines if the form should invoke the validation callbacks registered
    * with
-   * [`useValidate`](https://ariakit.org/reference/use-form-store#usevalidate)
-   * when the [`values`](https://ariakit.org/reference/use-form-store#values)
+   * [`useValidate`](https://ariakit.com/reference/use-form-store#usevalidate)
+   * when the [`values`](https://ariakit.com/reference/use-form-store#values)
    * change.
    * @default true
    */
@@ -213,22 +214,22 @@ export interface FormOptions<_T extends ElementType = TagName> extends Options {
   /**
    * Determines if the form should invoke the validation callbacks registered
    * with
-   * [`useValidate`](https://ariakit.org/reference/use-form-store#usevalidate)
+   * [`useValidate`](https://ariakit.com/reference/use-form-store#usevalidate)
    * when a field loses focus.
    * @default true
    */
   validateOnBlur?: boolean;
   /**
    * Determines if the form state should reset to its
-   * [`defaultValues`](https://ariakit.org/reference/use-form-store#defaultvalues)
-   * when the [`Form`](https://ariakit.org/reference/form) component is
+   * [`defaultValues`](https://ariakit.com/reference/use-form-store#defaultvalues)
+   * when the [`Form`](https://ariakit.com/reference/form) component is
    * unmounted.
    * @default false
    */
   resetOnUnmount?: boolean;
   /**
    * Determines if the form state should be reset to its
-   * [`defaultValues`](https://ariakit.org/reference/use-form-store#defaultvalues)
+   * [`defaultValues`](https://ariakit.com/reference/use-form-store#defaultvalues)
    * upon successful form submission.
    * @default true
    */

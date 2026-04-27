@@ -130,7 +130,7 @@
 }
 
 @utility ak-list-counter {
-  @apply ak-layer-pop-2 ak-list-counter-content;
+  @apply ak-layer ak-layer-12 ak-list-counter-content;
   @apply size-(--ak-list-counter-size) relative flex-none self-start rounded-full text-center font-semibold;
   --_ak-list-counter-margin: var(--ak-list-counter-margin, 0.2em);
   --ak-list-counter-leading: var(--ak-button-leading, --spacing(6));
@@ -144,7 +144,7 @@
 
 /* ak-list-item elements and variants */
 @utility ak-list-item-ul-marker {
-  @apply ak-layer-current ak-edge/40;
+  @apply ak-layer ak-edge-40;
   @apply absolute left-0 border-b;
   content: "";
   width: calc(var(--ak-list-leading) * 0.5);
@@ -173,7 +173,7 @@
   );
   /* Border segment */
   &::after {
-    @apply ak-layer-pop-2;
+    @apply ak-layer ak-layer-12;
     @apply z-2 pointer-events-none absolute h-full;
     content: "";
     width: var(--ak-list-border-width);
@@ -207,7 +207,7 @@
 }
 
 @utility ak-list-item_base {
-  @apply ak-frame-card/(--ak-list-item-padding);
+  @apply ak-frame ak-frame-card/(--ak-list-item-padding);
   @apply leading-(--ak-list-leading) relative;
   --ak-list-item-base-ps: calc(
     var(--ak-frame-padding) + var(--ak-list-item-ps)
@@ -281,7 +281,7 @@
 
 /* ak-list-item-check */
 @utility ak-list-item-check-base {
-  @apply ak-list-item-ol-marker ak-layer-pop ak-edge/25;
+  @apply ak-list-item-ol-marker ak-layer ak-layer-6 ak-edge-25;
   @apply ring ring-inset;
   &::before {
     content: "" / "Unchecked" !important;
@@ -310,7 +310,7 @@
 }
 
 @utility ak-list-item-check_checked {
-  @apply ak-layer-contrast-primary;
+  @apply ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-50;
   @apply ring-0;
   &::before {
     @apply ak-icon-check;
@@ -328,6 +328,6 @@
     @apply ak-progress-thickness-[0.15em];
   }
   @variant ak-list-ul {
-    @apply ak-progress-thickness-[calc(30%+5%*var(--contrast,0))];
+    @apply ak-progress-thickness-[calc(30%+0.25%*var(--contrast,0))];
   }
 }

@@ -1,11 +1,11 @@
-import { contains, getDocument, isVisible } from "@ariakit/core/utils/dom";
+import { contains, getDocument, getWindow } from "@ariakit/core/utils/dom";
 import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import type { MutableRefObject } from "react";
 import { useEffect, useRef } from "react";
-import { isSafariFocusAncestor } from "../../focusable/focusable.tsx";
 import { useEvent, useSafeLayoutEffect } from "../../utils/hooks.ts";
 import { useStoreState } from "../../utils/store.tsx";
-import type { DialogOptions } from "../dialog.tsx";
 import type { DialogStore } from "../dialog-store.ts";
+import type { DialogOptions } from "../dialog.tsx";
 import { isElementMarked } from "./mark-tree-outside.ts";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.ts";
 
@@ -56,19 +56,19 @@ function useEventOutside({
 }: EventOutsideOptions) {
   const callListener = useEvent(listener);
   const open = useStoreState(store, "open");
+  const contentElement = useStoreState(store, "contentElement");
   const focusedRef = useRef(false);
 
   useSafeLayoutEffect(() => {
     if (!open) return;
     if (!domReady) return;
-    const { contentElement } = store.getState();
     if (!contentElement) return;
     const onFocus = () => {
       focusedRef.current = true;
     };
     contentElement.addEventListener("focusin", onFocus, true);
     return () => contentElement.removeEventListener("focusin", onFocus, true);
-  }, [store, open, domReady]);
+  }, [open, domReady, contentElement]);
 
   useEffect(() => {
     if (!open) return;
@@ -94,18 +94,13 @@ function useEventOutside({
       // don't stay open when new nodes are added to the DOM and focused.
       const focused = focusedRef.current;
       if (focused && !isElementMarked(target, contentElement.id)) return;
-      // Since Safari focuses on the closest focusable ancestor and we're not
-      // preventing it (see focusable.tsx), dialogs may close on mousedown on
-      // their disclosure buttons. So we check if the target of this focus event
-      // is triggered by the Safari behavior. See the dialog-menu "open/close
-      // menu by clicking on menu button" test.
-      if (isSafariFocusAncestor(target)) return;
       // Finally, if the target has been marked as "outside" or is an ancestor
       // of the content element, we call the listener.
       callListener(event);
     };
-    return addGlobalEventListener(type, onEvent, capture);
-  }, [open, capture]);
+    const win = contentElement ? getWindow(contentElement) : undefined;
+    return addGlobalEventListener(type, onEvent, capture, win);
+  }, [open, capture, store, type, callListener, contentElement]);
 }
 
 function shouldHideOnInteractOutside(
@@ -122,9 +117,12 @@ export function useHideOnInteractOutside(
   store: DialogStore,
   hideOnInteractOutside: DialogOptions["hideOnInteractOutside"],
   domReady?: boolean | HTMLElement | null,
+  interactedOutsideRef?: MutableRefObject<boolean>,
 ) {
   const open = useStoreState(store, "open");
-  const previousMouseDownRef = usePreviousMouseDownRef(open);
+  const contentElement = useStoreState(store, "contentElement");
+  const contentWindow = contentElement ? getWindow(contentElement) : undefined;
+  const previousMouseDownRef = usePreviousMouseDownRef(open, contentWindow);
   const props = { store, domReady, capture: true };
 
   useEventOutside({
@@ -138,7 +136,6 @@ export function useHideOnInteractOutside(
       // was dispatched outside of the dialog. See form-select example. We just
       // ignore this.
       if (!previousMouseDown) return;
-      if (!isVisible(previousMouseDown)) return;
       // This prevents the dialog from closing by dragging the cursor (for
       // example, selecting some text inside the dialog and releasing the mouse
       // outside of it). See:
@@ -146,6 +143,9 @@ export function useHideOnInteractOutside(
       // - https://github.com/ariakit/ariakit/issues/2330
       if (!isElementMarked(previousMouseDown, contentElement?.id)) return;
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
+      if (interactedOutsideRef) {
+        interactedOutsideRef.current = true;
+      }
       store.hide();
     },
   });
@@ -168,6 +168,9 @@ export function useHideOnInteractOutside(
     type: "contextmenu",
     listener: (event) => {
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
+      if (interactedOutsideRef) {
+        interactedOutsideRef.current = true;
+      }
       store.hide();
     },
   });

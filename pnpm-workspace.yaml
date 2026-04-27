@@ -7,6 +7,21 @@ packages:
   - website
   - site
 
+minimumReleaseAge: 4320
+
 publicHoistPattern:
   - "*react*"
   - "*testing-library*"
+
+saveExact: true
+
+overrides:
+  "@wordpress/components>@ariakit/react": "workspace:*"
+
+patchedDependencies:
+  "@changesets/apply-release-plan@7.1.1": "patches/@changesets__apply-release-plan@7.1.1.patch"
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  workerd: true

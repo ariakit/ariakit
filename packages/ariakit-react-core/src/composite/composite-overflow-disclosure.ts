@@ -17,7 +17,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 /**
  * Returns props to create a `CompositeOverflowDisclosure` component. This hook
  * should be used in a component that's wrapped with a composite component.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * // This component should be wrapped with Composite
@@ -71,7 +71,7 @@ export const useCompositeOverflowDisclosure = createHook<
 /**
  * Renders a disclosure button for the `CompositeOverflow` component. This
  * component should be wrapped with a composite component.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const composite = useCompositeStore();
@@ -100,8 +100,8 @@ export const CompositeOverflowDisclosure = forwardRef(
 
 export interface CompositeOverflowDisclosureOptions<
   T extends ElementType = TagName,
-> extends Omit<CompositeItemOptions<T>, "store">,
-    PopoverDisclosureOptions<T> {
+>
+  extends Omit<CompositeItemOptions<T>, "store">, PopoverDisclosureOptions<T> {
   /**
    * Object returned by the `useCompositeOverflowStore` hook.
    */

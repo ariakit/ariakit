@@ -7,6 +7,12 @@ if (process.argv.includes("--headed")) {
 const CI = !!process.env.CI;
 const HEADED = process.env.PWHEADED === "true";
 
+// Workaround: Playwright 1.59 syncs navigator.platform with the user agent,
+// causing "Win32" on macOS (since Desktop Chrome has a Windows UA). This breaks
+// modifier-key detection (Meta vs Control). Remove once resolved upstream.
+// https://github.com/microsoft/playwright/issues/40009
+process.env.PLAYWRIGHT_NO_UA_PLATFORM = "1";
+
 function testMatchersFor(...kinds: string[]): RegExp[] {
   return kinds.flatMap((kind) => [
     new RegExp(`\\/test[^/]*-${kind}`),
@@ -22,7 +28,7 @@ export default defineConfig({
   reportSlowTests: null,
   reporter: CI ? [["github"], ["dot"]] : [["list"]],
   retries: 1,
-  testIgnore: ["site/**"],
+  testIgnore: ["site/**", ".claude/**"],
   webServer: {
     command: "pnpm start",
     reuseExistingServer: !CI,

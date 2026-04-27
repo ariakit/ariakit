@@ -14,9 +14,10 @@ import { basename, dirname, join } from "node:path";
 // Cloudflare Workers domain for Next.js app
 const NEXTJS_WORKERS_DOMAIN = "ariakit-nextjs.workers.dev";
 // Production domain for Next.js app
-const NEXTJS_PRODUCTION_DOMAIN = "nextjs.ariakit.org";
-// Development URL for Next.js app
-const NEXTJS_DEV_URL = "http://localhost:3000";
+const NEXTJS_PRODUCTION_DOMAIN = "nextjs.ariakit.com";
+// Default port for the Next.js dev server. The dev-site script overrides this
+// via the NEXTJS_PORT env variable when the default port is already in use.
+const NEXTJS_DEFAULT_PORT = "3000";
 
 /**
  * Regex pattern to match Next.js preview URLs.
@@ -41,25 +42,30 @@ const NEXTJS_CONVENTION_FILES = [
 
 type NextjsConventionFile = (typeof NEXTJS_CONVENTION_FILES)[number];
 
+interface GetNextjsUrlFromRequestParams {
+  requestUrl: string;
+  path: string;
+  /** Runtime environment bindings (e.g., from Astro.locals.runtime.env) */
+  env?: Record<string, string | undefined>;
+}
+
 /**
  * Derives the Next.js app URL from the current request URL. This allows dynamic
  * URL determination at runtime without needing build-time configuration.
  *
  * URL mapping:
- * - localhost:* → http://localhost:3000
+ * - localhost:* → http://localhost:{NEXTJS_PORT || 3000}
  * - {alias}.ariakit-preview.workers.dev → {alias}.ariakit-nextjs.workers.dev
  * - ariakit-preview.workers.dev → ariakit-nextjs.workers.dev
- * - next.ariakit.org → nextjs.ariakit.org
- * - *.ariakit.org → nextjs.ariakit.org
- *
- * @param requestUrl - The current request URL (e.g., from Astro context)
- * @param path - The path within the Next.js app (e.g., "/tab-nextjs")
- * @returns The full URL to the Next.js page
+ * - next.ariakit.com → nextjs.ariakit.com
+ * - *.ariakit.com → nextjs.ariakit.com
+ * - *.ariakit.org → nextjs.ariakit.com (legacy, redirected during migration)
  */
-export function getNextjsUrlFromRequest(
-  requestUrl: string,
-  path: string,
-): string {
+export function getNextjsUrlFromRequest({
+  requestUrl,
+  path,
+  env,
+}: GetNextjsUrlFromRequestParams): string {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   try {
     const url = new URL(requestUrl);
@@ -70,7 +76,8 @@ export function getNextjsUrlFromRequest(
       hostname === "127.0.0.1" ||
       hostname === "0.0.0.0"
     ) {
-      return `${NEXTJS_DEV_URL}${normalizedPath}`;
+      const port = env?.NEXTJS_PORT || NEXTJS_DEFAULT_PORT;
+      return `http://localhost:${port}${normalizedPath}`;
     }
     // Preview deployment on workers.dev
     if (hostname.endsWith(".workers.dev")) {
@@ -83,8 +90,13 @@ export function getNextjsUrlFromRequest(
       // No alias, use main workers domain
       return `${protocol}//${NEXTJS_WORKERS_DOMAIN}${normalizedPath}`;
     }
-    // Production or custom domain on ariakit.org
-    if (hostname.endsWith(".ariakit.org") || hostname === "ariakit.org") {
+    // Production or custom domain on ariakit.com (or legacy ariakit.org)
+    if (
+      hostname.endsWith(".ariakit.com") ||
+      hostname === "ariakit.com" ||
+      hostname.endsWith(".ariakit.org") ||
+      hostname === "ariakit.org"
+    ) {
       return `${protocol}//${NEXTJS_PRODUCTION_DOMAIN}${normalizedPath}`;
     }
     // Fallback: replace hostname with production Next.js domain

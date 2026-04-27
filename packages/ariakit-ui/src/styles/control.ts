@@ -60,7 +60,7 @@ export const control = cv({
     $disabled: [
       "disabled cursor-not-allowed!",
       "border-transparent! ring-transparent! inset-shadow-none! shadow-none!",
-      "bg-none! ak-text/0! *:ak-text/0!",
+      "bg-none! ak-ink-0! *:ak-ink-0!",
     ],
   },
   defaultVariants: {
@@ -101,7 +101,7 @@ export const controlSlot = cv({
     $bg: {
       // When the frame's bg is inverted, we need to make the pop effect more
       // pronounced so it's still visible.
-      pop: "group-[.layer-invert]/control:ak-layer-pop-2.5",
+      pop: "group-[.layer-invert]/control:ak-layer-15",
     },
     /**
      * Sets the slot size.
@@ -206,8 +206,8 @@ export const controlSlot = cv({
       setDefaultVariants({ $mx: $size, $p: $size });
       // Disabled frame
       addClass([
-        "group-[.disabled]/control:ak-layer-down",
-        "group-[.disabled]/control:ak-text/0",
+        "group-[.disabled]/control:ak-layer-darken-6",
+        "group-[.disabled]/control:ak-ink-0",
       ]);
     }
 
@@ -261,7 +261,7 @@ export const controlContent = cv({
 
 export const controlLabel = cv({
   class:
-    "group-[.flex-col]/control-content:flex-none group-[.disabled]/control:ak-text/0",
+    "group-[.flex-col]/control-content:flex-none group-[.disabled]/control:ak-ink-0",
   variants: {
     $truncate: "truncate",
   },
@@ -269,7 +269,7 @@ export const controlLabel = cv({
 
 export const controlDescription = cv({
   class:
-    "ms-0! ak-text/70 basis-full font-normal text-[0.875em] group-[.disabled]/control:ak-text/0",
+    "ms-0! ak-ink-70 basis-full font-normal text-[0.875em] group-[.disabled]/control:ak-ink-0",
   variants: {
     $truncate: "truncate",
   },
@@ -299,9 +299,9 @@ export const controlSeparator = cv({
       ],
     },
     $size: {
-      xs: "[--size:1cap] self-center ak-edge/[calc(24-var(--width)*6)] [.chevron]:ak-edge/[calc(64-var(--width)*12)]",
-      sm: "[--size:1em] self-center ak-edge/[calc(24-var(--width)*6)] [.chevron]:ak-edge/[calc(64-var(--width)*12)]",
-      md: "[--size:1lh] self-center ak-edge/[calc(24-var(--width)*6)] [.chevron]:ak-edge/[calc(64-var(--width)*12)]",
+      xs: "[--size:1cap] self-center ak-edge-[calc(24-var(--width)*6)] [.chevron]:ak-edge-[calc(64-var(--width)*12)]",
+      sm: "[--size:1em] self-center ak-edge-[calc(24-var(--width)*6)] [.chevron]:ak-edge-[calc(64-var(--width)*12)]",
+      md: "[--size:1lh] self-center ak-edge-[calc(24-var(--width)*6)] [.chevron]:ak-edge-[calc(64-var(--width)*12)]",
       lg: "self-stretch ak-edge",
       full: "self-stretch ak-edge -my-(--ak-frame-padding,0px) mx-0",
     },

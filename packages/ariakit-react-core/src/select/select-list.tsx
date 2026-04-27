@@ -3,10 +3,10 @@ import { invariant } from "@ariakit/core/utils/misc";
 import type { BooleanOrCallback } from "@ariakit/core/utils/types";
 import type { ElementType, KeyboardEvent } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import type { CompositeOptions } from "../composite/composite.tsx";
-import { useComposite } from "../composite/composite.tsx";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
@@ -38,7 +38,7 @@ const SelectListContext = createContext<
 
 /**
  * Returns props to create a `SelectList` component.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const store = useSelectStore();
@@ -107,7 +107,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
 
     const headingContextValue: typeof headingState = useMemo(
       () => [headingId, setHeadingId],
-      [headingId],
+      [headingId, setHeadingId],
     );
 
     const [childStore, setChildStore] = useState<SelectStore | null>(null);
@@ -166,10 +166,10 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     );
 
     props = {
-      id,
-      "aria-labelledby": labelId,
+      "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       hidden,
       ...props,
+      id,
       ref: useMergeRefs(setElement, props.ref),
       style,
       onKeyDown,
@@ -184,14 +184,14 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
 
 /**
  * Renders a wrapper for
- * [`SelectItem`](https://ariakit.org/reference/select-item) elements. This
+ * [`SelectItem`](https://ariakit.com/reference/select-item) elements. This
  * component may be rendered within a
- * [`SelectPopover`](https://ariakit.org/reference/select-popover) component if
+ * [`SelectPopover`](https://ariakit.com/reference/select-popover) component if
  * there are other non-item elements inside the popover.
  *
  * The `aria-labelledby` prop is set to the
- * [`Select`](https://ariakit.org/reference/select) element's `id` by default.
- * @see https://ariakit.org/components/select
+ * [`Select`](https://ariakit.com/reference/select) element's `id` by default.
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5-8}
  * <SelectProvider>
@@ -214,28 +214,29 @@ export const SelectList = forwardRef(function SelectList(
 });
 
 export interface SelectListOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>,
+  extends
+    CompositeOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook. If
    * not provided, the closest
-   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)
    * component's context will be used.
    */
   store?: SelectStore;
   /**
    * Whether the select value should be reset to the value before the list got
    * shown when Escape is pressed. This has effect only when
-   * [`setValueOnMove`](https://ariakit.org/reference/select-provider#setvalueonmove)
+   * [`setValueOnMove`](https://ariakit.com/reference/select-provider#setvalueonmove)
    * is `true`.
    * @default true
    */
   resetOnEscape?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
-   * Whether the [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
+   * Whether the [`SelectList`](https://ariakit.com/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.com/reference/select-popover) components
    * should be hidden when the user presses Enter or Space while the list
    * element is focused and no item is active.
    * @default true

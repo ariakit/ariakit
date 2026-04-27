@@ -214,6 +214,7 @@ function getItemSize(
     if (hasSameOrientation && itemObject.itemSize) {
       return initialSize + itemObject.itemSize * items.length;
     }
+    // oxlint-disable-next-line no-unnecessary-type-arguments
     const totalSize = items.reduce<number>(
       (sum, item) => sum + getItemSize(item, horizontal),
       initialSize,
@@ -345,6 +346,7 @@ function getItemsEnd<T extends Item>(props: {
   const lastItemData = props.data.get(lastItemId);
   if (lastItemData?.end) return lastItemData.end + props.paddingEnd;
   if (!Array.isArray(props.items)) return defaultEnd;
+  // oxlint-disable-next-line no-unnecessary-type-arguments
   const end = props.items.reduce<number>(
     (sum, item) => sum + getItemSize(item, props.horizontal, false),
     0,
@@ -605,6 +607,7 @@ export function useCollectionRenderer<T extends Item = any>({
       if (shallowEqual(prevIndices, indices)) return prevIndices;
       return indices;
     });
+    // oxlint-disable-next-line exhaustive-deps
   }, [
     elementsUpdated,
     items,
@@ -735,7 +738,7 @@ export function useCollectionRenderer<T extends Item = any>({
     return () => {
       observer.disconnect();
     };
-  }, [scroller, processVisibleIndicesEvent]);
+  }, [scroller, horizontal, processVisibleIndicesEvent]);
 
   const elementObserver = useMemo(() => {
     if (typeof ResizeObserver !== "function") return;
@@ -860,19 +863,20 @@ export type CollectionRendererItemProps<
   P extends BaseItemProps = BaseItemProps,
 > = ItemProps<T, P>;
 
-export interface CollectionRendererOptions<T extends Item = any>
-  extends Options {
+export interface CollectionRendererOptions<
+  T extends Item = any,
+> extends Options {
   /**
    * Object returned by the
-   * [`useCollectionStore`](https://ariakit.org/reference/use-collection-store)
+   * [`useCollectionStore`](https://ariakit.com/reference/use-collection-store)
    * hook. If not provided, the closest
-   * [Collection](https://ariakit.org/components/collection) component's
+   * [Collection](https://ariakit.com/components/collection) component's
    * context will be used.
    *
    * The store
-   * [`items`](https://ariakit.org/reference/use-collection-store#items) state
+   * [`items`](https://ariakit.com/reference/use-collection-store#items) state
    * will be used to render the items if the
-   * [`items`](https://ariakit.org/reference/collection-items#items) prop is not
+   * [`items`](https://ariakit.com/reference/collection-items#items) prop is not
    * provided.
    */
   store?: CollectionStore<
@@ -983,5 +987,7 @@ export interface CollectionRendererOptions<T extends Item = any>
   children?: (item: ItemProps<T>) => ReactNode;
 }
 
-export interface CollectionRendererProps<T extends Item = any>
-  extends Props<TagName, CollectionRendererOptions<T>> {}
+export interface CollectionRendererProps<T extends Item = any> extends Props<
+  TagName,
+  CollectionRendererOptions<T>
+> {}

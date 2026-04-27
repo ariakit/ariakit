@@ -9,30 +9,54 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-  generate:
+  build:
     name: Build styles
     runs-on: ubuntu-latest
     permissions:
-      actions: read
       contents: write
       pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
+          # Check out the PR branch tip (not the merge ref) so `commit-or-pr`
+          # can fetch and rebase onto `origin/$HEAD_REF` cleanly. Otherwise
+          # the merge ref includes commits from `main` that are absent from
+          # the PR branch, which causes rebase conflicts.
+          ref: ${{ github.head_ref || github.ref_name }}
           persist-credentials: false
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Build styles
         run: pnpm -F site run build-styles
 
-      - name: Generate patch or commit
-        uses: ./.github/workflows/patch-or-commit
+      - name: Detect changes
+        id: patch
+        # Scope the diff check to the generator's output. Other tree changes
+        # from earlier steps (e.g., `pnpm install` rewriting `pnpm-lock.yaml`
+        # to re-add pnpm's self-managed `packageManagerDependencies` section)
+        # must not trigger a style commit.
+        run: |
+          git add -A -- site/src/styles/styles.json
+          if git diff --cached --quiet --exit-code; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+
+      - name: Commit or create PR
+        if: steps.patch.outputs.has_changes == 'true'
+        uses: ./.github/workflows/commit-or-pr
         with:
+          # This write-back step intentionally assumes PRs come from branches
+          # on this repository instead of forks.
+          # On pull requests we push back to the branch; on pushes to `main`
+          # this opens or updates the long-lived bot PR for generated styles.
+          event: ${{ github.event_name }}
           message: Update styles
+          head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: chore/update-styles
-          patch-file: build-styles.patch
-          patch-name: build-styles-diff
+          paths: site/src/styles/styles.json
           token: ${{ secrets.ARIAKIT_BOT_PAT }}

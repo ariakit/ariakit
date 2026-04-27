@@ -40,15 +40,19 @@ function formatAmount(price: PriceData) {
 const priceTypes = [personal, team].filter(nonNullable);
 ---
 
-<li class="ak-layer ak-frame-card ak-frame-border">
-  <div class="text-3xl ak-text-amber-400/0 ak-frame-cover flex items-center">
+<li
+  class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card ak-frame-border"
+>
+  <div
+    class="text-3xl ak-text ak-text-amber-400 ak-frame ak-frame-cover flex items-center"
+  >
     {formatAmount(personal).symbol}{" "}
     {personal.currency.toUpperCase()}
     <div class="ms-auto text-2xl">
       {countryCode ? getFlagEmoji(countryCode) : "🌎"}
     </div>
   </div>
-  <div class="ak-frame-cover/0 ak-layer-current border-t">
+  <div class="ak-frame ak-frame-cover ak-frame-p-0 ak-layer border-t">
     <table class="w-full">
       <tbody class="divide-y">
         {
@@ -56,7 +60,7 @@ const priceTypes = [personal, team].filter(nonNullable);
             const id = `${priceType.key}-modal`;
             const fixedPrice = (priceType.amount / 100).toFixed(2);
             return (
-              <tr class="ak-layer-current *:ak-frame/1.5">
+              <tr class="ak-layer *:ak-frame *:ak-frame-p-1.5">
                 <th class="text-end text-sm">{capitalize(priceType.type)}</th>
                 <td style={`anchor-name: --${id}-1`} class="w-min text-end">
                   {priceType.amount ? (
@@ -67,19 +71,19 @@ const priceTypes = [personal, team].filter(nonNullable);
                       {formatAmount(priceType).toString()}
                     </InlineLink>
                   ) : (
-                    <span class="ak-text/50">Not set</span>
+                    <span class="ak-ink-50">Not set</span>
                   )}
                 </td>
                 <td
                   style={`anchor-name: --${id}-2`}
-                  class="text-start text-xs ak-text-green-500"
+                  class="text-start text-xs ak-text ak-text-green-500"
                 >
                   {priceType.type === "team" &&
                     `${(priceType.amount / personal.amount).toFixed(2)}x`}
                 </td>
                 <td class="w-12">
                   <button
-                    class="ak-button ak-layer-pop ak-button-square size-full"
+                    class="ak-button ak-layer ak-layer-6 ak-button-square size-full"
                     command="show-modal"
                     commandfor={id}
                   >
@@ -91,7 +95,7 @@ const priceTypes = [personal, team].filter(nonNullable);
                     closedby="any"
                     popover
                     style={`position-anchor: --${id}-1; inset-block-start: anchor(start); inset-inline-start: anchor(start); min-inline-size: calc(anchor-size() + anchor-size(--${id}-2));`}
-                    class="ak-frame/px m-1 backdrop:bg-black/20 backdrop:backdrop-blur-[2px]"
+                    class="ak-frame ak-frame-p-px m-1 backdrop:bg-black/20 backdrop:backdrop-blur-[2px]"
                   >
                     <form method="post" action={actions.admin.setPrice}>
                       <input type="hidden" name="type" value={priceType.type} />
@@ -106,7 +110,7 @@ const priceTypes = [personal, team].filter(nonNullable);
                         value={countryCode}
                       />
                       <div
-                        class="ak-input flex items-center gap-1 ak-frame-field/1 justify-end-safe"
+                        class="ak-input ak-frame ak-frame-field/1 flex items-center gap-1 justify-end-safe"
                         onclick="this.querySelector('input').focus()"
                       >
                         <div class="size-4 flex items-center justify-end">
@@ -125,7 +129,7 @@ const priceTypes = [personal, team].filter(nonNullable);
                           autofocus
                           onfocus="this.select()"
                         />
-                        <SubmitButton class="ak-button text-sm ak-frame-field/2">
+                        <SubmitButton class="ak-button ak-frame ak-frame-field/2 text-sm">
                           Set price
                         </SubmitButton>
                       </div>

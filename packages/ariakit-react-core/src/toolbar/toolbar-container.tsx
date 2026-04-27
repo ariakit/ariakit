@@ -17,7 +17,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ToolbarContainer` component.
- * @see https://ariakit.org/components/toolbar
+ * @see https://ariakit.com/components/toolbar
  * @example
  * ```jsx
  * const store = useToolbarStore();
@@ -41,7 +41,7 @@ export const useToolbarContainer = createHook<TagName, ToolbarContainerOptions>(
 
 /**
  * Renders a toolbar item that may contain interactive widgets inside.
- * @see https://ariakit.org/components/toolbar
+ * @see https://ariakit.com/components/toolbar
  * @example
  * ```jsx {2-4}
  * <Toolbar>
@@ -59,8 +59,7 @@ export const ToolbarContainer = memo(
 );
 
 export interface ToolbarContainerOptions<T extends ElementType = TagName>
-  extends ToolbarItemOptions<T>,
-    Omit<CompositeContainerOptions<T>, "store"> {}
+  extends ToolbarItemOptions<T>, Omit<CompositeContainerOptions<T>, "store"> {}
 
 export type ToolbarContainerProps<T extends ElementType = TagName> = Props<
   T,

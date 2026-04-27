@@ -14,7 +14,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ComboboxRow` component.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore();
@@ -53,10 +53,10 @@ export const useComboboxRow = createHook<TagName, ComboboxRowOptions>(
 
 /**
  * Renders a combobox row that allows two-dimensional arrow key navigation.
- * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) elements
+ * [`ComboboxItem`](https://ariakit.com/reference/combobox-item) elements
  * wrapped within this component will automatically receive a
- * [`rowId`](https://ariakit.org/reference/combobox-item#rowid) prop.
- * @see https://ariakit.org/components/combobox
+ * [`rowId`](https://ariakit.com/reference/combobox-item#rowid) prop.
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {4-13}
  * <ComboboxProvider>
@@ -83,14 +83,15 @@ export const ComboboxRow = forwardRef(function ComboboxRow(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxRowOptions<T extends ElementType = TagName>
-  extends CompositeRowOptions<T> {
+export interface ComboboxRowOptions<
+  T extends ElementType = TagName,
+> extends CompositeRowOptions<T> {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
-   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * [`ComboboxList`](https://ariakit.com/reference/combobox-list) or
+   * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
    * components' context will be used.
    */
   store?: ComboboxStore;

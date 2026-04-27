@@ -16,7 +16,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `RadioGroup` component.
- * @see https://ariakit.org/components/radio
+ * @see https://ariakit.com/components/radio
  * @example
  * ```jsx
  * const store = useRadioStore();
@@ -61,8 +61,8 @@ export const useRadioGroup = createHook<TagName, RadioGroupOptions>(
 
 /**
  * Renders a [`radiogroup`](https://w3c.github.io/aria/#radiogroup) element that
- * manages a group of [`Radio`](https://ariakit.org/reference/radio) elements.
- * @see https://ariakit.org/components/radio
+ * manages a group of [`Radio`](https://ariakit.com/reference/radio) elements.
+ * @see https://ariakit.com/components/radio
  * @example
  * ```jsx
  * <RadioProvider>
@@ -80,13 +80,14 @@ export const RadioGroup = forwardRef(function RadioGroup(
   return createElement(TagName, htmlProps);
 });
 
-export interface RadioGroupOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T> {
+export interface RadioGroupOptions<
+  T extends ElementType = TagName,
+> extends CompositeOptions<T> {
   /**
    * Object returned by the
-   * [`useRadioStore`](https://ariakit.org/reference/use-radio-store) hook. If
+   * [`useRadioStore`](https://ariakit.com/reference/use-radio-store) hook. If
    * not provided, the closest
-   * [`RadioProvider`](https://ariakit.org/reference/radio-provider) component's
+   * [`RadioProvider`](https://ariakit.com/reference/radio-provider) component's
    * context will be used.
    */
   store?: RadioStore;

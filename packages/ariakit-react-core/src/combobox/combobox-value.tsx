@@ -6,17 +6,17 @@ import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.ts";
 
 /**
  * Renders the current
- * [`value`](https://ariakit.org/reference/use-combobox-store#value) state in
- * the [combobox store](https://ariakit.org/reference/use-combobox-store).
+ * [`value`](https://ariakit.com/reference/use-combobox-store#value) state in
+ * the [combobox store](https://ariakit.com/reference/use-combobox-store).
  *
  * As a value component, it doesn't render any DOM elements and therefore
  * doesn't accept HTML props.
  *
  * It takes a
- * [`children`](https://ariakit.org/reference/combobox-value#children) function
+ * [`children`](https://ariakit.com/reference/combobox-value#children) function
  * that gets called with the current value as an argument. This can be used as
  * an uncontrolled API to render the combobox value in a custom way.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {3-5}
  * <ComboboxProvider>
@@ -49,9 +49,9 @@ export function ComboboxValue({ store, children }: ComboboxValueProps = {}) {
 export interface ComboboxValueProps {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
    * component's context will be used.
    */
   store?: ComboboxStore;

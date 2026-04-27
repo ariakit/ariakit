@@ -3,6 +3,12 @@
   "version": "0.0.2",
   "private": true,
   "type": "module",
+  "imports": {
+    "#app/*": "./*"
+  },
+  "exports": {
+    "./pages/*": "./app/*/page.tsx"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,22 +17,19 @@
     "start": "next start",
     "tsc": "next typegen && tsc"
   },
-  "imports": {
-    "#app/*": "./*"
-  },
   "dependencies": {
-    "@ariakit/react": "0.4.23",
-    "next": "16.1.6",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "@ariakit/react": "workspace:*",
+    "next": "16.2.4",
+    "react": "19.2.5",
+    "react-dom": "19.2.5"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "1.17.1",
-    "@tailwindcss/postcss": "4.2.1",
-    "@types/node": "25.5.0",
+    "@opennextjs/cloudflare": "1.19.4",
+    "@tailwindcss/postcss": "4.2.4",
+    "@types/node": "24.12.2",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "babel-plugin-react-compiler": "1.0.0",
-    "tailwindcss": "4.2.1"
+    "tailwindcss": "4.2.4"
   }
 }

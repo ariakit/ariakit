@@ -20,7 +20,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormRadio` component.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore({ defaultValues: { char: "a" } });
@@ -48,7 +48,7 @@ export const useFormRadio = createHook<TagName, FormRadioOptions>(
         "FormRadio must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const onChangeProp = props.onChange;
 
     const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +69,7 @@ export const useFormRadio = createHook<TagName, FormRadioOptions>(
       onChange,
     };
 
-    props = useRadio({ value, ...props });
+    props = useRadio({ name, value, ...props });
 
     props = useFormControl({
       store,
@@ -84,10 +84,10 @@ export const useFormRadio = createHook<TagName, FormRadioOptions>(
 
 /**
  * Renders a radio button as a form control. This component must be wrapped in a
- * [`FormRadioGroup`](https://ariakit.org/reference/form-radio-group) along with
+ * [`FormRadioGroup`](https://ariakit.com/reference/form-radio-group) along with
  * other radio buttons sharing the same
- * [`name`](https://ariakit.org/reference/form-radio#name).
- * @see https://ariakit.org/components/form
+ * [`name`](https://ariakit.com/reference/form-radio#name).
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {10-12}
  * const form = useFormStore({
@@ -114,8 +114,7 @@ export const FormRadio = memo(
 );
 
 export interface FormRadioOptions<T extends ElementType = TagName>
-  extends FormControlOptions<T>,
-    Omit<RadioOptions<T>, "store" | "name"> {}
+  extends FormControlOptions<T>, Omit<RadioOptions<T>, "store" | "name"> {}
 
 export type FormRadioProps<T extends ElementType = TagName> = Props<
   T,

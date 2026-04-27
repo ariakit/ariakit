@@ -12,7 +12,7 @@ type TagName = typeof TagName;
  * Returns props to create a `FormGroupLabel` component. This hook must be used
  * in a component that's wrapped with `FormGroup` so the `aria-labelledby` prop
  * is properly set on the form group element.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * // This component must be wrapped with FormGroup
@@ -29,10 +29,10 @@ export const useFormGroupLabel = createHook<TagName, FormGroupLabelOptions>(
 
 /**
  * Renders a label in a form group. This component must be wrapped with the
- * [`FormGroup`](https://ariakit.org/reference/form-group) or
- * [`FormRadioGroup`](https://ariakit.org/reference/form-radio-group) components
+ * [`FormGroup`](https://ariakit.com/reference/form-group) or
+ * [`FormRadioGroup`](https://ariakit.com/reference/form-radio-group) components
  * so the `aria-labelledby` prop is properly set on the form group element.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {10}
  * const form = useFormStore({
@@ -60,13 +60,14 @@ export const FormGroupLabel = forwardRef(function FormGroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface FormGroupLabelOptions<T extends ElementType = TagName>
-  extends GroupLabelOptions<T> {
+export interface FormGroupLabelOptions<
+  T extends ElementType = TagName,
+> extends GroupLabelOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * [`useFormStore`](https://ariakit.com/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.com/reference/form) or
+   * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
    */
   store?: FormStore;

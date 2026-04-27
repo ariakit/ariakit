@@ -1,20 +1,17 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
+  "minimumReleaseAge": "3 days",
   "semanticCommits": "disabled",
   "packageRules": [
-    {
-      "matchFileNames": ["package.json"],
-      "matchPackageNames": ["next"],
-      "enabled": false
-    },
     {
       "matchFileNames": ["website/package.json"],
       "enabled": false
     },
     {
-      "matchPackageNames": ["shiki"],
-      "matchCurrentVersion": "/^1\\./",
-      "allowedVersions": "/^1\\./"
+      "matchFileNames": ["package.json"],
+      "matchPackageNames": ["postcss"],
+      "enabled": false
     },
     {
       "matchPackageNames": ["tailwindcss"],
@@ -33,41 +30,49 @@
       ]
     },
     {
-      "matchFileNames": ["website/package.json"],
-      "matchPackageNames": ["/^@clerk\\//"],
-      "enabled": false
+      "groupName": "changesets",
+      "matchPackageNames": ["/^@changesets\\//"]
     },
     {
       "groupName": "clerk",
       "matchPackageNames": ["/^@clerk\\//"]
     },
     {
-      "matchFileNames": ["website/package.json"],
-      "matchPackageNames": ["stripe", "/^@stripe\\//"],
-      "enabled": false
-    },
-    {
       "groupName": "stripe",
-      "matchPackageNames": ["stripe", "/^@stripe\\//"]
-    },
-    {
-      "groupName": "monaco",
-      "matchPackageNames": ["/monaco/"]
+      "matchPackageNames": ["stripe", "/^@stripe/"]
     },
     {
       "groupName": "testing-library",
-      "matchPackageNames": ["/@testing-library//"]
+      "matchPackageNames": ["/^@testing-library/"]
     },
     {
       "groupName": "radix",
-      "matchPackageNames": ["/@radix-ui//"]
+      "matchPackageNames": ["/^@radix-ui/"]
     },
     {
       "groupName": "vite",
-      "matchPackageNames": ["vite", "/^@vitejs\\//"]
+      "matchPackageNames": ["vite", "/^@vitejs/"]
     },
     {
-      "matchPackageNames": ["lint-staged"],
+      "groupName": "oxc",
+      "matchPackageNames": ["/^oxlint/", "/^oxfmt/"]
+    },
+    {
+      "matchPackageNames": ["astro"],
+      "matchCurrentVersion": "/^5\\./",
+      "allowedVersions": "/^5\\./"
+    },
+    {
+      "matchPackageNames": ["@astrojs/cloudflare"],
+      "matchCurrentVersion": "/^12\\./",
+      "allowedVersions": "/^12\\./"
+    },
+    {
+      "matchPackageNames": ["@types/node"],
+      "allowedVersions": "/^24\\./"
+    },
+    {
+      "matchPackageNames": ["lint-staged", "vite", "/^@vitejs/"],
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true,
       "automergeType": "pr",
@@ -75,15 +80,15 @@
     },
     {
       "matchPackageNames": [
+        "@astrojs/check",
         "@wordpress/components",
         "cross-env",
         "cross-spawn",
         "dotenv",
-        "framer-motion",
+        "motion",
         "fs-extra",
         "glob",
         "jsdom",
-        "lerna",
         "lodash-es",
         "match-sorter",
         "null-loader",
@@ -100,13 +105,14 @@
         "webpack",
         "zod",
         "/^@babel//",
-        "/^@biomejs//",
         "/^@playwright//",
         "/^@radix-ui//",
         "/^@rollup//",
         "/^@testing-library//",
         "/^@types//",
         "/^@vitest//",
+        "/^oxlint/",
+        "/^oxfmt/",
         "/^prettier/",
         "/^vitest/",
         "/^stylelint/"
@@ -114,6 +120,29 @@
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
+    },
+    {
+      "matchPackageNames": [
+        "next",
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "matchUpdateTypes": ["major"],
+      "enabled": false
+    },
+    {
+      "matchPackageNames": [
+        "next",
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ],
+      "matchUpdateTypes": ["major"],
+      "matchFileNames": ["nextjs/**"],
+      "enabled": true
     }
   ]
 }

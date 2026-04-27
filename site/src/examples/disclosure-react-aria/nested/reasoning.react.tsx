@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { createContext, useContext } from "react";
 import type {
   DisclosureButtonProps,
@@ -25,7 +25,7 @@ export function Reasoning(props: ReasoningProps) {
     <div
       className={clsx(
         nested &&
-          "ak-frame-cover/1 -my-[calc(var(--ak-disclosure-padding)*0.6)]",
+          "ak-frame ak-frame-cover ak-frame-p-1 -my-[calc(var(--ak-disclosure-padding)*0.6)]",
       )}
     >
       <Disclosure
@@ -34,8 +34,8 @@ export function Reasoning(props: ReasoningProps) {
         content={content}
         className={clsx(
           nested
-            ? "ak-frame-field/3 data-expanded:ak-layer-pop"
-            : "ak-frame-card ak-layer ak-bordering",
+            ? "ak-frame ak-frame-field/3 data-expanded:ak-layer data-expanded:ak-layer-6"
+            : "ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering",
           props.className,
         )}
       />

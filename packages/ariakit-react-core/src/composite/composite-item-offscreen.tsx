@@ -18,8 +18,9 @@ type TagName = typeof TagName;
 
 export function useCompositeItemOffscreen<
   T extends ElementType,
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   P extends CompositeItemProps<T>,
->({ store, offscreenBehavior = "active", disabled, value, ...props }: P) {
+>({ store, offscreenMode = "active", disabled, value, ...props }: P) {
   const context = useCompositeContext();
   store = store || context;
 
@@ -55,7 +56,7 @@ export function useCompositeItemOffscreen<
   const offscreenProps = useCollectionItemOffscreen({
     id,
     store,
-    offscreenBehavior: active ? "active" : offscreenBehavior,
+    offscreenMode: active ? "active" : offscreenMode,
     ...props,
     offscreenRoot,
   });
@@ -74,12 +75,12 @@ export function useCompositeItemOffscreen<
 }
 
 export const CompositeItem = forwardRef(function CompositeItem({
-  offscreenBehavior,
+  offscreenMode,
   offscreenRoot,
   ...props
 }: CompositeItemProps) {
   const { active, ref, ...rest } = useCompositeItemOffscreen({
-    offscreenBehavior,
+    offscreenMode,
     offscreenRoot,
     ...props,
   });
@@ -102,7 +103,8 @@ export const CompositeItem = forwardRef(function CompositeItem({
 });
 
 export interface CompositeItemOptions<T extends ElementType = TagName>
-  extends Base.CompositeItemOptions<T>,
+  extends
+    Base.CompositeItemOptions<T>,
     Omit<CollectionItemOptions<T>, "store"> {}
 
 export type CompositeItemProps<T extends ElementType = TagName> = Props<

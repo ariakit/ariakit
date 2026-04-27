@@ -37,7 +37,7 @@ export const tab = cv({
         "not-ui-selected:ui-hover:after:-z-1",
         "not-ui-selected:ui-hover:after:absolute",
         "not-ui-selected:ui-hover:after:inset-0",
-        "not-ui-selected:ui-hover:after:ak-layer-(--ak-layer-parent)",
+        "not-ui-selected:ui-hover:after:ak-layer not-ui-selected:ui-hover:after:ak-layer-(color:--ak-layer-parent)",
         "not-ui-selected:ui-hover:after:[--inset:max(0px,0.2em+var(--group-gap)/2-var(--fp)/2)]",
         "not-ui-selected:ui-hover:after:[--inset-x:calc(var(--inset)+var(--fri))]",
         "not-ui-selected:ui-hover:after:[--inset-b:calc(var(--inset)+var(--fb))]",

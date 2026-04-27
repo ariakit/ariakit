@@ -4,8 +4,8 @@ import type { TagStoreProps } from "./tag-store.ts";
 import { useTagStore } from "./tag-store.ts";
 
 /**
- * Provides a tag store to [Tag](https://ariakit.org/components/tag) components.
- * @see https://ariakit.org/components/tag
+ * Provides a tag store to [Tag](https://ariakit.com/components/tag) components.
+ * @see https://ariakit.com/components/tag
  * @example
  * ```jsx
  * <TagProvider>

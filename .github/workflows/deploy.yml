@@ -15,8 +15,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Build app
         run: pnpm run build-site

@@ -3,7 +3,7 @@
 <p align="center">
   Toolkit for building accessible web apps with <a href="https://www.solidjs.com">Solid</a>.
   <br>
-  <a href="https://solid.ariakit.org"><strong>Explore website »</strong></a>
+  <a href="https://solid.ariakit.com"><strong>Explore website »</strong></a>
 </p>
 
 <br>
@@ -27,7 +27,7 @@
     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/ariakit/ariakit?style=social">
   </a>
   &nbsp;
-  <a href="https://bsky.app/profile/ariakit.org">
+  <a href="https://bsky.app/profile/ariakit.com">
     <img alt="Follow Ariakit on Bluesky" src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff">
   </a>
   &nbsp;

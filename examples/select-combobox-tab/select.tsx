@@ -1,10 +1,10 @@
 /**
  * @license
  * This file is part of Ariakit Plus. For the full license, see
- * https://ariakit.org/plus/license
+ * https://ariakit.com/plus/license
  */
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
 
 export interface SelectProps extends Ariakit.SelectProps {
@@ -168,8 +168,10 @@ export function SelectTabPanel(props: SelectTabPanelProps) {
   );
 }
 
-export interface SelectListProps
-  extends Omit<Ariakit.SelectListProps, "store"> {}
+export interface SelectListProps extends Omit<
+  Ariakit.SelectListProps,
+  "store"
+> {}
 
 export function SelectList(props: SelectListProps) {
   const combobox = Ariakit.useComboboxContext();

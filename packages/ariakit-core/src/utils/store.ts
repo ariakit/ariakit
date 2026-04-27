@@ -103,7 +103,7 @@ export function createStore<S extends State>(
           return sync(store, [key], (state) => {
             setState(
               key,
-              state[key]!,
+              state[key],
               // @ts-expect-error - Not public API. This is just to prevent
               // infinite loops.
               true,
@@ -405,7 +405,7 @@ export interface StoreProps<S extends State = State> {
    * Another store object that will be kept in sync with the original store.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    */
   store?: Store<Partial<S>>;
 }

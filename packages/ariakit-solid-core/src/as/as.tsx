@@ -22,7 +22,7 @@ const cache = new Map<string, Component<any>>();
  * To render as a component, use `<As component={Component} />` (e.g. `<As
  * component={MyButton} />`).
  *
- * Check out the [Composition](https://solid.ariakit.org/guide/composition)
+ * Check out the [Composition](https://solid.ariakit.com/guide/composition)
  * guide for more details.
  * @example
  * ```jsx

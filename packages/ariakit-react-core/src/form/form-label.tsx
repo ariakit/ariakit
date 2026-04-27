@@ -37,7 +37,7 @@ function supportsNativeLabel(tagName?: string) {
  * `span` element. Instead of relying on the `htmlFor` prop, it'll rely on the
  * `aria-labelledby` attribute on the form field. Clicking on the label will
  * move focus to the field even if it's not a native input.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore({ defaultValues: { email: "" } });
@@ -66,7 +66,7 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
 
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
-    const name = `${nameProp}`;
+    const name = String(nameProp);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
@@ -105,10 +105,10 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
     });
 
     props = {
-      id,
       render: isNativeLabel ? <label /> : <span />,
       htmlFor: isNativeLabel ? field?.id : undefined,
       ...props,
+      id,
       ref: useMergeRefs(ref, props.ref),
       onClick,
     };
@@ -138,7 +138,7 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
  * Otherwise, it'll render a `span` element and rely on the `aria-labelledby`
  * attribute on the form field instead. Clicking on the label will move focus to
  * the field even if it's not a native input.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {8}
  * const form = useFormStore({
@@ -160,20 +160,21 @@ export const FormLabel = memo(
   }),
 );
 
-export interface FormLabelOptions<T extends ElementType = TagName>
-  extends CollectionItemOptions<T> {
+export interface FormLabelOptions<
+  T extends ElementType = TagName,
+> extends CollectionItemOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * [`useFormStore`](https://ariakit.com/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.com/reference/form) or
+   * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
    */
   store?: FormStore;
   /**
    * Name of the field labeled by this element. This can either be a string or a
    * reference to a field name from the
-   * [`names`](https://ariakit.org/reference/use-form-store#names) object in the
+   * [`names`](https://ariakit.com/reference/use-form-store#names) object in the
    * store, for type safety.
    * @example
    * ```jsx

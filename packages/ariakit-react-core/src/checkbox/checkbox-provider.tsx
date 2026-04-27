@@ -14,7 +14,7 @@ type Value = CheckboxStoreValue;
  * creating a group of checkboxes that share the same state. `CheckboxProvider`
  * can efficiently manage the value of a checkbox, whether it's a single string,
  * number, or boolean value, or an array of such values.
- * @see https://ariakit.org/components/checkbox
+ * @see https://ariakit.com/components/checkbox
  * @example
  * ```jsx
  * <CheckboxProvider defaultValue={["orange"]}>
@@ -46,7 +46,8 @@ export function CheckboxProvider(props: CheckboxProviderProps = {}) {
   );
 }
 
-export interface CheckboxProviderProps<T extends Value = Value>
-  extends CheckboxStoreProps<T> {
+export interface CheckboxProviderProps<
+  T extends Value = Value,
+> extends CheckboxStoreProps<T> {
   children?: ReactNode;
 }

@@ -1,42 +1,87 @@
 name: visual
 
 on:
-  workflow_run:
-    workflows: ["app"]
-    types: [completed]
+  workflow_call:
+    inputs:
+      event:
+        description: Original event name from the caller workflow
+        required: true
+        type: string
+      test-result:
+        description: Result of the caller's visual test matrix
+        required: true
+        type: string
 
 env:
+  # Vizzly is an alternative visual baseline backend. When disabled, this
+  # workflow falls back to file-based screenshots committed in the repo.
   USE_VIZZLY: ${{ vars.USE_VIZZLY || 'false' }}
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
-  cancel-in-progress: true
+  VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
+  VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
+  VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
+  VIZZLY_BRANCH: ${{ github.head_ref || github.ref_name }}
+  VIZZLY_PR_NUMBER: ${{ github.event.pull_request.number }}
 
 jobs:
-  gate:
-    name: Ignore stale commits
-    permissions:
-      contents: read
-    if: github.event.workflow_run.head_repository.full_name == github.repository
-    uses: ./.github/workflows/ignore-stale-commits.yml
-    with:
-      head_repository: ${{ github.event.workflow_run.head_repository.full_name }}
-      head_branch: ${{ github.event.workflow_run.head_branch }}
-      head_sha: ${{ github.event.workflow_run.head_sha }}
-
-  update-snapshots:
-    name: Update snapshots
-    needs: gate
-    if: needs.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY != 'true' && github.event.workflow_run.conclusion == 'failure'
+  finalize:
+    name: Finalize
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       actions: read
-      contents: write
-      pull-requests: write
     steps:
-      - name: Check for complete snapshot artifacts
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
+
+      - name: Validate Vizzly configuration
+        if: env.USE_VIZZLY == 'true' && env.VIZZLY_TOKEN == ''
+        run: |
+          echo "::error title=Missing VIZZLY_TOKEN::USE_VIZZLY is true, but VIZZLY_TOKEN is not configured."
+          exit 1
+
+      - name: Set up environment
+        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
+        uses: ./.github/workflows/setup
+
+      - name: Finalize visual tests
+        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
+        run: pnpm exec vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
+
+      - name: Read tip SHA on branch
+        id: tip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_REPO: ${{ github.repository }}
+          HEAD_BRANCH: ${{ github.head_ref || github.ref_name }}
+        # Only the latest commit on a branch should update screenshots.
+        # Older runs still finish, but they must not overwrite newer baselines.
+        run: |
+          set -euo pipefail
+          tip_ref=$(python3 -c 'import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=""))' "$HEAD_BRANCH")
+          tip_sha=$(gh api "repos/$HEAD_REPO/commits/$tip_ref" --jq .sha)
+          echo "tip_sha=$tip_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Compare with current SHA
+        id: gate
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TIP_SHA: ${{ steps.tip.outputs.tip_sha }}
+        run: |
+          if [ "$HEAD_SHA" = "$TIP_SHA" ]; then
+            echo "is_latest=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_latest=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check for complete screenshot artifacts
         id: check-artifacts
-        uses: actions/github-script@v8
+        if: steps.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY != 'true' && inputs.test-result == 'failure'
+        # Only update committed screenshots when every browser shard that
+        # uploads screenshots has produced its artifact for this run.
+        uses: actions/github-script@v9
         with:
           script: |
             const perPage = 100;
@@ -49,7 +94,7 @@ jobs:
                 const response = await github.rest.actions.listJobsForWorkflowRun({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  run_id: ${{ github.event.workflow_run.id }},
+                  run_id: ${{ github.run_id }},
                   per_page: perPage,
                   page,
                 });
@@ -69,7 +114,7 @@ jobs:
                 const response = await github.rest.actions.listWorkflowRunArtifacts({
                   owner: context.repo.owner,
                   repo: context.repo.repo,
-                  run_id: ${{ github.event.workflow_run.id }},
+                  run_id: ${{ github.run_id }},
                   per_page: perPage,
                   page,
                 });
@@ -85,8 +130,8 @@ jobs:
             };
             const jobs = await listWorkflowRunJobs();
             const artifacts = await listWorkflowRunArtifacts();
-            const snapshotJobs = jobs
-              .filter((job) => job.steps?.some((step) => step.name === "Upload snapshots"))
+            const screenshotJobs = jobs
+              .filter((job) => job.steps?.some((step) => step.name === "Upload screenshots"))
               .map((job) => {
                 const project = job.name.startsWith("Test ")
                   ? job.name.slice(5).toLowerCase()
@@ -96,71 +141,70 @@ jobs:
                   project,
                 };
               });
-            const invalidSnapshotJobs = snapshotJobs.filter((job) => !job.project);
-            const expectedSnapshotArtifacts = snapshotJobs
+            const invalidScreenshotJobs = screenshotJobs.filter((job) => !job.project);
+            const expectedScreenshotArtifacts = screenshotJobs
               .filter((job) => job.project)
               .map((job) => job.project)
               .map((project) => `app-visual-${project}`);
-            const snapshotArtifacts = artifacts
+            const screenshotArtifacts = artifacts
               .map((artifact) => artifact.name)
               .filter((artifact) => artifact.startsWith("app-visual-"));
-            const missingSnapshotArtifacts = expectedSnapshotArtifacts.filter(
-              (artifact) => !snapshotArtifacts.includes(artifact),
+            const missingScreenshotArtifacts = expectedScreenshotArtifacts.filter(
+              (artifact) => !screenshotArtifacts.includes(artifact),
             );
-            const hasCompleteSnapshots =
-              invalidSnapshotJobs.length === 0 &&
-              expectedSnapshotArtifacts.length > 0 &&
-              missingSnapshotArtifacts.length === 0;
-            if (invalidSnapshotJobs.length > 0) {
+            const hasCompleteScreenshots =
+              invalidScreenshotJobs.length === 0 &&
+              expectedScreenshotArtifacts.length > 0 &&
+              missingScreenshotArtifacts.length === 0;
+            if (invalidScreenshotJobs.length > 0) {
               console.log(
-                `Unexpected snapshot job names: ${invalidSnapshotJobs.map((job) => job.name).join(", ")}`,
+                `Unexpected screenshot job names: ${invalidScreenshotJobs.map((job) => job.name).join(", ")}`,
               );
             }
             console.log(
-              `Expected snapshot artifacts: ${expectedSnapshotArtifacts.join(", ") || "(none)"}`,
+              `Expected screenshot artifacts: ${expectedScreenshotArtifacts.join(", ") || "(none)"}`,
             );
             console.log(
-              `Found snapshot artifacts: ${snapshotArtifacts.join(", ") || "(none)"}`,
+              `Found screenshot artifacts: ${screenshotArtifacts.join(", ") || "(none)"}`,
             );
-            if (missingSnapshotArtifacts.length > 0) {
+            if (missingScreenshotArtifacts.length > 0) {
               console.log(
-                `Missing snapshot artifacts: ${missingSnapshotArtifacts.join(", ")}`,
+                `Missing screenshot artifacts: ${missingScreenshotArtifacts.join(", ")}`,
               );
             }
-            core.setOutput("ready", String(hasCompleteSnapshots));
+            core.setOutput("ready", String(hasCompleteScreenshots));
 
-      - name: Checkout trusted repository
-        if: steps.check-artifacts.outputs.ready == 'true'
+      - name: Checkout branch
+        if: >
+          steps.gate.outputs.is_latest == 'true' &&
+          (
+            vars.USE_VIZZLY == 'true' ||
+            steps.check-artifacts.outputs.ready == 'true'
+          )
         uses: actions/checkout@v6
         with:
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
-          persist-credentials: false
-
-      - name: Checkout PR
-        if: steps.check-artifacts.outputs.ready == 'true'
-        uses: actions/checkout@v6
-        with:
+          # Keep the workflow files from the trusted checkout above and apply
+          # generated changes in a separate checkout directory we can commit from.
           path: pr
-          repository: ${{ github.event.workflow_run.head_repository.full_name }}
-          ref: ${{ github.event.workflow_run.head_branch }}
+          ref: ${{ github.head_ref || github.ref_name }}
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
-      - name: Download snapshots
+      - name: Download screenshots
         if: steps.check-artifacts.outputs.ready == 'true'
         uses: actions/download-artifact@v8
         with:
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           pattern: app-visual-*
           merge-multiple: true
           path: ${{ runner.temp }}/artifacts
 
       - name: Prepare screenshots
         if: steps.check-artifacts.outputs.ready == 'true'
+        # Replace the full screenshot tree so deletions and renames are handled
+        # the same way as a clean checkout after `-u`.
         run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
 
-      - name: Extract snapshots
+      - name: Extract screenshots
         if: steps.check-artifacts.outputs.ready == 'true'
         run: |
           find "${{ runner.temp }}/artifacts" -name "app-visual-*.tar.gz" \
@@ -171,45 +215,25 @@ jobs:
         uses: ./.github/workflows/commit-or-pr
         with:
           working-directory: pr
-          event: ${{ github.event.workflow_run.event }}
-          message: Update snapshots
-          head-branch: ${{ github.event.workflow_run.head_branch }}
-          new-branch: visual/update-snapshots
+          event: ${{ inputs.event }}
+          message: Update screenshots
+          head-branch: ${{ github.head_ref || github.ref_name }}
+          new-branch: visual/update-screenshots
           token: ${{ secrets.ARIAKIT_BOT_PAT }}
 
-  wipe-snapshots:
-    name: Wipe snapshots
-    needs: gate
-    if: needs.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - name: Checkout trusted repository
-        uses: actions/checkout@v6
-        with:
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
-          persist-credentials: false
-
-      - name: Checkout PR
-        uses: actions/checkout@v6
-        with:
-          path: pr
-          repository: ${{ github.event.workflow_run.head_repository.full_name }}
-          ref: ${{ github.event.workflow_run.head_branch }}
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
-          persist-credentials: false
-
-      - name: Remove visual snapshot directories
+      - name: Remove visual screenshot directories
+        if: steps.gate.outputs.is_latest == 'true' && env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
+        # Once Vizzly is authoritative, remove any file-based baselines that
+        # would otherwise drift out of sync with the external service.
         run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
 
       - name: Commit or create PR
+        if: steps.gate.outputs.is_latest == 'true' && env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
           working-directory: pr
-          event: ${{ github.event.workflow_run.event }}
-          message: Remove file-based visual snapshots
-          head-branch: ${{ github.event.workflow_run.head_branch }}
-          new-branch: visual/remove-snapshots
+          event: ${{ inputs.event }}
+          message: Remove file-based visual screenshots
+          head-branch: ${{ github.head_ref || github.ref_name }}
+          new-branch: visual/remove-screenshots
           token: ${{ secrets.ARIAKIT_BOT_PAT }}

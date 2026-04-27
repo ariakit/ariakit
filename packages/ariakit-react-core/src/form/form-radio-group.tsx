@@ -1,4 +1,6 @@
 import type { ElementType } from "react";
+import { CompositeScopedContextProvider } from "../composite/composite-context.tsx";
+import { useWrapElement } from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
 import type { FormGroupOptions } from "./form-group.tsx";
@@ -9,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormRadioGroup` component.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore({ defaultValues: { color: "red" } });
@@ -26,6 +28,20 @@ type TagName = typeof TagName;
  */
 export const useFormRadioGroup = createHook<TagName, FormRadioGroupOptions>(
   function useFormRadioGroup({ store, ...props }) {
+    // Reset the composite context so FormRadio items inside this group
+    // don't register to an unrelated ancestor composite store (e.g.,
+    // TabStore). Form controls explicitly pass their store to
+    // useCollectionItem, so they're not affected by this reset.
+    props = useWrapElement(
+      props,
+      (element) => (
+        <CompositeScopedContextProvider value={undefined}>
+          {element}
+        </CompositeScopedContextProvider>
+      ),
+      [],
+    );
+
     props = { role: "radiogroup", ...props };
     props = useFormGroup(props);
     return props;
@@ -34,11 +50,11 @@ export const useFormRadioGroup = createHook<TagName, FormRadioGroupOptions>(
 
 /**
  * Renders a group element for
- * [`FormRadio`](https://ariakit.org/reference/form-radio) elements. The
- * [`FormGroupLabel`](https://ariakit.org/reference/form-group-label) component
+ * [`FormRadio`](https://ariakit.com/reference/form-radio) elements. The
+ * [`FormGroupLabel`](https://ariakit.com/reference/form-group-label) component
  * can be used inside this component so the `aria-labelledby` prop is properly
  * set on the group element.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {8-13}
  * const form = useFormStore({

@@ -1,4 +1,9 @@
 {
   "extends": "../../tsconfig.solid.json",
-  "include": ["src"]
+  "compilerOptions": {
+    "declaration": true,
+    "rootDir": "src"
+  },
+  "include": ["src"],
+  "exclude": []
 }

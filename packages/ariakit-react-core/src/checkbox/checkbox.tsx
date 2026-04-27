@@ -52,7 +52,7 @@ function getPrimitiveValue<T>(value: T) {
  * Returns props to create a `Checkbox` component. If the element is not a
  * native checkbox, the hook will return additional props to make sure it's
  * accessible.
- * @see https://ariakit.org/components/checkbox
+ * @see https://ariakit.com/components/checkbox
  * @example
  * ```jsx
  * const props = useCheckbox({ render: <div /> });
@@ -109,7 +109,7 @@ export const useCheckbox = createHook<TagName, CheckboxOptions>(
         element.name = name;
       }
       if (valueProp !== undefined) {
-        element.value = `${valueProp}`;
+        element.value = String(valueProp);
       }
     }, [propertyUpdated, mixed, nativeCheckbox, isChecked, name, valueProp]);
 
@@ -196,7 +196,7 @@ export const useCheckbox = createHook<TagName, CheckboxOptions>(
  * Renders an accessible checkbox element. If the underlying element is not a
  * native checkbox, this component will pass additional attributes to make sure
  * it's accessible.
- * @see https://ariakit.org/components/checkbox
+ * @see https://ariakit.com/components/checkbox
  * @example
  * ```jsx
  * <Checkbox render={<div />}>Accessible checkbox</Checkbox>
@@ -207,35 +207,36 @@ export const Checkbox = forwardRef(function Checkbox(props: CheckboxProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface CheckboxOptions<T extends ElementType = TagName>
-  extends CommandOptions<T> {
+export interface CheckboxOptions<
+  T extends ElementType = TagName,
+> extends CommandOptions<T> {
   /**
    * Object returned by the
-   * [`useCheckboxStore`](https://ariakit.org/reference/use-checkbox-store)
+   * [`useCheckboxStore`](https://ariakit.com/reference/use-checkbox-store)
    * hook. If not provided, the closest
-   * [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider)
+   * [`CheckboxProvider`](https://ariakit.com/reference/checkbox-provider)
    * component's context will be used. Otherwise, the component will fall back
    * to an internal store.
    *
    * Live examples:
-   * - [Checkbox as button](https://ariakit.org/examples/checkbox-as-button)
+   * - [Checkbox as button](https://ariakit.com/examples/checkbox-as-button)
    */
   store?: CheckboxStore;
   /**
    * The native `name` attribute.
    *
    * Live examples:
-   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
+   * - [MenuItemCheckbox](https://ariakit.com/examples/menu-item-checkbox)
    */
   name?: string;
   /**
    * The value of the checkbox. This is useful when the same checkbox store is
-   * used for multiple [`Checkbox`](https://ariakit.org/reference/checkbox)
+   * used for multiple [`Checkbox`](https://ariakit.com/reference/checkbox)
    * elements, in which case the value will be an array of checked values.
    *
    * Live examples:
-   * - [Checkbox group](https://ariakit.org/examples/checkbox-group)
-   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
+   * - [Checkbox group](https://ariakit.com/examples/checkbox-group)
+   * - [MenuItemCheckbox](https://ariakit.com/examples/menu-item-checkbox)
    * @example
    * ```jsx "value"
    * <CheckboxProvider defaultValue={["Apple", "Orange"]}>
@@ -248,13 +249,13 @@ export interface CheckboxOptions<T extends ElementType = TagName>
   value?: ComponentPropsWithoutRef<TagName>["value"];
   /**
    * The default checked state of the checkbox. This prop is ignored if the
-   * [`checked`](https://ariakit.org/reference/checkbox#checked) or the
-   * [`store`](https://ariakit.org/reference/checkbox#store) props are provided.
+   * [`checked`](https://ariakit.com/reference/checkbox#checked) or the
+   * [`store`](https://ariakit.com/reference/checkbox#store) props are provided.
    */
   defaultChecked?: "mixed" | boolean;
   /**
    * The checked state of the checkbox. This will override the value inferred
-   * from [`store`](https://ariakit.org/reference/checkbox#store) prop, if
+   * from [`store`](https://ariakit.com/reference/checkbox#store) prop, if
    * provided. This can be `"mixed"` to indicate that the checkbox is partially
    * checked.
    */

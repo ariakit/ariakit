@@ -13,5 +13,5 @@ export function useIsMobile(defaultState = false, maxWidth = 768) {
     return () => mql.removeEventListener("change", onChange);
   }, [maxWidth]);
 
-  return !!isMobile;
+  return isMobile;
 }

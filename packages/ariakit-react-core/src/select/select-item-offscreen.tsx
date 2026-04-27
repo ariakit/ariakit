@@ -13,6 +13,7 @@ type TagName = typeof TagName;
 
 export function useSelectItemOffscreen<
   T extends ElementType,
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   P extends SelectItemProps<T>,
 >({ store, value, ...props }: P) {
   const context = useSelectScopedContext();
@@ -21,12 +22,12 @@ export function useSelectItemOffscreen<
 }
 
 export const SelectItem = forwardRef(function SelectItem({
-  offscreenBehavior,
+  offscreenMode,
   offscreenRoot,
   ...props
 }: SelectItemProps) {
   const { active, ref, ...rest } = useSelectItemOffscreen({
-    offscreenBehavior,
+    offscreenMode,
     offscreenRoot,
     ...props,
   });
@@ -51,8 +52,7 @@ export const SelectItem = forwardRef(function SelectItem({
 });
 
 export interface SelectItemOptions<T extends ElementType = TagName>
-  extends Base.SelectItemOptions<T>,
-    Omit<CompositeItemOptions<T>, "store"> {}
+  extends Base.SelectItemOptions<T>, Omit<CompositeItemOptions<T>, "store"> {}
 
 export type SelectItemProps<T extends ElementType = TagName> = Props<
   T,

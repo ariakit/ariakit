@@ -14,7 +14,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `ComboboxGroup` component.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore();
@@ -55,11 +55,11 @@ export const useComboboxGroup = createHook<TagName, ComboboxGroupOptions>(
 
 /**
  * Renders a group for
- * [`ComboboxItem`](https://ariakit.org/reference/combobox-item) elements.
+ * [`ComboboxItem`](https://ariakit.com/reference/combobox-item) elements.
  * Optionally, a
- * [`ComboboxGroupLabel`](https://ariakit.org/reference/combobox-group-label)
+ * [`ComboboxGroupLabel`](https://ariakit.com/reference/combobox-group-label)
  * can be rendered as a child to provide a label for the group.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {4-8}
  * <ComboboxProvider>
@@ -81,14 +81,15 @@ export const ComboboxGroup = forwardRef(function ComboboxGroup(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxGroupOptions<T extends ElementType = TagName>
-  extends CompositeGroupOptions<T> {
+export interface ComboboxGroupOptions<
+  T extends ElementType = TagName,
+> extends CompositeGroupOptions<T> {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxList`](https://ariakit.org/reference/combobox-list) or
-   * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover)
+   * [`ComboboxList`](https://ariakit.com/reference/combobox-list) or
+   * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
    * components' context will be used.
    */
   store?: ComboboxStore;

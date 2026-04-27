@@ -51,32 +51,32 @@ export interface HovercardStoreState extends PopoverStoreState {
   /**
    * The amount of time in milliseconds to wait before showing and hiding the
    * popup. To control the delay for showing and hiding separately, use
-   * [`showTimeout`](https://ariakit.org/reference/hovercard-provider#showtimeout)
+   * [`showTimeout`](https://ariakit.com/reference/hovercard-provider#showtimeout)
    * and
-   * [`hideTimeout`](https://ariakit.org/reference/hovercard-provider#hidetimeout).
+   * [`hideTimeout`](https://ariakit.com/reference/hovercard-provider#hidetimeout).
    * @default 500
    */
   timeout: number;
   /**
    * The amount of time in milliseconds to wait before _showing_ the popup. It
    * defaults to the value passed to
-   * [`timeout`](https://ariakit.org/reference/hovercard-provider#timeout).
+   * [`timeout`](https://ariakit.com/reference/hovercard-provider#timeout).
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    * - [Submenu with
-   *   Combobox](https://ariakit.org/examples/menu-nested-combobox)
+   *   Combobox](https://ariakit.com/examples/menu-nested-combobox)
    */
   showTimeout?: number;
   /**
    * The amount of time in milliseconds to wait before _hiding_ the popup. It
    * defaults to the value passed to
-   * [`timeout`](https://ariakit.org/reference/hovercard-provider#timeout).
+   * [`timeout`](https://ariakit.com/reference/hovercard-provider#timeout).
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
-   * - [Tooltip with Framer
-   *   Motion](https://ariakit.org/examples/tooltip-framer-motion)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
+   * - [Tooltip with
+   *   Motion](https://ariakit.com/examples/tooltip-framer-motion)
    */
   hideTimeout?: number;
   /**
@@ -92,22 +92,21 @@ export interface HovercardStoreFunctions extends PopoverStoreFunctions {
    * Sets the `autoFocusOnShow` state.
    *
    * Live examples:
-   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
+   * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
    */
   setAutoFocusOnShow: SetState<HovercardStoreState["autoFocusOnShow"]>;
 }
 
 export interface HovercardStoreOptions
-  extends StoreOptions<
+  extends
+    StoreOptions<
       HovercardStoreState,
       "placement" | "timeout" | "showTimeout" | "hideTimeout"
     >,
     PopoverStoreOptions {}
 
 export interface HovercardStoreProps
-  extends HovercardStoreOptions,
-    StoreProps<HovercardStoreState> {}
+  extends HovercardStoreOptions, StoreProps<HovercardStoreState> {}
 
 export interface HovercardStore
-  extends HovercardStoreFunctions,
-    Store<HovercardStoreState> {}
+  extends HovercardStoreFunctions, Store<HovercardStoreState> {}

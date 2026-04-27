@@ -13,8 +13,7 @@ import {
 } from "../styles/button.ts";
 
 export interface ButtonProps
-  extends ComponentProps<"button">,
-    VariantProps<typeof button> {}
+  extends ComponentProps<"button">, VariantProps<typeof button> {}
 
 /**
  * @see https://ariakit.com/react/examples/button
@@ -31,8 +30,7 @@ export function Button(props: ButtonProps) {
 }
 
 export interface ButtonGroupProps
-  extends ComponentProps<"div">,
-    VariantProps<typeof buttonGroup> {}
+  extends ComponentProps<"div">, VariantProps<typeof buttonGroup> {}
 
 /**
  * @see https://ariakit.com/react/examples/button
@@ -43,8 +41,7 @@ export function ButtonGroup(props: ButtonGroupProps) {
 }
 
 export interface ButtonGliderProps
-  extends ComponentProps<"div">,
-    VariantProps<typeof buttonGlider> {}
+  extends ComponentProps<"div">, VariantProps<typeof buttonGlider> {}
 
 /**
  * @see https://ariakit.com/react/examples/button
@@ -55,8 +52,7 @@ export function ButtonGlider(props: ButtonGliderProps) {
 }
 
 export interface ButtonSeparatorProps
-  extends ComponentProps<"div">,
-    VariantProps<typeof buttonSeparator> {}
+  extends ComponentProps<"div">, VariantProps<typeof buttonSeparator> {}
 
 /**
  * @see https://ariakit.com/react/examples/button
@@ -67,8 +63,7 @@ export function ButtonSeparator(props: ButtonSeparatorProps) {
 }
 
 export interface ButtonContentProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof buttonContent> {}
+  extends ComponentProps<"span">, VariantProps<typeof buttonContent> {}
 
 /**
  * @see https://ariakit.com/react/examples/button
@@ -79,8 +74,7 @@ export function ButtonContent(props: ButtonContentProps) {
 }
 
 export interface ButtonLabelProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof buttonLabel> {}
+  extends ComponentProps<"span">, VariantProps<typeof buttonLabel> {}
 
 /**
  * @see https://ariakit.com/react/examples/button
@@ -91,8 +85,7 @@ export function ButtonLabel(props: ButtonLabelProps) {
 }
 
 export interface ButtonDescriptionProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof buttonDescription> {}
+  extends ComponentProps<"span">, VariantProps<typeof buttonDescription> {}
 
 /**
  * @see https://ariakit.com/react/examples/button
@@ -103,8 +96,7 @@ export function ButtonDescription(props: ButtonDescriptionProps) {
 }
 
 export interface ButtonSlotProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof buttonSlot> {}
+  extends ComponentProps<"span">, VariantProps<typeof buttonSlot> {}
 
 /**
  * @see https://ariakit.com/react/examples/button

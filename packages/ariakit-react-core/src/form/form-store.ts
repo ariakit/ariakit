@@ -55,13 +55,13 @@ export function useFormStoreProps<
       useValidate,
       useSubmit,
     }),
-    [],
+    [store, useValue, useValidate, useSubmit],
   );
 }
 
 /**
  * Creates a form store to control the state of
- * [Form](https://ariakit.org/components/form) components.
+ * [Form](https://ariakit.com/components/form) components.
  * @example
  * ```jsx
  * const form = useFormStore({
@@ -102,34 +102,33 @@ export interface FormStoreValues extends Core.FormStoreValues {}
 export interface FormStoreItem extends Core.FormStoreItem {}
 
 export interface FormStoreState<T extends FormStoreValues = FormStoreValues>
-  extends Core.FormStoreState<T>,
-    CollectionStoreState<FormStoreItem> {}
+  extends Core.FormStoreState<T>, CollectionStoreState<FormStoreItem> {}
 
 export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
-  extends Core.FormStoreFunctions<T>,
-    CollectionStoreFunctions<FormStoreItem> {
+  extends Core.FormStoreFunctions<T>, CollectionStoreFunctions<FormStoreItem> {
   /**
    * A custom hook that rerenders the component when the value of the given
    * field changes. It accepts a string or a reference to a field name from the
-   * [`names`](https://ariakit.org/reference/use-form-store#names) object in the
+   * [`names`](https://ariakit.com/reference/use-form-store#names) object in the
    * store, for type safety. It returns the value of the field.
    *
    * Live examples:
-   * - [Form with Select](https://ariakit.org/examples/form-select)
+   * - [Form with Select](https://ariakit.com/examples/form-select)
    * @example
    * const nameValue = store.useValue("name");
    * // Can also use store.names for type safety.
    * const emailValue = store.useValue(store.names.email);
    */
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   useValue: <T = any>(name: StringLike) => T;
   /**
    * Custom hook that accepts a callback that will be used to validate the form
-   * when [`validate`](https://ariakit.org/reference/use-form-store#validate) is
+   * when [`validate`](https://ariakit.com/reference/use-form-store#validate) is
    * called, typically when a form field is touched or when the form is
    * submitted.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
    * @example
    * store.useValidate(async (state) => {
    *   const errors = await api.validate(state.values);
@@ -141,12 +140,12 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
   useValidate: (callback: Core.FormStoreCallback<FormStoreState<T>>) => void;
   /**
    * Custom hook that accepts a callback that will be used to submit the form
-   * when [`submit`](https://ariakit.org/reference/use-form-store#submit) is
+   * when [`submit`](https://ariakit.com/reference/use-form-store#submit) is
    * called.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
-   * - [Form with Select](https://ariakit.org/examples/form-select)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
+   * - [Form with Select](https://ariakit.com/examples/form-select)
    * @example
    * store.useSubmit(async (state) => {
    *   try {
@@ -160,11 +159,10 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
 }
 
 export interface FormStoreOptions<T extends FormStoreValues = FormStoreValues>
-  extends Core.FormStoreOptions<T>,
-    CollectionStoreOptions<FormStoreItem> {
+  extends Core.FormStoreOptions<T>, CollectionStoreOptions<FormStoreItem> {
   /**
    * Function that will be called when
-   * [`values`](https://ariakit.org/reference/use-form-store#values) state
+   * [`values`](https://ariakit.com/reference/use-form-store#values) state
    * changes.
    * @example
    * function MyForm({ values, onChange }) {
@@ -174,7 +172,7 @@ export interface FormStoreOptions<T extends FormStoreValues = FormStoreValues>
   setValues?: (values: FormStoreState<T>["values"]) => void;
   /**
    * Function that will be called when the
-   * [`errors`](https://ariakit.org/reference/use-form-store#errors) state
+   * [`errors`](https://ariakit.com/reference/use-form-store#errors) state
    * changes.
    * @example
    * useFormStore({ setErrors: (errors) => console.log(errors) });
@@ -182,7 +180,7 @@ export interface FormStoreOptions<T extends FormStoreValues = FormStoreValues>
   setErrors?: (errors: FormStoreState<T>["errors"]) => void;
   /**
    * Function that will be called when the
-   * [`touched`](https://ariakit.org/reference/use-form-store#touched) state
+   * [`touched`](https://ariakit.com/reference/use-form-store#touched) state
    * changes.
    * @example
    * useFormStore({ setTouched: (touched) => console.log(touched) });
@@ -191,9 +189,7 @@ export interface FormStoreOptions<T extends FormStoreValues = FormStoreValues>
 }
 
 export interface FormStoreProps<T extends FormStoreValues = FormStoreValues>
-  extends FormStoreOptions<T>,
-    Core.FormStoreProps<T> {}
+  extends FormStoreOptions<T>, Core.FormStoreProps<T> {}
 
 export interface FormStore<T extends FormStoreValues = FormStoreValues>
-  extends FormStoreFunctions<T>,
-    Store<Core.FormStore<T>> {}
+  extends FormStoreFunctions<T>, Store<Core.FormStore<T>> {}

@@ -29,12 +29,14 @@ export const border = cv({
      * `$border` set to `inherit`.
      */
     $border: {
-      true: "ak-edge-(--border-color)/(--border-weight)",
+      true: "ak-edge-(color:--border-color) ak-edge-(--border-weight)",
       inherit: [
-        "[@container_not_style(--border-contrast:1)]:ak-edge-(--border-color)/(--border-weight)",
-        "[@container_style(--border-contrast:1)]:ak-edge-contrast-(--border-color)",
+        "[@container_not_style(--border-contrast:1)]:ak-edge-(color:--border-color)",
+        "[@container_not_style(--border-contrast:1)]:ak-edge-(--border-weight)",
+        "[@container_style(--border-contrast:1)]:ak-edge-(color:--border-color)",
+        "[@container_style(--border-contrast:1)]:ak-edge-raw",
       ],
-      content: "ak-border-0! ak-ring-0!",
+      content: "ak-frame-border-0! ak-frame-ring-0!",
     },
     /**
      * Sets the weight of the border.
@@ -46,7 +48,8 @@ export const border = cv({
       normal: "[--border-weight:10]",
       medium: "[--border-weight:20]",
       bold: "[--border-weight:40]",
-      contrast: "[--border-contrast:1] ak-edge-contrast-(--border-color)",
+      contrast:
+        "[--border-contrast:1] ak-edge-(color:--border-color) ak-edge-raw",
     },
     /**
      * Sets the element’s border style. `bordering` uses `border` in dark mode
@@ -55,25 +58,26 @@ export const border = cv({
      */
     $borderType: {
       unset: "",
-      inherit: "ak-border-(--border-border,0px) ak-ring-(--border-ring,0px)",
+      inherit:
+        "ak-frame-border-(--border-border,0px) ak-frame-ring-(--border-ring,0px)",
       border: [
         "[--border-border:var(--border-width)]",
-        "ak-border-(--border-width)",
+        "ak-frame-border-(--border-width)",
       ],
       bordering: [
         "ak-light:[--border-backdrop:var(--ak-layer)]",
         "ak-dark:[--border-border:var(--border-width)]",
         "ak-light:[--border-ring:var(--border-width)]",
-        "ak-bordering-(--border-width)",
+        "ak-frame-bordering-(--border-width)",
       ],
       ring: [
         "[--border-backdrop:var(--ak-layer)]",
         "[--border-ring:var(--border-width)]",
-        "ak-ring-(--border-width)",
+        "ak-frame-ring-(--border-width)",
       ],
       inset: "ring-(length:--border-width) ring-inset",
-      dashed: "ak-border-(--border-width) border-dashed",
-      dotted: "ak-border-(--border-width) border-dotted",
+      dashed: "ak-frame-border-(--border-width) border-dashed",
+      dotted: "ak-frame-border-(--border-width) border-dotted",
     },
   },
   computedVariants: {

@@ -12,7 +12,7 @@ type TagName = typeof TagName;
  * Returns props to create a `PopoverDescription` component. This hook must be
  * used in a component that's wrapped with `Popover` so the `aria-describedby`
  * prop is properly set on the popover element.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx
  * // This component must be wrapped with Popover
@@ -30,9 +30,9 @@ export const usePopoverDescription = createHook<
 
 /**
  * Renders a description in a popover. This component must be wrapped with
- * [`Popover`](https://ariakit.org/reference/popover) so the `aria-describedby`
+ * [`Popover`](https://ariakit.com/reference/popover) so the `aria-describedby`
  * prop is properly set on the popover element.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx {3}
  * <PopoverProvider>
@@ -49,14 +49,15 @@ export const PopoverDescription = forwardRef(function PopoverDescription(
   return createElement(TagName, htmlProps);
 });
 
-export interface PopoverDescriptionOptions<T extends ElementType = TagName>
-  extends DialogDescriptionOptions<T> {
+export interface PopoverDescriptionOptions<
+  T extends ElementType = TagName,
+> extends DialogDescriptionOptions<T> {
   /**
    * Object returned by the
-   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * [`usePopoverStore`](https://ariakit.com/reference/use-popover-store) hook.
    * If not provided, the closest
-   * [`Popover`](https://ariakit.org/reference/popover) or
-   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * [`Popover`](https://ariakit.com/reference/popover) or
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
    * components' context will be used.
    */
   store?: PopoverStore;

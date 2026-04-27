@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `MenuDismiss` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore();
@@ -31,9 +31,9 @@ export const useMenuDismiss = createHook<TagName, MenuDismissOptions>(
 );
 
 /**
- * Renders a button that hides a [`Menu`](https://ariakit.org/reference/menu)
+ * Renders a button that hides a [`Menu`](https://ariakit.com/reference/menu)
  * when clicked.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {3}
  * <MenuProvider>
@@ -50,13 +50,14 @@ export const MenuDismiss = forwardRef(function MenuDismiss(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuDismissOptions<T extends ElementType = TagName>
-  extends HovercardDismissOptions<T> {
+export interface MenuDismissOptions<
+  T extends ElementType = TagName,
+> extends HovercardDismissOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.com/reference/menu) or
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
    */
   store?: MenuStore;

@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Group` component.
- * @see https://ariakit.org/components/group
+ * @see https://ariakit.com/components/group
  * @example
  * ```jsx
  * const props = useGroup();
@@ -34,7 +34,7 @@ export const useGroup = createHook<TagName, GroupOptions>(
 
     props = {
       role: "group",
-      "aria-labelledby": labelId,
+      "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       ...props,
     };
 
@@ -44,9 +44,9 @@ export const useGroup = createHook<TagName, GroupOptions>(
 
 /**
  * Renders a group element. Optionally, a
- * [`GroupLabel`](https://ariakit.org/reference/group-label) can be rendered as
+ * [`GroupLabel`](https://ariakit.com/reference/group-label) can be rendered as
  * a child to provide a label for the group.
- * @see https://ariakit.org/components/group
+ * @see https://ariakit.com/components/group
  * @example
  * ```jsx
  * <Group>Group</Group>

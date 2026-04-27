@@ -9,7 +9,7 @@
  */
 import { invariant } from "@ariakit/core/utils/misc";
 import * as ak from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { SplitSquareHorizontal } from "lucide-react";
 import * as React from "react";
 import useLocalStorageState from "use-local-storage-state";
@@ -18,14 +18,14 @@ import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
 import { slugify } from "#app/lib/string.ts";
 import { useControllableState } from "#app/lib/use-controllable-state.ts";
-import type {
-  CodeBlockProps as CodeBlockBaseProps,
-  CodeBlockTabProps as CodeBlockTabBaseProps,
-} from "./code-block.types.ts";
 import {
   CodeBlockEdit,
   getStackblitzFramework,
 } from "./code-block-edit.react.tsx";
+import type {
+  CodeBlockProps as CodeBlockBaseProps,
+  CodeBlockTabProps as CodeBlockTabBaseProps,
+} from "./code-block.types.ts";
 import { useCollapsible } from "./collapsible.react.tsx";
 import { CopyCode } from "./copy-code.react.tsx";
 import { Tooltip } from "./tooltip.react.tsx";
@@ -85,8 +85,7 @@ function SingleTabPanel(props: ak.TabPanelProps) {
 }
 
 export interface CodeBlockProps
-  extends Omit<React.ComponentProps<"div">, "lang">,
-    CodeBlockBaseProps {
+  extends Omit<React.ComponentProps<"div">, "lang">, CodeBlockBaseProps {
   topbar?: React.ReactNode;
   showFilename?: boolean;
   collapsibleClassName?: string;
@@ -135,11 +134,11 @@ export function CodeBlock({
         } as React.CSSProperties
       }
       className={clsx(
-        "ak-tab-panel ak-frame-cover/0 relative grid overflow-hidden",
-        "has-[pre:focus-visible]:after:outline-2 after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
+        "ak-tab-panel ak-frame ak-frame-cover ak-frame-p-0 relative grid overflow-hidden",
+        "has-[pre:focus-visible]:after:outline-2 after:ak-outline after:ak-outline-primary after:absolute after:inset-0 after:z-3 after:pointer-events-none after:ak-frame after:-outline-offset-2",
       )}
     >
-      <div className="absolute top-0 end-0 ak-frame-cover/1.5 z-3 pointer-events-none size-max">
+      <div className="absolute top-0 inset-e-0 ak-frame ak-frame-cover ak-frame-p-1.5 z-3 pointer-events-none size-max">
         <CopyCode
           text={code}
           className="pointer-events-auto supports-hover:not-data-open:not-group-has-hover:not-group-has-focus-visible:sr-only"
@@ -148,7 +147,7 @@ export function CodeBlock({
       <pre
         {...scrollableProps}
         className={clsx(
-          "whitespace-normal text-sm/(--line-height) ak-frame-cover/0 outline-none",
+          "whitespace-normal text-sm/(--line-height) ak-frame ak-frame-cover ak-frame-p-0 outline-none",
           // "transition-[max-height] duration-300 transition-discrete [interpolate-size:allow-keywords]",
           "[font-size-adjust:0.55]",
           expanded &&
@@ -179,8 +178,8 @@ export function CodeBlock({
     >
       <div
         className={clsx(
-          "ak-layer-0.5 ak-light:ak-layer group peer ak-light:ak-edge/15 ak-border ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
-          collapsed && "has-[[data-expand]:hover]:ak-layer-hover-0.5",
+          "ak-layer ak-dark:ak-layer-lighten-3 ak-light:ak-layer-lighten-6 group peer ak-light:ak-edge-15 ak-frame-border ak-frame ak-frame-container/0 relative overflow-clip ak-tabs flex flex-col scroll-my-2",
+          collapsed && "has-[[data-expand]:hover]:ak-state-3",
           collapsibleClassName,
         )}
         data-collapsible={collapsible || undefined}
@@ -190,7 +189,7 @@ export function CodeBlock({
           ? topbar
           : showFilename &&
             filename && (
-              <div className="ak-tab-list ak-layer-down-0.7 ak-light:ak-layer-down-0.5 text-sm">
+              <div className="ak-tab-list ak-layer ak-dark:ak-layer-darken-4 ak-light:ak-layer-darken-3 text-sm">
                 <div className="base:ak-tab-folder_idle ak-tab-folder_selected select-auto cursor-auto">
                   <div>
                     {filenameIcon && <Icon name={filenameIcon} />}
@@ -224,7 +223,7 @@ function CodeBlockTab({
       className={clsx(
         isPreviewSelected
           ? [
-              "ak-segmented-button aria-selected:ak-edge/0 aria-selected:ak-layer-pop aria-selected:shadow-none",
+              "ak-segmented-button aria-selected:ak-edge-0 aria-selected:ak-layer aria-selected:ak-layer-6 aria-selected:shadow-none",
               "not-aria-selected:px-2.5 not-aria-selected:sm:px-3 px-[calc(var(--spacing-field)---spacing(1.5))] sm:px-[calc(var(--spacing-field)---spacing(1))]",
             ]
           : "ak-tab-folder data-focus-visible:ak-tab-folder_focus h-full text-sm",
@@ -272,7 +271,7 @@ export function CodeBlockPreviewIframe({
 
   React.useEffect(() => {
     setLoaded(false);
-  }, [previewUrl]);
+  }, [previewUrl, setLoaded]);
 
   React.useEffect(() => {
     const iframe = iframeRef.current;
@@ -337,7 +336,11 @@ export function CodeBlockPreviewIframe({
       const doc = iframe.contentDocument;
       if (!doc) return;
       const html = doc.documentElement;
-      doc.body.classList.add("!ak-layer-canvas-down-0.15");
+      doc.body.classList.add(
+        "ak-layer!",
+        "ak-layer-canvas!",
+        "ak-layer-darken-1!",
+      );
       html.classList.add("scheme-light", "dark:scheme-dark");
       html.classList.add(
         fullscreen
@@ -473,7 +476,7 @@ export function CodeBlockPreviewIframe({
         true,
       );
     };
-  }, [previewUrl, clickAndWait, scrollTop, fullscreen]);
+  }, [previewUrl, clickAndWait, scrollTop, fullscreen, setLoaded]);
 
   return (
     <div className="relative h-full" style={{ minHeight }}>
@@ -487,7 +490,7 @@ export function CodeBlockPreviewIframe({
       {!loaded && (
         <div
           className={clsx(
-            "absolute inset-0 ak-layer-current ak-frame-cover/4 grid items-center justify-center",
+            "absolute inset-0 ak-layer ak-frame ak-frame-cover ak-frame-p-4 grid items-center justify-center",
           )}
         >
           <div
@@ -530,7 +533,7 @@ export function CodeBlockPreview({
     const onClick = (event: MouseEvent) => {
       const target = event.target as Element | null;
       if (!target) return;
-      const link = target.closest("a") as HTMLAnchorElement | null;
+      const link = target.closest("a");
       if (!link) return;
       if (link.target === "_blank") return;
       event.preventDefault();
@@ -548,7 +551,7 @@ export function CodeBlockPreview({
       tabIndex={-1}
       aria-label={title ? `${title} Preview` : "Preview"}
       className={clsx(
-        "size-full isolate group-focus-within:overflow-auto overflow-hidden max-h-[calc(100svh-var(--header-height)---spacing(16))] ak-frame-container/0 focus-visible:ak-outline-primary",
+        "size-full isolate group-focus-within:overflow-auto overflow-hidden max-h-[calc(100svh-var(--header-height)---spacing(16))] ak-frame ak-frame-container/0 focus-visible:ak-outline focus-visible:ak-outline-primary",
         fullscreen
           ? "[scrollbar-gutter:stable]"
           : "[scrollbar-gutter:stable_both-edges]",
@@ -560,7 +563,7 @@ export function CodeBlockPreview({
         className={clsx(
           "@container w-full min-h-full",
           !fullscreen &&
-            "ak-frame/14 @max-3xl/main:p-3 flex items-center-safe justify-center-safe",
+            "ak-frame ak-frame-p-14 @max-3xl/main:p-3 flex items-center-safe justify-center-safe",
         )}
       >
         {children}
@@ -570,7 +573,8 @@ export function CodeBlockPreview({
 }
 
 export interface CodeBlockTabsProps
-  extends Pick<CodeBlockPreviewProps, "title" | "fullscreen">,
+  extends
+    Pick<CodeBlockPreviewProps, "title" | "fullscreen">,
     Pick<
       CodeBlockPreviewIframeProps,
       "fallback" | "clickAndWait" | "scrollTop" | "minHeight"
@@ -689,7 +693,7 @@ export function CodeBlockTabs({
     showControlsOnHover &&
       "transition-[opacity,width] transition-discrete [interpolate-size:allow-keywords] supports-hover:w-0 group-hocus-within/code-block-tabs:w-auto supports-hover:opacity-0 group-hocus-within/code-block-tabs:opacity-100",
   );
-  const hasCodeToolbar = !!edit && !preview;
+  const hasCodeToolbar = edit && !preview;
   const exampleId = title ? `example-${slugify(title)}` : undefined;
 
   return (
@@ -703,7 +707,7 @@ export function CodeBlockTabs({
             {exampleId ? (
               <a
                 href={`#${exampleId}`}
-                className="ak-link not-hover:no-underline hover:decoration-1 @lg:row-1 @lg:col-2 @max-lg:px-4 ak-text/60 font-medium truncate transition-[color] group-hocus-within/code-block-tabs:ak-text"
+                className="ak-link not-hover:no-underline hover:decoration-1 @lg:row-1 @lg:col-2 @max-lg:px-4 ak-ink-60 font-medium truncate transition-[color] group-hocus-within/code-block-tabs:ak-ink-100"
               >
                 {title}
               </a>
@@ -713,17 +717,17 @@ export function CodeBlockTabs({
             <div
               className={clsx("flex justify-start gap-[inherit]", className)}
             >
-              <ak.TabList className="flex @lg:ak-segmented @lg:ak-frame-full/1 @max-lg:gap-[inherit]">
+              <ak.TabList className="flex @lg:ak-segmented @lg:ak-frame @lg:ak-frame-full/1 @max-lg:gap-[inherit]">
                 <ak.Tab
                   id={getTabId(storeId, "preview")}
-                  className="@lg:ak-segmented-button @max-lg:ak-button @max-lg:ak-segmented-button-selected:ak-layer-hover @max-lg:ak-button-square-10"
+                  className="@lg:ak-segmented-button @max-lg:ak-button @max-lg:ak-segmented-button-selected:ak-layer @max-lg:ak-segmented-button-selected:ak-state-6 @max-lg:ak-button-square-10"
                 >
                   <Icon name="preview" className="@max-lg:text-lg" />
                   <span className="@max-lg:sr-only">Preview</span>
                 </ak.Tab>
                 <ak.Tab
                   id={getTabId(storeId, "code")}
-                  className="@lg:ak-segmented-button @max-lg:ak-button @max-lg:ak-segmented-button-selected:ak-layer-hover @max-lg:ak-button-square-10"
+                  className="@lg:ak-segmented-button @max-lg:ak-button @max-lg:ak-segmented-button-selected:ak-layer @max-lg:ak-segmented-button-selected:ak-state-6 @max-lg:ak-button-square-10"
                 >
                   <span
                     className={clsx(
@@ -735,7 +739,7 @@ export function CodeBlockTabs({
                     <span className="@max-lg:sr-only flex gap-2 items-center">
                       Code{" "}
                       <span
-                        className="h-4 ak-layer-current border-e ak-edge/15"
+                        className="h-4 ak-layer border-e ak-edge-15"
                         aria-label="and"
                       />{" "}
                       Preview
@@ -792,7 +796,7 @@ export function CodeBlockTabs({
         <div
           className={clsx(
             "grid relative gap-4",
-            hasToolbar && "ak-frame-dialog/0",
+            hasToolbar && "ak-frame ak-frame-dialog/0",
             preview && (!wide || !isPreviewSelected) && "@[64rem]:grid-cols-2",
             "outline-primary in-target:outline-transparent in-target:outline transition-[outline-color] in-target:duration-1000 in-target:delay-500",
           )}
@@ -810,13 +814,13 @@ export function CodeBlockTabs({
                   <div
                     className={clsx(
                       hasToolbar && "[--height:--spacing(12)]",
-                      "ak-layer-down-0.7 ak-light:ak-layer-down-0.5 grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)",
+                      "ak-layer ak-dark:ak-layer-darken-4 ak-light:ak-layer-darken-3 grid grid-cols-[1fr_auto] [--height:--spacing(10)] h-(--height)",
                     )}
                   >
                     <ak.TabList
                       className={clsx(
-                        "ak-tab-list ak-layer-(--ak-layer-parent) rounded-b-none!",
-                        hasToolbar && "sm:ak-frame-overflow/1",
+                        "ak-tab-list ak-layer ak-layer-(color:--ak-layer-parent) ak-layer-darken-0 rounded-b-none!",
+                        hasToolbar && "sm:ak-frame-p-1",
                       )}
                     >
                       {tabs.map((tab) => (
@@ -835,7 +839,7 @@ export function CodeBlockTabs({
                       ))}
                     </ak.TabList>
                     {hasCodeToolbar && (
-                      <div className="ms-auto ak-frame-cover/1 ak-frame-cover-start ak-frame-cover-end h-(--height) flex gap-1">
+                      <div className="ms-auto ak-frame ak-frame-cover ak-frame-p-1 ak-frame-start ak-frame-end h-(--height) flex gap-1">
                         {edit && (
                           <Tooltip plus title="Edit code">
                             <CodeBlockEdit
@@ -843,7 +847,7 @@ export function CodeBlockTabs({
                               framework={framework}
                               example={example}
                               stackblitzFramework={stackblitzFramework}
-                              className="ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-text/80"
+                              className="ak-button @xl:text-sm @max-xl:ak-button-square h-full ak-ink-80"
                             />
                           </Tooltip>
                         )}
@@ -854,7 +858,7 @@ export function CodeBlockTabs({
                 code={selectedTab?.code || ""}
                 collapsibleClassName={clsx(
                   isPreviewSelected &&
-                    "ak-layer-canvas-down-0.15! ak-light:ak-edge/15 ak-dark:ak-edge/13",
+                    "ak-layer! ak-layer-canvas! ak-layer-darken-1! ak-light:ak-edge-15 ak-dark:ak-edge-13",
                 )}
                 renderContent={(content) => {
                   return (
@@ -866,12 +870,14 @@ export function CodeBlockTabs({
                   );
                 }}
               >
-                {selectedSlot}
+                <React.Fragment key={selectedTabId}>
+                  {selectedSlot}
+                </React.Fragment>
               </CodeBlock>
               {preview && (
                 <div
                   className={clsx(
-                    "absolute @max-[64rem]:hidden z-1 text-lg ak-text/0 top-1/2 end-0 -translate-y-1/2 translate-x-7 ak-layer-current ak-light:ak-edge/15 ak-dark:ak-edge/13 size-10 grid place-items-center border touch-none rounded-full",
+                    "absolute @max-[64rem]:hidden z-1 text-lg ak-ink-0 top-1/2 inset-e-0 -translate-y-1/2 translate-x-7 ak-layer ak-light:ak-edge-15 ak-dark:ak-edge-13 size-10 grid place-items-center border touch-none rounded-full",
                   )}
                 >
                   <Icon name="chevronRight" />
@@ -888,8 +894,8 @@ export function CodeBlockTabs({
             >
               <div
                 className={clsx(
-                  "group relative ak-border ak-frame-container/0 overflow-clip ak-layer-canvas-down-0.15 ak-light:ak-edge/15 ak-dark:ak-edge/13",
-                  "max-sm:ak-frame-container/0 size-full",
+                  "group relative ak-frame-border ak-frame ak-frame-container/0 overflow-clip ak-layer ak-layer-canvas ak-layer-darken-1 ak-light:ak-edge-15 ak-dark:ak-edge-13",
+                  "max-sm:ak-frame max-sm:ak-frame-container/0 size-full",
                 )}
               >
                 {iframe ? (

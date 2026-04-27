@@ -1,7 +1,7 @@
-import type { CollectionEntry } from "astro:content";
-import { getCollection } from "astro:content";
 import { basename, dirname, extname, join } from "node:path";
 import type { APIRoute } from "astro";
+import type { CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
 import type { Registry, RegistryItem } from "shadcn/schema";
 import { z } from "zod/v4";
 import {
@@ -38,7 +38,7 @@ const REACT_HOOKS_PREFIX = "examples/_lib/react-hooks/";
 const THEME_CSS = {
   '@import "@ariakit/tailwind"': {},
   body: {
-    "@apply ak-layer-canvas": {},
+    "@apply ak-layer ak-layer-canvas": {},
   },
 };
 
@@ -256,7 +256,7 @@ function getFlattenedSources(
     return source.sources;
   }
   if ("id" in source && !("utilities" in source)) {
-    return { [source.id]: source as SourceFile };
+    return { [source.id]: source };
   }
   return {};
 }

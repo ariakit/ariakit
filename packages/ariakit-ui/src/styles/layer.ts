@@ -1,29 +1,30 @@
 import { cv } from "clava";
 
 export const layer = cv({
+  class: "ak-layer",
   variants: {
     /**
      * Sets the element's background color.
      */
     $bg: {
       unset: "",
-      popLightDark: "ak-light:ak-layer-level-0.5 ak-layer-pop",
-      pop05: "ak-layer-level-0.5 ak-layer-pop",
-      pop: "ak-layer-pop",
-      pop2: "ak-layer-level-2 ak-layer-pop",
-      light: "ak-layer",
-      light2: "ak-layer-level-2 ak-layer",
-      dark: "ak-layer-down",
-      dark2: "ak-layer-level-2 ak-layer-down",
-      parent: "[--layer:var(--ak-layer-parent)] ak-layer-(--layer)",
+      popLightDark: "ak-layer-3",
+      pop05: "ak-layer-3",
+      pop: "ak-layer-6",
+      pop2: "ak-layer-12",
+      light: "ak-layer-lighten-6",
+      light2: "ak-layer-lighten-12",
+      dark: "ak-layer-darken-6",
+      dark2: "ak-layer-darken-12",
+      parent: "[--layer:var(--ak-layer-parent)] ak-layer-(color:--layer)",
       invert: "layer-invert ak-layer-invert",
-      ghost: "ak-layer-level-0 ak-layer bg-transparent",
-      disabled: "ak-layer-level-0.5 ak-layer-pop",
-      primary: "[--layer:theme(--color-primary)] ak-layer-(--layer)",
-      secondary: "[--layer:theme(--color-secondary)] ak-layer-(--layer)",
-      success: "[--layer:theme(--color-success)] ak-layer-(--layer)",
-      warning: "[--layer:theme(--color-warning)] ak-layer-(--layer)",
-      danger: "[--layer:theme(--color-danger)] ak-layer-(--layer)",
+      ghost: "bg-transparent",
+      disabled: "ak-layer-3",
+      primary: "[--layer:theme(--color-primary)] ak-layer-(color:--layer)",
+      secondary: "[--layer:theme(--color-secondary)] ak-layer-(color:--layer)",
+      success: "[--layer:theme(--color-success)] ak-layer-(color:--layer)",
+      warning: "[--layer:theme(--color-warning)] ak-layer-(color:--layer)",
+      danger: "[--layer:theme(--color-danger)] ak-layer-(color:--layer)",
     },
     /**
      * Whether to force the background color to have enough contrast with the
@@ -42,7 +43,7 @@ export const layer = cv({
       if (value === true) return "ak-layer-mix";
       return {
         "--background-mix": `${value}%`,
-        class: "ak-layer-mix/(--background-mix)",
+        class: "ak-layer-mix-(--background-mix)",
       };
     },
   },

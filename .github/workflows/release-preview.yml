@@ -19,8 +19,8 @@ jobs:
       - name: Fetch base branch
         run: git fetch origin ${{ github.base_ref }}:${{ github.base_ref }}
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Build
         run: pnpm run build
@@ -38,7 +38,7 @@ jobs:
       - name: Compute affected packages
         id: compute-affected-packages
         if: steps.changeset-status.outputs.has-changesets == 'true'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('node:fs');

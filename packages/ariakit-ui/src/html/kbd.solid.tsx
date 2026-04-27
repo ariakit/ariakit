@@ -4,8 +4,7 @@ import { splitProps } from "solid-js";
 import { kbd } from "../styles/kbd.ts";
 
 export interface KbdProps
-  extends ComponentProps<"kbd">,
-    VariantProps<typeof kbd> {}
+  extends ComponentProps<"kbd">, VariantProps<typeof kbd> {}
 
 export function Kbd(props: KbdProps) {
   const [variantProps, rest] = splitProps(props, kbd.html.propKeys);

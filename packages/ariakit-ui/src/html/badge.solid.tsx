@@ -4,8 +4,7 @@ import { splitProps } from "solid-js";
 import { badge, badgeLabel, badgeSlot } from "../styles/badge.ts";
 
 export interface BadgeProps
-  extends ComponentProps<"div">,
-    VariantProps<typeof badge> {}
+  extends ComponentProps<"div">, VariantProps<typeof badge> {}
 
 /**
  * @see https://ariakit.com/solid/examples/badge
@@ -16,8 +15,7 @@ export function Badge(props: BadgeProps) {
 }
 
 export interface BadgeLabelProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof badgeLabel> {}
+  extends ComponentProps<"span">, VariantProps<typeof badgeLabel> {}
 
 /**
  * @see https://ariakit.com/solid/examples/badge
@@ -28,8 +26,7 @@ export function BadgeLabel(props: BadgeLabelProps) {
 }
 
 export interface BadgeSlotProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof badgeSlot> {}
+  extends ComponentProps<"span">, VariantProps<typeof badgeSlot> {}
 
 /**
  * @see https://ariakit.com/solid/examples/badge

@@ -13,7 +13,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormReset` component.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore();
@@ -48,12 +48,12 @@ export const useFormSubmit = createHook<TagName, FormSubmitOptions>(
 
 /**
  * Renders a native submit button inside a form. The button will be
- * [`disabled`](https://ariakit.org/reference/form-submit#disabled) while the
+ * [`disabled`](https://ariakit.com/reference/form-submit#disabled) while the
  * form is submitting, but it will remain accessible to keyboard and screen
  * reader users thanks to the
- * [`accessibleWhenDisabled`](https://ariakit.org/reference/form-submit#accessiblewhendisabled)
+ * [`accessibleWhenDisabled`](https://ariakit.com/reference/form-submit#accessiblewhendisabled)
  * prop that's enabled by default.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {4}
  * const form = useFormStore();
@@ -70,13 +70,14 @@ export const FormSubmit = forwardRef(function FormSubmit(
   return createElement(TagName, htmlProps);
 });
 
-export interface FormSubmitOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface FormSubmitOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * [`useFormStore`](https://ariakit.com/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.com/reference/form) or
+   * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
    */
   store?: FormStore;

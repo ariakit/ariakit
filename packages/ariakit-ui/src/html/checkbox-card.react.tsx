@@ -12,8 +12,7 @@ import {
 } from "../styles/checkbox-card.ts";
 
 export interface CheckboxCardProps
-  extends ComponentProps<"input">,
-    VariantProps<typeof checkboxCard> {}
+  extends ComponentProps<"input">, VariantProps<typeof checkboxCard> {}
 
 export function CheckboxCard({ children, ...props }: CheckboxCardProps) {
   const [variantProps, rest] = splitProps(props, checkboxCard);
@@ -26,8 +25,7 @@ export function CheckboxCard({ children, ...props }: CheckboxCardProps) {
 }
 
 export interface CheckboxCardLabelProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof checkboxCardLabel> {}
+  extends ComponentProps<"span">, VariantProps<typeof checkboxCardLabel> {}
 
 export function CheckboxCardLabel(props: CheckboxCardLabelProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardLabel);
@@ -35,8 +33,7 @@ export function CheckboxCardLabel(props: CheckboxCardLabelProps) {
 }
 
 export interface CheckboxCardSlotProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof checkboxCardSlot> {}
+  extends ComponentProps<"span">, VariantProps<typeof checkboxCardSlot> {}
 
 export function CheckboxCardSlot(props: CheckboxCardSlotProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardSlot);
@@ -44,8 +41,7 @@ export function CheckboxCardSlot(props: CheckboxCardSlotProps) {
 }
 
 export interface CheckboxCardCheckProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof checkboxCardCheck> {}
+  extends ComponentProps<"span">, VariantProps<typeof checkboxCardCheck> {}
 
 export function CheckboxCardCheck(props: CheckboxCardCheckProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardCheck);
@@ -57,8 +53,7 @@ export function CheckboxCardCheck(props: CheckboxCardCheckProps) {
 }
 
 export interface CheckboxCardContentProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof checkboxCardContent> {}
+  extends ComponentProps<"span">, VariantProps<typeof checkboxCardContent> {}
 
 export function CheckboxCardContent(props: CheckboxCardContentProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardContent);
@@ -66,7 +61,8 @@ export function CheckboxCardContent(props: CheckboxCardContentProps) {
 }
 
 export interface CheckboxCardDescriptionProps
-  extends ComponentProps<"span">,
+  extends
+    ComponentProps<"span">,
     VariantProps<typeof checkboxCardDescription> {}
 
 export function CheckboxCardDescription(props: CheckboxCardDescriptionProps) {

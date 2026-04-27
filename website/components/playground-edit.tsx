@@ -98,8 +98,7 @@ function useStackblitz({
 }
 
 export interface PlaygroundEditToolbarButtonProps
-  extends ComponentPropsWithoutRef<"button">,
-    PlaygroundEditProps {}
+  extends ComponentPropsWithoutRef<"button">, PlaygroundEditProps {}
 
 export const PlaygroundEditToolbarButton = forwardRef<
   HTMLButtonElement,
@@ -176,8 +175,7 @@ export const PlaygroundEditToolbarButton = forwardRef<
 });
 
 export interface PlaygroundEditButtonProps
-  extends ComponentPropsWithoutRef<"div">,
-    PlaygroundEditProps {
+  extends ComponentPropsWithoutRef<"div">, PlaygroundEditProps {
   type?: "call-to-action" | "header";
 }
 

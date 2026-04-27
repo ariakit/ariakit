@@ -11,7 +11,7 @@ export default function Thumbnail() {
         <PlaceholderText>
           We are going to discuss what we have achieved on the project.
         </PlaceholderText>
-        <div className="ak-frame-cover/2 grid">
+        <div className="ak-frame ak-frame-cover ak-frame-p-2 grid">
           <div className="ak-button-classic_idle">Accept</div>
         </div>
       </div>

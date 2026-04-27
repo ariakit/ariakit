@@ -16,7 +16,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * Returns props to create a `Heading` component. The element type (or the
  * `aria-level` prop, if the element type is not a native heading) is determined
  * by the context level provided by the parent `HeadingLevel` component.
- * @see https://solid.ariakit.org/components/heading
+ * @see https://solid.ariakit.com/components/heading
  * @example
  * ```jsx
  * const props = useHeading();
@@ -56,8 +56,8 @@ export const useHeading = createHook<TagName, HeadingOptions>(
  * Renders a heading element. The element type (or the `aria-level` attribute,
  * if the element type is not a native heading) is determined by the context
  * level provided by the closest
- * [`HeadingLevel`](https://solid.ariakit.org/reference/heading-level) ancestor.
- * @see https://solid.ariakit.org/components/heading
+ * [`HeadingLevel`](https://solid.ariakit.com/reference/heading-level) ancestor.
+ * @see https://solid.ariakit.com/components/heading
  * @example
  * ```jsx
  * <HeadingLevel>
@@ -73,8 +73,9 @@ export const Heading = function Heading(props: HeadingProps) {
   return createInstance(TagName, htmlProps);
 };
 
-export interface HeadingOptions<_T extends ValidComponent = TagName>
-  extends Options {}
+export interface HeadingOptions<
+  _T extends ValidComponent = TagName,
+> extends Options {}
 
 export type HeadingProps<T extends ValidComponent = TagName> = Props<
   T,

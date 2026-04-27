@@ -1,12 +1,15 @@
+import { utimesSync } from "node:fs";
 import path from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
-import { query } from "@ariakit/test/playwright";
 import type { Locator, Page, TestInfo } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { vizzlyScreenshot } from "@vizzly-testing/cli/client";
 import { slugify } from "#app/lib/string.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;
+const CLIP_STABILITY_INTERVAL = 16;
+const CLIP_STABILITY_DURATION = 100;
+const CLIP_STABILITY_TIMEOUT = 1000;
 const countMap = new Map<string, number>();
 
 interface Rect {
@@ -25,7 +28,7 @@ type CSSProperties = Record<string, string | number>;
 type Viewports = Record<string, ViewportSize>;
 type Styles = Record<string, CSSProperties>;
 
-interface ScreenshotOptions {
+export interface ScreenshotOptions {
   /**
    * Viewports to capture.
    */
@@ -44,7 +47,7 @@ interface ScreenshotOptions {
    */
   style?: CSSProperties;
   /**
-   * Additional identifier to disambiguate snapshots (e.g., path slug).
+   * Additional identifier to disambiguate screenshots (e.g., path slug).
    */
   id?: string;
   /**
@@ -130,6 +133,27 @@ function getVizzlySnapshotName(params: {
   return `${slugify([...testFileDir, name].join("-"))}${ext}`;
 }
 
+function touchScreenshot(testInfo: TestInfo, fileName: string) {
+  const testDir =
+    testInfo.project.testDir || path.join(testInfo.config.rootDir, "src");
+  const screenshotPath = path.join(
+    testDir,
+    getTestFileDir(testInfo),
+    "__screenshots__",
+    fileName,
+  );
+  try {
+    const now = new Date();
+    utimesSync(screenshotPath, now, now);
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error) {
+      // File may not exist yet on the first run.
+      if (error.code === "ENOENT") return;
+    }
+    throw error;
+  }
+}
+
 function shouldUseVizzly() {
   return process.env.USE_VIZZLY === "true";
 }
@@ -142,12 +166,22 @@ function getCombinedClip(a: Rect, b: Rect) {
   return { x, y, width: right - x, height: bottom - y };
 }
 
+function areRectsEqual(a: Rect, b: Rect) {
+  return (
+    a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
+  );
+}
+
 function applyClipMargin(rect: Rect, margin = DEFAULT_CLIP_MARGIN) {
+  const newX = Math.max(0, rect.x - margin);
+  const newY = Math.max(0, rect.y - margin);
+  const deltaX = newX - (rect.x - margin);
+  const deltaY = newY - (rect.y - margin);
   return {
-    x: rect.x - margin,
-    y: rect.y - margin,
-    width: rect.width + margin * 2,
-    height: rect.height + margin * 2,
+    x: newX,
+    y: newY,
+    width: Math.max(0, rect.width + margin * 2 - deltaX),
+    height: Math.max(0, rect.height + margin * 2 - deltaY),
   };
 }
 
@@ -207,22 +241,66 @@ async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
   return getRectsClip(rects, margin);
 }
 
-async function getPlaywrightScreenshotOptions(
+async function getScreenshotClip(
   page: Page,
   options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
 ) {
   const { element, clipMargin, fullPage } = options;
   if (fullPage) {
-    return { animations: "disabled" as const, fullPage: true };
+    return null;
   }
   if (!element) {
-    const clip = await getBodyClip(page, clipMargin);
-    return { animations: "disabled" as const, clip, fullPage: false };
+    return getBodyClip(page, clipMargin);
   }
   const locator = typeof element === "string" ? page.locator(element) : element;
   const rect = await locator.boundingBox();
   invariant(rect, "Element not visible");
-  const clip = applyClipMargin(rect, clipMargin);
+  return applyClipMargin(rect, clipMargin);
+}
+
+async function waitForStableScreenshotClip(
+  page: Page,
+  options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
+) {
+  if (options.fullPage) {
+    return;
+  }
+  // Some previews update their layout a few frames after they become visible.
+  // Wait until the computed clip stays unchanged for a short window.
+  let previousClip = await getScreenshotClip(page, options);
+  let lastClip = previousClip;
+  let stableSince = Date.now();
+  const deadline = Date.now() + CLIP_STABILITY_TIMEOUT;
+  while (Date.now() < deadline) {
+    await page.waitForTimeout(CLIP_STABILITY_INTERVAL);
+    const clip = await getScreenshotClip(page, options);
+    lastClip = clip;
+    if (previousClip && clip && areRectsEqual(previousClip, clip)) {
+      if (Date.now() - stableSince >= CLIP_STABILITY_DURATION) {
+        return;
+      }
+      continue;
+    }
+    stableSince = Date.now();
+    previousClip = clip;
+  }
+  console.debug("waitForStableScreenshotClip timed out", {
+    clipStabilityTimeout: CLIP_STABILITY_TIMEOUT,
+    clipStabilityDuration: CLIP_STABILITY_DURATION,
+    stableFor: Date.now() - stableSince,
+    previousClip,
+    lastClip,
+  });
+}
+
+async function getPlaywrightScreenshotOptions(
+  page: Page,
+  options: Pick<ScreenshotOptions, "element" | "clipMargin" | "fullPage">,
+) {
+  const clip = await getScreenshotClip(page, options);
+  if (!clip) {
+    return { animations: "disabled" as const, fullPage: true };
+  }
   return { animations: "disabled" as const, clip, fullPage: false };
 }
 
@@ -287,7 +365,7 @@ export async function visual(
     "When running visual tests, the test title should contain @visual",
   ).toContain("@visual");
 
-  if (!process.env.VISUAL_TEST) {
+  if (!process.env.VISUAL_TEST || !process.env.CI) {
     return;
   }
 
@@ -322,6 +400,11 @@ export async function visual(
           });
           await page.waitForLoadState("domcontentloaded");
           await page.evaluate(() => document.fonts?.ready?.catch(() => {}));
+          await waitForStableScreenshotClip(page, {
+            element,
+            clipMargin,
+            fullPage,
+          });
           const screenshotOptions = await getPlaywrightScreenshotOptions(page, {
             element,
             clipMargin,
@@ -345,21 +428,12 @@ export async function visual(
           await expect(page).toHaveScreenshot(fileSnapshotName, {
             ...screenshotOptions,
           });
+          // Touch the screenshot file so the CI stale-detection step
+          // (which deletes files older than a pre-run marker) knows
+          // this screenshot is still expected by a test.
+          touchScreenshot(testInfo, fileSnapshotName);
         });
       }
     });
   }
 }
-
-export const visualTest = test.extend<{
-  visual: (options?: ScreenshotOptions) => Promise<void>;
-  q: ReturnType<typeof query>;
-}>({
-  visual: async ({ page }, use, testInfo) => {
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    await use((options) => visual(page, options, testInfo));
-  },
-  q: async ({ page }, use) => {
-    await use(query(page));
-  },
-});

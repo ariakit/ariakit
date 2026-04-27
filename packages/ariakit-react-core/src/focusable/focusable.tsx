@@ -1,17 +1,10 @@
-import { isButton } from "@ariakit/core/utils/dom";
 import {
   addGlobalEventListener,
   isFocusEventOutside,
-  isPortalEvent,
   isSelfTarget,
   queueBeforeEvent,
 } from "@ariakit/core/utils/events";
-import {
-  focusIfNeeded,
-  getClosestFocusable,
-  hasFocus,
-  isFocusable,
-} from "@ariakit/core/utils/focus";
+import { hasFocus, isFocusable } from "@ariakit/core/utils/focus";
 import {
   disabledFromProps,
   removeUndefinedValues,
@@ -23,11 +16,15 @@ import type {
   EventHandler,
   FocusEvent,
   KeyboardEvent as ReactKeyboardEvent,
-  MouseEvent as ReactMouseEvent,
   SyntheticEvent,
 } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { useEvent, useMergeRefs, useTagName } from "../utils/hooks.ts";
+import {
+  useEvent,
+  useMergeRefs,
+  useMetadataProps,
+  useTagName,
+} from "../utils/hooks.ts";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Options, Props } from "../utils/types.ts";
 import { FocusableContext } from "./focusable-context.tsx";
@@ -35,6 +32,8 @@ import { FocusableContext } from "./focusable-context.tsx";
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+const accessibleWhenDisabledSymbol = Symbol("accessibleWhenDisabled");
 
 const isSafariBrowser = isSafari();
 
@@ -54,22 +53,6 @@ const alwaysFocusVisibleInputTypes = [
   "datetime-local",
 ];
 
-const safariFocusAncestorSymbol = Symbol("safariFocusAncestor");
-type SafariFocusAncestor = Element & { [safariFocusAncestorSymbol]?: boolean };
-
-export function isSafariFocusAncestor(element: SafariFocusAncestor | null) {
-  if (!element) return false;
-  return !!element[safariFocusAncestorSymbol];
-}
-
-function markSafariFocusAncestor(
-  element: SafariFocusAncestor | null,
-  value: boolean,
-) {
-  if (!element) return;
-  element[safariFocusAncestorSymbol] = value;
-}
-
 function isAlwaysFocusVisible(element: HTMLElement) {
   const { tagName, readOnly, type } = element as HTMLInputElement;
   if (tagName === "TEXTAREA" && !readOnly) return true;
@@ -82,21 +65,6 @@ function isAlwaysFocusVisible(element: HTMLElement) {
   const role = element.getAttribute("role");
   if (role === "combobox" && element.dataset.name) {
     return true;
-  }
-  return false;
-}
-
-function getLabels(element: HTMLElement | HTMLInputElement) {
-  if ("labels" in element) {
-    return element.labels;
-  }
-  return null;
-}
-
-function isNativeCheckboxOrRadio(element: { tagName: string; type?: string }) {
-  const tagName = element.tagName.toLowerCase();
-  if (tagName === "input" && element.type) {
-    return element.type === "radio" || element.type === "checkbox";
   }
   return false;
 }
@@ -123,33 +91,62 @@ function supportsDisabledAttribute(tagName?: string) {
   );
 }
 
-function getTabIndex(
-  focusable: boolean,
-  trulyDisabled: boolean,
-  nativeTabbable: boolean,
-  supportsDisabled: boolean,
-  tabIndexProp?: number,
-) {
-  if (!focusable) {
-    return tabIndexProp;
+interface GetTabIndexParams {
+  focusable: boolean;
+  trulyDisabled: boolean;
+  nativeTabbable: boolean;
+  supportsDisabled: boolean;
+  safariTabIndex: boolean;
+  tabIndexProp?: number;
+}
+
+const buttonInputTypes = [
+  "button",
+  "color",
+  "file",
+  "image",
+  "reset",
+  "submit",
+];
+
+function needsSafariTabIndex(tagName?: string, inputType?: string) {
+  if (tagName === "button") return true;
+  if (tagName === "input" && inputType) {
+    if (inputType === "checkbox" || inputType === "radio") return true;
+    return buttonInputTypes.includes(inputType);
   }
+  return false;
+}
+
+function getTabIndex({
+  focusable,
+  trulyDisabled,
+  nativeTabbable,
+  supportsDisabled,
+  safariTabIndex,
+  tabIndexProp,
+}: GetTabIndexParams) {
+  if (!focusable) return tabIndexProp;
   if (trulyDisabled) {
     if (nativeTabbable && !supportsDisabled) {
-      // Anchor, audio and video tags don't support the `disabled` attribute. We
-      // must pass tabIndex={-1} so they don't receive focus on tab.
+      // Anchor, audio and video tags don't support the `disabled` attribute.
+      // We must pass tabIndex={-1} so they don't receive focus on tab.
       return -1;
     }
     // Elements that support the `disabled` attribute don't need tabIndex.
     return;
   }
   if (nativeTabbable) {
-    // If the element is enabled and it's natively tabbable, we don't need to
-    // specify a tabIndex attribute unless it's explicitly set by the user.
+    // On Safari, buttons and button-like inputs (checkboxes, radios, submit,
+    // reset, etc.) require an explicit tabIndex to receive focus on mousedown.
+    if (safariTabIndex && tabIndexProp == null) {
+      return 0;
+    }
     return tabIndexProp;
   }
-  // If the element is enabled and is not natively tabbable, we have to fallback
-  // tabIndex={0}.
-  return tabIndexProp || 0;
+  // If the element is enabled and is not natively tabbable, we have to
+  // fallback tabIndex={0}.
+  return tabIndexProp ?? 0;
 }
 
 function useDisableEvent(
@@ -191,7 +188,7 @@ function onGlobalKeyDown(event: KeyboardEvent) {
 
 /**
  * Returns props to create a `Focusable` component.
- * @see https://ariakit.org/components/focusable
+ * @see https://ariakit.com/components/focusable
  * @example
  * ```jsx
  * const props = useFocusable();
@@ -207,6 +204,12 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     ...props
   }) {
     const ref = useRef<HTMLType>(null);
+    const [parentAccessibleWhenDisabled, metadataProps] = useMetadataProps(
+      props,
+      accessibleWhenDisabledSymbol,
+      accessibleWhenDisabled,
+    );
+    accessibleWhenDisabled ??= parentAccessibleWhenDisabled;
 
     // Add global event listeners to determine whether the user is using a
     // keyboard to navigate the site or not.
@@ -218,31 +221,8 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       hasInstalledGlobalEventListeners = true;
     }, [focusable]);
 
-    // Safari and Firefox on Apple devices don't focus on checkboxes or radio
-    // buttons when their labels are clicked. This effect will make sure the
-    // focusable element is focused on label click.
-    if (isSafariBrowser) {
-      useEffect(() => {
-        if (!focusable) return;
-        const element = ref.current;
-        if (!element) return;
-        if (!isNativeCheckboxOrRadio(element)) return;
-        const labels = getLabels(element);
-        if (!labels) return;
-        const onMouseUp = () => queueMicrotask(() => element.focus());
-        for (const label of labels) {
-          label.addEventListener("mouseup", onMouseUp);
-        }
-        return () => {
-          for (const label of labels) {
-            label.removeEventListener("mouseup", onMouseUp);
-          }
-        };
-      }, [focusable]);
-    }
-
     const disabled = focusable && disabledFromProps(props);
-    const trulyDisabled = !!disabled && !accessibleWhenDisabled;
+    const trulyDisabled = disabled && !accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
 
     // When the focusable element is disabled, it doesn't trigger a blur event
@@ -284,52 +264,6 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       disabled,
     );
     const onClickCapture = useDisableEvent(props.onClickCapture, disabled);
-
-    const onMouseDownProp = props.onMouseDown;
-
-    const onMouseDown = useEvent((event: ReactMouseEvent<HTMLType>) => {
-      onMouseDownProp?.(event);
-      if (event.defaultPrevented) return;
-      if (!focusable) return;
-      const element = event.currentTarget;
-      // Safari doesn't focus on buttons on mouse down like other
-      // browsers/platforms. Instead, it focuses on the closest focusable ancestor
-      // element, which is ultimately the body element. So we make sure to give
-      // focus to this Focusable element on mouse down so it works consistently
-      // across browsers.
-      if (!isSafariBrowser) return;
-      if (isPortalEvent(event)) return;
-      if (!isButton(element) && !isNativeCheckboxOrRadio(element)) return;
-      // In future versions of Safari, it may change this behavior and start
-      // focusing on buttons on mouse down. To account for that, we must check if
-      // the element has received focus before.
-      let receivedFocus = false;
-      const onFocus = () => {
-        receivedFocus = true;
-      };
-      const options = { capture: true, once: true };
-      element.addEventListener("focusin", onFocus, options);
-
-      const focusableContainer = getClosestFocusable(element.parentElement);
-      // Since Safari focuses on the nearest focusable ancestor and we're not
-      // preventing it (see below), popups may close on mousedown on their
-      // disclosure buttons. Therefore, we mark the focusable container here to
-      // check for that in use-hide-on-interact-outside.ts. See the dialog-menu
-      // "open/close menu by clicking on menu button" test.
-      markSafariFocusAncestor(focusableContainer, true);
-      // We can't focus right away after on mouse down, otherwise it would prevent
-      // drag events from happening. So we queue the focus to the next animation
-      // frame, but always before the next mouseup event. The mouseup event might
-      // happen before the next animation frame on touch devices or by tapping on
-      // a MacBook's trackpad, for example. We can't use pointerup otherwise it
-      // breaks on mobile Safari. See dialog-menu/test-mobile test.
-      queueBeforeEvent(element, "mouseup", () => {
-        element.removeEventListener("focusin", onFocus, true);
-        markSafariFocusAncestor(focusableContainer, false);
-        if (receivedFocus) return;
-        focusIfNeeded(element);
-      });
-    });
 
     const handleFocusVisible = (
       event: SyntheticEvent<HTMLType>,
@@ -433,6 +367,22 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     const nativeTabbable = focusable && isNativeTabbable(tagName);
     const supportsDisabled = focusable && supportsDisabledAttribute(tagName);
 
+    // On Safari, buttons and button-like inputs don't receive focus on
+    // mousedown. We detect this from the DOM element (not props) so it works
+    // with render={<input type="submit" />} and custom components.
+    const [safariTabIndex, setSafariTabIndex] = useState(false);
+
+    if (isSafariBrowser) {
+      useEffect(() => {
+        if (!focusable) return;
+        const element = ref.current;
+        if (!element) return;
+        const tag = element.tagName.toLowerCase();
+        const type = (element as HTMLInputElement).type;
+        setSafariTabIndex(needsSafariTabIndex(tag, type));
+      }, [focusable]);
+    }
+
     const styleProp = props.style;
     const style = useMemo(() => {
       if (trulyDisabled) {
@@ -446,22 +396,23 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       "data-autofocus": autoFocus || undefined,
       "aria-disabled": disabled || undefined,
       ...props,
+      ...metadataProps,
       ref: useMergeRefs(ref, autoFocusRef, props.ref),
       style,
-      tabIndex: getTabIndex(
+      tabIndex: getTabIndex({
         focusable,
         trulyDisabled,
         nativeTabbable,
         supportsDisabled,
-        props.tabIndex,
-      ),
+        safariTabIndex,
+        tabIndexProp: props.tabIndex,
+      }),
       disabled: supportsDisabled && trulyDisabled ? true : undefined,
       // TODO: Test Focusable contentEditable.
       contentEditable: disabled ? undefined : props.contentEditable,
       onKeyPressCapture,
       onClickCapture,
       onMouseDownCapture,
-      onMouseDown,
       onKeyDownCapture,
       onFocusCapture,
       onBlur,
@@ -474,19 +425,19 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
 /**
  * Renders a focusable element. When this element gains keyboard focus, it gets
  * a
- * [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible)
+ * [`data-focus-visible`](https://ariakit.com/guide/styling#data-focus-visible)
  * attribute and triggers the
- * [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible)
+ * [`onFocusVisible`](https://ariakit.com/reference/focusable#onfocusvisible)
  * prop.
  *
  * The `Focusable` component supports the
- * [`disabled`](https://ariakit.org/reference/focusable#disabled) prop for all
+ * [`disabled`](https://ariakit.com/reference/focusable#disabled) prop for all
  * elements, even those not supporting the native `disabled` attribute. Disabled
  * elements using the `Focusable` component may be still accessible via keyboard
  * by using the the
- * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled)
+ * [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled)
  * prop.
- * @see https://ariakit.org/components/focusable
+ * @see https://ariakit.com/components/focusable
  * @example
  * ```jsx
  * <Focusable>Focusable</Focusable>
@@ -497,25 +448,26 @@ export const Focusable = forwardRef(function Focusable(props: FocusableProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface FocusableOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface FocusableOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Determines if the element is disabled. This sets the `aria-disabled`
    * attribute accordingly, enabling support for all elements, including those
    * that don't support the native `disabled` attribute.
    *
    * This feature can be combined with the
-   * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled)
+   * [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled)
    * prop to make disabled elements still accessible via keyboard.
    *
    * **Note**: For this prop to work, the
-   * [`focusable`](https://ariakit.org/reference/command#focusable) prop must be
+   * [`focusable`](https://ariakit.com/reference/command#focusable) prop must be
    * set to `true`, if it's not set by default.
    *
    * Live examples:
-   * - [Submenu](https://ariakit.org/examples/menu-nested)
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
-   * - [Context Menu](https://ariakit.org/examples/menu-context-menu)
+   * - [Submenu](https://ariakit.com/examples/menu-nested)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
+   * - [Context Menu](https://ariakit.com/examples/menu-context-menu)
    * @default false
    */
   disabled?: boolean;
@@ -526,42 +478,42 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    * executed.
    *
    * The `autoFocus` prop can also be used with
-   * [Focusable](https://ariakit.org/components/focusable) elements within a
-   * [Dialog](https://ariakit.org/components/dialog) component, establishing the
+   * [Focusable](https://ariakit.com/components/focusable) elements within a
+   * [Dialog](https://ariakit.com/components/dialog) component, establishing the
    * initial focus as the dialog opens.
    *
    * **Note**: For this prop to work, the
-   * [`focusable`](https://ariakit.org/reference/command#focusable) prop must be
+   * [`focusable`](https://ariakit.com/reference/command#focusable) prop must be
    * set to `true`, if it's not set by default.
    *
    * Live examples:
    * - [Warning on Dialog
-   *   hide](https://ariakit.org/examples/dialog-hide-warning)
+   *   hide](https://ariakit.com/examples/dialog-hide-warning)
    * - [Dialog with React
-   *   Router](https://ariakit.org/examples/dialog-react-router)
-   * - [Nested Dialog](https://ariakit.org/examples/dialog-nested)
+   *   Router](https://ariakit.com/examples/dialog-react-router)
+   * - [Nested Dialog](https://ariakit.com/examples/dialog-nested)
    * @default false
    */
   autoFocus?: boolean;
   /**
-   * Determines if [Focusable](https://ariakit.org/components/focusable)
+   * Determines if [Focusable](https://ariakit.com/components/focusable)
    * features should be active on non-native focusable elements.
    *
    * **Note**: This prop only turns off the additional features provided by the
-   * [`Focusable`](https://ariakit.org/reference/focusable) component.
+   * [`Focusable`](https://ariakit.com/reference/focusable) component.
    * Non-native focusable elements will lose their focusability entirely.
    * However, native focusable elements will retain their inherent focusability,
    * but without added features such as improved
-   * [`autoFocus`](https://ariakit.org/reference/focusable#autofocus),
-   * [`accessibleWhenDisabled`](https://ariakit.org/reference/focusable#accessiblewhendisabled),
-   * [`onFocusVisible`](https://ariakit.org/reference/focusable#onfocusvisible),
+   * [`autoFocus`](https://ariakit.com/reference/focusable#autofocus),
+   * [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled),
+   * [`onFocusVisible`](https://ariakit.com/reference/focusable#onfocusvisible),
    * etc.
    * @default true
    */
   focusable?: boolean;
   /**
    * Indicates whether the element should be focusable even when it is
-   * [`disabled`](https://ariakit.org/reference/focusable#disabled).
+   * [`disabled`](https://ariakit.com/reference/focusable#disabled).
    *
    * This is important when discoverability is a concern. For example:
    *
@@ -575,25 +527,25 @@ export interface FocusableOptions<_T extends ElementType = TagName>
    * controls](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/#focusabilityofdisabledcontrols).
    *
    * Live examples:
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   accessibleWhenDisabled?: boolean;
   /**
    * Custom event handler invoked when the element gains focus through keyboard
    * interaction or a key press occurs while the element is in focus. This is
    * the programmatic equivalent of the
-   * [`data-focus-visible`](https://ariakit.org/guide/styling#data-focus-visible)
+   * [`data-focus-visible`](https://ariakit.com/guide/styling#data-focus-visible)
    * attribute.
    *
    * **Note**: For this prop to work, the
-   * [`focusable`](https://ariakit.org/reference/command#focusable) prop must be
+   * [`focusable`](https://ariakit.com/reference/command#focusable) prop must be
    * set to `true`, if it's not set by default.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
-   * - [Custom Checkbox](https://ariakit.org/examples/checkbox-custom)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
+   * - [Custom Checkbox](https://ariakit.com/examples/checkbox-custom)
    */
   onFocusVisible?: BivariantCallback<
     (event: SyntheticEvent<HTMLElement>) => void

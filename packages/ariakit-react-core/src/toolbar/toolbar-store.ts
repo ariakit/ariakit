@@ -18,8 +18,8 @@ export function useToolbarStoreProps<T extends Core.ToolbarStore>(
 
 /**
  * Creates a toolbar store to control the state of
- * [Toolbar](https://ariakit.org/components/toolbar) components.
- * @see https://ariakit.org/components/toolbar
+ * [Toolbar](https://ariakit.com/components/toolbar) components.
+ * @see https://ariakit.com/components/toolbar
  * @example
  * ```jsx
  * const toolbar = useToolbarStore();
@@ -37,21 +37,16 @@ export function useToolbarStore(props: ToolbarStoreProps = {}): ToolbarStore {
 }
 
 export interface ToolbarStoreState
-  extends Core.ToolbarStoreState,
-    CompositeStoreState {}
+  extends Core.ToolbarStoreState, CompositeStoreState {}
 
 export interface ToolbarStoreFunctions
-  extends Core.ToolbarStoreFunctions,
-    CompositeStoreFunctions {}
+  extends Core.ToolbarStoreFunctions, CompositeStoreFunctions {}
 
 export interface ToolbarStoreOptions
-  extends Core.ToolbarStoreOptions,
-    CompositeStoreOptions {}
+  extends Core.ToolbarStoreOptions, CompositeStoreOptions {}
 
 export interface ToolbarStoreProps
-  extends ToolbarStoreOptions,
-    Core.ToolbarStoreProps {}
+  extends ToolbarStoreOptions, Core.ToolbarStoreProps {}
 
 export interface ToolbarStore
-  extends ToolbarStoreFunctions,
-    Store<Core.ToolbarStore> {}
+  extends ToolbarStoreFunctions, Store<Core.ToolbarStore> {}

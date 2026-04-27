@@ -1,5 +1,5 @@
 import * as ak from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
 
 export interface ComboboxProps extends Omit<ak.ComboboxProps, "onChange"> {
@@ -21,7 +21,7 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           gutter={8}
           overflowPadding={16}
           className={clsx(
-            "ak-popover data-open:ak-popover_open not-data-open:ak-popover_closed ak-frame-force-container max-h-[min(var(--popover-available-height),20rem)] w-[calc(var(--popover-anchor-width)+var(--ak-frame-padding)*2)] overflow-clip flex flex-col origin-(--popover-transform-origin)",
+            "ak-popover data-open:ak-popover_open not-data-open:ak-popover_closed ak-frame ak-frame-force ak-frame-container/container max-h-[min(var(--popover-available-height),20rem)] w-[calc(var(--popover-anchor-width)+var(--ak-frame-padding)*2)] overflow-clip flex flex-col origin-(--popover-transform-origin)",
           )}
         >
           <div className="ak-popover-scroll scroll-pt-11">{children}</div>
@@ -45,16 +45,16 @@ export const ComboboxGroup = React.forwardRef<
     <ak.ComboboxGroup
       ref={ref}
       {...props}
-      className={clsx("ak-group ak-frame-cover", props.className)}
+      className={clsx("ak-group ak-frame ak-frame-cover", props.className)}
     >
       {label && (
         <ak.ComboboxGroupLabel
           data-sticky={stickyLabel || undefined}
           className={clsx(
-            "text-sm font-medium ak-text/50 cursor-default",
+            "text-sm font-medium ak-ink-50 cursor-default",
             stickyLabel
-              ? "sticky top-(--ak-frame-margin) z-10 ak-layer-current ak-frame-cover/3 pb-[calc(var(--ak-frame-padding)---spacing(1))] border-b mb-1"
-              : "ak-frame-container/2 [&+*]:scroll-mt-11",
+              ? "sticky top-(--ak-frame-margin) z-10 ak-layer ak-frame ak-frame-cover ak-frame-p-3 pb-[calc(var(--ak-frame-padding)---spacing(1))] border-b mb-1"
+              : "ak-frame ak-frame-container/2 [&+*]:scroll-mt-11",
           )}
         >
           {label}

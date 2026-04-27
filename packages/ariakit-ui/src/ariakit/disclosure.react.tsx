@@ -1,10 +1,11 @@
 import * as ak from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
 import { createRender } from "../react-utils/create-render.ts";
 
 export interface DisclosureProps
-  extends Omit<ak.RoleProps<"div">, "content">,
+  extends
+    Omit<ak.RoleProps<"div">, "content">,
     Pick<ak.DisclosureProviderProps, "open" | "setOpen" | "defaultOpen"> {
   /** Custom button element or props to render a `DisclosureButton`. */
   button?: React.ReactNode | DisclosureButtonProps;
@@ -83,7 +84,7 @@ export function DisclosureGroup({
       {...props}
       className={clsx(
         baseClassName || "ak-disclosure-group",
-        "ak-layer-current border-y divide-y divide-(--ak-layer-border)",
+        "ak-layer border-y divide-y divide-(--ak-edge)",
         props.className,
       )}
     />
@@ -188,7 +189,7 @@ export function DisclosureButton({
               {labelWrapperElement}
               <span
                 id={descriptionId}
-                className="ak-text/60 grid gap-[inherit] font-normal text-sm"
+                className="ak-ink-60 grid gap-[inherit] font-normal text-sm"
               >
                 {description}
               </span>
@@ -207,8 +208,7 @@ export function DisclosureButton({
 }
 
 export interface DisclosureContentProps
-  extends ak.DisclosureContentProps,
-    Pick<DisclosureContentBodyProps, "prose"> {
+  extends ak.DisclosureContentProps, Pick<DisclosureContentBodyProps, "prose"> {
   /** Custom body element or props to render a `DisclosureContentBody`. */
   body?: React.ReactElement | DisclosureContentBodyProps;
   /** Applies a guide to the content. */
@@ -240,8 +240,7 @@ export function DisclosureContent({
   );
 }
 
-export interface DisclosureContentBodyProps
-  extends React.ComponentProps<"div"> {
+export interface DisclosureContentBodyProps extends React.ComponentProps<"div"> {
   /** Applies prose typography and spacing to the content body. */
   prose?: boolean;
   /** Custom base class name. */

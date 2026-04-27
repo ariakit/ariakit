@@ -13,7 +13,7 @@ type TagName = typeof TagName;
  * Returns props to create a `GroupLabel` component. This hook must be used in a
  * component that's wrapped with `Group` so the `aria-labelledby` prop is
  * properly set on the group element.
- * @see https://ariakit.org/components/group
+ * @see https://ariakit.com/components/group
  * @example
  * ```jsx
  * // This component must be wrapped with Group
@@ -32,9 +32,9 @@ export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
     }, [setLabelId, id]);
 
     props = {
-      id,
       "aria-hidden": true,
       ...props,
+      id,
     };
 
     return removeUndefinedValues(props);
@@ -43,9 +43,9 @@ export const useGroupLabel = createHook<TagName, GroupLabelOptions>(
 
 /**
  * Renders a label in a group. This component should be wrapped with a
- * [`Group`](https://ariakit.org/reference/group) so the `aria-labelledby`
+ * [`Group`](https://ariakit.com/reference/group) so the `aria-labelledby`
  * prop is correctly set on the group element.
- * @see https://ariakit.org/components/group
+ * @see https://ariakit.com/components/group
  * @example
  * ```jsx
  * <Group>
@@ -60,8 +60,9 @@ export const GroupLabel = forwardRef(function GroupLabel(
   return createElement(TagName, htmlProps);
 });
 
-export interface GroupLabelOptions<_T extends ElementType = TagName>
-  extends Options {}
+export interface GroupLabelOptions<
+  _T extends ElementType = TagName,
+> extends Options {}
 
 export type GroupLabelProps<T extends ElementType = TagName> = Props<
   T,

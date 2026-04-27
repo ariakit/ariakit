@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-
+import { expect, test } from "vitest";
 import {
   findStyleDependency,
   getStyleDefinition,
@@ -20,11 +20,11 @@ import {
 
 test("scanAkTokensInFiles finds ak-* tokens including bracketed", () => {
   const tokens = scanAkTokens(`
-    <div className="ak-badge ak-text/80"></div>
-    <div className='not-data-open:ak-text/0'></div>
+    <div className="ak-badge ak-text-l-80"></div>
+    <div className='not-data-open:ak-text-l-0'></div>
   `);
   expect(tokens.has("ak-badge")).toBe(true);
-  expect(tokens.has("ak-text/80")).toBe(true);
+  expect(tokens.has("ak-text-l-80")).toBe(true);
 });
 
 test("scanAkTokensInFiles scans from start for each file (lastIndex reset)", () => {
@@ -46,14 +46,24 @@ test("scanAkTokensInFiles scans from start for each file (lastIndex reset)", () 
 test("scanAkTokensInFiles finds tokens inside group-/peer- ak variant prefixes", () => {
   const tokens = scanAkTokens(`
     <div className="group-ak-command-disabled:ak-badge"></div>
-    <div className="peer-ak-command-active:ak-text/80"></div>
+    <div className="peer-ak-command-active:ak-text-l-80"></div>
   `);
   // Variants inside group-/peer- prefixes
   expect(tokens.has("ak-command-disabled")).toBe(true);
   expect(tokens.has("ak-command-active")).toBe(true);
   // Utilities after the ':' should also be picked up
   expect(tokens.has("ak-badge")).toBe(true);
-  expect(tokens.has("ak-text/80")).toBe(true);
+  expect(tokens.has("ak-text-l-80")).toBe(true);
+});
+
+test("scanAkTokensInFiles preserves colons inside arbitrary values", () => {
+  const tokens = scanAkTokens(`
+    <div className="ak-layer-(color:--ak-layer-parent) ak-dark:ak-edge-(color:--ak-edge)"></div>
+  `);
+  expect(tokens.has("ak-layer-(color:--ak-layer-parent)")).toBe(true);
+  expect(tokens.has("ak-edge-(color:--ak-edge)")).toBe(true);
+  expect(tokens.has("ak-layer-(color")).toBe(false);
+  expect(tokens.has("ak-edge-(color")).toBe(false);
 });
 
 test("styleDefToCss renders @property block", () => {
@@ -106,7 +116,7 @@ test("styleDefToCss renders ak-list-item-ol-border utility fully", () => {
       );
       /* Border segment */
       &::after {
-        @apply ak-layer-pop-2;
+        @apply ak-layer ak-layer-12;
         @apply z-2 pointer-events-none absolute h-full;
         content: "";
         width: var(--ak-list-border-width);
@@ -295,4 +305,66 @@ test("utilities include variant dependencies via not-* ak prefix", () => {
     name: "ak-command-disabled",
     module: "command",
   });
+});
+
+test("generated style dependencies preserve arbitrary values", () => {
+  const tab = getStyleDefinition("ak-tab-panel", "utility");
+  expect(tab?.dependencies).toEqual(
+    expect.arrayContaining([
+      {
+        type: "utility",
+        name: "ak-layer-(color:--ak-tab-bg)",
+        import: "@ariakit/tailwind",
+      },
+    ]),
+  );
+});
+
+test("generated style dependencies resolve local wildcard utilities", () => {
+  const progress = getStyleDefinition("ak-progress", "utility");
+  expect(progress?.dependencies).toEqual(
+    expect.arrayContaining([
+      {
+        type: "utility",
+        name: "ak-progress-thickness-*",
+        module: "progress",
+      },
+    ]),
+  );
+  const checkProgress = getStyleDefinition(
+    "ak-list-item-check-progress-*",
+    "utility",
+  );
+  expect(checkProgress?.dependencies).toEqual(
+    expect.arrayContaining([
+      {
+        type: "utility",
+        name: "ak-progress-value-*",
+        module: "progress",
+      },
+      {
+        type: "utility",
+        name: "ak-progress-thickness-*",
+        module: "progress",
+      },
+    ]),
+  );
+});
+
+test("generated style dependencies include dual utility and variant tokens", () => {
+  const list = getStyleDefinition("ak-list", "utility");
+  expect(list?.dependencies).toEqual(
+    expect.arrayContaining([
+      {
+        type: "utility",
+        name: "ak-list-blocks",
+        module: "list",
+      },
+      {
+        type: "variant",
+        name: "ak-list-blocks",
+        module: "list",
+      },
+    ]),
+  );
 });

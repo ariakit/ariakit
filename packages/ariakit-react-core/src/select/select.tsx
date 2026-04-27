@@ -61,7 +61,7 @@ function nextWithValue(store: SelectStore, next: SelectStore["next"]) {
 
 /**
  * Returns props to create a `Select` component.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const store = useSelectStore();
@@ -199,7 +199,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
             tabIndex={-1}
             aria-hidden
             aria-label={label}
-            aria-labelledby={labelledBy}
+            aria-labelledby={label != null ? undefined : labelledBy}
             name={name}
             form={form}
             required={required}
@@ -267,7 +267,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   props = {
     role: "combobox",
     "aria-autocomplete": "none",
-    "aria-labelledby": labelId,
+    "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
     "aria-haspopup": getPopupRole(contentElement, "listbox"),
     "data-autofill": autofill || undefined,
     "data-name": name,
@@ -285,15 +285,15 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
 
 /**
  * Renders a custom select element that controls the visibility of either a
- * [`SelectList`](https://ariakit.org/reference/select-list) or a
- * [`SelectPopover`](https://ariakit.org/reference/select-popover) component.
+ * [`SelectList`](https://ariakit.com/reference/select-list) or a
+ * [`SelectPopover`](https://ariakit.com/reference/select-popover) component.
  *
  * By default, the
- * [`value`](https://ariakit.org/reference/select-provider#value) state is
+ * [`value`](https://ariakit.com/reference/select-provider#value) state is
  * rendered as the children, followed by a
- * [`SelectArrow`](https://ariakit.org/reference/select-arrow) component. This
+ * [`SelectArrow`](https://ariakit.com/reference/select-arrow) component. This
  * can be customized by passing different children to the component.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx {2}
  * <SelectProvider>
@@ -311,7 +311,8 @@ export const Select = forwardRef(function Select(props: SelectProps) {
 });
 
 export interface SelectOptions<T extends ElementType = TagName>
-  extends PopoverDisclosureOptions<T>,
+  extends
+    PopoverDisclosureOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<
       SelectHTMLAttributes<HTMLSelectElement>,
@@ -319,40 +320,40 @@ export interface SelectOptions<T extends ElementType = TagName>
     > {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook. If
    * not provided, the closest
-   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)
    * component's context will be used.
    */
   store?: SelectStore;
   /**
    * Determines if the
-   * [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
+   * [`SelectList`](https://ariakit.com/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.com/reference/select-popover) components
    * will appear when the user uses arrow keys while the select element is
    * in focus.
    *
    * Live examples:
-   * - [Select Grid](https://ariakit.org/examples/select-grid)
+   * - [Select Grid](https://ariakit.com/examples/select-grid)
    * @default true
    */
   showOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
    * Determines whether pressing arrow keys will move the active item even when
-   * the [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components
+   * the [`SelectList`](https://ariakit.com/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.com/reference/select-popover) components
    * are hidden.
    * @default false
    */
   moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
    * Determines whether pressing Space, Enter, or a click event will
-   * [`toggle`](https://ariakit.org/reference/use-select-store#toggle) the
-   * [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components.
+   * [`toggle`](https://ariakit.com/reference/use-select-store#toggle) the
+   * [`SelectList`](https://ariakit.com/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.com/reference/select-popover) components.
    * @default true
    * @deprecated Use
-   * [`toggleOnClick`](https://ariakit.org/reference/select#toggleonclick)
+   * [`toggleOnClick`](https://ariakit.com/reference/select#toggleonclick)
    * instead.
    */
   toggleOnPress?: BooleanOrCallback<

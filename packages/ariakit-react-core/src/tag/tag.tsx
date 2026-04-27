@@ -32,7 +32,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `Tag` component.
- * @see https://ariakit.org/components/tag
+ * @see https://ariakit.com/components/tag
  * @example
  * ```jsx
  * const props = useTag();
@@ -119,11 +119,11 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
   );
 
   props = {
-    id,
     role: !touchDevice ? "option" : "listitem",
     children: value,
     "aria-describedby": removeId,
     ...props,
+    id,
     onKeyDown,
   };
 
@@ -138,16 +138,16 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
 
 /**
  * Renders a tag element inside a
- * [`TagList`](https://ariakit.org/reference/tag-list) wrapper.
+ * [`TagList`](https://ariakit.com/reference/tag-list) wrapper.
  *
  * The user can remove the tag by pressing `Backspace` or `Delete` keys when the
  * tag is focused. The
- * [`removeOnKeyPress`](https://ariakit.org/reference/tag#removeonkeypress) prop
+ * [`removeOnKeyPress`](https://ariakit.com/reference/tag#removeonkeypress) prop
  * can be used to disable this behavior.
  *
  * When a printable key is pressed, the focus is automatically moved to the
  * input element.
- * @see https://ariakit.org/components/tag
+ * @see https://ariakit.com/components/tag
  * @example
  * ```jsx {7-10}
  * <TagProvider>
@@ -175,12 +175,13 @@ export const Tag = memo(
   }),
 );
 
-export interface TagOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T> {
+export interface TagOptions<
+  T extends ElementType = TagName,
+> extends CompositeItemOptions<T> {
   /**
    * Object returned by the
-   * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not
-   * provided, the closest [`TagList`](https://ariakit.org/reference/tag-list)
+   * [`useTagStore`](https://ariakit.com/reference/use-tag-store) hook. If not
+   * provided, the closest [`TagList`](https://ariakit.com/reference/tag-list)
    * component's context will be used.
    */
   store?: TagStore;

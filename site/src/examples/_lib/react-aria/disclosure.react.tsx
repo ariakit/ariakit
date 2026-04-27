@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
 import * as rac from "react-aria-components";
 import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
@@ -57,14 +57,16 @@ export function DisclosureGroup({
     ...props,
     className: clsx(
       baseClassName || "ak-disclosure-group",
-      "ak-layer-current border-y divide-y divide-(--ak-layer-border)",
+      "ak-layer border-y divide-y divide-(--ak-edge)",
       props.className,
     ),
   });
 }
 
-export interface DisclosureButtonProps
-  extends Omit<rac.ButtonProps, "children"> {
+export interface DisclosureButtonProps extends Omit<
+  rac.ButtonProps,
+  "children"
+> {
   actions?: React.ReactNode;
   description?: React.ReactNode;
   baseClassName?: string;
@@ -121,7 +123,7 @@ export function DisclosureButton({
         </span>
         <span
           id={descriptionId}
-          className="ak-text/60 grid gap-[inherit] font-normal text-sm"
+          className="ak-ink-60 grid gap-[inherit] font-normal text-sm"
         >
           {description}
         </span>
@@ -173,8 +175,7 @@ export function DisclosureButton({
 }
 
 export interface DisclosureContentProps
-  extends rac.DisclosurePanelProps,
-    Pick<DisclosureContentBodyProps, "prose"> {
+  extends rac.DisclosurePanelProps, Pick<DisclosureContentBodyProps, "prose"> {
   body?: React.ReactElement | DisclosureContentBodyProps;
   guide?: boolean;
   baseClassName?: string;
@@ -204,8 +205,7 @@ export function DisclosureContent({
   );
 }
 
-export interface DisclosureContentBodyProps
-  extends React.ComponentProps<"div"> {
+export interface DisclosureContentBodyProps extends React.ComponentProps<"div"> {
   prose?: boolean;
   baseClassName?: string;
 }

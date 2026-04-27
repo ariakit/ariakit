@@ -7,10 +7,10 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { CollectionEntry, RenderResult } from "astro:content";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { MarkdownProcessor, RehypePlugin } from "@astrojs/markdown-remark";
 import { createMarkdownProcessor } from "@astrojs/markdown-remark";
+import type { CollectionEntry, RenderResult } from "astro:content";
 import type { Element } from "hast";
 import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";

@@ -28,6 +28,7 @@ function getItemRole(popupRole?: string) {
 
 export function useComboboxItemOffscreen<
   T extends ElementType,
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   P extends ComboboxItemProps<T>,
 >({ store, value, ...props }: P) {
   const context = useComboboxScopedContext();
@@ -47,12 +48,12 @@ export function useComboboxItemOffscreen<
 }
 
 export const ComboboxItem = forwardRef(function ComboboxItem({
-  offscreenBehavior,
+  offscreenMode,
   offscreenRoot,
   ...props
 }: ComboboxItemProps) {
   const { active, ref, ...rest } = useComboboxItemOffscreen({
-    offscreenBehavior,
+    offscreenMode,
     offscreenRoot,
     ...props,
   });
@@ -79,8 +80,7 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
 });
 
 export interface ComboboxItemOptions<T extends ElementType = TagName>
-  extends Base.ComboboxItemOptions<T>,
-    Omit<CompositeItemOptions<T>, "store"> {}
+  extends Base.ComboboxItemOptions<T>, Omit<CompositeItemOptions<T>, "store"> {}
 
 export type ComboboxItemProps<T extends ElementType = TagName> = Props<
   T,

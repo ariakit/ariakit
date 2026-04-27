@@ -20,7 +20,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * select element, we can't use the native label element. The `SelectLabel`
  * component will move focus and click on the `Select` component when the user
  * clicks on the label.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const store = useSelectStore();
@@ -57,8 +57,8 @@ export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
     });
 
     props = {
-      id,
       ...props,
+      id,
       ref: useMergeRefs(store.setLabelElement, props.ref),
       onClick,
       style: {
@@ -72,11 +72,11 @@ export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
 );
 
 /**
- * Renders a label for the [`Select`](https://ariakit.org/reference/select)
+ * Renders a label for the [`Select`](https://ariakit.com/reference/select)
  * component. Since it's not a native select element, we can't use the native
  * label element. This component will move focus and click on the
- * [`Select`](https://ariakit.org/reference/select) component when clicked.
- * @see https://ariakit.org/components/select
+ * [`Select`](https://ariakit.com/reference/select) component when clicked.
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx {2}
  * <SelectProvider defaultValue="Apple">
@@ -96,13 +96,14 @@ export const SelectLabel = memo(
   }),
 );
 
-export interface SelectLabelOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface SelectLabelOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook. If
    * not provided, the closest
-   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)
    * component's context will be used.
    */
   store?: SelectStore;

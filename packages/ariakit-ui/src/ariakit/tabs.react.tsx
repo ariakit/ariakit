@@ -15,7 +15,8 @@ import {
 } from "../styles/tabs.ts";
 
 export interface TabsProps
-  extends ak.RoleProps,
+  extends
+    ak.RoleProps,
     Pick<
       TabProviderProps,
       "selectedId" | "setSelectedId" | "defaultSelectedId"
@@ -63,8 +64,7 @@ export function Tab(props: TabProps) {
 }
 
 export interface TabListProps
-  extends ak.TabListProps,
-    VariantProps<typeof tabList> {
+  extends ak.TabListProps, VariantProps<typeof tabList> {
   tabs?:
     | Array<React.ReactNode | TabProps>
     | Record<string, React.ReactNode | TabProps>;
@@ -88,8 +88,7 @@ export function TabList({ tabs, children, ...props }: TabListProps) {
 }
 
 export interface TabSeparatorProps
-  extends ComponentProps<"div">,
-    VariantProps<typeof tabSeparator> {}
+  extends ComponentProps<"div">, VariantProps<typeof tabSeparator> {}
 
 /**
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
@@ -100,8 +99,7 @@ export function TabSeparator(props: TabSeparatorProps) {
 }
 
 export interface TabLabelProps
-  extends ComponentProps<"div">,
-    VariantProps<typeof tabLabel> {}
+  extends ComponentProps<"div">, VariantProps<typeof tabLabel> {}
 
 /**
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
@@ -112,8 +110,7 @@ export function TabLabel(props: TabLabelProps) {
 }
 
 export interface TabSlotProps
-  extends ComponentProps<"span">,
-    VariantProps<typeof tabSlot> {}
+  extends ComponentProps<"span">, VariantProps<typeof tabSlot> {}
 
 /**
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
@@ -124,8 +121,7 @@ export function TabSlot(props: TabSlotProps) {
 }
 
 export interface TabPanelsProps
-  extends ComponentProps<"div">,
-    VariantProps<typeof tabPanels> {}
+  extends ComponentProps<"div">, VariantProps<typeof tabPanels> {}
 
 /**
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/
@@ -149,8 +145,7 @@ export function TabPanel({ single, ...props }: TabPanelProps) {
 }
 
 export interface TabGliderProps
-  extends ComponentProps<"div">,
-    VariantProps<typeof tabGlider> {}
+  extends ComponentProps<"div">, VariantProps<typeof tabGlider> {}
 
 /**
  * @see https://ariakit.com/react/examples/tabs/ariakit-react/

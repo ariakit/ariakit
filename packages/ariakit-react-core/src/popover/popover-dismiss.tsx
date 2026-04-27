@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `PopoverDismiss` component.
- * @see https://ariakit.org/components/popover
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx
  * const store = usePopoverStore();
@@ -32,8 +32,8 @@ export const usePopoverDismiss = createHook<TagName, PopoverDismissOptions>(
 
 /**
  * Renders a button that hides a
- * [`Popover`](https://ariakit.org/reference/popover) component when clicked.
- * @see https://ariakit.org/components/popover
+ * [`Popover`](https://ariakit.com/reference/popover) component when clicked.
+ * @see https://ariakit.com/components/popover
  * @example
  * ```jsx {3}
  * <PopoverProvider>
@@ -50,14 +50,15 @@ export const PopoverDismiss = forwardRef(function PopoverDismiss(
   return createElement(TagName, htmlProps);
 });
 
-export interface PopoverDismissOptions<T extends ElementType = TagName>
-  extends DialogDismissOptions<T> {
+export interface PopoverDismissOptions<
+  T extends ElementType = TagName,
+> extends DialogDismissOptions<T> {
   /**
    * Object returned by the
-   * [`usePopoverStore`](https://ariakit.org/reference/use-popover-store) hook.
+   * [`usePopoverStore`](https://ariakit.com/reference/use-popover-store) hook.
    * If not provided, the closest
-   * [`Popover`](https://ariakit.org/reference/popover) or
-   * [`PopoverProvider`](https://ariakit.org/reference/popover-provider)
+   * [`Popover`](https://ariakit.com/reference/popover) or
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
    * components' context will be used.
    */
   store?: PopoverStore;

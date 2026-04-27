@@ -54,7 +54,7 @@ function useItem(store: FormStore, name: string, type: ItemType) {
  * This is so we can use it not only for native form elements but also for
  * custom components whose value is not controlled by the native `value` and
  * `onChange` props.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore({ defaultValues: { content: "" } });
@@ -89,7 +89,7 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
         "FormControl must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
 
@@ -139,10 +139,10 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
     );
 
     props = {
-      id,
-      "aria-labelledby": label?.id,
+      "aria-labelledby": props["aria-label"] != null ? undefined : label?.id,
       "aria-invalid": invalid,
       ...props,
+      id,
       "aria-describedby": describedBy || undefined,
       ref: useMergeRefs(ref, props.ref),
       onBlur,
@@ -156,12 +156,12 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
 
 /**
  * Abstract component that renders a form control. Unlike
- * [`FormInput`](https://ariakit.org/reference/form-input), this component
+ * [`FormInput`](https://ariakit.com/reference/form-input), this component
  * doesn't automatically pass the `value` and `onChange` props down to the
  * underlying element. This is so we can use it not only for native form
  * elements but also for custom components whose value is not controlled by the
  * native `value` and `onChange` props.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {11-19}
  * const form = useFormStore({
@@ -193,27 +193,28 @@ export const FormControl = memo(
   }),
 );
 
-export interface FormControlOptions<T extends ElementType = TagName>
-  extends CollectionItemOptions<T> {
+export interface FormControlOptions<
+  T extends ElementType = TagName,
+> extends CollectionItemOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * [`useFormStore`](https://ariakit.com/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.com/reference/form) or
+   * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
    */
   store?: FormStore;
   /**
    * Field name. This can either be a string corresponding to an existing
    * property name in the
-   * [`values`](https://ariakit.org/reference/use-form-store#values) state of
+   * [`values`](https://ariakit.com/reference/use-form-store#values) state of
    * the store, or a reference to a field name from the
-   * [`names`](https://ariakit.org/reference/use-form-store#names) object in the
+   * [`names`](https://ariakit.com/reference/use-form-store#names) object in the
    * store, ensuring type safety.
    *
    * Live examples:
-   * - [FormRadio](https://ariakit.org/examples/form-radio)
-   * - [Form with Select](https://ariakit.org/examples/form-select)
+   * - [FormRadio](https://ariakit.com/examples/form-radio)
+   * - [Form with Select](https://ariakit.com/examples/form-select)
    */
   name: StringLike;
   /**

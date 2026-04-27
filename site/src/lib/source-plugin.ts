@@ -13,8 +13,8 @@ import fs from "node:fs";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { resolve as resolveImportMeta } from "import-meta-resolve";
-import prettier from "prettier";
-import { readPackageUpSync } from "read-pkg-up";
+import * as prettier from "prettier";
+import { readPackageUpSync } from "read-package-up";
 import ts from "typescript";
 import type { HookHandler, Plugin } from "vite";
 import {
@@ -239,7 +239,7 @@ function collectDependencyFromResolved(
     }
   }
   const typesPackageId = resolved.resolvedModule?.packageId?.name;
-  const hasTypes = typesPackageId && !!typesPackageId.startsWith("@types/");
+  const hasTypes = typesPackageId && typesPackageId.startsWith("@types/");
   const resolvedTypesPath = resolved.resolvedModule?.resolvedFileName;
   if (hasTypes && resolvedTypesPath) {
     file.devDependencies ??= {};

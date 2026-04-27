@@ -1,5 +1,112 @@
 # @ariakit/react
 
+## 0.4.26
+
+This version focuses on bug fixes across [`Dialog`](https://ariakit.com/reference/dialog), [`Portal`](https://ariakit.com/reference/portal), [`Radio`](https://ariakit.com/reference/radio), [`Combobox`](https://ariakit.com/reference/combobox), and [`MenuButton`](https://ariakit.com/reference/menu-button), along with improvements to how portals behave inside fullscreen elements, how dialogs handle events in popup windows, and how [`Radio`](https://ariakit.com/reference/radio) groups automatically generate unique `name` attributes.
+
+### Fixed events not handled in popup windows
+
+[`Dialog`](https://ariakit.com/reference/dialog) and components that extend it, such as [`Menu`](https://ariakit.com/reference/menu) and [`Popover`](https://ariakit.com/reference/popover), now handle events correctly when rendered in a popup window opened via `window.open()`. [`hideOnEscape`](https://ariakit.com/reference/dialog#hideonescape), [`hideOnInteractOutside`](https://ariakit.com/reference/dialog#hideoninteractoutside), and focus restoration now use the content element's `ownerDocument` instead of the main window's `document` for event listeners.
+
+### Fixed `Portal` not rendering inside fullscreen elements
+
+[`Portal`](https://ariakit.com/reference/portal) was always appended to `document.body`, which made it invisible when an ancestor element entered fullscreen mode via the Fullscreen API. Portals are now automatically moved to `document.fullscreenElement` when it's active, and back to `document.body` when fullscreen is exited.
+
+### Auto-generated `name` attribute for `Radio`
+
+[`Radio`](https://ariakit.com/reference/radio) now automatically uses the [`RadioGroup`](https://ariakit.com/reference/radio-group) store's `id` as the default [`name`](https://ariakit.com/reference/radio#name) attribute when no explicit `name` prop is provided. This ensures consecutive [`RadioGroup`](https://ariakit.com/reference/radio-group) components have unique names, preventing the browser from treating all radio inputs as a single group and fixing Tab navigation and form submission issues.
+
+### Other updates
+
+- Fixed [`Combobox`](https://ariakit.com/reference/combobox) pressing Enter from submitting a parent form when the popover is open but has no matching items.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog) not removing `data-enter` when closed after using the [`render`](https://ariakit.com/reference/dialog#render) prop to wrap the dialog element in an outer element.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog) not restoring focus to the disclosure element when the dialog was opened and closed quickly in succession.
+- Fixed [`MenuButton`](https://ariakit.com/reference/menu-button) `aria-haspopup` attribute changing from `"menu"` to `"dialog"` when opening a menu that contains a combobox.
+- Fixed [`render`](https://ariakit.com/guide/composition) prop merging when the rendered element passes falsy `className` or event handler values such as `undefined` or `null`.
+- Fixed `Math.random()` being called unconditionally when creating composite stores ([`useTabStore`](https://ariakit.com/reference/use-tab-store), [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store), [`useSelectStore`](https://ariakit.com/reference/use-select-store), etc.), even when an explicit `id` prop was provided. This was causing Next.js build errors with `cacheComponents` enabled.
+- Updated dependencies: `@ariakit/react-core@0.4.26`
+
+## 0.4.25
+
+### Clicking outside no longer restores focus to the disclosure element
+
+[`Dialog`](https://ariakit.com/reference/dialog) and components that extend it (such as [`Menu`](https://ariakit.com/reference/menu) and [`Popover`](https://ariakit.com/reference/popover)) no longer restore focus to the disclosure element when the dialog is closed by clicking or right-clicking outside. This aligns with native HTML `<dialog>` and `popover` behavior where trigger buttons don't receive focus when you interact outside.
+
+Focus is still restored normally when the dialog is closed by other means, such as pressing Escape, selecting a menu item, or calling `store.hide()` programmatically. In these cases the disclosure element is now focused with default browser scrolling instead of `preventScroll`.
+
+### Improved Safari focus behavior for buttons, checkboxes, and radio buttons
+
+On Safari, buttons, checkboxes, and radio buttons don't receive focus on mousedown like other browsers. Previously, this was handled by manually focusing the element in a `mousedown` handler. Now, an explicit `tabIndex` attribute is set on these elements in Safari, which causes the browser to focus them natively. This results in more predictable focus behavior and fewer timing-sensitive workarounds.
+
+### Other updates
+
+- Fixed a race condition in [`Dialog`](https://ariakit.org/reference/dialog) where the deferred auto-focus could steal focus from the disclosure element after the dialog was closed.
+- Fixed [`formStore.setError()`](https://ariakit.org/reference/use-form-store#seterror) and [`formStore.setFieldTouched()`](https://ariakit.org/reference/use-form-store#setfieldtouched) failing to set values on nested array field paths such as `items.0.name`.
+- Fixed [`SelectItem`](https://ariakit.com/reference/select-item) store item `children` property reflecting the [`value`](https://ariakit.com/reference/select-item#value) prop instead of the actual rendered text content.
+- Fixed [`MenuButton`](https://ariakit.com/reference/menu-button) to preserve [`accessibleWhenDisabled`](https://ariakit.com/reference/menu-button#accessiblewhendisabled) behavior when composed with a rendered [`Button`](https://ariakit.com/reference/button).
+- Fixed [`Menu`](https://ariakit.org/reference/menu) with [`modal`](https://ariakit.org/reference/menu#modal) and [`getPersistentElements`](https://ariakit.org/reference/menu#getpersistentelements) so focusing a persistent [`MenuButton`](https://ariakit.org/reference/menu-button) doesn't immediately move focus back to the menu.
+- Fixed [`TabPanel`](https://ariakit.com/reference/tab-panel) not re-evaluating tabbable children when the panel becomes visible.
+- Fixed components not dropping their internal `aria-labelledby` when `aria-label` is passed.
+- Updated dependencies: `@ariakit/react-core@0.4.25`
+
+## 0.4.24
+
+This release improves React combobox and form reliability, including preserved combobox input and popover scroll position during result updates, more predictable focus behavior after filtering selects on iOS Safari, proper isolation of [`FormRadio`](https://ariakit.org/reference/form-radio) groups inside nested composite widgets, safer handling of explicitly undefined [`id`](https://ariakit.org/reference/select-item#id) props, and better generic typing for [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider) wrappers.
+
+### Improved `CheckboxProvider` generic typing
+
+This fixes TypeScript errors when wrapping [`CheckboxProvider`](https://ariakit.org/reference/checkbox-provider) in generic React components. Controlled and uncontrolled checkbox group wrappers now type-check correctly without requiring non-null assertions on values such as `defaultValue`.
+
+Before, generic wrappers often needed a non-null assertion to satisfy the provider props:
+
+```tsx {15}
+interface CheckboxCardGridProps<T extends string | number> extends Pick<
+  Ariakit.CheckboxProviderProps<T>,
+  "value" | "setValue" | "defaultValue"
+> {}
+
+function CheckboxCardGrid<T extends string | number>({
+  value,
+  setValue,
+  defaultValue,
+}: CheckboxCardGridProps<T>) {
+  return (
+    <CheckboxProvider
+      value={value}
+      setValue={setValue}
+      defaultValue={defaultValue!}
+    />
+  );
+}
+```
+
+Now the same wrapper can type-check without the workaround:
+
+```tsx {4}
+<CheckboxProvider
+  value={value}
+  setValue={setValue}
+  defaultValue={defaultValue}
+/>
+```
+
+### Fixed `Combobox` input scroll position resetting
+
+When a [`Combobox`](https://ariakit.org/reference/combobox) input's text overflowed its width, the input's horizontal scroll position reset to the beginning each time the results changed. This happened because the virtual focus mechanism briefly moved DOM focus to the active item and back when [`autoSelect`](https://ariakit.org/reference/combobox#autoselect) was enabled, causing browsers to reset the input's internal `scrollLeft`.
+
+The scroll position is now preserved across these focus transitions.
+
+### Fixed `FormRadio` registering to ancestor composite stores
+
+[`FormRadio`](https://ariakit.org/reference/form-radio) items nested inside components like [`TabPanel`](https://ariakit.org/reference/tab-panel) were incorrectly registering to the tab store, causing arrow keys in the tab list to navigate to radio items instead of other tabs. [`FormRadioGroup`](https://ariakit.org/reference/form-radio-group) now resets the composite context for its children, preventing form radio items from being picked up by unrelated parent stores.
+
+### Other updates
+
+- Fixed [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) scroll position resetting when items change in multi-select mode (e.g., during infinite scroll).
+- Fixed [`SelectItem`](https://ariakit.org/reference/select-item) stealing focus from the combobox input when the selected item reappears after filtering, which dismissed the keyboard on iOS Safari.
+- Fixed components crashing with "Maximum call stack size exceeded" when the [`id`](https://ariakit.org/reference/select-item#id) prop is explicitly passed as `undefined`.
+- Updated dependencies: `@ariakit/react-core@0.4.24`
+
 ## 0.4.23
 
 - Fixed [`ComboboxDisclosure`](https://ariakit.org/reference/combobox-disclosure) so pressing Escape closes [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) when the popover starts open and the [`Combobox`](https://ariakit.org/reference/combobox) input is auto-focused.

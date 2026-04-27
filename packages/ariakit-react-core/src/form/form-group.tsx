@@ -10,7 +10,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormGroup` component.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore();
@@ -31,10 +31,10 @@ export const useFormGroup = createHook<TagName, FormGroupOptions>(
 
 /**
  * Renders a group element for form controls. The
- * [`FormGroupLabel`](https://ariakit.org/reference/form-group-label) component
+ * [`FormGroupLabel`](https://ariakit.com/reference/form-group-label) component
  * can be used inside this component so the `aria-labelledby` prop is properly
  * set on the group element.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {9-15}
  * const form = useFormStore({
@@ -60,13 +60,14 @@ export const FormGroup = forwardRef(function FormGroup(props: FormGroupProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface FormGroupOptions<T extends ElementType = TagName>
-  extends GroupOptions<T> {
+export interface FormGroupOptions<
+  T extends ElementType = TagName,
+> extends GroupOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * [`useFormStore`](https://ariakit.com/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.com/reference/form) or
+   * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
    */
   store?: FormStore;

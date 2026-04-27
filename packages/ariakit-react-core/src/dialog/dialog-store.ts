@@ -18,8 +18,8 @@ export function useDialogStoreProps<T extends Core.DialogStore>(
 
 /**
  * Creates a dialog store to control the state of
- * [Dialog](https://ariakit.org/components/dialog) components.
- * @see https://ariakit.org/components/dialog
+ * [Dialog](https://ariakit.com/components/dialog) components.
+ * @see https://ariakit.com/components/dialog
  * @example
  * ```jsx
  * const dialog = useDialogStore();
@@ -34,21 +34,18 @@ export function useDialogStore(props: DialogStoreProps = {}): DialogStore {
 }
 
 export interface DialogStoreState
-  extends Core.DialogStoreState,
-    DisclosureStoreState {}
+  extends Core.DialogStoreState, DisclosureStoreState {}
 
 export interface DialogStoreFunctions
-  extends Omit<Core.DialogStoreFunctions, "disclosure">,
+  extends
+    Omit<Core.DialogStoreFunctions, "disclosure">,
     DisclosureStoreFunctions {}
 
 export interface DialogStoreOptions
-  extends Omit<Core.DialogStoreOptions, "disclosure">,
-    DisclosureStoreOptions {}
+  extends Omit<Core.DialogStoreOptions, "disclosure">, DisclosureStoreOptions {}
 
 export interface DialogStoreProps
-  extends DialogStoreOptions,
-    Omit<Core.DialogStoreProps, "disclosure"> {}
+  extends DialogStoreOptions, Omit<Core.DialogStoreProps, "disclosure"> {}
 
 export interface DialogStore
-  extends DialogStoreFunctions,
-    Omit<Store<Core.DialogStore>, "disclosure"> {}
+  extends DialogStoreFunctions, Omit<Store<Core.DialogStore>, "disclosure"> {}

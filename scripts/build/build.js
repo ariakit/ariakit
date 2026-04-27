@@ -1,4 +1,5 @@
 import { cpSync, existsSync } from "node:fs";
+import { join } from "node:path";
 import spawn from "cross-spawn";
 import { solidPlugin } from "esbuild-plugin-solid";
 import { glob } from "glob";
@@ -15,7 +16,6 @@ import {
   makeProxies,
   writePackageJson,
 } from "./utils.js";
-import { join } from "node:path";
 
 Object.defineProperty(process.env, "NODE_ENV", {
   writable: true,
@@ -37,10 +37,9 @@ const cjsDir = getCJSDir();
 const solidSourceDir = getSolidSourceDir();
 
 // Get the tsconfig path for the current package. If tsconfig.build.json exists, use it, otherwise use tsconfig.json.
-const tsconfigPath =
-  existsSync(join(cwd, "tsconfig.build.json"))
-    ? "tsconfig.build.json"
-    : "tsconfig.json";
+const tsconfigPath = existsSync(join(cwd, "tsconfig.build.json"))
+  ? "tsconfig.build.json"
+  : "tsconfig.json";
 
 spawn.sync(
   "tsc",
@@ -130,9 +129,7 @@ function buildSolid({ format, outDir }) {
       options.chunkNames = "__chunks/[hash]";
       options.jsx = "preserve";
     },
-    esbuildPlugins: [
-      solidPlugin({ solid: { generate: "dom" } }),
-    ],
+    esbuildPlugins: [solidPlugin({ solid: { generate: "dom" } })],
   });
 }
 

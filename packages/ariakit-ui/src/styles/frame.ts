@@ -3,6 +3,7 @@ import { border } from "./border.ts";
 
 export const frame = cv({
   extend: [border],
+  class: "ak-frame",
   variants: {
     /**
      * Sets the element’s border radius.
@@ -27,9 +28,9 @@ export const frame = cv({
     $roundedType: {
       unset: "",
       auto: "ak-frame-rounded-(--frame-radius)",
-      force: "ak-frame-rounded-force-(--frame-radius)",
-      cover: "ak-frame-cover-(--frame-radius)",
-      overflow: "ak-frame-overflow-(--frame-radius)",
+      force: "ak-frame-force ak-frame-rounded-(--frame-radius)",
+      cover: "ak-frame-cover ak-frame-rounded-(--frame-radius)",
+      overflow: "ak-frame-cover ak-frame-rounded-(--frame-radius)",
     },
     /**
      * Sets the element’s padding.

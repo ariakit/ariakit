@@ -276,7 +276,7 @@ export default function Example() {
             <TabPanel>Panel 3</TabPanel>
           </TabPanels>
         </Tabs>
-        <div className="ak-frame-xl/10 ak-bordering shadow-lg ak-layer-pop-0.5 overflow-clip">
+        <div className="ak-frame ak-frame-xl/10 ak-frame-bordering shadow-lg ak-layer ak-layer-3 overflow-clip">
           <Tabs
             $p="sm"
             $rounded="2xl"
@@ -314,7 +314,7 @@ export default function Example() {
             </TabPanels>
           </Tabs>
         </div>
-        <div className="ak-frame-xl ak-bordering shadow-lg ak-layer-pop-0.5 overflow-clip">
+        <div className="ak-frame ak-frame-xl ak-frame-bordering shadow-lg ak-layer ak-layer-3 overflow-clip">
           <Tabs
             $p="none"
             $rounded="xl"

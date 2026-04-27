@@ -1,4 +1,4 @@
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type * as React from "react";
 import * as rac from "react-aria-components";
 
@@ -9,11 +9,13 @@ export function Progress(props: ProgressProps) {
     <rac.ProgressBar
       maxValue={1}
       {...props}
-      style={
-        {
-          ...props.style,
+      style={(values) =>
+        ({
+          ...(typeof props.style === "function"
+            ? props.style(values)
+            : props.style),
           "--progress": props.value ?? 0,
-        } as React.CSSProperties
+        }) as React.CSSProperties
       }
       className={clsx(
         "ak-progress ak-progress-value-(--progress) after:ak-progress-fill",

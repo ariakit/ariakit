@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `HovercardArrow` component.
- * @see https://ariakit.org/components/hovercard
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx
  * const store = useHovercardStore();
@@ -33,9 +33,9 @@ export const useHovercardArrow = createHook<TagName, HovercardArrowOptions>(
 
 /**
  * Renders an arrow element inside a
- * [`Hovercard`](https://ariakit.org/reference/hovercard) component that points
+ * [`Hovercard`](https://ariakit.com/reference/hovercard) component that points
  * to the anchor element.
- * @see https://ariakit.org/components/hovercard
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx {4}
  * <HovercardProvider>
@@ -54,14 +54,15 @@ export const HovercardArrow = forwardRef(function HovercardArrow(
   return createElement(TagName, htmlProps);
 });
 
-export interface HovercardArrowOptions<T extends ElementType = TagName>
-  extends PopoverArrowOptions<T> {
+export interface HovercardArrowOptions<
+  T extends ElementType = TagName,
+> extends PopoverArrowOptions<T> {
   /**
    * Object returned by the
-   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * [`useHovercardStore`](https://ariakit.com/reference/use-hovercard-store)
    * hook. If not provided, the closest
-   * [`Hovercard`](https://ariakit.org/reference/hovercard) or
-   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * [`Hovercard`](https://ariakit.com/reference/hovercard) or
+   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
    * components' context will be used.
    */
   store?: HovercardStore;

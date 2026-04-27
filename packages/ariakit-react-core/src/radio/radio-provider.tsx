@@ -4,9 +4,9 @@ import type { RadioStoreProps } from "./radio-store.ts";
 import { useRadioStore } from "./radio-store.ts";
 
 /**
- * Provides a radio store to [Radio](https://ariakit.org/components/radio)
+ * Provides a radio store to [Radio](https://ariakit.com/components/radio)
  * components.
- * @see https://ariakit.org/components/radio
+ * @see https://ariakit.com/components/radio
  * @example
  * ```jsx
  * <RadioProvider defaultValue="Apple">

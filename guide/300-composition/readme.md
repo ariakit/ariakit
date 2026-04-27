@@ -42,7 +42,7 @@ When rendering custom components using the `render` prop, be aware that [custom 
 
 Besides changing the underlying HTML element, the `render` prop can be used to render a custom component.
 
-In the [Menu with Framer Motion](/examples/menu-framer-motion) example, the `render` prop is used to render the [Menu](/components/menu) component as a `motion.div` element:
+In the [Menu with Motion](/examples/menu-framer-motion) example, the `render` prop is used to render the [Menu](/components/menu) component as a `motion.div` element:
 
 ```jsx "Menu" "motion.div"
 <Menu render={<motion.div animate={{ y: 100 }} />} />
@@ -92,12 +92,12 @@ This also applies to the `children` prop. You don't need to nest children within
 
 - Children passed directly to the rendered element will override the original component children:
 
-  ```jsx "Ariakit.org"
-  <ComboboxItem render={<a>Ariakit.org</a>}>Ariakit</ComboboxItem>
+  ```jsx "Ariakit.com"
+  <ComboboxItem render={<a>Ariakit.com</a>}>Ariakit</ComboboxItem>
   ```
 
-  ```html "Ariakit.org"
-  <a>Ariakit.org</a>
+  ```html "Ariakit.com"
+  <a>Ariakit.com</a>
   ```
 
 <aside data-type="note" title="Flat is better than nested">

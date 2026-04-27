@@ -23,7 +23,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `HovercardDisclosure` component.
- * @see https://ariakit.org/components/hovercard
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx
  * const store = useHovercardStore();
@@ -154,10 +154,10 @@ export const useHovercardDisclosure = createHook<
 
 /**
  * Renders a hidden disclosure button that will be visible when the
- * [`HovercardAnchor`](https://ariakit.org/reference/hovercard-anchor) receives
+ * [`HovercardAnchor`](https://ariakit.com/reference/hovercard-anchor) receives
  * keyboard focus. The user can then navigate to the button to open the
  * hovercard when using the keyboard.
- * @see https://ariakit.org/components/hovercard
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx {3}
  * <HovercardProvider>
@@ -174,13 +174,14 @@ export const HovercardDisclosure = forwardRef(function HovercardDisclosure(
   return createElement(TagName, htmlProps);
 });
 
-export interface HovercardDisclosureOptions<T extends ElementType = TagName>
-  extends DialogDisclosureOptions<T> {
+export interface HovercardDisclosureOptions<
+  T extends ElementType = TagName,
+> extends DialogDisclosureOptions<T> {
   /**
    * Object returned by the
-   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * [`useHovercardStore`](https://ariakit.com/reference/use-hovercard-store)
    * hook. If not provided, the closest
-   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
    * component's context will be used.
    */
   store?: HovercardStore;

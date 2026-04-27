@@ -10,10 +10,10 @@ export default function Example() {
     <div className="w-100 max-w-[100cqi]">
       <Disclosure
         split
-        className="ak-frame-card ak-layer ak-bordering ak-disclosure-icon-5"
+        className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering ak-disclosure-icon-5"
       >
         <DisclosureButton
-          icon={<icons.Rocket className="ak-text-primary" />}
+          icon={<icons.Rocket className="ak-text ak-text-primary" />}
           description="Account, email, setup"
         >
           How do I get started?

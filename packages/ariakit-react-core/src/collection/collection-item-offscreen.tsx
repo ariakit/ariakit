@@ -27,21 +27,22 @@ function cancelIdleCallback(id: number) {
 
 export function useCollectionItemOffscreen<
   T extends ElementType,
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   P extends CollectionItemProps<T>,
->({ offscreenBehavior = "active", offscreenRoot, ...props }: P) {
+>({ offscreenMode = "active", offscreenRoot, ...props }: P) {
   const id = useId(props.id);
   const [updated, forceUpdate] = useForceUpdate();
   const forcedUpdatesCountRef = useRef(0);
 
-  const [_active, setActive] = useState(offscreenBehavior === "active");
-  const active = _active || offscreenBehavior === "active";
+  const [_active, setActive] = useState(offscreenMode === "active");
+  const active = _active || offscreenMode === "active";
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   const idleCallbackIdRef = useRef(0);
 
   const ref = useCallback<RefCallback<HTMLType>>(
     (element) => {
-      if (!element || offscreenBehavior === "active") {
+      if (!element || offscreenMode === "active") {
         cancelIdleCallback(idleCallbackIdRef.current);
         observerRef.current?.disconnect();
         return;
@@ -83,7 +84,7 @@ export function useCollectionItemOffscreen<
             cancelIdleCallback(idleCallbackIdRef.current);
             const isIntersecting = !!entry?.isIntersecting;
             idleCallbackIdRef.current = requestIdleCallback(() => {
-              if (!isIntersecting && offscreenBehavior === "lazy") return;
+              if (!isIntersecting && offscreenMode === "lazy") return;
               setActive(isIntersecting);
             });
           },
@@ -93,7 +94,11 @@ export function useCollectionItemOffscreen<
 
       observerRef.current.observe(element);
     },
-    [updated, offscreenBehavior, offscreenRoot],
+    // This callback intentionally depends on `updated` so `forceUpdate()`
+    // causes React to re-run the ref callback when the offscreen root becomes
+    // available.
+    // oxlint-disable-next-line exhaustive-deps
+    [updated, offscreenMode, offscreenRoot],
   );
 
   return {
@@ -105,12 +110,12 @@ export function useCollectionItemOffscreen<
 }
 
 export const CollectionItem = forwardRef(function CollectionItem({
-  offscreenBehavior,
+  offscreenMode,
   offscreenRoot,
   ...props
 }: CollectionItemProps) {
   const { active, ref, ...rest } = useCollectionItemOffscreen({
-    offscreenBehavior,
+    offscreenMode,
     offscreenRoot,
     ...props,
   });
@@ -131,9 +136,10 @@ export const CollectionItem = forwardRef(function CollectionItem({
   return <Component {...htmlProps} />;
 });
 
-export interface CollectionItemOptions<T extends ElementType = TagName>
-  extends Base.CollectionItemOptions<T> {
-  offscreenBehavior?: "active" | "passive" | "lazy";
+export interface CollectionItemOptions<
+  T extends ElementType = TagName,
+> extends Base.CollectionItemOptions<T> {
+  offscreenMode?: "active" | "passive" | "lazy";
   offscreenRoot?:
     | HTMLElement
     | RefObject<HTMLElement | null>

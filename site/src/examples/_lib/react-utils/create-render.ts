@@ -10,10 +10,11 @@ import { mergeProps } from "./merge-props.ts";
  * const element = createRender(Component, <Component />);
  * const element = createRender(Component, <Component />, { children: "Hi" });
  */
-export function createRender<
-  T extends React.ElementType<P> | React.ExoticComponent<P>,
-  P extends object,
->(Component: T, props?: P | React.ReactNode, defaultProps?: P) {
+export function createRender<P extends object>(
+  Component: React.ElementType<P> | React.ExoticComponent<P>,
+  props?: P | React.ReactNode,
+  defaultProps?: P,
+) {
   if (props == null || (typeof props === "object" && "then" in props)) {
     return React.createElement(Component, defaultProps);
   }

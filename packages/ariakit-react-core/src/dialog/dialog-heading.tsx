@@ -15,7 +15,7 @@ type TagName = typeof TagName;
  * Returns props to create a `DialogHeading` component. This hook must be used
  * in a component that's wrapped with `Dialog` so the `aria-labelledby` prop is
  * properly set on the dialog element.
- * @see https://ariakit.org/components/dialog
+ * @see https://ariakit.com/components/dialog
  * @example
  * ```jsx
  * // This component must be wrapped with Dialog
@@ -34,8 +34,8 @@ export const useDialogHeading = createHook<TagName, DialogHeadingOptions>(
     }, [setHeadingId, id]);
 
     props = {
-      id,
       ...props,
+      id,
     };
 
     props = useHeading(props);
@@ -46,9 +46,9 @@ export const useDialogHeading = createHook<TagName, DialogHeadingOptions>(
 
 /**
  * Renders a heading in a dialog. This component must be wrapped with
- * [`Dialog`](https://ariakit.org/reference/dialog) so the `aria-labelledby`
+ * [`Dialog`](https://ariakit.com/reference/dialog) so the `aria-labelledby`
  * prop is properly set on the dialog element.
- * @see https://ariakit.org/components/dialog
+ * @see https://ariakit.com/components/dialog
  * @example
  * ```jsx {4}
  * const [open, setOpen] = useState(false);
@@ -65,12 +65,13 @@ export const DialogHeading = forwardRef(function DialogHeading(
   return createElement(TagName, htmlProps);
 });
 
-export interface DialogHeadingOptions<T extends ElementType = TagName>
-  extends HeadingOptions<T> {
+export interface DialogHeadingOptions<
+  T extends ElementType = TagName,
+> extends HeadingOptions<T> {
   /**
    * Object returned by the
-   * [`useDialogStore`](https://ariakit.org/reference/use-dialog-store) hook. If
-   * not provided, the closest [`Dialog`](https://ariakit.org/reference/dialog)
+   * [`useDialogStore`](https://ariakit.com/reference/use-dialog-store) hook. If
+   * not provided, the closest [`Dialog`](https://ariakit.com/reference/dialog)
    * component's context will be used.
    */
   store?: DialogStore;

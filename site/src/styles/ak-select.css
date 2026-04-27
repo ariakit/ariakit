@@ -57,7 +57,7 @@
 
 /* ak-select-popover */
 @utility ak-select-popover_idle {
-  @apply ak-popover_idle ak-frame-force-container ak-layer-canvas-1;
+  @apply ak-popover_idle ak-frame ak-frame-force ak-frame-container/container ak-layer-canvas;
   @apply outline-none;
   top: calc(anchor(bottom) + --spacing(1));
   inset-inline-start: calc(anchor(start) - --spacing(1));

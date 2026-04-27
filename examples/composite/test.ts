@@ -1,4 +1,5 @@
 import { press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 function setActEnvironment(value: boolean) {
   const scope = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };

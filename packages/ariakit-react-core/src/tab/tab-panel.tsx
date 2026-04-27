@@ -13,6 +13,7 @@ import {
   useEvent,
   useId,
   useMergeRefs,
+  useSafeLayoutEffect,
   useWrapElement,
 } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
@@ -30,7 +31,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `TabPanel` component.
- * @see https://ariakit.org/components/tab
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx
  * const store = useTabStore();
@@ -78,8 +79,8 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     // Store the scroll position for each tabId. The component may receive
     // different tab ids if it's a single tab panel with dynamic tab id and
     // content.
-    const scrollPositionRef = useRef<Map<string, { x: number; y: number }>>(
-      new Map(),
+    const scrollPositionRef = useRef(
+      new Map<string, { x: number; y: number }>(),
     );
 
     const getScrollElement = useEvent(() => {
@@ -125,12 +126,14 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 
-    useEffect(() => {
+    // Re-check tabbable children each time the panel becomes visible so
+    // content rendered conditionally on tab selection is accounted for.
+    useSafeLayoutEffect(() => {
+      if (!mounted) return;
       const element = ref.current;
       if (!element) return;
-      const tabbable = getAllTabbableIn(element);
-      setHasTabbableChildren(!!tabbable.length);
-    }, []);
+      setHasTabbableChildren(!!getAllTabbableIn(element).length);
+    }, [mounted]);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
@@ -175,10 +178,11 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     );
 
     props = {
-      id,
       role: "tabpanel",
-      "aria-labelledby": tabId || undefined,
+      "aria-labelledby":
+        props["aria-label"] != null ? undefined : tabId || undefined,
       ...props,
+      id,
       children: unmountOnHide && !mounted ? null : props.children,
       ref: useMergeRefs(ref, props.ref),
       onKeyDown,
@@ -199,15 +203,15 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
 
 /**
  * Renders a tab panel element that's controlled by a
- * [`Tab`](https://ariakit.org/reference/tab) component.
+ * [`Tab`](https://ariakit.com/reference/tab) component.
  *
- * If the [`tabId`](https://ariakit.org/reference/tab-panel#tabid) prop isn't
+ * If the [`tabId`](https://ariakit.com/reference/tab-panel#tabid) prop isn't
  * provided, the tab panel will automatically associate with a
- * [`Tab`](https://ariakit.org/reference/tab) based on its position in the DOM.
+ * [`Tab`](https://ariakit.com/reference/tab) based on its position in the DOM.
  * Alternatively, you can render a single tab panel with a dynamic
- * [`tabId`](https://ariakit.org/reference/tab-panel#tabid) value pointing to
+ * [`tabId`](https://ariakit.com/reference/tab-panel#tabid) value pointing to
  * the selected tab.
- * @see https://ariakit.org/components/tab
+ * @see https://ariakit.com/components/tab
  * @example
  * ```jsx {6,7}
  * <TabProvider>
@@ -226,37 +230,38 @@ export const TabPanel = forwardRef(function TabPanel(props: TabPanelProps) {
 });
 
 export interface TabPanelOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T>,
+  extends
+    FocusableOptions<T>,
     CollectionItemOptions<T>,
     Omit<DisclosureContentOptions<T>, "store"> {
   /**
    * Object returned by the
-   * [`useTabStore`](https://ariakit.org/reference/use-tab-store) hook. If not
+   * [`useTabStore`](https://ariakit.com/reference/use-tab-store) hook. If not
    * provided, the closest
-   * [`TabProvider`](https://ariakit.org/reference/tab-provider) component's
+   * [`TabProvider`](https://ariakit.com/reference/tab-provider) component's
    * context will be used.
    */
   store?: TabStore;
   /**
-   * The [`id`](https://ariakit.org/reference/tab#id) of the tab controlling
+   * The [`id`](https://ariakit.com/reference/tab#id) of the tab controlling
    * this panel. This connection is used to assign the `aria-labelledby`
    * attribute to the tab panel and to determine if the tab panel should be
    * visible.
    *
    * This link is automatically established by matching the order of
-   * [`Tab`](https://ariakit.org/reference/tab) and
-   * [`TabPanel`](https://ariakit.org/reference/tab-panel) elements in the DOM.
+   * [`Tab`](https://ariakit.com/reference/tab) and
+   * [`TabPanel`](https://ariakit.com/reference/tab-panel) elements in the DOM.
    * If you're rendering a single tab panel, this can be set to a dynamic value
    * that refers to the selected tab.
    *
    * Live examples:
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
-   * - [Tab with React Router](https://ariakit.org/examples/tab-react-router)
-   * - [Animated TabPanel](https://ariakit.org/examples/tab-panel-animated)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
+   * - [Tab with React Router](https://ariakit.com/examples/tab-react-router)
+   * - [Animated TabPanel](https://ariakit.com/examples/tab-panel-animated)
    * - [Select with Combobox and
-   *   Tabs](https://ariakit.org/examples/select-combobox-tab)
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    * - [Command Menu with
-   *   Tabs](https://ariakit.org/examples/dialog-combobox-tab-command-menu)
+   *   Tabs](https://ariakit.com/examples/dialog-combobox-tab-command-menu)
    */
   tabId?: string | null;
   /**
@@ -265,7 +270,7 @@ export interface TabPanelOptions<T extends ElementType = TagName>
    *
    * This is especially useful when using a single tab panel for multiple tabs,
    * where you dynamically change the
-   * [`tabId`](https://ariakit.org/reference/tab-panel#tabid) prop and the
+   * [`tabId`](https://ariakit.com/reference/tab-panel#tabid) prop and the
    * panel's children, which would otherwise retain the current scroll position
    * when switching tabs.
    *
@@ -275,14 +280,14 @@ export interface TabPanelOptions<T extends ElementType = TagName>
    *
    * The default scroll element is the tab panel itself. To scroll a different
    * element, use the
-   * [`scrollElement`](https://ariakit.org/reference/tab-panel#scrollelement)
+   * [`scrollElement`](https://ariakit.com/reference/tab-panel#scrollelement)
    * prop.
    * @default false
    */
   scrollRestoration?: boolean | "reset";
   /**
    * When using the
-   * [`scrollRestoration`](https://ariakit.org/reference/tab-panel#scrollrestoration)
+   * [`scrollRestoration`](https://ariakit.com/reference/tab-panel#scrollrestoration)
    * prop, the tab panel element serves as the default scroll element. You can
    * use this prop to designate a different element for scrolling.
    *

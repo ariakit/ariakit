@@ -14,7 +14,8 @@ import { DateFromNow } from "./date-from-now.tsx";
 import { PlusBordered } from "./plus-bordered.tsx";
 
 export interface UpdateLinkProps
-  extends UpdateItem,
+  extends
+    UpdateItem,
     Omit<ComponentPropsWithoutRef<typeof Link>, "href" | "title" | "type"> {
   dateStyle?: "fromNow" | "long";
   layer?: "popup" | "page";
@@ -26,7 +27,7 @@ export interface UpdateLinkProps
 
 function renderPaths(id: string, url: URL) {
   const [, category, page] = url.pathname.split("/");
-  if (url.origin !== "https://ariakit.org") {
+  if (url.origin !== "https://ariakit.com") {
     return (
       <span
         aria-hidden
@@ -79,14 +80,14 @@ export const UpdateLink = forwardRef<HTMLAnchorElement, UpdateLinkProps>(
   ) {
     let id = useId();
     id = props.id ?? id;
-    const url = new URL(props.href, "https://ariakit.org");
+    const url = new URL(props.href, "https://ariakit.com");
     const [, category, page] = url.pathname.split("/");
     return (
       <Link
         ref={ref}
         aria-labelledby={`${id}/label`}
         aria-describedby={`${id}/path ${id}/description`}
-        target={url.origin !== "https://ariakit.org" ? "_blank" : undefined}
+        target={url.origin !== "https://ariakit.com" ? "_blank" : undefined}
         {...props}
         className={twMerge(
           "group relative z-[1] flex w-full scroll-m-2 scroll-mb-14 scroll-mt-[92px] items-start gap-4 rounded p-4",

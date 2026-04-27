@@ -10,6 +10,6 @@ ports:
 
 vscode:
   extensions:
-    - biomejs.biome
+    - oxc.oxc-vscode
     - EditorConfig.EditorConfig
     - bradlc.vscode-tailwindcss

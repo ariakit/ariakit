@@ -1,8 +1,8 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
+import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
 import { useCheckbox } from "../checkbox/checkbox.tsx";
-import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import {
   createElement,
   createHook,
@@ -19,7 +19,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `FormCheckbox` component.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore({ defaultValues: { acceptTerms: false } });
@@ -50,7 +50,7 @@ export const useFormCheckbox = createHook<TagName, FormCheckboxOptions>(
         "FormCheckbox must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
 
     const checkboxStore = useCheckboxStore({
       value: store.useValue(name),
@@ -73,7 +73,7 @@ export const useFormCheckbox = createHook<TagName, FormCheckboxOptions>(
 /**
  * Renders a checkbox input as a form control, representing a boolean, string,
  * number, or array value.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {9}
  * const form = useFormStore({
@@ -98,8 +98,7 @@ export const FormCheckbox = memo(
 );
 
 export interface FormCheckboxOptions<T extends ElementType = TagName>
-  extends FormControlOptions<T>,
-    Omit<CheckboxOptions<T>, "store" | "name"> {}
+  extends FormControlOptions<T>, Omit<CheckboxOptions<T>, "store" | "name"> {}
 
 export type FormCheckboxProps<T extends ElementType = TagName> = Props<
   T,

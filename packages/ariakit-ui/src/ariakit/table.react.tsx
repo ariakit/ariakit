@@ -1,5 +1,5 @@
 import * as ak from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
 import { createRender } from "../react-utils/create-render.ts";
 import { isIterable } from "../react-utils/is-iterable.ts";
@@ -14,8 +14,9 @@ export type TableRows<K extends keyof any> = TableRow<K>[];
 
 const TableRowGroupContext = React.createContext<TableRowGroup>("body");
 
-export interface TableProps<K extends keyof any>
-  extends React.ComponentProps<"table"> {
+export interface TableProps<
+  K extends keyof any,
+> extends React.ComponentProps<"table"> {
   /** Custom container element or props to render a `TableContainer`. */
   container?: React.ReactElement | TableContainerProps;
   /** Custom scroller element or props to render a `TableScroller`. */
@@ -174,8 +175,9 @@ export function TableScroller(props: TableScrollerProps) {
   );
 }
 
-export interface TableRowGroupProps
-  extends React.ComponentProps<"tbody" | "thead" | "tfoot"> {
+export interface TableRowGroupProps extends React.ComponentProps<
+  "tbody" | "thead" | "tfoot"
+> {
   /** The group of rows to render. */
   group?: TableRowGroup;
 }

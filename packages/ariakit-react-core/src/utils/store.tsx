@@ -12,19 +12,14 @@ import type {
   SetState,
 } from "@ariakit/core/utils/types";
 import * as React from "react";
-// import { useSyncExternalStore } from "use-sync-external-store/shim/index.js";
-// This doesn't work in ESM, because use-sync-external-store only exposes CJS.
-// The following is a workaround until ESM is supported.
-import useSyncExternalStoreExports from "use-sync-external-store/shim/index.js";
+import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { useEvent, useLiveRef, useSafeLayoutEffect } from "./hooks.ts";
-
-const { useSyncExternalStore } = useSyncExternalStoreExports;
 
 export interface UseState<S> {
   /**
    * Re-renders the component when state changes and returns the current state.
    * @deprecated Use
-   * [`useStoreState`](https://ariakit.org/reference/use-store-state) instead.
+   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    * @example
    * const state = store.useState();
    */
@@ -35,7 +30,7 @@ export interface UseState<S> {
    * re-render.
    * @param key The state key.
    * @deprecated Use
-   * [`useStoreState`](https://ariakit.org/reference/use-store-state) instead.
+   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    * @example
    * const foo = store.useState("foo");
    */
@@ -47,7 +42,7 @@ export interface UseState<S> {
    * selector function.
    * @param selector The selector function.
    * @deprecated Use
-   * [`useStoreState`](https://ariakit.org/reference/use-store-state) instead.
+   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    * @example
    * const foo = store.useState((state) => state.foo);
    */
@@ -190,7 +185,7 @@ export function useStoreStateObject(
   const storeSubscribe = React.useCallback(
     (callback: () => void) => {
       if (!store) return noopSubscribe();
-      return subscribe(store as CoreStore, null, callback);
+      return subscribe(store, null, callback);
     },
     [store],
   );
@@ -243,6 +238,7 @@ export function useStoreProps<
   S extends State,
   P extends Partial<S>,
   K extends keyof S,
+  // oxlint-disable-next-line no-unnecessary-type-parameters
   SK extends keyof PickByValue<P, SetState<P[K]>>,
 >(store: CoreStore<S>, props: P, key: K, setKey?: SK) {
   const value = hasOwnProperty(props, key) ? props[key] : undefined;
@@ -308,7 +304,7 @@ export type Store<T extends CoreStore = CoreStore> = T & {
    * Re-renders the component when the state changes and returns the current
    * state.
    * @deprecated Use
-   * [`useStoreState`](https://ariakit.org/reference/use-store-state) instead.
+   * [`useStoreState`](https://ariakit.com/reference/use-store-state) instead.
    */
   useState: UseState<StoreState<T>>;
 };

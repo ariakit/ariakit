@@ -25,12 +25,12 @@
 }
 
 @utility ak-progress {
-  @apply ak-layer-pop-2 ak-edge/0 ak-frame-force-full ak-progress-thickness-2;
+  @apply ak-layer ak-layer-12 ak-edge-0 ak-frame ak-frame-force ak-frame-full/0 ak-progress-thickness-2;
   @apply h-(--ak-progress-thickness) relative block w-full overflow-clip ring ring-inset;
-  --ak-progress-ring: var(--ak-ring);
+  --ak-progress-ring: var(--ak-edge);
 
   &::-webkit-progress-bar {
-    @apply ak-frame ak-layer-current;
+    @apply ak-frame ak-layer;
     @apply ring-(--ak-progress-ring) ring ring-inset;
   }
   &::-webkit-progress-value {
@@ -39,7 +39,7 @@
 }
 
 @utility ak-progress-fill_base {
-  @apply ak-layer-contrast-primary ak-frame;
+  @apply ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-50 ak-frame;
   @apply starting:w-0! block h-full transition-[width] duration-1000;
   @variant motion-reduce {
     @apply duration-0;
@@ -52,19 +52,19 @@
 }
 
 @utility ak-progress-circular {
-  @apply ak-layer-pop-2 ak-edge/0 ak-frame-force-full ak-progress-thickness-2;
+  @apply ak-layer ak-layer-12 ak-edge-0 ak-frame ak-frame-force ak-frame-full/0 ak-progress-thickness-2;
   @apply relative size-full ring ring-inset;
   --ak-progress-layer-parent: var(--ak-layer-parent);
-  --ak-progress-ring: var(--ak-ring);
+  --ak-progress-ring: var(--ak-edge);
   &::after {
-    @apply ak-layer-(--ak-progress-layer-parent);
+    @apply ak-layer ak-layer-(color:--ak-progress-layer-parent);
     @apply ring-(--ak-progress-ring) inset-(--ak-progress-thickness) absolute rounded-full ring;
     content: "";
   }
 }
 
 @utility ak-progress-circular-fill {
-  @apply ak-layer-contrast-primary;
+  @apply ak-layer ak-layer-primary ak-layer-contrast ak-layer-contrast-50;
   @apply absolute inset-0 rounded-full bg-transparent transition-[--ak-progress-value] duration-1000;
   --feather-px: 0.5px;
   --feather-deg: 1deg;

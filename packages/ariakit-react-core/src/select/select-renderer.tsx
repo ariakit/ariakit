@@ -42,9 +42,9 @@ function getItemObject(item: Item): ItemObject {
   return item;
 }
 
-function findIndicesByValue<V extends SelectStoreValue>(
+function findIndicesByValue(
   items: readonly Item[],
-  value: V,
+  value: SelectStoreValue,
 ): number[] {
   const values = toArray(value);
   const indices: number[] = [];
@@ -129,17 +129,19 @@ export type SelectRendererItemProps<
   P extends BaseItemProps = BaseItemProps,
 > = ItemProps<T, P>;
 
-export interface SelectRendererOptions<T extends Item = any>
-  extends Omit<CompositeRendererOptions<T>, "store"> {
+export interface SelectRendererOptions<T extends Item = any> extends Omit<
+  CompositeRendererOptions<T>,
+  "store"
+> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
-   * not provided, the closest [Select](https://ariakit.org/components/select)
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook. If
+   * not provided, the closest [Select](https://ariakit.com/components/select)
    * component's context will be used.
    *
-   * The store [`items`](https://ariakit.org/reference/use-select-store#items)
+   * The store [`items`](https://ariakit.com/reference/use-select-store#items)
    * state will be used to render the items if the
-   * [`items`](https://ariakit.org/reference/select-items#items) prop is not
+   * [`items`](https://ariakit.com/reference/select-items#items) prop is not
    * provided.
    */
   store?: SelectStore;
@@ -152,5 +154,7 @@ export interface SelectRendererOptions<T extends Item = any>
   value?: SelectStoreValue;
 }
 
-export interface SelectRendererProps<T extends Item = any>
-  extends Props<TagName, SelectRendererOptions<T>> {}
+export interface SelectRendererProps<T extends Item = any> extends Props<
+  TagName,
+  SelectRendererOptions<T>
+> {}

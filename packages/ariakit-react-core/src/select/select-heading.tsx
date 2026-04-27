@@ -13,7 +13,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectHeading` component.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const props = useSelectHeading();
@@ -31,8 +31,8 @@ export const useSelectHeading = createHook<TagName, SelectHeadingOptions>(
     }, [setHeadingId, id]);
 
     props = {
-      id,
       ...props,
+      id,
     };
 
     props = usePopoverHeading(props);
@@ -43,15 +43,15 @@ export const useSelectHeading = createHook<TagName, SelectHeadingOptions>(
 
 /**
  * Renders a heading element that serves as a label for
- * [`SelectPopover`](https://ariakit.org/reference/select-popover) and
- * [`SelectList`](https://ariakit.org/reference/select-list) components.
+ * [`SelectPopover`](https://ariakit.com/reference/select-popover) and
+ * [`SelectList`](https://ariakit.com/reference/select-list) components.
  *
  * When this component is rendered within
- * [`SelectPopover`](https://ariakit.org/reference/select-popover), all
- * [`SelectItem`](https://ariakit.org/reference/select-item) elements must be
- * rendered within a [`SelectList`](https://ariakit.org/reference/select-list)
+ * [`SelectPopover`](https://ariakit.com/reference/select-popover), all
+ * [`SelectItem`](https://ariakit.com/reference/select-item) elements must be
+ * rendered within a [`SelectList`](https://ariakit.com/reference/select-list)
  * instead of directly within the popover.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4}
  * <SelectProvider>
@@ -73,14 +73,15 @@ export const SelectHeading = forwardRef(function SelectHeading(
   return createElement(TagName, htmlProps);
 });
 
-export interface SelectHeadingOptions<T extends ElementType = TagName>
-  extends PopoverHeadingOptions<T> {
+export interface SelectHeadingOptions<
+  T extends ElementType = TagName,
+> extends PopoverHeadingOptions<T> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook.
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook.
    * If not provided, the closest
-   * [`Select`](https://ariakit.org/reference/select) or
-   * [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * [`Select`](https://ariakit.com/reference/select) or
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)
    * components' context will be used.
    */
   store?: SelectStore;

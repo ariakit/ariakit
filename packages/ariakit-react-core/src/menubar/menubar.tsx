@@ -17,7 +17,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `Menubar` component.
- * @see https://ariakit.org/components/menubar
+ * @see https://ariakit.com/components/menubar
  * @example
  * ```jsx
  * const store = useMenubarStore();
@@ -88,9 +88,9 @@ export const useMenubar = createHook<TagName, MenubarOptions>(
 
 /**
  * Renders a menubar that may contain a group of
- * [`MenuItem`](https://ariakit.org/reference/menu-item) elements that control
+ * [`MenuItem`](https://ariakit.com/reference/menu-item) elements that control
  * other submenus.
- * @see https://ariakit.org/components/menubar
+ * @see https://ariakit.com/components/menubar
  * @example
  * ```jsx
  * <Menubar>
@@ -117,18 +117,19 @@ export const Menubar = forwardRef(function Menubar(props: MenubarProps) {
 });
 
 export interface MenubarOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>,
+  extends
+    CompositeOptions<T>,
     Pick<
       MenubarStoreProps,
       "focusLoop" | "orientation" | "rtl" | "virtualFocus"
     > {
   /**
    * Object returned by the
-   * [`useMenubarStore`](https://ariakit.org/reference/use-menubar-store) hook.
+   * [`useMenubarStore`](https://ariakit.com/reference/use-menubar-store) hook.
    * If not provided, the closest
-   * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
+   * [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)
    * component context will be used. If the component is not wrapped in a
-   * [`MenubarProvider`](https://ariakit.org/reference/menubar-provider)
+   * [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)
    * component, an internal store will be used.
    */
   store?: MenubarStore;

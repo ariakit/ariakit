@@ -22,7 +22,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `HovercardAnchor` component.
- * @see https://ariakit.org/components/hovercard
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx
  * const store = useHovercardStore();
@@ -143,8 +143,8 @@ export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
 
 /**
  * Renders an anchor element that will open a
- * [`Hovercard`](https://ariakit.org/reference/hovercard) popup on hover.
- * @see https://ariakit.org/components/hovercard
+ * [`Hovercard`](https://ariakit.com/reference/hovercard) popup on hover.
+ * @see https://ariakit.com/components/hovercard
  * @example
  * ```jsx {2}
  * <HovercardProvider>
@@ -160,13 +160,14 @@ export const HovercardAnchor = forwardRef(function HovercardAnchor(
   return createElement(TagName, htmlProps);
 });
 
-export interface HovercardAnchorOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T> {
+export interface HovercardAnchorOptions<
+  T extends ElementType = TagName,
+> extends FocusableOptions<T> {
   /**
    * Object returned by the
-   * [`useHovercardStore`](https://ariakit.org/reference/use-hovercard-store)
+   * [`useHovercardStore`](https://ariakit.com/reference/use-hovercard-store)
    * hook. If not provided, the closest
-   * [`HovercardProvider`](https://ariakit.org/reference/hovercard-provider)
+   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
    * component's context will be used.
    */
   store?: HovercardStore;
@@ -176,8 +177,8 @@ export interface HovercardAnchorOptions<T extends ElementType = TagName>
    * unintentional mouse enter events, like those that happen during scrolling.
    *
    * Live examples:
-   * - [Navigation Menubar](https://ariakit.org/examples/menubar-navigation)
-   * - [Sliding Menu](https://ariakit.org/examples/menu-slide)
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
+   * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
    * @default true
    */
   showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;

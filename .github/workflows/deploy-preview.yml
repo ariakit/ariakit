@@ -1,17 +1,17 @@
 name: deploy-preview
 
 on:
-  workflow_run:
-    workflows: ["app"]
-    types: [completed]
+  workflow_call:
 
 jobs:
   deploy:
-    name: Deploy preview
+    name: Deploy
     runs-on: ubuntu-latest
-    environment: Preview
+    environment:
+      name: Preview
+      url: ${{ steps.preview-url.outputs.commit_url }}
     concurrency:
-      group: ${{ github.workflow }}-${{ github.event.workflow_run.head_branch }}
+      group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
     permissions:
       actions: read
       contents: read
@@ -21,30 +21,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Check repository
-        id: check-repo
-        env:
-          HEAD_REPO: ${{ github.event.workflow_run.head_repository.full_name }}
-          REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          if [ "$HEAD_REPO" = "$REPO" ]; then
-            echo "same_repo=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "same_repo=false" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Set commit status (pending)
-        uses: actions/github-script@v8
+        # Preview statuses are created eagerly so the commit shows a stable
+        # target URL even when deployment finishes later in the job.
+        uses: actions/github-script@v9
         env:
           SERVER_URL: ${{ github.server_url }}
           REPO: ${{ github.repository }}
           RUN_ID: ${{ github.run_id }}
-          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
-          SAME_REPO: ${{ steps.check-repo.outputs.same_repo }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         with:
           script: |
-            const { SERVER_URL, REPO, RUN_ID, HEAD_SHA, SAME_REPO } = process.env;
+            const { SERVER_URL, REPO, RUN_ID, HEAD_SHA } = process.env;
             const runUrl = `${SERVER_URL}/${REPO}/actions/runs/${RUN_ID}`;
             const args = {
               owner: context.repo.owner,
@@ -54,21 +42,24 @@ jobs:
               target_url: runUrl,
             };
             await github.rest.repos.createCommitStatus({ ...args, context: 'Preview (commit)' });
-            if (SAME_REPO === 'true') {
-              await github.rest.repos.createCommitStatus({ ...args, context: 'Preview (branch)' });
-            }
+            await github.rest.repos.createCommitStatus({ ...args, context: 'Preview (branch)' });
 
       - name: Generate preview alias
         id: alias
-        if: steps.check-repo.outputs.same_repo == 'true' && github.event.workflow_run.head_branch != 'main'
+        if: (github.head_ref || github.ref_name) != 'main'
         env:
-          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_BRANCH: ${{ github.head_ref || github.ref_name }}
+        # Non-main branches get a deterministic Cloudflare preview alias so
+        # the branch status can point at a stable branch URL.
         run: |
           SAFE=$(printf "%s" "$HEAD_BRANCH" | tr '[:upper:]' '[:lower:]' | sed -E 's#[^a-z0-9-]+#-#g' | sed -E 's#^-+##; s#-+$##')
+          if [ -z "$SAFE" ]; then
+            SAFE="branch-$(printf "%s" "$HEAD_BRANCH" | shasum | cut -c1-12)"
+          fi
           echo "slug=$SAFE" >> "$GITHUB_OUTPUT"
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Download Next.js app artifact
         id: download-nextjs-artifact
@@ -77,8 +68,6 @@ jobs:
         with:
           name: nextjs-dist
           path: nextjs/.open-next
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download app artifact
         id: download-app-artifact
@@ -87,8 +76,6 @@ jobs:
         with:
           name: app-dist
           path: site/dist
-          run-id: ${{ github.event.workflow_run.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Next.js app version
         id: versions-nextjs
@@ -118,7 +105,7 @@ jobs:
             ${{ steps.alias.outputs.slug && format('--preview-alias {0}', steps.alias.outputs.slug) }}
 
       - name: Deploy Next.js app version
-        if: steps.download-nextjs-artifact.outcome == 'success' && steps.check-repo.outputs.same_repo == 'true' && github.event.workflow_run.head_branch == 'main'
+        if: steps.download-nextjs-artifact.outcome == 'success' && (github.head_ref || github.ref_name) == 'main'
         id: deploy-nextjs
         uses: cloudflare/wrangler-action@v3
         continue-on-error: true
@@ -130,7 +117,7 @@ jobs:
           command: deploy
 
       - name: Deploy app version
-        if: steps.download-app-artifact.outcome == 'success' && steps.check-repo.outputs.same_repo == 'true' && github.event.workflow_run.head_branch == 'main'
+        if: steps.download-app-artifact.outcome == 'success' && (github.head_ref || github.ref_name) == 'main'
         id: deploy
         uses: cloudflare/wrangler-action@v3
         continue-on-error: true
@@ -140,37 +127,68 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           command: deploy --env preview
 
+      - name: Compute preview URLs
+        id: preview-url
+        env:
+          VERSION_URL: ${{ steps.versions.outputs.deployment-url }}
+          DEPLOY_URL: ${{ steps.deploy.outputs.deployment-url }}
+          ALIAS_SLUG: ${{ steps.alias.outputs.slug }}
+        run: |
+          version_url="${VERSION_URL:-}"
+          deploy_url="${DEPLOY_URL:-}"
+          alias_slug="${ALIAS_SLUG:-}"
+          alias_url=""
+          if [ -n "$alias_slug" ] && [ -n "$version_url" ]; then
+            alias_url=$(printf '%s' "$version_url" | sed -E "s#^(https?://)[^-]+#\\1${alias_slug}#")
+          fi
+          echo "commit_url=$version_url" >> "$GITHUB_OUTPUT"
+          echo "alias_url=$alias_url" >> "$GITHUB_OUTPUT"
+          echo "deploy_url=$deploy_url" >> "$GITHUB_OUTPUT"
+
       - name: Set commit status (result)
         if: always()
-        uses: actions/github-script@v8
+        # "Preview (commit)" points at the immutable version URL.
+        # "Preview (branch)" keeps the old success signal: PRs only go green
+        # when both version uploads succeeded, and main only goes green when
+        # both deploy steps succeeded.
+        uses: actions/github-script@v9
         env:
           SERVER_URL: ${{ github.server_url }}
           REPO: ${{ github.repository }}
           RUN_ID: ${{ github.run_id }}
-          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
-          SAME_REPO: ${{ steps.check-repo.outputs.same_repo }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           VERSIONS_SUCCESS: ${{ steps.versions.outcome == 'success' && steps.versions-nextjs.outcome == 'success' }}
           DEPLOY_SUCCESS: ${{ steps.deploy.outcome == 'success' && steps.deploy-nextjs.outcome == 'success' }}
-          DEPLOY_URL: ${{ steps.deploy.outputs.deployment-url }}
-          VERSION_URL: ${{ steps.versions.outputs.deployment-url }}
-          ALIAS_URL: ${{ steps.alias.outputs.slug }}
+          COMMIT_URL: ${{ steps.preview-url.outputs.commit_url }}
+          ALIAS_URL: ${{ steps.preview-url.outputs.alias_url }}
+          DEPLOY_URL: ${{ steps.preview-url.outputs.deploy_url }}
         with:
           script: |
-            const { SERVER_URL, REPO, RUN_ID, HEAD_SHA, SAME_REPO, VERSIONS_SUCCESS, DEPLOY_SUCCESS, DEPLOY_URL, VERSION_URL, ALIAS_URL } = process.env;
+            const {
+              SERVER_URL,
+              REPO,
+              RUN_ID,
+              HEAD_SHA,
+              VERSIONS_SUCCESS,
+              DEPLOY_SUCCESS,
+              COMMIT_URL,
+              ALIAS_URL,
+              DEPLOY_URL,
+            } = process.env;
             const versionsSuccess = VERSIONS_SUCCESS === 'true';
             const deploySuccess = DEPLOY_SUCCESS === 'true';
             const runUrl = `${SERVER_URL}/${REPO}/actions/runs/${RUN_ID}`;
-            const deployUrl = DEPLOY_URL;
-            const versionUrl = VERSION_URL;
-            const aliasUrl = ALIAS_URL && versionUrl
-              ? versionUrl.replace(/^(https?:\/\/)[^-]+/, `$1${ALIAS_URL}`)
+            const commitTarget = versionsSuccess && COMMIT_URL
+              ? COMMIT_URL
               : '';
-            const commitTarget = versionsSuccess && versionUrl
-              ? versionUrl
-              : '';
-            const branchTarget = versionsSuccess && aliasUrl
-              ? aliasUrl
-              : deploySuccess && deployUrl ? deployUrl : '';
+            const branchTarget = versionsSuccess && ALIAS_URL
+              ? ALIAS_URL
+              : deploySuccess && DEPLOY_URL
+                ? DEPLOY_URL
+                : '';
+            const commitState = commitTarget
+              ? 'success'
+              : 'failure';
             const args = {
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -178,15 +196,13 @@ jobs:
             };
             await github.rest.repos.createCommitStatus({
               ...args,
-              state: commitTarget ? 'success' : 'failure',
+              state: commitState,
               target_url: commitTarget || runUrl,
               context: 'Preview (commit)',
             });
-            if (SAME_REPO === 'true') {
-              await github.rest.repos.createCommitStatus({
-                ...args,
-                state: branchTarget ? 'success' : 'failure',
-                target_url: branchTarget || runUrl,
-                context: 'Preview (branch)',
-              });
-            }
+            await github.rest.repos.createCommitStatus({
+              ...args,
+              state: branchTarget ? 'success' : 'failure',
+              target_url: branchTarget || runUrl,
+              context: 'Preview (branch)',
+            });

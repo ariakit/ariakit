@@ -1,4 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 function getSelectionStart(element: Element | HTMLInputElement | null) {
   return element && "selectionStart" in element ? element.selectionStart : null;

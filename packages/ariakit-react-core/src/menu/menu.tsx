@@ -20,7 +20,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `Menu` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore();
@@ -35,7 +35,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   store,
   modal: modalProp = false,
-  portal = !!modalProp,
+  portal = modalProp,
   hideOnEscape = true,
   autoFocusOnShow = true,
   hideOnHoverOutside,
@@ -57,6 +57,8 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   const parentMenubar = store.menubar;
   const hasParentMenu = !!parentMenu;
   const parentIsMenubar = !!parentMenubar && !hasParentMenu;
+  // If it's a submenu, it shouldn't behave like a modal dialog.
+  const modal = hasParentMenu ? false : modalProp;
 
   props = {
     ...props,
@@ -88,34 +90,37 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     let cleaning = false;
     setInitialFocusRef((prevInitialFocusRef) => {
       if (cleaning) return;
-      // TODO: Fix
+      if (modal && prevInitialFocusRef?.current?.isConnected) {
+        return prevInitialFocusRef;
+      }
       if (!autoFocusOnShowState) return;
-      if (prevInitialFocusRef?.current?.isConnected) return prevInitialFocusRef;
-      const ref = createRef() as MutableRefObject<HTMLElement | null>;
+      let element: HTMLElement | null;
       switch (initialFocus) {
         // TODO: Refactor
         case "first":
-          ref.current =
+          element =
             items.find((item) => !item.disabled && item.element)?.element ||
             null;
           break;
         case "last":
-          ref.current =
+          element =
             [...items].reverse().find((item) => !item.disabled && item.element)
               ?.element || null;
           break;
         default:
-          ref.current = baseElement;
+          element = baseElement;
       }
+      if (element && element === prevInitialFocusRef?.current) {
+        return prevInitialFocusRef;
+      }
+      const ref = createRef() as MutableRefObject<HTMLElement | null>;
+      ref.current = element;
       return ref;
     });
     return () => {
       cleaning = true;
     };
-  }, [store, autoFocusOnShowState, initialFocus, items, baseElement]);
-
-  // If it's a submenu, it shouldn't behave like a modal dialog.
-  const modal = hasParentMenu ? false : modalProp;
+  }, [store, modal, autoFocusOnShowState, initialFocus, items, baseElement]);
 
   const mayAutoFocusOnShow = !!autoFocusOnShow;
   // When the `autoFocusOnShow` prop is set to `true` (default), we'll only
@@ -124,8 +129,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   // store.setAutoFocusOnShow(true) every time they want to open the menu.
   // This differs from the usual dialog behavior that would automatically
   // focus on the dialog container when no initialFocusRef is set.
-  const canAutoFocusOnShow =
-    !!initialFocusRef || !!props.initialFocus || !!modal;
+  const canAutoFocusOnShow = !!initialFocusRef || !!props.initialFocus || modal;
 
   const contentElement = useStoreState(
     store.combobox || store,
@@ -167,7 +171,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     initialFocus: initialFocusRef,
     autoFocusOnShow: mayAutoFocusOnShow
       ? canAutoFocusOnShow && autoFocusOnShow
-      : autoFocusOnShowState || !!modal,
+      : autoFocusOnShowState || modal,
     ...props,
     hideOnEscape(event) {
       if (isFalsyBooleanCallback(hideOnEscape, event)) return false;
@@ -229,13 +233,13 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
 
 /**
  * Renders a dropdown menu element that's controlled by a
- * [`MenuButton`](https://ariakit.org/reference/menu-button) component.
+ * [`MenuButton`](https://ariakit.com/reference/menu-button) component.
  *
  * This component uses the primitive
- * [`MenuList`](https://ariakit.org/reference/menu-list) component under the
+ * [`MenuList`](https://ariakit.com/reference/menu-list) component under the
  * hood. It renders a popover and automatically focuses on items when the menu
  * is shown.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {3-6}
  * <MenuProvider>
@@ -256,8 +260,7 @@ export const Menu = createDialogComponent(
 );
 
 export interface MenuOptions<T extends ElementType = TagName>
-  extends MenuListOptions<T>,
-    Omit<HovercardOptions<T>, "store"> {}
+  extends MenuListOptions<T>, Omit<HovercardOptions<T>, "store"> {}
 
 export type MenuProps<T extends ElementType = TagName> = Props<
   T,

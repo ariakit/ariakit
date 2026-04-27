@@ -37,10 +37,7 @@ const allHeadings = title
 
 <ul
   data-inert={inert || undefined}
-  class:list={[
-    "ak-layer-current ps-3 flex flex-col text-sm w-fit",
-    props.class,
-  ]}
+  class:list={["ak-layer ps-3 flex flex-col text-sm w-fit", props.class]}
   data-table-of-contents
   data-top-offset={topOffset}
   {...props}
@@ -52,7 +49,7 @@ const allHeadings = title
       return (
         <li class="relative" style={`--depth:${depth}`}>
           <a
-            class="block decoration-1 data-top-level:font-semibold data-top-level:ak-text underline-offset-[0.25em] ak-text/80 data-active:ak-text hover:ak-layer-current hover:underline data-active:ak-layer-pop font-normal justify-start ak-frame-field/1.5 ps-[calc((var(--depth)-1)*--spacing(3))] pe-3 scroll-m-2"
+            class="block decoration-1 data-top-level:font-semibold data-top-level:ak-ink-100 underline-offset-[0.25em] ak-layer ak-ink-80 data-active:ak-ink-100 hover:underline data-active:ak-layer-6 font-normal justify-start ak-frame ak-frame-field/1.5 ps-[calc((var(--depth)-1)*--spacing(3))] pe-3 scroll-m-2"
             href={`#${heading.slug}`}
             data-heading-link={heading.slug}
             data-top-level={isTopLevel || undefined}
@@ -60,12 +57,16 @@ const allHeadings = title
             <InlineFragment>
               {heading.text}
               {!!isTopLevel && (
-                <Icon slot="iconRight" name="arrowUp" className="ak-text/0" />
+                <Icon
+                  slot="iconRight"
+                  name="arrowUp"
+                  className="ak-ink-0"
+                />
               )}
             </InlineFragment>
           </a>
           <div
-            class="absolute inset-y-0 -left-3 w-[calc(1px+0.03rem*var(--contrast))] bg-current opacity-0 data-visible:opacity-100 data-active:opacity-100"
+            class="absolute inset-y-0 -left-3 w-[calc(1px+0.001rem*var(--contrast))] bg-current opacity-0 data-visible:opacity-100 data-active:opacity-100"
             data-indicator
           />
         </li>
@@ -87,7 +88,7 @@ const allHeadings = title
    */
   function initTableOfContents() {
     const tocElements = document.querySelectorAll<HTMLElement>(
-      "[data-table-of-contents]"
+      "[data-table-of-contents]",
     );
     if (!tocElements.length) return;
 
@@ -116,7 +117,7 @@ const allHeadings = title
 
       // Get all the links within the table of contents.
       const links = Array.from(
-        tocElement.querySelectorAll<HTMLAnchorElement>("[data-heading-link]")
+        tocElement.querySelectorAll<HTMLAnchorElement>("[data-heading-link]"),
       );
       // Get the actual heading elements on the page that correspond to the links.
       const headings = links
@@ -136,7 +137,7 @@ const allHeadings = title
             for (const entry of entries) {
               const heading = entry.target;
               const link = tocElement.querySelector(
-                `[data-heading-link="${heading.id}"]`
+                `[data-heading-link="${heading.id}"]`,
               );
               if (!link) continue;
               const listItem = link.closest("li");
@@ -155,7 +156,7 @@ const allHeadings = title
           // The rootMargin is negative to account for the sticky header. A
           // heading is considered "intersecting" when its top edge is
           // `topOffset` pixels from the top of the viewport.
-          { rootMargin: `-${topOffset}px 0px 0px 0px` }
+          { rootMargin: `-${topOffset}px 0px 0px 0px` },
         );
 
         // Observe all the headings.
@@ -204,7 +205,7 @@ const allHeadings = title
           // into view if it's not fully visible in the TOC. If there are no
           // visible indicators, fall back to the active link.
           const indicators = tocElement!.querySelectorAll<HTMLElement>(
-            "[data-indicator][data-visible]"
+            "[data-indicator][data-visible]",
           );
           let linkToScroll: Element | null = null;
           const scroller = getScrollParent(link);
@@ -261,7 +262,7 @@ const allHeadings = title
           const lastHeading = headings[headings.length - 1];
           if (lastHeading) {
             const targetLink = tocElement!.querySelector(
-              `[data-heading-link="${lastHeading.id}"]`
+              `[data-heading-link="${lastHeading.id}"]`,
             );
             setActiveLink(targetLink);
             return;

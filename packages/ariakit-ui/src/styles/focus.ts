@@ -17,7 +17,7 @@ export const focus = cv({
      */
     $focusColor: {
       unset: "",
-      primary: "ak-outline-primary",
+      primary: "ak-outline ak-outline-primary",
     },
     /**
      * The offset of the focus ring.

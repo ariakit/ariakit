@@ -36,7 +36,7 @@ function getFirstFieldsByName(
 
 /**
  * Returns props to create a `FormPush` component.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx
  * const store = useFormStore({
@@ -77,7 +77,7 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
         "FormPush must be wrapped in a Form component.",
     );
 
-    const name = `${nameProp}`;
+    const name = String(nameProp);
     const [shouldFocus, setShouldFocus] = useState(false);
 
     useEffect(() => {
@@ -126,16 +126,16 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
  * Renders a button that will push items to an array value in the form store
  * when clicked.
  *
- * The [`name`](https://ariakit.org/reference/form-push#name) prop needs to be
+ * The [`name`](https://ariakit.com/reference/form-push#name) prop needs to be
  * provided to identify the array field. The
- * [`value`](https://ariakit.org/reference/form-push#value) prop is required to
+ * [`value`](https://ariakit.com/reference/form-push#value) prop is required to
  * define the value that will be added to the array.
  *
  * By default, the newly added input will be automatically focused when the
  * button is clicked unless the
- * [`autoFocusOnClick`](https://ariakit.org/reference/form-push#autofocusonclick)
+ * [`autoFocusOnClick`](https://ariakit.com/reference/form-push#autofocusonclick)
  * prop is set to `false`.
- * @see https://ariakit.org/components/form
+ * @see https://ariakit.com/components/form
  * @example
  * ```jsx {13-15}
  * const form = useFormStore({
@@ -162,20 +162,19 @@ export const FormPush = forwardRef(function FormPush(props: FormPushProps) {
 });
 
 export interface FormPushOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T>,
-    CollectionItemOptions<T> {
+  extends ButtonOptions<T>, CollectionItemOptions<T> {
   /**
    * Object returned by the
-   * [`useFormStore`](https://ariakit.org/reference/use-form-store) hook. If not
-   * provided, the closest [`Form`](https://ariakit.org/reference/form) or
-   * [`FormProvider`](https://ariakit.org/reference/form-provider) components'
+   * [`useFormStore`](https://ariakit.com/reference/use-form-store) hook. If not
+   * provided, the closest [`Form`](https://ariakit.com/reference/form) or
+   * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
    */
   store?: FormStore;
   /**
    * Name of the array field. This can either be a string or a reference to a
    * field name from the
-   * [`names`](https://ariakit.org/reference/use-form-store#names) object in the
+   * [`names`](https://ariakit.com/reference/use-form-store#names) object in the
    * store, for type safety.
    */
   name: StringLike;

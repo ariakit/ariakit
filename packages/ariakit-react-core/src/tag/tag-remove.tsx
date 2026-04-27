@@ -20,7 +20,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `TagRemove` component.
- * @see https://ariakit.org/components/tag
+ * @see https://ariakit.com/components/tag
  * @example
  * ```jsx
  * const props = useTagRemove();
@@ -89,7 +89,6 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
     const touchDevice = useTouchDevice() && withinTag;
 
     props = {
-      id,
       children,
       role: touchDevice ? "button" : undefined,
       "aria-hidden": !touchDevice,
@@ -99,6 +98,7 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
           ? "Press Delete or Backspace to remove"
           : undefined,
       ...props,
+      id,
       onClick,
       render: withinTag ? <Role.span render={props.render} /> : props.render,
     };
@@ -109,9 +109,9 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
 
 /**
  * Renders a `Backspace` icon inside a
- * [`Tag`](https://ariakit.org/reference/tag) component that removes the tag
+ * [`Tag`](https://ariakit.com/reference/tag) component that removes the tag
  * when clicked with a mouse.
- * @see https://ariakit.org/components/tag
+ * @see https://ariakit.com/components/tag
  * @example
  * ```jsx {9}
  * <TagProvider>
@@ -137,19 +137,20 @@ export const TagRemove = forwardRef(function TagRemove(props: TagRemoveProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface TagRemoveOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface TagRemoveOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
-   * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not
+   * [`useTagStore`](https://ariakit.com/reference/use-tag-store) hook. If not
    * provided, the closest
-   * [`TagProvider`](https://ariakit.org/reference/tag-provider) component's
+   * [`TagProvider`](https://ariakit.com/reference/tag-provider) component's
    * context will be used.
    */
   store?: TagStore;
   /**
    * The value of the tag to remove. If not provided, the value will be inferred
-   * from the parent [`Tag`](https://ariakit.org/reference/tag) component.
+   * from the parent [`Tag`](https://ariakit.com/reference/tag) component.
    */
   value?: string;
   /**

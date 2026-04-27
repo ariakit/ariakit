@@ -14,7 +14,7 @@ import {
   useId,
   useWrapElement,
 } from "../utils/hooks.ts";
-import { useStoreStateObject } from "../utils/store.tsx";
+import { useStoreState, useStoreStateObject } from "../utils/store.tsx";
 import {
   createElement,
   createHook,
@@ -46,7 +46,7 @@ function isSelected(
 
 /**
  * Returns props to create a `SelectItem` component.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const store = useSelectStore();
@@ -99,13 +99,14 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
         },
       });
 
+    const virtualFocus = useStoreState(store?.combobox, "virtualFocus");
+
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
       (item) => {
         // When the item is disabled, we don't register its value.
         const nextItem = {
           ...item,
           value: disabled ? undefined : value,
-          children: value,
         };
         if (getItemProp) {
           return getItemProp(nextItem);
@@ -150,13 +151,21 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
       [selected],
     );
 
+    const shouldAutoFocus = props.autoFocus ?? autoFocus;
+
     props = {
-      id,
       role: getPopupItemRole(listElement),
       "aria-selected": selected,
       children: value,
       ...props,
-      autoFocus: props.autoFocus ?? autoFocus,
+      id,
+      // When virtualFocus is false (e.g., iOS Safari), we suppress autoFocus to
+      // prevent a re-mounted selected item from stealing focus from the
+      // combobox input (which dismisses the iOS keyboard). We keep
+      // data-autofocus so the dialog's initial focus effect can still find and
+      // focus this element. See https://github.com/ariakit/ariakit/issues/5047
+      autoFocus: virtualFocus === false ? false : shouldAutoFocus,
+      "data-autofocus": shouldAutoFocus || undefined,
       onClick,
     };
 
@@ -177,8 +186,8 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
       // closed by clicking on an item.
       focusOnHover(event) {
         if (!focusOnHoverProp(event)) return false;
-        const state = store?.getState();
-        return !!state?.open;
+        const state = store.getState();
+        return state.open;
       },
     });
 
@@ -188,19 +197,19 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
 
 /**
  * Renders a select item inside a
- * [`SelectList`](https://ariakit.org/reference/select-list) or
- * [`SelectPopover`](https://ariakit.org/reference/select-popover).
+ * [`SelectList`](https://ariakit.com/reference/select-list) or
+ * [`SelectPopover`](https://ariakit.com/reference/select-popover).
  *
  * The `role` attribute will be automatically set on the item based on the
  * list's own `role` attribute. For example, if the
- * [`SelectPopover`](https://ariakit.org/reference/select-popover) component's
+ * [`SelectPopover`](https://ariakit.com/reference/select-popover) component's
  * `role` attribute is set to `listbox` (which is the default), the item `role`
  * will be set to `option`.
  *
- * By default, the [`value`](https://ariakit.org/reference/select-item#value)
+ * By default, the [`value`](https://ariakit.com/reference/select-item#value)
  * prop will be rendered as the children, but this can be overriden if a custom
  * children is provided.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4-5}
  * <SelectProvider>
@@ -220,39 +229,38 @@ export const SelectItem = memo(
 );
 
 export interface SelectItemOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T>,
-    CompositeHoverOptions<T> {
+  extends CompositeItemOptions<T>, CompositeHoverOptions<T> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook. If
    * not provided, the parent
-   * [`SelectList`](https://ariakit.org/reference/select-list) or
-   * [`SelectPopover`](https://ariakit.org/reference/select-popover) components'
+   * [`SelectList`](https://ariakit.com/reference/select-list) or
+   * [`SelectPopover`](https://ariakit.com/reference/select-popover) components'
    * context will be used.
    */
   store?: SelectStore;
   /**
    * The value of the item. This will be rendered as the children by default.
    * - If
-   *   [`setValueOnClick`](https://ariakit.org/reference/select-item#setvalueonclick)
+   *   [`setValueOnClick`](https://ariakit.com/reference/select-item#setvalueonclick)
    *   is set to `true`, the
-   *   [`value`](https://ariakit.org/reference/select-provider#value) state will
+   *   [`value`](https://ariakit.com/reference/select-provider#value) state will
    *   be set to this value when the user clicks on it.
    * - If
-   *   [`setValueOnMove`](https://ariakit.org/reference/select-provider#setvalueonmove)
+   *   [`setValueOnMove`](https://ariakit.com/reference/select-provider#setvalueonmove)
    *   is set to `true`, the
-   *   [`value`](https://ariakit.org/reference/select-provider#value) state will
+   *   [`value`](https://ariakit.com/reference/select-provider#value) state will
    *   be set to this value when the user moves to it (which is usually the case
    *   when moving through the items using the keyboard).
    *
    * Live examples:
-   * - [Form with Select](https://ariakit.org/examples/form-select)
-   * - [Animated Select](https://ariakit.org/examples/select-animated)
-   * - [Select with Combobox](https://ariakit.org/examples/select-combobox)
-   * - [Select Grid](https://ariakit.org/examples/select-grid)
-   * - [SelectGroup](https://ariakit.org/examples/select-group)
+   * - [Form with Select](https://ariakit.com/examples/form-select)
+   * - [Animated Select](https://ariakit.com/examples/select-animated)
+   * - [Select with Combobox](https://ariakit.com/examples/select-combobox)
+   * - [Select Grid](https://ariakit.com/examples/select-grid)
+   * - [SelectGroup](https://ariakit.com/examples/select-group)
    * - [Select with custom
-   *   item](https://ariakit.org/examples/select-item-custom)
+   *   item](https://ariakit.com/examples/select-item-custom)
    * @example
    * ```jsx
    * <SelectItem value="Apple" />
@@ -261,19 +269,19 @@ export interface SelectItemOptions<T extends ElementType = TagName>
   value?: string;
   /**
    * Whether to hide the select when this item is clicked. By default, it's
-   * `true` when the [`value`](https://ariakit.org/reference/select-item#value)
+   * `true` when the [`value`](https://ariakit.com/reference/select-item#value)
    * prop is also provided.
    */
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
    * Whether to set the select value with this item's value, if any, when this
    * item is clicked. By default, it's `true` when the
-   * [`value`](https://ariakit.org/reference/select-item#value) prop is also
+   * [`value`](https://ariakit.com/reference/select-item#value) prop is also
    * provided.
    *
    * Live examples:
    * - [Select with Next.js App
-   *   Router](https://ariakit.org/examples/select-next-router)
+   *   Router](https://ariakit.com/examples/select-next-router)
    */
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }

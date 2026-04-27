@@ -38,7 +38,7 @@ const querySchema = z
   }));
 
 const { redirectUrl } = querySchema.parse(
-  Object.fromEntries(Astro.url.searchParams)
+  Object.fromEntries(Astro.url.searchParams),
 );
 
 function removeTrailingSlash(path: string) {
@@ -47,7 +47,7 @@ function removeTrailingSlash(path: string) {
 
 function getLinkProps(
   path: GetPlusAccountURLParams["path"] = "",
-  redirectUrl?: string | URL
+  redirectUrl?: string | URL,
 ) {
   const url = getPlusAccountURL({ url: Astro.url, path, redirectUrl });
   const href = url.toString().replace(url.origin, "");
@@ -76,9 +76,7 @@ const teams = await getCurrentUserTeams(Astro);
   <body
     class="[--color-canvas:#F9FAFA] dark:[--color-canvas:theme(--color-gray-900)] ak-container-size-[64rem]/3 flex flex-col"
   >
-    <div
-      class="py-8 border-b ak-layer-current flex flex-col gap-4 ak-layer-down-0.5"
-    >
+    <div class="py-8 border-b ak-layer flex flex-col gap-4 ak-layer-darken-3">
       <div class="ak-container">
         <div class="flex items-center gap-2">
           <Logo iconOnly />
@@ -102,7 +100,7 @@ const teams = await getCurrentUserTeams(Astro);
                     <span>No license</span>
                   </span>
                   <InlineLink
-                    className="ak-text-yellow-500"
+                    className="ak-text ak-text-yellow-500"
                     set:text="Purchase now"
                     href={getPlusCheckoutPath({ url: Astro.url })}
                   >
@@ -130,7 +128,7 @@ const teams = await getCurrentUserTeams(Astro);
                 <li>
                   <a
                     {...getLinkProps()}
-                    class="ak-button aria-[current]:ak-layer-pop"
+                    class="ak-button ak-layer aria-[current]:ak-layer-6"
                   >
                     Account
                   </a>
@@ -138,7 +136,7 @@ const teams = await getCurrentUserTeams(Astro);
                 <li>
                   <a
                     {...getLinkProps("team")}
-                    class="ak-button aria-[current]:ak-layer-pop"
+                    class="ak-button ak-layer aria-[current]:ak-layer-6"
                   >
                     Team
                   </a>
@@ -154,12 +152,16 @@ const teams = await getCurrentUserTeams(Astro);
                 </li>
                 <li>
                   <SignOutButton
-                    class="ak-button"
+                    asChild
                     redirectUrl={getPlusAccountPath({
                       url: Astro.url,
                       path: "login",
                     })}
-                  />
+                  >
+                    <button type="button" class="ak-button">
+                      Sign out
+                    </button>
+                  </SignOutButton>
                 </li>
               </ul>
             )

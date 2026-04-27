@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import clsx from "clsx";
+import { clsx } from "clsx";
 
 export interface PlaceholderTextProps {
   children?: string;
@@ -27,10 +27,10 @@ export function PlaceholderText({
   className,
 }: PlaceholderTextProps) {
   const weightMap = {
-    light: "ak-layer-pop",
-    normal: "ak-layer-pop-2",
-    medium: "ak-layer-pop-4",
-    bold: "ak-layer-pop-6",
+    light: "ak-layer ak-layer-6",
+    normal: "ak-layer ak-layer-12",
+    medium: "ak-layer ak-layer-24",
+    bold: "ak-layer ak-layer-36",
   };
   const sizeMap = {
     sm: "text-sm",

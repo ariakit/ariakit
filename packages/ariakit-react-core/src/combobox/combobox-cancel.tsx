@@ -36,7 +36,7 @@ const children = (
 /**
  * Returns props to create a `ComboboxCancel` component that clears the combobox
  * input when clicked.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore();
@@ -99,7 +99,7 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
 /**
  * Renders a combobox cancel button that clears the combobox input value when
  * clicked.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {3}
  * <ComboboxProvider>
@@ -120,13 +120,14 @@ export const ComboboxCancel = forwardRef(function ComboboxCancel(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxCancelOptions<T extends ElementType = TagName>
-  extends ButtonOptions<T> {
+export interface ComboboxCancelOptions<
+  T extends ElementType = TagName,
+> extends ButtonOptions<T> {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
    * component's context will be used.
    */
   store?: ComboboxStore;
@@ -135,7 +136,7 @@ export interface ComboboxCancelOptions<T extends ElementType = TagName>
    * empty.
    *
    * Live examples:
-   * - [Combobox with Tabs](https://ariakit.org/examples/combobox-tabs)
+   * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
    * @default false
    */
   hideWhenEmpty?: boolean;

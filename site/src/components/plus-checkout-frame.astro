@@ -36,7 +36,7 @@ if (!session) {
 }
 ---
 
-<div class="ak-frame-card/0 overflow-clip">
+<div class="ak-frame ak-frame-card/0 overflow-clip">
   <div id="checkout" data-client-secret={session.client_secret} class="w-full">
   </div>
 </div>
@@ -46,7 +46,7 @@ if (!session) {
   const checkoutDiv = document.querySelector<HTMLElement>("#checkout");
   const { clientSecret } = checkoutDiv?.dataset || {};
   const stripe = await loadStripe(
-    import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY!
+    import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY!,
   );
   const checkout = await stripe?.initEmbeddedCheckout({ clientSecret });
   checkout?.mount(checkoutDiv!);

@@ -34,7 +34,7 @@ const children = (
 /**
  * Returns props to create a `ComboboxDisclosure` component that toggles the
  * combobox popover visibility when clicked.
- * @see https://ariakit.org/components/combobox
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
  * const store = useComboboxStore();
@@ -111,13 +111,13 @@ export const useComboboxDisclosure = createHook<
 
 /**
  * Renders a combobox disclosure button that toggles the
- * [`ComboboxPopover`](https://ariakit.org/reference/combobox-popover) element's
+ * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) element's
  * visibility when clicked.
  *
  * Although this button is not tabbable, it remains accessible to screen reader
  * users. On clicking, it automatically shifts focus to the
- * [`Combobox`](https://ariakit.org/reference/combobox) element.
- * @see https://ariakit.org/components/combobox
+ * [`Combobox`](https://ariakit.com/reference/combobox) element.
+ * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {3}
  * <ComboboxProvider>
@@ -138,13 +138,14 @@ export const ComboboxDisclosure = forwardRef(function ComboboxDisclosure(
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxDisclosureOptions<T extends ElementType = TagName>
-  extends DialogDisclosureOptions<T> {
+export interface ComboboxDisclosureOptions<
+  T extends ElementType = TagName,
+> extends DialogDisclosureOptions<T> {
   /**
    * Object returned by the
-   * [`useComboboxStore`](https://ariakit.org/reference/use-combobox-store)
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
    * hook. If not provided, the closest
-   * [`ComboboxProvider`](https://ariakit.org/reference/combobox-provider)
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
    * component's context will be used.
    */
   store?: ComboboxStore;

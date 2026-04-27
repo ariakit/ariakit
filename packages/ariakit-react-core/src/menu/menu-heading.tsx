@@ -12,7 +12,7 @@ type TagName = typeof TagName;
  * Returns props to create a `MenuHeading` component. This hook must be used in
  * a component that's wrapped with `Menu` so the `aria-labelledby` prop is
  * properly set on the menu element.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * // This component must be wrapped with Menu
@@ -29,9 +29,9 @@ export const useMenuHeading = createHook<TagName, MenuHeadingOptions>(
 
 /**
  * Renders a heading in a menu. This component must be wrapped within
- * [`Menu`](https://ariakit.org/reference/menu) so the `aria-labelledby` prop is
+ * [`Menu`](https://ariakit.com/reference/menu) so the `aria-labelledby` prop is
  * properly set on the content element.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * <MenuProvider>
@@ -48,13 +48,14 @@ export const MenuHeading = forwardRef(function MenuHeading(
   return createElement(TagName, htmlProps);
 });
 
-export interface MenuHeadingOptions<T extends ElementType = TagName>
-  extends HovercardHeadingOptions<T> {
+export interface MenuHeadingOptions<
+  T extends ElementType = TagName,
+> extends HovercardHeadingOptions<T> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.com/reference/menu) or
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
    */
   store?: MenuStore;

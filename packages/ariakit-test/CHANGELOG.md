@@ -1,5 +1,14 @@
 # @ariakit/test
 
+## 0.4.15
+
+- Changed the [`query`](https://ariakit.com/reference/query) helper to use `exact: true` by default for role and text queries in Playwright tests.
+- Updated dependencies: `@ariakit/core@0.4.20`
+
+## 0.4.14
+
+- Updated dependencies: `@ariakit/core@0.4.19`
+
 ## 0.4.13
 
 - Added `q.text()` query to `@ariakit/test/playwright`.

@@ -6,11 +6,17 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+@import "tailwindcss";
 @import "./ariakit.css";
 
 @source "../../../packages/ariakit-ui/src/**";
+@source not "./styles.json";
+@source not "../sandbox/ariakit-tailwind";
 
 @theme {
+  --color-canvas: oklch(99.33% 0.0011 197.14);
+  --color-brand: oklch(56.7% 0.1546 248.5156);
+
   --container-wider: 92rem;
   --container-wide: 84rem;
   --container-default: 72rem;
@@ -22,6 +28,12 @@
 
   --radius-playground: calc(var(--radius) * 3.5);
   --spacing-playground: --spacing(0);
+}
+
+:root {
+  @variant dark {
+    --color-canvas: oklch(16.34% 0.0091 264.28);
+  }
 }
 
 @theme inline {
@@ -63,10 +75,18 @@ astro-static-slot {
 }
 
 .cl-organizationSwitcherTrigger {
-  @apply ak-button !ak-layer-pop hover:!ak-layer-pop-2 ak-frame-field/2;
+  @apply ak-button !ak-layer-6 hover:!ak-layer-12 ak-frame-field/2;
 } */
 
 html,
 body {
   @apply font-sans min-h-dvh antialiased;
+}
+
+body {
+  @apply ak-layer ak-layer-canvas;
+}
+
+body > * {
+  @apply ak-dark:scheme-dark;
 }

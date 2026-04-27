@@ -16,5 +16,10 @@ export async function redirects() {
       destination: "/tags/plus",
       permanent: true,
     },
+    {
+      source: "/tags/framer-motion",
+      destination: "/tags/motion",
+      permanent: true,
+    },
   ];
 }

@@ -1,4 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("autocomplete on arrow down key", async () => {
   await press.Tab();

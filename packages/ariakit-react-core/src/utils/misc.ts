@@ -58,9 +58,13 @@ export function mergeProps<T extends HTMLAttributes<any>>(
 
     if (key === "className") {
       const prop = "className";
-      props[prop] = base[prop]
-        ? `${base[prop]} ${overrides[prop]}`
-        : overrides[prop];
+      const baseClass = base[prop];
+      const overrideClass = overrides[prop];
+      if (baseClass && overrideClass) {
+        props[prop] = `${baseClass} ${overrideClass}`;
+      } else {
+        props[prop] = overrideClass || baseClass;
+      }
       continue;
     }
 
@@ -74,7 +78,11 @@ export function mergeProps<T extends HTMLAttributes<any>>(
 
     const overrideValue = overrides[key];
 
-    if (typeof overrideValue === "function" && key.startsWith("on")) {
+    if (key.startsWith("on")) {
+      if (typeof overrideValue !== "function") {
+        // Skip non-function event handler overrides to preserve base handlers.
+        continue;
+      }
       const baseValue = base[key];
       if (typeof baseValue === "function") {
         type EventKey = Extract<keyof HTMLAttributes<any>, `on${string}`>;

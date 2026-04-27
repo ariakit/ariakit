@@ -2,13 +2,12 @@
   "name": "root",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@10.32.1",
   "scripts": {
     "start": "pnpm -F website start",
     "dev-package-json": "node scripts/build/package-json-dev.js",
     "dev": "conc -r 'pnpm:dev-package-json' 'pnpm -F website run dev'",
     "dev-lite": "cross-env DISABLE_SHIKI=true pnpm run dev",
-    "dev-site": "conc -r 'pnpm -F site run dev' 'pnpm -F nextjs run dev'",
+    "dev-site": "ariakit dev",
     "dev-site-lite": "cross-env DISABLE_SYNTAX_HIGHLIGHTING=true pnpm run dev-site",
     "build-site": "pnpm -F nextjs run build-worker && pnpm -F site run build",
     "build-site-lite": "pnpm -F nextjs run build-worker && pnpm -F site run build-lite",
@@ -46,12 +45,13 @@
     "test-android-debug": "playwright test --project=android --ui",
     "coverage": "pnpm test --coverage",
     "postcoverage": "open-cli coverage/index.html",
-    "lint": "biome check",
-    "lint-fix": "biome check --write",
+    "lint": "oxlint --disable-nested-config && oxfmt --check",
+    "lint-fix": "oxlint --disable-nested-config --fix && oxfmt",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
-    "tsc": "conc -r 'tsc' 'pnpm -F site run tsc' 'pnpm -F nextjs run tsc' 'pnpm -F \"./templates/*\" run tsc' 'tsc -p tsconfig.solid.json'",
-    "tsc-clean": "tsc --build --clean",
-    "build": "pnpm -F \"@ariakit/*\" run --if-present build",
+    "wrangler-types": "wrangler types --include-runtime=false",
+    "tsc": "pnpm run wrangler-types && pnpm -F site run check && tsc -b",
+    "tsc-clean": "tsc -b --clean",
+    "build": "pnpm -F \"@ariakit/*\" run build",
     "build-website": "pnpm -F website run build",
     "build-website-lite": "cross-env DISABLE_SHIKI=true pnpm run build-website",
     "clean": "pnpm -r run --if-present clean",
@@ -60,48 +60,28 @@
     "publish": "pnpm run build && changeset publish",
     "prepare": "husky"
   },
-  "lint-staged": {
-    "package.json": [
-      "pnpm -r run --if-present clean",
-      "biome check --no-errors-on-unmatched --write"
-    ],
-    "*.{js,ts,tsx,json}": "biome check --no-errors-on-unmatched --write"
-  },
-  "pnpm": {
-    "overrides": {
-      "@wordpress/components>@ariakit/react": "workspace:*"
-    },
-    "patchedDependencies": {
-      "@changesets/apply-release-plan@7.1.0": "patches/@changesets__apply-release-plan@7.1.0.patch"
-    },
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "sharp",
-      "workerd"
-    ]
-  },
   "devDependencies": {
     "@ariakit/core": "workspace:*",
     "@ariakit/react": "workspace:*",
     "@ariakit/react-core": "workspace:*",
+    "@ariakit/scripts": "workspace:*",
     "@ariakit/solid": "workspace:*",
     "@ariakit/solid-core": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
     "@ariakit/test": "workspace:*",
-    "@biomejs/biome": "2.4.7",
-    "@changesets/apply-release-plan": "7.1.0",
-    "@changesets/cli": "2.30.0",
-    "@playwright/test": "1.58.2",
+    "@changesets/apply-release-plan": "7.1.1",
+    "@changesets/cli": "2.31.0",
+    "@playwright/test": "1.59.1",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",
     "@types/cross-spawn": "6.0.6",
     "@types/fs-extra": "11.0.4",
-    "@types/node": "24.12.0",
+    "@types/node": "24.12.2",
     "@types/react": "18.3.28",
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "6.0.1",
-    "@vitest/coverage-v8": "4.1.0",
-    "autoprefixer": "10.4.27",
+    "@vitest/coverage-v8": "4.1.5",
+    "autoprefixer": "10.5.0",
     "chalk": "5.6.2",
     "chokidar": "5.0.0",
     "concurrently": "9.2.1",
@@ -111,28 +91,39 @@
     "fs-extra": "11.3.4",
     "glob": "13.0.6",
     "husky": "9.1.7",
-    "jsdom": "29.0.0",
+    "jsdom": "29.0.2",
     "lint-staged": "16.4.0",
     "next": "14.2.35",
-    "open-cli": "8.0.0",
+    "open-cli": "9.0.0",
+    "oxfmt": "0.46.0",
+    "oxlint": "1.61.0",
+    "oxlint-tsgolint": "0.21.1",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
-    "prettier": "3.8.1",
-    "prettier-plugin-tailwindcss": "0.7.2",
+    "prettier": "3.8.3",
+    "prettier-plugin-tailwindcss": "0.7.3",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "rimraf": "6.1.3",
-    "solid-js": "1.9.11",
-    "stylelint": "17.4.0",
+    "solid-js": "1.9.12",
+    "stylelint": "17.9.0",
     "stylelint-config-standard": "40.0.0",
     "tailwindcss": "3.4.18",
     "tailwindcss-animate": "1.0.7",
     "tsup": "8.5.1",
-    "typescript": "5.9.3",
-    "vite": "8.0.0",
-    "vite-plugin-solid": "2.11.11",
-    "vitest": "4.1.0",
+    "typescript": "6.0.3",
+    "vite": "8.0.10",
+    "vite-plugin-solid": "2.11.12",
+    "vitest": "4.1.5",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.73.0"
-  }
+    "wrangler": "4.85.0"
+  },
+  "lint-staged": {
+    "package.json": "pnpm -r run --if-present clean",
+    "*.{js,ts,tsx,md,mdx,json}": [
+      "oxlint --disable-nested-config --fix --no-error-on-unmatched-pattern",
+      "oxfmt --no-error-on-unmatched-pattern"
+    ]
+  },
+  "packageManager": "pnpm@10.33.2"
 }

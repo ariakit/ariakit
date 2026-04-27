@@ -64,7 +64,7 @@ function isUpdater<T>(
   return typeof argument === "function";
 }
 
-function isLazyValue<T>(value: any): value is () => T {
+function isLazyValue<T>(value: T | (() => T)): value is () => T {
   return typeof value === "function";
 }
 
@@ -121,7 +121,6 @@ export function hasOwnProperty<T extends AnyObject>(
   if (typeof Object.hasOwn === "function") {
     return Object.hasOwn(object, prop);
   }
-  // biome-ignore lint/suspicious/noPrototypeBuiltins: false positive
   return Object.prototype.hasOwnProperty.call(object, prop);
 }
 
@@ -266,6 +265,15 @@ export function disabledFromProps(props: {
     props["aria-disabled"] === true ||
     props["aria-disabled"] === "true"
   );
+}
+
+/**
+ * Checks whether something is disabled or not based on its DOM attributes.
+ */
+export function disabledFromElement(element: Element) {
+  if (element.getAttribute("aria-disabled") === "true") return true;
+  if ("disabled" in element && element.disabled === true) return true;
+  return false;
 }
 
 /**

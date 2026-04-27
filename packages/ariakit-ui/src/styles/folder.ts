@@ -19,7 +19,7 @@ export const folder = cv({
         "ui-selected:befter:[--folder-outer-border:calc(var(--folder-outer)+var(--folder-smoothness))]",
         "ui-selected:befter:[--folder-outer-bg:calc(var(--folder-outer)-var(--folder-smoothness))]",
         "ui-selected:befter:[--folder-transparent:transparent_var(--folder-outer-bg)]",
-        "ui-selected:befter:[--folder-border:var(--ak-layer-border)_var(--folder-outer-border),var(--ak-layer-border)_var(--folder-inner-border)]",
+        "ui-selected:befter:[--folder-border:var(--ak-edge)_var(--folder-outer-border),var(--ak-edge)_var(--folder-inner-border)]",
         "ui-selected:befter:[--folder-bg:var(--ak-layer)_var(--folder-inner-bg)]",
         "ui-selected:befter:[--folder-gradient:var(--folder-transparent),var(--folder-border),var(--folder-bg)]",
         "ui-selected:befter:[--folder-backdrop:transparent_var(--folder-outer-border),var(--border-backdrop,var(--ak-layer))_var(--folder-outer-border)]",

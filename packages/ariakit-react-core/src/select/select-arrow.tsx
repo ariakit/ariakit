@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectArrow` component.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx
  * const store = useSelectStore();
@@ -37,9 +37,9 @@ export const useSelectArrow = createHook<TagName, SelectArrowOptions>(
 
 /**
  * Renders an arrow pointing to the select popover position. It's usually
- * rendered inside the [`Select`](https://ariakit.org/reference/select)
+ * rendered inside the [`Select`](https://ariakit.com/reference/select)
  * component.
- * @see https://ariakit.org/components/select
+ * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4}
  * <SelectProvider>
@@ -61,13 +61,14 @@ export const SelectArrow = forwardRef(function SelectArrow(
   return createElement(TagName, htmlProps);
 });
 
-export interface SelectArrowOptions<T extends ElementType = TagName>
-  extends PopoverDisclosureArrowOptions<T> {
+export interface SelectArrowOptions<
+  T extends ElementType = TagName,
+> extends PopoverDisclosureArrowOptions<T> {
   /**
    * Object returned by the
-   * [`useSelectStore`](https://ariakit.org/reference/use-select-store) hook. If
-   * not provided, the closest [`Select`](https://ariakit.org/reference/select)
-   * or [`SelectProvider`](https://ariakit.org/reference/select-provider)
+   * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook. If
+   * not provided, the closest [`Select`](https://ariakit.com/reference/select)
+   * or [`SelectProvider`](https://ariakit.com/reference/select-provider)
    * components' context will be used.
    */
   store?: SelectStore;

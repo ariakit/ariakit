@@ -14,7 +14,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 /**
  * Returns props to create a `Button` component. If the element is not a native
  * button, the hook will return additional props to make sure it's accessible.
- * @see https://ariakit.org/components/button
+ * @see https://ariakit.com/components/button
  * @example
  * ```jsx
  * const props = useButton({ render: <div /> });
@@ -50,7 +50,7 @@ export const useButton = createHook<TagName, ButtonOptions>(
  * Renders an accessible button element. If the underlying element is not a
  * native button, this component will pass additional attributes to make sure
  * it's accessible.
- * @see https://ariakit.org/components/button
+ * @see https://ariakit.com/components/button
  * @example
  * ```jsx
  * <Button>Button</Button>
@@ -61,8 +61,9 @@ export const Button = forwardRef(function Button(props: ButtonProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface ButtonOptions<T extends ElementType = TagName>
-  extends CommandOptions<T> {}
+export interface ButtonOptions<
+  T extends ElementType = TagName,
+> extends CommandOptions<T> {}
 
 export type ButtonProps<T extends ElementType = TagName> = Props<
   T,

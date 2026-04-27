@@ -31,7 +31,7 @@ function getValue<T>(prevValue: T, value: T, checked?: boolean): T | false {
 
 /**
  * Returns props to create a `MenuItemRadio` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore({ defaultValues: { fruit: "apple" } });
@@ -88,7 +88,7 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <MenuItemCheckedContext.Provider value={!!isChecked}>
+        <MenuItemCheckedContext.Provider value={isChecked}>
           {element}
         </MenuItemCheckedContext.Provider>
       ),
@@ -123,14 +123,14 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
 
 /**
  * Renders a [`menuitemradio`](https://w3c.github.io/aria/#menuitemradio)
- * element within a [`Menu`](https://ariakit.org/reference/menu) component. The
- * [`name`](https://ariakit.org/reference/menu-item-radio#name) prop must be
+ * element within a [`Menu`](https://ariakit.com/reference/menu) component. The
+ * [`name`](https://ariakit.com/reference/menu-item-radio#name) prop must be
  * provided to identify the field in the
- * [`values`](https://ariakit.org/reference/menu-provider#values) state.
+ * [`values`](https://ariakit.com/reference/menu-provider#values) state.
  *
- * A [`MenuItemCheck`](https://ariakit.org/reference/menu-item-check) can be
+ * A [`MenuItemCheck`](https://ariakit.com/reference/menu-item-check) can be
  * used to render a checkmark inside this component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {4-11}
  * <MenuProvider defaultValues={{ profile: "john" }}>
@@ -156,33 +156,32 @@ export const MenuItemRadio = memo(
 );
 
 export interface MenuItemRadioOptions<T extends ElementType = TagName>
-  extends MenuItemOptions<T>,
-    Omit<RadioOptions<T>, "store"> {
+  extends MenuItemOptions<T>, Omit<RadioOptions<T>, "store"> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.com/reference/menu) or
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
    */
   store?: MenuStore;
   /**
    * The name of the field in the
-   * [`values`](https://ariakit.org/reference/menu-provider#values) state.
+   * [`values`](https://ariakit.com/reference/menu-provider#values) state.
    *
    * Live examples:
-   * - [MenuItemRadio](https://ariakit.org/examples/menu-item-radio)
+   * - [MenuItemRadio](https://ariakit.com/examples/menu-item-radio)
    */
   name: string;
   /**
    * The controlled checked state of the element. It will set the menu
-   * [`values`](https://ariakit.org/reference/menu-provider#values) state if
+   * [`values`](https://ariakit.com/reference/menu-provider#values) state if
    * provided.
    */
   checked?: boolean;
   /**
    * The default checked state of the element. It will set the default value in
-   * the menu [`values`](https://ariakit.org/reference/menu-provider#values)
+   * the menu [`values`](https://ariakit.com/reference/menu-provider#values)
    * state if provided.
    */
   defaultChecked?: boolean;

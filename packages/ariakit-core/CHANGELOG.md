@@ -1,5 +1,14 @@
 # @ariakit/core
 
+## 0.4.20
+
+- Fixed `Math.random()` being called unconditionally when creating composite stores ([`useTabStore`](https://ariakit.com/reference/use-tab-store), [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store), [`useSelectStore`](https://ariakit.com/reference/use-select-store), etc.), even when an explicit `id` prop was provided. This was causing Next.js build errors with `cacheComponents` enabled.
+
+## 0.4.19
+
+- Added `disabledFromElement` to `@ariakit/core/utils/misc`.
+- Fixed [`formStore.setError()`](https://ariakit.org/reference/use-form-store#seterror) and [`formStore.setFieldTouched()`](https://ariakit.org/reference/use-form-store#setfieldtouched) failing to set values on nested array field paths such as `items.0.name`.
+
 ## 0.4.18
 
 - Fixed an error when trying to reach focusable elements within iframes.

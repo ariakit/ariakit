@@ -1,7 +1,6 @@
 import { hasOwnProperty, invariant } from "@ariakit/core/utils/misc";
 import type { Project, ProjectFiles } from "@stackblitz/sdk";
 import _sdk from "@stackblitz/sdk";
-
 import type { StyleDependency } from "./styles.ts";
 import {
   getStyleDefinition,
@@ -44,7 +43,7 @@ function getPackageName(source: string) {
   if (maybeScope?.startsWith("@")) {
     return `${maybeScope}/${maybeName ?? ""}`;
   }
-  return `${maybeScope}`;
+  return maybeScope ?? "";
 }
 
 function normalizeDeps(deps: Record<string, string> = {}) {
@@ -165,7 +164,7 @@ function getBaseCss() {
 }
 
 body {
-  @apply ak-layer-canvas;
+  @apply ak-layer ak-layer-canvas;
 }
 `;
 }

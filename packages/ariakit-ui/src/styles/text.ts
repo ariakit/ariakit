@@ -8,18 +8,12 @@ export const text = cv({
      */
     $color: {
       auto: "",
-      tonal:
-        "ak-text-(--ak-layer-idle)/(--text-opacity) *:ak-text-(--ak-layer-idle)/(--text-opacity)",
-      primary:
-        "ak-text-primary/(--text-opacity) *:ak-text-primary/(--text-opacity)",
-      secondary:
-        "ak-text-secondary/(--text-opacity) *:ak-text-secondary/(--text-opacity)",
-      success:
-        "ak-text-success/(--text-opacity) *:ak-text-success/(--text-opacity)",
-      warning:
-        "ak-text-warning/(--text-opacity) *:ak-text-warning/(--text-opacity)",
-      danger:
-        "ak-text-danger/(--text-opacity) *:ak-text-danger/(--text-opacity)",
+      tonal: "ak-ink-(--text-opacity) *:ak-ink-(--text-opacity)",
+      primary: "ak-text ak-text-primary *:ak-text *:ak-text-primary",
+      secondary: "ak-text ak-text-secondary *:ak-text *:ak-text-secondary",
+      success: "ak-text ak-text-success *:ak-text *:ak-text-success",
+      warning: "ak-text ak-text-warning *:ak-text *:ak-text-warning",
+      danger: "ak-text ak-text-danger *:ak-text *:ak-text-danger",
     },
     /**
      * Sets the element's text opacity.

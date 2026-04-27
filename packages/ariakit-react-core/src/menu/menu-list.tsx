@@ -1,10 +1,10 @@
 import { invariant } from "@ariakit/core/utils/misc";
 import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
-import type { CompositeOptions } from "../composite/composite.tsx";
-import { useComposite } from "../composite/composite.tsx";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
@@ -52,7 +52,7 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
 
 /**
  * Returns props to create a `MenuList` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore();
@@ -156,10 +156,10 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
     props = {
-      id,
       "aria-labelledby": ariaLabelledBy,
       hidden,
       ...props,
+      id,
       ref: useMergeRefs(id ? store.setContentElement : null, props.ref),
       style,
       onKeyDown,
@@ -185,12 +185,12 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
 
 /**
  * Renders a menu list element. This is the primitive component used by the
- * [`Menu`](https://ariakit.org/reference/menu) component.
+ * [`Menu`](https://ariakit.com/reference/menu) component.
  *
- * Unlike [`Menu`](https://ariakit.org/reference/menu), this component doesn't
+ * Unlike [`Menu`](https://ariakit.com/reference/menu), this component doesn't
  * render a popover and therefore doesn't automatically focus on items when
  * opened.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx {3-6}
  * <MenuProvider>
@@ -208,14 +208,15 @@ export const MenuList = forwardRef(function MenuList(props: MenuListProps) {
 });
 
 export interface MenuListOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>,
+  extends
+    CompositeOptions<T>,
     CompositeTypeaheadOptions<T>,
     Pick<DisclosureContentOptions, "alwaysVisible"> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
    * provided, the closest
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) component's
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) component's
    * context will be used.
    */
   store?: MenuStore;

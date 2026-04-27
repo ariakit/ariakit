@@ -2,46 +2,43 @@
   "name": "@ariakit/tailwind",
   "version": "0.1.11",
   "description": "Tailwind CSS utilities for building accessible web apps",
-  "sideEffects": false,
+  "keywords": [
+    "a11y",
+    "ariakit",
+    "css",
+    "styles",
+    "tailwind",
+    "ui"
+  ],
+  "homepage": "https://ariakit.com/styles",
   "license": "MIT",
-  "homepage": "https://ariakit.org/styles",
-  "type": "module",
-  "exports": {
-    ".": "./src/index.css",
-    "./package.json": "./package.json"
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/ariakit/ariakit.git",
     "directory": "packages/ariakit-tailwind"
   },
-  "author": {
-    "name": "Diego Haz",
-    "email": "hazdiego@gmail.com",
-    "url": "https://github.com/diegohaz"
-  },
   "funding": {
     "type": "opencollective",
     "url": "https://opencollective.com/ariakit"
   },
-  "scripts": {
-    "build": "",
-    "lint": "biome check ."
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/output.css",
+    "./package.json": "./package.json"
   },
-  "keywords": [
-    "ariakit",
-    "tailwind",
-    "styles",
-    "css",
-    "a11y",
-    "ui"
-  ],
-  "dependencies": {
-    "color-string": "^2.0.0"
+  "scripts": {
+    "build": "node src/build.ts",
+    "lint": "oxlint . && oxfmt --check ."
   },
   "devDependencies": {
-    "@types/color-string": "1.5.5",
-    "tailwindcss": "4.2.1"
+    "csstype": "3.2.3",
+    "tailwindcss": "4.2.4"
   },
   "peerDependencies": {
     "tailwindcss": "^4.0.3"

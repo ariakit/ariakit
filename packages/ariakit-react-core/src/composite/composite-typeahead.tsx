@@ -95,7 +95,7 @@ function getSameInitialItems(
 
 /**
  * Returns props to create a `CompositeTypeahead` component.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * const store = useCompositeStore();
@@ -141,7 +141,7 @@ export const useCompositeTypeahead = createHook<
     let enabledItems = getEnabledItems(
       items.length > renderedItems.length ? items : renderedItems,
     );
-    // When the composite widget contains items with the `offscreenBehavior`
+    // When the composite widget contains items with the `offscreenMode`
     // prop, we need to consider them as well.
     const document = getDocument(event.currentTarget);
     const selector = `[data-offscreen-id="${id}"]`;
@@ -196,11 +196,11 @@ export const useCompositeTypeahead = createHook<
  * components.
  *
  * When the
- * [`typeahead`](https://ariakit.org/reference/composite-typeahead#typeahead)
+ * [`typeahead`](https://ariakit.com/reference/composite-typeahead#typeahead)
  * prop is enabled, which it is by default, hitting printable character keys
  * will move focus to the next composite item that begins with the input
  * characters.
- * @see https://ariakit.org/components/composite
+ * @see https://ariakit.com/components/composite
  * @example
  * ```jsx
  * <CompositeProvider>
@@ -218,14 +218,15 @@ export const CompositeTypeahead = forwardRef(function CompositeTypeahead(
   return createElement(TagName, htmlProps);
 });
 
-export interface CompositeTypeaheadOptions<_T extends ElementType = TagName>
-  extends Options {
+export interface CompositeTypeaheadOptions<
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
-   * [`useCompositeStore`](https://ariakit.org/reference/use-composite-store)
+   * [`useCompositeStore`](https://ariakit.com/reference/use-composite-store)
    * hook. If not provided, the closest
-   * [`Composite`](https://ariakit.org/reference/composite) or
-   * [`CompositeProvider`](https://ariakit.org/reference/composite-provider)
+   * [`Composite`](https://ariakit.com/reference/composite) or
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
    */
   store?: CompositeStore;

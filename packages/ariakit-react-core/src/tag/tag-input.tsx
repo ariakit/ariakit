@@ -58,7 +58,7 @@ function splitValueByDelimiter(value: string, delimiters: (string | RegExp)[]) {
 
 /**
  * Returns props to create a `TagInput` component.
- * @see https://ariakit.org/components/tag
+ * @see https://ariakit.com/components/tag
  * @example
  * ```jsx
  * const props = useTagInput();
@@ -125,7 +125,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
       const { value } = currentTarget;
       // Set the value in the store if the value changes
       if (setValueOnChangeProp(event)) {
-        UndoManager.execute(() => {
+        void UndoManager.execute(() => {
           store.setValue(value);
           // When the value is not set synchronously, the selection range may be
           // lost.
@@ -157,7 +157,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
           for (const tagValue of values) {
             store.addValue(tagValue);
           }
-          UndoManager.execute(() => {
+          void UndoManager.execute(() => {
             store.setValue(trailingvalue);
             if (trailingvalue === prevValue) return;
             return () => store.setValue(prevValue);
@@ -200,16 +200,16 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
 
 /**
  * Renders an input element within a
- * [`TagList`](https://ariakit.org/reference/tag-list) component. This component
+ * [`TagList`](https://ariakit.com/reference/tag-list) component. This component
  * lets users input tag values that are added to the store when the input value
  * changes or when the user pastes text into the input element, based on the
- * [`delimiter`](https://ariakit.org/reference/tag-input#delimiter) prop.
+ * [`delimiter`](https://ariakit.com/reference/tag-input#delimiter) prop.
  *
  * This component can be combined with a
- * [`Combobox`](https://ariakit.org/reference/combobox) component using the
- * [`render`](https://ariakit.org/reference/tag-input#render) prop to create a
+ * [`Combobox`](https://ariakit.com/reference/combobox) component using the
+ * [`render`](https://ariakit.com/reference/tag-input#render) prop to create a
  * tag input with suggestions.
- * @see https://ariakit.org/components/tag
+ * @see https://ariakit.com/components/tag
  * @example
  * ```jsx {14}
  * <TagProvider>
@@ -235,13 +235,14 @@ export const TagInput = forwardRef(function TagInput(props: TagInputProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface TagInputOptions<T extends ElementType = TagName>
-  extends CompositeItemOptions<T> {
+export interface TagInputOptions<
+  T extends ElementType = TagName,
+> extends CompositeItemOptions<T> {
   /**
    * Object returned by the
-   * [`useTagStore`](https://ariakit.org/reference/use-tag-store) hook. If not
+   * [`useTagStore`](https://ariakit.com/reference/use-tag-store) hook. If not
    * provided, the closest
-   * [`TagProvider`](https://ariakit.org/reference/tag-provider) component's
+   * [`TagProvider`](https://ariakit.com/reference/tag-provider) component's
    * context will be used.
    */
   store?: TagStore;
@@ -264,7 +265,7 @@ export interface TagInputOptions<T extends ElementType = TagName>
    * Determines if tag values should be added to the store when the input value
    * is pasted. The values are extracted from the clipboard text and
    * automatically processed with the
-   * [`delimiter`](https://ariakit.org/reference/tag-input#delimiter) prop.
+   * [`delimiter`](https://ariakit.com/reference/tag-input#delimiter) prop.
    *
    * This can be either a boolean or a callback that receives an event with an
    * extra `values` property and should return a boolean.
@@ -276,7 +277,7 @@ export interface TagInputOptions<T extends ElementType = TagName>
   /**
    * Determines if the tag value should be added to the store when the input
    * value changes. The tag value is automatically processed with the
-   * [`delimiter`](https://ariakit.org/reference/tag-input#delimiter) prop.
+   * [`delimiter`](https://ariakit.com/reference/tag-input#delimiter) prop.
    *
    * This can be either a boolean or a callback that receives an event with an
    * extra `values` property and should return a boolean.
@@ -287,10 +288,10 @@ export interface TagInputOptions<T extends ElementType = TagName>
   >;
   /**
    * Whether the tag
-   * [`value`](https://ariakit.org/reference/tag-provider#value) state
+   * [`value`](https://ariakit.com/reference/tag-provider#value) state
    * should be updated when the input value changes. This is useful if you want
    * to customize how the store
-   * [`value`](https://ariakit.org/reference/tag-provider#value) is updated
+   * [`value`](https://ariakit.com/reference/tag-provider#value) is updated
    * based on the input element's value.
    * @default true
    */

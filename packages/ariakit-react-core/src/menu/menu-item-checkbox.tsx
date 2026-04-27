@@ -1,9 +1,9 @@
 import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
 import type { ElementType } from "react";
 import { useEffect } from "react";
+import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
 import { useCheckbox } from "../checkbox/checkbox.tsx";
-import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import { useInitialValue } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
 import {
@@ -56,7 +56,7 @@ function getValue(
 
 /**
  * Returns props to create a `MenuItemCheckbox` component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * const store = useMenuStore({ defaultValues: { apple: false } });
@@ -138,16 +138,16 @@ export const useMenuItemCheckbox = createHook<TagName, MenuItemCheckboxOptions>(
 
 /**
  * Renders a [`menuitemcheckbox`](https://w3c.github.io/aria/#menuitemcheckbox)
- * element within a [`Menu`](https://ariakit.org/reference/menu) component. The
- * [`name`](https://ariakit.org/reference/menu-item-checkbox#name) prop must be
+ * element within a [`Menu`](https://ariakit.com/reference/menu) component. The
+ * [`name`](https://ariakit.com/reference/menu-item-checkbox#name) prop must be
  * provided to identify the field in the
- * [`values`](https://ariakit.org/reference/menu-provider#values) state.
+ * [`values`](https://ariakit.com/reference/menu-provider#values) state.
  *
- * A [`MenuItemCheck`](https://ariakit.org/reference/menu-item-check) can be
+ * A [`MenuItemCheck`](https://ariakit.com/reference/menu-item-check) can be
  * used to render a checkmark inside this component.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
- * The [`name`](https://ariakit.org/reference/menu-item-checkbox#name) prop can
+ * The [`name`](https://ariakit.com/reference/menu-item-checkbox#name) prop can
  * refer to a single value in the state:
  * ```jsx {4-7}
  * <MenuProvider defaultValues={{ warnBeforeQuitting: true }}>
@@ -162,7 +162,7 @@ export const useMenuItemCheckbox = createHook<TagName, MenuItemCheckboxOptions>(
  * ```
  * @example
  * Or it can refer to an array of values, in which case the
- * [`value`](https://ariakit.org/reference/menu-item-checkbox#value) prop must
+ * [`value`](https://ariakit.com/reference/menu-item-checkbox#value) prop must
  * be provided:
  * ```jsx {4-9}
  * <MenuProvider defaultValues={{ watching: ["issues"] }}>
@@ -186,33 +186,32 @@ export const MenuItemCheckbox = memo(
 );
 
 export interface MenuItemCheckboxOptions<T extends ElementType = TagName>
-  extends MenuItemOptions<T>,
-    Omit<CheckboxOptions<T>, "store"> {
+  extends MenuItemOptions<T>, Omit<CheckboxOptions<T>, "store"> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.org/reference/use-menu-store) hook. If not
-   * provided, the closest [`Menu`](https://ariakit.org/reference/menu) or
-   * [`MenuProvider`](https://ariakit.org/reference/menu-provider) components'
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. If not
+   * provided, the closest [`Menu`](https://ariakit.com/reference/menu) or
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
    */
   store?: MenuStore;
   /**
    * The name of the field in the
-   * [`values`](https://ariakit.org/reference/menu-provider#values) state.
+   * [`values`](https://ariakit.com/reference/menu-provider#values) state.
    *
    * Live examples:
-   * - [MenuItemCheckbox](https://ariakit.org/examples/menu-item-checkbox)
+   * - [MenuItemCheckbox](https://ariakit.com/examples/menu-item-checkbox)
    */
   name: string;
   /**
    * The controlled checked state of the element. It will set the menu
-   * [`values`](https://ariakit.org/reference/menu-provider#values) state if
+   * [`values`](https://ariakit.com/reference/menu-provider#values) state if
    * provided.
    */
   checked?: boolean;
   /**
    * The default checked state of the element. It will set the default value in
-   * the menu [`values`](https://ariakit.org/reference/menu-provider#values)
+   * the menu [`values`](https://ariakit.com/reference/menu-provider#values)
    * state if provided.
    */
   defaultChecked?: boolean;

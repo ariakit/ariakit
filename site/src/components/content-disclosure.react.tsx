@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as ak from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type * as React from "react";
 
 export interface ContentDisclosureProps extends React.ComponentProps<"div"> {
@@ -25,7 +25,7 @@ export function ContentDisclosure({
       <div
         {...props}
         className={clsx(
-          "ak-disclosure has-aria-expanded:ak-disclosure_open ak-frame-field ak-container",
+          "ak-disclosure has-aria-expanded:ak-disclosure_open ak-frame ak-frame-field/field ak-container",
           "ak-container-size-[calc(min(theme(--container-content),100%)+var(--ak-frame-padding)*2)]/0",
           props.className,
         )}
@@ -59,7 +59,7 @@ export function ContentDisclosureContent(props: ContentDisclosureContentProps) {
     <ak.DisclosureContent
       {...props}
       className={clsx(
-        "ak-disclosure-content *:ak-frame-force-card @max-3xl:*:px-0",
+        "ak-disclosure-content *:ak-frame *:ak-frame-force *:ak-frame-card/card @max-3xl:*:px-0",
         props.className,
       )}
     >

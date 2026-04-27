@@ -8,62 +8,32 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
-import styles from "#app/styles/styles.json" with { type: "json" };
+import stylesRaw from "#app/styles/styles.json" with { type: "json" };
+import type {
+  AtPropertyDef,
+  ModuleJson,
+  PropertyDecl,
+  StyleDef,
+  StyleDependency,
+  StyleType,
+  StylesJson,
+  UtilityDef,
+  VariantDef,
+} from "./styles-json-types.ts";
 
-export type StyleType = "utility" | "variant" | "at-property";
+const styles = stylesRaw as unknown as StylesJson;
 
-export interface StyleDependency {
-  type: StyleType;
-  name: string;
-  module?: string;
-  import?: string;
-}
-
-export interface PropertyDecl {
-  name: string;
-  value: string | PropertyDecl[] | Record<string, never>;
-}
-
-export interface AtPropertyDef {
-  name: string;
-  syntax: string | null;
-  inherits: string | null;
-  initialValue: string | null;
-}
-
-export interface UtilityDef {
-  name: string;
-  type: "utility";
-  properties: PropertyDecl[];
-  dependencies: StyleDependency[];
-}
-
-export interface VariantDef {
-  name: string;
-  type: "variant";
-  properties: PropertyDecl[];
-  dependencies: StyleDependency[];
-}
-
-export type StyleDef = UtilityDef | VariantDef | AtPropertyDef;
-
-export interface ModuleJson {
-  id: string;
-  path: string;
-  atProperties: Record<string, AtPropertyDef>;
-  utilities: Record<string, UtilityDef>;
-  variants: Record<string, VariantDef>;
-}
-
-export interface StylesJson {
-  version: number;
-  modules: ModuleJson[];
-  index: {
-    utilities: Record<string, { module: string }>;
-    variants: Record<string, { module: string }>;
-    atProperties: Record<string, { module: string }>;
-  };
-}
+export type {
+  AtPropertyDef,
+  ModuleJson,
+  PropertyDecl,
+  StyleDef,
+  StyleDependency,
+  StyleType,
+  StylesJson,
+  UtilityDef,
+  VariantDef,
+} from "./styles-json-types.ts";
 
 /**
  * Cache module lookups to avoid repeated scans.
@@ -73,10 +43,7 @@ const moduleById = new Map<string, ModuleJson>();
 function ensureModuleCache() {
   if (moduleById.size) return;
   for (const mod of styles.modules) {
-    // TODO: We need to cast mod to ModuleJson to avoid type errors from the
-    // root tsconfig.json. After we finish the migration to the new app, we can
-    // remove this cast.
-    moduleById.set(mod.id, mod as unknown as ModuleJson);
+    moduleById.set(mod.id, mod);
   }
 }
 
@@ -125,6 +92,30 @@ function toRegexFromWildcard(pattern: string): RegExp {
   return new RegExp(`^${regexBody}$`);
 }
 
+function splitVariantSegments(token: string) {
+  const segments: string[] = [];
+  let start = 0;
+  let bracketDepth = 0;
+  let parenDepth = 0;
+  for (let i = 0; i < token.length; i++) {
+    const char = token.charAt(i);
+    if (char === "[") {
+      bracketDepth++;
+    } else if (char === "]") {
+      bracketDepth = Math.max(0, bracketDepth - 1);
+    } else if (char === "(") {
+      parenDepth++;
+    } else if (char === ")") {
+      parenDepth = Math.max(0, parenDepth - 1);
+    } else if (char === ":" && bracketDepth === 0 && parenDepth === 0) {
+      segments.push(token.slice(start, i));
+      start = i + 1;
+    }
+  }
+  segments.push(token.slice(start));
+  return segments;
+}
+
 type IndexMap = Record<string, { module: string }>;
 
 const wildcardCache = {
@@ -136,7 +127,10 @@ function getWildcardIndex(type: Exclude<StyleType, "at-property">) {
   if (type === "utility") {
     if (!wildcardCache.utilities) {
       const out: Array<{ key: string; module: string; re: RegExp }> = [];
-      for (const [key, value] of Object.entries(styles.index.utilities)) {
+      for (const [key, value] of Object.entries(styles.index.utilities) as [
+        string,
+        { module: string },
+      ][]) {
         if (!isWildcard(key)) continue;
         out.push({ key, module: value.module, re: toRegexFromWildcard(key) });
       }
@@ -146,7 +140,10 @@ function getWildcardIndex(type: Exclude<StyleType, "at-property">) {
   }
   if (!wildcardCache.variants) {
     const out: Array<{ key: string; module: string; re: RegExp }> = [];
-    for (const [key, value] of Object.entries(styles.index.variants)) {
+    for (const [key, value] of Object.entries(styles.index.variants) as [
+      string,
+      { module: string },
+    ][]) {
       if (!isWildcard(key)) continue;
       out.push({ key, module: value.module, re: toRegexFromWildcard(key) });
     }
@@ -170,14 +167,13 @@ export function scanAkTokens(...contents: string[]): Set<string> {
   for (const content of contents) {
     if (!content) continue;
     let match: RegExpExecArray | null;
-    // eslint-disable-next-line no-cond-assign
     while ((match = re.exec(content)) !== null) {
       const token = match[0];
       if (!token) continue;
       // Split non-bracket tokens on ':' to capture group-/peer- prefixed forms
       // like "group-ak-command-disabled:ak-badge" → ["ak-command-disabled",
       // "ak-badge"]
-      const parts = token.split(":");
+      const parts = splitVariantSegments(token);
       for (const part of parts) {
         if (part.startsWith("ak-")) {
           tokens.add(part);

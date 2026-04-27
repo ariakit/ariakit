@@ -7,9 +7,9 @@ import { useMenuStore } from "./menu-store.ts";
 type Values = MenuStoreValues;
 
 /**
- * Provides a menu store to [Menu](https://ariakit.org/components/menu)
+ * Provides a menu store to [Menu](https://ariakit.com/components/menu)
  * components.
- * @see https://ariakit.org/components/menu
+ * @see https://ariakit.com/components/menu
  * @example
  * ```jsx
  * <MenuProvider placement="top">
@@ -35,7 +35,8 @@ export function MenuProvider(props: MenuProviderProps = {}) {
   );
 }
 
-export interface MenuProviderProps<T extends Values = Values>
-  extends MenuStoreProps<T> {
+export interface MenuProviderProps<
+  T extends Values = Values,
+> extends MenuStoreProps<T> {
   children?: ReactNode;
 }

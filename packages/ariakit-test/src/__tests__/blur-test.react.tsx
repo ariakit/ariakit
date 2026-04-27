@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { expect, test } from "vitest";
 import { blur } from "../blur.ts";
 import { q, render } from "../react.tsx";
 import { useAllEvents } from "./use-all-events.ts";
@@ -16,7 +17,7 @@ test("blur", async () => {
     );
   };
 
-  render(<Test />);
+  await render(<Test />);
 
   expect(q.button()).toHaveFocus();
   await blur(q.button());

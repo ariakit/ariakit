@@ -8,7 +8,8 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { APIContext } from "astro";
-import { Stripe } from "stripe";
+// oxlint-disable-next-line no-named-as-default
+import Stripe from "stripe";
 import { findInOrder } from "./array.ts";
 import type { User } from "./auth.ts";
 import {
@@ -43,7 +44,13 @@ function createHttpClient(enabled: boolean) {
   return Stripe.createFetchHttpClient(
     async (...args: Parameters<typeof fetch>) => {
       const { info, error } = logger.start();
-      const url = new URL(args[0].toString());
+      const input = args[0];
+      const url =
+        typeof input === "string"
+          ? new URL(input)
+          : input instanceof URL
+            ? input
+            : new URL(input.url);
       const response = await fetch(...args);
       if (response.ok) {
         info(url.pathname);
@@ -85,8 +92,15 @@ export function expanded(
 }
 
 export function isSalePromo(promo: Stripe.PromotionCode | Stripe.Coupon) {
-  const coupon = "coupon" in promo ? promo.coupon : promo;
+  const coupon = "promotion" in promo ? promo.promotion.coupon : promo;
+  if (!coupon || typeof coupon === "string" || coupon.deleted) return false;
   return coupon.metadata?.type === SALE_PROMO_TYPE;
+}
+
+export function getPromotionCoupon(promo: Stripe.PromotionCode) {
+  const coupon = promo.promotion.coupon;
+  if (!coupon || typeof coupon === "string") return null;
+  return coupon;
 }
 
 export interface CreateSalePromoParams {
@@ -131,7 +145,10 @@ export async function createSalePromo({
   const expiresAtTime = expiresAt ? getUnixTime(expiresAt) : undefined;
 
   const promo = await stripe.promotionCodes.create({
-    coupon: coupon.id,
+    promotion: {
+      type: "coupon",
+      coupon: coupon.id,
+    },
     customer: customer || undefined,
     max_redemptions: maxRedemptions,
     expires_at: expiresAtTime,
@@ -204,7 +221,8 @@ export function parsePlusPriceKey(key: string) {
 }
 
 export interface PlusPrice
-  extends PriceData,
+  extends
+    PriceData,
     Pick<
       PromoData,
       "percentOff" | "expiresAt" | "maxRedemptions" | "timesRedeemed"
@@ -308,7 +326,7 @@ export async function createCheckout({
     price.taxBehavior === stripePrice.tax_behavior &&
     compareCurrency(price.currency, stripePrice.currency);
 
-  const lineItem: Stripe.Checkout.SessionCreateParams.LineItem = isSamePrice
+  const lineItem = isSamePrice
     ? { price: price.id, quantity: 1 }
     : {
         quantity: 1,
@@ -324,7 +342,7 @@ export async function createCheckout({
     customer,
     line_items: [lineItem],
     mode: "payment",
-    ui_mode: "embedded",
+    ui_mode: "embedded_page",
     invoice_creation: { enabled: true },
     automatic_tax: { enabled: true },
     tax_id_collection: { enabled: true },
