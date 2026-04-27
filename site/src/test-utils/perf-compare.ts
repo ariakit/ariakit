@@ -27,6 +27,7 @@ interface ComparisonRow {
 interface ComparisonSummary {
   rows: ComparisonRow[];
   hasSignificantChanges: boolean;
+  currentResults: PerfResult[];
   newTests: PerfResult[];
   removedTests: PerfResult[];
 }
@@ -87,6 +88,14 @@ function formatDelta(delta: number, percent: number, baseline: number): string {
     return `${sign}${formatMs(delta)}`;
   }
   return `${sign}${formatMs(delta)} (${sign}${percent.toFixed(0)}%)`;
+}
+
+function formatPercent(value: number): string {
+  return `${value.toFixed(0)}%`;
+}
+
+function escapeTableCell(value: string): string {
+  return value.replace(/\|/g, "\\|").replace(/\s+/g, " ").trim();
 }
 
 function resultKey(result: PerfResult): string {
@@ -150,6 +159,7 @@ function compare(): ComparisonSummary {
   return {
     rows,
     hasSignificantChanges: rows.some((r) => r.significant),
+    currentResults: current,
     newTests,
     removedTests,
   };
@@ -189,9 +199,62 @@ function formatSummaryTable(rows: ComparisonRow[], keys: string[]): string[] {
   return lines;
 }
 
+function formatScriptProfile(result: PerfResult): string[] {
+  const profile = result.profiles?.script;
+  if (!profile) return [];
+  if (profile.length === 0) return [];
+
+  const lines: string[] = [];
+  lines.push("#### Script profile");
+  lines.push("");
+  lines.push("| Function | Self | Total | Hits | Source |");
+  lines.push("|----------|------|-------|------|--------|");
+
+  for (const item of profile) {
+    const source = `${item.url}:${item.line}:${item.column}`;
+    lines.push(
+      `| ${escapeTableCell(item.functionName)} | ${formatMs(item.selfTime)} | ${formatMs(item.totalTime)} | ${item.hitCount} | ${escapeTableCell(source)} |`,
+    );
+  }
+
+  lines.push("");
+  return lines;
+}
+
+function formatSelectorProfile(result: PerfResult): string[] {
+  const profile = result.profiles?.selectors;
+  if (!profile) return [];
+  if (profile.length === 0) return [];
+
+  const lines: string[] = [];
+  lines.push("#### Selector profile");
+  lines.push("");
+  lines.push(
+    "| Selector | Elapsed | Attempts | Matches | Slow non-match | Stylesheet |",
+  );
+  lines.push(
+    "|----------|---------|----------|---------|----------------|------------|",
+  );
+
+  for (const item of profile) {
+    lines.push(
+      `| ${escapeTableCell(item.selector)} | ${formatMs(item.elapsed)} | ${item.matchAttempts} | ${item.matchCount} | ${formatPercent(item.slowPathNonMatchPercent)} | ${escapeTableCell(item.styleSheetUrl || item.styleSheetId)} |`,
+    );
+  }
+
+  lines.push("");
+  return lines;
+}
+
+function formatProfiles(result?: PerfResult): string[] {
+  if (!result) return [];
+  return [...formatScriptProfile(result), ...formatSelectorProfile(result)];
+}
+
 function formatDetailedBreakdown(
   rows: ComparisonRow[],
   keys: string[],
+  currentByKey: Map<string, PerfResult>,
 ): string[] {
   const lines: string[] = [];
   for (const key of keys) {
@@ -216,12 +279,23 @@ function formatDetailedBreakdown(
       );
     }
     lines.push("");
+    lines.push(...formatProfiles(currentByKey.get(key)));
   }
   return lines;
 }
 
 function formatMarkdown(summary: ComparisonSummary): string {
-  const { rows, hasSignificantChanges, newTests, removedTests } = summary;
+  const {
+    rows,
+    hasSignificantChanges,
+    currentResults,
+    newTests,
+    removedTests,
+  } = summary;
+  const currentByKey = new Map<string, PerfResult>();
+  for (const result of currentResults) {
+    currentByKey.set(resultKey(result), result);
+  }
 
   const allKeys = [...new Set(rows.map((r) => rowKey(r)))];
   const significantKeys = allKeys.filter((key) =>
@@ -248,7 +322,7 @@ function formatMarkdown(summary: ComparisonSummary): string {
   lines.push(`<details>`);
   lines.push(`<summary>Full breakdown (${totalTests} tests)</summary>`);
   lines.push("");
-  lines.push(...formatDetailedBreakdown(rows, allKeys));
+  lines.push(...formatDetailedBreakdown(rows, allKeys, currentByKey));
 
   if (newTests.length > 0) {
     lines.push("### New tests (no baseline)");
@@ -263,6 +337,14 @@ function formatMarkdown(summary: ComparisonSummary): string {
       lines.push(`| ${cells.join(" | ")} |`);
     }
     lines.push("");
+
+    for (const result of newTests) {
+      const profileLines = formatProfiles(result);
+      if (profileLines.length === 0) continue;
+      lines.push(`#### ${result.label}`);
+      lines.push("");
+      lines.push(...profileLines);
+    }
   }
 
   if (removedTests.length > 0) {
