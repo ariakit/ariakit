@@ -51,6 +51,27 @@
   --spacing: 0.25em;
   --spacing-px: 1px;
 
+  --radius-container: var(--radius-xl);
+  --spacing-container: --spacing(1);
+
+  --radius-tooltip: var(--radius-lg);
+  --spacing-tooltip: --spacing(1);
+
+  --radius-dialog: var(--radius-2xl);
+  --spacing-dialog: --spacing(4);
+
+  --radius-playground: calc(var(--radius) * 3.5);
+  --spacing-playground: --spacing(0);
+
+  --radius-field: var(--radius-lg);
+  --spacing-field: 0.75em;
+
+  --radius-card: var(--radius-xl);
+  --spacing-card: --spacing(4);
+
+  --radius-badge: var(--radius-full);
+  --spacing-badge: --spacing(1.5);
+
   --duration-tabs: 100ms;
   --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
 
