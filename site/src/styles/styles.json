@@ -1361,7 +1361,7 @@
               "name": "&&",
               "value": [
                 {
-                  "name": "@apply ak-edge-5 ak-layer-mix-80 ak-ink-0",
+                  "name": "@apply ak-edge-5 ak-layer-mix-20 ak-ink-0",
                   "value": {}
                 }
               ]
@@ -1384,7 +1384,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-mix-80",
+              "name": "ak-layer-mix-20",
               "import": "@ariakit/tailwind"
             },
             {

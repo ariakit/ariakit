@@ -80,7 +80,7 @@
 @utility ak-checkbox-card_disabled {
   --ak-checkbox-disabled: 1;
   && {
-    @apply ak-edge-5 ak-layer-mix-80 ak-ink-0;
+    @apply ak-edge-5 ak-layer-mix-20 ak-ink-0;
   }
   svg,
   img {
