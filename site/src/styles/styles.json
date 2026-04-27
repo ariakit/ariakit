@@ -257,7 +257,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color",
+              "name": "ak-layer-(color:--ak-badge-color)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -272,7 +272,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-edge-(color",
+              "name": "ak-edge-(color:--ak-badge-color)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -292,7 +292,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-text-(color",
+              "name": "ak-text-(color:--ak-badge-color)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -1169,7 +1169,7 @@
             {
               "type": "utility",
               "name": "ak-aurora-(--ak-button-aurora-color-1)/(--ak-button-aurora-color-2)",
-              "import": "@ariakit/tailwind"
+              "module": "aurora"
             },
             {
               "type": "variant",
@@ -1294,7 +1294,7 @@
             {
               "type": "utility",
               "name": "ak-command-depth-4",
-              "import": "@ariakit/tailwind"
+              "module": "command"
             }
           ]
         },
@@ -1676,7 +1676,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color",
+              "name": "ak-layer-(color:--ak-checkbox-card-edge)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -1708,7 +1708,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color",
+              "name": "ak-layer-(color:--ak-layer-parent)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -2497,7 +2497,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color",
+              "name": "ak-layer-(color:--ak-tab-bg)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -2888,7 +2888,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color",
+              "name": "ak-layer-(color:--ak-tab-bg)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -3685,7 +3685,7 @@
             {
               "type": "utility",
               "name": "ak-command-depth-x-3",
-              "import": "@ariakit/tailwind"
+              "module": "command"
             },
             {
               "type": "utility",
@@ -4528,7 +4528,7 @@
             {
               "type": "utility",
               "name": "ak-nav-gap-1",
-              "import": "@ariakit/tailwind"
+              "module": "nav"
             },
             {
               "type": "utility",
@@ -4691,7 +4691,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color",
+              "name": "ak-layer-(color:--ak-layer)",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -5214,7 +5214,7 @@
             {
               "type": "utility",
               "name": "ak-disclosure-icon-(--ak-nav-icon-size)",
-              "import": "@ariakit/tailwind"
+              "module": "disclosure"
             }
           ]
         },
@@ -6695,7 +6695,7 @@
             {
               "type": "utility",
               "name": "ak-progress-thickness-2",
-              "import": "@ariakit/tailwind"
+              "module": "progress"
             },
             {
               "type": "utility",
@@ -6852,11 +6852,11 @@
             {
               "type": "utility",
               "name": "ak-progress-thickness-2",
-              "import": "@ariakit/tailwind"
+              "module": "progress"
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color",
+              "name": "ak-layer-(color:--ak-progress-layer-parent)",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -7051,17 +7051,17 @@
             {
               "type": "utility",
               "name": "ak-list-item-padding-2",
-              "import": "@ariakit/tailwind"
+              "module": "list"
             },
             {
               "type": "utility",
               "name": "ak-list-item-border-1",
-              "import": "@ariakit/tailwind"
+              "module": "list"
             },
             {
               "type": "utility",
               "name": "ak-list-item-border-0",
-              "import": "@ariakit/tailwind"
+              "module": "list"
             }
           ]
         },
@@ -7188,12 +7188,12 @@
             {
               "type": "utility",
               "name": "ak-list-gap-4",
-              "import": "@ariakit/tailwind"
+              "module": "list"
             },
             {
               "type": "utility",
               "name": "ak-list-leading-normal",
-              "import": "@ariakit/tailwind"
+              "module": "list"
             },
             {
               "type": "utility",
@@ -7203,7 +7203,7 @@
             {
               "type": "utility",
               "name": "ak-list-item-padding-1",
-              "import": "@ariakit/tailwind"
+              "module": "list"
             },
             {
               "type": "utility",
@@ -7218,7 +7218,7 @@
             {
               "type": "utility",
               "name": "ak-list-gap-2",
-              "import": "@ariakit/tailwind"
+              "module": "list"
             },
             {
               "type": "utility",
@@ -8142,17 +8142,17 @@
             {
               "type": "utility",
               "name": "ak-progress-value-(--value)",
-              "import": "@ariakit/tailwind"
+              "module": "progress"
             },
             {
               "type": "utility",
               "name": "ak-progress-thickness-[0.15em]",
-              "import": "@ariakit/tailwind"
+              "module": "progress"
             },
             {
               "type": "utility",
               "name": "ak-progress-thickness-[calc(30%+0.25%*var(--contrast,0))]",
-              "import": "@ariakit/tailwind"
+              "module": "progress"
             },
             {
               "type": "variant",
@@ -9904,12 +9904,12 @@
             {
               "type": "utility",
               "name": "ak-sidebar-max-width-60",
-              "import": "@ariakit/tailwind"
+              "module": "sidebar"
             },
             {
               "type": "utility",
               "name": "ak-sidebar-min-width-14",
-              "import": "@ariakit/tailwind"
+              "module": "sidebar"
             }
           ]
         },
@@ -10274,7 +10274,7 @@
             {
               "type": "utility",
               "name": "ak-prose-text-base/relaxed",
-              "import": "@ariakit/tailwind"
+              "module": "prose"
             },
             {
               "type": "utility",
@@ -10393,12 +10393,12 @@
             {
               "type": "utility",
               "name": "ak-list-leading-(--ak-prose-leading)",
-              "import": "@ariakit/tailwind"
+              "module": "list"
             },
             {
               "type": "utility",
               "name": "ak-list-gap-(--ak-prose-gap)",
-              "import": "@ariakit/tailwind"
+              "module": "list"
             },
             {
               "type": "utility",

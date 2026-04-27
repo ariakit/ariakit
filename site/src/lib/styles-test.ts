@@ -56,6 +56,16 @@ test("scanAkTokensInFiles finds tokens inside group-/peer- ak variant prefixes",
   expect(tokens.has("ak-text-l-80")).toBe(true);
 });
 
+test("scanAkTokensInFiles preserves colons inside arbitrary values", () => {
+  const tokens = scanAkTokens(`
+    <div className="ak-layer-(color:--ak-layer-parent) ak-dark:ak-edge-(color:--ak-edge)"></div>
+  `);
+  expect(tokens.has("ak-layer-(color:--ak-layer-parent)")).toBe(true);
+  expect(tokens.has("ak-edge-(color:--ak-edge)")).toBe(true);
+  expect(tokens.has("ak-layer-(color")).toBe(false);
+  expect(tokens.has("ak-edge-(color")).toBe(false);
+});
+
 test("styleDefToCss renders @property block", () => {
   const def = getStyleDefinition("--ak-tab-border-width", "at-property");
   expect(def).toBeTruthy();
@@ -295,4 +305,48 @@ test("utilities include variant dependencies via not-* ak prefix", () => {
     name: "ak-command-disabled",
     module: "command",
   });
+});
+
+test("generated style dependencies preserve arbitrary values", () => {
+  const tab = getStyleDefinition("ak-tab-panel", "utility");
+  expect(tab?.dependencies).toEqual(
+    expect.arrayContaining([
+      {
+        type: "utility",
+        name: "ak-layer-(color:--ak-tab-bg)",
+        import: "@ariakit/tailwind",
+      },
+    ]),
+  );
+});
+
+test("generated style dependencies resolve local wildcard utilities", () => {
+  const progress = getStyleDefinition("ak-progress", "utility");
+  expect(progress?.dependencies).toEqual(
+    expect.arrayContaining([
+      {
+        type: "utility",
+        name: "ak-progress-thickness-2",
+        module: "progress",
+      },
+    ]),
+  );
+  const checkProgress = getStyleDefinition(
+    "ak-list-item-check-progress-*",
+    "utility",
+  );
+  expect(checkProgress?.dependencies).toEqual(
+    expect.arrayContaining([
+      {
+        type: "utility",
+        name: "ak-progress-thickness-[0.15em]",
+        module: "progress",
+      },
+      {
+        type: "utility",
+        name: "ak-progress-thickness-[calc(30%+0.25%*var(--contrast,0))]",
+        module: "progress",
+      },
+    ]),
+  );
 });

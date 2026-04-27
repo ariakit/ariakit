@@ -92,6 +92,30 @@ function toRegexFromWildcard(pattern: string): RegExp {
   return new RegExp(`^${regexBody}$`);
 }
 
+function splitVariantSegments(token: string) {
+  const segments: string[] = [];
+  let start = 0;
+  let bracketDepth = 0;
+  let parenDepth = 0;
+  for (let i = 0; i < token.length; i++) {
+    const char = token.charAt(i);
+    if (char === "[") {
+      bracketDepth++;
+    } else if (char === "]") {
+      bracketDepth = Math.max(0, bracketDepth - 1);
+    } else if (char === "(") {
+      parenDepth++;
+    } else if (char === ")") {
+      parenDepth = Math.max(0, parenDepth - 1);
+    } else if (char === ":" && bracketDepth === 0 && parenDepth === 0) {
+      segments.push(token.slice(start, i));
+      start = i + 1;
+    }
+  }
+  segments.push(token.slice(start));
+  return segments;
+}
+
 type IndexMap = Record<string, { module: string }>;
 
 const wildcardCache = {
@@ -149,7 +173,7 @@ export function scanAkTokens(...contents: string[]): Set<string> {
       // Split non-bracket tokens on ':' to capture group-/peer- prefixed forms
       // like "group-ak-command-disabled:ak-badge" → ["ak-command-disabled",
       // "ak-badge"]
-      const parts = token.split(":");
+      const parts = splitVariantSegments(token);
       for (const part of parts) {
         if (part.startsWith("ak-")) {
           tokens.add(part);
