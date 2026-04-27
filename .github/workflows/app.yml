@@ -246,28 +246,32 @@ jobs:
 
       - name: Find base app artifact
         id: find-base-artifact
-        continue-on-error: true
         uses: actions/github-script@v9
         with:
           script: |
+            const baseSha = '${{ github.event.pull_request.base.sha }}';
             const runs = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'app.yml',
               branch: '${{ github.event.pull_request.base.ref }}',
+              head_sha: baseSha,
               status: 'success',
               per_page: 1,
             });
             const run = runs.data.workflow_runs[0];
             if (!run) {
-              core.setFailed('No successful run found');
+              core.notice(
+                `No successful app.yml run found for base SHA ${baseSha}. ` +
+                  'Building base artifacts in this job.',
+              );
               return;
             }
-            core.setOutput('run-id', run.id);
+            core.setOutput('run-id', String(run.id));
 
       - name: Download base app artifact
         id: base-artifact
-        if: steps.find-base-artifact.outcome == 'success'
+        if: steps.find-base-artifact.outputs.run-id != ''
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
@@ -278,7 +282,7 @@ jobs:
 
       - name: Download base Next.js artifact
         id: base-nextjs-artifact
-        if: steps.find-base-artifact.outcome == 'success'
+        if: steps.find-base-artifact.outputs.run-id != ''
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
@@ -310,9 +314,9 @@ jobs:
           mkdir -p /tmp/perf-baseline
           cp site/.perf-results/baseline*.json /tmp/perf-baseline/ 2>/dev/null || true
 
-      # --- Current (PR branch) ---
-      - name: Checkout PR branch
-        run: git checkout -f ${{ github.event.pull_request.head.sha }}
+      # --- Current (merge commit) ---
+      - name: Checkout merge commit
+        run: git checkout -f ${{ github.sha }}
 
       - name: Set up PR environment
         uses: ./.github/workflows/setup
