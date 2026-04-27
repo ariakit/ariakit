@@ -862,11 +862,7 @@ function getPushL(pushValue: Value, baseLightness: Value) {
  * Resolves layer lightness from relative offset and optional absolute input.
  */
 function getLayerL(relativeLightness: Value, absoluteLightness?: VarProperty) {
-  // Floor the parent channel only while darkening, so repeated small negative
-  // offsets converge instead of stacking all the way to black.
-  const darkeningMask = fn.binary(fn.neg(relativeLightness));
-  const baseLightnessFloor = fn.max(l, fn.mul(0.13, darkeningMask));
-  const fallbackLightness = fn.add(baseLightnessFloor, relativeLightness);
+  const fallbackLightness = fn.add(l, relativeLightness);
   return absoluteLightness
     ? fn.var(absoluteLightness, fallbackLightness)
     : fallbackLightness;
