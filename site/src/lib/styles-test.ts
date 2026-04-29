@@ -313,7 +313,7 @@ test("generated style dependencies preserve arbitrary values", () => {
     expect.arrayContaining([
       {
         type: "utility",
-        name: "ak-layer-(color:--ak-tab-bg)",
+        name: "ak-layer-color-(--ak-tab-bg)",
         import: "@ariakit/tailwind",
       },
     ]),

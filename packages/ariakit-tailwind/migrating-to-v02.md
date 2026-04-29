@@ -6,7 +6,7 @@ This guide covers all breaking changes for users of the `@ariakit/tailwind` plug
 
 1. **Explicit base classes.** Utilities like `ak-layer`, `ak-frame`, `ak-text`, and `ak-outline` must now appear as base classes before their modifiers.
 2. **Slash to hyphen.** Opacity/value syntax changes from `/N` to `-N`. Text opacity moves from `ak-text/80` to `ak-ink-80`.
-3. **`color:` prefix for custom properties.** Custom CSS variable colors now use `(color:--var)` instead of `(--var)`.
+3. **Explicit longhands for custom properties.** Overloaded shorthand utilities still need typed arbitrary value hints like `(color:--var)` or `(number:--var)`, but explicit longhands can use custom properties directly, such as `ak-layer-color-(--var)` and `ak-layer-offset-(--var)`.
 4. **Unified `--ak-edge`.** The CSS variables `--ak-layer-border`, `--ak-border`, `--ak-ring`, and `--ak-layer-ring` are all replaced by `--ak-edge`.
 
 ---
@@ -105,13 +105,28 @@ In v0.1, `ak-layer-contrast-<color>` adjusted the color's lightness to contrast 
 + ak-layer ak-layer-canvas
 ```
 
-### `ak-layer-(--var)` → `ak-layer ak-layer-(color:--var)`
+### `ak-layer-(--var)` → `ak-layer ak-layer-color-(--var)`
 
-Custom color layers now use the `color:` prefix.
+Custom color layers can use the explicit color longhand.
 
 ```diff
 - ak-layer-(--my-color)
-+ ak-layer ak-layer-(color:--my-color)
++ ak-layer ak-layer-color-(--my-color)
+```
+
+The overloaded `ak-layer-*` shorthand also still accepts typed custom properties:
+
+```html
+<div class="ak-layer ak-layer-(color:--my-color)"></div>
+```
+
+### `ak-layer-pop-(--var)` → `ak-layer ak-layer-offset-(--var)`
+
+Custom pop values can use the explicit offset longhand.
+
+```diff
+- ak-layer-pop-(--depth)
++ ak-layer ak-layer-offset-(--depth)
 ```
 
 ### Variant prefixes on modifier classes
@@ -146,13 +161,13 @@ When `ak-layer` is NOT already on the element and should only appear conditional
 
 ## Layer mix
 
-### `ak-layer-mix-(--color)/N` → `ak-layer ak-layer-(color:--color) ak-layer-mix-N`
+### `ak-layer-mix-(--color)/N` → `ak-layer ak-layer-color-(--color) ak-layer-mix-N`
 
 The color is now set via `ak-layer-<color>`, and `ak-layer-mix-N` controls how much of that color is mixed into the parent. The number stays the same.
 
 ```diff
 - ak-layer-mix-(--my-color)/15
-+ ak-layer ak-layer-(color:--my-color) ak-layer-mix-15
++ ak-layer ak-layer-color-(--my-color) ak-layer-mix-15
 
 - ak-layer-mix-primary/20
 + ak-layer ak-layer-primary ak-layer-mix-20
@@ -161,7 +176,14 @@ The color is now set via `ak-layer-<color>`, and `ak-layer-mix-N` controls how m
 + ak-layer ak-layer-red-500 ak-layer-mix-30
 ```
 
-Note: `ak-layer-mix-<color>` (with a color directly on the mix utility) is a **new** v0.2 feature for mixing another color into the current layer — it is not the migration path for the old `/N` syntax.
+Note: `ak-layer-mix-<color>` and `ak-layer-mix-color-<color>` set the mix color directly on the mix utility. They are **new** v0.2 features for mixing another color into the current layer, not the migration path for the old `/N` syntax.
+
+For custom properties on the mix utility itself, use explicit longhands:
+
+```diff
+- ak-layer-mix-(color:--my-mix-color) ak-layer-mix-(number:--amount)
++ ak-layer-mix-color-(--my-mix-color) ak-layer-mix-amount-(--amount)
+```
 
 ---
 
@@ -214,17 +236,19 @@ If you need to increase contrast beyond the default, add `ak-text-N` alongside t
 + ak-text ak-text-primary
 
 - ak-text-(--color)/70
-+ ak-text ak-text-(color:--color)
++ ak-text ak-text-color-(--color)
 ```
 
-### `ak-text-(--var)` → `ak-text ak-text-(color:--var)`
+### `ak-text-(--var)` → `ak-text ak-text-color-(--var)`
 
-Custom color text now uses the `color:` prefix.
+Custom color text can use the explicit color longhand.
 
 ```diff
 - ak-text-(--my-color)
-+ ak-text ak-text-(color:--my-color)
++ ak-text ak-text-color-(--my-color)
 ```
+
+For custom push values, use `ak-text-push-(--value)` instead of `ak-text-(number:--value)`.
 
 ---
 
@@ -237,11 +261,11 @@ Custom color text now uses the `color:` prefix.
 + ak-edge-15
 ```
 
-### `ak-edge-(--color)/N` → `ak-edge-(color:--color) ak-edge-N`
+### `ak-edge-(--color)/N` → `ak-edge-color-(--color) ak-edge-N`
 
 ```diff
 - ak-edge-(--my-color)/10
-+ ak-edge-(color:--my-color) ak-edge-10
++ ak-edge-color-(--my-color) ak-edge-10
 ```
 
 ### `ak-edge-contrast-primary` → `ak-edge-primary ak-edge-raw`
@@ -254,6 +278,8 @@ In v0.1, `ak-edge-contrast-<color>` set the edge to a solid color with lightness
 ```
 
 `ak-edge-raw` is shorthand for `ak-edge-100 ak-edge-push-0` — use it when you want the color to be applied exactly as specified. For other combinations, `ak-edge-N` controls alpha (`100` = opaque) and `ak-edge-push-N` controls how far the edge lightness is pushed away from the layer (`0` = the color's natural lightness).
+
+For custom alpha values, use `ak-edge-alpha-(--alpha)` instead of `ak-edge-(number:--alpha)`.
 
 ### CSS variable renames (color)
 

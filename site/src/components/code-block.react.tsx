@@ -819,7 +819,7 @@ export function CodeBlockTabs({
                   >
                     <ak.TabList
                       className={clsx(
-                        "ak-tab-list ak-layer ak-layer-(color:--ak-layer-parent) ak-layer-darken-0 rounded-b-none!",
+                        "ak-tab-list ak-layer ak-layer-color-(--ak-layer-parent) ak-layer-darken-0 rounded-b-none!",
                         hasToolbar && "sm:ak-frame-p-1",
                       )}
                     >

@@ -104,7 +104,7 @@ function OrderCard({ order }: OrderCardProps) {
             className={clsx("text-sm", className)}
             checkmark="after"
             icon={
-              <span className="ak-text ak-text-(color:--status-color)">
+              <span className="ak-text ak-text-color-(--status-color)">
                 {icon}
               </span>
             }

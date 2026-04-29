@@ -12,11 +12,11 @@ import { Icon } from "#app/icons/icon.react.tsx";
 export function BoxPatternsRight() {
   const top = (
     <div className="absolute bottom-full flex flex-col gap-2 inset-e-0 mb-4 w-full h-40 mask-t-from-50% mask-t-to-95% ak-layer ak-layer-6 ak-frame-border ak-frame ak-frame-2xl/2 [--hole:var(--ak-layer-parent)]">
-      <div className="ak-layer ak-layer-(color:--hole) ak-frame ak-frame-p-2 ring flex-1 flex flex-col">
+      <div className="ak-layer ak-layer-color-(--hole) ak-frame ak-frame-p-2 ring flex-1 flex flex-col">
         <div className="flex-1" />
         <div className="ak-layer ak-layer-6 ak-frame ak-frame-p-1 h-8 w-2/3" />
       </div>
-      <div className="ak-layer ak-dark:ak-layer-(color:--hole) ak-frame ak-frame-p-1 ring flex">
+      <div className="ak-layer ak-dark:ak-layer-color-(--hole) ak-frame ak-frame-p-1 ring flex">
         <div className="size-8 ak-frame ak-frame-p-1 ak-layer ak-layer-6 ms-auto" />
       </div>
     </div>
