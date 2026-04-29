@@ -401,8 +401,8 @@ importers:
         specifier: workspace:*
         version: link:../ariakit-react
       clava:
-        specifier: 0.1.15
-        version: 0.1.15
+        specifier: 0.2.0
+        version: 0.2.0
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -5923,8 +5923,8 @@ packages:
     resolution: {integrity: sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==}
     engines: {node: '>=8'}
 
-  clava@0.1.15:
-    resolution: {integrity: sha512-WVRRpOGoNXpdq6N3zlC4qtujwt3y6FI50QO4PW92nhpRT2bC58rPmvgMkiiO3BXOs7lnhoM08ivjERZzgHqIKg==}
+  clava@0.2.0:
+    resolution: {integrity: sha512-J+HuKjs2L86TL3nnrkZlH2VYIIew+dV4gL3Qt3mxmlvhi2pOkH1nzofcBYdnGeR6MGBLc/VfnIcLYXHRo1Hz0A==}
 
   cli-boxes@3.0.0:
     resolution: {integrity: sha512-/lzGpEWL/8PfI0BmBOPRwp0c/wFNX1RdUML3jK/RcSBA9T8mZDdQpqYBKtCFTOfQbwPqWEOpjqW+Fnayc0969g==}
@@ -16257,7 +16257,7 @@ snapshots:
 
   ci-info@4.4.0: {}
 
-  clava@0.1.15:
+  clava@0.2.0:
     dependencies:
       clsx: 2.1.1
       csstype: 3.2.3

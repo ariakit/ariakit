@@ -179,7 +179,7 @@ Use [`ak-edge`](#ak-edge) to fine-tune border, ring, and shadow colors without t
 | `ak-layer-warm-<number>`     | Shifts hue toward `--hue-warm` by `<number>`%, along the shortest arc.                                                               |
 | `ak-layer-cool-<number>`     | Shifts hue toward `--hue-cool` by `<number>`%, along the shortest arc.                                                               |
 | `ak-layer-h-<value>`         | Sets absolute hue. Accepts a named hue (`ak-layer-h-blue`), a degree (`ak-layer-h-240`), or arbitrary value (`ak-layer-h-[240deg]`). |
-| `ak-layer-h-rotate-<number>` | Rotates hue by `<number>` degrees. Accepts named relational hues (`ak-layer-h-rotate-complementary`).                                |
+| `ak-layer-h-rotate-<number>` | Rotates hue by `<number>` degrees.                                                                                                   |
 
 ### Chroma (saturation) adjustments
 
