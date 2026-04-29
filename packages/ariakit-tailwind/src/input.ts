@@ -872,7 +872,7 @@ function getLayerL(relativeLightness: Value, absoluteLightness?: VarProperty) {
   // downstream stages with rel=0 must preserve the current lightness.
   const floorBoost = fn.mul(
     fn.binary(relativeLightness),
-    fn.relu`${LAYER_L_FLOOR} - ${l}`,
+    fn.relu(fn.sub(LAYER_L_FLOOR, l)),
   );
   const fallbackLightness = fn.add(l, relativeLightness, floorBoost);
   return absoluteLightness
