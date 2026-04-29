@@ -196,7 +196,7 @@ function getWildcardColorTokenValue() {
 }
 
 function getLightnessDeclarations(target: VarProperty) {
-  return set(target, getWildcardPercentTokenValue());
+  return [set(target, getWildcardPercentTokenValue())];
 }
 
 /**
@@ -834,7 +834,7 @@ function getLightnessOffset(value: Value) {
  * variable for the expensive expression.
  */
 function withUtilityTokenGate(value: Value, pattern: string) {
-  return fn.calc`${value} + (0 * ${getPercentTokenValue(pattern)})`;
+  return fn.add(value, fn.calc`0 * ${getPercentTokenValue(pattern)}`);
 }
 
 /**
