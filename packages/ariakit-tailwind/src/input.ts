@@ -834,6 +834,8 @@ function getLightnessOffset(value: Value) {
  * variable for the expensive expression.
  */
 function withUtilityTokenGate(value: Value, pattern: string) {
+  // Use raw calc here because fn.mul(0, ...) simplifies to 0, dropping the
+  // --value() dependency that gates this declaration to matching utility tokens.
   return fn.add(value, fn.calc`0 * ${getPercentTokenValue(pattern)}`);
 }
 
