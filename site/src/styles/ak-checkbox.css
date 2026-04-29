@@ -138,12 +138,12 @@
 }
 
 @utility ak-checkbox-card-check_checked {
-  @apply ak-layer ak-layer-(color:--ak-checkbox-card-edge) ak-layer-darken-0 empty:before:ak-icon-check;
+  @apply ak-layer ak-layer-color-(--ak-checkbox-card-edge) ak-layer-darken-0 empty:before:ak-icon-check;
   @apply ring-(--ak-layer) border-0 ring *:block;
 }
 
 @utility ak-checkbox-card-check_disabled {
-  @apply ak-layer ak-layer-(color:--ak-layer-parent) ak-layer-darken-0 ak-ink-0 ak-edge-10;
+  @apply ak-layer ak-layer-color-(--ak-layer-parent) ak-layer-darken-0 ak-ink-0 ak-edge-10;
 }
 
 @utility ak-checkbox-card-check {

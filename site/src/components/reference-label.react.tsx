@@ -43,7 +43,7 @@ export function getReferenceLabelText(
 export function getReferenceLabelColors(kind: ReferenceLabelProps["kind"]) {
   const kindColors = labelColors[kind];
   const className =
-    "ak-text ak-text-(color:--dark) ak-light:ak-text-(color:--light) ak-text-0";
+    "ak-text ak-text-color-(--dark) ak-light:ak-text-color-(--light) ak-text-0";
   const getStyle = (color: typeof kindColors) => {
     return {
       "--dark": color.dark,

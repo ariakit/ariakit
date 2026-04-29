@@ -341,6 +341,29 @@ export default function Example() {
           />
           <Cell label="#165DFC" className="*:ak-text *:ak-text-[#165DFC]" />
           <Layer
+            label="explicit longhands"
+            className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
+          >
+            <Layer className="flex-wrap items-start">
+              <Cell
+                label="layer"
+                className="[--demo-color:oklch(0.55_0.12_260)] [--demo-max-l:80] [--demo-offset:20] ak-layer-color-(--demo-color) ak-layer-offset-(--demo-offset) ak-layer-max-l-(--demo-max-l) *:ak-text"
+              />
+              <Cell
+                label="state"
+                className="[--demo-offset:25] ak-state-offset-(--demo-offset)"
+              />
+              <Cell
+                label="mix"
+                className="[--demo-color:oklch(0.6_0.15_30)] [--demo-mix:35] [--demo-method:oklch] ak-layer-mix-color-(--demo-color) ak-layer-mix-amount-(--demo-mix) ak-layer-mix-method-(--demo-method) *:ak-text"
+              />
+              <Cell
+                label="edge/text/outline"
+                className="[--demo-alpha:35] [--demo-color:oklch(0.58_0.18_145)] [--demo-push:25] ak-edge-color-(--demo-color) ak-edge-alpha-(--demo-alpha) ak-outline ak-outline-color-(--demo-color) ak-outline-push-(--demo-push) outline outline-2 *:ak-text *:ak-text-color-(--demo-color) *:ak-text-push-(--demo-push)"
+              />
+            </Layer>
+          </Layer>
+          <Layer
             label="ak-layer! modifier cascade"
             className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
           >
@@ -477,6 +500,22 @@ export default function Example() {
             <Layers />
           </Layer>
           <Layer className="ak-layer ak-layer-100 ak-frame ak-frame-p-1 ak-frame-border flex-col">
+            <Layers />
+          </Layer>
+        </Layer>
+      </Layer>
+      <Layer
+        label="very dark parent (l < 0.13)"
+        className="ak-layer ak-frame ak-frame-[1.25rem]/1 ak-frame-border flex-col"
+      >
+        <Layer className="flex-wrap items-start">
+          <Layer className="ak-layer ak-layer-black ak-frame ak-frame-p-1 ak-frame-border flex-col">
+            <Layers />
+          </Layer>
+          <Layer className="ak-layer ak-layer-[oklch(0.05_0_0)] ak-frame ak-frame-p-1 ak-frame-border flex-col">
+            <Layers />
+          </Layer>
+          <Layer className="ak-layer ak-layer-[oklch(0.08_0.02_260)] ak-frame ak-frame-p-1 ak-frame-border flex-col">
             <Layers />
           </Layer>
         </Layer>

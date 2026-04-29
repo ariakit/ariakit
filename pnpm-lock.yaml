@@ -123,10 +123,10 @@ importers:
         version: 0.46.0
       oxlint:
         specifier: 1.61.0
-        version: 1.61.0(oxlint-tsgolint@0.21.1)
+        version: 1.61.0(oxlint-tsgolint@0.22.0)
       oxlint-tsgolint:
-        specifier: 0.21.1
-        version: 0.21.1
+        specifier: 0.22.0
+        version: 0.22.0
       postcss:
         specifier: 8.5.8
         version: 8.5.8
@@ -461,8 +461,8 @@ importers:
         specifier: 6.0.1
         version: 6.0.1(@testing-library/jest-dom@6.9.1)(@types/node@24.12.2)(jiti@2.6.1)(lightningcss@1.32.0)(solid-js@1.9.12)(terser@5.46.0)(yaml@2.8.3)
       '@clerk/astro':
-        specifier: 3.0.19
-        version: 3.0.19(astro@5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        specifier: 3.0.21
+        version: 3.0.21(astro@5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@fontsource-variable/inter':
         specifier: 5.2.8
         version: 5.2.8
@@ -488,8 +488,8 @@ importers:
         specifier: 4.2.4
         version: 4.2.4(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.3))
       '@tanstack/react-query':
-        specifier: 5.100.1
-        version: 5.100.1(react@18.3.1)
+        specifier: 5.100.5
+        version: 5.100.5(react@18.3.1)
       astro:
         specifier: 5.18.1
         version: 5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3)
@@ -600,8 +600,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/ariakit-test
       '@axe-core/playwright':
-        specifier: 4.11.1
-        version: 4.11.1(playwright-core@1.59.1)
+        specifier: 4.11.2
+        version: 4.11.2(playwright-core@1.59.1)
       '@playwright/test':
         specifier: 1.59.1
         version: 1.59.1
@@ -651,8 +651,8 @@ importers:
         specifier: 6.1.3
         version: 6.1.3
       shadcn:
-        specifier: 4.4.0
-        version: 4.4.0(@types/node@24.12.2)(babel-plugin-macros@3.1.0)(typescript@6.0.3)
+        specifier: 4.5.0
+        version: 4.5.0(@types/node@24.12.2)(babel-plugin-macros@3.1.0)(typescript@6.0.3)
       vitest:
         specifier: 4.1.5
         version: 4.1.5(@types/node@24.12.2)(@vitest/coverage-v8@4.1.5)(jsdom@29.0.2(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@24.12.2)(typescript@6.0.3))(vite@8.0.10(@types/node@24.12.2)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.3))
@@ -1327,8 +1327,8 @@ packages:
     resolution: {integrity: sha512-iY8yvjE0y651BixKNPgmv1WrQc+GZ142sb0z4gYnChDDY2YqI4P/jsSopBWrKfAt7LOJAkOXt7rC/hms+WclQQ==}
     engines: {node: '>=18.0.0'}
 
-  '@axe-core/playwright@4.11.1':
-    resolution: {integrity: sha512-mKEfoUIB1MkVTht0BGZFXtSAEKXMJoDkyV5YZ9jbBmZCcWDz71tegNsdTkIN8zc/yMi5Gm2kx7Z5YQ9PfWNAWw==}
+  '@axe-core/playwright@4.11.2':
+    resolution: {integrity: sha512-iP6hfNl9G0j/SEUSo8M7D80RbcDo9KRAAfDP4IT5OHB+Wm6zUHIrm8Y51BKI+Oyqduvipf9u1hcRy57zCBKzWQ==}
     peerDependencies:
       playwright-core: '>= 1.0.0'
 
@@ -1973,8 +1973,8 @@ packages:
   '@changesets/write@0.4.0':
     resolution: {integrity: sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q==}
 
-  '@clerk/astro@3.0.19':
-    resolution: {integrity: sha512-76T/O1jRX8lieLJdoDzP5/sG5talfr4dDaFDfixgWMYD8VMKGmohBmCwC6WnTIU5mrZbSjKiXLCrXSRpkCEykg==}
+  '@clerk/astro@3.0.21':
+    resolution: {integrity: sha512-eMA/zP5VWhQVA4Kjg6c5v8nZ+2zJb7JLWDMSBGu+dHv8bH+dNUNGIG2n9z8+YPxpbxSKDKafuHCmPxrNqApwJQ==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       astro: ^4.15.0 || ^5.0.0 || ^6.0.0
@@ -1983,8 +1983,8 @@ packages:
     resolution: {integrity: sha512-zmd0jPyb1iALlmyzyRbgujQXrGqw8sf+VpFjm5GkndpBeq5+9+oH7QgMaFEmWi9oxvTd2sZ+EN+QT4+OXPUnGA==}
     engines: {node: '>=14'}
 
-  '@clerk/backend@3.3.0':
-    resolution: {integrity: sha512-6KuOaIig4CQPSn23I7xExkGKKi2rE2PEH3mvhnA41fktv3LqtPSifRb0xjmJEAwSZwJ8QY6uzk/jDccNof2eUA==}
+  '@clerk/backend@3.4.1':
+    resolution: {integrity: sha512-+Tgo1uPEFpBRvyFW3JtPbrTMRgiP+pWBo9gi2tTB0AxEqR2I/kSYy5l3+KqWciUpbVZtVvLXm1j+NEE2WEG+jg==}
     engines: {node: '>=20.9.0'}
 
   '@clerk/clerk-react@4.32.5':
@@ -2014,8 +2014,8 @@ packages:
       react:
         optional: true
 
-  '@clerk/shared@4.8.3':
-    resolution: {integrity: sha512-HZViZBCTfOR2OreSBDMXcIRPgYiiYCE+GCCPrpjq/ZPcA6OsGiRCIQgUoGgGdAoFgr6Hk0TT00hnVK7g0qRKqQ==}
+  '@clerk/shared@4.8.5':
+    resolution: {integrity: sha512-YxgUWHoKEXEbRPWPEcB2Q0o+NJkDc0/zQRp4QCsnGIM5e32hlBUwxcYpyDjDlZ2lYB+GUXHuEc3KETnxWGp26g==}
     engines: {node: '>=20.9.0'}
     peerDependencies:
       react: ^18.0.0 || ~19.0.3 || ~19.1.4 || ~19.2.3 || ~19.3.0-0
@@ -3693,33 +3693,33 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@oxlint-tsgolint/darwin-arm64@0.21.1':
-    resolution: {integrity: sha512-7TLjyWe4wG9saJc992VWmaHq2hwKfOEEVTjheReXJXaDhavMZI4X9a6nKhbEng4IVkYtzjD2jw16vw2WFXLYLw==}
+  '@oxlint-tsgolint/darwin-arm64@0.22.0':
+    resolution: {integrity: sha512-/exgXceakHbQrzaHTtKOe7MuDATaWMCCWpsCDQCZKeYhLGXzComipTrCYnHzAXrdnNBb5r5K+RRf5A6ormrhMA==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oxlint-tsgolint/darwin-x64@0.21.1':
-    resolution: {integrity: sha512-7wf9Wf75nTzA7zpL9myhFe2RKvfuqGUOADNvUooCjEWvh7hmPz3lSEqTMh5Z/VQhzsG04mM9ACyghxhRzq7zFw==}
+  '@oxlint-tsgolint/darwin-x64@0.22.0':
+    resolution: {integrity: sha512-xFGdIahlmUbK+/MpZ5y08D0ewMGLDbd2Vki5wxVFYg50lSrtgPAtdDl+kqKZLNaFu0zpMar8n9wv1le05sL/jw==}
     cpu: [x64]
     os: [darwin]
 
-  '@oxlint-tsgolint/linux-arm64@0.21.1':
-    resolution: {integrity: sha512-IPuQN/Vd0Rjklg/cCGBbQyUuRBp2f6LQXpZYwk5ivOR6V/+CgiYsv8pn/PVY7gjeyoNvPQrXB7xMjHUO2YZbdw==}
+  '@oxlint-tsgolint/linux-arm64@0.22.0':
+    resolution: {integrity: sha512-53RvC9f77eUo+V1dfQNwGVnsIfPJFMibRR0ee128EUpYNDOZe/ojmCfuXJeU7cY91V7r7fZSm42KPJocXUX8og==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint-tsgolint/linux-x64@0.21.1':
-    resolution: {integrity: sha512-d1niGuTbh2qiv7dR7tqkbOcM5cIR63of0lMBFdEQavL1KrJV8zuRdwdi68K7MNGdgoR+J5A9ajpGGvsHwp1bPg==}
+  '@oxlint-tsgolint/linux-x64@0.22.0':
+    resolution: {integrity: sha512-evZcJAZ9hjNyuN69RnXwbt+U2pAOcYt+yvqukgugiCkRm4iBZ0R0CvpY1tgfG2XcGUhEPh8dljO+nPZTEVGpCQ==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint-tsgolint/win32-arm64@0.21.1':
-    resolution: {integrity: sha512-ICu9y2JLnFPvFqstnWPPNqBM8LK8BWw2OTeaR0UgEMm4hOSbrZAKv1/hwZYyiLqnCNjBL87AGSQIgTHCYlsipw==}
+  '@oxlint-tsgolint/win32-arm64@0.22.0':
+    resolution: {integrity: sha512-7jTO+k1mr5BxRAI2fxc1NRcE3MAbHNZ0Vef9SD1yAR6d1E6qEv5D/D7yuHpQpw6AO3qoecSVo2Jzr+JirN61+w==}
     cpu: [arm64]
     os: [win32]
 
-  '@oxlint-tsgolint/win32-x64@0.21.1':
-    resolution: {integrity: sha512-cTEFCFjCj6iXfrSHcvajSPNqhEA4TxSzU3gFxbdGSAUTNXGToU99IbdhWAPSbhcucoym0XE4Zl7E41NiSkNTug==}
+  '@oxlint-tsgolint/win32-x64@0.22.0':
+    resolution: {integrity: sha512-7lbl9XFcqO+scsynxMzTQdl0XUe6sBUCyY/oGWvCB+JmV4U+70vzSyZJdTEzzxtkZiNnUVFFh9RJLmoiQSne+w==}
     cpu: [x64]
     os: [win32]
 
@@ -4869,8 +4869,8 @@ packages:
   '@tannin/sprintf@1.3.3':
     resolution: {integrity: sha512-RwARl+hFwhzy0tg9atWcchLFvoQiOh4rrP7uG2N5E4W80BPCUX0ElcUR9St43fxB9EfjsW2df9Qp+UsTbvQDjA==}
 
-  '@tanstack/query-core@5.100.1':
-    resolution: {integrity: sha512-awvQhOO/2TrSCHE5LKKsXcvvj6WSBncwEcMFCB/ez0Qs0b17iyyivoGArNV3HFfXryZwCpnb/olsaBBKrIbtSw==}
+  '@tanstack/query-core@5.100.5':
+    resolution: {integrity: sha512-t20KrhKkf0HXzqQkPbJ5erhFesup68BAbwFgYmTrS7bxMF7O5MdmL8jUkik4thsG7Hg00fblz30h6yF1d5TxGg==}
 
   '@tanstack/query-core@5.90.16':
     resolution: {integrity: sha512-MvtWckSVufs/ja463/K4PyJeqT+HMlJWtw6PrCpywznd2NSgO3m4KwO9RqbFqGg6iDE8vVMFWMeQI4Io3eEYww==}
@@ -4878,8 +4878,8 @@ packages:
   '@tanstack/query-core@5.95.2':
     resolution: {integrity: sha512-o4T8vZHZET4Bib3jZ/tCW9/7080urD4c+0/AUaYVpIqOsr7y0reBc1oX3ttNaSW5mYyvZHctiQ/UOP2PfdmFEQ==}
 
-  '@tanstack/react-query@5.100.1':
-    resolution: {integrity: sha512-UgWRLhQKprC37SsO6y1zRabOqDmM2gsdTNPbqTT35yl7kOOhwXU4nyfOiGHXPwoEFJV1IpSk85hjIFjNFWVpzw==}
+  '@tanstack/react-query@5.100.5':
+    resolution: {integrity: sha512-aNwj1mi2v2bQ9IxkyR1grLOUkv3BYWoykHy9KDyLNbjC3tsahbOHJibK+Wjtr1wRhG59/AvJhiJG5OlthaCgJA==}
     peerDependencies:
       react: ^18 || ^19
 
@@ -5662,8 +5662,8 @@ packages:
   aws4fetch@1.0.20:
     resolution: {integrity: sha512-/djoAN709iY65ETD6LKCtyyEI04XIBP5xVvfmNxsEP0uJB5tyaGBztSryRr4HqMStr9R06PisQE7m9zDTXKu6g==}
 
-  axe-core@4.11.1:
-    resolution: {integrity: sha512-BASOg+YwO2C+346x3LZOeoovTIoTrRqEsqMa6fmfAV0P+U9mFr9NsyOEpiYvFjbc64NMrSswhV50WdXzdb/Z5A==}
+  axe-core@4.11.3:
+    resolution: {integrity: sha512-zBQouZixDTbo3jMGqHKyePxYxr1e5W8UdTmBQ7sNtaA9M2bE32daxxPLS/jojhKOHxQ7LWwPjfiwf/fhaJWzlg==}
     engines: {node: '>=4'}
 
   axobject-query@4.1.0:
@@ -8242,8 +8242,8 @@ packages:
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
-  oxlint-tsgolint@0.21.1:
-    resolution: {integrity: sha512-O2hxiT14C2HJkwzBU6CQBFPoagSd/IcV+Tt3e3UUaXFwbW4BO5DSDPSSboc3UM5MIDY+MLyepvtQwBQafNxWdw==}
+  oxlint-tsgolint@0.22.0:
+    resolution: {integrity: sha512-ku4MecLmCQIj1ScCtzNAqTuyl0BJQ02B36fJT+c5XQihHpYSFak+FC3GYO5fPyYk4oDwi0w0S7hTvrpNzuZhig==}
     hasBin: true
 
   oxlint@1.61.0:
@@ -9132,8 +9132,8 @@ packages:
   setprototypeof@1.2.0:
     resolution: {integrity: sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==}
 
-  shadcn@4.4.0:
-    resolution: {integrity: sha512-0V1AjVktKwhK1e0ONXb9SeBoyJePH04iTSJeMjl9eROqjjyb8OoWYtWDI39UdBU3GzpUlFBJFohhB9c6fGOkQA==}
+  shadcn@4.5.0:
+    resolution: {integrity: sha512-ZpNOz7IMI5aezbMEWNxBvl2aJ1ek6NuAMqpL/FUnk5IuRxERl8ohYEnqqAmhPOcur8RbGuCoqTZLQ3Oi4Xkf8A==}
     hasBin: true
 
   sharp@0.34.5:
@@ -11590,9 +11590,9 @@ snapshots:
 
   '@aws/lambda-invoke-store@0.2.4': {}
 
-  '@axe-core/playwright@4.11.1(playwright-core@1.59.1)':
+  '@axe-core/playwright@4.11.2(playwright-core@1.59.1)':
     dependencies:
-      axe-core: 4.11.1
+      axe-core: 4.11.3
       playwright-core: 1.59.1
 
   '@babel/code-frame@7.29.0':
@@ -12503,10 +12503,10 @@ snapshots:
       human-id: 4.1.3
       prettier: 2.8.8
 
-  '@clerk/astro@3.0.19(astro@5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/astro@3.0.21(astro@5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@clerk/backend': 3.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@clerk/shared': 4.8.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/backend': 3.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/shared': 4.8.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       astro: 5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3)
       nanoid: 5.1.6
       nanostores: 1.0.1
@@ -12528,9 +12528,9 @@ snapshots:
     transitivePeerDependencies:
       - react
 
-  '@clerk/backend@3.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/backend@3.4.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@clerk/shared': 4.8.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@clerk/shared': 4.8.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       standardwebhooks: 1.0.0
       tslib: 2.8.1
     transitivePeerDependencies:
@@ -12578,7 +12578,7 @@ snapshots:
     optionalDependencies:
       react: 18.3.1
 
-  '@clerk/shared@4.8.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@clerk/shared@4.8.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/query-core': 5.90.16
       dequal: 2.0.3
@@ -13780,22 +13780,22 @@ snapshots:
   '@oxfmt/binding-win32-x64-msvc@0.46.0':
     optional: true
 
-  '@oxlint-tsgolint/darwin-arm64@0.21.1':
+  '@oxlint-tsgolint/darwin-arm64@0.22.0':
     optional: true
 
-  '@oxlint-tsgolint/darwin-x64@0.21.1':
+  '@oxlint-tsgolint/darwin-x64@0.22.0':
     optional: true
 
-  '@oxlint-tsgolint/linux-arm64@0.21.1':
+  '@oxlint-tsgolint/linux-arm64@0.22.0':
     optional: true
 
-  '@oxlint-tsgolint/linux-x64@0.21.1':
+  '@oxlint-tsgolint/linux-x64@0.22.0':
     optional: true
 
-  '@oxlint-tsgolint/win32-arm64@0.21.1':
+  '@oxlint-tsgolint/win32-arm64@0.22.0':
     optional: true
 
-  '@oxlint-tsgolint/win32-x64@0.21.1':
+  '@oxlint-tsgolint/win32-x64@0.22.0':
     optional: true
 
   '@oxlint/binding-android-arm-eabi@1.61.0':
@@ -14882,15 +14882,15 @@ snapshots:
 
   '@tannin/sprintf@1.3.3': {}
 
-  '@tanstack/query-core@5.100.1': {}
+  '@tanstack/query-core@5.100.5': {}
 
   '@tanstack/query-core@5.90.16': {}
 
   '@tanstack/query-core@5.95.2': {}
 
-  '@tanstack/react-query@5.100.1(react@18.3.1)':
+  '@tanstack/react-query@5.100.5(react@18.3.1)':
     dependencies:
-      '@tanstack/query-core': 5.100.1
+      '@tanstack/query-core': 5.100.5
       react: 18.3.1
 
   '@tanstack/react-query@5.95.2(react@18.3.1)':
@@ -15971,7 +15971,7 @@ snapshots:
 
   aws4fetch@1.0.20: {}
 
-  axe-core@4.11.1: {}
+  axe-core@4.11.3: {}
 
   axobject-query@4.1.0: {}
 
@@ -19196,16 +19196,16 @@ snapshots:
       '@oxfmt/binding-win32-ia32-msvc': 0.46.0
       '@oxfmt/binding-win32-x64-msvc': 0.46.0
 
-  oxlint-tsgolint@0.21.1:
+  oxlint-tsgolint@0.22.0:
     optionalDependencies:
-      '@oxlint-tsgolint/darwin-arm64': 0.21.1
-      '@oxlint-tsgolint/darwin-x64': 0.21.1
-      '@oxlint-tsgolint/linux-arm64': 0.21.1
-      '@oxlint-tsgolint/linux-x64': 0.21.1
-      '@oxlint-tsgolint/win32-arm64': 0.21.1
-      '@oxlint-tsgolint/win32-x64': 0.21.1
+      '@oxlint-tsgolint/darwin-arm64': 0.22.0
+      '@oxlint-tsgolint/darwin-x64': 0.22.0
+      '@oxlint-tsgolint/linux-arm64': 0.22.0
+      '@oxlint-tsgolint/linux-x64': 0.22.0
+      '@oxlint-tsgolint/win32-arm64': 0.22.0
+      '@oxlint-tsgolint/win32-x64': 0.22.0
 
-  oxlint@1.61.0(oxlint-tsgolint@0.21.1):
+  oxlint@1.61.0(oxlint-tsgolint@0.22.0):
     optionalDependencies:
       '@oxlint/binding-android-arm-eabi': 1.61.0
       '@oxlint/binding-android-arm64': 1.61.0
@@ -19226,7 +19226,7 @@ snapshots:
       '@oxlint/binding-win32-arm64-msvc': 1.61.0
       '@oxlint/binding-win32-ia32-msvc': 1.61.0
       '@oxlint/binding-win32-x64-msvc': 1.61.0
-      oxlint-tsgolint: 0.21.1
+      oxlint-tsgolint: 0.22.0
 
   p-filter@2.1.0:
     dependencies:
@@ -20221,7 +20221,7 @@ snapshots:
 
   setprototypeof@1.2.0: {}
 
-  shadcn@4.4.0(@types/node@24.12.2)(babel-plugin-macros@3.1.0)(typescript@6.0.3):
+  shadcn@4.5.0(@types/node@24.12.2)(babel-plugin-macros@3.1.0)(typescript@6.0.3):
     dependencies:
       '@babel/core': 7.29.0
       '@babel/parser': 7.29.2
