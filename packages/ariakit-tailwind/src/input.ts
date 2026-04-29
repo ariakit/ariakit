@@ -478,6 +478,9 @@ const constantMathVars = {
   forbiddenLbBase: _ak.prop("flbb", {
     initial: fn.add(LB_BASE, fn.mul(fn.min(c, CHROMA_MAX), LB_CHROMA_SPREAD)),
   }),
+  layerLFloorBoost: _ak.prop("llfb", {
+    initial: fn.relu(fn.sub(LAYER_L_FLOOR, l)),
+  }),
   autoLDirection: _ak.prop("ald", { initial: fn.sub(fn.double(DARK_L), 1) }),
   darkL: _ak.prop("dal", { initial: DARK_L }),
   lightL: _ak.prop("lil", { initial: LIGHT_L }),
@@ -872,7 +875,7 @@ function getLayerL(relativeLightness: Value, absoluteLightness?: VarProperty) {
   // downstream stages with rel=0 must preserve the current lightness.
   const floorBoost = fn.mul(
     fn.binary(relativeLightness),
-    fn.relu(fn.sub(LAYER_L_FLOOR, l)),
+    vars.layerLFloorBoost,
   );
   const fallbackLightness = fn.add(l, relativeLightness, floorBoost);
   return absoluteLightness
