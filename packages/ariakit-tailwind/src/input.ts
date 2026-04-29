@@ -67,7 +67,7 @@ const LCH_LAYER_LIGHT_CHROMA_DAMPING_START_L = 50;
 const LCH_LAYER_LIGHT_CHROMA_DAMPING_RANGE = 50;
 const LCH_LAYER_DARK_CHROMA_BOOST = 0.11;
 const LCH_LAYER_DARK_CHROMA_BOOST_MAX_L = 20;
-const OUTLINE_MIN_CONTRAST = 0.5;
+const OUTLINE_MIN_PUSH = 0.5;
 const INK_DARK_MID_ALPHA_BOOST_START_L = 0.25;
 const INK_DARK_MID_ALPHA_BOOST = 0.08;
 const TEXT_CONTRAST_CYAN_CHROMA_START = 0.29;
@@ -179,6 +179,24 @@ function getNumericTokenValue(pattern: string, options?: NumbersOptions) {
  */
 function getPercentTokenValue(pattern: string, options?: NumbersOptions) {
   return fn.div(getNumericTokenValue(pattern, options), 100);
+}
+
+/**
+ * Parses a wildcard numeric utility token and converts it to a 0..1 percentage.
+ */
+function getWildcardPercentTokenValue(options?: NumbersOptions) {
+  return getPercentTokenValue("[*]", options);
+}
+
+/**
+ * Parses a wildcard color utility token.
+ */
+function getWildcardColorTokenValue() {
+  return fn.value(color, "[*]");
+}
+
+function getLightnessDeclarations(target: VarProperty) {
+  return set(target, getWildcardPercentTokenValue());
 }
 
 /**
@@ -309,12 +327,12 @@ function getSafeLightness(
 }
 
 /**
- * Computes an automatic lightness delta that avoids forbidden lightness. If the
- * next lightness enters the forbidden interval, we either flip direction or
- * clamp to the entry boundary, whichever yields more lightness distance from
- * the original layer color.
+ * Computes a lightness offset that avoids forbidden lightness. If the next
+ * lightness enters the forbidden interval, we either flip direction or clamp
+ * to the entry boundary, whichever yields more lightness distance from the
+ * original layer color.
  */
-function getAutoLightnessDelta(
+function getResolvedLightnessOffset(
   normalDelta: Value,
   direction: Value,
   lowerBoundary: Value,
@@ -481,7 +499,9 @@ const constantMathVars = {
   layerLFloorBoost: _ak.prop("llfb", {
     initial: fn.relu(fn.sub(LAYER_L_FLOOR, l)),
   }),
-  autoLDirection: _ak.prop("ald", { initial: fn.sub(fn.double(DARK_L), 1) }),
+  lightnessOffsetDirection: _ak.prop("lod", {
+    initial: fn.sub(fn.double(DARK_L), 1),
+  }),
   darkL: _ak.prop("dal", { initial: DARK_L }),
   lightL: _ak.prop("lil", { initial: LIGHT_L }),
   bandDarkHigh: _ak.prop("bdh", { initial: bandDarkHigh }),
@@ -518,7 +538,7 @@ const layerMathVars = {
   forbiddenLa: _ak.var("fla"),
   forbiddenLb: _ak.var("flb"),
   safeL: _ak.var("sl"),
-  autoDirectionToLight: _ak.var("adtl"),
+  offsetDirectionToLight: _ak.var("odtl"),
   forbiddenBandWidth: _ak.var("bw"),
   forbiddenEntryBoundary: _ak.var("eb"),
   layerIdlePushValue: _ak.prop.zero("lipv"),
@@ -545,14 +565,14 @@ const themeTokenVars = {
 const layerColorVars = {
   layerIdleBase: _ak.prop.canvas("lib"),
   layerIdleMixed: _ak.prop.canvas("lim"),
-  layerIdleAuto: _ak.prop.canvas("lia"),
+  layerIdleOffset: _ak.prop.canvas("lio"),
   layerIdle: _ak.prop.canvas("li"),
   layerL: _ak.prop.canvas("ll", { inherits: true }),
   layerTextL: _ak.prop.canvas("ltl", { inherits: true }),
   layerScheme: _ak.prop.black("ls", { inherits: true }),
   layerBand: _ak.prop.black("lbd", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
-  layerAuto: _ak.prop.canvas("la"),
+  layerOffset: _ak.prop.canvas("lo"),
   layerPush: _ak.prop.canvas("lp"),
   layer: ak.prop.canvas("layer", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
@@ -568,7 +588,7 @@ const layerContrastMathVars = {
 };
 
 const outlineMathVars = {
-  outlineContrastDirection: _ak.prop.number("ocd", { initial: 1 }),
+  outlinePushDirection: _ak.prop.number("opd", { initial: 1 }),
   outlineParentL: _ak.prop.zero("opl"),
 };
 
@@ -625,10 +645,10 @@ const inputs = {
   layerIdleRelativeL: _ak.prop("layer-idle-relative-lightness", { initial: 0 }),
   layerIdleRelativeC: _ak.prop("layer-idle-relative-chroma", { initial: 0 }),
   layerIdleRelativeH: _ak.prop("layer-idle-relative-hue", { initial: 0 }),
-  layerIdleAutoLDelta: _ak.prop("layer-idle-auto-lightness-delta", {
+  layerIdleLOffsetDelta: _ak.prop("layer-idle-lightness-offset-delta", {
     initial: 0,
   }),
-  layerIdleAutoL: _ak.prop("layer-idle-auto-lightness", { initial: 0 }),
+  layerIdleLOffset: _ak.prop("layer-idle-lightness-offset", { initial: 0 }),
   layerIdlePushL: _ak.prop("layer-idle-push-lightness", { initial: 0 }),
   layerIdleContrastL: _ak.prop("layer-idle-contrast-lightness", { initial: 0 }),
   layerL: _ak.prop("layer-lightness"),
@@ -641,8 +661,8 @@ const inputs = {
   layerRelativeL: _ak.prop("layer-relative-lightness", { initial: 0 }),
   layerRelativeC: _ak.prop("layer-relative-chroma", { initial: 0 }),
   layerRelativeH: _ak.prop("layer-relative-hue", { initial: 0 }),
-  layerAutoLDelta: _ak.prop("layer-auto-lightness-delta", { initial: 0 }),
-  layerAutoL: _ak.prop("layer-auto-lightness", { initial: 0 }),
+  layerLOffsetDelta: _ak.prop("layer-lightness-offset-delta", { initial: 0 }),
+  layerLOffset: _ak.prop("layer-lightness-offset", { initial: 0 }),
   layerPushL: _ak.prop("layer-push-lightness", { initial: 0 }),
   layerMix: _ak.prop("layer-mix"),
   layerMixMethod: _ak.prop("layer-mix-method", "oklab"),
@@ -674,7 +694,7 @@ const inputs = {
   textCMin: _ak.prop("text-chroma-min", { initial: 0 }),
   textCMax: _ak.prop("text-chroma-max", vars.chromaP3Max),
   textH: _ak.prop("text-hue"),
-  outlineContrastL: _ak.prop("outline-contrast-lightness", { initial: 0 }),
+  outlinePushL: _ak.prop("outline-push-lightness", { initial: 0 }),
   outlineColor: _ak.prop("outline-color"),
   outlineRelativeL: _ak.prop("outline-relative-lightness", { initial: 0 }),
   outlineRelativeC: _ak.prop("outline-relative-chroma", { initial: 0 }),
@@ -797,12 +817,12 @@ function getPushValue(value: Value) {
 }
 
 /**
- * Computes auto lightness from an already direction-adjusted delta.
+ * Computes lightness offset from an already direction-adjusted delta.
  */
-function getAutoLDelta(value: Value) {
-  return getAutoLightnessDelta(
+function getLightnessOffset(value: Value) {
+  return getResolvedLightnessOffset(
     value,
-    vars.autoLDirection,
+    vars.lightnessOffsetDirection,
     vars.forbiddenLa,
     vars.forbiddenLb,
     vars.forbiddenEntryBoundary,
@@ -810,10 +830,10 @@ function getAutoLDelta(value: Value) {
 }
 
 /**
- * Keeps a declaration tied to numeric utility tokens while using a factored
- * scratch variable for the expensive expression.
+ * Keeps a declaration tied to utility tokens while using a factored scratch
+ * variable for the expensive expression.
  */
-function withNumericTokenGate(value: Value, pattern: string) {
+function withUtilityTokenGate(value: Value, pattern: string) {
   return fn.calc`${value} + (0 * ${getPercentTokenValue(pattern)})`;
 }
 
@@ -823,7 +843,7 @@ function withNumericTokenGate(value: Value, pattern: string) {
  * to the opposite boundary and preserve their remaining progress there.
  */
 function getPushL(pushValue: Value, baseLightness: Value) {
-  const direction = vars.autoLDirection;
+  const direction = vars.lightnessOffsetDirection;
   const lowerBoundary = vars.forbiddenLa;
   const upperBoundary = vars.forbiddenLb;
   const bandWidth = vars.forbiddenBandWidth;
@@ -840,7 +860,7 @@ function getPushL(pushValue: Value, baseLightness: Value) {
     fn.binary(fn.sub(upperBoundary, baseLightness)),
   );
   // These are mutually exclusive (l cannot be both below fla and above flb),
-  // and each can only fire when the auto-direction aligns with the crossing
+  // and each can only fire when the offset direction aligns with the crossing
   // direction, so the direction weights that were here before are redundant
   // and have been removed.
   const crossed = fn.add(crossedFromDarkSide, crossedFromLightSide);
@@ -1027,11 +1047,11 @@ const forbiddenLb = fn.min(
 const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
 const layerIdleBase = fn.oklch(layerBaseColor, idleLayerChannels);
 const layerIdleMixed = fn.var(inputs.layerMix, vars.layerIdleBase);
-const layerIdleAuto = fn.oklch(vars.layerIdleMixed, {
+const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
   l: fn.add(
     fn.clamp(
       inputs.layerLMin,
-      getLayerL(inputs.layerIdleAutoL),
+      getLayerL(inputs.layerIdleLOffset),
       inputs.layerLMax,
     ),
     vars.layerContrastBias,
@@ -1062,7 +1082,7 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   );
 }
 
-const layerIdle = fn.oklch(vars.layerIdleAuto, {
+const layerIdle = fn.oklch(vars.layerIdleOffset, {
   l: getContrastL(vars.layerIdlePushL, vars.layerIdleContrastValue),
 });
 
@@ -1070,11 +1090,11 @@ const layerState = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
   l: vars.safeL,
 });
 
-const layerAuto = fn.oklch(vars.layerBase, {
-  l: getLayerL(inputs.layerAutoL),
+const layerOffset = fn.oklch(vars.layerBase, {
+  l: getLayerL(inputs.layerLOffset),
 });
 
-const layerPush = fn.oklch(vars.layerAuto, {
+const layerPush = fn.oklch(vars.layerOffset, {
   l: vars.layerPushL,
 });
 
@@ -1121,18 +1141,22 @@ const layerMathDeclarations = [
   set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
   set(
     vars.layerContrastBias,
-    fn.mul(fn.neg(vars.contrastT), CONTRAST_SCALE, vars.autoLDirection),
+    fn.mul(
+      fn.neg(vars.contrastT),
+      CONTRAST_SCALE,
+      vars.lightnessOffsetDirection,
+    ),
   ),
   set(vars.forbiddenLa, forbiddenLa),
   set(vars.forbiddenLb, forbiddenLb),
-  set(vars.autoDirectionToLight, fn.clamp01(vars.autoLDirection)),
+  set(vars.offsetDirectionToLight, fn.clamp01(vars.lightnessOffsetDirection)),
   set(vars.forbiddenBandWidth, fn.sub(vars.forbiddenLb, vars.forbiddenLa)),
   set(
     vars.forbiddenEntryBoundary,
     fn.add(
       vars.forbiddenLb,
       fn.mul(
-        vars.autoDirectionToLight,
+        vars.offsetDirectionToLight,
         fn.sub(vars.forbiddenLa, vars.forbiddenLb),
       ),
     ),
@@ -1142,14 +1166,14 @@ const layerMathDeclarations = [
   set(vars.edgeContrastValue, fn.mul(vars.contrastT, CONTRAST_SCALE)),
 ];
 
-// Build the layered color stages from idle -> base -> auto -> final.
+// Build the layered color stages from idle -> base -> offset -> final.
 const layerColorDeclarations = [
   set(vars.layerIdleBase, layerIdleBase),
   set(vars.layerIdleMixed, layerIdleMixed),
-  set(vars.layerIdleAuto, layerIdleAuto),
+  set(vars.layerIdleOffset, layerIdleOffset),
   set(vars.layerIdle, layerIdle),
   set(vars.layerBase, layerState),
-  set(vars.layerAuto, layerAuto),
+  set(vars.layerOffset, layerOffset),
   set(vars.layerPush, layerPush),
 ];
 
@@ -1223,6 +1247,50 @@ const inkText = fn.oklch(vars.layer, {
 
 const layerContext = createContext();
 
+function getLayerMixDeclaration() {
+  return set(
+    inputs.layerMix,
+    fn.colorMix(
+      inputs.layerMixMethod,
+      inputs.layerMixColor,
+      vars.layerIdleBase,
+      inputs.layerMixAmount,
+    ),
+  );
+}
+
+function getLayerOffsetDeclarations(pattern: string) {
+  return [
+    set(
+      inputs.layerIdleLOffsetDelta,
+      fn.mul(getPercentTokenValue(pattern), vars.lightnessOffsetDirection),
+    ),
+    set(
+      inputs.layerIdleLOffset,
+      withUtilityTokenGate(
+        getLightnessOffset(inputs.layerIdleLOffsetDelta),
+        pattern,
+      ),
+    ),
+  ];
+}
+
+function getStateOffsetDeclarations(pattern: string) {
+  return [
+    set(
+      inputs.layerLOffsetDelta,
+      fn.mul(getPercentTokenValue(pattern), vars.lightnessOffsetDirection),
+    ),
+    set(
+      inputs.layerLOffset,
+      withUtilityTokenGate(
+        getLightnessOffset(inputs.layerLOffsetDelta),
+        pattern,
+      ),
+    ),
+  ];
+}
+
 utility(
   "layer",
   set.color(vars.text),
@@ -1250,55 +1318,43 @@ utility(
   set(inputs.layerC, fn.value(chroma)),
   set(inputs.layerH, fn.value(hue)),
   set(inputs.layerColor, fn.value(color, "[color]")),
-  set(
-    inputs.layerIdleAutoLDelta,
-    fn.mul(getPercentTokenValue("[number]"), vars.autoLDirection),
-  ),
-  set(
-    inputs.layerIdleAutoL,
-    withNumericTokenGate(getAutoLDelta(inputs.layerIdleAutoLDelta), "[number]"),
-  ),
+  getLayerOffsetDeclarations("[number]"),
 );
 
-utility(
-  "layer-mix",
-  set(
-    inputs.layerMix,
-    fn.colorMix(
-      inputs.layerMixMethod,
-      inputs.layerMixColor,
-      vars.layerIdleBase,
-      inputs.layerMixAmount,
-    ),
-  ),
-);
+utility("layer-mix", getLayerMixDeclaration());
 
 utility(
   "layer-mix-*",
   set(inputs.layerMixAmount, fn.toPercent(getNumericTokenValue("[number]"))),
   set(inputs.layerMixColor, fn.value(color, "[color]")),
   set(inputs.layerMixMethod, fn.value(mix)),
-  set(
-    inputs.layerMix,
-    fn.colorMix(
-      inputs.layerMixMethod,
-      inputs.layerMixColor,
-      vars.layerIdleBase,
-      inputs.layerMixAmount,
-    ),
-  ),
+  getLayerMixDeclaration(),
+);
+
+utility("state-*", getStateOffsetDeclarations("[*]"));
+
+utility("layer-offset-*", getLayerOffsetDeclarations("[*]"));
+
+utility("state-offset-*", getStateOffsetDeclarations("[*]"));
+
+utility("layer-color-*", set(inputs.layerColor, getWildcardColorTokenValue()));
+
+utility(
+  "layer-mix-color-*",
+  set(inputs.layerMixColor, getWildcardColorTokenValue()),
+  getLayerMixDeclaration(),
 );
 
 utility(
-  "state-*",
-  set(
-    inputs.layerAutoLDelta,
-    fn.mul(getPercentTokenValue("[*]"), vars.autoLDirection),
-  ),
-  set(
-    inputs.layerAutoL,
-    withNumericTokenGate(getAutoLDelta(inputs.layerAutoLDelta), "[*]"),
-  ),
+  "layer-mix-amount-*",
+  set(inputs.layerMixAmount, fn.toPercent(getNumericTokenValue("[*]"))),
+  getLayerMixDeclaration(),
+);
+
+utility(
+  "layer-mix-method-*",
+  set(inputs.layerMixMethod, fn.value(mix, "[*]")),
+  getLayerMixDeclaration(),
 );
 
 const layerLighten = utility(
@@ -1350,7 +1406,7 @@ utility(
   set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(
     vars.layerIdlePushBaseL,
-    getLayerL(fn.mul(vars.layerIdlePushValue, vars.autoLDirection)),
+    getLayerL(fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection)),
   ),
   set(
     vars.layerIdlePushL,
@@ -1364,7 +1420,7 @@ utility(
   set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
   set(
     vars.layerPushBaseL,
-    getLayerL(fn.mul(vars.layerPushValue, vars.autoLDirection)),
+    getLayerL(fn.mul(vars.layerPushValue, vars.lightnessOffsetDirection)),
   ),
   set(vars.layerPushL, getPushL(vars.layerPushValue, vars.layerPushBaseL)),
 );
@@ -1396,6 +1452,10 @@ utility(
   set(inputs.layerLMin, fn.value("[*]")),
   set(inputs.layerLMin, getPercentTokenValue("[number]")),
 );
+
+utility("layer-max-l-*", getLightnessDeclarations(inputs.layerLMax));
+
+utility("layer-min-l-*", getLightnessDeclarations(inputs.layerLMin));
 
 utility(
   "layer-max-c-*",
@@ -1485,6 +1545,10 @@ utility(
   set(inputs.edgeA, getPercentTokenValue("[number]")),
 );
 
+utility("edge-color-*", set(inputs.edgeColor, getWildcardColorTokenValue()));
+
+utility("edge-alpha-*", set(inputs.edgeA, getWildcardPercentTokenValue()));
+
 utility("edge-raw", set(inputs.edgeA, 1), set(inputs.edgePushL, 0));
 
 const edgeLighten = utility(
@@ -1548,6 +1612,10 @@ utility(
   set(inputs.edgeLMin, fn.value("[*]")),
   set(inputs.edgeLMin, getPercentTokenValue("[number]")),
 );
+
+utility("edge-max-l-*", getLightnessDeclarations(inputs.edgeLMax));
+
+utility("edge-min-l-*", getLightnessDeclarations(inputs.edgeLMin));
 
 utility(
   "edge-max-c-*",
@@ -1648,6 +1716,10 @@ utility(
   set(inputs.textPushL, getPercentTokenValue("[number]")),
 );
 
+utility("text-color-*", set(inputs.textColor, getWildcardColorTokenValue()));
+
+utility("text-push-*", set(inputs.textPushL, getWildcardPercentTokenValue()));
+
 utility(
   "ink-*",
   set(inputs.textA, getPercentTokenValue("[number]")),
@@ -1715,6 +1787,10 @@ utility(
   set(inputs.textLMin, getPercentTokenValue("[number]")),
 );
 
+utility("text-max-l-*", getLightnessDeclarations(inputs.textLMax));
+
+utility("text-min-l-*", getLightnessDeclarations(inputs.textLMin));
+
 utility(
   "text-max-c-*",
   set(inputs.textCMax, fn.value("[*]")),
@@ -1750,18 +1826,18 @@ const outlineColorAdjusted = fn.oklch(outlineBaseColor, {
   h: outlineAdjustedHue,
 });
 
-const outlineContrastShift = fn.mul(
+const outlinePushShift = fn.mul(
   fn.add(
-    fn.max(OUTLINE_MIN_CONTRAST, inputs.outlineContrastL),
+    fn.max(OUTLINE_MIN_PUSH, inputs.outlinePushL),
     fn.mul(vars.contrastT, CONTRAST_SCALE),
   ),
-  vars.outlineContrastDirection,
+  vars.outlinePushDirection,
 );
-const outlineComputedL = fn.add(vars.outlineParentL, outlineContrastShift);
+const outlineComputedL = fn.add(vars.outlineParentL, outlinePushShift);
 const outlineDirectedLightness = getDirectionalLightness(
   l,
   outlineComputedL,
-  vars.outlineContrastDirection,
+  vars.outlinePushDirection,
 );
 
 const outlineDirectional = fn.oklch(outlineColorAdjusted, {
@@ -1775,7 +1851,7 @@ utility(
   set.outlineColor(vars.outline),
   at.container(fn.style(vars.layerL), set(vars.outline, outlineDirectional)),
   mapLayerLightnessSteps((parentL, isDark) => [
-    set(vars.outlineContrastDirection, isDark ? 1 : -1),
+    set(vars.outlinePushDirection, isDark ? 1 : -1),
     set(vars.outlineParentL, parentL),
   ]),
 );
@@ -1785,7 +1861,17 @@ utility(
   set(inputs.outlineC, fn.value(chroma)),
   set(inputs.outlineH, fn.value(hue)),
   set(inputs.outlineColor, fn.value(color, "[color]")),
-  set(inputs.outlineContrastL, getPercentTokenValue("[number]")),
+  set(inputs.outlinePushL, getPercentTokenValue("[number]")),
+);
+
+utility(
+  "outline-color-*",
+  set(inputs.outlineColor, getWildcardColorTokenValue()),
+);
+
+utility(
+  "outline-push-*",
+  set(inputs.outlinePushL, getWildcardPercentTokenValue()),
 );
 
 const outlineLighten = utility(
@@ -1856,6 +1942,10 @@ utility(
   set(inputs.outlineLMin, fn.value("[*]")),
   set(inputs.outlineLMin, getPercentTokenValue("[number]")),
 );
+
+utility("outline-max-l-*", getLightnessDeclarations(inputs.outlineLMax));
+
+utility("outline-min-l-*", getLightnessDeclarations(inputs.outlineLMin));
 
 utility(
   "outline-max-c-*",

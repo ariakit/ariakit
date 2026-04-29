@@ -57,7 +57,7 @@
   --ak-progress-layer-parent: var(--ak-layer-parent);
   --ak-progress-ring: var(--ak-edge);
   &::after {
-    @apply ak-layer ak-layer-(color:--ak-progress-layer-parent);
+    @apply ak-layer ak-layer-color-(--ak-progress-layer-parent);
     @apply ring-(--ak-progress-ring) inset-(--ak-progress-thickness) absolute rounded-full ring;
     content: "";
   }

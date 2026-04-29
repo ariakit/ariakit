@@ -231,14 +231,14 @@
               "value": {}
             },
             {
-              "name": "@apply ak-layer ak-layer-(color:--ak-badge-color) ak-layer-mix-15 ak-dark:ak-edge-(color:--ak-badge-color) ak-edge-20 ak-light:ak-edge-(color:--ak-badge-color)",
+              "name": "@apply ak-layer ak-layer-color-(--ak-badge-color) ak-layer-mix-15 ak-dark:ak-edge-color-(--ak-badge-color) ak-edge-20 ak-light:ak-edge-color-(--ak-badge-color)",
               "value": {}
             },
             {
               "name": "&::before,\n  &::after,\n  :where(& > *)",
               "value": [
                 {
-                  "name": "@apply ak-text ak-text-(color:--ak-badge-color) ak-text-25",
+                  "name": "@apply ak-text ak-text-color-(--ak-badge-color) ak-text-25",
                   "value": {}
                 }
               ]
@@ -257,7 +257,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color:--ak-badge-color)",
+              "name": "ak-layer-color-(--ak-badge-color)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -272,7 +272,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-edge-(color:--ak-badge-color)",
+              "name": "ak-edge-color-(--ak-badge-color)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -292,7 +292,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-text-(color:--ak-badge-color)",
+              "name": "ak-text-color-(--ak-badge-color)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -1660,7 +1660,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer ak-layer-(color:--ak-checkbox-card-edge) ak-layer-darken-0 empty:before:ak-icon-check",
+              "name": "@apply ak-layer ak-layer-color-(--ak-checkbox-card-edge) ak-layer-darken-0 empty:before:ak-icon-check",
               "value": {}
             },
             {
@@ -1676,7 +1676,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color:--ak-checkbox-card-edge)",
+              "name": "ak-layer-color-(--ak-checkbox-card-edge)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -1696,7 +1696,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer ak-layer-(color:--ak-layer-parent) ak-layer-darken-0 ak-ink-0 ak-edge-10",
+              "name": "@apply ak-layer ak-layer-color-(--ak-layer-parent) ak-layer-darken-0 ak-ink-0 ak-edge-10",
               "value": {}
             }
           ],
@@ -1708,7 +1708,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color:--ak-layer-parent)",
+              "name": "ak-layer-color-(--ak-layer-parent)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -2476,7 +2476,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-frame-border-(--ak-tab-border-width) ak-layer ak-layer-(color:--ak-tab-bg) ak-frame ak-frame-cover",
+              "name": "@apply ak-frame-border-(--ak-tab-border-width) ak-layer ak-layer-color-(--ak-tab-bg) ak-frame ak-frame-cover",
               "value": {}
             },
             {
@@ -2497,7 +2497,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color:--ak-tab-bg)",
+              "name": "ak-layer-color-(--ak-tab-bg)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -2759,7 +2759,7 @@
           "type": "utility",
           "properties": [
             {
-              "name": "@apply ak-layer ak-layer-(color:--ak-tab-bg) ak-ink-100",
+              "name": "@apply ak-layer ak-layer-color-(--ak-tab-bg) ak-ink-100",
               "value": {}
             },
             {
@@ -2888,7 +2888,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color:--ak-tab-bg)",
+              "name": "ak-layer-color-(--ak-tab-bg)",
               "import": "@ariakit/tailwind"
             },
             {
@@ -4669,7 +4669,7 @@
               "name": "&::before",
               "value": [
                 {
-                  "name": "@apply -z-1 ak-layer ak-layer-(color:--ak-layer) absolute inset-x-0 rounded-[inherit]",
+                  "name": "@apply -z-1 ak-layer ak-layer-color-(--ak-layer) absolute inset-x-0 rounded-[inherit]",
                   "value": {}
                 },
                 {
@@ -4691,7 +4691,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color:--ak-layer)",
+              "name": "ak-layer-color-(--ak-layer)",
               "import": "@ariakit/tailwind"
             }
           ]
@@ -6804,7 +6804,7 @@
               "name": "&::after",
               "value": [
                 {
-                  "name": "@apply ak-layer ak-layer-(color:--ak-progress-layer-parent)",
+                  "name": "@apply ak-layer ak-layer-color-(--ak-progress-layer-parent)",
                   "value": {}
                 },
                 {
@@ -6856,7 +6856,7 @@
             },
             {
               "type": "utility",
-              "name": "ak-layer-(color:--ak-progress-layer-parent)",
+              "name": "ak-layer-color-(--ak-progress-layer-parent)",
               "import": "@ariakit/tailwind"
             }
           ]

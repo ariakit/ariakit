@@ -67,7 +67,7 @@
     @apply bg-transparent;
   }
   &::before {
-    @apply -z-1 ak-layer ak-layer-(color:--ak-layer) absolute inset-x-0 rounded-[inherit];
+    @apply -z-1 ak-layer ak-layer-color-(--ak-layer) absolute inset-x-0 rounded-[inherit];
     content: "";
     inset-block: calc(var(--ak-nav-gap) * 0.5);
   }

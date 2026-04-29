@@ -18,6 +18,15 @@
       "#CB8CC6": "bg-[oklch(0_0.0082_274.531)] text-[oklch(1_0_0)] *:text-[lch(100_37.44_327.358)] rounded-[15px] border-[1px] border-[oklch(1_0.0082_274.531_/_0.4334)] p-[4px] shadow-[oklch(1_0.0082_274.531_/_0.4334)_0px_0px_0px_0px]",
       "#CE9178": "bg-[oklch(0_0.0082_274.531)] text-[oklch(1_0_0)] *:text-[lch(100_31.52_46.871)] rounded-[15px] border-[1px] border-[oklch(1_0.0082_274.531_/_0.4334)] p-[4px] shadow-[oklch(1_0.0082_274.531_/_0.4334)_0px_0px_0px_0px]",
       "#165DFC": "bg-[oklch(0_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[lch(100_80_288.704)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.4334)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.4334)_0px_0px_0px_0px]",
+      "explicit longhands": {
+        "class": "bg-[oklch(0_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.4334)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.4334)_0px_0px_0px_0px]",
+        "children": {
+          "layer": "bg-[oklch(0.0166_0.12_260)] text-[oklch(1_0_0)] *:text-[lch(100_13.3_296.465)] rounded-[10px] border-[1px] border-[oklch(1_0.12_260_/_0.4334)] p-[4px] shadow-[oklch(1_0.12_260_/_0.4334)_0px_0px_0px_0px]",
+          "state": "bg-[oklch(0.2_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.4334)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.4334)_0px_0px_0px_0px]",
+          "mix": "bg-[oklch(0.0566_0.1007_345.998)] text-[oklch(1_0_0)] *:text-[lch(100_3.81_347.088)] rounded-[10px] border-[1px] border-[oklch(1_0.1007_345.998_/_0.4334)] p-[4px] shadow-[oklch(1_0.1007_345.998_/_0.4334)_0px_0px_0px_0px]",
+          "edge/text/outline": "bg-[oklch(0_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[lch(100_65.49_140.432)] rounded-[10px] border-[1px] border-[oklch(1_0.18_145_/_0.6834)] p-[4px] shadow-[oklch(1_0.18_145_/_0.6834)_0px_0px_0px_0px] ring-[2px] ring-[oklch(0.8334_0.18_145)]"
+        }
+      },
       "ak-layer! modifier cascade": {
         "class": "bg-[oklch(0_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.4334)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.4334)_0px_0px_0px_0px]",
         "children": {
