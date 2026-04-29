@@ -486,10 +486,7 @@ export default function Example() {
         className="ak-layer ak-frame ak-frame-[1.25rem]/1 ak-frame-border flex-col"
       >
         <Layer className="flex-wrap items-start">
-          <Layer className="ak-layer ak-layer-[#000] ak-frame ak-frame-p-1 ak-frame-border flex-col">
-            <Layers />
-          </Layer>
-          <Layer className="ak-layer ak-layer-[#0C0E12] ak-frame ak-frame-p-1 ak-frame-border flex-col">
+          <Layer className="ak-layer ak-layer-black ak-frame ak-frame-p-1 ak-frame-border flex-col">
             <Layers />
           </Layer>
           <Layer className="ak-layer ak-layer-[oklch(0.05_0_0)] ak-frame ak-frame-p-1 ak-frame-border flex-col">
