@@ -120,25 +120,13 @@ The overloaded `ak-layer-*` shorthand also still accepts typed custom properties
 <div class="ak-layer ak-layer-(color:--my-color)"></div>
 ```
 
-### `ak-layer-(number:--var)` → `ak-layer ak-layer-offset-(--var)`
+### `ak-layer-pop-(--var)` → `ak-layer ak-layer-offset-(--var)`
 
-Custom lightness offsets can use the explicit offset longhand. The custom property keeps the same `0`–`100` scale as `ak-layer-<number>`.
+Custom pop values can use the explicit offset longhand.
 
 ```diff
-- ak-layer-(number:--depth)
+- ak-layer-pop-(--depth)
 + ak-layer ak-layer-offset-(--depth)
-```
-
-### Lightness bounds custom properties
-
-Use explicit `-l-` longhands for lightness min/max custom properties. Custom properties keep the same `0`–`100` scale as numeric lightness utilities.
-
-```diff
-- ak-layer-max-(number:--max-lightness)
-+ ak-layer-max-l-(--max-lightness)
-
-- ak-layer-min-(number:--min-lightness)
-+ ak-layer-min-l-(--min-lightness)
 ```
 
 ### Variant prefixes on modifier classes
@@ -273,11 +261,11 @@ For custom push values, use `ak-text-push-(--value)` instead of `ak-text-(number
 + ak-edge-15
 ```
 
-### `ak-edge-(--color)/N` → `ak-edge-color-(--color) ak-edge-alpha-N`
+### `ak-edge-(--color)/N` → `ak-edge-color-(--color) ak-edge-N`
 
 ```diff
 - ak-edge-(--my-color)/10
-+ ak-edge-color-(--my-color) ak-edge-alpha-10
++ ak-edge-color-(--my-color) ak-edge-10
 ```
 
 ### `ak-edge-contrast-primary` → `ak-edge-primary ak-edge-raw`
@@ -289,7 +277,7 @@ In v0.1, `ak-edge-contrast-<color>` set the edge to a solid color with lightness
 + ak-edge-primary ak-edge-raw
 ```
 
-`ak-edge-raw` is shorthand for `ak-edge-100 ak-edge-push-0` — use it when you want the color to be applied exactly as specified. For other combinations, `ak-edge-N` or `ak-edge-alpha-N` controls alpha (`100` = opaque) and `ak-edge-push-N` controls how far the edge lightness is pushed away from the layer (`0` = the color's natural lightness).
+`ak-edge-raw` is shorthand for `ak-edge-100 ak-edge-push-0` — use it when you want the color to be applied exactly as specified. For other combinations, `ak-edge-N` controls alpha (`100` = opaque) and `ak-edge-push-N` controls how far the edge lightness is pushed away from the layer (`0` = the color's natural lightness).
 
 For custom alpha values, use `ak-edge-alpha-(--alpha)` instead of `ak-edge-(number:--alpha)`.
 
@@ -416,21 +404,6 @@ When overriding a compound utility's frame token (e.g., `ak-button` + `ak-frame-
 ```diff
 - ak-outline-primary
 + ak-outline ak-outline-primary
-```
-
-### Outline custom properties
-
-Use explicit longhands for custom outline color, push, and lightness bounds. Numeric custom properties keep the same `0`–`100` scale as the shorthand utilities.
-
-```diff
-- ak-outline-(color:--outline-color)
-+ ak-outline-color-(--outline-color)
-
-- ak-outline-(number:--outline-push)
-+ ak-outline-push-(--outline-push)
-
-- ak-outline-max-(number:--outline-max-lightness)
-+ ak-outline-max-l-(--outline-max-lightness)
 ```
 
 ---
