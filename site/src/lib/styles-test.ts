@@ -58,11 +58,11 @@ test("scanAkTokensInFiles finds tokens inside group-/peer- ak variant prefixes",
 
 test("scanAkTokensInFiles preserves colons inside arbitrary values", () => {
   const tokens = scanAkTokens(`
-    <div className="ak-badge-(color:--status-color) ak-dark:ak-edge-color-(--ak-edge)"></div>
+    <div className="ak-layer-(color:--ak-layer-parent) ak-dark:ak-edge-(color:--ak-edge)"></div>
   `);
-  expect(tokens.has("ak-badge-(color:--status-color)")).toBe(true);
-  expect(tokens.has("ak-edge-color-(--ak-edge)")).toBe(true);
-  expect(tokens.has("ak-badge-(color")).toBe(false);
+  expect(tokens.has("ak-layer-(color:--ak-layer-parent)")).toBe(true);
+  expect(tokens.has("ak-edge-(color:--ak-edge)")).toBe(true);
+  expect(tokens.has("ak-layer-(color")).toBe(false);
   expect(tokens.has("ak-edge-(color")).toBe(false);
 });
 
