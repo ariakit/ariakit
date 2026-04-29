@@ -481,6 +481,22 @@ export default function Example() {
           </Layer>
         </Layer>
       </Layer>
+      <Layer
+        label="very dark parent (l < 0.13)"
+        className="ak-layer ak-frame ak-frame-[1.25rem]/1 ak-frame-border flex-col"
+      >
+        <Layer className="flex-wrap items-start">
+          <Layer className="ak-layer ak-layer-black ak-frame ak-frame-p-1 ak-frame-border flex-col">
+            <Layers />
+          </Layer>
+          <Layer className="ak-layer ak-layer-[oklch(0.05_0_0)] ak-frame ak-frame-p-1 ak-frame-border flex-col">
+            <Layers />
+          </Layer>
+          <Layer className="ak-layer ak-layer-[oklch(0.08_0.02_260)] ak-frame ak-frame-p-1 ak-frame-border flex-col">
+            <Layers />
+          </Layer>
+        </Layer>
+      </Layer>
       <Layer className="ak-layer ak-layer-blue-600 ak-frame ak-frame-[1.25rem]/1 ak-frame-border flex-col">
         <Layer className="flex-wrap items-start">
           <Layer className="ak-layer ak-layer-0 ak-frame ak-frame ak-frame-p-1 ak-frame-border flex-col">

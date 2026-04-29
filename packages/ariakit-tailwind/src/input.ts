@@ -21,6 +21,11 @@ const CHROMA_MAX_REC2020 = 0.467;
 const CHROMA_MAX = CHROMA_MAX_P3;
 
 const DARK_THRESHOLD_L = 0.645;
+// Below this OKLCH lightness, additive deltas become hard to see on real
+// displays (gamma compression and ambient-light black floor squash near-black
+// differences). Layer math floors `l` to this value so descendants of very dark
+// parents remain visible without altering the parent's rendered color.
+const LAYER_L_FLOOR = 0.13;
 const CONTRAST_HIGH = 100;
 const AUTO_CHROMA_COEFFICIENT = roundToDecimals(
   CHROMA_MAX / (DARK_THRESHOLD_L * (1 - DARK_THRESHOLD_L)),
@@ -473,6 +478,9 @@ const constantMathVars = {
   forbiddenLbBase: _ak.prop("flbb", {
     initial: fn.add(LB_BASE, fn.mul(fn.min(c, CHROMA_MAX), LB_CHROMA_SPREAD)),
   }),
+  layerLFloorBoost: _ak.prop("llfb", {
+    initial: fn.relu(fn.sub(LAYER_L_FLOOR, l)),
+  }),
   autoLDirection: _ak.prop("ald", { initial: fn.sub(fn.double(DARK_L), 1) }),
   darkL: _ak.prop("dal", { initial: DARK_L }),
   lightL: _ak.prop("lil", { initial: LIGHT_L }),
@@ -862,7 +870,14 @@ function getPushL(pushValue: Value, baseLightness: Value) {
  * Resolves layer lightness from relative offset and optional absolute input.
  */
 function getLayerL(relativeLightness: Value, absoluteLightness?: VarProperty) {
-  const fallbackLightness = fn.add(l, relativeLightness);
+  // Boost lightness up to LAYER_L_FLOOR only when the relative shift is
+  // strictly positive: ak-layer-0 (no shift) and ak-layer-l-*/ak-layer-darken-*
+  // downstream stages with rel=0 must preserve the current lightness.
+  const floorBoost = fn.mul(
+    fn.binary(relativeLightness),
+    vars.layerLFloorBoost,
+  );
+  const fallbackLightness = fn.add(l, relativeLightness, floorBoost);
   return absoluteLightness
     ? fn.var(absoluteLightness, fallbackLightness)
     : fallbackLightness;
