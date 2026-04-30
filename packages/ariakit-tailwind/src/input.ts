@@ -1439,23 +1439,18 @@ utility(
   set(inputs.layerRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
-utility(
-  "layer-l-*",
-  set(inputs.layerL, fn.value("[*]")),
-  set(inputs.layerL, getPercentTokenValue("[number]")),
-);
+utility("layer-l-*", set(inputs.layerL, getPercentTokenValue("[*]")));
 
 utility(
   "layer-c-*",
-  set(inputs.layerC, fn.value("[*]")),
   set(inputs.layerC, fn.value(chroma)),
-  set(inputs.layerC, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+  set(inputs.layerC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "layer-h-*",
-  set(inputs.layerH, fn.value(hue, "[*]")),
-  set(inputs.layerH, getNumericTokenValue("[number]", HUE_TOKEN_OPTIONS)),
+  set(inputs.layerH, fn.value(hue)),
+  set(inputs.layerH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
 utility(
