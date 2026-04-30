@@ -198,17 +198,19 @@ Use [`ak-edge`](#ak-edge) to fine-tune border, ring, and shadow colors without t
 
 ### Mixing with another color
 
-| Utility                        | Description                                                                                                                                                             |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-layer-mix`                 | Enables mixing. By default, mixes with the parent layer at `50%` using the `oklab` interpolation method.                                                                |
-| `ak-layer-mix-<color>`         | Sets the color to mix with, e.g. `ak-layer-mix-primary` or `ak-layer-mix-[#000]`.                                                                                       |
-| `ak-layer-mix-color-<color>`   | Explicit color-only alias. Useful for custom properties (`ak-layer-mix-color-(--mix-color)`).                                                                           |
-| `ak-layer-mix-<number>`        | Sets the mix amount (`0`–`100`).                                                                                                                                        |
-| `ak-layer-mix-amount-<value>`  | Explicit amount alias for `ak-layer-mix-<number>`. Useful for custom properties (`ak-layer-mix-amount-(--mix-amount)`). Custom properties use the same `0`–`100` scale. |
-| `ak-layer-mix-<method>`        | Sets the interpolation method, e.g. `ak-layer-mix-oklch`, `ak-layer-mix-shorter-hue`, `ak-layer-mix-srgb`. See the `--mix-*` tokens.                                    |
-| `ak-layer-mix-method-<method>` | Explicit interpolation-method alias. Useful for custom properties (`ak-layer-mix-method-(--mix-method)`).                                                               |
+| Utility                        | Description                                                                                                                                              |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer-mix`                 | Enables mixing. By default, mixes with the parent layer at `50%` using the `oklab` interpolation method.                                                 |
+| `ak-layer-mix-<color>`         | Sets the color to mix with, e.g. `ak-layer-mix-primary` or `ak-layer-mix-[#000]`.                                                                        |
+| `ak-layer-mix-color-<color>`   | Sets the mix color for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-color-(--mix-color)`).                                                |
+| `ak-layer-mix-<number>`        | Sets the mix amount (`0`–`100`).                                                                                                                         |
+| `ak-layer-mix-amount-<value>`  | Sets the amount for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-amount-(--mix-amount)`). Custom properties use the same `0`–`100` scale. |
+| `ak-layer-mix-<method>`        | Sets the interpolation method, e.g. `ak-layer-mix-oklch`, `ak-layer-mix-shorter-hue`, `ak-layer-mix-srgb`. See the `--mix-*` tokens.                     |
+| `ak-layer-mix-method-<method>` | Sets the interpolation method for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-method-(--mix-method)`).                                   |
 
 Combine freely — `ak-layer ak-layer-primary ak-layer-mix ak-layer-mix-30 ak-layer-mix-oklch` mixes the primary color 30% into the parent layer using OKLCH.
+
+The explicit `ak-layer-mix-*` longhands configure the mix color, amount, and method, but don't enable mixing by themselves. Pair them with `ak-layer-mix` when setting any of these values independently.
 
 ## `ak-state`
 
