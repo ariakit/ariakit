@@ -9,6 +9,7 @@
 @import "tailwindcss";
 @import "./ariakit.css";
 
+@source "../../../packages/ariakit-ui/src/**";
 @source not "./styles.json";
 @source not "../sandbox/ariakit-tailwind";
 
@@ -24,6 +25,9 @@
   --container-overlap: 100.05rem;
 
   --leading-loose: 1.85;
+
+  --radius-playground: calc(var(--radius) * 3.5);
+  --spacing-playground: --spacing(0);
 }
 
 :root {
@@ -71,7 +75,7 @@ astro-static-slot {
 }
 
 .cl-organizationSwitcherTrigger {
-  @apply ak-button !ak-layer-pop hover:!ak-layer-pop-2 ak-frame-field/2;
+  @apply ak-button !ak-layer-6 hover:!ak-layer-12 ak-frame-field/2;
 } */
 
 html,

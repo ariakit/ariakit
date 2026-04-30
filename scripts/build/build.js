@@ -1,4 +1,5 @@
-import { cpSync } from "node:fs";
+import { cpSync, existsSync } from "node:fs";
+import { join } from "node:path";
 import spawn from "cross-spawn";
 import { solidPlugin } from "esbuild-plugin-solid";
 import { glob } from "glob";
@@ -35,12 +36,17 @@ const esmDir = getESMDir();
 const cjsDir = getCJSDir();
 const solidSourceDir = getSolidSourceDir();
 
+// Get the tsconfig path for the current package. If tsconfig.build.json exists, use it, otherwise use tsconfig.json.
+const tsconfigPath = existsSync(join(cwd, "tsconfig.build.json"))
+  ? "tsconfig.build.json"
+  : "tsconfig.json";
+
 spawn.sync(
   "tsc",
   [
     "--emitDeclarationOnly",
     "--project",
-    "tsconfig.build.json",
+    tsconfigPath,
     "--noEmit",
     "false",
     "--outDir",

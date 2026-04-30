@@ -13,6 +13,7 @@
     "examples",
     "nextjs",
     "@ariakit/scripts",
+    "@ariakit/ui",
     "template-*"
   ]
 }
