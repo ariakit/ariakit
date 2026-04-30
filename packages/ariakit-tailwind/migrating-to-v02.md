@@ -176,13 +176,13 @@ The color is now set via `ak-layer-<color>`, and `ak-layer-mix-N` controls how m
 + ak-layer ak-layer-red-500 ak-layer-mix-30
 ```
 
-Note: `ak-layer-mix-<color>` and `ak-layer-mix-color-<color>` set the mix color directly on the mix utility. They are **new** v0.2 features for mixing another color into the current layer, not the migration path for the old `/N` syntax.
+Note: `ak-layer-mix-<color>` enables mixing with that color. `ak-layer-mix-color-<color>` only sets the mix-color input and must be paired with `ak-layer-mix`. They are **new** v0.2 features for mixing another color into the current layer, not the migration path for the old `/N` syntax.
 
-For custom properties on the mix utility itself, use explicit longhands:
+For custom properties on the mix utility itself, pair `ak-layer-mix` with explicit longhands:
 
 ```diff
 - ak-layer-mix-(color:--my-mix-color) ak-layer-mix-(number:--amount)
-+ ak-layer-mix-color-(--my-mix-color) ak-layer-mix-amount-(--amount)
++ ak-layer-mix ak-layer-mix-color-(--my-mix-color) ak-layer-mix-amount-(--amount)
 ```
 
 ---

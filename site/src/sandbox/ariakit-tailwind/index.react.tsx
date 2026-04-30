@@ -351,15 +351,15 @@ export default function Example() {
               />
               <Cell
                 label="state"
-                className="[--demo-offset:25] ak-state-offset-(--demo-offset)"
+                className="[--demo-offset:25] ak-state-(--demo-offset)"
               />
               <Cell
                 label="mix"
-                className="[--demo-color:oklch(0.6_0.15_30)] [--demo-mix:35] [--demo-method:oklch] ak-layer-mix-color-(--demo-color) ak-layer-mix-amount-(--demo-mix) ak-layer-mix-method-(--demo-method) *:ak-text"
+                className="ak-layer-mix [--demo-color:oklch(0.6_0.15_30)] [--demo-mix:35] [--demo-method:oklch] ak-layer-mix-color-(--demo-color) ak-layer-mix-amount-(--demo-mix) ak-layer-mix-method-(--demo-method) *:ak-text"
               />
               <Cell
                 label="edge/text/outline"
-                className="[--demo-alpha:35] [--demo-color:oklch(0.58_0.18_145)] [--demo-push:25] ak-edge-color-(--demo-color) ak-edge-alpha-(--demo-alpha) ak-outline ak-outline-color-(--demo-color) ak-outline-push-(--demo-push) outline outline-2 *:ak-text *:ak-text-color-(--demo-color) *:ak-text-push-(--demo-push)"
+                className="[--demo-alpha:35] [--demo-color:oklch(0.58_0.18_145)] [--demo-push:25] ak-edge-color-(--demo-color) ak-edge-alpha-(--demo-alpha) ak-outline ak-outline-color-(--demo-color) ak-outline-push-(--demo-push) outline-2 *:ak-text *:ak-text-color-(--demo-color) *:ak-text-push-(--demo-push)"
               />
             </Layer>
           </Layer>
@@ -522,22 +522,22 @@ export default function Example() {
       </Layer>
       <Layer className="ak-layer ak-layer-blue-600 ak-frame ak-frame-[1.25rem]/1 ak-frame-border flex-col">
         <Layer className="flex-wrap items-start">
-          <Layer className="ak-layer ak-layer-0 ak-frame ak-frame ak-frame-p-1 ak-frame-border flex-col">
+          <Layer className="ak-layer ak-layer-0 ak-frame ak-frame-p-1 ak-frame-border flex-col">
             <Layers />
           </Layer>
-          <Layer className="ak-layer ak-layer-10 ak-frame ak-frame ak-frame-p-1 ak-frame-border flex-col">
+          <Layer className="ak-layer ak-layer-10 ak-frame ak-frame-p-1 ak-frame-border flex-col">
             <Layers />
           </Layer>
-          <Layer className="ak-layer ak-layer-20 ak-frame ak-frame ak-frame-p-1 ak-frame-border flex-col">
+          <Layer className="ak-layer ak-layer-20 ak-frame ak-frame-p-1 ak-frame-border flex-col">
             <Layers />
           </Layer>
-          <Layer className="ak-layer ak-layer-30 ak-frame ak-frame ak-frame-p-1 ak-frame-border flex-col">
+          <Layer className="ak-layer ak-layer-30 ak-frame ak-frame-p-1 ak-frame-border flex-col">
             <Layers />
           </Layer>
-          <Layer className="ak-layer ak-layer-40 ak-frame ak-frame ak-frame-p-1 ak-frame-border flex-col">
+          <Layer className="ak-layer ak-layer-40 ak-frame ak-frame-p-1 ak-frame-border flex-col">
             <Layers />
           </Layer>
-          <Layer className="ak-layer ak-layer-50 ak-frame ak-frame ak-frame-p-1 ak-frame-border flex-col">
+          <Layer className="ak-layer ak-layer-50 ak-frame ak-frame-p-1 ak-frame-border flex-col">
             <Layers />
           </Layer>
         </Layer>
