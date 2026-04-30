@@ -182,24 +182,6 @@ function getPercentTokenValue(pattern: string, options?: NumbersOptions) {
 }
 
 /**
- * Parses a wildcard numeric utility token and converts it to a 0..1 percentage.
- */
-function getWildcardPercentTokenValue(options?: NumbersOptions) {
-  return getPercentTokenValue("[*]", options);
-}
-
-/**
- * Parses a wildcard color utility token.
- */
-function getWildcardColorTokenValue() {
-  return fn.value(color, "[*]");
-}
-
-function getLightnessDeclarations(target: VarProperty) {
-  return [set(target, getWildcardPercentTokenValue())];
-}
-
-/**
  * Returns declaration children with their values negated. Used to derive
  * inverse utilities from the positive definitions.
  */
@@ -1249,50 +1231,6 @@ const inkText = fn.oklch(vars.layer, {
 
 const layerContext = createContext();
 
-function getLayerMixDeclaration() {
-  return set(
-    inputs.layerMix,
-    fn.colorMix(
-      inputs.layerMixMethod,
-      inputs.layerMixColor,
-      vars.layerIdleBase,
-      inputs.layerMixAmount,
-    ),
-  );
-}
-
-function getLayerOffsetDeclarations(pattern: string) {
-  return [
-    set(
-      inputs.layerIdleLOffsetDelta,
-      fn.mul(getPercentTokenValue(pattern), vars.lightnessOffsetDirection),
-    ),
-    set(
-      inputs.layerIdleLOffset,
-      withUtilityTokenGate(
-        getLightnessOffset(inputs.layerIdleLOffsetDelta),
-        pattern,
-      ),
-    ),
-  ];
-}
-
-function getStateOffsetDeclarations(pattern: string) {
-  return [
-    set(
-      inputs.layerLOffsetDelta,
-      fn.mul(getPercentTokenValue(pattern), vars.lightnessOffsetDirection),
-    ),
-    set(
-      inputs.layerLOffset,
-      withUtilityTokenGate(
-        getLightnessOffset(inputs.layerLOffsetDelta),
-        pattern,
-      ),
-    ),
-  ];
-}
-
 utility(
   "layer",
   set.color(vars.text),
@@ -1315,6 +1253,22 @@ utility(
   ]),
 );
 
+function getLayerOffsetDeclarations(pattern: string) {
+  return [
+    set(
+      inputs.layerIdleLOffsetDelta,
+      fn.mul(getPercentTokenValue(pattern), vars.lightnessOffsetDirection),
+    ),
+    set(
+      inputs.layerIdleLOffset,
+      withUtilityTokenGate(
+        getLightnessOffset(inputs.layerIdleLOffsetDelta),
+        pattern,
+      ),
+    ),
+  ];
+}
+
 utility(
   "layer-*",
   set(inputs.layerC, fn.value(chroma)),
@@ -1322,6 +1276,22 @@ utility(
   set(inputs.layerColor, fn.value(color, "[color]")),
   getLayerOffsetDeclarations("[number]"),
 );
+
+utility("layer-offset-*", getLayerOffsetDeclarations("[*]"));
+
+utility("layer-color-*", set(inputs.layerColor, fn.value(color, "[*]")));
+
+function getLayerMixDeclaration() {
+  return set(
+    inputs.layerMix,
+    fn.colorMix(
+      inputs.layerMixMethod,
+      inputs.layerMixColor,
+      vars.layerIdleBase,
+      inputs.layerMixAmount,
+    ),
+  );
+}
 
 utility("layer-mix", getLayerMixDeclaration());
 
@@ -1333,31 +1303,14 @@ utility(
   getLayerMixDeclaration(),
 );
 
-utility("state-*", getStateOffsetDeclarations("[*]"));
-
-utility("layer-offset-*", getLayerOffsetDeclarations("[*]"));
-
-utility("state-offset-*", getStateOffsetDeclarations("[*]"));
-
-utility("layer-color-*", set(inputs.layerColor, getWildcardColorTokenValue()));
-
-utility(
-  "layer-mix-color-*",
-  set(inputs.layerMixColor, getWildcardColorTokenValue()),
-  getLayerMixDeclaration(),
-);
+utility("layer-mix-color-*", set(inputs.layerMixColor, fn.value(color, "[*]")));
 
 utility(
   "layer-mix-amount-*",
   set(inputs.layerMixAmount, fn.toPercent(getNumericTokenValue("[*]"))),
-  getLayerMixDeclaration(),
 );
 
-utility(
-  "layer-mix-method-*",
-  set(inputs.layerMixMethod, fn.value(mix, "[*]")),
-  getLayerMixDeclaration(),
-);
+utility("layer-mix-method-*", set(inputs.layerMixMethod, fn.value(mix, "[*]")));
 
 const layerLighten = utility(
   "layer-lighten-*",
@@ -1417,17 +1370,6 @@ utility(
 );
 
 utility(
-  "state-push-*",
-  set(inputs.layerPushL, getPercentTokenValue("[*]")),
-  set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
-  set(
-    vars.layerPushBaseL,
-    getLayerL(fn.mul(vars.layerPushValue, vars.lightnessOffsetDirection)),
-  ),
-  set(vars.layerPushL, getPushL(vars.layerPushValue, vars.layerPushBaseL)),
-);
-
-utility(
   "layer-contrast",
   set(inputs.layerIdleContrastL, 0.25),
   mapLayerLightnessSteps((parentL, isDark) => [
@@ -1444,33 +1386,29 @@ utility(
 utility(
   "layer-max-*",
   set(inputs.layerCMax, fn.value(chroma)),
-  set(inputs.layerLMax, fn.value("[*]")),
-  set(inputs.layerLMax, getPercentTokenValue("[number]")),
+  set(inputs.layerLMax, getPercentTokenValue("[*]")),
 );
 
 utility(
   "layer-min-*",
   set(inputs.layerCMin, fn.value(chroma)),
-  set(inputs.layerLMin, fn.value("[*]")),
-  set(inputs.layerLMin, getPercentTokenValue("[number]")),
+  set(inputs.layerLMin, getPercentTokenValue("[*]")),
 );
 
-utility("layer-max-l-*", getLightnessDeclarations(inputs.layerLMax));
+utility("layer-max-l-*", set(inputs.layerLMax, getPercentTokenValue("[*]")));
 
-utility("layer-min-l-*", getLightnessDeclarations(inputs.layerLMin));
+utility("layer-min-l-*", set(inputs.layerLMin, getPercentTokenValue("[*]")));
 
 utility(
   "layer-max-c-*",
-  set(inputs.layerCMax, fn.value("[*]")),
   set(inputs.layerCMax, fn.value(chroma)),
-  set(inputs.layerCMax, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+  set(inputs.layerCMax, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "layer-min-c-*",
-  set(inputs.layerCMin, fn.value("[*]")),
   set(inputs.layerCMin, fn.value(chroma)),
-  set(inputs.layerCMin, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+  set(inputs.layerCMin, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
@@ -1489,6 +1427,70 @@ const layerSaturate = utility(
 utility("layer-desaturate-*", getNegatedDeclarations(layerSaturate));
 
 utility(
+  "layer-h-rotate-*",
+  set(
+    inputs.layerIdleRelativeH,
+    getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS),
+  ),
+);
+
+utility(
+  "state-h-rotate-*",
+  set(inputs.layerRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
+);
+
+utility("layer-l-*", set(inputs.layerL, getPercentTokenValue("[*]")));
+
+utility(
+  "layer-c-*",
+  set(inputs.layerC, fn.value(chroma)),
+  set(inputs.layerC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+);
+
+utility(
+  "layer-h-*",
+  set(inputs.layerH, fn.value(hue)),
+  set(inputs.layerH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
+);
+
+utility(
+  "layer-invert",
+  set(inputs.layerLMin, 0.25),
+  set(inputs.layerL, fn.invert(l)),
+);
+
+function getStateOffsetDeclarations(pattern: string) {
+  return [
+    set(
+      inputs.layerLOffsetDelta,
+      fn.mul(getPercentTokenValue(pattern), vars.lightnessOffsetDirection),
+    ),
+    set(
+      inputs.layerLOffset,
+      withUtilityTokenGate(
+        getLightnessOffset(inputs.layerLOffsetDelta),
+        pattern,
+      ),
+    ),
+  ];
+}
+
+utility("state-*", getStateOffsetDeclarations("[*]"));
+
+utility("state-offset-*", getStateOffsetDeclarations("[*]"));
+
+utility(
+  "state-push-*",
+  set(inputs.layerPushL, getPercentTokenValue("[*]")),
+  set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
+  set(
+    vars.layerPushBaseL,
+    getLayerL(fn.mul(vars.layerPushValue, vars.lightnessOffsetDirection)),
+  ),
+  set(vars.layerPushL, getPushL(vars.layerPushValue, vars.layerPushBaseL)),
+);
+
+utility(
   "state-saturate-*",
   set(inputs.layerRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
@@ -1502,44 +1504,6 @@ utility(
 );
 
 utility(
-  "layer-h-rotate-*",
-  set(
-    inputs.layerIdleRelativeH,
-    getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS),
-  ),
-);
-
-utility(
-  "state-h-rotate-*",
-  set(inputs.layerRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
-);
-
-utility(
-  "layer-l-*",
-  set(inputs.layerL, fn.value("[*]")),
-  set(inputs.layerL, getPercentTokenValue("[number]")),
-);
-
-utility(
-  "layer-c-*",
-  set(inputs.layerC, fn.value("[*]")),
-  set(inputs.layerC, fn.value(chroma)),
-  set(inputs.layerC, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
-);
-
-utility(
-  "layer-h-*",
-  set(inputs.layerH, fn.value(hue, "[*]")),
-  set(inputs.layerH, getNumericTokenValue("[number]", HUE_TOKEN_OPTIONS)),
-);
-
-utility(
-  "layer-invert",
-  set(inputs.layerLMin, 0.25),
-  set(inputs.layerL, fn.invert(l)),
-);
-
-utility(
   "edge-*",
   set(inputs.edgeC, fn.value(chroma)),
   set(inputs.edgeH, fn.value(hue)),
@@ -1547,9 +1511,9 @@ utility(
   set(inputs.edgeA, getPercentTokenValue("[number]")),
 );
 
-utility("edge-color-*", set(inputs.edgeColor, getWildcardColorTokenValue()));
+utility("edge-color-*", set(inputs.edgeColor, fn.value(color, "[*]")));
 
-utility("edge-alpha-*", set(inputs.edgeA, getWildcardPercentTokenValue()));
+utility("edge-alpha-*", set(inputs.edgeA, getPercentTokenValue("[*]")));
 
 utility("edge-raw", set(inputs.edgeA, 1), set(inputs.edgePushL, 0));
 
@@ -1582,55 +1546,46 @@ utility(
   set(inputs.edgeRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
-utility(
-  "edge-l-*",
-  set(inputs.edgeL, fn.value("[*]")),
-  set(inputs.edgeL, getPercentTokenValue("[number]")),
-);
+utility("edge-l-*", set(inputs.edgeL, getPercentTokenValue("[*]")));
 
 utility(
   "edge-c-*",
-  set(inputs.edgeC, fn.value("[*]")),
   set(inputs.edgeC, fn.value(chroma)),
-  set(inputs.edgeC, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+  set(inputs.edgeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "edge-h-*",
-  set(inputs.edgeH, fn.value(hue, "[*]")),
-  set(inputs.edgeH, getNumericTokenValue("[number]", HUE_TOKEN_OPTIONS)),
+  set(inputs.edgeH, fn.value(hue)),
+  set(inputs.edgeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
 utility(
   "edge-max-*",
   set(inputs.edgeCMax, fn.value(chroma)),
-  set(inputs.edgeLMax, fn.value("[*]")),
-  set(inputs.edgeLMax, getPercentTokenValue("[number]")),
+  set(inputs.edgeLMax, getPercentTokenValue("[*]")),
 );
 
 utility(
   "edge-min-*",
   set(inputs.edgeCMin, fn.value(chroma)),
-  set(inputs.edgeLMin, fn.value("[*]")),
-  set(inputs.edgeLMin, getPercentTokenValue("[number]")),
+  set(inputs.edgeLMin, getPercentTokenValue("[*]")),
 );
 
-utility("edge-max-l-*", getLightnessDeclarations(inputs.edgeLMax));
+utility("edge-max-l-*", set(inputs.edgeLMax, getPercentTokenValue("[*]")));
 
-utility("edge-min-l-*", getLightnessDeclarations(inputs.edgeLMin));
+utility("edge-min-l-*", set(inputs.edgeLMin, getPercentTokenValue("[*]")));
 
 utility(
   "edge-max-c-*",
-  set(inputs.edgeCMax, fn.value("[*]")),
   set(inputs.edgeCMax, fn.value(chroma)),
-  set(inputs.edgeCMax, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+  set(inputs.edgeCMax, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "edge-min-c-*",
-  set(inputs.edgeCMin, fn.value("[*]")),
   set(inputs.edgeCMin, fn.value(chroma)),
-  set(inputs.edgeCMin, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+  set(inputs.edgeCMin, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
 const textBaseColor = fn.var(inputs.textColor, vars.layer);
@@ -1718,13 +1673,13 @@ utility(
   set(inputs.textPushL, getPercentTokenValue("[number]")),
 );
 
-utility("text-color-*", set(inputs.textColor, getWildcardColorTokenValue()));
+utility("text-color-*", set(inputs.textColor, fn.value(color, "[*]")));
 
-utility("text-push-*", set(inputs.textPushL, getWildcardPercentTokenValue()));
+utility("text-push-*", set(inputs.textPushL, getPercentTokenValue("[*]")));
 
 utility(
   "ink-*",
-  set(inputs.textA, getPercentTokenValue("[number]")),
+  set(inputs.textA, getPercentTokenValue("[*]")),
   set(vars.text, inkText),
   set.color(vars.text),
 );
@@ -1756,55 +1711,46 @@ utility(
   set(inputs.textRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
-utility(
-  "text-l-*",
-  set(inputs.textL, fn.value("[*]")),
-  set(inputs.textL, getPercentTokenValue("[number]")),
-);
+utility("text-l-*", set(inputs.textL, getPercentTokenValue("[*]")));
 
 utility(
   "text-c-*",
-  set(inputs.textC, fn.value("[*]")),
   set(inputs.textC, fn.value(chroma)),
-  set(inputs.textC, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+  set(inputs.textC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "text-h-*",
-  set(inputs.textH, fn.value(hue, "[*]")),
-  set(inputs.textH, getNumericTokenValue("[number]", HUE_TOKEN_OPTIONS)),
+  set(inputs.textH, fn.value(hue)),
+  set(inputs.textH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
 utility(
   "text-max-*",
   set(inputs.textCMax, fn.value(chroma)),
-  set(inputs.textLMax, fn.value("[*]")),
-  set(inputs.textLMax, getPercentTokenValue("[number]")),
+  set(inputs.textLMax, getPercentTokenValue("[*]")),
 );
 
 utility(
   "text-min-*",
   set(inputs.textCMin, fn.value(chroma)),
-  set(inputs.textLMin, fn.value("[*]")),
-  set(inputs.textLMin, getPercentTokenValue("[number]")),
+  set(inputs.textLMin, getPercentTokenValue("[*]")),
 );
 
-utility("text-max-l-*", getLightnessDeclarations(inputs.textLMax));
+utility("text-max-l-*", set(inputs.textLMax, getPercentTokenValue("[*]")));
 
-utility("text-min-l-*", getLightnessDeclarations(inputs.textLMin));
+utility("text-min-l-*", set(inputs.textLMin, getPercentTokenValue("[*]")));
 
 utility(
   "text-max-c-*",
-  set(inputs.textCMax, fn.value("[*]")),
   set(inputs.textCMax, fn.value(chroma)),
-  set(inputs.textCMax, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+  set(inputs.textCMax, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "text-min-c-*",
-  set(inputs.textCMin, fn.value("[*]")),
   set(inputs.textCMin, fn.value(chroma)),
-  set(inputs.textCMin, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+  set(inputs.textCMin, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
 const outlineBaseColor = fn.var(inputs.outlineColor, vars.layer);
@@ -1866,14 +1812,11 @@ utility(
   set(inputs.outlinePushL, getPercentTokenValue("[number]")),
 );
 
-utility(
-  "outline-color-*",
-  set(inputs.outlineColor, getWildcardColorTokenValue()),
-);
+utility("outline-color-*", set(inputs.outlineColor, fn.value(color, "[*]")));
 
 utility(
   "outline-push-*",
-  set(inputs.outlinePushL, getWildcardPercentTokenValue()),
+  set(inputs.outlinePushL, getPercentTokenValue("[*]")),
 );
 
 const outlineLighten = utility(
@@ -1912,61 +1855,52 @@ utility(
   set(inputs.outlineRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
-utility(
-  "outline-l-*",
-  set(inputs.outlineL, fn.value("[*]")),
-  set(inputs.outlineL, getPercentTokenValue("[number]")),
-);
+utility("outline-l-*", set(inputs.outlineL, getPercentTokenValue("[*]")));
 
 utility(
   "outline-c-*",
-  set(inputs.outlineC, fn.value("[*]")),
   set(inputs.outlineC, fn.value(chroma)),
-  set(inputs.outlineC, getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS)),
+  set(inputs.outlineC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "outline-h-*",
-  set(inputs.outlineH, fn.value(hue, "[*]")),
-  set(inputs.outlineH, getNumericTokenValue("[number]", HUE_TOKEN_OPTIONS)),
+  set(inputs.outlineH, fn.value(hue)),
+  set(inputs.outlineH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
 utility(
   "outline-max-*",
   set(inputs.outlineCMax, fn.value(chroma)),
-  set(inputs.outlineLMax, fn.value("[*]")),
-  set(inputs.outlineLMax, getPercentTokenValue("[number]")),
+  set(inputs.outlineLMax, getPercentTokenValue("[*]")),
 );
 
 utility(
   "outline-min-*",
   set(inputs.outlineCMin, fn.value(chroma)),
-  set(inputs.outlineLMin, fn.value("[*]")),
-  set(inputs.outlineLMin, getPercentTokenValue("[number]")),
+  set(inputs.outlineLMin, getPercentTokenValue("[*]")),
 );
 
-utility("outline-max-l-*", getLightnessDeclarations(inputs.outlineLMax));
+utility(
+  "outline-max-l-*",
+  set(inputs.outlineLMax, getPercentTokenValue("[*]")),
+);
 
-utility("outline-min-l-*", getLightnessDeclarations(inputs.outlineLMin));
+utility(
+  "outline-min-l-*",
+  set(inputs.outlineLMin, getPercentTokenValue("[*]")),
+);
 
 utility(
   "outline-max-c-*",
-  set(inputs.outlineCMax, fn.value("[*]")),
   set(inputs.outlineCMax, fn.value(chroma)),
-  set(
-    inputs.outlineCMax,
-    getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS),
-  ),
+  set(inputs.outlineCMax, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
 utility(
   "outline-min-c-*",
-  set(inputs.outlineCMin, fn.value("[*]")),
   set(inputs.outlineCMin, fn.value(chroma)),
-  set(
-    inputs.outlineCMin,
-    getPercentTokenValue("[number]", CHROMA_TOKEN_OPTIONS),
-  ),
+  set(inputs.outlineCMin, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
 );
 
 function getFrameBorderWidthDeclarations(target: VarProperty) {
