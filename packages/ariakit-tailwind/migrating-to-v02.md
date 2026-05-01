@@ -380,7 +380,7 @@ The force modifier is now a separate utility.
 
 ### `ak-frame-overflow` → `ak-frame ak-frame-cover`
 
-`ak-frame-overflow` has been removed. Use `ak-frame-cover` instead — it now automatically handles all border/ring combinations, collapsing shared borders when both parent and child have them.
+`ak-frame-overflow` has been removed. Use `ak-frame-cover` instead — it now automatically handles padding and border combinations, collapsing shared borders when both parent and child have them.
 
 ```diff
 - ak-frame-overflow
@@ -390,13 +390,13 @@ The force modifier is now a separate utility.
 + ak-frame ak-frame-cover ak-frame-p-1
 ```
 
-### Compound utility + frame override requires explicit `ak-frame`
+### Frame preset padding overrides require explicit `ak-frame`
 
-When overriding a compound utility's frame token (e.g., `ak-button` + `ak-frame-field/1`), you must add an explicit `ak-frame` class. Without it, the compound utility's inlined padding-block longhand isn't reset by the shorthand.
+In v0.1, frame preset padding overrides such as `ak-frame-field/1` worked without a separate base class because the preset utility also initialized frame setup. In v0.2, add `ak-frame` explicitly before the modifier so the frame context is initialized.
 
 ```diff
-- ak-button ak-frame-field/1
-+ ak-button ak-frame ak-frame-field/1
+- ak-frame-field/1
++ ak-frame ak-frame-field/1
 ```
 
 ---
