@@ -57,14 +57,14 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
 
 Ariakit Tailwind revolves around a few families of utilities:
 
-- **[`ak-layer`](#ak-layer)** turns any element into a _layer_ — a surface with its own background, text, border, and shadow colors. Layers nest, and each nested layer shifts in lightness relative to its parent so stacked surfaces read correctly in both light and dark modes.
+- **[`ak-layer`](#ak-layer)** turns any element into a _layer_ — a surface with its own background, text, border, and shadow colors. Layers can nest, and lightness modifiers such as `ak-layer-lighten-*`, `ak-layer-darken-*`, and numeric `ak-layer-*` modifiers shift nested surfaces relative to their parent so stacked surfaces read correctly in both light and dark modes.
 - **[`ak-ink`](#ak-ink)** sets the text opacity for the layer's own text. Safe to apply on the same element as `ak-layer` or on a descendant.
 - **[`ak-text`](#ak-text)** colors inline text _inside_ a layer with automatic WCAG contrast. Must go on a descendant, not on the `ak-layer` element itself.
 - **[`ak-edge`](#ak-edge)** colors borders and rings, adapting opacity and contrast to the layer behind them.
 - **[`ak-outline`](#ak-outline)** colors outlines in the same adaptive way.
 - **[`ak-frame`](#ak-frame)** handles radius, padding, margin, borders, and concentric-radius layout.
 
-All color math uses [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch), so modifiers like `ak-layer-warm-40` or `ak-text-saturate-50` behave predictably across hues. Because every value is computed relatively, changing a single theme token ripples through every layer, text, edge, and frame that depends on it — so users can reskin the whole system without breaking contrast, depth, or shape relationships.
+Color channel utilities are authored in [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch), so modifiers like `ak-layer-warm-40` or `ak-text-saturate-50` behave predictably across hues. Text contrast is converted to LCH at the final contrast step, and layer mixing can use any supported CSS `color-mix()` interpolation method. Because every value is computed relatively, changing a single theme token ripples through every layer, text, edge, and frame that depends on it — so users can reskin the whole system without breaking contrast, depth, or shape relationships.
 
 ### Value scales
 
@@ -113,12 +113,12 @@ With the theme above, you can use your custom colors anywhere Ariakit expects a 
 
 Ariakit Tailwind exposes additional tokens beyond `--color-*`, `--radius-*`, and `--spacing-*`:
 
-| Token family | Purpose                                                                                                                                                                        | Defaults                                                                                                                                                                                                                                                                                                                                            |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--contrast` | Global contrast preference (`0`–`100`). Utilities like `ak-text` lift lightness as `--contrast` grows. Automatically set to `100` by the [`contrast-more`](#variants) variant. | `0`                                                                                                                                                                                                                                                                                                                                                 |
-| `--chroma-*` | Named chroma presets for `ak-layer-*`, `ak-text-*`, `ak-edge-*`, `ak-outline-*`, and all `-c-*` / `-max-c-*` / `-min-c-*` utilities.                                           | `grayscale` (0), `muted` (0.05), `balanced` (0.15), `vivid` (0.22), `neon` (0.32)                                                                                                                                                                                                                                                                   |
-| `--hue-*`    | Named hue presets (OKLCH degrees) for `-<hue>` / `-h-*` utilities.                                                                                                             | Absolute: `red`, `orange`, `yellow`, `green`, `cyan`, `blue`, `magenta`. Relational (relative to current hue): `complementary`, `split1`/`split2`, `analogous1`/`analogous2`, `triadic1`/`triadic2`, `tetradic1`/`tetradic2`/`tetradic3`, `square1`/`square2`/`square3`. `--hue-warm` and `--hue-cool` are used by `-warm-*` / `-cool-*` utilities. |
-| `--mix-*`    | Named `color-mix()` interpolation methods used by `ak-layer-mix-*`.                                                                                                            | Every CSS color-mix method, e.g. `oklab`, `oklch`, `lab`, `lch`, `hsl`, `hwb`, `srgb`, `srgb-linear`, `display-p3`, `rec2020`, etc. Hyphen-separated forms like `shorter-hue` are available via `ak-layer-mix-shorter-hue`.                                                                                                                         |
+| Token family | Purpose                                                                                                                                                                                               | Defaults                                                                                                                                                                                                                                                                                                                                            |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--contrast` | Global contrast preference (`0`–`100`). Utilities like `ak-text` push lightness farther from the layer as `--contrast` grows. Automatically set to `100` by the [`contrast-more`](#variants) variant. | `0`                                                                                                                                                                                                                                                                                                                                                 |
+| `--chroma-*` | Named chroma presets for `ak-layer-*`, `ak-text-*`, `ak-edge-*`, `ak-outline-*`, and all `-c-*` / `-max-c-*` / `-min-c-*` utilities.                                                                  | `grayscale` (0), `muted` (0.05), `balanced` (0.15), `vivid` (0.22), `neon` (0.32)                                                                                                                                                                                                                                                                   |
+| `--hue-*`    | Named hue presets (OKLCH degrees) for `-<hue>` / `-h-*` utilities.                                                                                                                                    | Absolute: `red`, `orange`, `yellow`, `green`, `cyan`, `blue`, `magenta`. Relational (relative to current hue): `complementary`, `split1`/`split2`, `analogous1`/`analogous2`, `triadic1`/`triadic2`, `tetradic1`/`tetradic2`/`tetradic3`, `square1`/`square2`/`square3`. `--hue-warm` and `--hue-cool` are used by `-warm-*` / `-cool-*` utilities. |
+| `--mix-*`    | Named `color-mix()` interpolation methods used by `ak-layer-mix-*`.                                                                                                                                   | Every CSS color-mix method, e.g. `oklab`, `oklch`, `lab`, `lch`, `hsl`, `hwb`, `srgb`, `srgb-linear`, `display-p3`, `rec2020`, etc. Hyphen-separated forms like `shorter-hue` are available via `ak-layer-mix-shorter-hue`.                                                                                                                         |
 
 Override any of these in your own `@theme` block:
 
@@ -135,11 +135,11 @@ Override any of these in your own `@theme` block:
 
 ## `ak-layer`
 
-Layers are the foundation of Ariakit Styles. Every element with `ak-layer` is a surface with its own background, text, border, and shadow colors. Nested layers shift lightness relative to their parent — stacked cards read progressively lighter in light mode and progressively darker-to-lighter in dark mode, so depth is always visible.
+Layers are the foundation of Ariakit Styles. Every element with `ak-layer` is a surface with its own background, text, border, and shadow colors. Add lightness modifiers to nested layers so stacked cards read progressively lighter in light mode and progressively darker-to-lighter in dark mode.
 
 ```html
 <body class="ak-layer ak-layer-canvas">
-  <div class="ak-layer">Subtly lighter surface</div>
+  <div class="ak-layer ak-layer-lighten-5">Subtly lighter surface</div>
   <div class="ak-layer ak-layer-primary">Brand-colored surface</div>
 </body>
 ```
@@ -161,7 +161,7 @@ Use [`ak-edge`](#ak-edge) to fine-tune border, ring, and shadow colors without t
 | `ak-layer`                | Required base class. Sets background, text, border, and shadow colors.                                                                                                                              |
 | `ak-layer-<color>`        | Sets the layer to a specific color. Accepts any theme color (e.g. `ak-layer-primary`, `ak-layer-blue-500`) or arbitrary value (`ak-layer-[#131418]`).                                               |
 | `ak-layer-color-<color>`  | Explicit color-only alias. Useful for custom properties without a typed arbitrary value hint (`ak-layer-color-(--surface)`).                                                                        |
-| `ak-layer-<number>`       | Shifts lightness relative to parent layer (`0`–`100`). Nested `ak-layer` alone uses a sensible default step. Arbitrary values are raw, e.g. `ak-layer-[calc(l+0.1)]`.                               |
+| `ak-layer-<number>`       | Shifts lightness relative to parent layer (`0`–`100`). Bare `ak-layer` doesn't shift lightness on its own. Arbitrary values are raw, e.g. `ak-layer-[calc(l+0.1)]`.                                 |
 | `ak-layer-offset-<value>` | Explicit lightness-offset alias for `ak-layer-<number>`. Useful for custom properties without a typed arbitrary value hint (`ak-layer-offset-(--depth)`). Arbitrary/custom-property values are raw. |
 | `ak-layer-<chroma>`       | Sets chroma from a named preset, e.g. `ak-layer-vivid`, `ak-layer-muted`. See `--chroma-*` tokens.                                                                                                  |
 | `ak-layer-<hue>`          | Sets hue from a named preset, e.g. `ak-layer-red`, `ak-layer-blue`. See `--hue-*` tokens.                                                                                                           |
@@ -220,7 +220,7 @@ The explicit `ak-layer-mix-*` longhands configure the mix color, amount, and met
 
 ## `ak-state`
 
-`ak-state-*` utilities are companions to `ak-layer-*` that target interactive states (hover, active, focus). They shift lightness, chroma, and hue _without_ recomputing descendant text contrast, so state changes feel instant without layout jitter.
+`ak-state-*` utilities are companions to `ak-layer-*` that target interactive states (hover, active, focus). They shift the state layer's lightness, chroma, and hue separately from the idle layer setup. Descendant text and edges still respond to the resulting layer color.
 
 ```html
 <button class="ak-layer ak-layer-primary hover:ak-state-10 active:ak-state-20">
@@ -245,14 +245,14 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ```html
 <div class="ak-layer ak-layer-canvas ak-ink-70">
-  Layer with its own text at 70% opacity
+  Layer with its own text at least 70% opaque
   <p class="ak-ink-0">Nested text at minimum readable opacity</p>
 </div>
 ```
 
 | Utility           | Description                                                                                                                                                          |
 | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-ink-<number>` | Sets text opacity as an **absolute** alpha value (`0`–`100`). `0` clamps to the minimum alpha that still meets WCAG AA for the current layer; `100` is fully opaque. |
+| `ak-ink-<number>` | Requests a minimum text alpha (`0`–`100`). The rendered alpha is clamped to the minimum value that still meets WCAG AA for the current layer; `100` is fully opaque. |
 
 ## `ak-text`
 
@@ -480,11 +480,11 @@ Frame presets make paired radius/spacing tokens ergonomic:
 
 All three utilities accept no argument (defaults to `1px`), named widths (`0`, `1`, `2`, `4`, `8`), or arbitrary values (`[3px]`).
 
-| Utility                                             | Description                                                                                                                                                                 |
-| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-frame-border` / `ak-frame-border-<width>`       | Applies a border whose width is factored into nested-frame radius calculations.                                                                                             |
-| `ak-frame-ring` / `ak-frame-ring-<width>`           | Applies a ring with the same treatment. Rings draw outside the border-box without shifting layout.                                                                          |
-| `ak-frame-bordering` / `ak-frame-bordering-<width>` | Adaptive edge: behaves as a border when the layer is lightening relative to its parent, and as a ring when darkening. Keeps surfaces visually separated regardless of mode. |
+| Utility                                             | Description                                                                                                                                                                |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-frame-border` / `ak-frame-border-<width>`       | Applies a border whose width is factored into nested-frame radius calculations.                                                                                            |
+| `ak-frame-ring` / `ak-frame-ring-<width>`           | Applies a ring with the same treatment. Rings draw outside the border-box without shifting layout.                                                                         |
+| `ak-frame-bordering` / `ak-frame-bordering-<width>` | Adaptive edge: chooses border or ring based on parent layer appearance and whether the layer is lightening or darkening, keeping surfaces visually separated across modes. |
 
 ### Cover and flow
 
@@ -499,7 +499,7 @@ All three utilities accept no argument (defaults to `1px`), named widths (`0`, `
 
 | Utility          | Description                                                                                 |
 | ---------------- | ------------------------------------------------------------------------------------------- |
-| `ak-frame-cover` | Stretches the element to fill the parent content box, collapsing shared borders/rings.      |
+| `ak-frame-cover` | Stretches the element to fill the parent content box, collapsing shared borders.            |
 | `ak-frame-start` | Marks the element as the first child so `frame-cover` applies top/leading-edge rounding.    |
 | `ak-frame-end`   | Marks the element as the last child so `frame-cover` applies bottom/trailing-edge rounding. |
 | `ak-frame-row`   | Flags the frame as a horizontal flow (affects how `cover` / `start` / `end` compute edges). |
@@ -538,9 +538,9 @@ These variants are scoped to an `ak-layer` container and match based on the laye
 
 ### Accessibility
 
-| Variant         | Matches when…                                                                                                                                                                            |
-| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `contrast-more` | The user has requested higher contrast (`@media (prefers-contrast: more)`). Automatically sets `--contrast: 100`, which lifts lightness in every `ak-text`, `ak-edge`, and `ak-outline`. |
+| Variant         | Matches when…                                                                                                                                                                                           |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `contrast-more` | The user has requested higher contrast (`@media (prefers-contrast: more)`). Automatically sets `--contrast: 100`, which pushes `ak-text`, `ak-edge`, and `ak-outline` lightness farther from the layer. |
 
 You can opt extra utilities into high-contrast mode with `contrast-more:`:
 
