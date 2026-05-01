@@ -70,7 +70,7 @@ All color math uses [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/col
 
 Bare numeric modifiers use Ariakit's documented authoring scales. For example, lightness and alpha values use `0`–`100`, chroma values use `0`–`40`, and mix amounts use `0`–`100`.
 
-Arbitrary values and custom properties are raw CSS values. Use normalized OKLCH channel values like `ak-layer-l-[0.8]`, raw deltas like `ak-layer-[calc(l+0.1)]`, percentages where CSS expects percentages like `ak-layer-mix-amount-[35%]`, and custom properties that already contain those raw values.
+Arbitrary values and custom properties are raw CSS values. That means percent-style modifiers use normalized `0`–`1` values in arbitrary/custom-property form, even when their bare numeric forms use Ariakit's `0`–`100` or `0`–`40` authoring scales. Use normalized OKLCH channel values like `ak-layer-l-[0.8]`, normalized percent-style values like `ak-layer-warm-[0.4]` or `ak-text-saturate-[0.25]`, raw deltas like `ak-layer-[calc(l+0.1)]`, percentages where CSS expects percentages like `ak-layer-mix-amount-[35%]`, and custom properties that already contain those raw values.
 
 ## Theming
 
@@ -171,7 +171,7 @@ Use [`ak-edge`](#ak-edge) to fine-tune border, ring, and shadow colors without t
 | Utility                      | Description                                                                                                                                                            |
 | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ak-layer-lighten-<number>`  | Lightens the layer by `<number>`%. Arbitrary values are raw (`ak-layer-lighten-[0.05]`).                                                                               |
-| `ak-layer-darken-<number>`   | Darkens the layer by `<number>`%.                                                                                                                                      |
+| `ak-layer-darken-<number>`   | Darkens the layer by `<number>`%. Arbitrary values are raw (`ak-layer-darken-[0.05]`).                                                                                 |
 | `ak-layer-push-<number>`     | Minimum lightness shift (self-relative), jumping the forbidden mid-luminance range where contrast math becomes unreliable.                                             |
 | `ak-layer-contrast`          | Adapts the layer to contrast against its parent (preset `25`).                                                                                                         |
 | `ak-layer-contrast-<number>` | Custom contrast amount (`0`–`100`, default `25`).                                                                                                                      |

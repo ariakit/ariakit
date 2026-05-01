@@ -189,13 +189,6 @@ function getBarePercentTokenValue(options?: NumbersOptions) {
 }
 
 /**
- * Parses an arbitrary utility value without scaling it.
- */
-function getRawArbitraryValue(pattern = "[*]") {
-  return fn.value(pattern);
-}
-
-/**
  * Returns declarations for utilities whose bare numeric tokens use a percent
  * scale while arbitrary values are raw.
  */
@@ -206,7 +199,7 @@ function getRawPercentDeclarations(
 ) {
   return [
     set(target, getBarePercentTokenValue(options)),
-    set(target, getRawArbitraryValue(arbitraryPattern)),
+    set(target, fn.value(arbitraryPattern ?? "[*]")),
   ];
 }
 
@@ -1284,7 +1277,7 @@ utility(
 
 function getLayerOffsetDeclarations(arbitraryPattern = "[*]") {
   const bareValue = getBarePercentTokenValue();
-  const arbitraryValue = getRawArbitraryValue(arbitraryPattern);
+  const arbitraryValue = fn.value(arbitraryPattern ?? "[*]");
   return [
     set(
       inputs.layerIdleLOffsetDelta,
@@ -1342,7 +1335,7 @@ utility(
   set(inputs.layerMixAmount, fn.toPercent(getBareNumericTokenValue())),
   set(inputs.layerMixColor, fn.value(color, "[color]")),
   set(inputs.layerMixMethod, fn.value(mix)),
-  set(inputs.layerMixAmount, getRawArbitraryValue("[percentage]")),
+  set(inputs.layerMixAmount, fn.value("[percentage]")),
   getLayerMixDeclaration(),
 );
 
@@ -1351,7 +1344,7 @@ utility("layer-mix-color-*", set(inputs.layerMixColor, fn.value(color, "[*]")));
 utility(
   "layer-mix-amount-*",
   set(inputs.layerMixAmount, fn.toPercent(getBareNumericTokenValue())),
-  set(inputs.layerMixAmount, getRawArbitraryValue()),
+  set(inputs.layerMixAmount, fn.value("[*]")),
 );
 
 utility("layer-mix-method-*", set(inputs.layerMixMethod, fn.value(mix, "[*]")));
@@ -1368,7 +1361,7 @@ utility("state-lighten-*", getRawPercentDeclarations(inputs.layerRelativeL));
 utility(
   "state-darken-*",
   set(inputs.layerRelativeL, fn.neg(getBarePercentTokenValue())),
-  set(inputs.layerRelativeL, fn.neg(getRawArbitraryValue())),
+  set(inputs.layerRelativeL, fn.neg(fn.value("[*]"))),
 );
 
 /**
@@ -1384,13 +1377,13 @@ function getHueToward(current: Value, target: Value, amount: Value) {
 utility(
   "layer-cool-*",
   set(inputs.layerH, getHueToward(h, vars.hueCool, getBarePercentTokenValue())),
-  set(inputs.layerH, getHueToward(h, vars.hueCool, getRawArbitraryValue())),
+  set(inputs.layerH, getHueToward(h, vars.hueCool, fn.value("[*]"))),
 );
 
 utility(
   "layer-warm-*",
   set(inputs.layerH, getHueToward(h, vars.hueWarm, getBarePercentTokenValue())),
-  set(inputs.layerH, getHueToward(h, vars.hueWarm, getRawArbitraryValue())),
+  set(inputs.layerH, getHueToward(h, vars.hueWarm, fn.value("[*]"))),
 );
 
 utility(
@@ -1496,7 +1489,7 @@ utility(
 
 function getStateOffsetDeclarations() {
   const bareValue = getBarePercentTokenValue();
-  const arbitraryValue = getRawArbitraryValue();
+  const arbitraryValue = fn.value("[*]");
   return [
     set(
       inputs.layerLOffsetDelta,
@@ -1549,7 +1542,7 @@ utility(
     inputs.layerRelativeC,
     fn.neg(getBarePercentTokenValue(CHROMA_TOKEN_OPTIONS)),
   ),
-  set(inputs.layerRelativeC, fn.neg(getRawArbitraryValue())),
+  set(inputs.layerRelativeC, fn.neg(fn.value("[*]"))),
 );
 
 utility(
@@ -1575,13 +1568,13 @@ utility("edge-darken-*", getNegatedDeclarations(edgeLighten));
 utility(
   "edge-cool-*",
   set(inputs.edgeH, getHueToward(h, vars.hueCool, getBarePercentTokenValue())),
-  set(inputs.edgeH, getHueToward(h, vars.hueCool, getRawArbitraryValue())),
+  set(inputs.edgeH, getHueToward(h, vars.hueCool, fn.value("[*]"))),
 );
 
 utility(
   "edge-warm-*",
   set(inputs.edgeH, getHueToward(h, vars.hueWarm, getBarePercentTokenValue())),
-  set(inputs.edgeH, getHueToward(h, vars.hueWarm, getRawArbitraryValue())),
+  set(inputs.edgeH, getHueToward(h, vars.hueWarm, fn.value("[*]"))),
 );
 
 utility("edge-push-*", getRawPercentDeclarations(inputs.edgePushL));
@@ -1744,13 +1737,13 @@ utility("text-darken-*", getNegatedDeclarations(textLighten));
 utility(
   "text-cool-*",
   set(inputs.textH, getHueToward(h, vars.hueCool, getBarePercentTokenValue())),
-  set(inputs.textH, getHueToward(h, vars.hueCool, getRawArbitraryValue())),
+  set(inputs.textH, getHueToward(h, vars.hueCool, fn.value("[*]"))),
 );
 
 utility(
   "text-warm-*",
   set(inputs.textH, getHueToward(h, vars.hueWarm, getBarePercentTokenValue())),
-  set(inputs.textH, getHueToward(h, vars.hueWarm, getRawArbitraryValue())),
+  set(inputs.textH, getHueToward(h, vars.hueWarm, fn.value("[*]"))),
 );
 
 const textSaturate = utility(
@@ -1881,7 +1874,7 @@ utility(
     inputs.outlineH,
     getHueToward(h, vars.hueCool, getBarePercentTokenValue()),
   ),
-  set(inputs.outlineH, getHueToward(h, vars.hueCool, getRawArbitraryValue())),
+  set(inputs.outlineH, getHueToward(h, vars.hueCool, fn.value("[*]"))),
 );
 
 utility(
@@ -1890,7 +1883,7 @@ utility(
     inputs.outlineH,
     getHueToward(h, vars.hueWarm, getBarePercentTokenValue()),
   ),
-  set(inputs.outlineH, getHueToward(h, vars.hueWarm, getRawArbitraryValue())),
+  set(inputs.outlineH, getHueToward(h, vars.hueWarm, fn.value("[*]"))),
 );
 
 const outlineSaturate = utility(

@@ -6,7 +6,7 @@ This guide covers all breaking changes for users of the `@ariakit/tailwind` plug
 
 1. **Explicit base classes.** Utilities like `ak-layer`, `ak-frame`, `ak-text`, and `ak-outline` must now appear as base classes before their modifiers.
 2. **Slash to hyphen.** Opacity/value syntax changes from `/N` to `-N`. Text opacity moves from `ak-text/80` to `ak-ink-80`.
-3. **Explicit longhands for custom properties.** Overloaded shorthand utilities still need typed arbitrary value hints like `(color:--var)` or `(number:--var)`, but explicit longhands can use custom properties directly, such as `ak-layer-color-(--var)` and `ak-layer-offset-(--var)`. Custom-property values are raw CSS values, so use normalized values like `0.2` instead of scaled utility tokens like `20`.
+3. **Explicit longhands for custom properties.** Overloaded shorthand utilities still need typed arbitrary value hints when a shorthand accepts multiple value kinds, such as `ak-layer-(color:--var)` for colors or `ak-layer-(number:--var)` for lightness offsets. For `ak-edge`, `ak-text`, and `ak-outline`, use explicit longhands for custom properties, such as `ak-edge-alpha-(--alpha)`, `ak-text-push-(--value)`, and `ak-outline-push-(--value)`. Custom-property values are raw CSS values, so use normalized values like `0.2` instead of scaled utility tokens like `20`.
 4. **Unified `--ak-edge`.** The CSS variables `--ak-layer-border`, `--ak-border`, `--ak-ring`, and `--ak-layer-ring` are all replaced by `--ak-edge`.
 
 ---
