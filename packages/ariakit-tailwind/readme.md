@@ -2,7 +2,7 @@
 
 > **Experimental.** This package is currently experimental. Breaking changes might be introduced in patch or minor releases.
 
-Ariakit Tailwind is a Tailwind CSS v4 plugin that brings Ariakit Styles to your projects. It enables developers to build accessible design systems with **relative colors and radii** instead of fixed values, giving end users full freedom to customize the theme without sacrificing visual consistency. Swap any token — a brand color, a radius, a spacing scale — and every derived surface, text, border, and shadow rebalances itself automatically.
+Ariakit Tailwind is a Tailwind CSS v4 plugin that brings Ariakit Styles to your projects. It enables developers to build accessible design systems with **relative colors and radii** instead of fixed values, giving end users full freedom to customize the theme without sacrificing visual consistency. Swap any token — a brand color, a radius, a spacing scale — and every derived surface, text, and border rebalances itself automatically.
 
 Ariakit Tailwind is framework and library agnostic. It works with any frontend framework (React, Vue, Svelte, Astro, …) and any component library (Ariakit React, Radix UI, React Aria, …).
 
@@ -57,7 +57,7 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
 
 Ariakit Tailwind revolves around a few families of utilities:
 
-- **[`ak-layer`](#ak-layer)** turns any element into a _layer_ — a surface with its own background, text, border, and shadow colors. Layers can nest, and lightness modifiers such as `ak-layer-lighten-*`, `ak-layer-darken-*`, and numeric `ak-layer-*` modifiers shift nested surfaces relative to their parent so stacked surfaces read correctly in both light and dark modes.
+- **[`ak-layer`](#ak-layer)** turns any element into a _layer_ — a surface with its own background, text, and edge colors. Layers can nest, and lightness modifiers such as `ak-layer-lighten-*`, `ak-layer-darken-*`, and numeric `ak-layer-*` modifiers shift nested surfaces relative to their parent so stacked surfaces read correctly in both light and dark modes.
 - **[`ak-ink`](#ak-ink)** sets the text opacity for the layer's own text. Safe to apply on the same element as `ak-layer` or on a descendant.
 - **[`ak-text`](#ak-text)** colors inline text _inside_ a layer with automatic WCAG contrast. Must go on a descendant, not on the `ak-layer` element itself.
 - **[`ak-edge`](#ak-edge)** colors borders and rings, adapting opacity and contrast to the layer behind them.
@@ -135,7 +135,7 @@ Override any of these in your own `@theme` block:
 
 ## `ak-layer`
 
-Layers are the foundation of Ariakit Styles. Every element with `ak-layer` is a surface with its own background, text, border, and shadow colors. Add lightness modifiers to nested layers so stacked cards read progressively lighter in light mode and progressively darker-to-lighter in dark mode.
+Layers are the foundation of Ariakit Styles. Every element with `ak-layer` is a surface with its own background, text, and edge colors. Add lightness modifiers to nested layers so stacked cards read progressively lighter in light mode and progressively darker-to-lighter in dark mode.
 
 ```html
 <body class="ak-layer ak-layer-canvas">
@@ -144,21 +144,20 @@ Layers are the foundation of Ariakit Styles. Every element with `ak-layer` is a 
 </body>
 ```
 
-A layer automatically sets border, ring, and shadow colors. Use [`ak-frame-border`](#ak-frame), [`ak-frame-ring`](#ak-frame), or Tailwind's `shadow` utilities to display them:
+A layer automatically sets border and ring colors through the shared `--ak-edge` color. Use [`ak-frame-border`](#ak-frame) or [`ak-frame-ring`](#ak-frame) to display them:
 
 ```html
 <div class="ak-layer ak-frame ak-frame-border">Border from ak-layer</div>
 <div class="ak-layer ak-frame ak-frame-ring">Ring from ak-layer</div>
-<div class="ak-layer shadow-xl">Shadow from ak-layer</div>
 ```
 
-Use [`ak-edge`](#ak-edge) to fine-tune border, ring, and shadow colors without touching the layer background.
+Use [`ak-edge`](#ak-edge) to fine-tune border and ring colors without touching the layer background.
 
 ### Setting the layer color
 
 | Utility                   | Description                                                                                                                                                                                         |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-layer`                | Required base class. Sets background, text, border, and shadow colors.                                                                                                                              |
+| `ak-layer`                | Required base class. Sets background, text, border, and ring colors.                                                                                                                                |
 | `ak-layer-<color>`        | Sets the layer to a specific color. Accepts any theme color (e.g. `ak-layer-primary`, `ak-layer-blue-500`) or arbitrary value (`ak-layer-[#131418]`).                                               |
 | `ak-layer-color-<color>`  | Explicit color-only alias. Useful for custom properties without a typed arbitrary value hint (`ak-layer-color-(--surface)`).                                                                        |
 | `ak-layer-<number>`       | Shifts lightness relative to parent layer (`0`–`100`). Bare `ak-layer` doesn't shift lightness on its own. Arbitrary values are raw, e.g. `ak-layer-[calc(l+0.1)]`.                                 |
@@ -307,7 +306,7 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ## `ak-edge`
 
-`ak-edge` controls border, ring, and shadow colors for any element inside an [`ak-layer`](#ak-layer). Useful for giving borders their own hue, saturation, or opacity without affecting the surface.
+`ak-edge` controls border and ring colors for any element inside an [`ak-layer`](#ak-layer). Useful for giving borders their own hue, saturation, or opacity without affecting the surface.
 
 ```html
 <div class="ak-layer ak-frame ak-frame-border ak-edge-10">10% edge opacity</div>
