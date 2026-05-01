@@ -390,9 +390,9 @@ The force modifier is now a separate utility.
 + ak-frame ak-frame-cover ak-frame-p-1
 ```
 
-### Frame modifiers require explicit `ak-frame`
+### Frame preset padding overrides require explicit `ak-frame`
 
-When using a frame modifier such as `ak-frame-field/1`, you must add an explicit `ak-frame` class so the frame context is initialized.
+In v0.1, frame preset padding overrides such as `ak-frame-field/1` worked without a separate base class because the preset utility also initialized frame setup. In v0.2, add `ak-frame` explicitly before the modifier so the frame context is initialized.
 
 ```diff
 - ak-frame-field/1

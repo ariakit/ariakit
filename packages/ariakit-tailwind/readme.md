@@ -250,9 +250,9 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 </div>
 ```
 
-| Utility           | Description                                                                                                                                                          |
-| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-ink-<number>` | Requests a minimum text alpha (`0`–`100`). The rendered alpha is clamped to the minimum value that still meets WCAG AA for the current layer; `100` is fully opaque. |
+| Utility           | Description                                                                                                                                                                                                                               |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-ink-<number>` | Requests a text alpha (`0`–`100`). The rendered alpha is the larger of the requested value and the minimum that still meets WCAG AA contrast against the current layer, so values below that floor are clamped up; `100` is fully opaque. |
 
 ## `ak-text`
 
