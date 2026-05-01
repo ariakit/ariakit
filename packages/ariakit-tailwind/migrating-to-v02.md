@@ -6,7 +6,7 @@ This guide covers all breaking changes for users of the `@ariakit/tailwind` plug
 
 1. **Explicit base classes.** Utilities like `ak-layer`, `ak-frame`, `ak-text`, and `ak-outline` must now appear as base classes before their modifiers.
 2. **Slash to hyphen.** Opacity/value syntax changes from `/N` to `-N`. Text opacity moves from `ak-text/80` to `ak-ink-80`.
-3. **Explicit longhands for custom properties.** Overloaded shorthand utilities still need typed arbitrary value hints like `(color:--var)` or `(number:--var)`, but explicit longhands can use custom properties directly, such as `ak-layer-color-(--var)` and `ak-layer-offset-(--var)`.
+3. **Explicit longhands for custom properties.** Overloaded shorthand utilities still need typed arbitrary value hints when a shorthand accepts multiple value kinds, such as `ak-layer-(color:--var)` for colors or `ak-layer-(number:--var)` for lightness offsets. For `ak-edge`, `ak-text`, and `ak-outline`, use explicit longhands for custom properties, such as `ak-edge-alpha-(--alpha)`, `ak-text-push-(--value)`, and `ak-outline-push-(--value)`. Custom-property values are raw CSS values, so use normalized values like `0.2` instead of scaled utility tokens like `20`.
 4. **Unified `--ak-edge`.** The CSS variables `--ak-layer-border`, `--ak-border`, `--ak-ring`, and `--ak-layer-ring` are all replaced by `--ak-edge`.
 
 ---
@@ -129,6 +129,8 @@ Custom pop values can use the explicit offset longhand.
 + ak-layer ak-layer-offset-(--depth)
 ```
 
+The `--depth` value should be a raw normalized offset such as `0.2`, not `20`.
+
 ### Variant prefixes on modifier classes
 
 When `ak-layer` is already on the element unconditionally, variant-prefixed modifiers work without re-applying `ak-layer`:
@@ -184,6 +186,8 @@ For custom properties on the mix utility itself, pair `ak-layer-mix` with explic
 - ak-layer-mix-(color:--my-mix-color) ak-layer-mix-(number:--amount)
 + ak-layer-mix ak-layer-mix-color-(--my-mix-color) ak-layer-mix-amount-(--amount)
 ```
+
+The `--amount` value should be a raw CSS percentage such as `15%`.
 
 ---
 
@@ -248,7 +252,7 @@ Custom color text can use the explicit color longhand.
 + ak-text ak-text-color-(--my-color)
 ```
 
-For custom push values, use `ak-text-push-(--value)` instead of `ak-text-(number:--value)`.
+For custom push values, use `ak-text-push-(--value)` instead of `ak-text-(number:--value)`. The `--value` custom property should contain a raw normalized value such as `0.25`.
 
 ---
 
@@ -279,7 +283,7 @@ In v0.1, `ak-edge-contrast-<color>` set the edge to a solid color with lightness
 
 `ak-edge-raw` is shorthand for `ak-edge-100 ak-edge-push-0` — use it when you want the color to be applied exactly as specified. For other combinations, `ak-edge-N` controls alpha (`100` = opaque) and `ak-edge-push-N` controls how far the edge lightness is pushed away from the layer (`0` = the color's natural lightness).
 
-For custom alpha values, use `ak-edge-alpha-(--alpha)` instead of `ak-edge-(number:--alpha)`.
+For custom alpha values, use `ak-edge-alpha-(--alpha)` instead of `ak-edge-(number:--alpha)`. The `--alpha` custom property should contain a raw alpha value such as `0.4`.
 
 ### CSS variable renames (color)
 

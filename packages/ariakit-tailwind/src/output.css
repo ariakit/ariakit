@@ -163,13 +163,17 @@
   --_ak-layer-chroma: --value(--chroma-*);
   --_ak-layer-hue: --value(--hue-*);
   --_ak-layer-color: --value(--color-*, [color]);
-  --_ak-layer-idle-lightness-offset-delta: calc((--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * var(--_ak-lod));
-  --_ak-layer-idle-lightness-offset: calc((var(--_ak-layer-idle-lightness-offset-delta) + (clamp(0, (min(((l + var(--_ak-layer-idle-lightness-offset-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-idle-lightness-offset-delta)))) * 1000000), 1) * (((var(--_ak-eb) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-idle-lightness-offset-delta) * -1)), 1)) * var(--_ak-lod)) - ((var(--_ak-eb) - l) * var(--_ak-lod))) * 1000000), 1) * ((var(--_ak-layer-idle-lightness-offset-delta) * -1) - (var(--_ak-eb) - l)))) - var(--_ak-layer-idle-lightness-offset-delta)))) + (0 * (--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100)));
+  --_ak-layer-idle-lightness-offset-delta: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * var(--_ak-lod));
+  --_ak-layer-idle-lightness-offset: calc((var(--_ak-layer-idle-lightness-offset-delta) + (clamp(0, (min(((l + var(--_ak-layer-idle-lightness-offset-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-idle-lightness-offset-delta)))) * 1000000), 1) * (((var(--_ak-eb) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-idle-lightness-offset-delta) * -1)), 1)) * var(--_ak-lod)) - ((var(--_ak-eb) - l) * var(--_ak-lod))) * 1000000), 1) * ((var(--_ak-layer-idle-lightness-offset-delta) * -1) - (var(--_ak-eb) - l)))) - var(--_ak-layer-idle-lightness-offset-delta)))) + (0 * (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100)));
+  --_ak-layer-idle-lightness-offset-delta: calc(--value([number]) * var(--_ak-lod));
+  --_ak-layer-idle-lightness-offset: calc((var(--_ak-layer-idle-lightness-offset-delta) + (clamp(0, (min(((l + var(--_ak-layer-idle-lightness-offset-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-idle-lightness-offset-delta)))) * 1000000), 1) * (((var(--_ak-eb) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-idle-lightness-offset-delta) * -1)), 1)) * var(--_ak-lod)) - ((var(--_ak-eb) - l) * var(--_ak-lod))) * 1000000), 1) * ((var(--_ak-layer-idle-lightness-offset-delta) * -1) - (var(--_ak-eb) - l)))) - var(--_ak-layer-idle-lightness-offset-delta)))) + (0 * --value([number])));
 }
 
 @utility ak-layer-offset-* {
-  --_ak-layer-idle-lightness-offset-delta: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * var(--_ak-lod));
-  --_ak-layer-idle-lightness-offset: calc((var(--_ak-layer-idle-lightness-offset-delta) + (clamp(0, (min(((l + var(--_ak-layer-idle-lightness-offset-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-idle-lightness-offset-delta)))) * 1000000), 1) * (((var(--_ak-eb) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-idle-lightness-offset-delta) * -1)), 1)) * var(--_ak-lod)) - ((var(--_ak-eb) - l) * var(--_ak-lod))) * 1000000), 1) * ((var(--_ak-layer-idle-lightness-offset-delta) * -1) - (var(--_ak-eb) - l)))) - var(--_ak-layer-idle-lightness-offset-delta)))) + (0 * (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100)));
+  --_ak-layer-idle-lightness-offset-delta: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * var(--_ak-lod));
+  --_ak-layer-idle-lightness-offset: calc((var(--_ak-layer-idle-lightness-offset-delta) + (clamp(0, (min(((l + var(--_ak-layer-idle-lightness-offset-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-idle-lightness-offset-delta)))) * 1000000), 1) * (((var(--_ak-eb) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-idle-lightness-offset-delta) * -1)), 1)) * var(--_ak-lod)) - ((var(--_ak-eb) - l) * var(--_ak-lod))) * 1000000), 1) * ((var(--_ak-layer-idle-lightness-offset-delta) * -1) - (var(--_ak-eb) - l)))) - var(--_ak-layer-idle-lightness-offset-delta)))) + (0 * (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100)));
+  --_ak-layer-idle-lightness-offset-delta: calc(--value([*]) * var(--_ak-lod));
+  --_ak-layer-idle-lightness-offset: calc((var(--_ak-layer-idle-lightness-offset-delta) + (clamp(0, (min(((l + var(--_ak-layer-idle-lightness-offset-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-idle-lightness-offset-delta)))) * 1000000), 1) * (((var(--_ak-eb) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-idle-lightness-offset-delta) * -1)), 1)) * var(--_ak-lod)) - ((var(--_ak-eb) - l) * var(--_ak-lod))) * 1000000), 1) * ((var(--_ak-layer-idle-lightness-offset-delta) * -1) - (var(--_ak-eb) - l)))) - var(--_ak-layer-idle-lightness-offset-delta)))) + (0 * --value([*])));
 }
 
 @utility ak-layer-color-* {
@@ -181,9 +185,10 @@
 }
 
 @utility ak-layer-mix-* {
-  --_ak-layer-mix-amount: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") * 1%);
+  --_ak-layer-mix-amount: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") * 1%);
   --_ak-layer-mix-color: --value(--color-*, [color]);
   --_ak-layer-mix-method: --value(--mix-*);
+  --_ak-layer-mix-amount: --value([percentage]);
   --_ak-layer-mix: color-mix(in var(--_ak-layer-mix-method, oklab), var(--_ak-layer-mix-color, var(--ak-layer-parent, canvas)), var(--_ak-lib) var(--_ak-layer-mix-amount, 50%));
 }
 
@@ -192,7 +197,8 @@
 }
 
 @utility ak-layer-mix-amount-* {
-  --_ak-layer-mix-amount: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") * 1%);
+  --_ak-layer-mix-amount: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") * 1%);
+  --_ak-layer-mix-amount: --value([*]);
 }
 
 @utility ak-layer-mix-method-* {
@@ -200,31 +206,38 @@
 }
 
 @utility ak-layer-lighten-* {
-  --_ak-layer-idle-relative-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-idle-relative-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-idle-relative-lightness: --value([*]);
 }
 
 @utility ak-layer-darken-* {
-  --_ak-layer-idle-relative-lightness: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * -1);
+  --_ak-layer-idle-relative-lightness: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * -1);
+  --_ak-layer-idle-relative-lightness: calc(--value([*]) * -1);
 }
 
 @utility ak-state-lighten-* {
-  --_ak-layer-relative-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-relative-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-relative-lightness: --value([*]);
 }
 
 @utility ak-state-darken-* {
-  --_ak-layer-relative-lightness: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * -1);
+  --_ak-layer-relative-lightness: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * -1);
+  --_ak-layer-relative-lightness: calc(--value([*]) * -1);
 }
 
 @utility ak-layer-cool-* {
-  --_ak-layer-hue: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-layer-hue: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-layer-hue: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, --value([*]), 1)));
 }
 
 @utility ak-layer-warm-* {
-  --_ak-layer-hue: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-layer-hue: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-layer-hue: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, --value([*]), 1)));
 }
 
 @utility ak-layer-push-* {
-  --_ak-layer-idle-push-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-idle-push-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-idle-push-lightness: --value([*]);
   --_ak-lipv: calc(var(--_ak-layer-idle-push-lightness) * var(--_ak-cps));
   --_ak-lipbl: calc(l + (var(--_ak-lipv) * var(--_ak-lod)) + (clamp(0, ((var(--_ak-lipv) * var(--_ak-lod)) * 1000000), 1) * var(--_ak-llfb)));
   --_ak-lipl: clamp(0, (var(--_ak-lipbl) + (var(--_ak-lod) * var(--_ak-bw) * max(((clamp(0, ((var(--_ak-fla) - l) * 1000000), 1) * clamp(0, ((var(--_ak-lipbl) - var(--_ak-fla)) * 1000000), 1)) + (clamp(0, ((l - var(--_ak-flb)) * 1000000), 1) * clamp(0, ((var(--_ak-flb) - var(--_ak-lipbl)) * 1000000), 1))), (clamp(0, (min((var(--_ak-lipbl) - var(--_ak-fla)), (var(--_ak-flb) - var(--_ak-lipbl))) * 1000000), 1) * clamp(0, (var(--_ak-lipv) * 1000000), 1))))), 1);
@@ -271,35 +284,42 @@
 }
 
 @utility ak-layer-contrast-* {
-  --_ak-layer-idle-contrast-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-idle-contrast-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-idle-contrast-lightness: --value([*]);
 }
 
 @utility ak-layer-max-* {
   --_ak-layer-chroma-max: --value(--chroma-*);
-  --_ak-layer-lightness-max: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-lightness-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-lightness-max: --value([*]);
 }
 
 @utility ak-layer-min-* {
   --_ak-layer-chroma-min: --value(--chroma-*);
-  --_ak-layer-lightness-min: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-lightness-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-lightness-min: --value([*]);
 }
 
 @utility ak-layer-max-l-* {
-  --_ak-layer-lightness-max: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-lightness-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-lightness-max: --value([*]);
 }
 
 @utility ak-layer-min-l-* {
-  --_ak-layer-lightness-min: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-lightness-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-lightness-min: --value([*]);
 }
 
 @utility ak-layer-max-c-* {
   --_ak-layer-chroma-max: --value(--chroma-*);
-  --_ak-layer-chroma-max: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-layer-chroma-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-layer-chroma-max: --value([*]);
 }
 
 @utility ak-layer-min-c-* {
   --_ak-layer-chroma-min: --value(--chroma-*);
-  --_ak-layer-chroma-min: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-layer-chroma-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-layer-chroma-min: --value([*]);
 }
 
 @utility ak-layer-max-c-auto {
@@ -307,11 +327,13 @@
 }
 
 @utility ak-layer-saturate-* {
-  --_ak-layer-idle-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-layer-idle-relative-chroma: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-layer-idle-relative-chroma: --value([*]);
 }
 
 @utility ak-layer-desaturate-* {
-  --_ak-layer-idle-relative-chroma: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
+  --_ak-layer-idle-relative-chroma: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
+  --_ak-layer-idle-relative-chroma: calc(--value([*]) * -1);
 }
 
 @utility ak-layer-h-rotate-* {
@@ -323,12 +345,14 @@
 }
 
 @utility ak-layer-l-* {
-  --_ak-layer-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-lightness: --value([*]);
 }
 
 @utility ak-layer-c-* {
   --_ak-layer-chroma: --value(--chroma-*);
-  --_ak-layer-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-layer-chroma: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-layer-chroma: --value([*]);
 }
 
 @utility ak-layer-h-* {
@@ -342,35 +366,42 @@
 }
 
 @utility ak-state-* {
-  --_ak-layer-lightness-offset-delta: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * var(--_ak-lod));
-  --_ak-layer-lightness-offset: calc((var(--_ak-layer-lightness-offset-delta) + (clamp(0, (min(((l + var(--_ak-layer-lightness-offset-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-lightness-offset-delta)))) * 1000000), 1) * (((var(--_ak-eb) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-lightness-offset-delta) * -1)), 1)) * var(--_ak-lod)) - ((var(--_ak-eb) - l) * var(--_ak-lod))) * 1000000), 1) * ((var(--_ak-layer-lightness-offset-delta) * -1) - (var(--_ak-eb) - l)))) - var(--_ak-layer-lightness-offset-delta)))) + (0 * (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100)));
+  --_ak-layer-lightness-offset-delta: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * var(--_ak-lod));
+  --_ak-layer-lightness-offset: calc((var(--_ak-layer-lightness-offset-delta) + (clamp(0, (min(((l + var(--_ak-layer-lightness-offset-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-lightness-offset-delta)))) * 1000000), 1) * (((var(--_ak-eb) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-lightness-offset-delta) * -1)), 1)) * var(--_ak-lod)) - ((var(--_ak-eb) - l) * var(--_ak-lod))) * 1000000), 1) * ((var(--_ak-layer-lightness-offset-delta) * -1) - (var(--_ak-eb) - l)))) - var(--_ak-layer-lightness-offset-delta)))) + (0 * (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100)));
+  --_ak-layer-lightness-offset-delta: calc(--value([*]) * var(--_ak-lod));
+  --_ak-layer-lightness-offset: calc((var(--_ak-layer-lightness-offset-delta) + (clamp(0, (min(((l + var(--_ak-layer-lightness-offset-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-lightness-offset-delta)))) * 1000000), 1) * (((var(--_ak-eb) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-lightness-offset-delta) * -1)), 1)) * var(--_ak-lod)) - ((var(--_ak-eb) - l) * var(--_ak-lod))) * 1000000), 1) * ((var(--_ak-layer-lightness-offset-delta) * -1) - (var(--_ak-eb) - l)))) - var(--_ak-layer-lightness-offset-delta)))) + (0 * --value([*])));
 }
 
 @utility ak-state-offset-* {
-  --_ak-layer-lightness-offset-delta: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * var(--_ak-lod));
-  --_ak-layer-lightness-offset: calc((var(--_ak-layer-lightness-offset-delta) + (clamp(0, (min(((l + var(--_ak-layer-lightness-offset-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-lightness-offset-delta)))) * 1000000), 1) * (((var(--_ak-eb) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-lightness-offset-delta) * -1)), 1)) * var(--_ak-lod)) - ((var(--_ak-eb) - l) * var(--_ak-lod))) * 1000000), 1) * ((var(--_ak-layer-lightness-offset-delta) * -1) - (var(--_ak-eb) - l)))) - var(--_ak-layer-lightness-offset-delta)))) + (0 * (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100)));
+  --_ak-layer-lightness-offset-delta: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * var(--_ak-lod));
+  --_ak-layer-lightness-offset: calc((var(--_ak-layer-lightness-offset-delta) + (clamp(0, (min(((l + var(--_ak-layer-lightness-offset-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-lightness-offset-delta)))) * 1000000), 1) * (((var(--_ak-eb) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-lightness-offset-delta) * -1)), 1)) * var(--_ak-lod)) - ((var(--_ak-eb) - l) * var(--_ak-lod))) * 1000000), 1) * ((var(--_ak-layer-lightness-offset-delta) * -1) - (var(--_ak-eb) - l)))) - var(--_ak-layer-lightness-offset-delta)))) + (0 * (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100)));
+  --_ak-layer-lightness-offset-delta: calc(--value([*]) * var(--_ak-lod));
+  --_ak-layer-lightness-offset: calc((var(--_ak-layer-lightness-offset-delta) + (clamp(0, (min(((l + var(--_ak-layer-lightness-offset-delta)) - var(--_ak-fla)), (var(--_ak-flb) - (l + var(--_ak-layer-lightness-offset-delta)))) * 1000000), 1) * (((var(--_ak-eb) - l) + (clamp(0, ((((l - clamp(0, (l + (var(--_ak-layer-lightness-offset-delta) * -1)), 1)) * var(--_ak-lod)) - ((var(--_ak-eb) - l) * var(--_ak-lod))) * 1000000), 1) * ((var(--_ak-layer-lightness-offset-delta) * -1) - (var(--_ak-eb) - l)))) - var(--_ak-layer-lightness-offset-delta)))) + (0 * --value([*])));
 }
 
 @utility ak-state-push-* {
-  --_ak-layer-push-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-push-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-layer-push-lightness: --value([*]);
   --_ak-lpv: calc(var(--_ak-layer-push-lightness) * var(--_ak-cps));
   --_ak-lpbl: calc(l + (var(--_ak-lpv) * var(--_ak-lod)) + (clamp(0, ((var(--_ak-lpv) * var(--_ak-lod)) * 1000000), 1) * var(--_ak-llfb)));
   --_ak-lpl: clamp(0, (var(--_ak-lpbl) + (var(--_ak-lod) * var(--_ak-bw) * max(((clamp(0, ((var(--_ak-fla) - l) * 1000000), 1) * clamp(0, ((var(--_ak-lpbl) - var(--_ak-fla)) * 1000000), 1)) + (clamp(0, ((l - var(--_ak-flb)) * 1000000), 1) * clamp(0, ((var(--_ak-flb) - var(--_ak-lpbl)) * 1000000), 1))), (clamp(0, (min((var(--_ak-lpbl) - var(--_ak-fla)), (var(--_ak-flb) - var(--_ak-lpbl))) * 1000000), 1) * clamp(0, (var(--_ak-lpv) * 1000000), 1))))), 1);
 }
 
 @utility ak-state-saturate-* {
-  --_ak-layer-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-layer-relative-chroma: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-layer-relative-chroma: --value([*]);
 }
 
 @utility ak-state-desaturate-* {
-  --_ak-layer-relative-chroma: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
+  --_ak-layer-relative-chroma: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
+  --_ak-layer-relative-chroma: calc(--value([*]) * -1);
 }
 
 @utility ak-edge-* {
   --_ak-edge-chroma: --value(--chroma-*);
   --_ak-edge-h: --value(--hue-*);
   --_ak-edge-color: --value(--color-*, [color]);
-  --_ak-edge-alpha: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-alpha: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
 }
 
 @utility ak-edge-color-* {
@@ -378,7 +409,8 @@
 }
 
 @utility ak-edge-alpha-* {
-  --_ak-edge-alpha: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-alpha: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-alpha: --value([*]);
 }
 
 @utility ak-edge-raw {
@@ -387,31 +419,38 @@
 }
 
 @utility ak-edge-lighten-* {
-  --_ak-edge-relative-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-relative-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-relative-lightness: --value([*]);
 }
 
 @utility ak-edge-darken-* {
-  --_ak-edge-relative-lightness: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * -1);
+  --_ak-edge-relative-lightness: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * -1);
+  --_ak-edge-relative-lightness: calc(--value([*]) * -1);
 }
 
 @utility ak-edge-cool-* {
-  --_ak-edge-h: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-edge-h: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-edge-h: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, --value([*]), 1)));
 }
 
 @utility ak-edge-warm-* {
-  --_ak-edge-h: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-edge-h: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-edge-h: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, --value([*]), 1)));
 }
 
 @utility ak-edge-push-* {
-  --_ak-edge-push-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-push-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-push-lightness: --value([*]);
 }
 
 @utility ak-edge-saturate-* {
-  --_ak-edge-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-edge-relative-chroma: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-edge-relative-chroma: --value([*]);
 }
 
 @utility ak-edge-desaturate-* {
-  --_ak-edge-relative-chroma: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
+  --_ak-edge-relative-chroma: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
+  --_ak-edge-relative-chroma: calc(--value([*]) * -1);
 }
 
 @utility ak-edge-h-rotate-* {
@@ -419,12 +458,14 @@
 }
 
 @utility ak-edge-l-* {
-  --_ak-edge-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-lightness: --value([*]);
 }
 
 @utility ak-edge-c-* {
   --_ak-edge-chroma: --value(--chroma-*);
-  --_ak-edge-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-edge-chroma: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-edge-chroma: --value([*]);
 }
 
 @utility ak-edge-h-* {
@@ -434,30 +475,36 @@
 
 @utility ak-edge-max-* {
   --_ak-edge-chroma-max: --value(--chroma-*);
-  --_ak-edge-lightness-max: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-lightness-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-lightness-max: --value([*]);
 }
 
 @utility ak-edge-min-* {
   --_ak-edge-chroma-min: --value(--chroma-*);
-  --_ak-edge-lightness-min: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-lightness-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-lightness-min: --value([*]);
 }
 
 @utility ak-edge-max-l-* {
-  --_ak-edge-lightness-max: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-lightness-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-lightness-max: --value([*]);
 }
 
 @utility ak-edge-min-l-* {
-  --_ak-edge-lightness-min: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-lightness-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-edge-lightness-min: --value([*]);
 }
 
 @utility ak-edge-max-c-* {
   --_ak-edge-chroma-max: --value(--chroma-*);
-  --_ak-edge-chroma-max: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-edge-chroma-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-edge-chroma-max: --value([*]);
 }
 
 @utility ak-edge-min-c-* {
   --_ak-edge-chroma-min: --value(--chroma-*);
-  --_ak-edge-chroma-min: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-edge-chroma-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-edge-chroma-min: --value([*]);
 }
 
 @utility ak-text {
@@ -670,7 +717,7 @@
   --_ak-text-chroma: --value(--chroma-*);
   --_ak-text-hue: --value(--hue-*);
   --_ak-text-color: --value(--color-*, [color]);
-  --_ak-text-push-lightness: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-push-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
 }
 
 @utility ak-text-color-* {
@@ -678,37 +725,45 @@
 }
 
 @utility ak-text-push-* {
-  --_ak-text-push-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-push-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-push-lightness: --value([*]);
 }
 
 @utility ak-ink-* {
-  --_ak-text-alpha: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-alpha: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-alpha: --value([*]);
   --ak-text: oklch(from var(--ak-layer) var(--_ak-tfcl) 0 0 / max((((((var(--_ak-lil) * var(--_ak-tmal)) + (var(--_ak-dal) * (var(--_ak-tmad) + var(--_ak-tmab)))) + (c * 0.135)) * var(--_ak-text-contrast-scale)) + (var(--_ak-ct) * 0.6668)), var(--_ak-text-alpha)));
   color: var(--ak-text);
 }
 
 @utility ak-text-lighten-* {
-  --_ak-text-relative-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-relative-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-relative-lightness: --value([*]);
 }
 
 @utility ak-text-darken-* {
-  --_ak-text-relative-lightness: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * -1);
+  --_ak-text-relative-lightness: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * -1);
+  --_ak-text-relative-lightness: calc(--value([*]) * -1);
 }
 
 @utility ak-text-cool-* {
-  --_ak-text-hue: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-text-hue: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-text-hue: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, --value([*]), 1)));
 }
 
 @utility ak-text-warm-* {
-  --_ak-text-hue: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-text-hue: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-text-hue: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, --value([*]), 1)));
 }
 
 @utility ak-text-saturate-* {
-  --_ak-text-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-text-relative-chroma: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-text-relative-chroma: --value([*]);
 }
 
 @utility ak-text-desaturate-* {
-  --_ak-text-relative-chroma: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
+  --_ak-text-relative-chroma: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
+  --_ak-text-relative-chroma: calc(--value([*]) * -1);
 }
 
 @utility ak-text-h-rotate-* {
@@ -716,12 +771,14 @@
 }
 
 @utility ak-text-l-* {
-  --_ak-text-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-lightness: --value([*]);
 }
 
 @utility ak-text-c-* {
   --_ak-text-chroma: --value(--chroma-*);
-  --_ak-text-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-text-chroma: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-text-chroma: --value([*]);
 }
 
 @utility ak-text-h-* {
@@ -731,30 +788,36 @@
 
 @utility ak-text-max-* {
   --_ak-text-chroma-max: --value(--chroma-*);
-  --_ak-text-lightness-max: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-lightness-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-lightness-max: --value([*]);
 }
 
 @utility ak-text-min-* {
   --_ak-text-chroma-min: --value(--chroma-*);
-  --_ak-text-lightness-min: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-lightness-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-lightness-min: --value([*]);
 }
 
 @utility ak-text-max-l-* {
-  --_ak-text-lightness-max: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-lightness-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-lightness-max: --value([*]);
 }
 
 @utility ak-text-min-l-* {
-  --_ak-text-lightness-min: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-lightness-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-text-lightness-min: --value([*]);
 }
 
 @utility ak-text-max-c-* {
   --_ak-text-chroma-max: --value(--chroma-*);
-  --_ak-text-chroma-max: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-text-chroma-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-text-chroma-max: --value([*]);
 }
 
 @utility ak-text-min-c-* {
   --_ak-text-chroma-min: --value(--chroma-*);
-  --_ak-text-chroma-min: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-text-chroma-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-text-chroma-min: --value([*]);
 }
 
 @utility ak-outline {
@@ -806,7 +869,7 @@
   --_ak-outline-chroma: --value(--chroma-*);
   --_ak-outline-hue: --value(--hue-*);
   --_ak-outline-color: --value(--color-*, [color]);
-  --_ak-outline-push-lightness: calc(--value(number, [number], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-push-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
 }
 
 @utility ak-outline-color-* {
@@ -814,31 +877,38 @@
 }
 
 @utility ak-outline-push-* {
-  --_ak-outline-push-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-push-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-push-lightness: --value([*]);
 }
 
 @utility ak-outline-lighten-* {
-  --_ak-outline-relative-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-relative-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-relative-lightness: --value([*]);
 }
 
 @utility ak-outline-darken-* {
-  --_ak-outline-relative-lightness: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * -1);
+  --_ak-outline-relative-lightness: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * -1);
+  --_ak-outline-relative-lightness: calc(--value([*]) * -1);
 }
 
 @utility ak-outline-cool-* {
-  --_ak-outline-hue: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-outline-hue: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-outline-hue: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, --value([*]), 1)));
 }
 
 @utility ak-outline-warm-* {
-  --_ak-outline-hue: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, (--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-outline-hue: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
+  --_ak-outline-hue: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, --value([*]), 1)));
 }
 
 @utility ak-outline-saturate-* {
-  --_ak-outline-relative-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-outline-relative-chroma: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-outline-relative-chroma: --value([*]);
 }
 
 @utility ak-outline-desaturate-* {
-  --_ak-outline-relative-chroma: calc((--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
+  --_ak-outline-relative-chroma: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
+  --_ak-outline-relative-chroma: calc(--value([*]) * -1);
 }
 
 @utility ak-outline-h-rotate-* {
@@ -846,12 +916,14 @@
 }
 
 @utility ak-outline-l-* {
-  --_ak-outline-lightness: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-lightness: --value([*]);
 }
 
 @utility ak-outline-c-* {
   --_ak-outline-chroma: --value(--chroma-*);
-  --_ak-outline-chroma: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-outline-chroma: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-outline-chroma: --value([*]);
 }
 
 @utility ak-outline-h-* {
@@ -861,30 +933,36 @@
 
 @utility ak-outline-max-* {
   --_ak-outline-chroma-max: --value(--chroma-*);
-  --_ak-outline-lightness-max: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-lightness-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-lightness-max: --value([*]);
 }
 
 @utility ak-outline-min-* {
   --_ak-outline-chroma-min: --value(--chroma-*);
-  --_ak-outline-lightness-min: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-lightness-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-lightness-min: --value([*]);
 }
 
 @utility ak-outline-max-l-* {
-  --_ak-outline-lightness-max: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-lightness-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-lightness-max: --value([*]);
 }
 
 @utility ak-outline-min-l-* {
-  --_ak-outline-lightness-min: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-lightness-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
+  --_ak-outline-lightness-min: --value([*]);
 }
 
 @utility ak-outline-max-c-* {
   --_ak-outline-chroma-max: --value(--chroma-*);
-  --_ak-outline-chroma-max: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-outline-chroma-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-outline-chroma-max: --value([*]);
 }
 
 @utility ak-outline-min-c-* {
   --_ak-outline-chroma-min: --value(--chroma-*);
-  --_ak-outline-chroma-min: calc(--value(number, [*], "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-outline-chroma-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
+  --_ak-outline-chroma-min: --value([*]);
 }
 
 @utility ak-frame {

@@ -66,6 +66,12 @@ Ariakit Tailwind revolves around a few families of utilities:
 
 All color math uses [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch), so modifiers like `ak-layer-warm-40` or `ak-text-saturate-50` behave predictably across hues. Because every value is computed relatively, changing a single theme token ripples through every layer, text, edge, and frame that depends on it — so users can reskin the whole system without breaking contrast, depth, or shape relationships.
 
+### Value scales
+
+Bare numeric modifiers use Ariakit's documented authoring scales. For example, lightness and alpha values use `0`–`100`, chroma values use `0`–`40`, and mix amounts use `0`–`100`.
+
+Arbitrary values and custom properties are raw CSS values. That means percent-style modifiers use normalized `0`–`1` values in arbitrary/custom-property form, even when their bare numeric forms use Ariakit's `0`–`100` or `0`–`40` authoring scales. Use normalized OKLCH channel values like `ak-layer-l-[0.8]`, normalized percent-style values like `ak-layer-warm-[0.4]` or `ak-text-saturate-[0.25]`, raw deltas like `ak-layer-[calc(l+0.1)]`, percentages where CSS expects percentages like `ak-layer-mix-amount-[35%]`, and custom properties that already contain those raw values.
+
 ## Theming
 
 Ariakit Tailwind integrates directly with Tailwind's theming system. Every `--color-*`, `--radius-*`, and `--spacing-*` token in your `@theme` block becomes available to the matching Ariakit utilities.
@@ -150,31 +156,31 @@ Use [`ak-edge`](#ak-edge) to fine-tune border, ring, and shadow colors without t
 
 ### Setting the layer color
 
-| Utility                   | Description                                                                                                                                                                                               |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-layer`                | Required base class. Sets background, text, border, and shadow colors.                                                                                                                                    |
-| `ak-layer-<color>`        | Sets the layer to a specific color. Accepts any theme color (e.g. `ak-layer-primary`, `ak-layer-blue-500`) or arbitrary value (`ak-layer-[#131418]`).                                                     |
-| `ak-layer-color-<color>`  | Explicit color-only alias. Useful for custom properties without a typed arbitrary value hint (`ak-layer-color-(--surface)`).                                                                              |
-| `ak-layer-<number>`       | Shifts lightness relative to parent layer (`0`–`100`). Nested `ak-layer` alone uses a sensible default step.                                                                                              |
-| `ak-layer-offset-<value>` | Explicit lightness-offset alias for `ak-layer-<number>`. Useful for custom properties without a typed arbitrary value hint (`ak-layer-offset-(--depth)`). Custom properties use the same `0`–`100` scale. |
-| `ak-layer-<chroma>`       | Sets chroma from a named preset, e.g. `ak-layer-vivid`, `ak-layer-muted`. See `--chroma-*` tokens.                                                                                                        |
-| `ak-layer-<hue>`          | Sets hue from a named preset, e.g. `ak-layer-red`, `ak-layer-blue`. See `--hue-*` tokens.                                                                                                                 |
+| Utility                   | Description                                                                                                                                                                                         |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer`                | Required base class. Sets background, text, border, and shadow colors.                                                                                                                              |
+| `ak-layer-<color>`        | Sets the layer to a specific color. Accepts any theme color (e.g. `ak-layer-primary`, `ak-layer-blue-500`) or arbitrary value (`ak-layer-[#131418]`).                                               |
+| `ak-layer-color-<color>`  | Explicit color-only alias. Useful for custom properties without a typed arbitrary value hint (`ak-layer-color-(--surface)`).                                                                        |
+| `ak-layer-<number>`       | Shifts lightness relative to parent layer (`0`–`100`). Nested `ak-layer` alone uses a sensible default step. Arbitrary values are raw, e.g. `ak-layer-[calc(l+0.1)]`.                               |
+| `ak-layer-offset-<value>` | Explicit lightness-offset alias for `ak-layer-<number>`. Useful for custom properties without a typed arbitrary value hint (`ak-layer-offset-(--depth)`). Arbitrary/custom-property values are raw. |
+| `ak-layer-<chroma>`       | Sets chroma from a named preset, e.g. `ak-layer-vivid`, `ak-layer-muted`. See `--chroma-*` tokens.                                                                                                  |
+| `ak-layer-<hue>`          | Sets hue from a named preset, e.g. `ak-layer-red`, `ak-layer-blue`. See `--hue-*` tokens.                                                                                                           |
 
 ### Lightness adjustments
 
-| Utility                      | Description                                                                                                                                                                  |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-layer-lighten-<number>`  | Lightens the layer by `<number>`%. Accepts arbitrary values (`ak-layer-lighten-[0.05]`).                                                                                     |
-| `ak-layer-darken-<number>`   | Darkens the layer by `<number>`%.                                                                                                                                            |
-| `ak-layer-push-<number>`     | Minimum lightness shift (self-relative), jumping the forbidden mid-luminance range where contrast math becomes unreliable.                                                   |
-| `ak-layer-contrast`          | Adapts the layer to contrast against its parent (preset `25`).                                                                                                               |
-| `ak-layer-contrast-<number>` | Custom contrast amount (`0`–`100`, default `25`).                                                                                                                            |
-| `ak-layer-invert`            | Inverts lightness (clamped so the result is never pure black).                                                                                                               |
-| `ak-layer-l-<value>`         | Sets absolute lightness (`0`–`100`). Custom properties use the same scale.                                                                                                   |
-| `ak-layer-max-<value>`       | Caps lightness (`0`–`100`) or caps chroma with a named chroma preset (`ak-layer-max-muted`). Custom properties use the same lightness scale.                                 |
-| `ak-layer-min-<value>`       | Floors lightness or chroma, same form as `max-*`.                                                                                                                            |
-| `ak-layer-max-l-<value>`     | Caps lightness specifically. Useful for custom properties without a typed arbitrary value hint (`ak-layer-max-l-(--max-l)`). Custom properties use the same `0`–`100` scale. |
-| `ak-layer-min-l-<value>`     | Floors lightness specifically. Custom properties use the same `0`–`100` scale.                                                                                               |
+| Utility                      | Description                                                                                                                                                            |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer-lighten-<number>`  | Lightens the layer by `<number>`%. Arbitrary values are raw (`ak-layer-lighten-[0.05]`).                                                                               |
+| `ak-layer-darken-<number>`   | Darkens the layer by `<number>`%. Arbitrary values are raw (`ak-layer-darken-[0.05]`).                                                                                 |
+| `ak-layer-push-<number>`     | Minimum lightness shift (self-relative), jumping the forbidden mid-luminance range where contrast math becomes unreliable.                                             |
+| `ak-layer-contrast`          | Adapts the layer to contrast against its parent (preset `25`).                                                                                                         |
+| `ak-layer-contrast-<number>` | Custom contrast amount (`0`–`100`, default `25`).                                                                                                                      |
+| `ak-layer-invert`            | Inverts lightness (clamped so the result is never pure black).                                                                                                         |
+| `ak-layer-l-<value>`         | Sets absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values).                                                                |
+| `ak-layer-max-<value>`       | Caps lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values) or caps chroma with a named chroma preset (`ak-layer-max-muted`).        |
+| `ak-layer-min-<value>`       | Floors lightness or chroma, same form as `max-*`.                                                                                                                      |
+| `ak-layer-max-l-<value>`     | Caps lightness specifically. Useful for custom properties without a typed arbitrary value hint (`ak-layer-max-l-(--max-l)`). Arbitrary/custom-property values are raw. |
+| `ak-layer-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                                                                               |
 
 ### Hue adjustments
 
@@ -191,22 +197,22 @@ Use [`ak-edge`](#ak-edge) to fine-tune border, ring, and shadow colors without t
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ak-layer-saturate-<number>`   | Increases chroma by `<number>`%.                                                                                                                        |
 | `ak-layer-desaturate-<number>` | Decreases chroma by `<number>`%.                                                                                                                        |
-| `ak-layer-c-<value>`           | Sets absolute chroma (`0`–`40`) or a named preset. Custom properties use the same numeric scale.                                                        |
-| `ak-layer-max-c-<value>`       | Caps chroma (`0`–`40`) or a named preset. Custom properties use the same numeric scale.                                                                 |
+| `ak-layer-c-<value>`           | Sets absolute chroma (`0`–`40` for bare numbers, raw OKLCH chroma for arbitrary/custom-property values) or a named preset.                              |
+| `ak-layer-max-c-<value>`       | Caps chroma (`0`–`40` for bare numbers, raw OKLCH chroma for arbitrary/custom-property values) or a named preset.                                       |
 | `ak-layer-min-c-<value>`       | Floors chroma, same form.                                                                                                                               |
 | `ak-layer-max-c-auto`          | Automatically caps chroma based on layer lightness. Peaks at the mid-luminance threshold and tapers toward extremes so colors stay within the P3 gamut. |
 
 ### Mixing with another color
 
-| Utility                        | Description                                                                                                                                              |
-| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-layer-mix`                 | Enables mixing. By default, mixes with the parent layer at `50%` using the `oklab` interpolation method.                                                 |
-| `ak-layer-mix-<color>`         | Enables mixing with a color, e.g. `ak-layer-mix-primary` or `ak-layer-mix-[#000]`.                                                                       |
-| `ak-layer-mix-color-<color>`   | Sets the mix color for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-color-(--mix-color)`).                                                |
-| `ak-layer-mix-<number>`        | Sets the mix amount (`0`–`100`).                                                                                                                         |
-| `ak-layer-mix-amount-<value>`  | Sets the amount for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-amount-(--mix-amount)`). Custom properties use the same `0`–`100` scale. |
-| `ak-layer-mix-<method>`        | Sets the interpolation method, e.g. `ak-layer-mix-oklch`, `ak-layer-mix-shorter-hue`, `ak-layer-mix-srgb`. See the `--mix-*` tokens.                     |
-| `ak-layer-mix-method-<method>` | Sets the interpolation method for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-method-(--mix-method)`).                                   |
+| Utility                        | Description                                                                                                                                                        |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ak-layer-mix`                 | Enables mixing. By default, mixes with the parent layer at `50%` using the `oklab` interpolation method.                                                           |
+| `ak-layer-mix-<color>`         | Enables mixing with a color, e.g. `ak-layer-mix-primary` or `ak-layer-mix-[#000]`.                                                                                 |
+| `ak-layer-mix-color-<color>`   | Sets the mix color for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-color-(--mix-color)`).                                                          |
+| `ak-layer-mix-<number>`        | Sets the mix amount (`0`–`100`).                                                                                                                                   |
+| `ak-layer-mix-amount-<value>`  | Sets the amount for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-amount-(--mix-amount)`). Arbitrary/custom-property values are raw CSS percentages. |
+| `ak-layer-mix-<method>`        | Sets the interpolation method, e.g. `ak-layer-mix-oklch`, `ak-layer-mix-shorter-hue`, `ak-layer-mix-srgb`. See the `--mix-*` tokens.                               |
+| `ak-layer-mix-method-<method>` | Sets the interpolation method for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-method-(--mix-method)`).                                             |
 
 Combine freely — `ak-layer ak-layer-primary ak-layer-mix ak-layer-mix-30 ak-layer-mix-oklch` mixes the primary color 30% into the parent layer using OKLCH.
 
@@ -222,16 +228,16 @@ The explicit `ak-layer-mix-*` longhands configure the mix color, amount, and met
 </button>
 ```
 
-| Utility                        | Description                                                                                                                                                         |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-state-<value>`             | Adjusts lightness for interactive state (`0`–`100`), parallel to `ak-layer-<number>`. Custom properties can use `ak-state-(--depth)`.                               |
-| `ak-state-offset-<value>`      | Explicit lightness-offset alias for `ak-state-<value>`. Useful for custom properties (`ak-state-offset-(--depth)`). Custom properties use the same `0`–`100` scale. |
-| `ak-state-lighten-<number>`    | Lightens in state context.                                                                                                                                          |
-| `ak-state-darken-<number>`     | Darkens in state context.                                                                                                                                           |
-| `ak-state-saturate-<number>`   | Increases chroma in state context.                                                                                                                                  |
-| `ak-state-desaturate-<number>` | Decreases chroma in state context.                                                                                                                                  |
-| `ak-state-push-<number>`       | Minimum lightness shift in state context.                                                                                                                           |
-| `ak-state-h-rotate-<number>`   | Rotates hue in state context.                                                                                                                                       |
+| Utility                        | Description                                                                                                                                                            |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-state-<value>`             | Adjusts lightness for interactive state (`0`–`100` for bare numbers), parallel to `ak-layer-<number>`. Custom properties can use `ak-state-(--depth)` with raw values. |
+| `ak-state-offset-<value>`      | Explicit lightness-offset alias for `ak-state-<value>`. Useful for custom properties (`ak-state-offset-(--depth)`). Arbitrary/custom-property values are raw.          |
+| `ak-state-lighten-<number>`    | Lightens in state context.                                                                                                                                             |
+| `ak-state-darken-<number>`     | Darkens in state context.                                                                                                                                              |
+| `ak-state-saturate-<number>`   | Increases chroma in state context.                                                                                                                                     |
+| `ak-state-desaturate-<number>` | Decreases chroma in state context.                                                                                                                                     |
+| `ak-state-push-<number>`       | Minimum lightness shift in state context.                                                                                                                              |
+| `ak-state-h-rotate-<number>`   | Rotates hue in state context.                                                                                                                                          |
 
 ## `ak-ink`
 
@@ -263,15 +269,15 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Setting the text color
 
-| Utility                 | Description                                                                                                                                                   |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-text`               | Required base class for colored text.                                                                                                                         |
-| `ak-text-<color>`       | Applies a color with automatic contrast, e.g. `ak-text-primary`, `ak-text-[#c33]`.                                                                            |
-| `ak-text-color-<color>` | Explicit color-only alias. Useful for custom properties (`ak-text-color-(--text-color)`).                                                                     |
-| `ak-text-<number>`      | Pushes lightness away from the parent layer beyond the automatic readable floor.                                                                              |
-| `ak-text-push-<value>`  | Explicit lightness-push alias for `ak-text-<number>`. Useful for custom properties (`ak-text-push-(--push)`). Custom properties use the same `0`–`100` scale. |
-| `ak-text-<chroma>`      | Sets chroma from a named preset (`ak-text-vivid`).                                                                                                            |
-| `ak-text-<hue>`         | Sets hue from a named preset (`ak-text-blue`).                                                                                                                |
+| Utility                 | Description                                                                                                                                             |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-text`               | Required base class for colored text.                                                                                                                   |
+| `ak-text-<color>`       | Applies a color with automatic contrast, e.g. `ak-text-primary`, `ak-text-[#c33]`.                                                                      |
+| `ak-text-color-<color>` | Explicit color-only alias. Useful for custom properties (`ak-text-color-(--text-color)`).                                                               |
+| `ak-text-<number>`      | Pushes lightness away from the parent layer beyond the automatic readable floor.                                                                        |
+| `ak-text-push-<value>`  | Explicit lightness-push alias for `ak-text-<number>`. Useful for custom properties (`ak-text-push-(--push)`). Arbitrary/custom-property values are raw. |
+| `ak-text-<chroma>`      | Sets chroma from a named preset (`ak-text-vivid`).                                                                                                      |
+| `ak-text-<hue>`         | Sets hue from a named preset (`ak-text-blue`).                                                                                                          |
 
 ### Adjustments
 
@@ -286,18 +292,18 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Channels and bounds
 
-| Utility                     | Description                                                                                 |
-| --------------------------- | ------------------------------------------------------------------------------------------- |
-| `ak-text-l-<value>`         | Absolute lightness (`0`–`100`). Custom properties use the same scale.                       |
-| `ak-text-c-<value>`         | Absolute chroma (`0`–`40`) or a named preset. Custom properties use the same numeric scale. |
-| `ak-text-h-<value>`         | Absolute hue. Accepts named hues or degrees, including custom properties.                   |
-| `ak-text-h-rotate-<number>` | Rotates hue by degrees.                                                                     |
-| `ak-text-max-<value>`       | Caps lightness, or caps chroma when given a named chroma preset.                            |
-| `ak-text-min-<value>`       | Floors lightness or chroma, same form.                                                      |
-| `ak-text-max-l-<value>`     | Caps lightness specifically. Custom properties use the same `0`–`100` scale.                |
-| `ak-text-min-l-<value>`     | Floors lightness specifically. Custom properties use the same `0`–`100` scale.              |
-| `ak-text-max-c-<value>`     | Caps chroma specifically. Custom properties use the same `0`–`40` scale.                    |
-| `ak-text-min-c-<value>`     | Floors chroma specifically. Custom properties use the same `0`–`40` scale.                  |
+| Utility                     | Description                                                                                                           |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `ak-text-l-<value>`         | Absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values).                    |
+| `ak-text-c-<value>`         | Absolute chroma (`0`–`40` for bare numbers, raw OKLCH chroma for arbitrary/custom-property values) or a named preset. |
+| `ak-text-h-<value>`         | Absolute hue. Accepts named hues or degrees, including custom properties.                                             |
+| `ak-text-h-rotate-<number>` | Rotates hue by degrees.                                                                                               |
+| `ak-text-max-<value>`       | Caps lightness, or caps chroma when given a named chroma preset.                                                      |
+| `ak-text-min-<value>`       | Floors lightness or chroma, same form.                                                                                |
+| `ak-text-max-l-<value>`     | Caps lightness specifically. Arbitrary/custom-property values are raw.                                                |
+| `ak-text-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                              |
+| `ak-text-max-c-<value>`     | Caps chroma specifically. Arbitrary/custom-property values are raw.                                                   |
+| `ak-text-min-c-<value>`     | Floors chroma specifically. Arbitrary/custom-property values are raw.                                                 |
 
 ## `ak-edge`
 
@@ -312,15 +318,15 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Setting the edge color
 
-| Utility                 | Description                                                                                                                                            |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ak-edge-<number>`      | Sets edge alpha (`0`–`100`, default `10`).                                                                                                             |
-| `ak-edge-alpha-<value>` | Explicit alpha alias for `ak-edge-<number>`. Useful for custom properties (`ak-edge-alpha-(--alpha)`). Custom properties use the same `0`–`100` scale. |
-| `ak-edge-<color>`       | Applies a specific edge color.                                                                                                                         |
-| `ak-edge-color-<color>` | Explicit color-only alias. Useful for custom properties (`ak-edge-color-(--edge-color)`).                                                              |
-| `ak-edge-<chroma>`      | Sets chroma from a named preset.                                                                                                                       |
-| `ak-edge-<hue>`         | Sets hue from a named preset.                                                                                                                          |
-| `ak-edge-raw`           | Applies the color exactly as specified — shorthand for `ak-edge-100` + `ak-edge-push-0`.                                                               |
+| Utility                 | Description                                                                                                                                                   |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-edge-<number>`      | Sets edge alpha (`0`–`100`, default `10`).                                                                                                                    |
+| `ak-edge-alpha-<value>` | Explicit alpha alias for `ak-edge-<number>`. Useful for custom properties (`ak-edge-alpha-(--alpha)`). Arbitrary/custom-property values are raw alpha values. |
+| `ak-edge-<color>`       | Applies a specific edge color.                                                                                                                                |
+| `ak-edge-color-<color>` | Explicit color-only alias. Useful for custom properties (`ak-edge-color-(--edge-color)`).                                                                     |
+| `ak-edge-<chroma>`      | Sets chroma from a named preset.                                                                                                                              |
+| `ak-edge-<hue>`         | Sets hue from a named preset.                                                                                                                                 |
+| `ak-edge-raw`           | Applies the color exactly as specified — shorthand for `ak-edge-100` + `ak-edge-push-0`.                                                                      |
 
 ### Adjustments
 
@@ -336,18 +342,18 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Channels and bounds
 
-| Utility                     | Description                                                                                 |
-| --------------------------- | ------------------------------------------------------------------------------------------- |
-| `ak-edge-l-<value>`         | Absolute lightness (`0`–`100`). Custom properties use the same scale.                       |
-| `ak-edge-c-<value>`         | Absolute chroma (`0`–`40`) or a named preset. Custom properties use the same numeric scale. |
-| `ak-edge-h-<value>`         | Absolute hue. Accepts named hues or degrees, including custom properties.                   |
-| `ak-edge-h-rotate-<number>` | Rotates hue by degrees.                                                                     |
-| `ak-edge-max-<value>`       | Caps lightness or chroma.                                                                   |
-| `ak-edge-min-<value>`       | Floors lightness or chroma.                                                                 |
-| `ak-edge-max-l-<value>`     | Caps lightness specifically. Custom properties use the same `0`–`100` scale.                |
-| `ak-edge-min-l-<value>`     | Floors lightness specifically. Custom properties use the same `0`–`100` scale.              |
-| `ak-edge-max-c-<value>`     | Caps chroma specifically. Custom properties use the same `0`–`40` scale.                    |
-| `ak-edge-min-c-<value>`     | Floors chroma specifically. Custom properties use the same `0`–`40` scale.                  |
+| Utility                     | Description                                                                                                           |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `ak-edge-l-<value>`         | Absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values).                    |
+| `ak-edge-c-<value>`         | Absolute chroma (`0`–`40` for bare numbers, raw OKLCH chroma for arbitrary/custom-property values) or a named preset. |
+| `ak-edge-h-<value>`         | Absolute hue. Accepts named hues or degrees, including custom properties.                                             |
+| `ak-edge-h-rotate-<number>` | Rotates hue by degrees.                                                                                               |
+| `ak-edge-max-<value>`       | Caps lightness or chroma.                                                                                             |
+| `ak-edge-min-<value>`       | Floors lightness or chroma.                                                                                           |
+| `ak-edge-max-l-<value>`     | Caps lightness specifically. Arbitrary/custom-property values are raw.                                                |
+| `ak-edge-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                              |
+| `ak-edge-max-c-<value>`     | Caps chroma specifically. Arbitrary/custom-property values are raw.                                                   |
+| `ak-edge-min-c-<value>`     | Floors chroma specifically. Arbitrary/custom-property values are raw.                                                 |
 
 ## `ak-outline`
 
@@ -363,15 +369,15 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Setting the outline color
 
-| Utility                    | Description                                                                                                                                                         |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-outline`               | Required base class.                                                                                                                                                |
-| `ak-outline-<color>`       | Applies a specific outline color.                                                                                                                                   |
-| `ak-outline-color-<color>` | Explicit color-only alias. Useful for custom properties (`ak-outline-color-(--outline-color)`).                                                                     |
-| `ak-outline-<number>`      | Pushes outline lightness away from the parent layer (`0`–`100`).                                                                                                    |
-| `ak-outline-push-<value>`  | Explicit lightness-push alias for `ak-outline-<number>`. Useful for custom properties (`ak-outline-push-(--push)`). Custom properties use the same `0`–`100` scale. |
-| `ak-outline-<chroma>`      | Sets chroma from a named preset.                                                                                                                                    |
-| `ak-outline-<hue>`         | Sets hue from a named preset.                                                                                                                                       |
+| Utility                    | Description                                                                                                                                                   |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-outline`               | Required base class.                                                                                                                                          |
+| `ak-outline-<color>`       | Applies a specific outline color.                                                                                                                             |
+| `ak-outline-color-<color>` | Explicit color-only alias. Useful for custom properties (`ak-outline-color-(--outline-color)`).                                                               |
+| `ak-outline-<number>`      | Pushes outline lightness away from the parent layer (`0`–`100`).                                                                                              |
+| `ak-outline-push-<value>`  | Explicit lightness-push alias for `ak-outline-<number>`. Useful for custom properties (`ak-outline-push-(--push)`). Arbitrary/custom-property values are raw. |
+| `ak-outline-<chroma>`      | Sets chroma from a named preset.                                                                                                                              |
+| `ak-outline-<hue>`         | Sets hue from a named preset.                                                                                                                                 |
 
 ### Adjustments
 
@@ -386,18 +392,18 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Channels and bounds
 
-| Utility                        | Description                                                                                 |
-| ------------------------------ | ------------------------------------------------------------------------------------------- |
-| `ak-outline-l-<value>`         | Absolute lightness (`0`–`100`). Custom properties use the same scale.                       |
-| `ak-outline-c-<value>`         | Absolute chroma (`0`–`40`) or a named preset. Custom properties use the same numeric scale. |
-| `ak-outline-h-<value>`         | Absolute hue. Accepts named hues or degrees, including custom properties.                   |
-| `ak-outline-h-rotate-<number>` | Rotates hue by degrees.                                                                     |
-| `ak-outline-max-<value>`       | Caps lightness or chroma.                                                                   |
-| `ak-outline-min-<value>`       | Floors lightness or chroma.                                                                 |
-| `ak-outline-max-l-<value>`     | Caps lightness specifically. Custom properties use the same `0`–`100` scale.                |
-| `ak-outline-min-l-<value>`     | Floors lightness specifically. Custom properties use the same `0`–`100` scale.              |
-| `ak-outline-max-c-<value>`     | Caps chroma specifically. Custom properties use the same `0`–`40` scale.                    |
-| `ak-outline-min-c-<value>`     | Floors chroma specifically. Custom properties use the same `0`–`40` scale.                  |
+| Utility                        | Description                                                                                                           |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| `ak-outline-l-<value>`         | Absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values).                    |
+| `ak-outline-c-<value>`         | Absolute chroma (`0`–`40` for bare numbers, raw OKLCH chroma for arbitrary/custom-property values) or a named preset. |
+| `ak-outline-h-<value>`         | Absolute hue. Accepts named hues or degrees, including custom properties.                                             |
+| `ak-outline-h-rotate-<number>` | Rotates hue by degrees.                                                                                               |
+| `ak-outline-max-<value>`       | Caps lightness or chroma.                                                                                             |
+| `ak-outline-min-<value>`       | Floors lightness or chroma.                                                                                           |
+| `ak-outline-max-l-<value>`     | Caps lightness specifically. Arbitrary/custom-property values are raw.                                                |
+| `ak-outline-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                              |
+| `ak-outline-max-c-<value>`     | Caps chroma specifically. Arbitrary/custom-property values are raw.                                                   |
+| `ak-outline-min-c-<value>`     | Floors chroma specifically. Arbitrary/custom-property values are raw.                                                 |
 
 ## `ak-frame`
 

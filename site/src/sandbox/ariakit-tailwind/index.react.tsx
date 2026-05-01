@@ -340,6 +340,19 @@ export default function Example() {
             className="ak-layer-[#131418] *:ak-text *:ak-text-[#CE9178]"
           />
           <Cell label="#165DFC" className="*:ak-text *:ak-text-[#165DFC]" />
+          <Cell label="raw calc" className="ak-layer-[calc(l+0.1)] *:ak-text" />
+          <Cell
+            label="raw l/c"
+            className="ak-layer-l-[0.62] ak-layer-c-[0.18] *:ak-text"
+          />
+          <Cell
+            label="raw ink/edge"
+            className="ak-ink-[0.45] ak-edge-alpha-[0.35] *:ak-text"
+          />
+          <Cell
+            label="raw mix"
+            className="ak-layer-mix ak-layer-mix-color-[oklch(0.6_0.15_30)] ak-layer-mix-amount-[35%] *:ak-text"
+          />
           <Layer
             label="explicit longhands"
             className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
@@ -347,19 +360,19 @@ export default function Example() {
             <Layer className="flex-wrap items-start">
               <Cell
                 label="layer"
-                className="[--demo-color:oklch(0.55_0.12_260)] [--demo-max-l:80] [--demo-offset:20] ak-layer-color-(--demo-color) ak-layer-offset-(--demo-offset) ak-layer-max-l-(--demo-max-l) *:ak-text"
+                className="[--demo-color:oklch(0.55_0.12_260)] [--demo-max-l:0.8] [--demo-offset:0.2] ak-layer-color-(--demo-color) ak-layer-offset-(--demo-offset) ak-layer-max-l-(--demo-max-l) *:ak-text"
               />
               <Cell
                 label="state"
-                className="[--demo-offset:25] ak-state-(--demo-offset)"
+                className="[--demo-offset:0.25] ak-state-(--demo-offset)"
               />
               <Cell
                 label="mix"
-                className="ak-layer-mix [--demo-color:oklch(0.6_0.15_30)] [--demo-mix:35] [--demo-method:oklch] ak-layer-mix-color-(--demo-color) ak-layer-mix-amount-(--demo-mix) ak-layer-mix-method-(--demo-method) *:ak-text"
+                className="ak-layer-mix [--demo-color:oklch(0.6_0.15_30)] [--demo-mix:35%] [--demo-method:oklch] ak-layer-mix-color-(--demo-color) ak-layer-mix-amount-(--demo-mix) ak-layer-mix-method-(--demo-method) *:ak-text"
               />
               <Cell
                 label="edge/text/outline"
-                className="[--demo-alpha:35] [--demo-color:oklch(0.58_0.18_145)] [--demo-push:25] ak-edge-color-(--demo-color) ak-edge-alpha-(--demo-alpha) ak-outline ak-outline-color-(--demo-color) ak-outline-push-(--demo-push) outline-2 *:ak-text *:ak-text-color-(--demo-color) *:ak-text-push-(--demo-push)"
+                className="[--demo-alpha:0.35] [--demo-color:oklch(0.58_0.18_145)] [--demo-push:0.25] ak-edge-color-(--demo-color) ak-edge-alpha-(--demo-alpha) ak-outline ak-outline-color-(--demo-color) ak-outline-push-(--demo-push) outline-2 *:ak-text *:ak-text-color-(--demo-color) *:ak-text-push-(--demo-push)"
               />
             </Layer>
           </Layer>
@@ -419,8 +432,8 @@ export default function Example() {
             </Layer>
           </Layer>
           <Layer
-            label="ak-layer-l-[6.24999497075] ak-text-<number>"
-            className="ak-layer ak-layer-l-[6.24999497075] ak-frame ak-frame-p-1 ak-frame-border flex-col"
+            label="ak-layer-l-[0.0624999497075] ak-text-<number>"
+            className="ak-layer ak-layer-l-[0.0624999497075] ak-frame ak-frame-p-1 ak-frame-border flex-col"
           >
             <Layer className="flex-wrap items-start">
               <Cell className="*:ak-text *:ak-text-0" />
