@@ -175,10 +175,39 @@ function getNumericTokenValue(pattern: string, options?: NumbersOptions) {
 }
 
 /**
- * Parses a numeric utility token and converts it to a 0..1 percentage.
+ * Parses a non-arbitrary numeric utility token such as `10` or `45`.
  */
-function getPercentTokenValue(pattern: string, options?: NumbersOptions) {
-  return fn.div(getNumericTokenValue(pattern, options), 100);
+function getBareNumericTokenValue(options?: NumbersOptions) {
+  return fn.value("number", getNumberTokens(options));
+}
+
+/**
+ * Parses a non-arbitrary numeric utility token as a 0..1 percentage.
+ */
+function getBarePercentTokenValue(options?: NumbersOptions) {
+  return fn.div(getBareNumericTokenValue(options), 100);
+}
+
+/**
+ * Parses an arbitrary utility value without scaling it.
+ */
+function getRawArbitraryValue(pattern = "[*]") {
+  return fn.value(pattern);
+}
+
+/**
+ * Returns declarations for utilities whose bare numeric tokens use a percent
+ * scale while arbitrary values are raw.
+ */
+function getRawPercentDeclarations(
+  target: VarProperty,
+  options?: NumbersOptions,
+  arbitraryPattern?: string,
+) {
+  return [
+    set(target, getBarePercentTokenValue(options)),
+    set(target, getRawArbitraryValue(arbitraryPattern)),
+  ];
 }
 
 /**
@@ -815,10 +844,10 @@ function getLightnessOffset(value: Value) {
  * Keeps a declaration tied to utility tokens while using a factored scratch
  * variable for the expensive expression.
  */
-function withUtilityTokenGate(value: Value, pattern: string) {
+function withUtilityTokenGate(value: Value, tokenValue: Value) {
   // Use raw calc here because fn.mul(0, ...) simplifies to 0, dropping the
   // --value() dependency that gates this declaration to matching utility tokens.
-  return fn.add(value, fn.calc`0 * ${getPercentTokenValue(pattern)}`);
+  return fn.add(value, fn.calc`0 * ${tokenValue}`);
 }
 
 /**
@@ -1253,17 +1282,30 @@ utility(
   ]),
 );
 
-function getLayerOffsetDeclarations(pattern: string) {
+function getLayerOffsetDeclarations(arbitraryPattern = "[*]") {
+  const bareValue = getBarePercentTokenValue();
+  const arbitraryValue = getRawArbitraryValue(arbitraryPattern);
   return [
     set(
       inputs.layerIdleLOffsetDelta,
-      fn.mul(getPercentTokenValue(pattern), vars.lightnessOffsetDirection),
+      fn.mul(bareValue, vars.lightnessOffsetDirection),
     ),
     set(
       inputs.layerIdleLOffset,
       withUtilityTokenGate(
         getLightnessOffset(inputs.layerIdleLOffsetDelta),
-        pattern,
+        bareValue,
+      ),
+    ),
+    set(
+      inputs.layerIdleLOffsetDelta,
+      fn.mul(arbitraryValue, vars.lightnessOffsetDirection),
+    ),
+    set(
+      inputs.layerIdleLOffset,
+      withUtilityTokenGate(
+        getLightnessOffset(inputs.layerIdleLOffsetDelta),
+        arbitraryValue,
       ),
     ),
   ];
@@ -1277,7 +1319,7 @@ utility(
   getLayerOffsetDeclarations("[number]"),
 );
 
-utility("layer-offset-*", getLayerOffsetDeclarations("[*]"));
+utility("layer-offset-*", getLayerOffsetDeclarations());
 
 utility("layer-color-*", set(inputs.layerColor, fn.value(color, "[*]")));
 
@@ -1297,9 +1339,10 @@ utility("layer-mix", getLayerMixDeclaration());
 
 utility(
   "layer-mix-*",
-  set(inputs.layerMixAmount, fn.toPercent(getNumericTokenValue("[number]"))),
+  set(inputs.layerMixAmount, fn.toPercent(getBareNumericTokenValue())),
   set(inputs.layerMixColor, fn.value(color, "[color]")),
   set(inputs.layerMixMethod, fn.value(mix)),
+  set(inputs.layerMixAmount, getRawArbitraryValue("[percentage]")),
   getLayerMixDeclaration(),
 );
 
@@ -1307,26 +1350,25 @@ utility("layer-mix-color-*", set(inputs.layerMixColor, fn.value(color, "[*]")));
 
 utility(
   "layer-mix-amount-*",
-  set(inputs.layerMixAmount, fn.toPercent(getNumericTokenValue("[*]"))),
+  set(inputs.layerMixAmount, fn.toPercent(getBareNumericTokenValue())),
+  set(inputs.layerMixAmount, getRawArbitraryValue()),
 );
 
 utility("layer-mix-method-*", set(inputs.layerMixMethod, fn.value(mix, "[*]")));
 
 const layerLighten = utility(
   "layer-lighten-*",
-  set(inputs.layerIdleRelativeL, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.layerIdleRelativeL),
 );
 
 utility("layer-darken-*", getNegatedDeclarations(layerLighten));
 
-utility(
-  "state-lighten-*",
-  set(inputs.layerRelativeL, getPercentTokenValue("[*]")),
-);
+utility("state-lighten-*", getRawPercentDeclarations(inputs.layerRelativeL));
 
 utility(
   "state-darken-*",
-  set(inputs.layerRelativeL, fn.neg(getPercentTokenValue("[*]"))),
+  set(inputs.layerRelativeL, fn.neg(getBarePercentTokenValue())),
+  set(inputs.layerRelativeL, fn.neg(getRawArbitraryValue())),
 );
 
 /**
@@ -1335,29 +1377,25 @@ utility(
 function getHueToward(current: Value, target: Value, amount: Value) {
   // Normalize to [-180, 180] so interpolation follows the shortest arc.
   const delta = fn.sub(fn.mod(fn.add(fn.sub(target, current), 540), 360), 180);
-  const percent = fn.clamp01(fn.div(amount, 100));
+  const percent = fn.clamp01(amount);
   return fn.add(current, fn.mul(delta, percent));
 }
 
 utility(
   "layer-cool-*",
-  set(
-    inputs.layerH,
-    getHueToward(h, vars.hueCool, getNumericTokenValue("[*]")),
-  ),
+  set(inputs.layerH, getHueToward(h, vars.hueCool, getBarePercentTokenValue())),
+  set(inputs.layerH, getHueToward(h, vars.hueCool, getRawArbitraryValue())),
 );
 
 utility(
   "layer-warm-*",
-  set(
-    inputs.layerH,
-    getHueToward(h, vars.hueWarm, getNumericTokenValue("[*]")),
-  ),
+  set(inputs.layerH, getHueToward(h, vars.hueWarm, getBarePercentTokenValue())),
+  set(inputs.layerH, getHueToward(h, vars.hueWarm, getRawArbitraryValue())),
 );
 
 utility(
   "layer-push-*",
-  set(inputs.layerIdlePushL, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.layerIdlePushL),
   set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(
     vars.layerIdlePushBaseL,
@@ -1380,35 +1418,35 @@ utility(
 
 utility(
   "layer-contrast-*",
-  set(inputs.layerIdleContrastL, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.layerIdleContrastL),
 );
 
 utility(
   "layer-max-*",
   set(inputs.layerCMax, fn.value(chroma)),
-  set(inputs.layerLMax, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.layerLMax),
 );
 
 utility(
   "layer-min-*",
   set(inputs.layerCMin, fn.value(chroma)),
-  set(inputs.layerLMin, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.layerLMin),
 );
 
-utility("layer-max-l-*", set(inputs.layerLMax, getPercentTokenValue("[*]")));
+utility("layer-max-l-*", getRawPercentDeclarations(inputs.layerLMax));
 
-utility("layer-min-l-*", set(inputs.layerLMin, getPercentTokenValue("[*]")));
+utility("layer-min-l-*", getRawPercentDeclarations(inputs.layerLMin));
 
 utility(
   "layer-max-c-*",
   set(inputs.layerCMax, fn.value(chroma)),
-  set(inputs.layerCMax, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.layerCMax, CHROMA_TOKEN_OPTIONS),
 );
 
 utility(
   "layer-min-c-*",
   set(inputs.layerCMin, fn.value(chroma)),
-  set(inputs.layerCMin, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.layerCMin, CHROMA_TOKEN_OPTIONS),
 );
 
 utility(
@@ -1419,10 +1457,7 @@ utility(
 
 const layerSaturate = utility(
   "layer-saturate-*",
-  set(
-    inputs.layerIdleRelativeC,
-    getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS),
-  ),
+  getRawPercentDeclarations(inputs.layerIdleRelativeC, CHROMA_TOKEN_OPTIONS),
 );
 utility("layer-desaturate-*", getNegatedDeclarations(layerSaturate));
 
@@ -1439,12 +1474,12 @@ utility(
   set(inputs.layerRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
-utility("layer-l-*", set(inputs.layerL, getPercentTokenValue("[*]")));
+utility("layer-l-*", getRawPercentDeclarations(inputs.layerL));
 
 utility(
   "layer-c-*",
   set(inputs.layerC, fn.value(chroma)),
-  set(inputs.layerC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.layerC, CHROMA_TOKEN_OPTIONS),
 );
 
 utility(
@@ -1459,29 +1494,42 @@ utility(
   set(inputs.layerL, fn.invert(l)),
 );
 
-function getStateOffsetDeclarations(pattern: string) {
+function getStateOffsetDeclarations() {
+  const bareValue = getBarePercentTokenValue();
+  const arbitraryValue = getRawArbitraryValue();
   return [
     set(
       inputs.layerLOffsetDelta,
-      fn.mul(getPercentTokenValue(pattern), vars.lightnessOffsetDirection),
+      fn.mul(bareValue, vars.lightnessOffsetDirection),
     ),
     set(
       inputs.layerLOffset,
       withUtilityTokenGate(
         getLightnessOffset(inputs.layerLOffsetDelta),
-        pattern,
+        bareValue,
+      ),
+    ),
+    set(
+      inputs.layerLOffsetDelta,
+      fn.mul(arbitraryValue, vars.lightnessOffsetDirection),
+    ),
+    set(
+      inputs.layerLOffset,
+      withUtilityTokenGate(
+        getLightnessOffset(inputs.layerLOffsetDelta),
+        arbitraryValue,
       ),
     ),
   ];
 }
 
-utility("state-*", getStateOffsetDeclarations("[*]"));
+utility("state-*", getStateOffsetDeclarations());
 
-utility("state-offset-*", getStateOffsetDeclarations("[*]"));
+utility("state-offset-*", getStateOffsetDeclarations());
 
 utility(
   "state-push-*",
-  set(inputs.layerPushL, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.layerPushL),
   set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
   set(
     vars.layerPushBaseL,
@@ -1492,15 +1540,16 @@ utility(
 
 utility(
   "state-saturate-*",
-  set(inputs.layerRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.layerRelativeC, CHROMA_TOKEN_OPTIONS),
 );
 
 utility(
   "state-desaturate-*",
   set(
     inputs.layerRelativeC,
-    fn.neg(getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+    fn.neg(getBarePercentTokenValue(CHROMA_TOKEN_OPTIONS)),
   ),
+  set(inputs.layerRelativeC, fn.neg(getRawArbitraryValue())),
 );
 
 utility(
@@ -1508,36 +1557,38 @@ utility(
   set(inputs.edgeC, fn.value(chroma)),
   set(inputs.edgeH, fn.value(hue)),
   set(inputs.edgeColor, fn.value(color, "[color]")),
-  set(inputs.edgeA, getPercentTokenValue("[number]")),
+  set(inputs.edgeA, getBarePercentTokenValue()),
 );
 
 utility("edge-color-*", set(inputs.edgeColor, fn.value(color, "[*]")));
 
-utility("edge-alpha-*", set(inputs.edgeA, getPercentTokenValue("[*]")));
+utility("edge-alpha-*", getRawPercentDeclarations(inputs.edgeA));
 
 utility("edge-raw", set(inputs.edgeA, 1), set(inputs.edgePushL, 0));
 
 const edgeLighten = utility(
   "edge-lighten-*",
-  set(inputs.edgeRelativeL, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.edgeRelativeL),
 );
 utility("edge-darken-*", getNegatedDeclarations(edgeLighten));
 
 utility(
   "edge-cool-*",
-  set(inputs.edgeH, getHueToward(h, vars.hueCool, getNumericTokenValue("[*]"))),
+  set(inputs.edgeH, getHueToward(h, vars.hueCool, getBarePercentTokenValue())),
+  set(inputs.edgeH, getHueToward(h, vars.hueCool, getRawArbitraryValue())),
 );
 
 utility(
   "edge-warm-*",
-  set(inputs.edgeH, getHueToward(h, vars.hueWarm, getNumericTokenValue("[*]"))),
+  set(inputs.edgeH, getHueToward(h, vars.hueWarm, getBarePercentTokenValue())),
+  set(inputs.edgeH, getHueToward(h, vars.hueWarm, getRawArbitraryValue())),
 );
 
-utility("edge-push-*", set(inputs.edgePushL, getPercentTokenValue("[*]")));
+utility("edge-push-*", getRawPercentDeclarations(inputs.edgePushL));
 
 const edgeSaturate = utility(
   "edge-saturate-*",
-  set(inputs.edgeRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.edgeRelativeC, CHROMA_TOKEN_OPTIONS),
 );
 utility("edge-desaturate-*", getNegatedDeclarations(edgeSaturate));
 
@@ -1546,12 +1597,12 @@ utility(
   set(inputs.edgeRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
-utility("edge-l-*", set(inputs.edgeL, getPercentTokenValue("[*]")));
+utility("edge-l-*", getRawPercentDeclarations(inputs.edgeL));
 
 utility(
   "edge-c-*",
   set(inputs.edgeC, fn.value(chroma)),
-  set(inputs.edgeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.edgeC, CHROMA_TOKEN_OPTIONS),
 );
 
 utility(
@@ -1563,29 +1614,29 @@ utility(
 utility(
   "edge-max-*",
   set(inputs.edgeCMax, fn.value(chroma)),
-  set(inputs.edgeLMax, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.edgeLMax),
 );
 
 utility(
   "edge-min-*",
   set(inputs.edgeCMin, fn.value(chroma)),
-  set(inputs.edgeLMin, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.edgeLMin),
 );
 
-utility("edge-max-l-*", set(inputs.edgeLMax, getPercentTokenValue("[*]")));
+utility("edge-max-l-*", getRawPercentDeclarations(inputs.edgeLMax));
 
-utility("edge-min-l-*", set(inputs.edgeLMin, getPercentTokenValue("[*]")));
+utility("edge-min-l-*", getRawPercentDeclarations(inputs.edgeLMin));
 
 utility(
   "edge-max-c-*",
   set(inputs.edgeCMax, fn.value(chroma)),
-  set(inputs.edgeCMax, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.edgeCMax, CHROMA_TOKEN_OPTIONS),
 );
 
 utility(
   "edge-min-c-*",
   set(inputs.edgeCMin, fn.value(chroma)),
-  set(inputs.edgeCMin, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.edgeCMin, CHROMA_TOKEN_OPTIONS),
 );
 
 const textBaseColor = fn.var(inputs.textColor, vars.layer);
@@ -1670,39 +1721,41 @@ utility(
   set(inputs.textC, fn.value(chroma)),
   set(inputs.textH, fn.value(hue)),
   set(inputs.textColor, fn.value(color, "[color]")),
-  set(inputs.textPushL, getPercentTokenValue("[number]")),
+  set(inputs.textPushL, getBarePercentTokenValue()),
 );
 
 utility("text-color-*", set(inputs.textColor, fn.value(color, "[*]")));
 
-utility("text-push-*", set(inputs.textPushL, getPercentTokenValue("[*]")));
+utility("text-push-*", getRawPercentDeclarations(inputs.textPushL));
 
 utility(
   "ink-*",
-  set(inputs.textA, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.textA),
   set(vars.text, inkText),
   set.color(vars.text),
 );
 
 const textLighten = utility(
   "text-lighten-*",
-  set(inputs.textRelativeL, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.textRelativeL),
 );
 utility("text-darken-*", getNegatedDeclarations(textLighten));
 
 utility(
   "text-cool-*",
-  set(inputs.textH, getHueToward(h, vars.hueCool, getNumericTokenValue("[*]"))),
+  set(inputs.textH, getHueToward(h, vars.hueCool, getBarePercentTokenValue())),
+  set(inputs.textH, getHueToward(h, vars.hueCool, getRawArbitraryValue())),
 );
 
 utility(
   "text-warm-*",
-  set(inputs.textH, getHueToward(h, vars.hueWarm, getNumericTokenValue("[*]"))),
+  set(inputs.textH, getHueToward(h, vars.hueWarm, getBarePercentTokenValue())),
+  set(inputs.textH, getHueToward(h, vars.hueWarm, getRawArbitraryValue())),
 );
 
 const textSaturate = utility(
   "text-saturate-*",
-  set(inputs.textRelativeC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.textRelativeC, CHROMA_TOKEN_OPTIONS),
 );
 utility("text-desaturate-*", getNegatedDeclarations(textSaturate));
 
@@ -1711,12 +1764,12 @@ utility(
   set(inputs.textRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
-utility("text-l-*", set(inputs.textL, getPercentTokenValue("[*]")));
+utility("text-l-*", getRawPercentDeclarations(inputs.textL));
 
 utility(
   "text-c-*",
   set(inputs.textC, fn.value(chroma)),
-  set(inputs.textC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.textC, CHROMA_TOKEN_OPTIONS),
 );
 
 utility(
@@ -1728,29 +1781,29 @@ utility(
 utility(
   "text-max-*",
   set(inputs.textCMax, fn.value(chroma)),
-  set(inputs.textLMax, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.textLMax),
 );
 
 utility(
   "text-min-*",
   set(inputs.textCMin, fn.value(chroma)),
-  set(inputs.textLMin, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.textLMin),
 );
 
-utility("text-max-l-*", set(inputs.textLMax, getPercentTokenValue("[*]")));
+utility("text-max-l-*", getRawPercentDeclarations(inputs.textLMax));
 
-utility("text-min-l-*", set(inputs.textLMin, getPercentTokenValue("[*]")));
+utility("text-min-l-*", getRawPercentDeclarations(inputs.textLMin));
 
 utility(
   "text-max-c-*",
   set(inputs.textCMax, fn.value(chroma)),
-  set(inputs.textCMax, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.textCMax, CHROMA_TOKEN_OPTIONS),
 );
 
 utility(
   "text-min-c-*",
   set(inputs.textCMin, fn.value(chroma)),
-  set(inputs.textCMin, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.textCMin, CHROMA_TOKEN_OPTIONS),
 );
 
 const outlineBaseColor = fn.var(inputs.outlineColor, vars.layer);
@@ -1809,19 +1862,16 @@ utility(
   set(inputs.outlineC, fn.value(chroma)),
   set(inputs.outlineH, fn.value(hue)),
   set(inputs.outlineColor, fn.value(color, "[color]")),
-  set(inputs.outlinePushL, getPercentTokenValue("[number]")),
+  set(inputs.outlinePushL, getBarePercentTokenValue()),
 );
 
 utility("outline-color-*", set(inputs.outlineColor, fn.value(color, "[*]")));
 
-utility(
-  "outline-push-*",
-  set(inputs.outlinePushL, getPercentTokenValue("[*]")),
-);
+utility("outline-push-*", getRawPercentDeclarations(inputs.outlinePushL));
 
 const outlineLighten = utility(
   "outline-lighten-*",
-  set(inputs.outlineRelativeL, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.outlineRelativeL),
 );
 utility("outline-darken-*", getNegatedDeclarations(outlineLighten));
 
@@ -1829,24 +1879,23 @@ utility(
   "outline-cool-*",
   set(
     inputs.outlineH,
-    getHueToward(h, vars.hueCool, getNumericTokenValue("[*]")),
+    getHueToward(h, vars.hueCool, getBarePercentTokenValue()),
   ),
+  set(inputs.outlineH, getHueToward(h, vars.hueCool, getRawArbitraryValue())),
 );
 
 utility(
   "outline-warm-*",
   set(
     inputs.outlineH,
-    getHueToward(h, vars.hueWarm, getNumericTokenValue("[*]")),
+    getHueToward(h, vars.hueWarm, getBarePercentTokenValue()),
   ),
+  set(inputs.outlineH, getHueToward(h, vars.hueWarm, getRawArbitraryValue())),
 );
 
 const outlineSaturate = utility(
   "outline-saturate-*",
-  set(
-    inputs.outlineRelativeC,
-    getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS),
-  ),
+  getRawPercentDeclarations(inputs.outlineRelativeC, CHROMA_TOKEN_OPTIONS),
 );
 utility("outline-desaturate-*", getNegatedDeclarations(outlineSaturate));
 
@@ -1855,12 +1904,12 @@ utility(
   set(inputs.outlineRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
-utility("outline-l-*", set(inputs.outlineL, getPercentTokenValue("[*]")));
+utility("outline-l-*", getRawPercentDeclarations(inputs.outlineL));
 
 utility(
   "outline-c-*",
   set(inputs.outlineC, fn.value(chroma)),
-  set(inputs.outlineC, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.outlineC, CHROMA_TOKEN_OPTIONS),
 );
 
 utility(
@@ -1872,35 +1921,29 @@ utility(
 utility(
   "outline-max-*",
   set(inputs.outlineCMax, fn.value(chroma)),
-  set(inputs.outlineLMax, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.outlineLMax),
 );
 
 utility(
   "outline-min-*",
   set(inputs.outlineCMin, fn.value(chroma)),
-  set(inputs.outlineLMin, getPercentTokenValue("[*]")),
+  getRawPercentDeclarations(inputs.outlineLMin),
 );
 
-utility(
-  "outline-max-l-*",
-  set(inputs.outlineLMax, getPercentTokenValue("[*]")),
-);
+utility("outline-max-l-*", getRawPercentDeclarations(inputs.outlineLMax));
 
-utility(
-  "outline-min-l-*",
-  set(inputs.outlineLMin, getPercentTokenValue("[*]")),
-);
+utility("outline-min-l-*", getRawPercentDeclarations(inputs.outlineLMin));
 
 utility(
   "outline-max-c-*",
   set(inputs.outlineCMax, fn.value(chroma)),
-  set(inputs.outlineCMax, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.outlineCMax, CHROMA_TOKEN_OPTIONS),
 );
 
 utility(
   "outline-min-c-*",
   set(inputs.outlineCMin, fn.value(chroma)),
-  set(inputs.outlineCMin, getPercentTokenValue("[*]", CHROMA_TOKEN_OPTIONS)),
+  getRawPercentDeclarations(inputs.outlineCMin, CHROMA_TOKEN_OPTIONS),
 );
 
 function getFrameBorderWidthDeclarations(target: VarProperty) {
