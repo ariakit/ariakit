@@ -21,6 +21,19 @@
       "raw calc": "bg-[oklch(0.4268_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[lch(84.1828_3.43_266.444)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
       "raw l/c": "bg-[oklch(0.5096_0.18_264.28)] text-[oklch(1_0_0)] *:text-[lch(97.3245_20_284.288)] rounded-[15px] border-[1px] border-[oklch(1_0.18_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.18_264.28_/_0.1)_0px_0px_0px_0px]",
       "raw ink/edge": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0_/_0.4969)] *:text-[lch(57.033_2.32_268.203)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.35)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.35)_0px_0px_0px_0px]",
+      "edge inherit": {
+        "class": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.245_27.325_/_0.4)] p-[4px] shadow-[oklch(1_0.245_27.325_/_0.4)_0px_0px_0px_0px]",
+        "children": {
+          "20": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.245_27.325_/_0.4)] p-[4px] shadow-[oklch(1_0.245_27.325_/_0.4)_0px_0px_0px_0px]"
+        }
+      },
+      "bordering inherit": {
+        "class": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[15px] border-[4px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+        "children": {
+          "20": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[7px] border-[4px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+          "20 (2)": "bg-[oklch(0_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[7px] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_4px]"
+        }
+      },
       "raw mix": "bg-[oklch(0.4472_0.0957_28.4513)] text-[oklch(1_0_0)] *:text-[lch(88.4225_35.24_33.406)] rounded-[15px] border-[1px] border-[oklch(1_0.0957_28.4513_/_0.1)] p-[4px] shadow-[oklch(1_0.0957_28.4513_/_0.1)_0px_0px_0px_0px]",
       "explicit longhands": {
         "class": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",

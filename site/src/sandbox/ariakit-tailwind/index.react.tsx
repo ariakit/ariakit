@@ -349,6 +349,19 @@ export default function Example() {
             label="raw ink/edge"
             className="ak-ink-[0.45] ak-edge-alpha-[0.35] *:ak-text"
           />
+          <Layer
+            label="edge inherit"
+            className="ak-layer ak-layer-blue-600 ak-edge-red-600 ak-edge-40 ak-frame ak-frame-p-1 ak-frame-border flex-col"
+          >
+            <Layer className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border" />
+          </Layer>
+          <Layer
+            label="bordering inherit"
+            className="ak-layer ak-frame ak-frame-p-1 ak-frame-bordering-4 flex-col"
+          >
+            <Layer className="ak-layer ak-layer-lighten-20 ak-frame ak-frame-p-1 ak-frame-bordering-inherit" />
+            <Layer className="ak-layer ak-layer-darken-20 ak-frame ak-frame-p-1 ak-frame-bordering-inherit" />
+          </Layer>
           <Cell
             label="raw mix"
             className="ak-layer-mix ak-layer-mix-color-[oklch(0.6_0.15_30)] ak-layer-mix-amount-[35%] *:ak-text"

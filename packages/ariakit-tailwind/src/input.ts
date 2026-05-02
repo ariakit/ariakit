@@ -14,6 +14,7 @@ import {
 const l = "l";
 const c = "c";
 const h = "h";
+const alpha = "alpha";
 
 const CHROMA_MAX_SRGB = 0.32;
 const CHROMA_MAX_P3 = 0.368;
@@ -580,6 +581,7 @@ const layerColorVars = {
   layerPush: _ak.prop.canvas("lp"),
   layer: ak.prop.canvas("layer", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
+  layerEdgeContext: _ak.var("lec"),
   layerParent: ak.var("layer-parent", "canvas"),
   edge: ak.prop.black("edge"),
   text: ak.prop.black("text", { inherits: true }),
@@ -1271,6 +1273,7 @@ utility(
   at.variant(dark, set(vars.edgePushDirection, 1)),
   layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
+    set(provide(vars.layerEdgeContext), vars.edge),
     set(vars.layerParent, inherit(vars.layerParentContext)),
   ]),
 );
@@ -1558,6 +1561,19 @@ utility("edge-color-*", set(inputs.edgeColor, fn.value(color, "[*]")));
 utility("edge-alpha-*", getRawPercentDeclarations(inputs.edgeA));
 
 utility("edge-raw", set(inputs.edgeA, 1), set(inputs.edgePushL, 0));
+
+utility(
+  "edge-inherit",
+  layerContext(({ inherit }) => {
+    const parentEdge = inherit(vars.layerEdgeContext, vars.layer);
+    return [
+      set(inputs.edgeColor, parentEdge),
+      set(inputs.edgePushL, fn.neg(vars.edgeContrastValue)),
+      set(inputs.edgeL, fn.sub(l, edgeDirectionalShift)),
+      set(inputs.edgeA, fn.sub(alpha, vars.edgeContrastValue)),
+    ];
+  }),
+);
 
 const edgeLighten = utility(
   "edge-lighten-*",
@@ -2252,6 +2268,20 @@ utility(
   "frame-bordering",
   set(inputs.frameBordering, "1px"),
   getFrameBorderingDarkLight(),
+);
+
+utility(
+  "frame-bordering-inherit",
+  frameContext(({ inherit }) => [
+    set(
+      inputs.frameBordering,
+      fn.max(
+        inherit(vars.frameParentBorderContext, "0px"),
+        inherit(vars.frameParentRingContext, "0px"),
+      ),
+    ),
+    ...getFrameBorderingDarkLight(),
+  ]),
 );
 
 utility(
