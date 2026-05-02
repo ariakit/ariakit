@@ -1564,7 +1564,7 @@ utility("edge-raw", set(inputs.edgeA, 1), set(inputs.edgePushL, 0));
 
 utility(
   "edge-inherit",
-  layerContext(({ inherit }) => {
+  layerContext.read(({ inherit }) => {
     const parentEdge = inherit(vars.layerEdgeContext, vars.layer);
     return [
       set(inputs.edgeColor, parentEdge),
@@ -2272,7 +2272,7 @@ utility(
 
 utility(
   "frame-bordering-inherit",
-  frameContext(({ inherit }) => [
+  frameContext.read(({ inherit }) => [
     set(
       inputs.frameBordering,
       fn.max(

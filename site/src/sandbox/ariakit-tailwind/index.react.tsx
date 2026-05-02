@@ -354,6 +354,12 @@ export default function Example() {
             className="ak-layer ak-layer-blue-600 ak-edge-red-600 ak-edge-40 ak-frame ak-frame-p-1 ak-frame-border flex-col"
           >
             <Layer className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border" />
+            <div className="ak-edge-inherit">
+              <Layer
+                label="host"
+                className="ak-layer ak-layer-20 ak-frame ak-frame-p-1 ak-frame-border"
+              />
+            </div>
           </Layer>
           <Layer
             label="bordering inherit"
@@ -361,6 +367,12 @@ export default function Example() {
           >
             <Layer className="ak-layer ak-layer-lighten-20 ak-frame ak-frame-p-1 ak-frame-bordering-inherit" />
             <Layer className="ak-layer ak-layer-darken-20 ak-frame ak-frame-p-1 ak-frame-bordering-inherit" />
+            <div className="ak-frame-bordering-inherit">
+              <Layer
+                label="host"
+                className="ak-layer ak-layer-darken-20 ak-frame ak-frame-p-1 ak-frame-bordering-inherit"
+              />
+            </div>
           </Layer>
           <Cell
             label="raw mix"

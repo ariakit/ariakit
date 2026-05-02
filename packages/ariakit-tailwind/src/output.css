@@ -422,14 +422,12 @@
 
 @utility ak-edge-inherit {
   @container (style(--_context-0: even)) or (not style(--_context-0)) {
-    --_context-0: odd;
     --_ak-edge-color: var(--_ak-lec-even, var(--ak-layer));
     --_ak-edge-push-lightness: calc(var(--_ak-ecv) * -1);
     --_ak-edge-lightness: calc(l - ((var(--_ak-edge-push-lightness) + var(--_ak-ecv)) * var(--_ak-epd, -1)));
     --_ak-edge-alpha: calc(alpha - var(--_ak-ecv));
   }
   @container style(--_context-0: odd) {
-    --_context-0: even;
     --_ak-edge-color: var(--_ak-lec-odd, var(--ak-layer));
     --_ak-edge-push-lightness: calc(var(--_ak-ecv) * -1);
     --_ak-edge-lightness: calc(l - ((var(--_ak-edge-push-lightness) + var(--_ak-ecv)) * var(--_ak-epd, -1)));
@@ -1155,7 +1153,6 @@
 
 @utility ak-frame-bordering-inherit {
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
-    --_context-1: odd;
     --_ak-frame-bordering: max(var(--_ak-fpbc-even, 0px), var(--_ak-fpgc-even, 0px));
     --_ak-fbd: clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1);
     @variant ak-dark {
@@ -1170,7 +1167,6 @@
     }
   }
   @container style(--_context-1: odd) {
-    --_context-1: even;
     --_ak-frame-bordering: max(var(--_ak-fpbc-odd, 0px), var(--_ak-fpgc-odd, 0px));
     --_ak-fbd: clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1);
     @variant ak-dark {
