@@ -93,10 +93,10 @@ export function createTabStore({
   // using the keyboard.
   setup(tab, () =>
     sync(tab, ["moves"], () => {
-      const { activeId, selectOnMove } = tab.getState();
+      const { focusedId, selectOnMove } = tab.getState();
       if (!selectOnMove) return;
-      if (!activeId) return;
-      const tabItem = composite.item(activeId);
+      if (!focusedId) return;
+      const tabItem = composite.item(focusedId);
       if (!tabItem) return;
       if (tabItem.dimmed) return;
       if (tabItem.disabled) return;

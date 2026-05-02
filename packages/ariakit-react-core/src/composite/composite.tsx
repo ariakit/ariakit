@@ -176,6 +176,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     const previousElementRef = useRef<HTMLElement | null>(null);
     const scheduleFocus = useScheduleFocus(store);
     const moves = useStoreState(store, "moves");
+    const focusedId = useStoreState(store, "focusedId");
 
     const [, setBaseElement] = useTransactionState(
       composite ? store.setBaseElement : null,
@@ -187,20 +188,18 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (!moves) return;
       if (!composite) return;
       if (!focusOnMove) return;
-      const { activeId } = store.getState();
-      const itemElement = getEnabledItem(store, activeId)?.element;
+      const itemElement = getEnabledItem(store, focusedId)?.element;
       if (!itemElement) return;
       withBaseScrollPreserved(store, () => focusIntoView(itemElement));
-    }, [store, moves, composite, focusOnMove]);
+    }, [store, moves, focusedId, composite, focusOnMove]);
 
     // If composite.move(null) has been called, the composite container (this
     // element) should receive focus.
     useSafeLayoutEffect(() => {
       if (!store) return;
-      if (!moves) return;
       if (!composite) return;
-      const { baseElement, activeId } = store.getState();
-      const isSelfAcive = activeId === null;
+      const { baseElement } = store.getState();
+      const isSelfAcive = focusedId === null;
       if (!isSelfAcive) return;
       if (!baseElement) return;
       const previousElement = previousElementRef.current;
@@ -217,7 +216,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (!hasFocus(baseElement)) {
         baseElement.focus();
       }
-    }, [store, moves, composite]);
+    }, [store, focusedId, composite]);
 
     const activeId = useStoreState(store, "activeId");
     const virtualFocus = useStoreState(store, "virtualFocus");

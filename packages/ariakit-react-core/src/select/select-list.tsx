@@ -91,6 +91,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (event.key === "Escape" && resetOnEscapeProp(event)) {
+        store?.setState("focusedId", undefined);
         store?.setValue(defaultValue);
       }
       if (event.key === " " || event.key === "Enter") {

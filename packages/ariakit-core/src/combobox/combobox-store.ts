@@ -16,7 +16,6 @@ import { chain, defaultValue } from "../utils/misc.ts";
 import { isSafari, isTouchDevice } from "../utils/platform.ts";
 import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
 import {
-  batch,
   createStore,
   mergeStore,
   pick,
@@ -172,6 +171,7 @@ export function createComboboxStore({
     sync(combobox, ["open"], (state) => {
       if (state.open) return;
       combobox.setState("activeId", activeId);
+      combobox.setState("focusedId", undefined);
       combobox.setState("moves", 0);
     }),
   );
@@ -180,8 +180,8 @@ export function createComboboxStore({
   // activeValue state. This is useful when the activeId changes because of
   // a mouse move interaction.
   setup(combobox, () =>
-    sync(combobox, ["moves", "activeId"], (state, prevState) => {
-      if (state.moves === prevState.moves) {
+    sync(combobox, ["focusedId", "activeId"], (state, prevState) => {
+      if (state.focusedId === prevState.focusedId) {
         combobox.setState("activeValue", undefined);
       }
     }),
@@ -189,10 +189,8 @@ export function createComboboxStore({
 
   // Otherwise, if the moves count changes, we update the activeValue state.
   setup(combobox, () =>
-    batch(combobox, ["moves", "renderedItems"], (state, prev) => {
-      if (state.moves === prev.moves) return;
-      const { activeId } = combobox.getState();
-      const activeItem = composite.item(activeId);
+    sync(combobox, ["focusedId", "renderedItems"], (state) => {
+      const activeItem = composite.item(state.focusedId);
       combobox.setState("activeValue", activeItem?.value);
     }),
   );

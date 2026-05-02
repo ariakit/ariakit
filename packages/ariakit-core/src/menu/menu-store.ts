@@ -104,6 +104,7 @@ export function createMenuStore({
     sync(menu, ["mounted"], (state) => {
       if (state.mounted) return;
       menu.setState("activeId", null);
+      menu.setState("focusedId", undefined);
     }),
   );
 
