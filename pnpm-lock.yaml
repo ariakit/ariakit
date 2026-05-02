@@ -609,8 +609,8 @@ importers:
         specifier: workspace:*
         version: link:../nextjs
       pixelmatch:
-        specifier: 7.1.1
-        version: 7.1.1
+        specifier: 7.2.0
+        version: 7.2.0
       pngjs:
         specifier: 7.0.0
         version: 7.0.0
@@ -8380,8 +8380,8 @@ packages:
     resolution: {integrity: sha512-TfySrs/5nm8fQJDcBDuUng3VOUKsd7S+zqvbOTiGXHfxX4wK31ard+hoNuvkicM/2YFzlpDgABOevKSsB4G/FA==}
     engines: {node: '>= 6'}
 
-  pixelmatch@7.1.1:
-    resolution: {integrity: sha512-ug6CkUcHtxn0umoaqV1VB9+h7IMxRgKQQ/fq4W7ahMnyzDSvQ0vsJRo6BC5s+Gv+RvpriWosDcGkI3L8+8Yxbw==}
+  pixelmatch@7.2.0:
+    resolution: {integrity: sha512-xhcb4yHu9sM/G7foGzoLtXYcC0zHEaOXXjRKhGup0fw78Nf2Tkiapv4EQyMzrbcmQPsllAI7DbFY2UT7PlI9Pg==}
     hasBin: true
 
   pkce-challenge@5.0.1:
@@ -19331,7 +19331,7 @@ snapshots:
 
   pirates@4.0.7: {}
 
-  pixelmatch@7.1.1:
+  pixelmatch@7.2.0:
     dependencies:
       pngjs: 7.0.0
 
