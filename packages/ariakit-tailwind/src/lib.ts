@@ -246,13 +246,29 @@ export interface WithContextParams {
   inherit: typeof fn.var;
 }
 
+interface WithContextReadParams {
+  inherit: typeof fn.var;
+}
+
+type GetContextChildren = (
+  params: WithContextParams,
+) => Array<AtRuleChild | undefined>;
+type GetContextReadChildren = (
+  params: WithContextReadParams,
+) => Array<AtRuleChild | undefined>;
+
+interface Context {
+  (getContextChildren: GetContextChildren): AtRuleChild[];
+  read: (getContextChildren: GetContextReadChildren) => AtRuleChild[];
+}
+
 let contextCounter = 0;
 
 /**
  * Emulates an `inherit()` function by routing parent values through alternating
  * context vars selected by style container queries.
  */
-export function createContext(reset?: boolean) {
+export function createContext(reset?: boolean): Context {
   const id = `--_context-${contextCounter++}`;
 
   const getNextParity = (parity: ContextParity): ContextParity => {
@@ -267,24 +283,9 @@ export function createContext(reset?: boolean) {
     return createVar(`${getIdent(property)}-${parity}`);
   };
 
-  const context = (
-    getContextChildren: (
-      params: WithContextParams,
-    ) => Array<AtRuleChild | undefined>,
+  const withParityContainers = (
+    getChildren: (parity?: ContextParity) => AtRuleChild[],
   ) => {
-    const getChildren = (parity: ContextParity = "even"): AtRuleChild[] => {
-      const nextParity = getNextParity(parity);
-      const contextChildren = getContextChildren({
-        opposite: (property) =>
-          getParityVar(property, parity === "even" ? "odd" : "even"),
-        provide: (property) => getParityVar(property, nextParity),
-        inherit: (property, ...fallbacks) => {
-          const inheritedVar = getParityVar(property, parity);
-          return fn.var(inheritedVar, ...fallbacks);
-        },
-      }).filter((child) => child != null);
-      return [set(id, nextParity), ...contextChildren];
-    };
     if (reset) {
       return getChildren();
     }
@@ -295,7 +296,47 @@ export function createContext(reset?: boolean) {
     ];
   };
 
-  return context;
+  const getContextChildrenForParity = (
+    getContextChildren: GetContextChildren,
+    parity: ContextParity = "even",
+  ) => {
+    const nextParity = getNextParity(parity);
+    const contextChildren = getContextChildren({
+      opposite: (property) =>
+        getParityVar(property, parity === "even" ? "odd" : "even"),
+      provide: (property) => getParityVar(property, nextParity),
+      inherit: (property, ...fallbacks) => {
+        const inheritedVar = getParityVar(property, parity);
+        return fn.var(inheritedVar, ...fallbacks);
+      },
+    }).filter((child) => child != null);
+    return [set(id, nextParity), ...contextChildren];
+  };
+
+  const getContextReadChildrenForParity = (
+    getContextChildren: GetContextReadChildren,
+    parity: ContextParity = "even",
+  ) => {
+    return getContextChildren({
+      inherit: (property, ...fallbacks) => {
+        const inheritedVar = getParityVar(property, parity);
+        return fn.var(inheritedVar, ...fallbacks);
+      },
+    }).filter((child) => child != null);
+  };
+
+  return Object.assign(
+    (getContextChildren: GetContextChildren) =>
+      withParityContainers((parity) =>
+        getContextChildrenForParity(getContextChildren, parity),
+      ),
+    {
+      read: (getContextChildren: GetContextReadChildren) =>
+        withParityContainers((parity) =>
+          getContextReadChildrenForParity(getContextChildren, parity),
+        ),
+    },
+  );
 }
 
 export interface Namespace
