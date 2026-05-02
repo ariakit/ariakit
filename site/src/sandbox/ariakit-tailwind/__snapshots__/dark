@@ -25,6 +25,7 @@
         "class": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.245_27.325_/_0.4)] p-[4px] shadow-[oklch(1_0.245_27.325_/_0.4)_0px_0px_0px_0px]",
         "children": {
           "20": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.245_27.325_/_0.4)] p-[4px] shadow-[oklch(1_0.245_27.325_/_0.4)_0px_0px_0px_0px]",
+          "push": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.245_27.325_/_0.4)] p-[4px] shadow-[oklch(1_0.245_27.325_/_0.4)_0px_0px_0px_0px]",
           "host": "bg-[oklch(0.2951_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0.245_262.881_/_0.1)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.1)_0px_0px_0px_0px]"
         }
       },

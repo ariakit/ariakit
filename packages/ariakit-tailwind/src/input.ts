@@ -1569,7 +1569,6 @@ utility(
     return [
       set(inputs.edgeColor, parentEdge),
       set(inputs.edgePushL, fn.neg(vars.edgeContrastValue)),
-      set(inputs.edgeL, fn.sub(l, edgeDirectionalShift)),
       set(inputs.edgeA, fn.sub(alpha, vars.edgeContrastValue)),
     ];
   }),
