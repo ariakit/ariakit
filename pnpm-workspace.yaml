@@ -9,6 +9,9 @@ packages:
 
 minimumReleaseAge: 4320
 
+minimumReleaseAgeExclude:
+  - clava
+
 publicHoistPattern:
   - "*react*"
   - "*testing-library*"

@@ -26,6 +26,7 @@ import {
   checkboxCardLabel,
 } from "@ariakit/ui/styles/checkbox-card.ts";
 import { controlGroup, controlSeparator } from "@ariakit/ui/styles/control.ts";
+import { frame } from "@ariakit/ui/styles/frame.ts";
 import { layer } from "@ariakit/ui/styles/layer.ts";
 import {
   ActivityIcon,
@@ -64,7 +65,7 @@ export default function Example() {
   const [values, setValues] = useState<(keyof typeof interests)[]>(["finance"]);
   return (
     <Group className="flex flex-col gap-4">
-      <div {...layer.jsx({ $lightnessOffset: true })}>dsadas</div>
+      <div {...layer.jsx({ $bgOffset: true })}>dsadas</div>
       <div {...layer.jsx({ $bg: "canvas" })}>dsadas</div>
       <div {...layer.jsx({ $bg: "brand", $mix: 20, $lightnessMin: 20 })}>
         brand
@@ -72,7 +73,27 @@ export default function Example() {
       <div {...layer.jsx({ $bg: "brand", $hue: 224 })}>brand</div>
       <div {...layer.jsx({ $bg: "success" })}>dsadas</div>
       <div {...layer.jsx({ $bg: "warning" })}>dsadas</div>
-      <div {...layer.jsx({ $bg: "danger", $contrast: true })}>dsadas</div>
+      <div
+        {...frame.jsx({
+          $bgOffset: true,
+          $border: 2,
+          $borderWeight: "bold",
+          $p: 1,
+          $rounded: "xl",
+        })}
+      >
+        <div
+          {...frame.jsx({
+            $bgOffset: true,
+            $border: "inherit",
+            // $borderRaw: true,
+            // $borderColor: "brand",
+            $p: 1,
+          })}
+        >
+          dsadas
+        </div>
+      </div>
       <GroupLabel className="text-xl font-medium  text-center">
         Select your interests
       </GroupLabel>
