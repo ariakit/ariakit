@@ -1,5 +1,9 @@
 # @ariakit/tailwind
 
+## 0.2.1
+
+- Added `ak-edge-inherit` and `ak-frame-bordering-inherit` utilities.
+
 ## 0.2.0
 
 ### Ariakit Tailwind v0.2
