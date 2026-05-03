@@ -81,6 +81,7 @@
     {
       "matchPackageNames": [
         "@astrojs/check",
+        "@axe-core/playwright",
         "@wordpress/components",
         "cross-env",
         "cross-spawn",
