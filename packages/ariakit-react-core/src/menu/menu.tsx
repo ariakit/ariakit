@@ -1,3 +1,4 @@
+import { getActiveElement } from "@ariakit/core/utils/dom";
 import { fireEvent } from "@ariakit/core/utils/events";
 import { hasFocusWithin } from "@ariakit/core/utils/focus";
 import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
@@ -131,17 +132,26 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   // focus on the dialog container when no initialFocusRef is set.
   const canAutoFocusOnShow = !!initialFocusRef || !!props.initialFocus || modal;
   const autoFocusOnShowProp = useEvent((element: HTMLElement | null) => {
-    if (autoFocusOnShow === false || typeof autoFocusOnShow === "function") {
+    if (autoFocusOnShow === false) {
       if (autoFocusOnShowState && initialFocus !== "container") {
         return canAutoFocusOnShow;
       }
-      if (autoFocusOnShow === false) return false;
+      return false;
+    }
+    if (typeof autoFocusOnShow === "function") {
+      if (autoFocusOnShowState && initialFocus !== "container") {
+        if (!canAutoFocusOnShow) return false;
+        const activeElement = getActiveElement(element, true);
+        const autoFocus = autoFocusOnShow(element);
+        if (autoFocus) return autoFocus;
+        if (activeElement !== getActiveElement(element, true)) return false;
+        return true;
+      }
+      if (!canAutoFocusOnShow) return false;
+      return autoFocusOnShow(element);
     }
     if (mayAutoFocusOnShow) {
       if (!canAutoFocusOnShow) return false;
-      if (typeof autoFocusOnShow === "function") {
-        return autoFocusOnShow(element);
-      }
       return autoFocusOnShow;
     }
     return autoFocusOnShowState || modal;

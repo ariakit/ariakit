@@ -121,4 +121,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(menu).not.toBeVisible();
     await test.expect(toggleButton).toBeFocused();
   });
+
+  test("preserves callback side effects on keyboard show", async ({
+    page,
+    q,
+  }) => {
+    const menuButton = q.button("Callback Side Effect");
+    const menuItem = q.menuitem("Side Effect Edit");
+
+    await menuButton.focus();
+    await page.keyboard.press("ArrowDown");
+
+    await test.expect(menuItem).toBeFocused();
+    await test
+      .expect(menuItem)
+      .toHaveAttribute("data-callback-side-effect", "true");
+  });
 });

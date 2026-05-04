@@ -23,6 +23,25 @@ function CallbackTrueMenu() {
   );
 }
 
+function CallbackSideEffectMenu() {
+  return (
+    <Ariakit.MenuProvider>
+      <Ariakit.MenuButton>Callback Side Effect</Ariakit.MenuButton>
+      <Ariakit.Menu
+        autoFocusOnShow={(element) => {
+          element?.setAttribute("data-callback-side-effect", "true");
+          element?.focus({ preventScroll: true });
+          return false;
+        }}
+        gutter={8}
+      >
+        <Ariakit.MenuItem>Side Effect Edit</Ariakit.MenuItem>
+        <Ariakit.MenuItem>Side Effect Share</Ariakit.MenuItem>
+      </Ariakit.Menu>
+    </Ariakit.MenuProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -47,6 +66,7 @@ export default function Example() {
         </Ariakit.Menu>
       </Ariakit.MenuProvider>
       <CallbackTrueMenu />
+      <CallbackSideEffectMenu />
     </>
   );
 }
