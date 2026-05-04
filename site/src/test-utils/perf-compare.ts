@@ -10,6 +10,7 @@ import type { PerfMetrics, PerfResult } from "./perf.ts";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const THRESHOLD_PERCENT = 10;
+const MIN_SIGNIFICANT_DELTA_MS = 5;
 
 type MetricKey = keyof PerfMetrics;
 
@@ -21,16 +22,19 @@ interface ComparisonRow {
   current: number;
   delta: number;
   percent: number;
+  perRoundDeltas: number[];
+  agreement: number;
   significant: boolean;
 }
 
 interface ComparisonSummary {
   rows: ComparisonRow[];
   hasSignificantChanges: boolean;
-  currentResults: PerfResult[];
+  currentResults: AggregatedPerfResult[];
   profileModeMismatches: ProfileModeMismatch[];
-  newTests: PerfResult[];
-  removedTests: PerfResult[];
+  newTests: AggregatedPerfResult[];
+  removedTests: AggregatedPerfResult[];
+  pairedRoundsCount: number;
 }
 
 interface PersistedComparisonSummary {
@@ -39,6 +43,7 @@ interface PersistedComparisonSummary {
   profileModeMismatches: ProfileModeMismatch[];
   newTests: PerfResult[];
   removedTests: PerfResult[];
+  pairedRoundsCount: number;
 }
 
 interface ProfileModeMismatch {
@@ -47,6 +52,22 @@ interface ProfileModeMismatch {
   profile: "script" | "selectors";
   baseline: boolean;
   current: boolean;
+}
+
+interface RoundPerfResult {
+  roundIndex: number;
+  result: PerfResult;
+}
+
+interface AggregatedPerfResult {
+  key: string;
+  result: PerfResult;
+  byRound: Map<number, PerfResult>;
+}
+
+interface DiscoveredRoundFile {
+  filePath: string;
+  roundIndex: number;
 }
 
 // Primary metrics shown in the summary table.
@@ -80,19 +101,192 @@ const RENDERING_SUB_METRICS = new Set<MetricKey>([
   "painting",
 ]);
 
-function loadResults(prefix: string): PerfResult[] {
+function readJsonFile(filePath: string): unknown {
+  if (!existsSync(filePath)) return [];
+  try {
+    return JSON.parse(readFileSync(filePath, "utf-8"));
+  } catch (error) {
+    console.warn(
+      `Warning: failed to parse JSON file at ${filePath}. Falling back to empty results.`,
+      error,
+    );
+    return [];
+  }
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+// Discover round files like `baseline-1-worker0.json` and
+// `current-1-worker0.json`. If no numbered rounds are present, fall back to
+// the previous single-run files such as `baseline-worker0.json`.
+function discoverRoundFiles(prefix: string): DiscoveredRoundFile[] {
   if (!existsSync(RESULTS_DIR)) return [];
   const files = readdirSync(RESULTS_DIR)
-    .filter((f) => f.startsWith(prefix) && f.endsWith(".json"))
+    .filter((file) => file.startsWith(prefix) && file.endsWith(".json"))
     .sort();
-  const all: PerfResult[] = [];
+
+  const numbered: DiscoveredRoundFile[] = [];
+  const roundPattern = new RegExp(
+    `^${escapeRegExp(prefix)}-(\\d+)(?:-.+)?\\.json$`,
+  );
   for (const file of files) {
-    const data = JSON.parse(
-      readFileSync(path.join(RESULTS_DIR, file), "utf-8"),
-    );
-    all.push(...data);
+    const match = file.match(roundPattern);
+    if (!match) continue;
+    const roundIndex = Number(match[1] ?? 0);
+    if (!Number.isInteger(roundIndex) || roundIndex <= 0) continue;
+    numbered.push({
+      filePath: path.join(RESULTS_DIR, file),
+      roundIndex,
+    });
   }
-  return all;
+  if (numbered.length > 0) {
+    return numbered.sort(
+      (a, b) =>
+        a.roundIndex - b.roundIndex || a.filePath.localeCompare(b.filePath),
+    );
+  }
+
+  return files.map((file) => ({
+    filePath: path.join(RESULTS_DIR, file),
+    roundIndex: 1,
+  }));
+}
+
+function loadRounds(prefix: string): RoundPerfResult[] {
+  const rounds: RoundPerfResult[] = [];
+  for (const { filePath, roundIndex } of discoverRoundFiles(prefix)) {
+    const data = readJsonFile(filePath);
+    if (!Array.isArray(data)) continue;
+    for (const result of data) {
+      rounds.push({ roundIndex, result: result as PerfResult });
+    }
+  }
+  return rounds;
+}
+
+function median(values: number[]): number {
+  if (values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  const midValue = sorted[mid];
+  if (midValue == null) return 0;
+  if (sorted.length % 2 !== 0) return midValue;
+  const prevValue = sorted[mid - 1];
+  if (prevValue == null) return midValue;
+  return (prevValue + midValue) / 2;
+}
+
+function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
+  return {
+    scripting: median(all.map((m) => m.scripting)),
+    layout: median(all.map((m) => m.layout)),
+    styleRecalc: median(all.map((m) => m.styleRecalc)),
+    painting: median(all.map((m) => m.painting)),
+    rendering: median(all.map((m) => m.rendering)),
+    inp: median(all.map((m) => m.inp)),
+    total: median(all.map((m) => m.total)),
+  };
+}
+
+function getAggregatedProfiles(results: PerfResult[]) {
+  return results.find((result) => result.profiles)?.profiles;
+}
+
+function createAggregatedResult(
+  key: string,
+  byRound: Map<number, PerfResult>,
+): AggregatedPerfResult | undefined {
+  const results = [...byRound.values()];
+  const first = results[0];
+  if (!first) return;
+  return {
+    key,
+    byRound,
+    result: {
+      ...first,
+      metrics: computeMedianMetrics(results.map((result) => result.metrics)),
+      raw: results.flatMap((result) => result.raw),
+      profiles: getAggregatedProfiles(results),
+    },
+  };
+}
+
+function aggregateByKey(
+  roundResults: RoundPerfResult[],
+): Map<string, AggregatedPerfResult> {
+  const grouped = new Map<string, Map<number, PerfResult>>();
+  for (const { roundIndex, result } of roundResults) {
+    const key = resultKey(result);
+    let byRound = grouped.get(key);
+    if (!byRound) {
+      byRound = new Map();
+      grouped.set(key, byRound);
+    }
+    byRound.set(roundIndex, result);
+  }
+
+  const aggregated = new Map<string, AggregatedPerfResult>();
+  for (const [key, byRound] of grouped) {
+    const result = createAggregatedResult(key, byRound);
+    if (!result) continue;
+    aggregated.set(key, result);
+  }
+  return aggregated;
+}
+
+function getSharedRoundIndices(
+  baseline: AggregatedPerfResult,
+  current: AggregatedPerfResult,
+) {
+  const roundIndices: number[] = [];
+  for (const roundIndex of current.byRound.keys()) {
+    if (baseline.byRound.has(roundIndex)) {
+      roundIndices.push(roundIndex);
+    }
+  }
+  return roundIndices.sort((a, b) => a - b);
+}
+
+function requiredAgreement(roundsCount: number) {
+  if (roundsCount <= 2) return 1;
+  if (roundsCount <= 4) return roundsCount;
+  return roundsCount - 1;
+}
+
+function computeSignificance({
+  baseline,
+  current,
+  percent,
+  perRoundDeltas,
+}: {
+  baseline: number;
+  current: number;
+  percent: number;
+  perRoundDeltas: number[];
+}) {
+  if (perRoundDeltas.length === 0) {
+    return { agreement: 0, significant: false };
+  }
+
+  const delta = current - baseline;
+  const direction = Math.sign(delta);
+  let agreement = 0;
+  for (const roundDelta of perRoundDeltas) {
+    if (Math.sign(roundDelta) === direction) {
+      agreement += 1;
+    }
+  }
+
+  const percentOk = Math.abs(percent) > THRESHOLD_PERCENT;
+  const deltaOk = Math.abs(delta) >= MIN_SIGNIFICANT_DELTA_MS;
+  const zeroBaselineOk =
+    baseline === 0 && Math.abs(current) >= MIN_SIGNIFICANT_DELTA_MS;
+  const magnitudeOk = baseline === 0 ? zeroBaselineOk : percentOk && deltaOk;
+  const agreementOk = agreement >= requiredAgreement(perRoundDeltas.length);
+
+  return { agreement, significant: magnitudeOk && agreementOk };
 }
 
 function formatMs(value: number): string {
@@ -123,32 +317,25 @@ function resultKey(result: PerfResult): string {
   return `${result.testFile}::${result.label}`;
 }
 
-function hasProfile(result: PerfResult, profile: "script" | "selectors") {
-  return (result.profiles?.[profile]?.length ?? 0) > 0;
+function hasProfile(
+  result: AggregatedPerfResult,
+  profile: "script" | "selectors",
+) {
+  return (result.result.profiles?.[profile]?.length ?? 0) > 0;
 }
 
 function compare(): ComparisonSummary {
-  const baseline = loadResults("baseline");
-  const current = loadResults("current");
-
-  const baselineByKey = new Map<string, PerfResult>();
-  for (const result of baseline) {
-    baselineByKey.set(resultKey(result), result);
-  }
-
-  const currentByKey = new Map<string, PerfResult>();
-  for (const result of current) {
-    currentByKey.set(resultKey(result), result);
-  }
+  const baseline = aggregateByKey(loadRounds("baseline"));
+  const current = aggregateByKey(loadRounds("current"));
 
   const rows: ComparisonRow[] = [];
   const profileModeMismatches: ProfileModeMismatch[] = [];
-  const newTests: PerfResult[] = [];
-  const removedTests: PerfResult[] = [];
+  const newTests: AggregatedPerfResult[] = [];
+  const removedTests: AggregatedPerfResult[] = [];
+  const pairedRoundIndices = new Set<number>();
 
-  for (const cur of current) {
-    const key = resultKey(cur);
-    const base = baselineByKey.get(key);
+  for (const [key, cur] of current) {
+    const base = baseline.get(key);
     if (!base) {
       newTests.push(cur);
       continue;
@@ -158,38 +345,61 @@ function compare(): ComparisonSummary {
       const currentHasProfile = hasProfile(cur, profile);
       if (baselineHasProfile === currentHasProfile) continue;
       profileModeMismatches.push({
-        testFile: cur.testFile,
-        label: cur.label,
+        testFile: cur.result.testFile,
+        label: cur.result.label,
         profile,
         baseline: baselineHasProfile,
         current: currentHasProfile,
       });
     }
+
+    const sharedRoundIndices = getSharedRoundIndices(base, cur);
+    for (const roundIndex of sharedRoundIndices) {
+      pairedRoundIndices.add(roundIndex);
+    }
+
     for (const metric of ALL_METRICS) {
-      const baseVal = base.metrics[metric];
-      const curVal = cur.metrics[metric];
+      const baselineValues: number[] = [];
+      const currentValues: number[] = [];
+      const perRoundDeltas: number[] = [];
+      for (const roundIndex of sharedRoundIndices) {
+        const baselineRound = base.byRound.get(roundIndex);
+        const currentRound = cur.byRound.get(roundIndex);
+        if (!baselineRound || !currentRound) continue;
+        const baselineValue = baselineRound.metrics[metric];
+        const currentValue = currentRound.metrics[metric];
+        baselineValues.push(baselineValue);
+        currentValues.push(currentValue);
+        perRoundDeltas.push(currentValue - baselineValue);
+      }
+
+      const baseVal = median(baselineValues);
+      const curVal = median(currentValues);
       const delta = curVal - baseVal;
       const percent = baseVal > 0 ? (delta / baseVal) * 100 : 0;
-      // Flag as significant when percentage exceeds threshold, or when a
-      // metric goes from zero to a non-trivial value (> 1ms).
-      const significant =
-        Math.abs(percent) > THRESHOLD_PERCENT ||
-        (baseVal === 0 && Math.abs(curVal) > 1);
+      const { agreement, significant } = computeSignificance({
+        baseline: baseVal,
+        current: curVal,
+        percent,
+        perRoundDeltas,
+      });
       rows.push({
-        testFile: cur.testFile,
-        label: cur.label,
+        testFile: cur.result.testFile,
+        label: cur.result.label,
         metric,
         baseline: baseVal,
         current: curVal,
         delta,
         percent,
+        perRoundDeltas,
+        agreement,
         significant,
       });
     }
   }
 
-  for (const base of baseline) {
-    if (!currentByKey.has(resultKey(base))) {
+  for (const [key, base] of baseline) {
+    if (!current.has(key)) {
       removedTests.push(base);
     }
   }
@@ -197,10 +407,11 @@ function compare(): ComparisonSummary {
   return {
     rows,
     hasSignificantChanges: rows.some((r) => r.significant),
-    currentResults: current,
+    currentResults: [...current.values()],
     profileModeMismatches,
     newTests,
     removedTests,
+    pairedRoundsCount: pairedRoundIndices.size,
   };
 }
 
@@ -312,7 +523,7 @@ function formatProfileModeWarning(mismatches: ProfileModeMismatch[]): string[] {
 function formatDetailedBreakdown(
   rows: ComparisonRow[],
   keys: string[],
-  currentByKey: Map<string, PerfResult>,
+  currentByKey: Map<string, AggregatedPerfResult>,
 ): string[] {
   const lines: string[] = [];
   for (const key of keys) {
@@ -337,7 +548,7 @@ function formatDetailedBreakdown(
       );
     }
     lines.push("");
-    lines.push(...formatProfiles(currentByKey.get(key)));
+    lines.push(...formatProfiles(currentByKey.get(key)?.result));
   }
   return lines;
 }
@@ -350,10 +561,11 @@ function formatMarkdown(summary: ComparisonSummary): string {
     profileModeMismatches,
     newTests,
     removedTests,
+    pairedRoundsCount,
   } = summary;
-  const currentByKey = new Map<string, PerfResult>();
+  const currentByKey = new Map<string, AggregatedPerfResult>();
   for (const result of currentResults) {
-    currentByKey.set(resultKey(result), result);
+    currentByKey.set(result.key, result);
   }
 
   const allKeys = [...new Set(rows.map((r) => rowKey(r)))];
@@ -389,7 +601,7 @@ function formatMarkdown(summary: ComparisonSummary): string {
     lines.push("");
     lines.push("| Test | Scripting | Rendering | Total |");
     lines.push("|------|-----------|-----------|-------|");
-    for (const result of newTests) {
+    for (const { result } of newTests) {
       const cells: string[] = [result.label];
       for (const metric of PRIMARY_METRICS) {
         cells.push(formatMs(result.metrics[metric]));
@@ -398,7 +610,7 @@ function formatMarkdown(summary: ComparisonSummary): string {
     }
     lines.push("");
 
-    for (const result of newTests) {
+    for (const { result } of newTests) {
       const profileLines = formatProfiles(result);
       if (profileLines.length === 0) continue;
       lines.push(`#### ${result.label}`);
@@ -410,7 +622,7 @@ function formatMarkdown(summary: ComparisonSummary): string {
   if (removedTests.length > 0) {
     lines.push("### Removed tests");
     lines.push("");
-    for (const result of removedTests) {
+    for (const { result } of removedTests) {
       lines.push(`- ${result.label}`);
     }
     lines.push("");
@@ -420,8 +632,14 @@ function formatMarkdown(summary: ComparisonSummary): string {
   lines.push("");
 
   lines.push(
-    `:warning: = regression above ${THRESHOLD_PERCENT}% · :rocket: = improvement above ${THRESHOLD_PERCENT}%`,
+    `:warning: = regression above ${THRESHOLD_PERCENT}% and ${formatMs(MIN_SIGNIFICANT_DELTA_MS)} · :rocket: = improvement above ${THRESHOLD_PERCENT}% and ${formatMs(MIN_SIGNIFICANT_DELTA_MS)}`,
   );
+  if (pairedRoundsCount > 1) {
+    lines.push("");
+    lines.push(
+      `Aggregated across ${pairedRoundsCount} interleaved rounds; a change is flagged only when the median exceeds the threshold and rounds agree on direction.`,
+    );
+  }
 
   return lines.join("\n");
 }
@@ -433,8 +651,9 @@ function toPersistedSummary(
     rows: summary.rows,
     hasSignificantChanges: summary.hasSignificantChanges,
     profileModeMismatches: summary.profileModeMismatches,
-    newTests: summary.newTests,
-    removedTests: summary.removedTests,
+    newTests: summary.newTests.map((entry) => entry.result),
+    removedTests: summary.removedTests.map((entry) => entry.result),
+    pairedRoundsCount: summary.pairedRoundsCount,
   };
 }
 
