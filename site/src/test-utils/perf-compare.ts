@@ -59,7 +59,12 @@ interface ComparisonRow {
   current: number;
   delta: number;
   percent: number;
-  perRoundPercents: number[];
+  // Signed per-round deltas (current - baseline) for every shared round.
+  // Used for the agreement check so every paired round contributes a vote,
+  // including rounds where the baseline measured zero — those rounds still
+  // carry direction information and dropping them shrinks the denominator
+  // `requiredAgreement` sees.
+  perRoundDeltas: number[];
   agreement: number;
   significant: boolean;
   // Number of baseline/current round indices that paired up for this row's
@@ -343,7 +348,7 @@ interface SignificanceParams {
   percent: number;
   baseline: number;
   current: number;
-  perRoundPercents: number[];
+  perRoundDeltas: number[];
 }
 
 interface SignificanceResult {
@@ -352,11 +357,10 @@ interface SignificanceResult {
 }
 
 function computeSignificance(params: SignificanceParams): SignificanceResult {
-  const { metric, delta, percent, baseline, current, perRoundPercents } =
-    params;
+  const { metric, delta, percent, baseline, current, perRoundDeltas } = params;
   const direction = Math.sign(delta);
   let agreement = 0;
-  for (const value of perRoundPercents) {
+  for (const value of perRoundDeltas) {
     if (Math.sign(value) === direction) {
       agreement += 1;
     }
@@ -367,7 +371,7 @@ function computeSignificance(params: SignificanceParams): SignificanceResult {
   const magnitudeOk = Math.abs(percent) > THRESHOLD_PERCENT;
   const absoluteOk = Math.abs(delta) > MIN_DELTA_MS;
   const fromZeroOk = baseline === 0 && Math.abs(current) > MIN_DELTA_MS;
-  const enoughRounds = perRoundPercents.length;
+  const enoughRounds = perRoundDeltas.length;
   const agreementOk =
     enoughRounds === 0 || agreement >= requiredAgreement(enoughRounds);
   const significant =
@@ -453,17 +457,18 @@ function compare(): ComparisonSummary {
       const curVal = currentMetrics[metric];
       const delta = curVal - baseVal;
       const percent = baseVal > 0 ? (delta / baseVal) * 100 : 0;
-      const perRoundPercents: number[] = [];
+      // One signed delta per paired round, including rounds where baseline
+      // measured zero. Filtering zero-baseline rounds out shrinks the array
+      // `requiredAgreement` operates on and lets a 2-round row flag from a
+      // single agreeing round whenever one baseline sample is zero.
+      const perRoundDeltas: number[] = [];
       for (let i = 0; i < sharedBaseline.length; i++) {
         const baselineRoundEntry = sharedBaseline[i];
         const currentRoundEntry = sharedCurrent[i];
         if (!baselineRoundEntry || !currentRoundEntry) continue;
         const baselineRoundValue = baselineRoundEntry.metrics[metric];
         const currentRoundValue = currentRoundEntry.metrics[metric];
-        if (baselineRoundValue <= 0) continue;
-        perRoundPercents.push(
-          ((currentRoundValue - baselineRoundValue) / baselineRoundValue) * 100,
-        );
+        perRoundDeltas.push(currentRoundValue - baselineRoundValue);
       }
       const { agreement, significant } = computeSignificance({
         metric,
@@ -471,7 +476,7 @@ function compare(): ComparisonSummary {
         percent,
         baseline: baseVal,
         current: curVal,
-        perRoundPercents,
+        perRoundDeltas,
       });
       rows.push({
         testFile: cur.testFile,
@@ -481,7 +486,7 @@ function compare(): ComparisonSummary {
         current: curVal,
         delta,
         percent,
-        perRoundPercents,
+        perRoundDeltas,
         agreement,
         significant,
         pairedRoundsCount,

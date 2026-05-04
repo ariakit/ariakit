@@ -367,6 +367,30 @@ describe("perf-compare", () => {
     expect(markdown).toContain(":warning:");
   });
 
+  test("counts zero-baseline rounds toward the agreement denominator", () => {
+    // Baseline `[0, 100]` and current `[0, 130]` median to `50ms → 65ms`
+    // (+30%). Only the second paired round provides agreeing direction; the
+    // first round is `0 → 0` and contributes nothing. With two paired rounds
+    // unanimity is required, so this must not flag — even though one round
+    // alone agrees with the median direction. Filtering the zero-baseline
+    // round out of the agreement check would shrink the denominator to one
+    // and let a single agreeing round pass.
+    const baselineRounds = [
+      [createResult("zero-baseline", { scripting: 0, total: 0 })],
+      [createResult("zero-baseline", { scripting: 100, total: 100 })],
+    ];
+    const currentRounds = [
+      [createResult("zero-baseline", { scripting: 0, total: 0 })],
+      [createResult("zero-baseline", { scripting: 130, total: 130 })],
+    ];
+    const markdown = runCompareRounds({
+      baseline: baselineRounds,
+      current: currentRounds,
+    });
+    expect(markdown).toContain("No significant performance changes detected.");
+    expect(markdown).not.toMatch(/% :warning:/);
+  });
+
   test("does not flag tests with no shared rounds", () => {
     // Baseline ran only round 1, current ran only round 2. No round produced
     // both sides, so cross-round medians would be the only comparison —
