@@ -367,6 +367,76 @@ describe("perf-compare", () => {
     expect(markdown).toContain(":warning:");
   });
 
+  test("does not flag tests with no shared rounds", () => {
+    // Baseline ran only round 1, current ran only round 2. No round produced
+    // both sides, so cross-round medians would be the only comparison —
+    // exactly the runner-noise the rounds layout is supposed to filter. The
+    // test must surface as unpaired and never get a flag, even if the
+    // cross-round values look like a regression.
+    const dir = createTempDir();
+    const outputDir = path.join(dir, resultsDir);
+    mkdirSync(outputDir, { recursive: true });
+    writeJson(dir, "baseline-1-worker0.json", [
+      createResult("disjoint", { scripting: 100, total: 100 }),
+    ]);
+    writeJson(dir, "current-2-worker0.json", [
+      createResult("disjoint", { scripting: 130, total: 130 }),
+    ]);
+    execFileSync(process.execPath, [scriptPath], {
+      cwd: dir,
+      stdio: "pipe",
+    });
+    const markdown = readFileSync(
+      path.join(outputDir, "comparison.md"),
+      "utf-8",
+    );
+    expect(markdown).not.toMatch(/% :warning:/);
+    expect(markdown).toContain("Tests without paired rounds");
+    expect(markdown).toMatch(/disjoint.*\| 1 \| 2 \|/);
+    // Headline must reflect the unpaired state instead of falling through to
+    // "No performance results found." — the breakdown below contradicts that.
+    expect(markdown).toContain(
+      "No comparable rounds across baseline and current.",
+    );
+    expect(markdown).not.toContain("No performance results found.");
+  });
+
+  test("notes mixed paired-round counts in the footer", () => {
+    // One test has all three rounds paired; another has only the second
+    // round paired. The footer must call out the mixed counts so readers
+    // don't assume the agreement check spans the same number of rounds for
+    // every row.
+    const dir = createTempDir();
+    const outputDir = path.join(dir, resultsDir);
+    mkdirSync(outputDir, { recursive: true });
+    for (let i = 1; i <= 3; i++) {
+      writeJson(dir, `baseline-${i}-worker0.json`, [
+        createResult("full-rounds", { scripting: 100, total: 100 }),
+      ]);
+      writeJson(dir, `current-${i}-worker0.json`, [
+        createResult("full-rounds", { scripting: 100, total: 100 }),
+      ]);
+    }
+    writeJson(dir, "baseline-2-worker0.json", [
+      createResult("full-rounds", { scripting: 100, total: 100 }),
+      createResult("partial", { scripting: 100, total: 100 }),
+    ]);
+    writeJson(dir, "current-2-worker0.json", [
+      createResult("full-rounds", { scripting: 100, total: 100 }),
+      createResult("partial", { scripting: 100, total: 100 }),
+    ]);
+    execFileSync(process.execPath, [scriptPath], {
+      cwd: dir,
+      stdio: "pipe",
+    });
+    const markdown = readFileSync(
+      path.join(outputDir, "comparison.md"),
+      "utf-8",
+    );
+    expect(markdown).toContain("mix of paired baseline/current round counts");
+    expect(markdown).toMatch(/1.{1,3}3 rounds/);
+  });
+
   test("aggregates from shared rounds when round counts differ", () => {
     // Baseline has four rounds; current has only two. The unpaired baseline
     // rounds (3-4) are far slower — if they leaked into the displayed

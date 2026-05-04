@@ -62,6 +62,21 @@ interface ComparisonRow {
   perRoundPercents: number[];
   agreement: number;
   significant: boolean;
+  // Number of baseline/current round indices that paired up for this row's
+  // test. Tracked per-row instead of globally because different tests can
+  // produce different numbers of paired rounds when one side drops a round.
+  pairedRoundsCount: number;
+}
+
+// Tests where baseline and current never produced the same round index, so
+// no per-round comparison was possible. Listed separately rather than
+// silently compared via cross-round medians, which would reintroduce the
+// runner-noise the rounds layout exists to filter.
+interface UnpairedTest {
+  testFile: string;
+  label: string;
+  baselineRounds: number[];
+  currentRounds: number[];
 }
 
 interface ProfileModeMismatch {
@@ -79,7 +94,7 @@ interface ComparisonSummary {
   profileModeMismatches: ProfileModeMismatch[];
   newTests: AggregatedResult[];
   removedTests: AggregatedResult[];
-  pairedRoundsCount: number;
+  unpairedTests: UnpairedTest[];
 }
 
 interface PersistedComparisonSummary {
@@ -88,7 +103,7 @@ interface PersistedComparisonSummary {
   profileModeMismatches: ProfileModeMismatch[];
   newTests: PerfResult[];
   removedTests: PerfResult[];
-  pairedRoundsCount: number;
+  unpairedTests: UnpairedTest[];
 }
 
 // Metrics that can trigger a warning/rocket flag. Sub-metrics (layout,
@@ -372,7 +387,7 @@ function compare(): ComparisonSummary {
   const profileModeMismatches: ProfileModeMismatch[] = [];
   const newTests: AggregatedResult[] = [];
   const removedTests: AggregatedResult[] = [];
-  const pairedRoundIndices = new Set<number>();
+  const unpairedTests: UnpairedTest[] = [];
 
   for (const [key, cur] of current) {
     const base = baseline.get(key);
@@ -401,27 +416,37 @@ function compare(): ComparisonSummary {
       }
     }
     sharedRounds.sort((a, b) => a - b);
+
+    // No round produced both a baseline and current sample for this test.
+    // Comparing cross-round medians would silently feed runner noise into
+    // the report — exactly the failure mode the rounds layout was added to
+    // filter — so surface these tests as unpaired and skip flagging.
+    if (sharedRounds.length === 0) {
+      unpairedTests.push({
+        testFile: cur.testFile,
+        label: cur.label,
+        baselineRounds: [...base.byRound.keys()].sort((a, b) => a - b),
+        currentRounds: [...cur.byRound.keys()].sort((a, b) => a - b),
+      });
+      continue;
+    }
+
     const sharedBaseline: PerfResult[] = [];
     const sharedCurrent: PerfResult[] = [];
     for (const roundIndex of sharedRounds) {
       const baselineRound = base.byRound.get(roundIndex);
       const currentRound = cur.byRound.get(roundIndex);
       if (!baselineRound || !currentRound) continue;
-      pairedRoundIndices.add(roundIndex);
       sharedBaseline.push(baselineRound);
       sharedCurrent.push(currentRound);
     }
-    // Aggregate displayed baseline/current from shared rounds only. Otherwise
-    // an unpaired round can drag one side's median past the paired rounds and
-    // even flip the sign of the change relative to per-round percents.
-    const baselineMetrics =
-      sharedBaseline.length > 0
-        ? computeMedianMetrics(sharedBaseline)
-        : base.metrics;
-    const currentMetrics =
-      sharedCurrent.length > 0
-        ? computeMedianMetrics(sharedCurrent)
-        : cur.metrics;
+    // Aggregate displayed baseline/current from shared rounds only. An
+    // unpaired round on either side could otherwise drag one side's median
+    // past the paired rounds and even flip the sign of the change relative
+    // to per-round percents.
+    const baselineMetrics = computeMedianMetrics(sharedBaseline);
+    const currentMetrics = computeMedianMetrics(sharedCurrent);
+    const pairedRoundsCount = sharedBaseline.length;
 
     for (const metric of ALL_METRICS) {
       const baseVal = baselineMetrics[metric];
@@ -459,6 +484,7 @@ function compare(): ComparisonSummary {
         perRoundPercents,
         agreement,
         significant,
+        pairedRoundsCount,
       });
     }
   }
@@ -476,7 +502,7 @@ function compare(): ComparisonSummary {
     profileModeMismatches,
     newTests,
     removedTests,
-    pairedRoundsCount: pairedRoundIndices.size,
+    unpairedTests,
   };
 }
 
@@ -640,6 +666,21 @@ function formatDetailedBreakdown(
   return lines;
 }
 
+function formatPairedRoundsNote(counts: Set<number>): string | null {
+  if (counts.size === 0) return null;
+  if (counts.size === 1) {
+    const [count] = counts;
+    // Only worth pointing out the agreement check when there's more than one
+    // round per row — at one round per row the agreement check is auto-
+    // satisfied and the message would mislead.
+    if (count == null || count <= 1) return null;
+    return `Comparison spans ${count} interleaved baseline/current rounds; a change is flagged only when the median exceeds the threshold and the per-round directions agree.`;
+  }
+  const min = Math.min(...counts);
+  const max = Math.max(...counts);
+  return `Compared rows used a mix of paired baseline/current round counts (${min}–${max} rounds). Rows with fewer paired rounds carry weaker agreement signal — see the per-test breakdown for the count behind each row.`;
+}
+
 function formatMarkdown(summary: ComparisonSummary): string {
   const {
     rows,
@@ -648,7 +689,7 @@ function formatMarkdown(summary: ComparisonSummary): string {
     profileModeMismatches,
     newTests,
     removedTests,
-    pairedRoundsCount,
+    unpairedTests,
   } = summary;
   const currentByKey = new Map<string, AggregatedResult>();
   for (const result of currentResults) {
@@ -660,7 +701,12 @@ function formatMarkdown(summary: ComparisonSummary): string {
     rows.some((r) => rowKey(r) === key && r.significant),
   );
 
-  const totalTests = allKeys.length + newTests.length + removedTests.length;
+  const totalTests =
+    allKeys.length +
+    newTests.length +
+    removedTests.length +
+    unpairedTests.length;
+  const pairedRoundsCounts = new Set(rows.map((r) => r.pairedRoundsCount));
 
   const lines: string[] = [];
   lines.push("## Performance");
@@ -670,8 +716,18 @@ function formatMarkdown(summary: ComparisonSummary): string {
     lines.push(...formatSummaryTable(rows, significantKeys));
   } else if (rows.length === 0 && newTests.length > 0) {
     lines.push("No baseline results available for comparison.");
-  } else if (rows.length === 0 && newTests.length === 0) {
+  } else if (
+    rows.length === 0 &&
+    newTests.length === 0 &&
+    unpairedTests.length === 0
+  ) {
     lines.push("No performance results found.");
+  } else if (rows.length === 0 && unpairedTests.length > 0) {
+    // No row was comparable, but the run isn't empty — every test produced
+    // results on each side, just never in the same round. Surface that
+    // directly so the headline doesn't claim "no results found" while the
+    // breakdown lists tests below.
+    lines.push("No comparable rounds across baseline and current.");
   } else {
     lines.push("No significant performance changes detected.");
   }
@@ -714,16 +770,32 @@ function formatMarkdown(summary: ComparisonSummary): string {
     lines.push("");
   }
 
+  if (unpairedTests.length > 0) {
+    lines.push("### Tests without paired rounds");
+    lines.push("");
+    lines.push(
+      "Baseline and current never produced the same round index for these tests, so no change is flagged.",
+    );
+    lines.push("");
+    lines.push("| Test | Baseline rounds | Current rounds |");
+    lines.push("|------|-----------------|----------------|");
+    for (const result of unpairedTests) {
+      lines.push(
+        `| ${escapeTableCell(result.label)} | ${result.baselineRounds.join(", ") || "—"} | ${result.currentRounds.join(", ") || "—"} |`,
+      );
+    }
+    lines.push("");
+  }
+
   lines.push("</details>");
   lines.push("");
   lines.push(
     `:warning: = regression above ${THRESHOLD_PERCENT}% · :rocket: = improvement above ${THRESHOLD_PERCENT}%`,
   );
-  if (pairedRoundsCount > 1) {
+  const footerNote = formatPairedRoundsNote(pairedRoundsCounts);
+  if (footerNote) {
     lines.push("");
-    lines.push(
-      `Comparison spans ${pairedRoundsCount} interleaved baseline/current rounds; a change is flagged only when the median exceeds the threshold and the per-round directions agree.`,
-    );
+    lines.push(footerNote);
   }
 
   return lines.join("\n");
@@ -738,7 +810,7 @@ function toPersistedSummary(
     profileModeMismatches: summary.profileModeMismatches,
     newTests: summary.newTests.map(toPersistedResult),
     removedTests: summary.removedTests.map(toPersistedResult),
-    pairedRoundsCount: summary.pairedRoundsCount,
+    unpairedTests: summary.unpairedTests,
   };
 }
 
