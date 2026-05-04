@@ -55,6 +55,14 @@ function createResult(total: number): PerfResult {
   };
 }
 
+function createResultWithLabel(label: string, total: number): PerfResult {
+  return {
+    ...createResult(total),
+    label,
+    testTitle: label,
+  };
+}
+
 function writeJson(dir: string, file: string, data: unknown) {
   const outputDir = path.join(dir, resultsDir);
   mkdirSync(outputDir, { recursive: true });
@@ -140,6 +148,63 @@ test("aggregates displayed values from shared rounds", () => {
   expect(markdown).toContain("200.0ms → 160.0ms (-20%) :rocket:");
   expect(markdown).not.toContain("125.0ms");
   expect(markdown).toContain("Aggregated across 2 interleaved rounds");
+});
+
+test("requires both rounds to agree in two-round comparisons", () => {
+  const dir = createTempDir();
+  [100, 100].forEach((total, index) => {
+    writeRound(dir, "baseline", index + 1, total);
+  });
+  [80, 150].forEach((total, index) => {
+    writeRound(dir, "current", index + 1, total);
+  });
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain("100.0ms | 115.0ms | +15.0ms (+15%)");
+  expect(markdown).not.toMatch(/% :warning:/);
+});
+
+test("reports tests with no paired rounds separately", () => {
+  const dir = createTempDir();
+  writeRound(dir, "baseline", 1, 100);
+  writeRound(dir, "current", 2, 120);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain(
+    "No paired performance results available for comparison.",
+  );
+  expect(markdown).toContain("### Unpaired tests");
+  expect(markdown).not.toContain("0.0ms | 0.0ms");
+});
+
+test("surfaces unpaired tests outside the details block", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-1-worker0.json", [
+    createResultWithLabel("paired", 100),
+    createResultWithLabel("unpaired", 100),
+  ]);
+  writeJson(dir, "current-1-worker0.json", [
+    createResultWithLabel("paired", 100),
+  ]);
+  writeJson(dir, "current-2-worker0.json", [
+    createResultWithLabel("unpaired", 120),
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain(
+    ":warning: 1 test had no paired baseline/current rounds and was not compared.",
+  );
+  expect(markdown.indexOf(":warning: 1 test")).toBeLessThan(
+    markdown.indexOf("<details>"),
+  );
+  expect(markdown.indexOf("- unpaired")).toBeLessThan(
+    markdown.indexOf("<details>"),
+  );
 });
 
 test("does not flag percentage-only changes below the absolute floor", () => {

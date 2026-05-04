@@ -214,10 +214,22 @@ function isTruthyEnv(name: string): boolean {
   return process.env[name] === "true" || process.env[name] === "1";
 }
 
-function getIntegerEnv(name: string, fallback: number): number {
+interface IntegerEnvOptions {
+  min?: number;
+}
+
+export function getIntegerEnv(
+  name: string,
+  fallback: number,
+  options: IntegerEnvOptions = {},
+): number {
   const value = process.env[name];
   if (value == null) return fallback;
-  return Number(value);
+  if (value.trim() === "") return fallback;
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed)) return fallback;
+  if (options.min != null && parsed < options.min) return fallback;
+  return parsed;
 }
 
 function normalizeProfileUrl(url: string): string {
@@ -707,8 +719,8 @@ export async function createPerfMeasure(
   options: CreatePerfMeasureOptions = {},
 ): Promise<PerfMetrics> {
   const {
-    iterations = getIntegerEnv("PERF_ITERATIONS", 10),
-    warmup = getIntegerEnv("PERF_WARMUP", 1),
+    iterations = getIntegerEnv("PERF_ITERATIONS", 10, { min: 1 }),
+    warmup = getIntegerEnv("PERF_WARMUP", 1, { min: 0 }),
     resetPage = true,
     label,
     profileLimit = DEFAULT_PROFILE_LIMIT,

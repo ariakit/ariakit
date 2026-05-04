@@ -34,6 +34,7 @@ interface ComparisonSummary {
   profileModeMismatches: ProfileModeMismatch[];
   newTests: AggregatedPerfResult[];
   removedTests: AggregatedPerfResult[];
+  unpairedTests: AggregatedPerfResult[];
   pairedRoundsCount: number;
 }
 
@@ -43,6 +44,7 @@ interface PersistedComparisonSummary {
   profileModeMismatches: ProfileModeMismatch[];
   newTests: PerfResult[];
   removedTests: PerfResult[];
+  unpairedTests: PerfResult[];
   pairedRoundsCount: number;
 }
 
@@ -250,7 +252,7 @@ function getSharedRoundIndices(
 }
 
 function requiredAgreement(roundsCount: number) {
-  if (roundsCount <= 2) return 1;
+  if (roundsCount <= 1) return 1;
   if (roundsCount <= 4) return roundsCount;
   return roundsCount - 1;
 }
@@ -332,6 +334,7 @@ function compare(): ComparisonSummary {
   const profileModeMismatches: ProfileModeMismatch[] = [];
   const newTests: AggregatedPerfResult[] = [];
   const removedTests: AggregatedPerfResult[] = [];
+  const unpairedTests: AggregatedPerfResult[] = [];
   const pairedRoundIndices = new Set<number>();
 
   for (const [key, cur] of current) {
@@ -354,6 +357,11 @@ function compare(): ComparisonSummary {
     }
 
     const sharedRoundIndices = getSharedRoundIndices(base, cur);
+    if (sharedRoundIndices.length === 0) {
+      unpairedTests.push(cur);
+      continue;
+    }
+
     for (const roundIndex of sharedRoundIndices) {
       pairedRoundIndices.add(roundIndex);
     }
@@ -411,6 +419,7 @@ function compare(): ComparisonSummary {
     profileModeMismatches,
     newTests,
     removedTests,
+    unpairedTests,
     pairedRoundsCount: pairedRoundIndices.size,
   };
 }
@@ -561,6 +570,7 @@ function formatMarkdown(summary: ComparisonSummary): string {
     profileModeMismatches,
     newTests,
     removedTests,
+    unpairedTests,
     pairedRoundsCount,
   } = summary;
   const currentByKey = new Map<string, AggregatedPerfResult>();
@@ -573,7 +583,11 @@ function formatMarkdown(summary: ComparisonSummary): string {
     rows.some((r) => rowKey(r) === key && r.significant),
   );
 
-  const totalTests = allKeys.length + newTests.length + removedTests.length;
+  const totalTests =
+    allKeys.length +
+    newTests.length +
+    removedTests.length +
+    unpairedTests.length;
 
   const lines: string[] = [];
   lines.push("## Performance");
@@ -583,10 +597,30 @@ function formatMarkdown(summary: ComparisonSummary): string {
     lines.push(...formatSummaryTable(rows, significantKeys));
   } else if (rows.length === 0 && newTests.length > 0) {
     lines.push("No baseline results available for comparison.");
+  } else if (rows.length === 0 && unpairedTests.length > 0) {
+    lines.push("No paired performance results available for comparison.");
   } else if (rows.length === 0 && newTests.length === 0) {
     lines.push("No performance results found.");
   } else {
     lines.push("No significant performance changes detected.");
+  }
+
+  if (unpairedTests.length > 0) {
+    const visibleUnpairedTests = unpairedTests.slice(0, 5);
+    const hiddenUnpairedTests =
+      unpairedTests.length - visibleUnpairedTests.length;
+    const label = unpairedTests.length === 1 ? "test" : "tests";
+    const verb = unpairedTests.length === 1 ? "was" : "were";
+    lines.push("");
+    lines.push(
+      `:warning: ${unpairedTests.length} ${label} had no paired baseline/current rounds and ${verb} not compared.`,
+    );
+    for (const { result } of visibleUnpairedTests) {
+      lines.push(`- ${result.label}`);
+    }
+    if (hiddenUnpairedTests > 0) {
+      lines.push(`- ...and ${hiddenUnpairedTests} more.`);
+    }
   }
 
   lines.push("");
@@ -617,6 +651,19 @@ function formatMarkdown(summary: ComparisonSummary): string {
       lines.push("");
       lines.push(...profileLines);
     }
+  }
+
+  if (unpairedTests.length > 0) {
+    lines.push("### Unpaired tests");
+    lines.push("");
+    lines.push(
+      "These tests produced baseline and current results, but no shared round index.",
+    );
+    lines.push("");
+    for (const { result } of unpairedTests) {
+      lines.push(`- ${result.label}`);
+    }
+    lines.push("");
   }
 
   if (removedTests.length > 0) {
@@ -653,6 +700,7 @@ function toPersistedSummary(
     profileModeMismatches: summary.profileModeMismatches,
     newTests: summary.newTests.map((entry) => entry.result),
     removedTests: summary.removedTests.map((entry) => entry.result),
+    unpairedTests: summary.unpairedTests.map((entry) => entry.result),
     pairedRoundsCount: summary.pairedRoundsCount,
   };
 }
