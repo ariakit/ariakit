@@ -21,9 +21,12 @@ const PROFILE_LIMIT = 10;
 // A metric must move by both this much in percent and at least MIN_DELTA_MS in
 // absolute terms before it is flagged. Without an absolute floor a 1ms metric
 // drifting to 1.2ms reads as a 20% regression even though the underlying
-// timing is well inside CDP's quantization noise.
+// timing is well inside CDP's quantization noise. The 5ms floor is wide enough
+// to cover CDP timer quantization (~1ms) plus the typical run-to-run jitter we
+// see on shared CI runners; values below it tend to be noise rather than
+// signal even on the primary metrics.
 const THRESHOLD_PERCENT = 10;
-const MIN_DELTA_MS = 1;
+const MIN_DELTA_MS = 5;
 
 type MetricKey = keyof PerfMetrics;
 
@@ -307,13 +310,14 @@ function aggregateByKey(rounds: RoundResult[]): Map<string, AggregatedResult> {
   return aggregated;
 }
 
-// Direction-of-change agreement check across rounds. Up to two rounds we fall
-// back to magnitude only — with so few samples a single noise round would
-// otherwise veto every flag, which is the failure mode this exists to avoid.
-// Three or four rounds require unanimity. Five or more rounds tolerate a
-// single dissenter so a one-off CI hiccup cannot block an alert.
+// Direction-of-change agreement check across rounds. With one round the
+// agreement check carries no signal and we fall back to magnitude only. From
+// two rounds up through four rounds we require unanimity — with so few
+// samples even a single dissenting round is enough to suspect noise. Five or
+// more rounds tolerate one dissenter so a single CI hiccup cannot veto a real
+// flag.
 function requiredAgreement(roundsCount: number) {
-  if (roundsCount <= 2) return 1;
+  if (roundsCount <= 1) return 1;
   if (roundsCount <= 4) return roundsCount;
   return roundsCount - 1;
 }

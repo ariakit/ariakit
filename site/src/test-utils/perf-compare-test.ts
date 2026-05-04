@@ -328,6 +328,45 @@ describe("perf-compare", () => {
     expect(markdown).toContain("+30%");
   });
 
+  test("requires unanimity with two paired rounds", () => {
+    // With two rounds, accepting a single agreeing direction would let any
+    // disagreeing pair flag whatever way the median happens to fall — exactly
+    // the flip-flop the agreement check exists to filter. Bumping to N=2
+    // makes both rounds matter.
+    const baselineRounds = [
+      [createResult("two-round", { scripting: 100, total: 100 })],
+      [createResult("two-round", { scripting: 100, total: 100 })],
+    ];
+    // Round 1 regresses, round 2 improves — median is +15% but rounds
+    // disagree on direction.
+    const currentRounds = [
+      [createResult("two-round", { scripting: 150, total: 150 })],
+      [createResult("two-round", { scripting: 80, total: 80 })],
+    ];
+    const markdown = runCompareRounds({
+      baseline: baselineRounds,
+      current: currentRounds,
+    });
+    expect(markdown).toContain("No significant performance changes detected.");
+    expect(markdown).not.toMatch(/% :warning:/);
+  });
+
+  test("flags a unanimous regression with two paired rounds", () => {
+    const baselineRounds = [
+      [createResult("two-round-pass", { scripting: 100, total: 100 })],
+      [createResult("two-round-pass", { scripting: 100, total: 100 })],
+    ];
+    const currentRounds = [
+      [createResult("two-round-pass", { scripting: 130, total: 130 })],
+      [createResult("two-round-pass", { scripting: 132, total: 132 })],
+    ];
+    const markdown = runCompareRounds({
+      baseline: baselineRounds,
+      current: currentRounds,
+    });
+    expect(markdown).toContain(":warning:");
+  });
+
   test("aggregates from shared rounds when round counts differ", () => {
     // Baseline has four rounds; current has only two. The unpaired baseline
     // rounds (3-4) are far slower — if they leaked into the displayed
@@ -363,9 +402,12 @@ describe("perf-compare", () => {
   });
 
   test("reports a metric that goes from zero to non-trivial", () => {
+    // The from-zero branch needs a current value above MIN_DELTA_MS,
+    // otherwise the same floor that suppresses CDP quantization noise
+    // suppresses this case too.
     const markdown = runCompareSingle({
       baseline: [createResult("zero-to-nonzero", { scripting: 0, total: 0 })],
-      current: [createResult("zero-to-nonzero", { scripting: 5, total: 5 })],
+      current: [createResult("zero-to-nonzero", { scripting: 10, total: 10 })],
     });
     expect(markdown).toContain(":warning:");
   });
