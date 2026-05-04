@@ -329,22 +329,30 @@ jobs:
       - name: Run interleaved perf tests
         # Alternating baseline and current within the same job lets us cancel
         # out runner-level noise (CPU governor, neighbor jobs) that a
-        # sequential run would attribute entirely to one side. Baseline
-        # failures are tolerated because new perf tests don't exist yet on
-        # the base branch. `xvfb-run -a` picks the next free display number
-        # so back-to-back rounds in this job don't collide on `/tmp/.X99-lock`
-        # if a prior `xvfb-run` invocation hasn't finished tearing down its
-        # default display.
+        # sequential run would attribute entirely to one side. `xvfb-run -a`
+        # picks the next free display number so back-to-back rounds in this
+        # job don't collide on `/tmp/.X99-lock` if a prior `xvfb-run`
+        # invocation hasn't finished tearing down its default display.
+        # `--pass-with-no-tests` keeps the very-first-perf-test PR working
+        # because the base SHA simply has no perf files for Playwright to
+        # discover; an actual baseline failure (server crash, browser mismatch,
+        # truncated artifact) must still propagate so the PR comment doesn't
+        # publish a misleading comparison built on partial data. `nullglob`
+        # makes the round-N glob deterministic when the round produced no
+        # files instead of expanding to a literal pattern.
         run: |
+          shopt -s nullglob
           rm -rf site/.perf-results "$BASELINE_DIR/site/.perf-results"
           mkdir -p site/.perf-results
           for i in $(seq 1 "$PERF_ROUNDS"); do
             echo "::group::Round $i — baseline"
             (cd "$BASELINE_DIR" && \
               PERF_RESULTS_FILE="baseline-$i.json" \
-              xvfb-run -a pnpm -F site run test-perf --pass-with-no-tests) || true
-            cp "$BASELINE_DIR"/site/.perf-results/baseline-"$i"-*.json \
-              site/.perf-results/ 2>/dev/null || true
+              xvfb-run -a pnpm -F site run test-perf --pass-with-no-tests)
+            baseline_files=("$BASELINE_DIR"/site/.perf-results/baseline-"$i"-*.json)
+            if [ ${#baseline_files[@]} -gt 0 ]; then
+              cp "${baseline_files[@]}" site/.perf-results/
+            fi
             echo "::endgroup::"
 
             echo "::group::Round $i — current"
@@ -354,10 +362,11 @@ jobs:
           done
 
       - name: Compare results
-        if: always()
         run: pnpm -F site run perf-compare
 
       - name: Upload performance results
+        # `always()` so a failed comparison still uploads the raw
+        # `.perf-results` artifacts for debugging the failure.
         if: always()
         uses: actions/upload-artifact@v7
         with:
@@ -370,7 +379,6 @@ jobs:
           retention-days: 7
 
       - name: Post or update PR comment
-        if: always()
         uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.ARIAKIT_BOT_PAT }}
