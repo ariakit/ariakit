@@ -12,11 +12,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.menu()).toBeVisible();
     await test.expect(menuButton).toBeFocused();
 
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.menuitem("Edit")).toBeFocused();
+
     await page.keyboard.press("Escape");
     await test.expect(q.menu()).not.toBeVisible();
     await test.expect(menuButton).toBeFocused();
-
-    await page.keyboard.press("ArrowDown");
-    await test.expect(q.menuitem("Edit")).toBeFocused();
   });
 });
