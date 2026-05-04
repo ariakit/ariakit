@@ -42,6 +42,9 @@ export const frame = cv({
       "4xl": "ak-frame-4xl",
       full: "ak-frame-full",
     },
+    /**
+     * Sets the border color.
+     */
     $borderColor: {
       unset: "",
       brand: "ak-edge-brand",
@@ -49,7 +52,14 @@ export const frame = cv({
       warning: "ak-edge-warning",
       danger: "ak-edge-danger",
     },
+    /**
+     * Applies the border color exactly as specified, without alpha or lightness
+     * adjustments.
+     */
     $borderRaw: "ak-edge-raw",
+    /**
+     * Sets the border alpha.
+     */
     $borderWeight: {
       unset: "",
       adaptive: "ak-edge-0",
@@ -58,6 +68,9 @@ export const frame = cv({
       medium: "ak-edge-20",
       bold: "ak-edge-40",
     },
+    /**
+     * Sets how the border is rendered.
+     */
     $borderType: {
       unset: "",
       border: "ak-frame-border-(--border-width)",
@@ -67,15 +80,27 @@ export const frame = cv({
       dashed: "ak-frame-border-(--border-width) border-dashed",
       dotted: "ak-frame-border-(--border-width) border-dotted",
     },
+    /**
+     * Sets the frame flow direction for cover and edge calculations.
+     */
     $orientation: {
       unset: "",
       horizontal: "ak-frame-row",
       vertical: "ak-frame-col",
     },
+    /**
+     * Marks the frame as the first child in the current flow.
+     */
     $frameStart: "ak-frame-start",
+    /**
+     * Marks the frame as the last child in the current flow.
+     */
     $frameEnd: "ak-frame-end",
   },
   computedVariants: {
+    /**
+     * Sets the element's frame padding.
+     */
     $p: (value?: "unset" | "none" | (string & {}) | number) => {
       if (value == null) return;
       if (value === "unset") return;
@@ -85,6 +110,9 @@ export const frame = cv({
         style: { "--frame-padding": getSpacingValue(value) },
       };
     },
+    /**
+     * Sets the element's frame margin.
+     */
     $m: (value?: "unset" | "none" | (string & {}) | number) => {
       if (value == null) return;
       if (value === "unset") return;
@@ -94,6 +122,9 @@ export const frame = cv({
         style: { "--frame-margin": getSpacingValue(value) },
       };
     },
+    /**
+     * Sets the border width.
+     */
     $border: (value?: "inherit" | boolean | number) => {
       if (value == null) return;
       if (value === false) return;
@@ -105,6 +136,9 @@ export const frame = cv({
       }
       return { style: { "--border-width": `${value}px` } };
     },
+    /**
+     * Sets the border alpha.
+     */
     $borderAlpha: (value?: string | number) => {
       return getScaledStyleClass({
         value,
@@ -113,6 +147,9 @@ export const frame = cv({
         class: "ak-edge-alpha-(--border-alpha)",
       });
     },
+    /**
+     * Pushes the border lightness away from the layer for contrast.
+     */
     $borderPush: (value?: string | number | boolean) => {
       return getLightnessStyleClass({
         value,
@@ -120,6 +157,9 @@ export const frame = cv({
         class: "ak-edge-push-(--border-push)",
       });
     },
+    /**
+     * Sets the absolute border lightness.
+     */
     $borderLightness: (value?: string | number) => {
       return getLightnessStyleClass({
         value,
@@ -127,6 +167,9 @@ export const frame = cv({
         class: "ak-edge-l-(--border-lightness)",
       });
     },
+    /**
+     * Lightens the border color by the specified amount.
+     */
     $borderLighten: (value?: string | number | boolean) => {
       return getLightnessStyleClass({
         value,
@@ -134,6 +177,9 @@ export const frame = cv({
         class: "ak-edge-lighten-(--border-lighten)",
       });
     },
+    /**
+     * Darkens the border color by the specified amount.
+     */
     $borderDarken: (value?: string | number | boolean) => {
       return getLightnessStyleClass({
         value,
@@ -141,6 +187,9 @@ export const frame = cv({
         class: "ak-edge-darken-(--border-darken)",
       });
     },
+    /**
+     * Sets the minimum border lightness.
+     */
     $borderLightnessMin: (value?: string | number) => {
       return getScaledStyleClass({
         value,
@@ -148,6 +197,9 @@ export const frame = cv({
         class: "ak-edge-min-(--border-lightness-min)",
       });
     },
+    /**
+     * Sets the maximum border lightness.
+     */
     $borderLightnessMax: (value?: string | number) => {
       return getScaledStyleClass({
         value,
@@ -155,6 +207,9 @@ export const frame = cv({
         class: "ak-edge-max-(--border-lightness-max)",
       });
     },
+    /**
+     * Increases the border chroma by the specified amount.
+     */
     $borderSaturate: (value?: string | number | boolean) => {
       return getScaledStyleClass({
         value,
@@ -163,6 +218,9 @@ export const frame = cv({
         class: "ak-edge-saturate-(--border-saturate)",
       });
     },
+    /**
+     * Decreases the border chroma by the specified amount.
+     */
     $borderDesaturate: (value?: string | number | boolean) => {
       return getScaledStyleClass({
         value,
@@ -171,6 +229,9 @@ export const frame = cv({
         class: "ak-edge-desaturate-(--border-desaturate)",
       });
     },
+    /**
+     * Sets the absolute border chroma.
+     */
     $borderChroma: (value?: ChromaValues | (string & {}) | number) => {
       if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
@@ -188,6 +249,9 @@ export const frame = cv({
         class: "ak-edge-c-(--border-chroma)",
       });
     },
+    /**
+     * Sets the minimum border chroma.
+     */
     $borderChromaMin: (value?: ChromaValues | (string & {}) | number) => {
       if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
@@ -205,6 +269,9 @@ export const frame = cv({
         class: "ak-edge-min-c-(--border-chroma-min)",
       });
     },
+    /**
+     * Sets the maximum border chroma.
+     */
     $borderChromaMax: (value?: ChromaValues | (string & {}) | number) => {
       if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
@@ -222,6 +289,9 @@ export const frame = cv({
         class: "ak-edge-max-c-(--border-chroma-max)",
       });
     },
+    /**
+     * Sets the absolute border hue.
+     */
     $borderHue: (value?: HueValues | (string & {}) | number) => {
       if (!value) return;
       if (includes(HUE_VALUES, value)) {
@@ -254,6 +324,9 @@ export const frame = cv({
         style: { "--border-hue": `${value}` },
       };
     },
+    /**
+     * Rotates the border hue by the specified amount.
+     */
     $borderHueRotate: (value?: string | number) => {
       if (!value) return;
       return {
