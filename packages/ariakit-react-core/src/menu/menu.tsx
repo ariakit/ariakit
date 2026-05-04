@@ -6,7 +6,7 @@ import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
-import { useMergeRefs } from "../utils/hooks.ts";
+import { useEvent, useMergeRefs } from "../utils/hooks.ts";
 import { useStoreState } from "../utils/store.tsx";
 import { createElement, createHook, forwardRef } from "../utils/system.tsx";
 import type { Props } from "../utils/types.ts";
@@ -130,12 +130,20 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   // This differs from the usual dialog behavior that would automatically
   // focus on the dialog container when no initialFocusRef is set.
   const canAutoFocusOnShow = !!initialFocusRef || !!props.initialFocus || modal;
-  const autoFocusOnShowProp =
-    autoFocusOnShow === false
-      ? autoFocusOnShowState && initialFocus !== "container"
-      : mayAutoFocusOnShow
-        ? canAutoFocusOnShow && autoFocusOnShow
-        : autoFocusOnShowState || modal;
+  const autoFocusOnShowProp = useEvent((element: HTMLElement | null) => {
+    if (autoFocusOnShow === false || typeof autoFocusOnShow === "function") {
+      if (autoFocusOnShowState && initialFocus !== "container") return true;
+      if (autoFocusOnShow === false) return false;
+    }
+    if (mayAutoFocusOnShow) {
+      if (!canAutoFocusOnShow) return false;
+      if (typeof autoFocusOnShow === "function") {
+        return autoFocusOnShow(element);
+      }
+      return autoFocusOnShow;
+    }
+    return autoFocusOnShowState || modal;
+  });
 
   const contentElement = useStoreState(
     store.combobox || store,
