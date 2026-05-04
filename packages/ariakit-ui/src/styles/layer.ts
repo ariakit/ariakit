@@ -1,77 +1,17 @@
-import { cv, type StyleClassValue } from "clava";
+import { cv } from "clava";
+import { includes } from "../utils/includes.ts";
+import {
+  CHROMA_VALUES,
+  HUE_VALUES,
+  getChromaStyleClass,
+  getScaledStyleClass,
+  getLightnessStyleClass,
+  type ChromaValues,
+  type HueValues,
+} from "../utils/styles.ts";
 
-const DEFAULT_LIGHTNESS_OFFSET = 5;
 const DEFAULT_MIX_AMOUNT = 50;
 const DEFAULT_CONTRAST_AMOUNT = 25;
-const DEFAULT_CHROMA_OFFSET = 4;
-
-export const CHROMA = ["muted", "balanced", "vivid", "neon"] as const;
-export type Chroma = (typeof CHROMA)[number];
-
-export const HUE = [
-  "red",
-  "orange",
-  "yellow",
-  "green",
-  "cyan",
-  "blue",
-  "magenta",
-  "complementary",
-  "split1",
-  "split2",
-  "analogous1",
-  "analogous2",
-  "triadic1",
-  "triadic2",
-  "tetradic1",
-  "tetradic2",
-  "tetradic3",
-  "square1",
-  "square2",
-  "square3",
-] as const;
-export type Hue = (typeof HUE)[number];
-
-interface GetStyleClassOptions {
-  var: string;
-  class: string;
-  value?: string | number | boolean;
-  defaultValue?: number;
-  multiplier?: number;
-}
-
-function getStyleClass(options: GetStyleClassOptions): StyleClassValue {
-  if (!options.value) return {};
-  if (options.value === true) {
-    options.value = options.defaultValue;
-  }
-  if (options.multiplier != null) {
-    options.value = `(${options.value}) * ${options.multiplier}`;
-  }
-  return {
-    style: { [options.var]: `calc((${options.value}) / 100)` },
-    class: options.class,
-  };
-}
-
-function getLightnessOffsetStyleClass(options: GetStyleClassOptions) {
-  return getStyleClass({
-    multiplier: DEFAULT_LIGHTNESS_OFFSET,
-    defaultValue: 1,
-    ...options,
-  });
-}
-
-function getChromaOffsetStyleClass(options: GetStyleClassOptions) {
-  return getStyleClass({
-    defaultValue: DEFAULT_CHROMA_OFFSET,
-    ...options,
-  });
-}
-
-function includes<T>(array: readonly T[], value: unknown): value is T {
-  return array.includes(value as T);
-}
 
 export const layer = cv({
   variants: {
@@ -104,9 +44,10 @@ export const layer = cv({
      * Sets the absolute lightness of the background color.
      */
     $lightness: (value?: string | number) => {
-      return getStyleClass({
+      return getLightnessStyleClass({
         value,
-        var: "--layer-lightness",
+        allowZero: true,
+        property: "--layer-lightness",
         class: "ak-layer-l-(--layer-lightness)",
       });
     },
@@ -121,9 +62,9 @@ export const layer = cv({
      * goes up, use `$bgPush` instead.
      */
     $bgOffset: (value?: string | number | boolean) => {
-      return getLightnessOffsetStyleClass({
+      return getLightnessStyleClass({
         value,
-        var: "--layer-offset",
+        property: "--layer-offset",
         class: "ak-layer-offset-(--layer-offset)",
       });
     },
@@ -138,9 +79,9 @@ export const layer = cv({
      * goes up, use `$bgOffset` instead.
      */
     $bgPush: (value?: string | number | boolean) => {
-      return getLightnessOffsetStyleClass({
+      return getLightnessStyleClass({
         value,
-        var: "--layer-push",
+        property: "--layer-push",
         class: "ak-layer-push-(--layer-push)",
       });
     },
@@ -148,9 +89,9 @@ export const layer = cv({
      * Lightens the layer by the specified amount.
      */
     $lighten: (value?: string | number | boolean) => {
-      return getLightnessOffsetStyleClass({
+      return getLightnessStyleClass({
         value,
-        var: "--layer-lighten",
+        property: "--layer-lighten",
         class: "ak-layer-lighten-(--layer-lighten)",
       });
     },
@@ -158,37 +99,38 @@ export const layer = cv({
      * Darkens the layer by the specified amount.
      */
     $darken: (value?: string | number | boolean) => {
-      return getLightnessOffsetStyleClass({
+      return getLightnessStyleClass({
         value,
-        var: "--layer-darken",
+        property: "--layer-darken",
         class: "ak-layer-darken-(--layer-darken)",
       });
     },
     /**
      * Sets the absolute chroma of the background color.
      */
-    $chroma: (value?: Chroma | (string & {}) | number) => {
+    $chroma: (value?: ChromaValues | (string & {}) | number) => {
       if (!value) return;
-      if (includes(CHROMA, value)) {
+      if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
           muted: "ak-layer-muted",
           balanced: "ak-layer-balanced",
           vivid: "ak-layer-vivid",
           neon: "ak-layer-neon",
-        } satisfies Record<Chroma, string>;
+        } satisfies Record<ChromaValues, string>;
         return valueMap[value];
       }
-      return {
-        style: { "--layer-chroma": `calc((${value}) / 100)` },
+      return getScaledStyleClass({
+        value,
+        property: "--layer-chroma",
         class: `ak-layer-c-(--layer-chroma)`,
-      };
+      });
     },
     /**
      * Sets the absolute hue of the background color.
      */
-    $hue: (value?: Hue | (string & {}) | number) => {
+    $hue: (value?: HueValues | (string & {}) | number) => {
       if (!value) return;
-      if (includes(HUE, value)) {
+      if (includes(HUE_VALUES, value)) {
         const valueMap = {
           red: "ak-layer-red",
           orange: "ak-layer-orange",
@@ -210,22 +152,23 @@ export const layer = cv({
           square1: "ak-layer-square1",
           square2: "ak-layer-square2",
           square3: "ak-layer-square3",
-        } satisfies Record<Hue, string>;
+        } satisfies Record<HueValues, string>;
         return valueMap[value];
       }
       return {
-        style: { "--layer-hue": `${value}` },
         class: `ak-layer-h-(--layer-hue)`,
+        style: { "--layer-hue": `${value}` },
       };
     },
     /**
      * Increases the contrast between the layer and its parent.
      */
     $contrast: (value?: string | number | boolean) => {
-      return getStyleClass({
+      return getScaledStyleClass({
         value,
         defaultValue: DEFAULT_CONTRAST_AMOUNT,
-        var: "--layer-contrast",
+        unit: "%",
+        property: "--layer-contrast",
         class: "ak-layer-contrast ak-layer-contrast-(--layer-contrast)",
       });
     },
@@ -233,9 +176,9 @@ export const layer = cv({
      * Sets the minimum lightness of the background color.
      */
     $lightnessMin: (value?: string | number) => {
-      return getStyleClass({
+      return getScaledStyleClass({
         value,
-        var: "--layer-lightness-min",
+        property: "--layer-lightness-min",
         class: "ak-layer-min-(--layer-lightness-min)",
       });
     },
@@ -243,59 +186,61 @@ export const layer = cv({
      * Sets the maximum lightness of the background color.
      */
     $lightnessMax: (value?: string | number) => {
-      return getStyleClass({
+      return getScaledStyleClass({
         value,
-        var: "--layer-lightness-max",
+        property: "--layer-lightness-max",
         class: "ak-layer-max-(--layer-lightness-max)",
       });
     },
     /**
      * Sets the minimum chroma of the background color.
      */
-    $chromaMin: (value?: Chroma | "auto" | (string & {}) | number) => {
+    $chromaMin: (value?: ChromaValues | "auto" | (string & {}) | number) => {
       if (!value) return;
-      if (includes(CHROMA, value)) {
+      if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
           muted: "ak-layer-min-c-muted",
           balanced: "ak-layer-min-c-balanced",
           vivid: "ak-layer-min-c-vivid",
           neon: "ak-layer-min-c-neon",
           auto: "ak-layer-min-c-auto",
-        } satisfies Record<Chroma | "auto", string>;
+        } satisfies Record<ChromaValues | "auto", string>;
         return valueMap[value];
       }
-      return {
-        style: { "--layer-chroma": `calc((${value}) / 100)` },
+      return getScaledStyleClass({
+        value,
+        property: "--layer-chroma",
         class: `ak-layer-min-c-(--layer-chroma)`,
-      };
+      });
     },
     /**
      * Sets the maximum chroma of the background color.
      */
-    $chromaMax: (value?: Chroma | "auto" | (string & {}) | number) => {
+    $chromaMax: (value?: ChromaValues | "auto" | (string & {}) | number) => {
       if (!value) return;
-      if (includes(CHROMA, value)) {
+      if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
           muted: "ak-layer-max-c-muted",
           balanced: "ak-layer-max-c-balanced",
           vivid: "ak-layer-max-c-vivid",
           neon: "ak-layer-max-c-neon",
           auto: "ak-layer-max-c-auto",
-        } satisfies Record<Chroma | "auto", string>;
+        } satisfies Record<ChromaValues | "auto", string>;
         return valueMap[value];
       }
-      return {
-        style: { "--layer-chroma": `calc((${value}) / 100)` },
+      return getScaledStyleClass({
+        value,
+        property: "--layer-chroma",
         class: `ak-layer-max-c-(--layer-chroma)`,
-      };
+      });
     },
     /**
      * Increases the background color's chroma by the specified amount.
      */
     $saturate: (value?: string | number | boolean) => {
-      return getChromaOffsetStyleClass({
+      return getChromaStyleClass({
         value,
-        var: "--layer-saturate",
+        property: "--layer-saturate",
         class: "ak-layer-saturate-(--layer-saturate)",
       });
     },
@@ -303,9 +248,9 @@ export const layer = cv({
      * Decreases the background color's chroma by the specified amount.
      */
     $desaturate: (value?: string | number | boolean) => {
-      return getChromaOffsetStyleClass({
+      return getChromaStyleClass({
         value,
-        var: "--layer-desaturate",
+        property: "--layer-desaturate",
         class: "ak-layer-desaturate-(--layer-desaturate)",
       });
     },
@@ -315,14 +260,13 @@ export const layer = cv({
      * layer.
      */
     $mix: (value?: string | number | boolean) => {
-      if (!value) return;
-      if (value === true) {
-        value = DEFAULT_MIX_AMOUNT;
-      }
-      return {
-        style: { "--layer-mix": `calc((${value}) * 1%)` },
+      return getScaledStyleClass({
+        value,
+        defaultValue: DEFAULT_MIX_AMOUNT,
+        unit: "%",
+        property: "--layer-mix",
         class: "ak-layer-mix ak-layer-mix-amount-(--layer-mix)",
-      };
+      });
     },
   },
   defaultVariants: {

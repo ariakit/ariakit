@@ -77,7 +77,9 @@ export default function Example() {
         {...frame.jsx({
           $bgOffset: true,
           $border: 2,
-          $borderWeight: "bold",
+          // $borderWeight: "bold",
+          $borderColor: "brand",
+          $borderRaw: true,
           $p: 1,
           $rounded: "xl",
         })}
