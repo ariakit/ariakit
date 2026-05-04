@@ -218,6 +218,15 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    env:
+      # Number of interleaved baseline/current rounds. Three rounds keeps the
+      # job under ~10 minutes while letting the agreement check filter out
+      # one-off CI hiccups.
+      PERF_ROUNDS: 3
+      # The baseline worktree shares `.git/config` with the main checkout, so
+      # husky's prepare step would otherwise rewrite `core.hooksPath` to a
+      # relative path under a temporary worktree that is removed at job end.
+      HUSKY: 0
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -232,17 +241,16 @@ jobs:
         with:
           engine: chromium
 
-      # --- Baseline (base branch) ---
-      - name: Checkout base branch
-        run: git checkout -f ${{ github.event.pull_request.base.sha }}
+      - name: Set up baseline worktree
+        run: |
+          BASELINE_DIR="$RUNNER_TEMP/perf-baseline"
+          echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"
+          git worktree add --detach "$BASELINE_DIR" \
+            ${{ github.event.pull_request.base.sha }}
 
-      - name: Set up base environment
-        uses: ./.github/workflows/setup
-
-      - name: Install Playwright (base)
-        uses: ./.github/workflows/install-playwright
-        with:
-          engine: chromium
+      - name: Install baseline dependencies
+        working-directory: ${{ env.BASELINE_DIR }}
+        run: pnpm install --frozen-lockfile
 
       - name: Find base app artifact
         id: find-base-artifact
@@ -277,7 +285,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: app-dist
-          path: site/dist
+          path: ${{ env.BASELINE_DIR }}/site/dist
           github-token: ${{ github.token }}
           run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
@@ -288,42 +296,23 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: nextjs-dist
-          path: nextjs/.open-next
+          path: ${{ env.BASELINE_DIR }}/nextjs/.open-next
           github-token: ${{ github.token }}
           run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
       - name: Clean partial base artifacts
         if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
-        run: rm -rf site/dist nextjs/.open-next
+        run: rm -rf "$BASELINE_DIR/site/dist" "$BASELINE_DIR/nextjs/.open-next"
 
       - name: Build base app
         if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
+        working-directory: ${{ env.BASELINE_DIR }}
         run: pnpm -F site run build-lite
 
       - name: Build base Next.js app
         if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
+        working-directory: ${{ env.BASELINE_DIR }}
         run: pnpm -F nextjs run build-worker
-
-      - name: Run baseline perf tests
-        # Baseline failures are expected when perf tests are new.
-        run: |
-          PERF_RESULTS_FILE=baseline.json \
-          xvfb-run pnpm -F site run test-perf --pass-with-no-tests || true
-
-      - name: Save baseline results
-        run: |
-          mkdir -p /tmp/perf-baseline
-          cp site/.perf-results/baseline*.json /tmp/perf-baseline/ 2>/dev/null || true
-
-      # --- Current (merge commit) ---
-      - name: Checkout merge commit
-        run: git checkout -f ${{ github.sha }}
-
-      - name: Set up PR environment
-        uses: ./.github/workflows/setup
-
-      - name: Clean base app artifacts
-        run: rm -rf site/dist nextjs/.open-next
 
       - name: Download app artifact
         uses: actions/download-artifact@v8
@@ -337,19 +326,41 @@ jobs:
           name: nextjs-dist
           path: nextjs/.open-next
 
-      - name: Restore baseline results
+      - name: Run interleaved perf tests
+        # Alternating baseline and current within the same job lets us cancel
+        # out runner-level noise (CPU governor, neighbor jobs) that a
+        # sequential run would attribute entirely to one side. Baseline
+        # failures are tolerated because new perf tests don't exist yet on
+        # the base branch.
         run: |
           mkdir -p site/.perf-results
-          cp /tmp/perf-baseline/*.json site/.perf-results/ 2>/dev/null || true
+          for i in $(seq 1 "$PERF_ROUNDS"); do
+            echo "::group::Round $i — baseline"
+            (cd "$BASELINE_DIR" && \
+              PERF_RESULTS_FILE="baseline-$i.json" \
+              xvfb-run pnpm -F site run test-perf --pass-with-no-tests) || true
+            cp "$BASELINE_DIR"/site/.perf-results/baseline-"$i"-*.json \
+              site/.perf-results/ 2>/dev/null || true
+            echo "::endgroup::"
 
-      - name: Run current perf tests
-        run: |
-          PERF_RESULTS_FILE=current.json \
-          xvfb-run pnpm -F site run test-perf --pass-with-no-tests
+            echo "::group::Round $i — current"
+            PERF_RESULTS_FILE="current-$i.json" \
+              xvfb-run pnpm -F site run test-perf --pass-with-no-tests
+            echo "::endgroup::"
+          done
 
       - name: Compare results
         if: always()
         run: pnpm -F site run perf-compare
+
+      - name: Upload performance results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: perf-results
+          path: site/.perf-results
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Post or update PR comment
         if: always()
