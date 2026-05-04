@@ -23,7 +23,13 @@ export default function Example() {
       </Ariakit.MenuProvider>
       <Ariakit.MenuProvider>
         <Ariakit.MenuButton>Callback</Ariakit.MenuButton>
-        <Ariakit.Menu autoFocusOnShow={() => false} gutter={8}>
+        <Ariakit.Menu
+          autoFocusOnShow={(element) => {
+            element?.setAttribute("data-autofocus-on-show-callback", "true");
+            return false;
+          }}
+          gutter={8}
+        >
           <MenuItems />
         </Ariakit.Menu>
       </Ariakit.MenuProvider>

@@ -45,6 +45,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await test.expect(q.menuitem("Edit")).toBeFocused();
     });
 
+    if (name === "Callback") {
+      test(`${name} autoFocusOnShow false calls the callback`, async ({
+        page,
+        q,
+      }) => {
+        const menuButton = q.button(name);
+
+        await menuButton.focus();
+        await page.keyboard.press("ArrowDown");
+
+        await test
+          .expect(q.menuitem("Edit"))
+          .toHaveAttribute("data-autofocus-on-show-callback", "true");
+        await test.expect(menuButton).toBeFocused();
+      });
+    }
+
     test(`${name} menu accepts ArrowUp focus after it is open`, async ({
       page,
       q,
