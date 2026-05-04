@@ -132,7 +132,9 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   const canAutoFocusOnShow = !!initialFocusRef || !!props.initialFocus || modal;
   const autoFocusOnShowProp = useEvent((element: HTMLElement | null) => {
     if (autoFocusOnShow === false || typeof autoFocusOnShow === "function") {
-      if (autoFocusOnShowState && initialFocus !== "container") return true;
+      if (autoFocusOnShowState && initialFocus !== "container") {
+        return canAutoFocusOnShow;
+      }
       if (autoFocusOnShow === false) return false;
     }
     if (mayAutoFocusOnShow) {
