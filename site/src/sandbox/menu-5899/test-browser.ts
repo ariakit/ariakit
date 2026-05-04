@@ -6,7 +6,6 @@ const openKeys = ["Enter", "Space", "ArrowDown", "ArrowUp"] as const;
 withFramework(import.meta.dirname, async ({ test }) => {
   for (const name of menuButtons) {
     test(`${name} autoFocusOnShow false does not focus menu on click`, async ({
-      page,
       q,
     }) => {
       const menuButton = q.button(name);
