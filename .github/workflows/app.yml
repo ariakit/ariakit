@@ -220,10 +220,10 @@ jobs:
       pull-requests: write
     env:
       PERF_ROUNDS: 3
+      # Keep each round short enough for CI while still collecting more total
+      # samples than the previous single 10-iteration baseline/current runs.
       PERF_ITERATIONS: 5
       PERF_WARMUP: 1
-      # Skip husky's prepare script in the detached baseline worktree.
-      HUSKY: 0
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -247,6 +247,11 @@ jobs:
 
       - name: Install dependencies (baseline)
         working-directory: ${{ runner.temp }}/perf-baseline
+        env:
+          # The baseline worktree shares `.git/config` with the main checkout,
+          # so husky's prepare step would otherwise rewrite `core.hooksPath`
+          # to a relative path under a temporary worktree.
+          HUSKY: 0
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright (baseline)

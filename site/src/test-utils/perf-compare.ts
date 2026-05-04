@@ -6,9 +6,16 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
-import type { PerfMetrics, PerfResult } from "./perf.ts";
+import type {
+  PerfMetrics,
+  PerfProfiles,
+  PerfResult,
+  PerfScriptProfileEntry,
+  PerfSelectorProfileEntry,
+} from "./perf.ts";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
+const PROFILE_LIMIT = 10;
 const THRESHOLD_PERCENT = 10;
 const MIN_SIGNIFICANT_DELTA_MS = 5;
 
@@ -159,7 +166,11 @@ function loadRounds(prefix: string): RoundPerfResult[] {
   const rounds: RoundPerfResult[] = [];
   for (const { filePath, roundIndex } of discoverRoundFiles(prefix)) {
     const data = readJsonFile(filePath);
-    if (!Array.isArray(data)) continue;
+    if (!Array.isArray(data)) {
+      throw new Error(
+        `Invalid perf results format at ${filePath}: expected an array of results.`,
+      );
+    }
     for (const result of data) {
       rounds.push({ roundIndex, result: result as PerfResult });
     }
@@ -191,8 +202,112 @@ function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
   };
 }
 
-function getAggregatedProfiles(results: PerfResult[]) {
-  return results.find((result) => result.profiles)?.profiles;
+function scriptProfileKey(entry: PerfScriptProfileEntry) {
+  return [entry.functionName, entry.url, entry.line, entry.column].join("\0");
+}
+
+function selectorProfileKey(entry: PerfSelectorProfileEntry) {
+  return [entry.selector, entry.styleSheetId].join("\0");
+}
+
+function mergeScriptProfiles(
+  profiles: PerfScriptProfileEntry[][],
+): PerfScriptProfileEntry[] {
+  const entries = new Map<string, PerfScriptProfileEntry>();
+  for (const profile of profiles) {
+    for (const entry of profile) {
+      const key = scriptProfileKey(entry);
+      const existing = entries.get(key);
+      if (existing) {
+        existing.selfTime += entry.selfTime;
+        existing.totalTime += entry.totalTime;
+        existing.hitCount += entry.hitCount;
+        continue;
+      }
+      entries.set(key, { ...entry });
+    }
+  }
+  return [...entries.values()]
+    .sort((a, b) => b.selfTime - a.selfTime || b.totalTime - a.totalTime)
+    .slice(0, PROFILE_LIMIT);
+}
+
+interface SelectorProfileAccumulator extends PerfSelectorProfileEntry {
+  weightedSlowPathSum: number;
+}
+
+function mergeSelectorProfiles(
+  profiles: PerfSelectorProfileEntry[][],
+): PerfSelectorProfileEntry[] {
+  const entries = new Map<string, SelectorProfileAccumulator>();
+  for (const profile of profiles) {
+    for (const entry of profile) {
+      const key = selectorProfileKey(entry);
+      const weightedSlowPathSum =
+        entry.matchAttempts * entry.slowPathNonMatchPercent;
+      const existing = entries.get(key);
+      if (existing) {
+        existing.elapsed += entry.elapsed;
+        existing.matchAttempts += entry.matchAttempts;
+        existing.matchCount += entry.matchCount;
+        existing.invalidationCount += entry.invalidationCount;
+        existing.weightedSlowPathSum += weightedSlowPathSum;
+        if (!existing.styleSheetUrl && entry.styleSheetUrl) {
+          existing.styleSheetUrl = entry.styleSheetUrl;
+        }
+        continue;
+      }
+      entries.set(key, {
+        ...entry,
+        weightedSlowPathSum,
+      });
+    }
+  }
+  return [...entries.values()]
+    .map(({ weightedSlowPathSum, ...entry }) => {
+      return {
+        ...entry,
+        slowPathNonMatchPercent:
+          entry.matchAttempts > 0
+            ? weightedSlowPathSum / entry.matchAttempts
+            : 0,
+      };
+    })
+    .sort((a, b) => b.elapsed - a.elapsed)
+    .slice(0, PROFILE_LIMIT);
+}
+
+function mergeProfiles(results: PerfResult[]): PerfProfiles | undefined {
+  const scriptProfiles: PerfScriptProfileEntry[][] = [];
+  const selectorProfiles: PerfSelectorProfileEntry[][] = [];
+  for (const result of results) {
+    if (result.profiles?.script && result.profiles.script.length > 0) {
+      scriptProfiles.push(result.profiles.script);
+    }
+    if (result.profiles?.selectors && result.profiles.selectors.length > 0) {
+      selectorProfiles.push(result.profiles.selectors);
+    }
+  }
+  const profiles: PerfProfiles = {};
+  if (scriptProfiles.length > 0) {
+    profiles.script = mergeScriptProfiles(scriptProfiles);
+  }
+  if (selectorProfiles.length > 0) {
+    profiles.selectors = mergeSelectorProfiles(selectorProfiles);
+  }
+  if (!profiles.script && !profiles.selectors) return;
+  return profiles;
+}
+
+function combineResults(results: PerfResult[]): PerfResult | undefined {
+  const first = results[0];
+  if (!first) return;
+  return {
+    ...first,
+    metrics: computeMedianMetrics(results.map((result) => result.metrics)),
+    raw: results.flatMap((result) => result.raw),
+    profiles: mergeProfiles(results),
+  };
 }
 
 function createAggregatedResult(
@@ -200,24 +315,19 @@ function createAggregatedResult(
   byRound: Map<number, PerfResult>,
 ): AggregatedPerfResult | undefined {
   const results = [...byRound.values()];
-  const first = results[0];
-  if (!first) return;
+  const result = combineResults(results);
+  if (!result) return;
   return {
     key,
     byRound,
-    result: {
-      ...first,
-      metrics: computeMedianMetrics(results.map((result) => result.metrics)),
-      raw: results.flatMap((result) => result.raw),
-      profiles: getAggregatedProfiles(results),
-    },
+    result,
   };
 }
 
 function aggregateByKey(
   roundResults: RoundPerfResult[],
 ): Map<string, AggregatedPerfResult> {
-  const grouped = new Map<string, Map<number, PerfResult>>();
+  const grouped = new Map<string, Map<number, PerfResult[]>>();
   for (const { roundIndex, result } of roundResults) {
     const key = resultKey(result);
     let byRound = grouped.get(key);
@@ -225,11 +335,22 @@ function aggregateByKey(
       byRound = new Map();
       grouped.set(key, byRound);
     }
-    byRound.set(roundIndex, result);
+    const resultsForRound = byRound.get(roundIndex);
+    if (resultsForRound) {
+      resultsForRound.push(result);
+    } else {
+      byRound.set(roundIndex, [result]);
+    }
   }
 
   const aggregated = new Map<string, AggregatedPerfResult>();
-  for (const [key, byRound] of grouped) {
+  for (const [key, groupedByRound] of grouped) {
+    const byRound = new Map<number, PerfResult>();
+    for (const [roundIndex, roundResults] of groupedByRound) {
+      const result = combineResults(roundResults);
+      if (!result) continue;
+      byRound.set(roundIndex, result);
+    }
     const result = createAggregatedResult(key, byRound);
     if (!result) continue;
     aggregated.set(key, result);
@@ -259,11 +380,13 @@ function requiredAgreement(roundsCount: number) {
 function computeSignificance({
   baseline,
   current,
+  metric,
   percent,
   perRoundDeltas,
 }: {
   baseline: number;
   current: number;
+  metric: MetricKey;
   percent: number;
   perRoundDeltas: number[];
 }) {
@@ -286,8 +409,12 @@ function computeSignificance({
     baseline === 0 && Math.abs(current) >= MIN_SIGNIFICANT_DELTA_MS;
   const magnitudeOk = baseline === 0 ? zeroBaselineOk : percentOk && deltaOk;
   const agreementOk = agreement >= requiredAgreement(perRoundDeltas.length);
+  const primaryMetric = PRIMARY_METRICS.includes(metric);
 
-  return { agreement, significant: magnitudeOk && agreementOk };
+  return {
+    agreement,
+    significant: primaryMetric && magnitudeOk && agreementOk,
+  };
 }
 
 function formatMs(value: number): string {
@@ -382,6 +509,7 @@ function compare(): ComparisonSummary {
       const { agreement, significant } = computeSignificance({
         baseline: baseVal,
         current: curVal,
+        metric,
         percent,
         perRoundDeltas,
       });

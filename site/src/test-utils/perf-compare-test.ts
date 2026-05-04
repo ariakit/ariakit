@@ -20,7 +20,12 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, expect, test } from "vitest";
-import type { PerfMetrics, PerfResult } from "./perf.ts";
+import type {
+  PerfMetrics,
+  PerfProfiles,
+  PerfResult,
+  PerfScriptProfileEntry,
+} from "./perf.ts";
 
 const resultsDir = ".perf-results";
 const scriptPath = path.join(import.meta.dirname, "perf-compare.ts");
@@ -60,6 +65,34 @@ function createResultWithLabel(label: string, total: number): PerfResult {
     ...createResult(total),
     label,
     testTitle: label,
+  };
+}
+
+function createResultWithMetrics(
+  label: string,
+  metrics: PerfMetrics,
+  profiles?: PerfProfiles,
+): PerfResult {
+  return {
+    ...createResultWithLabel(label, metrics.total),
+    metrics,
+    raw: [metrics],
+    profiles,
+  };
+}
+
+function createScriptProfileEntry(
+  functionName: string,
+  selfTime: number,
+): PerfScriptProfileEntry {
+  return {
+    functionName,
+    url: "https://example.com/script.js",
+    line: 1,
+    column: 1,
+    selfTime,
+    totalTime: selfTime,
+    hitCount: 1,
   };
 }
 
@@ -219,6 +252,17 @@ test("fails on malformed perf result files", () => {
   expect(stderr).toContain("baseline-worker0.json");
 });
 
+test("fails on parsed non-array perf result files", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-worker0.json", {});
+  writeJson(dir, "current-worker0.json", [createResult(100)]);
+
+  const stderr = runCompareFailure(dir);
+
+  expect(stderr).toContain("Invalid perf results format");
+  expect(stderr).toContain("baseline-worker0.json");
+});
+
 test("reports tests with no paired rounds separately", () => {
   const dir = createTempDir();
   writeRound(dir, "baseline", 1, 100);
@@ -270,4 +314,83 @@ test("does not flag percentage-only changes below the absolute floor", () => {
   expect(markdown).toContain("No significant performance changes detected.");
   expect(markdown).toContain("20.0ms | 24.0ms | +4.0ms (+20%)");
   expect(markdown).not.toMatch(/% :warning:/);
+});
+
+test("does not flag rendering sub-metric noise", () => {
+  const dir = createTempDir();
+  const baselineMetrics: PerfMetrics = {
+    scripting: 100,
+    layout: 16,
+    styleRecalc: 4,
+    painting: 0,
+    rendering: 20,
+    inp: 0,
+    total: 120,
+  };
+  const currentMetrics: PerfMetrics = {
+    scripting: 100,
+    layout: 11,
+    styleRecalc: 9,
+    painting: 0,
+    rendering: 20,
+    inp: 0,
+    total: 120,
+  };
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithMetrics("sub-metrics", baselineMetrics),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    createResultWithMetrics("sub-metrics", currentMetrics),
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain(
+    "| - Style recalc | 4.0ms | 9.0ms | +5.0ms (+125%) |",
+  );
+  expect(markdown).not.toContain("+5.0ms (+125%) :warning:");
+  expect(markdown).not.toContain("-5.0ms (-31%) :rocket:");
+});
+
+test("aggregates worker shards within the same round", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-1-worker0.json", [createResult(100)]);
+  writeJson(dir, "baseline-1-worker1.json", [createResult(100)]);
+  writeJson(dir, "current-1-worker0.json", [createResult(200)]);
+  writeJson(dir, "current-1-worker1.json", [createResult(100)]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("100.0ms → 150.0ms (+50%) :warning:");
+  expect(markdown).toContain("100.0ms | 150.0ms | +50.0ms (+50%) :warning:");
+});
+
+test("merges profiles across rounds", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-1-worker0.json", [
+    createResultWithMetrics("profiled", createMetrics(100), {
+      script: [createScriptProfileEntry("baselineFirstRound", 1)],
+    }),
+  ]);
+  writeJson(dir, "baseline-2-worker0.json", [
+    createResultWithMetrics("profiled", createMetrics(100), {
+      script: [createScriptProfileEntry("baselineSecondRound", 1)],
+    }),
+  ]);
+  writeJson(dir, "current-1-worker0.json", [
+    createResultWithMetrics("profiled", createMetrics(100), {
+      script: [createScriptProfileEntry("firstRoundFn", 8)],
+    }),
+  ]);
+  writeJson(dir, "current-2-worker0.json", [
+    createResultWithMetrics("profiled", createMetrics(100), {
+      script: [createScriptProfileEntry("secondRoundFn", 7)],
+    }),
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("firstRoundFn");
+  expect(markdown).toContain("secondRoundFn");
 });
