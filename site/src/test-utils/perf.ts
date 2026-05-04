@@ -7,9 +7,6 @@ const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const DEFAULT_ITERATIONS = 10;
 const DEFAULT_WARMUP = 1;
 const DEFAULT_PROFILE_LIMIT = 10;
-// Idle barrier after the rAF×2 settle. Long enough for any deferred microtasks
-// to drain, short enough that it doesn't dominate iteration time.
-const IDLE_TIMEOUT_MS = 200;
 const initializedResultFiles = new Set<string>();
 
 // CDP metric names (values are in seconds).
@@ -189,45 +186,6 @@ function getMetricValue(
   const metric = metrics.find((m) => m.name === name);
   if (!metric) return 0;
   return metric.value;
-}
-
-/**
- * Resets the page to the given URL and waits for the DOM, fonts, and a couple
- * of frames to settle before returning. Replaces `networkidle`, which on
- * larger pages reliably wastes 2-3 seconds waiting on idle connections that
- * don't influence the measured interaction.
- *
- * Trade-off: this only waits on fonts already requested at the time
- * `document.fonts.ready` is awaited and does not gate on lazy-loaded images
- * or post-DCL prefetches. If a perf test interacts with content that pulls in
- * a fresh `@font-face` or a deferred image, the resulting layout cost can
- * leak into the measured interaction. Tests that need that wait should
- * trigger the load explicitly before calling `createPerfMeasure`.
- */
-async function navigateAndSettle(page: Page, url: string) {
-  await page.goto(url, { waitUntil: "domcontentloaded" });
-  await page.evaluate(async (idleTimeout) => {
-    await document.fonts?.ready?.catch(() => {});
-    await new Promise<void>((resolve) => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => resolve());
-      });
-    });
-    if (typeof requestIdleCallback === "function") {
-      await new Promise<void>((resolve) => {
-        requestIdleCallback(() => resolve(), { timeout: idleTimeout });
-      });
-    }
-  }, IDLE_TIMEOUT_MS);
-}
-
-/**
- * Runs the Chrome heap GC via CDP so allocations from the previous iteration
- * don't bleed into the next iteration's measurement. This is the same pass
- * DevTools uses; it doesn't require `--js-flags=--expose-gc`.
- */
-async function forceGarbageCollect(cdp: CDPSession) {
-  await cdp.send("HeapProfiler.collectGarbage").catch(() => {});
 }
 
 function median(values: number[]): number {
@@ -622,14 +580,6 @@ async function measureOnce(
     w.__perfObserver = observer;
   });
 
-  // Drain any allocations from a previous iteration so this measurement
-  // starts from a clean heap. Otherwise GC pauses can bleed into either the
-  // baseline or current side at random and inflate variance. The major GC
-  // does not collect the observer (it is rooted on `window.__perfObserver`)
-  // or its captured durations (we just reset `__perfInpEntries` to a fresh
-  // array above), so this call only frees previous-iteration garbage.
-  await forceGarbageCollect(cdp);
-
   let before: MetricsResponse | undefined;
   let selectorTrace: SelectorTraceSession | undefined;
   let scriptProfilerStarted = false;
@@ -803,7 +753,7 @@ export async function createPerfMeasure(
     for (let i = 0; i < warmup + iterations; i++) {
       if (resetPage) {
         // Re-navigate for a clean state on every iteration.
-        await navigateAndSettle(page, url);
+        await page.goto(url, { waitUntil: "networkidle" });
       }
 
       const result = await measureOnce(page, cdp, interaction, {
