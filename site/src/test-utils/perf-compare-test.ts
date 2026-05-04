@@ -370,7 +370,11 @@ describe("perf-compare", () => {
     expect(markdown).toContain(":warning:");
   });
 
-  test("falls back to empty results for malformed JSON", () => {
+  test("hard-fails when a results file is malformed JSON", () => {
+    // Silently treating a corrupt artifact as missing input would surface as
+    // "No baseline results available" in the PR comment, hiding the real
+    // problem. The comparator must exit non-zero with the file path so CI
+    // fails loudly.
     const dir = createTempDir();
     const outputDir = path.join(dir, resultsDir);
     mkdirSync(outputDir, { recursive: true });
@@ -378,15 +382,12 @@ describe("perf-compare", () => {
     writeJson(dir, "current-worker0.json", [
       createResult("bench", { scripting: 100, total: 100 }),
     ]);
-    execFileSync(process.execPath, [scriptPath], {
-      cwd: dir,
-      stdio: "pipe",
-    });
-    const markdown = readFileSync(
-      path.join(outputDir, "comparison.md"),
-      "utf-8",
-    );
-    expect(markdown).toContain("No baseline results available for comparison.");
+    expect(() =>
+      execFileSync(process.execPath, [scriptPath], {
+        cwd: dir,
+        stdio: "pipe",
+      }),
+    ).toThrowError(/Failed to parse perf results/);
   });
 
   test("ignores unrelated round files when discovering numbered rounds", () => {

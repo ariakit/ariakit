@@ -122,17 +122,31 @@ const RENDERING_SUB_METRICS = new Set<MetricKey>([
 
 function readJsonFile(filePath: string): PerfResult[] {
   if (!existsSync(filePath)) return [];
+  // Hard-fail on parse errors. A truncated or malformed artifact otherwise
+  // surfaces as an empty side and the comparison silently degrades into "no
+  // baseline / new tests", masking the real cause.
+  let raw: string;
   try {
-    const parsed = JSON.parse(readFileSync(filePath, "utf-8"));
-    if (Array.isArray(parsed)) return parsed as PerfResult[];
-    return [];
+    raw = readFileSync(filePath, "utf-8");
   } catch (error) {
-    console.warn(
-      `Warning: failed to parse JSON file at ${filePath}. Falling back to empty results.`,
-      error,
-    );
-    return [];
+    throw new Error(`Failed to read perf results at ${filePath}`, {
+      cause: error,
+    });
   }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (error) {
+    throw new Error(`Failed to parse perf results at ${filePath}`, {
+      cause: error,
+    });
+  }
+  if (!Array.isArray(parsed)) {
+    throw new Error(
+      `Perf results at ${filePath} must be a JSON array, got ${typeof parsed}`,
+    );
+  }
+  return parsed as PerfResult[];
 }
 
 // Discover round files like `baseline-1-worker0.json`, `baseline-2-worker0.json`,
