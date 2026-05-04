@@ -252,6 +252,18 @@ jobs:
         working-directory: ${{ env.BASELINE_DIR }}
         run: pnpm install --frozen-lockfile
 
+      - name: Install baseline Playwright browsers
+        working-directory: ${{ env.BASELINE_DIR }}
+        # The earlier `Install Playwright` step (composite) ran in the main
+        # checkout, so `~/.cache/ms-playwright` only has the current PR's
+        # browser revision. A PR that bumps `@playwright/test` would
+        # otherwise leave the baseline worktree with the wrong browser
+        # version and the baseline `test-perf` would fail before producing
+        # artifacts — exactly the dependency-only PR case this perf job is
+        # meant to make trustworthy. Install for the baseline lockfile too;
+        # the global cache then holds both revisions.
+        run: pnpm exec playwright install --with-deps chromium
+
       - name: Find base app artifact
         id: find-base-artifact
         continue-on-error: true
