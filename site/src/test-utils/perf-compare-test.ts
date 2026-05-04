@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import {
   mkdirSync,
   mkdtempSync,
@@ -86,6 +86,17 @@ function runCompare(dir: string) {
   return readFileSync(path.join(dir, resultsDir, "comparison.md"), "utf-8");
 }
 
+function runCompareFailure(dir: string) {
+  const result = spawnSync(process.execPath, [scriptPath], {
+    cwd: dir,
+    encoding: "utf-8",
+  });
+  if (result.status === 0) {
+    throw new Error("Expected performance comparison to fail");
+  }
+  return `${result.stderr}${result.stdout}`;
+}
+
 afterEach(() => {
   for (const dir of tempDirs.splice(0)) {
     rmSync(dir, { recursive: true, force: true });
@@ -150,6 +161,35 @@ test("aggregates displayed values from shared rounds", () => {
   expect(markdown).toContain("Aggregated across 2 interleaved rounds");
 });
 
+test("does not overstate mixed paired round counts", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-1-worker0.json", [
+    createResultWithLabel("three rounds", 100),
+    createResultWithLabel("one round", 100),
+  ]);
+  writeJson(dir, "baseline-2-worker0.json", [
+    createResultWithLabel("three rounds", 100),
+  ]);
+  writeJson(dir, "baseline-3-worker0.json", [
+    createResultWithLabel("three rounds", 100),
+  ]);
+  writeJson(dir, "current-1-worker0.json", [
+    createResultWithLabel("three rounds", 120),
+    createResultWithLabel("one round", 120),
+  ]);
+  writeJson(dir, "current-2-worker0.json", [
+    createResultWithLabel("three rounds", 120),
+  ]);
+  writeJson(dir, "current-3-worker0.json", [
+    createResultWithLabel("three rounds", 120),
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).not.toContain("Aggregated across 3 interleaved rounds");
+  expect(markdown).toContain("mixed interleaved round counts");
+});
+
 test("requires both rounds to agree in two-round comparisons", () => {
   const dir = createTempDir();
   [100, 100].forEach((total, index) => {
@@ -164,6 +204,19 @@ test("requires both rounds to agree in two-round comparisons", () => {
   expect(markdown).toContain("No significant performance changes detected.");
   expect(markdown).toContain("100.0ms | 115.0ms | +15.0ms (+15%)");
   expect(markdown).not.toMatch(/% :warning:/);
+});
+
+test("fails on malformed perf result files", () => {
+  const dir = createTempDir();
+  const outputDir = path.join(dir, resultsDir);
+  mkdirSync(outputDir, { recursive: true });
+  writeFileSync(path.join(outputDir, "baseline-worker0.json"), "{", "utf-8");
+  writeJson(dir, "current-worker0.json", [createResult(100)]);
+
+  const stderr = runCompareFailure(dir);
+
+  expect(stderr).toContain("Failed to parse perf results");
+  expect(stderr).toContain("baseline-worker0.json");
 });
 
 test("reports tests with no paired rounds separately", () => {

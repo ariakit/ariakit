@@ -22,6 +22,7 @@ interface ComparisonRow {
   current: number;
   delta: number;
   percent: number;
+  pairedRoundsCount: number;
   perRoundDeltas: number[];
   agreement: number;
   significant: boolean;
@@ -35,7 +36,7 @@ interface ComparisonSummary {
   newTests: AggregatedPerfResult[];
   removedTests: AggregatedPerfResult[];
   unpairedTests: AggregatedPerfResult[];
-  pairedRoundsCount: number;
+  pairedRoundsCount: number | null;
 }
 
 interface PersistedComparisonSummary {
@@ -45,7 +46,7 @@ interface PersistedComparisonSummary {
   newTests: PerfResult[];
   removedTests: PerfResult[];
   unpairedTests: PerfResult[];
-  pairedRoundsCount: number;
+  pairedRoundsCount: number | null;
 }
 
 interface ProfileModeMismatch {
@@ -108,11 +109,9 @@ function readJsonFile(filePath: string): unknown {
   try {
     return JSON.parse(readFileSync(filePath, "utf-8"));
   } catch (error) {
-    console.warn(
-      `Warning: failed to parse JSON file at ${filePath}. Falling back to empty results.`,
-      error,
-    );
-    return [];
+    throw new Error(`Failed to parse perf results at ${filePath}`, {
+      cause: error,
+    });
   }
 }
 
@@ -335,7 +334,6 @@ function compare(): ComparisonSummary {
   const newTests: AggregatedPerfResult[] = [];
   const removedTests: AggregatedPerfResult[] = [];
   const unpairedTests: AggregatedPerfResult[] = [];
-  const pairedRoundIndices = new Set<number>();
 
   for (const [key, cur] of current) {
     const base = baseline.get(key);
@@ -360,10 +358,6 @@ function compare(): ComparisonSummary {
     if (sharedRoundIndices.length === 0) {
       unpairedTests.push(cur);
       continue;
-    }
-
-    for (const roundIndex of sharedRoundIndices) {
-      pairedRoundIndices.add(roundIndex);
     }
 
     for (const metric of ALL_METRICS) {
@@ -399,6 +393,7 @@ function compare(): ComparisonSummary {
         current: curVal,
         delta,
         percent,
+        pairedRoundsCount: sharedRoundIndices.length,
         perRoundDeltas,
         agreement,
         significant,
@@ -412,6 +407,8 @@ function compare(): ComparisonSummary {
     }
   }
 
+  const pairedRoundsCounts = new Set(rows.map((row) => row.pairedRoundsCount));
+
   return {
     rows,
     hasSignificantChanges: rows.some((r) => r.significant),
@@ -420,7 +417,12 @@ function compare(): ComparisonSummary {
     newTests,
     removedTests,
     unpairedTests,
-    pairedRoundsCount: pairedRoundIndices.size,
+    pairedRoundsCount:
+      pairedRoundsCounts.size === 0
+        ? 0
+        : pairedRoundsCounts.size === 1
+          ? (pairedRoundsCounts.values().next().value ?? 0)
+          : null,
   };
 }
 
@@ -681,7 +683,12 @@ function formatMarkdown(summary: ComparisonSummary): string {
   lines.push(
     `:warning: = regression above ${THRESHOLD_PERCENT}% and ${formatMs(MIN_SIGNIFICANT_DELTA_MS)} · :rocket: = improvement above ${THRESHOLD_PERCENT}% and ${formatMs(MIN_SIGNIFICANT_DELTA_MS)}`,
   );
-  if (pairedRoundsCount > 1) {
+  if (pairedRoundsCount == null) {
+    lines.push("");
+    lines.push(
+      "Compared tests used mixed interleaved round counts; a change is flagged only when the median exceeds the threshold and rounds agree on direction.",
+    );
+  } else if (pairedRoundsCount > 1) {
     lines.push("");
     lines.push(
       `Aggregated across ${pairedRoundsCount} interleaved rounds; a change is flagged only when the median exceeds the threshold and rounds agree on direction.`,
