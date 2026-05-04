@@ -331,21 +331,25 @@ jobs:
         # out runner-level noise (CPU governor, neighbor jobs) that a
         # sequential run would attribute entirely to one side. Baseline
         # failures are tolerated because new perf tests don't exist yet on
-        # the base branch.
+        # the base branch. `xvfb-run -a` picks the next free display number
+        # so back-to-back rounds in this job don't collide on `/tmp/.X99-lock`
+        # if a prior `xvfb-run` invocation hasn't finished tearing down its
+        # default display.
         run: |
+          rm -rf site/.perf-results "$BASELINE_DIR/site/.perf-results"
           mkdir -p site/.perf-results
           for i in $(seq 1 "$PERF_ROUNDS"); do
             echo "::group::Round $i — baseline"
             (cd "$BASELINE_DIR" && \
               PERF_RESULTS_FILE="baseline-$i.json" \
-              xvfb-run pnpm -F site run test-perf --pass-with-no-tests) || true
+              xvfb-run -a pnpm -F site run test-perf --pass-with-no-tests) || true
             cp "$BASELINE_DIR"/site/.perf-results/baseline-"$i"-*.json \
               site/.perf-results/ 2>/dev/null || true
             echo "::endgroup::"
 
             echo "::group::Round $i — current"
             PERF_RESULTS_FILE="current-$i.json" \
-              xvfb-run pnpm -F site run test-perf --pass-with-no-tests
+              xvfb-run -a pnpm -F site run test-perf --pass-with-no-tests
             echo "::endgroup::"
           done
 
@@ -360,6 +364,9 @@ jobs:
           name: perf-results
           path: site/.perf-results
           if-no-files-found: ignore
+          # `.perf-results` starts with a dot, so upload-artifact treats it as
+          # hidden and skips its contents unless this is set.
+          include-hidden-files: true
           retention-days: 7
 
       - name: Post or update PR comment
