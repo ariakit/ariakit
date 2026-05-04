@@ -220,9 +220,9 @@ jobs:
       pull-requests: write
     env:
       PERF_ROUNDS: 3
-      # Keep each round short enough for CI while still collecting more total
-      # samples than the previous single 10-iteration baseline/current runs.
-      PERF_ITERATIONS: 5
+      # Keep the previous per-run sample depth so detached baselines from
+      # revisions that do not read PERF_ITERATIONS remain comparable.
+      PERF_ITERATIONS: 10
       PERF_WARMUP: 1
     steps:
       - name: Checkout repository
@@ -339,6 +339,7 @@ jobs:
         run: |
           rm -rf site/.perf-results "$BASELINE_DIR/site/.perf-results"
           mkdir -p site/.perf-results
+          shopt -s nullglob
           for i in $(seq 1 "$PERF_ROUNDS"); do
             echo "::group::Round $i - baseline"
             (
@@ -348,7 +349,12 @@ jobs:
               PERF_WARMUP="$PERF_WARMUP" \
               xvfb-run -a pnpm -F site run test-perf --pass-with-no-tests
             )
-            cp "$BASELINE_DIR"/site/.perf-results/baseline-"$i"*.json site/.perf-results/ 2>/dev/null || true
+            baseline_files=("$BASELINE_DIR"/site/.perf-results/baseline-"$i"*.json)
+            if [ ${#baseline_files[@]} -eq 0 ]; then
+              echo "Missing baseline perf results for round $i" >&2
+              exit 1
+            fi
+            cp "${baseline_files[@]}" site/.perf-results/
             echo "::endgroup::"
 
             echo "::group::Round $i - current"
@@ -356,11 +362,15 @@ jobs:
             PERF_ITERATIONS="$PERF_ITERATIONS" \
             PERF_WARMUP="$PERF_WARMUP" \
             xvfb-run -a pnpm -F site run test-perf --pass-with-no-tests
+            current_files=(site/.perf-results/current-"$i"*.json)
+            if [ ${#current_files[@]} -eq 0 ]; then
+              echo "Missing current perf results for round $i" >&2
+              exit 1
+            fi
             echo "::endgroup::"
           done
 
       - name: Compare results
-        if: always()
         run: pnpm -F site run perf-compare
 
       - name: Upload performance results
@@ -374,7 +384,6 @@ jobs:
           retention-days: 7
 
       - name: Post or update PR comment
-        if: always()
         uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.ARIAKIT_BOT_PAT }}
