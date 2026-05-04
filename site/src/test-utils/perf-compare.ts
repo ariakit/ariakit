@@ -6,12 +6,14 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
-import type {
-  PerfMetrics,
-  PerfProfiles,
-  PerfResult,
-  PerfScriptProfileEntry,
-  PerfSelectorProfileEntry,
+import {
+  mergeScriptProfiles,
+  mergeSelectorProfiles,
+  type PerfMetrics,
+  type PerfProfiles,
+  type PerfResult,
+  type PerfScriptProfileEntry,
+  type PerfSelectorProfileEntry,
 } from "./perf.ts";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
@@ -42,7 +44,7 @@ interface ComparisonSummary {
   profileModeMismatches: ProfileModeMismatch[];
   newTests: AggregatedPerfResult[];
   removedTests: AggregatedPerfResult[];
-  unpairedTests: AggregatedPerfResult[];
+  unpairedTests: UnpairedTest[];
   pairedRoundsCount: number | null;
 }
 
@@ -52,7 +54,7 @@ interface PersistedComparisonSummary {
   profileModeMismatches: ProfileModeMismatch[];
   newTests: PerfResult[];
   removedTests: PerfResult[];
-  unpairedTests: PerfResult[];
+  unpairedTests: UnpairedTest[];
   pairedRoundsCount: number | null;
 }
 
@@ -73,6 +75,13 @@ interface AggregatedPerfResult {
   key: string;
   result: PerfResult;
   byRound: Map<number, PerfResult>;
+}
+
+interface UnpairedTest {
+  testFile: string;
+  label: string;
+  baselineRounds: number[];
+  currentRounds: number[];
 }
 
 interface DiscoveredRoundFile {
@@ -202,81 +211,6 @@ function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
   };
 }
 
-function scriptProfileKey(entry: PerfScriptProfileEntry) {
-  return [entry.functionName, entry.url, entry.line, entry.column].join("\0");
-}
-
-function selectorProfileKey(entry: PerfSelectorProfileEntry) {
-  return [entry.selector, entry.styleSheetId].join("\0");
-}
-
-function mergeScriptProfiles(
-  profiles: PerfScriptProfileEntry[][],
-): PerfScriptProfileEntry[] {
-  const entries = new Map<string, PerfScriptProfileEntry>();
-  for (const profile of profiles) {
-    for (const entry of profile) {
-      const key = scriptProfileKey(entry);
-      const existing = entries.get(key);
-      if (existing) {
-        existing.selfTime += entry.selfTime;
-        existing.totalTime += entry.totalTime;
-        existing.hitCount += entry.hitCount;
-        continue;
-      }
-      entries.set(key, { ...entry });
-    }
-  }
-  return [...entries.values()]
-    .sort((a, b) => b.selfTime - a.selfTime || b.totalTime - a.totalTime)
-    .slice(0, PROFILE_LIMIT);
-}
-
-interface SelectorProfileAccumulator extends PerfSelectorProfileEntry {
-  weightedSlowPathSum: number;
-}
-
-function mergeSelectorProfiles(
-  profiles: PerfSelectorProfileEntry[][],
-): PerfSelectorProfileEntry[] {
-  const entries = new Map<string, SelectorProfileAccumulator>();
-  for (const profile of profiles) {
-    for (const entry of profile) {
-      const key = selectorProfileKey(entry);
-      const weightedSlowPathSum =
-        entry.matchAttempts * entry.slowPathNonMatchPercent;
-      const existing = entries.get(key);
-      if (existing) {
-        existing.elapsed += entry.elapsed;
-        existing.matchAttempts += entry.matchAttempts;
-        existing.matchCount += entry.matchCount;
-        existing.invalidationCount += entry.invalidationCount;
-        existing.weightedSlowPathSum += weightedSlowPathSum;
-        if (!existing.styleSheetUrl && entry.styleSheetUrl) {
-          existing.styleSheetUrl = entry.styleSheetUrl;
-        }
-        continue;
-      }
-      entries.set(key, {
-        ...entry,
-        weightedSlowPathSum,
-      });
-    }
-  }
-  return [...entries.values()]
-    .map(({ weightedSlowPathSum, ...entry }) => {
-      return {
-        ...entry,
-        slowPathNonMatchPercent:
-          entry.matchAttempts > 0
-            ? weightedSlowPathSum / entry.matchAttempts
-            : 0,
-      };
-    })
-    .sort((a, b) => b.elapsed - a.elapsed)
-    .slice(0, PROFILE_LIMIT);
-}
-
 function mergeProfiles(results: PerfResult[]): PerfProfiles | undefined {
   const scriptProfiles: PerfScriptProfileEntry[][] = [];
   const selectorProfiles: PerfSelectorProfileEntry[][] = [];
@@ -290,10 +224,10 @@ function mergeProfiles(results: PerfResult[]): PerfProfiles | undefined {
   }
   const profiles: PerfProfiles = {};
   if (scriptProfiles.length > 0) {
-    profiles.script = mergeScriptProfiles(scriptProfiles);
+    profiles.script = mergeScriptProfiles(scriptProfiles, PROFILE_LIMIT);
   }
   if (selectorProfiles.length > 0) {
-    profiles.selectors = mergeSelectorProfiles(selectorProfiles);
+    profiles.selectors = mergeSelectorProfiles(selectorProfiles, PROFILE_LIMIT);
   }
   if (!profiles.script && !profiles.selectors) return;
   return profiles;
@@ -460,7 +394,7 @@ function compare(): ComparisonSummary {
   const profileModeMismatches: ProfileModeMismatch[] = [];
   const newTests: AggregatedPerfResult[] = [];
   const removedTests: AggregatedPerfResult[] = [];
-  const unpairedTests: AggregatedPerfResult[] = [];
+  const unpairedTests: UnpairedTest[] = [];
 
   for (const [key, cur] of current) {
     const base = baseline.get(key);
@@ -483,7 +417,12 @@ function compare(): ComparisonSummary {
 
     const sharedRoundIndices = getSharedRoundIndices(base, cur);
     if (sharedRoundIndices.length === 0) {
-      unpairedTests.push(cur);
+      unpairedTests.push({
+        testFile: cur.result.testFile,
+        label: cur.result.label,
+        baselineRounds: [...base.byRound.keys()].sort((a, b) => a - b),
+        currentRounds: [...cur.byRound.keys()].sort((a, b) => a - b),
+      });
       continue;
     }
 
@@ -556,6 +495,11 @@ function compare(): ComparisonSummary {
 
 function rowKey(row: ComparisonRow): string {
   return `${row.testFile}::${row.label}`;
+}
+
+function formatRoundList(rounds: number[]): string {
+  if (rounds.length === 0) return "-";
+  return rounds.join(", ");
 }
 
 function formatSummaryTable(rows: ComparisonRow[], keys: string[]): string[] {
@@ -745,7 +689,7 @@ function formatMarkdown(summary: ComparisonSummary): string {
     lines.push(
       `:warning: ${unpairedTests.length} ${label} had no paired baseline/current rounds and ${verb} not compared.`,
     );
-    for (const { result } of visibleUnpairedTests) {
+    for (const result of visibleUnpairedTests) {
       lines.push(`- ${result.label}`);
     }
     if (hiddenUnpairedTests > 0) {
@@ -790,8 +734,12 @@ function formatMarkdown(summary: ComparisonSummary): string {
       "These tests produced baseline and current results, but no shared round index.",
     );
     lines.push("");
-    for (const { result } of unpairedTests) {
-      lines.push(`- ${result.label}`);
+    lines.push("| Test | Baseline rounds | Current rounds |");
+    lines.push("|------|-----------------|----------------|");
+    for (const result of unpairedTests) {
+      lines.push(
+        `| ${escapeTableCell(result.label)} | ${formatRoundList(result.baselineRounds)} | ${formatRoundList(result.currentRounds)} |`,
+      );
     }
     lines.push("");
   }
@@ -835,7 +783,7 @@ function toPersistedSummary(
     profileModeMismatches: summary.profileModeMismatches,
     newTests: summary.newTests.map((entry) => entry.result),
     removedTests: summary.removedTests.map((entry) => entry.result),
-    unpairedTests: summary.unpairedTests.map((entry) => entry.result),
+    unpairedTests: summary.unpairedTests,
     pairedRoundsCount: summary.pairedRoundsCount,
   };
 }

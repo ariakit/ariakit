@@ -460,7 +460,7 @@ async function startSelectorTrace(
   };
 }
 
-function mergeScriptProfiles(
+export function mergeScriptProfiles(
   profiles: PerfScriptProfileEntry[][],
   limit: number,
 ): PerfScriptProfileEntry[] {
@@ -487,7 +487,7 @@ function mergeScriptProfiles(
     .slice(0, limit);
 }
 
-function mergeSelectorProfiles(
+export function mergeSelectorProfiles(
   profiles: PerfSelectorProfileEntry[][],
   limit: number,
 ): PerfSelectorProfileEntry[] {

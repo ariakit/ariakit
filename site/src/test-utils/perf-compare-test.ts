@@ -239,6 +239,35 @@ test("requires both rounds to agree in two-round comparisons", () => {
   expect(markdown).not.toMatch(/% :warning:/);
 });
 
+test("flags unanimous two-round regressions", () => {
+  const dir = createTempDir();
+  [100, 100].forEach((total, index) => {
+    writeRound(dir, "baseline", index + 1, total);
+  });
+  [130, 132].forEach((total, index) => {
+    writeRound(dir, "current", index + 1, total);
+  });
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain(":warning:");
+  expect(markdown).toContain("+31%");
+});
+
+test("keeps zero-baseline paired rounds in the agreement count", () => {
+  const dir = createTempDir();
+  writeRound(dir, "baseline", 1, 0);
+  writeRound(dir, "current", 1, 0);
+  writeRound(dir, "baseline", 2, 100);
+  writeRound(dir, "current", 2, 130);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain("50.0ms | 65.0ms | +15.0ms (+30%)");
+  expect(markdown).not.toMatch(/% :warning:/);
+});
+
 test("fails on malformed perf result files", () => {
   const dir = createTempDir();
   const outputDir = path.join(dir, resultsDir);
@@ -274,6 +303,9 @@ test("reports tests with no paired rounds separately", () => {
     "No paired performance results available for comparison.",
   );
   expect(markdown).toContain("### Unpaired tests");
+  expect(markdown).toContain(
+    "| sandbox/example/perf-chrome.ts > react > example | 1 | 2 |",
+  );
   expect(markdown).not.toContain("0.0ms | 0.0ms");
 });
 
@@ -302,6 +334,24 @@ test("surfaces unpaired tests outside the details block", () => {
   expect(markdown.indexOf("- unpaired")).toBeLessThan(
     markdown.indexOf("<details>"),
   );
+  expect(markdown).toContain("| unpaired | 1 | 2 |");
+});
+
+test("reports renamed tests as new and removed", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithLabel("old name", 100),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    createResultWithLabel("new name", 100),
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("### New tests (no baseline)");
+  expect(markdown).toContain("### Removed tests");
+  expect(markdown).toContain("new name");
+  expect(markdown).toContain("- old name");
 });
 
 test("does not flag percentage-only changes below the absolute floor", () => {
@@ -393,4 +443,21 @@ test("merges profiles across rounds", () => {
 
   expect(markdown).toContain("firstRoundFn");
   expect(markdown).toContain("secondRoundFn");
+});
+
+test("warns when only one side has profile data for a test", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithMetrics("profile-mismatch", createMetrics(100), {
+      script: [createScriptProfileEntry("baselineProfile", 1)],
+    }),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    createResultWithMetrics("profile-mismatch", createMetrics(100)),
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("Profile data differs between baseline");
+  expect(markdown).toContain("| profile-mismatch | script | yes | no |");
 });
