@@ -9,7 +9,7 @@ overrides:
 
 patchedDependencies:
   '@changesets/apply-release-plan@7.1.1':
-    hash: f29011b4c524844645e36619b9ff9456017c62b0591f411a98e3f4826ea22852
+    hash: 19cb6131207f59da50995e2f93d09dbcaccb346cdc696d59f1aa89e3114f6ac5
     path: patches/@changesets__apply-release-plan@7.1.1.patch
 
 importers:
@@ -42,7 +42,7 @@ importers:
         version: link:packages/ariakit-test
       '@changesets/apply-release-plan':
         specifier: 7.1.1
-        version: 7.1.1(patch_hash=f29011b4c524844645e36619b9ff9456017c62b0591f411a98e3f4826ea22852)
+        version: 7.1.1(patch_hash=19cb6131207f59da50995e2f93d09dbcaccb346cdc696d59f1aa89e3114f6ac5)
       '@changesets/cli':
         specifier: 2.31.0
         version: 2.31.0(@types/node@24.12.2)
@@ -12318,7 +12318,7 @@ snapshots:
     dependencies:
       fontkitten: 1.0.3
 
-  '@changesets/apply-release-plan@7.1.1(patch_hash=f29011b4c524844645e36619b9ff9456017c62b0591f411a98e3f4826ea22852)':
+  '@changesets/apply-release-plan@7.1.1(patch_hash=19cb6131207f59da50995e2f93d09dbcaccb346cdc696d59f1aa89e3114f6ac5)':
     dependencies:
       '@changesets/config': 3.1.4
       '@changesets/get-version-range-type': 0.4.0
@@ -12349,7 +12349,7 @@ snapshots:
 
   '@changesets/cli@2.31.0(@types/node@24.12.2)':
     dependencies:
-      '@changesets/apply-release-plan': 7.1.1(patch_hash=f29011b4c524844645e36619b9ff9456017c62b0591f411a98e3f4826ea22852)
+      '@changesets/apply-release-plan': 7.1.1(patch_hash=19cb6131207f59da50995e2f93d09dbcaccb346cdc696d59f1aa89e3114f6ac5)
       '@changesets/assemble-release-plan': 6.0.10
       '@changesets/changelog-git': 0.2.1
       '@changesets/config': 3.1.4

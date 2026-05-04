@@ -7,10 +7,21 @@ test("changesets getChangelogEntry hook", async () => {
   // Create a temporary package to avoid touching real repo packages
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "changesets-test-"));
   const pkgDir = path.join(tempDir, "pkg-a");
+  const dependentPkgDir = path.join(tempDir, "pkg-b");
   await fs.ensureDir(pkgDir);
+  await fs.ensureDir(dependentPkgDir);
   await fs.writeJson(
     path.join(pkgDir, "package.json"),
     { name: "pkg-a", version: "1.0.0" },
+    { spaces: 2 },
+  );
+  await fs.writeJson(
+    path.join(dependentPkgDir, "package.json"),
+    {
+      name: "pkg-b",
+      version: "1.0.0",
+      dependencies: { "pkg-a": "^1.0.0" },
+    },
     { spaces: 2 },
   );
 
@@ -39,6 +50,12 @@ test("changesets getChangelogEntry hook", async () => {
         newVersion: "1.1.0",
         changesets: ["fake-id-1", "fake-id-2", "fake-id-3"],
       },
+      {
+        name: "pkg-b",
+        type: "patch",
+        newVersion: "1.0.1",
+        changesets: [],
+      },
     ],
     preState: undefined,
   } as const;
@@ -49,6 +66,14 @@ test("changesets getChangelogEntry hook", async () => {
       {
         dir: pkgDir,
         packageJson: { name: "pkg-a", version: "1.0.0" },
+      },
+      {
+        dir: dependentPkgDir,
+        packageJson: {
+          name: "pkg-b",
+          version: "1.0.0",
+          dependencies: { "pkg-a": "^1.0.0" },
+        },
       },
     ],
   } as const;
@@ -91,6 +116,18 @@ test("changesets getChangelogEntry hook", async () => {
     ### Other updates
 
     - Chore: update docs
+    "
+  `);
+
+  const dependentChangelogPath = path.join(dependentPkgDir, "CHANGELOG.md");
+  const dependentChangelog = await fs.readFile(dependentChangelogPath, "utf8");
+
+  expect(dependentChangelog).toMatchInlineSnapshot(`
+    "# pkg-b
+
+    ## 1.0.1
+
+    - Updated dependencies: \`pkg-a@1.1.0\`
     "
   `);
 });
