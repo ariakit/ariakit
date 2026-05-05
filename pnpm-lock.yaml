@@ -597,8 +597,8 @@ importers:
         specifier: 18.3.7
         version: 18.3.7(@types/react@18.3.28)
       '@vizzly-testing/cli':
-        specifier: 0.29.6
-        version: 0.29.6(typescript@6.0.3)
+        specifier: 0.30.0
+        version: 0.30.0(typescript@6.0.3)
       concurrently:
         specifier: 9.2.1
         version: 9.2.1
@@ -5219,8 +5219,8 @@ packages:
   '@vitest/utils@4.1.5':
     resolution: {integrity: sha512-76wdkrmfXfqGjueGgnb45ITPyUi1ycZ4IHgC2bhPDUfWHklY/q3MdLOAB+TF1e6xfl8NxNY0ZYaPCFNWSsw3Ug==}
 
-  '@vizzly-testing/cli@0.29.6':
-    resolution: {integrity: sha512-csN9BkRkEa3tsX6eR6oxbG7MAxq3gcAYLxfVMaH1te6H9pG3K5bOZb3eY07EMqwdsIwXZGaR+EDVBfqpnlkySQ==}
+  '@vizzly-testing/cli@0.30.0':
+    resolution: {integrity: sha512-vtF2ncb8NatRMBtY+0KKs8PFY7h5B86bymaWzyWWffIqzTcOC0ZCVI6ZMJ8qit6zx8Jh/EKdGHcieKJ5qrYa4A==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
@@ -15316,7 +15316,7 @@ snapshots:
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
 
-  '@vizzly-testing/cli@0.29.6(typescript@6.0.3)':
+  '@vizzly-testing/cli@0.30.0(typescript@6.0.3)':
     dependencies:
       '@vizzly-testing/honeydiff': 0.10.1
       ansis: 4.2.0

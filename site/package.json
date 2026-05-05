@@ -116,7 +116,7 @@
     "@types/pngjs": "6.0.5",
     "@types/react": "18.3.28",
     "@types/react-dom": "18.3.7",
-    "@vizzly-testing/cli": "0.29.6",
+    "@vizzly-testing/cli": "0.30.0",
     "concurrently": "9.2.1",
     "cross-env": "10.1.0",
     "nextjs": "workspace:*",
