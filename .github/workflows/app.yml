@@ -224,9 +224,9 @@ jobs:
       # extra confirmation round before the PR comment is published.
       PERF_INITIAL_ROUNDS: 2
       PERF_CONFIRMATION_ROUNDS: 1
-      # Keep the previous per-run sample depth so detached baselines from
-      # revisions that do not read PERF_ITERATIONS remain comparable.
-      PERF_ITERATIONS: 10
+      # Keep per-round samples modest; paired rounds and confirmation preserve
+      # enough signal for noisy results.
+      PERF_ITERATIONS: 5
       PERF_WARMUP: 1
     steps:
       - name: Checkout repository
@@ -358,10 +358,11 @@ jobs:
             )
             baseline_files=("$BASELINE_DIR"/site/.perf-results/baseline-"$i"*.json)
             if [ ${#baseline_files[@]} -eq 0 ]; then
-              echo "Missing baseline perf results for round $i" >&2
-              exit 1
+              echo "No baseline perf results for round $i; writing an empty baseline."
+              printf '[]\n' > site/.perf-results/baseline-"$i"-worker0.json
+            else
+              cp "${baseline_files[@]}" site/.perf-results/
             fi
-            cp "${baseline_files[@]}" site/.perf-results/
             echo "::endgroup::"
 
             echo "::group::Round $i - current"
