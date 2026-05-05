@@ -41,17 +41,6 @@ export const layer = cv({
   },
   computedVariants: {
     /**
-     * Sets the absolute lightness of the background color.
-     */
-    $lightness: (value?: string | number) => {
-      return getLightnessStyleClass({
-        value,
-        allowZero: true,
-        property: "--layer-lightness",
-        class: "ak-layer-l-(--layer-lightness)",
-      });
-    },
-    /**
      * Automatically adjusts the background color's lightness. The background
      * color becomes lighter or darker depending on its current lightness. The
      * value represents the **maximum** lightness offset, but it's not
@@ -152,10 +141,9 @@ export const layer = cv({
     },
     /**
      * Sets the minimum chroma of the background color after all other layer
-     * variants have been applied. If set to `auto`, it sets the minimum chroma
-     * to the maximum chroma that can be achieved with the current lightness.
+     * variants have been applied.
      */
-    $chromaMin: (value?: ChromaValues | "auto" | (string & {}) | number) => {
+    $chromaMin: (value?: ChromaValues | (string & {}) | number) => {
       if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
@@ -163,8 +151,7 @@ export const layer = cv({
           balanced: "ak-layer-min-c-balanced",
           vivid: "ak-layer-min-c-vivid",
           neon: "ak-layer-min-c-neon",
-          auto: "ak-layer-min-c-auto",
-        } satisfies Record<ChromaValues | "auto", string>;
+        } satisfies Record<ChromaValues, string>;
         return valueMap[value];
       }
       return getScaledStyleClass({

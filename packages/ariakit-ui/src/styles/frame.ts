@@ -4,7 +4,6 @@ import {
   CHROMA_VALUES,
   HUE_VALUES,
   getScaledStyleClass,
-  getLightnessStyleClass,
   type ChromaValues,
   type HueValues,
 } from "../utils/styles.ts";
@@ -24,10 +23,49 @@ export const frame = cv({
      * padding, margin, borders, and concentric-radius layout.
      */
     $frame: "ak-frame",
-    $force: "ak-frame-force",
+    /**
+     * Stretches the element to fill the parent frame's content box while
+     * collapsing shared borders. The element's corners are rounded to match the
+     * parent frame's corners based on the parent's `$orientation`. If this
+     * isn't inferred automatically, use `$frameStart` and `$frameEnd` to
+     * indicate whether the frame is the first or last child in the current
+     * flow, which affects how the corners are rounded.
+     */
     $cover: "ak-frame-cover",
     /**
-     * Sets the element’s border radius.
+     * Sets the frame flow direction. This affects how nested `$cover` frames
+     * are rounded.
+     */
+    $orientation: {
+      unset: "",
+      horizontal: "ak-frame-row",
+      vertical: "ak-frame-col",
+    },
+    /**
+     * Marks the frame as the first child in the current flow, where
+     * `$orientation` is determined by the parent frame. This only has an effect
+     * when used together with `$cover` and determines how the current frame's
+     * corners are rounded. Usually, this doesn't need to be set explicitly if
+     * the element is already the first child in the current HTML tree. This is
+     * useful when you render another hidden or absolutely positioned element as
+     * the first child instead.
+     */
+    $frameStart: "ak-frame-start",
+    /**
+     * Marks the frame as the last child in the current flow. This should be
+     * used together with `$cover` and determines how the current frame's
+     * corners are rounded. Usually, this doesn't need to be set explicitly if
+     * the element is already the last child in the current HTML tree. This is
+     * useful when you render another hidden or absolutely positioned element as
+     * the last child instead.
+     */
+    $frameEnd: "ak-frame-end",
+    /**
+     * Sets the default border radius for the element. If the frame is nested,
+     * this value will be adjusted to stay concentric with the parent unless
+     * `$forceRounded` is used or the parent padding plus the child margin is at
+     * least 1rem, in which case the concentric effect is not visually
+     * meaningful.
      */
     $rounded: {
       unset: "",
@@ -43,7 +81,13 @@ export const frame = cv({
       full: "ak-frame-full",
     },
     /**
-     * Sets the border color.
+     * Forces the element to use the `$rounded` value exactly for its radius,
+     * regardless of the parent frame context.
+     */
+    $forceRounded: "ak-frame-force",
+    /**
+     * Sets the border color. By default, it's based on the layer's background
+     * color.
      */
     $borderColor: {
       unset: "",
@@ -53,12 +97,13 @@ export const frame = cv({
       danger: "ak-edge-danger",
     },
     /**
-     * Applies the border color exactly as specified, without alpha or lightness
-     * adjustments.
+     * Applies the border color exactly as specified, without the default alpha
+     * and lightness adjustments.
      */
     $borderRaw: "ak-edge-raw",
     /**
-     * Sets the border alpha.
+     * Sets the border opacity. Setting it to `adaptive` makes the border appear
+     * only in high-contrast mode.
      */
     $borderWeight: {
       unset: "",
@@ -69,37 +114,24 @@ export const frame = cv({
       bold: "ak-edge-40",
     },
     /**
-     * Sets how the border is rendered.
+     * Specifies how the border is rendered. Setting it to `auto` uses either a
+     * border or a ring, depending on the parent layer's lightness.
      */
     $borderType: {
       unset: "",
+      auto: "ak-frame-bordering-(--border-width)",
       border: "ak-frame-border-(--border-width)",
-      bordering: "ak-frame-bordering-(--border-width)",
       ring: "ak-frame-ring-(--border-width)",
       inset: "ring-(length:--border-width) ring-inset",
       dashed: "ak-frame-border-(--border-width) border-dashed",
       dotted: "ak-frame-border-(--border-width) border-dotted",
     },
-    /**
-     * Sets the frame flow direction for cover and edge calculations.
-     */
-    $orientation: {
-      unset: "",
-      horizontal: "ak-frame-row",
-      vertical: "ak-frame-col",
-    },
-    /**
-     * Marks the frame as the first child in the current flow.
-     */
-    $frameStart: "ak-frame-start",
-    /**
-     * Marks the frame as the last child in the current flow.
-     */
-    $frameEnd: "ak-frame-end",
   },
   computedVariants: {
     /**
-     * Sets the element's frame padding.
+     * Sets the element's frame padding. This affects nested frames' radius
+     * calculations unless it's set to `1rem` or more, in which case the
+     * concentric effect is no longer visually meaningful.
      */
     $p: (value?: "unset" | "none" | (string & {}) | number) => {
       if (value == null) return;
@@ -111,7 +143,10 @@ export const frame = cv({
       };
     },
     /**
-     * Sets the element's frame margin.
+     * Sets the element's frame margin. This affects the frame's radius
+     * calculations if the current frame is nested, unless the sum of the parent
+     * padding and the child margin is at least `1rem`, in which case the
+     * concentric effect is no longer visually meaningful.
      */
     $m: (value?: "unset" | "none" | (string & {}) | number) => {
       if (value == null) return;
@@ -123,7 +158,9 @@ export const frame = cv({
       };
     },
     /**
-     * Sets the border width.
+     * Sets the border width. When set to `inherit`, the border uses the parent
+     * frame's border or ring width and color. When set to `true`, it defaults
+     * to `1px`.
      */
     $border: (value?: "inherit" | boolean | number) => {
       if (value == null) return;
@@ -137,58 +174,41 @@ export const frame = cv({
       return { style: { "--border-width": `${value}px` } };
     },
     /**
-     * Sets the border alpha.
+     * Pushes the border lightness away from the current color to create
+     * contrast. By default, it's set to `100` (full contrast). Set it to `0`,
+     * or use `$borderRaw` (which sets both alpha and lightness), to use the
+     * exact lightness of the base border color.
      */
-    $borderAlpha: (value?: string | number) => {
+    $borderPush: (value?: string | number) => {
       return getScaledStyleClass({
-        value,
-        allowZero: true,
-        property: "--border-alpha",
-        class: "ak-edge-alpha-(--border-alpha)",
-      });
-    },
-    /**
-     * Pushes the border lightness away from the layer for contrast.
-     */
-    $borderPush: (value?: string | number | boolean) => {
-      return getLightnessStyleClass({
         value,
         property: "--border-push",
         class: "ak-edge-push-(--border-push)",
       });
     },
     /**
-     * Sets the absolute border lightness.
+     * Lightens the border color by the specified amount (0-100).
      */
-    $borderLightness: (value?: string | number) => {
-      return getLightnessStyleClass({
-        value,
-        property: "--border-lightness",
-        class: "ak-edge-l-(--border-lightness)",
-      });
-    },
-    /**
-     * Lightens the border color by the specified amount.
-     */
-    $borderLighten: (value?: string | number | boolean) => {
-      return getLightnessStyleClass({
+    $borderLighten: (value?: string | number) => {
+      return getScaledStyleClass({
         value,
         property: "--border-lighten",
         class: "ak-edge-lighten-(--border-lighten)",
       });
     },
     /**
-     * Darkens the border color by the specified amount.
+     * Darkens the border color by the specified amount (0-100).
      */
-    $borderDarken: (value?: string | number | boolean) => {
-      return getLightnessStyleClass({
+    $borderDarken: (value?: string | number) => {
+      return getScaledStyleClass({
         value,
         property: "--border-darken",
         class: "ak-edge-darken-(--border-darken)",
       });
     },
     /**
-     * Sets the minimum border lightness.
+     * Sets the minimum lightness (0-100) of the border color after all other
+     * border variants have been applied.
      */
     $borderLightnessMin: (value?: string | number) => {
       return getScaledStyleClass({
@@ -198,7 +218,8 @@ export const frame = cv({
       });
     },
     /**
-     * Sets the maximum border lightness.
+     * Sets the maximum lightness (0-100) of the border color after all other
+     * border variants have been applied.
      */
     $borderLightnessMax: (value?: string | number) => {
       return getScaledStyleClass({
@@ -208,29 +229,8 @@ export const frame = cv({
       });
     },
     /**
-     * Increases the border chroma by the specified amount.
-     */
-    $borderSaturate: (value?: string | number | boolean) => {
-      return getScaledStyleClass({
-        value,
-        defaultValue: 1,
-        property: "--border-saturate",
-        class: "ak-edge-saturate-(--border-saturate)",
-      });
-    },
-    /**
-     * Decreases the border chroma by the specified amount.
-     */
-    $borderDesaturate: (value?: string | number | boolean) => {
-      return getScaledStyleClass({
-        value,
-        defaultValue: 1,
-        property: "--border-desaturate",
-        class: "ak-edge-desaturate-(--border-desaturate)",
-      });
-    },
-    /**
-     * Sets the absolute border chroma.
+     * Sets the absolute chroma (0-40) of the border color. Higher values mean
+     * more saturated colors.
      */
     $borderChroma: (value?: ChromaValues | (string & {}) | number) => {
       if (!value) return;
@@ -250,7 +250,28 @@ export const frame = cv({
       });
     },
     /**
-     * Sets the minimum border chroma.
+     * Increases the border chroma by the specified amount (0-40).
+     */
+    $borderSaturate: (value?: string | number) => {
+      return getScaledStyleClass({
+        value,
+        property: "--border-saturate",
+        class: "ak-edge-saturate-(--border-saturate)",
+      });
+    },
+    /**
+     * Decreases the border chroma by the specified amount (0-40).
+     */
+    $borderDesaturate: (value?: string | number) => {
+      return getScaledStyleClass({
+        value,
+        property: "--border-desaturate",
+        class: "ak-edge-desaturate-(--border-desaturate)",
+      });
+    },
+    /**
+     * Sets the minimum chroma (0-40) of the border color after all other
+     * border variants have been applied.
      */
     $borderChromaMin: (value?: ChromaValues | (string & {}) | number) => {
       if (!value) return;
@@ -270,7 +291,8 @@ export const frame = cv({
       });
     },
     /**
-     * Sets the maximum border chroma.
+     * Sets the maximum chroma (0-40) of the border color after all other
+     * border variants have been applied.
      */
     $borderChromaMax: (value?: ChromaValues | (string & {}) | number) => {
       if (!value) return;
@@ -290,7 +312,9 @@ export const frame = cv({
       });
     },
     /**
-     * Sets the absolute border hue.
+     * Sets the exact hue of the border color. Accepts a named hue like
+     * `"red"` or `"blue"`, a color harmony like `"complementary"`, or a degree
+     * value like `240`.
      */
     $borderHue: (value?: HueValues | (string & {}) | number) => {
       if (!value) return;
@@ -324,20 +348,10 @@ export const frame = cv({
         style: { "--border-hue": `${value}` },
       };
     },
-    /**
-     * Rotates the border hue by the specified amount.
-     */
-    $borderHueRotate: (value?: string | number) => {
-      if (!value) return;
-      return {
-        class: "ak-edge-h-rotate-(--border-hue-rotate)",
-        style: { "--border-hue-rotate": `${value}` },
-      };
-    },
   },
   defaultVariants: {
     $frame: true,
-    $borderType: "border",
+    $borderType: "auto",
   },
   computed: ({ variants, setDefaultVariants }) => {
     if (variants.$border === "inherit") {
