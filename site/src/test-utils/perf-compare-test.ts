@@ -15,6 +15,7 @@ import {
   readFileSync,
   realpathSync,
   rmSync,
+  symlinkSync,
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
@@ -278,6 +279,19 @@ test("fails on malformed perf result files", () => {
   const stderr = runCompareFailure(dir);
 
   expect(stderr).toContain("Failed to parse perf results");
+  expect(stderr).toContain("baseline-worker0.json");
+});
+
+test("fails on missing discovered perf result files", () => {
+  const dir = createTempDir();
+  const outputDir = path.join(dir, resultsDir);
+  mkdirSync(outputDir, { recursive: true });
+  symlinkSync("missing.json", path.join(outputDir, "baseline-worker0.json"));
+  writeJson(dir, "current-worker0.json", [createResult(100)]);
+
+  const stderr = runCompareFailure(dir);
+
+  expect(stderr).toContain("Failed to read perf results");
   expect(stderr).toContain("baseline-worker0.json");
 });
 

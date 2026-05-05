@@ -121,9 +121,17 @@ const RENDERING_SUB_METRICS = new Set<MetricKey>([
 ]);
 
 function readJsonFile(filePath: string): unknown {
-  if (!existsSync(filePath)) return [];
+  let contents: string;
   try {
-    return JSON.parse(readFileSync(filePath, "utf-8"));
+    contents = readFileSync(filePath, "utf-8");
+  } catch (error) {
+    throw new Error(`Failed to read perf results at ${filePath}`, {
+      cause: error,
+    });
+  }
+
+  try {
+    return JSON.parse(contents);
   } catch (error) {
     throw new Error(`Failed to parse perf results at ${filePath}`, {
       cause: error,
