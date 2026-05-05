@@ -220,7 +220,10 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      PERF_ROUNDS: 3
+      # Clean runs stop after two paired rounds. Significant deltas get one
+      # extra confirmation round before the PR comment is published.
+      PERF_INITIAL_ROUNDS: 2
+      PERF_CONFIRMATION_ROUNDS: 1
       # Keep the previous per-run sample depth so detached baselines from
       # revisions that do not read PERF_ITERATIONS remain comparable.
       PERF_ITERATIONS: 10
@@ -341,7 +344,10 @@ jobs:
           rm -rf site/.perf-results "$BASELINE_DIR/site/.perf-results"
           mkdir -p site/.perf-results
           shopt -s nullglob
-          for i in $(seq 1 "$PERF_ROUNDS"); do
+
+          run_perf_round() {
+            local i="$1"
+
             echo "::group::Round $i - baseline"
             (
               cd "$BASELINE_DIR"
@@ -369,10 +375,41 @@ jobs:
               exit 1
             fi
             echo "::endgroup::"
+          }
+
+          for i in $(seq 1 "$PERF_INITIAL_ROUNDS"); do
+            run_perf_round "$i"
           done
 
-      - name: Compare results
-        run: pnpm -F site run perf-compare
+          echo "::group::Preliminary comparison"
+          pnpm -F site run perf-compare
+          has_significant_changes=$(
+            node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs";
+
+          const summary = JSON.parse(
+            readFileSync("site/.perf-results/comparison.json", "utf-8"),
+          );
+
+          console.log(summary.hasSignificantChanges ? "true" : "false");
+          NODE
+          )
+          echo "::endgroup::"
+
+          if [ "$has_significant_changes" = "true" ]; then
+            echo "Significant changes detected; running confirmation rounds."
+            start_round=$((PERF_INITIAL_ROUNDS + 1))
+            end_round=$((PERF_INITIAL_ROUNDS + PERF_CONFIRMATION_ROUNDS))
+            for i in $(seq "$start_round" "$end_round"); do
+              run_perf_round "$i"
+            done
+
+            echo "::group::Final comparison"
+            pnpm -F site run perf-compare
+            echo "::endgroup::"
+          else
+            echo "No significant changes detected; skipping confirmation rounds."
+          fi
 
       - name: Upload performance results
         if: always()
