@@ -152,7 +152,7 @@ export const tabPanels = cv({
   },
   defaultVariants: {
     $roundedTop: "auto",
-    $bg: "light",
+    $layer: "light",
     $p: "lg",
     $rounded: "unset",
     $roundedType: "overflow",

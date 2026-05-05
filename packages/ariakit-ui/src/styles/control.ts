@@ -73,7 +73,7 @@ export const control = cv({
   },
   computed: ({ variants, setDefaultVariants, addClass }) => {
     if (variants.$disabled) {
-      setDefaultVariants({ $bg: "disabled" });
+      setDefaultVariants({ $layer: "disabled" });
     }
     if (variants.$p === "none") {
       setDefaultVariants({ $px: "none" });
@@ -98,7 +98,7 @@ export const controlSlot = cv({
     "[&>svg]:block [&>svg]:size-(--size) mx-(--mx) my-(--my)",
   ],
   variants: {
-    $bg: {
+    $layer: {
       // When the frame's bg is inverted, we need to make the pop effect more
       // pronounced so it's still visible.
       pop: "group-[.layer-invert]/control:ak-layer-15",

@@ -34,8 +34,9 @@ export const bevel = cv({
     ],
   },
   computed: ({ variants, setVariants, setDefaultVariants }) => {
-    const $bg = variants.$kind === "bevel" ? "light2" : (variants.$bg ?? "pop");
-    setDefaultVariants({ $bg });
+    const $layer =
+      variants.$kind === "bevel" ? "light2" : (variants.$layer ?? "pop");
+    setDefaultVariants({ $layer });
     // Apply button states only when using the bevel kind.
     const $bevelButton =
       variants.$kind !== "bevel" ? false : variants.$bevelButton;

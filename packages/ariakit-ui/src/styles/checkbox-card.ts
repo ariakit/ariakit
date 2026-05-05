@@ -58,7 +58,7 @@ export const checkboxCardCheck = cv({
     "group-ui-checked-within/checkbox:*:block!",
   ],
   variants: {
-    $bg: {
+    $layer: {
       dark: "group-not-ui-disabled/checkbox:ak-layer-darken-6",
       pop: "group-not-ui-disabled/checkbox:ak-layer-6",
     },

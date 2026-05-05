@@ -6,7 +6,7 @@ export const badge = cv({
   extend: [control],
   class: "font-medium",
   defaultVariants: {
-    $bg: "pop",
+    $layer: "pop",
     $rounded: "full",
     $color: "tonal",
     $size: "xs",
@@ -20,11 +20,11 @@ export const badge = cv({
     $textOpacity: 70,
   },
   computed: ({ variants, setDefaultVariants }) => {
-    if (!variants.$bg) return;
-    if (!isBorderColor(variants.$bg)) return;
+    if (!variants.$layer) return;
+    if (!isBorderColor(variants.$layer)) return;
     // If the background is set to a color that’s also available for the border,
     // we use it for the border and blend the background with the parent layer.
-    const $borderColor = variants.$borderColor ?? variants.$bg;
+    const $borderColor = variants.$borderColor ?? variants.$layer;
     setDefaultVariants({ $mix: 15, $borderColor });
   },
 });

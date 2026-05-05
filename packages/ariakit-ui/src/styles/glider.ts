@@ -87,10 +87,10 @@ export const glider = cv({
             : "pop2",
     } satisfies Record<
       NonNullable<typeof variants.$state>,
-      typeof variants.$bg
+      typeof variants.$layer
     >;
     setDefaultVariants({
-      $bg: variants.$bg ?? bg[variants.$state ?? "none"],
+      $layer: variants.$layer ?? bg[variants.$state ?? "none"],
     });
     if (variants.$state === "selected") {
       setDefaultVariants({
