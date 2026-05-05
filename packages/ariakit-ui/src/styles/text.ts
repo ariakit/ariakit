@@ -3,9 +3,7 @@ import { includes } from "../utils/includes.ts";
 import {
   CHROMA_VALUES,
   HUE_VALUES,
-  getChromaStyleClass,
   getScaledStyleClass,
-  getLightnessStyleClass,
   type ChromaValues,
   type HueValues,
 } from "../utils/styles.ts";
@@ -13,12 +11,19 @@ import {
 export const text = cv({
   variants: {
     /**
-     * Enables the text system, which allows you to color inline text with
-     * automatic contrast against the parent layer.
-     */
-    /**
-     * Sets the element's text color. Use `auto` to inherit the parent’s text
-     * color.
+     * Sets the element's base text color, which can be modified by other text
+     * variants.
+     *
+     * - If set to `true`, the element will use the parent layer's background
+     *   color as its base text color and adjust it automatically to meet WCAG
+     *   AA contrast.
+     * - If set to a color, the element will have that color as its base text
+     *   color.
+     *
+     * Set to `false` to disable the text system.
+     *
+     * **Important**: this should be applied to a descendant, not to the
+     * `$layer` element itself.
      */
     $text: {
       true: "ak-text",
@@ -30,49 +35,41 @@ export const text = cv({
   },
   computedVariants: {
     /**
-     * Pushes text lightness away from the parent layer beyond the automatic
-     * readable floor.
+     * Pushes text lightness farther from the parent layer beyond the automatic
+     * readability floor. This value represents the **minimum** lightness
+     * offset, from `0` to `100`. It automatically increases as the `--contrast`
+     * value increases, like in high-contrast mode.
      */
-    $textPush: (value?: string | number | boolean) => {
-      return getLightnessStyleClass({
+    $textPush: (value?: string | number) => {
+      return getScaledStyleClass({
         value,
         property: "--text-push",
         class: "ak-text-push-(--text-push)",
       });
     },
     /**
-     * Sets the absolute text lightness.
+     * Lightens the text color by the specified amount (0-100).
      */
-    $textLightness: (value?: string | number) => {
-      return getLightnessStyleClass({
-        value,
-        allowZero: true,
-        property: "--text-lightness",
-        class: "ak-text-l-(--text-lightness)",
-      });
-    },
-    /**
-     * Lightens the text color by the specified amount.
-     */
-    $textLighten: (value?: string | number | boolean) => {
-      return getLightnessStyleClass({
+    $textLighten: (value?: string | number) => {
+      return getScaledStyleClass({
         value,
         property: "--text-lighten",
         class: "ak-text-lighten-(--text-lighten)",
       });
     },
     /**
-     * Darkens the text color by the specified amount.
+     * Darkens the text color by the specified amount (0-100).
      */
-    $textDarken: (value?: string | number | boolean) => {
-      return getLightnessStyleClass({
+    $textDarken: (value?: string | number) => {
+      return getScaledStyleClass({
         value,
         property: "--text-darken",
         class: "ak-text-darken-(--text-darken)",
       });
     },
     /**
-     * Sets the minimum text lightness.
+     * Sets the minimum lightness (0-100) of the text color after all other
+     * text variants have been applied.
      */
     $textLightnessMin: (value?: string | number) => {
       return getScaledStyleClass({
@@ -82,7 +79,8 @@ export const text = cv({
       });
     },
     /**
-     * Sets the maximum text lightness.
+     * Sets the maximum lightness (0-100) of the text color after all other
+     * text variants have been applied.
      */
     $textLightnessMax: (value?: string | number) => {
       return getScaledStyleClass({
@@ -91,50 +89,10 @@ export const text = cv({
         class: "ak-text-max-(--text-lightness-max)",
       });
     },
+
     /**
-     * Increases the text chroma by the specified amount.
-     */
-    $textSaturate: (value?: string | number | boolean) => {
-      return getChromaStyleClass({
-        value,
-        property: "--text-saturate",
-        class: "ak-text-saturate-(--text-saturate)",
-      });
-    },
-    /**
-     * Decreases the text chroma by the specified amount.
-     */
-    $textDesaturate: (value?: string | number | boolean) => {
-      return getChromaStyleClass({
-        value,
-        property: "--text-desaturate",
-        class: "ak-text-desaturate-(--text-desaturate)",
-      });
-    },
-    /**
-     * Shifts the text hue toward the warm hue.
-     */
-    $textWarm: (value?: string | number | boolean) => {
-      return getScaledStyleClass({
-        value,
-        defaultValue: 1,
-        property: "--text-warm",
-        class: "ak-text-warm-(--text-warm)",
-      });
-    },
-    /**
-     * Shifts the text hue toward the cool hue.
-     */
-    $textCool: (value?: string | number | boolean) => {
-      return getScaledStyleClass({
-        value,
-        defaultValue: 1,
-        property: "--text-cool",
-        class: "ak-text-cool-(--text-cool)",
-      });
-    },
-    /**
-     * Sets the absolute text chroma.
+     * Sets the exact chroma of the text color. Accepts a named chroma like
+     * `"muted"` or `"vivid"`, or a value like `40`.
      */
     $textChroma: (value?: ChromaValues | (string & {}) | number) => {
       if (!value) return;
@@ -154,7 +112,28 @@ export const text = cv({
       });
     },
     /**
-     * Sets the minimum text chroma.
+     * Increases the text chroma by the specified amount (0-40).
+     */
+    $textSaturate: (value?: string | number) => {
+      return getScaledStyleClass({
+        value,
+        property: "--text-saturate",
+        class: "ak-text-saturate-(--text-saturate)",
+      });
+    },
+    /**
+     * Decreases the text chroma by the specified amount (0-40).
+     */
+    $textDesaturate: (value?: string | number) => {
+      return getScaledStyleClass({
+        value,
+        property: "--text-desaturate",
+        class: "ak-text-desaturate-(--text-desaturate)",
+      });
+    },
+    /**
+     * Sets the minimum chroma (0-40) of the text color after all other text
+     * variants have been applied.
      */
     $textChromaMin: (value?: ChromaValues | (string & {}) | number) => {
       if (!value) return;
@@ -174,7 +153,8 @@ export const text = cv({
       });
     },
     /**
-     * Sets the maximum text chroma.
+     * Sets the maximum chroma (0-40) of the text color after all other text
+     * variants have been applied.
      */
     $textChromaMax: (value?: ChromaValues | (string & {}) | number) => {
       if (!value) return;
@@ -194,7 +174,9 @@ export const text = cv({
       });
     },
     /**
-     * Sets the absolute text hue.
+     * Sets the exact hue of the text color. Accepts a named hue like
+     * `"red"` or `"blue"`, a color harmony like `"complementary"`, or a degree
+     * value like `240`.
      */
     $textHue: (value?: HueValues | (string & {}) | number) => {
       if (!value) return;
@@ -226,16 +208,6 @@ export const text = cv({
       return {
         class: "ak-text-h-(--text-hue)",
         style: { "--text-hue": `${value}` },
-      };
-    },
-    /**
-     * Rotates the text hue by the specified amount.
-     */
-    $textHueRotate: (value?: string | number) => {
-      if (!value) return;
-      return {
-        class: "ak-text-h-rotate-(--text-hue-rotate)",
-        style: { "--text-hue-rotate": `${value}` },
       };
     },
   },
