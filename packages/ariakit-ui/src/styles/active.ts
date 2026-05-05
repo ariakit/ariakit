@@ -18,27 +18,31 @@ export const active = cv({
      * smaller value for larger elements.
      * @default 5
      **/
-    $depthX: (value: number) => ({ "--active-depth-x": `${value}` }),
+    $activeDepthX: (value: number) => ({
+      style: { "--active-depth-x": `${value}` },
+    }),
     /**
      * Vertical scale factor applied to the element when pressed. Use a smaller
      * value for larger elements.
      * @default 5
      **/
-    $depthY: (value: number) => ({ "--active-depth-y": `${value}` }),
+    $activeDepthY: (value: number) => ({
+      style: { "--active-depth-y": `${value}` },
+    }),
     /**
      * Scale factor applied to the element when pressed. Use a smaller value for
      * larger elements.
      * @default 5
      **/
-    $depth: (_value: number) => {},
+    $activeDepth: (_value: number) => {},
   },
   defaultVariants: {
-    $depth: 5,
+    $activeDepth: 5,
   },
   computed: (context) => {
     context.setDefaultVariants({
-      $depthX: context.variants.$depth,
-      $depthY: context.variants.$depth,
+      $activeDepthX: context.variants.$activeDepth,
+      $activeDepthY: context.variants.$activeDepth,
     });
   },
 });
