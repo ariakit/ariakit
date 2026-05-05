@@ -216,8 +216,18 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
+      actions: read
       contents: read
       pull-requests: write
+    env:
+      # Clean runs stop after two paired rounds. Significant deltas get one
+      # extra confirmation round before the PR comment is published.
+      PERF_INITIAL_ROUNDS: 2
+      PERF_CONFIRMATION_ROUNDS: 1
+      # Keep per-round samples modest; paired rounds and confirmation preserve
+      # enough signal for noisy results.
+      PERF_ITERATIONS: 5
+      PERF_WARMUP: 1
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -232,17 +242,25 @@ jobs:
         with:
           engine: chromium
 
-      # --- Baseline (base branch) ---
-      - name: Checkout base branch
-        run: git checkout -f ${{ github.event.pull_request.base.sha }}
+      - name: Set up baseline worktree
+        run: |
+          BASELINE_DIR="$RUNNER_TEMP/perf-baseline"
+          echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"
+          git worktree add --detach "$BASELINE_DIR" \
+            ${{ github.event.pull_request.base.sha }}
 
-      - name: Set up base environment
-        uses: ./.github/workflows/setup
+      - name: Install dependencies (baseline)
+        working-directory: ${{ runner.temp }}/perf-baseline
+        env:
+          # The baseline worktree shares `.git/config` with the main checkout,
+          # so husky's prepare step would otherwise rewrite `core.hooksPath`
+          # to a relative path under a temporary worktree.
+          HUSKY: 0
+        run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright (base)
-        uses: ./.github/workflows/install-playwright
-        with:
-          engine: chromium
+      - name: Install Playwright (baseline)
+        working-directory: ${{ runner.temp }}/perf-baseline
+        run: pnpm exec playwright install --with-deps chromium
 
       - name: Find base app artifact
         id: find-base-artifact
@@ -277,7 +295,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: app-dist
-          path: site/dist
+          path: ${{ runner.temp }}/perf-baseline/site/dist
           github-token: ${{ github.token }}
           run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
@@ -288,41 +306,25 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: nextjs-dist
-          path: nextjs/.open-next
+          path: ${{ runner.temp }}/perf-baseline/nextjs/.open-next
           github-token: ${{ github.token }}
           run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
       - name: Clean partial base artifacts
         if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
-        run: rm -rf site/dist nextjs/.open-next
+        run: rm -rf "$BASELINE_DIR/site/dist" "$BASELINE_DIR/nextjs/.open-next"
 
       - name: Build base app
         if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
+        working-directory: ${{ runner.temp }}/perf-baseline
         run: pnpm -F site run build-lite
 
       - name: Build base Next.js app
         if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
+        working-directory: ${{ runner.temp }}/perf-baseline
         run: pnpm -F nextjs run build-worker
 
-      - name: Run baseline perf tests
-        # Baseline failures are expected when perf tests are new.
-        run: |
-          PERF_RESULTS_FILE=baseline.json \
-          xvfb-run pnpm -F site run test-perf --pass-with-no-tests || true
-
-      - name: Save baseline results
-        run: |
-          mkdir -p /tmp/perf-baseline
-          cp site/.perf-results/baseline*.json /tmp/perf-baseline/ 2>/dev/null || true
-
-      # --- Current (merge commit) ---
-      - name: Checkout merge commit
-        run: git checkout -f ${{ github.sha }}
-
-      - name: Set up PR environment
-        uses: ./.github/workflows/setup
-
-      - name: Clean base app artifacts
+      - name: Clean current app artifacts
         run: rm -rf site/dist nextjs/.open-next
 
       - name: Download app artifact
@@ -337,22 +339,90 @@ jobs:
           name: nextjs-dist
           path: nextjs/.open-next
 
-      - name: Restore baseline results
+      - name: Run interleaved perf tests
         run: |
+          rm -rf site/.perf-results "$BASELINE_DIR/site/.perf-results"
           mkdir -p site/.perf-results
-          cp /tmp/perf-baseline/*.json site/.perf-results/ 2>/dev/null || true
+          shopt -s nullglob
 
-      - name: Run current perf tests
-        run: |
-          PERF_RESULTS_FILE=current.json \
-          xvfb-run pnpm -F site run test-perf --pass-with-no-tests
+          run_perf_round() {
+            local i="$1"
 
-      - name: Compare results
+            echo "::group::Round $i - baseline"
+            (
+              cd "$BASELINE_DIR"
+              PERF_RESULTS_FILE=baseline-$i.json \
+              PERF_ITERATIONS="$PERF_ITERATIONS" \
+              PERF_WARMUP="$PERF_WARMUP" \
+              xvfb-run -a pnpm -F site run test-perf --pass-with-no-tests
+            )
+            baseline_files=("$BASELINE_DIR"/site/.perf-results/baseline-"$i"*.json)
+            if [ ${#baseline_files[@]} -eq 0 ]; then
+              echo "No baseline perf results for round $i; writing an empty baseline."
+              printf '[]\n' > site/.perf-results/baseline-"$i"-worker0.json
+            else
+              cp "${baseline_files[@]}" site/.perf-results/
+            fi
+            echo "::endgroup::"
+
+            echo "::group::Round $i - current"
+            PERF_RESULTS_FILE=current-$i.json \
+            PERF_ITERATIONS="$PERF_ITERATIONS" \
+            PERF_WARMUP="$PERF_WARMUP" \
+            xvfb-run -a pnpm -F site run test-perf --pass-with-no-tests
+            current_files=(site/.perf-results/current-"$i"*.json)
+            if [ ${#current_files[@]} -eq 0 ]; then
+              echo "Missing current perf results for round $i" >&2
+              exit 1
+            fi
+            echo "::endgroup::"
+          }
+
+          for i in $(seq 1 "$PERF_INITIAL_ROUNDS"); do
+            run_perf_round "$i"
+          done
+
+          echo "::group::Preliminary comparison"
+          pnpm -F site run perf-compare
+          has_significant_changes=$(
+            node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs";
+
+          const summary = JSON.parse(
+            readFileSync("site/.perf-results/comparison.json", "utf-8"),
+          );
+
+          console.log(summary.hasSignificantChanges ? "true" : "false");
+          NODE
+          )
+          echo "::endgroup::"
+
+          if [ "$has_significant_changes" = "true" ]; then
+            echo "Significant changes detected; running confirmation rounds."
+            start_round=$((PERF_INITIAL_ROUNDS + 1))
+            end_round=$((PERF_INITIAL_ROUNDS + PERF_CONFIRMATION_ROUNDS))
+            for i in $(seq "$start_round" "$end_round"); do
+              run_perf_round "$i"
+            done
+
+            echo "::group::Final comparison"
+            pnpm -F site run perf-compare
+            echo "::endgroup::"
+          else
+            echo "No significant changes detected; skipping confirmation rounds."
+          fi
+
+      - name: Upload performance results
         if: always()
-        run: pnpm -F site run perf-compare
+        uses: actions/upload-artifact@v7
+        with:
+          name: perf-results
+          path: site/.perf-results
+          if-no-files-found: ignore
+          include-hidden-files: true
+          retention-days: 7
 
       - name: Post or update PR comment
-        if: always()
         uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.ARIAKIT_BOT_PAT }}

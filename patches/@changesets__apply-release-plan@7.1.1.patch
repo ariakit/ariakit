@@ -1,7 +1,7 @@
 diff --git a/dist/changesets-apply-release-plan.cjs.js b/dist/changesets-apply-release-plan.cjs.js
 --- a/dist/changesets-apply-release-plan.cjs.js
 +++ b/dist/changesets-apply-release-plan.cjs.js
-@@ -447,15 +447,61 @@ async function getNewChangelogEntry(releasesWithPackage, changesets, config, cwd
+@@ -447,15 +447,63 @@ async function getNewChangelogEntry(releasesWithPackage, changesets, config, cwd
    } else {
      throw new Error("Could not resolve changelog generation functions");
    }
@@ -37,9 +37,11 @@ diff --git a/dist/changesets-apply-release-plan.cjs.js b/dist/changesets-apply-r
 +          const peerDependencyVersionRange = (_release$packageJson$2 = release.packageJson.peerDependencies) === null || _release$packageJson$2 === void 0 ? void 0 : _release$packageJson$2[rel.name];
 +          const versionRange = dependencyVersionRange || peerDependencyVersionRange;
 +          const usesWorkspaceRange = versionRange === null || versionRange === void 0 ? void 0 : versionRange.startsWith("workspace:");
-+          return versionRange && (usesWorkspaceRange || validRange__default["default"](versionRange) !== null) && shouldUpdateDependencyBasedOnConfig({
++          return versionRange && (usesWorkspaceRange || validRange__default["default"](versionRange) !== null) && shouldUpdateDependencyBasedOnConfig(cwd, {
 +            type: rel.type,
-+            version: rel.newVersion
++            version: rel.newVersion,
++            oldVersion: rel.oldVersion,
++            dir: rel.dir
 +          }, {
 +            depVersionRange: versionRange,
 +            depType: dependencyVersionRange ? "dependencies" : "peerDependencies"

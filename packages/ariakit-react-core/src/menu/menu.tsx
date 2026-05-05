@@ -122,7 +122,6 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     };
   }, [store, modal, autoFocusOnShowState, initialFocus, items, baseElement]);
 
-  const mayAutoFocusOnShow = !!autoFocusOnShow;
   // When the `autoFocusOnShow` prop is set to `true` (default), we'll only
   // move focus to the menu when there's an initialFocusRef set or the menu is
   // modal. Otherwise, users would have to manually call
@@ -130,6 +129,8 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   // This differs from the usual dialog behavior that would automatically
   // focus on the dialog container when no initialFocusRef is set.
   const canAutoFocusOnShow = !!initialFocusRef || !!props.initialFocus || modal;
+  const autoFocusOnShowProp =
+    autoFocusOnShow === false ? false : canAutoFocusOnShow && autoFocusOnShow;
 
   const contentElement = useStoreState(
     store.combobox || store,
@@ -169,9 +170,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     store,
     alwaysVisible,
     initialFocus: initialFocusRef,
-    autoFocusOnShow: mayAutoFocusOnShow
-      ? canAutoFocusOnShow && autoFocusOnShow
-      : autoFocusOnShowState || modal,
+    autoFocusOnShow: autoFocusOnShowProp,
     ...props,
     hideOnEscape(event) {
       if (isFalsyBooleanCallback(hideOnEscape, event)) return false;

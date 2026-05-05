@@ -140,6 +140,12 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       const initialFocus = getInitialFocus(event, dir);
       if (initialFocus) {
         event.preventDefault();
+        const { open } = store.getState();
+        if (open) {
+          const id = initialFocus === "last" ? store.last() : store.first();
+          store.move(id);
+          return;
+        }
         showMenu();
         store?.setAutoFocusOnShow(true);
         store?.setInitialFocus(initialFocus);

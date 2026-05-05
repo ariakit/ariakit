@@ -4,8 +4,6 @@ import { fileURLToPath } from "node:url";
 import type { CDPSession, Page, TestInfo } from "@playwright/test";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
-const DEFAULT_ITERATIONS = 10;
-const DEFAULT_WARMUP = 1;
 const DEFAULT_PROFILE_LIMIT = 10;
 const initializedResultFiles = new Set<string>();
 
@@ -214,6 +212,24 @@ function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
 
 function isTruthyEnv(name: string): boolean {
   return process.env[name] === "true" || process.env[name] === "1";
+}
+
+interface IntegerEnvOptions {
+  min?: number;
+}
+
+export function getIntegerEnv(
+  name: string,
+  fallback: number,
+  options: IntegerEnvOptions = {},
+): number {
+  const value = process.env[name];
+  if (value == null) return fallback;
+  if (value.trim() === "") return fallback;
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed)) return fallback;
+  if (options.min != null && parsed < options.min) return fallback;
+  return parsed;
 }
 
 function normalizeProfileUrl(url: string): string {
@@ -444,7 +460,7 @@ async function startSelectorTrace(
   };
 }
 
-function mergeScriptProfiles(
+export function mergeScriptProfiles(
   profiles: PerfScriptProfileEntry[][],
   limit: number,
 ): PerfScriptProfileEntry[] {
@@ -471,7 +487,7 @@ function mergeScriptProfiles(
     .slice(0, limit);
 }
 
-function mergeSelectorProfiles(
+export function mergeSelectorProfiles(
   profiles: PerfSelectorProfileEntry[][],
   limit: number,
 ): PerfSelectorProfileEntry[] {
@@ -703,8 +719,8 @@ export async function createPerfMeasure(
   options: CreatePerfMeasureOptions = {},
 ): Promise<PerfMetrics> {
   const {
-    iterations = DEFAULT_ITERATIONS,
-    warmup = DEFAULT_WARMUP,
+    iterations = getIntegerEnv("PERF_ITERATIONS", 10, { min: 1 }),
+    warmup = getIntegerEnv("PERF_WARMUP", 1, { min: 0 }),
     resetPage = true,
     label,
     profileLimit = DEFAULT_PROFILE_LIMIT,
