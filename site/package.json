@@ -67,7 +67,7 @@
     "@stackblitz/sdk": "1.11.0",
     "@stripe/stripe-js": "9.4.0",
     "@tailwindcss/vite": "4.2.4",
-    "@tanstack/react-query": "5.100.7",
+    "@tanstack/react-query": "5.100.8",
     "astro": "5.18.1",
     "astro-remote": "0.3.4",
     "canvas-confetti": "1.9.4",
