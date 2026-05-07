@@ -8,9 +8,7 @@ overrides:
   '@wordpress/components>@ariakit/react': workspace:*
 
 patchedDependencies:
-  '@changesets/apply-release-plan@7.1.1':
-    hash: 19cb6131207f59da50995e2f93d09dbcaccb346cdc696d59f1aa89e3114f6ac5
-    path: patches/@changesets__apply-release-plan@7.1.1.patch
+  '@changesets/apply-release-plan@7.1.1': 19cb6131207f59da50995e2f93d09dbcaccb346cdc696d59f1aa89e3114f6ac5
 
 importers:
 
