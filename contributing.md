@@ -53,7 +53,7 @@ Alternatively, you can [open the project in Gitpod](https://gitpod.io/#https://g
 
 ## Installing Node.js and pnpm
 
-This repository uses [pnpm workspaces](https://pnpm.io/workspaces) to manage multiple ESM projects. You need to install **[pnpm](https://pnpm.io/installation)** and **Node.js v18 or higher**.
+This repository uses [pnpm workspaces](https://pnpm.io/workspaces) to manage multiple ESM projects. You need to install **[pnpm](https://pnpm.io/installation)** and **Node.js v22 or higher**.
 
 You can run the following commands in your terminal to check your local Node.js and pnpm versions:
 
