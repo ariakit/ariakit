@@ -10,7 +10,7 @@
 import type { APIContext } from "astro";
 import { ActionError, defineAction } from "astro:actions";
 import type { Stripe } from "stripe";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { getUser, isAdmin } from "#app/lib/auth.ts";
 import {
   deletePrice,

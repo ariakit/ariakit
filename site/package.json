@@ -102,7 +102,7 @@
     "unist-util-visit": "5.1.0",
     "use-local-storage-state": "19.5.0",
     "vfile": "6.0.3",
-    "zod": "3.25.76"
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@ariakit/test": "workspace:*",
