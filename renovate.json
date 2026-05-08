@@ -49,6 +49,10 @@
       "matchPackageNames": ["/^@radix-ui/"]
     },
     {
+      "groupName": "react",
+      "matchPackageNames": ["react", "react-dom"]
+    },
+    {
       "groupName": "vite",
       "matchPackageNames": ["vite", "/^@vitejs/"]
     },
