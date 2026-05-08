@@ -150,11 +150,11 @@ importers:
         specifier: 1.9.12
         version: 1.9.12
       stylelint:
-        specifier: 17.10.0
-        version: 17.10.0(typescript@6.0.3)
+        specifier: 17.11.0
+        version: 17.11.0(typescript@6.0.3)
       stylelint-config-standard:
         specifier: 40.0.0
-        version: 40.0.0(stylelint@17.10.0(typescript@6.0.3))
+        version: 40.0.0(stylelint@17.11.0(typescript@6.0.3))
       tailwindcss:
         specifier: 3.4.18
         version: 3.4.18(yaml@2.8.3)
@@ -9242,6 +9242,10 @@ packages:
     resolution: {integrity: sha512-6hJPQ8N0V0P3SNmP6h2J99RLuzrWz2gvT7VnK5tKvrNqJoyS9W4/Fb8mo31UiPvy00z7DQXkP2hnKBVav76thw==}
     engines: {node: '>=20'}
 
+  string-width@8.2.1:
+    resolution: {integrity: sha512-IIaP0g3iy9Cyy18w3M9YcaDudujEAVHKt3a3QJg1+sr/oX96TbaGUubG0hJyCjCBThFH+tFpcIyoUHUn1ogaLA==}
+    engines: {node: '>=20'}
+
   stringify-entities@4.0.4:
     resolution: {integrity: sha512-IwfBptatlO+QCJUo19AqvrPNqlVMpW9YEL2LIVY+Rpv2qsjCGxaDLNRgeGsQWJhfItebuJhsGSLjaBbNSQ+ieg==}
 
@@ -9348,8 +9352,8 @@ packages:
     peerDependencies:
       stylelint: ^17.0.0
 
-  stylelint@17.10.0:
-    resolution: {integrity: sha512-cI7I6HHEYOHHVNVci+s92WlA3QfmNhjwFdgCgYV3TLEysilOjk+B3EFxMED1xY9GYB0Kre3OD+mSLj19VLTIvA==}
+  stylelint@17.11.0:
+    resolution: {integrity: sha512-/3czzmbF9XdGWvReDF3Ex4R23Ajolo7j8RB2bFNEqk6Ht356nlpVV+G5bG2Qt8AW1ofJzXztBRDnAtd7cgowWA==}
     engines: {node: '>=20.19.0'}
     hasBin: true
 
@@ -20258,6 +20262,11 @@ snapshots:
       get-east-asian-width: 1.5.0
       strip-ansi: 7.2.0
 
+  string-width@8.2.1:
+    dependencies:
+      get-east-asian-width: 1.5.0
+      strip-ansi: 7.2.0
+
   stringify-entities@4.0.4:
     dependencies:
       character-entities-html4: 2.1.0
@@ -20334,16 +20343,16 @@ snapshots:
     optionalDependencies:
       '@babel/core': 7.29.0
 
-  stylelint-config-recommended@18.0.0(stylelint@17.10.0(typescript@6.0.3)):
+  stylelint-config-recommended@18.0.0(stylelint@17.11.0(typescript@6.0.3)):
     dependencies:
-      stylelint: 17.10.0(typescript@6.0.3)
+      stylelint: 17.11.0(typescript@6.0.3)
 
-  stylelint-config-standard@40.0.0(stylelint@17.10.0(typescript@6.0.3)):
+  stylelint-config-standard@40.0.0(stylelint@17.11.0(typescript@6.0.3)):
     dependencies:
-      stylelint: 17.10.0(typescript@6.0.3)
-      stylelint-config-recommended: 18.0.0(stylelint@17.10.0(typescript@6.0.3))
+      stylelint: 17.11.0(typescript@6.0.3)
+      stylelint-config-recommended: 18.0.0(stylelint@17.11.0(typescript@6.0.3))
 
-  stylelint@17.10.0(typescript@6.0.3):
+  stylelint@17.11.0(typescript@6.0.3):
     dependencies:
       '@csstools/css-calc': 3.2.0(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-parser-algorithms': 4.0.0(@csstools/css-tokenizer@4.0.0)
@@ -20376,7 +20385,7 @@ snapshots:
       postcss-safe-parser: 7.0.1(postcss@8.5.13)
       postcss-selector-parser: 7.1.1
       postcss-value-parser: 4.2.0
-      string-width: 8.2.0
+      string-width: 8.2.1
       supports-hyperlinks: 4.4.0
       svg-tags: 1.0.0
       table: 6.9.0
