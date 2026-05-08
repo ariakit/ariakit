@@ -25,7 +25,10 @@ export function Button(props: ButtonProps) {
     props["aria-disabled"] === true ||
     props["aria-disabled"] === "true";
   return (
-    <button {...button({ $disabled: disabled, ...variantProps })} {...rest} />
+    <button
+      {...button.jsx({ $disabled: disabled, ...variantProps })}
+      {...rest}
+    />
   );
 }
 

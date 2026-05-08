@@ -401,8 +401,8 @@ importers:
         specifier: workspace:*
         version: link:../ariakit-react
       clava:
-        specifier: 0.2.3
-        version: 0.2.3
+        specifier: 0.2.4
+        version: 0.2.4
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -5916,8 +5916,8 @@ packages:
     resolution: {integrity: sha512-77PSwercCZU2Fc4sX94eF8k8Pxte6JAwL4/ICZLFjJLqegs7kCuAsqqj/70NQF6TvDpgFjkubQB2FW2ZZddvQg==}
     engines: {node: '>=8'}
 
-  clava@0.2.3:
-    resolution: {integrity: sha512-ZBt5YZ7PFMlaJAVTiodqehUEtG1dwVI54rQfcIOynMR9GqFa/OIFbGF9wNuscX6vnFbnYz9MerTIAOwORe0/mg==}
+  clava@0.2.4:
+    resolution: {integrity: sha512-Yix9avIz+wOKmtMyfH14oqmeXw4nZGoWr/+9BG+HZl8xfsylqt6F0EvpL/3DIGqZpCC2iBTqQ0lNQpYEYQH/Bg==}
 
   cli-boxes@3.0.0:
     resolution: {integrity: sha512-/lzGpEWL/8PfI0BmBOPRwp0c/wFNX1RdUML3jK/RcSBA9T8mZDdQpqYBKtCFTOfQbwPqWEOpjqW+Fnayc0969g==}
@@ -7525,6 +7525,11 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
+
+  lucide-react@1.11.0:
+    resolution: {integrity: sha512-UOhjdztXCgdBReRcIhsvz2siIBogfv/lhJEIViCpLt924dO+GDms9T7DNoucI23s6kEPpe988m5N0D2ajnzb2g==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   lucide-react@1.14.0:
     resolution: {integrity: sha512-+1mdWcfSJVUsaTIjN9zoezmUhfXo5l0vP7ekBMPo3jcS/aIkxHnXqAPsByszMZx/Y8oQBRJxJx5xg+RH3urzxA==}
@@ -16252,7 +16257,7 @@ snapshots:
 
   ci-info@4.4.0: {}
 
-  clava@0.2.3:
+  clava@0.2.4:
     dependencies:
       clsx: 2.1.1
       csstype: 3.2.3
@@ -17989,6 +17994,10 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
+
+  lucide-react@1.11.0(react@18.3.1):
+    dependencies:
+      react: 18.3.1
 
   lucide-react@1.14.0(react@18.3.1):
     dependencies:

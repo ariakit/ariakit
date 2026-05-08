@@ -91,6 +91,7 @@ export default function Example() {
             // $borderRaw: true,
             // $borderColor: "brand",
             $p: 1,
+            className: "ui-bevel-button",
           })}
         >
           dsadas

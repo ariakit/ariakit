@@ -253,3 +253,48 @@
     @slot;
   }
 }
+
+
+@utility ui-bevel {
+  --min-l: 0.25;
+  --max-l: 1;
+  --bg-dark-l: calc(l - 0.02 - 0.1 * c);
+  --bg-light-l: calc(l + 0.01);
+  --bg-dark: oklch(from var(--ak-layer) clamp(var(--min-l), var(--bg-dark-l), var(--max-l)) c h);
+  --bg-light: oklch(from var(--ak-layer) clamp(var(--min-l), var(--bg-light-l), var(--max-l)) c h);
+  --shadow-color: oklch(from var(--bg-dark) calc(l - 0.15) c h);
+  --shadow: 0 -0.5px 0.5px 1px var(--shadow-color);
+  --highlight: 0 2px 0.5px oklch(from var(--bg-dark) calc(l + 0.2) calc(c / 2) h);
+  --inset-shadow: var(--shadow), inset var(--highlight);
+  @apply inset-shadow-(--inset-shadow) from-(--bg-dark) to-(--bg-light) bg-linear-to-b from-50% bg-clip-padding outline-offset-1;
+  @variant ak-dark {
+    --min-l: 0.15;
+    --max-l: 0.85;
+    --bg-dark-l: l;
+    --shadow: 0 -0.5px 0.5px var(--shadow-color);
+    --highlight: 0 1.5px 0.5px oklch(from var(--bg-dark) calc(l + 0.1) c h);
+  }
+}
+
+@utility ui-bevel-button {
+  @apply ui-bevel;
+  @variant ui-hover {
+    --min-l: 0.35;
+    --max-l: 1;
+    @variant ak-dark {
+      --min-l: 0.25;
+    }
+  }
+  @variant ui-active {
+    --bg-dark-active: oklch(from var(--ak-layer) calc(l - 0.02) c h);
+    --bg-light-active: oklch(from var(--ak-layer) calc(l + 0.02) c h);
+    --shadow: 0 1px 0.5px 1px var(--shadow-color);
+    --highlight: 0 0 transparent;
+    @apply from-(--bg-dark-active) to-(--bg-light-active) from-60%;
+    @variant ak-dark {
+      --bg-dark-active: oklch(from var(--ak-layer) calc(l - 0.02) c h);
+      --bg-light-active: oklch(from var(--ak-layer) calc(l + 0.02) c h);
+      --shadow: 0 0.5px 0.5px var(--shadow-color);
+    }
+  }
+}

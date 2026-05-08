@@ -5,10 +5,9 @@ import { layer } from "./layer.ts";
 import { text } from "./text.ts";
 
 export const control = cv({
-  extend: [layer, frame, text],
+  extend: [frame],
   class: [
     "control group/control relative flex justify-center",
-    "[--parent-background:var(--ak-layer-parent)]",
     // font sidebearing
     "[--sb:0.15em]",
   ],
@@ -28,6 +27,7 @@ export const control = cv({
     },
     /**
      * Sets the gap between the element's content and its siblings.
+     * @default "md"
      */
     $gap: {
       none: "",
@@ -38,6 +38,7 @@ export const control = cv({
     },
     /**
      * Sets the vertical gap between the element's label and description.
+     * @default "auto"
      */
     $gapY: {
       none: "",
@@ -66,14 +67,14 @@ export const control = cv({
   defaultVariants: {
     $size: "auto",
     $rounded: "md",
-    $p: "md",
+    $p: 2,
     $px: "md",
     $gap: "md",
     $gapY: "auto",
   },
   computed: ({ variants, setDefaultVariants, addClass }) => {
     if (variants.$disabled) {
-      setDefaultVariants({ $layer: "disabled" });
+      setDefaultVariants({ $lightnessOffset: true });
     }
     if (variants.$p === "none") {
       setDefaultVariants({ $px: "none" });
@@ -171,8 +172,10 @@ export const controlSlot = cv({
     /**
      * Renders the slot as a floating element in the top-right corner.
      */
-    $floating:
-      "m-0! absolute top-0 end-0 -translate-y-1/2 translate-x-[calc(var(--size)/2)] border border-(--parent-background)",
+    $floating: [
+      "m-0! absolute top-0 inset-e-0 -translate-y-1/2 translate-x-[calc(var(--size)/2)] border",
+      "group-has-[&]/control:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
+    ],
   },
   computedVariants: {
     /**

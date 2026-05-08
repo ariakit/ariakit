@@ -1,31 +1,89 @@
 import { cv } from "clava";
+import {
+  getChromaStyleClass,
+  getLightnessStyleClass,
+} from "../utils/styles.ts";
 
 export const hover = cv({
-  variants: {
+  computedVariants: {
     /**
-     * Sets the element's background color when hovered.
+     * Automatically adjusts the layer's lightness when the element is hovered.
+     * The background color becomes lighter or darker depending on its current
+     * lightness. The value represents the **maximum** lightness offset, but
+     * it's not guaranteed. If the user has high-contrast preferences, the
+     * offset will be lower to allow for greater contrast between the layer and
+     * the text.
+     *
+     * If you want the opposite effect, where the offset increases as contrast
+     * goes up, use `$hoverPush` instead.
      */
-    $hover: {
-      // hover
-      faint: "ui-hover:ak-state-1.5",
-      light: "ui-hover:ak-state-3",
-      true: "ui-hover:ak-state-6",
-      medium: "ui-hover:ak-state-9",
-      bold: "ui-hover:ak-state-12",
-      intense: "ui-hover:ak-state-18",
-      // hover vivid
-      vividFaint: "ui-hover:ak-state-1.5 ui-hover:ak-state-saturate-10",
-      vividLight: "ui-hover:ak-state-3 ui-hover:ak-state-saturate-10",
-      vivid: "ui-hover:ak-state-6 ui-hover:ak-state-saturate-10",
-      vividMedium: "ui-hover:ak-state-9 ui-hover:ak-state-saturate-10",
-      vividBold: "ui-hover:ak-state-12 ui-hover:ak-state-saturate-10",
-      vividIntense: "ui-hover:ak-state-18 ui-hover:ak-state-saturate-10",
-      // colors
-      primary: "ui-hover:ak-layer-primary ui-hover:ak-layer-mix-20",
-      secondary: "ui-hover:ak-layer-secondary ui-hover:ak-layer-mix-20",
-      success: "ui-hover:ak-layer-success ui-hover:ak-layer-mix-20",
-      warning: "ui-hover:ak-layer-warning ui-hover:ak-layer-mix-20",
-      danger: "ui-hover:ak-layer-danger ui-hover:ak-layer-mix-20",
+    $hoverOffset: (value?: string | number | boolean) => {
+      return getLightnessStyleClass({
+        value,
+        property: "--hover-offset",
+        class: "ui-hover:ak-state-(--hover-offset)",
+      });
+    },
+    /**
+     * Automatically adjusts the layer's lightness when the element is hovered.
+     * The background color becomes lighter or darker depending on its current
+     * lightness. The value represents the **minimum** guaranteed lightness
+     * shift. If the user has high-contrast preferences, the shift will be
+     * greater to allow for more contrast between the layer and its parent.
+     *
+     * If you want the opposite effect, where the offset decreases as contrast
+     * goes up, use `$hoverOffset` instead.
+     */
+    $hoverPush: (value?: string | number | boolean) => {
+      return getLightnessStyleClass({
+        value,
+        property: "--hover-push",
+        class: "ui-hover:ak-state-push-(--hover-push)",
+      });
+    },
+    /**
+     * Lightens the layer when the element is hovered by the specified amount.
+     * When set to `true`, it lightens the layer by one step.
+     */
+    $hoverLighten: (value?: string | number | boolean) => {
+      return getLightnessStyleClass({
+        value,
+        property: "--hover-lighten",
+        class: "ui-hover:ak-state-lighten-(--hover-lighten)",
+      });
+    },
+    /**
+     * Darkens the layer when the element is hovered by the specified amount.
+     * When set to `true`, it darkens the layer by one step.
+     */
+    $hoverDarken: (value?: string | number | boolean) => {
+      return getLightnessStyleClass({
+        value,
+        property: "--hover-darken",
+        class: "ui-hover:ak-state-darken-(--hover-darken)",
+      });
+    },
+    /**
+     * Increases the layer chroma when the element is hovered by the specified
+     * amount. When set to `true`, it increases the chroma by one step.
+     */
+    $hoverSaturate: (value?: string | number | boolean) => {
+      return getChromaStyleClass({
+        value,
+        property: "--hover-saturate",
+        class: "ui-hover:ak-state-saturate-(--hover-saturate)",
+      });
+    },
+    /**
+     * Decreases the layer chroma when the element is hovered by the specified
+     * amount. When set to `true`, it decreases the chroma by one step.
+     */
+    $hoverDesaturate: (value?: string | number | boolean) => {
+      return getChromaStyleClass({
+        value,
+        property: "--hover-desaturate",
+        class: "ui-hover:ak-state-desaturate-(--hover-desaturate)",
+      });
     },
   },
 });

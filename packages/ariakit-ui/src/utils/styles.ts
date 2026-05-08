@@ -34,24 +34,32 @@ type StyleValue = string | number;
 type OptionalStyleValue = StyleValue | boolean | undefined;
 
 interface GetScaledStyleClassParams {
+  /** Class name to emit when the value produces a style class. */
   class: string;
+  /** CSS custom property that receives the scaled value. */
   property: `--${string}`;
+  /** Raw value from the component prop; use `true` to apply the default. */
   value?: OptionalStyleValue;
+  /** Fallback value used when `value` is `true`. */
   defaultValue?: StyleValue;
+  /** Scale factor for non-percent values before writing the CSS property. */
   multiplier?: StyleValue;
+  /** Output unit mode; use `%` when the value should map directly to percent. */
   unit?: "%";
+  /** Allows zero values to generate a style class instead of being ignored. */
   allowZero?: boolean;
 }
 
-interface GetScaledStyleValueOptions {
-  multiplier?: StyleValue;
-  unit?: "%";
-}
+interface GetScaledStyleValueOptions extends Pick<
+  GetScaledStyleClassParams,
+  "multiplier" | "unit"
+> {}
 
 export function getScaledStyleValue(
   value: StyleValue,
-  { multiplier, unit }: GetScaledStyleValueOptions = {},
+  options: GetScaledStyleValueOptions = {},
 ) {
+  const { multiplier, unit } = options;
   if (unit === "%") {
     return `calc((${value}) * 1%)`;
   }

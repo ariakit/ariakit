@@ -34,7 +34,7 @@ export const button = cv({
   defaultVariants: {
     $kind: "flat",
     $gapY: "none",
-    $hover: true,
+    $hoverOffset: true,
     $focus: true,
     $active: true,
     $bevelButton: true,
