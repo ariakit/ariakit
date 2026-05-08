@@ -7,16 +7,18 @@ packages:
   - website
   - site
 
+allowBuilds:
+  "@clerk/shared": false
+  core-js: false
+  esbuild: true
+  msw: false
+  sharp: true
+  workerd: true
+
 minimumReleaseAge: 4320
 
 minimumReleaseAgeExclude:
   - clava
-
-publicHoistPattern:
-  - "*react*"
-  - "*testing-library*"
-
-saveExact: true
 
 overrides:
   "@wordpress/components>@ariakit/react": "workspace:*"
@@ -24,7 +26,8 @@ overrides:
 patchedDependencies:
   "@changesets/apply-release-plan@7.1.1": "patches/@changesets__apply-release-plan@7.1.1.patch"
 
-allowBuilds:
-  esbuild: true
-  sharp: true
-  workerd: true
+publicHoistPattern:
+  - "*react*"
+  - "*testing-library*"
+
+saveExact: true
