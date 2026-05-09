@@ -1179,6 +1179,10 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
   ];
 }
 
+// When push is inactive, blends to `lod`; when push is active, blends to the
+// push direction (`lipdtl*2 - 1`). The blend is declared inside `ak-layer` so
+// it survives the `!` modifier; `ak-layer-push-*` only sets the inputs
+// (`lipv`, `lipdtl`) that the `lcb` expression substitutes at use time.
 function getLayerIdleContrastBiasDirection() {
   const pushEnabled = fn.binary(vars.layerIdlePushValue);
   const pushDirection = fn.sub(
@@ -1198,12 +1202,6 @@ const layerMathDeclarations = [
   // contrast-scale math at each call site.
   set(vars.contrastT, fn.mul(globalContrastT, disabledVars.contrastScale)),
   set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
-  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
-  set(vars.layerPushDirectionToLight, vars.offsetDirectionToLight),
-  set(
-    vars.layerIdlePushDirectionToLight,
-    fn.binary(fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection)),
-  ),
   set(
     vars.layerContrastBias,
     fn.mul(
@@ -1326,18 +1324,8 @@ utility(
   getBaseDeclarations(vars.layer),
   layerMathDeclarations,
   layerColorDeclarations,
-  at.variant(
-    light,
-    set(vars.layerIdlePushDirectionToLight, 0),
-    set(vars.layerPushDirectionToLight, 0),
-    set(vars.edgePushDirection, -1),
-  ),
-  at.variant(
-    dark,
-    set(vars.layerIdlePushDirectionToLight, 1),
-    set(vars.layerPushDirectionToLight, 1),
-    set(vars.edgePushDirection, 1),
-  ),
+  at.variant(light, set(vars.edgePushDirection, -1)),
+  at.variant(dark, set(vars.edgePushDirection, 1)),
   layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
     set(provide(vars.layerEdgeContext), vars.edge),
@@ -1469,6 +1457,11 @@ utility(
 utility(
   "layer-push-*",
   getRawPercentDeclarations(inputs.layerIdlePushL),
+  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
+  set(
+    vars.layerIdlePushDirectionToLight,
+    fn.binary(fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection)),
+  ),
   set(vars.layerIdlePushOffsetL, getLayerIdleOffsetL()),
   set(
     vars.layerIdlePushBaseL,
@@ -1488,6 +1481,8 @@ utility(
     ),
   ),
   set(vars.layerIdlePushColor, getLayerIdlePushColor()),
+  at.variant(light, set(vars.layerIdlePushDirectionToLight, 0)),
+  at.variant(dark, set(vars.layerIdlePushDirectionToLight, 1)),
 );
 
 utility(
@@ -1625,6 +1620,7 @@ utility(
   "state-push-*",
   getRawPercentDeclarations(inputs.layerPushL),
   set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
+  set(vars.layerPushDirectionToLight, vars.offsetDirectionToLight),
   set(
     vars.layerPushBaseL,
     getLayerL(fn.mul(vars.layerPushValue, vars.lightnessOffsetDirection)),
@@ -1637,6 +1633,8 @@ utility(
       vars.layerPushDirectionToLight,
     ),
   ),
+  at.variant(light, set(vars.layerPushDirectionToLight, 0)),
+  at.variant(dark, set(vars.layerPushDirectionToLight, 1)),
 );
 
 utility(
