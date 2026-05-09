@@ -387,6 +387,12 @@ export default function Example() {
                 label="push max arbitrary"
                 className="ak-layer-max-[0.8] ak-layer-push-100"
               />
+              <Layer
+                label="push nested layer"
+                className="ak-layer ak-layer-push-60 ak-frame ak-frame-p-1 ak-frame-border flex-col"
+              >
+                <Cell label="nested blue" className="ak-layer-blue-600" />
+              </Layer>
               <Cell
                 label="offset max bounds"
                 className="ak-layer-min-20 ak-layer-max-30 ak-layer-offset-[0.25]"
