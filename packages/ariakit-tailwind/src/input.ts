@@ -552,9 +552,11 @@ const layerMathVars = {
   layerOffsetDelta: _ak.prop("lodl", { initial: 0 }),
   layerIdlePushValue: _ak.prop.zero("lipv"),
   layerIdlePushDirectionToLight: _ak.prop.zero("lipdtl"),
-  layerIdlePushOffsetL: _ak.prop("lipol", { initial: l }),
-  layerIdlePushBaseL: _ak.prop("lipbl", { initial: l }),
-  layerIdlePushL: _ak.prop("lipl", { initial: l }),
+  // These scratch vars only resolve the pushed color in ak-layer-push-*.
+  // Keep them unregistered so each push utility avoids extra @property work.
+  layerIdlePushOffsetL: _ak.var("lipol"),
+  layerIdlePushBaseL: _ak.var("lipbl"),
+  layerIdlePushL: _ak.var("lipl"),
   layerIdlePushColor: _ak.prop("lipc"),
   layerPushValue: _ak.prop.zero("lpv"),
   layerPushDirectionToLight: _ak.prop.zero("lpdtl"),

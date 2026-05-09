@@ -1388,24 +1388,6 @@
   initial-value: 0;
 }
 
-@property --_ak-lipol {
-  syntax: "*";
-  inherits: false;
-  initial-value: l;
-}
-
-@property --_ak-lipbl {
-  syntax: "*";
-  inherits: false;
-  initial-value: l;
-}
-
-@property --_ak-lipl {
-  syntax: "*";
-  inherits: false;
-  initial-value: l;
-}
-
 @property --_ak-lipc {
   syntax: "*";
   inherits: false;
