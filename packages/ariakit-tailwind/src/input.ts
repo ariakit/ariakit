@@ -552,12 +552,13 @@ const layerMathVars = {
   layerOffsetDelta: _ak.prop("lodl", { initial: 0 }),
   layerIdlePushValue: _ak.prop.zero("lipv"),
   layerIdlePushDirectionToLight: _ak.prop.zero("lipdtl"),
-  // These scratch vars only resolve the pushed color in ak-layer-push-*.
+  // These scratch vars only resolve the pushed lightness in ak-layer-push-*.
   // Keep them unregistered so each push utility avoids extra @property work.
   layerIdlePushOffsetL: _ak.var("lipol"),
   layerIdlePushBaseL: _ak.var("lipbl"),
   layerIdlePushL: _ak.var("lipl"),
-  layerIdlePushColor: _ak.prop("lipc"),
+
+  layerIdlePushResolvedL: _ak.prop("liprl"),
   layerPushValue: _ak.prop.zero("lpv"),
   layerPushDirectionToLight: _ak.prop.zero("lpdtl"),
   layerPushBaseL: _ak.prop("lpbl", { initial: l }),
@@ -1081,21 +1082,8 @@ function getLayerIdleOffsetL() {
 }
 
 const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
-  l: getLayerIdleOffsetL(),
+  l: fn.var(vars.layerIdlePushResolvedL, getLayerIdleOffsetL()),
 });
-
-function getLayerIdlePushColor() {
-  const pushEnabled = fn.binary(vars.layerIdlePushValue);
-  return fn.oklch(vars.layerIdleMixed, {
-    l: fn.add(
-      vars.layerIdlePushOffsetL,
-      fn.mul(
-        pushEnabled,
-        fn.sub(vars.layerIdlePushL, vars.layerIdlePushOffsetL),
-      ),
-    ),
-  });
-}
 
 /**
  * Computes parent-relative contrast lightness. When `ak-layer-contrast` is
@@ -1121,8 +1109,7 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   );
 }
 
-const layerIdlePushed = fn.var(vars.layerIdlePushColor, vars.layerIdleOffset);
-const layerIdle = fn.oklch(layerIdlePushed, {
+const layerIdle = fn.oklch(vars.layerIdleOffset, {
   l: fn.add(
     getContrastL(l, vars.layerIdleContrastValue),
     fn.mul(
@@ -1201,11 +1188,8 @@ const layerMathDeclarations = [
   set(vars.contrastT, fn.mul(globalContrastT, disabledVars.contrastScale)),
   set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
   set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
+  set(vars.layerIdlePushDirectionToLight, vars.offsetDirectionToLight),
   set(vars.layerPushDirectionToLight, vars.offsetDirectionToLight),
-  set(
-    vars.layerIdlePushDirectionToLight,
-    fn.binary(fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection)),
-  ),
   set(
     vars.layerContrastBias,
     fn.mul(
@@ -1471,7 +1455,10 @@ utility(
 utility(
   "layer-push-*",
   getRawPercentDeclarations(inputs.layerIdlePushL),
-  set(vars.layerIdlePushOffsetL, getLayerIdleOffsetL()),
+  set(
+    vars.layerIdlePushOffsetL,
+    withUtilityTokenGate(getLayerIdleOffsetL(), fn.value("[*]")),
+  ),
   set(
     vars.layerIdlePushBaseL,
     getLimitedLayerL(
@@ -1489,7 +1476,26 @@ utility(
       vars.layerIdlePushDirectionToLight,
     ),
   ),
-  set(vars.layerIdlePushColor, getLayerIdlePushColor()),
+  set(vars.layerIdlePushResolvedL, vars.layerIdlePushL),
+  set(
+    vars.layerIdlePushResolvedL,
+    withUtilityTokenGate(
+      fn.add(
+        vars.layerIdlePushOffsetL,
+        fn.mul(
+          fn.binary(vars.layerIdlePushValue),
+          fn.sub(vars.layerIdlePushL, vars.layerIdlePushOffsetL),
+        ),
+      ),
+      fn.value("[*]"),
+    ),
+  ),
+);
+
+utility(
+  "layer-push-0",
+  set(vars.layerIdlePushOffsetL, getLayerIdleOffsetL()),
+  set(vars.layerIdlePushResolvedL, vars.layerIdlePushOffsetL),
 );
 
 utility(

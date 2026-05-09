@@ -364,6 +364,10 @@ export default function Example() {
                 className="ak-layer-offset-40 ak-layer-push-0"
               />
               <Cell
+                label="push zero arbitrary offset"
+                className="ak-layer-offset-40 ak-layer-push-[0]"
+              />
+              <Cell
                 label="push min arbitrary"
                 className="ak-layer-min-70 ak-layer-push-[0.25]"
               />
