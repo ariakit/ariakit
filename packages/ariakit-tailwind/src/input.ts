@@ -1528,12 +1528,6 @@ utility(
   set(inputs.layerH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
-utility(
-  "layer-invert",
-  set(inputs.layerLMin, 0.25),
-  set(inputs.layerL, fn.invert(l)),
-);
-
 function getStateOffsetDeclarations() {
   const bareValue = getBarePercentTokenValue();
   const arbitraryValue = fn.value("[*]");
