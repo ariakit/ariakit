@@ -122,7 +122,7 @@
   --_ak-lbd: oklch(from var(--ak-layer) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
   --_ak-ls: oklch(from var(--ak-layer) var(--_ak-tfcl) 0 0);
   --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 0);
-  --_ak-ltl: lch(from var(--ak-layer) round(down, clamp(0, (l + (c * 0.11 * clamp(0, ((20 - l) / 20), 1)) + ((c * 0.18 * clamp(0, ((l - 50) / 50), 1)) * -1)), 100), 3.125) 0 0);
+  --_ak-ltl: lch(from var(--ak-layer) round(down, var(--_ak-ltlv), 3.125) 0 0);
   --_ak-ct: calc((max(0, var(--contrast, 0)) / 100) * var(--_ak-contrast-scale));
   --_ak-cps: calc(1 + (var(--_ak-ct) * 3.334));
   --_ak-lcb: calc((var(--_ak-ct) * -1) * 0.3334 * var(--_ak-lod));
@@ -853,7 +853,7 @@
 
 @utility ak-outline {
   --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 0);
-  --_ak-ltl: lch(from var(--ak-layer) round(down, clamp(0, (l + (c * 0.11 * clamp(0, ((20 - l) / 20), 1)) + ((c * 0.18 * clamp(0, ((l - 50) / 50), 1)) * -1)), 100), 3.125) 0 0);
+  --_ak-ltl: lch(from var(--ak-layer) round(down, var(--_ak-ltlv), 3.125) 0 0);
   outline-color: var(--ak-outline, canvastext);
   @container style(--_ak-ll) {
     --ak-outline: oklch(from oklch(from var(--_ak-outline-color, var(--ak-layer)) var(--_ak-outline-lightness, calc(l + var(--_ak-outline-relative-lightness))) var(--_ak-outline-chroma, calc(c + var(--_ak-outline-relative-chroma))) var(--_ak-outline-hue, calc(h + var(--_ak-outline-relative-hue)))) clamp(var(--_ak-outline-lightness-min), (l + (var(--_ak-opd) * max(0, (((var(--_ak-opl) + ((max(0.5, var(--_ak-outline-push-lightness)) + (var(--_ak-ct) * 0.3334)) * var(--_ak-opd))) - l) * var(--_ak-opd))))), var(--_ak-outline-lightness-max)) clamp(var(--_ak-outline-chroma-min), c, var(--_ak-outline-chroma-max, var(--chroma-p3-max, 0.368))) h);
