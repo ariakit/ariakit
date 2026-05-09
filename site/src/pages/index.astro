@@ -21,7 +21,7 @@ import {
   ChevronDownIcon,
   CircleCheckBigIcon,
   CopyIcon,
-} from "@lucide/astro";
+} from "lucide-react";
 import Layout from "./_layout.astro";
 ---
 
@@ -30,7 +30,7 @@ import Layout from "./_layout.astro";
 
   <div class="flex flex-wrap gap-2 items-center p-2">
     <button class="ak-button-classic">Button</button>
-    <ButtonSolid.Button $kind="bevel">
+    <ButtonSolid.Button $invert $hoverOffset={2}>
       <ButtonSolid.ButtonSlot>
         <CopyIcon />
       </ButtonSolid.ButtonSlot>

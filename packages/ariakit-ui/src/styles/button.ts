@@ -34,6 +34,7 @@ export const button = cv({
   defaultVariants: {
     $kind: "flat",
     $gapY: "none",
+    $lightnessOffset: true,
     $hoverOffset: true,
     $focus: true,
     $active: true,

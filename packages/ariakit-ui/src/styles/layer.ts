@@ -37,7 +37,7 @@ export const layer = cv({
     /**
      * Inverts the layer's base background color.
      */
-    $invert: "ak-layer-invert",
+    $invert: "",
   },
   computedVariants: {
     /**
@@ -274,5 +274,15 @@ export const layer = cv({
   },
   defaultVariants: {
     $layer: true,
+  },
+  computed: ({ variants, setDefaultVariants }) => {
+    if (variants.$invert) {
+      setDefaultVariants({
+        $lightnessOffset: false,
+        $lightnessPush: 16,
+        $lightnessMin: 30,
+        $lightnessMax: 75,
+      });
+    }
   },
 });

@@ -16,6 +16,7 @@ export const control = cv({
      * Sets the element’s font size. This affects the entire element, including
      * the gap, padding, and icon size. Use `auto` to inherit the parent’s font
      * size.
+     * @default "auto"
      */
     $size: {
       auto: "",
