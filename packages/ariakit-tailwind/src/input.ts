@@ -911,6 +911,41 @@ function getLayerL(relativeLightness: Value, absoluteLightness?: VarProperty) {
     : fallbackLightness;
 }
 
+function getLimitedLayerL(
+  relativeLightness: Value,
+  absoluteLightness?: VarProperty,
+) {
+  return fn.clamp(
+    inputs.layerLMin,
+    getLayerL(relativeLightness, absoluteLightness),
+    inputs.layerLMax,
+  );
+}
+
+/**
+ * Resolves lightness limits together with the directional offset so min/max
+ * values cannot pull the result back into the forbidden mid-luminance range.
+ */
+function getLayerOffsetL(relativeLightness: Value) {
+  const limitedLightness = getLimitedLayerL(relativeLightness);
+  const limitedDelta = fn.sub(limitedLightness, l);
+  const resolvedOffsetLightness = fn.add(
+    l,
+    getResolvedLightnessOffset(
+      limitedDelta,
+      vars.lightnessOffsetDirection,
+      vars.forbiddenLa,
+      vars.forbiddenLb,
+      vars.forbiddenEntryBoundary,
+    ),
+  );
+  const offsetEnabled = fn.binary(fn.abs(inputs.layerIdleLOffsetDelta));
+  return fn.add(
+    limitedLightness,
+    fn.mul(offsetEnabled, fn.sub(resolvedOffsetLightness, limitedLightness)),
+  );
+}
+
 /**
  * Resolves layer chroma from relative offset and optional absolute input.
  */
@@ -1056,14 +1091,7 @@ const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
 const layerIdleBase = fn.oklch(layerBaseColor, idleLayerChannels);
 const layerIdleMixed = fn.var(inputs.layerMix, vars.layerIdleBase);
 const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
-  l: fn.add(
-    fn.clamp(
-      inputs.layerLMin,
-      getLayerL(inputs.layerIdleLOffset),
-      inputs.layerLMax,
-    ),
-    vars.layerContrastBias,
-  ),
+  l: getLayerOffsetL(inputs.layerIdleLOffset),
 });
 
 /**
@@ -1091,7 +1119,16 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
 }
 
 const layerIdle = fn.oklch(vars.layerIdleOffset, {
-  l: getContrastL(vars.layerIdlePushL, vars.layerIdleContrastValue),
+  l: fn.add(
+    getContrastL(vars.layerIdlePushL, vars.layerIdleContrastValue),
+    fn.mul(
+      vars.layerContrastBias,
+      fn.sub(
+        1,
+        fn.mul(vars.layerContrastDirection, vars.layerContrastDirection),
+      ),
+    ),
+  ),
 });
 
 const layerState = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
@@ -1281,28 +1318,15 @@ utility(
 function getLayerOffsetDeclarations(arbitraryPattern = "[*]") {
   const bareValue = getBarePercentTokenValue();
   const arbitraryValue = fn.value(arbitraryPattern ?? "[*]");
+  const bareDelta = fn.mul(bareValue, vars.lightnessOffsetDirection);
+  const arbitraryDelta = fn.mul(arbitraryValue, vars.lightnessOffsetDirection);
   return [
-    set(
-      inputs.layerIdleLOffsetDelta,
-      fn.mul(bareValue, vars.lightnessOffsetDirection),
-    ),
-    set(
-      inputs.layerIdleLOffset,
-      withUtilityTokenGate(
-        getLightnessOffset(inputs.layerIdleLOffsetDelta),
-        bareValue,
-      ),
-    ),
-    set(
-      inputs.layerIdleLOffsetDelta,
-      fn.mul(arbitraryValue, vars.lightnessOffsetDirection),
-    ),
+    set(inputs.layerIdleLOffsetDelta, bareDelta),
+    set(inputs.layerIdleLOffset, withUtilityTokenGate(bareDelta, bareValue)),
+    set(inputs.layerIdleLOffsetDelta, arbitraryDelta),
     set(
       inputs.layerIdleLOffset,
-      withUtilityTokenGate(
-        getLightnessOffset(inputs.layerIdleLOffsetDelta),
-        arbitraryValue,
-      ),
+      withUtilityTokenGate(arbitraryDelta, arbitraryValue),
     ),
   ];
 }
@@ -1395,7 +1419,9 @@ utility(
   set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(
     vars.layerIdlePushBaseL,
-    getLayerL(fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection)),
+    getLimitedLayerL(
+      fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection),
+    ),
   ),
   set(
     vars.layerIdlePushL,
