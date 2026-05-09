@@ -101,45 +101,6 @@ function Layers() {
           <Cell className="ak-layer-90" />
           <Cell className="ak-layer-100" />
         </Layer>
-        <Layer className="ak-layer ak-frame ak-frame-p-1 ak-frame-ring ak-frame-row">
-          <Cell
-            label="ak-layer-min-70 ak-layer-offset-20"
-            className="ak-layer-min-70 ak-layer-offset-20"
-          />
-          <Cell
-            label="ak-layer-min-70 ak-layer-offset-40"
-            className="ak-layer-min-70 ak-layer-offset-40"
-          />
-          <Cell
-            label="ak-layer-min-70 ak-layer-offset-[0.25]"
-            className="ak-layer-min-70 ak-layer-offset-[0.25]"
-          />
-          <Cell
-            label="ak-layer-max-30 ak-layer-offset-20"
-            className="ak-layer-max-30 ak-layer-offset-20"
-          />
-          <Cell
-            label="ak-layer-max-30 ak-layer-offset-40"
-            className="ak-layer-max-30 ak-layer-offset-40"
-          />
-          <Cell label="ak-layer-min-60" className="ak-layer-min-60" />
-          <Cell
-            label="ak-layer-min-70 ak-layer-50"
-            className="ak-layer-min-70 ak-layer-50"
-          />
-          <Cell
-            label="ak-layer-max-30 ak-layer-50"
-            className="ak-layer-max-30 ak-layer-50"
-          />
-          <Cell
-            label="ak-layer-min-50 ak-layer-offset-40"
-            className="ak-layer-min-50 ak-layer-offset-40"
-          />
-          <Cell
-            label="ak-layer-min-50 ak-layer-max-80 ak-layer-offset-40"
-            className="ak-layer-min-50 ak-layer-max-80 ak-layer-offset-40"
-          />
-        </Layer>
       </Layer>
       <Layer
         label="ak-state-<number>"
@@ -157,24 +118,6 @@ function Layers() {
           <Cell className="ak-state-80" />
           <Cell className="ak-state-90" />
           <Cell className="ak-state-100" />
-        </Layer>
-        <Layer className="ak-layer ak-frame ak-frame-p-1 ak-frame-ring ak-frame-row">
-          <Cell
-            label="ak-layer-min-70 ak-state-offset-40"
-            className="ak-layer-min-70 ak-state-offset-40"
-          />
-          <Cell
-            label="ak-layer-min-70 ak-state-push-40"
-            className="ak-layer-min-70 ak-state-push-40"
-          />
-          <Cell
-            label="ak-layer-max-30 ak-state-offset-40"
-            className="ak-layer-max-30 ak-state-offset-40"
-          />
-          <Cell
-            label="ak-layer-max-30 ak-state-push-40"
-            className="ak-layer-max-30 ak-state-push-40"
-          />
         </Layer>
       </Layer>
       <Layer
@@ -234,36 +177,6 @@ function Layers() {
           <Cell className="ak-layer-push-90" />
           <Cell className="ak-layer-push-100" />
         </Layer>
-        <Layer className="ak-layer ak-frame ak-frame-p-1 ak-frame-ring ak-frame-row">
-          <Cell
-            label="ak-layer-min-70 ak-layer-push-20"
-            className="ak-layer-min-70 ak-layer-push-20"
-          />
-          <Cell
-            label="ak-layer-min-70 ak-layer-push-40"
-            className="ak-layer-min-70 ak-layer-push-40"
-          />
-          <Cell
-            label="ak-layer-min-70 ak-layer-push-[0.25]"
-            className="ak-layer-min-70 ak-layer-push-[0.25]"
-          />
-          <Cell
-            label="ak-layer-max-30 ak-layer-push-20"
-            className="ak-layer-max-30 ak-layer-push-20"
-          />
-          <Cell
-            label="ak-layer-max-30 ak-layer-push-40"
-            className="ak-layer-max-30 ak-layer-push-40"
-          />
-          <Cell
-            label="ak-layer-max-50 ak-layer-push-40"
-            className="ak-layer-max-50 ak-layer-push-40"
-          />
-          <Cell
-            label="ak-layer-min-100 ak-layer-push-40"
-            className="ak-layer-min-100 ak-layer-push-40"
-          />
-        </Layer>
       </Layer>
       <Layer
         label="ak-layer-contrast-<number>"
@@ -281,24 +194,6 @@ function Layers() {
           <Cell className="ak-layer-contrast ak-layer-contrast-80 ak-layer-blue-600" />
           <Cell className="ak-layer-contrast ak-layer-contrast-90 ak-layer-blue-600" />
           <Cell className="ak-layer-contrast ak-layer-contrast-100 ak-layer-blue-600" />
-        </Layer>
-        <Layer className="ak-layer ak-frame ak-frame-p-1 ak-frame-ring ak-frame-row">
-          <Cell
-            label="ak-layer-contrast ak-layer-min-70 ak-layer-offset-40"
-            className="ak-layer-contrast ak-layer-min-70 ak-layer-offset-40"
-          />
-          <Cell
-            label="ak-layer-contrast ak-layer-min-70 ak-layer-push-40"
-            className="ak-layer-contrast ak-layer-min-70 ak-layer-push-40"
-          />
-          <Cell
-            label="ak-layer-contrast ak-layer-max-30 ak-layer-offset-40"
-            className="ak-layer-contrast ak-layer-max-30 ak-layer-offset-40"
-          />
-          <Cell
-            label="ak-layer-contrast ak-layer-max-30 ak-layer-push-40"
-            className="ak-layer-contrast ak-layer-max-30 ak-layer-push-40"
-          />
         </Layer>
       </Layer>
       <Layer
