@@ -1199,6 +1199,7 @@ const layerMathDeclarations = [
   set(vars.contrastT, fn.mul(globalContrastT, disabledVars.contrastScale)),
   set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
   set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
+  set(vars.layerPushDirectionToLight, vars.offsetDirectionToLight),
   set(
     vars.layerIdlePushDirectionToLight,
     fn.binary(fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection)),
@@ -1328,11 +1329,13 @@ utility(
   at.variant(
     light,
     set(vars.layerIdlePushDirectionToLight, 0),
+    set(vars.layerPushDirectionToLight, 0),
     set(vars.edgePushDirection, -1),
   ),
   at.variant(
     dark,
     set(vars.layerIdlePushDirectionToLight, 1),
+    set(vars.layerPushDirectionToLight, 1),
     set(vars.edgePushDirection, 1),
   ),
   layerContext(({ provide, inherit }) => [
@@ -1622,12 +1625,6 @@ utility(
   "state-push-*",
   getRawPercentDeclarations(inputs.layerPushL),
   set(vars.layerPushValue, getPushValue(inputs.layerPushL)),
-  set(
-    vars.layerPushDirectionToLight,
-    fn.binary(fn.mul(vars.layerPushValue, vars.lightnessOffsetDirection)),
-  ),
-  at.variant(light, set(vars.layerPushDirectionToLight, 0)),
-  at.variant(dark, set(vars.layerPushDirectionToLight, 1)),
   set(
     vars.layerPushBaseL,
     getLayerL(fn.mul(vars.layerPushValue, vars.lightnessOffsetDirection)),
