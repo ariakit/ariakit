@@ -122,7 +122,7 @@ function Layers() {
       </Layer>
       <Layer
         label="ak-layer-invert"
-        className="ak-layer ak-layer-invert ak-frame ak-frame-full/1 ak-frame-force ak-frame-border ak-edge-min-c-30 ak-edge-raw *:ak-text"
+        className="ak-layer ak-layer-l-[calc(1-l)] ak-layer-min-25 ak-frame ak-frame-full/1 ak-frame-force ak-frame-border ak-edge-min-c-30 ak-edge-raw *:ak-text"
       />
       <Layer
         label="ak-layer-darken-<number>"
