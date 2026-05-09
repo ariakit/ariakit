@@ -363,8 +363,16 @@ export default function Example() {
                 className="ak-layer-min-70 ak-layer-push-[0.25]"
               />
               <Cell
+                label="push min arbitrary low"
+                className="ak-layer-min-[0.2] ak-layer-push-100"
+              />
+              <Cell
                 label="push max"
                 className="ak-layer-max-30 ak-layer-push-40"
+              />
+              <Cell
+                label="push max arbitrary"
+                className="ak-layer-max-[0.8] ak-layer-push-100"
               />
               <Cell
                 label="offset max bounds"
