@@ -1084,13 +1084,6 @@ const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
   l: getLayerIdleOffsetL(),
 });
 
-/**
- * Materializes the pushed layer color in `--_ak-lim`'s context so the push
- * target can be evaluated against the un-min/max-clamped layer lightness.
- * `--_ak-li` then sources from `--_ak-lipc` (with `--_ak-lio` fallback) so
- * `ak-layer-min-*` and `ak-layer-max-*` apply to the final clamp without
- * being absorbed by the push delta.
- */
 function getLayerIdlePushColor() {
   const pushEnabled = fn.binary(vars.layerIdlePushValue);
   return fn.oklch(vars.layerIdleMixed, {
@@ -1108,7 +1101,7 @@ function getLayerIdlePushColor() {
  * Computes parent-relative contrast lightness. When `ak-layer-contrast` is
  * active (layerContrastDirection !== 0), derives the target lightness from the
  * parent layer's lightness rather than the current color's lightness. Falls
- * back to `selfRelativeL` when inactive.
+ * back to the self-relative `getContrastL` when inactive.
  */
 function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   const direction = vars.layerContrastDirection;
@@ -1188,25 +1181,17 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
   ];
 }
 
-// Layer contrast bias is computed in two flavors. The static `ak-layer` body
-// sets the simple offset-direction form (this is the only form a non-push
-// layer needs, and it is what `ak-layer!` consumers expect to keep when they
-// force `ak-layer` declarations `!important`). The `ak-layer-push-*` utility
-// overrides this with the push-aware form, marked `!important` so it still
-// wins against an `ak-layer!` modifier on the same element. `--_ak-lcb` is
-// an internal var so hardening its priority here does not affect public-API
-// overrides.
-const layerContrastBiasFromOffset = fn.mul(
-  fn.neg(vars.contrastT),
-  CONTRAST_SCALE,
-  vars.lightnessOffsetDirection,
-);
-
-const layerContrastBiasFromPush = fn.mul(
-  fn.neg(vars.contrastT),
-  CONTRAST_SCALE,
-  fn.sub(fn.double(vars.layerIdlePushDirectionToLight), 1),
-);
+function getLayerIdleContrastBiasDirection() {
+  const pushEnabled = fn.binary(vars.layerIdlePushValue);
+  const pushDirection = fn.sub(
+    fn.double(vars.layerIdlePushDirectionToLight),
+    1,
+  );
+  return fn.add(
+    fn.mul(vars.lightnessOffsetDirection, fn.sub(1, pushEnabled)),
+    fn.mul(pushDirection, pushEnabled),
+  );
+}
 
 // Assign derived math first so later color stages can reference short vars.
 const layerMathDeclarations = [
@@ -1215,8 +1200,20 @@ const layerMathDeclarations = [
   // contrast-scale math at each call site.
   set(vars.contrastT, fn.mul(globalContrastT, disabledVars.contrastScale)),
   set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
+  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(vars.layerPushDirectionToLight, vars.offsetDirectionToLight),
-  set(vars.layerContrastBias, layerContrastBiasFromOffset),
+  set(
+    vars.layerIdlePushDirectionToLight,
+    fn.binary(fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection)),
+  ),
+  set(
+    vars.layerContrastBias,
+    fn.mul(
+      fn.neg(vars.contrastT),
+      CONTRAST_SCALE,
+      getLayerIdleContrastBiasDirection(),
+    ),
+  ),
   set(vars.forbiddenLa, forbiddenLa),
   set(vars.forbiddenLb, forbiddenLb),
   set(vars.offsetDirectionToLight, fn.clamp01(vars.lightnessOffsetDirection)),
@@ -1474,11 +1471,6 @@ utility(
 utility(
   "layer-push-*",
   getRawPercentDeclarations(inputs.layerIdlePushL),
-  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
-  // Override `lcb` with the push-aware form; `!important` so it still wins
-  // when `ak-layer!` is on the same element (see the rationale where
-  // `layerContrastBiasFromPush` is defined).
-  set(vars.layerContrastBias, fn.important(layerContrastBiasFromPush)),
   set(vars.layerIdlePushOffsetL, getLayerIdleOffsetL()),
   set(
     vars.layerIdlePushBaseL,
