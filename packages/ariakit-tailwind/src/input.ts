@@ -915,6 +915,9 @@ function getLimitedLayerL(
 /**
  * Resolves a layer lightness candidate together with its directional offset so
  * callers can apply floor/min/max adjustments before the forbidden-range jump.
+ * `baseDelta` must be `baseLightness - l` (the current lightness channel);
+ * callers pass it separately so layer/state offset utilities can reuse the
+ * cached delta inside the final color stage.
  */
 function getLayerOffsetL(
   baseLightness: Value,
