@@ -546,6 +546,8 @@ const layerMathVars = {
   offsetDirectionToLight: _ak.var("odtl"),
   forbiddenBandWidth: _ak.var("bw"),
   forbiddenEntryBoundary: _ak.var("eb"),
+  layerIdleLimitedL: _ak.prop("lill", { initial: l }),
+  layerIdleLimitedDelta: _ak.prop("lild", { initial: 0 }),
   layerIdlePushValue: _ak.prop.zero("lipv"),
   layerIdlePushBaseL: _ak.prop("lipbl", { initial: l }),
   layerIdlePushL: _ak.prop("lipl", { initial: l }),
@@ -651,10 +653,8 @@ const inputs = {
   layerIdleRelativeL: _ak.prop("layer-idle-relative-lightness", { initial: 0 }),
   layerIdleRelativeC: _ak.prop("layer-idle-relative-chroma", { initial: 0 }),
   layerIdleRelativeH: _ak.prop("layer-idle-relative-hue", { initial: 0 }),
-  layerIdleLOffsetDelta: _ak.prop("layer-idle-lightness-offset-delta", {
-    initial: 0,
-  }),
   layerIdleLOffset: _ak.prop("layer-idle-lightness-offset", { initial: 0 }),
+  layerIdleLOffsetL: _ak.prop("layer-idle-lightness-offset-resolved"),
   layerIdlePushL: _ak.prop("layer-idle-push-lightness", { initial: 0 }),
   layerIdleContrastL: _ak.prop("layer-idle-contrast-lightness", { initial: 0 }),
   layerL: _ak.prop("layer-lightness"),
@@ -926,23 +926,22 @@ function getLimitedLayerL(
  * Resolves lightness limits together with the directional offset so min/max
  * values cannot pull the result back into the forbidden mid-luminance range.
  */
-function getLayerOffsetL(relativeLightness: Value) {
-  const limitedLightness = getLimitedLayerL(relativeLightness);
-  const limitedDelta = fn.sub(limitedLightness, l);
-  const resolvedOffsetLightness = fn.add(
-    l,
-    getResolvedLightnessOffset(
-      limitedDelta,
-      vars.lightnessOffsetDirection,
-      vars.forbiddenLa,
-      vars.forbiddenLb,
-      vars.forbiddenEntryBoundary,
-    ),
+function getLayerOffsetL(
+  limitedLightness: Value,
+  limitedDelta: Value,
+  relativeLightness: Value,
+) {
+  const resolvedDelta = getResolvedLightnessOffset(
+    limitedDelta,
+    vars.lightnessOffsetDirection,
+    vars.forbiddenLa,
+    vars.forbiddenLb,
+    vars.forbiddenEntryBoundary,
   );
-  const offsetEnabled = fn.binary(fn.abs(inputs.layerIdleLOffsetDelta));
+  const offsetEnabled = fn.binary(fn.abs(relativeLightness));
   return fn.add(
     limitedLightness,
-    fn.mul(offsetEnabled, fn.sub(resolvedOffsetLightness, limitedLightness)),
+    fn.mul(offsetEnabled, fn.sub(resolvedDelta, limitedDelta)),
   );
 }
 
@@ -1091,7 +1090,10 @@ const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
 const layerIdleBase = fn.oklch(layerBaseColor, idleLayerChannels);
 const layerIdleMixed = fn.var(inputs.layerMix, vars.layerIdleBase);
 const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
-  l: getLayerOffsetL(inputs.layerIdleLOffset),
+  l: fn.var(
+    inputs.layerIdleLOffsetL,
+    getLimitedLayerL(inputs.layerIdleLOffset),
+  ),
 });
 
 /**
@@ -1320,14 +1322,34 @@ function getLayerOffsetDeclarations(arbitraryPattern = "[*]") {
   const arbitraryValue = fn.value(arbitraryPattern ?? "[*]");
   const bareDelta = fn.mul(bareValue, vars.lightnessOffsetDirection);
   const arbitraryDelta = fn.mul(arbitraryValue, vars.lightnessOffsetDirection);
-  return [
-    set(inputs.layerIdleLOffsetDelta, bareDelta),
-    set(inputs.layerIdleLOffset, withUtilityTokenGate(bareDelta, bareValue)),
-    set(inputs.layerIdleLOffsetDelta, arbitraryDelta),
+  const getDeclarations = (delta: Value, tokenValue: Value) => [
+    set(inputs.layerIdleLOffset, withUtilityTokenGate(delta, tokenValue)),
     set(
-      inputs.layerIdleLOffset,
-      withUtilityTokenGate(arbitraryDelta, arbitraryValue),
+      vars.layerIdleLimitedL,
+      withUtilityTokenGate(
+        getLimitedLayerL(inputs.layerIdleLOffset),
+        tokenValue,
+      ),
     ),
+    set(
+      vars.layerIdleLimitedDelta,
+      withUtilityTokenGate(fn.sub(vars.layerIdleLimitedL, l), tokenValue),
+    ),
+    set(
+      inputs.layerIdleLOffsetL,
+      withUtilityTokenGate(
+        getLayerOffsetL(
+          vars.layerIdleLimitedL,
+          vars.layerIdleLimitedDelta,
+          inputs.layerIdleLOffset,
+        ),
+        tokenValue,
+      ),
+    ),
+  ];
+  return [
+    ...getDeclarations(bareDelta, bareValue),
+    ...getDeclarations(arbitraryDelta, arbitraryValue),
   ];
 }
 
