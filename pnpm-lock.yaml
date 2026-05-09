@@ -466,7 +466,7 @@ importers:
         version: 5.2.8
       '@lucide/astro':
         specifier: 0.562.0
-        version: 0.562.0(astro@5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3))
+        version: 0.562.0(astro@5.18.1(@types/node@24.12.3)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.4))
       '@react-aria/utils':
         specifier: 3.34.0
         version: 3.34.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -13362,9 +13362,9 @@ snapshots:
 
   '@keyv/serialize@1.1.1': {}
 
-  '@lucide/astro@0.562.0(astro@5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3))':
+  '@lucide/astro@0.562.0(astro@5.18.1(@types/node@24.12.3)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.4))':
     dependencies:
-      astro: 5.18.1(@types/node@24.12.2)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.3)
+      astro: 5.18.1(@types/node@24.12.3)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.4)
 
   '@manypkg/find-root@1.1.0':
     dependencies:
