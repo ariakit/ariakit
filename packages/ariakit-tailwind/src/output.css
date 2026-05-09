@@ -128,7 +128,7 @@
   --_ak-lipv: calc(var(--_ak-layer-idle-push-lightness) * var(--_ak-cps));
   --_ak-lpdtl: var(--_ak-odtl);
   --_ak-lipdtl: clamp(0, ((var(--_ak-lipv) * var(--_ak-lod)) * 1000000), 1);
-  --_ak-lcb: calc((var(--_ak-ct) * -1) * 0.3334 * ((var(--_ak-lod) * (1 - clamp(0, (var(--_ak-lipv) * 1000000), 1))) + (((var(--_ak-lipdtl) * 2) - 1) * clamp(0, (var(--_ak-lipv) * 1000000), 1))));
+  --_ak-lcb: calc((var(--_ak-ct) * -1) * 0.3334 * ((var(--_ak-lod) * (1 - clamp(0, (var(--_ak-lipv) * 1000000), 1))) + (((var(--_ak-lipdtl, 0) * 2) - 1) * clamp(0, (var(--_ak-lipv) * 1000000), 1))));
   --_ak-fla: max(0.2, (var(--_ak-flab) - (var(--_ak-ct) * 0.35)));
   --_ak-flb: min(0.9, (var(--_ak-flbb) + (var(--_ak-ct) * 0.175)));
   --_ak-odtl: clamp(0, var(--_ak-lod), 1);
@@ -257,7 +257,7 @@
   --_ak-layer-idle-push-lightness: --value([*]);
   --_ak-lipol: var(--_ak-layer-idle-lightness-offset-resolved, clamp(var(--_ak-layer-lightness-min), (l + var(--_ak-layer-idle-lightness-offset) + (clamp(0, (var(--_ak-layer-idle-lightness-offset) * 1000000), 1) * var(--_ak-llfb))), var(--_ak-layer-lightness-max)));
   --_ak-lipbl: clamp(var(--_ak-layer-lightness-min), (l + (var(--_ak-layer-idle-lightness-offset) + (var(--_ak-lipv) * var(--_ak-lod))) + (clamp(0, ((var(--_ak-layer-idle-lightness-offset) + (var(--_ak-lipv) * var(--_ak-lod))) * 1000000), 1) * var(--_ak-llfb))), var(--_ak-layer-lightness-max));
-  --_ak-lipl: clamp(0, (var(--_ak-lipbl) + ((clamp(0, (min((var(--_ak-lipbl) - var(--_ak-fla)), (var(--_ak-flb) - var(--_ak-lipbl))) * 1000000), 1) * clamp(0, (var(--_ak-lipv) * 1000000), 1)) * ((var(--_ak-fla) + (var(--_ak-lipdtl) * var(--_ak-bw))) - var(--_ak-lipbl)))), 1);
+  --_ak-lipl: clamp(0, (var(--_ak-lipbl) + ((clamp(0, (min((var(--_ak-lipbl) - var(--_ak-fla)), (var(--_ak-flb) - var(--_ak-lipbl))) * 1000000), 1) * clamp(0, (var(--_ak-lipv) * 1000000), 1)) * ((var(--_ak-fla) + (var(--_ak-lipdtl, 0) * var(--_ak-bw))) - var(--_ak-lipbl)))), 1);
   --_ak-lipc: oklch(from var(--_ak-lim) calc(var(--_ak-lipol) + (clamp(0, (var(--_ak-lipv) * 1000000), 1) * (var(--_ak-lipl) - var(--_ak-lipol)))) c h);
 }
 
@@ -410,7 +410,7 @@
   --_ak-layer-push-lightness: --value([*]);
   --_ak-lpv: calc(var(--_ak-layer-push-lightness) * var(--_ak-cps));
   --_ak-lpbl: calc(l + (var(--_ak-lpv) * var(--_ak-lod)) + (clamp(0, ((var(--_ak-lpv) * var(--_ak-lod)) * 1000000), 1) * var(--_ak-llfb)));
-  --_ak-lpl: clamp(0, (var(--_ak-lpbl) + ((clamp(0, (min((var(--_ak-lpbl) - var(--_ak-fla)), (var(--_ak-flb) - var(--_ak-lpbl))) * 1000000), 1) * clamp(0, (var(--_ak-lpv) * 1000000), 1)) * ((var(--_ak-fla) + (var(--_ak-lpdtl) * var(--_ak-bw))) - var(--_ak-lpbl)))), 1);
+  --_ak-lpl: clamp(0, (var(--_ak-lpbl) + ((clamp(0, (min((var(--_ak-lpbl) - var(--_ak-fla)), (var(--_ak-flb) - var(--_ak-lpbl))) * 1000000), 1) * clamp(0, (var(--_ak-lpv) * 1000000), 1)) * ((var(--_ak-fla) + (var(--_ak-lpdtl, 0) * var(--_ak-bw))) - var(--_ak-lpbl)))), 1);
 }
 
 @utility ak-state-saturate-* {
@@ -1382,42 +1382,12 @@
   initial-value: 0;
 }
 
-@property --_ak-lipdtl {
-  syntax: "<number>";
-  inherits: false;
-  initial-value: 0;
-}
-
-@property --_ak-lipol {
-  syntax: "*";
-  inherits: false;
-  initial-value: l;
-}
-
-@property --_ak-lipbl {
-  syntax: "*";
-  inherits: false;
-  initial-value: l;
-}
-
-@property --_ak-lipl {
-  syntax: "*";
-  inherits: false;
-  initial-value: l;
-}
-
 @property --_ak-lipc {
   syntax: "*";
   inherits: false;
 }
 
 @property --_ak-lpv {
-  syntax: "<number>";
-  inherits: false;
-  initial-value: 0;
-}
-
-@property --_ak-lpdtl {
   syntax: "<number>";
   inherits: false;
   initial-value: 0;

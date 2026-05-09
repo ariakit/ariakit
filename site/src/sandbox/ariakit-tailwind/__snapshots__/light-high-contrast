@@ -33,6 +33,12 @@
           "push min target high": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
           "push max": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
           "push max arbitrary": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
+          "push nested layer": {
+            "class": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
+            "children": {
+              "nested blue": "bg-[oklch(0.2_0.245_262.881)] text-[oklch(1_0_0)] rounded-[5px] border-[1px] border-[oklch(1_0.245_262.881_/_0.4334)] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.4334)_0px_0px_0px_0px]"
+            }
+          },
           "offset max bounds": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
           "state offset": "bg-[oklch(0.9_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
           "state push": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
