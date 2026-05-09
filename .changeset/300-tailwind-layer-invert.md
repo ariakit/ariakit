@@ -6,7 +6,7 @@ Removed `ak-layer-invert`
 
 **BREAKING** if you're using the `ak-layer-invert` utility.
 
-The `ak-layer-invert` utility has been removed. Use the [`ak-layer-l-*`](https://ariakit.com/styles#ak-layer) utility with a raw expression and the [`ak-layer-min-*`](https://ariakit.com/styles#ak-layer) lightness clamp instead.
+The `ak-layer-invert` utility has been removed. Use the `ak-layer-l-*` utility with a raw expression and the `ak-layer-min-*` lightness clamp instead.
 
 Before:
 
