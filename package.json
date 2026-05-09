@@ -76,7 +76,7 @@
     "@testing-library/react": "16.3.2",
     "@types/cross-spawn": "6.0.6",
     "@types/fs-extra": "11.0.4",
-    "@types/node": "24.12.2",
+    "@types/node": "24.12.3",
     "@types/react": "18.3.28",
     "@types/react-dom": "18.3.7",
     "@vitejs/plugin-react": "6.0.1",
@@ -88,15 +88,15 @@
     "cross-env": "10.1.0",
     "cross-spawn": "7.0.6",
     "esbuild-plugin-solid": "0.6.0",
-    "fs-extra": "11.3.4",
+    "fs-extra": "11.3.5",
     "glob": "13.0.6",
     "husky": "9.1.7",
     "jsdom": "29.1.1",
-    "lint-staged": "16.4.0",
+    "lint-staged": "17.0.3",
     "next": "14.2.35",
     "open-cli": "9.0.0",
-    "oxfmt": "0.47.0",
-    "oxlint": "1.62.0",
+    "oxfmt": "0.48.0",
+    "oxlint": "1.63.0",
     "oxlint-tsgolint": "0.22.1",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
@@ -106,17 +106,17 @@
     "react-dom": "18.3.1",
     "rimraf": "6.1.3",
     "solid-js": "1.9.12",
-    "stylelint": "17.10.0",
+    "stylelint": "17.11.0",
     "stylelint-config-standard": "40.0.0",
     "tailwindcss": "3.4.18",
     "tailwindcss-animate": "1.0.7",
     "tsup": "8.5.1",
     "typescript": "6.0.3",
-    "vite": "8.0.10",
+    "vite": "8.0.11",
     "vite-plugin-solid": "2.11.12",
     "vitest": "4.1.5",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.87.0"
+    "wrangler": "4.90.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
@@ -125,5 +125,5 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@11.0.5"
+  "packageManager": "pnpm@11.0.9"
 }

@@ -15,11 +15,6 @@ allowBuilds:
   sharp: true
   workerd: true
 
-minimumReleaseAge: 4320
-
-minimumReleaseAgeExclude:
-  - clava
-
 overrides:
   "@wordpress/components>@ariakit/react": "workspace:*"
 

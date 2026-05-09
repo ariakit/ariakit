@@ -349,16 +349,22 @@ jobs:
             local i="$1"
 
             echo "::group::Round $i - baseline"
-            (
-              cd "$BASELINE_DIR"
+            local baseline_failed=0
+            if ! (
+              cd "$BASELINE_DIR" || exit 1
               PERF_RESULTS_FILE=baseline-$i.json \
               PERF_ITERATIONS="$PERF_ITERATIONS" \
               PERF_WARMUP="$PERF_WARMUP" \
               xvfb-run -a pnpm -F site run test-perf --pass-with-no-tests
-            )
-            baseline_files=("$BASELINE_DIR"/site/.perf-results/baseline-"$i"*.json)
-            if [ ${#baseline_files[@]} -eq 0 ]; then
-              echo "No baseline perf results for round $i; writing an empty baseline."
+            ); then
+              echo "::warning::Baseline perf run failed for round $i; writing an empty baseline."
+              baseline_failed=1
+            fi
+            local baseline_files=("$BASELINE_DIR"/site/.perf-results/baseline-"$i"*.json)
+            if [ "$baseline_failed" -eq 1 ] || [ ${#baseline_files[@]} -eq 0 ]; then
+              if [ "$baseline_failed" -eq 0 ]; then
+                echo "::warning::No baseline perf results for round $i; writing an empty baseline."
+              fi
               printf '[]\n' > site/.perf-results/baseline-"$i"-worker0.json
             else
               cp "${baseline_files[@]}" site/.perf-results/
@@ -370,7 +376,7 @@ jobs:
             PERF_ITERATIONS="$PERF_ITERATIONS" \
             PERF_WARMUP="$PERF_WARMUP" \
             xvfb-run -a pnpm -F site run test-perf --pass-with-no-tests
-            current_files=(site/.perf-results/current-"$i"*.json)
+            local current_files=(site/.perf-results/current-"$i"*.json)
             if [ ${#current_files[@]} -eq 0 ]; then
               echo "Missing current perf results for round $i" >&2
               exit 1
