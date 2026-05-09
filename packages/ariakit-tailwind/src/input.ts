@@ -534,8 +534,8 @@ const disabledVars = {
   }),
 };
 
-// Utility-assigned math values. These depend on other vars and are resolved in
-// @utility ak-layer.
+// Utility-assigned math values. These depend on other vars and are resolved by
+// layer/state pipeline utilities.
 const layerMathVars = {
   contrastT: _ak.prop.zero("ct", { inherits: true }),
   contrastPushScale: _ak.prop.number("cps", { inherits: true, initial: 1 }),
