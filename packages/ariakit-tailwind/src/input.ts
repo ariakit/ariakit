@@ -1162,7 +1162,7 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
       fn.lch(sourceColor, {
         l: fn.round(
           "down",
-          getLayerTextLightness(),
+          vars.layerTextLightness,
           LCH_QUANTIZED_LIGHTNESS_INTERVAL,
         ),
         c: 0,
