@@ -279,9 +279,9 @@ export const layer = cv({
     if (variants.$invert) {
       setDefaultVariants({
         $lightnessOffset: false,
-        $lightnessPush: 16,
+        $lightnessPush: 14,
         $lightnessMin: 30,
-        $lightnessMax: 75,
+        $lightnessMax: 80,
       });
     }
   },
