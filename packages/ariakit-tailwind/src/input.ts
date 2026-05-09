@@ -551,11 +551,13 @@ const layerMathVars = {
   layerOffsetBaseL: _ak.prop("lobl", { initial: l }),
   layerOffsetDelta: _ak.prop("lodl", { initial: 0 }),
   layerIdlePushValue: _ak.prop.zero("lipv"),
-  layerIdlePushDirectionToLight: _ak.var("lipdtl"),
+  layerIdlePushDirectionToLight: _ak.prop.zero("lipdtl"),
+  layerIdlePushOffsetL: _ak.prop("lipol", { initial: l }),
   layerIdlePushBaseL: _ak.prop("lipbl", { initial: l }),
   layerIdlePushL: _ak.prop("lipl", { initial: l }),
+  layerIdlePushColor: _ak.prop("lipc"),
   layerPushValue: _ak.prop.zero("lpv"),
-  layerPushDirectionToLight: _ak.var("lpdtl"),
+  layerPushDirectionToLight: _ak.prop.zero("lpdtl"),
   layerPushBaseL: _ak.prop("lpbl", { initial: l }),
   layerPushL: _ak.prop("lpl", { initial: l }),
   layerIdleContrastValue: _ak.prop.zero("licv", { inherits: true }),
@@ -1068,12 +1070,30 @@ const forbiddenLb = fn.min(
 const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
 const layerIdleBase = fn.oklch(layerBaseColor, idleLayerChannels);
 const layerIdleMixed = fn.var(inputs.layerMix, vars.layerIdleBase);
-const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
-  l: fn.var(
+
+function getLayerIdleOffsetL() {
+  return fn.var(
     inputs.layerIdleLOffsetL,
     getLimitedLayerL(inputs.layerIdleLOffset),
-  ),
+  );
+}
+
+const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
+  l: getLayerIdleOffsetL(),
 });
+
+function getLayerIdlePushColor() {
+  const pushEnabled = fn.binary(vars.layerIdlePushValue);
+  return fn.oklch(vars.layerIdleMixed, {
+    l: fn.add(
+      vars.layerIdlePushOffsetL,
+      fn.mul(
+        pushEnabled,
+        fn.sub(vars.layerIdlePushL, vars.layerIdlePushOffsetL),
+      ),
+    ),
+  });
+}
 
 /**
  * Computes parent-relative contrast lightness. When `ak-layer-contrast` is
@@ -1099,9 +1119,10 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   );
 }
 
-const layerIdle = fn.oklch(vars.layerIdleOffset, {
+const layerIdlePushed = fn.var(vars.layerIdlePushColor, vars.layerIdleOffset);
+const layerIdle = fn.oklch(layerIdlePushed, {
   l: fn.add(
-    getContrastL(vars.layerIdlePushL, vars.layerIdleContrastValue),
+    getContrastL(l, vars.layerIdleContrastValue),
     fn.mul(
       vars.layerContrastBias,
       fn.sub(
@@ -1158,6 +1179,18 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
   ];
 }
 
+function getLayerIdleContrastBiasDirection() {
+  const pushEnabled = fn.binary(vars.layerIdlePushValue);
+  const pushDirection = fn.sub(
+    fn.double(vars.layerIdlePushDirectionToLight),
+    1,
+  );
+  return fn.add(
+    fn.mul(vars.lightnessOffsetDirection, fn.sub(1, pushEnabled)),
+    fn.mul(pushDirection, pushEnabled),
+  );
+}
+
 // Assign derived math first so later color stages can reference short vars.
 const layerMathDeclarations = [
   // Set contrastT explicitly so the 5+ references inside this body resolve
@@ -1165,12 +1198,17 @@ const layerMathDeclarations = [
   // contrast-scale math at each call site.
   set(vars.contrastT, fn.mul(globalContrastT, disabledVars.contrastScale)),
   set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
+  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
+  set(
+    vars.layerIdlePushDirectionToLight,
+    fn.binary(fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection)),
+  ),
   set(
     vars.layerContrastBias,
     fn.mul(
       fn.neg(vars.contrastT),
       CONTRAST_SCALE,
-      vars.lightnessOffsetDirection,
+      getLayerIdleContrastBiasDirection(),
     ),
   ),
   set(vars.forbiddenLa, forbiddenLa),
@@ -1287,8 +1325,16 @@ utility(
   getBaseDeclarations(vars.layer),
   layerMathDeclarations,
   layerColorDeclarations,
-  at.variant(light, set(vars.edgePushDirection, -1)),
-  at.variant(dark, set(vars.edgePushDirection, 1)),
+  at.variant(
+    light,
+    set(vars.layerIdlePushDirectionToLight, 0),
+    set(vars.edgePushDirection, -1),
+  ),
+  at.variant(
+    dark,
+    set(vars.layerIdlePushDirectionToLight, 1),
+    set(vars.edgePushDirection, 1),
+  ),
   layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
     set(provide(vars.layerEdgeContext), vars.edge),
@@ -1420,17 +1466,14 @@ utility(
 utility(
   "layer-push-*",
   getRawPercentDeclarations(inputs.layerIdlePushL),
-  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
-  set(
-    vars.layerIdlePushDirectionToLight,
-    fn.binary(fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection)),
-  ),
-  at.variant(light, set(vars.layerIdlePushDirectionToLight, 0)),
-  at.variant(dark, set(vars.layerIdlePushDirectionToLight, 1)),
+  set(vars.layerIdlePushOffsetL, getLayerIdleOffsetL()),
   set(
     vars.layerIdlePushBaseL,
     getLimitedLayerL(
-      fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection),
+      fn.add(
+        inputs.layerIdleLOffset,
+        fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection),
+      ),
     ),
   ),
   set(
@@ -1441,6 +1484,7 @@ utility(
       vars.layerIdlePushDirectionToLight,
     ),
   ),
+  set(vars.layerIdlePushColor, getLayerIdlePushColor()),
 );
 
 utility(
