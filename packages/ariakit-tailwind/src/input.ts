@@ -548,6 +548,8 @@ const layerMathVars = {
   forbiddenEntryBoundary: _ak.var("eb"),
   layerIdleLimitedL: _ak.prop("lill", { initial: l }),
   layerIdleLimitedDelta: _ak.prop("lild", { initial: 0 }),
+  layerOffsetBaseL: _ak.prop("lobl", { initial: l }),
+  layerOffsetDelta: _ak.prop("lodl", { initial: 0 }),
   layerIdlePushValue: _ak.prop.zero("lipv"),
   layerIdlePushBaseL: _ak.prop("lipbl", { initial: l }),
   layerIdlePushL: _ak.prop("lipl", { initial: l }),
@@ -669,6 +671,7 @@ const inputs = {
   layerRelativeH: _ak.prop("layer-relative-hue", { initial: 0 }),
   layerLOffsetDelta: _ak.prop("layer-lightness-offset-delta", { initial: 0 }),
   layerLOffset: _ak.prop("layer-lightness-offset", { initial: 0 }),
+  layerLOffsetL: _ak.prop("layer-lightness-offset-resolved"),
   layerPushL: _ak.prop("layer-push-lightness", { initial: 0 }),
   layerMix: _ak.prop("layer-mix"),
   layerMixMethod: _ak.prop("layer-mix-method", "oklab"),
@@ -823,19 +826,6 @@ function getPushValue(value: Value) {
 }
 
 /**
- * Computes lightness offset from an already direction-adjusted delta.
- */
-function getLightnessOffset(value: Value) {
-  return getResolvedLightnessOffset(
-    value,
-    vars.lightnessOffsetDirection,
-    vars.forbiddenLa,
-    vars.forbiddenLb,
-    vars.forbiddenEntryBoundary,
-  );
-}
-
-/**
  * Keeps a declaration tied to utility tokens while using a factored scratch
  * variable for the expensive expression.
  */
@@ -923,16 +913,16 @@ function getLimitedLayerL(
 }
 
 /**
- * Resolves lightness limits together with the directional offset so min/max
- * values cannot pull the result back into the forbidden mid-luminance range.
+ * Resolves a layer lightness candidate together with its directional offset so
+ * callers can apply floor/min/max adjustments before the forbidden-range jump.
  */
 function getLayerOffsetL(
-  limitedLightness: Value,
-  limitedDelta: Value,
+  baseLightness: Value,
+  baseDelta: Value,
   relativeLightness: Value,
 ) {
   const resolvedDelta = getResolvedLightnessOffset(
-    limitedDelta,
+    baseDelta,
     vars.lightnessOffsetDirection,
     vars.forbiddenLa,
     vars.forbiddenLb,
@@ -940,8 +930,8 @@ function getLayerOffsetL(
   );
   const offsetEnabled = fn.binary(fn.abs(relativeLightness));
   return fn.add(
-    limitedLightness,
-    fn.mul(offsetEnabled, fn.sub(resolvedDelta, limitedDelta)),
+    baseLightness,
+    fn.mul(offsetEnabled, fn.sub(resolvedDelta, baseDelta)),
   );
 }
 
@@ -1138,7 +1128,7 @@ const layerState = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
 });
 
 const layerOffset = fn.oklch(vars.layerBase, {
-  l: getLayerL(inputs.layerLOffset),
+  l: fn.var(inputs.layerLOffsetL, getLayerL(inputs.layerLOffset)),
 });
 
 const layerPush = fn.oklch(vars.layerOffset, {
@@ -1322,7 +1312,10 @@ function getLayerOffsetDeclarations(arbitraryPattern = "[*]") {
   const arbitraryValue = fn.value(arbitraryPattern ?? "[*]");
   const bareDelta = fn.mul(bareValue, vars.lightnessOffsetDirection);
   const arbitraryDelta = fn.mul(arbitraryValue, vars.lightnessOffsetDirection);
-  const getDeclarations = (delta: Value, tokenValue: Value) => [
+  const getDeclarations = (
+    delta: string | number | VarProperty,
+    tokenValue: Value,
+  ) => [
     set(inputs.layerIdleLOffset, withUtilityTokenGate(delta, tokenValue)),
     set(
       vars.layerIdleLimitedL,
@@ -1541,28 +1534,39 @@ utility(
 function getStateOffsetDeclarations() {
   const bareValue = getBarePercentTokenValue();
   const arbitraryValue = fn.value("[*]");
+  const getDeclarations = (
+    delta: string | number | VarProperty,
+    tokenValue: Value,
+  ) => [
+    set(inputs.layerLOffsetDelta, delta),
+    set(
+      vars.layerOffsetBaseL,
+      withUtilityTokenGate(getLayerL(inputs.layerLOffsetDelta), tokenValue),
+    ),
+    set(
+      vars.layerOffsetDelta,
+      withUtilityTokenGate(fn.sub(vars.layerOffsetBaseL, l), tokenValue),
+    ),
+    set(
+      inputs.layerLOffsetL,
+      withUtilityTokenGate(
+        getLayerOffsetL(
+          vars.layerOffsetBaseL,
+          vars.layerOffsetDelta,
+          inputs.layerLOffsetDelta,
+        ),
+        tokenValue,
+      ),
+    ),
+  ];
   return [
-    set(
-      inputs.layerLOffsetDelta,
+    ...getDeclarations(
       fn.mul(bareValue, vars.lightnessOffsetDirection),
+      bareValue,
     ),
-    set(
-      inputs.layerLOffset,
-      withUtilityTokenGate(
-        getLightnessOffset(inputs.layerLOffsetDelta),
-        bareValue,
-      ),
-    ),
-    set(
-      inputs.layerLOffsetDelta,
+    ...getDeclarations(
       fn.mul(arbitraryValue, vars.lightnessOffsetDirection),
-    ),
-    set(
-      inputs.layerLOffset,
-      withUtilityTokenGate(
-        getLightnessOffset(inputs.layerLOffsetDelta),
-        arbitraryValue,
-      ),
+      arbitraryValue,
     ),
   ];
 }
