@@ -350,6 +350,41 @@ export default function Example() {
             className="ak-ink-[0.45] ak-edge-alpha-[0.35] *:ak-text"
           />
           <Layer
+            label="layer limits"
+            className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
+          >
+            <Layer className="flex-wrap items-start">
+              <Cell
+                label="offset min"
+                className="ak-layer-min-70 ak-layer-offset-40"
+              />
+              <Cell
+                label="push min arbitrary"
+                className="ak-layer-min-70 ak-layer-push-[0.25]"
+              />
+              <Cell
+                label="push max"
+                className="ak-layer-max-30 ak-layer-push-40"
+              />
+              <Cell
+                label="offset max bounds"
+                className="ak-layer-min-20 ak-layer-max-30 ak-layer-offset-[0.25]"
+              />
+              <Cell
+                label="state offset"
+                className="ak-layer-min-70 ak-state-offset-40"
+              />
+              <Cell
+                label="state push"
+                className="ak-layer-max-30 ak-state-push-40"
+              />
+              <Cell
+                label="contrast push"
+                className="ak-layer-contrast ak-layer-min-70 ak-layer-push-40"
+              />
+            </Layer>
+          </Layer>
+          <Layer
             label="edge inherit"
             className="ak-layer ak-layer-blue-600 ak-edge-red-600 ak-edge-40 ak-frame ak-frame-p-1 ak-frame-border flex-col"
           >
@@ -371,7 +406,7 @@ export default function Example() {
           >
             <Layer className="ak-layer ak-layer-lighten-20 ak-frame ak-frame-p-1 ak-frame-bordering-inherit" />
             <Layer className="ak-layer ak-layer-darken-20 ak-frame ak-frame-p-1 ak-frame-bordering-inherit" />
-            <div className="ak-frame-bordering-inherit">
+            <div className="ak-frame ak-frame-bordering-inherit">
               <Layer
                 label="host"
                 className="ak-layer ak-layer-darken-20 ak-frame ak-frame-p-1 ak-frame-bordering-inherit"

@@ -534,8 +534,8 @@ const disabledVars = {
   }),
 };
 
-// Utility-assigned math values. These depend on other vars and are resolved in
-// @utility ak-layer.
+// Utility-assigned math values. These depend on other vars and are resolved by
+// layer/state pipeline utilities.
 const layerMathVars = {
   contrastT: _ak.prop.zero("ct", { inherits: true }),
   contrastPushScale: _ak.prop.number("cps", { inherits: true, initial: 1 }),
@@ -546,6 +546,10 @@ const layerMathVars = {
   offsetDirectionToLight: _ak.var("odtl"),
   forbiddenBandWidth: _ak.var("bw"),
   forbiddenEntryBoundary: _ak.var("eb"),
+  layerIdleLimitedL: _ak.prop("lill", { initial: l }),
+  layerIdleLimitedDelta: _ak.prop("lild", { initial: 0 }),
+  layerOffsetBaseL: _ak.prop("lobl", { initial: l }),
+  layerOffsetDelta: _ak.prop("lodl", { initial: 0 }),
   layerIdlePushValue: _ak.prop.zero("lipv"),
   layerIdlePushBaseL: _ak.prop("lipbl", { initial: l }),
   layerIdlePushL: _ak.prop("lipl", { initial: l }),
@@ -651,10 +655,8 @@ const inputs = {
   layerIdleRelativeL: _ak.prop("layer-idle-relative-lightness", { initial: 0 }),
   layerIdleRelativeC: _ak.prop("layer-idle-relative-chroma", { initial: 0 }),
   layerIdleRelativeH: _ak.prop("layer-idle-relative-hue", { initial: 0 }),
-  layerIdleLOffsetDelta: _ak.prop("layer-idle-lightness-offset-delta", {
-    initial: 0,
-  }),
   layerIdleLOffset: _ak.prop("layer-idle-lightness-offset", { initial: 0 }),
+  layerIdleLOffsetL: _ak.prop("layer-idle-lightness-offset-resolved"),
   layerIdlePushL: _ak.prop("layer-idle-push-lightness", { initial: 0 }),
   layerIdleContrastL: _ak.prop("layer-idle-contrast-lightness", { initial: 0 }),
   layerL: _ak.prop("layer-lightness"),
@@ -669,6 +671,7 @@ const inputs = {
   layerRelativeH: _ak.prop("layer-relative-hue", { initial: 0 }),
   layerLOffsetDelta: _ak.prop("layer-lightness-offset-delta", { initial: 0 }),
   layerLOffset: _ak.prop("layer-lightness-offset", { initial: 0 }),
+  layerLOffsetL: _ak.prop("layer-lightness-offset-resolved"),
   layerPushL: _ak.prop("layer-push-lightness", { initial: 0 }),
   layerMix: _ak.prop("layer-mix"),
   layerMixMethod: _ak.prop("layer-mix-method", "oklab"),
@@ -823,19 +826,6 @@ function getPushValue(value: Value) {
 }
 
 /**
- * Computes lightness offset from an already direction-adjusted delta.
- */
-function getLightnessOffset(value: Value) {
-  return getResolvedLightnessOffset(
-    value,
-    vars.lightnessOffsetDirection,
-    vars.forbiddenLa,
-    vars.forbiddenLb,
-    vars.forbiddenEntryBoundary,
-  );
-}
-
-/**
  * Keeps a declaration tied to utility tokens while using a factored scratch
  * variable for the expensive expression.
  */
@@ -909,6 +899,43 @@ function getLayerL(relativeLightness: Value, absoluteLightness?: VarProperty) {
   return absoluteLightness
     ? fn.var(absoluteLightness, fallbackLightness)
     : fallbackLightness;
+}
+
+function getLimitedLayerL(
+  relativeLightness: Value,
+  absoluteLightness?: VarProperty,
+) {
+  return fn.clamp(
+    inputs.layerLMin,
+    getLayerL(relativeLightness, absoluteLightness),
+    inputs.layerLMax,
+  );
+}
+
+/**
+ * Resolves a layer lightness candidate together with its directional offset so
+ * callers can apply floor/min/max adjustments before the forbidden-range jump.
+ * `baseDelta` must be `baseLightness - l` (the current lightness channel);
+ * callers pass it separately so layer/state offset utilities can reuse the
+ * cached delta inside the final color stage.
+ */
+function getLayerOffsetL(
+  baseLightness: Value,
+  baseDelta: Value,
+  relativeLightness: Value,
+) {
+  const resolvedDelta = getResolvedLightnessOffset(
+    baseDelta,
+    vars.lightnessOffsetDirection,
+    vars.forbiddenLa,
+    vars.forbiddenLb,
+    vars.forbiddenEntryBoundary,
+  );
+  const offsetEnabled = fn.binary(fn.abs(relativeLightness));
+  return fn.add(
+    baseLightness,
+    fn.mul(offsetEnabled, fn.sub(resolvedDelta, baseDelta)),
+  );
 }
 
 /**
@@ -1056,13 +1083,9 @@ const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
 const layerIdleBase = fn.oklch(layerBaseColor, idleLayerChannels);
 const layerIdleMixed = fn.var(inputs.layerMix, vars.layerIdleBase);
 const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
-  l: fn.add(
-    fn.clamp(
-      inputs.layerLMin,
-      getLayerL(inputs.layerIdleLOffset),
-      inputs.layerLMax,
-    ),
-    vars.layerContrastBias,
+  l: fn.var(
+    inputs.layerIdleLOffsetL,
+    getLimitedLayerL(inputs.layerIdleLOffset),
   ),
 });
 
@@ -1091,7 +1114,16 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
 }
 
 const layerIdle = fn.oklch(vars.layerIdleOffset, {
-  l: getContrastL(vars.layerIdlePushL, vars.layerIdleContrastValue),
+  l: fn.add(
+    getContrastL(vars.layerIdlePushL, vars.layerIdleContrastValue),
+    fn.mul(
+      vars.layerContrastBias,
+      fn.sub(
+        1,
+        fn.mul(vars.layerContrastDirection, vars.layerContrastDirection),
+      ),
+    ),
+  ),
 });
 
 const layerState = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
@@ -1099,7 +1131,7 @@ const layerState = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
 });
 
 const layerOffset = fn.oklch(vars.layerBase, {
-  l: getLayerL(inputs.layerLOffset),
+  l: fn.var(inputs.layerLOffsetL, getLayerL(inputs.layerLOffset)),
 });
 
 const layerPush = fn.oklch(vars.layerOffset, {
@@ -1281,29 +1313,39 @@ utility(
 function getLayerOffsetDeclarations(arbitraryPattern = "[*]") {
   const bareValue = getBarePercentTokenValue();
   const arbitraryValue = fn.value(arbitraryPattern ?? "[*]");
+  const bareDelta = fn.mul(bareValue, vars.lightnessOffsetDirection);
+  const arbitraryDelta = fn.mul(arbitraryValue, vars.lightnessOffsetDirection);
+  const getDeclarations = (
+    delta: string | number | VarProperty,
+    tokenValue: Value,
+  ) => [
+    set(inputs.layerIdleLOffset, withUtilityTokenGate(delta, tokenValue)),
+    set(
+      vars.layerIdleLimitedL,
+      withUtilityTokenGate(
+        getLimitedLayerL(inputs.layerIdleLOffset),
+        tokenValue,
+      ),
+    ),
+    set(
+      vars.layerIdleLimitedDelta,
+      withUtilityTokenGate(fn.sub(vars.layerIdleLimitedL, l), tokenValue),
+    ),
+    set(
+      inputs.layerIdleLOffsetL,
+      withUtilityTokenGate(
+        getLayerOffsetL(
+          vars.layerIdleLimitedL,
+          vars.layerIdleLimitedDelta,
+          inputs.layerIdleLOffset,
+        ),
+        tokenValue,
+      ),
+    ),
+  ];
   return [
-    set(
-      inputs.layerIdleLOffsetDelta,
-      fn.mul(bareValue, vars.lightnessOffsetDirection),
-    ),
-    set(
-      inputs.layerIdleLOffset,
-      withUtilityTokenGate(
-        getLightnessOffset(inputs.layerIdleLOffsetDelta),
-        bareValue,
-      ),
-    ),
-    set(
-      inputs.layerIdleLOffsetDelta,
-      fn.mul(arbitraryValue, vars.lightnessOffsetDirection),
-    ),
-    set(
-      inputs.layerIdleLOffset,
-      withUtilityTokenGate(
-        getLightnessOffset(inputs.layerIdleLOffsetDelta),
-        arbitraryValue,
-      ),
-    ),
+    ...getDeclarations(bareDelta, bareValue),
+    ...getDeclarations(arbitraryDelta, arbitraryValue),
   ];
 }
 
@@ -1395,7 +1437,9 @@ utility(
   set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(
     vars.layerIdlePushBaseL,
-    getLayerL(fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection)),
+    getLimitedLayerL(
+      fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection),
+    ),
   ),
   set(
     vars.layerIdlePushL,
@@ -1493,28 +1537,39 @@ utility(
 function getStateOffsetDeclarations() {
   const bareValue = getBarePercentTokenValue();
   const arbitraryValue = fn.value("[*]");
+  const getDeclarations = (
+    delta: string | number | VarProperty,
+    tokenValue: Value,
+  ) => [
+    set(inputs.layerLOffsetDelta, delta),
+    set(
+      vars.layerOffsetBaseL,
+      withUtilityTokenGate(getLayerL(inputs.layerLOffsetDelta), tokenValue),
+    ),
+    set(
+      vars.layerOffsetDelta,
+      withUtilityTokenGate(fn.sub(vars.layerOffsetBaseL, l), tokenValue),
+    ),
+    set(
+      inputs.layerLOffsetL,
+      withUtilityTokenGate(
+        getLayerOffsetL(
+          vars.layerOffsetBaseL,
+          vars.layerOffsetDelta,
+          inputs.layerLOffsetDelta,
+        ),
+        tokenValue,
+      ),
+    ),
+  ];
   return [
-    set(
-      inputs.layerLOffsetDelta,
+    ...getDeclarations(
       fn.mul(bareValue, vars.lightnessOffsetDirection),
+      bareValue,
     ),
-    set(
-      inputs.layerLOffset,
-      withUtilityTokenGate(
-        getLightnessOffset(inputs.layerLOffsetDelta),
-        bareValue,
-      ),
-    ),
-    set(
-      inputs.layerLOffsetDelta,
+    ...getDeclarations(
       fn.mul(arbitraryValue, vars.lightnessOffsetDirection),
-    ),
-    set(
-      inputs.layerLOffset,
-      withUtilityTokenGate(
-        getLightnessOffset(inputs.layerLOffsetDelta),
-        arbitraryValue,
-      ),
+      arbitraryValue,
     ),
   ];
 }
