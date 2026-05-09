@@ -552,15 +552,12 @@ const layerMathVars = {
   layerOffsetDelta: _ak.prop("lodl", { initial: 0 }),
   layerIdlePushValue: _ak.prop.zero("lipv"),
   layerIdlePushDirectionToLight: _ak.prop.zero("lipdtl"),
-  // `lipbl` only resolves the pushed lightness inside `ak-layer-push-*`, so
-  // keep it unregistered to avoid extra @property work on every layer.
+  // These scratch vars only resolve the pushed color in ak-layer-push-*.
+  // Keep them unregistered so each push utility avoids extra @property work.
+  layerIdlePushOffsetL: _ak.var("lipol"),
   layerIdlePushBaseL: _ak.var("lipbl"),
-  // `lipl` is referenced by the static `--_ak-li` body to feed the pushed
-  // lightness back into the contrast-base position. Register it with
-  // `initial: l` so a non-push layer naturally collapses to the literal `l`
-  // channel of `--_ak-lio` without needing a `var(--_ak-lipl, l)` fallback
-  // at the use site.
-  layerIdlePushL: _ak.prop("lipl", { initial: l }),
+  layerIdlePushL: _ak.var("lipl"),
+  layerIdlePushColor: _ak.prop("lipc"),
   layerPushValue: _ak.prop.zero("lpv"),
   layerPushDirectionToLight: _ak.prop.zero("lpdtl"),
   layerPushBaseL: _ak.prop("lpbl", { initial: l }),
@@ -1076,22 +1073,45 @@ const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
 const layerIdleBase = fn.oklch(layerBaseColor, idleLayerChannels);
 const layerIdleMixed = fn.var(inputs.layerMix, vars.layerIdleBase);
 
-const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
-  l: fn.var(
+function getLayerIdleOffsetL() {
+  return fn.var(
     inputs.layerIdleLOffsetL,
     getLimitedLayerL(inputs.layerIdleLOffset),
-  ),
+  );
+}
+
+const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
+  l: getLayerIdleOffsetL(),
 });
+
+/**
+ * Materializes the pushed layer color in `--_ak-lim`'s context so the push
+ * target evaluates against the un-min/max-clamped layer lightness. `--_ak-li`
+ * sources from `--_ak-lipc` (with `--_ak-lio` fallback) so `ak-layer-min-*`
+ * and `ak-layer-max-*` apply to the final clamp without absorbing the push
+ * delta. The mask falls back to `lipol` when push is inactive so
+ * `ak-layer-push-0` stays a no-op against `ak-layer-offset-*` resolved L.
+ */
+function getLayerIdlePushColor() {
+  const pushEnabled = fn.binary(vars.layerIdlePushValue);
+  return fn.oklch(vars.layerIdleMixed, {
+    l: fn.add(
+      vars.layerIdlePushOffsetL,
+      fn.mul(
+        pushEnabled,
+        fn.sub(vars.layerIdlePushL, vars.layerIdlePushOffsetL),
+      ),
+    ),
+  });
+}
 
 /**
  * Computes parent-relative contrast lightness. When `ak-layer-contrast` is
  * active (layerContrastDirection !== 0), derives the target lightness from the
  * parent layer's lightness rather than the current color's lightness. Falls
- * back to `selfL` when inactive, and uses `selfL` as the starting point for
- * the directional shift toward the parent target so layer push composes with
- * `ak-layer-contrast`.
+ * back to the self-relative `selfRelativeL` when inactive.
  */
-function getContrastL(selfL: Value, contrastValue: Value) {
+function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   const direction = vars.layerContrastDirection;
   // Use the contrast value as the shift magnitude, pushed in the parent-
   // relative direction (positive = lighter, negative = darker).
@@ -1099,26 +1119,20 @@ function getContrastL(selfL: Value, contrastValue: Value) {
   const parentTargetL = fn.clamp01(
     fn.add(vars.layerContrastParentL, parentShift),
   );
-  const parentDirectedL = getDirectionalLightness(
-    selfL,
-    parentTargetL,
-    direction,
-  );
+  const parentDirectedL = getDirectionalLightness(l, parentTargetL, direction);
   // When ak-layer-contrast is active, direction is ±1 so |direction|=1.
   // When inactive, direction=0. Use this as a blend mask.
   const isActive = fn.mul(direction, direction);
   return fn.add(
     fn.mul(parentDirectedL, isActive),
-    fn.mul(selfL, fn.sub(1, isActive)),
+    fn.mul(selfRelativeL, fn.sub(1, isActive)),
   );
 }
 
-const layerIdle = fn.oklch(vars.layerIdleOffset, {
+const layerIdlePushed = fn.var(vars.layerIdlePushColor, vars.layerIdleOffset);
+const layerIdle = fn.oklch(layerIdlePushed, {
   l: fn.add(
-    // `--_ak-lipl` resolves to `l` via its `@property` initial value when push
-    // is inactive, so this expression collapses to the literal `l` channel of
-    // `--_ak-lio` for non-push layers and only diverges once push is active.
-    getContrastL(vars.layerIdlePushL, vars.layerIdleContrastValue),
+    getContrastL(l, vars.layerIdleContrastValue),
     fn.mul(
       vars.layerContrastBias,
       fn.sub(
@@ -1466,10 +1480,14 @@ utility(
   // when `ak-layer!` is on the same element (see the rationale where
   // `layerContrastBiasFromPush` is defined).
   set(vars.layerContrastBias, fn.important(layerContrastBiasFromPush)),
+  set(vars.layerIdlePushOffsetL, getLayerIdleOffsetL()),
   set(
     vars.layerIdlePushBaseL,
     getLimitedLayerL(
-      fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection),
+      fn.add(
+        inputs.layerIdleLOffset,
+        fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection),
+      ),
     ),
   ),
   set(
@@ -1480,6 +1498,7 @@ utility(
       vars.layerIdlePushDirectionToLight,
     ),
   ),
+  set(vars.layerIdlePushColor, getLayerIdlePushColor()),
 );
 
 utility(
