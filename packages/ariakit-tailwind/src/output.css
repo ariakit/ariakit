@@ -128,7 +128,7 @@
   --_ak-lipv: calc(var(--_ak-layer-idle-push-lightness) * var(--_ak-cps));
   --_ak-lipdtl: var(--_ak-odtl);
   --_ak-lpdtl: var(--_ak-odtl);
-  --_ak-lcb: calc((var(--_ak-ct) * -1) * 0.3334 * ((var(--_ak-lod) * (1 - clamp(0, (var(--_ak-lipv) * 1000000), 1))) + (((var(--_ak-lipdtl) * 2) - 1) * clamp(0, (var(--_ak-lipv) * 1000000), 1))));
+  --_ak-lcb: calc((var(--_ak-ct) * -1) * 0.3334 * (var(--_ak-lod) + (clamp(0, (var(--_ak-lipv) * 1000000), 1) * (((var(--_ak-lipdtl) * 2) - 1) - var(--_ak-lod)))));
   --_ak-fla: max(0.2, (var(--_ak-flab) - (var(--_ak-ct) * 0.35)));
   --_ak-flb: min(0.9, (var(--_ak-flbb) + (var(--_ak-ct) * 0.175)));
   --_ak-odtl: clamp(0, var(--_ak-lod), 1);

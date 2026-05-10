@@ -1175,8 +1175,8 @@ function getLayerIdleContrastBiasDirection() {
     1,
   );
   return fn.add(
-    fn.mul(vars.lightnessOffsetDirection, fn.sub(1, pushEnabled)),
-    fn.mul(pushDirection, pushEnabled),
+    vars.lightnessOffsetDirection,
+    fn.mul(pushEnabled, fn.sub(pushDirection, vars.lightnessOffsetDirection)),
   );
 }
 
