@@ -2,4 +2,4 @@
 "@ariakit/tailwind": patch
 ---
 
-Fixed `ak-layer-offset-*` and `ak-layer-push-*` utilities to use `ak-layer-min-*` and `ak-layer-max-*` lightness limits before escaping the forbidden mid-luminance range and applying high-contrast adjustments, and aligned `ak-state-*` and `ak-state-offset-*` with the layer lightness floor before the same forbidden-range escape.
+Fixed `ak-layer-offset-*` and `ak-layer-push-*` utilities to use `ak-layer-min-*` and `ak-layer-max-*` lightness limits on the resolved target before escaping the forbidden mid-luminance range.

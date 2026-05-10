@@ -122,7 +122,7 @@ function Layers() {
       </Layer>
       <Layer
         label="ak-layer-invert"
-        className="ak-layer ak-layer-invert ak-frame ak-frame-full/1 ak-frame-force ak-frame-border ak-edge-min-c-30 ak-edge-raw *:ak-text"
+        className="ak-layer ak-layer-l-[calc(1-l)] ak-layer-min-25 ak-frame ak-frame-full/1 ak-frame-force ak-frame-border ak-edge-min-c-30 ak-edge-raw *:ak-text"
       />
       <Layer
         label="ak-layer-darken-<number>"
@@ -358,14 +358,45 @@ export default function Example() {
                 label="offset min"
                 className="ak-layer-min-70 ak-layer-offset-40"
               />
+              <Cell label="offset" className="ak-layer-offset-40" />
+              <Cell
+                label="push zero offset"
+                className="ak-layer-offset-40 ak-layer-push-0"
+              />
+              <Cell
+                label="push zero arbitrary offset"
+                className="ak-layer-offset-40 ak-layer-push-[0]"
+              />
               <Cell
                 label="push min arbitrary"
                 className="ak-layer-min-70 ak-layer-push-[0.25]"
               />
               <Cell
+                label="push min arbitrary low"
+                className="ak-layer-min-[0.2] ak-layer-push-100"
+              />
+              <Cell
+                label="push min target low"
+                className="ak-layer-min-20 ak-layer-push-[0.25]"
+              />
+              <Cell
+                label="push min target high"
+                className="ak-layer-min-80 ak-layer-push-[0.1]"
+              />
+              <Cell
                 label="push max"
                 className="ak-layer-max-30 ak-layer-push-40"
               />
+              <Cell
+                label="push max arbitrary"
+                className="ak-layer-max-[0.8] ak-layer-push-100"
+              />
+              <Layer
+                label="push nested layer"
+                className="ak-layer ak-layer-push-60 ak-frame ak-frame-p-1 ak-frame-border flex-col"
+              >
+                <Cell label="nested blue" className="ak-layer-blue-600" />
+              </Layer>
               <Cell
                 label="offset max bounds"
                 className="ak-layer-min-20 ak-layer-max-30 ak-layer-offset-[0.25]"
@@ -373,6 +404,10 @@ export default function Example() {
               <Cell
                 label="state offset"
                 className="ak-layer-min-70 ak-state-offset-40"
+              />
+              <Cell
+                label="state push zero"
+                className="ak-layer-40 ak-state-push-0"
               />
               <Cell
                 label="state push"

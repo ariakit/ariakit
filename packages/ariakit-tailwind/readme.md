@@ -174,7 +174,6 @@ Use [`ak-edge`](#ak-edge) to fine-tune border and ring colors without touching t
 | `ak-layer-push-<number>`     | Minimum lightness shift (self-relative), jumping the forbidden mid-luminance range where contrast math becomes unreliable.                                             |
 | `ak-layer-contrast`          | Adapts the layer to contrast against its parent (preset `25`).                                                                                                         |
 | `ak-layer-contrast-<number>` | Custom contrast amount (`0`–`100`, default `25`).                                                                                                                      |
-| `ak-layer-invert`            | Inverts lightness (clamped so the result is never pure black).                                                                                                         |
 | `ak-layer-l-<value>`         | Sets absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values).                                                                |
 | `ak-layer-max-<value>`       | Caps lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values) or caps chroma with a named chroma preset (`ak-layer-max-muted`).        |
 | `ak-layer-min-<value>`       | Floors lightness or chroma, same form as `max-*`.                                                                                                                      |

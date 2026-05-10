@@ -551,9 +551,16 @@ const layerMathVars = {
   layerOffsetBaseL: _ak.prop("lobl", { initial: l }),
   layerOffsetDelta: _ak.prop("lodl", { initial: 0 }),
   layerIdlePushValue: _ak.prop.zero("lipv"),
-  layerIdlePushBaseL: _ak.prop("lipbl", { initial: l }),
-  layerIdlePushL: _ak.prop("lipl", { initial: l }),
+  layerIdlePushEnabled: _ak.prop.zero("lipe"),
+  layerIdlePushDirectionToLight: _ak.prop.zero("lipdtl"),
+  // These scratch vars only resolve the pushed lightness in ak-layer-push-*.
+  // Keep them unregistered so each push utility avoids extra @property work.
+  layerIdlePushBaseL: _ak.var("lipbl"),
+  layerIdlePushL: _ak.var("lipl"),
+
+  layerIdlePushResolvedL: _ak.prop("liprl"),
   layerPushValue: _ak.prop.zero("lpv"),
+  layerPushDirectionToLight: _ak.prop.zero("lpdtl"),
   layerPushBaseL: _ak.prop("lpbl", { initial: l }),
   layerPushL: _ak.prop("lpl", { initial: l }),
   layerIdleContrastValue: _ak.prop.zero("licv", { inherits: true }),
@@ -836,51 +843,29 @@ function withUtilityTokenGate(value: Value, tokenValue: Value) {
 }
 
 /**
- * Applies contrast lightness with the same baseline progression as
- * `ak-layer-*`, except values that would land inside the forbidden band jump
- * to the opposite boundary and preserve their remaining progress there.
+ * Moves push values out of the forbidden band only when the target lightness
+ * lands inside it. Targets already outside the band stay untouched.
  */
-function getPushL(pushValue: Value, baseLightness: Value) {
-  const direction = vars.lightnessOffsetDirection;
+function getPushL(baseLightness: Value, directionToLight: Value) {
   const lowerBoundary = vars.forbiddenLa;
   const upperBoundary = vars.forbiddenLb;
-  const bandWidth = vars.forbiddenBandWidth;
-  const valueEnabled = fn.binary(pushValue);
-  const startLightness = l;
-  // Crossed from dark side: l was below fla AND baseLightness moved above fla.
-  const crossedFromDarkSide = fn.mul(
-    fn.binary(fn.sub(lowerBoundary, startLightness)),
-    fn.binary(fn.sub(baseLightness, lowerBoundary)),
-  );
-  // Crossed from light side: l was above flb AND baseLightness moved below flb.
-  const crossedFromLightSide = fn.mul(
-    fn.binary(fn.sub(startLightness, upperBoundary)),
-    fn.binary(fn.sub(upperBoundary, baseLightness)),
-  );
-  // These are mutually exclusive (l cannot be both below fla and above flb),
-  // and each can only fire when the offset direction aligns with the crossing
-  // direction, so the direction weights that were here before are redundant
-  // and have been removed.
-  const crossed = fn.add(crossedFromDarkSide, crossedFromLightSide);
-  // When l starts inside the forbidden range (crossed is always 0 there),
-  // baseLightness may still sit inside the range, so a second mask is needed.
-  // It is gated by valueEnabled so that a zero contrast value does not trigger
-  // the jump.
+  // Only values that land inside the forbidden range need a jump. Values that
+  // are already outside the range may have crossed through it, but they are
+  // already safe and should not be moved again.
   const baseLightnessInForbidden = getForbiddenRangeMask(
     baseLightness,
     lowerBoundary,
     upperBoundary,
   );
-  // A crossing always lands outside the forbidden range (the skip adds the
-  // full band width), so crossed and baseLightnessInForbidden are never both
-  // 1. Using max selects whichever condition applies without inflating the
-  // expression the way the previous skippedLightness intermediate did.
-  const needsJump = fn.max(
-    crossed,
-    fn.mul(baseLightnessInForbidden, valueEnabled),
+  const escapeBoundary = fn.add(
+    lowerBoundary,
+    fn.mul(directionToLight, vars.forbiddenBandWidth),
   );
   return fn.clamp01(
-    fn.add(baseLightness, fn.mul(direction, bandWidth, needsJump)),
+    fn.add(
+      baseLightness,
+      fn.mul(baseLightnessInForbidden, fn.sub(escapeBoundary, baseLightness)),
+    ),
   );
 }
 
@@ -1082,11 +1067,16 @@ const forbiddenLb = fn.min(
 const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
 const layerIdleBase = fn.oklch(layerBaseColor, idleLayerChannels);
 const layerIdleMixed = fn.var(inputs.layerMix, vars.layerIdleBase);
-const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
-  l: fn.var(
+
+function getLayerIdleOffsetL() {
+  return fn.var(
     inputs.layerIdleLOffsetL,
     getLimitedLayerL(inputs.layerIdleLOffset),
-  ),
+  );
+}
+
+const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
+  l: fn.var(vars.layerIdlePushResolvedL, getLayerIdleOffsetL()),
 });
 
 /**
@@ -1115,7 +1105,7 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
 
 const layerIdle = fn.oklch(vars.layerIdleOffset, {
   l: fn.add(
-    getContrastL(vars.layerIdlePushL, vars.layerIdleContrastValue),
+    getContrastL(l, vars.layerIdleContrastValue),
     fn.mul(
       vars.layerContrastBias,
       fn.sub(
@@ -1162,7 +1152,7 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
       fn.lch(sourceColor, {
         l: fn.round(
           "down",
-          getLayerTextLightness(),
+          vars.layerTextLightness,
           LCH_QUANTIZED_LIGHTNESS_INTERVAL,
         ),
         c: 0,
@@ -1172,6 +1162,20 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
   ];
 }
 
+function getLayerIdleContrastBiasDirection() {
+  const pushDirection = fn.sub(
+    fn.double(vars.layerIdlePushDirectionToLight),
+    1,
+  );
+  return fn.add(
+    vars.lightnessOffsetDirection,
+    fn.mul(
+      vars.layerIdlePushEnabled,
+      fn.sub(pushDirection, vars.lightnessOffsetDirection),
+    ),
+  );
+}
+
 // Assign derived math first so later color stages can reference short vars.
 const layerMathDeclarations = [
   // Set contrastT explicitly so the 5+ references inside this body resolve
@@ -1179,12 +1183,15 @@ const layerMathDeclarations = [
   // contrast-scale math at each call site.
   set(vars.contrastT, fn.mul(globalContrastT, disabledVars.contrastScale)),
   set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
+  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
+  set(vars.layerIdlePushDirectionToLight, vars.offsetDirectionToLight),
+  set(vars.layerPushDirectionToLight, vars.offsetDirectionToLight),
   set(
     vars.layerContrastBias,
     fn.mul(
       fn.neg(vars.contrastT),
       CONTRAST_SCALE,
-      vars.lightnessOffsetDirection,
+      getLayerIdleContrastBiasDirection(),
     ),
   ),
   set(vars.forbiddenLa, forbiddenLa),
@@ -1301,8 +1308,18 @@ utility(
   getBaseDeclarations(vars.layer),
   layerMathDeclarations,
   layerColorDeclarations,
-  at.variant(light, set(vars.edgePushDirection, -1)),
-  at.variant(dark, set(vars.edgePushDirection, 1)),
+  at.variant(
+    light,
+    set(vars.layerIdlePushDirectionToLight, 0),
+    set(vars.layerPushDirectionToLight, 0),
+    set(vars.edgePushDirection, -1),
+  ),
+  at.variant(
+    dark,
+    set(vars.layerIdlePushDirectionToLight, 1),
+    set(vars.layerPushDirectionToLight, 1),
+    set(vars.edgePushDirection, 1),
+  ),
   layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
     set(provide(vars.layerEdgeContext), vars.edge),
@@ -1434,17 +1451,21 @@ utility(
 utility(
   "layer-push-*",
   getRawPercentDeclarations(inputs.layerIdlePushL),
-  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
+  set(vars.layerIdlePushEnabled, 1),
   set(
     vars.layerIdlePushBaseL,
     getLimitedLayerL(
-      fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection),
+      fn.add(
+        inputs.layerIdleLOffset,
+        fn.mul(vars.layerIdlePushValue, vars.lightnessOffsetDirection),
+      ),
     ),
   ),
   set(
     vars.layerIdlePushL,
-    getPushL(vars.layerIdlePushValue, vars.layerIdlePushBaseL),
+    getPushL(vars.layerIdlePushBaseL, vars.layerIdlePushDirectionToLight),
   ),
+  set(vars.layerIdlePushResolvedL, vars.layerIdlePushL),
 );
 
 utility(
@@ -1528,12 +1549,6 @@ utility(
   set(inputs.layerH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
 );
 
-utility(
-  "layer-invert",
-  set(inputs.layerLMin, 0.25),
-  set(inputs.layerL, fn.invert(l)),
-);
-
 function getStateOffsetDeclarations() {
   const bareValue = getBarePercentTokenValue();
   const arbitraryValue = fn.value("[*]");
@@ -1586,7 +1601,10 @@ utility(
     vars.layerPushBaseL,
     getLayerL(fn.mul(vars.layerPushValue, vars.lightnessOffsetDirection)),
   ),
-  set(vars.layerPushL, getPushL(vars.layerPushValue, vars.layerPushBaseL)),
+  set(
+    vars.layerPushL,
+    getPushL(vars.layerPushBaseL, vars.layerPushDirectionToLight),
+  ),
 );
 
 utility(
