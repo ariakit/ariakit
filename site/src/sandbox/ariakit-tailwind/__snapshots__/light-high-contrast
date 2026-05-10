@@ -26,8 +26,8 @@
         "children": {
           "offset min": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
           "offset": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
-          "push zero offset": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
-          "push zero arbitrary offset": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
+          "push zero offset": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
+          "push zero arbitrary offset": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
           "push min arbitrary": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
           "push min arbitrary low": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
           "push min target low": "bg-[oklch(0.2_0.0011_197.14)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
@@ -42,6 +42,7 @@
           },
           "offset max bounds": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
           "state offset": "bg-[oklch(0.9_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
+          "state push zero": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
           "state push": "bg-[oklch(1_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]",
           "contrast push": "bg-[oklch(0_0.0011_197.14)] text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.4334)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.4334)_0px_0px_0px_0px]"
         }

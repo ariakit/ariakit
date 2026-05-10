@@ -551,10 +551,10 @@ const layerMathVars = {
   layerOffsetBaseL: _ak.prop("lobl", { initial: l }),
   layerOffsetDelta: _ak.prop("lodl", { initial: 0 }),
   layerIdlePushValue: _ak.prop.zero("lipv"),
+  layerIdlePushEnabled: _ak.prop.zero("lipe"),
   layerIdlePushDirectionToLight: _ak.prop.zero("lipdtl"),
   // These scratch vars only resolve the pushed lightness in ak-layer-push-*.
   // Keep them unregistered so each push utility avoids extra @property work.
-  layerIdlePushOffsetL: _ak.var("lipol"),
   layerIdlePushBaseL: _ak.var("lipbl"),
   layerIdlePushL: _ak.var("lipl"),
 
@@ -846,14 +846,9 @@ function withUtilityTokenGate(value: Value, tokenValue: Value) {
  * Moves push values out of the forbidden band only when the target lightness
  * lands inside it. Targets already outside the band stay untouched.
  */
-function getPushL(
-  pushValue: Value,
-  baseLightness: Value,
-  directionToLight: Value,
-) {
+function getPushL(baseLightness: Value, directionToLight: Value) {
   const lowerBoundary = vars.forbiddenLa;
   const upperBoundary = vars.forbiddenLb;
-  const valueEnabled = fn.binary(pushValue);
   // Only values that land inside the forbidden range need a jump. Values that
   // are already outside the range may have crossed through it, but they are
   // already safe and should not be moved again.
@@ -862,7 +857,6 @@ function getPushL(
     lowerBoundary,
     upperBoundary,
   );
-  const needsJump = fn.mul(baseLightnessInForbidden, valueEnabled);
   const escapeBoundary = fn.add(
     lowerBoundary,
     fn.mul(directionToLight, vars.forbiddenBandWidth),
@@ -870,7 +864,7 @@ function getPushL(
   return fn.clamp01(
     fn.add(
       baseLightness,
-      fn.mul(needsJump, fn.sub(escapeBoundary, baseLightness)),
+      fn.mul(baseLightnessInForbidden, fn.sub(escapeBoundary, baseLightness)),
     ),
   );
 }
@@ -1169,14 +1163,16 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
 }
 
 function getLayerIdleContrastBiasDirection() {
-  const pushEnabled = fn.binary(vars.layerIdlePushValue);
   const pushDirection = fn.sub(
     fn.double(vars.layerIdlePushDirectionToLight),
     1,
   );
   return fn.add(
     vars.lightnessOffsetDirection,
-    fn.mul(pushEnabled, fn.sub(pushDirection, vars.lightnessOffsetDirection)),
+    fn.mul(
+      vars.layerIdlePushEnabled,
+      fn.sub(pushDirection, vars.lightnessOffsetDirection),
+    ),
   );
 }
 
@@ -1455,10 +1451,7 @@ utility(
 utility(
   "layer-push-*",
   getRawPercentDeclarations(inputs.layerIdlePushL),
-  set(
-    vars.layerIdlePushOffsetL,
-    withUtilityTokenGate(getLayerIdleOffsetL(), fn.value("[*]")),
-  ),
+  set(vars.layerIdlePushEnabled, 1),
   set(
     vars.layerIdlePushBaseL,
     getLimitedLayerL(
@@ -1470,32 +1463,9 @@ utility(
   ),
   set(
     vars.layerIdlePushL,
-    getPushL(
-      vars.layerIdlePushValue,
-      vars.layerIdlePushBaseL,
-      vars.layerIdlePushDirectionToLight,
-    ),
+    getPushL(vars.layerIdlePushBaseL, vars.layerIdlePushDirectionToLight),
   ),
   set(vars.layerIdlePushResolvedL, vars.layerIdlePushL),
-  set(
-    vars.layerIdlePushResolvedL,
-    withUtilityTokenGate(
-      fn.add(
-        vars.layerIdlePushOffsetL,
-        fn.mul(
-          fn.binary(vars.layerIdlePushValue),
-          fn.sub(vars.layerIdlePushL, vars.layerIdlePushOffsetL),
-        ),
-      ),
-      fn.value("[*]"),
-    ),
-  ),
-);
-
-utility(
-  "layer-push-0",
-  set(vars.layerIdlePushOffsetL, getLayerIdleOffsetL()),
-  set(vars.layerIdlePushResolvedL, vars.layerIdlePushOffsetL),
 );
 
 utility(
@@ -1639,11 +1609,7 @@ utility(
   ),
   set(
     vars.layerPushL,
-    getPushL(
-      vars.layerPushValue,
-      vars.layerPushBaseL,
-      vars.layerPushDirectionToLight,
-    ),
+    getPushL(vars.layerPushBaseL, vars.layerPushDirectionToLight),
   ),
 );
 

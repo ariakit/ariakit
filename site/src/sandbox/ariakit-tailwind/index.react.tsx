@@ -406,6 +406,10 @@ export default function Example() {
                 className="ak-layer-min-70 ak-state-offset-40"
               />
               <Cell
+                label="state push zero"
+                className="ak-layer-40 ak-state-push-0"
+              />
+              <Cell
                 label="state push"
                 className="ak-layer-max-30 ak-state-push-40"
               />
