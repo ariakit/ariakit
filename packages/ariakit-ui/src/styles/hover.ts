@@ -14,6 +14,10 @@ export const hover = cv({
      * offset will be lower to allow for greater contrast between the layer and
      * the text.
      *
+     * When used on a layer with `$invert`, the amount is automatically
+     * increased because the perceived difference in lightness is less
+     * noticeable when there is high contrast between the layer and its parent.
+     *
      * If you want the opposite effect, where the offset increases as contrast
      * goes up, use `$hoverPush` instead.
      */
@@ -21,7 +25,8 @@ export const hover = cv({
       return getLightnessStyleClass({
         value,
         property: "--hover-offset",
-        class: "ui-hover:ak-state-(--hover-offset)",
+        class:
+          "ui-hover:ak-state-[calc(var(--hover-offset)*(2+var(--layer-invert,0)))]",
       });
     },
     /**
@@ -31,6 +36,10 @@ export const hover = cv({
      * shift. If the user has high-contrast preferences, the shift will be
      * greater to allow for more contrast between the layer and its parent.
      *
+     * When used on a layer with `$invert`, the amount is automatically
+     * increased because the perceived difference in lightness is less
+     * noticeable when there is high contrast between the layer and its parent.
+     *
      * If you want the opposite effect, where the offset decreases as contrast
      * goes up, use `$hoverOffset` instead.
      */
@@ -38,7 +47,8 @@ export const hover = cv({
       return getLightnessStyleClass({
         value,
         property: "--hover-push",
-        class: "ui-hover:ak-state-push-(--hover-push)",
+        class:
+          "ui-hover:ak-state-push-[calc(var(--hover-push)*(2+var(--layer-invert,0)))]",
       });
     },
     /**
