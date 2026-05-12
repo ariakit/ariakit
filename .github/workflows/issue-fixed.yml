@@ -137,7 +137,7 @@ jobs:
 
           while IFS= read -r issue_number; do
             existing_id=$(gh api --paginate --slurp "repos/$REPO/issues/$issue_number/comments?per_page=100" \
-              | jq -r "[.[][] | select(.body | contains(\"$marker\"))] | last | .id // empty")
+              | jq -r "[.[][] | select((.body | contains(\"$marker\")) and .user.login? == \"ariakito[bot]\")] | last | .id // empty")
             if [ -n "$existing_id" ]; then
               jq -n --rawfile body body.md "{ body: \$body }" \
                 | gh api --method PATCH "repos/$REPO/issues/comments/$existing_id" --input -
