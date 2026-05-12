@@ -19,6 +19,8 @@ jobs:
     permissions:
       contents: read
       actions: read
+    env:
+      WRITEBACK_ALLOWED: ${{ inputs.event != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -154,10 +156,7 @@ jobs:
         if: >
           steps.gate.outputs.is_latest == 'true' &&
           steps.check-artifacts.outputs.ready == 'true' &&
-          (
-            inputs.event != 'pull_request' ||
-            github.event.pull_request.head.repo.full_name == github.repository
-          )
+          env.WRITEBACK_ALLOWED == 'true'
         uses: actions/create-github-app-token@v3
         with:
           client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
@@ -169,10 +168,7 @@ jobs:
         if: >
           steps.gate.outputs.is_latest == 'true' &&
           steps.check-artifacts.outputs.ready == 'true' &&
-          (
-            inputs.event != 'pull_request' ||
-            github.event.pull_request.head.repo.full_name == github.repository
-          )
+          env.WRITEBACK_ALLOWED == 'true'
         uses: actions/checkout@v6
         with:
           # Keep the workflow files from the trusted checkout above and apply
@@ -184,11 +180,9 @@ jobs:
 
       - name: Download screenshots
         if: >
+          steps.gate.outputs.is_latest == 'true' &&
           steps.check-artifacts.outputs.ready == 'true' &&
-          (
-            inputs.event != 'pull_request' ||
-            github.event.pull_request.head.repo.full_name == github.repository
-          )
+          env.WRITEBACK_ALLOWED == 'true'
         uses: actions/download-artifact@v8
         with:
           pattern: app-visual-*
@@ -197,33 +191,27 @@ jobs:
 
       - name: Prepare screenshots
         if: >
+          steps.gate.outputs.is_latest == 'true' &&
           steps.check-artifacts.outputs.ready == 'true' &&
-          (
-            inputs.event != 'pull_request' ||
-            github.event.pull_request.head.repo.full_name == github.repository
-          )
+          env.WRITEBACK_ALLOWED == 'true'
         # Replace the full screenshot tree so deletions and renames are handled
         # the same way as a clean checkout after `-u`.
         run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
 
       - name: Extract screenshots
         if: >
+          steps.gate.outputs.is_latest == 'true' &&
           steps.check-artifacts.outputs.ready == 'true' &&
-          (
-            inputs.event != 'pull_request' ||
-            github.event.pull_request.head.repo.full_name == github.repository
-          )
+          env.WRITEBACK_ALLOWED == 'true'
         run: |
           find "${{ runner.temp }}/artifacts" -name "app-visual-*.tar.gz" \
             -exec tar -xzf {} -C pr \;
 
       - name: Commit or create PR
         if: >
+          steps.gate.outputs.is_latest == 'true' &&
           steps.check-artifacts.outputs.ready == 'true' &&
-          (
-            inputs.event != 'pull_request' ||
-            github.event.pull_request.head.repo.full_name == github.repository
-          )
+          env.WRITEBACK_ALLOWED == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
           working-directory: pr

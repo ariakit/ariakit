@@ -15,6 +15,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    env:
+      WRITEBACK_ALLOWED: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -50,10 +52,7 @@ jobs:
         id: app-token
         if: >
           steps.patch.outputs.has_changes == 'true' &&
-          (
-            github.event_name != 'pull_request' ||
-            github.event.pull_request.head.repo.full_name == github.repository
-          )
+          env.WRITEBACK_ALLOWED == 'true'
         uses: actions/create-github-app-token@v3
         with:
           client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
@@ -64,10 +63,7 @@ jobs:
       - name: Commit or create PR
         if: >
           steps.patch.outputs.has_changes == 'true' &&
-          (
-            github.event_name != 'pull_request' ||
-            github.event.pull_request.head.repo.full_name == github.repository
-          )
+          env.WRITEBACK_ALLOWED == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
           # This write-back step intentionally assumes PRs come from branches
