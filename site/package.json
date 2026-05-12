@@ -69,7 +69,7 @@
     "@stackblitz/sdk": "1.11.0",
     "@stripe/stripe-js": "9.4.0",
     "@tailwindcss/vite": "4.3.0",
-    "@tanstack/react-query": "5.100.9",
+    "@tanstack/react-query": "5.100.10",
     "astro": "5.18.1",
     "astro-remote": "0.3.4",
     "canvas-confetti": "1.9.4",
@@ -85,7 +85,7 @@
     "match-sorter": "8.3.0",
     "motion": "12.38.0",
     "parse-numeric-range": "1.3.0",
-    "playwright": "1.59.1",
+    "playwright": "1.60.0",
     "pluralize": "8.0.0",
     "prettier": "3.8.3",
     "react": "18.3.1",
@@ -109,11 +109,11 @@
   "devDependencies": {
     "@ariakit/test": "workspace:*",
     "@axe-core/playwright": "4.11.3",
-    "@playwright/test": "1.59.1",
+    "@playwright/test": "1.60.0",
     "@types/canvas-confetti": "1.9.0",
     "@types/hast": "3.0.4",
     "@types/lodash-es": "4.17.12",
-    "@types/node": "24.12.3",
+    "@types/node": "24.12.4",
     "@types/pluralize": "0.0.33",
     "@types/pngjs": "6.0.5",
     "@types/react": "18.3.28",
@@ -126,7 +126,7 @@
     "pngjs": "7.0.0",
     "rimraf": "6.1.3",
     "shadcn": "4.7.0",
-    "vitest": "4.1.5",
+    "vitest": "4.1.6",
     "wrangler": "4.90.0"
   }
 }
