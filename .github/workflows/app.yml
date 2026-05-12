@@ -416,6 +416,7 @@ jobs:
           client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
           private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}
           permission-issues: write
+          permission-pull-requests: write
 
       - name: Post or update PR comment
         if: github.event.pull_request.head.repo.full_name == github.repository
