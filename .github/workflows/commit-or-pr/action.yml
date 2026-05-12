@@ -90,6 +90,7 @@ runs:
       shell: bash
       if: ${{ inputs.event == 'pull_request' && steps.commit.outputs.did_commit == 'true' }}
       env:
+        GITHUB_REPOSITORY: ${{ github.repository }}
         HEAD_REF: ${{ inputs.head-branch }}
         GH_TOKEN: ${{ inputs.token != '' && inputs.token || github.token }}
       # Rebase onto the latest branch tip so generated-file commits do not
@@ -103,6 +104,26 @@ runs:
         # `gh auth git-credential` reads GH_TOKEN from the environment, so no
         # explicit `gh auth login` is needed — and calling it under `set -e`
         # would fail the step because gh exits 1 when GH_TOKEN is already set.
+        export GIT_CONFIG_GLOBAL="${RUNNER_TEMP:-/tmp}/commit-or-pr-gitconfig"
+        export GIT_CONFIG_NOSYSTEM=1
+        unset GIT_CONFIG_COUNT GIT_CONFIG_PARAMETERS
+        : > "$GIT_CONFIG_GLOBAL"
+        git config --local --unset-all credential.helper || true
+        git config --local --unset-all http.https://github.com/.extraheader || true
+        set +e
+        url_keys=$(git config --local --name-only --get-regexp '^url\.')
+        status=$?
+        set -e
+        if [ "$status" -gt 1 ]; then
+          exit "$status"
+        fi
+        printf '%s\n' "$url_keys" | sort -u | while IFS= read -r key; do
+          if [ -n "$key" ]; then
+            git config --local --unset-all "$key" || true
+          fi
+        done
+        git remote set-url origin "https://github.com/$GITHUB_REPOSITORY.git"
+        git remote set-url --push origin "https://github.com/$GITHUB_REPOSITORY.git"
         gh auth setup-git
         git fetch origin "$HEAD_REF"
         if ! git rebase "origin/$HEAD_REF"; then

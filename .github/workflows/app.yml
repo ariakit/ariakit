@@ -199,6 +199,7 @@ jobs:
     permissions:
       actions: read
       contents: read
+      issues: write
       pull-requests: write
     env:
       # Clean runs stop after two paired rounds. Significant deltas get one
@@ -214,6 +215,7 @@ jobs:
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
@@ -410,9 +412,10 @@ jobs:
           retention-days: 7
 
       - name: Post or update PR comment
+        if: github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v9
         with:
-          github-token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          github-token: ${{ github.token }}
           script: |
             const fs = require('fs');
             const marker = '<!-- perf-results -->';

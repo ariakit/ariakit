@@ -14,10 +14,19 @@ jobs:
       id-token: write
       contents: write
     steps:
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
+          private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
@@ -26,6 +35,11 @@ jobs:
         run: |
           git config user.name "ariakit-bot"
           git config user.email "ariakit-bot@users.noreply.github.com"
+
+      - name: Configure git authentication
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: gh auth setup-git
 
       - name: Create PR or publish to npm
         uses: changesets/action@v1
@@ -36,5 +50,5 @@ jobs:
           publish: pnpm run publish
           setupGitUser: false
         env:
-          GITHUB_TOKEN: ${{ secrets.ARIAKIT_BOT_PAT }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           NPM_TOKEN: ""

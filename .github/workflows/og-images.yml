@@ -76,8 +76,28 @@ jobs:
           fi
           echo "has_changes=true" >> "$GITHUB_OUTPUT"
 
+      - name: Create GitHub App token
+        id: app-token
+        if: >
+          steps.patch.outputs.has_changes == 'true' &&
+          (
+            github.event_name != 'pull_request' ||
+            github.event.pull_request.head.repo.full_name == github.repository
+          )
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
+          private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
       - name: Commit or create PR
-        if: steps.patch.outputs.has_changes == 'true'
+        if: >
+          steps.patch.outputs.has_changes == 'true' &&
+          (
+            github.event_name != 'pull_request' ||
+            github.event.pull_request.head.repo.full_name == github.repository
+          )
         uses: ./.github/workflows/commit-or-pr
         with:
           # This write-back step intentionally assumes PRs come from branches
@@ -89,4 +109,4 @@ jobs:
           head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: chore/update-og-images
           paths: site/public/og-image
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          token: ${{ steps.app-token.outputs.token }}
