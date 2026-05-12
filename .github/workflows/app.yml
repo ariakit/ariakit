@@ -183,8 +183,7 @@ jobs:
     if: always() && needs.test.result != 'cancelled'
     permissions:
       actions: read
-      contents: write
-      pull-requests: write
+      contents: read
     uses: ./.github/workflows/visual.yml
     with:
       event: ${{ github.event_name }}
@@ -199,8 +198,6 @@ jobs:
     permissions:
       actions: read
       contents: read
-      issues: write
-      pull-requests: write
     env:
       # Clean runs stop after two paired rounds. Significant deltas get one
       # extra confirmation round before the PR comment is published.
@@ -411,11 +408,20 @@ jobs:
           include-hidden-files: true
           retention-days: 7
 
+      - name: Create GitHub App token
+        id: app-token
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
+          private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}
+          permission-issues: write
+
       - name: Post or update PR comment
         if: github.event.pull_request.head.repo.full_name == github.repository
         uses: actions/github-script@v9
         with:
-          github-token: ${{ github.token }}
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const fs = require('fs');
             const marker = '<!-- perf-results -->';

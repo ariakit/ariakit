@@ -151,19 +151,6 @@ jobs:
             }
             core.setOutput("ready", String(hasCompleteScreenshots));
 
-      - name: Create GitHub App token
-        id: app-token
-        if: >
-          steps.gate.outputs.is_latest == 'true' &&
-          steps.check-artifacts.outputs.ready == 'true' &&
-          env.WRITEBACK_ALLOWED == 'true'
-        uses: actions/create-github-app-token@v3
-        with:
-          client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
-          private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}
-          permission-contents: write
-          permission-pull-requests: write
-
       - name: Checkout branch
         if: >
           steps.gate.outputs.is_latest == 'true' &&
@@ -175,7 +162,6 @@ jobs:
           # generated changes in a separate checkout directory we can commit from.
           path: pr
           ref: ${{ github.head_ref || github.ref_name }}
-          token: ${{ steps.app-token.outputs.token }}
           persist-credentials: false
 
       - name: Download screenshots
@@ -219,4 +205,5 @@ jobs:
           message: Update screenshots
           head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: visual/update-screenshots
-          token: ${{ steps.app-token.outputs.token }}
+          app-client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
+          app-private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}

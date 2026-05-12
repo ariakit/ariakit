@@ -14,8 +14,7 @@ jobs:
     name: Generate OG images
     runs-on: macos-latest
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
     env:
       WRITEBACK_ALLOWED: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
@@ -78,18 +77,6 @@ jobs:
           fi
           echo "has_changes=true" >> "$GITHUB_OUTPUT"
 
-      - name: Create GitHub App token
-        id: app-token
-        if: >
-          steps.patch.outputs.has_changes == 'true' &&
-          env.WRITEBACK_ALLOWED == 'true'
-        uses: actions/create-github-app-token@v3
-        with:
-          client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
-          private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}
-          permission-contents: write
-          permission-pull-requests: write
-
       - name: Commit or create PR
         if: >
           steps.patch.outputs.has_changes == 'true' &&
@@ -105,4 +92,5 @@ jobs:
           head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: chore/update-og-images
           paths: site/public/og-image
-          token: ${{ steps.app-token.outputs.token }}
+          app-client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
+          app-private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}

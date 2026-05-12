@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
-      contents: write
+      contents: read
     steps:
       - name: Create GitHub App token
         id: app-token
@@ -33,8 +33,10 @@ jobs:
 
       - name: Configure git
         run: |
-          git config user.name "ariakit-bot"
-          git config user.email "ariakit-bot@users.noreply.github.com"
+          # Authentication controls who can push; git config controls the
+          # author/committer recorded on the release commit.
+          git config user.name "ariakito[bot]"
+          git config user.email "283989922+ariakito[bot]@users.noreply.github.com"
 
       - name: Configure git authentication
         env:

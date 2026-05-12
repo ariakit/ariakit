@@ -15,7 +15,15 @@ inputs:
     description: Branch name when creating a new PR
     required: true
   token:
-    description: Token used for PR creation (defaults to GITHUB_TOKEN)
+    description: Token used for GitHub writes (defaults to app credentials or GITHUB_TOKEN)
+    required: false
+    default: ""
+  app-client-id:
+    description: GitHub App client ID used to create a write token
+    required: false
+    default: ""
+  app-private-key:
+    description: GitHub App private key used to create a write token
     required: false
     default: ""
   working-directory:
@@ -34,12 +42,22 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Create GitHub App token
+      id: app-token
+      if: inputs.token == '' && inputs.app-client-id != '' && inputs.app-private-key != ''
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ inputs.app-client-id }}
+        private-key: ${{ inputs.app-private-key }}
+        permission-contents: write
+        permission-pull-requests: write
+
     - name: Configure git
       shell: bash
       run: |
         cd "${{ inputs.working-directory }}"
-        git config user.name "ariakit-bot"
-        git config user.email "ariakit-bot@users.noreply.github.com"
+        git config user.name "ariakito[bot]"
+        git config user.email "283989922+ariakito[bot]@users.noreply.github.com"
 
     - name: Create PR
       if: inputs.event == 'push'
@@ -54,9 +72,9 @@ runs:
         base: ${{ inputs.head-branch }}
         branch: ${{ inputs.new-branch }}
         delete-branch: true
-        token: ${{ inputs.token != '' && inputs.token || github.token }}
-        author: ariakit-bot <ariakit-bot@users.noreply.github.com>
-        committer: ariakit-bot <ariakit-bot@users.noreply.github.com>
+        token: ${{ inputs.token != '' && inputs.token || steps.app-token.outputs.token != '' && steps.app-token.outputs.token || github.token }}
+        author: ariakito[bot] <283989922+ariakito[bot]@users.noreply.github.com>
+        committer: ariakito[bot] <283989922+ariakito[bot]@users.noreply.github.com>
 
     - name: Commit changes
       id: commit
@@ -92,7 +110,7 @@ runs:
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
         HEAD_REF: ${{ inputs.head-branch }}
-        GH_TOKEN: ${{ inputs.token != '' && inputs.token || github.token }}
+        GH_TOKEN: ${{ inputs.token != '' && inputs.token || steps.app-token.outputs.token != '' && steps.app-token.outputs.token || github.token }}
       # Rebase onto the latest branch tip so generated-file commits do not
       # fail just because another commit landed while the workflow was running.
       # Abort the rebase on conflicts instead of swallowing the error; otherwise
