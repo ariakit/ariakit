@@ -19,7 +19,7 @@ export const badge = cv({
     $borderType: "inset",
     $textOpacity: 70,
   },
-  computed: ({ variants, setDefaultVariants }) => {
+  refine: ({ variants, setDefaultVariants }) => {
     if (!variants.$layer) return;
     if (!isBorderColor(variants.$layer)) return;
     // If the background is set to a color that’s also available for the border,

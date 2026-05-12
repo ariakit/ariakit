@@ -1,6 +1,5 @@
 import { cv } from "clava";
 import { active } from "./active.ts";
-import { bevel } from "./bevel.ts";
 import {
   control,
   controlContent,
@@ -18,7 +17,7 @@ import {
 import { hover } from "./hover.ts";
 
 export const button = cv({
-  extend: [control, bevel, gliderAnchor, hover, focus, active],
+  extend: [control, gliderAnchor, hover, focus, active],
   class: [
     "transition-[color] not-[a]:cursor-default not-[button]:select-none",
     // Only apply cursor-pointer to submit buttons that are not disabled

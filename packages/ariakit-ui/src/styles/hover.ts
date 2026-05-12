@@ -5,7 +5,7 @@ import {
 } from "../utils/styles.ts";
 
 export const hover = cv({
-  computedVariants: {
+  variants: {
     /**
      * Automatically adjusts the layer's lightness when the element is hovered.
      * The background color becomes lighter or darker depending on its current

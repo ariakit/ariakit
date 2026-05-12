@@ -74,7 +74,7 @@ export const glider = cv({
     $p: "none",
     $borderType: "ring",
   },
-  computed: ({ variants, setDefaultVariants }) => {
+  refine: ({ variants, setDefaultVariants }) => {
     const bg = {
       none: "unset",
       hover: "pop",
@@ -131,7 +131,7 @@ export const gliderGroup = cv({
     anchorScope:
       "--glider-group, --glider-hover, --glider-focus, --glider-selected",
   },
-  computed: ({ variants }) => {
+  refine: ({ variants }) => {
     const classes: string[] = [];
     if (variants.$gap !== "none") {
       classes.push(

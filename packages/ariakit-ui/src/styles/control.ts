@@ -73,9 +73,9 @@ export const control = cv({
     $gap: "md",
     $gapY: "auto",
   },
-  computed: ({ variants, setDefaultVariants, addClass }) => {
+  refine: ({ variants, setDefaultVariants, setVariants, addClass }) => {
     if (variants.$disabled) {
-      setDefaultVariants({ $lightnessOffset: true });
+      setVariants({ $invert: false });
     }
     if (variants.$p === "none") {
       setDefaultVariants({ $px: "none" });
@@ -177,8 +177,6 @@ export const controlSlot = cv({
       "m-0! absolute top-0 inset-e-0 -translate-y-1/2 translate-x-[calc(var(--size)/2)] border",
       "group-has-[&]/control:[--bg-parent:var(--ak-layer-parent)] border-(--bg-parent)",
     ],
-  },
-  computedVariants: {
     /**
      * Increases the element’s size by a specified number of rows. This is
      * useful when a control spans multiple rows of content, such as a
@@ -186,7 +184,9 @@ export const controlSlot = cv({
      * it as `1` if you want the slot to match the first row’s size and align
      * with it.
      */
-    $rowSpan: (value: number) => ({ "--row-span": `${value}` }),
+    $rowSpan: (value: number) => ({
+      style: { "--row-span": `${value}` },
+    }),
   },
   defaultVariants: {
     $kind: "icon",
@@ -196,7 +196,7 @@ export const controlSlot = cv({
     $p: "unset",
     $rowSpan: 1,
   },
-  computed: ({ variants, setVariants, setDefaultVariants, addClass }) => {
+  refine: ({ variants, setVariants, setDefaultVariants, addClass }) => {
     setDefaultVariants({ $mx: variants.$size });
 
     const mdOrLess = [undefined, "none", "xs", "sm", "md"];
@@ -276,11 +276,12 @@ export const controlDescription = cv({
     "ms-0! ak-ink-70 basis-full font-normal text-[0.875em] group-[.disabled]/control:ak-ink-0",
   variants: {
     $truncate: "truncate",
-  },
-  computedVariants: {
     $lineClamp: (value: number | false) => {
       if (value === false) return;
-      return { "--line-clamp": `${value}`, class: "line-clamp-(--line-clamp)" };
+      return {
+        style: { "--line-clamp": `${value}` },
+        class: "line-clamp-(--line-clamp)",
+      };
     },
   },
 });
@@ -326,7 +327,7 @@ export const controlSeparator = cv({
     $width: 1,
     $kind: "pipe",
   },
-  computed: ({ variants, setVariants, setDefaultVariants }) => {
+  refine: ({ variants, setVariants, setDefaultVariants }) => {
     if (
       variants.$kind === "chevron" &&
       (variants.$size === "lg" || variants.$size === "full")

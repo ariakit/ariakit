@@ -38,8 +38,6 @@ export const layer = cv({
      * Inverts the layer's base background color.
      */
     $invert: "[--layer-invert:1]",
-  },
-  computedVariants: {
     /**
      * Automatically adjusts the background color's lightness. The background
      * color becomes lighter or darker depending on its current lightness. The
@@ -100,7 +98,7 @@ export const layer = cv({
      * Sets the minimum lightness of the background color after all other layer
      * variants have been applied.
      */
-    $lightnessMin: (value?: string | number) => {
+    $lightnessMin: (value?: string | number | null) => {
       return getScaledStyleClass({
         value,
         property: "--layer-lightness-min",
@@ -111,7 +109,7 @@ export const layer = cv({
      * Sets the maximum lightness of the background color after all other layer
      * variants have been applied.
      */
-    $lightnessMax: (value?: string | number) => {
+    $lightnessMax: (value?: string | number | null) => {
       return getScaledStyleClass({
         value,
         property: "--layer-lightness-max",
@@ -275,14 +273,18 @@ export const layer = cv({
   defaultVariants: {
     $layer: true,
   },
-  computed: ({ variants, setDefaultVariants }) => {
-    if (variants.$invert) {
-      setDefaultVariants({
-        $lightnessOffset: false,
-        $lightnessPush: 20,
-        $lightnessMin: 23,
-        $lightnessMax: 92,
-      });
-    }
+  refine: ({ variants, setDefaultVariants }) => {
+    // TODO: computed should be pure function and return ctx.
+    // ctx.defaultVariants, ctx.variants, ctx.setDefaultVariants,
+    // ctx.setVariants, ctx.addClass, ctx.class, ctx.style, ctx.addClass,
+    // ctx.addStyle. ctx.style and class will only include the values from
+    // addClass and addStyle. We need to figure out how to do the diff. Will we
+    // mutate the ctx.variants when calling setVariants?
+    setDefaultVariants({
+      $lightnessOffset: !variants.$invert,
+      $lightnessPush: variants.$invert ? 20 : undefined,
+      $lightnessMin: variants.$invert ? 23 : undefined,
+      $lightnessMax: variants.$invert ? 92 : undefined,
+    });
   },
 });

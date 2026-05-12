@@ -126,8 +126,6 @@ export const frame = cv({
       dashed: "ak-frame-border-(--border-width) border-dashed",
       dotted: "ak-frame-border-(--border-width) border-dotted",
     },
-  },
-  computedVariants: {
     /**
      * Sets the element's frame padding. This affects nested frames' radius
      * calculations unless it's set to `1rem` or more, in which case the
@@ -353,7 +351,7 @@ export const frame = cv({
     $frame: true,
     $borderType: "auto",
   },
-  computed: ({ variants, setDefaultVariants }) => {
+  refine: ({ variants, setDefaultVariants }) => {
     if (variants.$border === "inherit") {
       setDefaultVariants({
         $borderType: "unset",

@@ -11,8 +11,6 @@ export const active = cv({
       "ui-active:[--active-scale-y:min(100%,94%+6%*calc(1-clamp(0,var(--active-depth-y)/10,1)))]",
       "ui-active:origin-bottom ui-active:scale-x-(--active-scale-x) ui-active:scale-y-(--active-scale-y)",
     ],
-  },
-  computedVariants: {
     /**
      * Horizontal scale factor applied to the element when pressed. Use a
      * smaller value for larger elements.
@@ -39,10 +37,10 @@ export const active = cv({
   defaultVariants: {
     $activeDepth: 5,
   },
-  computed: (context) => {
-    context.setDefaultVariants({
-      $activeDepthX: context.variants.$activeDepth,
-      $activeDepthY: context.variants.$activeDepth,
+  refine: (ctx) => {
+    ctx.setDefaultVariants({
+      $activeDepthX: ctx.variants.$activeDepth,
+      $activeDepthY: ctx.variants.$activeDepth,
     });
   },
 });

@@ -33,7 +33,7 @@ export const bevel = cv({
       "ui-active:from-60% ui-active:from-(--bg-dark-active) ui-active:to-(--bg-light-active)",
     ],
   },
-  computed: ({ variants, setVariants, setDefaultVariants }) => {
+  refine: ({ variants, setDefaultVariants, setVariants }) => {
     const $layer =
       variants.$kind === "bevel" ? "light2" : (variants.$layer ?? "pop");
     setDefaultVariants({ $layer });

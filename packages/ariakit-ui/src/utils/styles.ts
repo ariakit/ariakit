@@ -31,7 +31,7 @@ export const HUE_VALUES = [
 export type HueValues = (typeof HUE_VALUES)[number];
 
 type StyleValue = string | number;
-type OptionalStyleValue = StyleValue | boolean | undefined;
+type OptionalStyleValue = StyleValue | boolean | null | undefined;
 
 interface GetScaledStyleClassParams {
   /** Class name to emit when the value produces a style class. */

@@ -102,9 +102,9 @@ export const tabGlider = cv({
       ],
     },
   },
-  computed: (context) => {
-    if (context.variants.$kind === "folder") {
-      context.setDefaultVariants({
+  refine: (ctx) => {
+    if (ctx.variants.$kind === "folder") {
+      ctx.setDefaultVariants({
         $bg: "light",
         $border: "inherit",
         $borderType: "inherit",

@@ -96,23 +96,23 @@ export const border = cv({
     $borderWeight: "normal",
     $borderWidth: 1,
   },
-  computed: (context) => {
-    if (context.variants.$border) {
-      if (context.variants.$border === "inherit") {
-        context.setDefaultVariants({
+  refine: (ctx) => {
+    if (ctx.variants.$border) {
+      if (ctx.variants.$border === "inherit") {
+        ctx.setDefaultVariants({
           $borderType: "inherit",
           $borderWidth: "unset",
           $borderColor: "unset",
           $borderWeight: "unset",
         });
       }
-      if (context.variants.$borderWeight === "contrast") {
-        context.setVariants({
-          $border: context.variants.$border === "content" ? "content" : false,
+      if (ctx.variants.$borderWeight === "contrast") {
+        ctx.setVariants({
+          $border: ctx.variants.$border === "content" ? "content" : false,
         });
       }
     } else {
-      context.setVariants({
+      ctx.setVariants({
         $borderType: "unset",
         $borderColor: "unset",
         $borderWeight: "unset",

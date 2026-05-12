@@ -32,8 +32,6 @@ export const text = cv({
       warning: "ak-text ak-text-warning",
       danger: "ak-text ak-text-danger",
     },
-  },
-  computedVariants: {
     /**
      * Pushes text lightness farther from the parent layer beyond the automatic
      * readability floor. This value represents the **minimum** lightness

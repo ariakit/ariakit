@@ -24,9 +24,9 @@ export const checkboxCard = cv({
     $p: "lg",
     $border: true,
   },
-  computed: (context) => {
-    if (context.variants.$rounded === "full") {
-      context.setDefaultVariants({ $p: "lg" });
+  refine: (ctx) => {
+    if (ctx.variants.$rounded === "full") {
+      ctx.setDefaultVariants({ $p: "lg" });
     }
   },
 });
