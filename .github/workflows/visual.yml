@@ -19,11 +19,12 @@ jobs:
     permissions:
       contents: read
       actions: read
+    env:
+      WRITEBACK_ALLOWED: ${{ inputs.event != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
       - name: Read tip SHA on branch
@@ -151,18 +152,23 @@ jobs:
             core.setOutput("ready", String(hasCompleteScreenshots));
 
       - name: Checkout branch
-        if: steps.gate.outputs.is_latest == 'true' && steps.check-artifacts.outputs.ready == 'true'
+        if: >
+          steps.gate.outputs.is_latest == 'true' &&
+          steps.check-artifacts.outputs.ready == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
         uses: actions/checkout@v6
         with:
           # Keep the workflow files from the trusted checkout above and apply
           # generated changes in a separate checkout directory we can commit from.
           path: pr
           ref: ${{ github.head_ref || github.ref_name }}
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
       - name: Download screenshots
-        if: steps.check-artifacts.outputs.ready == 'true'
+        if: >
+          steps.gate.outputs.is_latest == 'true' &&
+          steps.check-artifacts.outputs.ready == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
         uses: actions/download-artifact@v8
         with:
           pattern: app-visual-*
@@ -170,19 +176,28 @@ jobs:
           path: ${{ runner.temp }}/artifacts
 
       - name: Prepare screenshots
-        if: steps.check-artifacts.outputs.ready == 'true'
+        if: >
+          steps.gate.outputs.is_latest == 'true' &&
+          steps.check-artifacts.outputs.ready == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
         # Replace the full screenshot tree so deletions and renames are handled
         # the same way as a clean checkout after `-u`.
         run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
 
       - name: Extract screenshots
-        if: steps.check-artifacts.outputs.ready == 'true'
+        if: >
+          steps.gate.outputs.is_latest == 'true' &&
+          steps.check-artifacts.outputs.ready == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
         run: |
           find "${{ runner.temp }}/artifacts" -name "app-visual-*.tar.gz" \
             -exec tar -xzf {} -C pr \;
 
       - name: Commit or create PR
-        if: steps.check-artifacts.outputs.ready == 'true'
+        if: >
+          steps.gate.outputs.is_latest == 'true' &&
+          steps.check-artifacts.outputs.ready == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
           working-directory: pr
@@ -190,4 +205,5 @@ jobs:
           message: Update screenshots
           head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: visual/update-screenshots
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          app-client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
+          app-private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}

@@ -13,8 +13,9 @@ jobs:
     name: Build styles
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
+    env:
+      WRITEBACK_ALLOWED: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -47,7 +48,9 @@ jobs:
           echo "has_changes=true" >> "$GITHUB_OUTPUT"
 
       - name: Commit or create PR
-        if: steps.patch.outputs.has_changes == 'true'
+        if: >
+          steps.patch.outputs.has_changes == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
           # This write-back step intentionally assumes PRs come from branches
@@ -59,4 +62,5 @@ jobs:
           head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: chore/update-styles
           paths: site/src/styles/styles.json
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          app-client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
+          app-private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}
