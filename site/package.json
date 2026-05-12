@@ -125,6 +125,6 @@
     "rimraf": "6.1.3",
     "shadcn": "4.7.0",
     "vitest": "4.1.6",
-    "wrangler": "4.90.0"
+    "wrangler": "4.90.1"
   }
 }
