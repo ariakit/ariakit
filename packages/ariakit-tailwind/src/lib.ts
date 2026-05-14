@@ -445,9 +445,14 @@ function variant(
   return atRule(AtRuleName.Variant, name, ...children);
 }
 
-function container(query: string, ...children: AtRuleChild[]): AtRule {
+function containerFn(query: string, ...children: AtRuleChild[]): AtRule {
   return atRule(AtRuleName.Container, query, ...children);
 }
+
+const container = Object.assign(containerFn, {
+  not: (query: string, ...children: AtRuleChild[]): AtRule =>
+    containerFn(`not ${query}`, ...children),
+});
 
 function supportsFn(query: string, ...children: AtRuleChild[]): AtRule {
   return atRule(AtRuleName.Supports, query, ...children);

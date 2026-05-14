@@ -778,10 +778,7 @@ const dark = createVariant(
 
 const notDark = createVariant(
   "not-ak-dark",
-  at.container(
-    `not ${fn.style(vars.layerScheme, "oklch(1 0 0)")}`,
-    set("@slot"),
-  ),
+  at.container.not(fn.style(vars.layerScheme, "oklch(1 0 0)"), set("@slot")),
 );
 
 const light = createVariant(
@@ -791,10 +788,7 @@ const light = createVariant(
 
 const notLight = createVariant(
   "not-ak-light",
-  at.container(
-    `not ${fn.style(vars.layerScheme, "oklch(0 0 0)")}`,
-    set("@slot"),
-  ),
+  at.container.not(fn.style(vars.layerScheme, "oklch(0 0 0)"), set("@slot")),
 );
 
 const darkHigh = createVariant(
@@ -807,8 +801,8 @@ const darkHigh = createVariant(
 
 const notDarkHigh = createVariant(
   "not-ak-dark-high",
-  at.container(
-    `not ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_HIGH }))}`,
+  at.container.not(
+    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_HIGH })),
     set("@slot"),
   ),
 );
@@ -823,8 +817,8 @@ const darkLow = createVariant(
 
 const notDarkLow = createVariant(
   "not-ak-dark-low",
-  at.container(
-    `not ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_LOW }))}`,
+  at.container.not(
+    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_LOW })),
     set("@slot"),
   ),
 );
@@ -839,8 +833,8 @@ const lightLow = createVariant(
 
 const notLightLow = createVariant(
   "not-ak-light-low",
-  at.container(
-    `not ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_LOW }))}`,
+  at.container.not(
+    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_LOW })),
     set("@slot"),
   ),
 );
@@ -855,8 +849,8 @@ const lightHigh = createVariant(
 
 const notLightHigh = createVariant(
   "not-ak-light-high",
-  at.container(
-    `not ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_HIGH }))}`,
+  at.container.not(
+    fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_HIGH })),
     set("@slot"),
   ),
 );
