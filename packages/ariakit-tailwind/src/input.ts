@@ -776,15 +776,39 @@ const dark = createVariant(
   at.container(fn.style(vars.layerScheme, "oklch(1 0 0)"), set("@slot")),
 );
 
+const notDark = createVariant(
+  "not-ak-dark",
+  at.container(
+    `not ${fn.style(vars.layerScheme, "oklch(1 0 0)")}`,
+    set("@slot"),
+  ),
+);
+
 const light = createVariant(
   "ak-light",
   at.container(fn.style(vars.layerScheme, "oklch(0 0 0)"), set("@slot")),
+);
+
+const notLight = createVariant(
+  "not-ak-light",
+  at.container(
+    `not ${fn.style(vars.layerScheme, "oklch(0 0 0)")}`,
+    set("@slot"),
+  ),
 );
 
 const darkHigh = createVariant(
   "ak-dark-high",
   at.container(
     fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_HIGH })),
+    set("@slot"),
+  ),
+);
+
+const notDarkHigh = createVariant(
+  "not-ak-dark-high",
+  at.container(
+    `not ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_HIGH }))}`,
     set("@slot"),
   ),
 );
@@ -797,6 +821,14 @@ const darkLow = createVariant(
   ),
 );
 
+const notDarkLow = createVariant(
+  "not-ak-dark-low",
+  at.container(
+    `not ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_DARK_LOW }))}`,
+    set("@slot"),
+  ),
+);
+
 const lightLow = createVariant(
   "ak-light-low",
   at.container(
@@ -805,10 +837,26 @@ const lightLow = createVariant(
   ),
 );
 
+const notLightLow = createVariant(
+  "not-ak-light-low",
+  at.container(
+    `not ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_LOW }))}`,
+    set("@slot"),
+  ),
+);
+
 const lightHigh = createVariant(
   "ak-light-high",
   at.container(
     fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_HIGH })),
+    set("@slot"),
+  ),
+);
+
+const notLightHigh = createVariant(
+  "not-ak-light-high",
+  at.container(
+    `not ${fn.style(vars.layerBand, fn.oklch({ l: BAND_LEVEL_LIGHT_HIGH }))}`,
     set("@slot"),
   ),
 );
@@ -2367,11 +2415,17 @@ export const input = [
   root,
   disabled,
   dark,
+  notDark,
   light,
+  notLight,
   darkHigh,
+  notDarkHigh,
   darkLow,
+  notDarkLow,
   lightLow,
+  notLightLow,
   lightHigh,
+  notLightHigh,
   ...utilities,
   ...Object.values(vars),
   ...Object.values(inputs),

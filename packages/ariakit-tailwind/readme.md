@@ -522,6 +522,9 @@ These variants are scoped to an `ak-layer` container and match based on the laye
 | `ak-light-low`  | A light mid-tier.                    |
 | `ak-light-high` | The lightest tier.                   |
 
+Each layer appearance variant also has a `not-*` counterpart, such as
+`not-ak-dark`, `not-ak-light`, and `not-ak-dark-high`.
+
 ```html
 <div class="ak-layer ak-layer-canvas">
   <div class="ak-dark:ak-layer-darken-6 ak-light:ak-layer-lighten-6">
@@ -531,10 +534,14 @@ These variants are scoped to an `ak-layer` container and match based on the laye
   <div class="ak-dark-high:ak-edge-20 ak-light-high:ak-edge-10">
     Stronger edges on the darkest surfaces.
   </div>
+
+  <div class="not-ak-dark:ak-layer-lighten-6">
+    Applies inside this layer when the current layer is not dark.
+  </div>
 </div>
 ```
 
-> `ak-dark` / `ak-light` and their band variants require a parent `ak-layer`. They're implemented as `@container` style queries, so they silently fail to match outside a layer rather than falling back to a default.
+> `ak-dark` / `ak-light` and their band variants require a parent `ak-layer`. They're implemented as `@container` style queries, so they silently fail to match outside a layer rather than falling back to a default. Negated variants match whenever the queried layer value is absent or different, so wrap them in an `ak-layer` when relying on layer appearance.
 
 ### Accessibility
 
