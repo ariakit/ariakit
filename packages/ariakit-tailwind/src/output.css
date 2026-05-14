@@ -81,8 +81,20 @@
   }
 }
 
+@custom-variant not-ak-dark {
+  @container not style(--_ak-ls: oklch(1 0 0)) {
+    @slot;
+  }
+}
+
 @custom-variant ak-light {
   @container style(--_ak-ls: oklch(0 0 0)) {
+    @slot;
+  }
+}
+
+@custom-variant not-ak-light {
+  @container not style(--_ak-ls: oklch(0 0 0)) {
     @slot;
   }
 }
@@ -93,8 +105,20 @@
   }
 }
 
+@custom-variant not-ak-dark-high {
+  @container not style(--_ak-lbd: oklch(0 0 0)) {
+    @slot;
+  }
+}
+
 @custom-variant ak-dark-low {
   @container style(--_ak-lbd: oklch(0.25 0 0)) {
+    @slot;
+  }
+}
+
+@custom-variant not-ak-dark-low {
+  @container not style(--_ak-lbd: oklch(0.25 0 0)) {
     @slot;
   }
 }
@@ -105,8 +129,20 @@
   }
 }
 
+@custom-variant not-ak-light-low {
+  @container not style(--_ak-lbd: oklch(0.75 0 0)) {
+    @slot;
+  }
+}
+
 @custom-variant ak-light-high {
   @container style(--_ak-lbd: oklch(1 0 0)) {
+    @slot;
+  }
+}
+
+@custom-variant not-ak-light-high {
+  @container not style(--_ak-lbd: oklch(1 0 0)) {
     @slot;
   }
 }
