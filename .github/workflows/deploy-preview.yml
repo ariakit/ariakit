@@ -80,7 +80,7 @@ jobs:
       - name: Upload Next.js app version
         id: versions-nextjs
         if: steps.download-nextjs-artifact.outcome == 'success'
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         continue-on-error: true
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -94,7 +94,7 @@ jobs:
       - name: Upload app version
         id: versions
         if: steps.download-app-artifact.outcome == 'success'
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         continue-on-error: true
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -107,7 +107,7 @@ jobs:
       - name: Deploy Next.js app version
         if: steps.download-nextjs-artifact.outcome == 'success' && (github.head_ref || github.ref_name) == 'main'
         id: deploy-nextjs
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         continue-on-error: true
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -119,7 +119,7 @@ jobs:
       - name: Deploy app version
         if: steps.download-app-artifact.outcome == 'success' && (github.head_ref || github.ref_name) == 'main'
         id: deploy
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         continue-on-error: true
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
