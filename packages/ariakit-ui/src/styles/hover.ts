@@ -26,7 +26,7 @@ export const hover = cv({
         value,
         property: "--hover-offset",
         class:
-          "ui-hover:ak-state-[calc(var(--hover-offset)*(2+var(--layer-invert,0)))]",
+          "ui-hover:ak-state-[calc(var(--hover-offset)*(1+2*var(--layer-invert,0)))]",
       });
     },
     /**

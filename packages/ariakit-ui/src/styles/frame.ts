@@ -86,6 +86,35 @@ export const frame = cv({
      */
     $forceRounded: "ak-frame-force",
     /**
+     * Sets the element's frame padding. This affects nested frames' radius
+     * calculations unless it's set to `1rem` or more, in which case the
+     * concentric effect is no longer visually meaningful.
+     */
+    $p: (value?: "unset" | "none" | (string & {}) | number) => {
+      if (value == null) return;
+      if (value === "unset") return;
+      if (value === "none") return "ak-frame-p-0";
+      return {
+        class: "ak-frame-p-(--frame-padding)",
+        style: { "--frame-padding": getSpacingValue(value) },
+      };
+    },
+    /**
+     * Sets the element's frame margin. This affects the frame's radius
+     * calculations if the current frame is nested, unless the sum of the parent
+     * padding and the child margin is at least `1rem`, in which case the
+     * concentric effect is no longer visually meaningful.
+     */
+    $m: (value?: "unset" | "none" | (string & {}) | number) => {
+      if (value == null) return;
+      if (value === "unset") return;
+      if (value === "none") return "ak-frame-m-0";
+      return {
+        class: "ak-frame-m-(--frame-margin)",
+        style: { "--frame-margin": getSpacingValue(value) },
+      };
+    },
+    /**
      * Sets the border color. By default, it's based on the layer's background
      * color.
      */
@@ -114,6 +143,13 @@ export const frame = cv({
       bold: "ak-edge-40",
     },
     /**
+     * Uses very dark borders on low-dark layers, typically for native-app-like
+     * interfaces with dark surfaces and black or nearly black dividers.
+     */
+    $borderDark:
+      "ak-dark-low:ak-edge-push-[-0.28] ak-dark-low:ak-edge-alpha-[calc((1-l)*(1-l))]",
+
+    /**
      * Specifies how the border is rendered. Setting it to `auto` uses either a
      * border or a ring, depending on the parent layer's lightness.
      */
@@ -125,35 +161,6 @@ export const frame = cv({
       inset: "ring-(length:--border-width) ring-inset",
       dashed: "ak-frame-border-(--border-width) border-dashed",
       dotted: "ak-frame-border-(--border-width) border-dotted",
-    },
-    /**
-     * Sets the element's frame padding. This affects nested frames' radius
-     * calculations unless it's set to `1rem` or more, in which case the
-     * concentric effect is no longer visually meaningful.
-     */
-    $p: (value?: "unset" | "none" | (string & {}) | number) => {
-      if (value == null) return;
-      if (value === "unset") return;
-      if (value === "none") return "ak-frame-p-0";
-      return {
-        class: "ak-frame-p-(--frame-padding)",
-        style: { "--frame-padding": getSpacingValue(value) },
-      };
-    },
-    /**
-     * Sets the element's frame margin. This affects the frame's radius
-     * calculations if the current frame is nested, unless the sum of the parent
-     * padding and the child margin is at least `1rem`, in which case the
-     * concentric effect is no longer visually meaningful.
-     */
-    $m: (value?: "unset" | "none" | (string & {}) | number) => {
-      if (value == null) return;
-      if (value === "unset") return;
-      if (value === "none") return "ak-frame-m-0";
-      return {
-        class: "ak-frame-m-(--frame-margin)",
-        style: { "--frame-margin": getSpacingValue(value) },
-      };
     },
     /**
      * Sets the border width. When set to `inherit`, the border uses the parent
@@ -349,15 +356,12 @@ export const frame = cv({
   },
   defaultVariants: {
     $frame: true,
-    $borderType: "auto",
   },
   refine: ({ variants, setDefaultVariants }) => {
-    if (variants.$border === "inherit") {
-      setDefaultVariants({
-        $borderType: "unset",
-        $borderColor: "unset",
-        $borderWeight: "unset",
-      });
-    }
+    setDefaultVariants({
+      $borderType: variants.$border === "inherit" ? "unset" : "auto",
+      $borderColor: variants.$border === "inherit" ? "unset" : undefined,
+      $borderWeight: variants.$border === "inherit" ? "unset" : undefined,
+    });
   },
 });

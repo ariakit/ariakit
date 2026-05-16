@@ -274,12 +274,6 @@ export const layer = cv({
     $layer: true,
   },
   refine: ({ variants, setDefaultVariants }) => {
-    // TODO: computed should be pure function and return ctx.
-    // ctx.defaultVariants, ctx.variants, ctx.setDefaultVariants,
-    // ctx.setVariants, ctx.addClass, ctx.class, ctx.style, ctx.addClass,
-    // ctx.addStyle. ctx.style and class will only include the values from
-    // addClass and addStyle. We need to figure out how to do the diff. Will we
-    // mutate the ctx.variants when calling setVariants?
     setDefaultVariants({
       $lightnessOffset: !variants.$invert,
       $lightnessPush: variants.$invert ? 20 : undefined,

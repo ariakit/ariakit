@@ -23,7 +23,7 @@ export const button = cv({
     // Only apply cursor-pointer to submit buttons that are not disabled
     "[&:where([type='submit'],form_button:only-of-type,a_&)]:not-ui-disabled:cursor-pointer",
     // Adjust the font weight based on the global contrast setting.
-    "font-[calc(500+50*var(--contrast))]",
+    "font-[calc(500+var(--contrast))]",
   ],
   variants: {
     $kind: {
