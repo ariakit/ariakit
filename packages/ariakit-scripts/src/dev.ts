@@ -33,7 +33,7 @@ export async function dev() {
     "conc",
     [
       "-r",
-      "pnpm -F site run dev",
+      "pnpm -F app run dev",
       `pnpm -F nextjs run dev --port ${nextjsPort}`,
     ],
     {

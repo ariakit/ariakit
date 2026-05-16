@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-// @ts-nocheck Revisit this after we merge the site folder into root
+// @ts-nocheck Revisit this after we merge the app folder into root
 import type { BundledLanguage } from "shiki";
 import { createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";

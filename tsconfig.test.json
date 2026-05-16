@@ -4,5 +4,5 @@
     "types": ["node", "@testing-library/jest-dom"]
   },
   "include": ["**/*test.ts"],
-  "exclude": ["site"]
+  "exclude": ["app"]
 }

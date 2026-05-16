@@ -31,7 +31,7 @@ jobs:
         uses: ./.github/workflows/setup
 
       - name: Build styles
-        run: pnpm -F site run build-styles
+        run: pnpm -F app run build-styles
 
       - name: Detect changes
         id: patch
@@ -40,7 +40,7 @@ jobs:
         # to re-add pnpm's self-managed `packageManagerDependencies` section)
         # must not trigger a style commit.
         run: |
-          git add -A -- site/src/styles/styles.json
+          git add -A -- app/src/styles/styles.json
           if git diff --cached --quiet --exit-code; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
             exit 0
@@ -61,6 +61,6 @@ jobs:
           message: Update styles
           head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: chore/update-styles
-          paths: site/src/styles/styles.json
+          paths: app/src/styles/styles.json
           app-client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
           app-private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}

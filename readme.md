@@ -49,9 +49,9 @@
 | Path                     | License                                                      | Summary                                                                    |
 | :----------------------- | :----------------------------------------------------------- | :------------------------------------------------------------------------- |
 | `packages`               | [**MIT License**](packages/ariakit-react/license)            | Permissive open-source.                                                    |
-| `examples` (except Plus) | [**MIT License**](site/src/examples/license.md)              | Permissive open-source.                                                    |
+| `examples` (except Plus) | [**MIT License**](app/src/examples/license.md)               | Permissive open-source.                                                    |
 | `examples` (Plus)        | [**Ariakit Plus License**](https://ariakit.com/plus/license) | License granted to [**Ariakit Plus**](https://ariakit.com/plus) customers. |
-| `site`                   | [**Proprietary**](site/license.md)                           | No license granted.                                                        |
+| `app`                    | [**Proprietary**](app/license.md)                            | No license granted.                                                        |
 
 Each of these directories contains its own license file with the full terms. Always refer to the most specific license file that applies to the code you are using.
 

@@ -24,7 +24,7 @@ type Dependency = StyleDependency;
 
 // Files and discovery
 const ROOT_DIR = path.resolve(import.meta.dirname, "../../../");
-const STYLES_DIR = path.resolve(ROOT_DIR, "site/src/styles");
+const STYLES_DIR = path.resolve(ROOT_DIR, "app/src/styles");
 const ARIAKIT_CSS = path.join(STYLES_DIR, "ariakit.css");
 const OUTPUT_JSON = path.join(STYLES_DIR, "styles.json");
 
@@ -922,7 +922,7 @@ async function main() {
     const actual = await fs.readFile(out, "utf8");
     if (expected !== actual) {
       console.error(
-        "styles.json is out of date. Run: pnpm -F site run build-styles",
+        "styles.json is out of date. Run: pnpm -F app run build-styles",
       );
       process.exitCode = 1;
     }

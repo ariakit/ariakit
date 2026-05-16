@@ -206,18 +206,18 @@ export function parseContentToSections(html: string): Section[] {
         const newSection: Section = {
           id,
           parent: typeof parent === "string" ? parent : null,
-          // @ts-ignore TODO: Remove this comment once we fully migrate the site
+          // @ts-ignore TODO: Remove this comment once we fully migrate the app
           title: toText(node),
           content: [],
         };
         sections.push(newSection);
-        // @ts-ignore TODO: Remove this comment once we fully migrate the site
+        // @ts-ignore TODO: Remove this comment once we fully migrate the app
         parentHeadings.push(node);
         continue;
       }
     }
 
-    // @ts-ignore TODO: Remove this comment once we fully migrate the site
+    // @ts-ignore TODO: Remove this comment once we fully migrate the app
     const content = toText(node).trim();
     if (content) {
       const lastSection = sections[sections.length - 1];

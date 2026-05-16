@@ -20,13 +20,13 @@ jobs:
         uses: ./.github/workflows/setup
 
       - name: Build app
-        run: pnpm -F site run build-lite
+        run: pnpm -F app run build-lite
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v7
         with:
           name: app-dist
-          path: site/dist
+          path: app/dist
           retention-days: 7
           include-hidden-files: true
 
@@ -63,31 +63,31 @@ jobs:
             name: Chrome
             engine: chromium
             project: chrome
-            test: xvfb-run pnpm -F site run test
-            visual: xvfb-run pnpm -F site run test-visual
+            test: xvfb-run pnpm -F app run test
+            visual: xvfb-run pnpm -F app run test-visual
           - os: ubuntu-latest
             name: Firefox
             engine: firefox
             project: firefox
-            test: xvfb-run pnpm -F site run test
-            visual: xvfb-run pnpm -F site run test-visual
+            test: xvfb-run pnpm -F app run test
+            visual: xvfb-run pnpm -F app run test-visual
           # - os: ubuntu-latest
           #   name: Android
           #   engine: chromium
           #   project: android
-          #   run: xvfb-run pnpm -F site run test-visual
+          #   run: xvfb-run pnpm -F app run test-visual
           - os: macos-latest
             name: Safari
             engine: webkit
             project: safari
-            test: pnpm -F site run test
-            visual: pnpm -F site run test-visual
+            test: pnpm -F app run test
+            visual: pnpm -F app run test-visual
           # - os: macos-latest
           #   name: iOS
           #   engine: webkit
           #   project: ios
-          #   test: pnpm -F site run test
-          #   visual: pnpm -F site run test-visual
+          #   test: pnpm -F app run test
+          #   visual: pnpm -F app run test-visual
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -104,7 +104,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: app-dist
-          path: site/dist
+          path: app/dist
 
       - name: Download Next.js artifact
         uses: actions/download-artifact@v8
@@ -134,7 +134,7 @@ jobs:
         if: always() && steps.update-screenshots.outcome == 'success'
         # The update run only touches files that still exist, so remove any
         # older screenshots for this browser that were left behind.
-        run: find site/src -path "*/__screenshots__/*-${{ matrix.project }}.png" ! -newer "${{ runner.temp }}/pre-update-marker" -delete
+        run: find app/src -path "*/__screenshots__/*-${{ matrix.project }}.png" ! -newer "${{ runner.temp }}/pre-update-marker" -delete
 
       - name: Pack screenshots
         if: always()
@@ -148,7 +148,7 @@ jobs:
           from pathlib import Path
 
           project = "${{ matrix.project }}"
-          root = Path("site/src")
+          root = Path("app/src")
           archive_path = Path("${{ runner.temp }}/artifacts") / f"app-visual-{project}.tar.gz"
           screenshots = sorted(root.glob(f"**/__screenshots__/*-{project}.png"))
           if not screenshots:
@@ -172,7 +172,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: ${{ matrix.project }}-test-results
-          path: site/test-results
+          path: app/test-results
           retention-days: 7
 
   test-finalize:
@@ -275,7 +275,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: app-dist
-          path: ${{ runner.temp }}/perf-baseline/site/dist
+          path: ${{ runner.temp }}/perf-baseline/app/dist
           github-token: ${{ github.token }}
           run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
@@ -292,12 +292,12 @@ jobs:
 
       - name: Clean partial base artifacts
         if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
-        run: rm -rf "$BASELINE_DIR/site/dist" "$BASELINE_DIR/nextjs/.open-next"
+        run: rm -rf "$BASELINE_DIR/app/dist" "$BASELINE_DIR/nextjs/.open-next"
 
       - name: Build base app
         if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
         working-directory: ${{ runner.temp }}/perf-baseline
-        run: pnpm -F site run build-lite
+        run: pnpm -F app run build-lite
 
       - name: Build base Next.js app
         if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
@@ -305,13 +305,13 @@ jobs:
         run: pnpm -F nextjs run build-worker
 
       - name: Clean current app artifacts
-        run: rm -rf site/dist nextjs/.open-next
+        run: rm -rf app/dist nextjs/.open-next
 
       - name: Download app artifact
         uses: actions/download-artifact@v8
         with:
           name: app-dist
-          path: site/dist
+          path: app/dist
 
       - name: Download Next.js artifact
         uses: actions/download-artifact@v8
@@ -321,8 +321,8 @@ jobs:
 
       - name: Run interleaved perf tests
         run: |
-          rm -rf site/.perf-results "$BASELINE_DIR/site/.perf-results"
-          mkdir -p site/.perf-results
+          rm -rf app/.perf-results "$BASELINE_DIR/app/.perf-results"
+          mkdir -p app/.perf-results
           shopt -s nullglob
 
           run_perf_round() {
@@ -335,19 +335,19 @@ jobs:
               PERF_RESULTS_FILE=baseline-$i.json \
               PERF_ITERATIONS="$PERF_ITERATIONS" \
               PERF_WARMUP="$PERF_WARMUP" \
-              xvfb-run -a pnpm -F site run test-perf --pass-with-no-tests
+              xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests
             ); then
               echo "::warning::Baseline perf run failed for round $i; writing an empty baseline."
               baseline_failed=1
             fi
-            local baseline_files=("$BASELINE_DIR"/site/.perf-results/baseline-"$i"*.json)
+            local baseline_files=("$BASELINE_DIR"/app/.perf-results/baseline-"$i"*.json)
             if [ "$baseline_failed" -eq 1 ] || [ ${#baseline_files[@]} -eq 0 ]; then
               if [ "$baseline_failed" -eq 0 ]; then
                 echo "::warning::No baseline perf results for round $i; writing an empty baseline."
               fi
-              printf '[]\n' > site/.perf-results/baseline-"$i"-worker0.json
+              printf '[]\n' > app/.perf-results/baseline-"$i"-worker0.json
             else
-              cp "${baseline_files[@]}" site/.perf-results/
+              cp "${baseline_files[@]}" app/.perf-results/
             fi
             echo "::endgroup::"
 
@@ -355,8 +355,8 @@ jobs:
             PERF_RESULTS_FILE=current-$i.json \
             PERF_ITERATIONS="$PERF_ITERATIONS" \
             PERF_WARMUP="$PERF_WARMUP" \
-            xvfb-run -a pnpm -F site run test-perf --pass-with-no-tests
-            local current_files=(site/.perf-results/current-"$i"*.json)
+            xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests
+            local current_files=(app/.perf-results/current-"$i"*.json)
             if [ ${#current_files[@]} -eq 0 ]; then
               echo "Missing current perf results for round $i" >&2
               exit 1
@@ -369,13 +369,13 @@ jobs:
           done
 
           echo "::group::Preliminary comparison"
-          pnpm -F site run perf-compare
+          pnpm -F app run perf-compare
           has_significant_changes=$(
             node --input-type=module <<'NODE'
           import { readFileSync } from "node:fs";
 
           const summary = JSON.parse(
-            readFileSync("site/.perf-results/comparison.json", "utf-8"),
+            readFileSync("app/.perf-results/comparison.json", "utf-8"),
           );
 
           console.log(summary.hasSignificantChanges ? "true" : "false");
@@ -392,7 +392,7 @@ jobs:
             done
 
             echo "::group::Final comparison"
-            pnpm -F site run perf-compare
+            pnpm -F app run perf-compare
             echo "::endgroup::"
           else
             echo "No significant changes detected; skipping confirmation rounds."
@@ -403,7 +403,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: perf-results
-          path: site/.perf-results
+          path: app/.perf-results
           if-no-files-found: ignore
           include-hidden-files: true
           retention-days: 7
@@ -428,7 +428,7 @@ jobs:
             const marker = '<!-- perf-results -->';
             let body;
             try {
-              body = fs.readFileSync('site/.perf-results/comparison.md', 'utf-8');
+              body = fs.readFileSync('app/.perf-results/comparison.md', 'utf-8');
             } catch {
               body = 'No performance results available.';
             }

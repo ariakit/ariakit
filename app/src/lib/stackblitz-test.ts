@@ -12,7 +12,7 @@ vi.mock("@stackblitz/sdk", () => ({
   },
 }));
 
-import type { SiteStackblitzProps } from "./stackblitz.ts";
+import type { AppStackblitzProps } from "./stackblitz.ts";
 import {
   embedStackblitz,
   getProject,
@@ -27,7 +27,7 @@ afterEach(() => {
 });
 
 test("react-vite project includes tailwind v4 setup", () => {
-  const props: SiteStackblitzProps = {
+  const props: AppStackblitzProps = {
     id: "accordion-basic",
     framework: "react-vite",
     files: {
@@ -133,7 +133,7 @@ test("react-vite project includes tailwind v4 setup", () => {
 });
 
 test("react-nextjs project generates styles and query provider", () => {
-  const props: SiteStackblitzProps = {
+  const props: AppStackblitzProps = {
     id: "dialog-styled",
     framework: "react-nextjs",
     files: {
@@ -191,7 +191,7 @@ test("react-nextjs project generates styles and query provider", () => {
 });
 
 test("solid-vite project emits generated utilities", () => {
-  const props: SiteStackblitzProps = {
+  const props: AppStackblitzProps = {
     id: "separator-solid",
     framework: "solid-vite",
     files: {
@@ -281,7 +281,7 @@ test("solid-vite project emits generated utilities", () => {
 });
 
 test("getSourceFiles returns example entries only", () => {
-  const props: SiteStackblitzProps = {
+  const props: AppStackblitzProps = {
     id: "checkbox-basic",
     framework: "react-vite",
     files: {
@@ -296,7 +296,7 @@ test("getSourceFiles returns example entries only", () => {
 });
 
 test("openInStackblitz forwards initialOpenFile", () => {
-  const props: SiteStackblitzProps = {
+  const props: AppStackblitzProps = {
     id: "tabs-initial",
     framework: "react-vite",
     files: {
@@ -314,7 +314,7 @@ test("openInStackblitz forwards initialOpenFile", () => {
 });
 
 test("embedStackblitz configures preview view", async () => {
-  const props: SiteStackblitzProps = {
+  const props: AppStackblitzProps = {
     id: "menu-preview",
     framework: "react-vite",
     files: {

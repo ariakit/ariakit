@@ -103,7 +103,7 @@ function getPackageName(source: string) {
 function isLibPath(path: string) {
   return (
     path.startsWith("#") ||
-    path.startsWith("site/") ||
+    path.startsWith("app/") ||
     path.startsWith(APP_LIB_PATH) ||
     path.startsWith(NEXTJS_LIB_PATH)
   );
