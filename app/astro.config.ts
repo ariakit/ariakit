@@ -16,8 +16,9 @@ import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
 import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "astro/config";
+import { defineConfig, sessionDrivers } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
 import {
   rehypeAdmonitions,
   rehypeAsTagName,
@@ -31,6 +32,8 @@ try {
 } catch (_error) {}
 
 const port = Number(process.env.APP_PORT) || 4321;
+const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+const isPreview = process.env.CLOUDFLARE_ENV === "preview";
 
 // https://astro.build/config
 export default defineConfig({
@@ -50,6 +53,12 @@ export default defineConfig({
   devToolbar: {
     enabled: false,
   },
+
+  ...(isPreview && {
+    session: {
+      driver: sessionDrivers.lruCache(),
+    },
+  }),
 
   adapter: cloudflare({
     configPath: "../wrangler.jsonc",
@@ -84,18 +93,20 @@ export default defineConfig({
         ],
       ],
     }),
-    clerk({
-      signInUrl: getPlusAccountPath({ path: "login" }),
-      signUpUrl: getPlusCheckoutPath({ step: "login" }),
-      appearance: {
-        variables: {
-          fontSize: "1rem",
-        },
-        layout: {
-          logoPlacement: "none",
-          showOptionalFields: false,
-        },
-      },
-    }),
+    !hasClerk
+      ? dummyClerkIntegration()
+      : clerk({
+          signInUrl: getPlusAccountPath({ path: "login" }),
+          signUpUrl: getPlusCheckoutPath({ step: "login" }),
+          appearance: {
+            variables: {
+              fontSize: "1rem",
+            },
+            layout: {
+              logoPlacement: "none",
+              showOptionalFields: false,
+            },
+          },
+        }),
   ],
 });

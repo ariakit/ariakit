@@ -15,13 +15,13 @@ import { unauthorized } from "./lib/response.ts";
 
 const clerk = clerkMiddleware();
 
-async function getRuntimeEnv() {
-  try {
-    const { env } = await import("cloudflare:workers");
-    return env;
-  } catch {
-    return null;
-  }
+let runtimeEnvPromise: Promise<Cloudflare.Env | null> | undefined;
+
+function getRuntimeEnv() {
+  runtimeEnvPromise ??= import("cloudflare:workers")
+    .then(({ env }) => env)
+    .catch(() => null);
+  return runtimeEnvPromise;
 }
 
 function isPublicRoute(url: URL) {

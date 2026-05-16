@@ -15,7 +15,7 @@ import { chromium } from "playwright";
 import { PNG } from "pngjs";
 import type { OGImageItem } from "./api.ts";
 
-const BASE_URL = "http://localhost:4321";
+const BASE_URL = process.env.BASE_URL ?? "http://localhost:4321";
 const PUBLIC_DIR = path.resolve(process.cwd(), "public");
 
 // Maximum fraction of pixels allowed to differ before the image is
@@ -80,6 +80,12 @@ async function waitForImageReady(page: Page) {
   });
 }
 
+interface GeneratedImage {
+  path: string;
+  relativePath: string;
+  buffer: Buffer;
+}
+
 async function generateImage(page: Page, item: OGImageItem) {
   const url = `${BASE_URL}/og-image${item.path}`;
 
@@ -92,15 +98,23 @@ async function generateImage(page: Page, item: OGImageItem) {
 
     if (isWithinTolerance(buffer, imagePath)) {
       console.log(`⏭️  Skipped ${relativePath} (within tolerance)`);
+      return;
     } else {
-      fs.mkdirSync(path.dirname(imagePath), { recursive: true });
-      fs.writeFileSync(imagePath, buffer);
-      console.log(`✅ Generated ${relativePath}`);
+      console.log(`✅ Queued ${relativePath}`);
+      return { path: imagePath, relativePath, buffer } satisfies GeneratedImage;
     }
   } catch (e) {
     console.error(`❌ Failed to generate ${item.path}`);
     console.error(e);
     throw e;
+  }
+}
+
+function writeImages(images: GeneratedImage[]) {
+  for (const { path: imagePath, relativePath, buffer } of images) {
+    fs.mkdirSync(path.dirname(imagePath), { recursive: true });
+    fs.writeFileSync(imagePath, buffer);
+    console.log(`✅ Generated ${relativePath}`);
   }
 }
 
@@ -135,9 +149,13 @@ async function main() {
       throw new Error("No OG image items found");
     }
     const failedPaths: string[] = [];
+    const generatedImages: GeneratedImage[] = [];
     for (const item of items) {
       try {
-        await generateImage(page, item);
+        const image = await generateImage(page, item);
+        if (image) {
+          generatedImages.push(image);
+        }
       } catch (_error) {
         failedPaths.push(item.path);
       }
@@ -147,6 +165,7 @@ async function main() {
         `Failed to generate OG images for: ${failedPaths.join(", ")}`,
       );
     }
+    writeImages(generatedImages);
     removeStaleImages(items);
     console.log("✨ Done");
   } finally {

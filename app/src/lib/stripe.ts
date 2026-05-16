@@ -262,6 +262,7 @@ export async function getPlusPrice({
 }: GetPlusPriceParams): Promise<PlusPrice | null> {
   const stripe = getStripeClient(env);
   if (!stripe) return null;
+  if (!env.PLUS) return null;
   const keys = [
     getPlusPriceKey({ type, currency, countryCode }),
     getPlusPriceKey({ type, currency }),
@@ -398,6 +399,7 @@ export async function processCheckout({
 }: ProcessCheckoutParams) {
   const stripe = getStripeClient(env);
   if (!stripe) return;
+  if (!env.EVENTS) return;
   if (typeof session === "string") {
     try {
       session = await stripe.checkout.sessions.retrieve(session);

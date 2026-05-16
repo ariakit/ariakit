@@ -401,7 +401,6 @@ export const admin = {
         throw new ActionError({ code: "UNAUTHORIZED" });
       }
       await setPrice(env, input);
-      return "Hello, world!";
     },
   }),
 
