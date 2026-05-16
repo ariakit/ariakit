@@ -3,7 +3,7 @@
   "modules": [
     {
       "id": "aurora",
-      "path": "site/src/styles/ak-aurora.css",
+      "path": "app/src/styles/ak-aurora.css",
       "atProperties": {},
       "utilities": {
         "ak-aurora_hover": {
@@ -91,7 +91,7 @@
     },
     {
       "id": "icon",
-      "path": "site/src/styles/ak-icon.css",
+      "path": "app/src/styles/ak-icon.css",
       "atProperties": {},
       "utilities": {
         "ak-icon": {
@@ -168,7 +168,7 @@
     },
     {
       "id": "badge",
-      "path": "site/src/styles/ak-badge.css",
+      "path": "app/src/styles/ak-badge.css",
       "atProperties": {},
       "utilities": {
         "ak-badge_base": {
@@ -336,7 +336,7 @@
     },
     {
       "id": "command",
-      "path": "site/src/styles/ak-command.css",
+      "path": "app/src/styles/ak-command.css",
       "atProperties": {
         "--ak-command-depth-x": {
           "name": "--ak-command-depth-x",
@@ -593,7 +593,7 @@
     },
     {
       "id": "button",
-      "path": "site/src/styles/ak-button.css",
+      "path": "app/src/styles/ak-button.css",
       "atProperties": {},
       "utilities": {
         "ak-button_idle": {
@@ -1188,7 +1188,7 @@
     },
     {
       "id": "checkbox",
-      "path": "site/src/styles/ak-checkbox.css",
+      "path": "app/src/styles/ak-checkbox.css",
       "atProperties": {},
       "utilities": {
         "ak-checkbox-card-grid": {
@@ -1966,7 +1966,7 @@
     },
     {
       "id": "radio",
-      "path": "site/src/styles/ak-radio.css",
+      "path": "app/src/styles/ak-radio.css",
       "atProperties": {},
       "utilities": {
         "ak-radio_idle": {
@@ -2179,7 +2179,7 @@
     },
     {
       "id": "option",
-      "path": "site/src/styles/ak-option.css",
+      "path": "app/src/styles/ak-option.css",
       "atProperties": {},
       "utilities": {
         "ak-option_idle": {
@@ -2379,7 +2379,7 @@
     },
     {
       "id": "tab",
-      "path": "site/src/styles/ak-tab.css",
+      "path": "app/src/styles/ak-tab.css",
       "atProperties": {
         "--ak-tab-border-width": {
           "name": "--ak-tab-border-width",
@@ -2945,7 +2945,7 @@
     },
     {
       "id": "popover",
-      "path": "site/src/styles/ak-popover.css",
+      "path": "app/src/styles/ak-popover.css",
       "atProperties": {},
       "utilities": {
         "ak-popover_idle": {
@@ -3176,7 +3176,7 @@
     },
     {
       "id": "dialog",
-      "path": "site/src/styles/ak-dialog.css",
+      "path": "app/src/styles/ak-dialog.css",
       "atProperties": {},
       "utilities": {
         "ak-dialog_idle": {
@@ -3331,7 +3331,7 @@
     },
     {
       "id": "disclosure",
-      "path": "site/src/styles/ak-disclosure.css",
+      "path": "app/src/styles/ak-disclosure.css",
       "atProperties": {},
       "utilities": {
         "ak-disclosure-group": {
@@ -4473,7 +4473,7 @@
     },
     {
       "id": "nav",
-      "path": "site/src/styles/ak-nav.css",
+      "path": "app/src/styles/ak-nav.css",
       "atProperties": {},
       "utilities": {
         "ak-nav-icon-*": {
@@ -5373,7 +5373,7 @@
     },
     {
       "id": "tooltip",
-      "path": "site/src/styles/ak-tooltip.css",
+      "path": "app/src/styles/ak-tooltip.css",
       "atProperties": {},
       "utilities": {
         "ak-tooltip_idle": {
@@ -5487,7 +5487,7 @@
     },
     {
       "id": "select",
-      "path": "site/src/styles/ak-select.css",
+      "path": "app/src/styles/ak-select.css",
       "atProperties": {},
       "utilities": {
         "ak-select_idle": {
@@ -6045,7 +6045,7 @@
     },
     {
       "id": "container",
-      "path": "site/src/styles/ak-container.css",
+      "path": "app/src/styles/ak-container.css",
       "atProperties": {},
       "utilities": {
         "ak-container-size-*": {
@@ -6106,7 +6106,7 @@
     },
     {
       "id": "input",
-      "path": "site/src/styles/ak-input.css",
+      "path": "app/src/styles/ak-input.css",
       "atProperties": {},
       "utilities": {
         "ak-input-placeholder": {
@@ -6364,7 +6364,7 @@
     },
     {
       "id": "kbd",
-      "path": "site/src/styles/ak-kbd.css",
+      "path": "app/src/styles/ak-kbd.css",
       "atProperties": {},
       "utilities": {
         "ak-kbd": {
@@ -6475,7 +6475,7 @@
     },
     {
       "id": "link",
-      "path": "site/src/styles/ak-link.css",
+      "path": "app/src/styles/ak-link.css",
       "atProperties": {},
       "utilities": {
         "ak-link_idle": {
@@ -6578,7 +6578,7 @@
     },
     {
       "id": "progress",
-      "path": "site/src/styles/ak-progress.css",
+      "path": "app/src/styles/ak-progress.css",
       "atProperties": {
         "--ak-progress-value": {
           "name": "--ak-progress-value",
@@ -6941,7 +6941,7 @@
     },
     {
       "id": "list",
-      "path": "site/src/styles/ak-list.css",
+      "path": "app/src/styles/ak-list.css",
       "atProperties": {},
       "utilities": {
         "ak-list-gap-*": {
@@ -8261,7 +8261,7 @@
     },
     {
       "id": "heading",
-      "path": "site/src/styles/ak-heading.css",
+      "path": "app/src/styles/ak-heading.css",
       "atProperties": {},
       "utilities": {
         "ak-heading-1": {
@@ -8452,7 +8452,7 @@
     },
     {
       "id": "segmented",
-      "path": "site/src/styles/ak-segmented.css",
+      "path": "app/src/styles/ak-segmented.css",
       "atProperties": {},
       "utilities": {
         "ak-segmented": {
@@ -8924,7 +8924,7 @@
     },
     {
       "id": "table",
-      "path": "site/src/styles/ak-table.css",
+      "path": "app/src/styles/ak-table.css",
       "atProperties": {},
       "utilities": {
         "ak-table-sticky-top": {
@@ -9814,7 +9814,7 @@
     },
     {
       "id": "sidebar",
-      "path": "site/src/styles/ak-sidebar.css",
+      "path": "app/src/styles/ak-sidebar.css",
       "atProperties": {},
       "utilities": {
         "ak-sidebar-max-width-*": {
@@ -10050,7 +10050,7 @@
     },
     {
       "id": "prose",
-      "path": "site/src/styles/ak-prose.css",
+      "path": "app/src/styles/ak-prose.css",
       "atProperties": {},
       "utilities": {
         "ak-code": {

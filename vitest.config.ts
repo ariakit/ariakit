@@ -4,7 +4,7 @@ import reactPlugin from "@vitejs/plugin-react";
 import solidPlugin from "vite-plugin-solid";
 import type { Plugin } from "vitest/config";
 import { configDefaults, defineConfig } from "vitest/config";
-import { sourcePlugin } from "./site/src/lib/source-plugin.ts";
+import { sourcePlugin } from "./app/src/lib/source-plugin.ts";
 
 // In a pnpm monorepo, each workspace package may resolve its own copy of
 // react from its node_modules. We pin all imports to a single copy via
@@ -33,7 +33,7 @@ if (!ALLOWED_TEST_LOADERS.includes(LOADER))
   throw new Error(`Invalid loader: ${LOADER}`);
 
 const sourcePluginInstance = sourcePlugin(
-  join(import.meta.dirname, "site/src/examples/"),
+  join(import.meta.dirname, "app/src/examples/"),
 );
 
 const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {

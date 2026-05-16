@@ -19,7 +19,7 @@ jobs:
         uses: ./.github/workflows/setup
 
       - name: Build app
-        run: pnpm run build-site
+        run: pnpm run build-app
 
       - name: Deploy Next.js app to Cloudflare
         uses: cloudflare/wrangler-action@v4

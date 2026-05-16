@@ -182,7 +182,7 @@ jobs:
           env.WRITEBACK_ALLOWED == 'true'
         # Replace the full screenshot tree so deletions and renames are handled
         # the same way as a clean checkout after `-u`.
-        run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
+        run: find pr/app/src -type d -name __screenshots__ -prune -exec rm -rf {} +
 
       - name: Extract screenshots
         if: >

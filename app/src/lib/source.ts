@@ -100,7 +100,7 @@ export interface Source {
   files: Record<string, SourceFile>;
   /**
    * Styles referenced by the source code. This follows the same shape as items
-   * in `dependencies` arrays within `site/src/styles/styles.json` (name, type,
+   * in `dependencies` arrays within `app/src/styles/styles.json` (name, type,
    * and optionally module/import).
    */
   styles: StyleDependency[];
