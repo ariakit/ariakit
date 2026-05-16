@@ -1,5 +1,5 @@
 {
-  "name": "site",
+  "name": "app",
   "version": "0.0.1",
   "private": true,
   "license": "See license.md",
@@ -67,7 +67,7 @@
     "@shikijs/langs": "4.0.2",
     "@shikijs/themes": "4.0.2",
     "@stackblitz/sdk": "1.11.0",
-    "@stripe/stripe-js": "9.4.0",
+    "@stripe/stripe-js": "9.5.0",
     "@tailwindcss/vite": "4.3.0",
     "@tanstack/react-query": "5.100.10",
     "astro": "5.18.1",
@@ -118,7 +118,6 @@
     "@types/pngjs": "6.0.5",
     "@types/react": "18.3.28",
     "@types/react-dom": "18.3.7",
-    "@vizzly-testing/cli": "0.30.0",
     "concurrently": "9.2.1",
     "cross-env": "10.1.0",
     "nextjs": "workspace:*",
@@ -127,6 +126,6 @@
     "rimraf": "6.1.3",
     "shadcn": "4.7.0",
     "vitest": "4.1.6",
-    "wrangler": "4.90.0"
+    "wrangler": "4.90.1"
   }
 }

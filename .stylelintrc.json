@@ -2,7 +2,7 @@
   "extends": "stylelint-config-standard",
   "ignoreFiles": [
     "packages/ariakit-tailwind/**",
-    "site/**",
+    "app/**",
     "templates/**",
     "nextjs/**"
   ],

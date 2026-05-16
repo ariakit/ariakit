@@ -5,7 +5,7 @@ packages:
   - examples
   - guide
   - website
-  - site
+  - app
 
 allowBuilds:
   "@clerk/shared": false

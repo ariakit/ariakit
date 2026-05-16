@@ -12,16 +12,6 @@ on:
         required: true
         type: string
 
-env:
-  # Vizzly is an alternative visual baseline backend. When disabled, this
-  # workflow falls back to file-based screenshots committed in the repo.
-  USE_VIZZLY: ${{ vars.USE_VIZZLY || 'false' }}
-  VIZZLY_TOKEN: ${{ secrets.VIZZLY_TOKEN }}
-  VIZZLY_COMMIT_MESSAGE: ${{ github.event.head_commit.message || github.event.pull_request.title }}
-  VIZZLY_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.event.head_commit.id }}
-  VIZZLY_BRANCH: ${{ github.head_ref || github.ref_name }}
-  VIZZLY_PR_NUMBER: ${{ github.event.pull_request.number }}
-
 jobs:
   finalize:
     name: Finalize
@@ -29,26 +19,13 @@ jobs:
     permissions:
       contents: read
       actions: read
+    env:
+      WRITEBACK_ALLOWED: ${{ inputs.event != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
-
-      - name: Validate Vizzly configuration
-        if: env.USE_VIZZLY == 'true' && env.VIZZLY_TOKEN == ''
-        run: |
-          echo "::error title=Missing VIZZLY_TOKEN::USE_VIZZLY is true, but VIZZLY_TOKEN is not configured."
-          exit 1
-
-      - name: Set up environment
-        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
-        uses: ./.github/workflows/setup
-
-      - name: Finalize visual tests
-        if: env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
-        run: pnpm exec vizzly finalize "${{ github.run_id }}-${{ github.run_attempt }}"
 
       - name: Read tip SHA on branch
         id: tip
@@ -78,7 +55,7 @@ jobs:
 
       - name: Check for complete screenshot artifacts
         id: check-artifacts
-        if: steps.gate.outputs.is_latest == 'true' && vars.USE_VIZZLY != 'true' && inputs.test-result == 'failure'
+        if: steps.gate.outputs.is_latest == 'true' && inputs.test-result == 'failure'
         # Only update committed screenshots when every browser shard that
         # uploads screenshots has produced its artifact for this run.
         uses: actions/github-script@v9
@@ -177,21 +154,21 @@ jobs:
       - name: Checkout branch
         if: >
           steps.gate.outputs.is_latest == 'true' &&
-          (
-            vars.USE_VIZZLY == 'true' ||
-            steps.check-artifacts.outputs.ready == 'true'
-          )
+          steps.check-artifacts.outputs.ready == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
         uses: actions/checkout@v6
         with:
           # Keep the workflow files from the trusted checkout above and apply
           # generated changes in a separate checkout directory we can commit from.
           path: pr
           ref: ${{ github.head_ref || github.ref_name }}
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
           persist-credentials: false
 
       - name: Download screenshots
-        if: steps.check-artifacts.outputs.ready == 'true'
+        if: >
+          steps.gate.outputs.is_latest == 'true' &&
+          steps.check-artifacts.outputs.ready == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
         uses: actions/download-artifact@v8
         with:
           pattern: app-visual-*
@@ -199,19 +176,28 @@ jobs:
           path: ${{ runner.temp }}/artifacts
 
       - name: Prepare screenshots
-        if: steps.check-artifacts.outputs.ready == 'true'
+        if: >
+          steps.gate.outputs.is_latest == 'true' &&
+          steps.check-artifacts.outputs.ready == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
         # Replace the full screenshot tree so deletions and renames are handled
         # the same way as a clean checkout after `-u`.
-        run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
+        run: find pr/app/src -type d -name __screenshots__ -prune -exec rm -rf {} +
 
       - name: Extract screenshots
-        if: steps.check-artifacts.outputs.ready == 'true'
+        if: >
+          steps.gate.outputs.is_latest == 'true' &&
+          steps.check-artifacts.outputs.ready == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
         run: |
           find "${{ runner.temp }}/artifacts" -name "app-visual-*.tar.gz" \
             -exec tar -xzf {} -C pr \;
 
       - name: Commit or create PR
-        if: steps.check-artifacts.outputs.ready == 'true'
+        if: >
+          steps.gate.outputs.is_latest == 'true' &&
+          steps.check-artifacts.outputs.ready == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
           working-directory: pr
@@ -219,21 +205,5 @@ jobs:
           message: Update screenshots
           head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: visual/update-screenshots
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
-
-      - name: Remove visual screenshot directories
-        if: steps.gate.outputs.is_latest == 'true' && env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
-        # Once Vizzly is authoritative, remove any file-based baselines that
-        # would otherwise drift out of sync with the external service.
-        run: find pr/site/src -type d -name __screenshots__ -prune -exec rm -rf {} +
-
-      - name: Commit or create PR
-        if: steps.gate.outputs.is_latest == 'true' && env.VIZZLY_TOKEN != '' && env.USE_VIZZLY == 'true'
-        uses: ./.github/workflows/commit-or-pr
-        with:
-          working-directory: pr
-          event: ${{ inputs.event }}
-          message: Remove file-based visual screenshots
-          head-branch: ${{ github.head_ref || github.ref_name }}
-          new-branch: visual/remove-screenshots
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          app-client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
+          app-private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}

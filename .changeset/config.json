@@ -9,7 +9,7 @@
   "updateInternalDependencies": "patch",
   "ignore": [
     "website",
-    "site",
+    "app",
     "examples",
     "nextjs",
     "@ariakit/scripts",

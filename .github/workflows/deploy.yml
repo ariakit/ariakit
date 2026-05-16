@@ -19,10 +19,10 @@ jobs:
         uses: ./.github/workflows/setup
 
       - name: Build app
-        run: pnpm run build-site
+        run: pnpm run build-app
 
       - name: Deploy Next.js app to Cloudflare
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -31,7 +31,7 @@ jobs:
           command: deploy
 
       - name: Deploy app to Cloudflare
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

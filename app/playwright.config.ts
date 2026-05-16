@@ -7,7 +7,7 @@ if (process.argv.includes("--headed")) {
 const CI = !!process.env.CI;
 const HEADED = process.env.PWHEADED === "true";
 const PERF = process.env.PERF_TEST === "true";
-const port = Number(process.env.SITE_PORT) || 4321;
+const port = Number(process.env.APP_PORT) || 4321;
 const nextjsPort = Number(process.env.NEXTJS_PORT) || 3000;
 
 function testMatchersFor(...kinds: string[]): RegExp[] {

@@ -14,8 +14,9 @@ jobs:
     name: Generate OG images
     runs-on: macos-latest
     permissions:
-      contents: write
-      pull-requests: write
+      contents: read
+    env:
+      WRITEBACK_ALLOWED: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -41,7 +42,7 @@ jobs:
         # server alive in the background and block until the API is responsive.
         run: |
           set -euo pipefail
-          pnpm -F site run dev &
+          pnpm -F app run dev &
           echo "Waiting for dev server (http://localhost:4321)..."
           ready=0
           for i in {1..90}; do
@@ -59,7 +60,7 @@ jobs:
           fi
 
       - name: Generate OG images
-        run: pnpm -F site run og-image-generate
+        run: pnpm -F app run og-image-generate
 
       - name: Detect changes
         id: patch
@@ -69,7 +70,7 @@ jobs:
         # `packageManagerDependencies` section) must not trigger an OG image
         # commit.
         run: |
-          git add -A -- site/public/og-image
+          git add -A -- app/public/og-image
           if git diff --cached --quiet --exit-code; then
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
             exit 0
@@ -77,7 +78,9 @@ jobs:
           echo "has_changes=true" >> "$GITHUB_OUTPUT"
 
       - name: Commit or create PR
-        if: steps.patch.outputs.has_changes == 'true'
+        if: >
+          steps.patch.outputs.has_changes == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
           # This write-back step intentionally assumes PRs come from branches
@@ -88,5 +91,6 @@ jobs:
           message: Update OG images
           head-branch: ${{ github.head_ref || github.ref_name }}
           new-branch: chore/update-og-images
-          paths: site/public/og-image
-          token: ${{ secrets.ARIAKIT_BOT_PAT }}
+          paths: app/public/og-image
+          app-client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
+          app-private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}

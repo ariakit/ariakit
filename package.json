@@ -7,12 +7,12 @@
     "dev-package-json": "node scripts/build/package-json-dev.js",
     "dev": "conc -r 'pnpm:dev-package-json' 'pnpm -F website run dev'",
     "dev-lite": "cross-env DISABLE_SHIKI=true pnpm run dev",
-    "dev-site": "ariakit dev",
-    "dev-site-lite": "cross-env DISABLE_SYNTAX_HIGHLIGHTING=true pnpm run dev-site",
-    "build-site": "pnpm -F nextjs run build-worker && pnpm -F site run build",
-    "build-site-lite": "pnpm -F nextjs run build-worker && pnpm -F site run build-lite",
-    "preview-site": "conc -r 'pnpm -F site run preview' 'pnpm -F nextjs run preview'",
-    "preview-site-lite": "cross-env DISABLE_REFERENCE_LINKS=true pnpm run preview-site",
+    "dev-app": "ariakit dev",
+    "dev-app-lite": "cross-env DISABLE_SYNTAX_HIGHLIGHTING=true pnpm run dev-app",
+    "build-app": "pnpm -F nextjs run build-worker && pnpm -F app run build",
+    "build-app-lite": "pnpm -F nextjs run build-worker && pnpm -F app run build-lite",
+    "preview-app": "conc -r 'pnpm -F app run preview' 'pnpm -F nextjs run preview'",
+    "preview-app-lite": "cross-env DISABLE_REFERENCE_LINKS=true pnpm run preview-app",
     "generate-images": "playwright test -u -c generate-images.config.ts",
     "test": "vitest",
     "test-solid": "ARIAKIT_TEST_LOADER=solid vitest",
@@ -49,7 +49,7 @@
     "lint-fix": "oxlint --disable-nested-config --fix && oxfmt",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
     "wrangler-types": "wrangler types --include-runtime=false",
-    "tsc": "pnpm run wrangler-types && pnpm -F site run check && tsc -b",
+    "tsc": "pnpm run wrangler-types && pnpm -F app run check && tsc -b",
     "tsc-clean": "tsc -b --clean",
     "build": "pnpm -F \"@ariakit/*\" run build",
     "build-website": "pnpm -F website run build",
@@ -116,7 +116,7 @@
     "vite-plugin-solid": "2.11.12",
     "vitest": "4.1.6",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.90.0"
+    "wrangler": "4.90.1"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
@@ -125,5 +125,5 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@11.1.0"
+  "packageManager": "pnpm@11.1.1"
 }

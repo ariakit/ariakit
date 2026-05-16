@@ -3,7 +3,6 @@ import path from "node:path";
 import { invariant } from "@ariakit/core/utils/misc";
 import type { Locator, Page, TestInfo } from "@playwright/test";
 import { expect, test } from "@playwright/test";
-import { vizzlyScreenshot } from "@vizzly-testing/cli/client";
 import { slugify } from "#app/lib/string.ts";
 
 const DEFAULT_CLIP_MARGIN = 16;
@@ -120,19 +119,6 @@ function getFileSnapshotName(params: {
   return `${baseName}${countSuffix}-${testInfo.project.name}.png`;
 }
 
-function getVizzlySnapshotName(params: {
-  testInfo: TestInfo;
-  fileSnapshotName: string;
-}) {
-  const { testInfo, fileSnapshotName } = params;
-  const { name, ext } = path.parse(fileSnapshotName);
-  const testFileDir = getTestFileDir(testInfo)
-    .split(path.sep)
-    .filter(Boolean)
-    .filter((part) => part !== "__screenshots__");
-  return `${slugify([...testFileDir, name].join("-"))}${ext}`;
-}
-
 function touchScreenshot(testInfo: TestInfo, fileName: string) {
   const testDir =
     testInfo.project.testDir || path.join(testInfo.config.rootDir, "src");
@@ -152,10 +138,6 @@ function touchScreenshot(testInfo: TestInfo, fileName: string) {
     }
     throw error;
   }
-}
-
-function shouldUseVizzly() {
-  return process.env.USE_VIZZLY === "true";
 }
 
 function getCombinedClip(a: Rect, b: Rect) {
@@ -410,21 +392,6 @@ export async function visual(
             clipMargin,
             fullPage,
           });
-          if (shouldUseVizzly()) {
-            const buffer = await page.screenshot(screenshotOptions);
-            const vizzlySnapshotName = getVizzlySnapshotName({
-              testInfo,
-              fileSnapshotName,
-            });
-            await vizzlyScreenshot(vizzlySnapshotName, buffer, {
-              properties: {
-                id,
-                style: styleName,
-                browser: testInfo.project.name,
-              },
-            });
-            return;
-          }
           await expect(page).toHaveScreenshot(fileSnapshotName, {
             ...screenshotOptions,
           });

@@ -12,7 +12,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
-      issues: write
+      issues: read
     steps:
       - name: Get linked issues
         id: issues
@@ -101,10 +101,19 @@ jobs:
           echo "$npm_commands" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
 
+      - name: Create GitHub App token
+        if: steps.packages.outputs.found == 'true'
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
+          private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}
+          permission-issues: write
+
       - name: Comment on issues
         if: steps.packages.outputs.found == 'true'
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           REPO: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           ISSUE_NUMBERS: ${{ steps.issues.outputs.numbers }}
@@ -127,14 +136,16 @@ jobs:
           } > body.md
 
           while IFS= read -r issue_number; do
-            existing=$(gh api --paginate --slurp "repos/$REPO/issues/$issue_number/comments?per_page=100" \
-              | jq "[.[][] | select(.body | contains(\"$marker\"))] | length")
-            if [ "$existing" -gt 0 ]; then
-              echo "Skipping issue #$issue_number (already commented)"
-              continue
+            existing_id=$(gh api --paginate --slurp "repos/$REPO/issues/$issue_number/comments?per_page=100" \
+              | jq -r "[.[][] | select((.body | contains(\"$marker\")) and .user.login? == \"ariakito[bot]\")] | last | .id // empty")
+            if [ -n "$existing_id" ]; then
+              jq -n --rawfile body body.md "{ body: \$body }" \
+                | gh api --method PATCH "repos/$REPO/issues/comments/$existing_id" --input -
+              echo "Updated comment on issue #$issue_number"
+            else
+              gh issue comment "$issue_number" \
+                --repo "$REPO" \
+                --body-file body.md
+              echo "Commented on issue #$issue_number"
             fi
-            gh issue comment "$issue_number" \
-              --repo "$REPO" \
-              --body-file body.md
-            echo "Commented on issue #$issue_number"
           done <<< "$ISSUE_NUMBERS"

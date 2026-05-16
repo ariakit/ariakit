@@ -15,7 +15,7 @@ import { basename, dirname, join } from "node:path";
 const NEXTJS_WORKERS_DOMAIN = "ariakit-nextjs.workers.dev";
 // Production domain for Next.js app
 const NEXTJS_PRODUCTION_DOMAIN = "nextjs.ariakit.com";
-// Default port for the Next.js dev server. The dev-site script overrides this
+// Default port for the Next.js dev server. The dev-app script overrides this
 // via the NEXTJS_PORT env variable when the default port is already in use.
 const NEXTJS_DEFAULT_PORT = "3000";
 

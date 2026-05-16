@@ -180,247 +180,10 @@ importers:
         specifier: 0.10.1
         version: 0.10.1(@vitest/utils@4.1.6)(vite@8.0.12(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.4))(vitest@4.1.6)
       wrangler:
-        specifier: 4.90.0
-        version: 4.90.0(@cloudflare/workers-types@4.20260316.1)
+        specifier: 4.90.1
+        version: 4.90.1(@cloudflare/workers-types@4.20260316.1)
 
-  examples:
-    dependencies:
-      '@ariakit/core':
-        specifier: workspace:*
-        version: link:../packages/ariakit-core
-      '@ariakit/react':
-        specifier: workspace:*
-        version: link:../packages/ariakit-react
-      '@ariakit/react-core':
-        specifier: workspace:*
-        version: link:../packages/ariakit-react-core
-      '@ariakit/solid':
-        specifier: workspace:*
-        version: link:../packages/ariakit-solid
-      '@radix-ui/react-popover':
-        specifier: 1.1.15
-        version: 1.1.15(@types/react-dom@19.2.3(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@radix-ui/react-select':
-        specifier: 2.2.6
-        version: 2.2.6(@types/react-dom@19.2.3(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      '@wordpress/components':
-        specifier: 33.0.0
-        version: 33.0.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      clsx:
-        specifier: 2.1.1
-        version: 2.1.1
-      lodash-es:
-        specifier: 4.18.1
-        version: 4.18.1
-      match-sorter:
-        specifier: 8.3.0
-        version: 8.3.0
-      motion:
-        specifier: 12.38.0
-        version: 12.38.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react:
-        specifier: 18.3.1
-        version: 18.3.1
-      react-dom:
-        specifier: 18.3.1
-        version: 18.3.1(react@18.3.1)
-      react-router:
-        specifier: 7.15.0
-        version: 7.15.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react-shadow:
-        specifier: 20.6.0
-        version: 20.6.0(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react-toastify:
-        specifier: 11.1.0
-        version: 11.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      textarea-caret:
-        specifier: 3.1.0
-        version: 3.1.0
-      tiny-invariant:
-        specifier: 1.3.3
-        version: 1.3.3
-    devDependencies:
-      '@ariakit/test':
-        specifier: workspace:*
-        version: link:../packages/ariakit-test
-      '@playwright/test':
-        specifier: 1.60.0
-        version: 1.60.0
-      '@types/lodash-es':
-        specifier: 4.17.12
-        version: 4.17.12
-      '@types/textarea-caret':
-        specifier: 3.0.4
-        version: 3.0.4
-      vitest:
-        specifier: 4.1.5
-        version: 4.1.5(@types/node@24.12.4)(@vitest/coverage-v8@4.1.6(vitest@4.1.6))(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@24.12.4)(typescript@6.0.3))(vite@8.0.12(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.4))
-
-  guide: {}
-
-  nextjs:
-    dependencies:
-      '@ariakit/react':
-        specifier: workspace:*
-        version: link:../packages/ariakit-react
-      next:
-        specifier: 16.2.6
-        version: 16.2.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react:
-        specifier: 19.2.6
-        version: 19.2.6
-      react-dom:
-        specifier: 19.2.6
-        version: 19.2.6(react@19.2.6)
-    devDependencies:
-      '@opennextjs/cloudflare':
-        specifier: 1.19.9
-        version: 1.19.9(encoding@0.1.13)(next@16.2.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(wrangler@4.90.0)
-      '@tailwindcss/postcss':
-        specifier: 4.3.0
-        version: 4.3.0
-      '@types/node':
-        specifier: 24.12.4
-        version: 24.12.4
-      '@types/react':
-        specifier: 19.2.14
-        version: 19.2.14
-      '@types/react-dom':
-        specifier: 19.2.3
-        version: 19.2.3(@types/react@19.2.14)
-      babel-plugin-react-compiler:
-        specifier: 1.0.0
-        version: 1.0.0
-      tailwindcss:
-        specifier: 4.3.0
-        version: 4.3.0
-
-  packages/ariakit-core: {}
-
-  packages/ariakit-react:
-    dependencies:
-      '@ariakit/react-core':
-        specifier: workspace:*
-        version: link:../ariakit-react-core
-    devDependencies:
-      react:
-        specifier: 18.3.1
-        version: 18.3.1
-      react-dom:
-        specifier: 18.3.1
-        version: 18.3.1(react@18.3.1)
-
-  packages/ariakit-react-core:
-    dependencies:
-      '@ariakit/core':
-        specifier: workspace:*
-        version: link:../ariakit-core
-      '@floating-ui/dom':
-        specifier: ^1.0.0
-        version: 1.7.6
-      use-sync-external-store:
-        specifier: ^1.6.0
-        version: 1.6.0(react@18.3.1)
-    devDependencies:
-      '@types/use-sync-external-store':
-        specifier: 1.5.0
-        version: 1.5.0
-      react:
-        specifier: 18.3.1
-        version: 18.3.1
-      react-dom:
-        specifier: 18.3.1
-        version: 18.3.1(react@18.3.1)
-
-  packages/ariakit-scripts:
-    dependencies:
-      commander:
-        specifier: 14.0.3
-        version: 14.0.3
-
-  packages/ariakit-solid:
-    dependencies:
-      '@ariakit/solid-core':
-        specifier: workspace:*
-        version: link:../ariakit-solid-core
-      solid-js:
-        specifier: ^1.8
-        version: 1.9.12
-
-  packages/ariakit-solid-core:
-    dependencies:
-      '@ariakit/core':
-        specifier: workspace:*
-        version: link:../ariakit-core
-      '@solid-primitives/props':
-        specifier: 3.2.3
-        version: 3.2.3(solid-js@1.9.12)
-      '@solid-primitives/utils':
-        specifier: 6.4.0
-        version: 6.4.0(solid-js@1.9.12)
-      solid-js:
-        specifier: ^1.8
-        version: 1.9.12
-
-  packages/ariakit-tailwind:
-    devDependencies:
-      csstype:
-        specifier: 3.2.3
-        version: 3.2.3
-      tailwindcss:
-        specifier: 4.3.0
-        version: 4.3.0
-
-  packages/ariakit-test:
-    dependencies:
-      '@ariakit/core':
-        specifier: workspace:*
-        version: link:../ariakit-core
-      '@playwright/test':
-        specifier: ^1.27.0
-        version: 1.60.0
-      '@testing-library/dom':
-        specifier: ^8.0.0 || ^9.0.0 || ^10.0.0
-        version: 10.4.1
-      '@testing-library/react':
-        specifier: ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
-        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-    devDependencies:
-      react:
-        specifier: 18.3.1
-        version: 18.3.1
-      react-dom:
-        specifier: 18.3.1
-        version: 18.3.1(react@18.3.1)
-
-  packages/ariakit-ui:
-    dependencies:
-      '@ariakit/react':
-        specifier: workspace:*
-        version: link:../ariakit-react
-      clava:
-        specifier: 0.4.2
-        version: 0.4.2
-      clsx:
-        specifier: 2.1.1
-        version: 2.1.1
-      lucide-react:
-        specifier: 1.11.0
-        version: 1.11.0(react@18.3.1)
-      react:
-        specifier: 18.3.1
-        version: 18.3.1
-      react-aria-components:
-        specifier: 1.17.0
-        version: 1.17.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react-dom:
-        specifier: 18.3.1
-        version: 18.3.1(react@18.3.1)
-      solid-js:
-        specifier: 1.9.12
-        version: 1.9.12
-
-  site:
+  app:
     dependencies:
       '@ariakit/core':
         specifier: workspace:*
@@ -480,8 +243,8 @@ importers:
         specifier: 1.11.0
         version: 1.11.0
       '@stripe/stripe-js':
-        specifier: 9.4.0
-        version: 9.4.0
+        specifier: 9.5.0
+        version: 9.5.0
       '@tailwindcss/vite':
         specifier: 4.3.0
         version: 4.3.0(vite@8.0.12(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.4))
@@ -627,9 +390,6 @@ importers:
       '@types/react-dom':
         specifier: 18.3.7
         version: 18.3.7(@types/react@18.3.28)
-      '@vizzly-testing/cli':
-        specifier: 0.30.0
-        version: 0.30.0(typescript@6.0.3)
       concurrently:
         specifier: 9.2.1
         version: 9.2.1
@@ -655,8 +415,245 @@ importers:
         specifier: 4.1.6
         version: 4.1.6(@types/node@24.12.4)(@vitest/coverage-v8@4.1.6)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@24.12.4)(typescript@6.0.3))(vite@8.0.12(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.4))
       wrangler:
-        specifier: 4.90.0
-        version: 4.90.0(@cloudflare/workers-types@4.20260316.1)
+        specifier: 4.90.1
+        version: 4.90.1(@cloudflare/workers-types@4.20260316.1)
+
+  examples:
+    dependencies:
+      '@ariakit/core':
+        specifier: workspace:*
+        version: link:../packages/ariakit-core
+      '@ariakit/react':
+        specifier: workspace:*
+        version: link:../packages/ariakit-react
+      '@ariakit/react-core':
+        specifier: workspace:*
+        version: link:../packages/ariakit-react-core
+      '@ariakit/solid':
+        specifier: workspace:*
+        version: link:../packages/ariakit-solid
+      '@radix-ui/react-popover':
+        specifier: 1.1.15
+        version: 1.1.15(@types/react-dom@19.2.3(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@radix-ui/react-select':
+        specifier: 2.2.6
+        version: 2.2.6(@types/react-dom@19.2.3(@types/react@18.3.28))(@types/react@18.3.28)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@wordpress/components':
+        specifier: 33.0.0
+        version: 33.0.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      clsx:
+        specifier: 2.1.1
+        version: 2.1.1
+      lodash-es:
+        specifier: 4.18.1
+        version: 4.18.1
+      match-sorter:
+        specifier: 8.3.0
+        version: 8.3.0
+      motion:
+        specifier: 12.38.0
+        version: 12.38.0(@emotion/is-prop-valid@1.4.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react:
+        specifier: 18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
+      react-router:
+        specifier: 7.15.0
+        version: 7.15.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-shadow:
+        specifier: 20.6.0
+        version: 20.6.0(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-toastify:
+        specifier: 11.1.0
+        version: 11.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      textarea-caret:
+        specifier: 3.1.0
+        version: 3.1.0
+      tiny-invariant:
+        specifier: 1.3.3
+        version: 1.3.3
+    devDependencies:
+      '@ariakit/test':
+        specifier: workspace:*
+        version: link:../packages/ariakit-test
+      '@playwright/test':
+        specifier: 1.60.0
+        version: 1.60.0
+      '@types/lodash-es':
+        specifier: 4.17.12
+        version: 4.17.12
+      '@types/textarea-caret':
+        specifier: 3.0.4
+        version: 3.0.4
+      vitest:
+        specifier: 4.1.5
+        version: 4.1.5(@types/node@24.12.4)(@vitest/coverage-v8@4.1.6(vitest@4.1.6))(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@24.12.4)(typescript@6.0.3))(vite@8.0.12(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.4))
+
+  guide: {}
+
+  nextjs:
+    dependencies:
+      '@ariakit/react':
+        specifier: workspace:*
+        version: link:../packages/ariakit-react
+      next:
+        specifier: 16.2.6
+        version: 16.2.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react:
+        specifier: 19.2.6
+        version: 19.2.6
+      react-dom:
+        specifier: 19.2.6
+        version: 19.2.6(react@19.2.6)
+    devDependencies:
+      '@opennextjs/cloudflare':
+        specifier: 1.19.9
+        version: 1.19.9(encoding@0.1.13)(next@16.2.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(wrangler@4.90.1)
+      '@tailwindcss/postcss':
+        specifier: 4.3.0
+        version: 4.3.0
+      '@types/node':
+        specifier: 24.12.4
+        version: 24.12.4
+      '@types/react':
+        specifier: 19.2.14
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: 19.2.3
+        version: 19.2.3(@types/react@19.2.14)
+      babel-plugin-react-compiler:
+        specifier: 1.0.0
+        version: 1.0.0
+      tailwindcss:
+        specifier: 4.3.0
+        version: 4.3.0
+
+  packages/ariakit-core: {}
+
+  packages/ariakit-react:
+    dependencies:
+      '@ariakit/react-core':
+        specifier: workspace:*
+        version: link:../ariakit-react-core
+    devDependencies:
+      react:
+        specifier: 18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
+
+  packages/ariakit-react-core:
+    dependencies:
+      '@ariakit/core':
+        specifier: workspace:*
+        version: link:../ariakit-core
+      '@floating-ui/dom':
+        specifier: ^1.0.0
+        version: 1.7.6
+      use-sync-external-store:
+        specifier: ^1.6.0
+        version: 1.6.0(react@18.3.1)
+    devDependencies:
+      '@types/use-sync-external-store':
+        specifier: 1.5.0
+        version: 1.5.0
+      react:
+        specifier: 18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
+
+  packages/ariakit-scripts:
+    dependencies:
+      commander:
+        specifier: 14.0.3
+        version: 14.0.3
+
+  packages/ariakit-solid:
+    dependencies:
+      '@ariakit/solid-core':
+        specifier: workspace:*
+        version: link:../ariakit-solid-core
+      solid-js:
+        specifier: ^1.8
+        version: 1.9.12
+
+  packages/ariakit-solid-core:
+    dependencies:
+      '@ariakit/core':
+        specifier: workspace:*
+        version: link:../ariakit-core
+      '@solid-primitives/props':
+        specifier: 3.2.3
+        version: 3.2.3(solid-js@1.9.12)
+      '@solid-primitives/utils':
+        specifier: 6.4.0
+        version: 6.4.0(solid-js@1.9.12)
+      solid-js:
+        specifier: ^1.8
+        version: 1.9.12
+
+  packages/ariakit-tailwind:
+    devDependencies:
+      csstype:
+        specifier: 3.2.3
+        version: 3.2.3
+      tailwindcss:
+        specifier: 4.3.0
+        version: 4.3.0
+
+  packages/ariakit-test:
+    dependencies:
+      '@ariakit/core':
+        specifier: workspace:*
+        version: link:../ariakit-core
+      '@playwright/test':
+        specifier: ^1.27.0
+        version: 1.60.0
+      '@testing-library/dom':
+        specifier: ^8.0.0 || ^9.0.0 || ^10.0.0
+        version: 10.4.1
+      '@testing-library/react':
+        specifier: ^12.0.0 || ^13.0.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+    devDependencies:
+      react:
+        specifier: 18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
+
+  packages/ariakit-ui:
+    dependencies:
+      '@ariakit/react':
+        specifier: workspace:*
+        version: link:../ariakit-react
+      clava:
+        specifier: 0.4.2
+        version: 0.4.2
+      clsx:
+        specifier: 2.1.1
+        version: 2.1.1
+      lucide-react:
+        specifier: 1.11.0
+        version: 1.11.0(react@18.3.1)
+      react:
+        specifier: 18.3.1
+        version: 18.3.1
+      react-aria-components:
+        specifier: 1.17.0
+        version: 1.17.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-dom:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
+      solid-js:
+        specifier: 1.9.12
+        version: 1.9.12
 
   templates/react:
     dependencies:
@@ -2065,8 +2062,8 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  '@cloudflare/workerd-darwin-64@1.20260507.1':
-    resolution: {integrity: sha512-S85aMwcaPJUjKWDiG6iMMnioKWtPLACa6m0j/EhHR1GYfVpnxb974cBc6d25L+sf7jHWHJI2u5hGp0UTJ7MtXQ==}
+  '@cloudflare/workerd-darwin-64@1.20260508.1':
+    resolution: {integrity: sha512-IT3r6VgiSwIesL4AJbxjgxvIxwWZqM7BKkhYAzOKHl4GF2M0TxeOahUIXd+CYXVZgHX8ceEg+MXbEehPelJyNg==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [darwin]
@@ -2077,8 +2074,8 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
-  '@cloudflare/workerd-darwin-arm64@1.20260507.1':
-    resolution: {integrity: sha512-GMEBu8Zp9Q97HLnf7bWJN4KjWpN5MxpeqdvHjBGWNl8UYprJI0k+Jkp89+Wh5S8vIon+HoVbDfOzPa7VwgL6Eg==}
+  '@cloudflare/workerd-darwin-arm64@1.20260508.1':
+    resolution: {integrity: sha512-JTVsisOJPcNKw0qovPjqyBWYahfdhUh7/9NICiG5wxaEQ45PYKdoqNq0hOAAIqvqoxsKZBvTgcPTJREPqk7avA==}
     engines: {node: '>=16'}
     cpu: [arm64]
     os: [darwin]
@@ -2089,8 +2086,8 @@ packages:
     cpu: [x64]
     os: [linux]
 
-  '@cloudflare/workerd-linux-64@1.20260507.1':
-    resolution: {integrity: sha512-QlrKEBdgA3uVc0Ok0Q3+0/CW0CTjgj5ySir1i1YY5FXVv0X6GpwtnB5umjunjF2MFprss+L+iFGZzxcSvMC1nA==}
+  '@cloudflare/workerd-linux-64@1.20260508.1':
+    resolution: {integrity: sha512-zO38pCc27YlsZiPYcaZnosy0/t7abXrRU3VEO1oKfUvnaCpHgphDG+VsrmHL+kntda6hrtNwg2jLeMAqqIjnjw==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [linux]
@@ -2101,8 +2098,8 @@ packages:
     cpu: [arm64]
     os: [linux]
 
-  '@cloudflare/workerd-linux-arm64@1.20260507.1':
-    resolution: {integrity: sha512-eGbbupEtK2nh9V9Dhcx3vv3GTKeXqSVNgAEYVCCN0NGS9tl9HbMoHRX/4JL181FKXROMigWBCQVL//qPhsAzBQ==}
+  '@cloudflare/workerd-linux-arm64@1.20260508.1':
+    resolution: {integrity: sha512-XhJa780Ia6MNIrtxn/ruZHS79b9pu5EKPfRNReaUqxy8erPT2fs93axMfFoS9kIkcaRRj/1TOUKcTeAMoywY7w==}
     engines: {node: '>=16'}
     cpu: [arm64]
     os: [linux]
@@ -2113,8 +2110,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cloudflare/workerd-windows-64@1.20260507.1':
-    resolution: {integrity: sha512-dmClJ/E0BAcuDetQIZFqbeAXejWrG5pysGRMQ6T83Y0IW/7IAamY2zFEkAJ10I5xwZsdHuYsZtzlOxpEXpJs7A==}
+  '@cloudflare/workerd-windows-64@1.20260508.1':
+    resolution: {integrity: sha512-QdDOK3B/Ul1s3QmIwDrFyx9230to6LsNmWcVR8w+TYjNZuRPzqQBgusp78LO7MlqCoEl9dvIcN00jkJnLtBSfw==}
     engines: {node: '>=16'}
     cpu: [x64]
     os: [win32]
@@ -4725,8 +4722,8 @@ packages:
     resolution: {integrity: sha512-/5zxRol+MU4I7fjZXPxP2M6E1nuHOxAzoc0tOEC/TLnC31Gzc+5EE93mIjoAnu28O1Sqpl7/BkceDHwnGmn75A==}
     engines: {node: '>=12.16'}
 
-  '@stripe/stripe-js@9.4.0':
-    resolution: {integrity: sha512-zXG86DnoLU5nH2U18tX5ApTE3IAm+txoiPm4YFyEtRS0K5y7ZDH9M8e1Le/cZyI6wvW3BkJn2daZe2FqZOrSSg==}
+  '@stripe/stripe-js@9.5.0':
+    resolution: {integrity: sha512-dTQWkJRw5lhcQipPuw6qZRBK2zY5eWWZ1Srw9mSjhIXSLdsNYO3uaIV+YRMkI0/tB/D7yQdHYStrcZrbeHI5Jg==}
     engines: {node: '>=12.16'}
 
   '@swc/counter@0.1.3':
@@ -4859,9 +4856,6 @@ packages:
 
   '@tanstack/query-core@5.100.10':
     resolution: {integrity: sha512-8UR0yJR+GiQ40m3lPhUr0xbfAupe6GSQiksSBSa9SM2NjezFyxXCIA69/lz8cSoNKZLrw1/PktIyQBJcVeMi3w==}
-
-  '@tanstack/query-core@5.100.9':
-    resolution: {integrity: sha512-SJSFw1S8+kQ0+knv/XGfrbocWoAlT7vDKsSImtLx3ZPQmEcR46hkDjLSvynSy25N8Ms4tIEini1FuBd5k7IscQ==}
 
   '@tanstack/query-core@5.95.2':
     resolution: {integrity: sha512-o4T8vZHZET4Bib3jZ/tCW9/7080urD4c+0/AUaYVpIqOsr7y0reBc1oX3ttNaSW5mYyvZHctiQ/UOP2PfdmFEQ==}
@@ -5247,15 +5241,6 @@ packages:
   '@vitest/utils@4.1.6':
     resolution: {integrity: sha512-FxIY+U81R3LGKCxaHHFRQ5+g6/iRgGLmeHWdp2Amj4ljQRrEIWHmZyDfDYBRZlpyqA7qKxtS9DD1dhk8RnRIVQ==}
 
-  '@vizzly-testing/cli@0.30.0':
-    resolution: {integrity: sha512-vtF2ncb8NatRMBtY+0KKs8PFY7h5B86bymaWzyWWffIqzTcOC0ZCVI6ZMJ8qit6zx8Jh/EKdGHcieKJ5qrYa4A==}
-    engines: {node: '>=22.0.0'}
-    hasBin: true
-
-  '@vizzly-testing/honeydiff@0.10.1':
-    resolution: {integrity: sha512-XKvW4WkHx9UaDs1cQCR83RC5KR1xmnyune4C7Gifb51+KVhdmZzl/hbRNbzInrK0oQij294xwn+tv8riuNusYg==}
-    engines: {node: '>=22.0.0'}
-
   '@volar/kit@2.4.28':
     resolution: {integrity: sha512-cKX4vK9dtZvDRaAzeoUdaAJEew6IdxHNCRrdp5Kvcl6zZOqb6jTOfk3kXkIkG3T7oTFXguEMt5+9ptyqYR84Pg==}
     peerDependencies:
@@ -5555,10 +5540,6 @@ packages:
   ansi-styles@6.2.3:
     resolution: {integrity: sha512-4Dj6M28JB+oAH8kFkTLUo+a2jwOFkuqb3yucU0CANcRRUbxS0cP0nZYCGjcc3BNXwRIsUVmDGgzawme7zvJHvg==}
     engines: {node: '>=12'}
-
-  ansis@4.2.0:
-    resolution: {integrity: sha512-HqZ5rWlFjGiV0tDm3UxxgNRqsOTniqoKZu0pIAfh7TZQMGuZK+hH0drySty0si0QXj1ieop4+SkSfPZBPPkHig==}
-    engines: {node: '>=14'}
 
   any-promise@1.3.0:
     resolution: {integrity: sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A==}
@@ -7919,8 +7900,8 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  miniflare@4.20260507.1:
-    resolution: {integrity: sha512-PSXBiLExTdZ4UGO/raKCHQauUpYL7F880ZRB7j0+78Rv8h7TsdN2E/iEDK9sK2Y+SPQ5wJSeAa+rDeVKoZZoEw==}
+  miniflare@4.20260508.0:
+    resolution: {integrity: sha512-h3aG+PA8jEH76V4ZtBAbs3g7kjMfHJUF8hPvxeeajLTKwir+G+dqfBODg5yF9MT29LqrZKCRQRqzfHPWX4kCIg==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
@@ -10421,8 +10402,8 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  workerd@1.20260507.1:
-    resolution: {integrity: sha512-z7JhsFSe6+X1b5fUHaVpo15VM1IRMJiLofEkq8iKdCo+Veqc+FUg5lIsuz8NwePxuSKrXtO4ZQpGkQLbPVXFhg==}
+  workerd@1.20260508.1:
+    resolution: {integrity: sha512-VlnjyH3AjVddpSK7J54nsCVgf8i2733pl8GjKttfNi7vN/hEjjAk20d2b1nDToOLKvRQpTewRnVkqaaeGHCaAw==}
     engines: {node: '>=16'}
     hasBin: true
 
@@ -10436,12 +10417,12 @@ packages:
       '@cloudflare/workers-types':
         optional: true
 
-  wrangler@4.90.0:
-    resolution: {integrity: sha512-bmNIykl59TfCUn5xQgU7IWylSsPx3LQaPLMSAq2VQHt89CBrcj9qXQ0eYfjBCWA5XTBVgten391evt7xxtXwcA==}
+  wrangler@4.90.1:
+    resolution: {integrity: sha512-u2KrieKSMfRM0toTst/CfDtcRraeoVjmcExcMWgILM/ytq3qcDhuOAULoZSyPHzma43lfLJy1BC544drFyqe1A==}
     engines: {node: '>=22.0.0'}
     hasBin: true
     peerDependencies:
-      '@cloudflare/workers-types': ^4.20260507.1
+      '@cloudflare/workers-types': ^4.20260508.1
     peerDependenciesMeta:
       '@cloudflare/workers-types':
         optional: true
@@ -10575,9 +10556,6 @@ packages:
 
   zod@3.25.76:
     resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
-
-  zod@4.3.6:
-    resolution: {integrity: sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -12526,7 +12504,7 @@ snapshots:
 
   '@clerk/shared@4.10.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@tanstack/query-core': 5.100.9
+      '@tanstack/query-core': 5.100.10
       dequal: 2.0.3
       glob-to-regexp: 0.4.1
       js-cookie: 3.0.5
@@ -12549,40 +12527,40 @@ snapshots:
     optionalDependencies:
       workerd: 1.20260114.0
 
-  '@cloudflare/unenv-preset@2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260507.1)':
+  '@cloudflare/unenv-preset@2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260508.1)':
     dependencies:
       unenv: 2.0.0-rc.24
     optionalDependencies:
-      workerd: 1.20260507.1
+      workerd: 1.20260508.1
 
   '@cloudflare/workerd-darwin-64@1.20260114.0':
     optional: true
 
-  '@cloudflare/workerd-darwin-64@1.20260507.1':
+  '@cloudflare/workerd-darwin-64@1.20260508.1':
     optional: true
 
   '@cloudflare/workerd-darwin-arm64@1.20260114.0':
     optional: true
 
-  '@cloudflare/workerd-darwin-arm64@1.20260507.1':
+  '@cloudflare/workerd-darwin-arm64@1.20260508.1':
     optional: true
 
   '@cloudflare/workerd-linux-64@1.20260114.0':
     optional: true
 
-  '@cloudflare/workerd-linux-64@1.20260507.1':
+  '@cloudflare/workerd-linux-64@1.20260508.1':
     optional: true
 
   '@cloudflare/workerd-linux-arm64@1.20260114.0':
     optional: true
 
-  '@cloudflare/workerd-linux-arm64@1.20260507.1':
+  '@cloudflare/workerd-linux-arm64@1.20260508.1':
     optional: true
 
   '@cloudflare/workerd-windows-64@1.20260114.0':
     optional: true
 
-  '@cloudflare/workerd-windows-64@1.20260507.1':
+  '@cloudflare/workerd-windows-64@1.20260508.1':
     optional: true
 
   '@cloudflare/workers-types@4.20260316.1': {}
@@ -13607,7 +13585,7 @@ snapshots:
       - aws-crt
       - supports-color
 
-  '@opennextjs/cloudflare@1.19.9(encoding@0.1.13)(next@16.2.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(wrangler@4.90.0)':
+  '@opennextjs/cloudflare@1.19.9(encoding@0.1.13)(next@16.2.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(wrangler@4.90.1)':
     dependencies:
       '@ast-grep/napi': 0.40.5
       '@dotenvx/dotenvx': 1.31.0
@@ -13619,7 +13597,7 @@ snapshots:
       glob: 12.0.0
       next: 16.2.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       ts-tqdm: 0.8.6
-      wrangler: 4.90.0(@cloudflare/workers-types@4.20260316.1)
+      wrangler: 4.90.1(@cloudflare/workers-types@4.20260316.1)
       yargs: 18.0.0
     transitivePeerDependencies:
       - aws-crt
@@ -14672,7 +14650,7 @@ snapshots:
 
   '@stripe/stripe-js@6.1.0': {}
 
-  '@stripe/stripe-js@9.4.0': {}
+  '@stripe/stripe-js@9.5.0': {}
 
   '@swc/counter@0.1.3': {}
 
@@ -14783,8 +14761,6 @@ snapshots:
   '@tannin/sprintf@1.3.3': {}
 
   '@tanstack/query-core@5.100.10': {}
-
-  '@tanstack/query-core@5.100.9': {}
 
   '@tanstack/query-core@5.95.2': {}
 
@@ -14898,7 +14874,7 @@ snapshots:
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
 
   '@types/canvas-confetti@1.9.0': {}
 
@@ -14909,14 +14885,14 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
 
   '@types/cookies@0.7.7':
     dependencies:
       '@types/connect': 3.4.38
       '@types/express': 4.17.14
       '@types/keygrip': 1.0.6
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
 
   '@types/cross-spawn@6.0.6':
     dependencies:
@@ -14946,7 +14922,7 @@ snapshots:
 
   '@types/express-serve-static-core@4.19.8':
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
       '@types/qs': 6.15.0
       '@types/range-parser': 1.2.7
       '@types/send': 1.2.1
@@ -14981,7 +14957,7 @@ snapshots:
 
   '@types/jsonfile@6.1.4':
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
 
   '@types/keygrip@1.0.6': {}
 
@@ -15013,12 +14989,12 @@ snapshots:
 
   '@types/node-fetch@2.6.13':
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
       form-data: 4.0.5
 
   '@types/node-fetch@2.6.2':
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
       form-data: 3.0.4
 
   '@types/node@12.20.55': {}
@@ -15047,7 +15023,7 @@ snapshots:
 
   '@types/pngjs@6.0.5':
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
 
   '@types/postcss-import@14.0.3':
     dependencies:
@@ -15083,12 +15059,12 @@ snapshots:
 
   '@types/send@1.2.1':
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
 
   '@types/serve-static@2.2.0':
     dependencies:
       '@types/http-errors': 2.0.5
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
 
   '@types/statuses@2.0.6': {}
 
@@ -15255,21 +15231,6 @@ snapshots:
       '@vitest/pretty-format': 4.1.6
       convert-source-map: 2.0.0
       tinyrainbow: 3.1.0
-
-  '@vizzly-testing/cli@0.30.0(typescript@6.0.3)':
-    dependencies:
-      '@vizzly-testing/honeydiff': 0.10.1
-      ansis: 4.2.0
-      commander: 14.0.3
-      cosmiconfig: 9.0.1(typescript@6.0.3)
-      dotenv: 17.3.1
-      form-data: 4.0.5
-      glob: 13.0.6
-      zod: 4.3.6
-    transitivePeerDependencies:
-      - typescript
-
-  '@vizzly-testing/honeydiff@0.10.1': {}
 
   '@volar/kit@2.4.28(typescript@6.0.3)':
     dependencies:
@@ -15677,8 +15638,6 @@ snapshots:
   ansi-styles@5.2.0: {}
 
   ansi-styles@6.2.3: {}
-
-  ansis@4.2.0: {}
 
   any-promise@1.3.0: {}
 
@@ -17647,7 +17606,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -18713,12 +18672,12 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  miniflare@4.20260507.1:
+  miniflare@4.20260508.0:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.34.5
       undici: 7.24.8
-      workerd: 1.20260507.1
+      workerd: 1.20260508.1
       ws: 8.18.0
       youch: 4.1.0-beta.10
     transitivePeerDependencies:
@@ -20394,7 +20353,7 @@ snapshots:
 
   stripe@17.7.0:
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
       qs: 6.15.0
 
   stripe@22.1.1(@types/node@24.12.4):
@@ -21468,13 +21427,13 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20260114.0
       '@cloudflare/workerd-windows-64': 1.20260114.0
 
-  workerd@1.20260507.1:
+  workerd@1.20260508.1:
     optionalDependencies:
-      '@cloudflare/workerd-darwin-64': 1.20260507.1
-      '@cloudflare/workerd-darwin-arm64': 1.20260507.1
-      '@cloudflare/workerd-linux-64': 1.20260507.1
-      '@cloudflare/workerd-linux-arm64': 1.20260507.1
-      '@cloudflare/workerd-windows-64': 1.20260507.1
+      '@cloudflare/workerd-darwin-64': 1.20260508.1
+      '@cloudflare/workerd-darwin-arm64': 1.20260508.1
+      '@cloudflare/workerd-linux-64': 1.20260508.1
+      '@cloudflare/workerd-linux-arm64': 1.20260508.1
+      '@cloudflare/workerd-windows-64': 1.20260508.1
 
   wrangler@4.59.2(@cloudflare/workers-types@4.20260316.1):
     dependencies:
@@ -21493,16 +21452,16 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  wrangler@4.90.0(@cloudflare/workers-types@4.20260316.1):
+  wrangler@4.90.1(@cloudflare/workers-types@4.20260316.1):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.5.0
-      '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260507.1)
+      '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260508.1)
       blake3-wasm: 2.1.5
       esbuild: 0.27.3
-      miniflare: 4.20260507.1
+      miniflare: 4.20260508.0
       path-to-regexp: 6.3.0
       unenv: 2.0.0-rc.24
-      workerd: 1.20260507.1
+      workerd: 1.20260508.1
     optionalDependencies:
       '@cloudflare/workers-types': 4.20260316.1
       fsevents: 2.3.3
@@ -21635,7 +21594,5 @@ snapshots:
       zod: 3.25.76
 
   zod@3.25.76: {}
-
-  zod@4.3.6: {}
 
   zwitch@2.0.4: {}

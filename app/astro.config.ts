@@ -31,7 +31,7 @@ try {
   loadEnvFile(join(import.meta.dirname, "../.dev.vars"));
 } catch (_error) {}
 
-const port = Number(process.env.SITE_PORT) || 4321;
+const port = Number(process.env.APP_PORT) || 4321;
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 // https://astro.build/config

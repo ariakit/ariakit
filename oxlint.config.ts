@@ -47,9 +47,9 @@ export default defineConfig({
       },
     },
     {
-      // Disable this rule for the site because some types depend on the site
-      // being built first, and linting may run before the site is built.
-      files: ["site/src/lib/**/*.ts"],
+      // Disable this rule for the app because some types depend on the app
+      // being built first, and linting may run before the app is built.
+      files: ["app/src/lib/**/*.ts"],
       rules: {
         "no-redundant-type-constituents": "off",
       },

@@ -4,20 +4,20 @@ import { Icon } from "#app/icons/icon.react.tsx";
 import { getFramework } from "#app/lib/frameworks.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
-import type { SiteStackblitzFramework } from "#app/lib/stackblitz.ts";
+import type { AppStackblitzFramework } from "#app/lib/stackblitz.ts";
 import { openInStackblitz } from "#app/lib/stackblitz.ts";
 
 export interface CodeBlockEditProps extends React.ComponentPropsWithRef<"button"> {
   source?: Source;
   framework?: Framework;
   example?: string;
-  stackblitzFramework?: SiteStackblitzFramework | null;
+  stackblitzFramework?: AppStackblitzFramework | null;
 }
 
 export function getStackblitzFramework(
   framework?: Framework,
   source?: Source,
-): SiteStackblitzFramework | null {
+): AppStackblitzFramework | null {
   if (!framework || !source) return null;
   const frameworkDetail = getFramework(framework);
   const indexFile =

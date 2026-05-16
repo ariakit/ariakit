@@ -16,6 +16,6 @@
     { "path": "./packages/ariakit-ui/tsconfig.json" },
     { "path": "./examples/tsconfig.react.json" },
     { "path": "./examples/tsconfig.solid.json" },
-    { "path": "./site/tsconfig.json" }
+    { "path": "./app/tsconfig.json" }
   ]
 }

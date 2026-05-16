@@ -9,7 +9,7 @@ const config: NextConfig = {
   },
   cacheComponents: true,
 
-  // Allow cross-origin iframe embedding from the Astro site
+  // Allow cross-origin iframe embedding from the Astro app
   async headers() {
     return [
       {
