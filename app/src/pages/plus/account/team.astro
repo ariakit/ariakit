@@ -15,17 +15,18 @@ import {
   OrganizationProfile,
   OrganizationSwitcher,
 } from "@clerk/astro/components";
+import { env } from "cloudflare:workers";
 import Layout from "./_layout.astro";
 
 export const prerender = false;
 
-const signedIn = isSignedIn(Astro);
+const signedIn = isSignedIn(Astro, env);
 
 if (!signedIn) {
   return Astro.redirect(getPlusAccountPath({ url: Astro.url, path: "login" }));
 }
 
-const teams = await getCurrentUserTeams(Astro);
+const teams = await getCurrentUserTeams(Astro, env);
 const { orgId } = Astro.locals.auth();
 ---
 

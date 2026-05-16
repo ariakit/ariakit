@@ -15,6 +15,15 @@ import { unauthorized } from "./lib/response.ts";
 
 const clerk = clerkMiddleware();
 
+async function getRuntimeEnv() {
+  try {
+    const { env } = await import("cloudflare:workers");
+    return env;
+  } catch {
+    return null;
+  }
+}
+
 function isPublicRoute(url: URL) {
   if (url.pathname.startsWith("/r/")) return true;
   return false;
@@ -23,8 +32,9 @@ function isPublicRoute(url: URL) {
 export async function onRequest(context: APIContext, next: MiddlewareNext) {
   const { action } = getActionContext(context);
   const isAdminAction = action?.name.startsWith("admin");
+  const runtimeEnv = await getRuntimeEnv();
 
-  if (!import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY) {
+  if (!runtimeEnv?.PUBLIC_CLERK_PUBLISHABLE_KEY) {
     if (isAdminAction) {
       return unauthorized();
     }
@@ -35,11 +45,12 @@ export async function onRequest(context: APIContext, next: MiddlewareNext) {
     return next();
   }
 
-  const response = await clerk(context, next);
-
-  if (isAdminAction && !(await isAdmin(context))) {
-    return unauthorized();
-  }
+  const response = await clerk(context, async () => {
+    if (isAdminAction && !(await isAdmin(context, runtimeEnv))) {
+      return unauthorized();
+    }
+    return next();
+  });
 
   return response;
 }

@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { APIRoute } from "astro";
+import { env } from "cloudflare:workers";
 import { z } from "zod";
 import { getCurrentUserId, getCustomer } from "#app/lib/auth.ts";
 import { URLSchema } from "#app/lib/schemas.ts";
@@ -29,7 +30,7 @@ const querySchema = z
   }));
 
 export const GET: APIRoute = async (context) => {
-  const userId = getCurrentUserId(context);
+  const userId = getCurrentUserId(context, env);
 
   if (!userId) {
     return context.redirect(
@@ -37,12 +38,12 @@ export const GET: APIRoute = async (context) => {
     );
   }
 
-  const stripe = getStripeClient();
+  const stripe = getStripeClient(env);
   if (!stripe) {
     return context.redirect("/");
   }
 
-  const customer = await getCustomer({ context, user: userId });
+  const customer = await getCustomer({ context, env, user: userId });
   if (!customer) {
     return context.redirect(getPlusCheckoutPath({ url: context.url }));
   }

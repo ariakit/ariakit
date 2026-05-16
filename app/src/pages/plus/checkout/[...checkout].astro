@@ -28,6 +28,7 @@ import { capitalize } from "#app/lib/string.ts";
 import { getPlusPrice, processCheckout } from "#app/lib/stripe.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "#app/lib/url.ts";
 import { SignUp } from "@clerk/astro/components";
+import { env } from "cloudflare:workers";
 import { formatDistanceToNow } from "date-fns";
 import { z } from "zod";
 import Layout from "./_layout.astro";
@@ -62,7 +63,7 @@ const isPaymentStep = step === "payment";
 const isAccessStep = step === "access";
 const shouldShowProductSelector = isLoginStep || isPaymentStep;
 
-const signedIn = isSignedIn(Astro);
+const signedIn = isSignedIn(Astro, env);
 
 function getPath(step: PlusCheckoutStep) {
   return getPlusCheckoutPath({ step, url: Astro.url });
@@ -76,15 +77,16 @@ if (isLoginStep) {
   if (!signedIn) {
     return Astro.redirect(getPath("login"));
   }
-  const currentUserPlus = await getCurrentUserPlus(Astro, isAccessStep);
+  const currentUserPlus = await getCurrentUserPlus(Astro, env, isAccessStep);
   const hasPersonal = currentUserPlus === "personal";
   const hasTeam =
     currentUserPlus === "team" ||
-    !!(await getCurrentUserTeams(Astro, isAccessStep)).size;
+    !!(await getCurrentUserTeams(Astro, env, isAccessStep)).size;
 
   if (sessionId) {
     const session = await processCheckout({
       context: Astro,
+      env,
       session: sessionId,
     });
     const url = new URL(Astro.url);
@@ -104,10 +106,10 @@ if (isLoginStep) {
 }
 
 async function getPriceData() {
-  const currentUserPlus = await getCurrentUserPlus(Astro);
+  const currentUserPlus = await getCurrentUserPlus(Astro, env);
   return Promise.all(
     PLUS_TYPES.map(async (type) => {
-      const price = await getPlusPrice({ context: Astro, type });
+      const price = await getPlusPrice({ context: Astro, env, type });
       if (!price) return null;
       return {
         ...price,

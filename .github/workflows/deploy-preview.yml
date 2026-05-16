@@ -100,8 +100,9 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          workingDirectory: app
           command: >-
-            versions upload --env preview
+            versions upload --config dist/server/wrangler.json
             ${{ steps.alias.outputs.slug && format('--preview-alias {0}', steps.alias.outputs.slug) }}
 
       - name: Deploy Next.js app version
@@ -125,7 +126,8 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          command: deploy --env preview
+          workingDirectory: app
+          command: deploy --config dist/server/wrangler.json
 
       - name: Compute preview URLs
         id: preview-url

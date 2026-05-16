@@ -45,7 +45,7 @@ type NextjsConventionFile = (typeof NEXTJS_CONVENTION_FILES)[number];
 interface GetNextjsUrlFromRequestParams {
   requestUrl: string;
   path: string;
-  /** Runtime environment bindings (e.g., from Astro.locals.runtime.env) */
+  /** Runtime environment bindings (e.g., from cloudflare:workers) */
   env?: Record<string, string | undefined>;
 }
 

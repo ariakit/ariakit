@@ -13,18 +13,18 @@ import {
   getNextjsUrlFromRequest,
 } from "#app/lib/nextjs.ts";
 import { notFound } from "#app/lib/response.ts";
+import { env } from "cloudflare:workers";
 
 export const prerender = false;
 
 const nextjsExampleId = getNextjsPreviewId(Astro.url.pathname);
 if (!nextjsExampleId) return notFound();
 
-const runtimePort = Astro.locals.runtime?.env?.NEXTJS_PORT;
 const nextjsUrl = getNextjsUrlFromRequest({
   requestUrl: Astro.url.href,
   path: `/${nextjsExampleId}`,
   env: {
-    NEXTJS_PORT: String(runtimePort ?? process.env.NEXTJS_PORT ?? ""),
+    NEXTJS_PORT: String(env.NEXTJS_PORT ?? process.env.NEXTJS_PORT ?? ""),
   },
 });
 return Astro.redirect(nextjsUrl, 307);

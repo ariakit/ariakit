@@ -11,11 +11,12 @@
 import { isSignedIn } from "#app/lib/auth.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "#app/lib/url.ts";
 import { SignIn as SignInComponent } from "@clerk/astro/components";
+import { env } from "cloudflare:workers";
 import Layout from "./_layout.astro";
 
 export const prerender = false;
 
-const signedIn = isSignedIn(Astro);
+const signedIn = isSignedIn(Astro, env);
 
 if (signedIn) {
   return Astro.redirect(getPlusAccountPath({ url: Astro.url }));

@@ -18,7 +18,6 @@ import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
 import {
   rehypeAdmonitions,
   rehypeAsTagName,
@@ -32,7 +31,6 @@ try {
 } catch (_error) {}
 
 const port = Number(process.env.APP_PORT) || 4321;
-const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 // https://astro.build/config
 export default defineConfig({
@@ -54,15 +52,14 @@ export default defineConfig({
   },
 
   adapter: cloudflare({
+    configPath: "../wrangler.jsonc",
     imageService: "compile",
-    platformProxy: { enabled: true },
+    prerenderEnvironment: "node",
   }),
 
   vite: {
     plugins: [
-      // @ts-expect-error Vite version mismatch (Astro 5 ships Vite 6)
       tailwindcss(),
-      // @ts-expect-error Vite version mismatch (Astro 5 ships Vite 6)
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
   },
@@ -87,20 +84,18 @@ export default defineConfig({
         ],
       ],
     }),
-    !hasClerk
-      ? dummyClerkIntegration()
-      : clerk({
-          signInUrl: getPlusAccountPath({ path: "login" }),
-          signUpUrl: getPlusCheckoutPath({ step: "login" }),
-          appearance: {
-            variables: {
-              fontSize: "1rem",
-            },
-            layout: {
-              logoPlacement: "none",
-              showOptionalFields: false,
-            },
-          },
-        }),
+    clerk({
+      signInUrl: getPlusAccountPath({ path: "login" }),
+      signUpUrl: getPlusCheckoutPath({ step: "login" }),
+      appearance: {
+        variables: {
+          fontSize: "1rem",
+        },
+        layout: {
+          logoPlacement: "none",
+          showOptionalFields: false,
+        },
+      },
+    }),
   ],
 });

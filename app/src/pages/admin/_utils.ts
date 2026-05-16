@@ -66,9 +66,12 @@ export function getPaginationUrl(
   return url.toString();
 }
 
-export async function getClerkInstanceUrl(context: APIContext) {
+export async function getClerkInstanceUrl(
+  context: APIContext,
+  env: Pick<Cloudflare.Env, "CLERK_APP_ID">,
+) {
   const clerk = clerkClient(context);
-  const appId = import.meta.env.CLERK_APP_ID;
+  const appId = env.CLERK_APP_ID;
   const instance = await clerk.instance.get();
   return `https://dashboard.clerk.com/apps/${appId}/instances/${instance.id}`;
 }

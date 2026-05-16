@@ -27,6 +27,7 @@ import "#app/styles/global.css";
 import { SignOutButton } from "@clerk/astro/components";
 import "@fontsource-variable/inter";
 import type { HTMLAttributes } from "astro/types";
+import { env } from "cloudflare:workers";
 import { z } from "zod";
 
 const querySchema = z
@@ -60,9 +61,9 @@ function getLinkProps(
   } satisfies HTMLAttributes<"a">;
 }
 
-const signedIn = isSignedIn(Astro);
-const currentUserPlus = await getCurrentUserPlus(Astro);
-const teams = await getCurrentUserTeams(Astro);
+const signedIn = isSignedIn(Astro, env);
+const currentUserPlus = await getCurrentUserPlus(Astro, env);
+const teams = await getCurrentUserTeams(Astro, env);
 ---
 
 <!doctype html>

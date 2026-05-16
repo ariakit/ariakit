@@ -11,6 +11,7 @@
 import { createLogger } from "#app/lib/logger.ts";
 import type { PlusType } from "#app/lib/schemas.ts";
 import { createCheckout, getPlusPrice } from "#app/lib/stripe.ts";
+import { env } from "cloudflare:workers";
 
 export const prerender = false;
 
@@ -21,14 +22,21 @@ interface Props {
 const logger = createLogger("plus-checkout-frame");
 
 const { type } = Astro.props;
-const price = await getPlusPrice({ context: Astro, type });
+const publishableKey = env.PUBLIC_STRIPE_PUBLISHABLE_KEY;
+
+if (!publishableKey) {
+  logger.error("Stripe publishable key not configured");
+  return null;
+}
+
+const price = await getPlusPrice({ context: Astro, env, type });
 
 if (!price) {
   logger.error("Price not found");
   return null;
 }
 
-const session = await createCheckout({ context: Astro, price });
+const session = await createCheckout({ context: Astro, env, price });
 
 if (!session) {
   logger.error("Session not found");
@@ -37,17 +45,20 @@ if (!session) {
 ---
 
 <div class="ak-frame ak-frame-card/0 overflow-clip">
-  <div id="checkout" data-client-secret={session.client_secret} class="w-full">
+  <div
+    id="checkout"
+    data-client-secret={session.client_secret}
+    data-publishable-key={publishableKey}
+    class="w-full"
+  >
   </div>
 </div>
 
 <script>
   import { loadStripe } from "@stripe/stripe-js";
   const checkoutDiv = document.querySelector<HTMLElement>("#checkout");
-  const { clientSecret } = checkoutDiv?.dataset || {};
-  const stripe = await loadStripe(
-    import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-  );
+  const { clientSecret, publishableKey } = checkoutDiv?.dataset || {};
+  const stripe = await loadStripe(publishableKey!);
   const checkout = await stripe?.initEmbeddedCheckout({ clientSecret });
   checkout?.mount(checkoutDiv!);
 </script>

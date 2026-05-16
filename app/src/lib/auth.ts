@@ -18,43 +18,46 @@ const logger = createLogger("clerk");
 
 export type { User };
 
-export function isClerkEnabled() {
-  return !!import.meta.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+type ClerkEnv = Pick<Cloudflare.Env, "PUBLIC_CLERK_PUBLISHABLE_KEY">;
+
+export function isClerkEnabled(env: ClerkEnv) {
+  return !!env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 }
 
-export function getCurrentUserId(context: APIContext) {
-  if (!isClerkEnabled()) return null;
+export function getCurrentUserId(context: APIContext, env: ClerkEnv) {
+  if (!isClerkEnabled(env)) return null;
   return context.locals.auth().userId;
 }
 
-export function isSignedIn(context: APIContext) {
-  return !!getCurrentUserId(context);
+export function isSignedIn(context: APIContext, env: ClerkEnv) {
+  return !!getCurrentUserId(context, env);
 }
 
 export function setCurrentUser(context: APIContext, user: User | null) {
   context.locals.user = user;
 }
 
-export async function getCurrentUser(context: APIContext) {
-  if (!isClerkEnabled()) return null;
+export async function getCurrentUser(context: APIContext, env: ClerkEnv) {
+  if (!isClerkEnabled(env)) return null;
   if (context.locals.user) return context.locals.user;
   const user = await context.locals.currentUser();
   setCurrentUser(context, user);
   return user;
 }
 
-export async function getCurrentCustomer(context: APIContext) {
-  if (!isClerkEnabled()) return null;
-  const user = await getCurrentUser(context);
+export async function getCurrentCustomer(context: APIContext, env: ClerkEnv) {
+  if (!isClerkEnabled(env)) return null;
+  const user = await getCurrentUser(context, env);
   if (!user) return null;
-  return getCustomer({ context, user });
+  return getCustomer({ context, env, user });
 }
 
 export async function getCurrentUserTeams(
   context: APIContext,
+  env: ClerkEnv,
   refresh = false,
 ) {
-  if (!isClerkEnabled()) return new Map<string, string>();
+  if (!isClerkEnabled(env)) return new Map<string, string>();
   if (refresh) {
     const clerk = clerkClient(context);
     const { userId } = context.locals.auth();
@@ -69,42 +72,48 @@ export async function getCurrentUserTeams(
   return new Map(Object.entries(sessionClaims?.teams ?? {}));
 }
 
-export async function getCurrentUserPlus(context: APIContext, refresh = false) {
-  if (!isClerkEnabled()) return null;
+export async function getCurrentUserPlus(
+  context: APIContext,
+  env: ClerkEnv,
+  refresh = false,
+) {
+  if (!isClerkEnabled(env)) return null;
   const { sessionClaims } = context.locals.auth();
   let publicMetadata = sessionClaims?.publicMetadata;
   if (refresh) {
-    const user = await getCurrentUser(context);
+    const user = await getCurrentUser(context, env);
     if (!user) return null;
     publicMetadata = user.publicMetadata;
   }
   if (publicMetadata?.plus) {
     return publicMetadata.plus;
   }
-  const teams = await getCurrentUserTeams(context, refresh);
+  const teams = await getCurrentUserTeams(context, env, refresh);
   if (teams.size === 0) return null;
   return "team";
 }
 
 export interface GetUserIdParams {
   context: APIContext;
+  env: ClerkEnv;
   user?: User | string | null;
 }
 
-export async function getUserId({ context, user }: GetUserIdParams) {
-  if (!isClerkEnabled()) return null;
-  if (!user) return getCurrentUserId(context);
+export async function getUserId({ context, env, user }: GetUserIdParams) {
+  if (!isClerkEnabled(env)) return null;
+  if (!user) return getCurrentUserId(context, env);
   return objectId(user);
 }
 
 export interface GetUserParams {
   context: APIContext;
+  env: ClerkEnv;
   user?: User | string | null;
 }
 
-export async function getUser({ context, user }: GetUserParams) {
-  if (!isClerkEnabled()) return null;
-  if (!user) return getCurrentUser(context);
+export async function getUser({ context, env, user }: GetUserParams) {
+  if (!isClerkEnabled(env)) return null;
+  if (!user) return getCurrentUser(context, env);
   if (typeof user !== "string") return user;
   const clerk = clerkClient(context);
   return clerk.users.getUser(user);
@@ -112,24 +121,26 @@ export async function getUser({ context, user }: GetUserParams) {
 
 export interface GetUserPlusParams {
   context: APIContext;
+  env: ClerkEnv;
   user?: User | string | null;
 }
 
-export async function getUserPlus({ context, user }: GetUserPlusParams) {
-  if (!isClerkEnabled()) return null;
-  if (!user) return getCurrentUserPlus(context);
-  user = await getUser({ context, user });
+export async function getUserPlus({ context, env, user }: GetUserPlusParams) {
+  if (!isClerkEnabled(env)) return null;
+  if (!user) return getCurrentUserPlus(context, env);
+  user = await getUser({ context, env, user });
   if (!user) return null;
   return user.publicMetadata.plus || null;
 }
 
 export interface GetCustomerParams {
   context: APIContext;
+  env: ClerkEnv;
   user?: User | string | null;
 }
 
 export async function getCustomer(params: GetCustomerParams) {
-  if (!isClerkEnabled()) return null;
+  if (!isClerkEnabled(params.env)) return null;
   const user = await getUser(params);
   if (!user) return null;
   return user.privateMetadata.stripeId || null;
@@ -137,10 +148,11 @@ export async function getCustomer(params: GetCustomerParams) {
 
 export async function setCustomer(
   context: APIContext,
+  env: ClerkEnv,
   userId: string,
   stripeId: string,
 ) {
-  if (!isClerkEnabled()) return;
+  if (!isClerkEnabled(env)) return;
   const clerk = clerkClient(context);
   const { info } = logger.start();
   const user = await clerk.users.updateUserMetadata(userId, {
@@ -152,12 +164,13 @@ export async function setCustomer(
 
 export interface CreateTeamParams {
   context: APIContext;
+  env: ClerkEnv;
   name?: string;
   user?: User | string | null;
 }
 
 export async function createTeam(params: CreateTeamParams) {
-  if (!isClerkEnabled()) return;
+  if (!isClerkEnabled(params.env)) return;
   const clerk = clerkClient(params.context);
   const { info } = logger.start();
   const user = await getUser(params);
@@ -176,6 +189,7 @@ export async function createTeam(params: CreateTeamParams) {
 
 export interface AddPlusToUserParams {
   context: APIContext;
+  env: ClerkEnv;
   type: PlusType;
   user?: User | string | null;
   amount?: number;
@@ -183,7 +197,7 @@ export interface AddPlusToUserParams {
 }
 
 export async function addPlusToUser(params: AddPlusToUserParams) {
-  if (!isClerkEnabled()) return;
+  if (!isClerkEnabled(params.env)) return;
   const userId = await getUserId(params);
   if (!userId) return;
   const { info } = logger.start();
@@ -201,11 +215,12 @@ export async function addPlusToUser(params: AddPlusToUserParams) {
 
 export interface RemovePlusFromUserParams {
   context: APIContext;
+  env: ClerkEnv;
   user?: User | string | null;
 }
 
 export async function removePlusFromUser(params: RemovePlusFromUserParams) {
-  if (!isClerkEnabled()) return;
+  if (!isClerkEnabled(params.env)) return;
   const userId = await getUserId(params);
   if (!userId) return;
   const { info } = logger.start();
@@ -217,27 +232,32 @@ export async function removePlusFromUser(params: RemovePlusFromUserParams) {
   info("Removed plus from user", userId);
 }
 
-export async function isAdmin(context: APIContext) {
-  if (!isClerkEnabled()) return false;
-  const orgId = import.meta.env.ADMIN_ORG_ID;
+export async function isAdmin(
+  context: APIContext,
+  env: Pick<Cloudflare.Env, "ADMIN_ORG_ID" | "PUBLIC_CLERK_PUBLISHABLE_KEY">,
+) {
+  if (!isClerkEnabled(env)) return false;
+  const orgId = env.ADMIN_ORG_ID;
   if (!orgId) return false;
-  const teams = await getCurrentUserTeams(context);
+  const teams = await getCurrentUserTeams(context, env);
   const orgRole = teams.get(orgId);
   return orgRole === "org:admin";
 }
 
 export interface GetAllUsersParams {
   context: APIContext;
+  env: ClerkEnv;
   limit?: number;
   offset?: number;
 }
 
 export async function getAllUsers({
   context,
+  env,
   limit = 100,
   offset = 0,
 }: GetAllUsersParams) {
-  if (!isClerkEnabled()) return [];
+  if (!isClerkEnabled(env)) return [];
   const clerk = clerkClient(context);
   const allUsers: User[] = [];
   let hasMore = false;

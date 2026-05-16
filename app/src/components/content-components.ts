@@ -1,4 +1,3 @@
----
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -35,4 +34,3 @@ export const components = {
   hr: ContentSeparator,
   details: ContentDisclosure,
 };
----

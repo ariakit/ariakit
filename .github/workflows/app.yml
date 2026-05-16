@@ -20,6 +20,8 @@ jobs:
         uses: ./.github/workflows/setup
 
       - name: Build app
+        env:
+          CLOUDFLARE_ENV: preview
         run: pnpm -F app run build-lite
 
       - name: Upload app artifact
@@ -297,6 +299,8 @@ jobs:
       - name: Build base app
         if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
         working-directory: ${{ runner.temp }}/perf-baseline
+        env:
+          CLOUDFLARE_ENV: preview
         run: pnpm -F app run build-lite
 
       - name: Build base Next.js app
