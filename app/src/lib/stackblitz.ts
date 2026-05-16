@@ -10,15 +10,15 @@ import {
 
 const sdk = _sdk as unknown as (typeof _sdk)["default"];
 
-export type SiteStackblitzFramework =
+export type AppStackblitzFramework =
   | "react-vite"
   | "react-nextjs"
   | "solid-vite";
 
-export interface SiteStackblitzProps {
+export interface AppStackblitzProps {
   id: string;
   files: Record<string, string>;
-  framework: SiteStackblitzFramework;
+  framework: AppStackblitzFramework;
   theme?: "light" | "dark";
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
@@ -28,7 +28,7 @@ export interface SiteStackblitzProps {
   initialOpenFile?: string;
 }
 
-interface NormalizedProps extends SiteStackblitzProps {
+interface NormalizedProps extends AppStackblitzProps {
   dependencies: Record<string, string>;
   devDependencies: Record<string, string>;
 }
@@ -57,7 +57,7 @@ function normalizeDeps(deps: Record<string, string> = {}) {
   );
 }
 
-function normalizeProps(props: SiteStackblitzProps): NormalizedProps {
+function normalizeProps(props: AppStackblitzProps): NormalizedProps {
   return {
     ...props,
     dependencies: normalizeDeps(props.dependencies),
@@ -65,11 +65,11 @@ function normalizeProps(props: SiteStackblitzProps): NormalizedProps {
   };
 }
 
-function getExampleName(id: SiteStackblitzProps["id"]) {
+function getExampleName(id: AppStackblitzProps["id"]) {
   return id.split("/").pop() ?? "";
 }
 
-function getFirstFilename(files: SiteStackblitzProps["files"]) {
+function getFirstFilename(files: AppStackblitzProps["files"]) {
   const firstFile = Object.keys(files)[0];
   invariant(firstFile, "No files provided");
   return firstFile;
@@ -658,7 +658,7 @@ function getProjectFromFramework(props: NormalizedProps): ProjectResult {
   return { files: {}, sourceFiles: {} };
 }
 
-export function getProject(props: SiteStackblitzProps) {
+export function getProject(props: AppStackblitzProps) {
   const normalized = normalizeProps(props);
   const { files, sourceFiles } = getProjectFromFramework(normalized);
 
@@ -672,7 +672,7 @@ export function getProject(props: SiteStackblitzProps) {
   return { project, sourceFiles };
 }
 
-export function openInStackblitz(props: SiteStackblitzProps) {
+export function openInStackblitz(props: AppStackblitzProps) {
   const { project, sourceFiles } = getProject(props);
   const openFile = props.initialOpenFile
     ? props.initialOpenFile
@@ -688,7 +688,7 @@ export function openInStackblitz(props: SiteStackblitzProps) {
 
 export function embedStackblitz(
   element: HTMLElement,
-  props: SiteStackblitzProps,
+  props: AppStackblitzProps,
 ) {
   const { project } = getProject(props);
   const options = {
@@ -701,12 +701,12 @@ export function embedStackblitz(
   return sdk.embedProject(element, project, options);
 }
 
-export function getSourceFiles(props: SiteStackblitzProps) {
+export function getSourceFiles(props: AppStackblitzProps) {
   const { sourceFiles } = getProject(props);
   return sourceFiles;
 }
 
-export function getThemedFiles(props: SiteStackblitzProps) {
+export function getThemedFiles(props: AppStackblitzProps) {
   const { project } = getProject(props);
   if (props.framework === "react-nextjs") {
     const files: Record<string, string> = {};
