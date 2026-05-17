@@ -114,7 +114,7 @@ headings.unshift(
 
 const tags = mapTags(entry.data.tags, [framework]);
 const title = entry.data.title;
-const descriptionText = descriptionToText(description?.body, framework);
+const descriptionText = await descriptionToText(description?.body, framework);
 
 // Build href to the full API reference page for the default reference
 const referenceHref = reference && getReferencePath({ reference });

@@ -150,20 +150,39 @@ export async function markdownToHtml(markdownString: string) {
   return result.code;
 }
 
-export function descriptionToText(
+export async function descriptionToText(
   body: string | undefined,
   framework: Framework,
 ) {
   if (!body) return;
   const frameworkLabel = getFramework(framework).label;
-  const text = body
-    .replace(/^import\s.+$/gm, "")
-    .replace(/<ContentLink\b[^>]*>(.*?)<\/ContentLink>/gs, "$1")
-    .replace(/\{getFramework\(props\.framework\)\.label\}/g, frameworkLabel)
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-    .replace(/`([^`]+)`/g, "$1")
-    .replace(/<[^>]+>/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
+  let markdown = "";
+  for (const line of body.split("\n")) {
+    if (!line.trimStart().startsWith("import ")) {
+      markdown += `${line}\n`;
+    }
+  }
+  markdown = markdown
+    .split("{getFramework(props.framework).label}")
+    .join(frameworkLabel);
+  while (true) {
+    const start = markdown.indexOf("<ContentLink");
+    if (start < 0) break;
+    const openEnd = markdown.indexOf(">", start);
+    if (openEnd < 0) break;
+    const closeStart = markdown.indexOf("</ContentLink>", openEnd);
+    if (closeStart < 0) break;
+    const closeEnd = closeStart + "</ContentLink>".length;
+    markdown =
+      markdown.slice(0, start) +
+      markdown.slice(openEnd + 1, closeStart) +
+      markdown.slice(closeEnd);
+  }
+  const [{ unified }, { default: rehypeParse }, { toText }] = await Promise.all(
+    [import("unified"), import("rehype-parse"), import("hast-util-to-text")],
+  );
+  const html = await markdownToHtml(markdown);
+  const tree = unified().use(rehypeParse, { fragment: true }).parse(html);
+  const text = toText(tree).replace(/\s+/g, " ").trim();
   return text || undefined;
 }
