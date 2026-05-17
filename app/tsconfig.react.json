@@ -1,10 +1,8 @@
 {
   "extends": "../tsconfig.react.json",
-  "include": [
-    ".astro/types.d.ts",
-    "env.d.ts",
-    "**/*.react.tsx",
-    "../worker-configuration.d.ts"
-  ],
+  "compilerOptions": {
+    "types": []
+  },
+  "include": [".astro/types.d.ts", "env.d.ts", "**/*.react.tsx"],
   "exclude": ["dist", "**/*test.react.tsx"]
 }

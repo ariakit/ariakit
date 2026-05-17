@@ -63,13 +63,13 @@
     },
     {
       "matchPackageNames": ["astro"],
-      "matchCurrentVersion": "/^5\\./",
-      "allowedVersions": "/^5\\./"
+      "matchCurrentVersion": "/^6\\./",
+      "allowedVersions": "/^6\\./"
     },
     {
       "matchPackageNames": ["@astrojs/cloudflare"],
-      "matchCurrentVersion": "/^12\\./",
-      "allowedVersions": "/^12\\./"
+      "matchCurrentVersion": "/^13\\./",
+      "allowedVersions": "/^13\\./"
     },
     {
       "matchPackageNames": ["@types/node"],

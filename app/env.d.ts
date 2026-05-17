@@ -25,12 +25,9 @@ declare module "#app/styles/styles.json" {
 type PlusType = import("./src/lib/schemas.ts").PlusType;
 type Framework = import("./src/lib/schemas.ts").Framework;
 type User = import("@clerk/astro/server").User;
-type Runtime = import("@astrojs/cloudflare").Runtime<
-  Pick<Cloudflare.Env, "PLUS" | "EVENTS" | "ADMIN">
->;
 
 declare namespace App {
-  interface Locals extends Runtime {
+  interface Locals {
     user?: User | null;
     framework?: Framework;
     reference?: string;
@@ -70,6 +67,38 @@ declare interface ImportMetaEnv {
 
 declare interface ImportMeta {
   readonly env: ImportMetaEnv;
+}
+
+interface KVNamespace {
+  get(key: string): Promise<string | null>;
+  getWithMetadata<Metadata>(
+    key: string,
+  ): Promise<{ metadata: Metadata | null }>;
+  getWithMetadata<Metadata>(
+    keys: string[],
+  ): Promise<Map<string, { metadata: Metadata | null } | null>>;
+  list<Metadata>(options?: { prefix?: string }): Promise<{
+    keys: Array<{ metadata?: Metadata | undefined }>;
+  }>;
+  put(
+    key: string,
+    value: string,
+    options?: { metadata?: unknown },
+  ): Promise<void>;
+  delete(key: string): Promise<void>;
+}
+
+declare namespace Cloudflare {
+  interface Env {
+    readonly PLUS: KVNamespace;
+    readonly EVENTS: KVNamespace;
+    readonly ADMIN: KVNamespace;
+    readonly NEXTJS_PORT?: string;
+  }
+}
+
+declare module "cloudflare:workers" {
+  export const env: Cloudflare.Env;
 }
 
 declare namespace astroHTML.JSX {

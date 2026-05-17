@@ -1,8 +1,8 @@
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import reactPlugin from "@vitejs/plugin-react";
+import type { PluginOption } from "vite";
 import solidPlugin from "vite-plugin-solid";
-import type { Plugin } from "vitest/config";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./app/src/lib/source-plugin.ts";
 
@@ -34,10 +34,9 @@ if (!ALLOWED_TEST_LOADERS.includes(LOADER))
 
 const sourcePluginInstance = sourcePlugin(
   join(import.meta.dirname, "app/src/examples/"),
-);
+) as unknown as PluginOption;
 
-const PLUGINS_BY_LOADER: Record<string, Array<Plugin> | undefined> = {
-  // @ts-expect-error Plugin type mismatch between vite and vitest
+const PLUGINS_BY_LOADER: Record<string, Array<PluginOption> | undefined> = {
   react: [reactPlugin(), sourcePluginInstance],
   solid: [solidPlugin(), sourcePluginInstance],
 };

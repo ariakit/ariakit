@@ -7,13 +7,21 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { clerkMiddleware } from "@clerk/astro/server";
+import type { clerkMiddleware as createClerkMiddleware } from "@clerk/astro/server";
 import type { APIContext, MiddlewareNext } from "astro";
 import { getActionContext } from "astro:actions";
-import { isAdmin } from "./lib/auth.ts";
 import { unauthorized } from "./lib/response.ts";
 
-const clerk = clerkMiddleware();
+let clerk: ReturnType<typeof createClerkMiddleware> | undefined;
+
+async function getClerkMiddleware() {
+  if (clerk) {
+    return clerk;
+  }
+  const { clerkMiddleware } = await import("@clerk/astro/server");
+  clerk = clerkMiddleware();
+  return clerk;
+}
 
 function isPublicRoute(url: URL) {
   if (url.pathname.startsWith("/r/")) return true;
@@ -35,10 +43,14 @@ export async function onRequest(context: APIContext, next: MiddlewareNext) {
     return next();
   }
 
+  const clerk = await getClerkMiddleware();
   const response = await clerk(context, next);
 
-  if (isAdminAction && !(await isAdmin(context))) {
-    return unauthorized();
+  if (isAdminAction) {
+    const { isAdmin } = await import("./lib/auth.ts");
+    if (!(await isAdmin(context))) {
+      return unauthorized();
+    }
   }
 
   return response;

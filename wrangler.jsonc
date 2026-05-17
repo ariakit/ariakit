@@ -1,7 +1,8 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ariakit",
-  "main": "./app/dist/_worker.js/index.js",
+  "main": "./app/dist/server/entry.mjs",
+  "no_bundle": true,
   "preview_urls": false,
   "compatibility_date": "2026-03-27",
   "compatibility_flags": ["nodejs_compat"],
@@ -17,7 +18,7 @@
   },
   "assets": {
     "binding": "ASSETS",
-    "directory": "./app/dist",
+    "directory": "./app/dist/client",
   },
   "kv_namespaces": [
     {

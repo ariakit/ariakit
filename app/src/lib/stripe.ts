@@ -32,8 +32,12 @@ import {
 import { getCountryCode, getCurrency } from "./locale.ts";
 import { createLogger } from "./logger.ts";
 import { objectId } from "./object.ts";
+import { getPlusPriceKey } from "./price-key.ts";
 import type { PlusType, PriceData, PromoData } from "./schemas.ts";
 import { PlusTypeSchema } from "./schemas.ts";
+
+export { getPlusPriceKey, parsePlusPriceKey } from "./price-key.ts";
+export type { GetPlusPriceKeyParams } from "./price-key.ts";
 
 const logger = createLogger("stripe");
 
@@ -187,37 +191,6 @@ export async function createCustomer({
   });
   await setCustomer(context, userId, customer.id);
   return customer;
-}
-
-export interface GetPlusPriceKeyParams {
-  type?: PlusType;
-  currency?: string;
-  countryCode?: string;
-}
-
-export function getPlusPriceKey({
-  type = "personal",
-  currency = "USD",
-  countryCode,
-}: GetPlusPriceKeyParams) {
-  const isPersonal = type === "personal";
-  const lowercaseCurrency = currency.toLowerCase();
-  const country = countryCode ? `-${countryCode.toLowerCase()}` : "";
-  return isPersonal
-    ? `ariakit-plus-${lowercaseCurrency}${country}`
-    : `ariakit-plus-${type}-${lowercaseCurrency}${country}`;
-}
-
-export function parsePlusPriceKey(key: string) {
-  const match = key.match(/ariakit-plus-(?:team-)?([a-z]+)(?:-([a-z]{2}))?$/);
-  if (!match) return {};
-  const [, currency, countryCode] = match;
-  if (!currency) return {};
-  return {
-    type: key.includes("team-") ? ("team" as const) : ("personal" as const),
-    currency,
-    countryCode,
-  };
 }
 
 export interface PlusPrice

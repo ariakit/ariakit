@@ -48,7 +48,7 @@
     "lint": "oxlint --disable-nested-config && oxfmt --check",
     "lint-fix": "oxlint --disable-nested-config --fix && oxfmt",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
-    "wrangler-types": "wrangler types --include-runtime=false",
+    "wrangler-types": "wrangler types",
     "tsc": "pnpm run wrangler-types && pnpm -F app run check && tsc -b",
     "tsc-clean": "tsc -b --clean",
     "build": "pnpm -F \"@ariakit/*\" run build",
@@ -116,7 +116,7 @@
     "vite-plugin-solid": "2.11.12",
     "vitest": "4.1.6",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.91.0"
+    "wrangler": "4.92.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",

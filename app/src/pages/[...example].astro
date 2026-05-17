@@ -46,11 +46,7 @@ Astro.locals.framework = framework;
 
 const tags = mapTags(entry.data.tags, [framework]);
 const title = entry.data.title;
-const descriptionText = await descriptionToText(
-  Description,
-  framework,
-  components
-);
+const descriptionText = descriptionToText(description?.body, framework);
 ---
 
 <Layout title={title}>

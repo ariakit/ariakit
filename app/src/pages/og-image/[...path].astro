@@ -20,12 +20,12 @@ import { capitalize } from "#app/lib/string.ts";
 import { importThumbnail } from "#app/lib/thumbnail.ts";
 import "#app/styles/global.css";
 import "@fontsource-variable/inter";
-import { getOGImageItems } from "./api.ts";
 
 export async function getStaticPaths() {
   if (import.meta.env.PROD) {
     return [];
   }
+  const { getOGImageItems } = await import("./api.ts");
   const items = await getOGImageItems();
   return items.map(({ path, ...props }) => {
     return { params: { path }, props };

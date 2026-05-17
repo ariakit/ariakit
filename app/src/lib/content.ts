@@ -9,15 +9,8 @@
  */
 import { invariant } from "@ariakit/core/utils/misc";
 import type { MarkdownProcessor, RehypePlugin } from "@astrojs/markdown-remark";
-import { createMarkdownProcessor } from "@astrojs/markdown-remark";
-import type { CollectionEntry, RenderResult } from "astro:content";
-import type { Element } from "hast";
-import { toText } from "hast-util-to-text";
-import rehypeParse from "rehype-parse";
-import { unified } from "unified";
-import { createContainer } from "./astro.ts";
-import { isFramework } from "./frameworks.ts";
-import { rehypeAsTagName } from "./rehype.ts";
+import type { CollectionEntry } from "astro:content";
+import { getFramework, isFramework } from "./frameworks.ts";
 import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
@@ -135,6 +128,10 @@ async function getMarkdownProcessor() {
   if (markdownProcessor) {
     return markdownProcessor;
   }
+  const [{ createMarkdownProcessor }, { rehypeAsTagName }] = await Promise.all([
+    import("@astrojs/markdown-remark"),
+    import("./rehype.ts"),
+  ]);
   markdownProcessor = await createMarkdownProcessor({
     syntaxHighlight: false,
     rehypePlugins: [
@@ -153,92 +150,20 @@ export async function markdownToHtml(markdownString: string) {
   return result.code;
 }
 
-interface Section {
-  parent: string | null;
-  id: string | null;
-  title: string | null;
-  content: string[];
-}
-
-export async function contentToText(
-  component: RenderResult["Content"],
-  props: Record<string, any>,
-) {
-  const container = await createContainer({
-    renderers: ["mdx", "react"],
-    client: true,
-  });
-  const result = await container.renderToString(component, { props });
-  const sections = parseContentToSections(result);
-  return sections;
-}
-
-export function parseContentToSections(html: string): Section[] {
-  const tree = unified().use(rehypeParse, { fragment: true }).parse(html);
-
-  const sections: Section[] = [
-    { id: null, parent: null, title: null, content: [] },
-  ];
-  const parentHeadings: Element[] = [];
-
-  for (const node of tree.children) {
-    if (node.type !== "element") continue;
-
-    const { tagName } = node;
-    const isHeading = /^h[1-6]$/.test(tagName);
-
-    if (isHeading) {
-      const { id } = node.properties || {};
-      if (typeof id === "string") {
-        const level = parseInt(tagName.charAt(1), 10);
-        while (parentHeadings.length > 0) {
-          const parentHeading = parentHeadings[parentHeadings.length - 1];
-          if (!parentHeading) break;
-          const parentLevel = parseInt(parentHeading.tagName.charAt(1), 10);
-          if (parentLevel >= level) {
-            parentHeadings.pop();
-          } else {
-            break;
-          }
-        }
-        const parentHeading = parentHeadings[parentHeadings.length - 1];
-        const parent = parentHeading?.properties?.id;
-        const newSection: Section = {
-          id,
-          parent: typeof parent === "string" ? parent : null,
-          // @ts-ignore TODO: Remove this comment once we fully migrate the app
-          title: toText(node),
-          content: [],
-        };
-        sections.push(newSection);
-        // @ts-ignore TODO: Remove this comment once we fully migrate the app
-        parentHeadings.push(node);
-        continue;
-      }
-    }
-
-    // @ts-ignore TODO: Remove this comment once we fully migrate the app
-    const content = toText(node).trim();
-    if (content) {
-      const lastSection = sections[sections.length - 1];
-      if (lastSection) {
-        lastSection.content.push(content);
-      }
-    }
-  }
-
-  return sections.filter((s) => s.id || s.content.length > 0);
-}
-
-export async function descriptionToText(
-  component: RenderResult["Content"] | undefined,
+export function descriptionToText(
+  body: string | undefined,
   framework: Framework,
-  components: Record<string, any>,
 ) {
-  if (!component) return;
-  const sections = await contentToText(component, {
-    framework,
-    components,
-  });
-  return sections[0]?.content[0];
+  if (!body) return;
+  const frameworkLabel = getFramework(framework).label;
+  const text = body
+    .replace(/^import\s.+$/gm, "")
+    .replace(/<ContentLink\b[^>]*>(.*?)<\/ContentLink>/gs, "$1")
+    .replace(/\{getFramework\(props\.framework\)\.label\}/g, frameworkLabel)
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return text || undefined;
 }

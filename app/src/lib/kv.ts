@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { APIContext } from "astro";
+import { env } from "cloudflare:workers";
 import { getUnixTime } from "./datetime.ts";
 import { nonNullable } from "./object.ts";
 import type { PriceData, PromoData } from "./schemas.ts";
@@ -21,15 +22,18 @@ function promoKey(key = "") {
 }
 
 export function getPlusStore(context: APIContext) {
-  return context.locals.runtime.env.PLUS;
+  void context;
+  return env.PLUS;
 }
 
 export function getEventsStore(context: APIContext) {
-  return context.locals.runtime.env.EVENTS;
+  void context;
+  return env.EVENTS;
 }
 
 export function getAdminStore(context: APIContext) {
-  return context.locals.runtime.env.ADMIN;
+  void context;
+  return env.ADMIN;
 }
 
 export async function getPrice(context: APIContext, key: string) {
