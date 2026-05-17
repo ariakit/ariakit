@@ -22,13 +22,11 @@ const NEXTJS_DEFAULT_PORT = "3000";
 /**
  * Regex pattern to match Next.js preview URLs.
  * Matches: /{framework}/previews/{example}/ where example contains "nextjs"
- * and nested preview IDs such as /{framework}/previews/sandbox/{example}/
  * Examples:
  * - /react/previews/tab-nextjs/
  * - /react/previews/menu-nextjs-app-router/
  */
-const NEXTJS_PREVIEW_PATTERN =
-  /^\/\w+\/previews\/(?:.*\/)?([^/]*nextjs[^/]*)\/?$/i;
+const NEXTJS_PREVIEW_PATTERN = /^\/\w+\/previews\/([^/]*nextjs[^/]*)\/?$/i;
 
 // Next.js App Router convention files that should be auto-included in the
 // source plugin
