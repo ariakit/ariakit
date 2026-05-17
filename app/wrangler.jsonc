@@ -1,5 +1,5 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
+  "$schema": "../node_modules/wrangler/config-schema.json",
   "name": "ariakit",
   "main": "@astrojs/cloudflare/entrypoints/server",
   "preview_urls": false,
@@ -17,7 +17,7 @@
   },
   "assets": {
     "binding": "ASSETS",
-    "directory": "./app/dist",
+    "directory": "./dist",
   },
   "kv_namespaces": [
     {

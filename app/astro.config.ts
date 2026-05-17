@@ -61,7 +61,6 @@ export default defineConfig({
   }),
 
   adapter: cloudflare({
-    configPath: "../wrangler.jsonc",
     imageService: "compile",
     prerenderEnvironment: "node",
   }),
