@@ -11,6 +11,13 @@ inputs:
   head-branch:
     description: Branch name when committing to existing PR
     required: true
+  expected-head-sha:
+    description: >
+      Expected current SHA for the head branch when committing to an existing
+      PR. When set, the action refuses to rebase generated changes onto a
+      different branch tip.
+    required: false
+    default: ""
   new-branch:
     description: Branch name when creating a new PR
     required: true
@@ -110,6 +117,7 @@ runs:
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
         HEAD_REF: ${{ inputs.head-branch }}
+        EXPECTED_HEAD_SHA: ${{ inputs.expected-head-sha }}
         GH_TOKEN: ${{ inputs.token != '' && inputs.token || steps.app-token.outputs.token != '' && steps.app-token.outputs.token || github.token }}
       # Rebase onto the latest branch tip so generated-file commits do not
       # fail just because another commit landed while the workflow was running.
@@ -143,7 +151,14 @@ runs:
         git remote set-url origin "https://github.com/$GITHUB_REPOSITORY.git"
         git remote set-url --push origin "https://github.com/$GITHUB_REPOSITORY.git"
         gh auth setup-git
-        git fetch origin "$HEAD_REF"
+        git fetch --no-tags origin "$HEAD_REF"
+        if [ -n "$EXPECTED_HEAD_SHA" ]; then
+          remote_sha="$(git rev-parse FETCH_HEAD)"
+          if [ "$remote_sha" != "$EXPECTED_HEAD_SHA" ]; then
+            echo "Branch advanced from $EXPECTED_HEAD_SHA to $remote_sha; refusing write-back." >&2
+            exit 1
+          fi
+        fi
         if ! git rebase "origin/$HEAD_REF"; then
           # `|| true` so a non-zero `--abort` (e.g., no in-progress rebase)
           # doesn't swallow the explicit diagnostic under `set -e`.

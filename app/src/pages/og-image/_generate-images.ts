@@ -13,15 +13,63 @@ import pixelmatch from "pixelmatch";
 import type { Page } from "playwright";
 import { chromium } from "playwright";
 import { PNG } from "pngjs";
+import { getFramework } from "#app/lib/frameworks.ts";
 import type { OGImageItem } from "./api.ts";
 
-const BASE_URL = "http://localhost:4321";
+const BASE_URL = process.env.OG_IMAGE_BASE_URL ?? "http://localhost:4321";
 const PUBLIC_DIR = path.resolve(process.cwd(), "public");
 
 // Maximum fraction of pixels allowed to differ before the image is
 // considered changed. This avoids committing images that only differ
 // due to sub-pixel rendering or anti-aliasing across runs.
 const MAX_DIFF_PIXEL_RATIO = 0.001;
+const MAX_BLANK_PIXEL_RATIO = 0.995;
+const MAX_SCREENSHOT_ATTEMPTS = 3;
+
+function isBlankImage(buffer: Buffer) {
+  const image = PNG.sync.read(buffer);
+  const pixels = image.data;
+  const red = pixels[0];
+  const green = pixels[1];
+  const blue = pixels[2];
+  const alpha = pixels[3];
+  if (red == null) return false;
+  if (green == null) return false;
+  if (blue == null) return false;
+  if (alpha == null) return false;
+  let matchingPixels = 0;
+  const totalPixels = image.width * image.height;
+  if (!totalPixels) return false;
+  for (let i = 0; i < pixels.length; i += 4) {
+    const currentRed = pixels[i];
+    const currentGreen = pixels[i + 1];
+    const currentBlue = pixels[i + 2];
+    const currentAlpha = pixels[i + 3];
+    if (currentRed == null) continue;
+    if (currentGreen == null) continue;
+    if (currentBlue == null) continue;
+    if (currentAlpha == null) continue;
+    if (
+      Math.abs(currentRed - red) <= 1 &&
+      Math.abs(currentGreen - green) <= 1 &&
+      Math.abs(currentBlue - blue) <= 1 &&
+      Math.abs(currentAlpha - alpha) <= 1
+    ) {
+      matchingPixels += 1;
+    }
+  }
+  return matchingPixels / totalPixels >= MAX_BLANK_PIXEL_RATIO;
+}
+
+function getExpectedText(item: OGImageItem) {
+  if (item.title) {
+    return item.title;
+  }
+  if (item.framework) {
+    return getFramework(item.framework).label;
+  }
+  return undefined;
+}
 
 function isWithinTolerance(newBuffer: Buffer, existingPath: string) {
   if (!fs.existsSync(existingPath)) return false;
@@ -68,8 +116,15 @@ async function getItemsToGenerate() {
   }
 }
 
-async function waitForImageReady(page: Page) {
+async function waitForImageReady(page: Page, item: OGImageItem) {
   await page.waitForLoadState("load");
+  const expectedText = getExpectedText(item);
+  if (expectedText) {
+    await page.waitForFunction(
+      (text) => document.body.textContent?.includes(text) ?? false,
+      expectedText,
+    );
+  }
   await page.evaluate(async () => {
     await document.fonts.ready;
     await new Promise((resolve) => {
@@ -80,14 +135,27 @@ async function waitForImageReady(page: Page) {
   });
 }
 
+async function screenshotImage(page: Page, item: OGImageItem, url: string) {
+  for (let attempt = 1; attempt <= MAX_SCREENSHOT_ATTEMPTS; attempt += 1) {
+    await page.goto(url, { waitUntil: "load" });
+    await waitForImageReady(page, item);
+    const buffer = await page.screenshot({ type: "png", timeout: 60_000 });
+    if (!isBlankImage(buffer)) {
+      return buffer;
+    }
+    if (attempt < MAX_SCREENSHOT_ATTEMPTS) {
+      await page.waitForTimeout(500 * attempt);
+    }
+  }
+  throw new Error(`Blank OG image after ${MAX_SCREENSHOT_ATTEMPTS} attempts`);
+}
+
 async function generateImage(page: Page, item: OGImageItem) {
   const url = `${BASE_URL}/og-image${item.path}`;
 
   try {
-    await page.goto(url, { waitUntil: "commit" });
-    await waitForImageReady(page);
     const imagePath = path.join(PUBLIC_DIR, item.imagePath);
-    const buffer = await page.screenshot({ type: "png", timeout: 60_000 });
+    const buffer = await screenshotImage(page, item, url);
     const relativePath = path.relative(PUBLIC_DIR, imagePath);
 
     if (isWithinTolerance(buffer, imagePath)) {
