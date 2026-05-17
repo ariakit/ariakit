@@ -66,7 +66,9 @@ export default defineConfig({
 
   vite: {
     plugins: [
+      // @ts-expect-error Vite version mismatch
       tailwindcss(),
+      // @ts-expect-error Vite version mismatch
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
   },
