@@ -63,7 +63,7 @@ async function getItemsToGenerate() {
     const items: OGImageItem[] = await response.json();
     return items;
   } catch (error) {
-    console.error("Please make sure the dev server is running: `pnpm run dev`");
+    console.error("Please make sure the app server is running.");
     throw error;
   }
 }
@@ -78,6 +78,14 @@ async function waitForImageReady(page: Page) {
       });
     });
   });
+  const error = await page.evaluate(() => {
+    const text = document.body?.innerText ?? "";
+    if (!text.includes("FailedToLoadModuleSSR")) return null;
+    return text.split("\n").slice(0, 3).join(" ");
+  });
+  if (error) {
+    throw new Error(`Astro failed to render ${page.url()}: ${error}`);
+  }
 }
 
 interface GeneratedImage {
@@ -90,7 +98,12 @@ async function generateImage(page: Page, item: OGImageItem) {
   const url = `${BASE_URL}/og-image${item.path}`;
 
   try {
-    await page.goto(url, { waitUntil: "commit" });
+    const response = await page.goto(url, { waitUntil: "commit" });
+    if (!response?.ok()) {
+      throw new Error(
+        `Failed to load ${url}: ${response?.status() ?? "no response"}`,
+      );
+    }
     await waitForImageReady(page);
     const imagePath = path.join(PUBLIC_DIR, item.imagePath);
     const buffer = await page.screenshot({ type: "png", timeout: 60_000 });

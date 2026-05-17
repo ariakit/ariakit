@@ -16,6 +16,7 @@ jobs:
     permissions:
       contents: read
     env:
+      OG_IMAGE_GENERATE: "true"
       WRITEBACK_ALLOWED: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - name: Checkout repository
@@ -36,18 +37,24 @@ jobs:
         with:
           engine: chromium
 
-      - name: Run app dev server
+      - name: Build app preview
+        env:
+          CLOUDFLARE_ENV: preview
+        run: pnpm -F app run build-lite
+
+      - name: Run app preview server
         shell: bash
-        # OG image generation renders the local app endpoint, so keep the dev
-        # server alive in the background and block until the API is responsive.
+        # OG image generation renders the local app endpoint, so keep the
+        # Cloudflare preview server alive in the background and block until the
+        # API is responsive.
         run: |
           set -euo pipefail
-          pnpm -F app run dev &
-          echo "Waiting for dev server (http://localhost:4321)..."
+          pnpm -F app run preview &
+          echo "Waiting for preview server (http://localhost:4321)..."
           ready=0
           for i in {1..90}; do
             if curl -sSf http://localhost:4321/og-image/api > /dev/null; then
-              echo "Dev server is up."
+              echo "Preview server is up."
               ready=1
               break
             fi
@@ -55,7 +62,7 @@ jobs:
             sleep 2
           done
           if [ "$ready" != "1" ]; then
-            echo "Dev server failed to start in time."
+            echo "Preview server failed to start in time."
             exit 1
           fi
 

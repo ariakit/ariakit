@@ -15,6 +15,10 @@ import { trim } from "#app/lib/string.ts";
 
 const types = ["pages", "examples", "components", "styles"] as const;
 
+export function canGenerateOGImages() {
+  return !import.meta.env.PROD || process.env.OG_IMAGE_GENERATE === "true";
+}
+
 function getImagePath(path: string) {
   return `/og-image/${trim(path, "/").replaceAll("/", "_")}.png`;
 }
@@ -131,7 +135,7 @@ export async function getOGImageItems(): Promise<OGImageItem[]> {
 }
 
 export const GET: APIRoute = async () => {
-  if (import.meta.env.PROD) {
+  if (!canGenerateOGImages()) {
     return Response.json([]);
   }
   return Response.json(await getOGImageItems());
