@@ -33,9 +33,10 @@ function isBlankImage(buffer: Buffer) {
   const green = pixels[1];
   const blue = pixels[2];
   const alpha = pixels[3];
-  if (red == null || green == null || blue == null || alpha == null) {
-    return false;
-  }
+  if (red == null) return false;
+  if (green == null) return false;
+  if (blue == null) return false;
+  if (alpha == null) return false;
   let matchingPixels = 0;
   const totalPixels = image.width * image.height;
   if (!totalPixels) return false;
@@ -44,14 +45,10 @@ function isBlankImage(buffer: Buffer) {
     const currentGreen = pixels[i + 1];
     const currentBlue = pixels[i + 2];
     const currentAlpha = pixels[i + 3];
-    if (
-      currentRed == null ||
-      currentGreen == null ||
-      currentBlue == null ||
-      currentAlpha == null
-    ) {
-      continue;
-    }
+    if (currentRed == null) continue;
+    if (currentGreen == null) continue;
+    if (currentBlue == null) continue;
+    if (currentAlpha == null) continue;
     if (
       Math.abs(currentRed - red) <= 1 &&
       Math.abs(currentGreen - green) <= 1 &&
@@ -65,8 +62,12 @@ function isBlankImage(buffer: Buffer) {
 }
 
 function getExpectedText(item: OGImageItem) {
-  if (item.title) return item.title;
-  if (item.framework) return getFramework(item.framework).label;
+  if (item.title) {
+    return item.title;
+  }
+  if (item.framework) {
+    return getFramework(item.framework).label;
+  }
   return undefined;
 }
 
@@ -139,7 +140,9 @@ async function screenshotImage(page: Page, item: OGImageItem, url: string) {
     await page.goto(url, { waitUntil: "load" });
     await waitForImageReady(page, item);
     const buffer = await page.screenshot({ type: "png", timeout: 60_000 });
-    if (!isBlankImage(buffer)) return buffer;
+    if (!isBlankImage(buffer)) {
+      return buffer;
+    }
     if (attempt < MAX_SCREENSHOT_ATTEMPTS) {
       await page.waitForTimeout(500 * attempt);
     }
