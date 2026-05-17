@@ -9,15 +9,8 @@
  */
 import { invariant } from "@ariakit/core/utils/misc";
 import type { MarkdownProcessor, RehypePlugin } from "@astrojs/markdown-remark";
-import { createMarkdownProcessor } from "@astrojs/markdown-remark";
-import type { CollectionEntry, RenderResult } from "astro:content";
-import type { Element } from "hast";
-import { toText } from "hast-util-to-text";
-import rehypeParse from "rehype-parse";
-import { unified } from "unified";
-import { createContainer } from "./astro.ts";
-import { isFramework } from "./frameworks.ts";
-import { rehypeAsTagName } from "./rehype.ts";
+import type { CollectionEntry } from "astro:content";
+import { getFramework, isFramework } from "./frameworks.ts";
 import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
@@ -135,6 +128,10 @@ async function getMarkdownProcessor() {
   if (markdownProcessor) {
     return markdownProcessor;
   }
+  const [{ createMarkdownProcessor }, { rehypeAsTagName }] = await Promise.all([
+    import("@astrojs/markdown-remark"),
+    import("./rehype.ts"),
+  ]);
   markdownProcessor = await createMarkdownProcessor({
     syntaxHighlight: false,
     rehypePlugins: [
@@ -153,92 +150,42 @@ export async function markdownToHtml(markdownString: string) {
   return result.code;
 }
 
-interface Section {
-  parent: string | null;
-  id: string | null;
-  title: string | null;
-  content: string[];
-}
-
-export async function contentToText(
-  component: RenderResult["Content"],
-  props: Record<string, any>,
+export async function descriptionToText(
+  body: string | undefined,
+  framework: Framework,
 ) {
-  const container = await createContainer({
-    renderers: ["mdx", "react"],
-    client: true,
-  });
-  const result = await container.renderToString(component, { props });
-  const sections = parseContentToSections(result);
-  return sections;
-}
-
-export function parseContentToSections(html: string): Section[] {
-  const tree = unified().use(rehypeParse, { fragment: true }).parse(html);
-
-  const sections: Section[] = [
-    { id: null, parent: null, title: null, content: [] },
-  ];
-  const parentHeadings: Element[] = [];
-
-  for (const node of tree.children) {
-    if (node.type !== "element") continue;
-
-    const { tagName } = node;
-    const isHeading = /^h[1-6]$/.test(tagName);
-
-    if (isHeading) {
-      const { id } = node.properties || {};
-      if (typeof id === "string") {
-        const level = parseInt(tagName.charAt(1), 10);
-        while (parentHeadings.length > 0) {
-          const parentHeading = parentHeadings[parentHeadings.length - 1];
-          if (!parentHeading) break;
-          const parentLevel = parseInt(parentHeading.tagName.charAt(1), 10);
-          if (parentLevel >= level) {
-            parentHeadings.pop();
-          } else {
-            break;
-          }
-        }
-        const parentHeading = parentHeadings[parentHeadings.length - 1];
-        const parent = parentHeading?.properties?.id;
-        const newSection: Section = {
-          id,
-          parent: typeof parent === "string" ? parent : null,
-          // @ts-ignore TODO: Remove this comment once we fully migrate the app
-          title: toText(node),
-          content: [],
-        };
-        sections.push(newSection);
-        // @ts-ignore TODO: Remove this comment once we fully migrate the app
-        parentHeadings.push(node);
-        continue;
-      }
-    }
-
-    // @ts-ignore TODO: Remove this comment once we fully migrate the app
-    const content = toText(node).trim();
-    if (content) {
-      const lastSection = sections[sections.length - 1];
-      if (lastSection) {
-        lastSection.content.push(content);
-      }
+  if (!body) return;
+  const frameworkLabel = getFramework(framework).label;
+  let markdown = "";
+  for (const line of body.split("\n")) {
+    if (!line.trimStart().startsWith("import ")) {
+      markdown += `${line}\n`;
     }
   }
-
-  return sections.filter((s) => s.id || s.content.length > 0);
-}
-
-export async function descriptionToText(
-  component: RenderResult["Content"] | undefined,
-  framework: Framework,
-  components: Record<string, any>,
-) {
-  if (!component) return;
-  const sections = await contentToText(component, {
-    framework,
-    components,
-  });
-  return sections[0]?.content[0];
+  markdown = markdown
+    .split("{getFramework(props.framework).label}")
+    .join(frameworkLabel);
+  while (true) {
+    const start = markdown.indexOf("<ContentLink");
+    if (start < 0) break;
+    const openEnd = markdown.indexOf(">", start);
+    if (openEnd < 0) break;
+    const closeStart = markdown.indexOf("</ContentLink>", openEnd);
+    if (closeStart < 0) break;
+    const closeEnd = closeStart + "</ContentLink>".length;
+    markdown =
+      markdown.slice(0, start) +
+      markdown.slice(openEnd + 1, closeStart) +
+      markdown.slice(closeEnd);
+  }
+  const [{ unified }, { default: rehypeParse }, { toText }] = await Promise.all(
+    [import("unified"), import("rehype-parse"), import("hast-util-to-text")],
+  );
+  const html = await markdownToHtml(markdown);
+  const tree = unified().use(rehypeParse, { fragment: true }).parse(html);
+  for (const node of tree.children) {
+    const text = toText(node).replace(/\s+/g, " ").trim();
+    if (text) return text;
+  }
+  return undefined;
 }
