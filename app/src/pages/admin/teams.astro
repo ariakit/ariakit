@@ -12,7 +12,6 @@ import { InlineLink } from "#app/components/inline-link.react.tsx";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { isAdmin } from "#app/lib/auth.ts";
 import { clerkClient, type Organization } from "@clerk/astro/server";
-import { env } from "cloudflare:workers";
 import LayoutPagination from "./_layout-pagination.astro";
 import {
   getClerkInstanceUrl,
@@ -22,7 +21,7 @@ import {
 
 export const prerender = false;
 
-if (!(await isAdmin(Astro, env))) {
+if (!(await isAdmin(Astro))) {
   return Astro.redirect("/");
 }
 
@@ -32,7 +31,7 @@ if (data instanceof Response) return data;
 
 const { limit, offset, query } = data;
 const clerk = clerkClient(Astro);
-const clerkInstanceUrl = await getClerkInstanceUrl(Astro, env);
+const clerkInstanceUrl = await getClerkInstanceUrl(Astro);
 
 async function getTeamData() {
   const teams = await clerk.organizations.getOrganizationList({

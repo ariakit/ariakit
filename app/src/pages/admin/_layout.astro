@@ -13,7 +13,6 @@ import { getAdminLastSync } from "#app/lib/kv.ts";
 import "#app/styles/global.css";
 import "@fontsource-variable/inter";
 import { actions } from "astro:actions";
-import { env } from "cloudflare:workers";
 import { formatDistanceToNow } from "date-fns";
 
 function getAriaCurrent(path: string) {
@@ -21,7 +20,7 @@ function getAriaCurrent(path: string) {
 }
 
 async function getLastSynced() {
-  const lastSynced = await getAdminLastSync(env);
+  const lastSynced = await getAdminLastSync();
   if (!lastSynced) return "never";
   return formatDistanceToNow(new Date(lastSynced * 1000));
 }

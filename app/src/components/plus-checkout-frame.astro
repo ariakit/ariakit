@@ -29,14 +29,14 @@ if (!publishableKey) {
   return null;
 }
 
-const price = await getPlusPrice({ context: Astro, env, type });
+const price = await getPlusPrice({ context: Astro, type });
 
 if (!price) {
   logger.error("Price not found");
   return null;
 }
 
-const session = await createCheckout({ context: Astro, env, price });
+const session = await createCheckout({ context: Astro, price });
 
 if (!session) {
   logger.error("Session not found");

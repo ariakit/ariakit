@@ -9,7 +9,6 @@
  */
 import type { APIContext } from "astro";
 import { ActionError, defineAction } from "astro:actions";
-import { env } from "cloudflare:workers";
 import type { Stripe } from "stripe";
 import { z } from "zod";
 import { getUser, isAdmin } from "#app/lib/auth.ts";
@@ -69,8 +68,8 @@ const defaultProducts: DefaultProduct[] = [
   },
 ];
 
-async function syncPrices(env: Cloudflare.Env) {
-  const stripe = getStripeClient(env);
+async function syncPrices() {
+  const stripe = getStripeClient();
   if (!stripe) {
     throw new ActionError({ code: "INTERNAL_SERVER_ERROR" });
   }
@@ -195,30 +194,30 @@ async function syncPrices(env: Cloudflare.Env) {
   }
 
   for (const price of pricesToCache.values()) {
-    await putPrice(env, price);
+    await putPrice(price);
     logger.info("Cached price %s (%s)", price.key, price.id);
   }
 
-  const cachedPrices = await getPrices(env);
+  const cachedPrices = await getPrices();
 
   // Delete prices that are not active
   for (const price of cachedPrices) {
     const stripePrice = prices.find((p) => p.id === price.id);
     if (stripePrice?.active) continue;
     logger.warn("Price %s is not active. Deleting from cache...", price.key);
-    await deletePrice(env, price.key);
+    await deletePrice(price.key);
   }
 }
 
-async function syncPromos(context: APIContext, env: Cloudflare.Env) {
-  const stripe = getStripeClient(env);
+async function syncPromos(context: APIContext) {
+  const stripe = getStripeClient();
   if (!stripe) {
     throw new ActionError({ code: "INTERNAL_SERVER_ERROR" });
   }
   logger.info("Syncing promos...");
 
   const promos: Stripe.PromotionCode[] = [];
-  const cachedPromos = await getAllPromos({ env, user: "any" });
+  const cachedPromos = await getAllPromos({ user: "any" });
 
   for await (const promo of stripe.promotionCodes.list({
     active: true,
@@ -235,12 +234,12 @@ async function syncPromos(context: APIContext, env: Cloudflare.Env) {
     if (!coupon.valid) continue;
     if (!isSalePromo(coupon) && !promo.customer) {
       logger.warn("Promo %s is not a plus sale", promo.id);
-      await deletePromo(env, promo.id);
+      await deletePromo(promo.id);
       continue;
     }
     if (!coupon.percent_off) {
       logger.warn("Promo %s has no percent off", promo.id);
-      await deletePromo(env, promo.id);
+      await deletePromo(promo.id);
       continue;
     }
     let user: User | null = null;
@@ -249,7 +248,7 @@ async function syncPromos(context: APIContext, env: Cloudflare.Env) {
       expanded(customer);
       if (customer.deleted) {
         logger.warn("Promo %s has deleted customer %s", promo.id, customer.id);
-        await deletePromo(env, promo.id);
+        await deletePromo(promo.id);
         continue;
       }
       const { clerkId } = customer.metadata;
@@ -259,10 +258,10 @@ async function syncPromos(context: APIContext, env: Cloudflare.Env) {
           promo.id,
           customer.id,
         );
-        await deletePromo(env, promo.id);
+        await deletePromo(promo.id);
         continue;
       }
-      user = await getUser({ context, env, user: clerkId });
+      user = await getUser({ context, user: clerkId });
       if (!user) {
         logger.warn(
           "Promo %s has customer %s with clerk id %s but no user",
@@ -270,13 +269,13 @@ async function syncPromos(context: APIContext, env: Cloudflare.Env) {
           customer.id,
           clerkId,
         );
-        await deletePromo(env, promo.id);
+        await deletePromo(promo.id);
         continue;
       }
     }
     const products = coupon.applies_to?.products ?? [];
     promos.push(promo);
-    await putPromo(env, {
+    await putPromo({
       id: promo.id,
       type: user ? "customer" : "sale",
       user: user ? objectId(user) : null,
@@ -294,7 +293,7 @@ async function syncPromos(context: APIContext, env: Cloudflare.Env) {
     const stripePromo = promos.find((p) => p.id === promo.id);
     if (stripePromo?.active) continue;
     logger.warn("Promo %s is not active. Deleting from cache...", promo.id);
-    await deletePromo(env, promo.id);
+    await deletePromo(promo.id);
   }
 }
 
@@ -307,8 +306,8 @@ const SetPriceInputSchema = z.object({
 
 type SetPriceInput = z.infer<typeof SetPriceInputSchema>;
 
-async function setPrice(env: Cloudflare.Env, input: SetPriceInput) {
-  const stripe = getStripeClient(env);
+async function setPrice(input: SetPriceInput) {
+  const stripe = getStripeClient();
   if (!stripe) {
     throw new ActionError({ code: "INTERNAL_SERVER_ERROR" });
   }
@@ -362,7 +361,7 @@ async function setPrice(env: Cloudflare.Env, input: SetPriceInput) {
     tax_behavior: taxBehavior,
     transfer_lookup_key: true,
   });
-  await putPrice(env, {
+  await putPrice({
     id: newPrice.id,
     type,
     key,
@@ -379,13 +378,13 @@ export const admin = {
     accept: "form",
     async handler(_, action) {
       const context = wrapActionContext(action);
-      if (!(await isAdmin(context, env))) {
+      if (!(await isAdmin(context))) {
         throw new ActionError({ code: "UNAUTHORIZED" });
       }
       try {
-        await syncPrices(env);
-        await syncPromos(context, env);
-        await syncAdmin(env);
+        await syncPrices();
+        await syncPromos(context);
+        await syncAdmin();
       } catch (error) {
         logger.error("Error syncing admin data", error);
       }
@@ -397,10 +396,10 @@ export const admin = {
     input: SetPriceInputSchema,
     async handler(input, action) {
       const context = wrapActionContext(action);
-      if (!(await isAdmin(context, env))) {
+      if (!(await isAdmin(context))) {
         throw new ActionError({ code: "UNAUTHORIZED" });
       }
-      await setPrice(env, input);
+      await setPrice(input);
     },
   }),
 
@@ -414,10 +413,10 @@ export const admin = {
     }),
     async handler(input, action) {
       const context = wrapActionContext(action);
-      if (!(await isAdmin(context, env))) {
+      if (!(await isAdmin(context))) {
         throw new ActionError({ code: "UNAUTHORIZED" });
       }
-      const stripe = getStripeClient(env);
+      const stripe = getStripeClient();
       if (!stripe) {
         throw new ActionError({ code: "INTERNAL_SERVER_ERROR" });
       }
@@ -427,7 +426,6 @@ export const admin = {
         : undefined;
       await createSalePromo({
         context,
-        env,
         user,
         percentOff,
         maxRedemptions,

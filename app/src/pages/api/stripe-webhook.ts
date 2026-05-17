@@ -46,7 +46,7 @@ const EVENTS = {
 } satisfies Record<string, Stripe.Event.Type>;
 
 export const POST: APIRoute = async (context) => {
-  const stripe = getStripeClient(env);
+  const stripe = getStripeClient();
   if (!stripe) {
     logger.error("Stripe not configured");
     return internalServerError();
@@ -89,7 +89,7 @@ export const POST: APIRoute = async (context) => {
       logger.error("Customer has no Clerk ID", customerId);
       return ok();
     }
-    const user = await getUser({ context, env, user: clerkId });
+    const user = await getUser({ context, user: clerkId });
     if (!user) {
       logger.error("User not found", clerkId);
       return ok();
@@ -102,7 +102,7 @@ export const POST: APIRoute = async (context) => {
     event.type === EVENTS.CheckoutSessionAsyncPaymentSucceeded
   ) {
     const session = event.data.object;
-    await processCheckout({ context, env, session });
+    await processCheckout({ context, session });
     return ok();
   }
 
@@ -122,14 +122,14 @@ export const POST: APIRoute = async (context) => {
       return ok();
     }
     if (price.deleted || !price.active) {
-      await deletePrice(env, key);
+      await deletePrice(key);
       return ok();
     }
     if (!price.unit_amount) {
       logger.error("Price has no unit amount", price.id);
       return ok();
     }
-    await putPrice(env, {
+    await putPrice({
       id: price.id,
       type,
       key,
@@ -144,13 +144,13 @@ export const POST: APIRoute = async (context) => {
 
   if (event.type === EVENTS.PriceDeleted) {
     const price = event.data.object;
-    const prices = await getPrices(env);
+    const prices = await getPrices();
     const key = prices.find((p) => p.id === price.id)?.key;
     if (!key) {
       logger.info("Price not found in KV store", price.id);
       return ok();
     }
-    await deletePrice(env, key);
+    await deletePrice(key);
     logger.info("Price deleted from KV store", key);
     return ok();
   }
@@ -165,7 +165,7 @@ export const POST: APIRoute = async (context) => {
     if (!coupon) {
       const couponId = promo.promotion.coupon;
       if (!couponId || typeof couponId !== "string") {
-        await deletePromo(env, promo.id);
+        await deletePromo(promo.id);
         logger.error("Promotion code has no coupon", promo.id);
         return ok();
       }
@@ -173,29 +173,29 @@ export const POST: APIRoute = async (context) => {
     }
     const isSale = isSalePromo(coupon);
     if (!isSale && !promo.customer) {
-      await deletePromo(env, promo.id);
+      await deletePromo(promo.id);
       logger.info("Promotion code not a plus sale", promo.id);
       return ok();
     }
     if (promo.customer) {
       const user = await getUserFromCustomer(promo.customer);
       if (user instanceof Response) {
-        await deletePromo(env, promo.id);
+        await deletePromo(promo.id);
         return user;
       }
       userId = objectId(user);
     }
     if (!promo.active || coupon.deleted || !coupon.valid) {
-      await deletePromo(env, promo.id);
+      await deletePromo(promo.id);
       logger.info("Promotion code not valid anymore", promo.id);
       return ok();
     }
     if (!coupon.percent_off) {
-      await deletePromo(env, promo.id);
+      await deletePromo(promo.id);
       logger.error("Promotion code has no percent off", promo.id);
       return ok();
     }
-    await putPromo(env, {
+    await putPromo({
       id: promo.id,
       type: promo.customer ? "customer" : "sale",
       user: userId,

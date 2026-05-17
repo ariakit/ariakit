@@ -28,7 +28,7 @@ export const highlighter = await createHighlighterCore({
     import("@shikijs/langs/python"),
     import("@shikijs/langs/jsx"),
   ],
-  engine: createOnigurumaEngine(import("shiki/wasm")),
+  engine: createOnigurumaEngine(import("shiki/onig.wasm")),
 });
 
 export function getLangFromFilename(filename: string): BundledLanguage {

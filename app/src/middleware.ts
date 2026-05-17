@@ -10,19 +10,11 @@
 import { clerkMiddleware } from "@clerk/astro/server";
 import type { APIContext, MiddlewareNext } from "astro";
 import { getActionContext } from "astro:actions";
+import { env } from "cloudflare:workers";
 import { isAdmin } from "./lib/auth.ts";
 import { unauthorized } from "./lib/response.ts";
 
 const clerk = clerkMiddleware();
-
-let runtimeEnvPromise: Promise<Cloudflare.Env | null> | undefined;
-
-function getRuntimeEnv() {
-  runtimeEnvPromise ??= import("cloudflare:workers")
-    .then(({ env }) => env)
-    .catch(() => null);
-  return runtimeEnvPromise;
-}
 
 function isPublicRoute(url: URL) {
   if (url.pathname.startsWith("/r/")) return true;
@@ -32,9 +24,8 @@ function isPublicRoute(url: URL) {
 export async function onRequest(context: APIContext, next: MiddlewareNext) {
   const { action } = getActionContext(context);
   const isAdminAction = action?.name.startsWith("admin");
-  const runtimeEnv = await getRuntimeEnv();
 
-  if (!runtimeEnv?.PUBLIC_CLERK_PUBLISHABLE_KEY) {
+  if (!env.PUBLIC_CLERK_PUBLISHABLE_KEY) {
     if (isAdminAction) {
       return unauthorized();
     }
@@ -46,7 +37,7 @@ export async function onRequest(context: APIContext, next: MiddlewareNext) {
   }
 
   const response = await clerk(context, async () => {
-    if (isAdminAction && !(await isAdmin(context, runtimeEnv))) {
+    if (isAdminAction && !(await isAdmin(context))) {
       return unauthorized();
     }
     return next();

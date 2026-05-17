@@ -9,6 +9,7 @@
  */
 import { clerkClient } from "@clerk/astro/server";
 import type { APIContext } from "astro";
+import { env } from "cloudflare:workers";
 import { z } from "zod";
 import { getFlagEmoji } from "#app/lib/locale.ts";
 
@@ -66,10 +67,7 @@ export function getPaginationUrl(
   return url.toString();
 }
 
-export async function getClerkInstanceUrl(
-  context: APIContext,
-  env: Pick<Cloudflare.Env, "CLERK_APP_ID">,
-) {
+export async function getClerkInstanceUrl(context: APIContext) {
   const clerk = clerkClient(context);
   const appId = env.CLERK_APP_ID;
   const instance = await clerk.instance.get();

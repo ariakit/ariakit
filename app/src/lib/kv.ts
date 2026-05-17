@@ -7,13 +7,12 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { env } from "cloudflare:workers";
 import { getUnixTime } from "./datetime.ts";
 import { nonNullable } from "./object.ts";
 import type { PriceData, PromoData } from "./schemas.ts";
 
 type StoreName = "PLUS" | "EVENTS" | "ADMIN";
-
-type StoreEnv = Pick<Cloudflare.Env, StoreName>;
 
 function priceKey(key = "") {
   return `price:${key}`;
@@ -23,7 +22,7 @@ function promoKey(key = "") {
   return `promo:${key}`;
 }
 
-function getStore(env: StoreEnv, name: StoreName) {
+function getStore(name: StoreName) {
   const store = env[name];
   if (!store) {
     throw new Error(`Missing Cloudflare ${name} binding`);
@@ -31,29 +30,26 @@ function getStore(env: StoreEnv, name: StoreName) {
   return store;
 }
 
-export function getPlusStore(env: StoreEnv) {
-  return getStore(env, "PLUS");
+export function getPlusStore() {
+  return getStore("PLUS");
 }
 
-export function getEventsStore(env: StoreEnv) {
-  return getStore(env, "EVENTS");
+export function getEventsStore() {
+  return getStore("EVENTS");
 }
 
-export function getAdminStore(env: StoreEnv) {
-  return getStore(env, "ADMIN");
+export function getAdminStore() {
+  return getStore("ADMIN");
 }
 
-export async function getPrice(env: StoreEnv, key: string) {
-  const store = getPlusStore(env);
+export async function getPrice(key: string) {
+  const store = getPlusStore();
   const price = await store.getWithMetadata<PriceData>(priceKey(key));
   return price.metadata;
 }
 
-export async function getPrices(
-  env: StoreEnv,
-  keys?: string[],
-): Promise<PriceData[]> {
-  const store = getPlusStore(env);
+export async function getPrices(keys?: string[]): Promise<PriceData[]> {
+  const store = getPlusStore();
   if (!keys?.length) {
     const result = await store.list<PriceData>({ prefix: priceKey() });
     return result.keys
@@ -69,30 +65,28 @@ export async function getPrices(
     .toArray();
 }
 
-export async function putPrice(env: StoreEnv, data: PriceData) {
-  const store = getPlusStore(env);
+export async function putPrice(data: PriceData) {
+  const store = getPlusStore();
   await store.put(priceKey(data.key), data.amount.toString(), {
     metadata: data,
   });
 }
 
-export async function deletePrice(env: StoreEnv, key: string) {
-  const store = getPlusStore(env);
+export async function deletePrice(key: string) {
+  const store = getPlusStore();
   await store.delete(priceKey(key));
 }
 
 interface GetPromoParams {
-  env: StoreEnv;
   product?: string | null;
   user?: string | null;
 }
 
 export async function getAllPromos({
-  env,
   product,
   user,
 }: GetPromoParams): Promise<PromoData[]> {
-  const store = getPlusStore(env);
+  const store = getPlusStore();
   const result = await store.list<PromoData>({ prefix: promoKey() });
   const promos: (PromoData | undefined)[] = result.keys.map(
     (key: { metadata?: PromoData | undefined }) => key.metadata,
@@ -137,36 +131,36 @@ export async function getBestPromo(
   });
 }
 
-export async function putPromo(env: StoreEnv, data: PromoData) {
-  const store = getPlusStore(env);
+export async function putPromo(data: PromoData) {
+  const store = getPlusStore();
   await store.put(promoKey(data.id), data.percentOff.toString(), {
     metadata: data,
   });
 }
 
-export async function deletePromo(env: StoreEnv, id: string) {
-  const store = getPlusStore(env);
+export async function deletePromo(id: string) {
+  const store = getPlusStore();
   await store.delete(promoKey(id));
 }
 
-export async function processEvent(env: StoreEnv, id: string) {
-  const store = getEventsStore(env);
+export async function processEvent(id: string) {
+  const store = getEventsStore();
   await store.put(id, "processed");
 }
 
-export async function isEventProcessed(env: StoreEnv, id: string) {
-  const store = getEventsStore(env);
+export async function isEventProcessed(id: string) {
+  const store = getEventsStore();
   const event = await store.get(id);
   return event !== null;
 }
 
-export async function syncAdmin(env: StoreEnv, time = getUnixTime()) {
-  const store = getAdminStore(env);
+export async function syncAdmin(time = getUnixTime()) {
+  const store = getAdminStore();
   await store.put("last-sync", time.toString());
 }
 
-export async function getAdminLastSync(env: StoreEnv) {
-  const store = getAdminStore(env);
+export async function getAdminLastSync() {
+  const store = getAdminStore();
   const lastSync = await store.get("last-sync");
   if (!lastSync) return;
   return Number.parseInt(lastSync, 10);

@@ -17,7 +17,6 @@ import { getPlusCheckoutPath } from "#app/lib/url.ts";
 import "#app/styles/global.css";
 import { SignOutButton } from "@clerk/astro/components";
 import "@fontsource-variable/inter";
-import { env } from "cloudflare:workers";
 
 interface Props {
   step: PlusCheckoutStep;
@@ -46,7 +45,7 @@ function getSteps() {
   ];
 }
 
-const signedIn = isSignedIn(Astro, env);
+const signedIn = isSignedIn(Astro);
 ---
 
 <!doctype html>

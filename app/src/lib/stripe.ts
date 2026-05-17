@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import type { APIContext } from "astro";
+import { env } from "cloudflare:workers";
 // oxlint-disable-next-line no-named-as-default
 import Stripe from "stripe";
 import { findInOrder } from "./array.ts";
@@ -32,8 +33,11 @@ import {
 import { getCountryCode, getCurrency } from "./locale.ts";
 import { createLogger } from "./logger.ts";
 import { objectId } from "./object.ts";
+import { getPlusPriceKey } from "./plus-pricing.ts";
 import type { PlusType, PriceData, PromoData } from "./schemas.ts";
 import { PlusTypeSchema } from "./schemas.ts";
+
+export { getPlusPriceKey, parsePlusPriceKey } from "./plus-pricing.ts";
 
 const logger = createLogger("stripe");
 
@@ -70,9 +74,7 @@ function compareCurrency(a?: string | null, b?: string | null) {
   return a.toLowerCase() === b.toLowerCase();
 }
 
-type StripeEnv = Pick<Cloudflare.Env, "STRIPE_SECRET_KEY">;
-
-export function getStripeClient(env: StripeEnv) {
+export function getStripeClient() {
   const key = env.STRIPE_SECRET_KEY;
   if (!key) return null;
   const stripe = stripeClients.get(key);
@@ -110,7 +112,6 @@ export function getPromotionCoupon(promo: Stripe.PromotionCode) {
 
 export interface CreateSalePromoParams {
   context: APIContext;
-  env: Cloudflare.Env;
   percentOff: number;
   user?: User | string | null;
   expiresAt?: Date;
@@ -119,13 +120,12 @@ export interface CreateSalePromoParams {
 
 export async function createSalePromo({
   context,
-  env,
   percentOff,
   user,
   expiresAt,
   maxRedemptions,
 }: CreateSalePromoParams) {
-  const stripe = getStripeClient(env);
+  const stripe = getStripeClient();
   if (!stripe) return;
   const coupons: Stripe.Coupon[] = [];
   for await (const coupon of stripe.coupons.list({ limit: 100 })) {
@@ -149,7 +149,7 @@ export async function createSalePromo({
     });
   }
 
-  const customer = user ? await getCustomer({ context, env, user }) : undefined;
+  const customer = user ? await getCustomer({ context, user }) : undefined;
   const expiresAtTime = expiresAt ? getUnixTime(expiresAt) : undefined;
 
   const promo = await stripe.promotionCodes.create({
@@ -161,7 +161,7 @@ export async function createSalePromo({
     max_redemptions: maxRedemptions,
     expires_at: expiresAtTime,
   });
-  await putPromo(env, {
+  await putPromo({
     id: promo.id,
     type: user ? "customer" : "sale",
     user: user ? objectId(user) : null,
@@ -176,19 +176,17 @@ export async function createSalePromo({
 
 export interface CreateCustomerParams extends Stripe.CustomerCreateParams {
   context: APIContext;
-  env: Cloudflare.Env;
   user: User | string;
   email?: string;
 }
 
 export async function createCustomer({
   context,
-  env,
   user,
   email,
   ...params
 }: CreateCustomerParams) {
-  const stripe = getStripeClient(env);
+  const stripe = getStripeClient();
   if (!stripe) return;
   const userId = objectId(user);
   const customer = await stripe.customers.create({
@@ -196,39 +194,8 @@ export async function createCustomer({
     ...params,
     metadata: { ...params?.metadata, clerkId: userId },
   });
-  await setCustomer(context, env, userId, customer.id);
+  await setCustomer(context, userId, customer.id);
   return customer;
-}
-
-export interface GetPlusPriceKeyParams {
-  type?: PlusType;
-  currency?: string;
-  countryCode?: string;
-}
-
-export function getPlusPriceKey({
-  type = "personal",
-  currency = "USD",
-  countryCode,
-}: GetPlusPriceKeyParams) {
-  const isPersonal = type === "personal";
-  const lowercaseCurrency = currency.toLowerCase();
-  const country = countryCode ? `-${countryCode.toLowerCase()}` : "";
-  return isPersonal
-    ? `ariakit-plus-${lowercaseCurrency}${country}`
-    : `ariakit-plus-${type}-${lowercaseCurrency}${country}`;
-}
-
-export function parsePlusPriceKey(key: string) {
-  const match = key.match(/ariakit-plus-(?:team-)?([a-z]+)(?:-([a-z]{2}))?$/);
-  if (!match) return {};
-  const [, currency, countryCode] = match;
-  if (!currency) return {};
-  return {
-    type: key.includes("team-") ? ("team" as const) : ("personal" as const),
-    currency,
-    countryCode,
-  };
 }
 
 export interface PlusPrice
@@ -245,7 +212,6 @@ export interface PlusPrice
 
 export interface GetPlusPriceParams {
   context: APIContext;
-  env: Cloudflare.Env;
   type?: PlusType;
   user?: User | string | null;
   currency?: string;
@@ -254,13 +220,12 @@ export interface GetPlusPriceParams {
 
 export async function getPlusPrice({
   context,
-  env,
   user,
   type = "personal",
   countryCode = getCountryCode(context.request.headers),
   currency = getCurrency(countryCode),
 }: GetPlusPriceParams): Promise<PlusPrice | null> {
-  const stripe = getStripeClient(env);
+  const stripe = getStripeClient();
   if (!stripe) return null;
   if (!env.PLUS) return null;
   const keys = [
@@ -268,15 +233,15 @@ export async function getPlusPrice({
     getPlusPriceKey({ type, currency }),
     getPlusPriceKey({ type, currency: "USD" }),
   ];
-  const prices = await getPrices(env, keys);
+  const prices = await getPrices(keys);
   if (!prices.length) return null;
   const price = findInOrder(prices, "key", keys);
   if (!price) return null;
   let credit = 0;
-  const userId = await getUserId({ context, env, user });
+  const userId = await getUserId({ context, user });
 
   if (type === "team") {
-    const userObject = await getUser({ context, env, user });
+    const userObject = await getUser({ context, user });
     const metadata = userObject?.privateMetadata;
     if (metadata?.credit && compareCurrency(currency, metadata.currency)) {
       credit = metadata.credit;
@@ -285,7 +250,6 @@ export async function getPlusPrice({
 
   const originalAmount = price.amount - credit;
   const promo = await getBestPromo({
-    env,
     user: userId,
     product: price.product,
   });
@@ -306,7 +270,6 @@ export async function getPlusPrice({
 
 export interface CreateCheckoutParams {
   context: APIContext;
-  env: Cloudflare.Env;
   price: PlusPrice;
   user?: User | string | null;
   returnUrl?: string | URL;
@@ -314,22 +277,21 @@ export interface CreateCheckoutParams {
 
 export async function createCheckout({
   context,
-  env,
   price,
   user,
   returnUrl = context.url,
 }: CreateCheckoutParams) {
-  const stripe = getStripeClient(env);
+  const stripe = getStripeClient();
   if (!stripe) return;
   const stripePrice = await stripe.prices.retrieve(price.id);
-  user = await getUser({ context, env, user });
+  user = await getUser({ context, user });
   if (!user) {
     return logger.error("User not found", user);
   }
-  let customer = await getCustomer({ context, env, user });
+  let customer = await getCustomer({ context, user });
   if (!customer) {
     const email = user.primaryEmailAddress?.emailAddress;
-    const newCustomer = await createCustomer({ context, email, env, user });
+    const newCustomer = await createCustomer({ context, email, user });
     customer = newCustomer?.id || null;
     if (!customer) {
       return logger.error("Failed to create customer", user.id);
@@ -388,16 +350,14 @@ export async function createCheckout({
 
 export interface ProcessCheckoutParams {
   context: APIContext;
-  env: Cloudflare.Env;
   session: Stripe.Checkout.Session | string;
 }
 
 export async function processCheckout({
   context,
-  env,
   session,
 }: ProcessCheckoutParams) {
-  const stripe = getStripeClient(env);
+  const stripe = getStripeClient();
   if (!stripe) return;
   if (!env.EVENTS) return;
   if (typeof session === "string") {
@@ -421,20 +381,19 @@ export async function processCheckout({
   if (!clerkId) {
     return logger.error("No clerk ID in session metadata", session.id);
   }
-  if (await isEventProcessed(env, session.id)) {
+  if (await isEventProcessed(session.id)) {
     logger.info("Checkout session already processed", session.id);
     return session;
   }
-  await processEvent(env, session.id);
+  await processEvent(session.id);
   if (type === "team") {
     if (Number(creditUsed)) {
-      await removePlusFromUser({ context, env, user: clerkId });
+      await removePlusFromUser({ context, user: clerkId });
     }
-    await createTeam({ context, env, user: clerkId });
+    await createTeam({ context, user: clerkId });
   } else {
     await addPlusToUser({
       context,
-      env,
       type,
       user: clerkId,
       amount: session.amount_total ?? 0,
