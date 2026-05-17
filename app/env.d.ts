@@ -63,12 +63,16 @@ declare interface ImportMetaEnv {
   readonly STRIPE_SECRET_KEY?: string;
   readonly STRIPE_WEBHOOK_SECRET?: string;
   readonly ADMIN_ORG_ID?: string;
+  readonly NEXTJS_PORT?: string;
 }
 
 declare interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
+// The generated worker-configuration.d.ts file includes global runtime types
+// that conflict with the repo-wide DOM projects under tsc -b. Keep the app
+// shim narrow: only the bindings this code imports from cloudflare:workers.
 interface KVNamespace {
   get(key: string): Promise<string | null>;
   getWithMetadata<Metadata>(

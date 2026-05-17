@@ -32,6 +32,8 @@ const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
 if (!ALLOWED_TEST_LOADERS.includes(LOADER))
   throw new Error(`Invalid loader: ${LOADER}`);
 
+// sourcePlugin is typed against the app workspace's Vite copy, while Vitest
+// consumes the root Vite types. The runtime plugin shape is compatible.
 const sourcePluginInstance = sourcePlugin(
   join(import.meta.dirname, "app/src/examples/"),
 ) as unknown as PluginOption;

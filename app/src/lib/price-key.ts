@@ -28,12 +28,12 @@ export function getPlusPriceKey({
 }
 
 export function parsePlusPriceKey(key: string) {
-  const match = key.match(/ariakit-plus-(?:team-)?([a-z]+)(?:-([a-z]{2}))?$/);
+  const match = key.match(/^ariakit-plus-(team-)?([a-z]+)(?:-([a-z]{2}))?$/);
   if (!match) return {};
-  const [, currency, countryCode] = match;
+  const [, teamPrefix, currency, countryCode] = match;
   if (!currency) return {};
   return {
-    type: key.includes("team-") ? ("team" as const) : ("personal" as const),
+    type: teamPrefix ? ("team" as const) : ("personal" as const),
     currency,
     countryCode,
   };

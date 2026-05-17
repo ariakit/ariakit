@@ -7,7 +7,6 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { APIContext } from "astro";
 import { env } from "cloudflare:workers";
 import { getUnixTime } from "./datetime.ts";
 import { nonNullable } from "./object.ts";
@@ -21,32 +20,34 @@ function promoKey(key = "") {
   return `promo:${key}`;
 }
 
-export function getPlusStore(context: APIContext) {
-  void context;
-  return env.PLUS;
+function getKVStore(name: "PLUS" | "EVENTS" | "ADMIN") {
+  const store = env[name];
+  if (!store) {
+    throw new Error(`Missing ${name} KV binding`);
+  }
+  return store;
 }
 
-export function getEventsStore(context: APIContext) {
-  void context;
-  return env.EVENTS;
+export function getPlusStore() {
+  return getKVStore("PLUS");
 }
 
-export function getAdminStore(context: APIContext) {
-  void context;
-  return env.ADMIN;
+export function getEventsStore() {
+  return getKVStore("EVENTS");
 }
 
-export async function getPrice(context: APIContext, key: string) {
-  const store = getPlusStore(context);
+export function getAdminStore() {
+  return getKVStore("ADMIN");
+}
+
+export async function getPrice(key: string) {
+  const store = getPlusStore();
   const price = await store.getWithMetadata<PriceData>(priceKey(key));
   return price.metadata;
 }
 
-export async function getPrices(
-  context: APIContext,
-  keys?: string[],
-): Promise<PriceData[]> {
-  const store = getPlusStore(context);
+export async function getPrices(keys?: string[]): Promise<PriceData[]> {
+  const store = getPlusStore();
   if (!keys?.length) {
     const result = await store.list<PriceData>({ prefix: priceKey() });
     return result.keys
@@ -62,30 +63,28 @@ export async function getPrices(
     .toArray();
 }
 
-export async function putPrice(context: APIContext, data: PriceData) {
-  const store = getPlusStore(context);
+export async function putPrice(data: PriceData) {
+  const store = getPlusStore();
   await store.put(priceKey(data.key), data.amount.toString(), {
     metadata: data,
   });
 }
 
-export async function deletePrice(context: APIContext, key: string) {
-  const store = getPlusStore(context);
+export async function deletePrice(key: string) {
+  const store = getPlusStore();
   await store.delete(priceKey(key));
 }
 
 interface GetPromoParams {
-  context: APIContext;
   product?: string | null;
   user?: string | null;
 }
 
 export async function getAllPromos({
-  context,
   product,
   user,
 }: GetPromoParams): Promise<PromoData[]> {
-  const store = getPlusStore(context);
+  const store = getPlusStore();
   const result = await store.list<PromoData>({ prefix: promoKey() });
   const promos: (PromoData | undefined)[] = result.keys.map(
     (key: { metadata?: PromoData | undefined }) => key.metadata,
@@ -130,36 +129,36 @@ export async function getBestPromo(
   });
 }
 
-export async function putPromo(context: APIContext, data: PromoData) {
-  const store = getPlusStore(context);
+export async function putPromo(data: PromoData) {
+  const store = getPlusStore();
   await store.put(promoKey(data.id), data.percentOff.toString(), {
     metadata: data,
   });
 }
 
-export async function deletePromo(context: APIContext, id: string) {
-  const store = getPlusStore(context);
+export async function deletePromo(id: string) {
+  const store = getPlusStore();
   await store.delete(promoKey(id));
 }
 
-export async function processEvent(context: APIContext, id: string) {
-  const store = getEventsStore(context);
+export async function processEvent(id: string) {
+  const store = getEventsStore();
   await store.put(id, "processed");
 }
 
-export async function isEventProcessed(context: APIContext, id: string) {
-  const store = getEventsStore(context);
+export async function isEventProcessed(id: string) {
+  const store = getEventsStore();
   const event = await store.get(id);
   return event !== null;
 }
 
-export async function syncAdmin(context: APIContext, time = getUnixTime()) {
-  const store = getAdminStore(context);
+export async function syncAdmin(time = getUnixTime()) {
+  const store = getAdminStore();
   await store.put("last-sync", time.toString());
 }
 
-export async function getAdminLastSync(context: APIContext) {
-  const store = getAdminStore(context);
+export async function getAdminLastSync() {
+  const store = getAdminStore();
   const lastSync = await store.get("last-sync");
   if (!lastSync) return;
   return Number.parseInt(lastSync, 10);

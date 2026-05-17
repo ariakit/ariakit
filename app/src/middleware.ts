@@ -18,6 +18,8 @@ async function getClerkMiddleware() {
   if (clerk) {
     return clerk;
   }
+  // Avoid evaluating Clerk's server module when Clerk is disabled. The module
+  // eagerly imports Node async storage and keyless file-storage helpers.
   const { clerkMiddleware } = await import("@clerk/astro/server");
   clerk = clerkMiddleware();
   return clerk;
@@ -47,6 +49,8 @@ export async function onRequest(context: APIContext, next: MiddlewareNext) {
   const response = await clerk(context, next);
 
   if (isAdminAction) {
+    // auth.ts imports Clerk's server module too, so keep it behind the same
+    // Clerk-enabled branch.
     const { isAdmin } = await import("./lib/auth.ts");
     if (!(await isAdmin(context))) {
       return unauthorized();

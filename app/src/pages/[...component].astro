@@ -37,7 +37,11 @@ import { trimRight } from "#app/lib/string.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import { getReferencePath } from "#app/lib/url.ts";
 import Layout from "#app/pages/_layout.astro";
-import type { MarkdownProcessor, RehypePlugin } from "@astrojs/markdown-remark";
+import {
+  createMarkdownProcessor,
+  type MarkdownProcessor,
+  type RehypePlugin,
+} from "@astrojs/markdown-remark";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 
@@ -179,7 +183,6 @@ async function getMarkdownProcessor() {
   if (markdownProcessor) {
     return markdownProcessor;
   }
-  const { createMarkdownProcessor } = await import("@astrojs/markdown-remark");
   markdownProcessor = await createMarkdownProcessor({
     syntaxHighlight: false,
     rehypePlugins: [

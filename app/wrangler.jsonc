@@ -1,9 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ariakit",
-  "main": "./app/dist/server/entry.mjs",
-  "no_bundle": true,
-  "rules": [{ "type": "ESModule", "globs": ["**/*.js", "**/*.mjs"] }],
+  "main": "@astrojs/cloudflare/entrypoints/server",
   "preview_urls": false,
   "compatibility_date": "2026-03-27",
   "compatibility_flags": ["nodejs_compat"],
@@ -19,7 +17,7 @@
   },
   "assets": {
     "binding": "ASSETS",
-    "directory": "./app/dist/client",
+    "directory": "./dist",
     "run_worker_first": ["/react/previews/*nextjs*"],
   },
   "kv_namespaces": [

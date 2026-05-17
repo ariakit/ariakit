@@ -35,7 +35,7 @@ if (formRequest) {
   return formRequest;
 }
 
-const promos = await getAllPromos({ context: Astro, user: "any" });
+const promos = await getAllPromos({ user: "any" });
 const salePromos = promos.filter((promo) => promo.type === "sale");
 const customerPromos = promos.filter((promo) => promo.type === "customer");
 const bestPromo = await getBestPromo(salePromos);

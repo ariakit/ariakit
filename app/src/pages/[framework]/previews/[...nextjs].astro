@@ -20,11 +20,14 @@ export const prerender = false;
 const nextjsExampleId = getNextjsPreviewId(Astro.url.pathname);
 if (!nextjsExampleId) return notFound();
 
+const devNextjsPort = import.meta.env.DEV
+  ? import.meta.env.NEXTJS_PORT
+  : undefined;
 const nextjsUrl = getNextjsUrlFromRequest({
   requestUrl: Astro.url.href,
   path: `/${nextjsExampleId}`,
   env: {
-    NEXTJS_PORT: env.NEXTJS_PORT ?? process.env.NEXTJS_PORT,
+    NEXTJS_PORT: env.NEXTJS_PORT ?? devNextjsPort,
   },
 });
 return Astro.redirect(nextjsUrl, 307);
