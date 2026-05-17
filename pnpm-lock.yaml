@@ -503,8 +503,8 @@ importers:
         version: 19.2.6(react@19.2.6)
     devDependencies:
       '@opennextjs/cloudflare':
-        specifier: 1.19.9
-        version: 1.19.9(encoding@0.1.13)(next@16.2.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(wrangler@4.90.1)
+        specifier: 1.19.10
+        version: 1.19.10(encoding@0.1.13)(next@16.2.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(wrangler@4.90.1)
       '@tailwindcss/postcss':
         specifier: 4.3.0
         version: 4.3.0
@@ -3515,8 +3515,8 @@ packages:
     peerDependencies:
       next: '>=15.5.18 <16 || >=16.2.6'
 
-  '@opennextjs/cloudflare@1.19.9':
-    resolution: {integrity: sha512-GUs+X25VFUqulzA0fALvUABWZ08zR1cpAPpREcNxhzVdhERe2OU3NslU25GsecV+0askV/w/NmE9PgpzENaAIg==}
+  '@opennextjs/cloudflare@1.19.10':
+    resolution: {integrity: sha512-rTVugmBI2q9PCc/XV7qQlCNFL1cCfhLvaOeyPu/TU8z4K1VcsDMVHDlABYeRB2kGmH7RnFNFeQAK+1YdQWk7tA==}
     hasBin: true
     peerDependencies:
       next: '>=15.5.18 <16 || >=16.2.6'
@@ -13582,7 +13582,7 @@ snapshots:
       - aws-crt
       - supports-color
 
-  '@opennextjs/cloudflare@1.19.9(encoding@0.1.13)(next@16.2.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(wrangler@4.90.1)':
+  '@opennextjs/cloudflare@1.19.10(encoding@0.1.13)(next@16.2.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(wrangler@4.90.1)':
     dependencies:
       '@ast-grep/napi': 0.40.5
       '@dotenvx/dotenvx': 1.31.0
@@ -14873,7 +14873,7 @@ snapshots:
   '@types/body-parser@1.19.6':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
 
   '@types/canvas-confetti@1.9.0': {}
 
@@ -14884,7 +14884,7 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
 
   '@types/cookies@0.7.7':
     dependencies:
@@ -14921,7 +14921,7 @@ snapshots:
 
   '@types/express-serve-static-core@4.19.8':
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
       '@types/qs': 6.15.0
       '@types/range-parser': 1.2.7
       '@types/send': 1.2.1
@@ -14988,7 +14988,7 @@ snapshots:
 
   '@types/node-fetch@2.6.13':
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
       form-data: 4.0.5
 
   '@types/node-fetch@2.6.2':
@@ -15058,12 +15058,12 @@ snapshots:
 
   '@types/send@1.2.1':
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
 
   '@types/serve-static@2.2.0':
     dependencies:
       '@types/http-errors': 2.0.5
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
 
   '@types/statuses@2.0.6': {}
 
@@ -17600,7 +17600,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 24.12.2
+      '@types/node': 24.12.4
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
