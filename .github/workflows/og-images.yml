@@ -95,6 +95,7 @@ jobs:
             exit 0
           fi
           echo "is_current=true" >> "$GITHUB_OUTPUT"
+          echo "local_sha=$local_sha" >> "$GITHUB_OUTPUT"
 
       - name: Commit or create PR
         if: >
@@ -110,6 +111,7 @@ jobs:
           event: ${{ github.event_name }}
           message: Update OG images
           head-branch: ${{ github.head_ref || github.ref_name }}
+          expected-head-sha: ${{ steps.branch.outputs.local_sha }}
           new-branch: chore/update-og-images
           paths: app/public/og-image
           app-client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
