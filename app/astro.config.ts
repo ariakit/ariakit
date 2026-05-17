@@ -71,6 +71,14 @@ export default defineConfig({
       // @ts-expect-error Vite version mismatch
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
+    define: {
+      // Inline OG_IMAGE_GENERATE at build time so the workerd prerender of
+      // the `/og-image/api` endpoint can opt in without relying on Node's
+      // process.env at runtime.
+      "process.env.OG_IMAGE_GENERATE": JSON.stringify(
+        process.env.OG_IMAGE_GENERATE ?? "",
+      ),
+    },
   },
 
   markdown: {
