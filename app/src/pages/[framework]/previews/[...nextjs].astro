@@ -18,7 +18,11 @@ import { env } from "cloudflare:workers";
 export const prerender = false;
 
 const nextjsExampleId = getNextjsPreviewId(Astro.url.pathname);
-if (!nextjsExampleId) return notFound();
+if (!nextjsExampleId) {
+  const asset = await env.ASSETS.fetch(Astro.request);
+  if (asset.status !== 404) return asset;
+  return notFound();
+}
 
 const nextjsUrl = getNextjsUrlFromRequest({
   requestUrl: Astro.url.href,
