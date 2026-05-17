@@ -28,15 +28,35 @@ const MAX_SCREENSHOT_ATTEMPTS = 3;
 
 function isBlankImage(buffer: Buffer) {
   const image = PNG.sync.read(buffer);
-  const [red, green, blue, alpha] = image.data;
+  const pixels = image.data;
+  const red = pixels[0];
+  const green = pixels[1];
+  const blue = pixels[2];
+  const alpha = pixels[3];
+  if (red == null || green == null || blue == null || alpha == null) {
+    return false;
+  }
   let matchingPixels = 0;
   const totalPixels = image.width * image.height;
-  for (let i = 0; i < image.data.length; i += 4) {
+  if (!totalPixels) return false;
+  for (let i = 0; i < pixels.length; i += 4) {
+    const currentRed = pixels[i];
+    const currentGreen = pixels[i + 1];
+    const currentBlue = pixels[i + 2];
+    const currentAlpha = pixels[i + 3];
     if (
-      Math.abs(image.data[i]! - red!) <= 1 &&
-      Math.abs(image.data[i + 1]! - green!) <= 1 &&
-      Math.abs(image.data[i + 2]! - blue!) <= 1 &&
-      Math.abs(image.data[i + 3]! - alpha!) <= 1
+      currentRed == null ||
+      currentGreen == null ||
+      currentBlue == null ||
+      currentAlpha == null
+    ) {
+      continue;
+    }
+    if (
+      Math.abs(currentRed - red) <= 1 &&
+      Math.abs(currentGreen - green) <= 1 &&
+      Math.abs(currentBlue - blue) <= 1 &&
+      Math.abs(currentAlpha - alpha) <= 1
     ) {
       matchingPixels += 1;
     }
@@ -47,7 +67,7 @@ function isBlankImage(buffer: Buffer) {
 function getExpectedText(item: OGImageItem) {
   if (item.title) return item.title;
   if (item.framework) return getFramework(item.framework).label;
-  return "Ariakit";
+  return undefined;
 }
 
 function isWithinTolerance(newBuffer: Buffer, existingPath: string) {
@@ -99,10 +119,10 @@ async function waitForImageReady(page: Page, item: OGImageItem) {
   await page.waitForLoadState("load");
   const expectedText = getExpectedText(item);
   if (expectedText) {
-    await page.waitForFunction((text) => {
-      if (document.title.includes(text)) return true;
-      return document.body.textContent?.includes(text) ?? false;
-    }, expectedText);
+    await page.waitForFunction(
+      (text) => document.body.textContent?.includes(text) ?? false,
+      expectedText,
+    );
   }
   await page.evaluate(async () => {
     await document.fonts.ready;
