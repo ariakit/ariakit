@@ -136,16 +136,25 @@ async function waitForImageReady(page: Page, item: OGImageItem) {
 }
 
 async function screenshotImage(page: Page, item: OGImageItem, url: string) {
+  let lastError: unknown;
   for (let attempt = 1; attempt <= MAX_SCREENSHOT_ATTEMPTS; attempt += 1) {
-    await page.goto(url, { waitUntil: "load" });
-    await waitForImageReady(page, item);
-    const buffer = await page.screenshot({ type: "png", timeout: 60_000 });
-    if (!isBlankImage(buffer)) {
-      return buffer;
+    try {
+      await page.goto(url, { waitUntil: "load" });
+      await waitForImageReady(page, item);
+      const buffer = await page.screenshot({ type: "png", timeout: 60_000 });
+      if (!isBlankImage(buffer)) {
+        return buffer;
+      }
+      lastError = undefined;
+    } catch (error) {
+      lastError = error;
     }
     if (attempt < MAX_SCREENSHOT_ATTEMPTS) {
       await page.waitForTimeout(500 * attempt);
     }
+  }
+  if (lastError) {
+    throw lastError;
   }
   throw new Error(`Blank OG image after ${MAX_SCREENSHOT_ATTEMPTS} attempts`);
 }
