@@ -23,7 +23,7 @@ Build **accessible** {getFramework(props.framework).label} components with <Cont
   );
 });
 
-test("descriptionToText returns only the first text block", async () => {
+test("descriptionToText extracts text from all blocks", async () => {
   const body = `
 First paragraph.
 
@@ -31,6 +31,6 @@ Second paragraph.
 `;
 
   await expect(descriptionToText(body, "react")).resolves.toBe(
-    "First paragraph.",
+    "First paragraph. Second paragraph.",
   );
 });

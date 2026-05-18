@@ -8,9 +8,17 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { invariant } from "@ariakit/core/utils/misc";
-import type { MarkdownProcessor, RehypePlugin } from "@astrojs/markdown-remark";
+import {
+  createMarkdownProcessor,
+  type MarkdownProcessor,
+  type RehypePlugin,
+} from "@astrojs/markdown-remark";
 import type { CollectionEntry } from "astro:content";
+import { toText } from "hast-util-to-text";
+import rehypeParse from "rehype-parse";
+import { unified } from "unified";
 import { getFramework, isFramework } from "./frameworks.ts";
+import { rehypeAsTagName } from "./rehype.ts";
 import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
@@ -128,10 +136,6 @@ async function getMarkdownProcessor() {
   if (markdownProcessor) {
     return markdownProcessor;
   }
-  const [{ createMarkdownProcessor }, { rehypeAsTagName }] = await Promise.all([
-    import("@astrojs/markdown-remark"),
-    import("./rehype.ts"),
-  ]);
   markdownProcessor = await createMarkdownProcessor({
     syntaxHighlight: false,
     rehypePlugins: [
@@ -150,21 +154,7 @@ export async function markdownToHtml(markdownString: string) {
   return result.code;
 }
 
-export async function descriptionToText(
-  body: string | undefined,
-  framework: Framework,
-) {
-  if (!body) return;
-  const frameworkLabel = getFramework(framework).label;
-  let markdown = "";
-  for (const line of body.split("\n")) {
-    if (!line.trimStart().startsWith("import ")) {
-      markdown += `${line}\n`;
-    }
-  }
-  markdown = markdown
-    .split("{getFramework(props.framework).label}")
-    .join(frameworkLabel);
+function unwrapContentLinks(markdown: string) {
   while (true) {
     const start = markdown.indexOf("<ContentLink");
     if (start < 0) break;
@@ -178,14 +168,29 @@ export async function descriptionToText(
       markdown.slice(openEnd + 1, closeStart) +
       markdown.slice(closeEnd);
   }
-  const [{ unified }, { default: rehypeParse }, { toText }] = await Promise.all(
-    [import("unified"), import("rehype-parse"), import("hast-util-to-text")],
-  );
+  return markdown;
+}
+
+function getDescriptionMarkdown(body: string, framework: Framework) {
+  const frameworkLabel = getFramework(framework).label;
+  const lines = body.split("\n").filter((line) => {
+    return !line.trimStart().startsWith("import ");
+  });
+  const markdown = lines
+    .join("\n")
+    .split("{getFramework(props.framework).label}")
+    .join(frameworkLabel);
+  return unwrapContentLinks(markdown);
+}
+
+export async function descriptionToText(
+  body: string | undefined,
+  framework: Framework,
+) {
+  if (!body) return;
+  const markdown = getDescriptionMarkdown(body, framework);
   const html = await markdownToHtml(markdown);
   const tree = unified().use(rehypeParse, { fragment: true }).parse(html);
-  for (const node of tree.children) {
-    const text = toText(node).replace(/\s+/g, " ").trim();
-    if (text) return text;
-  }
-  return undefined;
+  const text = toText(tree).replace(/\s+/g, " ").trim();
+  return text || undefined;
 }
