@@ -77,26 +77,6 @@ jobs:
           name: app-dist
           path: app/dist
 
-      - name: Prepare app preview config
-        if: steps.download-app-artifact.outcome == 'success'
-        working-directory: app
-        run: |
-          node --input-type=module <<'NODE'
-          import { readFileSync, writeFileSync } from "node:fs";
-
-          const config = JSON.parse(
-            readFileSync("dist/server/wrangler.json", "utf8"),
-          );
-          config.name = "ariakit-preview";
-          config.preview_urls = true;
-          delete config.kv_namespaces;
-          delete config.previews?.kv_namespaces;
-          writeFileSync(
-            "dist/server/wrangler.preview.json",
-            JSON.stringify(config),
-          );
-          NODE
-
       - name: Upload Next.js app version
         id: versions-nextjs
         if: steps.download-nextjs-artifact.outcome == 'success'
@@ -122,7 +102,7 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           workingDirectory: app
           command: >-
-            versions upload --config dist/server/wrangler.preview.json
+            versions upload dist/server/entry.mjs --config wrangler.jsonc --env preview --assets dist/client
             ${{ steps.alias.outputs.slug && format('--preview-alias {0}', steps.alias.outputs.slug) }}
 
       - name: Deploy Next.js app version
@@ -147,7 +127,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           workingDirectory: app
-          command: deploy --config dist/server/wrangler.preview.json
+          command: deploy dist/server/entry.mjs --config wrangler.jsonc --env preview --assets dist/client
 
       - name: Compute preview URLs
         id: preview-url

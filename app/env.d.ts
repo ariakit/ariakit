@@ -70,39 +70,10 @@ declare interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
 
-// The generated worker-configuration.d.ts file includes global runtime types
-// that conflict with the repo-wide DOM projects under tsc -b. Keep the app
-// shim narrow: only the bindings this code imports from cloudflare:workers.
-interface KVNamespace {
-  get(key: string): Promise<string | null>;
-  getWithMetadata<Metadata>(
-    key: string,
-  ): Promise<{ metadata: Metadata | null }>;
-  getWithMetadata<Metadata>(
-    keys: string[],
-  ): Promise<Map<string, { metadata: Metadata | null } | null>>;
-  list<Metadata>(options?: { prefix?: string }): Promise<{
-    keys: Array<{ metadata?: Metadata | undefined }>;
-  }>;
-  put(
-    key: string,
-    value: string,
-    options?: { metadata?: unknown },
-  ): Promise<void>;
-  delete(key: string): Promise<void>;
-}
-
 declare namespace Cloudflare {
   interface Env {
-    readonly PLUS: KVNamespace;
-    readonly EVENTS: KVNamespace;
-    readonly ADMIN: KVNamespace;
     readonly NEXTJS_PORT?: string;
   }
-}
-
-declare module "cloudflare:workers" {
-  export const env: Cloudflare.Env;
 }
 
 declare namespace astroHTML.JSX {

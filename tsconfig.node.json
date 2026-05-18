@@ -1,12 +1,4 @@
 {
   "extends": "./tsconfig.base.json",
-  "exclude": [
-    "website",
-    "app",
-    "examples",
-    "packages",
-    "nextjs",
-    "coverage",
-    "worker-configuration.d.ts"
-  ]
+  "exclude": ["website", "app", "examples", "packages", "nextjs", "coverage"]
 }
