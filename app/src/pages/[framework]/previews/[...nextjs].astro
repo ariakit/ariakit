@@ -20,8 +20,8 @@ export const prerender = false;
 const nextjsExampleId = getNextjsPreviewId(Astro.url.pathname);
 if (!nextjsExampleId) return notFound();
 
-// pnpm dev-app runs Astro dev outside workerd, so cloudflare:workers does not
-// receive NEXTJS_PORT there. Wrangler preview still uses env.NEXTJS_PORT.
+// pnpm dev-app passes NEXTJS_PORT through the spawned process env, while
+// Wrangler preview exposes it on the Cloudflare Worker env object.
 const devNextjsPort = import.meta.env.DEV
   ? import.meta.env.NEXTJS_PORT
   : undefined;
