@@ -21,12 +21,14 @@ const NEXTJS_DEFAULT_PORT = "3000";
 
 /**
  * Regex pattern to match Next.js preview URLs.
- * Matches: /{framework}/previews/{example}/ where example contains "nextjs"
+ * Matches: /{framework}/previews/{example}/ where the first example segment
+ * contains "nextjs".
  * Examples:
  * - /react/previews/tab-nextjs/
  * - /react/previews/menu-nextjs-app-router/
+ * - /react/previews/menu-nextjs/nested/
  */
-const NEXTJS_PREVIEW_PATTERN = /^\/\w+\/previews\/([^/]*nextjs[^/]*)\/?$/i;
+const PREVIEW_PATTERN = /^\/\w+\/previews\/(.+?)\/?$/;
 
 // Next.js App Router convention files that should be auto-included in the
 // source plugin
@@ -113,8 +115,16 @@ export function getNextjsUrlFromRequest({
  * @returns The example ID if it's a Next.js preview, null otherwise
  */
 export function getNextjsPreviewId(pathname: string): string | null {
-  const match = pathname.match(NEXTJS_PREVIEW_PATTERN);
-  return match ? (match[1] ?? null) : null;
+  const match = pathname.match(PREVIEW_PATTERN);
+  const previewId = match?.[1];
+  if (!previewId) return null;
+  if (!isNextjsPreviewId(previewId)) return null;
+  return previewId;
+}
+
+export function isNextjsPreviewId(previewId: string) {
+  const [exampleId] = previewId.split("/");
+  return !!exampleId?.toLowerCase().includes("nextjs");
 }
 
 /**

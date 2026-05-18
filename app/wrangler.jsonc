@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ariakit",
-  "main": "@astrojs/cloudflare/entrypoints/server",
+  "main": "./src/worker.ts",
   "preview_urls": false,
   "compatibility_date": "2026-03-27",
   "compatibility_flags": ["nodejs_compat"],
@@ -18,9 +18,6 @@
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist",
-    // Next.js previews are SSR redirects. Other preview routes should keep
-    // serving the prerendered static assets before the Worker runs.
-    "run_worker_first": ["/react/previews/*nextjs*"],
   },
   "kv_namespaces": [
     {

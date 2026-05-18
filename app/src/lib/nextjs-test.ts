@@ -9,11 +9,17 @@
  */
 
 import { expect, test } from "vitest";
-import { getNextjsPreviewId } from "./nextjs.ts";
+import { getNextjsPreviewId, isNextjsPreviewId } from "./nextjs.ts";
 
 test("getNextjsPreviewId handles stripped preview ids", () => {
   expect(getNextjsPreviewId("/react/previews/tab-nextjs/")).toBe("tab-nextjs");
   expect(getNextjsPreviewId("/react/previews/tab-nextjs")).toBe("tab-nextjs");
+});
+
+test("getNextjsPreviewId handles nested ids under a Next.js preview", () => {
+  expect(getNextjsPreviewId("/react/previews/counter-nextjs/nested/")).toBe(
+    "counter-nextjs/nested",
+  );
 });
 
 test("getNextjsPreviewId ignores source path segments", () => {
@@ -24,4 +30,12 @@ test("getNextjsPreviewId ignores source path segments", () => {
 
 test("getNextjsPreviewId ignores non-Next.js preview ids", () => {
   expect(getNextjsPreviewId("/react/previews/disclosure/")).toBeNull();
+  expect(
+    getNextjsPreviewId("/react/previews/counter/nested-nextjs/"),
+  ).toBeNull();
+});
+
+test("isNextjsPreviewId checks the first preview id segment", () => {
+  expect(isNextjsPreviewId("counter-nextjs/nested")).toBe(true);
+  expect(isNextjsPreviewId("counter/nested-nextjs")).toBe(false);
 });
