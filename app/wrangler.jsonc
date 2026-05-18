@@ -44,6 +44,20 @@
     "preview": {
       "name": "ariakit-preview",
       "preview_urls": true,
+      "kv_namespaces": [
+        {
+          "binding": "SESSION",
+          "id": "77a040b4f42e4f2f984fb81b9d7866af",
+        },
+      ],
+      "previews": {
+        "kv_namespaces": [
+          {
+            "binding": "SESSION",
+            "id": "77a040b4f42e4f2f984fb81b9d7866af",
+          },
+        ],
+      },
     },
   },
 }
