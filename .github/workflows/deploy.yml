@@ -37,4 +37,4 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           workingDirectory: app
-          command: deploy dist/server/entry.mjs --config wrangler.jsonc --assets dist/client --env=""
+          command: deploy

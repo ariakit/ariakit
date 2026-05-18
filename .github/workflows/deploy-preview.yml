@@ -74,8 +74,8 @@ jobs:
         uses: actions/download-artifact@v8
         continue-on-error: true
         with:
-          name: app-dist
-          path: app/dist
+          name: app-build
+          path: app
 
       - name: Upload Next.js app version
         id: versions-nextjs
@@ -101,11 +101,8 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           workingDirectory: app
-          # CI only downloads app/dist, not Astro's .wrangler redirect file.
-          # Use the source config for env.preview, but point Wrangler at the
-          # built server entry and client assets from the artifact.
           command: >-
-            versions upload dist/server/entry.mjs --config wrangler.jsonc --env preview --assets dist/client
+            versions upload
             ${{ steps.alias.outputs.slug && format('--preview-alias {0}', steps.alias.outputs.slug) }}
 
       - name: Deploy Next.js app version
@@ -130,8 +127,7 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           workingDirectory: app
-          # See the upload step above for why this uses the built entrypoint.
-          command: deploy dist/server/entry.mjs --config wrangler.jsonc --env preview --assets dist/client
+          command: deploy
 
       - name: Compute preview URLs
         id: preview-url
