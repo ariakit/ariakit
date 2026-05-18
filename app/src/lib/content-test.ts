@@ -40,7 +40,7 @@ test("descriptionToText extracts text from description markdown", async () => {
   );
 });
 
-test("descriptionToText extracts text from all blocks", async () => {
+test("descriptionToText extracts text from the first block", async () => {
   const body = `
 First paragraph.
 
@@ -48,7 +48,7 @@ Second paragraph.
 `;
 
   await expect(descriptionToText(body, "react")).resolves.toBe(
-    "First paragraph. Second paragraph.",
+    "First paragraph.",
   );
 });
 
