@@ -7,21 +7,16 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { clerkMiddleware as createClerkMiddleware } from "@clerk/astro/server";
+import { clerkMiddleware } from "@clerk/astro/server";
 import type { APIContext, MiddlewareNext } from "astro";
 import { getActionContext } from "astro:actions";
+import { isAdmin } from "./lib/auth.ts";
 import { unauthorized } from "./lib/response.ts";
 
-let clerk: ReturnType<typeof createClerkMiddleware> | undefined;
+let clerk: ReturnType<typeof clerkMiddleware> | undefined;
 
-async function getClerkMiddleware() {
-  if (clerk) {
-    return clerk;
-  }
-  // Avoid evaluating Clerk's server module when Clerk is disabled. The module
-  // eagerly imports Node async storage and keyless file-storage helpers.
-  const { clerkMiddleware } = await import("@clerk/astro/server");
-  clerk = clerkMiddleware();
+function getClerkMiddleware() {
+  clerk ??= clerkMiddleware();
   return clerk;
 }
 
@@ -45,13 +40,9 @@ export async function onRequest(context: APIContext, next: MiddlewareNext) {
     return next();
   }
 
-  const clerk = await getClerkMiddleware();
-  const response = await clerk(context, next);
+  const response = await getClerkMiddleware()(context, next);
 
   if (isAdminAction) {
-    // auth.ts imports Clerk's server module too, so keep it behind the same
-    // Clerk-enabled branch.
-    const { isAdmin } = await import("./lib/auth.ts");
     if (!(await isAdmin(context))) {
       return unauthorized();
     }

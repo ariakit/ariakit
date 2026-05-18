@@ -48,7 +48,7 @@
     "lint": "oxlint --disable-nested-config && oxfmt --check",
     "lint-fix": "oxlint --disable-nested-config --fix && oxfmt",
     "lint-css": "stylelint '**/*.css' --ignore-path .gitignore",
-    "wrangler-types": "rimraf worker-configuration.d.ts app/worker-configuration.d.ts && wrangler types app/worker-configuration.d.ts --config app/wrangler.jsonc",
+    "wrangler-types": "pnpm -F app run wrangler-types",
     "tsc": "pnpm -F app run check && tsc -b",
     "tsc-clean": "tsc -b --clean",
     "build": "pnpm -F \"@ariakit/*\" run build",

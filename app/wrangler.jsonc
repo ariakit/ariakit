@@ -18,6 +18,8 @@
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist",
+    // Next.js previews are SSR redirects. Other preview routes should keep
+    // serving the prerendered static assets before the Worker runs.
     "run_worker_first": ["/react/previews/*nextjs*"],
   },
   "kv_namespaces": [

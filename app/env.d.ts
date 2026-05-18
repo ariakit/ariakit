@@ -71,9 +71,7 @@ declare interface ImportMeta {
 }
 
 declare namespace Cloudflare {
-  interface Env {
-    readonly NEXTJS_PORT?: string;
-  }
+  interface Env extends ImportMetaEnv {}
 }
 
 declare namespace astroHTML.JSX {
