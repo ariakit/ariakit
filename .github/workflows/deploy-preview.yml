@@ -89,6 +89,8 @@ jobs:
           );
           config.name = "ariakit-preview";
           config.preview_urls = true;
+          delete config.kv_namespaces;
+          delete config.previews?.kv_namespaces;
           writeFileSync(
             "dist/server/wrangler.preview.json",
             JSON.stringify(config),
