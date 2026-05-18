@@ -8,7 +8,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import PreviewPage from "#app/components/preview-page.astro";
+import "#app/styles/global.css";
+import "@fontsource-variable/inter";
 import { isFramework } from "#app/lib/frameworks.ts";
 import {
   getNextjsPreviewId,
@@ -39,18 +40,22 @@ if (nextjsExampleId) {
 }
 
 // This route is more specific than the generic preview catch-all, so Astro dev
-// sends every /{framework}/previews/* request here. Render regular previews
-// here too; production still serves those from prerendered static assets.
+// sends every /{framework}/previews/* request here. In production, those
+// non-Next.js preview routes are prerendered and served as static assets.
+if (!import.meta.env.DEV) return notFound();
+
 const framework = Astro.params.framework;
-const previewId = Astro.params.nextjs;
+const preview = Astro.params.nextjs;
 
 if (!isFramework(framework)) return notFound();
-if (!previewId) return notFound();
+if (!preview) return notFound();
 
-const entry = await getEntry("previews", previewId);
+const entry = await getEntry("previews", preview);
 
 if (!entry) return notFound();
 if (!entry.data.frameworks.includes(framework)) return notFound();
+
+Astro.locals.framework = framework;
 
 const { Content } = await render(entry);
 
@@ -58,4 +63,27 @@ const title = entry.data.title;
 const fullscreen = entry.data.fullscreen;
 ---
 
-<PreviewPage {Content} {framework} {fullscreen} {title} />
+<!doctype html>
+<html lang="en" class:list={[!fullscreen && "min-h-[200vh]!"]}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Preview {title} - Ariakit</title>
+  </head>
+  <body
+    class:list={[
+      "flex",
+      !fullscreen && "items-center-safe justify-center-safe",
+    ]}
+  >
+    <div
+      class:list={[
+        "@container size-full",
+        !fullscreen && "p-3 flex items-center-safe justify-center-safe",
+      ]}
+    >
+      <Content {framework} />
+    </div>
+  </body>
+</html>
