@@ -68,7 +68,7 @@ const defaultProducts: DefaultProduct[] = [
   },
 ];
 
-async function syncPrices(context: APIContext) {
+async function syncPrices() {
   const stripe = getStripeClient();
   if (!stripe) {
     throw new ActionError({ code: "INTERNAL_SERVER_ERROR" });
@@ -194,11 +194,11 @@ async function syncPrices(context: APIContext) {
   }
 
   for (const price of pricesToCache.values()) {
-    await putPrice(context, price);
+    await putPrice(price);
     logger.info("Cached price %s (%s)", price.key, price.id);
   }
 
-  const cachedPrices = await getPrices(context);
+  const cachedPrices = await getPrices();
 
   // Delete prices that are not active
   for (const price of cachedPrices) {
@@ -208,13 +208,13 @@ async function syncPrices(context: APIContext) {
         "Price %s has invalid key. Deleting from cache...",
         price.key,
       );
-      await deletePrice(context, price.key);
+      await deletePrice(price.key);
       continue;
     }
     const stripePrice = prices.find((p) => p.id === price.id);
     if (stripePrice?.active) continue;
     logger.warn("Price %s is not active. Deleting from cache...", price.key);
-    await deletePrice(context, price.key);
+    await deletePrice(price.key);
   }
 }
 
@@ -226,7 +226,7 @@ async function syncPromos(context: APIContext) {
   logger.info("Syncing promos...");
 
   const promos: Stripe.PromotionCode[] = [];
-  const cachedPromos = await getAllPromos({ context, user: "any" });
+  const cachedPromos = await getAllPromos({ user: "any" });
 
   for await (const promo of stripe.promotionCodes.list({
     active: true,
@@ -243,12 +243,12 @@ async function syncPromos(context: APIContext) {
     if (!coupon.valid) continue;
     if (!isSalePromo(coupon) && !promo.customer) {
       logger.warn("Promo %s is not a plus sale", promo.id);
-      await deletePromo(context, promo.id);
+      await deletePromo(promo.id);
       continue;
     }
     if (!coupon.percent_off) {
       logger.warn("Promo %s has no percent off", promo.id);
-      await deletePromo(context, promo.id);
+      await deletePromo(promo.id);
       continue;
     }
     let user: User | null = null;
@@ -257,7 +257,7 @@ async function syncPromos(context: APIContext) {
       expanded(customer);
       if (customer.deleted) {
         logger.warn("Promo %s has deleted customer %s", promo.id, customer.id);
-        await deletePromo(context, promo.id);
+        await deletePromo(promo.id);
         continue;
       }
       const { clerkId } = customer.metadata;
@@ -267,7 +267,7 @@ async function syncPromos(context: APIContext) {
           promo.id,
           customer.id,
         );
-        await deletePromo(context, promo.id);
+        await deletePromo(promo.id);
         continue;
       }
       user = await getUser({ context, user: clerkId });
@@ -278,13 +278,13 @@ async function syncPromos(context: APIContext) {
           customer.id,
           clerkId,
         );
-        await deletePromo(context, promo.id);
+        await deletePromo(promo.id);
         continue;
       }
     }
     const products = coupon.applies_to?.products ?? [];
     promos.push(promo);
-    await putPromo(context, {
+    await putPromo({
       id: promo.id,
       type: user ? "customer" : "sale",
       user: user ? objectId(user) : null,
@@ -302,20 +302,23 @@ async function syncPromos(context: APIContext) {
     const stripePromo = promos.find((p) => p.id === promo.id);
     if (stripePromo?.active) continue;
     logger.warn("Promo %s is not active. Deleting from cache...", promo.id);
-    await deletePromo(context, promo.id);
+    await deletePromo(promo.id);
   }
 }
 
 const SetPriceInputSchema = z.object({
   type: PlusTypeSchema,
-  currency: z.string(),
-  countryCode: z.string().optional(),
+  currency: z.string().regex(/^[a-z]{3}$/i),
+  countryCode: z
+    .string()
+    .regex(/^$|^[a-z]{2}$/i)
+    .optional(),
   amount: z.number(),
 });
 
 type SetPriceInput = z.infer<typeof SetPriceInputSchema>;
 
-async function setPrice(context: APIContext, input: SetPriceInput) {
+async function setPrice(input: SetPriceInput) {
   const stripe = getStripeClient();
   if (!stripe) {
     throw new ActionError({ code: "INTERNAL_SERVER_ERROR" });
@@ -370,7 +373,7 @@ async function setPrice(context: APIContext, input: SetPriceInput) {
     tax_behavior: taxBehavior,
     transfer_lookup_key: true,
   });
-  await putPrice(context, {
+  await putPrice({
     id: newPrice.id,
     type,
     key,
@@ -391,9 +394,9 @@ export const admin = {
         throw new ActionError({ code: "UNAUTHORIZED" });
       }
       try {
-        await syncPrices(context);
+        await syncPrices();
         await syncPromos(context);
-        await syncAdmin(context);
+        await syncAdmin();
       } catch (error) {
         logger.error("Error syncing admin data", error);
       }
@@ -408,7 +411,7 @@ export const admin = {
       if (!(await isAdmin(context))) {
         throw new ActionError({ code: "UNAUTHORIZED" });
       }
-      await setPrice(context, input);
+      await setPrice(input);
       return "Hello, world!";
     },
   }),

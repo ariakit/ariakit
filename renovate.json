@@ -62,16 +62,6 @@
       "matchPackageNames": ["/^oxlint/", "/^oxfmt/"]
     },
     {
-      "matchPackageNames": ["astro"],
-      "matchCurrentVersion": "/^5\\./",
-      "allowedVersions": "/^5\\./"
-    },
-    {
-      "matchPackageNames": ["@astrojs/cloudflare"],
-      "matchCurrentVersion": "/^12\\./",
-      "allowedVersions": "/^12\\./"
-    },
-    {
       "matchPackageNames": ["@types/node"],
       "allowedVersions": "/^24\\./"
     },

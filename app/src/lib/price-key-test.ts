@@ -38,3 +38,7 @@ test("parsePlusPriceKey ignores prefixed keys", () => {
   expect(parsePlusPriceKey("invalid-ariakit-plus-usd")).toEqual({});
   expect(parsePlusPriceKey("team-invalid-ariakit-plus-usd")).toEqual({});
 });
+
+test("parsePlusPriceKey ignores malformed keys", () => {
+  expect(parsePlusPriceKey("ariakit-plus-team")).toEqual({});
+});

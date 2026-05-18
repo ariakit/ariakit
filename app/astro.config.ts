@@ -55,14 +55,11 @@ export default defineConfig({
 
   adapter: cloudflare({
     imageService: "compile",
-    platformProxy: { enabled: true },
   }),
 
   vite: {
     plugins: [
-      // @ts-expect-error Vite version mismatch (Astro 5 ships Vite 6)
       tailwindcss(),
-      // @ts-expect-error Vite version mismatch (Astro 5 ships Vite 6)
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
   },

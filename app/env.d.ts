@@ -25,12 +25,9 @@ declare module "#app/styles/styles.json" {
 type PlusType = import("./src/lib/schemas.ts").PlusType;
 type Framework = import("./src/lib/schemas.ts").Framework;
 type User = import("@clerk/astro/server").User;
-type Runtime = import("@astrojs/cloudflare").Runtime<
-  Pick<Cloudflare.Env, "PLUS" | "EVENTS" | "ADMIN">
->;
 
 declare namespace App {
-  interface Locals extends Runtime {
+  interface Locals {
     user?: User | null;
     framework?: Framework;
     reference?: string;
@@ -66,10 +63,15 @@ declare interface ImportMetaEnv {
   readonly STRIPE_SECRET_KEY?: string;
   readonly STRIPE_WEBHOOK_SECRET?: string;
   readonly ADMIN_ORG_ID?: string;
+  readonly NEXTJS_PORT?: string;
 }
 
 declare interface ImportMeta {
   readonly env: ImportMetaEnv;
+}
+
+declare namespace Cloudflare {
+  interface Env extends ImportMetaEnv {}
 }
 
 declare namespace astroHTML.JSX {

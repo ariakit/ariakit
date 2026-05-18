@@ -157,7 +157,7 @@ export async function createSalePromo({
     max_redemptions: maxRedemptions,
     expires_at: expiresAtTime,
   });
-  await putPromo(context, {
+  await putPromo({
     id: promo.id,
     type: user ? "customer" : "sale",
     user: user ? objectId(user) : null,
@@ -226,7 +226,7 @@ export async function getPlusPrice({
     getPlusPriceKey({ type, currency }),
     getPlusPriceKey({ type, currency: "USD" }),
   ];
-  const prices = await getPrices(context, keys);
+  const prices = await getPrices(keys);
   if (!prices.length) return null;
   const price = findInOrder(prices, "key", keys);
   if (!price) return null;
@@ -243,7 +243,6 @@ export async function getPlusPrice({
 
   const originalAmount = price.amount - credit;
   const promo = await getBestPromo({
-    context,
     user: userId,
     product: price.product,
   });
@@ -373,11 +372,11 @@ export async function processCheckout({
   if (!clerkId) {
     return logger.error("No clerk ID in session metadata", session.id);
   }
-  if (await isEventProcessed(context, session.id)) {
+  if (await isEventProcessed(session.id)) {
     logger.info("Checkout session already processed", session.id);
     return session;
   }
-  await processEvent(context, session.id);
+  await processEvent(session.id);
   if (type === "team") {
     if (Number(creditUsed)) {
       await removePlusFromUser({ context, user: clerkId });
