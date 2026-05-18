@@ -93,7 +93,7 @@
     "rehype-autolink-headings": "7.1.0",
     "rehype-parse": "9.0.1",
     "shiki": "4.0.2",
-    "solid-js": "1.9.12",
+    "solid-js": "1.9.13",
     "stripe": "22.1.1",
     "tailwindcss": "4.3.0",
     "ts-morph": "28.0.0",
