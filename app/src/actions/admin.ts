@@ -202,6 +202,15 @@ async function syncPrices(context: APIContext) {
 
   // Delete prices that are not active
   for (const price of cachedPrices) {
+    const { type } = parsePlusPriceKey(price.key);
+    if (!type) {
+      logger.warn(
+        "Price %s has invalid key. Deleting from cache...",
+        price.key,
+      );
+      await deletePrice(context, price.key);
+      continue;
+    }
     const stripePrice = prices.find((p) => p.id === price.id);
     if (stripePrice?.active) continue;
     logger.warn("Price %s is not active. Deleting from cache...", price.key);

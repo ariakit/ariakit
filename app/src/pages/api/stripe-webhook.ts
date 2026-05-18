@@ -118,6 +118,7 @@ export const POST: APIRoute = async (context) => {
     const { type } = parsePlusPriceKey(key);
     if (!type) {
       logger.error("Price not a plus price", key);
+      await deletePrice(context, key);
       return ok();
     }
     if (price.deleted || !price.active) {
