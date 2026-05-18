@@ -17,6 +17,16 @@ test("parsePlusPriceKey parses personal and team keys", () => {
     currency: "usd",
     countryCode: undefined,
   });
+  expect(parsePlusPriceKey("ariakit-plus-usd-br")).toEqual({
+    type: "personal",
+    currency: "usd",
+    countryCode: "br",
+  });
+  expect(parsePlusPriceKey("ariakit-plus-team-eur")).toEqual({
+    type: "team",
+    currency: "eur",
+    countryCode: undefined,
+  });
   expect(parsePlusPriceKey("ariakit-plus-team-eur-br")).toEqual({
     type: "team",
     currency: "eur",
@@ -26,4 +36,9 @@ test("parsePlusPriceKey parses personal and team keys", () => {
 
 test("parsePlusPriceKey ignores prefixed keys", () => {
   expect(parsePlusPriceKey("invalid-ariakit-plus-usd")).toEqual({});
+  expect(parsePlusPriceKey("team-invalid-ariakit-plus-usd")).toEqual({});
+});
+
+test("parsePlusPriceKey ignores malformed keys", () => {
+  expect(parsePlusPriceKey("ariakit-plus-team")).toEqual({});
 });

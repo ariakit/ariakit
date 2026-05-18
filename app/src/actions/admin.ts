@@ -202,6 +202,15 @@ async function syncPrices() {
 
   // Delete prices that are not active
   for (const price of cachedPrices) {
+    const { type } = parsePlusPriceKey(price.key);
+    if (!type) {
+      logger.warn(
+        "Price %s has invalid key. Deleting from cache...",
+        price.key,
+      );
+      await deletePrice(price.key);
+      continue;
+    }
     const stripePrice = prices.find((p) => p.id === price.id);
     if (stripePrice?.active) continue;
     logger.warn("Price %s is not active. Deleting from cache...", price.key);
@@ -299,8 +308,11 @@ async function syncPromos(context: APIContext) {
 
 const SetPriceInputSchema = z.object({
   type: PlusTypeSchema,
-  currency: z.string(),
-  countryCode: z.string().optional(),
+  currency: z.string().regex(/^[a-z]{3}$/i),
+  countryCode: z
+    .string()
+    .regex(/^$|^[a-z]{2}$/i)
+    .optional(),
   amount: z.number(),
 });
 

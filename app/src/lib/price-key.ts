@@ -28,7 +28,7 @@ export function getPlusPriceKey({
 }
 
 export function parsePlusPriceKey(key: string) {
-  const match = key.match(/^ariakit-plus-(team-)?([a-z]+)(?:-([a-z]{2}))?$/);
+  const match = key.match(/^ariakit-plus-(team-)?([a-z]{3})(?:-([a-z]{2}))?$/);
   if (!match) return {};
   const [, teamPrefix, currency, countryCode] = match;
   if (!currency) return {};
