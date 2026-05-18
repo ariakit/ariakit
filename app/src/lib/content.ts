@@ -192,5 +192,9 @@ export async function descriptionToText(
   const html = await markdownToHtml(markdown);
   const tree = unified().use(rehypeParse, { fragment: true }).parse(html);
   const text = toText(tree).replace(/\s+/g, " ").trim();
+  invariant(
+    !/[<{}]/.test(text),
+    `descriptionToText: unsupported MDX in description (got: ${text})`,
+  );
   return text || undefined;
 }
