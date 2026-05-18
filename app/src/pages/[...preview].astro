@@ -8,8 +8,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import "#app/styles/global.css";
-import "@fontsource-variable/inter";
+import PreviewPage from "#app/components/preview-page.astro";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 
@@ -28,33 +27,8 @@ export const getStaticPaths = (async () => {
 const { framework, entry } = Astro.props;
 const { Content } = await render(entry);
 
-Astro.locals.framework = framework;
-
 const title = entry.data.title;
 const fullscreen = entry.data.fullscreen;
 ---
 
-<!doctype html>
-<html lang="en" class:list={[!fullscreen && "min-h-[200vh]!"]}>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>Preview {title} - Ariakit</title>
-  </head>
-  <body
-    class:list={[
-      "flex",
-      !fullscreen && "items-center-safe justify-center-safe",
-    ]}
-  >
-    <div
-      class:list={[
-        "@container size-full",
-        !fullscreen && "p-3 flex items-center-safe justify-center-safe",
-      ]}
-    >
-      <Content {framework} />
-    </div>
-  </body>
-</html>
+<PreviewPage {Content} {framework} {fullscreen} {title} />

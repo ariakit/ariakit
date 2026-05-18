@@ -1,0 +1,51 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import "#app/styles/global.css";
+import "@fontsource-variable/inter";
+import type { frameworks } from "#app/lib/frameworks.ts";
+import type { RenderResult } from "astro:content";
+
+interface Props {
+  Content: RenderResult["Content"];
+  framework: keyof typeof frameworks;
+  fullscreen?: boolean;
+  title: string;
+}
+
+const { Content, framework, fullscreen, title } = Astro.props;
+
+Astro.locals.framework = framework;
+---
+
+<!doctype html>
+<html lang="en" class:list={[!fullscreen && "min-h-[200vh]!"]}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Preview {title} - Ariakit</title>
+  </head>
+  <body
+    class:list={[
+      "flex",
+      !fullscreen && "items-center-safe justify-center-safe",
+    ]}
+  >
+    <div
+      class:list={[
+        "@container size-full",
+        !fullscreen && "p-3 flex items-center-safe justify-center-safe",
+      ]}
+    >
+      <Content {framework} />
+    </div>
+  </body>
+</html>
