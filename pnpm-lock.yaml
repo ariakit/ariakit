@@ -94,7 +94,7 @@ importers:
         version: 7.0.6
       esbuild-plugin-solid:
         specifier: 0.6.0
-        version: 0.6.0(esbuild@0.27.4)(solid-js@1.9.12)
+        version: 0.6.0(esbuild@0.27.4)(solid-js@1.9.13)
       fs-extra:
         specifier: 11.3.5
         version: 11.3.5
@@ -147,8 +147,8 @@ importers:
         specifier: 6.1.3
         version: 6.1.3
       solid-js:
-        specifier: 1.9.12
-        version: 1.9.12
+        specifier: 1.9.13
+        version: 1.9.13
       stylelint:
         specifier: 17.11.1
         version: 17.11.1(typescript@6.0.3)
@@ -172,7 +172,7 @@ importers:
         version: 8.0.13(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.4)
       vite-plugin-solid:
         specifier: 2.11.12
-        version: 2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.12)(vite@8.0.13(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.4))
+        version: 2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.13)(vite@8.0.13(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.4))
       vitest:
         specifier: 4.1.6
         version: 4.1.6(@types/node@24.12.4)(@vitest/coverage-v8@4.1.6)(jsdom@29.1.1(@noble/hashes@1.8.0))(msw@2.12.14(@types/node@24.12.4)(typescript@6.0.3))(vite@8.0.13(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.4))
@@ -217,7 +217,7 @@ importers:
         version: 5.0.5(@types/node@24.12.4)(@types/react-dom@18.3.7(@types/react@18.3.28))(@types/react@18.3.28)(jiti@2.6.1)(lightningcss@1.32.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(terser@5.46.0)(yaml@2.8.4)
       '@astrojs/solid-js':
         specifier: 6.0.1
-        version: 6.0.1(@testing-library/jest-dom@6.9.1)(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(solid-js@1.9.12)(terser@5.46.0)(yaml@2.8.4)
+        version: 6.0.1(@testing-library/jest-dom@6.9.1)(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(solid-js@1.9.13)(terser@5.46.0)(yaml@2.8.4)
       '@clerk/astro':
         specifier: 3.2.3
         version: 3.2.3(astro@5.18.1(@types/node@24.12.4)(aws4fetch@1.0.20)(jiti@2.6.1)(lightningcss@1.32.0)(rollup@4.59.0)(terser@5.46.0)(typescript@6.0.3)(yaml@2.8.4))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -321,8 +321,8 @@ importers:
         specifier: 4.0.2
         version: 4.0.2
       solid-js:
-        specifier: 1.9.12
-        version: 1.9.12
+        specifier: 1.9.13
+        version: 1.9.13
       stripe:
         specifier: 22.1.1
         version: 22.1.1(@types/node@24.12.4)
@@ -9175,6 +9175,9 @@ packages:
   solid-js@1.9.12:
     resolution: {integrity: sha512-QzKaSJq2/iDrWR1As6MHZQ8fQkdOBf8GReYb7L5iKwMGceg7HxDcaOHk0at66tNgn9U2U7dXo8ZZpLIAmGMzgw==}
 
+  solid-js@1.9.13:
+    resolution: {integrity: sha512-6hJeJMOcEX8ktqjpDoJZEmld3ijvcvWBDtiXBm7f4332SiFN66QeAQI1REQshvyUoISsSeJ4PHDauKYbwao9JQ==}
+
   solid-refresh@0.6.3:
     resolution: {integrity: sha512-F3aPsX6hVw9ttm5LYlth8Q15x6MlI/J3Dn+o3EQyRTtTxidepSTwAYdozt01/YA+7ObcciagGEyXIopGZzQtbA==}
     peerDependencies:
@@ -10815,11 +10818,11 @@ snapshots:
       - tsx
       - yaml
 
-  '@astrojs/solid-js@6.0.1(@testing-library/jest-dom@6.9.1)(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(solid-js@1.9.12)(terser@5.46.0)(yaml@2.8.4)':
+  '@astrojs/solid-js@6.0.1(@testing-library/jest-dom@6.9.1)(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(solid-js@1.9.13)(terser@5.46.0)(yaml@2.8.4)':
     dependencies:
-      solid-js: 1.9.12
+      solid-js: 1.9.13
       vite: 7.3.2(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.4)
-      vite-plugin-solid: 2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.12)(vite@7.3.2(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.4))
+      vite-plugin-solid: 2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.13)(vite@7.3.2(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.4))
     transitivePeerDependencies:
       - '@testing-library/jest-dom'
       - '@types/node'
@@ -15891,6 +15894,13 @@ snapshots:
     optionalDependencies:
       solid-js: 1.9.12
 
+  babel-preset-solid@1.9.12(@babel/core@7.29.0)(solid-js@1.9.13):
+    dependencies:
+      '@babel/core': 7.29.0
+      babel-plugin-jsx-dom-expressions: 0.40.6(@babel/core@7.29.0)
+    optionalDependencies:
+      solid-js: 1.9.13
+
   bail@2.0.2: {}
 
   balanced-match@1.0.2: {}
@@ -16512,13 +16522,13 @@ snapshots:
       esast-util-from-estree: 2.0.0
       vfile-message: 4.0.3
 
-  esbuild-plugin-solid@0.6.0(esbuild@0.27.4)(solid-js@1.9.12):
+  esbuild-plugin-solid@0.6.0(esbuild@0.27.4)(solid-js@1.9.13):
     dependencies:
       '@babel/core': 7.29.0
       '@babel/preset-typescript': 7.28.5(@babel/core@7.29.0)
-      babel-preset-solid: 1.9.12(@babel/core@7.29.0)(solid-js@1.9.12)
+      babel-preset-solid: 1.9.12(@babel/core@7.29.0)(solid-js@1.9.13)
       esbuild: 0.27.4
-      solid-js: 1.9.12
+      solid-js: 1.9.13
     transitivePeerDependencies:
       - supports-color
 
@@ -20231,12 +20241,18 @@ snapshots:
       seroval: 1.5.1
       seroval-plugins: 1.5.1(seroval@1.5.1)
 
-  solid-refresh@0.6.3(solid-js@1.9.12):
+  solid-js@1.9.13:
+    dependencies:
+      csstype: 3.2.3
+      seroval: 1.5.1
+      seroval-plugins: 1.5.1(seroval@1.5.1)
+
+  solid-refresh@0.6.3(solid-js@1.9.13):
     dependencies:
       '@babel/generator': 7.29.1
       '@babel/helper-module-imports': 7.28.6
       '@babel/types': 7.29.0
-      solid-js: 1.9.12
+      solid-js: 1.9.13
     transitivePeerDependencies:
       - supports-color
 
@@ -21007,14 +21023,14 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite-plugin-solid@2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.12)(vite@7.3.2(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.4)):
+  vite-plugin-solid@2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.13)(vite@7.3.2(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.4)):
     dependencies:
       '@babel/core': 7.29.0
       '@types/babel__core': 7.20.5
-      babel-preset-solid: 1.9.12(@babel/core@7.29.0)(solid-js@1.9.12)
+      babel-preset-solid: 1.9.12(@babel/core@7.29.0)(solid-js@1.9.13)
       merge-anything: 5.1.7
-      solid-js: 1.9.12
-      solid-refresh: 0.6.3(solid-js@1.9.12)
+      solid-js: 1.9.13
+      solid-refresh: 0.6.3(solid-js@1.9.13)
       vite: 7.3.2(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.4)
       vitefu: 1.1.2(vite@7.3.2(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.8.4))
     optionalDependencies:
@@ -21022,14 +21038,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  vite-plugin-solid@2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.12)(vite@8.0.13(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.4)):
+  vite-plugin-solid@2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.13)(vite@8.0.13(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.4)):
     dependencies:
       '@babel/core': 7.29.0
       '@types/babel__core': 7.20.5
-      babel-preset-solid: 1.9.12(@babel/core@7.29.0)(solid-js@1.9.12)
+      babel-preset-solid: 1.9.12(@babel/core@7.29.0)(solid-js@1.9.13)
       merge-anything: 5.1.7
-      solid-js: 1.9.12
-      solid-refresh: 0.6.3(solid-js@1.9.12)
+      solid-js: 1.9.13
+      solid-refresh: 0.6.3(solid-js@1.9.13)
       vite: 8.0.13(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.4)
       vitefu: 1.1.2(vite@8.0.13(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.8.4))
     optionalDependencies:
