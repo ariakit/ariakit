@@ -17,6 +17,16 @@ test("parsePlusPriceKey parses personal and team keys", () => {
     currency: "usd",
     countryCode: undefined,
   });
+  expect(parsePlusPriceKey("ariakit-plus-usd-br")).toEqual({
+    type: "personal",
+    currency: "usd",
+    countryCode: "br",
+  });
+  expect(parsePlusPriceKey("ariakit-plus-team-eur")).toEqual({
+    type: "team",
+    currency: "eur",
+    countryCode: undefined,
+  });
   expect(parsePlusPriceKey("ariakit-plus-team-eur-br")).toEqual({
     type: "team",
     currency: "eur",
