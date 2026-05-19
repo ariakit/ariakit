@@ -14,6 +14,11 @@
       "enabled": false
     },
     {
+      "matchFileNames": ["app/package.json"],
+      "matchPackageNames": ["vite"],
+      "allowedVersions": "/^7\\./"
+    },
+    {
       "matchPackageNames": ["tailwindcss"],
       "matchCurrentVersion": "/^3\\./",
       "enabled": false
