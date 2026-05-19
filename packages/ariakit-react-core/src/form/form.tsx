@@ -1,6 +1,11 @@
 import { isTextField } from "@ariakit/core/utils/dom";
 import { invariant } from "@ariakit/core/utils/misc";
-import type { ElementType, FocusEvent, FormEvent } from "react";
+import type {
+  ComponentPropsWithRef,
+  ElementType,
+  FocusEvent,
+  FormEvent,
+} from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   useEvent,
@@ -19,6 +24,9 @@ import type { FormStore, FormStoreState } from "./form-store.ts";
 const TagName = "form" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+type FormSubmitEvent = Parameters<
+  NonNullable<ComponentPropsWithRef<TagName>["onSubmit"]>
+>[0];
 
 function isField(element: HTMLElement, items: FormStoreState["items"]) {
   return items.some(
@@ -104,7 +112,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
 
   const onSubmitProp = props.onSubmit;
 
-  const onSubmit = useEvent((event: FormEvent<HTMLType>) => {
+  const onSubmit = useEvent((event: FormSubmitEvent) => {
     onSubmitProp?.(event);
     if (event.defaultPrevented) return;
     event.preventDefault();

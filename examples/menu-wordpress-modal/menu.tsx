@@ -114,14 +114,16 @@ export function createMenuSlot(name: string, bubblesVirtually = false) {
     );
   };
 
-  const Fill = (props: { children: React.ReactNode }) => {
+  const Fill = (props: React.ComponentProps<typeof SlotFill.Fill>) => {
     if (!bubblesVirtually) return <SlotFill.Fill {...props} />;
     return (
       <SlotFill.Fill>
         {(menu) => (
           // Re-create the menu context within the fill tree
           <MenuContext.Provider value={menu as Ariakit.MenuStore}>
-            {props.children}
+            {typeof props.children === "function"
+              ? props.children(menu)
+              : props.children}
           </MenuContext.Provider>
         )}
       </SlotFill.Fill>
