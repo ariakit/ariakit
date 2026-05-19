@@ -13,7 +13,12 @@ import { getActionContext } from "astro:actions";
 import { isAdmin } from "./lib/auth.ts";
 import { unauthorized } from "./lib/response.ts";
 
-const clerk = clerkMiddleware();
+let clerk: ReturnType<typeof clerkMiddleware> | undefined;
+
+function getClerkMiddleware() {
+  clerk ??= clerkMiddleware();
+  return clerk;
+}
 
 function isPublicRoute(url: URL) {
   if (url.pathname.startsWith("/r/")) return true;
@@ -35,10 +40,12 @@ export async function onRequest(context: APIContext, next: MiddlewareNext) {
     return next();
   }
 
-  const response = await clerk(context, next);
+  const response = await getClerkMiddleware()(context, next);
 
-  if (isAdminAction && !(await isAdmin(context))) {
-    return unauthorized();
+  if (isAdminAction) {
+    if (!(await isAdmin(context))) {
+      return unauthorized();
+    }
   }
 
   return response;

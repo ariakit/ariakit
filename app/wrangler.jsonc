@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "ariakit",
-  "main": "./app/dist/_worker.js/index.js",
+  "main": "./src/worker.ts",
   "preview_urls": false,
   "compatibility_date": "2026-03-27",
   "compatibility_flags": ["nodejs_compat"],
@@ -17,7 +17,7 @@
   },
   "assets": {
     "binding": "ASSETS",
-    "directory": "./app/dist",
+    "directory": "./dist",
   },
   "kv_namespaces": [
     {
@@ -41,6 +41,20 @@
     "preview": {
       "name": "ariakit-preview",
       "preview_urls": true,
+      "kv_namespaces": [
+        {
+          "binding": "SESSION",
+          "id": "77a040b4f42e4f2f984fb81b9d7866af",
+        },
+      ],
+      "previews": {
+        "kv_namespaces": [
+          {
+            "binding": "SESSION",
+            "id": "77a040b4f42e4f2f984fb81b9d7866af",
+          },
+        ],
+      },
     },
   },
 }

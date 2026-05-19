@@ -32,15 +32,10 @@ import TimelineAnchor from "#app/components/timeline-anchor.astro";
 import TimelineAnimate from "#app/components/timeline-animate.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { descriptionToText } from "#app/lib/content.ts";
-import { rehypeAsTagName } from "#app/lib/rehype.ts";
 import { trimRight } from "#app/lib/string.ts";
 import { mapTags } from "#app/lib/tags.ts";
 import { getReferencePath } from "#app/lib/url.ts";
 import Layout from "#app/pages/_layout.astro";
-import {
-  type RehypePlugin,
-  createMarkdownProcessor,
-} from "@astrojs/markdown-remark";
 import type { GetStaticPaths } from "astro";
 import { getCollection, render } from "astro:content";
 
@@ -117,11 +112,7 @@ headings.unshift(
 
 const tags = mapTags(entry.data.tags, [framework]);
 const title = entry.data.title;
-const descriptionText = await descriptionToText(
-  Description,
-  framework,
-  components,
-);
+const descriptionText = await descriptionToText(description?.body, framework);
 
 // Build href to the full API reference page for the default reference
 const referenceHref = reference && getReferencePath({ reference });
@@ -180,21 +171,6 @@ function isCurrentHref(href: string, pathname = Astro.url.pathname) {
   return trimRight(pathname, "/") === trimRight(url.pathname, "/");
 }
 
-// TODO: This should be a singleton.
-const processor = await createMarkdownProcessor({
-  syntaxHighlight: false,
-  rehypePlugins: [
-    [
-      rehypeAsTagName as RehypePlugin,
-      { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
-    ],
-  ],
-});
-
-async function parseDescription(description: string) {
-  const result = await processor.render(description);
-  return result.code;
-}
 ---
 
 <Layout title={title}>

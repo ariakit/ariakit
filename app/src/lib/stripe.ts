@@ -32,8 +32,12 @@ import {
 import { getCountryCode, getCurrency } from "./locale.ts";
 import { createLogger } from "./logger.ts";
 import { objectId } from "./object.ts";
+import { getPlusPriceKey } from "./price-key.ts";
 import type { PlusType, PriceData, PromoData } from "./schemas.ts";
 import { PlusTypeSchema } from "./schemas.ts";
+
+export { getPlusPriceKey, parsePlusPriceKey } from "./price-key.ts";
+export type { GetPlusPriceKeyParams } from "./price-key.ts";
 
 const logger = createLogger("stripe");
 
@@ -153,7 +157,7 @@ export async function createSalePromo({
     max_redemptions: maxRedemptions,
     expires_at: expiresAtTime,
   });
-  await putPromo(context, {
+  await putPromo({
     id: promo.id,
     type: user ? "customer" : "sale",
     user: user ? objectId(user) : null,
@@ -189,37 +193,6 @@ export async function createCustomer({
   return customer;
 }
 
-export interface GetPlusPriceKeyParams {
-  type?: PlusType;
-  currency?: string;
-  countryCode?: string;
-}
-
-export function getPlusPriceKey({
-  type = "personal",
-  currency = "USD",
-  countryCode,
-}: GetPlusPriceKeyParams) {
-  const isPersonal = type === "personal";
-  const lowercaseCurrency = currency.toLowerCase();
-  const country = countryCode ? `-${countryCode.toLowerCase()}` : "";
-  return isPersonal
-    ? `ariakit-plus-${lowercaseCurrency}${country}`
-    : `ariakit-plus-${type}-${lowercaseCurrency}${country}`;
-}
-
-export function parsePlusPriceKey(key: string) {
-  const match = key.match(/ariakit-plus-(?:team-)?([a-z]+)(?:-([a-z]{2}))?$/);
-  if (!match) return {};
-  const [, currency, countryCode] = match;
-  if (!currency) return {};
-  return {
-    type: key.includes("team-") ? ("team" as const) : ("personal" as const),
-    currency,
-    countryCode,
-  };
-}
-
 export interface PlusPrice
   extends
     PriceData,
@@ -253,7 +226,7 @@ export async function getPlusPrice({
     getPlusPriceKey({ type, currency }),
     getPlusPriceKey({ type, currency: "USD" }),
   ];
-  const prices = await getPrices(context, keys);
+  const prices = await getPrices(keys);
   if (!prices.length) return null;
   const price = findInOrder(prices, "key", keys);
   if (!price) return null;
@@ -270,7 +243,6 @@ export async function getPlusPrice({
 
   const originalAmount = price.amount - credit;
   const promo = await getBestPromo({
-    context,
     user: userId,
     product: price.product,
   });
@@ -400,11 +372,11 @@ export async function processCheckout({
   if (!clerkId) {
     return logger.error("No clerk ID in session metadata", session.id);
   }
-  if (await isEventProcessed(context, session.id)) {
+  if (await isEventProcessed(session.id)) {
     logger.info("Checkout session already processed", session.id);
     return session;
   }
-  await processEvent(context, session.id);
+  await processEvent(session.id);
   if (type === "team") {
     if (Number(creditUsed)) {
       await removePlusFromUser({ context, user: clerkId });

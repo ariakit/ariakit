@@ -5,7 +5,7 @@ export default defineConfig({
   sortImports: { newlinesBetween: false },
   ignorePatterns: [
     "*.css",
-    "worker-configuration.d.ts",
+    "**/worker-configuration.d.ts",
     "packages/ariakit-*/package.json",
   ],
 });

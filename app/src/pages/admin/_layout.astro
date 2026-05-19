@@ -20,7 +20,7 @@ function getAriaCurrent(path: string) {
 }
 
 async function getLastSynced() {
-  const lastSynced = await getAdminLastSync(Astro);
+  const lastSynced = await getAdminLastSync();
   if (!lastSynced) return "never";
   return formatDistanceToNow(new Date(lastSynced * 1000));
 }

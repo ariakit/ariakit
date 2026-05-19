@@ -31,7 +31,7 @@ if (formRequest) {
 }
 
 async function getPriceData() {
-  const prices = await getPrices(Astro);
+  const prices = await getPrices();
   const personalPrices = prices.filter((price) => price.type === "personal");
   return personalPrices.map((personal) => {
     const { countryCode } = parsePlusPriceKey(personal.key);

@@ -10,7 +10,7 @@
 import { z } from "zod";
 import { frameworks } from "./frameworks.ts";
 import { keys } from "./object.ts";
-import { parsePlusPriceKey } from "./stripe.ts";
+import { parsePlusPriceKey } from "./price-key.ts";
 import { tags } from "./tags.ts";
 
 export const FRAMEWORKS = keys(frameworks);

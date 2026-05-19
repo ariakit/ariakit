@@ -20,13 +20,17 @@ jobs:
         uses: ./.github/workflows/setup
 
       - name: Build app
+        env:
+          CLOUDFLARE_ENV: preview
         run: pnpm -F app run build-lite
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v7
         with:
-          name: app-dist
-          path: app/dist
+          name: app-build
+          path: |
+            app/dist
+            app/.wrangler/deploy/config.json
           retention-days: 7
           include-hidden-files: true
 
@@ -103,8 +107,8 @@ jobs:
       - name: Download app artifact
         uses: actions/download-artifact@v8
         with:
-          name: app-dist
-          path: app/dist
+          name: app-build
+          path: app
 
       - name: Download Next.js artifact
         uses: actions/download-artifact@v8
@@ -274,8 +278,8 @@ jobs:
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
-          name: app-dist
-          path: ${{ runner.temp }}/perf-baseline/app/dist
+          name: app-build
+          path: ${{ runner.temp }}/perf-baseline/app
           github-token: ${{ github.token }}
           run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
@@ -292,11 +296,17 @@ jobs:
 
       - name: Clean partial base artifacts
         if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
-        run: rm -rf "$BASELINE_DIR/app/dist" "$BASELINE_DIR/nextjs/.open-next"
+        run: |
+          rm -rf \
+            "$BASELINE_DIR/app/dist" \
+            "$BASELINE_DIR/app/.wrangler" \
+            "$BASELINE_DIR/nextjs/.open-next"
 
       - name: Build base app
         if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
         working-directory: ${{ runner.temp }}/perf-baseline
+        env:
+          CLOUDFLARE_ENV: preview
         run: pnpm -F app run build-lite
 
       - name: Build base Next.js app
@@ -305,13 +315,13 @@ jobs:
         run: pnpm -F nextjs run build-worker
 
       - name: Clean current app artifacts
-        run: rm -rf app/dist nextjs/.open-next
+        run: rm -rf app/dist app/.wrangler nextjs/.open-next
 
       - name: Download app artifact
         uses: actions/download-artifact@v8
         with:
-          name: app-dist
-          path: app/dist
+          name: app-build
+          path: app
 
       - name: Download Next.js artifact
         uses: actions/download-artifact@v8

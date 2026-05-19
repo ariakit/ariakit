@@ -77,10 +77,31 @@ jobs:
           fi
           echo "has_changes=true" >> "$GITHUB_OUTPUT"
 
-      - name: Commit or create PR
+      - name: Verify branch tip
+        id: branch
         if: >
           steps.patch.outputs.has_changes == 'true' &&
           env.WRITEBACK_ALLOWED == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          branch="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
+          git fetch --no-tags origin "$branch"
+          local_sha="$(git rev-parse HEAD)"
+          remote_sha="$(git rev-parse FETCH_HEAD)"
+          if [ "$local_sha" != "$remote_sha" ]; then
+            echo "Branch advanced from $local_sha to $remote_sha; skipping write-back."
+            echo "is_current=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "is_current=true" >> "$GITHUB_OUTPUT"
+          echo "local_sha=$local_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Commit or create PR
+        if: >
+          steps.patch.outputs.has_changes == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true' &&
+          steps.branch.outputs.is_current == 'true'
         uses: ./.github/workflows/commit-or-pr
         with:
           # This write-back step intentionally assumes PRs come from branches
@@ -90,6 +111,7 @@ jobs:
           event: ${{ github.event_name }}
           message: Update OG images
           head-branch: ${{ github.head_ref || github.ref_name }}
+          expected-head-sha: ${{ steps.branch.outputs.local_sha }}
           new-branch: chore/update-og-images
           paths: app/public/og-image
           app-client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
