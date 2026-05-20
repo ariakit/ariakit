@@ -1,14 +1,7 @@
 import { click, hover, press, q, type, waitFor } from "@ariakit/test";
-import { beforeEach, expect, test, vi } from "vitest";
+import { expect, test, vi } from "vitest";
 
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
-
-let alert = spyOnAlert();
-
-beforeEach(() => {
-  alert = spyOnAlert();
-  return () => alert.mockClear();
-});
 
 test("show/hide on click", async () => {
   expect(q.menu()).not.toBeInTheDocument();
@@ -180,6 +173,7 @@ test("navigate through items with mouse", async () => {
 });
 
 test("menu item click", async () => {
+  using alert = spyOnAlert();
   await click(q.button("Actions"));
   expect(alert).toHaveBeenCalledTimes(0);
   await click(q.menuitem("Edit"));
@@ -189,6 +183,7 @@ test("menu item click", async () => {
 });
 
 test("menu item enter", async () => {
+  using alert = spyOnAlert();
   await press.Tab();
   await press.Enter();
   expect(alert).toHaveBeenCalledTimes(0);
@@ -199,6 +194,7 @@ test("menu item enter", async () => {
 });
 
 test("menu item space", async () => {
+  using alert = spyOnAlert();
   await press.Tab();
   await press.Space();
   expect(alert).toHaveBeenCalledTimes(0);
@@ -209,6 +205,7 @@ test("menu item space", async () => {
 });
 
 test("menu item hover enter", async () => {
+  using alert = spyOnAlert();
   await click(q.button("Actions"));
   expect(alert).toHaveBeenCalledTimes(0);
   await press.Enter();
@@ -221,6 +218,7 @@ test("menu item hover enter", async () => {
 });
 
 test("menu item hover space", async () => {
+  using alert = spyOnAlert();
   await click(q.button("Actions"));
   expect(alert).toHaveBeenCalledTimes(0);
   await press.Space();

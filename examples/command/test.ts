@@ -20,19 +20,17 @@ test("tab", async () => {
 });
 
 test("enter", async () => {
-  const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
+  using alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
   await press.Tab();
   expect(q.button()).toHaveFocus();
   await press.Enter();
   expect(alertMock).toHaveBeenCalledTimes(1);
-  alertMock.mockRestore();
 });
 
 test("space", async () => {
-  const alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
+  using alertMock = vi.spyOn(window, "alert").mockImplementation(() => {});
   await press.Tab();
   expect(q.button()).toHaveFocus();
   await press.Space();
   expect(alertMock).toHaveBeenCalledTimes(1);
-  alertMock.mockRestore();
 });

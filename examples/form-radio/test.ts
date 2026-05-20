@@ -1,14 +1,7 @@
 import { click, press, q } from "@ariakit/test";
-import { beforeEach, expect, test, vi } from "vitest";
+import { expect, test, vi } from "vitest";
 
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
-
-let alert = spyOnAlert();
-
-beforeEach(() => {
-  alert = spyOnAlert();
-  return () => alert.mockClear();
-});
 
 test("focus on the first radio button by tabbing", async () => {
   expect(q.radio("Red")).not.toHaveFocus();
@@ -50,16 +43,19 @@ test("fix error on change", async () => {
 });
 
 test("submit form", async () => {
+  using alert = spyOnAlert();
   await click(q.radio("Green"));
   await click(q.button("Submit"));
   expect(alert).toHaveBeenCalledWith(JSON.stringify({ color: "green" }));
 });
 
 test("reset form on submit", async () => {
+  using alert = spyOnAlert();
   await press.Tab();
   await press.Space();
   await press.Tab();
   await press.Enter();
+  expect(alert).toHaveBeenCalledTimes(1);
   expect(q.radio("Red")).not.toBeChecked();
   expect(q.radio("Green")).not.toBeChecked();
   expect(q.radio("Blue")).not.toBeChecked();
