@@ -1,14 +1,7 @@
 import { click, press, q, type } from "@ariakit/test";
-import { beforeEach, expect, test, vi } from "vitest";
+import { expect, test, vi } from "vitest";
 
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
-
-let alert = spyOnAlert();
-
-beforeEach(() => {
-  alert = spyOnAlert();
-  return () => alert.mockClear();
-});
 
 test("focus on the first input by tabbing", async () => {
   expect(q.textbox("Name")).not.toHaveFocus();
@@ -57,6 +50,7 @@ test("reset form on reset", async () => {
 });
 
 test("submit form", async () => {
+  using alert = spyOnAlert();
   await press.Tab();
   await type("John");
   await press.Tab();
@@ -68,11 +62,13 @@ test("submit form", async () => {
 });
 
 test("reset form on submit", async () => {
+  using alert = spyOnAlert();
   await press.Tab();
   await type("John");
   await press.Tab();
   await type("john@example.com");
   await press.Enter();
+  expect(alert).toHaveBeenCalledTimes(1);
   expect(q.textbox("Name")).toHaveValue("");
   expect(q.textbox("Email")).toHaveValue("");
 });

@@ -1,15 +1,8 @@
 import { click, press, q, type } from "@ariakit/test";
-import { beforeEach, expect, test, vi } from "vitest";
+import { expect, test, vi } from "vitest";
 
 const errors = () => q.text.all("Constraints not satisfied");
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
-
-let alert = spyOnAlert();
-
-beforeEach(() => {
-  alert = spyOnAlert();
-  return () => alert.mockClear();
-});
 
 test("click on label", async () => {
   await click(q.text("Favorite fruit"));
@@ -54,6 +47,7 @@ test("submit failed", async () => {
 });
 
 test("submit succeed", async () => {
+  using alert = spyOnAlert();
   await press.Tab();
   await type("John");
   await click(q.combobox());
