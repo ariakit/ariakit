@@ -68,7 +68,7 @@ runs:
 
     - name: Create PR
       if: inputs.event == 'push'
-      uses: peter-evans/create-pull-request@v8
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
       with:
         # Push workflows should not write directly to `main`; they publish
         # generated changes through a dedicated maintenance PR instead.
