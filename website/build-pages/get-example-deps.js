@@ -13,14 +13,7 @@ import { readPackageUpSync } from "read-package-up";
 import resolveFrom from "resolve-from";
 import ts from "typescript";
 
-const compilerOptions = {
-  module: ts.ModuleKind.ESNext,
-  moduleResolution: ts.ModuleResolutionKind.Bundler,
-  customConditions: ["ariakit-source", "solid"],
-  jsx: ts.JsxEmit.Preserve,
-  allowImportingTsExtensions: true,
-};
-const host = ts.createCompilerHost(compilerOptions);
+const host = ts.createCompilerHost({});
 let warnedAboutVersion = false;
 
 /**
@@ -90,12 +83,7 @@ function resolveSource(filename, source, resolvedModule) {
  * @param {string} filename
  */
 function assignExternal(deps, source, filename) {
-  const { resolvedModule } = ts.resolveModuleName(
-    source,
-    filename,
-    compilerOptions,
-    host,
-  );
+  const { resolvedModule } = ts.resolveModuleName(source, filename, {}, host);
   const external =
     resolvedModule?.isExternalLibraryImport ?? !source.startsWith(".");
 

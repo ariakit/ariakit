@@ -7,7 +7,6 @@
     "jsx": "react-jsx",
     "strict": true,
     "noEmit": true,
-    "customConditions": ["ariakit-source"],
     "allowImportingTsExtensions": true,
     "skipLibCheck": true
   },

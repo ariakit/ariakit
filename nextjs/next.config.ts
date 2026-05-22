@@ -1,22 +1,7 @@
-import { relative } from "node:path";
-import { getAriakitSourceAliases } from "@ariakit/scripts/ariakit-source";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import type { NextConfig } from "next";
 
-const ariakitSourceAliases = getAriakitSourceAliases();
-const ariakitTurbopackAliases = Object.fromEntries(
-  Object.entries(ariakitSourceAliases).map(([specifier, replacement]) => [
-    specifier,
-    relative(import.meta.dirname, replacement).replaceAll("\\", "/"),
-  ]),
-);
-
 const config: NextConfig = {
-  turbopack: {
-    // Turbopack doesn't expose custom package export conditions yet.
-    resolveAlias: ariakitTurbopackAliases,
-  },
-
   reactCompiler: true,
   typedRoutes: true,
   typescript: {

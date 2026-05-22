@@ -17,7 +17,7 @@
     "test": "vitest",
     "test-solid": "ARIAKIT_TEST_LOADER=solid vitest",
     "test-watch": "vitest watch",
-    "playwright": "cross-env NODE_OPTIONS=--conditions=ariakit-source playwright test",
+    "playwright": "playwright test",
     "test-browser": "pnpm run playwright --project=chrome --project=safari --project=firefox",
     "test-browser-solid": "cross-env ARIAKIT_TEST_LOADER=solid pnpm run playwright --project=chrome --project=safari --project=firefox",
     "test-browser-headed": "pnpm run playwright --project=chrome --project=safari --project=firefox --headed",

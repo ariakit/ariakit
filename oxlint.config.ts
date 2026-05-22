@@ -20,9 +20,6 @@ export default defineConfig({
     "iframe-missing-sandbox": "off",
     "consistent-return": "off",
     "no-unnecessary-type-arguments": "off",
-    // The import plugin resolves workspace export maps through the JS output,
-    // where type-only namespace exports don't exist.
-    "import/namespace": "off",
     "consistent-type-imports": ["error", { fixStyle: "separate-type-imports" }],
     "no-unused-vars": [
       "error",
@@ -54,13 +51,6 @@ export default defineConfig({
       // Disable this rule for the app because some types depend on the app
       // being built first, and linting may run before the app is built.
       files: ["app/src/lib/**/*.ts"],
-      rules: {
-        "no-redundant-type-constituents": "off",
-      },
-    },
-    {
-      // Oxlint's import plugin doesn't expose custom package export conditions.
-      files: ["examples/**/*.tsx"],
       rules: {
         "no-redundant-type-constituents": "off",
       },

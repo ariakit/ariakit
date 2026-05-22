@@ -34,12 +34,6 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   webpack(config, context) {
-    // Webpack uses "..." to keep its default export conditions.
-    config.resolve.conditionNames = [
-      "ariakit-source",
-      ...(config.resolve.conditionNames ?? ["..."]),
-    ];
-
     if (context.isServer) {
       config.plugins.push(
         new context.webpack.DefinePlugin({

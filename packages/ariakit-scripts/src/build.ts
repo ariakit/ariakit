@@ -7,6 +7,7 @@ import solidPlugin from "vite-plugin-solid";
 
 interface PackageJson {
   name: string;
+  scripts?: Record<string, string>;
   exports?: Record<string, unknown>;
   dependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
@@ -20,10 +21,14 @@ interface PublicFile {
 }
 
 interface BuildOptions {
-  clean?: boolean;
   indexOnly?: boolean;
-  updateExports?: boolean;
 }
+
+interface CleanOptions {
+  indexOnly?: boolean;
+}
+
+type ExportMode = "source" | "build";
 
 const sourceDir = "src";
 const distDir = "dist";
@@ -52,26 +57,39 @@ function readPackageJson(rootPath: string): PackageJson {
 
 function writePackageJson(rootPath: string, packageJson: PackageJson) {
   const packageJsonPath = join(rootPath, "package.json");
-  writeFileSync(packageJsonPath, `${JSON.stringify(packageJson, null, 2)}\n`);
+  const currentContents = readFileSync(packageJsonPath, "utf-8");
+  const nextContents = `${JSON.stringify(packageJson, null, 2)}\n`;
+  const currentContentsMin = JSON.stringify(JSON.parse(currentContents));
+  const nextContentsMin = JSON.stringify(JSON.parse(nextContents));
+  if (currentContentsMin === nextContentsMin) return;
+  writeFileSync(packageJsonPath, nextContents);
 }
 
 function isDirectory(path: string) {
   return lstatSync(path).isDirectory();
 }
 
-async function getPublicFiles(rootPath: string, prefix = "") {
+async function getPublicFiles(
+  sourcePath: string,
+  rootPath: string,
+  prefix = "",
+) {
   const files: PublicFile[] = [];
-  const entries = await readdir(rootPath);
+  const entries = await readdir(sourcePath);
   const sortedEntries = entries.sort((a, b) => a.localeCompare(b));
 
   for (const entry of sortedEntries) {
     if (isPrivateModule(entry)) continue;
 
-    const entryPath = join(rootPath, entry);
+    const entryPath = join(sourcePath, entry);
     const prefixedPath = join(prefix, entry);
 
     if (isDirectory(entryPath)) {
-      const childFiles = await getPublicFiles(entryPath, prefixedPath);
+      const childFiles = await getPublicFiles(
+        entryPath,
+        rootPath,
+        prefixedPath,
+      );
       files.push(...childFiles);
       continue;
     }
@@ -81,15 +99,15 @@ async function getPublicFiles(rootPath: string, prefix = "") {
     files.push({
       name: removeExtension(normalizePath(prefixedPath)),
       path: entryPath,
-      source: `./${normalizePath(relative(process.cwd(), entryPath))}`,
+      source: `./${normalizePath(relative(rootPath, entryPath))}`,
     });
   }
 
   return files;
 }
 
-async function getIndexFile(rootPath: string) {
-  const files = await getPublicFiles(rootPath);
+async function getIndexFile(sourcePath: string, rootPath: string) {
+  const files = await getPublicFiles(sourcePath, rootPath);
   const indexFile = files.find((file) => file.name === "index");
 
   if (!indexFile) {
@@ -104,10 +122,11 @@ function getExportName(name: string) {
   return `./${name.replace(/\/index$/, "")}`;
 }
 
-function getExportValue(file: PublicFile, isSolid: boolean) {
+function getExportValue(file: PublicFile, isSolid: boolean, mode: ExportMode) {
+  if (mode === "source") return file.source;
+
   const name = file.name;
   return {
-    "ariakit-source": file.source,
     types: `./${distDir}/${name}.d.ts`,
     ...(isSolid && { solid: `./${solidDir}/${name}.jsx` }),
     import: `./${distDir}/${name}.js`,
@@ -139,6 +158,7 @@ function isSolidPackage(packageJson: PackageJson) {
 async function updatePackageExports(
   rootPath: string,
   publicFiles: PublicFile[],
+  mode: ExportMode,
 ) {
   const packageJson = readPackageJson(rootPath);
   const isSolid = isSolidPackage(packageJson);
@@ -146,7 +166,7 @@ async function updatePackageExports(
   const exports = Object.fromEntries(
     sortedPublicFiles.map((file) => [
       getExportName(file.name),
-      getExportValue(file, isSolid),
+      getExportValue(file, isSolid, mode),
     ]),
   );
 
@@ -156,6 +176,27 @@ async function updatePackageExports(
   };
 
   writePackageJson(rootPath, packageJson);
+}
+
+function shouldUseIndexOnly(packageJson: PackageJson, options: BuildOptions) {
+  if (options.indexOnly) return true;
+  return packageJson.scripts?.build?.includes("--index-only") ?? false;
+}
+
+async function getPackagePublicFiles(rootPath: string, options: BuildOptions) {
+  const sourcePath = join(rootPath, sourceDir);
+  const packageJson = readPackageJson(rootPath);
+  return shouldUseIndexOnly(packageJson, options)
+    ? await getIndexFile(sourcePath, rootPath)
+    : await getPublicFiles(sourcePath, rootPath);
+}
+
+export async function updateSourcePackageJson(
+  rootPath: string,
+  options: CleanOptions = {},
+) {
+  const publicFiles = await getPackagePublicFiles(rootPath, options);
+  await updatePackageExports(rootPath, publicFiles, "source");
 }
 
 function getExternal(packageJson: PackageJson) {
@@ -253,9 +294,6 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
         build: true,
         incremental: false,
         sourcemap: true,
-        compilerOptions: {
-          customConditions: ["ariakit-source"],
-        },
       }),
     ],
   });
@@ -282,26 +320,30 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
   }
 }
 
-export async function build(options: BuildOptions) {
+export async function build(options: BuildOptions = {}) {
   const rootPath = process.cwd();
   const packageJson = readPackageJson(rootPath);
   const isSolid = isSolidPackage(packageJson);
 
-  if (options.clean) {
-    cleanOutput(rootPath, isSolid);
-    return;
-  }
+  const publicFiles = await getPackagePublicFiles(rootPath, options);
 
-  const sourcePath = join(rootPath, sourceDir);
-  const publicFiles = options.indexOnly
-    ? await getIndexFile(sourcePath)
-    : await getPublicFiles(sourcePath);
-
-  if (options.updateExports) {
-    await updatePackageExports(rootPath, publicFiles);
-    writeGitignore(rootPath, isSolid);
-    writeNpmignore(rootPath);
-  }
-
+  await updatePackageExports(rootPath, publicFiles, "build");
+  writeGitignore(rootPath, isSolid);
+  writeNpmignore(rootPath);
   await buildDist(rootPath, publicFiles);
+}
+
+export async function clean(options: CleanOptions = {}) {
+  const rootPath = process.cwd();
+  await cleanPackage(rootPath, options);
+}
+
+export async function cleanPackage(
+  rootPath: string,
+  options: CleanOptions = {},
+) {
+  const packageJson = readPackageJson(rootPath);
+  const isSolid = isSolidPackage(packageJson);
+  await updateSourcePackageJson(rootPath, options);
+  cleanOutput(rootPath, isSolid);
 }

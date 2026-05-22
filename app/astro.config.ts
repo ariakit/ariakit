@@ -18,11 +18,6 @@ import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import {
-  defaultClientConditions,
-  type EnvironmentOptions,
-  type PluginOption,
-} from "vite";
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
 import {
   rehypeAdmonitions,
@@ -38,43 +33,6 @@ try {
 
 const port = Number(process.env.APP_PORT) || 4321;
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
-const sourceConditions = [
-  "ariakit-source",
-  ...defaultClientConditions.filter((condition) => condition !== "module"),
-];
-
-function addSourceCondition(conditions: readonly string[]) {
-  return [
-    "ariakit-source",
-    ...conditions.filter((condition, index) => {
-      if (condition === "ariakit-source") return false;
-      return conditions.indexOf(condition) === index;
-    }),
-  ];
-}
-
-function getSourceResolveOptions(resolve?: EnvironmentOptions["resolve"]) {
-  const nextResolve = {
-    ...resolve,
-    conditions: addSourceCondition(resolve?.conditions ?? sourceConditions),
-  };
-  if (!resolve?.externalConditions) return nextResolve;
-  return {
-    ...nextResolve,
-    externalConditions: addSourceCondition(resolve.externalConditions),
-  };
-}
-
-function ariakitSourcePlugin(): PluginOption {
-  return {
-    name: "ariakit-source",
-    configEnvironment(_name, options) {
-      return {
-        resolve: getSourceResolveOptions(options.resolve),
-      };
-    },
-  };
-}
 
 // https://astro.build/config
 export default defineConfig({
@@ -101,7 +59,6 @@ export default defineConfig({
 
   vite: {
     plugins: [
-      ariakitSourcePlugin(),
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],

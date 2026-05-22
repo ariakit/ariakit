@@ -22,8 +22,8 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "build": "ariakit build --update-exports --index-only",
-    "clean": "ariakit build --clean"
+    "build": "ariakit build --index-only",
+    "clean": "ariakit clean"
   },
   "dependencies": {
     "@ariakit/store": "workspace:*",
@@ -36,11 +36,7 @@
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "exports": {
-    ".": {
-      "ariakit-source": "./src/index.ts",
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
+    ".": "./src/index.ts",
     "./package.json": "./package.json"
   }
 }

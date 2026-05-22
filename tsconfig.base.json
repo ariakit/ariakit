@@ -3,7 +3,6 @@
     "target": "es2018",
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "customConditions": ["ariakit-source"],
     "types": ["node"],
     "lib": ["DOM", "ESNext"],
     "outDir": ".typescript",

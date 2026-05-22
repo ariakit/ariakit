@@ -29,8 +29,8 @@
   "type": "module",
   "sideEffects": false,
   "scripts": {
-    "build": "ariakit build --update-exports --index-only",
-    "clean": "ariakit build --clean"
+    "build": "ariakit build --index-only",
+    "clean": "ariakit clean"
   },
   "dependencies": {
     "@ariakit/utils": "workspace:*",
@@ -41,12 +41,7 @@
     "solid-js": "^1.8"
   },
   "exports": {
-    ".": {
-      "ariakit-source": "./src/index.ts",
-      "types": "./dist/index.d.ts",
-      "solid": "./solid/index.jsx",
-      "import": "./dist/index.js"
-    },
+    ".": "./src/index.ts",
     "./package.json": "./package.json"
   }
 }
