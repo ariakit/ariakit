@@ -25,6 +25,11 @@
     "clean": "ariakit build --clean"
   },
   "exports": {
+    ".": {
+      "ariakit-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
     "./checkbox/checkbox-store": {
       "ariakit-source": "./src/checkbox/checkbox-store.ts",
       "types": "./dist/checkbox/checkbox-store.d.ts",
@@ -74,11 +79,6 @@
       "ariakit-source": "./src/hovercard/hovercard-store.ts",
       "types": "./dist/hovercard/hovercard-store.d.ts",
       "import": "./dist/hovercard/hovercard-store.js"
-    },
-    ".": {
-      "ariakit-source": "./src/index.ts",
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
     },
     "./menu/menu-bar-store": {
       "ariakit-source": "./src/menu/menu-bar-store.ts",

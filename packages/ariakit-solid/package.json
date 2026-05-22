@@ -46,6 +46,12 @@
     "solid-js": "^1.8"
   },
   "exports": {
+    ".": {
+      "ariakit-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "solid": "./solid/index.jsx",
+      "import": "./dist/index.js"
+    },
     "./as": {
       "ariakit-source": "./src/as.ts",
       "types": "./dist/as.d.ts",
@@ -69,12 +75,6 @@
       "types": "./dist/heading.d.ts",
       "solid": "./solid/heading.jsx",
       "import": "./dist/heading.js"
-    },
-    ".": {
-      "ariakit-source": "./src/index.ts",
-      "types": "./dist/index.d.ts",
-      "solid": "./solid/index.jsx",
-      "import": "./dist/index.js"
     },
     "./role": {
       "ariakit-source": "./src/role.ts",

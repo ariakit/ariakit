@@ -49,6 +49,11 @@
     }
   },
   "exports": {
+    ".": {
+      "ariakit-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
     "./blur": {
       "ariakit-source": "./src/blur.ts",
       "types": "./dist/blur.d.ts",
@@ -73,11 +78,6 @@
       "ariakit-source": "./src/hover.ts",
       "types": "./dist/hover.d.ts",
       "import": "./dist/hover.js"
-    },
-    ".": {
-      "ariakit-source": "./src/index.ts",
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
     },
     "./mouse-down": {
       "ariakit-source": "./src/mouse-down.ts",

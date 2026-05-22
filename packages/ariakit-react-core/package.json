@@ -42,10 +42,20 @@
     "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "exports": {
+    ".": {
+      "ariakit-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
     "./button/button": {
       "ariakit-source": "./src/button/button.tsx",
       "types": "./dist/button/button.d.ts",
       "import": "./dist/button/button.js"
+    },
+    "./checkbox/checkbox": {
+      "ariakit-source": "./src/checkbox/checkbox.tsx",
+      "types": "./dist/checkbox/checkbox.d.ts",
+      "import": "./dist/checkbox/checkbox.js"
     },
     "./checkbox/checkbox-check": {
       "ariakit-source": "./src/checkbox/checkbox-check.tsx",
@@ -72,25 +82,25 @@
       "types": "./dist/checkbox/checkbox-store.d.ts",
       "import": "./dist/checkbox/checkbox-store.js"
     },
-    "./checkbox/checkbox": {
-      "ariakit-source": "./src/checkbox/checkbox.tsx",
-      "types": "./dist/checkbox/checkbox.d.ts",
-      "import": "./dist/checkbox/checkbox.js"
+    "./collection/collection": {
+      "ariakit-source": "./src/collection/collection.tsx",
+      "types": "./dist/collection/collection.d.ts",
+      "import": "./dist/collection/collection.js"
     },
     "./collection/collection-context": {
       "ariakit-source": "./src/collection/collection-context.tsx",
       "types": "./dist/collection/collection-context.d.ts",
       "import": "./dist/collection/collection-context.js"
     },
-    "./collection/collection-item-offscreen": {
-      "ariakit-source": "./src/collection/collection-item-offscreen.tsx",
-      "types": "./dist/collection/collection-item-offscreen.d.ts",
-      "import": "./dist/collection/collection-item-offscreen.js"
-    },
     "./collection/collection-item": {
       "ariakit-source": "./src/collection/collection-item.tsx",
       "types": "./dist/collection/collection-item.d.ts",
       "import": "./dist/collection/collection-item.js"
+    },
+    "./collection/collection-item-offscreen": {
+      "ariakit-source": "./src/collection/collection-item-offscreen.tsx",
+      "types": "./dist/collection/collection-item-offscreen.d.ts",
+      "import": "./dist/collection/collection-item-offscreen.js"
     },
     "./collection/collection-provider": {
       "ariakit-source": "./src/collection/collection-provider.tsx",
@@ -107,10 +117,10 @@
       "types": "./dist/collection/collection-store.d.ts",
       "import": "./dist/collection/collection-store.js"
     },
-    "./collection/collection": {
-      "ariakit-source": "./src/collection/collection.tsx",
-      "types": "./dist/collection/collection.d.ts",
-      "import": "./dist/collection/collection.js"
+    "./combobox/combobox": {
+      "ariakit-source": "./src/combobox/combobox.tsx",
+      "types": "./dist/combobox/combobox.d.ts",
+      "import": "./dist/combobox/combobox.js"
     },
     "./combobox/combobox-cancel": {
       "ariakit-source": "./src/combobox/combobox-cancel.tsx",
@@ -127,15 +137,20 @@
       "types": "./dist/combobox/combobox-disclosure.d.ts",
       "import": "./dist/combobox/combobox-disclosure.js"
     },
+    "./combobox/combobox-group": {
+      "ariakit-source": "./src/combobox/combobox-group.tsx",
+      "types": "./dist/combobox/combobox-group.d.ts",
+      "import": "./dist/combobox/combobox-group.js"
+    },
     "./combobox/combobox-group-label": {
       "ariakit-source": "./src/combobox/combobox-group-label.tsx",
       "types": "./dist/combobox/combobox-group-label.d.ts",
       "import": "./dist/combobox/combobox-group-label.js"
     },
-    "./combobox/combobox-group": {
-      "ariakit-source": "./src/combobox/combobox-group.tsx",
-      "types": "./dist/combobox/combobox-group.d.ts",
-      "import": "./dist/combobox/combobox-group.js"
+    "./combobox/combobox-item": {
+      "ariakit-source": "./src/combobox/combobox-item.tsx",
+      "types": "./dist/combobox/combobox-item.d.ts",
+      "import": "./dist/combobox/combobox-item.js"
     },
     "./combobox/combobox-item-check": {
       "ariakit-source": "./src/combobox/combobox-item-check.tsx",
@@ -151,11 +166,6 @@
       "ariakit-source": "./src/combobox/combobox-item-value.tsx",
       "types": "./dist/combobox/combobox-item-value.d.ts",
       "import": "./dist/combobox/combobox-item-value.js"
-    },
-    "./combobox/combobox-item": {
-      "ariakit-source": "./src/combobox/combobox-item.tsx",
-      "types": "./dist/combobox/combobox-item.d.ts",
-      "import": "./dist/combobox/combobox-item.js"
     },
     "./combobox/combobox-label": {
       "ariakit-source": "./src/combobox/combobox-label.tsx",
@@ -197,15 +207,15 @@
       "types": "./dist/combobox/combobox-value.d.ts",
       "import": "./dist/combobox/combobox-value.js"
     },
-    "./combobox/combobox": {
-      "ariakit-source": "./src/combobox/combobox.tsx",
-      "types": "./dist/combobox/combobox.d.ts",
-      "import": "./dist/combobox/combobox.js"
-    },
     "./command/command": {
       "ariakit-source": "./src/command/command.tsx",
       "types": "./dist/command/command.d.ts",
       "import": "./dist/command/command.js"
+    },
+    "./composite/composite": {
+      "ariakit-source": "./src/composite/composite.tsx",
+      "types": "./dist/composite/composite.d.ts",
+      "import": "./dist/composite/composite.js"
     },
     "./composite/composite-container": {
       "ariakit-source": "./src/composite/composite-container.tsx",
@@ -217,15 +227,15 @@
       "types": "./dist/composite/composite-context.d.ts",
       "import": "./dist/composite/composite-context.js"
     },
-    "./composite/composite-group-label": {
-      "ariakit-source": "./src/composite/composite-group-label.tsx",
-      "types": "./dist/composite/composite-group-label.d.ts",
-      "import": "./dist/composite/composite-group-label.js"
-    },
     "./composite/composite-group": {
       "ariakit-source": "./src/composite/composite-group.tsx",
       "types": "./dist/composite/composite-group.d.ts",
       "import": "./dist/composite/composite-group.js"
+    },
+    "./composite/composite-group-label": {
+      "ariakit-source": "./src/composite/composite-group-label.tsx",
+      "types": "./dist/composite/composite-group-label.d.ts",
+      "import": "./dist/composite/composite-group-label.js"
     },
     "./composite/composite-hover": {
       "ariakit-source": "./src/composite/composite-hover.tsx",
@@ -237,15 +247,20 @@
       "types": "./dist/composite/composite-input.d.ts",
       "import": "./dist/composite/composite-input.js"
     },
+    "./composite/composite-item": {
+      "ariakit-source": "./src/composite/composite-item.tsx",
+      "types": "./dist/composite/composite-item.d.ts",
+      "import": "./dist/composite/composite-item.js"
+    },
     "./composite/composite-item-offscreen": {
       "ariakit-source": "./src/composite/composite-item-offscreen.tsx",
       "types": "./dist/composite/composite-item-offscreen.d.ts",
       "import": "./dist/composite/composite-item-offscreen.js"
     },
-    "./composite/composite-item": {
-      "ariakit-source": "./src/composite/composite-item.tsx",
-      "types": "./dist/composite/composite-item.d.ts",
-      "import": "./dist/composite/composite-item.js"
+    "./composite/composite-overflow": {
+      "ariakit-source": "./src/composite/composite-overflow.tsx",
+      "types": "./dist/composite/composite-overflow.d.ts",
+      "import": "./dist/composite/composite-overflow.js"
     },
     "./composite/composite-overflow-disclosure": {
       "ariakit-source": "./src/composite/composite-overflow-disclosure.ts",
@@ -256,11 +271,6 @@
       "ariakit-source": "./src/composite/composite-overflow-store.ts",
       "types": "./dist/composite/composite-overflow-store.d.ts",
       "import": "./dist/composite/composite-overflow-store.js"
-    },
-    "./composite/composite-overflow": {
-      "ariakit-source": "./src/composite/composite-overflow.tsx",
-      "types": "./dist/composite/composite-overflow.d.ts",
-      "import": "./dist/composite/composite-overflow.js"
     },
     "./composite/composite-provider": {
       "ariakit-source": "./src/composite/composite-provider.tsx",
@@ -292,15 +302,15 @@
       "types": "./dist/composite/composite-typeahead.d.ts",
       "import": "./dist/composite/composite-typeahead.js"
     },
-    "./composite/composite": {
-      "ariakit-source": "./src/composite/composite.tsx",
-      "types": "./dist/composite/composite.d.ts",
-      "import": "./dist/composite/composite.js"
-    },
     "./composite/utils": {
       "ariakit-source": "./src/composite/utils.ts",
       "types": "./dist/composite/utils.d.ts",
       "import": "./dist/composite/utils.js"
+    },
+    "./dialog/dialog": {
+      "ariakit-source": "./src/dialog/dialog.tsx",
+      "types": "./dist/dialog/dialog.d.ts",
+      "import": "./dist/dialog/dialog.js"
     },
     "./dialog/dialog-backdrop": {
       "ariakit-source": "./src/dialog/dialog-backdrop.tsx",
@@ -341,11 +351,6 @@
       "ariakit-source": "./src/dialog/dialog-store.ts",
       "types": "./dist/dialog/dialog-store.d.ts",
       "import": "./dist/dialog/dialog-store.js"
-    },
-    "./dialog/dialog": {
-      "ariakit-source": "./src/dialog/dialog.tsx",
-      "types": "./dist/dialog/dialog.d.ts",
-      "import": "./dist/dialog/dialog.js"
     },
     "./dialog/utils/disable-accessibility-tree-outside": {
       "ariakit-source": "./src/dialog/utils/disable-accessibility-tree-outside.ts",
@@ -417,6 +422,11 @@
       "types": "./dist/dialog/utils/walk-tree-outside.d.ts",
       "import": "./dist/dialog/utils/walk-tree-outside.js"
     },
+    "./disclosure/disclosure": {
+      "ariakit-source": "./src/disclosure/disclosure.tsx",
+      "types": "./dist/disclosure/disclosure.d.ts",
+      "import": "./dist/disclosure/disclosure.js"
+    },
     "./disclosure/disclosure-content": {
       "ariakit-source": "./src/disclosure/disclosure-content.tsx",
       "types": "./dist/disclosure/disclosure-content.d.ts",
@@ -437,20 +447,20 @@
       "types": "./dist/disclosure/disclosure-store.d.ts",
       "import": "./dist/disclosure/disclosure-store.js"
     },
-    "./disclosure/disclosure": {
-      "ariakit-source": "./src/disclosure/disclosure.tsx",
-      "types": "./dist/disclosure/disclosure.d.ts",
-      "import": "./dist/disclosure/disclosure.js"
+    "./focus-trap/focus-trap": {
+      "ariakit-source": "./src/focus-trap/focus-trap.tsx",
+      "types": "./dist/focus-trap/focus-trap.d.ts",
+      "import": "./dist/focus-trap/focus-trap.js"
     },
     "./focus-trap/focus-trap-region": {
       "ariakit-source": "./src/focus-trap/focus-trap-region.tsx",
       "types": "./dist/focus-trap/focus-trap-region.d.ts",
       "import": "./dist/focus-trap/focus-trap-region.js"
     },
-    "./focus-trap/focus-trap": {
-      "ariakit-source": "./src/focus-trap/focus-trap.tsx",
-      "types": "./dist/focus-trap/focus-trap.d.ts",
-      "import": "./dist/focus-trap/focus-trap.js"
+    "./focusable/focusable": {
+      "ariakit-source": "./src/focusable/focusable.tsx",
+      "types": "./dist/focusable/focusable.d.ts",
+      "import": "./dist/focusable/focusable.js"
     },
     "./focusable/focusable-container": {
       "ariakit-source": "./src/focusable/focusable-container.tsx",
@@ -462,10 +472,10 @@
       "types": "./dist/focusable/focusable-context.d.ts",
       "import": "./dist/focusable/focusable-context.js"
     },
-    "./focusable/focusable": {
-      "ariakit-source": "./src/focusable/focusable.tsx",
-      "types": "./dist/focusable/focusable.d.ts",
-      "import": "./dist/focusable/focusable.js"
+    "./form/form": {
+      "ariakit-source": "./src/form/form.tsx",
+      "types": "./dist/form/form.d.ts",
+      "import": "./dist/form/form.js"
     },
     "./form/form-checkbox": {
       "ariakit-source": "./src/form/form-checkbox.tsx",
@@ -497,15 +507,15 @@
       "types": "./dist/form/form-field.d.ts",
       "import": "./dist/form/form-field.js"
     },
-    "./form/form-group-label": {
-      "ariakit-source": "./src/form/form-group-label.tsx",
-      "types": "./dist/form/form-group-label.d.ts",
-      "import": "./dist/form/form-group-label.js"
-    },
     "./form/form-group": {
       "ariakit-source": "./src/form/form-group.tsx",
       "types": "./dist/form/form-group.d.ts",
       "import": "./dist/form/form-group.js"
+    },
+    "./form/form-group-label": {
+      "ariakit-source": "./src/form/form-group-label.tsx",
+      "types": "./dist/form/form-group-label.d.ts",
+      "import": "./dist/form/form-group-label.js"
     },
     "./form/form-input": {
       "ariakit-source": "./src/form/form-input.tsx",
@@ -527,15 +537,15 @@
       "types": "./dist/form/form-push.d.ts",
       "import": "./dist/form/form-push.js"
     },
-    "./form/form-radio-group": {
-      "ariakit-source": "./src/form/form-radio-group.tsx",
-      "types": "./dist/form/form-radio-group.d.ts",
-      "import": "./dist/form/form-radio-group.js"
-    },
     "./form/form-radio": {
       "ariakit-source": "./src/form/form-radio.tsx",
       "types": "./dist/form/form-radio.d.ts",
       "import": "./dist/form/form-radio.js"
+    },
+    "./form/form-radio-group": {
+      "ariakit-source": "./src/form/form-radio-group.tsx",
+      "types": "./dist/form/form-radio-group.d.ts",
+      "import": "./dist/form/form-radio-group.js"
     },
     "./form/form-remove": {
       "ariakit-source": "./src/form/form-remove.tsx",
@@ -557,25 +567,25 @@
       "types": "./dist/form/form-submit.d.ts",
       "import": "./dist/form/form-submit.js"
     },
-    "./form/form": {
-      "ariakit-source": "./src/form/form.tsx",
-      "types": "./dist/form/form.d.ts",
-      "import": "./dist/form/form.js"
-    },
-    "./group/group-label-context": {
-      "ariakit-source": "./src/group/group-label-context.tsx",
-      "types": "./dist/group/group-label-context.d.ts",
-      "import": "./dist/group/group-label-context.js"
+    "./group/group": {
+      "ariakit-source": "./src/group/group.tsx",
+      "types": "./dist/group/group.d.ts",
+      "import": "./dist/group/group.js"
     },
     "./group/group-label": {
       "ariakit-source": "./src/group/group-label.tsx",
       "types": "./dist/group/group-label.d.ts",
       "import": "./dist/group/group-label.js"
     },
-    "./group/group": {
-      "ariakit-source": "./src/group/group.tsx",
-      "types": "./dist/group/group.d.ts",
-      "import": "./dist/group/group.js"
+    "./group/group-label-context": {
+      "ariakit-source": "./src/group/group-label-context.tsx",
+      "types": "./dist/group/group-label-context.d.ts",
+      "import": "./dist/group/group-label-context.js"
+    },
+    "./heading/heading": {
+      "ariakit-source": "./src/heading/heading.tsx",
+      "types": "./dist/heading/heading.d.ts",
+      "import": "./dist/heading/heading.js"
     },
     "./heading/heading-context": {
       "ariakit-source": "./src/heading/heading-context.tsx",
@@ -587,15 +597,15 @@
       "types": "./dist/heading/heading-level.d.ts",
       "import": "./dist/heading/heading-level.js"
     },
-    "./heading/heading": {
-      "ariakit-source": "./src/heading/heading.tsx",
-      "types": "./dist/heading/heading.d.ts",
-      "import": "./dist/heading/heading.js"
-    },
     "./heading/utils": {
       "ariakit-source": "./src/heading/utils.ts",
       "types": "./dist/heading/utils.d.ts",
       "import": "./dist/heading/utils.js"
+    },
+    "./hovercard/hovercard": {
+      "ariakit-source": "./src/hovercard/hovercard.tsx",
+      "types": "./dist/hovercard/hovercard.d.ts",
+      "import": "./dist/hovercard/hovercard.js"
     },
     "./hovercard/hovercard-anchor": {
       "ariakit-source": "./src/hovercard/hovercard-anchor.tsx",
@@ -642,11 +652,6 @@
       "types": "./dist/hovercard/hovercard-store.d.ts",
       "import": "./dist/hovercard/hovercard-store.js"
     },
-    "./hovercard/hovercard": {
-      "ariakit-source": "./src/hovercard/hovercard.tsx",
-      "types": "./dist/hovercard/hovercard.d.ts",
-      "import": "./dist/hovercard/hovercard.js"
-    },
     "./hovercard/utils/debug-polygon": {
       "ariakit-source": "./src/hovercard/utils/debug-polygon.ts",
       "types": "./dist/hovercard/utils/debug-polygon.d.ts",
@@ -657,15 +662,20 @@
       "types": "./dist/hovercard/utils/polygon.d.ts",
       "import": "./dist/hovercard/utils/polygon.js"
     },
-    ".": {
-      "ariakit-source": "./src/index.ts",
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+    "./menu/menu": {
+      "ariakit-source": "./src/menu/menu.tsx",
+      "types": "./dist/menu/menu.d.ts",
+      "import": "./dist/menu/menu.js"
     },
     "./menu/menu-arrow": {
       "ariakit-source": "./src/menu/menu-arrow.tsx",
       "types": "./dist/menu/menu-arrow.d.ts",
       "import": "./dist/menu/menu-arrow.js"
+    },
+    "./menu/menu-bar": {
+      "ariakit-source": "./src/menu/menu-bar.tsx",
+      "types": "./dist/menu/menu-bar.d.ts",
+      "import": "./dist/menu/menu-bar.js"
     },
     "./menu/menu-bar-provider": {
       "ariakit-source": "./src/menu/menu-bar-provider.tsx",
@@ -677,20 +687,15 @@
       "types": "./dist/menu/menu-bar-store.d.ts",
       "import": "./dist/menu/menu-bar-store.js"
     },
-    "./menu/menu-bar": {
-      "ariakit-source": "./src/menu/menu-bar.tsx",
-      "types": "./dist/menu/menu-bar.d.ts",
-      "import": "./dist/menu/menu-bar.js"
+    "./menu/menu-button": {
+      "ariakit-source": "./src/menu/menu-button.tsx",
+      "types": "./dist/menu/menu-button.d.ts",
+      "import": "./dist/menu/menu-button.js"
     },
     "./menu/menu-button-arrow": {
       "ariakit-source": "./src/menu/menu-button-arrow.tsx",
       "types": "./dist/menu/menu-button-arrow.d.ts",
       "import": "./dist/menu/menu-button-arrow.js"
-    },
-    "./menu/menu-button": {
-      "ariakit-source": "./src/menu/menu-button.tsx",
-      "types": "./dist/menu/menu-button.d.ts",
-      "import": "./dist/menu/menu-button.js"
     },
     "./menu/menu-context": {
       "ariakit-source": "./src/menu/menu-context.tsx",
@@ -707,20 +712,25 @@
       "types": "./dist/menu/menu-dismiss.d.ts",
       "import": "./dist/menu/menu-dismiss.js"
     },
-    "./menu/menu-group-label": {
-      "ariakit-source": "./src/menu/menu-group-label.tsx",
-      "types": "./dist/menu/menu-group-label.d.ts",
-      "import": "./dist/menu/menu-group-label.js"
-    },
     "./menu/menu-group": {
       "ariakit-source": "./src/menu/menu-group.tsx",
       "types": "./dist/menu/menu-group.d.ts",
       "import": "./dist/menu/menu-group.js"
     },
+    "./menu/menu-group-label": {
+      "ariakit-source": "./src/menu/menu-group-label.tsx",
+      "types": "./dist/menu/menu-group-label.d.ts",
+      "import": "./dist/menu/menu-group-label.js"
+    },
     "./menu/menu-heading": {
       "ariakit-source": "./src/menu/menu-heading.tsx",
       "types": "./dist/menu/menu-heading.d.ts",
       "import": "./dist/menu/menu-heading.js"
+    },
+    "./menu/menu-item": {
+      "ariakit-source": "./src/menu/menu-item.tsx",
+      "types": "./dist/menu/menu-item.d.ts",
+      "import": "./dist/menu/menu-item.js"
     },
     "./menu/menu-item-check": {
       "ariakit-source": "./src/menu/menu-item-check.tsx",
@@ -736,11 +746,6 @@
       "ariakit-source": "./src/menu/menu-item-radio.tsx",
       "types": "./dist/menu/menu-item-radio.d.ts",
       "import": "./dist/menu/menu-item-radio.js"
-    },
-    "./menu/menu-item": {
-      "ariakit-source": "./src/menu/menu-item.tsx",
-      "types": "./dist/menu/menu-item.d.ts",
-      "import": "./dist/menu/menu-item.js"
     },
     "./menu/menu-list": {
       "ariakit-source": "./src/menu/menu-list.tsx",
@@ -762,10 +767,10 @@
       "types": "./dist/menu/menu-store.d.ts",
       "import": "./dist/menu/menu-store.js"
     },
-    "./menu/menu": {
-      "ariakit-source": "./src/menu/menu.tsx",
-      "types": "./dist/menu/menu.d.ts",
-      "import": "./dist/menu/menu.js"
+    "./menubar/menubar": {
+      "ariakit-source": "./src/menubar/menubar.tsx",
+      "types": "./dist/menubar/menubar.d.ts",
+      "import": "./dist/menubar/menubar.js"
     },
     "./menubar/menubar-context": {
       "ariakit-source": "./src/menubar/menubar-context.tsx",
@@ -782,25 +787,25 @@
       "types": "./dist/menubar/menubar-store.d.ts",
       "import": "./dist/menubar/menubar-store.js"
     },
-    "./menubar/menubar": {
-      "ariakit-source": "./src/menubar/menubar.tsx",
-      "types": "./dist/menubar/menubar.d.ts",
-      "import": "./dist/menubar/menubar.js"
+    "./popover/popover": {
+      "ariakit-source": "./src/popover/popover.tsx",
+      "types": "./dist/popover/popover.d.ts",
+      "import": "./dist/popover/popover.js"
     },
     "./popover/popover-anchor": {
       "ariakit-source": "./src/popover/popover-anchor.tsx",
       "types": "./dist/popover/popover-anchor.d.ts",
       "import": "./dist/popover/popover-anchor.js"
     },
-    "./popover/popover-arrow-path": {
-      "ariakit-source": "./src/popover/popover-arrow-path.ts",
-      "types": "./dist/popover/popover-arrow-path.d.ts",
-      "import": "./dist/popover/popover-arrow-path.js"
-    },
     "./popover/popover-arrow": {
       "ariakit-source": "./src/popover/popover-arrow.tsx",
       "types": "./dist/popover/popover-arrow.d.ts",
       "import": "./dist/popover/popover-arrow.js"
+    },
+    "./popover/popover-arrow-path": {
+      "ariakit-source": "./src/popover/popover-arrow-path.ts",
+      "types": "./dist/popover/popover-arrow-path.d.ts",
+      "import": "./dist/popover/popover-arrow-path.js"
     },
     "./popover/popover-context": {
       "ariakit-source": "./src/popover/popover-context.tsx",
@@ -812,15 +817,15 @@
       "types": "./dist/popover/popover-description.d.ts",
       "import": "./dist/popover/popover-description.js"
     },
-    "./popover/popover-disclosure-arrow": {
-      "ariakit-source": "./src/popover/popover-disclosure-arrow.tsx",
-      "types": "./dist/popover/popover-disclosure-arrow.d.ts",
-      "import": "./dist/popover/popover-disclosure-arrow.js"
-    },
     "./popover/popover-disclosure": {
       "ariakit-source": "./src/popover/popover-disclosure.tsx",
       "types": "./dist/popover/popover-disclosure.d.ts",
       "import": "./dist/popover/popover-disclosure.js"
+    },
+    "./popover/popover-disclosure-arrow": {
+      "ariakit-source": "./src/popover/popover-disclosure-arrow.tsx",
+      "types": "./dist/popover/popover-disclosure-arrow.d.ts",
+      "import": "./dist/popover/popover-disclosure-arrow.js"
     },
     "./popover/popover-dismiss": {
       "ariakit-source": "./src/popover/popover-dismiss.tsx",
@@ -842,20 +847,20 @@
       "types": "./dist/popover/popover-store.d.ts",
       "import": "./dist/popover/popover-store.js"
     },
-    "./popover/popover": {
-      "ariakit-source": "./src/popover/popover.tsx",
-      "types": "./dist/popover/popover.d.ts",
-      "import": "./dist/popover/popover.js"
+    "./portal/portal": {
+      "ariakit-source": "./src/portal/portal.tsx",
+      "types": "./dist/portal/portal.d.ts",
+      "import": "./dist/portal/portal.js"
     },
     "./portal/portal-context": {
       "ariakit-source": "./src/portal/portal-context.tsx",
       "types": "./dist/portal/portal-context.d.ts",
       "import": "./dist/portal/portal-context.js"
     },
-    "./portal/portal": {
-      "ariakit-source": "./src/portal/portal.tsx",
-      "types": "./dist/portal/portal.d.ts",
-      "import": "./dist/portal/portal.js"
+    "./radio/radio": {
+      "ariakit-source": "./src/radio/radio.tsx",
+      "types": "./dist/radio/radio.d.ts",
+      "import": "./dist/radio/radio.js"
     },
     "./radio/radio-context": {
       "ariakit-source": "./src/radio/radio-context.tsx",
@@ -877,15 +882,15 @@
       "types": "./dist/radio/radio-store.d.ts",
       "import": "./dist/radio/radio-store.js"
     },
-    "./radio/radio": {
-      "ariakit-source": "./src/radio/radio.tsx",
-      "types": "./dist/radio/radio.d.ts",
-      "import": "./dist/radio/radio.js"
-    },
     "./role/role": {
       "ariakit-source": "./src/role/role.tsx",
       "types": "./dist/role/role.d.ts",
       "import": "./dist/role/role.js"
+    },
+    "./select/select": {
+      "ariakit-source": "./src/select/select.tsx",
+      "types": "./dist/select/select.d.ts",
+      "import": "./dist/select/select.js"
     },
     "./select/select-arrow": {
       "ariakit-source": "./src/select/select-arrow.tsx",
@@ -902,20 +907,25 @@
       "types": "./dist/select/select-dismiss.d.ts",
       "import": "./dist/select/select-dismiss.js"
     },
-    "./select/select-group-label": {
-      "ariakit-source": "./src/select/select-group-label.tsx",
-      "types": "./dist/select/select-group-label.d.ts",
-      "import": "./dist/select/select-group-label.js"
-    },
     "./select/select-group": {
       "ariakit-source": "./src/select/select-group.tsx",
       "types": "./dist/select/select-group.d.ts",
       "import": "./dist/select/select-group.js"
     },
+    "./select/select-group-label": {
+      "ariakit-source": "./src/select/select-group-label.tsx",
+      "types": "./dist/select/select-group-label.d.ts",
+      "import": "./dist/select/select-group-label.js"
+    },
     "./select/select-heading": {
       "ariakit-source": "./src/select/select-heading.tsx",
       "types": "./dist/select/select-heading.d.ts",
       "import": "./dist/select/select-heading.js"
+    },
+    "./select/select-item": {
+      "ariakit-source": "./src/select/select-item.tsx",
+      "types": "./dist/select/select-item.d.ts",
+      "import": "./dist/select/select-item.js"
     },
     "./select/select-item-check": {
       "ariakit-source": "./src/select/select-item-check.tsx",
@@ -926,11 +936,6 @@
       "ariakit-source": "./src/select/select-item-offscreen.tsx",
       "types": "./dist/select/select-item-offscreen.d.ts",
       "import": "./dist/select/select-item-offscreen.js"
-    },
-    "./select/select-item": {
-      "ariakit-source": "./src/select/select-item.tsx",
-      "types": "./dist/select/select-item.d.ts",
-      "import": "./dist/select/select-item.js"
     },
     "./select/select-label": {
       "ariakit-source": "./src/select/select-label.tsx",
@@ -977,11 +982,6 @@
       "types": "./dist/select/select-value.d.ts",
       "import": "./dist/select/select-value.js"
     },
-    "./select/select": {
-      "ariakit-source": "./src/select/select.tsx",
-      "types": "./dist/select/select.d.ts",
-      "import": "./dist/select/select.js"
-    },
     "./separator/separator": {
       "ariakit-source": "./src/separator/separator.tsx",
       "types": "./dist/separator/separator.d.ts",
@@ -991,6 +991,11 @@
       "ariakit-source": "./src/store.ts",
       "types": "./dist/store.d.ts",
       "import": "./dist/store.js"
+    },
+    "./tab/tab": {
+      "ariakit-source": "./src/tab/tab.tsx",
+      "types": "./dist/tab/tab.d.ts",
+      "import": "./dist/tab/tab.js"
     },
     "./tab/tab-context": {
       "ariakit-source": "./src/tab/tab-context.tsx",
@@ -1017,10 +1022,10 @@
       "types": "./dist/tab/tab-store.d.ts",
       "import": "./dist/tab/tab-store.js"
     },
-    "./tab/tab": {
-      "ariakit-source": "./src/tab/tab.tsx",
-      "types": "./dist/tab/tab.d.ts",
-      "import": "./dist/tab/tab.js"
+    "./tag/tag": {
+      "ariakit-source": "./src/tag/tag.tsx",
+      "types": "./dist/tag/tag.d.ts",
+      "import": "./dist/tag/tag.js"
     },
     "./tag/tag-context": {
       "ariakit-source": "./src/tag/tag-context.tsx",
@@ -1032,15 +1037,15 @@
       "types": "./dist/tag/tag-input.d.ts",
       "import": "./dist/tag/tag-input.js"
     },
-    "./tag/tag-list-label": {
-      "ariakit-source": "./src/tag/tag-list-label.tsx",
-      "types": "./dist/tag/tag-list-label.d.ts",
-      "import": "./dist/tag/tag-list-label.js"
-    },
     "./tag/tag-list": {
       "ariakit-source": "./src/tag/tag-list.tsx",
       "types": "./dist/tag/tag-list.d.ts",
       "import": "./dist/tag/tag-list.js"
+    },
+    "./tag/tag-list-label": {
+      "ariakit-source": "./src/tag/tag-list-label.tsx",
+      "types": "./dist/tag/tag-list-label.d.ts",
+      "import": "./dist/tag/tag-list-label.js"
     },
     "./tag/tag-provider": {
       "ariakit-source": "./src/tag/tag-provider.tsx",
@@ -1067,15 +1072,15 @@
       "types": "./dist/tag/tag-values.d.ts",
       "import": "./dist/tag/tag-values.js"
     },
-    "./tag/tag": {
-      "ariakit-source": "./src/tag/tag.tsx",
-      "types": "./dist/tag/tag.d.ts",
-      "import": "./dist/tag/tag.js"
-    },
     "./tag/utils": {
       "ariakit-source": "./src/tag/utils.ts",
       "types": "./dist/tag/utils.d.ts",
       "import": "./dist/tag/utils.js"
+    },
+    "./toolbar/toolbar": {
+      "ariakit-source": "./src/toolbar/toolbar.tsx",
+      "types": "./dist/toolbar/toolbar.d.ts",
+      "import": "./dist/toolbar/toolbar.js"
     },
     "./toolbar/toolbar-container": {
       "ariakit-source": "./src/toolbar/toolbar-container.tsx",
@@ -1112,10 +1117,10 @@
       "types": "./dist/toolbar/toolbar-store.d.ts",
       "import": "./dist/toolbar/toolbar-store.js"
     },
-    "./toolbar/toolbar": {
-      "ariakit-source": "./src/toolbar/toolbar.tsx",
-      "types": "./dist/toolbar/toolbar.d.ts",
-      "import": "./dist/toolbar/toolbar.js"
+    "./tooltip/tooltip": {
+      "ariakit-source": "./src/tooltip/tooltip.tsx",
+      "types": "./dist/tooltip/tooltip.d.ts",
+      "import": "./dist/tooltip/tooltip.js"
     },
     "./tooltip/tooltip-anchor": {
       "ariakit-source": "./src/tooltip/tooltip-anchor.tsx",
@@ -1141,11 +1146,6 @@
       "ariakit-source": "./src/tooltip/tooltip-store.ts",
       "types": "./dist/tooltip/tooltip-store.d.ts",
       "import": "./dist/tooltip/tooltip-store.js"
-    },
-    "./tooltip/tooltip": {
-      "ariakit-source": "./src/tooltip/tooltip.tsx",
-      "types": "./dist/tooltip/tooltip.d.ts",
-      "import": "./dist/tooltip/tooltip.js"
     },
     "./visually-hidden/visually-hidden": {
       "ariakit-source": "./src/visually-hidden/visually-hidden.tsx",

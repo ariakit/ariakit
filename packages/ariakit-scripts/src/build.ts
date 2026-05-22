@@ -7,7 +7,7 @@ import {
 } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
-import { build as rolldownBuild } from "rolldown";
+import { build as rolldownBuild, type Plugin } from "rolldown";
 import { dts } from "rolldown-plugin-dts";
 import solidPlugin from "vite-plugin-solid";
 
@@ -123,14 +123,37 @@ function getExportValue(file: PublicFile, isSolid: boolean) {
   };
 }
 
+function sortPublicFilesByExportName(publicFiles: PublicFile[]) {
+  return [...publicFiles].sort((a, b) =>
+    getExportName(a.name).localeCompare(getExportName(b.name)),
+  );
+}
+
+function getPackageDependencies(packageJson: PackageJson) {
+  return {
+    ...packageJson.dependencies,
+    ...packageJson.peerDependencies,
+  };
+}
+
+function hasPackageDependency(packageJson: PackageJson, name: string) {
+  return name in getPackageDependencies(packageJson);
+}
+
+function isSolidPackage(packageJson: PackageJson) {
+  if (!packageJson.name.includes("/solid")) return false;
+  return hasPackageDependency(packageJson, "solid-js");
+}
+
 async function updatePackageExports(
   rootPath: string,
   publicFiles: PublicFile[],
 ) {
   const packageJson = readPackageJson(rootPath);
-  const isSolid = packageJson.name.includes("/solid");
+  const isSolid = isSolidPackage(packageJson);
+  const sortedPublicFiles = sortPublicFilesByExportName(publicFiles);
   const exports = Object.fromEntries(
-    publicFiles.map((file) => [
+    sortedPublicFiles.map((file) => [
       getExportName(file.name),
       getExportValue(file, isSolid),
     ]),
@@ -149,10 +172,7 @@ async function updatePackageExports(
 }
 
 function getExternal(packageJson: PackageJson) {
-  const dependencies = {
-    ...packageJson.dependencies,
-    ...packageJson.peerDependencies,
-  };
+  const dependencies = getPackageDependencies(packageJson);
   const packageNames = Object.keys(dependencies);
 
   return (id: string) => {
@@ -168,6 +188,19 @@ function getInput(publicFiles: PublicFile[]) {
 
 function hasJsxPublicFile(publicFiles: PublicFile[]) {
   return publicFiles.some((file) => /\.[jt]sx$/.test(file.path));
+}
+
+function getUseClientPlugin(enabled: boolean): Plugin[] {
+  if (!enabled) return [];
+  return [
+    {
+      name: "ariakit-use-client",
+      renderChunk(code, chunk) {
+        if (chunk.fileName.endsWith(".d.ts")) return null;
+        return `"use client";\n${code}`;
+      },
+    },
+  ];
 }
 
 function cleanOutput(rootPath: string, isSolid: boolean) {
@@ -236,7 +269,7 @@ async function buildSolidSource(
 async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
   const packageJson = readPackageJson(rootPath);
   const isReactPackage = packageJson.name.includes("/react");
-  const isSolid = packageJson.name.includes("/solid");
+  const isSolid = isSolidPackage(packageJson);
   const shouldTransformReactJsx =
     isReactPackage || (!isSolid && hasJsxPublicFile(publicFiles));
 
@@ -253,14 +286,15 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
       dir: distDir,
       cleanDir: true,
       format: "es",
-      banner: isReactPackage ? '"use client";' : undefined,
       entryFileNames: "[name].js",
       chunkFileNames: "__chunks/[hash].js",
       sourcemap: true,
     },
     plugins: [
+      ...getUseClientPlugin(isReactPackage),
       ...(isSolid ? [solidPlugin({ solid: { generate: "dom" } })] : []),
       dts({
+        sourcemap: true,
         tsconfig: getTsconfig(rootPath),
         compilerOptions: {
           customConditions: ["ariakit-source"],
@@ -277,7 +311,7 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
 export async function build(options: BuildOptions) {
   const rootPath = process.cwd();
   const packageJson = readPackageJson(rootPath);
-  const isSolid = packageJson.name.includes("/solid");
+  const isSolid = isSolidPackage(packageJson);
 
   if (options.clean) {
     cleanOutput(rootPath, isSolid);

@@ -3,7 +3,9 @@
 "@ariakit/test": minor
 ---
 
-Removed CommonJS builds from these packages. They now publish ESM-only exports with the `ariakit-source` condition.
+Removed CommonJS builds
+
+These packages no longer publish CommonJS, and now ship ESM-only exports with the `ariakit-source` condition.
 
 **BREAKING** if your code loads these packages with CommonJS `require()`.
 

@@ -35,14 +35,10 @@
   "dependencies": {
     "@ariakit/store": "workspace:*"
   },
-  "peerDependencies": {
-    "solid-js": "^1.8"
-  },
   "exports": {
     ".": {
       "ariakit-source": "./src/index.ts",
       "types": "./dist/index.d.ts",
-      "solid": "./solid/index.jsx",
       "import": "./dist/index.js"
     },
     "./package.json": "./package.json"

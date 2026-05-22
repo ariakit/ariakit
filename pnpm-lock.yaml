@@ -674,9 +674,6 @@ importers:
       '@ariakit/store':
         specifier: workspace:*
         version: link:../ariakit-store
-      solid-js:
-        specifier: ^1.8
-        version: 1.9.13
 
   packages/ariakit-solid-utils:
     dependencies:
