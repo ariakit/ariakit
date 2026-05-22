@@ -1,10 +1,5 @@
 {
   "extends": "../../tsconfig.node.json",
-  "files": [
-    "src/ariakit-source.ts",
-    "src/build.ts",
-    "src/dev.ts",
-    "src/index.ts"
-  ],
+  "include": ["src"],
   "exclude": []
 }

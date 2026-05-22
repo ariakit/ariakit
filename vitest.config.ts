@@ -55,11 +55,6 @@ export default defineConfig({
     ],
     dedupe: ["react", "react-dom"],
   },
-  optimizeDeps: {
-    esbuildOptions: {
-      conditions: ["ariakit-source"],
-    },
-  },
   test: {
     watch: false,
     testTimeout: 10_000,

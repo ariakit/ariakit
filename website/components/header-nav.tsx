@@ -8,8 +8,7 @@ import {
 import type { SelectRendererItem } from "@ariakit/react-components/select/select-renderer";
 import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-utils";
-import { getKeys } from "@ariakit/utils";
-import { isApple } from "@ariakit/utils";
+import { getKeys, isApple } from "@ariakit/utils";
 import { track } from "@vercel/analytics";
 import { groupBy } from "lodash-es";
 import { useSelectedLayoutSegments } from "next/navigation.js";

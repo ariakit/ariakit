@@ -1,8 +1,6 @@
 # Ariakit Tailwind
 
-**Important:** This package is an internal dependency of Ariakit and does not follow semantic versioning, meaning breaking changes may occur in patch and minor versions. You probably want to use [`@ariakit/react`](https://npmjs.org/package/@ariakit/react) instead.
-
-> **Experimental.** This package is currently experimental. Breaking changes might be introduced in patch or minor releases.
+**Important:** This package is experimental and does not follow semantic versioning, meaning breaking changes may occur in patch and minor versions.
 
 Ariakit Tailwind is a Tailwind CSS v4 plugin that brings Ariakit Styles to your projects. It enables developers to build accessible design systems with **relative colors and radii** instead of fixed values, giving end users full freedom to customize the theme without sacrificing visual consistency. Swap any token — a brand color, a radius, a spacing scale — and every derived surface, text, and border rebalances itself automatically.
 

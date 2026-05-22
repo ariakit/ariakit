@@ -1,10 +1,4 @@
-import {
-  existsSync,
-  lstatSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
+import { lstatSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 import { build as rolldownBuild, type Plugin } from "rolldown";
@@ -16,9 +10,6 @@ interface PackageJson {
   exports?: Record<string, unknown>;
   dependencies?: Record<string, string>;
   peerDependencies?: Record<string, string>;
-  main?: string;
-  module?: string;
-  types?: string;
   [key: string]: unknown;
 }
 
@@ -159,10 +150,6 @@ async function updatePackageExports(
     ]),
   );
 
-  delete packageJson.main;
-  delete packageJson.module;
-  delete packageJson.types;
-
   packageJson.exports = {
     ...exports,
     "./package.json": "./package.json",
@@ -231,26 +218,12 @@ function writeNpmignore(rootPath: string) {
   writeFileSync(join(rootPath, ".npmignore"), `${contents.join("\n")}\n`);
 }
 
-function getTsconfig(rootPath: string) {
-  for (const filename of [
-    "tsconfig.build.json",
-    "tsconfig.node.json",
-    "tsconfig.json",
-  ]) {
-    if (existsSync(join(rootPath, filename))) {
-      return filename;
-    }
-  }
-  return false;
-}
-
 async function buildSolidSource(
   rootPath: string,
   input: Record<string, string>,
 ) {
   await rolldownBuild({
     input,
-    tsconfig: getTsconfig(rootPath),
     external: getExternal(readPackageJson(rootPath)),
     transform: {
       jsx: "preserve",
@@ -275,7 +248,6 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
 
   await rolldownBuild({
     input: getInput(publicFiles),
-    tsconfig: getTsconfig(rootPath),
     external: getExternal(packageJson),
     transform: shouldTransformReactJsx
       ? {
@@ -294,8 +266,9 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
       ...getUseClientPlugin(isReactPackage),
       ...(isSolid ? [solidPlugin({ solid: { generate: "dom" } })] : []),
       dts({
+        build: true,
+        incremental: false,
         sourcemap: true,
-        tsconfig: getTsconfig(rootPath),
         compilerOptions: {
           customConditions: ["ariakit-source"],
         },

@@ -20,7 +20,6 @@ import type { FormStore, FormStoreState } from "./form-store.ts";
 const TagName = "form" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-type FormSubmitEvent = Parameters<NonNullable<FormProps["onSubmit"]>>[0];
 
 function isField(element: HTMLElement, items: FormStoreState["items"]) {
   return items.some(
@@ -106,7 +105,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
 
   const onSubmitProp = props.onSubmit;
 
-  const onSubmit = useEvent((event: FormSubmitEvent) => {
+  const onSubmit = useEvent((event: FormEvent<HTMLType>) => {
     onSubmitProp?.(event);
     if (event.defaultPrevented) return;
     event.preventDefault();

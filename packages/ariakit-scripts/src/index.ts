@@ -9,7 +9,8 @@ program.name("ariakit");
 program
   .command("build")
   .description("Build packages")
-  .argument("[files...]", "Ignored staged files")
+  // lint-staged appends matched filenames to package scripts.
+  .argument("[files...]", "Ignored file arguments passed by lint-staged")
   .option("--clean", "Remove build output")
   .option("--index-only", "Build and export only src/index.ts")
   .option("--update-exports", "Update package exports from public source files")
