@@ -51,5 +51,8 @@
   "dependencies": {
     "@ariakit/store": "workspace:*",
     "@ariakit/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@ariakit/scripts": "workspace:*"
   }
 }

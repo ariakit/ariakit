@@ -27,6 +27,9 @@
   "dependencies": {
     "@ariakit/utils": "workspace:*"
   },
+  "devDependencies": {
+    "@ariakit/scripts": "workspace:*"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./package.json": "./package.json"

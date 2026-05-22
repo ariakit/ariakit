@@ -36,6 +36,9 @@
     "@ariakit/solid-utils": "workspace:*",
     "@ariakit/utils": "workspace:*"
   },
+  "devDependencies": {
+    "@ariakit/scripts": "workspace:*"
+  },
   "peerDependencies": {
     "solid-js": "^1.8"
   },

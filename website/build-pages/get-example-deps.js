@@ -62,22 +62,6 @@ function getPackageVersion(source) {
 }
 
 /**
- * @param {string} filename
- * @param {string} source
- * @param {ts.ResolvedModuleFull | undefined} resolvedModule
- */
-function resolveSource(filename, source, resolvedModule) {
-  try {
-    return resolveFrom(dirname(filename), source);
-  } catch (error) {
-    if (resolvedModule?.resolvedFileName) {
-      return resolvedModule.resolvedFileName;
-    }
-    throw error;
-  }
-}
-
-/**
  * @param {Deps} deps
  * @param {string} source
  * @param {string} filename
@@ -90,7 +74,7 @@ function assignExternal(deps, source, filename) {
   const resolvedSource =
     resolvedModule?.resolvedFileName && !resolvedModule.isExternalLibraryImport
       ? resolvedModule.resolvedFileName
-      : resolveSource(filename, source, resolvedModule);
+      : resolveFrom(dirname(filename), source);
 
   const result = { resolvedSource, external };
 

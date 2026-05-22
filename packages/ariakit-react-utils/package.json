@@ -30,6 +30,7 @@
     "@ariakit/utils": "workspace:*"
   },
   "devDependencies": {
+    "@ariakit/scripts": "workspace:*",
     "react": "18.3.1"
   },
   "peerDependencies": {

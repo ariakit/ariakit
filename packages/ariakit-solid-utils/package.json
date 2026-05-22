@@ -37,6 +37,9 @@
     "@solid-primitives/props": "^3.2.3",
     "@solid-primitives/utils": "^6.4.0"
   },
+  "devDependencies": {
+    "@ariakit/scripts": "workspace:*"
+  },
   "peerDependencies": {
     "solid-js": "^1.8"
   },

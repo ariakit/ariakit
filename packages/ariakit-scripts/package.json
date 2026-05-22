@@ -6,6 +6,7 @@
     "ariakit": "src/index.ts"
   },
   "dependencies": {
+    "chokidar": "5.0.0",
     "commander": "14.0.3",
     "rolldown": "1.0.1",
     "rolldown-plugin-dts": "0.25.1",
