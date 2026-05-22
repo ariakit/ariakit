@@ -1,6 +1,11 @@
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Options } from "@ariakit/react-utils/types";
+import type { Props } from "@ariakit/react-utils/types";
 import type { ElementType } from "react";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "hr" satisfies ElementType;
 type TagName = typeof TagName;

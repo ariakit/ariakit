@@ -1,12 +1,21 @@
-import { toArray } from "@ariakit/core/utils/array";
+import { useStoreState } from "@ariakit/react-store";
 import {
-  getTextboxSelection,
-  setSelectionRange,
-} from "@ariakit/core/utils/dom";
-import { getInputType } from "@ariakit/core/utils/events";
-import { invariant } from "@ariakit/core/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import { UndoManager } from "@ariakit/core/utils/undo";
+  useBooleanEvent,
+  useEvent,
+  useMergeRefs,
+} from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { toArray } from "@ariakit/utils/array";
+import { getTextboxSelection, setSelectionRange } from "@ariakit/utils/dom";
+import { getInputType } from "@ariakit/utils/events";
+import { invariant } from "@ariakit/utils/misc";
+import type { BooleanOrCallback } from "@ariakit/utils/types";
+import { UndoManager } from "@ariakit/utils/undo";
 import type {
   ChangeEvent,
   ClipboardEvent,
@@ -16,10 +25,6 @@ import type {
 } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
-import { useBooleanEvent, useEvent, useMergeRefs } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { useTagContext } from "./tag-context.tsx";
 import type { TagStore } from "./tag-store.ts";
 

@@ -1,15 +1,19 @@
-import { fireEvent } from "@ariakit/core/utils/events";
-import { hasFocusWithin } from "@ariakit/core/utils/focus";
-import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
+import { useStoreState } from "@ariakit/react-store";
+import { useMergeRefs } from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { fireEvent } from "@ariakit/utils/events";
+import { hasFocusWithin } from "@ariakit/utils/focus";
+import { invariant, isFalsyBooleanCallback } from "@ariakit/utils/misc";
 import type { ElementType, MutableRefObject } from "react";
 import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
-import { useMergeRefs } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { useMenuProviderContext } from "./menu-context.tsx";
 import type { MenuListOptions } from "./menu-list.tsx";
 import { useMenuList } from "./menu-list.tsx";

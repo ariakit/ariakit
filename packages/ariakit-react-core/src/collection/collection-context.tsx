@@ -1,4 +1,4 @@
-import { createStoreContext } from "../utils/system.tsx";
+import { createStoreContext } from "@ariakit/react-store/context";
 import type { CollectionStore } from "./collection-store.ts";
 
 const ctx = createStoreContext<CollectionStore>();

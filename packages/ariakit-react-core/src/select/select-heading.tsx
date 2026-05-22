@@ -1,10 +1,14 @@
+import { useId, useSafeLayoutEffect } from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
 import type { ElementType } from "react";
 import { useContext } from "react";
 import type { PopoverHeadingOptions } from "../popover/popover-heading.tsx";
 import { usePopoverHeading } from "../popover/popover-heading.tsx";
-import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { SelectHeadingContext } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
 

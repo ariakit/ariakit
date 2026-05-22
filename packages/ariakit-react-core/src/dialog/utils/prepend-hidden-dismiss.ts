@@ -1,4 +1,4 @@
-import { getDocument } from "@ariakit/core/utils/dom";
+import { getDocument } from "@ariakit/utils/dom";
 
 export function prependHiddenDismiss(
   container: HTMLElement,

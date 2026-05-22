@@ -36,7 +36,8 @@
     "clean": "node ../../scripts/build/clean.js"
   },
   "dependencies": {
-    "@ariakit/react-core": "workspace:*"
+    "@ariakit/react-core": "workspace:*",
+    "@ariakit/react-store": "workspace:*"
   },
   "devDependencies": {
     "react": "18.3.1",

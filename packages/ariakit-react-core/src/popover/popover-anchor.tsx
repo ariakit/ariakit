@@ -1,7 +1,12 @@
+import { useMergeRefs } from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Options } from "@ariakit/react-utils/types";
+import type { Props } from "@ariakit/react-utils/types";
 import type { ElementType } from "react";
-import { useMergeRefs } from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import { usePopoverProviderContext } from "./popover-context.tsx";
 import type { PopoverStore } from "./popover-store.ts";
 

@@ -1,8 +1,21 @@
-import { toArray } from "@ariakit/core/utils/array";
-import { getPopupRole } from "@ariakit/core/utils/dom";
-import { queueBeforeEvent } from "@ariakit/core/utils/events";
-import { invariant } from "@ariakit/core/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import { useStoreState } from "@ariakit/react-store";
+import {
+  useBooleanEvent,
+  useEvent,
+  useMergeRefs,
+  useWrapElement,
+} from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { toArray } from "@ariakit/utils/array";
+import { getPopupRole } from "@ariakit/utils/dom";
+import { queueBeforeEvent } from "@ariakit/utils/events";
+import { invariant } from "@ariakit/utils/misc";
+import type { BooleanOrCallback } from "@ariakit/utils/types";
 import type {
   ElementType,
   KeyboardEvent,
@@ -14,15 +27,6 @@ import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
-import {
-  useBooleanEvent,
-  useEvent,
-  useMergeRefs,
-  useWrapElement,
-} from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { SelectArrow } from "./select-arrow.tsx";
 import {
   SelectScopedContextProvider,

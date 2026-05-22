@@ -1,13 +1,14 @@
-import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import type { ElementType, MouseEvent } from "react";
-import { useEvent, useId, useMergeRefs } from "../utils/hooks.ts";
+import { useEvent, useId, useMergeRefs } from "@ariakit/react-utils/hooks";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
+} from "@ariakit/react-utils/system";
+import type { Options } from "@ariakit/react-utils/types";
+import type { Props } from "@ariakit/react-utils/types";
+import { invariant, removeUndefinedValues } from "@ariakit/utils/misc";
+import type { ElementType, MouseEvent } from "react";
 import { useSelectProviderContext } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
 

@@ -1,7 +1,18 @@
+import { useStoreState } from "@ariakit/react-store";
 import {
-  disabledFromProps,
-  removeUndefinedValues,
-} from "@ariakit/core/utils/misc";
+  useEvent,
+  useForceUpdate,
+  useMergeRefs,
+  useTagName,
+  useWrapElement,
+} from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { disabledFromProps, removeUndefinedValues } from "@ariakit/utils/misc";
 import type {
   ChangeEvent,
   ComponentPropsWithoutRef,
@@ -11,16 +22,6 @@ import type {
 import { useEffect, useRef, useState } from "react";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
-import {
-  useEvent,
-  useForceUpdate,
-  useMergeRefs,
-  useTagName,
-  useWrapElement,
-} from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.tsx";
 import { useCheckboxContext } from "./checkbox-context.tsx";
 import type { CheckboxStore } from "./checkbox-store.ts";

@@ -1,18 +1,22 @@
-import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
-import { useCallback, useEffect, useRef } from "react";
-import type { FocusableOptions } from "../focusable/focusable.tsx";
-import { useFocusable } from "../focusable/focusable.tsx";
 import {
   useBooleanEvent,
   useEvent,
   useIsMouseMoving,
   useMergeRefs,
-} from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
+} from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { addGlobalEventListener } from "@ariakit/utils/events";
+import { disabledFromProps, invariant } from "@ariakit/utils/misc";
+import type { BooleanOrCallback } from "@ariakit/utils/types";
+import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import type { FocusableOptions } from "../focusable/focusable.tsx";
+import { useFocusable } from "../focusable/focusable.tsx";
 import { useHovercardProviderContext } from "./hovercard-context.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
 

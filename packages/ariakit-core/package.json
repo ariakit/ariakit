@@ -27,6 +27,10 @@
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
+  "dependencies": {
+    "@ariakit/store": "workspace:*",
+    "@ariakit/utils": "workspace:*"
+  },
   "exports": {
     ".": "./src/index.ts",
     "./checkbox/checkbox-store": "./src/checkbox/checkbox-store.ts",

@@ -1,18 +1,18 @@
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import {
+  createStore,
+  mergeStore,
+  omit,
+  throwOnConflictingProps,
+} from "@ariakit/store";
+import { defaultValue } from "@ariakit/utils/misc";
+import type { SetState } from "@ariakit/utils/types";
 import type {
   DialogStoreFunctions,
   DialogStoreOptions,
   DialogStoreState,
 } from "../dialog/dialog-store.ts";
 import { createDialogStore } from "../dialog/dialog-store.ts";
-import { defaultValue } from "../utils/misc.ts";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
-import {
-  createStore,
-  mergeStore,
-  omit,
-  throwOnConflictingProps,
-} from "../utils/store.ts";
-import type { SetState } from "../utils/types.ts";
 
 type BasePlacement = "top" | "bottom" | "left" | "right";
 

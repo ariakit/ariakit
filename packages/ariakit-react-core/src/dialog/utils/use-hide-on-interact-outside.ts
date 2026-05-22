@@ -1,9 +1,9 @@
-import { contains, getDocument, getWindow } from "@ariakit/core/utils/dom";
-import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { useStoreState } from "@ariakit/react-store";
+import { useEvent, useSafeLayoutEffect } from "@ariakit/react-utils/hooks";
+import { contains, getDocument, getWindow } from "@ariakit/utils/dom";
+import { addGlobalEventListener } from "@ariakit/utils/events";
 import type { MutableRefObject } from "react";
 import { useEffect, useRef } from "react";
-import { useEvent, useSafeLayoutEffect } from "../../utils/hooks.ts";
-import { useStoreState } from "../../utils/store.tsx";
 import type { DialogStore } from "../dialog-store.ts";
 import type { DialogOptions } from "../dialog.tsx";
 import { isElementMarked } from "./mark-tree-outside.ts";

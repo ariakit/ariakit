@@ -1,12 +1,12 @@
+import type { Store, StoreProps } from "@ariakit/store";
+import { createStore } from "@ariakit/store";
+import { defaultValue } from "@ariakit/utils/misc";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.ts";
 import { createCompositeStore } from "../composite/composite-store.ts";
-import { defaultValue } from "../utils/misc.ts";
-import type { Store, StoreProps } from "../utils/store.ts";
-import { createStore } from "../utils/store.ts";
 
 /**
  * Creates a menubar store.

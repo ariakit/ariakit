@@ -1,5 +1,8 @@
 import * as Core from "@ariakit/core/combobox/combobox-store";
-import type { PickRequired } from "@ariakit/core/utils/types";
+import type { Store } from "@ariakit/react-store";
+import { useStore, useStoreProps } from "@ariakit/react-store";
+import { useUpdateEffect } from "@ariakit/react-utils/hooks";
+import type { PickRequired } from "@ariakit/utils/types";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -17,9 +20,6 @@ import type {
 import { usePopoverStoreProps } from "../popover/popover-store.ts";
 import { useTagContext } from "../tag/tag-context.tsx";
 import type { TagStore } from "../tag/tag-store.ts";
-import { useUpdateEffect } from "../utils/hooks.ts";
-import type { Store } from "../utils/store.tsx";
-import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useComboboxStoreOptions<T extends Core.ComboboxStoreOptions>(
   props: T,

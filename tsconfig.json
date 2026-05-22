@@ -1,20 +1,68 @@
 {
   "files": [],
   "references": [
-    { "path": "./tsconfig.node.json" },
-    { "path": "./tsconfig.test.json" },
-    { "path": "./tsconfig.test.react.json" },
-    { "path": "./tsconfig.test.solid.json" },
-    { "path": "./packages/ariakit-core/tsconfig.json" },
-    { "path": "./packages/ariakit-react/tsconfig.json" },
-    { "path": "./packages/ariakit-react-core/tsconfig.json" },
-    { "path": "./packages/ariakit-solid/tsconfig.json" },
-    { "path": "./packages/ariakit-solid-core/tsconfig.json" },
-    { "path": "./packages/ariakit-scripts/tsconfig.json" },
-    { "path": "./packages/ariakit-tailwind/tsconfig.json" },
-    { "path": "./packages/ariakit-test/tsconfig.json" },
-    { "path": "./examples/tsconfig.react.json" },
-    { "path": "./examples/tsconfig.solid.json" },
-    { "path": "./app/tsconfig.json" }
+    {
+      "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.test.json"
+    },
+    {
+      "path": "./tsconfig.test.react.json"
+    },
+    {
+      "path": "./tsconfig.test.solid.json"
+    },
+    {
+      "path": "./packages/ariakit-utils/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-store/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-core/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-react-utils/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-react-store/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-react-core/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-react/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-solid-utils/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-solid-store/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-solid-core/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-solid/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-scripts/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-tailwind/tsconfig.json"
+    },
+    {
+      "path": "./packages/ariakit-test/tsconfig.json"
+    },
+    {
+      "path": "./examples/tsconfig.react.json"
+    },
+    {
+      "path": "./examples/tsconfig.solid.json"
+    },
+    {
+      "path": "./app/tsconfig.json"
+    }
   ]
 }

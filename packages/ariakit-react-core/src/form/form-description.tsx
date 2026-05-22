@@ -1,17 +1,17 @@
 import type { StringLike } from "@ariakit/core/form/types";
-import { invariant } from "@ariakit/core/utils/misc";
-import type { ElementType } from "react";
-import { useCallback, useRef } from "react";
-import type { CollectionItemOptions } from "../collection/collection-item.tsx";
-import { useCollectionItem } from "../collection/collection-item.tsx";
-import { useId, useMergeRefs } from "../utils/hooks.ts";
+import { useId, useMergeRefs } from "@ariakit/react-utils/hooks";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { invariant } from "@ariakit/utils/misc";
+import type { ElementType } from "react";
+import { useCallback, useRef } from "react";
+import type { CollectionItemOptions } from "../collection/collection-item.tsx";
+import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useFormContext } from "./form-context.tsx";
 import type { FormStore } from "./form-store.ts";
 

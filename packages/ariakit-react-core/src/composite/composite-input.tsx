@@ -1,19 +1,20 @@
-import {
-  getDocument,
-  getTextboxSelection,
-  isTextField,
-} from "@ariakit/core/utils/dom";
-import { removeUndefinedValues } from "@ariakit/core/utils/misc";
-import type { ElementType, FocusEvent, KeyboardEvent } from "react";
-import { useEffect } from "react";
-import { useEvent } from "../utils/hooks.ts";
+import { useEvent } from "@ariakit/react-utils/hooks";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
+} from "@ariakit/react-utils/system";
+import type { Options } from "@ariakit/react-utils/types";
+import type { Props } from "@ariakit/react-utils/types";
+import {
+  getDocument,
+  getTextboxSelection,
+  isTextField,
+} from "@ariakit/utils/dom";
+import { removeUndefinedValues } from "@ariakit/utils/misc";
+import type { ElementType, FocusEvent, KeyboardEvent } from "react";
+import { useEffect } from "react";
 import type { CompositeStore } from "./composite-store.ts";
 import { selectTextField } from "./utils.ts";
 

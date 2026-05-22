@@ -28,7 +28,7 @@
     "clean": "node ../../scripts/build/clean.js"
   },
   "dependencies": {
-    "@ariakit/core": "workspace:*",
+    "@ariakit/utils": "workspace:*",
     "@testing-library/dom": "^8.0.0 || ^9.0.0 || ^10.0.0"
   },
   "devDependencies": {

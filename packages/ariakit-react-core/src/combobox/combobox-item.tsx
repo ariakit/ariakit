@@ -1,23 +1,27 @@
-import { isTextField } from "@ariakit/core/utils/dom";
-import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
-import { hasFocus } from "@ariakit/core/utils/focus";
-import { invariant } from "@ariakit/core/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import { useStoreStateObject } from "@ariakit/react-store";
+import {
+  useBooleanEvent,
+  useEvent,
+  useWrapElement,
+} from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  memo,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { isTextField } from "@ariakit/utils/dom";
+import { isDownloading, isOpeningInNewTab } from "@ariakit/utils/events";
+import { hasFocus } from "@ariakit/utils/focus";
+import { invariant } from "@ariakit/utils/misc";
+import type { BooleanOrCallback } from "@ariakit/utils/types";
 import type { ElementType, KeyboardEvent, MouseEvent } from "react";
 import { useCallback, useContext } from "react";
 import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
-import { useBooleanEvent, useEvent, useWrapElement } from "../utils/hooks.ts";
-import { useStoreStateObject } from "../utils/store.tsx";
-import {
-  createElement,
-  createHook,
-  forwardRef,
-  memo,
-} from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import {
   ComboboxItemCheckedContext,
   ComboboxItemValueContext,

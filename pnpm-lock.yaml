@@ -23,6 +23,12 @@ importers:
       '@ariakit/react-core':
         specifier: workspace:*
         version: link:packages/ariakit-react-core
+      '@ariakit/react-store':
+        specifier: workspace:*
+        version: link:packages/ariakit-react-store
+      '@ariakit/react-utils':
+        specifier: workspace:*
+        version: link:packages/ariakit-react-utils
       '@ariakit/scripts':
         specifier: workspace:*
         version: link:packages/ariakit-scripts
@@ -32,12 +38,24 @@ importers:
       '@ariakit/solid-core':
         specifier: workspace:*
         version: link:packages/ariakit-solid-core
+      '@ariakit/solid-store':
+        specifier: workspace:*
+        version: link:packages/ariakit-solid-store
+      '@ariakit/solid-utils':
+        specifier: workspace:*
+        version: link:packages/ariakit-solid-utils
+      '@ariakit/store':
+        specifier: workspace:*
+        version: link:packages/ariakit-store
       '@ariakit/tailwind':
         specifier: workspace:*
         version: link:packages/ariakit-tailwind
       '@ariakit/test':
         specifier: workspace:*
         version: link:packages/ariakit-test
+      '@ariakit/utils':
+        specifier: workspace:*
+        version: link:packages/ariakit-utils
       '@changesets/apply-release-plan':
         specifier: 7.1.1
         version: 7.1.1(patch_hash=19cb6131207f59da50995e2f93d09dbcaccb346cdc696d59f1aa89e3114f6ac5)
@@ -527,13 +545,23 @@ importers:
         specifier: 4.3.0
         version: 4.3.0
 
-  packages/ariakit-core: {}
+  packages/ariakit-core:
+    dependencies:
+      '@ariakit/store':
+        specifier: workspace:*
+        version: link:../ariakit-store
+      '@ariakit/utils':
+        specifier: workspace:*
+        version: link:../ariakit-utils
 
   packages/ariakit-react:
     dependencies:
       '@ariakit/react-core':
         specifier: workspace:*
         version: link:../ariakit-react-core
+      '@ariakit/react-store':
+        specifier: workspace:*
+        version: link:../ariakit-react-store
     devDependencies:
       react:
         specifier: 18.3.1
@@ -547,9 +575,40 @@ importers:
       '@ariakit/core':
         specifier: workspace:*
         version: link:../ariakit-core
+      '@ariakit/react-store':
+        specifier: workspace:*
+        version: link:../ariakit-react-store
+      '@ariakit/react-utils':
+        specifier: workspace:*
+        version: link:../ariakit-react-utils
+      '@ariakit/store':
+        specifier: workspace:*
+        version: link:../ariakit-store
+      '@ariakit/utils':
+        specifier: workspace:*
+        version: link:../ariakit-utils
       '@floating-ui/dom':
         specifier: ^1.0.0
         version: 1.7.6
+    devDependencies:
+      react:
+        specifier: 18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
+
+  packages/ariakit-react-store:
+    dependencies:
+      '@ariakit/react-utils':
+        specifier: workspace:*
+        version: link:../ariakit-react-utils
+      '@ariakit/store':
+        specifier: workspace:*
+        version: link:../ariakit-store
+      '@ariakit/utils':
+        specifier: workspace:*
+        version: link:../ariakit-utils
       use-sync-external-store:
         specifier: ^1.6.0
         version: 1.6.0(react@18.3.1)
@@ -560,9 +619,16 @@ importers:
       react:
         specifier: 18.3.1
         version: 18.3.1
-      react-dom:
+
+  packages/ariakit-react-utils:
+    dependencies:
+      '@ariakit/utils':
+        specifier: workspace:*
+        version: link:../ariakit-utils
+    devDependencies:
+      react:
         specifier: 18.3.1
-        version: 18.3.1(react@18.3.1)
+        version: 18.3.1
 
   packages/ariakit-scripts:
     dependencies:
@@ -584,6 +650,27 @@ importers:
       '@ariakit/core':
         specifier: workspace:*
         version: link:../ariakit-core
+      '@ariakit/solid-utils':
+        specifier: workspace:*
+        version: link:../ariakit-solid-utils
+      '@ariakit/utils':
+        specifier: workspace:*
+        version: link:../ariakit-utils
+      solid-js:
+        specifier: ^1.8
+        version: 1.9.13
+
+  packages/ariakit-solid-store:
+    dependencies:
+      '@ariakit/store':
+        specifier: workspace:*
+        version: link:../ariakit-store
+
+  packages/ariakit-solid-utils:
+    dependencies:
+      '@ariakit/utils':
+        specifier: workspace:*
+        version: link:../ariakit-utils
       '@solid-primitives/props':
         specifier: 3.2.3
         version: 3.2.3(solid-js@1.9.13)
@@ -593,6 +680,12 @@ importers:
       solid-js:
         specifier: ^1.8
         version: 1.9.13
+
+  packages/ariakit-store:
+    dependencies:
+      '@ariakit/utils':
+        specifier: workspace:*
+        version: link:../ariakit-utils
 
   packages/ariakit-tailwind:
     devDependencies:
@@ -605,9 +698,9 @@ importers:
 
   packages/ariakit-test:
     dependencies:
-      '@ariakit/core':
+      '@ariakit/utils':
         specifier: workspace:*
-        version: link:../ariakit-core
+        version: link:../ariakit-utils
       '@playwright/test':
         specifier: ^1.27.0
         version: 1.60.0
@@ -624,6 +717,8 @@ importers:
       react-dom:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
+
+  packages/ariakit-utils: {}
 
   templates/react:
     dependencies:

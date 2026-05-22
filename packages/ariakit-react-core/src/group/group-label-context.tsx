@@ -1,4 +1,4 @@
-import type { SetState } from "@ariakit/core/utils/types";
+import type { SetState } from "@ariakit/utils/types";
 import { createContext } from "react";
 
 export const GroupLabelContext = createContext<

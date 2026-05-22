@@ -1,15 +1,19 @@
-import { queueBeforeEvent } from "@ariakit/core/utils/events";
-import { getClosestFocusable } from "@ariakit/core/utils/focus";
-import { invariant } from "@ariakit/core/utils/misc";
-import { isApple } from "@ariakit/core/utils/platform";
-import { UndoManager } from "@ariakit/core/utils/undo";
+import { useStoreState } from "@ariakit/react-store";
+import { useEvent, useWrapElement } from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { queueBeforeEvent } from "@ariakit/utils/events";
+import { getClosestFocusable } from "@ariakit/utils/focus";
+import { invariant } from "@ariakit/utils/misc";
+import { isApple } from "@ariakit/utils/platform";
+import { UndoManager } from "@ariakit/utils/undo";
 import type { ElementType, KeyboardEvent, MouseEvent } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
-import { useEvent, useWrapElement } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import {
   TagScopedContextProvider,
   useTagProviderContext,

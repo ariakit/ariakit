@@ -1,10 +1,15 @@
-import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
+import { useStoreState } from "@ariakit/react-store";
+import { useId, useWrapElement } from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Options } from "@ariakit/react-utils/types";
+import type { Props } from "@ariakit/react-utils/types";
+import { invariant, removeUndefinedValues } from "@ariakit/utils/misc";
 import type { ElementType } from "react";
 import { useMemo } from "react";
-import { useId, useWrapElement } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import {
   CompositeRowContext,
   useCompositeContext,

@@ -1,11 +1,15 @@
-import { isButton } from "@ariakit/core/utils/dom";
+import { useMergeRefs, useTagName } from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { isButton } from "@ariakit/utils/dom";
 import type { ElementType } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
-import { useMergeRefs, useTagName } from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

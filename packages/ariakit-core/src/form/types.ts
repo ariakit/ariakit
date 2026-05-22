@@ -1,4 +1,4 @@
-import type { AnyObject } from "../utils/types.ts";
+import type { AnyObject } from "@ariakit/utils/types";
 
 /**
  * An object or primitive value that can be converted to a string.

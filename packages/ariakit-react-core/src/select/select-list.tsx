@@ -1,14 +1,4 @@
-import { isSelfTarget } from "@ariakit/core/utils/events";
-import { invariant } from "@ariakit/core/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { ElementType, KeyboardEvent } from "react";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
-import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
-import type { CompositeOptions } from "../composite/composite.tsx";
-import { useComposite } from "../composite/composite.tsx";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
-import { isHidden } from "../disclosure/disclosure-content.tsx";
+import { useStoreState } from "@ariakit/react-store";
 import {
   useAttribute,
   useBooleanEvent,
@@ -17,10 +7,24 @@ import {
   useMergeRefs,
   useTransactionState,
   useWrapElement,
-} from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
+} from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { isSelfTarget } from "@ariakit/utils/events";
+import { invariant } from "@ariakit/utils/misc";
+import type { BooleanOrCallback } from "@ariakit/utils/types";
+import type { ElementType, KeyboardEvent } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
+import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
   SelectHeadingContext,
   SelectScopedContextProvider,

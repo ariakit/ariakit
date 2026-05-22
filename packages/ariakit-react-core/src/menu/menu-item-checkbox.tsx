@@ -1,18 +1,18 @@
-import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
-import type { ElementType } from "react";
-import { useEffect } from "react";
-import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
-import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
-import { useCheckbox } from "../checkbox/checkbox.tsx";
-import { useInitialValue } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
+import { useStoreState } from "@ariakit/react-store";
+import { useInitialValue } from "@ariakit/react-utils/hooks";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { invariant, shallowEqual } from "@ariakit/utils/misc";
+import type { ElementType } from "react";
+import { useEffect } from "react";
+import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
+import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
+import { useCheckbox } from "../checkbox/checkbox.tsx";
 import { useMenuScopedContext } from "./menu-context.tsx";
 import type { MenuItemOptions } from "./menu-item.tsx";
 import { useMenuItem } from "./menu-item.tsx";

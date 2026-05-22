@@ -1,4 +1,4 @@
-import { chain } from "@ariakit/core/utils/misc";
+import { chain } from "@ariakit/utils/misc";
 import { isBackdrop } from "./is-backdrop.ts";
 import { setProperty } from "./orchestrate.ts";
 import { walkTreeOutside } from "./walk-tree-outside.ts";

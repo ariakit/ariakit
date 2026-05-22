@@ -1,23 +1,28 @@
-import { getDocument } from "@ariakit/core/utils/dom";
-import { isFocusEventOutside } from "@ariakit/core/utils/events";
+import {
+  useMergeRefs,
+  useSafeLayoutEffect,
+  useWrapElement,
+} from "@ariakit/react-utils/hooks";
+import { setRef } from "@ariakit/react-utils/misc";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Options } from "@ariakit/react-utils/types";
+import type { Props } from "@ariakit/react-utils/types";
+import { getDocument } from "@ariakit/utils/dom";
+import { isFocusEventOutside } from "@ariakit/utils/events";
 import {
   disableFocusIn,
   getNextTabbable,
   getPreviousTabbable,
   restoreFocusIn,
-} from "@ariakit/core/utils/focus";
+} from "@ariakit/utils/focus";
 import type { ElementType, MutableRefObject, RefCallback } from "react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FocusTrap } from "../focus-trap/focus-trap.tsx";
-import {
-  useMergeRefs,
-  useSafeLayoutEffect,
-  useWrapElement,
-} from "../utils/hooks.ts";
-import { setRef } from "../utils/misc.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import { PortalContext } from "./portal-context.tsx";
 
 const TagName = "div" satisfies ElementType;

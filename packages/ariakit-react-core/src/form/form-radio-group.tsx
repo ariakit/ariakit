@@ -1,8 +1,12 @@
+import { useWrapElement } from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
 import type { ElementType } from "react";
 import { CompositeScopedContextProvider } from "../composite/composite-context.tsx";
-import { useWrapElement } from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import type { FormGroupOptions } from "./form-group.tsx";
 import { useFormGroup } from "./form-group.tsx";
 

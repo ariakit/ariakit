@@ -1,7 +1,7 @@
+import { mergeProps } from "@ariakit/solid-utils/reactivity";
+import { createHook, createInstance } from "@ariakit/solid-utils/system";
+import type { Props } from "@ariakit/solid-utils/types";
 import type { ValidComponent } from "solid-js";
-import { mergeProps } from "../utils/reactivity.ts";
-import { createHook, createInstance } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import type { VisuallyHiddenOptions } from "../visually-hidden/visually-hidden.tsx";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.tsx";
 

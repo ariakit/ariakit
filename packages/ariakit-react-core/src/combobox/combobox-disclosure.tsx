@@ -1,11 +1,15 @@
-import { invariant } from "@ariakit/core/utils/misc";
+import { useStoreState } from "@ariakit/react-store";
+import { useEvent, useSafeLayoutEffect } from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { invariant } from "@ariakit/utils/misc";
 import type { ElementType, MouseEvent } from "react";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
-import { useEvent, useSafeLayoutEffect } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 

@@ -1,8 +1,12 @@
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
 import type { ElementType } from "react";
 import type { PopoverDismissOptions } from "../popover/popover-dismiss.tsx";
 import { usePopoverDismiss } from "../popover/popover-dismiss.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { useHovercardScopedContext } from "./hovercard-context.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
 

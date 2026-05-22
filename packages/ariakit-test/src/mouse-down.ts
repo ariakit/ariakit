@@ -1,6 +1,6 @@
-import { getDocument, isVisible } from "@ariakit/core/utils/dom";
-import { getClosestFocusable, isFocusable } from "@ariakit/core/utils/focus";
-import { invariant } from "@ariakit/core/utils/misc";
+import { getDocument, isVisible } from "@ariakit/utils/dom";
+import { getClosestFocusable, isFocusable } from "@ariakit/utils/focus";
+import { invariant } from "@ariakit/utils/misc";
 import { wrapAsync } from "./__utils.ts";
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";

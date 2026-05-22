@@ -1,25 +1,25 @@
 import type { StringLike } from "@ariakit/core/form/types";
-import { getDocument } from "@ariakit/core/utils/dom";
-import { cx, invariant } from "@ariakit/core/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { ElementType, FocusEvent, RefObject } from "react";
-import { useCallback, useRef } from "react";
-import type { CollectionItemOptions } from "../collection/collection-item.tsx";
-import { useCollectionItem } from "../collection/collection-item.tsx";
+import { useStoreState } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
   useId,
   useMergeRefs,
-} from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
+} from "@ariakit/react-utils/hooks";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { getDocument } from "@ariakit/utils/dom";
+import { cx, invariant } from "@ariakit/utils/misc";
+import type { BooleanOrCallback } from "@ariakit/utils/types";
+import type { ElementType, FocusEvent, RefObject } from "react";
+import { useCallback, useRef } from "react";
+import type { CollectionItemOptions } from "../collection/collection-item.tsx";
+import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useFormContext } from "./form-context.tsx";
 import type { FormStore } from "./form-store.ts";
 

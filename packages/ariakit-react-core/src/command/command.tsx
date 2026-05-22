@@ -1,18 +1,26 @@
-import { isButton, isTextField } from "@ariakit/core/utils/dom";
+import {
+  useEvent,
+  useMergeRefs,
+  useMetadataProps,
+} from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { isButton, isTextField } from "@ariakit/utils/dom";
 import {
   fireClickEvent,
   isSelfTarget,
   queueBeforeEvent,
-} from "@ariakit/core/utils/events";
-import { disabledFromProps } from "@ariakit/core/utils/misc";
-import { isFirefox } from "@ariakit/core/utils/platform";
+} from "@ariakit/utils/events";
+import { disabledFromProps } from "@ariakit/utils/misc";
+import { isFirefox } from "@ariakit/utils/platform";
 import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
-import { useEvent, useMergeRefs, useMetadataProps } from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

@@ -1,10 +1,10 @@
+import type { Store, StoreProps } from "@ariakit/store";
 import type {
   DisclosureStoreFunctions,
   DisclosureStoreOptions,
   DisclosureStoreState,
 } from "../disclosure/disclosure-store.ts";
 import { createDisclosureStore } from "../disclosure/disclosure-store.ts";
-import type { Store, StoreProps } from "../utils/store.ts";
 
 /**
  * Creates a dialog store.

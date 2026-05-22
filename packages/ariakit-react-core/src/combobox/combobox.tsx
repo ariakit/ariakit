@@ -1,25 +1,36 @@
+import { useStoreState } from "@ariakit/react-store";
+import {
+  useBooleanEvent,
+  useEvent,
+  useForceUpdate,
+  useId,
+  useMergeRefs,
+  useSafeLayoutEffect,
+  useUpdateEffect,
+  useUpdateLayoutEffect,
+} from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { sync } from "@ariakit/store";
 import {
   getPopupRole,
   getScrollingElement,
   getTextboxSelection,
   setSelectionRange,
-} from "@ariakit/core/utils/dom";
-import {
-  isFocusEventOutside,
-  queueBeforeEvent,
-} from "@ariakit/core/utils/events";
-import { hasFocus } from "@ariakit/core/utils/focus";
+} from "@ariakit/utils/dom";
+import { isFocusEventOutside, queueBeforeEvent } from "@ariakit/utils/events";
+import { hasFocus } from "@ariakit/utils/focus";
 import {
   invariant,
   isFalsyBooleanCallback,
   noop,
   normalizeString,
-} from "@ariakit/core/utils/misc";
-import { sync } from "@ariakit/core/utils/store";
-import type {
-  BooleanOrCallback,
-  StringWithValue,
-} from "@ariakit/core/utils/types";
+} from "@ariakit/utils/misc";
+import type { BooleanOrCallback, StringWithValue } from "@ariakit/utils/types";
 import type {
   AriaAttributes,
   ChangeEvent,
@@ -35,19 +46,6 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
 import { usePopoverAnchor } from "../popover/popover-anchor.tsx";
-import {
-  useBooleanEvent,
-  useEvent,
-  useForceUpdate,
-  useId,
-  useMergeRefs,
-  useSafeLayoutEffect,
-  useUpdateEffect,
-  useUpdateLayoutEffect,
-} from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,

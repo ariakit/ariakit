@@ -1,5 +1,4 @@
-import { defaultValue } from "../utils/misc.ts";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import {
   createStore,
   mergeStore,
@@ -8,8 +7,9 @@ import {
   subscribe,
   sync,
   throwOnConflictingProps,
-} from "../utils/store.ts";
-import type { SetState } from "../utils/types.ts";
+} from "@ariakit/store";
+import { defaultValue } from "@ariakit/utils/misc";
+import type { SetState } from "@ariakit/utils/types";
 
 /**
  * Creates a disclosure store.

@@ -1,9 +1,22 @@
-import { getPopupItemRole, getPopupRole } from "@ariakit/core/utils/dom";
+import { useStoreState } from "@ariakit/react-store";
+import {
+  useEvent,
+  useId,
+  useMergeRefs,
+  useWrapElement,
+} from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { getPopupItemRole, getPopupRole } from "@ariakit/utils/dom";
 import {
   disabledFromElement,
   disabledFromProps,
   invariant,
-} from "@ariakit/core/utils/misc";
+} from "@ariakit/utils/misc";
 import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useRef } from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
@@ -13,15 +26,6 @@ import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import { Role } from "../role/role.tsx";
-import {
-  useEvent,
-  useId,
-  useMergeRefs,
-  useWrapElement,
-} from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import {
   MenuContextProvider,
   useMenuProviderContext,

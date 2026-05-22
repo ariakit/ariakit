@@ -1,3 +1,14 @@
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import {
+  batch,
+  createStore,
+  mergeStore,
+  omit,
+  setup,
+  sync,
+} from "@ariakit/store";
+import { chain, defaultValue } from "@ariakit/utils/misc";
+import type { SetState } from "@ariakit/utils/types";
 import type {
   CollectionStore,
   CollectionStoreItem,
@@ -13,17 +24,6 @@ import type {
 } from "../composite/composite-store.ts";
 import { createCompositeStore } from "../composite/composite-store.ts";
 import type { SelectStore } from "../select/select-store.ts";
-import { chain, defaultValue } from "../utils/misc.ts";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
-import {
-  batch,
-  createStore,
-  mergeStore,
-  omit,
-  setup,
-  sync,
-} from "../utils/store.ts";
-import type { SetState } from "../utils/types.ts";
 
 export function createTabStore({
   composite: parentComposite,

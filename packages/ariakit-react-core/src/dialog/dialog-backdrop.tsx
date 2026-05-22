@@ -1,9 +1,9 @@
+import { useStoreState } from "@ariakit/react-store";
+import { useSafeLayoutEffect } from "@ariakit/react-utils/hooks";
 import { isValidElement, useEffect, useRef } from "react";
 import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
 import { Role } from "../role/role.tsx";
-import { useSafeLayoutEffect } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 import type { DialogProps } from "./dialog.tsx";
 import { markAncestor } from "./utils/mark-tree-outside.ts";

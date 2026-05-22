@@ -1,11 +1,15 @@
-import { invariant } from "@ariakit/core/utils/misc";
+import { useStoreState } from "@ariakit/react-store";
+import { useWrapElement } from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { invariant } from "@ariakit/utils/misc";
 import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
-import { useWrapElement } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import {
   TabScopedContextProvider,
   useTabProviderContext,

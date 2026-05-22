@@ -1,4 +1,4 @@
-import { createStoreContext } from "../utils/system.tsx";
+import { createStoreContext } from "@ariakit/react-store/context";
 import type { DisclosureStore } from "./disclosure-store.ts";
 
 const ctx = createStoreContext<DisclosureStore>();

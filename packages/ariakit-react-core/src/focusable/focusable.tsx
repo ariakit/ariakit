@@ -1,16 +1,26 @@
 import {
+  useEvent,
+  useMergeRefs,
+  useMetadataProps,
+  useTagName,
+} from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Options } from "@ariakit/react-utils/types";
+import type { Props } from "@ariakit/react-utils/types";
+import {
   addGlobalEventListener,
   isFocusEventOutside,
   isSelfTarget,
   queueBeforeEvent,
-} from "@ariakit/core/utils/events";
-import { hasFocus, isFocusable } from "@ariakit/core/utils/focus";
-import {
-  disabledFromProps,
-  removeUndefinedValues,
-} from "@ariakit/core/utils/misc";
-import { isSafari } from "@ariakit/core/utils/platform";
-import type { BivariantCallback } from "@ariakit/core/utils/types";
+} from "@ariakit/utils/events";
+import { hasFocus, isFocusable } from "@ariakit/utils/focus";
+import { disabledFromProps, removeUndefinedValues } from "@ariakit/utils/misc";
+import { isSafari } from "@ariakit/utils/platform";
+import type { BivariantCallback } from "@ariakit/utils/types";
 import type {
   ElementType,
   EventHandler,
@@ -19,14 +29,6 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import {
-  useEvent,
-  useMergeRefs,
-  useMetadataProps,
-  useTagName,
-} from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import { FocusableContext } from "./focusable-context.tsx";
 
 const TagName = "div" satisfies ElementType;

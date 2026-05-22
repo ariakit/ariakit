@@ -1,7 +1,14 @@
-import { contains } from "@ariakit/core/utils/dom";
-import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { invariant } from "@ariakit/core/utils/misc";
-import { sync } from "@ariakit/core/utils/store";
+import { useEvent, useMergeRefs } from "@ariakit/react-utils/hooks";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { sync } from "@ariakit/store";
+import { contains } from "@ariakit/utils/dom";
+import { addGlobalEventListener } from "@ariakit/utils/events";
+import { invariant } from "@ariakit/utils/misc";
 import type {
   ElementType,
   MouseEvent,
@@ -10,9 +17,6 @@ import type {
 import { useEffect, useState } from "react";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
-import { useEvent, useMergeRefs } from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.tsx";
 import { useHovercardProviderContext } from "./hovercard-context.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";

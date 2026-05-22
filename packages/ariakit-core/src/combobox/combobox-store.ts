@@ -1,3 +1,16 @@
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import {
+  batch,
+  createStore,
+  mergeStore,
+  pick,
+  setup,
+  sync,
+  throwOnConflictingProps,
+} from "@ariakit/store";
+import { chain, defaultValue } from "@ariakit/utils/misc";
+import { isSafari, isTouchDevice } from "@ariakit/utils/platform";
+import type { PickRequired, SetState } from "@ariakit/utils/types";
 import type {
   CompositeStoreFunctions,
   CompositeStoreItem,
@@ -12,19 +25,6 @@ import type {
 } from "../popover/popover-store.ts";
 import { createPopoverStore } from "../popover/popover-store.ts";
 import type { TagStore } from "../tag/tag-store.ts";
-import { chain, defaultValue } from "../utils/misc.ts";
-import { isSafari, isTouchDevice } from "../utils/platform.ts";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
-import {
-  batch,
-  createStore,
-  mergeStore,
-  pick,
-  setup,
-  sync,
-  throwOnConflictingProps,
-} from "../utils/store.ts";
-import type { PickRequired, SetState } from "../utils/types.ts";
 
 type MutableValue<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,

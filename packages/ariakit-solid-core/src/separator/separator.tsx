@@ -1,7 +1,12 @@
+import { mergeProps } from "@ariakit/solid-utils/reactivity";
+import {
+  createHook,
+  createInstance,
+  withOptions,
+} from "@ariakit/solid-utils/system";
+import type { Options } from "@ariakit/solid-utils/types";
+import type { Props } from "@ariakit/solid-utils/types";
 import type { ValidComponent } from "solid-js";
-import { mergeProps } from "../utils/reactivity.ts";
-import { createHook, createInstance, withOptions } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "hr" satisfies ValidComponent;
 type TagName = typeof TagName;

@@ -1,3 +1,4 @@
+import { createStoreContext } from "@ariakit/react-store/context";
 import { createContext } from "react";
 import {
   CompositeContextProvider,
@@ -14,7 +15,6 @@ import {
   useMenubarProviderContext,
   useMenubarScopedContext,
 } from "../menubar/menubar-context.tsx";
-import { createStoreContext } from "../utils/system.tsx";
 import type { MenuStore } from "./menu-store.ts";
 
 const menu = createStoreContext<MenuStore>(

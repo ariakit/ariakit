@@ -1,23 +1,23 @@
-import { invariant } from "@ariakit/core/utils/misc";
-import { isApple } from "@ariakit/core/utils/platform";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { ElementType, KeyboardEvent } from "react";
-import { useCallback, useState } from "react";
-import type { CompositeItemOptions } from "../composite/composite-item.tsx";
-import { useCompositeItem } from "../composite/composite-item.tsx";
 import {
   useBooleanEvent,
   useEvent,
   useId,
   useWrapElement,
-} from "../utils/hooks.ts";
+} from "@ariakit/react-utils/hooks";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
+} from "@ariakit/react-utils/system";
+import type { Props } from "@ariakit/react-utils/types";
+import { invariant } from "@ariakit/utils/misc";
+import { isApple } from "@ariakit/utils/platform";
+import type { BooleanOrCallback } from "@ariakit/utils/types";
+import type { ElementType, KeyboardEvent } from "react";
+import { useCallback, useState } from "react";
+import type { CompositeItemOptions } from "../composite/composite-item.tsx";
+import { useCompositeItem } from "../composite/composite-item.tsx";
 import {
   TagRemoveIdContext,
   TagValueContext,

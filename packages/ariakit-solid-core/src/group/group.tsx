@@ -1,9 +1,14 @@
+import { mergeProps } from "@ariakit/solid-utils/reactivity";
+import {
+  createHook,
+  createInstance,
+  wrapInstance,
+} from "@ariakit/solid-utils/system";
+import type { Options } from "@ariakit/solid-utils/types";
+import type { Props } from "@ariakit/solid-utils/types";
 import type { ValidComponent } from "solid-js";
 import { createSignal } from "solid-js";
 import { As } from "../as/as.tsx";
-import { mergeProps } from "../utils/reactivity.ts";
-import { createHook, createInstance, wrapInstance } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import { GroupLabelContext } from "./group-label-context.tsx";
 
 const TagName = "div" satisfies ValidComponent;

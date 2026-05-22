@@ -1,5 +1,5 @@
 // Part of this code is based on https://github.com/testing-library/user-event/blob/d7483f049a1ec2ebf1ca1e2c1f4367849fca5997/src/event/createEvent.ts
-import { getKeys, invariant } from "@ariakit/core/utils/misc";
+import { getKeys, invariant } from "@ariakit/utils/misc";
 import type { EventType } from "@testing-library/dom";
 import { createEvent, fireEvent } from "@testing-library/dom";
 import { flushMicrotasks, wrapAsync } from "./__utils.ts";

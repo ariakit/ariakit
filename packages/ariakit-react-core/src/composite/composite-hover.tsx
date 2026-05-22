@@ -1,26 +1,27 @@
-import { contains } from "@ariakit/core/utils/dom";
-import { hasFocus, hasFocusWithin } from "@ariakit/core/utils/focus";
-import {
-  hasOwnProperty,
-  invariant,
-  removeUndefinedValues,
-} from "@ariakit/core/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
-import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
-import { useCallback } from "react";
 import {
   useBooleanEvent,
   useEvent,
   useIsMouseMoving,
   useMergeRefs,
-} from "../utils/hooks.ts";
+} from "@ariakit/react-utils/hooks";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
+} from "@ariakit/react-utils/system";
+import type { Options } from "@ariakit/react-utils/types";
+import type { Props } from "@ariakit/react-utils/types";
+import { contains } from "@ariakit/utils/dom";
+import { hasFocus, hasFocusWithin } from "@ariakit/utils/focus";
+import {
+  hasOwnProperty,
+  invariant,
+  removeUndefinedValues,
+} from "@ariakit/utils/misc";
+import type { BooleanOrCallback } from "@ariakit/utils/types";
+import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
+import { useCallback } from "react";
 import { useCompositeContext } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 

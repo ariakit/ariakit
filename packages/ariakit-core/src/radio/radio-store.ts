@@ -1,13 +1,13 @@
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import { createStore } from "@ariakit/store";
+import { defaultValue } from "@ariakit/utils/misc";
+import type { SetState } from "@ariakit/utils/types";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.ts";
 import { createCompositeStore } from "../composite/composite-store.ts";
-import { defaultValue } from "../utils/misc.ts";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
-import { createStore } from "../utils/store.ts";
-import type { SetState } from "../utils/types.ts";
 
 /**
  * Creates a radio store.

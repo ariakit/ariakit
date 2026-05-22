@@ -1,5 +1,5 @@
-import { getActiveElement, isTextField } from "@ariakit/core/utils/dom";
-import { isFocusable } from "@ariakit/core/utils/focus";
+import { getActiveElement, isTextField } from "@ariakit/utils/dom";
+import { isFocusable } from "@ariakit/utils/focus";
 import type { DirtiableElement, TextField } from "./__utils.ts";
 import { wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";

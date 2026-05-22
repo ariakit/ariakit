@@ -1,14 +1,14 @@
-import { getDocument, sortBasedOnDOMPosition } from "../utils/dom.ts";
-import { chain, defaultValue } from "../utils/misc.ts";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import {
   batch,
   createStore,
   init,
   setup,
   throwOnConflictingProps,
-} from "../utils/store.ts";
-import type { BivariantCallback } from "../utils/types.ts";
+} from "@ariakit/store";
+import { getDocument, sortBasedOnDOMPosition } from "@ariakit/utils/dom";
+import { chain, defaultValue } from "@ariakit/utils/misc";
+import type { BivariantCallback } from "@ariakit/utils/types";
 
 function getCommonParent(items: CollectionStoreItem[]) {
   const firstItem = items.find((item) => !!item.element);
