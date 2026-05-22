@@ -1,8 +1,8 @@
-import { createStoreContext } from "@ariakit/react-store/context";
 import {
   CompositeContextProvider,
   CompositeScopedContextProvider,
 } from "../composite/composite-context.tsx";
+import { createStoreContext } from "../utils/store.tsx";
 import type { ToolbarStore } from "./toolbar-store.ts";
 
 const ctx = createStoreContext<ToolbarStore>(

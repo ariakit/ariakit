@@ -8,13 +8,13 @@ import {
   sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
-import { applyState, defaultValue } from "@ariakit/utils/misc";
+import { applyState, defaultValue } from "@ariakit/utils";
 import type {
   BivariantCallback,
   PickRequired,
   SetState,
   SetStateAction,
-} from "@ariakit/utils/types";
+} from "@ariakit/utils";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
   CompositeStoreFunctions,

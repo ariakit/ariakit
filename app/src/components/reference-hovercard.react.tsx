@@ -1,3 +1,4 @@
+import * as ak from "@ariakit/react";
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -7,8 +8,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { invariant } from "@ariakit/core/utils/misc";
-import * as ak from "@ariakit/react";
+import { useStoreState } from "@ariakit/react";
+import { invariant } from "@ariakit/utils";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { clsx } from "clsx";
 import * as React from "react";
@@ -123,8 +124,8 @@ export function ReferenceHovercard({
   ...props
 }: ReferenceHovercardProps) {
   const store = ak.useHovercardContext();
-  const open = ak.useStoreState(store, "mounted");
-  const anchorElement = ak.useStoreState(store, "anchorElement");
+  const open = useStoreState(store, "mounted");
+  const anchorElement = useStoreState(store, "anchorElement");
 
   const partialPath = React.useMemo(() => {
     if (!anchorElement) return null;

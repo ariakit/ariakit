@@ -8,7 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { join } from "node:path";
-import { invariant } from "@ariakit/core/utils/misc";
+import { invariant } from "@ariakit/utils";
 import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { defineCollection, reference } from "astro:content";

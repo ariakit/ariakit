@@ -1,22 +1,18 @@
-import { useEvent } from "@ariakit/react-utils/hooks";
-import {
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils/system";
-import type { Options } from "@ariakit/react-utils/types";
-import type { Props } from "@ariakit/react-utils/types";
+import { useEvent } from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Options } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import {
   getDocument,
   isTextField,
   sortBasedOnDOMPosition,
-} from "@ariakit/utils/dom";
-import { isSelfTarget } from "@ariakit/utils/events";
+} from "@ariakit/utils";
+import { isSelfTarget } from "@ariakit/utils";
 import {
   invariant,
   normalizeString,
   removeUndefinedValues,
-} from "@ariakit/utils/misc";
+} from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
 import { useRef } from "react";
 import { useCompositeContext } from "./composite-context.tsx";

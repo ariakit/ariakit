@@ -265,11 +265,7 @@
     "./tooltip/tooltip-provider": "./src/tooltip/tooltip-provider.tsx",
     "./tooltip/tooltip-store": "./src/tooltip/tooltip-store.ts",
     "./tooltip/tooltip": "./src/tooltip/tooltip.tsx",
-    "./utils/hooks": "./src/utils/hooks.ts",
-    "./utils/misc": "./src/utils/misc.ts",
     "./utils/store": "./src/utils/store.tsx",
-    "./utils/system": "./src/utils/system.tsx",
-    "./utils/types": "./src/utils/types.ts",
     "./visually-hidden/visually-hidden": "./src/visually-hidden/visually-hidden.tsx",
     "./package.json": "./package.json"
   }

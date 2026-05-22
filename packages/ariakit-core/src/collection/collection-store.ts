@@ -6,9 +6,9 @@ import {
   setup,
   throwOnConflictingProps,
 } from "@ariakit/store";
-import { getDocument, sortBasedOnDOMPosition } from "@ariakit/utils/dom";
-import { chain, defaultValue } from "@ariakit/utils/misc";
-import type { BivariantCallback } from "@ariakit/utils/types";
+import { getDocument, sortBasedOnDOMPosition } from "@ariakit/utils";
+import { chain, defaultValue } from "@ariakit/utils";
+import type { BivariantCallback } from "@ariakit/utils";
 
 function getCommonParent(items: CollectionStoreItem[]) {
   const firstItem = items.find((item) => !!item.element);

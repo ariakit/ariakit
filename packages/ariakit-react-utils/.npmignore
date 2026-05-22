@@ -1,5 +1,7 @@
 coverage
-src
+.typescript
+*.tsbuildinfo
+src/__tests__
 tsconfig.json
 *.log
 *.config.js

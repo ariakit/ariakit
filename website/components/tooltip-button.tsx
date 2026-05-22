@@ -1,7 +1,7 @@
 "use client";
 
 import { Role } from "@ariakit/react";
-import { forwardRef } from "@ariakit/react-core/utils/system";
+import { forwardRef } from "@ariakit/react-utils";
 import { Button } from "@ariakit/react/button";
 import type {
   TooltipAnchorProps,

@@ -1,14 +1,14 @@
-import { useStoreState } from "@ariakit/react-store";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "@ariakit/react-utils/system";
-import type { Options } from "@ariakit/react-utils/types";
-import type { Props } from "@ariakit/react-utils/types";
-import { invariant, removeUndefinedValues } from "@ariakit/utils/misc";
+} from "@ariakit/react-utils";
+import type { Options } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
+import { useStoreState } from "../utils/store.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 

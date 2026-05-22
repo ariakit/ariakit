@@ -1,8 +1,8 @@
-import { createId } from "@ariakit/solid-utils/misc";
-import { mergeProps, stableAccessor } from "@ariakit/solid-utils/reactivity";
-import { createHook, createInstance } from "@ariakit/solid-utils/system";
-import type { Options } from "@ariakit/solid-utils/types";
-import type { Props } from "@ariakit/solid-utils/types";
+import { createId } from "@ariakit/solid-utils";
+import { mergeProps, stableAccessor } from "@ariakit/solid-utils";
+import { createHook, createInstance } from "@ariakit/solid-utils";
+import type { Options } from "@ariakit/solid-utils";
+import type { Props } from "@ariakit/solid-utils";
 import type { ValidComponent } from "solid-js";
 import { createEffect, onCleanup, useContext } from "solid-js";
 import { GroupLabelContext } from "./group-label-context.tsx";

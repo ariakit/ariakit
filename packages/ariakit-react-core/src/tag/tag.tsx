@@ -3,17 +3,17 @@ import {
   useEvent,
   useId,
   useWrapElement,
-} from "@ariakit/react-utils/hooks";
+} from "@ariakit/react-utils";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
-import { invariant } from "@ariakit/utils/misc";
-import { isApple } from "@ariakit/utils/platform";
-import type { BooleanOrCallback } from "@ariakit/utils/types";
+} from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { invariant } from "@ariakit/utils";
+import { isApple } from "@ariakit/utils";
+import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
 import { useCallback, useState } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";

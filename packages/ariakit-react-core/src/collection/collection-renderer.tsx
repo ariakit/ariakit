@@ -1,4 +1,3 @@
-import { useStoreState } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
@@ -6,17 +5,13 @@ import {
   useId,
   useMergeRefs,
   useWrapElement,
-} from "@ariakit/react-utils/hooks";
-import { createElement, forwardRef } from "@ariakit/react-utils/system";
-import type { Options } from "@ariakit/react-utils/types";
-import type { Props } from "@ariakit/react-utils/types";
-import { getScrollingElement, getWindow } from "@ariakit/utils/dom";
-import { invariant, shallowEqual } from "@ariakit/utils/misc";
-import type {
-  AnyObject,
-  BooleanOrCallback,
-  EmptyObject,
-} from "@ariakit/utils/types";
+} from "@ariakit/react-utils";
+import { createElement, forwardRef } from "@ariakit/react-utils";
+import type { Options } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { getScrollingElement, getWindow } from "@ariakit/utils";
+import { invariant, shallowEqual } from "@ariakit/utils";
+import type { AnyObject, BooleanOrCallback, EmptyObject } from "@ariakit/utils";
 import type {
   CSSProperties,
   ElementType,
@@ -34,6 +29,7 @@ import {
   useState,
 } from "react";
 import { flushSync } from "react-dom";
+import { useStoreState } from "../utils/store.tsx";
 import { useCollectionContext } from "./collection-context.tsx";
 import type {
   CollectionStore,

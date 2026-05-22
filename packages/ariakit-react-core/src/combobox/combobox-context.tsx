@@ -1,4 +1,3 @@
-import { createStoreContext } from "@ariakit/react-store/context";
 import { createContext } from "react";
 import {
   CompositeContextProvider,
@@ -8,6 +7,7 @@ import {
   PopoverContextProvider,
   PopoverScopedContextProvider,
 } from "../popover/popover-context.tsx";
+import { createStoreContext } from "../utils/store.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 export const ComboboxListRoleContext = createContext<string | undefined>(

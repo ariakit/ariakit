@@ -1,4 +1,4 @@
-import { mergeProps } from "@ariakit/solid-utils/reactivity";
+import { mergeProps } from "@ariakit/solid-utils";
 import type { Component, ComponentProps, JSX, ValidComponent } from "solid-js";
 import { Dynamic } from "solid-js/web";
 

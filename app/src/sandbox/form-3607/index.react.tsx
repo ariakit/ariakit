@@ -1,4 +1,5 @@
 import * as ak from "@ariakit/react";
+import { useStoreState } from "@ariakit/react";
 import { Fragment } from "react";
 
 interface Item {
@@ -27,7 +28,7 @@ export default function Example() {
     alert(JSON.stringify(state.values));
   });
 
-  const items = ak.useStoreState(form, (state) => state.values.items);
+  const items = useStoreState(form, (state) => state.values.items);
 
   return (
     <ak.Form store={form}>

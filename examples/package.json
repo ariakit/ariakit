@@ -11,6 +11,7 @@
     "@ariakit/react": "workspace:*",
     "@ariakit/react-core": "workspace:*",
     "@ariakit/solid": "workspace:*",
+    "@ariakit/utils": "workspace:*",
     "@radix-ui/react-popover": "1.1.15",
     "@radix-ui/react-select": "2.2.6",
     "@wordpress/components": "33.0.0",

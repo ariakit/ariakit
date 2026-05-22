@@ -1,4 +1,3 @@
-import { createStoreContext } from "@ariakit/react-store/context";
 import type { Dispatch, SetStateAction } from "react";
 import { createContext } from "react";
 import {
@@ -9,6 +8,7 @@ import {
   PopoverContextProvider,
   PopoverScopedContextProvider,
 } from "../popover/popover-context.tsx";
+import { createStoreContext } from "../utils/store.tsx";
 import type { SelectStore } from "./select-store.ts";
 
 const ctx = createStoreContext<SelectStore>(

@@ -1,9 +1,5 @@
-import {
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { PopoverDescriptionOptions } from "../popover/popover-description.tsx";
 import { usePopoverDescription } from "../popover/popover-description.tsx";

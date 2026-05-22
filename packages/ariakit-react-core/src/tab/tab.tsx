@@ -1,13 +1,12 @@
-import { useStoreState } from "@ariakit/react-store";
-import { useEvent, useId } from "@ariakit/react-utils/hooks";
+import { useEvent, useId } from "@ariakit/react-utils";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
-import { disabledFromProps, invariant } from "@ariakit/utils/misc";
+} from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { disabledFromProps, invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
@@ -15,6 +14,7 @@ import {
   CompositeItem,
   useCompositeItem,
 } from "../composite/composite-item.tsx";
+import { useStoreState } from "../utils/store.tsx";
 import { useTabScopedContext } from "./tab-context.tsx";
 import type { TabStore } from "./tab-store.ts";
 

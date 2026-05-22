@@ -7,8 +7,8 @@ import {
   setup,
   sync,
 } from "@ariakit/store";
-import { chain, defaultValue } from "@ariakit/utils/misc";
-import type { SetState } from "@ariakit/utils/types";
+import { chain, defaultValue } from "@ariakit/utils";
+import type { SetState } from "@ariakit/utils";
 import type {
   CollectionStore,
   CollectionStoreItem,

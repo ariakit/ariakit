@@ -1,4 +1,4 @@
-import { hasOwnProperty } from "@ariakit/core/utils/misc";
+import { hasOwnProperty } from "@ariakit/utils";
 import { kebabCase } from "lodash-es";
 import Link from "next/link.js";
 import type { BundledLanguage, SpecialLanguage, ThemedToken } from "shiki";

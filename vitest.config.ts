@@ -48,6 +48,7 @@ const PLUGINS_BY_LOADER: Record<string, Array<PluginOption> | undefined> = {
 export default defineConfig({
   plugins: PLUGINS_BY_LOADER[LOADER],
   resolve: {
+    conditions: ["ariakit-source"],
     alias: [
       { find: /^react-dom($|\/)/, replacement: `${reactDomDir}$1` },
       { find: /^react($|\/)/, replacement: `${reactDir}$1` },

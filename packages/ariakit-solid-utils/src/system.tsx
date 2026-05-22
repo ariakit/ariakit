@@ -1,4 +1,4 @@
-import type { AnyObject, EmptyObject } from "@ariakit/utils/types";
+import type { AnyObject, EmptyObject } from "@ariakit/utils";
 import type { ValidComponent } from "solid-js";
 import { mergeProps, splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";

@@ -1,11 +1,7 @@
-import { mergeProps } from "@ariakit/solid-utils/reactivity";
-import {
-  createHook,
-  createInstance,
-  wrapInstance,
-} from "@ariakit/solid-utils/system";
-import type { Options } from "@ariakit/solid-utils/types";
-import type { Props } from "@ariakit/solid-utils/types";
+import { mergeProps } from "@ariakit/solid-utils";
+import { createHook, createInstance, wrapInstance } from "@ariakit/solid-utils";
+import type { Options } from "@ariakit/solid-utils";
+import type { Props } from "@ariakit/solid-utils";
 import type { ValidComponent } from "solid-js";
 import { createSignal } from "solid-js";
 import { As } from "../as/as.tsx";

@@ -1,4 +1,4 @@
-import type { AnyObject, EmptyObject } from "@ariakit/utils/types";
+import type { AnyObject, EmptyObject } from "@ariakit/utils";
 import * as React from "react";
 import { useMergeRefs } from "./hooks.ts";
 import { getRefProperty, mergeProps } from "./misc.ts";

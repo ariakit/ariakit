@@ -4,6 +4,8 @@ import pagesConfig from "./build-pages/config.js";
 import PagesWebpackPlugin from "./build-pages/pages-webpack-plugin.js";
 import { redirects } from "./redirects.js";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   redirects,
@@ -67,6 +69,7 @@ const nextConfig = {
       sugarss: false,
       babylon: false,
     };
+    config.resolve.conditionNames = ["ariakit-source", "..."];
 
     // Solid support
     const solidRule = {
@@ -96,13 +99,14 @@ const nextConfig = {
       test: /\.solid\.tsx$/,
       ...solidRule,
     });
-    const __dirname = path.dirname(fileURLToPath(import.meta.url));
     config.module.rules.push({
       // .tsx files in the @ariakit/solid and @ariakit/solid-core packages
       test: /\.tsx?$/,
       include: [
         path.resolve(__dirname, "../packages/ariakit-solid"),
         path.resolve(__dirname, "../packages/ariakit-solid-core"),
+        path.resolve(__dirname, "../packages/ariakit-solid-store"),
+        path.resolve(__dirname, "../packages/ariakit-solid-utils"),
       ],
       ...solidRule,
     });

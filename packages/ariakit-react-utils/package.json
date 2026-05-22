@@ -21,12 +21,8 @@
   },
   "type": "module",
   "sideEffects": false,
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "scripts": {
-    "build": "node ../../scripts/build/build.js",
-    "clean": "node ../../scripts/build/clean.js"
+    "build": "ariakit build"
   },
   "dependencies": {
     "@ariakit/utils": "workspace:*"
@@ -38,11 +34,12 @@
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./hooks": "./src/hooks.ts",
-    "./misc": "./src/misc.ts",
-    "./system": "./src/system.tsx",
-    "./types": "./src/types.ts",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "ariakit-source": "./src/index.ts",
+      "source": "./src/index.ts",
+      "import": "./dist/index.js"
+    },
     "./package.json": "./package.json"
   }
 }

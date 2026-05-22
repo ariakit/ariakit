@@ -56,10 +56,6 @@
     "./heading/utils": "./src/heading/utils.ts",
     "./role/role": "./src/role/role.tsx",
     "./separator/separator": "./src/separator/separator.tsx",
-    "./utils/misc": "./src/utils/misc.ts",
-    "./utils/reactivity": "./src/utils/reactivity.ts",
-    "./utils/system": "./src/utils/system.tsx",
-    "./utils/types": "./src/utils/types.ts",
     "./visually-hidden/visually-hidden": "./src/visually-hidden/visually-hidden.tsx",
     "./package.json": "./package.json"
   }

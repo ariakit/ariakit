@@ -8,9 +8,9 @@ import {
   sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
-import { chain, defaultValue } from "@ariakit/utils/misc";
-import { isSafari, isTouchDevice } from "@ariakit/utils/platform";
-import type { PickRequired, SetState } from "@ariakit/utils/types";
+import { chain, defaultValue } from "@ariakit/utils";
+import { isSafari, isTouchDevice } from "@ariakit/utils";
+import type { PickRequired, SetState } from "@ariakit/utils";
 import type {
   CompositeStoreFunctions,
   CompositeStoreItem,

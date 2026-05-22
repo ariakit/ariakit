@@ -1,4 +1,4 @@
-import { getActiveElement } from "@ariakit/utils/dom";
+import { getActiveElement } from "@ariakit/utils";
 import type { DirtiableElement } from "./__utils.ts";
 import { flushMicrotasks, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";

@@ -1,3 +1,4 @@
+import * as ak from "@ariakit/react";
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -7,8 +8,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { invariant } from "@ariakit/core/utils/misc";
-import * as ak from "@ariakit/react";
+import { useStoreState } from "@ariakit/react";
+import { invariant } from "@ariakit/utils";
 import { clsx } from "clsx";
 import { SplitSquareHorizontal } from "lucide-react";
 import * as React from "react";
@@ -77,7 +78,7 @@ function getPreviewUrl(
  */
 function SingleTabPanel(props: ak.TabPanelProps) {
   const store = ak.useTabContext();
-  const tabId = ak.useStoreState(
+  const tabId = useStoreState(
     store,
     (state) => props.tabId ?? state?.selectedId,
   );
@@ -673,7 +674,7 @@ export function CodeBlockTabs({
       setSelectedId: (id) => setPersistedFilename(getFilename(id)),
     }),
   });
-  const selectedTabId = ak.useStoreState(tabStore, "selectedId");
+  const selectedTabId = useStoreState(tabStore, "selectedId");
 
   const selectedTab = tabs.find(
     (tab) => getTabId(storeId, tab.filename) === selectedTabId,
@@ -686,7 +687,7 @@ export function CodeBlockTabs({
   const viewStore = ak.useTabStore({
     defaultSelectedId: defaultViewId,
   });
-  const viewSelectedId = ak.useStoreState(viewStore, "selectedId");
+  const viewSelectedId = useStoreState(viewStore, "selectedId");
   const isPreviewSelected = viewSelectedId === getTabId(storeId, "preview");
 
   const className = clsx(

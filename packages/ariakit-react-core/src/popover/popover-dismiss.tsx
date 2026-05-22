@@ -1,9 +1,5 @@
-import {
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { DialogDismissOptions } from "../dialog/dialog-dismiss.tsx";
 import { useDialogDismiss } from "../dialog/dialog-dismiss.tsx";

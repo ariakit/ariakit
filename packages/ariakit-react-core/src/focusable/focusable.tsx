@@ -3,24 +3,20 @@ import {
   useMergeRefs,
   useMetadataProps,
   useTagName,
-} from "@ariakit/react-utils/hooks";
-import {
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils/system";
-import type { Options } from "@ariakit/react-utils/types";
-import type { Props } from "@ariakit/react-utils/types";
+} from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Options } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import {
   addGlobalEventListener,
   isFocusEventOutside,
   isSelfTarget,
   queueBeforeEvent,
-} from "@ariakit/utils/events";
-import { hasFocus, isFocusable } from "@ariakit/utils/focus";
-import { disabledFromProps, removeUndefinedValues } from "@ariakit/utils/misc";
-import { isSafari } from "@ariakit/utils/platform";
-import type { BivariantCallback } from "@ariakit/utils/types";
+} from "@ariakit/utils";
+import { hasFocus, isFocusable } from "@ariakit/utils";
+import { disabledFromProps, removeUndefinedValues } from "@ariakit/utils";
+import { isSafari } from "@ariakit/utils";
+import type { BivariantCallback } from "@ariakit/utils";
 import type {
   ElementType,
   EventHandler,

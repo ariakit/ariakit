@@ -1,8 +1,8 @@
-import { createStoreContext } from "@ariakit/react-store/context";
 import {
   DialogContextProvider,
   DialogScopedContextProvider,
 } from "../dialog/dialog-context.tsx";
+import { createStoreContext } from "../utils/store.tsx";
 import type { PopoverStore } from "./popover-store.ts";
 
 const ctx = createStoreContext<PopoverStore>(

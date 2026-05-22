@@ -1,6 +1,6 @@
-import { useStoreState } from "@ariakit/react-store";
-import type { PickRequired, ToPrimitive } from "@ariakit/utils/types";
+import type { PickRequired, ToPrimitive } from "@ariakit/utils";
 import type { ReactNode } from "react";
+import { useStoreState } from "../utils/store.tsx";
 import { useSelectContext } from "./select-context.tsx";
 import type { SelectStore, SelectStoreValue } from "./select-store.ts";
 

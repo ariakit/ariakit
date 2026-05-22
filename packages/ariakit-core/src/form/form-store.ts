@@ -6,18 +6,13 @@ import {
   sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
-import {
-  applyState,
-  defaultValue,
-  isInteger,
-  isObject,
-} from "@ariakit/utils/misc";
+import { applyState, defaultValue, isInteger, isObject } from "@ariakit/utils";
 import type {
   AnyObject,
   PickRequired,
   SetState,
   SetStateAction,
-} from "@ariakit/utils/types";
+} from "@ariakit/utils";
 import type {
   CollectionStoreFunctions,
   CollectionStoreItem,

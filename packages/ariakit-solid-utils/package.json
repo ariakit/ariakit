@@ -28,27 +28,25 @@
   },
   "type": "module",
   "sideEffects": false,
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "scripts": {
-    "build": "node ../../scripts/build/build.js",
-    "clean": "node ../../scripts/build/clean.js"
+    "build": "ariakit build"
   },
   "dependencies": {
     "@ariakit/utils": "workspace:*",
-    "@solid-primitives/props": "3.2.3",
-    "@solid-primitives/utils": "6.4.0"
+    "@solid-primitives/props": "^3.2.3",
+    "@solid-primitives/utils": "^6.4.0"
   },
   "peerDependencies": {
     "solid-js": "^1.8"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./misc": "./src/misc.ts",
-    "./reactivity": "./src/reactivity.ts",
-    "./system": "./src/system.tsx",
-    "./types": "./src/types.ts",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "ariakit-source": "./src/index.ts",
+      "solid": "./src/index.ts",
+      "source": "./src/index.ts",
+      "import": "./dist/index.js"
+    },
     "./package.json": "./package.json"
   }
 }

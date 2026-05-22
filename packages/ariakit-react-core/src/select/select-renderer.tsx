@@ -1,7 +1,6 @@
-import { useStoreState } from "@ariakit/react-store";
-import { createElement, forwardRef } from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
-import { toArray } from "@ariakit/utils/array";
+import { createElement, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { toArray } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo } from "react";
 import type {
@@ -16,6 +15,7 @@ import {
   getCompositeRendererItemId,
   useCompositeRenderer,
 } from "../composite/composite-renderer.tsx";
+import { useStoreState } from "../utils/store.tsx";
 import { useSelectContext } from "./select-context.tsx";
 import type { SelectStore, SelectStoreValue } from "./select-store.ts";
 

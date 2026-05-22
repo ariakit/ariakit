@@ -1,4 +1,5 @@
 import * as ak from "@ariakit/react";
+import { useStoreState } from "@ariakit/react";
 import { clsx } from "clsx";
 import * as React from "react";
 import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
@@ -42,7 +43,7 @@ export function Disclosure({
   ...props
 }: DisclosureProps) {
   const disclosure = ak.useDisclosureStore({ open, setOpen, defaultOpen });
-  const isOpen = ak.useStoreState(disclosure, "open");
+  const isOpen = useStoreState(disclosure, "open");
   const buttonEl = createRender(DisclosureButton, button);
   const contentEl = createRender(DisclosureContent, content);
   return (
@@ -126,7 +127,7 @@ export function DisclosureButton({
   ...props
 }: DisclosureButtonProps) {
   const store = ak.useDisclosureContext();
-  const isOpen = ak.useStoreState(store, "open");
+  const isOpen = useStoreState(store, "open");
   const baseId = React.useId();
   const labelId = `${baseId}-label`;
   const descriptionId = `${baseId}-description`;

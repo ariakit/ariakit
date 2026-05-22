@@ -1,7 +1,7 @@
-import { useSafeLayoutEffect } from "@ariakit/react-utils/hooks";
-import type { WrapElement } from "@ariakit/react-utils/types";
+import { useSafeLayoutEffect } from "@ariakit/react-utils";
+import type { WrapElement } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
-import { chain } from "@ariakit/utils/misc";
+import { chain } from "@ariakit/utils";
 import {
   createContext,
   useCallback,

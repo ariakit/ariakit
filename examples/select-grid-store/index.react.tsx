@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import Square from "../select-grid/square.tsx";
 import "./style.css";
+import Square from "../select-grid/square.tsx";
 
 export default function Example() {
   const select = Ariakit.useSelectStore({

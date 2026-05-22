@@ -1,4 +1,4 @@
-import { hasOwnProperty } from "@ariakit/utils/misc";
+import { hasOwnProperty } from "@ariakit/utils";
 import type {
   HTMLAttributes,
   MutableRefObject,

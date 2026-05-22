@@ -1,8 +1,8 @@
-import { createStoreContext } from "@ariakit/react-store/context";
 import {
   CollectionContextProvider,
   CollectionScopedContextProvider,
 } from "../collection/collection-context.tsx";
+import { createStoreContext } from "../utils/store.tsx";
 import type { FormStore } from "./form-store.ts";
 
 const ctx = createStoreContext<FormStore>(

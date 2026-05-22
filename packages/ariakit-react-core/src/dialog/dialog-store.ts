@@ -1,12 +1,12 @@
 import * as Core from "@ariakit/core/dialog/dialog-store";
-import type { Store } from "@ariakit/react-store";
-import { useStore } from "@ariakit/react-store";
 import type {
   DisclosureStoreFunctions,
   DisclosureStoreOptions,
   DisclosureStoreState,
 } from "../disclosure/disclosure-store.ts";
 import { useDisclosureStoreProps } from "../disclosure/disclosure-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore } from "../utils/store.tsx";
 
 export function useDialogStoreProps<T extends Core.DialogStore>(
   store: T,

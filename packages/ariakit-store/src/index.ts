@@ -7,8 +7,8 @@ import {
   hasOwnProperty,
   invariant,
   noop,
-} from "@ariakit/utils/misc";
-import type { AnyObject, SetStateAction } from "@ariakit/utils/types";
+} from "@ariakit/utils";
+import type { AnyObject, SetStateAction } from "@ariakit/utils";
 
 type Listener<S> = (state: S, prevState: S) => void | (() => void);
 

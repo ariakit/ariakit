@@ -1,9 +1,9 @@
-import { createStoreContext } from "@ariakit/react-store/context";
 import { createContext } from "react";
 import {
   CompositeContextProvider,
   CompositeScopedContextProvider,
 } from "../composite/composite-context.tsx";
+import { createStoreContext } from "../utils/store.tsx";
 import type { TagStore } from "./tag-store.ts";
 
 export const TagValueContext = createContext<string | null>(null);

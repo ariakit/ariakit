@@ -1,8 +1,8 @@
 import * as Core from "@ariakit/core/collection/collection-store";
-import type { Store } from "@ariakit/react-store";
-import { useStore, useStoreProps } from "@ariakit/react-store";
-import { useUpdateEffect } from "@ariakit/react-utils/hooks";
-import type { BivariantCallback, PickRequired } from "@ariakit/utils/types";
+import { useUpdateEffect } from "@ariakit/react-utils";
+import type { BivariantCallback, PickRequired } from "@ariakit/utils";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useCollectionStoreProps<T extends Core.CollectionStore>(
   store: T,

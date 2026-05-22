@@ -8,9 +8,9 @@ import {
   sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
-import { toArray } from "@ariakit/utils/array";
-import { defaultValue } from "@ariakit/utils/misc";
-import type { PickRequired, SetState } from "@ariakit/utils/types";
+import { toArray } from "@ariakit/utils";
+import { defaultValue } from "@ariakit/utils";
+import type { PickRequired, SetState } from "@ariakit/utils";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
   CompositeStoreFunctions,

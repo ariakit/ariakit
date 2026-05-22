@@ -1,6 +1,6 @@
-import { createHook, createInstance } from "@ariakit/solid-utils/system";
-import type { Options } from "@ariakit/solid-utils/types";
-import type { Props } from "@ariakit/solid-utils/types";
+import { createHook, createInstance } from "@ariakit/solid-utils";
+import type { Options } from "@ariakit/solid-utils";
+import type { Props } from "@ariakit/solid-utils";
 import type { Component, JSX, ValidComponent } from "solid-js";
 
 const TagName = "div" satisfies ValidComponent;

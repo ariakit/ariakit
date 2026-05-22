@@ -1,12 +1,12 @@
 import * as Core from "@ariakit/core/tag/tag-store";
-import type { Store } from "@ariakit/react-store";
-import { useStore, useStoreProps } from "@ariakit/react-store";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.ts";
 import { useCompositeStoreProps } from "../composite/composite-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useTagStoreProps<T extends Core.TagStore>(
   store: T,

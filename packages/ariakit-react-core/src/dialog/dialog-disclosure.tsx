@@ -1,15 +1,11 @@
-import { useStoreState } from "@ariakit/react-store";
-import {
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
-import { getPopupRole } from "@ariakit/utils/dom";
-import { invariant } from "@ariakit/utils/misc";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { getPopupRole } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { DisclosureOptions } from "../disclosure/disclosure.tsx";
 import { useDisclosure } from "../disclosure/disclosure.tsx";
+import { useStoreState } from "../utils/store.tsx";
 import { useDialogProviderContext } from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 

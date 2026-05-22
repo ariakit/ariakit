@@ -1,17 +1,16 @@
-import { useStoreState } from "@ariakit/react-store";
-import { useBooleanEvent, useEvent } from "@ariakit/react-utils/hooks";
+import { useBooleanEvent, useEvent } from "@ariakit/react-utils";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
-import { getDocument, getPopupItemRole } from "@ariakit/utils/dom";
-import { isDownloading, isOpeningInNewTab } from "@ariakit/utils/events";
-import { hasFocusWithin } from "@ariakit/utils/focus";
-import { invariant } from "@ariakit/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/utils/types";
+} from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { getDocument, getPopupItemRole } from "@ariakit/utils";
+import { isDownloading, isOpeningInNewTab } from "@ariakit/utils";
+import { hasFocusWithin } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
+import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
@@ -19,6 +18,7 @@ import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useMenubarScopedContext } from "../menubar/menubar-context.tsx";
 import type { MenubarStore } from "../menubar/menubar-store.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { useMenuScopedContext } from "./menu-context.tsx";
 import type { MenuStore, MenuStoreState } from "./menu-store.ts";
 

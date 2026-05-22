@@ -1,9 +1,5 @@
-import {
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { DialogHeadingOptions } from "../dialog/dialog-heading.tsx";
 import { useDialogHeading } from "../dialog/dialog-heading.tsx";

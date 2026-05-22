@@ -1,10 +1,10 @@
-import { createStoreContext } from "@ariakit/react-store/context";
-import type { SetState } from "@ariakit/utils/types";
+import type { SetState } from "@ariakit/utils";
 import { createContext } from "react";
 import {
   DisclosureContextProvider,
   DisclosureScopedContextProvider,
 } from "../disclosure/disclosure-context.tsx";
+import { createStoreContext } from "../utils/store.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 
 const ctx = createStoreContext<DialogStore>(

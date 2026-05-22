@@ -1,5 +1,5 @@
-import { contains, getDocument } from "@ariakit/utils/dom";
-import { chain } from "@ariakit/utils/misc";
+import { contains, getDocument } from "@ariakit/utils";
+import { chain } from "@ariakit/utils";
 import { setProperty } from "./orchestrate.ts";
 
 type Elements = Array<Element | null>;

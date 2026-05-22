@@ -20,23 +20,16 @@
   },
   "type": "module",
   "sideEffects": false,
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "scripts": {
-    "build": "node ../../scripts/build/build.js",
-    "clean": "node ../../scripts/build/clean.js"
+    "build": "ariakit build"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./array": "./src/array.ts",
-    "./dom": "./src/dom.ts",
-    "./events": "./src/events.ts",
-    "./focus": "./src/focus.ts",
-    "./misc": "./src/misc.ts",
-    "./platform": "./src/platform.ts",
-    "./types": "./src/types.ts",
-    "./undo": "./src/undo.ts",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "ariakit-source": "./src/index.ts",
+      "source": "./src/index.ts",
+      "import": "./dist/index.js"
+    },
     "./package.json": "./package.json"
   }
 }

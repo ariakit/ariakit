@@ -1,13 +1,13 @@
 import type { StringLike } from "@ariakit/core/form/types";
-import { useId, useMergeRefs } from "@ariakit/react-utils/hooks";
+import { useId, useMergeRefs } from "@ariakit/react-utils";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
-import { invariant } from "@ariakit/utils/misc";
+} from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useCallback, useRef } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";

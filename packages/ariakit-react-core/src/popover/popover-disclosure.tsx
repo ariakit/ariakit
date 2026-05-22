@@ -1,11 +1,7 @@
-import { useEvent, useWrapElement } from "@ariakit/react-utils/hooks";
-import {
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
-import { invariant } from "@ariakit/utils/misc";
+import { useEvent, useWrapElement } from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";

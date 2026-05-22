@@ -1,4 +1,5 @@
 import * as ak from "@ariakit/react";
+import { useStoreState } from "@ariakit/react";
 import { clsx } from "clsx";
 import * as React from "react";
 import { useIsMobile } from "../react-hooks/use-is-mobile.ts";
@@ -91,7 +92,7 @@ export interface SidebarToggleProps extends ak.DialogDisclosureProps {
 
 export function SidebarToggle({ baseClassName, ...props }: SidebarToggleProps) {
   const context = ak.useDialogContext();
-  const isOpen = ak.useStoreState(context, "open");
+  const isOpen = useStoreState(context, "open");
   return (
     <ak.DialogDisclosure
       {...props}

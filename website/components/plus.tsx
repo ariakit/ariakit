@@ -1,6 +1,4 @@
 "use client";
-import { scrollIntoViewIfNeeded } from "@ariakit/core/utils/dom";
-import { createStore, sync } from "@ariakit/core/utils/store";
 import type {
   ButtonProps,
   HovercardAnchorProps,
@@ -17,8 +15,10 @@ import {
   Role,
   VisuallyHidden,
 } from "@ariakit/react";
-import { useEvent } from "@ariakit/react-core/utils/hooks";
-import { useStore, useStoreProps } from "@ariakit/react-core/utils/store";
+import { useStore, useStoreProps } from "@ariakit/react";
+import { useEvent } from "@ariakit/react-utils";
+import { createStore, sync } from "@ariakit/store";
+import { scrollIntoViewIfNeeded } from "@ariakit/utils";
 import { SignedIn, SignedOut, SignUp } from "@clerk/clerk-react";
 import {
   EmbeddedCheckout,

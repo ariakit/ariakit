@@ -1,5 +1,5 @@
-import { isVisible } from "@ariakit/utils/dom";
-import { invariant } from "@ariakit/utils/misc";
+import { isVisible } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import { wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { hover } from "./hover.ts";

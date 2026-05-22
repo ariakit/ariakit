@@ -2,16 +2,16 @@ import {
   useEvent,
   useLiveRef,
   useSafeLayoutEffect,
-} from "@ariakit/react-utils/hooks";
+} from "@ariakit/react-utils";
 import type { Store as CoreStore, State, StoreState } from "@ariakit/store";
 import { batch, init, subscribe, sync } from "@ariakit/store";
-import { hasOwnProperty, identity } from "@ariakit/utils/misc";
+import { hasOwnProperty, identity } from "@ariakit/utils";
 import type {
   AnyFunction,
   AnyObject,
   PickByValue,
   SetState,
-} from "@ariakit/utils/types";
+} from "@ariakit/utils";
 import * as React from "react";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 

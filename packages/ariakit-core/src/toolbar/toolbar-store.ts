@@ -1,5 +1,5 @@
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
-import { defaultValue } from "@ariakit/utils/misc";
+import { defaultValue } from "@ariakit/utils";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,

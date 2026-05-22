@@ -1,4 +1,4 @@
-import type { AnyObject, EmptyObject } from "@ariakit/utils/types";
+import type { AnyObject, EmptyObject } from "@ariakit/utils";
 import type * as React from "react";
 
 /**

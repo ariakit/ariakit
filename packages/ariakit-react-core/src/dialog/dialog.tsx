@@ -1,4 +1,3 @@
-import { useStoreState } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
@@ -7,25 +6,21 @@ import {
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
-} from "@ariakit/react-utils/hooks";
-import {
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
+} from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
   contains,
   getActiveElement,
   getDocument,
   getWindow,
-} from "@ariakit/utils/dom";
-import { addGlobalEventListener } from "@ariakit/utils/events";
-import { getFirstTabbableIn, isFocusable } from "@ariakit/utils/focus";
-import { chain } from "@ariakit/utils/misc";
-import { isSafari } from "@ariakit/utils/platform";
-import type { BooleanOrCallback } from "@ariakit/utils/types";
+} from "@ariakit/utils";
+import { addGlobalEventListener } from "@ariakit/utils";
+import { getFirstTabbableIn, isFocusable } from "@ariakit/utils";
+import { chain } from "@ariakit/utils";
+import { isSafari } from "@ariakit/utils";
+import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
   ComponentPropsWithRef,
   ElementType,
@@ -47,6 +42,7 @@ import { useFocusable } from "../focusable/focusable.tsx";
 import { HeadingLevel } from "../heading/heading-level.tsx";
 import type { PortalOptions } from "../portal/portal.tsx";
 import { usePortal } from "../portal/portal.tsx";
+import { useStoreState } from "../utils/store.tsx";
 import { DialogBackdrop } from "./dialog-backdrop.tsx";
 import {
   DialogDescriptionContext,

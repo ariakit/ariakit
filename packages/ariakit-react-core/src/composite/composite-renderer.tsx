@@ -1,7 +1,6 @@
-import { useStoreState } from "@ariakit/react-store";
-import { useId } from "@ariakit/react-utils/hooks";
-import { createElement, forwardRef } from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
+import { useId } from "@ariakit/react-utils";
+import { createElement, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import type { ElementType, ReactNode } from "react";
 import { useMemo } from "react";
 import type {
@@ -17,6 +16,7 @@ import {
   useCollectionRenderer,
 } from "../collection/collection-renderer.tsx";
 import type { CollectionStoreItem } from "../collection/collection-store.ts";
+import { useStoreState } from "../utils/store.tsx";
 import { useCompositeContext } from "./composite-context.tsx";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 

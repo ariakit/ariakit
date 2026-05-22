@@ -1,7 +1,7 @@
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { createStore, throwOnConflictingProps } from "@ariakit/store";
-import { defaultValue } from "@ariakit/utils/misc";
-import type { PickRequired, SetState, ToPrimitive } from "@ariakit/utils/types";
+import { defaultValue } from "@ariakit/utils";
+import type { PickRequired, SetState, ToPrimitive } from "@ariakit/utils";
 
 /**
  * Creates a checkbox store.

@@ -1,4 +1,4 @@
-import { createStoreContext } from "@ariakit/react-store/context";
+import { createStoreContext } from "../utils/store.tsx";
 import type { CheckboxStore } from "./checkbox-store.ts";
 
 const ctx = createStoreContext<CheckboxStore>();

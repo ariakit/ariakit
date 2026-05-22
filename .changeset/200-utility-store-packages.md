@@ -7,4 +7,4 @@
 "@ariakit/solid-store": minor
 ---
 
-Added shared utility and store packages for framework-agnostic, React, and Solid internals.
+Added pure ESM utility and store packages with single-entry exports for framework-agnostic, React, and Solid internals.

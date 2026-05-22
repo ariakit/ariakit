@@ -1,6 +1,6 @@
-import { canUseDOM } from "@ariakit/utils/dom";
-import { addGlobalEventListener } from "@ariakit/utils/events";
-import type { AnyFunction } from "@ariakit/utils/types";
+import { canUseDOM } from "@ariakit/utils";
+import { addGlobalEventListener } from "@ariakit/utils";
+import type { AnyFunction } from "@ariakit/utils";
 import type {
   ComponentType,
   DependencyList,

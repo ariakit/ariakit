@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { loadEnvFile } from "node:process";
 import cloudflare from "@astrojs/cloudflare";
 import { rehypeHeadingIds } from "@astrojs/markdown-remark";
@@ -33,6 +33,33 @@ try {
 
 const port = Number(process.env.APP_PORT) || 4321;
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+const root = resolve(import.meta.dirname, "..");
+const packageAliases = [
+  {
+    find: "@ariakit/react-store",
+    replacement: resolve(root, "packages/ariakit-react-store/src/index.ts"),
+  },
+  {
+    find: "@ariakit/react-utils",
+    replacement: resolve(root, "packages/ariakit-react-utils/src/index.ts"),
+  },
+  {
+    find: "@ariakit/solid-store",
+    replacement: resolve(root, "packages/ariakit-solid-store/src/index.ts"),
+  },
+  {
+    find: "@ariakit/solid-utils",
+    replacement: resolve(root, "packages/ariakit-solid-utils/src/index.ts"),
+  },
+  {
+    find: "@ariakit/store",
+    replacement: resolve(root, "packages/ariakit-store/src/index.ts"),
+  },
+  {
+    find: "@ariakit/utils",
+    replacement: resolve(root, "packages/ariakit-utils/src/index.ts"),
+  },
+];
 
 // https://astro.build/config
 export default defineConfig({
@@ -58,6 +85,10 @@ export default defineConfig({
   }),
 
   vite: {
+    resolve: {
+      alias: packageAliases,
+      conditions: ["ariakit-source"],
+    },
     plugins: [
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),

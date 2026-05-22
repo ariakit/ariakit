@@ -66,12 +66,22 @@ const builds = /** @type {const} */ ([
   { format: "cjs", outDir: cjsDir },
 ]);
 
+const pureEsmPackages = [
+  "@ariakit/react-store",
+  "@ariakit/react-utils",
+  "@ariakit/solid-store",
+  "@ariakit/solid-utils",
+  "@ariakit/store",
+  "@ariakit/utils",
+];
+
 /** @param {{ format: import("tsup").Format, outDir: string }} options */
 function buildStandard({ format, outDir }) {
   if (isFramework) return;
   return build({
     entry,
     format,
+    noExternal: format === "cjs" ? pureEsmPackages : undefined,
     outDir,
     // dts: true,
     // tsconfig: "tsconfig.build.json",
@@ -94,6 +104,7 @@ function buildReact({ format, outDir }) {
   return build({
     entry,
     format,
+    noExternal: format === "cjs" ? pureEsmPackages : undefined,
     outDir,
     // dts: true,
     // tsconfig: "tsconfig.build.json",
@@ -115,6 +126,7 @@ function buildSolid({ format, outDir }) {
   return build({
     entry,
     format,
+    noExternal: format === "cjs" ? pureEsmPackages : undefined,
     outDir,
     // dts: true,
     // tsconfig: "tsconfig.build.json",

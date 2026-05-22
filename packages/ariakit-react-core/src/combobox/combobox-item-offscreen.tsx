@@ -1,6 +1,6 @@
-import { useMergeRefs } from "@ariakit/react-utils/hooks";
-import { forwardRef } from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
+import { useMergeRefs } from "@ariakit/react-utils";
+import { forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { useContext } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item-offscreen.tsx";

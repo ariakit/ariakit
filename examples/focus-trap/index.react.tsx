@@ -1,7 +1,7 @@
 import * as Ariakit from "@ariakit/react";
 import type { FocusEvent } from "react";
-import { useRef } from "react";
 import "./style.css";
+import { useRef } from "react";
 
 export default function Example() {
   const checkbox = Ariakit.useCheckboxStore({ defaultValue: true });

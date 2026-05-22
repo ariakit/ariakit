@@ -2,23 +2,19 @@ import {
   useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
-} from "@ariakit/react-utils/hooks";
-import { setRef } from "@ariakit/react-utils/misc";
-import {
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils/system";
-import type { Options } from "@ariakit/react-utils/types";
-import type { Props } from "@ariakit/react-utils/types";
-import { getDocument } from "@ariakit/utils/dom";
-import { isFocusEventOutside } from "@ariakit/utils/events";
+} from "@ariakit/react-utils";
+import { setRef } from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Options } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { getDocument } from "@ariakit/utils";
+import { isFocusEventOutside } from "@ariakit/utils";
 import {
   disableFocusIn,
   getNextTabbable,
   getPreviousTabbable,
   restoreFocusIn,
-} from "@ariakit/utils/focus";
+} from "@ariakit/utils";
 import type { ElementType, MutableRefObject, RefCallback } from "react";
 import { useContext, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";

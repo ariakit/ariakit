@@ -1,4 +1,3 @@
-import { useStoreState } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
@@ -6,23 +5,15 @@ import {
   useSafeLayoutEffect,
   useTransactionState,
   useWrapElement,
-} from "@ariakit/react-utils/hooks";
-import {
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
-import { flatten2DArray, reverseArray } from "@ariakit/utils/array";
-import { getActiveElement, isTextField } from "@ariakit/utils/dom";
-import {
-  fireBlurEvent,
-  fireKeyboardEvent,
-  isSelfTarget,
-} from "@ariakit/utils/events";
-import { focusIntoView, hasFocus } from "@ariakit/utils/focus";
-import { invariant } from "@ariakit/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/utils/types";
+} from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { flatten2DArray, reverseArray } from "@ariakit/utils";
+import { getActiveElement, isTextField } from "@ariakit/utils";
+import { fireBlurEvent, fireKeyboardEvent, isSelfTarget } from "@ariakit/utils";
+import { focusIntoView, hasFocus } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
+import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
   ElementType,
   FocusEvent,
@@ -33,6 +24,7 @@ import type {
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
+import { useStoreState } from "../utils/store.tsx";
 import {
   CompositeContextProvider,
   useCompositeProviderContext,

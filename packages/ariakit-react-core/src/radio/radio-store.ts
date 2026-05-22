@@ -1,6 +1,4 @@
 import * as Core from "@ariakit/core/radio/radio-store";
-import type { Store } from "@ariakit/react-store";
-import { useStore, useStoreProps } from "@ariakit/react-store";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -10,6 +8,8 @@ import {
   useCompositeStoreOptions,
   useCompositeStoreProps,
 } from "../composite/composite-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useRadioStoreProps<T extends Core.RadioStore>(
   store: T,

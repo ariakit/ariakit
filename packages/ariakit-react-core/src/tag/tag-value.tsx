@@ -1,6 +1,6 @@
-import { useStoreState } from "@ariakit/react-store";
-import { invariant } from "@ariakit/utils/misc";
+import { invariant } from "@ariakit/utils";
 import type { ReactNode } from "react";
+import { useStoreState } from "../utils/store.tsx";
 import { useTagContext } from "./tag-context.tsx";
 import type { TagStore, TagStoreState } from "./tag-store.ts";
 

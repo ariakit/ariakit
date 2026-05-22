@@ -1,7 +1,7 @@
 import * as Core from "@ariakit/core/disclosure/disclosure-store";
-import type { Store } from "@ariakit/react-store";
-import { useStore, useStoreProps } from "@ariakit/react-store";
-import { useUpdateEffect } from "@ariakit/react-utils/hooks";
+import { useUpdateEffect } from "@ariakit/react-utils";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useDisclosureStoreProps<T extends Core.DisclosureStore>(
   store: T,

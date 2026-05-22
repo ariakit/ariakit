@@ -1,3 +1,4 @@
+import * as ak from "@ariakit/react";
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -7,7 +8,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import * as ak from "@ariakit/react";
+import { useStoreState } from "@ariakit/react";
 import { clsx } from "clsx";
 import type { ReactElement, ReactNode } from "react";
 import { getPortalRoot } from "../lib/get-portal-root.ts";
@@ -32,7 +33,7 @@ export function Tooltip({
   ...props
 }: TooltipProps) {
   const store = ak.useTooltipStore();
-  const open = ak.useStoreState(store, "open");
+  const open = useStoreState(store, "open");
   return (
     <ak.TooltipProvider store={store} placement={placement} timeout={250}>
       <ak.TooltipAnchor data-open={open || undefined} render={children} />

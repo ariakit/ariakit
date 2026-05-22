@@ -1,11 +1,7 @@
-import {
-  useForceUpdate,
-  useId,
-  useMergeRefs,
-} from "@ariakit/react-utils/hooks";
-import { forwardRef } from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
-import { invariant } from "@ariakit/utils/misc";
+import { useForceUpdate, useId, useMergeRefs } from "@ariakit/react-utils";
+import { forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType, RefCallback, RefObject } from "react";
 import { useCallback, useRef, useState } from "react";
 import { Role } from "../role/role.tsx";

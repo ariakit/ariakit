@@ -1,14 +1,14 @@
 import * as Core from "@ariakit/core/composite/composite-store";
-import type { Store } from "@ariakit/react-store";
-import { useStore, useStoreProps } from "@ariakit/react-store";
-import { useId } from "@ariakit/react-utils/hooks";
-import type { PickRequired } from "@ariakit/utils/types";
+import { useId } from "@ariakit/react-utils";
+import type { PickRequired } from "@ariakit/utils";
 import type {
   CollectionStoreFunctions,
   CollectionStoreOptions,
   CollectionStoreState,
 } from "../collection/collection-store.ts";
 import { useCollectionStoreProps } from "../collection/collection-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useCompositeStoreOptions<T extends Core.CompositeStoreOptions>(
   props: T,

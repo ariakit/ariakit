@@ -1,5 +1,8 @@
 {
   "extends": "../../tsconfig.react.json",
+  "compilerOptions": {
+    "outDir": "./.typescript"
+  },
   "include": ["src"],
   "exclude": []
 }

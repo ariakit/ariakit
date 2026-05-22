@@ -1,4 +1,4 @@
-import { hasOwnProperty, invariant } from "@ariakit/core/utils/misc";
+import { hasOwnProperty, invariant } from "@ariakit/utils";
 import type { ProjectFiles } from "@stackblitz/sdk";
 import _sdk from "@stackblitz/sdk";
 import { pick } from "lodash-es";

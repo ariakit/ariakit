@@ -1,8 +1,6 @@
 import * as Core from "@ariakit/core/select/select-store";
-import type { Store } from "@ariakit/react-store";
-import { useStore, useStoreProps } from "@ariakit/react-store";
-import { useUpdateEffect } from "@ariakit/react-utils/hooks";
-import type { BivariantCallback, PickRequired } from "@ariakit/utils/types";
+import { useUpdateEffect } from "@ariakit/react-utils";
+import type { BivariantCallback, PickRequired } from "@ariakit/utils";
 import { useComboboxProviderContext } from "../combobox/combobox-context.tsx";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
@@ -20,6 +18,8 @@ import type {
   PopoverStoreState,
 } from "../popover/popover-store.ts";
 import { usePopoverStoreProps } from "../popover/popover-store.ts";
+import type { Store } from "../utils/store.tsx";
+import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useSelectStoreOptions<T extends Core.SelectStoreOptions>(
   props: T,

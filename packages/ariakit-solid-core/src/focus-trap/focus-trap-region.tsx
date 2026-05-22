@@ -1,13 +1,13 @@
-import { createRef, mergeProps } from "@ariakit/solid-utils/reactivity";
+import { createRef, mergeProps } from "@ariakit/solid-utils";
 import {
   createHook,
   createInstance,
   withOptions,
   wrapInstance,
-} from "@ariakit/solid-utils/system";
-import type { Options } from "@ariakit/solid-utils/types";
-import type { Props } from "@ariakit/solid-utils/types";
-import { getAllTabbableIn } from "@ariakit/utils/focus";
+} from "@ariakit/solid-utils";
+import type { Options } from "@ariakit/solid-utils";
+import type { Props } from "@ariakit/solid-utils";
+import { getAllTabbableIn } from "@ariakit/utils";
 import type { ValidComponent } from "solid-js";
 import { Show } from "solid-js";
 import { FocusTrap } from "./focus-trap.tsx";

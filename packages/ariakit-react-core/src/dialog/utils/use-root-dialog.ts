@@ -1,5 +1,5 @@
-import { useForceUpdate } from "@ariakit/react-utils/hooks";
-import { getDocument } from "@ariakit/utils/dom";
+import { useForceUpdate } from "@ariakit/react-utils";
+import { getDocument } from "@ariakit/utils";
 import { useCallback, useEffect } from "react";
 import { flushSync } from "react-dom";
 

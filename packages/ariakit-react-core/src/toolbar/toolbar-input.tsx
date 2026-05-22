@@ -3,8 +3,8 @@ import {
   createHook,
   forwardRef,
   memo,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
+} from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { useToolbarContext } from "./toolbar-context.tsx";
 import type { ToolbarItemOptions } from "./toolbar-item.tsx";

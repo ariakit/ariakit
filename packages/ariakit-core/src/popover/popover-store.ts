@@ -5,8 +5,8 @@ import {
   omit,
   throwOnConflictingProps,
 } from "@ariakit/store";
-import { defaultValue } from "@ariakit/utils/misc";
-import type { SetState } from "@ariakit/utils/types";
+import { defaultValue } from "@ariakit/utils";
+import type { SetState } from "@ariakit/utils";
 import type {
   DialogStoreFunctions,
   DialogStoreOptions,

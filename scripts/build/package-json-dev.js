@@ -3,6 +3,15 @@ import { watch } from "chokidar";
 import { globSync } from "glob";
 import { writePackageJson } from "./utils.js";
 
+const pureEsmPackages = new Set([
+  "ariakit-react-store",
+  "ariakit-react-utils",
+  "ariakit-solid-store",
+  "ariakit-solid-utils",
+  "ariakit-store",
+  "ariakit-utils",
+]);
+
 /** @param {string} path */
 function processDevPackage(path) {
   if (path.includes("ariakit-tailwind")) return;
@@ -10,6 +19,7 @@ function processDevPackage(path) {
   if (!match) return;
   const [, pkg] = match;
   if (!pkg) return;
+  if (pureEsmPackages.has(pkg)) return;
   const pkgPath = join(process.cwd(), "packages", pkg);
   writePackageJson(pkgPath);
 }

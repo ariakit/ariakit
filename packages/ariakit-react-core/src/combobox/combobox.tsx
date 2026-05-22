@@ -1,4 +1,3 @@
-import { useStoreState } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
@@ -8,29 +7,25 @@ import {
   useSafeLayoutEffect,
   useUpdateEffect,
   useUpdateLayoutEffect,
-} from "@ariakit/react-utils/hooks";
-import {
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils/system";
-import type { Props } from "@ariakit/react-utils/types";
+} from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
   getPopupRole,
   getScrollingElement,
   getTextboxSelection,
   setSelectionRange,
-} from "@ariakit/utils/dom";
-import { isFocusEventOutside, queueBeforeEvent } from "@ariakit/utils/events";
-import { hasFocus } from "@ariakit/utils/focus";
+} from "@ariakit/utils";
+import { isFocusEventOutside, queueBeforeEvent } from "@ariakit/utils";
+import { hasFocus } from "@ariakit/utils";
 import {
   invariant,
   isFalsyBooleanCallback,
   noop,
   normalizeString,
-} from "@ariakit/utils/misc";
-import type { BooleanOrCallback, StringWithValue } from "@ariakit/utils/types";
+} from "@ariakit/utils";
+import type { BooleanOrCallback, StringWithValue } from "@ariakit/utils";
 import type {
   AriaAttributes,
   ChangeEvent,
@@ -46,6 +41,7 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
 import { usePopoverAnchor } from "../popover/popover-anchor.tsx";
+import { useStoreState } from "../utils/store.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
