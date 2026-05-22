@@ -15,6 +15,7 @@ export const isReact = [
 export const isSolid = [
   "ariakit-solid",
   "ariakit-solid-core",
+  "ariakit-solid-store",
   "ariakit-solid-utils",
 ].includes(dirName);
 export const isTest = ["ariakit-test"].includes(dirName);
