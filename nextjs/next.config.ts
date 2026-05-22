@@ -13,6 +13,7 @@ const ariakitTurbopackAliases = Object.fromEntries(
 
 const config: NextConfig = {
   turbopack: {
+    // Turbopack doesn't expose custom package export conditions yet.
     resolveAlias: ariakitTurbopackAliases,
   },
 

@@ -9,7 +9,6 @@
  */
 import { join } from "node:path";
 import { loadEnvFile } from "node:process";
-import { getAriakitSourceAliasEntries } from "@ariakit/scripts/ariakit-source";
 import cloudflare from "@astrojs/cloudflare";
 import { rehypeHeadingIds } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
@@ -19,6 +18,7 @@ import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import { defaultClientConditions } from "vite";
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
 import {
   rehypeAdmonitions,
@@ -34,7 +34,10 @@ try {
 
 const port = Number(process.env.APP_PORT) || 4321;
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
-const alias = getAriakitSourceAliasEntries();
+const sourceConditions = [
+  "ariakit-source",
+  ...defaultClientConditions.filter((condition) => condition !== "module"),
+];
 
 // https://astro.build/config
 export default defineConfig({
@@ -61,7 +64,7 @@ export default defineConfig({
 
   vite: {
     resolve: {
-      alias,
+      conditions: sourceConditions,
     },
     plugins: [
       tailwindcss(),

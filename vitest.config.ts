@@ -1,7 +1,7 @@
 import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import reactPlugin from "@vitejs/plugin-react";
-import type { PluginOption } from "vite";
+import { defaultClientConditions, type PluginOption } from "vite";
 import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./app/src/lib/source-plugin.ts";
@@ -44,11 +44,15 @@ const PLUGINS_BY_LOADER: Record<string, Array<PluginOption> | undefined> = {
   react: [reactPlugin(), sourcePluginInstance],
   solid: [solidPlugin(), sourcePluginInstance],
 };
+const sourceConditions = [
+  "ariakit-source",
+  ...defaultClientConditions.filter((condition) => condition !== "module"),
+];
 
 export default defineConfig({
   plugins: PLUGINS_BY_LOADER[LOADER],
   resolve: {
-    conditions: ["ariakit-source"],
+    conditions: sourceConditions,
     alias: [
       { find: /^react-dom($|\/)/, replacement: `${reactDomDir}$1` },
       { find: /^react($|\/)/, replacement: `${reactDir}$1` },

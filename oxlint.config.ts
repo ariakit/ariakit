@@ -58,8 +58,7 @@ export default defineConfig({
       },
     },
     {
-      // Oxlint doesn't resolve the Ariakit source condition for namespace
-      // imports in examples on a clean checkout before packages are built.
+      // Oxlint's import plugin doesn't expose custom package export conditions.
       files: ["examples/**/*.tsx"],
       rules: {
         "no-redundant-type-constituents": "off",

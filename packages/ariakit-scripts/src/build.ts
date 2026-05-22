@@ -173,10 +173,6 @@ function getInput(publicFiles: PublicFile[]) {
   return Object.fromEntries(publicFiles.map((file) => [file.name, file.path]));
 }
 
-function hasJsxPublicFile(publicFiles: PublicFile[]) {
-  return publicFiles.some((file) => /\.[jt]sx$/.test(file.path));
-}
-
 function getUseClientPlugin(enabled: boolean): Plugin[] {
   if (!enabled) return [];
   return [
@@ -225,9 +221,6 @@ async function buildSolidSource(
   await rolldownBuild({
     input,
     external: getExternal(readPackageJson(rootPath)),
-    transform: {
-      jsx: "preserve",
-    },
     output: {
       dir: solidDir,
       cleanDir: true,
@@ -243,20 +236,36 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
   const packageJson = readPackageJson(rootPath);
   const isReactPackage = packageJson.name.includes("/react");
   const isSolid = isSolidPackage(packageJson);
-  const shouldTransformReactJsx =
-    isReactPackage || (!isSolid && hasJsxPublicFile(publicFiles));
+  const input = getInput(publicFiles);
 
   await rolldownBuild({
-    input: getInput(publicFiles),
+    input,
     external: getExternal(packageJson),
-    transform: shouldTransformReactJsx
-      ? {
-          jsx: "react-jsx",
-        }
-      : undefined,
     output: {
       dir: distDir,
       cleanDir: true,
+      format: "es",
+      sourcemap: true,
+    },
+    plugins: [
+      dts({
+        emitDtsOnly: true,
+        build: true,
+        incremental: false,
+        sourcemap: true,
+        compilerOptions: {
+          customConditions: ["ariakit-source"],
+        },
+      }),
+    ],
+  });
+
+  await rolldownBuild({
+    input,
+    external: getExternal(packageJson),
+    output: {
+      dir: distDir,
+      cleanDir: false,
       format: "es",
       entryFileNames: "[name].js",
       chunkFileNames: "__chunks/[hash].js",
@@ -265,14 +274,6 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
     plugins: [
       ...getUseClientPlugin(isReactPackage),
       ...(isSolid ? [solidPlugin({ solid: { generate: "dom" } })] : []),
-      dts({
-        build: true,
-        incremental: false,
-        sourcemap: true,
-        compilerOptions: {
-          customConditions: ["ariakit-source"],
-        },
-      }),
     ],
   });
 
