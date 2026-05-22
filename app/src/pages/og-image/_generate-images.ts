@@ -10,7 +10,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import pixelmatch from "pixelmatch";
-import type { Page } from "playwright";
+import type { Page, Response } from "playwright";
 import { chromium } from "playwright";
 import { PNG } from "pngjs";
 import { getFramework } from "#app/lib/frameworks.ts";
@@ -25,6 +25,21 @@ const PUBLIC_DIR = path.resolve(process.cwd(), "public");
 const MAX_DIFF_PIXEL_RATIO = 0.001;
 const MAX_BLANK_PIXEL_RATIO = 0.995;
 const MAX_SCREENSHOT_ATTEMPTS = 3;
+
+function getServerError(response: Response) {
+  const status = response.status();
+  if (status < 500) return;
+  return `${status} ${response.request().method()} ${response.url()}`;
+}
+
+function assertNoServerErrors(item: OGImageItem, serverErrors: string[]) {
+  if (!serverErrors.length) return;
+  throw new Error(
+    `Server errors while rendering ${item.path}:\n${[
+      ...new Set(serverErrors),
+    ].join("\n")}`,
+  );
+}
 
 function isBlankImage(buffer: Buffer) {
   const image = PNG.sync.read(buffer);
@@ -118,6 +133,7 @@ async function getItemsToGenerate() {
 
 async function waitForImageReady(page: Page, item: OGImageItem) {
   await page.waitForLoadState("load");
+  await page.waitForSelector("[data-og-image]");
   const expectedText = getExpectedText(item);
   if (expectedText) {
     await page.waitForFunction(
@@ -133,21 +149,56 @@ async function waitForImageReady(page: Page, item: OGImageItem) {
       });
     });
   });
+  const errorText = await page.evaluate(() => {
+    const overlay = document.querySelector("vite-error-overlay");
+    if (overlay) {
+      return (
+        overlay.shadowRoot?.textContent?.trim() ||
+        overlay.textContent?.trim() ||
+        "Vite error overlay detected"
+      );
+    }
+    const text = document.body.textContent?.trim();
+    if (!text) return;
+    if (!text.includes("An error occurred.")) return;
+    if (!text.includes("Stack Trace")) return;
+    return text;
+  });
+  if (errorText) {
+    throw new Error(
+      `Error overlay while rendering ${item.path}:\n${errorText.slice(0, 500)}`,
+    );
+  }
 }
 
 async function screenshotImage(page: Page, item: OGImageItem, url: string) {
   let lastError: unknown;
   for (let attempt = 1; attempt <= MAX_SCREENSHOT_ATTEMPTS; attempt += 1) {
+    const serverErrors: string[] = [];
+    const handleResponse = (response: Response) => {
+      const error = getServerError(response);
+      if (error) {
+        serverErrors.push(error);
+      }
+    };
     try {
-      await page.goto(url, { waitUntil: "load" });
+      page.on("response", handleResponse);
+      const response = await page.goto(url, { waitUntil: "load" });
+      if (response) {
+        handleResponse(response);
+      }
+      assertNoServerErrors(item, serverErrors);
       await waitForImageReady(page, item);
       const buffer = await page.screenshot({ type: "png", timeout: 60_000 });
+      assertNoServerErrors(item, serverErrors);
       if (!isBlankImage(buffer)) {
         return buffer;
       }
       lastError = undefined;
     } catch (error) {
       lastError = error;
+    } finally {
+      page.off("response", handleResponse);
     }
     if (attempt < MAX_SCREENSHOT_ATTEMPTS) {
       await page.waitForTimeout(500 * attempt);
