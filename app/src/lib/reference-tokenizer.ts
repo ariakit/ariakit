@@ -145,7 +145,7 @@ function parseAriakitImports(code: string): ImportInfo {
   let hasAriakitImport = false;
 
   const importRegex =
-    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)(?:-core)?["']/g;
+    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)["']/g;
   let match: RegExpExecArray | null;
 
   while ((match = importRegex.exec(code))) {
@@ -1089,7 +1089,7 @@ function processNamedImports(
   ) => string | undefined,
 ) {
   const importRegex =
-    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)(?:-core)?["']/g;
+    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)["']/g;
   let importMatch: RegExpExecArray | null;
 
   while ((importMatch = importRegex.exec(code))) {

@@ -67,8 +67,8 @@ const builds = /** @type {const} */ ([
 ]);
 
 const cjsInternalPackages = [
-  /^@ariakit\/core($|\/)/,
-  /^@ariakit\/react-core($|\/)/,
+  /^@ariakit\/components($|\/)/,
+  /^@ariakit\/react-components($|\/)/,
   /^@ariakit\/react-store($|\/)/,
   /^@ariakit\/react-utils($|\/)/,
   /^@ariakit\/store($|\/)/,
@@ -88,7 +88,7 @@ function buildStandard({ format, outDir }) {
     splitting: true,
     esbuildOptions(options) {
       options.chunkNames = "__chunks/[hash]";
-      // TODO: this might not be necessary for anything other than react and react-core
+      // TODO: this might not be necessary for anything other than react and react-components
       if (format === "esm") {
         options.banner = {
           js: '"use client";',

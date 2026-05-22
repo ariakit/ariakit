@@ -1,1 +1,1 @@
-export { useStoreState } from "@ariakit/react-core/store";
+export { useStoreState } from "@ariakit/react-components/store";

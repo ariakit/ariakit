@@ -40,7 +40,7 @@
     "clean": "ariakit build --clean"
   },
   "dependencies": {
-    "@ariakit/solid-core": "workspace:*"
+    "@ariakit/solid-components": "workspace:*"
   },
   "peerDependencies": {
     "solid-js": "^1.8"

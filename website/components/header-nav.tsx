@@ -5,8 +5,8 @@ import {
   PopoverDisclosureArrow,
   PopoverDismiss,
 } from "@ariakit/react";
-import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
-import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
+import type { SelectRendererItem } from "@ariakit/react-components/select/select-renderer";
+import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-utils";
 import { getKeys } from "@ariakit/utils";
 import { isApple } from "@ariakit/utils";

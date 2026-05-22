@@ -14,15 +14,15 @@ importers:
 
   .:
     devDependencies:
-      '@ariakit/core':
+      '@ariakit/components':
         specifier: workspace:*
-        version: link:packages/ariakit-core
+        version: link:packages/ariakit-components
       '@ariakit/react':
         specifier: workspace:*
         version: link:packages/ariakit-react
-      '@ariakit/react-core':
+      '@ariakit/react-components':
         specifier: workspace:*
-        version: link:packages/ariakit-react-core
+        version: link:packages/ariakit-react-components
       '@ariakit/react-store':
         specifier: workspace:*
         version: link:packages/ariakit-react-store
@@ -35,9 +35,9 @@ importers:
       '@ariakit/solid':
         specifier: workspace:*
         version: link:packages/ariakit-solid
-      '@ariakit/solid-core':
+      '@ariakit/solid-components':
         specifier: workspace:*
-        version: link:packages/ariakit-solid-core
+        version: link:packages/ariakit-solid-components
       '@ariakit/solid-store':
         specifier: workspace:*
         version: link:packages/ariakit-solid-store
@@ -206,9 +206,9 @@ importers:
       '@ariakit/react':
         specifier: workspace:*
         version: link:../packages/ariakit-react
-      '@ariakit/react-core':
+      '@ariakit/react-components':
         specifier: workspace:*
-        version: link:../packages/ariakit-react-core
+        version: link:../packages/ariakit-react-components
       '@ariakit/react-utils':
         specifier: workspace:*
         version: link:../packages/ariakit-react-utils
@@ -444,9 +444,9 @@ importers:
       '@ariakit/react':
         specifier: workspace:*
         version: link:../packages/ariakit-react
-      '@ariakit/react-core':
+      '@ariakit/react-components':
         specifier: workspace:*
-        version: link:../packages/ariakit-react-core
+        version: link:../packages/ariakit-react-components
       '@ariakit/solid':
         specifier: workspace:*
         version: link:../packages/ariakit-solid
@@ -554,7 +554,7 @@ importers:
         specifier: 4.3.0
         version: 4.3.0
 
-  packages/ariakit-core:
+  packages/ariakit-components:
     dependencies:
       '@ariakit/store':
         specifier: workspace:*
@@ -565,9 +565,9 @@ importers:
 
   packages/ariakit-react:
     dependencies:
-      '@ariakit/react-core':
+      '@ariakit/react-components':
         specifier: workspace:*
-        version: link:../ariakit-react-core
+        version: link:../ariakit-react-components
     devDependencies:
       react:
         specifier: 18.3.1
@@ -576,11 +576,11 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
 
-  packages/ariakit-react-core:
+  packages/ariakit-react-components:
     dependencies:
-      '@ariakit/core':
+      '@ariakit/components':
         specifier: workspace:*
-        version: link:../ariakit-core
+        version: link:../ariakit-components
       '@ariakit/react-store':
         specifier: workspace:*
         version: link:../ariakit-react-store
@@ -656,14 +656,14 @@ importers:
 
   packages/ariakit-solid:
     dependencies:
-      '@ariakit/solid-core':
+      '@ariakit/solid-components':
         specifier: workspace:*
-        version: link:../ariakit-solid-core
+        version: link:../ariakit-solid-components
       solid-js:
         specifier: ^1.8
         version: 1.9.13
 
-  packages/ariakit-solid-core:
+  packages/ariakit-solid-components:
     dependencies:
       '@ariakit/solid-utils':
         specifier: workspace:*
@@ -737,15 +737,15 @@ importers:
 
   templates/react:
     dependencies:
-      '@ariakit/core':
+      '@ariakit/components':
         specifier: workspace:*
-        version: link:../../packages/ariakit-core
+        version: link:../../packages/ariakit-components
       '@ariakit/react':
         specifier: workspace:*
         version: link:../../packages/ariakit-react
-      '@ariakit/react-core':
+      '@ariakit/react-components':
         specifier: workspace:*
-        version: link:../../packages/ariakit-react-core
+        version: link:../../packages/ariakit-react-components
       '@ariakit/tailwind':
         specifier: workspace:*
         version: link:../../packages/ariakit-tailwind
@@ -783,9 +783,9 @@ importers:
       '@ariakit/react':
         specifier: workspace:*
         version: link:../packages/ariakit-react
-      '@ariakit/react-core':
+      '@ariakit/react-components':
         specifier: workspace:*
-        version: link:../packages/ariakit-react-core
+        version: link:../packages/ariakit-react-components
       '@ariakit/react-store':
         specifier: workspace:*
         version: link:../packages/ariakit-react-store

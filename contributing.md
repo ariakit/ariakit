@@ -108,7 +108,7 @@ Now open http://localhost:3000 in your browser to see the project's site.
 
 To make a new component, create a file with the following contents:
 
-`packages/ariakit-react-core/src/my-component/my-component.tsx`
+`packages/ariakit-react-components/src/my-component/my-component.tsx`
 
 ````tsx
 import type { ElementType } from "react";
@@ -181,7 +181,7 @@ Let's create a default example for our component:
 `examples/my-component/index.react.tsx`
 
 ```tsx
-import { MyComponent } from "@ariakit/react-core/my-component/my-component";
+import { MyComponent } from "@ariakit/react-components/my-component/my-component";
 
 export default function Example() {
   return <MyComponent />;
@@ -216,7 +216,7 @@ Now we need to import the CSS file on the example's `index.react.tsx` file and a
 
 ```tsx
 import "./style.css";
-import { MyComponent } from "@ariakit/react-core/my-component/my-component";
+import { MyComponent } from "@ariakit/react-components/my-component/my-component";
 
 export default function Example() {
   return <MyComponent className="my-component" />;
@@ -271,7 +271,7 @@ Let's create another example for our component:
 
 ```tsx
 import "./style.css";
-import { MyComponent } from "@ariakit/react-core/my-component/my-component";
+import { MyComponent } from "@ariakit/react-components/my-component/my-component";
 
 export default function Example() {
   return <MyComponent className="my-component" customProp="Hello world" />;
@@ -304,19 +304,19 @@ Now open http://localhost:3000/examples/my-component-custom-prop to see the exam
 
 ## Promoting the component
 
-So far, we've been working with the `@ariakit/react-core` package. This is where all the components — including experimental stuff — are developed. This package doesn't follow [semver](https://semver.org/), so we can introduce breaking changes on patch and minor updates. Once a component is stable enough, it's promoted to the `@ariakit/react` package.
+So far, we've been working with the `@ariakit/react-components` package. This is where all the components — including experimental stuff — are developed. This package doesn't follow [semver](https://semver.org/), so we can introduce breaking changes on patch and minor updates. Once a component is stable enough, it's promoted to the `@ariakit/react` package.
 
-To promote our component to the `@ariakit/react` package, we need to create a file and re-export the component from the `@ariakit/react-core` package:
+To promote our component to the `@ariakit/react` package, we need to create a file and re-export the component from the `@ariakit/react-components` package:
 
 `packages/ariakit-react/src/my-component.ts`
 
 ```ts
-export { MyComponent } from "@ariakit/react-core/my-component/my-component";
+export { MyComponent } from "@ariakit/react-components/my-component/my-component";
 
 export type {
   MyComponentProps,
   MyComponentOptions,
-} from "@ariakit/react-core/my-component/my-component";
+} from "@ariakit/react-components/my-component/my-component";
 ```
 
 Finally, we must update the `index.ts` file to export the component:
@@ -459,7 +459,7 @@ Let's craft a fresh changeset file for our component. You can use any name for t
 ```markdown
 ---
 "@ariakit/react": minor
-"@ariakit/react-core": patch
+"@ariakit/react-components": patch
 ---
 
 Added `MyComponent` component.

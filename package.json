@@ -61,14 +61,14 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@ariakit/core": "workspace:*",
+    "@ariakit/components": "workspace:*",
     "@ariakit/react": "workspace:*",
-    "@ariakit/react-core": "workspace:*",
+    "@ariakit/react-components": "workspace:*",
     "@ariakit/react-store": "workspace:*",
     "@ariakit/react-utils": "workspace:*",
     "@ariakit/scripts": "workspace:*",
     "@ariakit/solid": "workspace:*",
-    "@ariakit/solid-core": "workspace:*",
+    "@ariakit/solid-components": "workspace:*",
     "@ariakit/solid-store": "workspace:*",
     "@ariakit/solid-utils": "workspace:*",
     "@ariakit/store": "workspace:*",

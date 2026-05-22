@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@ariakit/react": "workspace:*",
-    "@ariakit/react-core": "workspace:*",
+    "@ariakit/react-components": "workspace:*",
     "@ariakit/react-utils": "workspace:*",
     "@ariakit/solid": "workspace:*",
     "@ariakit/tailwind": "workspace:*",

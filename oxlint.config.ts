@@ -44,7 +44,7 @@ export default defineConfig({
     {
       // We have our own `forwardRef` implementation that doesn't need the `ref`
       // parameter, which leads to false positives.
-      files: ["packages/ariakit-react-core/src/**/*.{ts,tsx}"],
+      files: ["packages/ariakit-react-components/src/**/*.{ts,tsx}"],
       rules: {
         "forward-ref-uses-ref": "off",
       },

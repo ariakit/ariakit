@@ -1,5 +1,5 @@
 export type {
   FocusableOptions,
   FocusableProps,
-} from "@ariakit/react-core/focusable/focusable";
-export { Focusable } from "@ariakit/react-core/focusable/focusable";
+} from "@ariakit/react-components/focusable/focusable";
+export { Focusable } from "@ariakit/react-components/focusable/focusable";

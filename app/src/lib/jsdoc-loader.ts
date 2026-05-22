@@ -24,8 +24,8 @@ export interface JsDocFrameworkOptions {
   /** Framework name */
   framework: z.infer<typeof FrameworkSchema>;
   /**
-   * Path to the ariakit core package (e.g., `ariakit-react-core`,
-   * `ariakit-solid-core`)
+   * Path to the ariakit components package (e.g., `ariakit-react-components`,
+   * `ariakit-solid-components`)
    */
   corePath: string;
   /** Path to the ariakit package (e.g., ariakit-react, ariakit-solid) */
@@ -107,7 +107,7 @@ function getComponentSourceFilePaths(
 
   const reExportPattern =
     /export\s*(?:type\s*)?\{\s*[^}]+\s*\}\s*from\s*["']([^"']+)["']/g;
-  const corePackagePrefix = `@ariakit/${framework}-core/`;
+  const corePackagePrefix = `@ariakit/${framework}-components/`;
   let match: RegExpExecArray | null;
 
   // Seed the walk with directly re-exported core source files
@@ -1322,8 +1322,8 @@ function parseSourceFileExports({
   corePath,
   framework,
 }: ParseSourceFileExportsParams) {
-  // Resolve the actual file path - handle framework core paths
-  const corePackagePrefix = `@ariakit/${framework}-core/`;
+  // Resolve the actual file path - handle framework component paths
+  const corePackagePrefix = `@ariakit/${framework}-components/`;
   const resolvedPath = join(
     corePath,
     "src",

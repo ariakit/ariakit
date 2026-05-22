@@ -1,0 +1,123 @@
+{
+  "name": "@ariakit/solid-components",
+  "version": "0.0.0",
+  "description": "Ariakit Solid components",
+  "keywords": [
+    "ariakit",
+    "solid",
+    "components"
+  ],
+  "homepage": "https://ariakit.com",
+  "license": "MIT",
+  "author": {
+    "name": "Dani Guardiola",
+    "email": "hi@daniguardio.la",
+    "url": "https://dio.la"
+  },
+  "contributors": [
+    {
+      "name": "Diego Haz",
+      "email": "hazdiego@gmail.com",
+      "url": "https://github.com/diegohaz"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-solid-components"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "ariakit build --update-exports",
+    "clean": "ariakit build --clean"
+  },
+  "dependencies": {
+    "@ariakit/solid-utils": "workspace:*",
+    "@ariakit/utils": "workspace:*"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.8"
+  },
+  "exports": {
+    "./as/as": {
+      "ariakit-source": "./src/as/as.tsx",
+      "types": "./dist/as/as.d.ts",
+      "solid": "./solid/as/as.jsx",
+      "import": "./dist/as/as.js"
+    },
+    "./focus-trap/focus-trap": {
+      "ariakit-source": "./src/focus-trap/focus-trap.tsx",
+      "types": "./dist/focus-trap/focus-trap.d.ts",
+      "solid": "./solid/focus-trap/focus-trap.jsx",
+      "import": "./dist/focus-trap/focus-trap.js"
+    },
+    "./focus-trap/focus-trap-region": {
+      "ariakit-source": "./src/focus-trap/focus-trap-region.tsx",
+      "types": "./dist/focus-trap/focus-trap-region.d.ts",
+      "solid": "./solid/focus-trap/focus-trap-region.jsx",
+      "import": "./dist/focus-trap/focus-trap-region.js"
+    },
+    "./group/group": {
+      "ariakit-source": "./src/group/group.tsx",
+      "types": "./dist/group/group.d.ts",
+      "solid": "./solid/group/group.jsx",
+      "import": "./dist/group/group.js"
+    },
+    "./group/group-label": {
+      "ariakit-source": "./src/group/group-label.tsx",
+      "types": "./dist/group/group-label.d.ts",
+      "solid": "./solid/group/group-label.jsx",
+      "import": "./dist/group/group-label.js"
+    },
+    "./group/group-label-context": {
+      "ariakit-source": "./src/group/group-label-context.tsx",
+      "types": "./dist/group/group-label-context.d.ts",
+      "solid": "./solid/group/group-label-context.jsx",
+      "import": "./dist/group/group-label-context.js"
+    },
+    "./heading/heading": {
+      "ariakit-source": "./src/heading/heading.tsx",
+      "types": "./dist/heading/heading.d.ts",
+      "solid": "./solid/heading/heading.jsx",
+      "import": "./dist/heading/heading.js"
+    },
+    "./heading/heading-context": {
+      "ariakit-source": "./src/heading/heading-context.tsx",
+      "types": "./dist/heading/heading-context.d.ts",
+      "solid": "./solid/heading/heading-context.jsx",
+      "import": "./dist/heading/heading-context.js"
+    },
+    "./heading/heading-level": {
+      "ariakit-source": "./src/heading/heading-level.tsx",
+      "types": "./dist/heading/heading-level.d.ts",
+      "solid": "./solid/heading/heading-level.jsx",
+      "import": "./dist/heading/heading-level.js"
+    },
+    "./heading/utils": {
+      "ariakit-source": "./src/heading/utils.ts",
+      "types": "./dist/heading/utils.d.ts",
+      "solid": "./solid/heading/utils.jsx",
+      "import": "./dist/heading/utils.js"
+    },
+    "./role/role": {
+      "ariakit-source": "./src/role/role.tsx",
+      "types": "./dist/role/role.d.ts",
+      "solid": "./solid/role/role.jsx",
+      "import": "./dist/role/role.js"
+    },
+    "./separator/separator": {
+      "ariakit-source": "./src/separator/separator.tsx",
+      "types": "./dist/separator/separator.d.ts",
+      "solid": "./solid/separator/separator.jsx",
+      "import": "./dist/separator/separator.js"
+    },
+    "./visually-hidden/visually-hidden": {
+      "ariakit-source": "./src/visually-hidden/visually-hidden.tsx",
+      "types": "./dist/visually-hidden/visually-hidden.d.ts",
+      "solid": "./solid/visually-hidden/visually-hidden.jsx",
+      "import": "./dist/visually-hidden/visually-hidden.js"
+    },
+    "./package.json": "./package.json"
+  }
+}
