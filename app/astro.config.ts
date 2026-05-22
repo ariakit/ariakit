@@ -18,6 +18,7 @@ import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import { getAriakitSourceAliasEntries } from "../scripts/ariakit-source.ts";
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
 import {
   rehypeAdmonitions,
@@ -34,6 +35,7 @@ try {
 const port = Number(process.env.APP_PORT) || 4321;
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 const conditions = ["ariakit-source"];
+const alias = getAriakitSourceAliasEntries();
 
 // https://astro.build/config
 export default defineConfig({
@@ -60,6 +62,7 @@ export default defineConfig({
 
   vite: {
     resolve: {
+      alias,
       conditions,
     },
     environments: {

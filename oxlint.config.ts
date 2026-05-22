@@ -57,5 +57,13 @@ export default defineConfig({
         "no-redundant-type-constituents": "off",
       },
     },
+    {
+      // Oxlint doesn't resolve the Ariakit source condition for namespace
+      // imports in examples on a clean checkout before packages are built.
+      files: ["examples/**/*.tsx"],
+      rules: {
+        "no-redundant-type-constituents": "off",
+      },
+    },
   ],
 });
