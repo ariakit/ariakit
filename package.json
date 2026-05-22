@@ -101,8 +101,8 @@
     "lint-staged": "17.0.5",
     "next": "14.2.35",
     "open-cli": "9.0.0",
-    "oxfmt": "0.50.0",
-    "oxlint": "1.65.0",
+    "oxfmt": "0.51.0",
+    "oxlint": "1.66.0",
     "oxlint-tsgolint": "0.23.0",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
@@ -122,7 +122,7 @@
     "vite-plugin-solid": "2.11.12",
     "vitest": "4.1.6",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.92.0"
+    "wrangler": "4.93.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
