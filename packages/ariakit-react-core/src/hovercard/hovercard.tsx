@@ -1,13 +1,22 @@
-import { contains } from "@ariakit/core/utils/dom";
-import { addGlobalEventListener } from "@ariakit/core/utils/events";
-import { hasFocusWithin } from "@ariakit/core/utils/focus";
+import { useStoreState } from "@ariakit/react-store";
 import {
-  chain,
-  invariant,
-  isFalsyBooleanCallback,
-} from "@ariakit/core/utils/misc";
-import { sync } from "@ariakit/core/utils/store";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+  useBooleanEvent,
+  useEvent,
+  useIsMouseMoving,
+  useLiveRef,
+  useMergeRefs,
+  usePortalRef,
+  useSafeLayoutEffect,
+  useWrapElement,
+} from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { sync } from "@ariakit/store";
+import { contains } from "@ariakit/utils";
+import { addGlobalEventListener } from "@ariakit/utils";
+import { hasFocusWithin } from "@ariakit/utils";
+import { chain, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
+import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, FocusEvent } from "react";
 import {
   createContext,
@@ -20,19 +29,6 @@ import {
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
-import {
-  useBooleanEvent,
-  useEvent,
-  useIsMouseMoving,
-  useLiveRef,
-  useMergeRefs,
-  usePortalRef,
-  useSafeLayoutEffect,
-  useWrapElement,
-} from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import {
   HovercardScopedContextProvider,
   useHovercardProviderContext,

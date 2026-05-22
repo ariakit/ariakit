@@ -1,11 +1,11 @@
-import { invariant } from "@ariakit/core/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import { useBooleanEvent, useEvent, useId } from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Options, Props } from "@ariakit/react-utils";
+import { invariant } from "@ariakit/utils";
+import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useContext, useEffect } from "react";
 import { Role } from "../role/role.tsx";
-import { useBooleanEvent, useEvent, useId } from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import {
   TagRemoveIdContext,
   TagValueContext,

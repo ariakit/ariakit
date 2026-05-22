@@ -1,10 +1,10 @@
-import { invariant } from "@ariakit/core/utils/misc";
+import { useForceUpdate, useId, useMergeRefs } from "@ariakit/react-utils";
+import { forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType, RefCallback, RefObject } from "react";
 import { useCallback, useRef, useState } from "react";
 import { Role } from "../role/role.tsx";
-import { useForceUpdate, useId, useMergeRefs } from "../utils/hooks.ts";
-import { forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import * as Base from "./collection-item.tsx";
 
 const TagName = "div" satisfies ElementType;

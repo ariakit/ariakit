@@ -2,6 +2,14 @@ import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import type { NextConfig } from "next";
 
 const config: NextConfig = {
+  webpack(config) {
+    config.resolve.conditionNames = [
+      "ariakit-source",
+      ...(config.resolve.conditionNames ?? ["..."]),
+    ];
+    return config;
+  },
+
   reactCompiler: true,
   typedRoutes: true,
   typescript: {

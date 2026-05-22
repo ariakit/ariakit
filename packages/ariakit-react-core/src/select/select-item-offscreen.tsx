@@ -1,10 +1,10 @@
+import { useMergeRefs } from "@ariakit/react-utils";
+import { forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item-offscreen.tsx";
 import { useCompositeItemOffscreen } from "../composite/composite-item-offscreen.tsx";
 import { Role } from "../role/role.tsx";
-import { useMergeRefs } from "../utils/hooks.ts";
-import { forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { useSelectScopedContext } from "./select-context.tsx";
 import * as Base from "./select-item.tsx";
 

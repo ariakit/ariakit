@@ -1,27 +1,27 @@
-import { getPopupItemRole } from "@ariakit/core/utils/dom";
-import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
-import { disabledFromProps, invariant } from "@ariakit/core/utils/misc";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+import { useStoreState, useStoreStateObject } from "@ariakit/react-store";
+import {
+  useBooleanEvent,
+  useEvent,
+  useId,
+  useWrapElement,
+} from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  memo,
+} from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { getPopupItemRole } from "@ariakit/utils";
+import { isDownloading, isOpeningInNewTab } from "@ariakit/utils";
+import { disabledFromProps, invariant } from "@ariakit/utils";
+import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
 import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
-import {
-  useBooleanEvent,
-  useEvent,
-  useId,
-  useWrapElement,
-} from "../utils/hooks.ts";
-import { useStoreState, useStoreStateObject } from "../utils/store.tsx";
-import {
-  createElement,
-  createHook,
-  forwardRef,
-  memo,
-} from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import {
   SelectItemCheckedContext,
   useSelectScopedContext,

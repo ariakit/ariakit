@@ -35,12 +35,9 @@
   },
   "type": "module",
   "sideEffects": false,
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "scripts": {
-    "build": "node ../../scripts/build/build.js",
-    "clean": "node ../../scripts/build/clean.js"
+    "build": "ariakit build --update-exports",
+    "clean": "ariakit build --clean"
   },
   "dependencies": {
     "@ariakit/solid-core": "workspace:*"
@@ -49,14 +46,54 @@
     "solid-js": "^1.8"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./as": "./src/as.ts",
-    "./focus-trap": "./src/focus-trap.ts",
-    "./group": "./src/group.ts",
-    "./heading": "./src/heading.ts",
-    "./role": "./src/role.ts",
-    "./separator": "./src/separator.ts",
-    "./visually-hidden": "./src/visually-hidden.ts",
+    "./as": {
+      "ariakit-source": "./src/as.ts",
+      "types": "./dist/as.d.ts",
+      "solid": "./solid/as.jsx",
+      "import": "./dist/as.js"
+    },
+    "./focus-trap": {
+      "ariakit-source": "./src/focus-trap.ts",
+      "types": "./dist/focus-trap.d.ts",
+      "solid": "./solid/focus-trap.jsx",
+      "import": "./dist/focus-trap.js"
+    },
+    "./group": {
+      "ariakit-source": "./src/group.ts",
+      "types": "./dist/group.d.ts",
+      "solid": "./solid/group.jsx",
+      "import": "./dist/group.js"
+    },
+    "./heading": {
+      "ariakit-source": "./src/heading.ts",
+      "types": "./dist/heading.d.ts",
+      "solid": "./solid/heading.jsx",
+      "import": "./dist/heading.js"
+    },
+    ".": {
+      "ariakit-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "solid": "./solid/index.jsx",
+      "import": "./dist/index.js"
+    },
+    "./role": {
+      "ariakit-source": "./src/role.ts",
+      "types": "./dist/role.d.ts",
+      "solid": "./solid/role.jsx",
+      "import": "./dist/role.js"
+    },
+    "./separator": {
+      "ariakit-source": "./src/separator.ts",
+      "types": "./dist/separator.d.ts",
+      "solid": "./solid/separator.jsx",
+      "import": "./dist/separator.js"
+    },
+    "./visually-hidden": {
+      "ariakit-source": "./src/visually-hidden.ts",
+      "types": "./dist/visually-hidden.d.ts",
+      "solid": "./solid/visually-hidden.jsx",
+      "import": "./dist/visually-hidden.js"
+    },
     "./package.json": "./package.json"
   }
 }

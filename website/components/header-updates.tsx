@@ -1,8 +1,8 @@
 "use client";
 
-import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import * as Ariakit from "@ariakit/react";
-import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
+import { useSafeLayoutEffect } from "@ariakit/react-utils";
+import { isDownloading, isOpeningInNewTab } from "@ariakit/utils";
 import { track } from "@vercel/analytics";
 import { partition } from "lodash-es";
 import Link from "next/link.js";

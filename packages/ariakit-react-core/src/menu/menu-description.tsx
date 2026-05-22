@@ -1,8 +1,8 @@
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { HovercardDescriptionOptions } from "../hovercard/hovercard-description.tsx";
 import { useHovercardDescription } from "../hovercard/hovercard-description.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import type { MenuStore } from "./menu-store.ts";
 
 const TagName = "p" satisfies ElementType;

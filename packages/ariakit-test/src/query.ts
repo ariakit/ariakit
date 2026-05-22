@@ -1,5 +1,5 @@
 // oxlint-disable unbound-method
-import { invariant } from "@ariakit/core/utils/misc";
+import { invariant } from "@ariakit/utils";
 import type {
   ByRoleMatcher,
   ByRoleOptions,

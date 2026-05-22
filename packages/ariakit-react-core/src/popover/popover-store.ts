@@ -1,13 +1,13 @@
 import * as Core from "@ariakit/core/popover/popover-store";
+import type { Store } from "@ariakit/react-store";
+import { useStore, useStoreProps } from "@ariakit/react-store";
+import { useUpdateEffect } from "@ariakit/react-utils";
 import type {
   DialogStoreFunctions,
   DialogStoreOptions,
   DialogStoreState,
 } from "../dialog/dialog-store.ts";
 import { useDialogStoreProps } from "../dialog/dialog-store.ts";
-import { useUpdateEffect } from "../utils/hooks.ts";
-import type { Store } from "../utils/store.tsx";
-import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function usePopoverStoreProps<T extends Core.PopoverStore>(
   store: T,

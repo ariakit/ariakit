@@ -1,6 +1,6 @@
+# Automatically generated
 coverage
-src
-tsconfig.json
+tsconfig*.json
 *.log
-*.config.js
+*.config.*
 *.lock

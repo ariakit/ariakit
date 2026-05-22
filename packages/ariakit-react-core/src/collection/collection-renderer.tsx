@@ -1,10 +1,17 @@
-import { getScrollingElement, getWindow } from "@ariakit/core/utils/dom";
-import { invariant, shallowEqual } from "@ariakit/core/utils/misc";
-import type {
-  AnyObject,
-  BooleanOrCallback,
-  EmptyObject,
-} from "@ariakit/core/utils/types";
+import { useStoreState } from "@ariakit/react-store";
+import {
+  useBooleanEvent,
+  useEvent,
+  useForceUpdate,
+  useId,
+  useMergeRefs,
+  useWrapElement,
+} from "@ariakit/react-utils";
+import { createElement, forwardRef } from "@ariakit/react-utils";
+import type { Options, Props } from "@ariakit/react-utils";
+import { getScrollingElement, getWindow } from "@ariakit/utils";
+import { invariant, shallowEqual } from "@ariakit/utils";
+import type { AnyObject, BooleanOrCallback, EmptyObject } from "@ariakit/utils";
 import type {
   CSSProperties,
   ElementType,
@@ -22,17 +29,6 @@ import {
   useState,
 } from "react";
 import { flushSync } from "react-dom";
-import {
-  useBooleanEvent,
-  useEvent,
-  useForceUpdate,
-  useId,
-  useMergeRefs,
-  useWrapElement,
-} from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import { useCollectionContext } from "./collection-context.tsx";
 import type {
   CollectionStore,

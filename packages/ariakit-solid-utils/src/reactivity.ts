@@ -1,4 +1,4 @@
-import type { AnyObject } from "@ariakit/core/utils/types";
+import type { AnyObject } from "@ariakit/utils";
 import { combineProps } from "@solid-primitives/props";
 import type { Accessor, JSX, Setter } from "solid-js";
 import {

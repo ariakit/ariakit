@@ -1,4 +1,4 @@
-import { addGlobalEventListener } from "@ariakit/core/utils/events";
+import { addGlobalEventListener } from "@ariakit/utils";
 import { useEffect, useRef } from "react";
 
 export function usePreviousMouseDownRef(enabled?: boolean, scope?: Window) {

@@ -1,4 +1,4 @@
-import type { PickRequired } from "@ariakit/core/utils/types";
+import type { PickRequired } from "@ariakit/utils";
 import type { ReactElement, ReactNode } from "react";
 import { CompositeContextProvider } from "./composite-context.tsx";
 import type {

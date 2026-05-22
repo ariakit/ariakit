@@ -34,6 +34,11 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   webpack(config, context) {
+    config.resolve.conditionNames = [
+      "ariakit-source",
+      ...(config.resolve.conditionNames ?? ["..."]),
+    ];
+
     if (context.isServer) {
       config.plugins.push(
         new context.webpack.DefinePlugin({

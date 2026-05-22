@@ -1,12 +1,12 @@
 import * as Core from "@ariakit/core/hovercard/hovercard-store";
+import type { Store } from "@ariakit/react-store";
+import { useStore, useStoreProps } from "@ariakit/react-store";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
 } from "../popover/popover-store.ts";
 import { usePopoverStoreProps } from "../popover/popover-store.ts";
-import type { Store } from "../utils/store.tsx";
-import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useHovercardStoreProps<T extends Core.HovercardStore>(
   store: T,

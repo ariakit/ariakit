@@ -1,6 +1,6 @@
 "use client";
 
-import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
+import { useSafeLayoutEffect } from "@ariakit/react-utils";
 import type { ButtonHTMLAttributes } from "react";
 import { useState } from "react";
 import { twJoin } from "tailwind-merge";

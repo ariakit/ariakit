@@ -1,13 +1,10 @@
-import { toArray } from "@ariakit/core/utils/array";
-import {
-  normalizeString,
-  removeUndefinedValues,
-} from "@ariakit/core/utils/misc";
+import { useStoreState } from "@ariakit/react-store";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Options, Props } from "@ariakit/react-utils";
+import { toArray } from "@ariakit/utils";
+import { normalizeString, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType, ReactElement } from "react";
 import { useContext, useMemo } from "react";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import {
   ComboboxItemValueContext,
   useComboboxScopedContext,

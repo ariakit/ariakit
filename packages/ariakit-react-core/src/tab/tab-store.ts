@@ -1,4 +1,7 @@
 import * as Core from "@ariakit/core/tab/tab-store";
+import type { Store } from "@ariakit/react-store";
+import { useStore, useStoreProps } from "@ariakit/react-store";
+import { useUpdateEffect } from "@ariakit/react-utils";
 import { useMemo } from "react";
 import { useComboboxContext } from "../combobox/combobox-context.tsx";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
@@ -10,9 +13,6 @@ import type {
 } from "../composite/composite-store.ts";
 import { useCompositeStoreProps } from "../composite/composite-store.ts";
 import { useSelectContext } from "../select/select-context.tsx";
-import { useUpdateEffect } from "../utils/hooks.ts";
-import type { Store } from "../utils/store.tsx";
-import { useStore, useStoreProps } from "../utils/store.tsx";
 
 export function useTabStoreProps<T extends Core.TabStore>(
   store: T,

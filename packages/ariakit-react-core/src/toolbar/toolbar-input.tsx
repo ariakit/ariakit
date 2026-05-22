@@ -1,11 +1,11 @@
-import type { ElementType } from "react";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
+} from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import type { ElementType } from "react";
 import { useToolbarContext } from "./toolbar-context.tsx";
 import type { ToolbarItemOptions } from "./toolbar-item.tsx";
 import { useToolbarItem } from "./toolbar-item.tsx";

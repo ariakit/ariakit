@@ -1,8 +1,8 @@
 import * as Core from "@ariakit/core/menu/menu-store";
-import type {
-  BivariantCallback,
-  PickRequired,
-} from "@ariakit/core/utils/types";
+import type { Store } from "@ariakit/react-store";
+import { useStore, useStoreProps } from "@ariakit/react-store";
+import { useUpdateEffect } from "@ariakit/react-utils";
+import type { BivariantCallback, PickRequired } from "@ariakit/utils";
 import { useComboboxProviderContext } from "../combobox/combobox-context.tsx";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
@@ -19,9 +19,6 @@ import type {
 import { useHovercardStoreProps } from "../hovercard/hovercard-store.ts";
 import { useMenubarContext } from "../menubar/menubar-context.tsx";
 import type { MenubarStore } from "../menubar/menubar-store.ts";
-import { useUpdateEffect } from "../utils/hooks.ts";
-import type { Store } from "../utils/store.tsx";
-import { useStore, useStoreProps } from "../utils/store.tsx";
 import { useMenuContext } from "./menu-context.tsx";
 
 export function useMenuStoreProps<T extends Core.MenuStore>(

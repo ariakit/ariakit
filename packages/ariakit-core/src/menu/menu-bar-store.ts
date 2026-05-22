@@ -1,10 +1,10 @@
+import type { Store, StoreProps } from "@ariakit/store";
 import type {
   MenubarStoreFunctions,
   MenubarStoreOptions,
   MenubarStoreState,
 } from "../menubar/menubar-store.ts";
 import { createMenubarStore } from "../menubar/menubar-store.ts";
-import type { Store, StoreProps } from "../utils/store.ts";
 
 /**
  * Creates a menu bar store.

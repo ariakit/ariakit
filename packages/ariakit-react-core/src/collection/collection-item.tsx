@@ -1,10 +1,10 @@
 import type { CollectionStoreItem } from "@ariakit/core/collection/collection-store";
-import { identity, removeUndefinedValues } from "@ariakit/core/utils/misc";
+import { useId, useMergeRefs } from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Options, Props } from "@ariakit/react-utils";
+import { identity, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useEffect, useRef } from "react";
-import { useId, useMergeRefs } from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import { useCollectionContext } from "./collection-context.tsx";
 import type { CollectionStore } from "./collection-store.ts";
 

@@ -1,17 +1,17 @@
-import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import type { ElementType } from "react";
-import { useMemo, useRef, useState } from "react";
-import { flushSync } from "react-dom";
-import { DialogScopedContextProvider } from "../dialog/dialog-context.tsx";
+import { useStoreState } from "@ariakit/react-store";
 import {
   useId,
   useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
-} from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
+} from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Options, Props } from "@ariakit/react-utils";
+import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import type { ElementType } from "react";
+import { useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
+import { DialogScopedContextProvider } from "../dialog/dialog-context.tsx";
 import { useDisclosureProviderContext } from "./disclosure-context.tsx";
 import type { DisclosureStore } from "./disclosure-store.ts";
 

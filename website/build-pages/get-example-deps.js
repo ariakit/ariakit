@@ -13,7 +13,14 @@ import { readPackageUpSync } from "read-package-up";
 import resolveFrom from "resolve-from";
 import ts from "typescript";
 
-const host = ts.createCompilerHost({});
+const compilerOptions = {
+  module: ts.ModuleKind.ESNext,
+  moduleResolution: ts.ModuleResolutionKind.Bundler,
+  customConditions: ["ariakit-source", "solid"],
+  jsx: ts.JsxEmit.Preserve,
+  allowImportingTsExtensions: true,
+};
+const host = ts.createCompilerHost(compilerOptions);
 let warnedAboutVersion = false;
 
 /**
@@ -62,19 +69,40 @@ function getPackageVersion(source) {
 }
 
 /**
+ * @param {string} filename
+ * @param {string} source
+ * @param {ts.ResolvedModuleFull | undefined} resolvedModule
+ */
+function resolveSource(filename, source, resolvedModule) {
+  try {
+    return resolveFrom(dirname(filename), source);
+  } catch (error) {
+    if (resolvedModule?.resolvedFileName) {
+      return resolvedModule.resolvedFileName;
+    }
+    throw error;
+  }
+}
+
+/**
  * @param {Deps} deps
  * @param {string} source
  * @param {string} filename
  */
 function assignExternal(deps, source, filename) {
-  const { resolvedModule } = ts.resolveModuleName(source, filename, {}, host);
+  const { resolvedModule } = ts.resolveModuleName(
+    source,
+    filename,
+    compilerOptions,
+    host,
+  );
   const external =
     resolvedModule?.isExternalLibraryImport ?? !source.startsWith(".");
 
   const resolvedSource =
     resolvedModule?.resolvedFileName && !resolvedModule.isExternalLibraryImport
       ? resolvedModule.resolvedFileName
-      : resolveFrom(dirname(filename), source);
+      : resolveSource(filename, source, resolvedModule);
 
   const result = { resolvedSource, external };
 

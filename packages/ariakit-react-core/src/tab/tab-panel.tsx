@@ -1,5 +1,15 @@
-import { getAllTabbableIn } from "@ariakit/core/utils/focus";
-import { invariant } from "@ariakit/core/utils/misc";
+import { useStoreState } from "@ariakit/react-store";
+import {
+  useEvent,
+  useId,
+  useMergeRefs,
+  useSafeLayoutEffect,
+  useWrapElement,
+} from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { getAllTabbableIn } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent, RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
@@ -9,16 +19,6 @@ import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
-import {
-  useEvent,
-  useId,
-  useMergeRefs,
-  useSafeLayoutEffect,
-  useWrapElement,
-} from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import {
   TabScopedContextProvider,
   useTabProviderContext,

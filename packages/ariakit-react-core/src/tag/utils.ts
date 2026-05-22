@@ -1,4 +1,4 @@
-import { isTouchDevice } from "@ariakit/core/utils/platform";
+import { isTouchDevice } from "@ariakit/utils";
 import { useEffect, useState } from "react";
 
 export function useTouchDevice() {

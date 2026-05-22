@@ -1,7 +1,7 @@
-import { defaultValue } from "../utils/misc.ts";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
-import { createStore, throwOnConflictingProps } from "../utils/store.ts";
-import type { PickRequired, SetState, ToPrimitive } from "../utils/types.ts";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import { createStore, throwOnConflictingProps } from "@ariakit/store";
+import { defaultValue } from "@ariakit/utils";
+import type { PickRequired, SetState, ToPrimitive } from "@ariakit/utils";
 
 /**
  * Creates a checkbox store.

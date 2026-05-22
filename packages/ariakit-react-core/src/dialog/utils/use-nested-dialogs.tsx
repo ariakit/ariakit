@@ -1,5 +1,7 @@
-import { chain } from "@ariakit/core/utils/misc";
-import { sync } from "@ariakit/core/utils/store";
+import { useSafeLayoutEffect } from "@ariakit/react-utils";
+import type { WrapElement } from "@ariakit/react-utils";
+import { sync } from "@ariakit/store";
+import { chain } from "@ariakit/utils";
 import {
   createContext,
   useCallback,
@@ -7,8 +9,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useSafeLayoutEffect } from "../../utils/hooks.ts";
-import type { WrapElement } from "../../utils/types.ts";
 import type { DialogStore } from "../dialog-store.ts";
 
 const NestedDialogsContext = createContext<{

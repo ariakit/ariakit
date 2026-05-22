@@ -66,6 +66,15 @@ const builds = /** @type {const} */ ([
   { format: "cjs", outDir: cjsDir },
 ]);
 
+const cjsInternalPackages = [
+  /^@ariakit\/core($|\/)/,
+  /^@ariakit\/react-core($|\/)/,
+  /^@ariakit\/react-store($|\/)/,
+  /^@ariakit\/react-utils($|\/)/,
+  /^@ariakit\/store($|\/)/,
+  /^@ariakit\/utils($|\/)/,
+];
+
 /** @param {{ format: import("tsup").Format, outDir: string }} options */
 function buildStandard({ format, outDir }) {
   if (isFramework) return;
@@ -73,6 +82,7 @@ function buildStandard({ format, outDir }) {
     entry,
     format,
     outDir,
+    noExternal: format === "cjs" ? cjsInternalPackages : undefined,
     // dts: true,
     // tsconfig: "tsconfig.build.json",
     splitting: true,
@@ -95,6 +105,7 @@ function buildReact({ format, outDir }) {
     entry,
     format,
     outDir,
+    noExternal: format === "cjs" ? cjsInternalPackages : undefined,
     // dts: true,
     // tsconfig: "tsconfig.build.json",
     splitting: true,

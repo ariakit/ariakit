@@ -19,6 +19,9 @@ export default defineConfig({
     "iframe-missing-sandbox": "off",
     "consistent-return": "off",
     "no-unnecessary-type-arguments": "off",
+    // The import plugin resolves workspace export maps through the JS output,
+    // where type-only namespace exports don't exist.
+    "import/namespace": "off",
     "consistent-type-imports": ["error", { fixStyle: "separate-type-imports" }],
     "no-unused-vars": [
       "error",

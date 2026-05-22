@@ -6,4 +6,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
   // @ts-ignore
   plugins: [tailwindcss(), react()],
+  resolve: {
+    conditions: ["ariakit-source"],
+  },
 });

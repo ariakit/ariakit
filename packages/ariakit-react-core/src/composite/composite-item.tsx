@@ -1,3 +1,18 @@
+import { useStoreStateObject } from "@ariakit/react-store";
+import {
+  useBooleanEvent,
+  useEvent,
+  useId,
+  useMergeRefs,
+  useWrapElement,
+} from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  memo,
+} from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import {
   getScrollingElement,
   getTextboxSelection,
@@ -5,14 +20,11 @@ import {
   isButton,
   isTextbox,
   isTextField,
-} from "@ariakit/core/utils/dom";
-import { isPortalEvent, isSelfTarget } from "@ariakit/core/utils/events";
-import {
-  disabledFromProps,
-  removeUndefinedValues,
-} from "@ariakit/core/utils/misc";
-import { isSafari } from "@ariakit/core/utils/platform";
-import type { BooleanOrCallback } from "@ariakit/core/utils/types";
+} from "@ariakit/utils";
+import { isPortalEvent, isSelfTarget } from "@ariakit/utils";
+import { disabledFromProps, removeUndefinedValues } from "@ariakit/utils";
+import { isSafari } from "@ariakit/utils";
+import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
   ElementType,
   FocusEvent,
@@ -24,21 +36,6 @@ import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
-import {
-  useBooleanEvent,
-  useEvent,
-  useId,
-  useMergeRefs,
-  useWrapElement,
-} from "../utils/hooks.ts";
-import { useStoreStateObject } from "../utils/store.tsx";
-import {
-  createElement,
-  createHook,
-  forwardRef,
-  memo,
-} from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import {
   CompositeItemContext,
   CompositeRowContext,

@@ -1,8 +1,8 @@
+import { useMergeRefs, useTagName } from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Options, Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { useContext, useMemo, useRef } from "react";
-import { useMergeRefs, useTagName } from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import { HeadingContext } from "./heading-context.tsx";
 import type { HeadingLevels } from "./utils.ts";
 

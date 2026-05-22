@@ -33,6 +33,7 @@ try {
 
 const port = Number(process.env.APP_PORT) || 4321;
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+const conditions = ["ariakit-source"];
 
 // https://astro.build/config
 export default defineConfig({
@@ -58,6 +59,28 @@ export default defineConfig({
   }),
 
   vite: {
+    resolve: {
+      conditions,
+    },
+    environments: {
+      astro: {
+        resolve: {
+          conditions,
+          externalConditions: conditions,
+        },
+      },
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        conditions,
+      },
+    },
+    ssr: {
+      resolve: {
+        conditions,
+        externalConditions: conditions,
+      },
+    },
     plugins: [
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),

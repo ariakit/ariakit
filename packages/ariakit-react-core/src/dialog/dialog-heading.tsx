@@ -1,10 +1,10 @@
+import { useId, useSafeLayoutEffect } from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { useContext } from "react";
 import type { HeadingOptions } from "../heading/heading.tsx";
 import { useHeading } from "../heading/heading.tsx";
-import { useId, useSafeLayoutEffect } from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { DialogHeadingContext } from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 

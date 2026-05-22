@@ -1,7 +1,7 @@
 import { join } from "node:path";
 import { watch } from "chokidar";
 import { globSync } from "glob";
-import { writePackageJson } from "./utils.js";
+import { readPackageJson, writePackageJson } from "./utils.js";
 
 /** @param {string} path */
 function processDevPackage(path) {
@@ -11,6 +11,8 @@ function processDevPackage(path) {
   const [, pkg] = match;
   if (!pkg) return;
   const pkgPath = join(process.cwd(), "packages", pkg);
+  const pkgJson = readPackageJson(pkgPath);
+  if (pkgJson.scripts?.build?.startsWith("ariakit build")) return;
   writePackageJson(pkgPath);
 }
 

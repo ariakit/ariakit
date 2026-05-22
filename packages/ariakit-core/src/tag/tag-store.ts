@@ -1,3 +1,8 @@
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import { createStore, setup, sync } from "@ariakit/store";
+import { applyState, defaultValue } from "@ariakit/utils";
+import type { SetState } from "@ariakit/utils";
+import { UndoManager } from "@ariakit/utils";
 import type {
   CompositeStoreFunctions,
   CompositeStoreItem,
@@ -5,11 +10,6 @@ import type {
   CompositeStoreState,
 } from "../composite/composite-store.ts";
 import { createCompositeStore } from "../composite/composite-store.ts";
-import { applyState, defaultValue } from "../utils/misc.ts";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
-import { createStore, setup, sync } from "../utils/store.ts";
-import type { SetState } from "../utils/types.ts";
-import { UndoManager } from "../utils/undo.ts";
 
 /**
  * Creates a tag store.

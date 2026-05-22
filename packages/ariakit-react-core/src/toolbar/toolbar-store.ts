@@ -1,12 +1,12 @@
 import * as Core from "@ariakit/core/toolbar/toolbar-store";
+import type { Store } from "@ariakit/react-store";
+import { useStore } from "@ariakit/react-store";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
   CompositeStoreState,
 } from "../composite/composite-store.ts";
 import { useCompositeStoreProps } from "../composite/composite-store.ts";
-import type { Store } from "../utils/store.tsx";
-import { useStore } from "../utils/store.tsx";
 
 export function useToolbarStoreProps<T extends Core.ToolbarStore>(
   store: T,

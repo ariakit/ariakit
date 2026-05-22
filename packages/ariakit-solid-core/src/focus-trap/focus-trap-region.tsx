@@ -1,14 +1,14 @@
-import { getAllTabbableIn } from "@ariakit/core/utils/focus";
-import type { ValidComponent } from "solid-js";
-import { Show } from "solid-js";
-import { createRef, mergeProps } from "../utils/reactivity.ts";
+import { createRef, mergeProps } from "@ariakit/solid-utils";
 import {
   createHook,
   createInstance,
   withOptions,
   wrapInstance,
-} from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
+} from "@ariakit/solid-utils";
+import type { Options, Props } from "@ariakit/solid-utils";
+import { getAllTabbableIn } from "@ariakit/utils";
+import type { ValidComponent } from "solid-js";
+import { Show } from "solid-js";
 import { FocusTrap } from "./focus-trap.tsx";
 
 const TagName = "div" satisfies ValidComponent;

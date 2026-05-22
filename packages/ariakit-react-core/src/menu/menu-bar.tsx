@@ -1,9 +1,9 @@
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { useEffect } from "react";
 import type { MenubarOptions } from "../menubar/menubar.tsx";
 import { useMenubar } from "../menubar/menubar.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

@@ -1,7 +1,7 @@
+import { mergeProps } from "@ariakit/solid-utils";
+import { createHook, createInstance } from "@ariakit/solid-utils";
+import type { Options, Props } from "@ariakit/solid-utils";
 import type { ValidComponent } from "solid-js";
-import { mergeProps } from "../utils/reactivity.ts";
-import { createHook, createInstance } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 
 const TagName = "span" satisfies ValidComponent;
 type TagName = typeof TagName;

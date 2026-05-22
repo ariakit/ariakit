@@ -1,8 +1,8 @@
-import { removeUndefinedValues } from "@ariakit/core/utils/misc";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Options, Props } from "@ariakit/react-utils";
+import { removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useContext } from "react";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.tsx";
 import type { CheckboxStore } from "./checkbox-store.ts";
 

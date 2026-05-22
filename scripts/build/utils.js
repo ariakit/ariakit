@@ -48,6 +48,7 @@ export function getPackageJson(rootPath, prod = false) {
     path = removeExt(path).replace(sourcePath, "");
     return {
       ...(isSolid && { solid: `./${join(solidSourceDir, path)}.jsx` }),
+      "ariakit-source": `./${join(sourceDir, path)}.ts`,
       import: `./${join(esmDir, path)}.js`,
       require: {
         types: `./${join(cjsDir, path)}.d.cts`,

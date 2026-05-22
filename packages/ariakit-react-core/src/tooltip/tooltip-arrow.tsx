@@ -1,9 +1,9 @@
-import { invariant } from "@ariakit/core/utils/misc";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.tsx";
 import { usePopoverArrow } from "../popover/popover-arrow.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { useTooltipContext } from "./tooltip-context.tsx";
 import type { TooltipStore } from "./tooltip-store.ts";
 

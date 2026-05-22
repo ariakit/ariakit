@@ -1,12 +1,12 @@
 import * as Core from "@ariakit/core/composite/composite-overflow-store";
+import type { Store } from "@ariakit/react-store";
+import { useStore } from "@ariakit/react-store";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,
   PopoverStoreState,
 } from "../popover/popover-store.ts";
 import { usePopoverStoreProps } from "../popover/popover-store.ts";
-import type { Store } from "../utils/store.tsx";
-import { useStore } from "../utils/store.tsx";
 
 export function useCompositeOverflowStoreProps<
   T extends Core.CompositeOverflowStore,

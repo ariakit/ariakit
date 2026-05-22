@@ -20,15 +20,12 @@
   },
   "type": "module",
   "sideEffects": false,
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "scripts": {
-    "build": "node ../../scripts/build/build.js",
-    "clean": "node ../../scripts/build/clean.js"
+    "build": "ariakit build --update-exports",
+    "clean": "ariakit build --clean"
   },
   "dependencies": {
-    "@ariakit/core": "workspace:*",
+    "@ariakit/utils": "workspace:*",
     "@testing-library/dom": "^8.0.0 || ^9.0.0 || ^10.0.0"
   },
   "devDependencies": {
@@ -52,23 +49,91 @@
     }
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./blur": "./src/blur.ts",
-    "./click": "./src/click.ts",
-    "./dispatch": "./src/dispatch.ts",
-    "./focus": "./src/focus.ts",
-    "./hover": "./src/hover.ts",
-    "./mouse-down": "./src/mouse-down.ts",
-    "./mouse-up": "./src/mouse-up.ts",
-    "./playwright": "./src/playwright.ts",
-    "./press": "./src/press.ts",
-    "./query": "./src/query.ts",
-    "./react": "./src/react.tsx",
-    "./select": "./src/select.ts",
-    "./sleep": "./src/sleep.ts",
-    "./tap": "./src/tap.ts",
-    "./type": "./src/type.ts",
-    "./wait-for": "./src/wait-for.ts",
+    "./blur": {
+      "ariakit-source": "./src/blur.ts",
+      "types": "./dist/blur.d.ts",
+      "import": "./dist/blur.js"
+    },
+    "./click": {
+      "ariakit-source": "./src/click.ts",
+      "types": "./dist/click.d.ts",
+      "import": "./dist/click.js"
+    },
+    "./dispatch": {
+      "ariakit-source": "./src/dispatch.ts",
+      "types": "./dist/dispatch.d.ts",
+      "import": "./dist/dispatch.js"
+    },
+    "./focus": {
+      "ariakit-source": "./src/focus.ts",
+      "types": "./dist/focus.d.ts",
+      "import": "./dist/focus.js"
+    },
+    "./hover": {
+      "ariakit-source": "./src/hover.ts",
+      "types": "./dist/hover.d.ts",
+      "import": "./dist/hover.js"
+    },
+    ".": {
+      "ariakit-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./mouse-down": {
+      "ariakit-source": "./src/mouse-down.ts",
+      "types": "./dist/mouse-down.d.ts",
+      "import": "./dist/mouse-down.js"
+    },
+    "./mouse-up": {
+      "ariakit-source": "./src/mouse-up.ts",
+      "types": "./dist/mouse-up.d.ts",
+      "import": "./dist/mouse-up.js"
+    },
+    "./playwright": {
+      "ariakit-source": "./src/playwright.ts",
+      "types": "./dist/playwright.d.ts",
+      "import": "./dist/playwright.js"
+    },
+    "./press": {
+      "ariakit-source": "./src/press.ts",
+      "types": "./dist/press.d.ts",
+      "import": "./dist/press.js"
+    },
+    "./query": {
+      "ariakit-source": "./src/query.ts",
+      "types": "./dist/query.d.ts",
+      "import": "./dist/query.js"
+    },
+    "./react": {
+      "ariakit-source": "./src/react.tsx",
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js"
+    },
+    "./select": {
+      "ariakit-source": "./src/select.ts",
+      "types": "./dist/select.d.ts",
+      "import": "./dist/select.js"
+    },
+    "./sleep": {
+      "ariakit-source": "./src/sleep.ts",
+      "types": "./dist/sleep.d.ts",
+      "import": "./dist/sleep.js"
+    },
+    "./tap": {
+      "ariakit-source": "./src/tap.ts",
+      "types": "./dist/tap.d.ts",
+      "import": "./dist/tap.js"
+    },
+    "./type": {
+      "ariakit-source": "./src/type.ts",
+      "types": "./dist/type.d.ts",
+      "import": "./dist/type.js"
+    },
+    "./wait-for": {
+      "ariakit-source": "./src/wait-for.ts",
+      "types": "./dist/wait-for.d.ts",
+      "import": "./dist/wait-for.js"
+    },
     "./package.json": "./package.json"
   }
 }

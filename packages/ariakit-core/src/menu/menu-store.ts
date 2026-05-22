@@ -1,3 +1,20 @@
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import {
+  createStore,
+  mergeStore,
+  omit,
+  pick,
+  setup,
+  sync,
+  throwOnConflictingProps,
+} from "@ariakit/store";
+import { applyState, defaultValue } from "@ariakit/utils";
+import type {
+  BivariantCallback,
+  PickRequired,
+  SetState,
+  SetStateAction,
+} from "@ariakit/utils";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
   CompositeStoreFunctions,
@@ -11,23 +28,6 @@ import type {
   HovercardStoreState,
 } from "../hovercard/hovercard-store.ts";
 import { createHovercardStore } from "../hovercard/hovercard-store.ts";
-import { applyState, defaultValue } from "../utils/misc.ts";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
-import {
-  createStore,
-  mergeStore,
-  omit,
-  pick,
-  setup,
-  sync,
-  throwOnConflictingProps,
-} from "../utils/store.ts";
-import type {
-  BivariantCallback,
-  PickRequired,
-  SetState,
-  SetStateAction,
-} from "../utils/types.ts";
 import type { MenuBarStore } from "./menu-bar-store.ts";
 
 export function createMenuStore<T extends MenuStoreValues = MenuStoreValues>(

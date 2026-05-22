@@ -1,11 +1,11 @@
-import { sync } from "@ariakit/core/utils/store";
+import { useEvent, useMergeRefs } from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { sync } from "@ariakit/store";
 import type { ElementType, FocusEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
-import { useEvent, useMergeRefs } from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import type { CompositeItemOptions } from "./composite-item.tsx";
 import { useCompositeItem } from "./composite-item.tsx";
 import type { CompositeOverflowStore } from "./composite-overflow-store.ts";

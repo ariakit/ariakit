@@ -1,16 +1,16 @@
-import { getWindow } from "@ariakit/core/utils/dom";
-import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
-import type { ElementType } from "react";
-import { useMemo, useState } from "react";
-import { useId, useMergeRefs, useSafeLayoutEffect } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
+import { useStoreState } from "@ariakit/react-store";
+import { useId, useMergeRefs, useSafeLayoutEffect } from "@ariakit/react-utils";
 import {
   createElement,
   createHook,
   forwardRef,
   memo,
-} from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
+} from "@ariakit/react-utils";
+import type { Options, Props } from "@ariakit/react-utils";
+import { getWindow } from "@ariakit/utils";
+import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import type { ElementType } from "react";
+import { useMemo, useState } from "react";
 import { POPOVER_ARROW_PATH } from "./popover-arrow-path.ts";
 import { usePopoverContext } from "./popover-context.tsx";
 import type { PopoverStore } from "./popover-store.ts";

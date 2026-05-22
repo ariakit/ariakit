@@ -1,9 +1,9 @@
+import { extractTagName } from "@ariakit/solid-utils";
+import { createRef, mergeProps } from "@ariakit/solid-utils";
+import { createHook, createInstance } from "@ariakit/solid-utils";
+import type { Options, Props } from "@ariakit/solid-utils";
 import type { ValidComponent } from "solid-js";
 import { createMemo, useContext } from "solid-js";
-import { extractTagName } from "../utils/misc.ts";
-import { createRef, mergeProps } from "../utils/reactivity.ts";
-import { createHook, createInstance } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import { HeadingContext } from "./heading-context.tsx";
 import type { HeadingLevels } from "./utils.ts";
 

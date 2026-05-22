@@ -1,10 +1,10 @@
-import { invariant } from "@ariakit/core/utils/misc";
+import { useEvent, useWrapElement } from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
-import { useEvent, useWrapElement } from "../utils/hooks.ts";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import type { PopoverAnchorOptions } from "./popover-anchor.tsx";
 import { usePopoverAnchor } from "./popover-anchor.tsx";
 import {

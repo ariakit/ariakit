@@ -1,0 +1,52 @@
+{
+  "name": "@ariakit/solid-utils",
+  "version": "0.0.0",
+  "description": "Ariakit Solid utilities",
+  "keywords": [
+    "ariakit",
+    "solid",
+    "utils"
+  ],
+  "homepage": "https://solid.ariakit.com",
+  "license": "MIT",
+  "author": {
+    "name": "Dani Guardiola",
+    "email": "hi@daniguardio.la",
+    "url": "https://dio.la"
+  },
+  "contributors": [
+    {
+      "name": "Diego Haz",
+      "email": "hazdiego@gmail.com",
+      "url": "https://github.com/diegohaz"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-solid-utils"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "ariakit build --update-exports --index-only",
+    "clean": "ariakit build --clean"
+  },
+  "dependencies": {
+    "@ariakit/utils": "workspace:*",
+    "@solid-primitives/props": "^3.2.3",
+    "@solid-primitives/utils": "^6.4.0"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.8"
+  },
+  "exports": {
+    ".": {
+      "ariakit-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "solid": "./solid/index.jsx",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  }
+}

@@ -1,4 +1,12 @@
 {
   "extends": "./tsconfig.base.json",
-  "exclude": ["website", "app", "examples", "packages", "nextjs", "coverage"]
+  "exclude": [
+    "website",
+    "app",
+    "examples",
+    "packages",
+    "nextjs",
+    "coverage",
+    "templates/*/dist"
+  ]
 }

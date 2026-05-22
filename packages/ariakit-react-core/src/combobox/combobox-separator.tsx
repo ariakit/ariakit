@@ -1,9 +1,9 @@
-import { invariant } from "@ariakit/core/utils/misc";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.tsx";
 import { useCompositeSeparator } from "../composite/composite-separator.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { useComboboxScopedContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 

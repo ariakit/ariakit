@@ -1,11 +1,8 @@
 import * as Core from "@ariakit/core/checkbox/checkbox-store";
-import type {
-  BivariantCallback,
-  PickRequired,
-} from "@ariakit/core/utils/types";
-import { useUpdateEffect } from "../utils/hooks.ts";
-import type { Store } from "../utils/store.tsx";
-import { useStore, useStoreProps } from "../utils/store.tsx";
+import type { Store } from "@ariakit/react-store";
+import { useStore, useStoreProps } from "@ariakit/react-store";
+import { useUpdateEffect } from "@ariakit/react-utils";
+import type { BivariantCallback, PickRequired } from "@ariakit/utils";
 
 export function useCheckboxStoreProps<T extends Core.CheckboxStore>(
   store: T,

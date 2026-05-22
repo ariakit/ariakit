@@ -28,39 +28,96 @@
   },
   "type": "module",
   "sideEffects": false,
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
   "scripts": {
-    "build": "node ../../scripts/build/build.js",
-    "clean": "node ../../scripts/build/clean.js"
+    "build": "ariakit build --update-exports",
+    "clean": "ariakit build --clean"
   },
   "dependencies": {
-    "@ariakit/core": "workspace:*",
-    "@solid-primitives/props": "3.2.3",
-    "@solid-primitives/utils": "6.4.0"
+    "@ariakit/solid-utils": "workspace:*",
+    "@ariakit/utils": "workspace:*"
   },
   "peerDependencies": {
     "solid-js": "^1.8"
   },
   "exports": {
-    "./as/as": "./src/as/as.tsx",
-    "./focus-trap/focus-trap-region": "./src/focus-trap/focus-trap-region.tsx",
-    "./focus-trap/focus-trap": "./src/focus-trap/focus-trap.tsx",
-    "./group/group-label-context": "./src/group/group-label-context.tsx",
-    "./group/group-label": "./src/group/group-label.tsx",
-    "./group/group": "./src/group/group.tsx",
-    "./heading/heading-context": "./src/heading/heading-context.tsx",
-    "./heading/heading-level": "./src/heading/heading-level.tsx",
-    "./heading/heading": "./src/heading/heading.tsx",
-    "./heading/utils": "./src/heading/utils.ts",
-    "./role/role": "./src/role/role.tsx",
-    "./separator/separator": "./src/separator/separator.tsx",
-    "./utils/misc": "./src/utils/misc.ts",
-    "./utils/reactivity": "./src/utils/reactivity.ts",
-    "./utils/system": "./src/utils/system.tsx",
-    "./utils/types": "./src/utils/types.ts",
-    "./visually-hidden/visually-hidden": "./src/visually-hidden/visually-hidden.tsx",
+    "./as/as": {
+      "ariakit-source": "./src/as/as.tsx",
+      "types": "./dist/as/as.d.ts",
+      "solid": "./solid/as/as.jsx",
+      "import": "./dist/as/as.js"
+    },
+    "./focus-trap/focus-trap-region": {
+      "ariakit-source": "./src/focus-trap/focus-trap-region.tsx",
+      "types": "./dist/focus-trap/focus-trap-region.d.ts",
+      "solid": "./solid/focus-trap/focus-trap-region.jsx",
+      "import": "./dist/focus-trap/focus-trap-region.js"
+    },
+    "./focus-trap/focus-trap": {
+      "ariakit-source": "./src/focus-trap/focus-trap.tsx",
+      "types": "./dist/focus-trap/focus-trap.d.ts",
+      "solid": "./solid/focus-trap/focus-trap.jsx",
+      "import": "./dist/focus-trap/focus-trap.js"
+    },
+    "./group/group-label-context": {
+      "ariakit-source": "./src/group/group-label-context.tsx",
+      "types": "./dist/group/group-label-context.d.ts",
+      "solid": "./solid/group/group-label-context.jsx",
+      "import": "./dist/group/group-label-context.js"
+    },
+    "./group/group-label": {
+      "ariakit-source": "./src/group/group-label.tsx",
+      "types": "./dist/group/group-label.d.ts",
+      "solid": "./solid/group/group-label.jsx",
+      "import": "./dist/group/group-label.js"
+    },
+    "./group/group": {
+      "ariakit-source": "./src/group/group.tsx",
+      "types": "./dist/group/group.d.ts",
+      "solid": "./solid/group/group.jsx",
+      "import": "./dist/group/group.js"
+    },
+    "./heading/heading-context": {
+      "ariakit-source": "./src/heading/heading-context.tsx",
+      "types": "./dist/heading/heading-context.d.ts",
+      "solid": "./solid/heading/heading-context.jsx",
+      "import": "./dist/heading/heading-context.js"
+    },
+    "./heading/heading-level": {
+      "ariakit-source": "./src/heading/heading-level.tsx",
+      "types": "./dist/heading/heading-level.d.ts",
+      "solid": "./solid/heading/heading-level.jsx",
+      "import": "./dist/heading/heading-level.js"
+    },
+    "./heading/heading": {
+      "ariakit-source": "./src/heading/heading.tsx",
+      "types": "./dist/heading/heading.d.ts",
+      "solid": "./solid/heading/heading.jsx",
+      "import": "./dist/heading/heading.js"
+    },
+    "./heading/utils": {
+      "ariakit-source": "./src/heading/utils.ts",
+      "types": "./dist/heading/utils.d.ts",
+      "solid": "./solid/heading/utils.jsx",
+      "import": "./dist/heading/utils.js"
+    },
+    "./role/role": {
+      "ariakit-source": "./src/role/role.tsx",
+      "types": "./dist/role/role.d.ts",
+      "solid": "./solid/role/role.jsx",
+      "import": "./dist/role/role.js"
+    },
+    "./separator/separator": {
+      "ariakit-source": "./src/separator/separator.tsx",
+      "types": "./dist/separator/separator.d.ts",
+      "solid": "./solid/separator/separator.jsx",
+      "import": "./dist/separator/separator.js"
+    },
+    "./visually-hidden/visually-hidden": {
+      "ariakit-source": "./src/visually-hidden/visually-hidden.tsx",
+      "types": "./dist/visually-hidden/visually-hidden.d.ts",
+      "solid": "./solid/visually-hidden/visually-hidden.jsx",
+      "import": "./dist/visually-hidden/visually-hidden.js"
+    },
     "./package.json": "./package.json"
   }
 }

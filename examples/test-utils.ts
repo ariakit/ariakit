@@ -4,7 +4,7 @@ import {
   getTextboxSelection,
   getTextboxValue,
   isTextbox,
-} from "@ariakit/core/utils/dom";
+} from "@ariakit/utils";
 import type { Locator, Page, PageScreenshotOptions } from "@playwright/test";
 import { test as base } from "@playwright/test";
 import type { AllowedTestLoader } from "../vitest.config.ts";

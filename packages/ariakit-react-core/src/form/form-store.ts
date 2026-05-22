@@ -1,6 +1,9 @@
 import * as Core from "@ariakit/core/form/form-store";
 import type { StringLike } from "@ariakit/core/form/types";
-import type { PickRequired } from "@ariakit/core/utils/types";
+import type { Store } from "@ariakit/react-store";
+import { useStore, useStoreProps, useStoreState } from "@ariakit/react-store";
+import { useEvent } from "@ariakit/react-utils";
+import type { PickRequired } from "@ariakit/utils";
 import { useCallback, useEffect, useMemo } from "react";
 import type {
   CollectionStoreFunctions,
@@ -8,9 +11,6 @@ import type {
   CollectionStoreState,
 } from "../collection/collection-store.ts";
 import { useCollectionStoreProps } from "../collection/collection-store.ts";
-import { useEvent } from "../utils/hooks.ts";
-import type { Store } from "../utils/store.tsx";
-import { useStore, useStoreProps, useStoreState } from "../utils/store.tsx";
 
 export function useFormStoreProps<
   T extends Omit<FormStore, "useValue" | "useValidate" | "useSubmit">,

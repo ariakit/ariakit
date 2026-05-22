@@ -1,5 +1,5 @@
 {
   "extends": "../../tsconfig.node.json",
-  "include": ["src"],
+  "files": ["src/build.ts", "src/dev.ts", "src/index.ts"],
   "exclude": []
 }

@@ -1,9 +1,9 @@
-import { invariant, removeUndefinedValues } from "@ariakit/core/utils/misc";
+import { useStoreState } from "@ariakit/react-store";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Options, Props } from "@ariakit/react-utils";
+import { invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo } from "react";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import { usePopoverContext } from "./popover-context.tsx";
 import type { PopoverStore, PopoverStoreState } from "./popover-store.ts";
 

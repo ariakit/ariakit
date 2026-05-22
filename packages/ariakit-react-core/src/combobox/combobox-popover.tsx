@@ -1,13 +1,13 @@
-import { getDocument } from "@ariakit/core/utils/dom";
-import { invariant, isFalsyBooleanCallback } from "@ariakit/core/utils/misc";
+import { useStoreState } from "@ariakit/react-store";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
+import { getDocument } from "@ariakit/utils";
+import { invariant, isFalsyBooleanCallback } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useRef } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Props } from "../utils/types.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxListOptions } from "./combobox-list.tsx";
 import { useComboboxList } from "./combobox-list.tsx";

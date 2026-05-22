@@ -1,18 +1,18 @@
+import { useStoreState } from "@ariakit/react-store";
+import { useEvent, useMergeRefs } from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Options, Props } from "@ariakit/react-utils";
 // TODO: Add data-attribute to indicate whether it's expanded?
-import { isButton, isTextField } from "@ariakit/core/utils/dom";
-import { isFocusEventOutside, isSelfTarget } from "@ariakit/core/utils/events";
+import { isButton, isTextField } from "@ariakit/utils";
+import { isFocusEventOutside, isSelfTarget } from "@ariakit/utils";
 import {
   disableFocusIn,
   getFirstTabbableIn,
   restoreFocusIn,
-} from "@ariakit/core/utils/focus";
-import { removeUndefinedValues } from "@ariakit/core/utils/misc";
+} from "@ariakit/utils";
+import { removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
-import { useEvent, useMergeRefs } from "../utils/hooks.ts";
-import { useStoreState } from "../utils/store.tsx";
-import { createElement, createHook, forwardRef } from "../utils/system.tsx";
-import type { Options, Props } from "../utils/types.ts";
 import { useCompositeContext } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 import { selectTextField } from "./utils.ts";

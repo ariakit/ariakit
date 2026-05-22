@@ -1,3 +1,16 @@
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import {
+  batch,
+  createStore,
+  mergeStore,
+  omit,
+  setup,
+  sync,
+  throwOnConflictingProps,
+} from "@ariakit/store";
+import { toArray } from "@ariakit/utils";
+import { defaultValue } from "@ariakit/utils";
+import type { PickRequired, SetState } from "@ariakit/utils";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
   CompositeStoreFunctions,
@@ -12,19 +25,6 @@ import type {
   PopoverStoreState,
 } from "../popover/popover-store.ts";
 import { createPopoverStore } from "../popover/popover-store.ts";
-import { toArray } from "../utils/array.ts";
-import { defaultValue } from "../utils/misc.ts";
-import type { Store, StoreOptions, StoreProps } from "../utils/store.ts";
-import {
-  batch,
-  createStore,
-  mergeStore,
-  omit,
-  setup,
-  sync,
-  throwOnConflictingProps,
-} from "../utils/store.ts";
-import type { PickRequired, SetState } from "../utils/types.ts";
 
 type MutableValue<T extends SelectStoreValue = SelectStoreValue> =
   T extends string ? string : T;

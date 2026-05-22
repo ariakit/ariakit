@@ -1,0 +1,46 @@
+{
+  "name": "@ariakit/react-utils",
+  "version": "0.0.0",
+  "description": "Ariakit React utilities",
+  "keywords": [
+    "ariakit",
+    "react",
+    "utils"
+  ],
+  "homepage": "https://ariakit.com",
+  "license": "MIT",
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-react-utils"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "ariakit build --update-exports --index-only",
+    "clean": "ariakit build --clean"
+  },
+  "dependencies": {
+    "@ariakit/store": "workspace:*",
+    "@ariakit/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "react": "18.3.1"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0 || ^19.0.0"
+  },
+  "exports": {
+    ".": {
+      "ariakit-source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  }
+}
