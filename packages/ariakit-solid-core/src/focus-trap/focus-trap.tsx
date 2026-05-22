@@ -1,5 +1,4 @@
-import { mergeProps } from "@ariakit/solid-utils";
-import { createHook, createInstance } from "@ariakit/solid-utils";
+import { mergeProps, createHook, createInstance } from "@ariakit/solid-utils";
 import type { Props } from "@ariakit/solid-utils";
 import type { ValidComponent } from "solid-js";
 import type { VisuallyHiddenOptions } from "../visually-hidden/visually-hidden.tsx";

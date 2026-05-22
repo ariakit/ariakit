@@ -1,6 +1,6 @@
 import * as Core from "@ariakit/core/dialog/dialog-store";
-import type { Store } from "@ariakit/react-store";
 import { useStore } from "@ariakit/react-store";
+import type { Store } from "@ariakit/react-store";
 import type {
   DisclosureStoreFunctions,
   DisclosureStoreOptions,

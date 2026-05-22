@@ -1,7 +1,7 @@
 import * as Core from "@ariakit/core/form/form-store";
 import type { StringLike } from "@ariakit/core/form/types";
-import type { Store } from "@ariakit/react-store";
 import { useStore, useStoreProps, useStoreState } from "@ariakit/react-store";
+import type { Store } from "@ariakit/react-store";
 import { useEvent } from "@ariakit/react-utils";
 import type { PickRequired } from "@ariakit/utils";
 import { useCallback, useEffect, useMemo } from "react";

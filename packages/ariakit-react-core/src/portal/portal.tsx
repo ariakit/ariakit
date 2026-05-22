@@ -2,13 +2,15 @@ import {
   useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
+  setRef,
+  createElement,
+  createHook,
+  forwardRef,
 } from "@ariakit/react-utils";
-import { setRef } from "@ariakit/react-utils";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { getDocument } from "@ariakit/utils";
-import { isFocusEventOutside } from "@ariakit/utils";
 import {
+  getDocument,
+  isFocusEventOutside,
   disableFocusIn,
   getNextTabbable,
   getPreviousTabbable,

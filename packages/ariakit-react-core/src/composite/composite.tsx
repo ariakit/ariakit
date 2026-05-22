@@ -6,14 +6,23 @@ import {
   useSafeLayoutEffect,
   useTransactionState,
   useWrapElement,
+  createElement,
+  createHook,
+  forwardRef,
 } from "@ariakit/react-utils";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { flatten2DArray, reverseArray } from "@ariakit/utils";
-import { getActiveElement, isTextField } from "@ariakit/utils";
-import { fireBlurEvent, fireKeyboardEvent, isSelfTarget } from "@ariakit/utils";
-import { focusIntoView, hasFocus } from "@ariakit/utils";
-import { invariant } from "@ariakit/utils";
+import {
+  flatten2DArray,
+  reverseArray,
+  getActiveElement,
+  isTextField,
+  fireBlurEvent,
+  fireKeyboardEvent,
+  isSelfTarget,
+  focusIntoView,
+  hasFocus,
+  invariant,
+} from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
   ElementType,

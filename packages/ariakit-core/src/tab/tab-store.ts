@@ -1,4 +1,3 @@
-import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import {
   batch,
   createStore,
@@ -7,6 +6,7 @@ import {
   setup,
   sync,
 } from "@ariakit/store";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { chain, defaultValue } from "@ariakit/utils";
 import type { SetState } from "@ariakit/utils";
 import type {

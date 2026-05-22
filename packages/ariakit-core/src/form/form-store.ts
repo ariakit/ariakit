@@ -1,4 +1,3 @@
-import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import {
   createStore,
   init,
@@ -6,6 +5,7 @@ import {
   sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { applyState, defaultValue, isInteger, isObject } from "@ariakit/utils";
 import type {
   AnyObject,

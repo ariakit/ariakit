@@ -1,6 +1,6 @@
 import * as Core from "@ariakit/core/composite/composite-store";
-import type { Store } from "@ariakit/react-store";
 import { useStore, useStoreProps } from "@ariakit/react-store";
+import type { Store } from "@ariakit/react-store";
 import { useId } from "@ariakit/react-utils";
 import type { PickRequired } from "@ariakit/utils";
 import type {

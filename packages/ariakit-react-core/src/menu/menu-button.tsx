@@ -4,11 +4,14 @@ import {
   useId,
   useMergeRefs,
   useWrapElement,
+  createElement,
+  createHook,
+  forwardRef,
 } from "@ariakit/react-utils";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getPopupItemRole, getPopupRole } from "@ariakit/utils";
 import {
+  getPopupItemRole,
+  getPopupRole,
   disabledFromElement,
   disabledFromProps,
   invariant,

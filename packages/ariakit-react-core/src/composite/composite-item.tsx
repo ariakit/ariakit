@@ -5,8 +5,6 @@ import {
   useId,
   useMergeRefs,
   useWrapElement,
-} from "@ariakit/react-utils";
-import {
   createElement,
   createHook,
   forwardRef,
@@ -20,10 +18,12 @@ import {
   isButton,
   isTextbox,
   isTextField,
+  isPortalEvent,
+  isSelfTarget,
+  disabledFromProps,
+  removeUndefinedValues,
+  isSafari,
 } from "@ariakit/utils";
-import { isPortalEvent, isSelfTarget } from "@ariakit/utils";
-import { disabledFromProps, removeUndefinedValues } from "@ariakit/utils";
-import { isSafari } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
   ElementType,

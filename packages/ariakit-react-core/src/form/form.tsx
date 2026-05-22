@@ -6,11 +6,12 @@ import {
   useTagName,
   useUpdateEffect,
   useWrapElement,
+  createElement,
+  createHook,
+  forwardRef,
 } from "@ariakit/react-utils";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { isTextField } from "@ariakit/utils";
-import { invariant } from "@ariakit/utils";
+import { isTextField, invariant } from "@ariakit/utils";
 import type { ElementType, FocusEvent, FormEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { FormScopedContextProvider, useFormContext } from "./form-context.tsx";
@@ -19,6 +20,7 @@ import type { FormStore, FormStoreState } from "./form-store.ts";
 const TagName = "form" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+type FormSubmitEvent = Parameters<NonNullable<FormProps["onSubmit"]>>[0];
 
 function isField(element: HTMLElement, items: FormStoreState["items"]) {
   return items.some(
@@ -104,7 +106,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
 
   const onSubmitProp = props.onSubmit;
 
-  const onSubmit = useEvent((event: FormEvent<HTMLType>) => {
+  const onSubmit = useEvent((event: FormSubmitEvent) => {
     onSubmitProp?.(event);
     if (event.defaultPrevented) return;
     event.preventDefault();

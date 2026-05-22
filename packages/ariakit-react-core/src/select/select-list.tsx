@@ -7,11 +7,12 @@ import {
   useMergeRefs,
   useTransactionState,
   useWrapElement,
+  createElement,
+  createHook,
+  forwardRef,
 } from "@ariakit/react-utils";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { isSelfTarget } from "@ariakit/utils";
-import { invariant } from "@ariakit/utils";
+import { isSelfTarget, invariant } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";

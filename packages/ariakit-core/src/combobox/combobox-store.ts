@@ -1,4 +1,3 @@
-import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import {
   batch,
   createStore,
@@ -8,8 +7,8 @@ import {
   sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
-import { chain, defaultValue } from "@ariakit/utils";
-import { isSafari, isTouchDevice } from "@ariakit/utils";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import { chain, defaultValue, isSafari, isTouchDevice } from "@ariakit/utils";
 import type { PickRequired, SetState } from "@ariakit/utils";
 import type {
   CompositeStoreFunctions,

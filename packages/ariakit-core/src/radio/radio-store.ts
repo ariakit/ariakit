@@ -1,5 +1,5 @@
-import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { createStore } from "@ariakit/store";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { defaultValue } from "@ariakit/utils";
 import type { SetState } from "@ariakit/utils";
 import type {

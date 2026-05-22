@@ -4,13 +4,17 @@ import {
   useEvent,
   useMergeRefs,
   useWrapElement,
+  createElement,
+  createHook,
+  forwardRef,
 } from "@ariakit/react-utils";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { toArray } from "@ariakit/utils";
-import { getPopupRole } from "@ariakit/utils";
-import { queueBeforeEvent } from "@ariakit/utils";
-import { invariant } from "@ariakit/utils";
+import {
+  toArray,
+  getPopupRole,
+  queueBeforeEvent,
+  invariant,
+} from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
   ElementType,

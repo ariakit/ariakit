@@ -1,6 +1,6 @@
 import * as Core from "@ariakit/core/tooltip/tooltip-store";
-import type { Store } from "@ariakit/react-store";
 import { useStore, useStoreProps } from "@ariakit/react-store";
+import type { Store } from "@ariakit/react-store";
 import type {
   HovercardStoreFunctions,
   HovercardStoreOptions,

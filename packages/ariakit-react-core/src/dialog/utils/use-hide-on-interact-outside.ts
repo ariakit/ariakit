@@ -1,7 +1,11 @@
 import { useStoreState } from "@ariakit/react-store";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-utils";
-import { contains, getDocument, getWindow } from "@ariakit/utils";
-import { addGlobalEventListener } from "@ariakit/utils";
+import {
+  contains,
+  getDocument,
+  getWindow,
+  addGlobalEventListener,
+} from "@ariakit/utils";
 import type { MutableRefObject } from "react";
 import { useEffect, useRef } from "react";
 import type { DialogStore } from "../dialog-store.ts";

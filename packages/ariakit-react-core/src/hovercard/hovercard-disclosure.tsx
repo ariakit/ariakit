@@ -1,10 +1,13 @@
-import { useEvent, useMergeRefs } from "@ariakit/react-utils";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import {
+  useEvent,
+  useMergeRefs,
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
-import { contains } from "@ariakit/utils";
-import { addGlobalEventListener } from "@ariakit/utils";
-import { invariant } from "@ariakit/utils";
+import { contains, addGlobalEventListener, invariant } from "@ariakit/utils";
 import type {
   ElementType,
   MouseEvent,

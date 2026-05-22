@@ -8,8 +8,10 @@ import {
   useSafeLayoutEffect,
   useUpdateEffect,
   useUpdateLayoutEffect,
+  createElement,
+  createHook,
+  forwardRef,
 } from "@ariakit/react-utils";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
@@ -17,10 +19,9 @@ import {
   getScrollingElement,
   getTextboxSelection,
   setSelectionRange,
-} from "@ariakit/utils";
-import { isFocusEventOutside, queueBeforeEvent } from "@ariakit/utils";
-import { hasFocus } from "@ariakit/utils";
-import {
+  isFocusEventOutside,
+  queueBeforeEvent,
+  hasFocus,
   invariant,
   isFalsyBooleanCallback,
   noop,

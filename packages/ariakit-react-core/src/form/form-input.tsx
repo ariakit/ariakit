@@ -1,5 +1,5 @@
-import { useEvent } from "@ariakit/react-utils";
 import {
+  useEvent,
   createElement,
   createHook,
   forwardRef,

@@ -28,7 +28,7 @@ function getPackageJson(path: string): PackageJson {
 }
 
 export function getAriakitSourceAliases(
-  rootDir = resolve(import.meta.dirname, ".."),
+  rootDir = resolve(import.meta.dirname, "../../.."),
 ) {
   const aliases: Record<string, string> = {};
   const packagesDir = join(rootDir, "packages");
@@ -73,7 +73,7 @@ export function getAriakitSourceAliases(
 }
 
 export function getAriakitSourceAliasEntries(
-  rootDir = resolve(import.meta.dirname, ".."),
+  rootDir = resolve(import.meta.dirname, "../../.."),
 ): ViteAlias[] {
   return Object.entries(getAriakitSourceAliases(rootDir)).map(
     ([specifier, replacement]) => ({

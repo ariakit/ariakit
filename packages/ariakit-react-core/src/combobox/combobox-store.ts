@@ -1,6 +1,6 @@
 import * as Core from "@ariakit/core/combobox/combobox-store";
-import type { Store } from "@ariakit/react-store";
 import { useStore, useStoreProps } from "@ariakit/react-store";
+import type { Store } from "@ariakit/react-store";
 import { useUpdateEffect } from "@ariakit/react-utils";
 import type { PickRequired } from "@ariakit/utils";
 import type {

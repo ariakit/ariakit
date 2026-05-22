@@ -1,6 +1,4 @@
-import { isVisible } from "@ariakit/utils";
-import { isFocusable } from "@ariakit/utils";
-import { invariant } from "@ariakit/utils";
+import { isVisible, isFocusable, invariant } from "@ariakit/utils";
 import { wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";

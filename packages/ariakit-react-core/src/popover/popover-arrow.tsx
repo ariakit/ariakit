@@ -1,14 +1,15 @@
 import { useStoreState } from "@ariakit/react-store";
-import { useId, useMergeRefs, useSafeLayoutEffect } from "@ariakit/react-utils";
 import {
+  useId,
+  useMergeRefs,
+  useSafeLayoutEffect,
   createElement,
   createHook,
   forwardRef,
   memo,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { getWindow } from "@ariakit/utils";
-import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import { getWindow, invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo, useState } from "react";
 import { POPOVER_ARROW_PATH } from "./popover-arrow-path.ts";

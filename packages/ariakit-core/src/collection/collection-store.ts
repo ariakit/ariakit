@@ -1,4 +1,3 @@
-import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import {
   batch,
   createStore,
@@ -6,8 +5,13 @@ import {
   setup,
   throwOnConflictingProps,
 } from "@ariakit/store";
-import { getDocument, sortBasedOnDOMPosition } from "@ariakit/utils";
-import { chain, defaultValue } from "@ariakit/utils";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import {
+  getDocument,
+  sortBasedOnDOMPosition,
+  chain,
+  defaultValue,
+} from "@ariakit/utils";
 import type { BivariantCallback } from "@ariakit/utils";
 
 function getCommonParent(items: CollectionStoreItem[]) {

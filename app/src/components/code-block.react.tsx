@@ -1,4 +1,3 @@
-import * as ak from "@ariakit/react";
 /**
  * @license
  * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
@@ -8,6 +7,7 @@ import * as ak from "@ariakit/react";
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import * as ak from "@ariakit/react";
 import { invariant } from "@ariakit/utils";
 import { clsx } from "clsx";
 import { SplitSquareHorizontal } from "lucide-react";

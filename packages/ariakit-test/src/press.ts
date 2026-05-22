@@ -1,5 +1,6 @@
-import { isTextField, setSelectionRange } from "@ariakit/utils";
 import {
+  isTextField,
+  setSelectionRange,
   getNextTabbable,
   getPreviousTabbable,
   isFocusable,

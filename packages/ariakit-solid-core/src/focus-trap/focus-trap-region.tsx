@@ -1,5 +1,6 @@
-import { createRef, mergeProps } from "@ariakit/solid-utils";
 import {
+  createRef,
+  mergeProps,
   createHook,
   createInstance,
   withOptions,

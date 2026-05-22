@@ -1,5 +1,7 @@
-import { useEvent, useId, useMergeRefs } from "@ariakit/react-utils";
 import {
+  useEvent,
+  useId,
+  useMergeRefs,
   createElement,
   createHook,
   forwardRef,

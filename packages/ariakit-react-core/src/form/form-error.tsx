@@ -1,7 +1,8 @@
 import type { StringLike } from "@ariakit/core/form/types";
 import { useStoreState } from "@ariakit/react-store";
-import { useId, useMergeRefs } from "@ariakit/react-utils";
 import {
+  useId,
+  useMergeRefs,
   createElement,
   createHook,
   forwardRef,

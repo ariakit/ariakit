@@ -1,6 +1,5 @@
 // oxlint-disable unbound-method
-import { isFocusable } from "@ariakit/utils";
-import { noop } from "@ariakit/utils";
+import { isFocusable, noop } from "@ariakit/utils";
 
 export type DirtiableElement = Element & { dirty?: boolean };
 

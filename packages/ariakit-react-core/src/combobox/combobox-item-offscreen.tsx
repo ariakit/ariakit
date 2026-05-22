@@ -1,5 +1,4 @@
-import { useMergeRefs } from "@ariakit/react-utils";
-import { forwardRef } from "@ariakit/react-utils";
+import { useMergeRefs, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { useContext } from "react";

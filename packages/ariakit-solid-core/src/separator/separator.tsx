@@ -1,5 +1,9 @@
-import { mergeProps } from "@ariakit/solid-utils";
-import { createHook, createInstance, withOptions } from "@ariakit/solid-utils";
+import {
+  mergeProps,
+  createHook,
+  createInstance,
+  withOptions,
+} from "@ariakit/solid-utils";
 import type { Options, Props } from "@ariakit/solid-utils";
 import type { ValidComponent } from "solid-js";
 

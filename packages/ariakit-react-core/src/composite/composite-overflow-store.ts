@@ -1,6 +1,6 @@
 import * as Core from "@ariakit/core/composite/composite-overflow-store";
-import type { Store } from "@ariakit/react-store";
 import { useStore } from "@ariakit/react-store";
+import type { Store } from "@ariakit/react-store";
 import type {
   PopoverStoreFunctions,
   PopoverStoreOptions,

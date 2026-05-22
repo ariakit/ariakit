@@ -1,6 +1,10 @@
-import { extractTagName } from "@ariakit/solid-utils";
-import { createRef, mergeProps } from "@ariakit/solid-utils";
-import { createHook, createInstance } from "@ariakit/solid-utils";
+import {
+  extractTagName,
+  createRef,
+  mergeProps,
+  createHook,
+  createInstance,
+} from "@ariakit/solid-utils";
 import type { Options, Props } from "@ariakit/solid-utils";
 import type { ValidComponent } from "solid-js";
 import { createMemo, useContext } from "solid-js";

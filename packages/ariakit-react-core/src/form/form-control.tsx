@@ -5,16 +5,13 @@ import {
   useEvent,
   useId,
   useMergeRefs,
-} from "@ariakit/react-utils";
-import {
   createElement,
   createHook,
   forwardRef,
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getDocument } from "@ariakit/utils";
-import { cx, invariant } from "@ariakit/utils";
+import { getDocument, cx, invariant } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, FocusEvent, RefObject } from "react";
 import { useCallback, useRef } from "react";

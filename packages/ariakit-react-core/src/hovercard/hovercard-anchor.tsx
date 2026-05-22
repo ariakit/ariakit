@@ -3,11 +3,16 @@ import {
   useEvent,
   useIsMouseMoving,
   useMergeRefs,
+  createElement,
+  createHook,
+  forwardRef,
 } from "@ariakit/react-utils";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { addGlobalEventListener } from "@ariakit/utils";
-import { disabledFromProps, invariant } from "@ariakit/utils";
+import {
+  addGlobalEventListener,
+  disabledFromProps,
+  invariant,
+} from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
 import { useCallback, useEffect, useRef } from "react";

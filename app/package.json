@@ -107,6 +107,7 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@ariakit/scripts": "workspace:*",
     "@ariakit/test": "workspace:*",
     "@axe-core/playwright": "4.11.3",
     "@playwright/test": "1.60.0",

@@ -1,4 +1,3 @@
-import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import {
   batch,
   createStore,
@@ -8,8 +7,8 @@ import {
   sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
-import { toArray } from "@ariakit/utils";
-import { defaultValue } from "@ariakit/utils";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import { toArray, defaultValue } from "@ariakit/utils";
 import type { PickRequired, SetState } from "@ariakit/utils";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {

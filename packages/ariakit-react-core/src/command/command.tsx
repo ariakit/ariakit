@@ -1,10 +1,21 @@
-import { useEvent, useMergeRefs, useMetadataProps } from "@ariakit/react-utils";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import {
+  useEvent,
+  useMergeRefs,
+  useMetadataProps,
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { isButton, isTextField } from "@ariakit/utils";
-import { fireClickEvent, isSelfTarget, queueBeforeEvent } from "@ariakit/utils";
-import { disabledFromProps } from "@ariakit/utils";
-import { isFirefox } from "@ariakit/utils";
+import {
+  isButton,
+  isTextField,
+  fireClickEvent,
+  isSelfTarget,
+  queueBeforeEvent,
+  disabledFromProps,
+  isFirefox,
+} from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";

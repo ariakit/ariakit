@@ -1,6 +1,6 @@
 import * as Core from "@ariakit/core/tab/tab-store";
-import type { Store } from "@ariakit/react-store";
 import { useStore, useStoreProps } from "@ariakit/react-store";
+import type { Store } from "@ariakit/react-store";
 import { useUpdateEffect } from "@ariakit/react-utils";
 import { useMemo } from "react";
 import { useComboboxContext } from "../combobox/combobox-context.tsx";

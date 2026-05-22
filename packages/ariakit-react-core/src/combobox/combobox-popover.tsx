@@ -1,8 +1,7 @@
 import { useStoreState } from "@ariakit/react-store";
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getDocument } from "@ariakit/utils";
-import { invariant, isFalsyBooleanCallback } from "@ariakit/utils";
+import { getDocument, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useRef } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";

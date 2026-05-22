@@ -1,6 +1,7 @@
 import { useStoreState } from "@ariakit/react-store";
-import { useInitialValue, useWrapElement } from "@ariakit/react-utils";
 import {
+  useInitialValue,
+  useWrapElement,
   createElement,
   createHook,
   forwardRef,

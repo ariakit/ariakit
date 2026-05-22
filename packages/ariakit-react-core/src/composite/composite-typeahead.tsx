@@ -1,13 +1,15 @@
-import { useEvent } from "@ariakit/react-utils";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import {
+  useEvent,
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
 import {
   getDocument,
   isTextField,
   sortBasedOnDOMPosition,
-} from "@ariakit/utils";
-import { isSelfTarget } from "@ariakit/utils";
-import {
+  isSelfTarget,
   invariant,
   normalizeString,
   removeUndefinedValues,

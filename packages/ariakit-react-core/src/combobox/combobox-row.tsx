@@ -1,8 +1,7 @@
 import { useStoreState } from "@ariakit/react-store";
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getPopupRole } from "@ariakit/utils";
-import { invariant } from "@ariakit/utils";
+import { getPopupRole, invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { CompositeRowOptions } from "../composite/composite-row.tsx";
 import { useCompositeRow } from "../composite/composite-row.tsx";

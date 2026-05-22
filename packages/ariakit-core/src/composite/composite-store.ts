@@ -1,7 +1,6 @@
-import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { createStore, setup, sync } from "@ariakit/store";
-import { flatten2DArray, reverseArray } from "@ariakit/utils";
-import { defaultValue } from "@ariakit/utils";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import { flatten2DArray, reverseArray, defaultValue } from "@ariakit/utils";
 import type { SetState } from "@ariakit/utils";
 import type {
   CollectionStoreFunctions,

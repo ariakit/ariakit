@@ -1,6 +1,10 @@
-import { createId } from "@ariakit/solid-utils";
-import { mergeProps, stableAccessor } from "@ariakit/solid-utils";
-import { createHook, createInstance } from "@ariakit/solid-utils";
+import {
+  createId,
+  mergeProps,
+  stableAccessor,
+  createHook,
+  createInstance,
+} from "@ariakit/solid-utils";
 import type { Options, Props } from "@ariakit/solid-utils";
 import type { ValidComponent } from "solid-js";
 import { createEffect, onCleanup, useContext } from "solid-js";

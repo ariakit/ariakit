@@ -1,7 +1,7 @@
 import { relative } from "node:path";
+import { getAriakitSourceAliases } from "@ariakit/scripts/ariakit-source";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import type { NextConfig } from "next";
-import { getAriakitSourceAliases } from "../scripts/ariakit-source.ts";
 
 const ariakitSourceAliases = getAriakitSourceAliases();
 const ariakitTurbopackAliases = Object.fromEntries(
@@ -12,18 +12,6 @@ const ariakitTurbopackAliases = Object.fromEntries(
 );
 
 const config: NextConfig = {
-  webpack(config) {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      ...ariakitSourceAliases,
-    };
-    config.resolve.conditionNames = [
-      "ariakit-source",
-      ...(config.resolve.conditionNames ?? ["..."]),
-    ];
-    return config;
-  },
-
   turbopack: {
     resolveAlias: ariakitTurbopackAliases,
   },

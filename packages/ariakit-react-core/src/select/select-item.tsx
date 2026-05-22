@@ -4,17 +4,19 @@ import {
   useEvent,
   useId,
   useWrapElement,
-} from "@ariakit/react-utils";
-import {
   createElement,
   createHook,
   forwardRef,
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getPopupItemRole } from "@ariakit/utils";
-import { isDownloading, isOpeningInNewTab } from "@ariakit/utils";
-import { disabledFromProps, invariant } from "@ariakit/utils";
+import {
+  getPopupItemRole,
+  isDownloading,
+  isOpeningInNewTab,
+  disabledFromProps,
+  invariant,
+} from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";

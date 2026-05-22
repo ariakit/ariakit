@@ -3,16 +3,13 @@ import {
   useEvent,
   useId,
   useWrapElement,
-} from "@ariakit/react-utils";
-import {
   createElement,
   createHook,
   forwardRef,
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { invariant } from "@ariakit/utils";
-import { isApple } from "@ariakit/utils";
+import { invariant, isApple } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
 import { useCallback, useState } from "react";

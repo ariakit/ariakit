@@ -1,6 +1,7 @@
 import { useStoreState } from "@ariakit/react-store";
-import { useEvent, useId } from "@ariakit/react-utils";
 import {
+  useEvent,
+  useId,
   createElement,
   createHook,
   forwardRef,

@@ -1,6 +1,4 @@
-import { contains } from "@ariakit/utils";
-import { getAllTabbableIn } from "@ariakit/utils";
-import { chain, noop } from "@ariakit/utils";
+import { contains, getAllTabbableIn, chain, noop } from "@ariakit/utils";
 import { hideElementFromAccessibilityTree } from "./disable-accessibility-tree-outside.ts";
 import { isBackdrop } from "./is-backdrop.ts";
 import { isFocusTrap } from "./is-focus-trap.ts";

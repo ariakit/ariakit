@@ -1,16 +1,21 @@
 import { useStoreState } from "@ariakit/react-store";
-import { useBooleanEvent, useEvent } from "@ariakit/react-utils";
 import {
+  useBooleanEvent,
+  useEvent,
   createElement,
   createHook,
   forwardRef,
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getDocument, getPopupItemRole } from "@ariakit/utils";
-import { isDownloading, isOpeningInNewTab } from "@ariakit/utils";
-import { hasFocusWithin } from "@ariakit/utils";
-import { invariant } from "@ariakit/utils";
+import {
+  getDocument,
+  getPopupItemRole,
+  isDownloading,
+  isOpeningInNewTab,
+  hasFocusWithin,
+  invariant,
+} from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";

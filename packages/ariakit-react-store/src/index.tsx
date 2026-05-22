@@ -3,8 +3,8 @@ import {
   useLiveRef,
   useSafeLayoutEffect,
 } from "@ariakit/react-utils";
-import type { Store as CoreStore, State, StoreState } from "@ariakit/store";
 import { batch, init, subscribe, sync } from "@ariakit/store";
+import type { Store as CoreStore, State, StoreState } from "@ariakit/store";
 import { hasOwnProperty, identity } from "@ariakit/utils";
 import type {
   AnyFunction,

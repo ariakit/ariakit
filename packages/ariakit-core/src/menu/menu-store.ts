@@ -1,4 +1,3 @@
-import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import {
   createStore,
   mergeStore,
@@ -8,6 +7,7 @@ import {
   sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { applyState, defaultValue } from "@ariakit/utils";
 import type {
   BivariantCallback,

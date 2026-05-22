@@ -1,7 +1,5 @@
 // Based on https://github.com/floating-ui/floating-ui/blob/1201e72e67a80e479122293d46d96c9bbc8f156d/packages/react-dom-interactions/src/FloatingOverlay.tsx
-import { getDocument, getWindow } from "@ariakit/utils";
-import { chain } from "@ariakit/utils";
-import { isApple, isMac } from "@ariakit/utils";
+import { getDocument, getWindow, chain, isApple, isMac } from "@ariakit/utils";
 import { useEffect } from "react";
 import { assignStyle, setCSSProperty } from "./orchestrate.ts";
 import { useRootDialog } from "./use-root-dialog.ts";

@@ -1,5 +1,4 @@
-import { isVisible } from "@ariakit/utils";
-import { invariant } from "@ariakit/utils";
+import { isVisible, invariant } from "@ariakit/utils";
 import { wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { sleep } from "./sleep.ts";

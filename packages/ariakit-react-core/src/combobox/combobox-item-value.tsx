@@ -1,8 +1,11 @@
 import { useStoreState } from "@ariakit/react-store";
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { toArray } from "@ariakit/utils";
-import { normalizeString, removeUndefinedValues } from "@ariakit/utils";
+import {
+  toArray,
+  normalizeString,
+  removeUndefinedValues,
+} from "@ariakit/utils";
 import type { ElementType, ReactElement } from "react";
 import { useContext, useMemo } from "react";
 import {

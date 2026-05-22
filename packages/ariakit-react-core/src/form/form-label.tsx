@@ -5,16 +5,13 @@ import {
   useId,
   useMergeRefs,
   useTagName,
-} from "@ariakit/react-utils";
-import {
   createElement,
   createHook,
   forwardRef,
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getFirstTabbableIn } from "@ariakit/utils";
-import { invariant } from "@ariakit/utils";
+import { getFirstTabbableIn, invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback, useRef } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";

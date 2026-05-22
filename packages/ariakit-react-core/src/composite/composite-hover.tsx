@@ -3,17 +3,16 @@ import {
   useEvent,
   useIsMouseMoving,
   useMergeRefs,
-} from "@ariakit/react-utils";
-import {
   createElement,
   createHook,
   forwardRef,
   memo,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { contains } from "@ariakit/utils";
-import { hasFocus, hasFocusWithin } from "@ariakit/utils";
 import {
+  contains,
+  hasFocus,
+  hasFocusWithin,
   hasOwnProperty,
   invariant,
   removeUndefinedValues,

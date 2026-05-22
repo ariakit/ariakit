@@ -1,10 +1,10 @@
-import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import {
   createStore,
   mergeStore,
   omit,
   throwOnConflictingProps,
 } from "@ariakit/store";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { defaultValue } from "@ariakit/utils";
 import type { SetState } from "@ariakit/utils";
 import type {

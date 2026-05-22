@@ -1,6 +1,5 @@
 import { useStoreStateObject } from "@ariakit/react-store";
-import { useId, useMergeRefs } from "@ariakit/react-utils";
-import { forwardRef } from "@ariakit/react-utils";
+import { useId, useMergeRefs, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { getPopupItemRole } from "@ariakit/utils";
 import type { ElementType } from "react";

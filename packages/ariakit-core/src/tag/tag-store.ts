@@ -1,8 +1,7 @@
-import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { createStore, setup, sync } from "@ariakit/store";
-import { applyState, defaultValue } from "@ariakit/utils";
+import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
+import { applyState, defaultValue, UndoManager } from "@ariakit/utils";
 import type { SetState } from "@ariakit/utils";
-import { UndoManager } from "@ariakit/utils";
 import type {
   CompositeStoreFunctions,
   CompositeStoreItem,

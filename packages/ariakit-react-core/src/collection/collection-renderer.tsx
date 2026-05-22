@@ -6,11 +6,16 @@ import {
   useId,
   useMergeRefs,
   useWrapElement,
+  createElement,
+  forwardRef,
 } from "@ariakit/react-utils";
-import { createElement, forwardRef } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { getScrollingElement, getWindow } from "@ariakit/utils";
-import { invariant, shallowEqual } from "@ariakit/utils";
+import {
+  getScrollingElement,
+  getWindow,
+  invariant,
+  shallowEqual,
+} from "@ariakit/utils";
 import type { AnyObject, BooleanOrCallback, EmptyObject } from "@ariakit/utils";
 import type {
   CSSProperties,

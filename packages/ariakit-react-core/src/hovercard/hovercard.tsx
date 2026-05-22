@@ -8,14 +8,20 @@ import {
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
+  createElement,
+  createHook,
+  forwardRef,
 } from "@ariakit/react-utils";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
-import { contains } from "@ariakit/utils";
-import { addGlobalEventListener } from "@ariakit/utils";
-import { hasFocusWithin } from "@ariakit/utils";
-import { chain, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
+import {
+  contains,
+  addGlobalEventListener,
+  hasFocusWithin,
+  chain,
+  invariant,
+  isFalsyBooleanCallback,
+} from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, FocusEvent } from "react";
 import {
