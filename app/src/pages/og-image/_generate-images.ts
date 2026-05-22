@@ -131,24 +131,7 @@ async function getItemsToGenerate() {
   }
 }
 
-async function waitForImageReady(page: Page, item: OGImageItem) {
-  await page.waitForLoadState("load");
-  await page.waitForSelector("[data-og-image]");
-  const expectedText = getExpectedText(item);
-  if (expectedText) {
-    await page.waitForFunction(
-      (text) => document.body.textContent?.includes(text) ?? false,
-      expectedText,
-    );
-  }
-  await page.evaluate(async () => {
-    await document.fonts.ready;
-    await new Promise((resolve) => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(resolve);
-      });
-    });
-  });
+async function assertNoErrorOverlay(page: Page, item: OGImageItem) {
   const errorText = await page.evaluate(() => {
     const overlay = document.querySelector("vite-error-overlay");
     if (overlay) {
@@ -169,6 +152,28 @@ async function waitForImageReady(page: Page, item: OGImageItem) {
       `Error overlay while rendering ${item.path}:\n${errorText.slice(0, 500)}`,
     );
   }
+}
+
+async function waitForImageReady(page: Page, item: OGImageItem) {
+  await page.waitForLoadState("load");
+  await assertNoErrorOverlay(page, item);
+  await page.waitForSelector("[data-og-image]");
+  const expectedText = getExpectedText(item);
+  if (expectedText) {
+    await page.waitForFunction(
+      (text) => document.body.textContent?.includes(text) ?? false,
+      expectedText,
+    );
+  }
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await new Promise((resolve) => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(resolve);
+      });
+    });
+  });
+  await assertNoErrorOverlay(page, item);
 }
 
 async function screenshotImage(page: Page, item: OGImageItem, url: string) {
