@@ -186,7 +186,7 @@ export async function dev(options: DevOptions = {}) {
     "conc",
     [
       "-r",
-      `pnpm -F app run dev -- --port ${appPort}`,
+      `pnpm -F app run dev --port ${appPort}`,
       `pnpm -F nextjs run dev --port ${nextjsPort}`,
     ],
     {
