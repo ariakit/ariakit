@@ -1,6 +1,6 @@
 # Ariakit Test
 
-**Important:** This package is still experimental. Breaking changes may occur in patch and minor versions.
+**Important:** This package is experimental and does not follow semantic versioning, meaning breaking changes may occur in patch and minor versions.
 
 ## Installation
 

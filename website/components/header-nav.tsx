@@ -1,15 +1,14 @@
 "use client";
 
-import { getKeys } from "@ariakit/core/utils/misc";
-import { isApple } from "@ariakit/core/utils/platform";
 import {
   ComboboxItemValue,
   PopoverDisclosureArrow,
   PopoverDismiss,
 } from "@ariakit/react";
-import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
-import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
-import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
+import type { SelectRendererItem } from "@ariakit/react-components/select/select-renderer";
+import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
+import { useEvent, useSafeLayoutEffect } from "@ariakit/react-utils";
+import { getKeys, isApple } from "@ariakit/utils";
 import { track } from "@vercel/analytics";
 import { groupBy } from "lodash-es";
 import { useSelectedLayoutSegments } from "next/navigation.js";

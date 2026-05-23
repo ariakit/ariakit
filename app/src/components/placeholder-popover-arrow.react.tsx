@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { POPOVER_ARROW_PATH } from "@ariakit/react-core/popover/popover-arrow-path";
+import { POPOVER_ARROW_PATH } from "@ariakit/react-components/popover/popover-arrow-path";
 import { useId } from "react";
 
 export interface PopupArrowProps {

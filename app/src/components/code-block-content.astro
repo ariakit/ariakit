@@ -11,7 +11,7 @@
 import { ReferenceHovercardAnchor } from "#app/components/reference-hovercard.react.tsx";
 import { findCodeReferenceAnchors } from "#app/lib/reference-tokenizer.ts";
 import { getLangFromFilename, highlighter } from "#app/lib/shiki.ts";
-import { invariant } from "@ariakit/core/utils/misc";
+import { invariant } from "@ariakit/utils";
 import { getCollection } from "astro:content";
 import { diffLines, diffWordsWithSpace } from "diff";
 import type { ThemedToken } from "shiki";

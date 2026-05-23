@@ -1,5 +1,5 @@
 ---
-"@ariakit/react-core": patch
+"@ariakit/react-components": patch
 "@ariakit/react": patch
 ---
 

@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
+import { useSafeLayoutEffect } from "@ariakit/react-utils";
 import { useState } from "react";
 
 export function useHydrated() {

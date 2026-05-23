@@ -1,0 +1,34 @@
+{
+  "name": "@ariakit/utils",
+  "version": "0.0.0",
+  "description": "Ariakit utilities",
+  "keywords": [
+    "ariakit",
+    "utils"
+  ],
+  "homepage": "https://ariakit.com",
+  "license": "MIT",
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-utils"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "ariakit build --index-only",
+    "clean": "ariakit clean"
+  },
+  "devDependencies": {
+    "@ariakit/scripts": "workspace:*"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  }
+}

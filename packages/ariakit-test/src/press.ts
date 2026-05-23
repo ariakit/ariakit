@@ -1,9 +1,10 @@
-import { isTextField, setSelectionRange } from "@ariakit/core/utils/dom";
 import {
+  isTextField,
+  setSelectionRange,
   getNextTabbable,
   getPreviousTabbable,
   isFocusable,
-} from "@ariakit/core/utils/focus";
+} from "@ariakit/utils";
 import { wrapAsync } from "./__utils.ts";
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";

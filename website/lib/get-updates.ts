@@ -1,4 +1,4 @@
-import type { AnyObject } from "@ariakit/core/utils/types";
+import type { AnyObject } from "@ariakit/utils";
 import spawn from "cross-spawn";
 import type { UpdateItem } from "@/updates.ts";
 import updates from "@/updates.ts";
