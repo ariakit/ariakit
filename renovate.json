@@ -137,7 +137,7 @@
         "@types/react-dom"
       ],
       "matchUpdateTypes": ["major"],
-      "matchFileNames": ["nextjs/**"],
+      "matchFileNames": ["nextjs/**", "templates/**"],
       "enabled": true
     },
     {
