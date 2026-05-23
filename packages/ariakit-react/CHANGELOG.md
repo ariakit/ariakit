@@ -1,5 +1,10 @@
 # @ariakit/react
 
+## 0.4.28
+
+- Release artifacts now include npm trusted publishing provenance.
+- Updated dependencies: `@ariakit/react-components@0.1.1`
+
 ## 0.4.27
 
 - Fixed [`Menu`](https://ariakit.com/reference/menu) to respect the [`autoFocusOnShow`](https://ariakit.com/reference/menu#autofocusonshow) prop when set to `false` or when a callback returns `false`, while still allowing arrow keys to move focus into an already-open menu.

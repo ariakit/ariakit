@@ -1,5 +1,10 @@
 # @ariakit/solid-utils
 
+## 0.1.1
+
+- Release artifacts now include npm trusted publishing provenance.
+- Updated dependencies: `@ariakit/utils@0.1.1`
+
 ## 0.1.0
 
 ### Added standalone utility and store packages
