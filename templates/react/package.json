@@ -17,12 +17,12 @@
     "@ariakit/react-utils": "latest",
     "@ariakit/store": "latest",
     "@ariakit/tailwind": "latest",
-    "@ariakit/test": "latest",
     "@ariakit/utils": "latest",
     "react": "19.2.6",
     "react-dom": "19.2.6"
   },
   "devDependencies": {
+    "@ariakit/test": "latest",
     "@tailwindcss/vite": "4.3.0",
     "@types/react": "19.2.15",
     "@types/react-dom": "19.2.3",
