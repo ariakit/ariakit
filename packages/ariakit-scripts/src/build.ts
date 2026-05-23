@@ -219,8 +219,7 @@ function getUseClientPlugin(enabled: boolean): Plugin[] {
   return [
     {
       name: "ariakit-use-client",
-      renderChunk(code, chunk) {
-        if (chunk.fileName.endsWith(".d.ts")) return null;
+      renderChunk(code) {
         return `"use client";\n${code}`;
       },
     },
@@ -286,7 +285,6 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
       dir: distDir,
       cleanDir: true,
       format: "es",
-      sourcemap: true,
     },
     plugins: [
       dts({

@@ -140,9 +140,17 @@ function watchPackageChanges() {
 /**
  * Finds the first available TCP port starting from the given port number.
  */
-async function findAvailablePort(start: number): Promise<number> {
+async function findAvailablePort(
+  start: number,
+  excludedPorts: number[] = [],
+): Promise<number> {
   let port = start;
   while (true) {
+    if (excludedPorts.includes(port)) {
+      port += 1;
+      continue;
+    }
+
     const available = await new Promise<boolean>((resolve, reject) => {
       const server = createServer();
       server.once("error", (error: NodeJS.ErrnoException) => {
@@ -168,18 +176,26 @@ export async function dev(options: DevOptions = {}) {
     watchPackageChanges();
   }
 
-  const nextjsPort = await findAvailablePort(3000);
+  const appPort = await findAvailablePort(Number(process.env.APP_PORT) || 4321);
+  const nextjsPort = await findAvailablePort(
+    Number(process.env.NEXTJS_PORT) || 3000,
+    [appPort],
+  );
 
   const child = spawn(
     "conc",
     [
       "-r",
-      "pnpm -F app run dev",
+      `pnpm -F app run dev -- --port ${appPort}`,
       `pnpm -F nextjs run dev --port ${nextjsPort}`,
     ],
     {
       stdio: "inherit",
-      env: { ...process.env, NEXTJS_PORT: String(nextjsPort) },
+      env: {
+        ...process.env,
+        APP_PORT: String(appPort),
+        NEXTJS_PORT: String(nextjsPort),
+      },
     },
   );
 

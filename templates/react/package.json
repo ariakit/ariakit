@@ -10,9 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@ariakit/components": "workspace:*",
     "@ariakit/react": "workspace:*",
-    "@ariakit/react-components": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
     "react": "18.3.1",
     "react-dom": "18.3.1"

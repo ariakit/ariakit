@@ -777,15 +777,9 @@ importers:
 
   templates/react:
     dependencies:
-      '@ariakit/components':
-        specifier: workspace:*
-        version: link:../../packages/ariakit-components
       '@ariakit/react':
         specifier: workspace:*
         version: link:../../packages/ariakit-react
-      '@ariakit/react-components':
-        specifier: workspace:*
-        version: link:../../packages/ariakit-react-components
       '@ariakit/tailwind':
         specifier: workspace:*
         version: link:../../packages/ariakit-tailwind
