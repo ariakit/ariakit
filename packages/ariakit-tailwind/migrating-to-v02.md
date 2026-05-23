@@ -65,19 +65,19 @@ In contexts where bare `ak-layer` previously implied a subtle lighten (e.g., pop
 + ak-layer ak-layer-lighten-6
 ```
 
-### `ak-layer-hover` → `ak-layer ak-state-6`
+### `ak-layer-hover` → `ak-layer hover:ak-state-6`
 
 The hover layer shorthand is replaced by `ak-state-N` for interactive state lightness.
 
 ```diff
 - ak-layer-hover
-+ ak-layer ak-state-6
++ ak-layer hover:ak-state-6
 
 - ak-layer-hover-0.5
-+ ak-layer ak-state-3
++ ak-layer hover:ak-state-3
 ```
 
-When the element already has `ak-layer`, only `ak-state-6` needs to be added.
+When the element already has `ak-layer`, only `hover:ak-state-6` needs to be added.
 
 ### `ak-layer-contrast-primary` → `ak-layer ak-layer-primary ak-layer-contrast`
 
@@ -157,6 +157,13 @@ When `ak-layer` is NOT already on the element and should only appear conditional
 
 <!-- No base ak-layer — need it on data-open for background to appear -->
 <div class="data-open:ak-layer data-open:ak-layer-6">...</div>
+```
+
+`ak-state-*` is different from conditional `ak-layer-*` modifiers: these utilities require the static `ak-layer` class on the same element, so keep `ak-layer` unprefixed and add state modifiers with variants:
+
+```diff
+- hover:ak-layer hover:ak-state-6
++ ak-layer hover:ak-state-6
 ```
 
 ---
@@ -258,32 +265,39 @@ For custom push values, use `ak-text-push-(--value)` instead of `ak-text-(number
 
 ## Edge (border/ring)
 
-### `ak-edge/N` → `ak-edge-N`
+### `ak-edge/N` → `ak-layer ak-edge-N`
 
 ```diff
 - ak-edge/15
-+ ak-edge-15
++ ak-layer ak-edge-15
 ```
 
-### `ak-edge-(--color)/N` → `ak-edge-color-(--color) ak-edge-N`
+### `ak-edge-(--color)/N` → `ak-layer ak-edge-color-(--color) ak-edge-N`
 
 ```diff
 - ak-edge-(--my-color)/10
-+ ak-edge-color-(--my-color) ak-edge-10
++ ak-layer ak-edge-color-(--my-color) ak-edge-10
 ```
 
-### `ak-edge-contrast-primary` → `ak-edge-primary ak-edge-raw`
+### `ak-edge-contrast-primary` → `ak-layer ak-edge-primary ak-edge-raw`
 
 In v0.1, `ak-edge-contrast-<color>` set the edge to a solid color with lightness adjusted for contrast against the layer background. In v0.2, `ak-edge-<color>` sets the color and `ak-edge-raw` locks it to full opacity with no lightness push, matching the old solid behavior.
 
 ```diff
 - ak-edge-contrast-primary
-+ ak-edge-primary ak-edge-raw
++ ak-layer ak-edge-primary ak-edge-raw
 ```
 
 `ak-edge-raw` is shorthand for `ak-edge-100 ak-edge-push-0` — use it when you want the color to be applied exactly as specified. For other combinations, `ak-edge-N` controls alpha (`100` = opaque) and `ak-edge-push-N` controls how far the edge lightness is pushed away from the layer (`0` = the color's natural lightness).
 
 For custom alpha values, use `ak-edge-alpha-(--alpha)` instead of `ak-edge-(number:--alpha)`. The `--alpha` custom property should contain a raw alpha value such as `0.4`.
+
+`ak-edge-*` utilities now require the static `ak-layer` class on the same element:
+
+```diff
+- ak-edge-15
++ ak-layer ak-edge-15
+```
 
 ### CSS variable renames (color)
 
