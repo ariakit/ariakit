@@ -60,7 +60,7 @@ Ariakit Tailwind revolves around a few families of utilities:
 - **[`ak-layer`](#ak-layer)** turns any element into a _layer_ — a surface with its own background, text, and edge colors. Layers can nest, and lightness modifiers such as `ak-layer-lighten-*`, `ak-layer-darken-*`, and numeric `ak-layer-*` modifiers shift nested surfaces relative to their parent so stacked surfaces read correctly in both light and dark modes.
 - **[`ak-ink`](#ak-ink)** sets the text opacity for the layer's own text. Safe to apply on the same element as `ak-layer` or on a descendant.
 - **[`ak-text`](#ak-text)** colors inline text _inside_ a layer with automatic WCAG contrast. Must go on a descendant, not on the `ak-layer` element itself.
-- **[`ak-edge`](#ak-edge)** colors borders and rings, adapting opacity and contrast to the layer behind them.
+- **[`ak-edge`](#ak-edge)** colors borders and rings, adapting opacity and contrast to the element's own layer. `ak-edge-*` utilities require the static `ak-layer` class on the same element.
 - **[`ak-outline`](#ak-outline)** colors outlines in the same adaptive way.
 - **[`ak-frame`](#ak-frame)** handles radius, padding, margin, borders, and concentric-radius layout.
 
@@ -220,6 +220,8 @@ The explicit `ak-layer-mix-*` longhands configure the mix color, amount, and met
 
 `ak-state-*` utilities are companions to `ak-layer-*` that target interactive states (hover, active, focus). They shift the state layer's lightness, chroma, and hue separately from the idle layer setup. Descendant text and edges still respond to the resulting layer color.
 
+The static `ak-layer` class must be applied to the same element as `ak-state-*`. Keep `ak-layer` unprefixed, then add state utilities with variants such as `hover:` or `active:`.
+
 ```html
 <button class="ak-layer ak-layer-primary hover:ak-state-10 active:ak-state-20">
   Primary action
@@ -305,7 +307,9 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ## `ak-edge`
 
-`ak-edge` controls border and ring colors for any element inside an [`ak-layer`](#ak-layer). Useful for giving borders their own hue, saturation, or opacity without affecting the surface.
+`ak-edge` controls border and ring colors for the element's own [`ak-layer`](#ak-layer). Useful for giving borders their own hue, saturation, or opacity without affecting the surface.
+
+`ak-edge-*` utilities require the static `ak-layer` class on the same element so the edge color can resolve against that layer.
 
 ```html
 <div class="ak-layer ak-frame ak-frame-border ak-edge-10">10% edge opacity</div>
@@ -527,15 +531,15 @@ Each layer appearance variant also has a `not-*` counterpart, such as
 
 ```html
 <div class="ak-layer ak-layer-canvas">
-  <div class="ak-dark:ak-layer-darken-6 ak-light:ak-layer-lighten-6">
+  <div class="ak-layer ak-dark:ak-layer-darken-6 ak-light:ak-layer-lighten-6">
     Adapts to its parent layer's appearance.
   </div>
 
-  <div class="ak-dark-high:ak-edge-20 ak-light-high:ak-edge-10">
+  <div class="ak-layer ak-dark-high:ak-edge-20 ak-light-high:ak-edge-10">
     Stronger edges on the darkest surfaces.
   </div>
 
-  <div class="not-ak-dark:ak-layer-lighten-6">
+  <div class="ak-layer not-ak-dark:ak-layer-lighten-6">
     Applies inside this layer when the current layer is not dark.
   </div>
 </div>
