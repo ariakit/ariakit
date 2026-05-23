@@ -36,11 +36,7 @@ export const active = cv({
   },
   defaultVariants: {
     $activeDepth: 5,
-  },
-  refine: (ctx) => {
-    ctx.setDefaultVariants({
-      $activeDepthX: ctx.variants.$activeDepth,
-      $activeDepthY: ctx.variants.$activeDepth,
-    });
+    $activeDepthX: (ctx) => ctx.variants.$activeDepth,
+    $activeDepthY: (ctx) => ctx.variants.$activeDepth,
   },
 });

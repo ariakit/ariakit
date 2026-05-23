@@ -25,8 +25,7 @@ export const hover = cv({
       return getLightnessStyleClass({
         value,
         property: "--hover-offset",
-        class:
-          "ui-hover:ak-state-[calc(var(--hover-offset)*(1+2*var(--layer-invert,0)))]",
+        class: "ui-hover:ak-state-(--hover-offset)",
       });
     },
     /**
@@ -47,8 +46,7 @@ export const hover = cv({
       return getLightnessStyleClass({
         value,
         property: "--hover-push",
-        class:
-          "ui-hover:ak-state-push-[calc(var(--hover-push)*(2+var(--layer-invert,0)))]",
+        class: "ui-hover:ak-state-(--hover-push)",
       });
     },
     /**

@@ -94,7 +94,7 @@ export function getScaledStyleClass({
 export function getLightnessStyleClass(params: GetScaledStyleClassParams) {
   return getScaledStyleClass({
     defaultValue: 1,
-    multiplier: LIGHTNESS_MULTIPLIER,
+    multiplier: `calc(${LIGHTNESS_MULTIPLIER} * var(--layer-lightness-multiplier, 1))`,
     ...params,
   });
 }

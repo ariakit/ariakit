@@ -30,7 +30,7 @@ import Layout from "./_layout.astro";
 
   <div class="flex flex-wrap gap-2 items-center p-2">
     <button class="ak-button-classic">Button</button>
-    <ButtonSolid.Button $invert disabled>
+    <ButtonSolid.Button $invert>
       <ButtonSolid.ButtonSlot>
         <CopyIcon />
       </ButtonSolid.ButtonSlot>
@@ -87,7 +87,7 @@ import Layout from "./_layout.astro";
       <ButtonReact.Button $rounded="full" $invert $size="sm" $px="lg">
         <!-- <ButtonReact.ButtonIcon><CheckIcon /></ButtonReact.ButtonIcon> -->
         <ButtonReact.ButtonLabel>Following</ButtonReact.ButtonLabel>
-        <ButtonReact.ButtonSlot $bg="pop">
+        <ButtonReact.ButtonSlot $lightnessOffset>
           <span class="text-[0.875em] ak-ink-60">32</span>
         </ButtonReact.ButtonSlot>
       </ButtonReact.Button>

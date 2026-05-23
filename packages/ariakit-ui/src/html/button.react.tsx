@@ -40,7 +40,7 @@ export interface ButtonGroupProps
  */
 export function ButtonGroup(props: ButtonGroupProps) {
   const [variantProps, rest] = splitProps(props, buttonGroup);
-  return <div {...buttonGroup(variantProps)} {...rest} />;
+  return <div {...buttonGroup.jsx(variantProps)} {...rest} />;
 }
 
 export interface ButtonGliderProps
@@ -51,7 +51,7 @@ export interface ButtonGliderProps
  */
 export function ButtonGlider(props: ButtonGliderProps) {
   const [variantProps, rest] = splitProps(props, buttonGlider);
-  return <div {...buttonGlider(variantProps)} {...rest} />;
+  return <div {...buttonGlider.jsx(variantProps)} {...rest} />;
 }
 
 export interface ButtonSeparatorProps
@@ -62,7 +62,7 @@ export interface ButtonSeparatorProps
  */
 export function ButtonSeparator(props: ButtonSeparatorProps) {
   const [variantProps, rest] = splitProps(props, buttonSeparator);
-  return <div {...buttonSeparator(variantProps)} {...rest} />;
+  return <div {...buttonSeparator.jsx(variantProps)} {...rest} />;
 }
 
 export interface ButtonContentProps
@@ -73,7 +73,7 @@ export interface ButtonContentProps
  */
 export function ButtonContent(props: ButtonContentProps) {
   const [variantProps, rest] = splitProps(props, buttonContent);
-  return <span {...buttonContent(variantProps)} {...rest} />;
+  return <span {...buttonContent.jsx(variantProps)} {...rest} />;
 }
 
 export interface ButtonLabelProps
@@ -84,7 +84,7 @@ export interface ButtonLabelProps
  */
 export function ButtonLabel(props: ButtonLabelProps) {
   const [variantProps, rest] = splitProps(props, buttonLabel);
-  return <span {...buttonLabel(variantProps)} {...rest} />;
+  return <span {...buttonLabel.jsx(variantProps)} {...rest} />;
 }
 
 export interface ButtonDescriptionProps
@@ -95,7 +95,7 @@ export interface ButtonDescriptionProps
  */
 export function ButtonDescription(props: ButtonDescriptionProps) {
   const [variantProps, rest] = splitProps(props, buttonDescription);
-  return <span {...buttonDescription(variantProps)} {...rest} />;
+  return <span {...buttonDescription.jsx(variantProps)} {...rest} />;
 }
 
 export interface ButtonSlotProps
@@ -108,7 +108,7 @@ export function ButtonSlot(props: ButtonSlotProps) {
   const [variantProps, rest] = splitProps(props, buttonSlot);
   const variants = buttonSlot.getVariants(variantProps);
   return (
-    <span {...buttonSlot(variantProps)} {...rest}>
+    <span {...buttonSlot.jsx(variantProps)} {...rest}>
       {variants.$kind === "badge" ? (
         <span>{rest.children}</span>
       ) : (

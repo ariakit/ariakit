@@ -30,6 +30,6 @@ export const focus = cv({
   },
   refine: ({ variants, setDefaultVariants }) => {
     if (!variants.$focus) return;
-    setDefaultVariants({ $focusColor: "primary", $focusOffset: 1 });
+    // setDefaultVariants({ $focusColor: "primary", $focusOffset: 1 });
   },
 });

@@ -89,17 +89,17 @@ export const glider = cv({
       NonNullable<typeof variants.$state>,
       typeof variants.$layer
     >;
-    setDefaultVariants({
-      $layer: variants.$layer ?? bg[variants.$state ?? "none"],
-    });
-    if (variants.$state === "selected") {
-      setDefaultVariants({
-        $borderWeight: variants.$borderWeight ?? "adaptive",
-      });
-    }
-    if (variants.$kind === "bar") {
-      setDefaultVariants({ $rounded: false, $contrast: true, $border: false });
-    }
+    // setDefaultVariants({
+    //   $layer: variants.$layer ?? bg[variants.$state ?? "none"],
+    // });
+    // if (variants.$state === "selected") {
+    //   setDefaultVariants({
+    //     $borderWeight: variants.$borderWeight ?? "adaptive",
+    //   });
+    // }
+    // if (variants.$kind === "bar") {
+    //   setDefaultVariants({ $rounded: false, $contrast: true, $border: false });
+    // }
   },
 });
 

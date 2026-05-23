@@ -37,7 +37,7 @@ export const layer = cv({
     /**
      * Inverts the layer's base background color.
      */
-    $invert: "[--layer-invert:1]",
+    $invert: "[--layer-lightness-multiplier:2]",
     /**
      * Automatically adjusts the background color's lightness. The background
      * color becomes lighter or darker depending on its current lightness. The
@@ -272,13 +272,10 @@ export const layer = cv({
   },
   defaultVariants: {
     $layer: true,
-  },
-  refine: ({ variants, setDefaultVariants }) => {
-    setDefaultVariants({
-      $lightnessOffset: !variants.$invert,
-      $lightnessPush: variants.$invert ? 20 : undefined,
-      $lightnessMin: variants.$invert ? 23 : undefined,
-      $lightnessMax: variants.$invert ? 92 : undefined,
-    });
+    $lightnessOffset: (ctx) =>
+      ctx.variants.$invert ? false : ctx.defaultValue,
+    $lightnessPush: (ctx) => (ctx.variants.$invert ? 20 : ctx.defaultValue),
+    $lightnessMin: (ctx) => (ctx.variants.$invert ? 23 : ctx.defaultValue),
+    $lightnessMax: (ctx) => (ctx.variants.$invert ? 96 : ctx.defaultValue),
   },
 });

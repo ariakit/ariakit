@@ -104,14 +104,14 @@ export const tabGlider = cv({
   },
   refine: (ctx) => {
     if (ctx.variants.$kind === "folder") {
-      ctx.setDefaultVariants({
-        $bg: "light",
-        $border: "inherit",
-        $borderType: "inherit",
-        $borderWeight: "unset",
-        $borderColor: "unset",
-        $borderWidth: "unset",
-      });
+      // ctx.setDefaultVariants({
+      //   $bg: "light",
+      //   $border: "inherit",
+      //   $borderType: "inherit",
+      //   $borderWeight: "unset",
+      //   $borderColor: "unset",
+      //   $borderWidth: "unset",
+      // });
     }
   },
 });

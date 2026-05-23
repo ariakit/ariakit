@@ -68,18 +68,17 @@ export const control = cv({
   defaultVariants: {
     $size: "auto",
     $rounded: "md",
-    $p: 2,
-    $px: "md",
     $gap: "md",
     $gapY: "auto",
+    $p: 2,
+    $px: (ctx) =>
+      ctx.variants.$p === "none" ? "none" : (ctx.defaultValue ?? "md"),
   },
-  refine: ({ variants, setDefaultVariants, setVariants, addClass }) => {
+  refine: ({ variants, setVariants, addClass }) => {
     if (variants.$disabled) {
       setVariants({ $invert: false });
     }
-    if (variants.$p === "none") {
-      setDefaultVariants({ $px: "none" });
-    } else {
+    if (variants.$p !== "none") {
       addClass([
         "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
         "[--py:calc(var(--ak-frame-padding,0px))]",
@@ -91,7 +90,7 @@ export const control = cv({
 });
 
 export const controlSlot = cv({
-  extend: [layer, border, text],
+  extend: [frame],
   class: [
     "flex flex-none items-center justify-center",
     "[--my:calc((1lh-var(--size,1lh))/2*var(--row-span))]",
@@ -100,11 +99,6 @@ export const controlSlot = cv({
     "[&>svg]:block [&>svg]:size-(--size) mx-(--mx) my-(--my)",
   ],
   variants: {
-    $layer: {
-      // When the frame's bg is inverted, we need to make the pop effect more
-      // pronounced so it's still visible.
-      pop: "group-[.layer-invert]/control:ak-layer-15",
-    },
     /**
      * Sets the slot size.
      */
@@ -153,7 +147,7 @@ export const controlSlot = cv({
      */
     $rounded: {
       none: "",
-      auto: "ak-frame ak-frame-m-(--my)",
+      auto: "ak-frame-m-(--my)",
       full: "rounded-full",
     },
     /**
@@ -190,14 +184,16 @@ export const controlSlot = cv({
   },
   defaultVariants: {
     $kind: "icon",
-    $bg: "unset",
     $size: "md",
     $rounded: "auto",
     $p: "unset",
     $rowSpan: 1,
+    $mx: (ctx) => {
+      return ctx.variants.$size;
+    },
   },
-  refine: ({ variants, setVariants, setDefaultVariants, addClass }) => {
-    setDefaultVariants({ $mx: variants.$size });
+  refine: ({ variants, setVariants, addClass }) => {
+    // setDefaultVariants({ $mx: variants.$size });
 
     const mdOrLess = [undefined, "none", "xs", "sm", "md"];
     const lgOrLess = [...mdOrLess, "lg"];
@@ -206,44 +202,44 @@ export const controlSlot = cv({
     // it room to breathe.
     if (variants.$bg !== "unset") {
       const $size = mdOrLess.includes(variants.$size) ? "lg" : variants.$size;
-      setVariants({ $size });
-      setDefaultVariants({ $mx: $size, $p: $size });
+      // setVariants({ $size });
+      // setDefaultVariants({ $mx: $size, $p: $size });
       // Disabled frame
-      addClass([
-        "group-[.disabled]/control:ak-layer-darken-6",
-        "group-[.disabled]/control:ak-ink-0",
-      ]);
+      // addClass([
+      //   "group-[.disabled]/control:ak-layer-darken-6",
+      //   "group-[.disabled]/control:ak-ink-0",
+      // ]);
     }
 
     if (variants.$kind === "badge") {
       const $size = lgOrLess.includes(variants.$size) ? "xl" : variants.$size;
       const $bg = variants.$bg === "unset" ? "primary" : variants.$bg;
       if (isBorderColor($bg)) {
-        setDefaultVariants({ $borderColor: $bg });
+        // setDefaultVariants({ $borderColor: $bg });
       }
-      setVariants({ $size, $bg });
-      setDefaultVariants({
-        $p: $size,
-        $mx: $size,
-        $color: "tonal",
-        $contrast: true,
-        $textOpacity: 60,
-      });
+      // setVariants({ $size, $bg });
+      // setDefaultVariants({
+      //   $p: $size,
+      //   $mx: $size,
+      //   $color: "tonal",
+      //   $contrast: true,
+      //   $textOpacity: 60,
+      // });
     }
 
     if (variants.$kind === "avatar") {
       const $size = lgOrLess.includes(variants.$size) ? "xl" : variants.$size;
       const $bg = variants.$bg === "unset" ? "pop" : variants.$bg;
-      setVariants({ $size, $bg });
-      setDefaultVariants({ $mx: $size, $rounded: "full" });
+      // setVariants({ $size, $bg });
+      // setDefaultVariants({ $mx: $size, $rounded: "full" });
     }
 
     if (variants.$floating) {
-      setDefaultVariants({ $rounded: "full", $color: "auto" });
+      // setDefaultVariants({ $rounded: "full", $color: "auto" });
     }
 
     if (variants.$kind && ["icon", "avatar"].includes(variants.$kind)) {
-      setDefaultVariants({ $square: true });
+      // setDefaultVariants({ $square: true });
     }
   },
 });
@@ -326,16 +322,17 @@ export const controlSeparator = cv({
     $size: "md",
     $width: 1,
     $kind: "pipe",
+    $shy: (ctx) =>
+      ctx.variants.$kind !== "chevron" && ctx.variants.$size !== "full"
+        ? true
+        : ctx.defaultValue,
   },
-  refine: ({ variants, setVariants, setDefaultVariants }) => {
+  refine: ({ variants, setVariants }) => {
     if (
       variants.$kind === "chevron" &&
       (variants.$size === "lg" || variants.$size === "full")
     ) {
       setVariants({ $size: "md" });
-    }
-    if (variants.$kind !== "chevron" && variants.$size !== "full") {
-      setDefaultVariants({ $shy: variants.$shy ?? true });
     }
   },
 });

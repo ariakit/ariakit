@@ -99,12 +99,12 @@ export const border = cv({
   refine: (ctx) => {
     if (ctx.variants.$border) {
       if (ctx.variants.$border === "inherit") {
-        ctx.setDefaultVariants({
-          $borderType: "inherit",
-          $borderWidth: "unset",
-          $borderColor: "unset",
-          $borderWeight: "unset",
-        });
+        // ctx.setDefaultVariants({
+        //   $borderType: "inherit",
+        //   $borderWidth: "unset",
+        //   $borderColor: "unset",
+        //   $borderWeight: "unset",
+        // });
       }
       if (ctx.variants.$borderWeight === "contrast") {
         ctx.setVariants({

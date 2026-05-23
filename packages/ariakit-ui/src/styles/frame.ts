@@ -356,12 +356,13 @@ export const frame = cv({
   },
   defaultVariants: {
     $frame: true,
-  },
-  refine: ({ variants, setDefaultVariants }) => {
-    setDefaultVariants({
-      $borderType: variants.$border === "inherit" ? "unset" : "auto",
-      $borderColor: variants.$border === "inherit" ? "unset" : undefined,
-      $borderWeight: variants.$border === "inherit" ? "unset" : undefined,
-    });
+    $borderType: (ctx) =>
+      ctx.variants.$border === "inherit"
+        ? "unset"
+        : (ctx.defaultValue ?? "auto"),
+    $borderColor: (ctx) =>
+      ctx.variants.$border === "inherit" ? "unset" : ctx.defaultValue,
+    $borderWeight: (ctx) =>
+      ctx.variants.$border === "inherit" ? "unset" : ctx.defaultValue,
   },
 });

@@ -26,7 +26,7 @@ export const checkboxCard = cv({
   },
   refine: (ctx) => {
     if (ctx.variants.$rounded === "full") {
-      ctx.setDefaultVariants({ $p: "lg" });
+      // ctx.setDefaultVariants({ $p: "lg" });
     }
   },
 });
