@@ -1,6 +1,6 @@
 import { utimesSync } from "node:fs";
 import path from "node:path";
-import { invariant } from "@ariakit/core/utils/misc";
+import { invariant } from "@ariakit/utils";
 import type { Locator, Page, TestInfo } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import { slugify } from "#app/lib/string.ts";

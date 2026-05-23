@@ -6,6 +6,8 @@
   <a href="https://solid.ariakit.com"><strong>Explore website »</strong></a>
 </p>
 
+**Important:** This package is experimental and does not follow semantic versioning, meaning breaking changes may occur in patch and minor versions.
+
 <br>
 
 <div align="center">

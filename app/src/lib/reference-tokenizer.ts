@@ -144,8 +144,7 @@ function parseAriakitImports(code: string): ImportInfo {
   const namedImports = new Map<string, string>();
   let hasAriakitImport = false;
 
-  const importRegex =
-    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)(?:-core)?["']/g;
+  const importRegex = getAriakitPackageImportRegex();
   let match: RegExpExecArray | null;
 
   while ((match = importRegex.exec(code))) {
@@ -157,6 +156,13 @@ function parseAriakitImports(code: string): ImportInfo {
   }
 
   return { hasAriakitImport, namespaceAliases, namedImports };
+}
+
+/**
+ * Matches root Ariakit package imports for namespace and named import links.
+ */
+function getAriakitPackageImportRegex() {
+  return /import\s+([\s\S]*?)\s+from\s*["']@ariakit\/[\w-]+["']/g;
 }
 
 /**
@@ -1088,8 +1094,7 @@ function processNamedImports(
     item?: string,
   ) => string | undefined,
 ) {
-  const importRegex =
-    /import\s+([\s\S]*?)\s+from\s*["'](@ariakit\/[\w-]+)(?:-core)?["']/g;
+  const importRegex = getAriakitPackageImportRegex();
   let importMatch: RegExpExecArray | null;
 
   while ((importMatch = importRegex.exec(code))) {

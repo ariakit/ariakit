@@ -1,6 +1,5 @@
 "use client";
 
-import { invariant } from "@ariakit/core/utils/misc";
 import pkg from "@ariakit/react/package.json" with { type: "json" };
 import {
   Select,
@@ -14,6 +13,7 @@ import {
   SelectSeparator,
   useSelectStore,
 } from "@ariakit/react/select";
+import { invariant } from "@ariakit/utils";
 import Link from "next/link.js";
 import { usePathname } from "next/navigation.js";
 import { Fragment } from "react";

@@ -16,6 +16,7 @@ export default defineConfig({
     "no-unassigned-import": "off",
     "react-in-jsx-scope": "off",
     "no-shadow": "off",
+    "no-underscore-dangle": "off",
     "iframe-missing-sandbox": "off",
     "consistent-return": "off",
     "no-unnecessary-type-arguments": "off",
@@ -41,7 +42,7 @@ export default defineConfig({
     {
       // We have our own `forwardRef` implementation that doesn't need the `ref`
       // parameter, which leads to false positives.
-      files: ["packages/ariakit-react-core/src/**/*.{ts,tsx}"],
+      files: ["packages/ariakit-react-components/src/**/*.{ts,tsx}"],
       rules: {
         "forward-ref-uses-ref": "off",
       },

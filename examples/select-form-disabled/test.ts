@@ -1,14 +1,7 @@
 import { click, press, q } from "@ariakit/test";
-import { beforeEach, expect, test, vi } from "vitest";
+import { expect, test, vi } from "vitest";
 
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
-
-let alert = spyOnAlert();
-
-beforeEach(() => {
-  alert = spyOnAlert();
-  return () => alert.mockClear();
-});
 
 test("disabled select is visually and semantically disabled", () => {
   const button = q.combobox();
@@ -33,6 +26,7 @@ test("disabled select cannot be opened with keyboard", async () => {
 });
 
 test("disabled select does not submit value", async () => {
+  using alert = spyOnAlert();
   await press.Tab();
   await press.Enter();
   expect(alert).toHaveBeenCalledWith(null);

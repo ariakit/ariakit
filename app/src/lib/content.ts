@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { invariant } from "@ariakit/core/utils/misc";
+import { invariant } from "@ariakit/utils";
 import {
   createMarkdownProcessor,
   type MarkdownProcessor,

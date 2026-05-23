@@ -1,0 +1,17 @@
+# @ariakit/utils
+
+**Important:** This package is an internal dependency of Ariakit and does not follow semantic versioning, meaning breaking changes may occur in patch and minor versions.
+
+Shared framework-agnostic utilities used by Ariakit packages.
+
+```sh
+npm i @ariakit/utils
+```
+
+Import helpers from the package root:
+
+```ts
+import { invariant } from "@ariakit/utils";
+```
+
+This package is ESM-only and exposes a single public entrypoint.

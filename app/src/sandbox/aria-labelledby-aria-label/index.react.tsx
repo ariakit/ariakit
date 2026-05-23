@@ -1,7 +1,7 @@
 import * as ak from "@ariakit/react";
-import { TagList } from "@ariakit/react-core/tag/tag-list";
-import { TagListLabel } from "@ariakit/react-core/tag/tag-list-label";
-import { TagProvider } from "@ariakit/react-core/tag/tag-provider";
+import { TagList } from "@ariakit/react-components/tag/tag-list";
+import { TagListLabel } from "@ariakit/react-components/tag/tag-list-label";
+import { TagProvider } from "@ariakit/react-components/tag/tag-provider";
 
 export default function Example() {
   return (

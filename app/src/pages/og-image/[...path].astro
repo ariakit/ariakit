@@ -46,11 +46,12 @@ const Thumbnail2 = await importThumbnail("popover");
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <title>{title ? `${title} - Ariakit` : "Ariakit"}</title>
   </head>
   <body class="flex items-center justify-center">
     <div
+      data-og-image
       class="h-[315px] w-[600px] ak-layer ring overflow-clip relative isolate"
     >
       {

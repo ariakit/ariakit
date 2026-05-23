@@ -7,8 +7,8 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { invariant } from "@ariakit/core/utils/misc";
 import * as ak from "@ariakit/react";
+import { invariant } from "@ariakit/utils";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { clsx } from "clsx";
 import * as React from "react";

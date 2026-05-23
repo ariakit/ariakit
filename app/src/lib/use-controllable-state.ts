@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { useEvent } from "@ariakit/react-core/utils/hooks";
+import { useEvent } from "@ariakit/react-utils";
 import * as React from "react";
 
 function isUpdater<T>(value: T | ((prev: T) => T)): value is (prev: T) => T {
