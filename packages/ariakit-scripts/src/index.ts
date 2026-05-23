@@ -3,6 +3,7 @@
 import { program } from "commander";
 import { build, clean } from "./build.ts";
 import { dev } from "./dev.ts";
+import { publish } from "./publish.ts";
 
 program.name("ariakit");
 
@@ -26,5 +27,11 @@ program
   .option("--clean", "Clean and watch package builds", true)
   .option("--no-clean", "Use current package exports without cleaning")
   .action(dev);
+
+program
+  .command("publish")
+  .description("Publish packages")
+  .option("--dry-run", "Prepare packages without publishing")
+  .action(publish);
 
 program.parse();

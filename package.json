@@ -57,7 +57,7 @@
     "clean": "pnpm -r run --if-present clean",
     "changeset": "changeset",
     "version": "changeset version && pnpm install --lockfile-only --ignore-scripts",
-    "publish": "pnpm run build && changeset publish",
+    "publish": "pnpm run build && ariakit publish",
     "prepare": "husky"
   },
   "devDependencies": {
