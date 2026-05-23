@@ -1,5 +1,10 @@
 # @ariakit/react-components
 
+## 0.1.1
+
+- Release artifacts now include npm trusted publishing provenance.
+- Updated dependencies: `@ariakit/utils@0.1.1`, `@ariakit/store@0.1.1`, `@ariakit/components@0.1.1`, `@ariakit/react-utils@0.1.1`, `@ariakit/react-store@0.1.1`
+
 ## 0.1.0
 
 ### Added component packages

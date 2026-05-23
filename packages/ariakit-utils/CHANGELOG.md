@@ -1,5 +1,9 @@
 # @ariakit/utils
 
+## 0.1.1
+
+- Release artifacts now include npm trusted publishing provenance.
+
 ## 0.1.0
 
 ### Added standalone utility and store packages

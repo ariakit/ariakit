@@ -1,5 +1,10 @@
 # @ariakit/solid
 
+## 0.2.1
+
+- Release artifacts now include npm trusted publishing provenance.
+- Updated dependencies: `@ariakit/solid-components@0.1.1`
+
 ## 0.2.0
 
 ### Removed CommonJS builds
