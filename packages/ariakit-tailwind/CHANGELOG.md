@@ -1,5 +1,33 @@
 # @ariakit/tailwind
 
+## 0.2.1
+
+### Removed `ak-layer-invert`
+
+**BREAKING** if you're using the `ak-layer-invert` utility.
+
+The `ak-layer-invert` utility has been removed. Use the `ak-layer-l-*` utility with a raw expression and the `ak-layer-min-*` lightness clamp instead.
+
+Before:
+
+```tsx
+<div className="ak-layer ak-layer-invert" />
+```
+
+After:
+
+```tsx
+<div className="ak-layer ak-layer-l-[calc(1-l)] ak-layer-min-25" />
+```
+
+### Other updates
+
+- Added `ak-edge-inherit` and `ak-frame-bordering-inherit` utilities.
+- Fixed `ak-layer-offset-*` and `ak-layer-push-*` utilities to use `ak-layer-min-*` and `ak-layer-max-*` lightness limits on the resolved target before escaping the forbidden mid-luminance range.
+- Fixed `ak-layer-push-*` and `ak-state-push-*` utilities so targets inside the forbidden mid-luminance range move to the boundary on the other side, while targets that already land outside the range stay untouched.
+- Fixed zero-value `ak-layer-push-*` and `ak-state-push-*` utilities to activate push behavior while keeping the push distance at zero.
+- Fixed `ak-layer-contrast` to compose with the bounded `ak-layer-push-*` target instead of ignoring the pushed layer lightness.
+
 ## 0.2.0
 
 ### Ariakit Tailwind v0.2

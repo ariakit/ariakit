@@ -1,5 +1,29 @@
 # @ariakit/solid
 
+## 0.2.0
+
+### Removed CommonJS builds
+
+**BREAKING** if your code loads `@ariakit/solid` with CommonJS `require()`.
+
+`@ariakit/solid` now publishes ESM-only exports.
+
+Before:
+
+```js
+const Ariakit = require("@ariakit/solid");
+```
+
+After:
+
+```js
+import * as Ariakit from "@ariakit/solid";
+```
+
+### Other updates
+
+- Updated dependencies: `@ariakit/solid-components@0.1.0`
+
 ## 0.1.6
 
 - Updated dependencies: `@ariakit/solid-core@0.1.6`
