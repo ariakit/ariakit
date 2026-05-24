@@ -26,6 +26,7 @@ export const badge = cv({
     $borderType: "inset",
     $text: true,
     $textPush: 60,
+    $textWarm: 20,
     $textChroma({ defaultValue, variants }) {
       if (typeof variants.$layer !== "string") return defaultValue;
       return defaultValue ?? "vivid";
