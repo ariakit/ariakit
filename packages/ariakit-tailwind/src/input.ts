@@ -634,6 +634,8 @@ const frameVars = {
   frameParentPaddingContext: _ak.var("fppc"),
   frameParentBorderContext: _ak.var("fpbc"),
   frameParentRingContext: _ak.var("fpgc"),
+  frameParentBorderingBorderContext: _ak.var("fpbbc"),
+  frameParentBorderingRingContext: _ak.var("fpbgc"),
   frameParentRowContext: _ak.var("fpwc"),
   frameParentCornerTLContext: _ak.var("fpctl"),
   frameParentCornerTRContext: _ak.var("fpctr"),
@@ -697,6 +699,7 @@ const inputs = {
   edgeC: _ak.prop("edge-chroma"),
   edgeH: _ak.prop("edge-h"),
   edgeA: _ak.prop("edge-alpha", { initial: 0.1 }),
+  edgeContext: _ak.prop.number("edge-context", { initial: 0 }),
   textPushL: _ak.prop("text-push-lightness", { initial: 0 }),
   textA: _ak.prop("text-alpha", { initial: 1 }),
   textColor: _ak.prop("text-color"),
@@ -728,6 +731,9 @@ const inputs = {
   frameBorder: _ak.prop.len("frame-border", { initial: "0px" }),
   frameRing: _ak.prop.len("frame-ring", { initial: "0px" }),
   frameBordering: _ak.prop.len("frame-bordering", { initial: "0px" }),
+  frameBorderingContext: _ak.prop.number("frame-bordering-context", {
+    initial: 0,
+  }),
   frameRow: _ak.prop.number("frame-row", { initial: 0, inherits: true }),
   frameStart: _ak.prop.number("frame-start", { initial: 0 }),
   frameEnd: _ak.prop.number("frame-end", { initial: 0 }),
@@ -1320,11 +1326,22 @@ utility(
     set(vars.layerPushDirectionToLight, 1),
     set(vars.edgePushDirection, 1),
   ),
-  layerContext(({ provide, inherit }) => [
-    set(provide(vars.layerParentContext), vars.layer),
-    set(provide(vars.layerEdgeContext), vars.edge),
-    set(vars.layerParent, inherit(vars.layerParentContext)),
-  ]),
+  layerContext(({ provide, inherit }) => {
+    const parentEdge = inherit(vars.layerEdgeContext, vars.layer);
+    return [
+      set(provide(vars.layerParentContext), vars.layer),
+      set(
+        provide(vars.layerEdgeContext),
+        fn.colorMix(
+          "oklch",
+          parentEdge,
+          vars.edge,
+          fn.mul(inputs.edgeContext, "100%"),
+        ),
+      ),
+      set(vars.layerParent, inherit(vars.layerParentContext)),
+    ];
+  }),
 );
 
 function getLayerOffsetDeclarations(arbitraryPattern = "[*]") {
@@ -1621,19 +1638,37 @@ utility(
   set(inputs.layerRelativeC, fn.neg(fn.value("[*]"))),
 );
 
+function getEdgeContextDeclarations() {
+  return set(inputs.edgeContext, 1);
+}
+
 utility(
   "edge-*",
   set(inputs.edgeC, fn.value(chroma)),
   set(inputs.edgeH, fn.value(hue)),
   set(inputs.edgeColor, fn.value(color, "[color]")),
   set(inputs.edgeA, getBarePercentTokenValue()),
+  getEdgeContextDeclarations(),
 );
 
-utility("edge-color-*", set(inputs.edgeColor, fn.value(color, "[*]")));
+utility(
+  "edge-color-*",
+  set(inputs.edgeColor, fn.value(color, "[*]")),
+  getEdgeContextDeclarations(),
+);
 
-utility("edge-alpha-*", getRawPercentDeclarations(inputs.edgeA));
+utility(
+  "edge-alpha-*",
+  getRawPercentDeclarations(inputs.edgeA),
+  getEdgeContextDeclarations(),
+);
 
-utility("edge-raw", set(inputs.edgeA, 1), set(inputs.edgePushL, 0));
+utility(
+  "edge-raw",
+  set(inputs.edgeA, 1),
+  set(inputs.edgePushL, 0),
+  getEdgeContextDeclarations(),
+);
 
 utility(
   "edge-inherit",
@@ -1645,79 +1680,122 @@ utility(
       set(inputs.edgeA, fn.sub(alpha, vars.edgeContrastValue)),
     ];
   }),
+  getEdgeContextDeclarations(),
 );
 
-const edgeLighten = utility(
+utility(
   "edge-lighten-*",
   getRawPercentDeclarations(inputs.edgeRelativeL),
+  getEdgeContextDeclarations(),
 );
-utility("edge-darken-*", getNegatedDeclarations(edgeLighten));
+
+utility(
+  "edge-darken-*",
+  set(inputs.edgeRelativeL, fn.neg(getBarePercentTokenValue())),
+  set(inputs.edgeRelativeL, fn.neg(fn.value("[*]"))),
+  getEdgeContextDeclarations(),
+);
 
 utility(
   "edge-cool-*",
   set(inputs.edgeH, getHueToward(h, vars.hueCool, getBarePercentTokenValue())),
   set(inputs.edgeH, getHueToward(h, vars.hueCool, fn.value("[*]"))),
+  getEdgeContextDeclarations(),
 );
 
 utility(
   "edge-warm-*",
   set(inputs.edgeH, getHueToward(h, vars.hueWarm, getBarePercentTokenValue())),
   set(inputs.edgeH, getHueToward(h, vars.hueWarm, fn.value("[*]"))),
+  getEdgeContextDeclarations(),
 );
 
-utility("edge-push-*", getRawPercentDeclarations(inputs.edgePushL));
+utility(
+  "edge-push-*",
+  getRawPercentDeclarations(inputs.edgePushL),
+  getEdgeContextDeclarations(),
+);
 
-const edgeSaturate = utility(
+utility(
   "edge-saturate-*",
   getRawPercentDeclarations(inputs.edgeRelativeC, CHROMA_TOKEN_OPTIONS),
+  getEdgeContextDeclarations(),
 );
-utility("edge-desaturate-*", getNegatedDeclarations(edgeSaturate));
+
+utility(
+  "edge-desaturate-*",
+  set(
+    inputs.edgeRelativeC,
+    fn.neg(getBarePercentTokenValue(CHROMA_TOKEN_OPTIONS)),
+  ),
+  set(inputs.edgeRelativeC, fn.neg(fn.value("[*]"))),
+  getEdgeContextDeclarations(),
+);
 
 utility(
   "edge-h-rotate-*",
   set(inputs.edgeRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
+  getEdgeContextDeclarations(),
 );
 
-utility("edge-l-*", getRawPercentDeclarations(inputs.edgeL));
+utility(
+  "edge-l-*",
+  getRawPercentDeclarations(inputs.edgeL),
+  getEdgeContextDeclarations(),
+);
 
 utility(
   "edge-c-*",
   set(inputs.edgeC, fn.value(chroma)),
   getRawPercentDeclarations(inputs.edgeC, CHROMA_TOKEN_OPTIONS),
+  getEdgeContextDeclarations(),
 );
 
 utility(
   "edge-h-*",
   set(inputs.edgeH, fn.value(hue)),
   set(inputs.edgeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
+  getEdgeContextDeclarations(),
 );
 
 utility(
   "edge-max-*",
   set(inputs.edgeCMax, fn.value(chroma)),
   getRawPercentDeclarations(inputs.edgeLMax),
+  getEdgeContextDeclarations(),
 );
 
 utility(
   "edge-min-*",
   set(inputs.edgeCMin, fn.value(chroma)),
   getRawPercentDeclarations(inputs.edgeLMin),
+  getEdgeContextDeclarations(),
 );
 
-utility("edge-max-l-*", getRawPercentDeclarations(inputs.edgeLMax));
+utility(
+  "edge-max-l-*",
+  getRawPercentDeclarations(inputs.edgeLMax),
+  getEdgeContextDeclarations(),
+);
 
-utility("edge-min-l-*", getRawPercentDeclarations(inputs.edgeLMin));
+utility(
+  "edge-min-l-*",
+  getRawPercentDeclarations(inputs.edgeLMin),
+  getEdgeContextDeclarations(),
+);
 
 utility(
   "edge-max-c-*",
   set(inputs.edgeCMax, fn.value(chroma)),
   getRawPercentDeclarations(inputs.edgeCMax, CHROMA_TOKEN_OPTIONS),
+  getEdgeContextDeclarations(),
 );
 
 utility(
   "edge-min-c-*",
   set(inputs.edgeCMin, fn.value(chroma)),
   getRawPercentDeclarations(inputs.edgeCMin, CHROMA_TOKEN_OPTIONS),
+  getEdgeContextDeclarations(),
 );
 
 const textBaseColor = fn.var(inputs.textColor, vars.layer);
@@ -2039,6 +2117,10 @@ function getFrameBorderWidthDeclarations(target: VarProperty) {
 
 const frameContext = createContext();
 
+function getFrameBorderingContextDeclarations() {
+  return set(inputs.frameBorderingContext, 1);
+}
+
 const LAST_VISIBLE_SELECTOR = "&:not(:has(~ *:not([hidden],template)))";
 
 /**
@@ -2185,6 +2267,14 @@ utility(
     );
     const parentPadding = inherit(vars.frameParentPaddingContext, "0px");
     const parentBorder = inherit(vars.frameParentBorderContext, "0px");
+    const parentBorderingBorder = inherit(
+      vars.frameParentBorderingBorderContext,
+      "0px",
+    );
+    const parentBorderingRing = inherit(
+      vars.frameParentBorderingRingContext,
+      "0px",
+    );
     const parentPaddingAndMargin = fn.add(parentPadding, vars.frameMargin);
     const nestedRadius = fn.sub(
       parentRadius,
@@ -2221,6 +2311,7 @@ utility(
       fn.mul(inputs.frameForce, inputs.frameRadius),
       fn.mul(fn.sub(1, inputs.frameForce), cappedRadius),
     );
+    const inheritedBorderingContext = fn.invert(inputs.frameBorderingContext);
     return [
       set(vars.frameAutoRadius, autoRadius),
       set(vars.frameInflatedExcess, inflatedExcess),
@@ -2229,6 +2320,20 @@ utility(
       set(provide(vars.frameParentPaddingContext), vars.framePadding),
       set(provide(vars.frameParentBorderContext), vars.frameBorder),
       set(provide(vars.frameParentRingContext), vars.frameRing),
+      set(
+        provide(vars.frameParentBorderingBorderContext),
+        fn.add(
+          fn.mul(parentBorderingBorder, inheritedBorderingContext),
+          fn.mul(inputs.frameBorder, inputs.frameBorderingContext),
+        ),
+      ),
+      set(
+        provide(vars.frameParentBorderingRingContext),
+        fn.add(
+          fn.mul(parentBorderingRing, inheritedBorderingContext),
+          fn.mul(inputs.frameRing, inputs.frameBorderingContext),
+        ),
+      ),
       set(provide(vars.frameParentRowContext), inputs.frameRow),
       // Default: all corners rounded (non-stretch parents).
       set(provide(vars.frameParentCornerTLContext), 1),
@@ -2298,15 +2403,25 @@ utility(
   "frame-border",
   set(inputs.frameBorder, "1px"),
   set.borderWidth(inputs.frameBorder),
+  getFrameBorderingContextDeclarations(),
 );
 utility(
   "frame-border-*",
   getFrameBorderWidthDeclarations(inputs.frameBorder),
   set.borderWidth(inputs.frameBorder),
+  getFrameBorderingContextDeclarations(),
 );
 
-utility("frame-ring", set(inputs.frameRing, "1px"));
-utility("frame-ring-*", getFrameBorderWidthDeclarations(inputs.frameRing));
+utility(
+  "frame-ring",
+  set(inputs.frameRing, "1px"),
+  getFrameBorderingContextDeclarations(),
+);
+utility(
+  "frame-ring-*",
+  getFrameBorderWidthDeclarations(inputs.frameRing),
+  getFrameBorderingContextDeclarations(),
+);
 
 function getFrameBorderingDarkLight() {
   // When the layer is darkening relative to its parent (ak-layer-darken-*),
@@ -2340,6 +2455,7 @@ utility(
   "frame-bordering",
   set(inputs.frameBordering, "1px"),
   getFrameBorderingDarkLight(),
+  getFrameBorderingContextDeclarations(),
 );
 
 utility(
@@ -2348,18 +2464,20 @@ utility(
     set(
       inputs.frameBordering,
       fn.max(
-        inherit(vars.frameParentBorderContext, "0px"),
-        inherit(vars.frameParentRingContext, "0px"),
+        inherit(vars.frameParentBorderingBorderContext, "0px"),
+        inherit(vars.frameParentBorderingRingContext, "0px"),
       ),
     ),
     ...getFrameBorderingDarkLight(),
   ]),
+  getFrameBorderingContextDeclarations(),
 );
 
 utility(
   "frame-bordering-*",
   getFrameBorderWidthDeclarations(inputs.frameBordering),
   getFrameBorderingDarkLight(),
+  getFrameBorderingContextDeclarations(),
 );
 
 export const input = [
