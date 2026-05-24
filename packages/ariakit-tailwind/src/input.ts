@@ -699,7 +699,6 @@ const inputs = {
   edgeC: _ak.prop("edge-chroma"),
   edgeH: _ak.prop("edge-h"),
   edgeA: _ak.prop("edge-alpha", { initial: 0.1 }),
-  edgeContext: _ak.prop.number("edge-context", { initial: 0 }),
   textPushL: _ak.prop("text-push-lightness", { initial: 0 }),
   textA: _ak.prop("text-alpha", { initial: 1 }),
   textColor: _ak.prop("text-color"),
@@ -1336,7 +1335,7 @@ utility(
           "oklch",
           parentEdge,
           vars.edge,
-          fn.mul(inputs.edgeContext, "100%"),
+          fn.mul(inputs.frameBorderingContext, "100%"),
         ),
       ),
       set(vars.layerParent, inherit(vars.layerParentContext)),
@@ -1638,37 +1637,19 @@ utility(
   set(inputs.layerRelativeC, fn.neg(fn.value("[*]"))),
 );
 
-function getEdgeContextDeclarations() {
-  return set(inputs.edgeContext, 1);
-}
-
 utility(
   "edge-*",
   set(inputs.edgeC, fn.value(chroma)),
   set(inputs.edgeH, fn.value(hue)),
   set(inputs.edgeColor, fn.value(color, "[color]")),
   set(inputs.edgeA, getBarePercentTokenValue()),
-  getEdgeContextDeclarations(),
 );
 
-utility(
-  "edge-color-*",
-  set(inputs.edgeColor, fn.value(color, "[*]")),
-  getEdgeContextDeclarations(),
-);
+utility("edge-color-*", set(inputs.edgeColor, fn.value(color, "[*]")));
 
-utility(
-  "edge-alpha-*",
-  getRawPercentDeclarations(inputs.edgeA),
-  getEdgeContextDeclarations(),
-);
+utility("edge-alpha-*", getRawPercentDeclarations(inputs.edgeA));
 
-utility(
-  "edge-raw",
-  set(inputs.edgeA, 1),
-  set(inputs.edgePushL, 0),
-  getEdgeContextDeclarations(),
-);
+utility("edge-raw", set(inputs.edgeA, 1), set(inputs.edgePushL, 0));
 
 utility(
   "edge-inherit",
@@ -1680,122 +1661,79 @@ utility(
       set(inputs.edgeA, fn.sub(alpha, vars.edgeContrastValue)),
     ];
   }),
-  getEdgeContextDeclarations(),
 );
 
-utility(
+const edgeLighten = utility(
   "edge-lighten-*",
   getRawPercentDeclarations(inputs.edgeRelativeL),
-  getEdgeContextDeclarations(),
 );
-
-utility(
-  "edge-darken-*",
-  set(inputs.edgeRelativeL, fn.neg(getBarePercentTokenValue())),
-  set(inputs.edgeRelativeL, fn.neg(fn.value("[*]"))),
-  getEdgeContextDeclarations(),
-);
+utility("edge-darken-*", getNegatedDeclarations(edgeLighten));
 
 utility(
   "edge-cool-*",
   set(inputs.edgeH, getHueToward(h, vars.hueCool, getBarePercentTokenValue())),
   set(inputs.edgeH, getHueToward(h, vars.hueCool, fn.value("[*]"))),
-  getEdgeContextDeclarations(),
 );
 
 utility(
   "edge-warm-*",
   set(inputs.edgeH, getHueToward(h, vars.hueWarm, getBarePercentTokenValue())),
   set(inputs.edgeH, getHueToward(h, vars.hueWarm, fn.value("[*]"))),
-  getEdgeContextDeclarations(),
 );
 
-utility(
-  "edge-push-*",
-  getRawPercentDeclarations(inputs.edgePushL),
-  getEdgeContextDeclarations(),
-);
+utility("edge-push-*", getRawPercentDeclarations(inputs.edgePushL));
 
-utility(
+const edgeSaturate = utility(
   "edge-saturate-*",
   getRawPercentDeclarations(inputs.edgeRelativeC, CHROMA_TOKEN_OPTIONS),
-  getEdgeContextDeclarations(),
 );
-
-utility(
-  "edge-desaturate-*",
-  set(
-    inputs.edgeRelativeC,
-    fn.neg(getBarePercentTokenValue(CHROMA_TOKEN_OPTIONS)),
-  ),
-  set(inputs.edgeRelativeC, fn.neg(fn.value("[*]"))),
-  getEdgeContextDeclarations(),
-);
+utility("edge-desaturate-*", getNegatedDeclarations(edgeSaturate));
 
 utility(
   "edge-h-rotate-*",
   set(inputs.edgeRelativeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
-  getEdgeContextDeclarations(),
 );
 
-utility(
-  "edge-l-*",
-  getRawPercentDeclarations(inputs.edgeL),
-  getEdgeContextDeclarations(),
-);
+utility("edge-l-*", getRawPercentDeclarations(inputs.edgeL));
 
 utility(
   "edge-c-*",
   set(inputs.edgeC, fn.value(chroma)),
   getRawPercentDeclarations(inputs.edgeC, CHROMA_TOKEN_OPTIONS),
-  getEdgeContextDeclarations(),
 );
 
 utility(
   "edge-h-*",
   set(inputs.edgeH, fn.value(hue)),
   set(inputs.edgeH, getNumericTokenValue("[*]", HUE_TOKEN_OPTIONS)),
-  getEdgeContextDeclarations(),
 );
 
 utility(
   "edge-max-*",
   set(inputs.edgeCMax, fn.value(chroma)),
   getRawPercentDeclarations(inputs.edgeLMax),
-  getEdgeContextDeclarations(),
 );
 
 utility(
   "edge-min-*",
   set(inputs.edgeCMin, fn.value(chroma)),
   getRawPercentDeclarations(inputs.edgeLMin),
-  getEdgeContextDeclarations(),
 );
 
-utility(
-  "edge-max-l-*",
-  getRawPercentDeclarations(inputs.edgeLMax),
-  getEdgeContextDeclarations(),
-);
+utility("edge-max-l-*", getRawPercentDeclarations(inputs.edgeLMax));
 
-utility(
-  "edge-min-l-*",
-  getRawPercentDeclarations(inputs.edgeLMin),
-  getEdgeContextDeclarations(),
-);
+utility("edge-min-l-*", getRawPercentDeclarations(inputs.edgeLMin));
 
 utility(
   "edge-max-c-*",
   set(inputs.edgeCMax, fn.value(chroma)),
   getRawPercentDeclarations(inputs.edgeCMax, CHROMA_TOKEN_OPTIONS),
-  getEdgeContextDeclarations(),
 );
 
 utility(
   "edge-min-c-*",
   set(inputs.edgeCMin, fn.value(chroma)),
   getRawPercentDeclarations(inputs.edgeCMin, CHROMA_TOKEN_OPTIONS),
-  getEdgeContextDeclarations(),
 );
 
 const textBaseColor = fn.var(inputs.textColor, vars.layer);
@@ -2470,7 +2408,6 @@ utility(
     ),
     ...getFrameBorderingDarkLight(),
   ]),
-  getFrameBorderingContextDeclarations(),
 );
 
 utility(

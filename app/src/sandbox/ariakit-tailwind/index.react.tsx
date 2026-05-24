@@ -430,7 +430,16 @@ export default function Example() {
             />
             <Layer
               label="skip"
-              className="ak-layer ak-layer-20 ak-frame ak-frame-p-1 ak-frame-border flex-col"
+              className="ak-layer ak-layer-20 ak-edge-0 ak-frame ak-frame-p-1 flex-col"
+            >
+              <Layer
+                label="host"
+                className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
+              />
+            </Layer>
+            <Layer
+              label="inherit skip"
+              className="ak-layer ak-layer-20 ak-edge-0 ak-frame ak-frame-p-1 ak-frame-bordering-inherit flex-col"
             >
               <Layer
                 label="host"
@@ -439,7 +448,7 @@ export default function Example() {
             </Layer>
             <Layer
               label="zero"
-              className="ak-layer ak-layer-20 ak-edge-0 ak-frame ak-frame-p-1 ak-frame-border flex-col"
+              className="ak-layer ak-layer-20 ak-edge-0 ak-frame ak-frame-p-1 ak-frame-border-0 flex-col"
             >
               <Layer
                 label="host"

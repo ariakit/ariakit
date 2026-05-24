@@ -329,7 +329,7 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 | `ak-edge-<chroma>`      | Sets chroma from a named preset.                                                                                                                              |
 | `ak-edge-<hue>`         | Sets hue from a named preset.                                                                                                                                 |
 | `ak-edge-raw`           | Applies the color exactly as specified — shorthand for `ak-edge-100` + `ak-edge-push-0`.                                                                      |
-| `ak-edge-inherit`       | Uses the nearest ancestor edge as the current edge color, skipping intermediate layers that do not explicitly set an edge.                                    |
+| `ak-edge-inherit`       | Uses the edge from the nearest ancestor that explicitly sets a frame border, ring, or bordering width.                                                        |
 
 ### Adjustments
 
@@ -488,7 +488,7 @@ All three utilities accept no argument (defaults to `1px`), named widths (`0`, `
 | `ak-frame-border` / `ak-frame-border-<width>`       | Applies a border whose width is factored into nested-frame radius calculations.                                                                                            |
 | `ak-frame-ring` / `ak-frame-ring-<width>`           | Applies a ring with the same treatment. Rings draw outside the border-box without shifting layout.                                                                         |
 | `ak-frame-bordering` / `ak-frame-bordering-<width>` | Adaptive edge: chooses border or ring based on parent layer appearance and whether the layer is lightening or darkening, keeping surfaces visually separated across modes. |
-| `ak-frame-bordering-inherit`                        | Inherits the nearest ancestor border or ring width, skipping intermediate frames that do not explicitly set a border, ring, or bordering width.                            |
+| `ak-frame-bordering-inherit`                        | Inherits the nearest ancestor frame border, ring, or bordering width, skipping intermediate frames that do not explicitly set one.                                         |
 
 ### Cover and flow
 

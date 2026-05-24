@@ -157,13 +157,13 @@
   @container (style(--_context-0: even)) or (not style(--_context-0)) {
     --_context-0: odd;
     --_ak-lpc-odd: var(--ak-layer);
-    --_ak-lec-odd: color-mix(in oklch, var(--_ak-lec-even, var(--ak-layer)), var(--ak-edge) calc(var(--_ak-edge-context) * 100%));
+    --_ak-lec-odd: color-mix(in oklch, var(--_ak-lec-even, var(--ak-layer)), var(--ak-edge) calc(var(--_ak-frame-bordering-context) * 100%));
     --ak-layer-parent: var(--_ak-lpc-even);
   }
   @container style(--_context-0: odd) {
     --_context-0: even;
     --_ak-lpc-even: var(--ak-layer);
-    --_ak-lec-even: color-mix(in oklch, var(--_ak-lec-odd, var(--ak-layer)), var(--ak-edge) calc(var(--_ak-edge-context) * 100%));
+    --_ak-lec-even: color-mix(in oklch, var(--_ak-lec-odd, var(--ak-layer)), var(--ak-edge) calc(var(--_ak-frame-bordering-context) * 100%));
     --ak-layer-parent: var(--_ak-lpc-odd);
   }
 }
@@ -423,24 +423,20 @@
   --_ak-edge-h: --value(--hue-*);
   --_ak-edge-color: --value(--color-*, [color]);
   --_ak-edge-alpha: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-color-* {
   --_ak-edge-color: --value(--color-*, [*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-alpha-* {
   --_ak-edge-alpha: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
   --_ak-edge-alpha: --value([*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-raw {
   --_ak-edge-alpha: 1;
   --_ak-edge-push-lightness: 0;
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-inherit {
@@ -454,113 +450,95 @@
     --_ak-edge-push-lightness: calc(var(--_ak-ecv) * -1);
     --_ak-edge-alpha: calc(alpha - var(--_ak-ecv));
   }
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-lighten-* {
   --_ak-edge-relative-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
   --_ak-edge-relative-lightness: --value([*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-darken-* {
   --_ak-edge-relative-lightness: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100) * -1);
   --_ak-edge-relative-lightness: calc(--value([*]) * -1);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-cool-* {
   --_ak-edge-h: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
   --_ak-edge-h: calc(h + ((mod(((var(--hue-cool, 220) - h) + 540), 360) - 180) * clamp(0, --value([*]), 1)));
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-warm-* {
   --_ak-edge-h: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, (--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100), 1)));
   --_ak-edge-h: calc(h + ((mod(((var(--hue-warm, 90) - h) + 540), 360) - 180) * clamp(0, --value([*]), 1)));
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-push-* {
   --_ak-edge-push-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
   --_ak-edge-push-lightness: --value([*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-saturate-* {
   --_ak-edge-relative-chroma: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
   --_ak-edge-relative-chroma: --value([*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-desaturate-* {
   --_ak-edge-relative-chroma: calc((--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100) * -1);
   --_ak-edge-relative-chroma: calc(--value([*]) * -1);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-h-rotate-* {
   --_ak-edge-relative-hue: --value(number, [*], "0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300", "315", "330", "345", "360");
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-l-* {
   --_ak-edge-lightness: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
   --_ak-edge-lightness: --value([*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-c-* {
   --_ak-edge-chroma: --value(--chroma-*);
   --_ak-edge-chroma: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
   --_ak-edge-chroma: --value([*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-h-* {
   --_ak-edge-h: --value(--hue-*);
   --_ak-edge-h: --value(number, [*], "0", "15", "30", "45", "60", "75", "90", "105", "120", "135", "150", "165", "180", "195", "210", "225", "240", "255", "270", "285", "300", "315", "330", "345", "360");
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-max-* {
   --_ak-edge-chroma-max: --value(--chroma-*);
   --_ak-edge-lightness-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
   --_ak-edge-lightness-max: --value([*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-min-* {
   --_ak-edge-chroma-min: --value(--chroma-*);
   --_ak-edge-lightness-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
   --_ak-edge-lightness-min: --value([*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-max-l-* {
   --_ak-edge-lightness-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
   --_ak-edge-lightness-max: --value([*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-min-l-* {
   --_ak-edge-lightness-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100") / 100);
   --_ak-edge-lightness-min: --value([*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-max-c-* {
   --_ak-edge-chroma-max: --value(--chroma-*);
   --_ak-edge-chroma-max: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
   --_ak-edge-chroma-max: --value([*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-edge-min-c-* {
   --_ak-edge-chroma-min: --value(--chroma-*);
   --_ak-edge-chroma-min: calc(--value(number, "0", "5", "10", "15", "20", "25", "30", "35", "40") / 100);
   --_ak-edge-chroma-min: --value([*]);
-  --_ak-edge-context: 1;
 }
 
 @utility ak-text {
@@ -1228,7 +1206,6 @@
       --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
     }
   }
-  --_ak-frame-bordering-context: 1;
 }
 
 @utility ak-frame-bordering-* {
@@ -1841,12 +1818,6 @@
   syntax: "*";
   inherits: false;
   initial-value: 0.1;
-}
-
-@property --_ak-edge-context {
-  syntax: "<number>";
-  inherits: false;
-  initial-value: 0;
 }
 
 @property --_ak-text-push-lightness {
