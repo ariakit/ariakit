@@ -1,6 +1,7 @@
 import { cv } from "clava";
 import { frame } from "./frame.ts";
 import { layer } from "./layer.ts";
+import { text } from "./text.ts";
 
 function isFrameBorderColor(
   value: unknown,
@@ -14,7 +15,7 @@ function isFrameBorderColor(
 }
 
 export const control = cv({
-  extend: [frame],
+  extend: [frame, text],
   class: [
     "control group/control relative flex justify-center",
     // font sidebearing
@@ -277,6 +278,7 @@ export const controlContent = cv({
 });
 
 export const controlLabel = cv({
+  extend: [text],
   class:
     "group-[.flex-col]/control-content:flex-none group-[.disabled]/control:ak-ink-0",
   variants: {
@@ -285,6 +287,7 @@ export const controlLabel = cv({
 });
 
 export const controlDescription = cv({
+  extend: [text],
   class:
     "ms-0! ak-ink-70 basis-full font-normal text-[0.875em] group-[.disabled]/control:ak-ink-0",
   variants: {

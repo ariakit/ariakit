@@ -254,6 +254,12 @@
   }
 }
 
+@custom-variant ui-text {
+  &.text:not(.ak-layer), & .text:not(.ak-layer), & svg {
+    @slot;
+  }
+}
+
 
 @utility ui-bevel {
   --min-l: 0.25;
