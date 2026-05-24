@@ -275,6 +275,28 @@ export default function Example() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <Layer
+        label="edge inherit root no source"
+        className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
+      />
+      <Layer
+        label="edge inherit no source"
+        className="ak-layer ak-layer-blue-600 flex-col"
+      >
+        <Layer
+          label="host"
+          className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
+        />
+      </Layer>
+      <Layer
+        label="edge inherit edge no source"
+        className="ak-layer ak-layer-blue-600 ak-edge-red-600 ak-edge-40 flex-col"
+      >
+        <Layer
+          label="host"
+          className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
+        />
+      </Layer>
+      <Layer
         label="One-off"
         className="ak-layer ak-frame ak-frame-[1.25rem]/1 ak-frame-border flex-col"
       >
@@ -428,6 +450,42 @@ export default function Example() {
               label="push"
               className="ak-layer ak-layer-20 ak-edge-inherit ak-edge-push-20 ak-frame ak-frame-p-1 ak-frame-border"
             />
+            <Layer
+              label="skip"
+              className="ak-layer ak-layer-20 ak-edge-0 ak-frame ak-frame-p-1 flex-col"
+            >
+              <Layer
+                label="host"
+                className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
+              />
+            </Layer>
+            <Layer
+              label="inherit skip"
+              className="ak-layer ak-layer-20 ak-edge-0 ak-frame ak-frame-p-1 ak-frame-bordering-inherit flex-col"
+            >
+              <Layer
+                label="host"
+                className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
+              />
+            </Layer>
+            <Layer
+              label="frame source"
+              className="ak-frame ak-frame-p-1 ak-frame-border flex-col"
+            >
+              <Layer
+                label="host"
+                className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
+              />
+            </Layer>
+            <Layer
+              label="zero"
+              className="ak-layer ak-layer-20 ak-edge-0 ak-frame ak-frame-p-1 ak-frame-border-0 flex-col"
+            >
+              <Layer
+                label="host"
+                className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
+              />
+            </Layer>
             <div className="ak-edge-inherit">
               <Layer
                 label="host"
@@ -441,6 +499,24 @@ export default function Example() {
           >
             <Layer className="ak-layer ak-layer-lighten-20 ak-frame ak-frame-p-1 ak-frame-bordering-inherit" />
             <Layer className="ak-layer ak-layer-darken-20 ak-frame ak-frame-p-1 ak-frame-bordering-inherit" />
+            <Layer
+              label="skip"
+              className="ak-layer ak-layer-lighten-20 ak-frame ak-frame-p-1 flex-col"
+            >
+              <Layer
+                label="host"
+                className="ak-layer ak-layer-darken-20 ak-frame ak-frame-p-1 ak-frame-bordering-inherit"
+              />
+            </Layer>
+            <Layer
+              label="zero"
+              className="ak-layer ak-frame ak-frame-p-1 ak-frame-border-0 flex-col"
+            >
+              <Layer
+                label="host"
+                className="ak-layer ak-layer-darken-20 ak-frame ak-frame-p-1 ak-frame-bordering-inherit"
+              />
+            </Layer>
             <div className="ak-frame ak-frame-bordering-inherit">
               <Layer
                 label="host"
