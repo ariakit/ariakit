@@ -320,16 +320,16 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Setting the edge color
 
-| Utility                 | Description                                                                                                                                                   |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-edge-<number>`      | Sets edge alpha (`0`–`100`, default `10`).                                                                                                                    |
-| `ak-edge-alpha-<value>` | Explicit alpha alias for `ak-edge-<number>`. Useful for custom properties (`ak-edge-alpha-(--alpha)`). Arbitrary/custom-property values are raw alpha values. |
-| `ak-edge-<color>`       | Applies a specific edge color.                                                                                                                                |
-| `ak-edge-color-<color>` | Explicit color-only alias. Useful for custom properties (`ak-edge-color-(--edge-color)`).                                                                     |
-| `ak-edge-<chroma>`      | Sets chroma from a named preset.                                                                                                                              |
-| `ak-edge-<hue>`         | Sets hue from a named preset.                                                                                                                                 |
-| `ak-edge-raw`           | Applies the color exactly as specified — shorthand for `ak-edge-100` + `ak-edge-push-0`.                                                                      |
-| `ak-edge-inherit`       | Uses the parent layer edge as the current edge color while preserving the parent edge alpha and lightness.                                                    |
+| Utility                 | Description                                                                                                                                                                              |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-edge-<number>`      | Sets edge alpha (`0`–`100`, default `10`).                                                                                                                                               |
+| `ak-edge-alpha-<value>` | Explicit alpha alias for `ak-edge-<number>`. Useful for custom properties (`ak-edge-alpha-(--alpha)`). Arbitrary/custom-property values are raw alpha values.                            |
+| `ak-edge-<color>`       | Applies a specific edge color.                                                                                                                                                           |
+| `ak-edge-color-<color>` | Explicit color-only alias. Useful for custom properties (`ak-edge-color-(--edge-color)`).                                                                                                |
+| `ak-edge-<chroma>`      | Sets chroma from a named preset.                                                                                                                                                         |
+| `ak-edge-<hue>`         | Sets hue from a named preset.                                                                                                                                                            |
+| `ak-edge-raw`           | Applies the color exactly as specified — shorthand for `ak-edge-100` + `ak-edge-push-0`.                                                                                                 |
+| `ak-edge-inherit`       | Uses the parent layer edge as the current edge color while preserving the parent edge alpha and lightness for the element and descendant layers until they set their own edge utilities. |
 
 ### Adjustments
 

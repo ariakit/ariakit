@@ -599,6 +599,12 @@ const layerColorVars = {
   outline: ak.var("outline", "canvastext"),
 };
 
+const edgeContextVars = {
+  edgeColorContext: _ak.var("ecc"),
+  edgePushLContext: _ak.var("eplc", 1),
+  edgeAlphaContext: _ak.var("eac", 0.1),
+};
+
 const layerContrastMathVars = {
   layerContrastDirection: _ak.prop.number("lcd", { initial: 0 }),
   layerContrastParentL: _ak.prop.number("lcpl", { initial: 0 }),
@@ -651,6 +657,7 @@ const vars = {
   ...layerMathVars,
   ...themeTokenVars,
   ...layerColorVars,
+  ...edgeContextVars,
   ...layerContrastMathVars,
   ...outlineMathVars,
   ...textMathVars,
@@ -688,7 +695,7 @@ const inputs = {
   edgeRelativeL: _ak.prop("edge-relative-lightness", { initial: 0 }),
   edgeRelativeC: _ak.prop("edge-relative-chroma", { initial: 0 }),
   edgeRelativeH: _ak.prop("edge-relative-hue", { initial: 0 }),
-  edgePushL: _ak.prop("edge-push-lightness", { initial: 1 }),
+  edgePushL: _ak.prop("edge-push-lightness", vars.edgePushLContext),
   edgeLMin: _ak.prop("edge-lightness-min", { initial: 0 }),
   edgeLMax: _ak.prop("edge-lightness-max", { initial: 1 }),
   edgeCMin: _ak.prop("edge-chroma-min", { initial: 0 }),
@@ -696,7 +703,7 @@ const inputs = {
   edgeL: _ak.prop("edge-lightness"),
   edgeC: _ak.prop("edge-chroma"),
   edgeH: _ak.prop("edge-h"),
-  edgeA: _ak.prop("edge-alpha", { initial: 0.1 }),
+  edgeA: _ak.prop("edge-alpha", vars.edgeAlphaContext),
   textPushL: _ak.prop("text-push-lightness", { initial: 0 }),
   textA: _ak.prop("text-alpha", { initial: 1 }),
   textColor: _ak.prop("text-color"),
@@ -1224,7 +1231,10 @@ const layerColorDeclarations = [
   set(vars.layerPush, layerPush),
 ];
 
-const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
+const edgeBaseColor = fn.var(
+  inputs.edgeColor,
+  fn.var(vars.edgeColorContext, vars.layer),
+);
 // Borders get a small extra push from the current contrast preference so they
 // stay perceptible even when the user does not specify an edge push value.
 const edgeDirectionalDelta = fn.add(inputs.edgePushL, vars.edgeContrastValue);
@@ -1639,10 +1649,15 @@ utility(
   "edge-inherit",
   layerContext.read(({ inherit }) => {
     const parentEdge = inherit(vars.layerEdgeContext, vars.layer);
+    const inheritedEdgePushL = fn.neg(vars.edgeContrastValue);
+    const inheritedEdgeAlpha = fn.sub(alpha, vars.edgeContrastValue);
     return [
+      set(vars.edgeColorContext, parentEdge),
+      set(vars.edgePushLContext, inheritedEdgePushL),
+      set(vars.edgeAlphaContext, inheritedEdgeAlpha),
       set(inputs.edgeColor, parentEdge),
-      set(inputs.edgePushL, fn.neg(vars.edgeContrastValue)),
-      set(inputs.edgeA, fn.sub(alpha, vars.edgeContrastValue)),
+      set(inputs.edgePushL, inheritedEdgePushL),
+      set(inputs.edgeA, inheritedEdgeAlpha),
     ];
   }),
 );

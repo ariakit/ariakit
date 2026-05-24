@@ -428,6 +428,19 @@ export default function Example() {
               label="push"
               className="ak-layer ak-layer-20 ak-edge-inherit ak-edge-push-20 ak-frame ak-frame-p-1 ak-frame-border"
             />
+            <Layer
+              label="nested layer"
+              className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border flex-col"
+            >
+              <Layer
+                label="child"
+                className="ak-layer ak-layer-20 ak-frame ak-frame-p-1 ak-frame-border"
+              />
+              <Layer
+                label="override"
+                className="ak-layer ak-layer-20 ak-edge-green-600 ak-edge-push-20 ak-edge-40 ak-frame ak-frame-p-1 ak-frame-border"
+              />
+            </Layer>
             <div className="ak-edge-inherit">
               <Layer
                 label="host"
