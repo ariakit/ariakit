@@ -27,24 +27,24 @@ export const badge = cv({
     $text: true,
     $textPush: 60,
     $textWarm: 20,
-    $textChroma({ defaultValue, variants }) {
+    $textChroma(defaultValue, variants) {
       if (typeof variants.$layer !== "string") return defaultValue;
       return defaultValue ?? "vivid";
     },
-    $lightnessOffset({ defaultValue, variants }) {
+    $lightnessOffset(defaultValue, variants) {
       if (typeof variants.$layer === "string") return false;
       return defaultValue ?? true;
     },
-    $mix({ defaultValue, variants }) {
+    $mix(defaultValue, variants) {
       if (typeof variants.$layer !== "string") {
         return defaultValue;
       }
       return defaultValue ?? 15;
     },
-    $borderColor: (ctx) => {
-      if (typeof ctx.variants.$layer !== "string") return ctx.defaultValue;
-      if (!isFrameBorderColor(ctx.variants.$layer)) return ctx.defaultValue;
-      return ctx.defaultValue ?? ctx.variants.$layer;
+    $borderColor(defaultValue, variants) {
+      if (typeof variants.$layer !== "string") return defaultValue;
+      if (!isFrameBorderColor(variants.$layer)) return defaultValue;
+      return defaultValue ?? variants.$layer;
     },
   },
 });

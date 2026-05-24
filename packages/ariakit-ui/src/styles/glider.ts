@@ -70,30 +70,39 @@ export const glider = cv({
     $kind: "flat",
     $state: "selected",
     $animated: true,
-    $lightnessOffset: (ctx) => {
-      if (ctx.defaultValue != null) return ctx.defaultValue;
-      if (ctx.variants.$state === "hover") return true;
-      if (ctx.variants.$state !== "selected") return ctx.defaultValue;
-      return ctx.variants.$kind === "bar" ? ctx.defaultValue : 2;
+    $lightnessOffset(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      if (variants.$state === "hover") return true;
+      if (variants.$state !== "selected") return defaultValue;
+      return variants.$kind === "bar" ? defaultValue : 2;
     },
-    $invert: (ctx) => {
-      if (ctx.variants.$state !== "selected") return ctx.defaultValue;
-      if (ctx.variants.$kind !== "bar") return ctx.defaultValue;
-      return ctx.defaultValue ?? true;
+    $invert(defaultValue, variants) {
+      if (variants.$state !== "selected") return defaultValue;
+      if (variants.$kind !== "bar") return defaultValue;
+      return defaultValue ?? true;
     },
-    $rounded: (ctx) =>
-      ctx.variants.$kind === "bar" ? false : (ctx.defaultValue ?? "full"),
+    $rounded(defaultValue, variants) {
+      if (variants.$kind === "bar") return false;
+      return defaultValue ?? "full";
+    },
     $p: "none",
     $borderType: "ring",
-    $borderWeight: (ctx) =>
-      ctx.variants.$state === "selected"
-        ? (ctx.defaultValue ?? "adaptive")
-        : ctx.defaultValue,
-    $contrast: (ctx) =>
-      ctx.variants.$kind === "bar"
-        ? (ctx.defaultValue ?? true)
-        : ctx.defaultValue,
-    $border: (ctx) => (ctx.variants.$kind === "bar" ? false : ctx.defaultValue),
+    $borderWeight(defaultValue, variants) {
+      if (variants.$state === "selected") {
+        return defaultValue ?? "adaptive";
+      }
+      return defaultValue;
+    },
+    $contrast(defaultValue, variants) {
+      if (variants.$kind === "bar") {
+        return defaultValue ?? true;
+      }
+      return defaultValue;
+    },
+    $border(defaultValue, variants) {
+      if (variants.$kind === "bar") return false;
+      return defaultValue;
+    },
   },
 });
 
@@ -125,7 +134,7 @@ export const gliderGroup = cv({
     anchorScope:
       "--glider-group, --glider-hover, --glider-focus, --glider-selected",
   },
-  refine: ({ variants }) => {
+  refine({ variants }) {
     const classes: string[] = [];
     if (variants.$gap !== "none") {
       classes.push(

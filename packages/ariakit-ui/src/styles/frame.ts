@@ -358,20 +358,20 @@ export const frame = cv({
   },
   defaultVariants: {
     $frame: true,
-    $borderType({ variants, defaultValue }) {
-      if (variants.$border === "inherit" || variants.$border === false) {
+    $borderType(defaultValue, variants) {
+      if (variants.$border === "inherit") {
         return "unset";
       }
       return defaultValue ?? "auto";
     },
-    $borderColor({ variants, defaultValue }) {
-      if (variants.$border === "inherit" || variants.$border === false) {
+    $borderColor(defaultValue, variants) {
+      if (variants.$border === "inherit") {
         return "unset";
       }
       return defaultValue;
     },
-    $borderWeight({ variants, defaultValue }) {
-      if (variants.$border === "inherit" || variants.$border === false) {
+    $borderWeight(defaultValue, variants) {
+      if (variants.$border === "inherit") {
         return "unset";
       }
       return defaultValue;

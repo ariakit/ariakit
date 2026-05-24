@@ -31,7 +31,6 @@ export const tab = cv({
         "[--tab-radius:var(--ak-frame-radius)]",
         "[:first-child>&]:nth-[1_of_&]:ui-selected:before:[--ak-frame-radius:min(var(--tab-radius),var(--fp)/2)]",
         "[.tabs:not(:has(.glider))_&]:pb-[calc(var(--py)+var(--inset-padding,0px)+var(--fb))]",
-        "ui-selected:rounded-t-(--fr)",
         "not-ui-selected:border-transparent not-ui-selected:ring-0",
         "not-ui-selected:ui-hover:border-transparent",
         "not-ui-selected:ui-hover:bg-transparent",
@@ -58,15 +57,13 @@ export const tab = cv({
     $lightnessOffset: true,
     $kind: "folder",
     $rounded: "unset",
-    $borderType: "unset",
-    $borderColor: "unset",
-    $borderWeight: "unset",
+    $border: "inherit",
   },
-  refine: ({ variants, addClass }) => {
-    if (variants.$kind === "folder" && variants.$border !== false) {
-      addClass("ak-frame-border-(--fb)");
-    }
-  },
+  // refine: ({ variants, addClass }) => {
+  //   if (variants.$kind === "folder" && variants.$border !== false) {
+  //     addClass("ak-frame-border-(--fb)");
+  //   }
+  // },
 });
 
 export const tabSlot = buttonSlot;
@@ -112,20 +109,29 @@ export const tabGlider = cv({
     },
   },
   defaultVariants: {
-    $lightnessOffset: (ctx) =>
-      ctx.variants.$kind === "folder"
-        ? (ctx.defaultValue ?? true)
-        : ctx.defaultValue,
-    $borderType: (ctx) =>
-      ctx.variants.$kind === "folder" ? "unset" : ctx.defaultValue,
-    $borderColor: (ctx) =>
-      ctx.variants.$kind === "folder" ? "unset" : ctx.defaultValue,
-    $borderWeight: (ctx) =>
-      ctx.variants.$kind === "folder" ? "unset" : ctx.defaultValue,
+    $lightnessOffset(defaultValue, variants) {
+      if (variants.$kind === "folder") {
+        return defaultValue ?? true;
+      }
+      return defaultValue ?? true;
+    },
+    $border: "inherit",
+    $borderType(defaultValue, variants) {
+      if (variants.$kind === "folder") return "unset";
+      return defaultValue;
+    },
+    $borderColor(defaultValue, variants) {
+      if (variants.$kind === "folder") return "unset";
+      return defaultValue;
+    },
+    $borderWeight(defaultValue, variants) {
+      if (variants.$kind === "folder") return "unset";
+      return defaultValue;
+    },
   },
-  refine: ({ variants, addClass }) => {
+  refine({ variants, addClass }) {
     if (variants.$kind === "folder" && variants.$border !== false) {
-      addClass("ak-frame-border-(--fb)");
+      // addClass("ak-frame-border-(--fb)");
     }
   },
 });
@@ -133,7 +139,7 @@ export const tabGlider = cv({
 export const tabList = cv({
   extend: [buttonGroup],
   class: [
-    "rounded-b-none! pb-0",
+    "rounded-b-none! pb-0 border-none ring-0",
     "after:w-[calc((var(--fr)-var(--fp))*2)]",
     "bg-transparent overflow-clip not-has-[.glider]:gap-0 not-supports-anchor:gap-0",
   ],
@@ -141,8 +147,9 @@ export const tabList = cv({
     $cover: true,
     $p: "unset",
     $rounded: "unset",
-    $borderType: "unset",
+    $border: "inherit",
     $borderColor: "unset",
+    $borderType: "unset",
     $borderWeight: "unset",
   },
 });
@@ -171,14 +178,13 @@ export const tabPanels = cv({
     $roundedTop: "auto",
     $lightnessOffset: true,
     $p: 3,
+    $cover: true,
     $rounded: "unset",
-    $borderType: "unset",
-    $borderColor: "unset",
-    $borderWeight: "unset",
+    $border: "inherit",
   },
-  refine: ({ variants, addClass }) => {
+  refine({ variants, addClass }) {
     if (variants.$border !== false) {
-      addClass("ak-frame-border-(--fb)");
+      // addClass("ak-frame-border-(--fb)");
     }
   },
 });

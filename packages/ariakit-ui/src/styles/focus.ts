@@ -29,9 +29,17 @@ export const focus = cv({
     },
   },
   defaultVariants: {
-    $focusColor: (ctx) =>
-      ctx.variants.$focus ? (ctx.defaultValue ?? "primary") : ctx.defaultValue,
-    $focusOffset: (ctx) =>
-      ctx.variants.$focus ? (ctx.defaultValue ?? 1) : ctx.defaultValue,
+    $focusColor(defaultValue, variants) {
+      if (variants.$focus) {
+        return defaultValue ?? "primary";
+      }
+      return defaultValue;
+    },
+    $focusOffset(defaultValue, variants) {
+      if (variants.$focus) {
+        return defaultValue ?? 1;
+      }
+      return defaultValue;
+    },
   },
 });

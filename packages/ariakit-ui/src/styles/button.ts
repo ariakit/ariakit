@@ -34,10 +34,12 @@ export const button = cv({
   defaultVariants: {
     $kind: "flat",
     $gapY: "none",
-    $lightnessOffset: (ctx) =>
-      ctx.variants.$kind === "bevel"
-        ? (ctx.defaultValue ?? false)
-        : (ctx.defaultValue ?? true),
+    $lightnessOffset(defaultValue, variants) {
+      if (variants.$kind === "bevel") {
+        return defaultValue ?? false;
+      }
+      return defaultValue ?? true;
+    },
     $hoverOffset: true,
     $focus: true,
     $active: true,

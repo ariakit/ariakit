@@ -32,9 +32,12 @@ export const checkboxCardGrid = cv({
     "grid-cols-[repeat(auto-fill,minmax(var(--checkbox-card-min-w),1fr))]",
   ],
   variants: {
-    $minItemSize: (value: string) => ({
-      style: { "--checkbox-card-min-w": value },
-    }),
+    $minItemSize(value?: string) {
+      if (value == null) return;
+      return {
+        style: { "--checkbox-card-min-w": value },
+      };
+    },
   },
   defaultVariants: {
     $minItemSize: "10rem",

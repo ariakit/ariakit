@@ -83,36 +83,39 @@ export const border = cv({
      * Sets the size of the border.
      * @default 1
      */
-    $borderWidth: (value: "unset" | number) => {
+    $borderWidth(value?: "unset" | number) {
+      if (value == null) return;
       if (value === "unset") return;
       return { style: { "--border-width": `${value}px` } };
     },
   },
   defaultVariants: {
-    $borderType: (ctx) =>
-      ctx.variants.$border === "inherit"
-        ? "inherit"
-        : (ctx.defaultValue ?? "border"),
-    $borderColor: (ctx) =>
-      ctx.variants.$border === "inherit"
-        ? "unset"
-        : (ctx.defaultValue ?? "default"),
-    $borderWeight: (ctx) =>
-      ctx.variants.$border === "inherit"
-        ? "unset"
-        : (ctx.defaultValue ?? "normal"),
-    $borderWidth: (ctx) =>
-      ctx.variants.$border === "inherit" ? "unset" : (ctx.defaultValue ?? 1),
+    $borderType(defaultValue, variants) {
+      if (variants.$border === "inherit") return "inherit";
+      return defaultValue ?? "border";
+    },
+    $borderColor(defaultValue, variants) {
+      if (variants.$border === "inherit") return "unset";
+      return defaultValue ?? "default";
+    },
+    $borderWeight(defaultValue, variants) {
+      if (variants.$border === "inherit") return "unset";
+      return defaultValue ?? "normal";
+    },
+    $borderWidth(defaultValue, variants) {
+      if (variants.$border === "inherit") return "unset";
+      return defaultValue ?? 1;
+    },
   },
-  refine: (ctx) => {
-    if (ctx.variants.$border) {
-      if (ctx.variants.$borderWeight === "contrast") {
-        ctx.setVariants({
-          $border: ctx.variants.$border === "content" ? "content" : false,
+  refine({ variants, setVariants }) {
+    if (variants.$border) {
+      if (variants.$borderWeight === "contrast") {
+        setVariants({
+          $border: variants.$border === "content" ? "content" : false,
         });
       }
     } else {
-      ctx.setVariants({
+      setVariants({
         $borderType: "unset",
         $borderColor: "unset",
         $borderWeight: "unset",

@@ -293,11 +293,22 @@ export const layer = cv({
   },
   defaultVariants: {
     $layer: true,
-    $lightnessOffset: (ctx) =>
-      ctx.variants.$invert ? false : ctx.defaultValue,
-    $lightnessPush: (ctx) => (ctx.variants.$invert ? 20 : ctx.defaultValue),
-    $lightnessMin: (ctx) => (ctx.variants.$invert ? 23 : ctx.defaultValue),
-    $lightnessMax: (ctx) => (ctx.variants.$invert ? 96 : ctx.defaultValue),
+    $lightnessOffset(defaultValue, variants) {
+      if (variants.$invert) return false;
+      return defaultValue;
+    },
+    $lightnessPush(defaultValue, variants) {
+      if (variants.$invert) return 20;
+      return defaultValue;
+    },
+    $lightnessMin(defaultValue, variants) {
+      if (variants.$invert) return 23;
+      return defaultValue;
+    },
+    $lightnessMax(defaultValue, variants) {
+      if (variants.$invert) return 96;
+      return defaultValue;
+    },
   },
   refine({ variants, setVariants }) {
     if (variants.$layer !== "ghost") return;

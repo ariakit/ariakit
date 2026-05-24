@@ -21,7 +21,7 @@ export const hover = cv({
      * If you want the opposite effect, where the offset increases as contrast
      * goes up, use `$hoverPush` instead.
      */
-    $hoverOffset: (value?: string | number | boolean) => {
+    $hoverOffset(value?: string | number | boolean) {
       return getLightnessStyleClass({
         value,
         property: "--hover-offset",
@@ -42,7 +42,7 @@ export const hover = cv({
      * If you want the opposite effect, where the offset decreases as contrast
      * goes up, use `$hoverOffset` instead.
      */
-    $hoverPush: (value?: string | number | boolean) => {
+    $hoverPush(value?: string | number | boolean) {
       return getLightnessStyleClass({
         value,
         property: "--hover-push",
@@ -53,7 +53,7 @@ export const hover = cv({
      * Lightens the layer when the element is hovered by the specified amount.
      * When set to `true`, it lightens the layer by one step.
      */
-    $hoverLighten: (value?: string | number | boolean) => {
+    $hoverLighten(value?: string | number | boolean) {
       return getLightnessStyleClass({
         value,
         property: "--hover-lighten",
@@ -64,7 +64,7 @@ export const hover = cv({
      * Darkens the layer when the element is hovered by the specified amount.
      * When set to `true`, it darkens the layer by one step.
      */
-    $hoverDarken: (value?: string | number | boolean) => {
+    $hoverDarken(value?: string | number | boolean) {
       return getLightnessStyleClass({
         value,
         property: "--hover-darken",
@@ -75,7 +75,7 @@ export const hover = cv({
      * Increases the layer chroma when the element is hovered by the specified
      * amount. When set to `true`, it increases the chroma by one step.
      */
-    $hoverSaturate: (value?: string | number | boolean) => {
+    $hoverSaturate(value?: string | number | boolean) {
       return getChromaStyleClass({
         value,
         property: "--hover-saturate",
@@ -86,7 +86,7 @@ export const hover = cv({
      * Decreases the layer chroma when the element is hovered by the specified
      * amount. When set to `true`, it decreases the chroma by one step.
      */
-    $hoverDesaturate: (value?: string | number | boolean) => {
+    $hoverDesaturate(value?: string | number | boolean) {
       return getChromaStyleClass({
         value,
         property: "--hover-desaturate",

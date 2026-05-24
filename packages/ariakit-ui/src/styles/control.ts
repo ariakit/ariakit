@@ -81,10 +81,12 @@ export const control = cv({
     $gap: "md",
     $gapY: "auto",
     $p: 2,
-    $px: (ctx) =>
-      ctx.variants.$p === "none" ? "none" : (ctx.defaultValue ?? "md"),
+    $px(defaultValue, variants) {
+      if (variants.$p === "none") return "none";
+      return defaultValue ?? "md";
+    },
   },
-  refine: ({ variants, setVariants, addClass }) => {
+  refine({ variants, setVariants, addClass }) {
     if (variants.$disabled) {
       setVariants({ $invert: false });
     }
@@ -195,43 +197,41 @@ export const controlSlot = cv({
   defaultVariants: {
     $kind: "icon",
     $size: "md",
-    $layer: (ctx) => {
-      if (ctx.variants.$kind === "badge" && ctx.defaultValue === true) {
+    $layer(defaultValue, variants) {
+      if (variants.$kind === "badge" && defaultValue === true) {
         return "brand";
       }
-      return ctx.defaultValue;
+      return defaultValue;
     },
-    $lightnessOffset: (ctx) =>
-      ctx.variants.$kind === "avatar"
-        ? (ctx.defaultValue ?? true)
-        : ctx.defaultValue,
-    $rounded: (ctx) => {
-      if (ctx.variants.$floating) return "full";
-      if (ctx.variants.$kind === "avatar") return "full";
-      return ctx.defaultValue ?? "auto";
+    $lightnessOffset(defaultValue, variants) {
+      if (variants.$kind === "avatar") {
+        return defaultValue ?? true;
+      }
+      return defaultValue;
     },
-    $p: (ctx) => {
-      if (ctx.variants.$kind === "badge") return ctx.variants.$size;
-      if (ctx.variants.$kind === "avatar") return ctx.variants.$size;
-      return ctx.defaultValue ?? "unset";
+    $rounded: (defaultValue, variants) => {
+      if (variants.$floating) return "full";
+      if (variants.$kind === "avatar") return "full";
+      return defaultValue ?? "auto";
+    },
+    $p(defaultValue, variants) {
+      if (variants.$kind === "badge") return variants.$size;
+      if (variants.$kind === "avatar") return variants.$size;
+      return defaultValue ?? "unset";
     },
     $rowSpan: 1,
-    $mx: (ctx) => ctx.variants.$size,
-    $square: (ctx) => {
-      if (ctx.variants.$kind === "icon") return true;
-      if (ctx.variants.$kind === "avatar") return true;
-      return ctx.defaultValue;
+    $mx: (_, variants) => variants.$size,
+    $square(defaultValue, variants) {
+      if (variants.$kind === "icon") return true;
+      if (variants.$kind === "avatar") return true;
+      return defaultValue;
     },
-    $borderColor: (ctx) => {
-      if (ctx.variants.$kind !== "badge") return ctx.defaultValue;
-      if (typeof ctx.variants.$layer !== "string") return ctx.defaultValue;
-      if (!isFrameBorderColor(ctx.variants.$layer)) return ctx.defaultValue;
-      return ctx.defaultValue ?? ctx.variants.$layer;
+    $borderColor(defaultValue, variants) {
+      if (variants.$kind !== "badge") return defaultValue;
+      if (typeof variants.$layer !== "string") return defaultValue;
+      if (!isFrameBorderColor(variants.$layer)) return defaultValue;
+      return defaultValue ?? variants.$layer;
     },
-    $contrast: (ctx) =>
-      ctx.variants.$kind === "badge"
-        ? (ctx.defaultValue ?? true)
-        : ctx.defaultValue,
   },
   refine: ({ variants, setVariants, addClass }) => {
     const mdOrLess = [undefined, "none", "xs", "sm", "md"];
@@ -342,12 +342,14 @@ export const controlSeparator = cv({
     $size: "md",
     $width: 1,
     $kind: "pipe",
-    $shy: (ctx) =>
-      ctx.variants.$kind !== "chevron" && ctx.variants.$size !== "full"
-        ? true
-        : ctx.defaultValue,
+    $shy(defaultValue, variants) {
+      if (variants.$kind !== "chevron" && variants.$size !== "full") {
+        return true;
+      }
+      return defaultValue;
+    },
   },
-  refine: ({ variants, setVariants }) => {
+  refine({ variants, setVariants }) {
     if (
       variants.$kind === "chevron" &&
       (variants.$size === "lg" || variants.$size === "full")
