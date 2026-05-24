@@ -28,16 +28,19 @@ export const button = cv({
   variants: {
     $kind: {
       flat: "",
+      bevel: "ui-bevel-button",
     },
   },
   defaultVariants: {
     $kind: "flat",
     $gapY: "none",
-    $lightnessOffset: true,
+    $lightnessOffset: (ctx) =>
+      ctx.variants.$kind === "bevel"
+        ? (ctx.defaultValue ?? false)
+        : (ctx.defaultValue ?? true),
     $hoverOffset: true,
     $focus: true,
     $active: true,
-    $bevelButton: true,
   },
 });
 

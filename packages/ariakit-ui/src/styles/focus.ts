@@ -28,8 +28,10 @@ export const focus = cv({
       2: "outline-offset-2",
     },
   },
-  refine: ({ variants, setDefaultVariants }) => {
-    if (!variants.$focus) return;
-    // setDefaultVariants({ $focusColor: "primary", $focusOffset: 1 });
+  defaultVariants: {
+    $focusColor: (ctx) =>
+      ctx.variants.$focus ? (ctx.defaultValue ?? "primary") : ctx.defaultValue,
+    $focusOffset: (ctx) =>
+      ctx.variants.$focus ? (ctx.defaultValue ?? 1) : ctx.defaultValue,
   },
 });

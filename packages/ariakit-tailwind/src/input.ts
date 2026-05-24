@@ -14,7 +14,6 @@ import {
 const l = "l";
 const c = "c";
 const h = "h";
-const alpha = "alpha";
 
 const CHROMA_MAX_SRGB = 0.32;
 const CHROMA_MAX_P3 = 0.368;
@@ -593,6 +592,7 @@ const layerColorVars = {
   layer: ak.prop.canvas("layer", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
   layerEdgeContext: _ak.var("lec"),
+  layerEdgeAlphaContext: _ak.var("lea"),
   layerParent: ak.var("layer-parent", "canvas"),
   edge: ak.prop.black("edge"),
   text: ak.prop.black("text", { inherits: true }),
@@ -1323,6 +1323,7 @@ utility(
   layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
     set(provide(vars.layerEdgeContext), vars.edge),
+    set(provide(vars.layerEdgeAlphaContext), edgeAlpha),
     set(vars.layerParent, inherit(vars.layerParentContext)),
   ]),
 );
@@ -1637,12 +1638,13 @@ utility("edge-raw", set(inputs.edgeA, 1), set(inputs.edgePushL, 0));
 
 utility(
   "edge-inherit",
-  layerContext.read(({ inherit }) => {
+  layerContext.readPrevious(({ inherit }) => {
     const parentEdge = inherit(vars.layerEdgeContext, vars.layer);
+    const parentEdgeAlpha = inherit(vars.layerEdgeAlphaContext, inputs.edgeA);
     return [
       set(inputs.edgeColor, parentEdge),
       set(inputs.edgePushL, fn.neg(vars.edgeContrastValue)),
-      set(inputs.edgeA, fn.sub(alpha, vars.edgeContrastValue)),
+      set(inputs.edgeA, fn.sub(parentEdgeAlpha, vars.edgeContrastValue)),
     ];
   }),
 );

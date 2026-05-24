@@ -29,11 +29,11 @@ export const border = cv({
      * `$border` set to `inherit`.
      */
     $border: {
-      true: "ak-edge-(color:--border-color) ak-edge-(--border-weight)",
+      true: "ak-edge-color-(--border-color) ak-edge-alpha-(--border-weight)",
       inherit: [
-        "[@container_not_style(--border-contrast:1)]:ak-edge-(color:--border-color)",
-        "[@container_not_style(--border-contrast:1)]:ak-edge-(--border-weight)",
-        "[@container_style(--border-contrast:1)]:ak-edge-(color:--border-color)",
+        "[@container_not_style(--border-contrast:1)]:ak-edge-color-(--border-color)",
+        "[@container_not_style(--border-contrast:1)]:ak-edge-alpha-(--border-weight)",
+        "[@container_style(--border-contrast:1)]:ak-edge-color-(--border-color)",
         "[@container_style(--border-contrast:1)]:ak-edge-raw",
       ],
       content: "ak-frame-border-0! ak-frame-ring-0!",
@@ -44,12 +44,12 @@ export const border = cv({
     $borderWeight: {
       unset: "",
       adaptive: "[--border-weight:0]",
-      light: "[--border-weight:5]",
-      normal: "[--border-weight:10]",
-      medium: "[--border-weight:20]",
-      bold: "[--border-weight:40]",
+      light: "[--border-weight:0.05]",
+      normal: "[--border-weight:0.1]",
+      medium: "[--border-weight:0.2]",
+      bold: "[--border-weight:0.4]",
       contrast:
-        "[--border-contrast:1] ak-edge-(color:--border-color) ak-edge-raw",
+        "[--border-contrast:1] ak-edge-color-(--border-color) ak-edge-raw",
     },
     /**
      * Sets the element’s border style. `bordering` uses `border` in dark mode
@@ -79,33 +79,33 @@ export const border = cv({
       dashed: "ak-frame-border-(--border-width) border-dashed",
       dotted: "ak-frame-border-(--border-width) border-dotted",
     },
-  },
-  computedVariants: {
     /**
      * Sets the size of the border.
      * @default 1
      */
     $borderWidth: (value: "unset" | number) => {
       if (value === "unset") return;
-      return { "--border-width": `${value}px` };
+      return { style: { "--border-width": `${value}px` } };
     },
   },
   defaultVariants: {
-    $borderType: "border",
-    $borderColor: "default",
-    $borderWeight: "normal",
-    $borderWidth: 1,
+    $borderType: (ctx) =>
+      ctx.variants.$border === "inherit"
+        ? "inherit"
+        : (ctx.defaultValue ?? "border"),
+    $borderColor: (ctx) =>
+      ctx.variants.$border === "inherit"
+        ? "unset"
+        : (ctx.defaultValue ?? "default"),
+    $borderWeight: (ctx) =>
+      ctx.variants.$border === "inherit"
+        ? "unset"
+        : (ctx.defaultValue ?? "normal"),
+    $borderWidth: (ctx) =>
+      ctx.variants.$border === "inherit" ? "unset" : (ctx.defaultValue ?? 1),
   },
   refine: (ctx) => {
     if (ctx.variants.$border) {
-      if (ctx.variants.$border === "inherit") {
-        // ctx.setDefaultVariants({
-        //   $borderType: "inherit",
-        //   $borderWidth: "unset",
-        //   $borderColor: "unset",
-        //   $borderWeight: "unset",
-        // });
-      }
       if (ctx.variants.$borderWeight === "contrast") {
         ctx.setVariants({
           $border: ctx.variants.$border === "content" ? "content" : false,

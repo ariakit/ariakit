@@ -16,18 +16,13 @@ export const checkboxCard = cv({
     "not-ui-disabled:ui-checked-within:ak-edge-raw",
     "ui-focus-visible-within:outline-2 outline-offset-2",
     "ui-checked-within:ak-layer-primary ui-checked-within:ak-layer-mix-20",
+    "ui-checked-within:[--_ak-layer-idle-lightness-offset:0]",
     "[&_input]:sr-only",
   ],
   defaultVariants: {
-    $bg: "light",
     $rounded: "xl",
-    $p: "lg",
+    $p: 3,
     $border: true,
-  },
-  refine: (ctx) => {
-    if (ctx.variants.$rounded === "full") {
-      // ctx.setDefaultVariants({ $p: "lg" });
-    }
   },
 });
 
@@ -36,9 +31,9 @@ export const checkboxCardGrid = cv({
     "grid auto-rows-fr gap-3",
     "grid-cols-[repeat(auto-fill,minmax(var(--checkbox-card-min-w),1fr))]",
   ],
-  computedVariants: {
+  variants: {
     $minItemSize: (value: string) => ({
-      "--checkbox-card-min-w": value,
+      style: { "--checkbox-card-min-w": value },
     }),
   },
   defaultVariants: {
@@ -51,7 +46,7 @@ export const checkboxCardCheck = cv({
   class: [
     "*:hidden! [&>svg]:stroke-[2.5]",
     "group-ui-disabled/checkbox:ak-ink-0",
-    "group-not-ui-disabled/checkbox:group-ui-checked-within/checkbox:ak-layer-(color:--checkbox-card-edge)",
+    "group-not-ui-disabled/checkbox:group-ui-checked-within/checkbox:ak-layer-color-(--checkbox-card-edge)",
     "group-not-ui-disabled/checkbox:group-ui-checked-within/checkbox:ring",
     "group-not-ui-disabled/checkbox:group-ui-checked-within/checkbox:ring-(--ak-layer)",
     "group-not-ui-disabled/checkbox:group-ui-checked-within/checkbox:border-0",
@@ -64,9 +59,9 @@ export const checkboxCardCheck = cv({
     },
   },
   defaultVariants: {
-    $bg: "dark",
+    $darken: 6,
     $border: true,
-    $borderType: "bordering",
+    $borderType: "auto",
     $rounded: "full",
     $size: "lg",
   },

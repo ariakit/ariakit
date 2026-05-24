@@ -26,8 +26,6 @@ import {
   checkboxCardLabel,
 } from "@ariakit/ui/styles/checkbox-card.ts";
 import { controlGroup, controlSeparator } from "@ariakit/ui/styles/control.ts";
-import { frame } from "@ariakit/ui/styles/frame.ts";
-import { layer } from "@ariakit/ui/styles/layer.ts";
 import {
   ActivityIcon,
   ArrowRightIcon,
@@ -65,38 +63,6 @@ export default function Example() {
   const [values, setValues] = useState<(keyof typeof interests)[]>(["finance"]);
   return (
     <Group className="flex flex-col gap-4">
-      <div {...layer.jsx({ $lightnessOffset: true })}>dsadas</div>
-      <div {...layer.jsx({ $layer: "canvas" })}>dsadas</div>
-      <div {...layer.jsx({ $layer: "brand", $mix: 20, $lightnessMin: 20 })}>
-        brand
-      </div>
-      <div {...layer.jsx({ $layer: "brand", $hue: 224 })}>brand</div>
-      <div {...layer.jsx({ $layer: "success" })}>dsadas</div>
-      <div {...layer.jsx({ $layer: "warning" })}>dsadas</div>
-      <div
-        {...frame.jsx({
-          $lightnessOffset: true,
-          $border: 2,
-          // $borderWeight: "bold",
-          $borderColor: "brand",
-          $borderRaw: true,
-          $p: 1,
-          $rounded: "xl",
-        })}
-      >
-        <div
-          {...frame.jsx({
-            $lightnessOffset: true,
-            $border: "inherit",
-            // $borderRaw: true,
-            // $borderColor: "brand",
-            $p: 1,
-            className: "ui-bevel-button",
-          })}
-        >
-          dsadas
-        </div>
-      </div>
       <GroupLabel className="text-xl font-medium  text-center">
         Select your interests
       </GroupLabel>
@@ -237,27 +203,27 @@ export default function Example() {
 
       <div className="flex flex-wrap gap-8 justify-center w-160 items-center">
         <ButtonGroup
-          $bg="popLightDark"
+          $lightnessOffset
           $rounded="full"
           $size="sm"
           $layout="stretch"
           className="overflow-hidden relative ak-dark:ring w-100!"
         >
-          <Button $bg="ghost" $px="lg">
+          <Button $layer="ghost" $px="lg">
             <ButtonSlot>
               <UserIcon />
             </ButtonSlot>
             <ButtonLabel>Profile</ButtonLabel>
           </Button>
           <ButtonSeparator />
-          <Button $bg="ghost" $px="lg">
+          <Button $layer="ghost" $px="lg">
             <ButtonSlot>
               <SettingsIcon />
             </ButtonSlot>
             <ButtonLabel>Settings</ButtonLabel>
           </Button>
           <ButtonSeparator />
-          <Button $bg="ghost" $px="lg">
+          <Button $layer="ghost" $px="lg">
             <ButtonSlot>
               <SettingsIcon />
             </ButtonSlot>
@@ -267,14 +233,13 @@ export default function Example() {
           <ButtonGlider $state="focus" />
           <ButtonGlider
             $state="selected"
-            // $bg="light2"
             // $border="adaptive"
             // $borderType="inset"
             $kind="bevel"
             className="shadow-[0_0_12px_--alpha(black/0.05),0_8px_16px_--alpha(black/0.05)]"
           />
         </ButtonGroup>
-        <Tabs $rounded="2xl" $border $borderWidth={4} $p="none">
+        <Tabs $rounded="2xl" $border={4} $p="none">
           <TabList>
             <Tab>Profile</Tab>
             <TabSeparator />
@@ -292,7 +257,7 @@ export default function Example() {
             <TabPanel>Panel 3</TabPanel>
           </TabPanels>
         </Tabs>
-        <Tabs $rounded="3xl" $border $borderWidth={4} $p="lg">
+        <Tabs $rounded="3xl" $border={4} $p={3}>
           <TabList>
             <Tab>Profile</Tab>
             <TabSeparator />
@@ -312,11 +277,11 @@ export default function Example() {
         </Tabs>
         <div className="ak-frame ak-frame-xl/10 ak-frame-bordering shadow-lg ak-layer ak-layer-3 overflow-clip">
           <Tabs
-            $p="sm"
+            $p={1}
             $rounded="2xl"
-            $borderWidth={1}
-            $borderColor="primary"
-            $borderWeight="contrast"
+            $border={1}
+            $borderRaw
+            className="ak-edge-primary"
           >
             <TabList>
               <Tab>Profile</Tab>
@@ -330,18 +295,23 @@ export default function Example() {
               <Tab>Comments</Tab>
               <TabGlider $state="hover" />
               <TabGlider $state="selected" $kind="folder" />
-              <TabGlider $state="focus" $bg="primary" />
+              <TabGlider $state="focus" $layer="primary" />
             </TabList>
             <TabPanels>
               <TabPanel single className="grid">
                 <ButtonGroup
                   $layout="vertical"
-                  $roundedType="overflow"
-                  className="invisible"
+                  className="overflow-clip invisible"
                 >
-                  <Button $bg="ghost">Panel 1</Button>
-                  <Button $bg="ghost">Panel 1</Button>
-                  <Button $bg="ghost">Panel 1</Button>
+                  <Button $layer="ghost" $border={false}>
+                    Panel 1
+                  </Button>
+                  <Button $layer="ghost" $border={false}>
+                    Panel 1
+                  </Button>
+                  <Button $layer="ghost" $border={false}>
+                    Panel 1
+                  </Button>
                   <ButtonGlider $state="hover" />
                 </ButtonGroup>
               </TabPanel>
@@ -353,8 +323,7 @@ export default function Example() {
             $p="none"
             $rounded="xl"
             $border={true}
-            $borderType="bordering"
-            $roundedType="overflow"
+            className="overflow-clip"
           >
             <TabList>
               <Tab $border={false}>Tab 1</Tab>
@@ -363,52 +332,58 @@ export default function Example() {
               <TabSeparator />
               <Tab $border={false}>Tab 3</Tab>
               <TabGlider $state="hover" />
-              <TabGlider $state="selected" $kind="folder" $bg="light" $border />
+              <TabGlider $state="selected" $kind="folder" $border />
               <TabGlider
                 $state="focus"
                 className="rounded-b-none -z-2 [clip-path:inset(-0.25em_-0.25em_0.25em_-0.25em)]"
               />
             </TabList>
             <TabPanel single className="grid">
-              <ButtonGroup $layout="vertical" $roundedType="overflow">
-                <Button $bg="ghost">Panel 1</Button>
-                <Button $bg="ghost">Panel 1</Button>
-                <Button $bg="ghost">Panel 1</Button>
+              <ButtonGroup $layout="vertical" className="overflow-clip">
+                <Button $layer="ghost" $border={false}>
+                  Panel 1
+                </Button>
+                <Button $layer="ghost" $border={false}>
+                  Panel 1
+                </Button>
+                <Button $layer="ghost" $border={false}>
+                  Panel 1
+                </Button>
                 <ButtonGlider $state="hover" />
               </ButtonGroup>
             </TabPanel>
           </Tabs>
         </div>
         <div {...controlGroup({})}>
-          <Button $bg="pop" $color="danger">
+          <Button>
             <ButtonSlot>
               <LayoutDashboardIcon />
             </ButtonSlot>
             <ButtonLabel>Overview</ButtonLabel>
           </Button>
           <div {...controlSeparator({})}></div>
-          <Button $bg="ghost">
+          <Button $layer="ghost">
             <ButtonSlot>
               <ListIcon />
             </ButtonSlot>
             <ButtonLabel>Details</ButtonLabel>
           </Button>
           <div {...controlSeparator({})}></div>
-          <Button $bg="ghost">
+          <Button $layer="ghost">
             <ButtonSlot>
               <ActivityIcon />
             </ButtonSlot>
             <ButtonLabel>Activity</ButtonLabel>
           </Button>
           <div {...controlSeparator({})}></div>
-          <Button $bg="ghost">
+          <Button $layer="ghost">
             <ButtonSlot>
               <FilesIcon />
             </ButtonSlot>
             <ButtonLabel>Files</ButtonLabel>
           </Button>
           <div {...controlSeparator({})}></div>
-          <Button $bg="ghost">
+          <Button $layer="ghost">
             <ButtonSlot>
               <MessageSquareIcon />
             </ButtonSlot>
@@ -416,7 +391,7 @@ export default function Example() {
           </Button>
         </div>
 
-        <Button $px="xl" $bg="invert" $rounded="full">
+        <Button $px="xl" $invert $contrast $rounded="full">
           <ButtonSlot $kind="avatar" $rowSpan={2} $size="xl" $rounded="auto">
             <img
               src="https://pbs.twimg.com/profile_images/1964797260597772288/uQG557we_400x400.jpg"
@@ -443,7 +418,15 @@ export default function Example() {
           </ButtonSlot>
           <ButtonLabel>Following</ButtonLabel>
         </Button>
-        <Button $bg="warning" $kind="bevel" $rounded="md" $px="xl">
+        <Button
+          $layer="warning"
+          $hue="orange"
+          $darken={2}
+          $desaturate
+          $kind="bevel"
+          $rounded="md"
+          $px="xl"
+        >
           <ButtonSlot>
             <PlusIcon />
           </ButtonSlot>
@@ -458,16 +441,16 @@ export default function Example() {
             <BadgeLabel>New</BadgeLabel>
           </ButtonSlot>
         </Button>
-        <Button $rounded="full" $bg="invert">
+        <Button $rounded="full" $invert $contrast>
           <ButtonLabel>Continue</ButtonLabel>
-          <ButtonSlot $size="2xl" $bg="invert">
+          <ButtonSlot $size="2xl" $p="2xl" $invert $contrast>
             <ArrowRightIcon />
           </ButtonSlot>
         </Button>
-        <Button $rounded="xl" $p="sm" $bg="ghost" $border $size="sm">
+        <Button $rounded="xl" $p={1} $layer="ghost" $border $size="sm">
           <ButtonSlot
             $kind="badge"
-            $bg="primary"
+            $layer="primary"
             $mix={15}
             // $border="medium"
             $size="xl"

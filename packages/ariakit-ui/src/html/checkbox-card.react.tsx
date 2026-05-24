@@ -17,7 +17,7 @@ export interface CheckboxCardProps
 export function CheckboxCard({ children, ...props }: CheckboxCardProps) {
   const [variantProps, rest] = splitProps(props, checkboxCard);
   return (
-    <label {...checkboxCard({ $disabled: rest.disabled, ...variantProps })}>
+    <label {...checkboxCard.jsx({ $disabled: rest.disabled, ...variantProps })}>
       <input type="checkbox" {...rest} />
       {children}
     </label>
@@ -29,7 +29,7 @@ export interface CheckboxCardLabelProps
 
 export function CheckboxCardLabel(props: CheckboxCardLabelProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardLabel);
-  return <span {...checkboxCardLabel(variantProps)} {...rest} />;
+  return <span {...checkboxCardLabel.jsx(variantProps)} {...rest} />;
 }
 
 export interface CheckboxCardSlotProps
@@ -37,7 +37,7 @@ export interface CheckboxCardSlotProps
 
 export function CheckboxCardSlot(props: CheckboxCardSlotProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardSlot);
-  return <span {...checkboxCardSlot(variantProps)} {...rest} />;
+  return <span {...checkboxCardSlot.jsx(variantProps)} {...rest} />;
 }
 
 export interface CheckboxCardCheckProps
@@ -46,7 +46,7 @@ export interface CheckboxCardCheckProps
 export function CheckboxCardCheck(props: CheckboxCardCheckProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardCheck);
   return (
-    <span {...checkboxCardCheck(variantProps)} {...rest}>
+    <span {...checkboxCardCheck.jsx(variantProps)} {...rest}>
       {rest.children || <CheckIcon />}
     </span>
   );
@@ -57,7 +57,7 @@ export interface CheckboxCardContentProps
 
 export function CheckboxCardContent(props: CheckboxCardContentProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardContent);
-  return <span {...checkboxCardContent(variantProps)} {...rest} />;
+  return <span {...checkboxCardContent.jsx(variantProps)} {...rest} />;
 }
 
 export interface CheckboxCardDescriptionProps
@@ -67,5 +67,5 @@ export interface CheckboxCardDescriptionProps
 
 export function CheckboxCardDescription(props: CheckboxCardDescriptionProps) {
   const [variantProps, rest] = splitProps(props, checkboxCardDescription);
-  return <span {...checkboxCardDescription(variantProps)} {...rest} />;
+  return <span {...checkboxCardDescription.jsx(variantProps)} {...rest} />;
 }

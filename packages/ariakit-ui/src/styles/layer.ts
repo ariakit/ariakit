@@ -28,7 +28,10 @@ export const layer = cv({
      */
     $layer: {
       true: "ak-layer",
+      ghost: "ak-layer bg-transparent",
       canvas: "ak-layer ak-layer-canvas",
+      primary: "ak-layer ak-layer-primary",
+      secondary: "ak-layer ak-layer-secondary",
       brand: "ak-layer ak-layer-brand",
       success: "ak-layer ak-layer-success",
       warning: "ak-layer ak-layer-warning",
@@ -277,5 +280,25 @@ export const layer = cv({
     $lightnessPush: (ctx) => (ctx.variants.$invert ? 20 : ctx.defaultValue),
     $lightnessMin: (ctx) => (ctx.variants.$invert ? 23 : ctx.defaultValue),
     $lightnessMax: (ctx) => (ctx.variants.$invert ? 96 : ctx.defaultValue),
+  },
+  refine: ({ variants, setVariants }) => {
+    if (variants.$layer !== "ghost") return;
+    setVariants({
+      $invert: false,
+      $lightnessOffset: false,
+      $lightnessPush: false,
+      $lighten: false,
+      $darken: false,
+      $lightnessMin: null,
+      $lightnessMax: null,
+      $chroma: undefined,
+      $chromaMin: undefined,
+      $chromaMax: undefined,
+      $saturate: false,
+      $desaturate: false,
+      $hue: undefined,
+      $contrast: false,
+      $mix: false,
+    });
   },
 });

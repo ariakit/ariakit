@@ -94,7 +94,7 @@ import Layout from "./_layout.astro";
       <ButtonReact.Button $rounded="full" $size="sm" $px="lg">
         <!-- <ButtonReact.ButtonIcon><CheckIcon /></ButtonReact.ButtonIcon> -->
         <ButtonReact.ButtonLabel>Following</ButtonReact.ButtonLabel>
-        <ButtonReact.ButtonSlot $bg="pop">
+        <ButtonReact.ButtonSlot $lightnessOffset>
           <span class="text-[0.875em] ak-ink-60">32</span>
         </ButtonReact.ButtonSlot>
       </ButtonReact.Button>
@@ -104,15 +104,15 @@ import Layout from "./_layout.astro";
       <CheckboxCard
         $size="sm"
         $rounded="xl"
-        $bg="ghost"
+        $lightnessOffset={false}
         $border={false}
-        $depth={3}
+        $activeDepth={3}
       >
         <CheckboxCardCheck
           $rounded="auto"
           $size="sm"
-          $bg="pop"
-          $borderWeight="contrast"
+          $lightnessOffset
+          $borderRaw
         />
         Do this?
         <span slot="description"
@@ -121,7 +121,7 @@ import Layout from "./_layout.astro";
         <CopyIcon class="" />
       </CheckboxCard>
       <ButtonSolid.Button>Button</ButtonSolid.Button>
-      <ButtonSolid.Button $bg="primary">
+      <ButtonSolid.Button $layer="primary">
         <ButtonSolid.ButtonSlot>
           <CopyIcon />
         </ButtonSolid.ButtonSlot>
@@ -130,7 +130,9 @@ import Layout from "./_layout.astro";
           <ChevronDownIcon />
         </ButtonSolid.ButtonSlot>
       </ButtonSolid.Button>
-      <ButtonSolid.Button $bg="ghost" $border>Button</ButtonSolid.Button>
+      <ButtonSolid.Button $lightnessOffset={false} $border>
+        Button
+      </ButtonSolid.Button>
       <ButtonSolid.Button>
         <CopyIcon slot="iconStart" />
         Button
@@ -145,13 +147,13 @@ import Layout from "./_layout.astro";
         </BadgeSlot>
         <BadgeLabel>Badge Astro</BadgeLabel>
       </Badge>
-      <BadgeSolid $bg="danger" $size="lg">
+      <BadgeSolid $layer="danger" $size="lg">
         <BadgeSlot>
           <CopyIcon />
         </BadgeSlot>
         <BadgeLabel>Badge Solid</BadgeLabel>
       </BadgeSolid>
-      <BadgeSolid $bg="danger" $size="lg">
+      <BadgeSolid $layer="danger" $size="lg">
         <BadgeSlot>
           <CopyIcon />
         </BadgeSlot>
@@ -164,7 +166,7 @@ import Layout from "./_layout.astro";
         <BadgeLabel>Badge</BadgeLabel>
       </Badge>
 
-      <Badge $bg="primary" $border>
+      <Badge $layer="primary" $border>
         <BadgeLabel>Badge Border</BadgeLabel>
       </Badge>
       <Badge>
@@ -173,38 +175,38 @@ import Layout from "./_layout.astro";
         </BadgeSlot>
         <BadgeLabel>Badge</BadgeLabel>
       </Badge>
-      <Badge $bg="secondary">
+      <Badge $layer="secondary">
         <BadgeSlot>
           <CopyIcon />
         </BadgeSlot>
         <BadgeLabel>Badge</BadgeLabel>
       </Badge>
-      <Badge $bg="secondary" className="border-dashed">
+      <Badge $layer="secondary" className="border-dashed">
         <BadgeSlot>
           <div class="size-full bg-blue-500 rounded-full"></div>
         </BadgeSlot>
         <BadgeLabel>Badge</BadgeLabel>
       </Badge>
-      <Badge $bg="success">
+      <Badge $layer="success">
         <BadgeLabel>Badge</BadgeLabel>
       </Badge>
-      <Badge $bg="warning">
+      <Badge $layer="warning">
         <BadgeLabel>Badge</BadgeLabel>
       </Badge>
-      <Badge $bg="danger">
+      <Badge $layer="danger">
         <BadgeLabel>Badge</BadgeLabel>
       </Badge>
     </div>
     <div
       class="grid grid-cols-2 gap-14 w-max p-40 place-content-center place-items-center mt-20"
     >
-      <Badge $bg="success" className="bg-green-800">
+      <Badge $layer="success" className="bg-green-800">
         <span class="text-white">Success</span>
       </Badge>
-      <Badge $bg="success">
+      <Badge $layer="success">
         <span class="text-white">Success</span>
       </Badge>
-      <Badge $bg="success" className="max-w-40">
+      <Badge $layer="success" className="max-w-40">
         <BadgeSlot>
           <CircleCheckBigIcon />
         </BadgeSlot>
@@ -212,10 +214,10 @@ import Layout from "./_layout.astro";
           Success dhsakjdh ajks dsahk dsahk dhsakj
         </BadgeLabel>
       </Badge>
-      <Badge $bg="success">
+      <Badge $layer="success">
         <BadgeLabel>Success</BadgeLabel>
       </Badge>
-      <Badge $bg="success">
+      <Badge $layer="success">
         <BadgeSlot>
           <CircleCheckBigIcon />
         </BadgeSlot>

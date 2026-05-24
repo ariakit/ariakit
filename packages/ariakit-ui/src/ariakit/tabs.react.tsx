@@ -39,7 +39,7 @@ export function Tabs({
       setSelectedId={setSelectedId}
       defaultSelectedId={defaultSelectedId}
     >
-      <div {...tabs(variantProps)} {...rest} />
+      <div {...tabs.jsx(variantProps)} {...rest} />
     </TabProvider>
   );
 }
@@ -60,7 +60,7 @@ export interface TabProps extends ak.TabProps, VariantProps<typeof tab> {}
  */
 export function Tab(props: TabProps) {
   const [variantProps, rest] = splitProps(props, tab);
-  return <ak.Tab {...tab(variantProps)} {...rest} />;
+  return <ak.Tab {...tab.jsx(variantProps)} {...rest} />;
 }
 
 export interface TabListProps
@@ -76,7 +76,7 @@ export interface TabListProps
 export function TabList({ tabs, children, ...props }: TabListProps) {
   const [variantProps, rest] = splitProps(props, tabList);
   return (
-    <ak.TabList {...tabList(variantProps)} {...rest}>
+    <ak.TabList {...tabList.jsx(variantProps)} {...rest}>
       {Array.isArray(tabs)
         ? tabs.map((tab) => createRender(Tab, tab))
         : Object.entries(tabs ?? {}).map(([id, tab]) =>
@@ -95,7 +95,7 @@ export interface TabSeparatorProps
  */
 export function TabSeparator(props: TabSeparatorProps) {
   const [variantProps, rest] = splitProps(props, tabSeparator);
-  return <div {...tabSeparator(variantProps)} {...rest} />;
+  return <div {...tabSeparator.jsx(variantProps)} {...rest} />;
 }
 
 export interface TabLabelProps
@@ -106,7 +106,7 @@ export interface TabLabelProps
  */
 export function TabLabel(props: TabLabelProps) {
   const [variantProps, rest] = splitProps(props, tabLabel);
-  return <div {...tabLabel(variantProps)} {...rest} />;
+  return <div {...tabLabel.jsx(variantProps)} {...rest} />;
 }
 
 export interface TabSlotProps
@@ -117,7 +117,7 @@ export interface TabSlotProps
  */
 export function TabSlot(props: TabSlotProps) {
   const [variantProps, rest] = splitProps(props, tabSlot);
-  return <span {...tabSlot(variantProps)} {...rest} />;
+  return <span {...tabSlot.jsx(variantProps)} {...rest} />;
 }
 
 export interface TabPanelsProps
@@ -128,7 +128,7 @@ export interface TabPanelsProps
  */
 export function TabPanels(props: TabPanelsProps) {
   const [variantProps, rest] = splitProps(props, tabPanels);
-  return <div {...tabPanels(variantProps)} {...rest} />;
+  return <div {...tabPanels.jsx(variantProps)} {...rest} />;
 }
 
 export interface TabPanelProps extends ak.TabPanelProps {
@@ -152,5 +152,5 @@ export interface TabGliderProps
  */
 export function TabGlider(props: TabGliderProps) {
   const [variantProps, rest] = splitProps(props, tabGlider);
-  return <div {...tabGlider(variantProps)} {...rest} />;
+  return <div {...tabGlider.jsx(variantProps)} {...rest} />;
 }

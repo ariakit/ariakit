@@ -1,9 +1,8 @@
 import { cv } from "clava";
-import { border } from "./border.ts";
 import { layer } from "./layer.ts";
 
 export const folder = cv({
-  extend: [layer, border],
+  extend: [layer],
   variants: {
     $kind: {
       folder: [

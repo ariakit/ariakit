@@ -6,7 +6,7 @@ import type {
 } from "clava";
 
 export type Variant<
-  T extends CVComponent<any, any, any, any>,
+  T extends CVComponent<any, any, any>,
   K extends keyof VariantProps<T>,
 > = Record<VariantProps<T>[K] & string, ClassValue | StyleClassValue>;
 

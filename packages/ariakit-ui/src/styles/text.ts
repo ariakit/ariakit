@@ -27,6 +27,8 @@ export const text = cv({
      */
     $text: {
       true: "ak-text",
+      primary: "ak-text ak-text-primary",
+      secondary: "ak-text ak-text-secondary",
       brand: "ak-text ak-text-brand",
       success: "ak-text ak-text-success",
       warning: "ak-text ak-text-warning",

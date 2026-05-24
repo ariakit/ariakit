@@ -17,27 +17,28 @@ export const tabs = cv({
     "tabs [--fp:var(--ak-frame-padding,0px)] [--fr:var(--ak-frame-radius,0px)] [--fri:var(--ak-frame-ring,0px)] [--fbo:var(--ak-frame-border,0px)] [--fb:calc(var(--fbo)+var(--fri))]",
   ],
   defaultVariants: {
-    $borderType: "bordering",
-    $border: "content",
+    $borderType: "auto",
+    $border: true,
   },
 });
 
 export const tab = cv({
   extend: [button, folder],
-  class: "ui-selected:ak-layer",
+  class: ["ui-selected:ak-layer", "not-ui-selected:bg-transparent"],
   variants: {
     $kind: {
       folder: [
         "[--tab-radius:var(--ak-frame-radius)]",
         "[:first-child>&]:nth-[1_of_&]:ui-selected:before:[--ak-frame-radius:min(var(--tab-radius),var(--fp)/2)]",
         "[.tabs:not(:has(.glider))_&]:pb-[calc(var(--py)+var(--inset-padding,0px)+var(--fb))]",
+        "ui-selected:rounded-t-(--fr)",
         "not-ui-selected:border-transparent not-ui-selected:ring-0",
         "not-ui-selected:ui-hover:border-transparent",
         "not-ui-selected:ui-hover:bg-transparent",
         "not-ui-selected:ui-hover:after:-z-1",
         "not-ui-selected:ui-hover:after:absolute",
         "not-ui-selected:ui-hover:after:inset-0",
-        "not-ui-selected:ui-hover:after:ak-layer not-ui-selected:ui-hover:after:ak-layer-(color:--ak-layer-parent)",
+        "not-ui-selected:ui-hover:after:ak-layer not-ui-selected:ui-hover:after:ak-layer-color-(--ak-layer-parent)",
         "not-ui-selected:ui-hover:after:[--inset:max(0px,0.2em+var(--group-gap)/2-var(--fp)/2)]",
         "not-ui-selected:ui-hover:after:[--inset-x:calc(var(--inset)+var(--fri))]",
         "not-ui-selected:ui-hover:after:[--inset-b:calc(var(--inset)+var(--fb))]",
@@ -54,9 +55,17 @@ export const tab = cv({
     },
   },
   defaultVariants: {
-    $bg: "ghost",
+    $lightnessOffset: true,
     $kind: "folder",
-    $border: "inherit",
+    $rounded: "unset",
+    $borderType: "unset",
+    $borderColor: "unset",
+    $borderWeight: "unset",
+  },
+  refine: ({ variants, addClass }) => {
+    if (variants.$kind === "folder" && variants.$border !== false) {
+      addClass("ak-frame-border-(--fb)");
+    }
   },
 });
 
@@ -102,16 +111,21 @@ export const tabGlider = cv({
       ],
     },
   },
-  refine: (ctx) => {
-    if (ctx.variants.$kind === "folder") {
-      // ctx.setDefaultVariants({
-      //   $bg: "light",
-      //   $border: "inherit",
-      //   $borderType: "inherit",
-      //   $borderWeight: "unset",
-      //   $borderColor: "unset",
-      //   $borderWidth: "unset",
-      // });
+  defaultVariants: {
+    $lightnessOffset: (ctx) =>
+      ctx.variants.$kind === "folder"
+        ? (ctx.defaultValue ?? true)
+        : ctx.defaultValue,
+    $borderType: (ctx) =>
+      ctx.variants.$kind === "folder" ? "unset" : ctx.defaultValue,
+    $borderColor: (ctx) =>
+      ctx.variants.$kind === "folder" ? "unset" : ctx.defaultValue,
+    $borderWeight: (ctx) =>
+      ctx.variants.$kind === "folder" ? "unset" : ctx.defaultValue,
+  },
+  refine: ({ variants, addClass }) => {
+    if (variants.$kind === "folder" && variants.$border !== false) {
+      addClass("ak-frame-border-(--fb)");
     }
   },
 });
@@ -121,12 +135,15 @@ export const tabList = cv({
   class: [
     "rounded-b-none! pb-0",
     "after:w-[calc((var(--fr)-var(--fp))*2)]",
-    "bg-transparent not-has-[.glider]:gap-0 not-supports-anchor:gap-0",
+    "bg-transparent overflow-clip not-has-[.glider]:gap-0 not-supports-anchor:gap-0",
   ],
   defaultVariants: {
+    $cover: true,
     $p: "unset",
     $rounded: "unset",
-    $roundedType: "overflow",
+    $borderType: "unset",
+    $borderColor: "unset",
+    $borderWeight: "unset",
   },
 });
 
@@ -134,7 +151,7 @@ export const tabList = cv({
 export const tabPanels = cv({
   extend: [layer, frame],
   class: [
-    "relative panel ease-tabs -mt-(--ak-frame-border)",
+    "relative panel ease-tabs -mt-(--ak-frame-border) overflow-clip",
     // "rounded-ss-none",
     "[.tabs:has(:first-child>.control[aria-selected='false']:nth-child(1_of_.control))_&]:starting:rounded-ss-[min(var(--tab-radius,var(--ak-frame-radius,0px)),var(--fp)*0.5)]!",
     "[.tabs:has(:first-child>.control[aria-selected='true']:nth-child(1_of_.control))_&]:starting:rounded-ss-(--tab-radius,var(--ak-frame-radius,0px))!",
@@ -152,10 +169,16 @@ export const tabPanels = cv({
   },
   defaultVariants: {
     $roundedTop: "auto",
-    $layer: "light",
-    $p: "lg",
+    $lightnessOffset: true,
+    $p: 3,
     $rounded: "unset",
-    $roundedType: "overflow",
-    $border: "inherit",
+    $borderType: "unset",
+    $borderColor: "unset",
+    $borderWeight: "unset",
+  },
+  refine: ({ variants, addClass }) => {
+    if (variants.$border !== false) {
+      addClass("ak-frame-border-(--fb)");
+    }
   },
 });

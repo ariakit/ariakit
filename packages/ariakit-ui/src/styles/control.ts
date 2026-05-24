@@ -1,8 +1,17 @@
 import { cv } from "clava";
-import { border, isBorderColor } from "./border.ts";
 import { frame } from "./frame.ts";
 import { layer } from "./layer.ts";
-import { text } from "./text.ts";
+
+function isFrameBorderColor(
+  value: unknown,
+): value is "brand" | "success" | "warning" | "danger" {
+  return (
+    value === "brand" ||
+    value === "success" ||
+    value === "warning" ||
+    value === "danger"
+  );
+}
 
 export const control = cv({
   extend: [frame],
@@ -185,61 +194,69 @@ export const controlSlot = cv({
   defaultVariants: {
     $kind: "icon",
     $size: "md",
-    $rounded: "auto",
-    $p: "unset",
-    $rowSpan: 1,
-    $mx: (ctx) => {
-      return ctx.variants.$size;
+    $layer: (ctx) => {
+      if (ctx.variants.$kind === "badge" && ctx.defaultValue === true) {
+        return "primary";
+      }
+      return ctx.defaultValue;
     },
+    $lightnessOffset: (ctx) =>
+      ctx.variants.$kind === "avatar"
+        ? (ctx.defaultValue ?? true)
+        : ctx.defaultValue,
+    $rounded: (ctx) => {
+      if (ctx.variants.$floating) return "full";
+      if (ctx.variants.$kind === "avatar") return "full";
+      return ctx.defaultValue ?? "auto";
+    },
+    $p: (ctx) => {
+      if (ctx.variants.$kind === "badge") return ctx.variants.$size;
+      if (ctx.variants.$kind === "avatar") return ctx.variants.$size;
+      return ctx.defaultValue ?? "unset";
+    },
+    $rowSpan: 1,
+    $mx: (ctx) => ctx.variants.$size,
+    $square: (ctx) => {
+      if (ctx.variants.$kind === "icon") return true;
+      if (ctx.variants.$kind === "avatar") return true;
+      return ctx.defaultValue;
+    },
+    $borderColor: (ctx) => {
+      if (ctx.variants.$kind !== "badge") return ctx.defaultValue;
+      if (typeof ctx.variants.$layer !== "string") return ctx.defaultValue;
+      if (!isFrameBorderColor(ctx.variants.$layer)) return ctx.defaultValue;
+      return ctx.defaultValue ?? ctx.variants.$layer;
+    },
+    $contrast: (ctx) =>
+      ctx.variants.$kind === "badge"
+        ? (ctx.defaultValue ?? true)
+        : ctx.defaultValue,
   },
   refine: ({ variants, setVariants, addClass }) => {
-    // setDefaultVariants({ $mx: variants.$size });
-
     const mdOrLess = [undefined, "none", "xs", "sm", "md"];
     const lgOrLess = [...mdOrLess, "lg"];
+    let $size = variants.$size;
 
     // When a background is set, we adjust the slot’s size and padding to give
     // it room to breathe.
-    if (variants.$bg !== "unset") {
-      const $size = mdOrLess.includes(variants.$size) ? "lg" : variants.$size;
-      // setVariants({ $size });
-      // setDefaultVariants({ $mx: $size, $p: $size });
-      // Disabled frame
-      // addClass([
-      //   "group-[.disabled]/control:ak-layer-darken-6",
-      //   "group-[.disabled]/control:ak-ink-0",
-      // ]);
+    if (variants.$kind === "badge" || variants.$kind === "avatar") {
+      $size = mdOrLess.includes($size) ? "lg" : $size;
+      addClass([
+        "group-[.disabled]/control:ak-layer-darken-6",
+        "group-[.disabled]/control:ak-ink-0",
+      ]);
     }
 
     if (variants.$kind === "badge") {
-      const $size = lgOrLess.includes(variants.$size) ? "xl" : variants.$size;
-      const $bg = variants.$bg === "unset" ? "primary" : variants.$bg;
-      if (isBorderColor($bg)) {
-        // setDefaultVariants({ $borderColor: $bg });
-      }
-      // setVariants({ $size, $bg });
-      // setDefaultVariants({
-      //   $p: $size,
-      //   $mx: $size,
-      //   $color: "tonal",
-      //   $contrast: true,
-      //   $textOpacity: 60,
-      // });
+      $size = lgOrLess.includes($size) ? "xl" : $size;
     }
 
     if (variants.$kind === "avatar") {
-      const $size = lgOrLess.includes(variants.$size) ? "xl" : variants.$size;
-      const $bg = variants.$bg === "unset" ? "pop" : variants.$bg;
-      // setVariants({ $size, $bg });
-      // setDefaultVariants({ $mx: $size, $rounded: "full" });
+      $size = lgOrLess.includes($size) ? "xl" : $size;
     }
 
-    if (variants.$floating) {
-      // setDefaultVariants({ $rounded: "full", $color: "auto" });
-    }
-
-    if (variants.$kind && ["icon", "avatar"].includes(variants.$kind)) {
-      // setDefaultVariants({ $square: true });
+    if ($size !== variants.$size) {
+      setVariants({ $size });
     }
   },
 });
@@ -300,11 +317,11 @@ export const controlSeparator = cv({
       ],
     },
     $size: {
-      xs: "[--size:1cap] self-center ak-edge-[calc(24-var(--width)*6)] [.chevron]:ak-edge-[calc(64-var(--width)*12)]",
-      sm: "[--size:1em] self-center ak-edge-[calc(24-var(--width)*6)] [.chevron]:ak-edge-[calc(64-var(--width)*12)]",
-      md: "[--size:1lh] self-center ak-edge-[calc(24-var(--width)*6)] [.chevron]:ak-edge-[calc(64-var(--width)*12)]",
-      lg: "self-stretch ak-edge",
-      full: "self-stretch ak-edge -my-(--ak-frame-padding,0px) mx-0",
+      xs: "[--size:1cap] self-center ak-layer ak-edge-alpha-[calc((24-var(--width)*6)/100)] [.chevron]:ak-edge-alpha-[calc((64-var(--width)*12)/100)]",
+      sm: "[--size:1em] self-center ak-layer ak-edge-alpha-[calc((24-var(--width)*6)/100)] [.chevron]:ak-edge-alpha-[calc((64-var(--width)*12)/100)]",
+      md: "[--size:1lh] self-center ak-layer ak-edge-alpha-[calc((24-var(--width)*6)/100)] [.chevron]:ak-edge-alpha-[calc((64-var(--width)*12)/100)]",
+      lg: "self-stretch ak-layer",
+      full: "self-stretch ak-layer -my-(--ak-frame-padding,0px) mx-0",
     },
     $shy: [
       "in-[.control-group:hover:not(:has(:hover))]:delay-150",
@@ -370,17 +387,19 @@ export const controlGroup = cv({
       lg: "[--group-gap:--spacing(3)] gap-(--group-gap)",
       xl: "[--group-gap:--spacing(4)] gap-(--group-gap)",
     },
-    $p: {
-      none: [
-        "[&>.control:not(:nth-child(1_of_.control))]:rounded-s-none",
-        "[&>.control:not(:nth-last-child(1_of_.control))]:rounded-e-none",
-      ],
-    },
   },
   defaultVariants: {
     $rounded: "xl",
     $layout: "horizontal",
-    $p: "sm",
+    $p: 1,
     $gap: "auto",
+  },
+  refine: ({ variants, addClass }) => {
+    if (variants.$p === "none") {
+      addClass([
+        "[&>.control:not(:nth-child(1_of_.control))]:rounded-s-none",
+        "[&>.control:not(:nth-last-child(1_of_.control))]:rounded-e-none",
+      ]);
+    }
   },
 });

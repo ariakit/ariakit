@@ -8,5 +8,5 @@ export interface KbdProps
 
 export function Kbd(props: KbdProps) {
   const [variantProps, rest] = splitProps(props, kbd);
-  return <kbd {...kbd(variantProps)} {...rest} />;
+  return <kbd {...kbd.jsx(variantProps)} {...rest} />;
 }

@@ -11,7 +11,7 @@ export interface BadgeProps
  */
 export function Badge(props: BadgeProps) {
   const [variantProps, rest] = splitProps(props, badge);
-  return <div {...badge(variantProps)} {...rest} />;
+  return <div {...badge.jsx(variantProps)} {...rest} />;
 }
 
 export interface BadgeLabelProps
@@ -22,7 +22,7 @@ export interface BadgeLabelProps
  */
 export function BadgeLabel(props: BadgeLabelProps) {
   const [variantProps, rest] = splitProps(props, badgeLabel);
-  return <span {...badgeLabel(variantProps)} {...rest} />;
+  return <span {...badgeLabel.jsx(variantProps)} {...rest} />;
 }
 
 export interface BadgeSlotProps
@@ -33,5 +33,5 @@ export interface BadgeSlotProps
  */
 export function BadgeSlot(props: BadgeSlotProps) {
   const [variantProps, rest] = splitProps(props, badgeSlot);
-  return <span {...badgeSlot(variantProps)} {...rest} />;
+  return <span {...badgeSlot.jsx(variantProps)} {...rest} />;
 }

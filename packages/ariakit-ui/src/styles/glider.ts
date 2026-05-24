@@ -1,14 +1,14 @@
 import { cv } from "clava";
-import { bevel } from "./bevel.ts";
 import { controlGroup, controlSeparator } from "./control.ts";
 import { frame } from "./frame.ts";
 
 export const glider = cv({
-  extend: [frame, bevel],
+  extend: [frame],
   class: "glider absolute! -z-1 pointer-events-none not-supports-anchor:hidden",
   variants: {
     $kind: {
       bevel: [
+        "ui-bevel",
         "m-(--inset-padding)",
         "start-[anchor(start)] bottom-[anchor(bottom)]",
         "w-[calc(anchor-size()-var(--inset-padding)*2)]",
@@ -70,36 +70,30 @@ export const glider = cv({
     $kind: "flat",
     $state: "selected",
     $animated: true,
-    $rounded: "full",
+    $lightnessOffset: (ctx) => {
+      if (ctx.defaultValue != null) return ctx.defaultValue;
+      if (ctx.variants.$state === "hover") return true;
+      if (ctx.variants.$state !== "selected") return ctx.defaultValue;
+      return ctx.variants.$kind === "bar" ? ctx.defaultValue : 2;
+    },
+    $invert: (ctx) => {
+      if (ctx.variants.$state !== "selected") return ctx.defaultValue;
+      if (ctx.variants.$kind !== "bar") return ctx.defaultValue;
+      return ctx.defaultValue ?? true;
+    },
+    $rounded: (ctx) =>
+      ctx.variants.$kind === "bar" ? false : (ctx.defaultValue ?? "full"),
     $p: "none",
     $borderType: "ring",
-  },
-  refine: ({ variants, setDefaultVariants }) => {
-    const bg = {
-      none: "unset",
-      hover: "pop",
-      focus: "ghost",
-      selected:
-        variants.$kind === "bar"
-          ? "invert"
-          : variants.$kind === "bevel"
-            ? "light2"
-            : "pop2",
-    } satisfies Record<
-      NonNullable<typeof variants.$state>,
-      typeof variants.$layer
-    >;
-    // setDefaultVariants({
-    //   $layer: variants.$layer ?? bg[variants.$state ?? "none"],
-    // });
-    // if (variants.$state === "selected") {
-    //   setDefaultVariants({
-    //     $borderWeight: variants.$borderWeight ?? "adaptive",
-    //   });
-    // }
-    // if (variants.$kind === "bar") {
-    //   setDefaultVariants({ $rounded: false, $contrast: true, $border: false });
-    // }
+    $borderWeight: (ctx) =>
+      ctx.variants.$state === "selected"
+        ? (ctx.defaultValue ?? "adaptive")
+        : ctx.defaultValue,
+    $contrast: (ctx) =>
+      ctx.variants.$kind === "bar"
+        ? (ctx.defaultValue ?? true)
+        : ctx.defaultValue,
+    $border: (ctx) => (ctx.variants.$kind === "bar" ? false : ctx.defaultValue),
   },
 });
 
