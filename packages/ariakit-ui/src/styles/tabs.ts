@@ -156,7 +156,7 @@ export const tabList = cv({
 
 // TODO: It should be tabPanels.
 export const tabPanels = cv({
-  extend: [layer, frame],
+  extend: [frame],
   class: [
     "relative panel ease-tabs -mt-(--ak-frame-border) overflow-clip",
     // "rounded-ss-none",
