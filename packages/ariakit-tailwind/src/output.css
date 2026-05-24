@@ -157,13 +157,13 @@
   @container (style(--_context-0: even)) or (not style(--_context-0)) {
     --_context-0: odd;
     --_ak-lpc-odd: var(--ak-layer);
-    --_ak-lec-odd: var(--ak-edge);
+    --_ak-lec-odd: color-mix(in oklch, var(--_ak-lec-even, var(--ak-layer)), var(--ak-edge) calc(var(--_ak-frame-bordering-context) * 100%));
     --ak-layer-parent: var(--_ak-lpc-even);
   }
   @container style(--_context-0: odd) {
     --_context-0: even;
     --_ak-lpc-even: var(--ak-layer);
-    --_ak-lec-even: var(--ak-edge);
+    --_ak-lec-even: color-mix(in oklch, var(--_ak-lec-odd, var(--ak-layer)), var(--ak-edge) calc(var(--_ak-frame-bordering-context) * 100%));
     --ak-layer-parent: var(--_ak-lpc-odd);
   }
 }
@@ -1018,6 +1018,8 @@
     --_ak-fppc-odd: var(--ak-frame-padding);
     --_ak-fpbc-odd: var(--ak-frame-border);
     --_ak-fpgc-odd: var(--ak-frame-ring);
+    --_ak-fpbbc-odd: calc((var(--_ak-fpbbc-even, 0px) * (1 - var(--_ak-frame-bordering-context))) + (var(--_ak-frame-border) * var(--_ak-frame-bordering-context)));
+    --_ak-fpbgc-odd: calc((var(--_ak-fpbgc-even, 0px) * (1 - var(--_ak-frame-bordering-context))) + (var(--_ak-frame-ring) * var(--_ak-frame-bordering-context)));
     --_ak-fpwc-odd: var(--_ak-frame-row);
     --_ak-fpctl-odd: 1;
     --_ak-fpctr-odd: 1;
@@ -1033,6 +1035,8 @@
     --_ak-fppc-even: var(--ak-frame-padding);
     --_ak-fpbc-even: var(--ak-frame-border);
     --_ak-fpgc-even: var(--ak-frame-ring);
+    --_ak-fpbbc-even: calc((var(--_ak-fpbbc-odd, 0px) * (1 - var(--_ak-frame-bordering-context))) + (var(--_ak-frame-border) * var(--_ak-frame-bordering-context)));
+    --_ak-fpbgc-even: calc((var(--_ak-fpbgc-odd, 0px) * (1 - var(--_ak-frame-bordering-context))) + (var(--_ak-frame-ring) * var(--_ak-frame-bordering-context)));
     --_ak-fpwc-even: var(--_ak-frame-row);
     --_ak-fpctl-even: 1;
     --_ak-fpctr-even: 1;
@@ -1136,21 +1140,25 @@
 @utility ak-frame-border {
   --_ak-frame-border: 1px;
   border-width: var(--_ak-frame-border);
+  --_ak-frame-bordering-context: 1;
 }
 
 @utility ak-frame-border-* {
   --_ak-frame-border: --value([*]);
   --_ak-frame-border: calc(--value(number, [number], "0", "1", "2", "4", "8") * 1px);
   border-width: var(--_ak-frame-border);
+  --_ak-frame-bordering-context: 1;
 }
 
 @utility ak-frame-ring {
   --_ak-frame-ring: 1px;
+  --_ak-frame-bordering-context: 1;
 }
 
 @utility ak-frame-ring-* {
   --_ak-frame-ring: --value([*]);
   --_ak-frame-ring: calc(--value(number, [number], "0", "1", "2", "4", "8") * 1px);
+  --_ak-frame-bordering-context: 1;
 }
 
 @utility ak-frame-bordering {
@@ -1166,11 +1174,12 @@
     border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
     --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
   }
+  --_ak-frame-bordering-context: 1;
 }
 
 @utility ak-frame-bordering-inherit {
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
-    --_ak-frame-bordering: max(var(--_ak-fpbc-even, 0px), var(--_ak-fpgc-even, 0px));
+    --_ak-frame-bordering: max(var(--_ak-fpbbc-even, 0px), var(--_ak-fpbgc-even, 0px));
     --_ak-fbd: clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1);
     @variant ak-dark {
       --_ak-frame-border: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
@@ -1184,7 +1193,7 @@
     }
   }
   @container style(--_context-1: odd) {
-    --_ak-frame-bordering: max(var(--_ak-fpbc-odd, 0px), var(--_ak-fpgc-odd, 0px));
+    --_ak-frame-bordering: max(var(--_ak-fpbbc-odd, 0px), var(--_ak-fpbgc-odd, 0px));
     --_ak-fbd: clamp(0, ((var(--_ak-layer-idle-relative-lightness) * -1) * 1000000), 1);
     @variant ak-dark {
       --_ak-frame-border: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
@@ -1213,6 +1222,7 @@
     border-width: calc(var(--_ak-fbd) * var(--_ak-frame-bordering));
     --_ak-frame-ring: calc((1 - var(--_ak-fbd)) * var(--_ak-frame-bordering));
   }
+  --_ak-frame-bordering-context: 1;
 }
 
 @property --_ak-tcl {
@@ -1984,6 +1994,12 @@
   syntax: "<length>";
   inherits: false;
   initial-value: 0px;
+}
+
+@property --_ak-frame-bordering-context {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
 }
 
 @property --_ak-frame-row {

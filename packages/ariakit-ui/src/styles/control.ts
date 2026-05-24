@@ -1,6 +1,5 @@
 import { cv } from "clava";
 import { frame } from "./frame.ts";
-import { layer } from "./layer.ts";
 import { text } from "./text.ts";
 
 function isFrameBorderColor(
@@ -360,7 +359,7 @@ export const controlSeparator = cv({
 });
 
 export const controlGroup = cv({
-  extend: [layer, frame],
+  extend: [frame],
   class: ["control-group"],
   variants: {
     $size: {

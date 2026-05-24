@@ -148,7 +148,6 @@ export const frame = cv({
      */
     $borderDark:
       "ak-dark-low:ak-edge-push-[-0.28] ak-dark-low:ak-edge-alpha-[calc((1-l)*(1-l))]",
-
     /**
      * Specifies how the border is rendered. Setting it to `auto` uses either a
      * border or a ring, depending on the parent layer's lightness.
@@ -362,7 +361,10 @@ export const frame = cv({
       if (variants.$border === "inherit") {
         return "unset";
       }
-      return defaultValue ?? "auto";
+      if (variants.$border) {
+        return "auto";
+      }
+      return defaultValue;
     },
     $borderColor(defaultValue, variants) {
       if (variants.$border === "inherit") {

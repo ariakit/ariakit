@@ -139,7 +139,7 @@ export const tabGlider = cv({
 export const tabList = cv({
   extend: [buttonGroup],
   class: [
-    "rounded-b-none! pb-0 border-none ring-0",
+    "rounded-b-none! pb-0",
     "after:w-[calc((var(--fr)-var(--fp))*2)]",
     "bg-transparent overflow-clip not-has-[.glider]:gap-0 not-supports-anchor:gap-0",
   ],
@@ -147,10 +147,7 @@ export const tabList = cv({
     $cover: true,
     $p: "unset",
     $rounded: "unset",
-    $border: "inherit",
-    $borderColor: "unset",
-    $borderType: "unset",
-    $borderWeight: "unset",
+    $m: "calc(var(--fbo)*-1)",
   },
 });
 
