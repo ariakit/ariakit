@@ -1142,13 +1142,13 @@
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --_ak-lec-odd: var(--_ak-le) !important;
-    --_ak-lesc-odd: 1 !important;
+    --_ak-lec-odd: var(--_ak-le);
+    --_ak-lesc-odd: 1;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --_ak-lec-even: var(--_ak-le) !important;
-    --_ak-lesc-even: 1 !important;
+    --_ak-lec-even: var(--_ak-le);
+    --_ak-lesc-even: 1;
   }
 }
 
@@ -1159,13 +1159,13 @@
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --_ak-lec-odd: var(--_ak-le) !important;
-    --_ak-lesc-odd: 1 !important;
+    --_ak-lec-odd: var(--_ak-le);
+    --_ak-lesc-odd: 1;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --_ak-lec-even: var(--_ak-le) !important;
-    --_ak-lesc-even: 1 !important;
+    --_ak-lec-even: var(--_ak-le);
+    --_ak-lesc-even: 1;
   }
 }
 
@@ -1174,13 +1174,13 @@
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --_ak-lec-odd: var(--_ak-le) !important;
-    --_ak-lesc-odd: 1 !important;
+    --_ak-lec-odd: var(--_ak-le);
+    --_ak-lesc-odd: 1;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --_ak-lec-even: var(--_ak-le) !important;
-    --_ak-lesc-even: 1 !important;
+    --_ak-lec-even: var(--_ak-le);
+    --_ak-lesc-even: 1;
   }
 }
 
@@ -1190,13 +1190,13 @@
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --_ak-lec-odd: var(--_ak-le) !important;
-    --_ak-lesc-odd: 1 !important;
+    --_ak-lec-odd: var(--_ak-le);
+    --_ak-lesc-odd: 1;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --_ak-lec-even: var(--_ak-le) !important;
-    --_ak-lesc-even: 1 !important;
+    --_ak-lec-even: var(--_ak-le);
+    --_ak-lesc-even: 1;
   }
 }
 
@@ -1216,13 +1216,13 @@
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --_ak-lec-odd: var(--_ak-le) !important;
-    --_ak-lesc-odd: 1 !important;
+    --_ak-lec-odd: var(--_ak-le);
+    --_ak-lesc-odd: 1;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --_ak-lec-even: var(--_ak-le) !important;
-    --_ak-lesc-even: 1 !important;
+    --_ak-lec-even: var(--_ak-le);
+    --_ak-lesc-even: 1;
   }
 }
 
@@ -1274,13 +1274,13 @@
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --_ak-lec-odd: var(--_ak-le) !important;
-    --_ak-lesc-odd: 1 !important;
+    --_ak-lec-odd: var(--_ak-le);
+    --_ak-lesc-odd: 1;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --_ak-lec-even: var(--_ak-le) !important;
-    --_ak-lesc-even: 1 !important;
+    --_ak-lec-even: var(--_ak-le);
+    --_ak-lesc-even: 1;
   }
 }
 

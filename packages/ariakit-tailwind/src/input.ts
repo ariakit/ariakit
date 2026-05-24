@@ -2069,8 +2069,8 @@ function getFrameBorderingContextDeclarations() {
 
 function getLayerEdgeContextDeclarations() {
   return edgeContext(({ provide }) => [
-    set(provide(vars.layerEdgeContext), fn.important(vars.layerEdge)),
-    set(provide(vars.layerEdgeSourceContext), fn.important(1)),
+    set(provide(vars.layerEdgeContext), vars.layerEdge),
+    set(provide(vars.layerEdgeSourceContext), 1),
   ]);
 }
 
