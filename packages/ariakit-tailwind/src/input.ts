@@ -593,6 +593,7 @@ const layerColorVars = {
   layer: ak.prop.canvas("layer", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
   layerEdgeContext: _ak.var("lec"),
+  layerEdgeSourceContext: _ak.var("lesc"),
   layerParent: ak.var("layer-parent", "canvas"),
   edge: ak.prop.black("edge"),
   text: ak.prop.black("text", { inherits: true }),
@@ -600,8 +601,8 @@ const layerColorVars = {
 };
 
 const layerContrastMathVars = {
-  layerContrastDirection: _ak.prop.number("lcd", { initial: 0 }),
-  layerContrastParentL: _ak.prop.number("lcpl", { initial: 0 }),
+  layerContrastDirection: _ak.prop.zero("lcd"),
+  layerContrastParentL: _ak.prop.zero("lcpl"),
 };
 
 const outlineMathVars = {
@@ -611,7 +612,7 @@ const outlineMathVars = {
 
 const textMathVars = {
   textContrastDirection: _ak.prop.number("tcd", { initial: 1 }),
-  textParentL: _ak.prop.number("tpl", { initial: 0 }),
+  textParentL: _ak.prop.zero("tpl"),
   textAccessibleL: _ak.prop.number("tal", { initial: LCH_LIGHTNESS_MAX }),
   textChromaCap: _ak.prop.number("tcc", {
     initial: LCH_TEXT_CHROMA_CAP,
@@ -730,13 +731,11 @@ const inputs = {
   frameBorder: _ak.prop.len("frame-border", { initial: "0px" }),
   frameRing: _ak.prop.len("frame-ring", { initial: "0px" }),
   frameBordering: _ak.prop.len("frame-bordering", { initial: "0px" }),
-  frameBorderingContext: _ak.prop.number("frame-bordering-context", {
-    initial: 0,
-  }),
-  frameRow: _ak.prop.number("frame-row", { initial: 0, inherits: true }),
-  frameStart: _ak.prop.number("frame-start", { initial: 0 }),
-  frameEnd: _ak.prop.number("frame-end", { initial: 0 }),
-  frameForce: _ak.prop.number("frame-force", { initial: 0 }),
+  frameBorderingContext: _ak.prop.zero("frame-bordering-context"),
+  frameRow: _ak.prop.zero("frame-row", { inherits: true }),
+  frameStart: _ak.prop.zero("frame-start"),
+  frameEnd: _ak.prop.zero("frame-end"),
+  frameForce: _ak.prop.zero("frame-force"),
 };
 
 const theme = at.theme(
@@ -1326,7 +1325,8 @@ utility(
     set(vars.edgePushDirection, 1),
   ),
   layerContext(({ provide, inherit }) => {
-    const parentEdge = inherit(vars.layerEdgeContext, vars.layer);
+    const parentEdge = inherit(vars.layerEdgeContext, vars.edge);
+    const parentEdgeSource = inherit(vars.layerEdgeSourceContext, 0);
     return [
       set(provide(vars.layerParentContext), vars.layer),
       set(
@@ -1336,6 +1336,13 @@ utility(
           parentEdge,
           vars.edge,
           fn.mul(inputs.frameBorderingContext, "100%"),
+        ),
+      ),
+      set(
+        provide(vars.layerEdgeSourceContext),
+        fn.add(
+          fn.mul(parentEdgeSource, fn.invert(inputs.frameBorderingContext)),
+          inputs.frameBorderingContext,
         ),
       ),
       set(vars.layerParent, inherit(vars.layerParentContext)),
@@ -1654,11 +1661,32 @@ utility("edge-raw", set(inputs.edgeA, 1), set(inputs.edgePushL, 0));
 utility(
   "edge-inherit",
   layerContext.read(({ inherit }) => {
-    const parentEdge = inherit(vars.layerEdgeContext, vars.layer);
+    const parentEdge = inherit(vars.layerEdgeContext, vars.edge);
+    const parentEdgeSource = inherit(vars.layerEdgeSourceContext, 0);
     return [
-      set(inputs.edgeColor, parentEdge),
-      set(inputs.edgePushL, fn.neg(vars.edgeContrastValue)),
-      set(inputs.edgeA, fn.sub(alpha, vars.edgeContrastValue)),
+      set(
+        inputs.edgeColor,
+        fn.colorMix(
+          "oklch",
+          vars.layer,
+          parentEdge,
+          fn.mul(parentEdgeSource, "100%"),
+        ),
+      ),
+      set(
+        inputs.edgePushL,
+        fn.add(
+          fn.invert(parentEdgeSource),
+          fn.mul(parentEdgeSource, fn.neg(vars.edgeContrastValue)),
+        ),
+      ),
+      set(
+        inputs.edgeA,
+        fn.add(
+          fn.mul(fn.invert(parentEdgeSource), 0.1),
+          fn.mul(parentEdgeSource, fn.sub(alpha, vars.edgeContrastValue)),
+        ),
+      ),
     ];
   }),
 );

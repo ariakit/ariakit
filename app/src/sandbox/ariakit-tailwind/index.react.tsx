@@ -275,6 +275,28 @@ export default function Example() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <Layer
+        label="edge inherit root no source"
+        className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
+      />
+      <Layer
+        label="edge inherit no source"
+        className="ak-layer ak-layer-blue-600 flex-col"
+      >
+        <Layer
+          label="host"
+          className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
+        />
+      </Layer>
+      <Layer
+        label="edge inherit edge no source"
+        className="ak-layer ak-layer-blue-600 ak-edge-red-600 ak-edge-40 flex-col"
+      >
+        <Layer
+          label="host"
+          className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
+        />
+      </Layer>
+      <Layer
         label="One-off"
         className="ak-layer ak-frame ak-frame-[1.25rem]/1 ak-frame-border flex-col"
       >
