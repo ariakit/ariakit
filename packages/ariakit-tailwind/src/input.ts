@@ -771,14 +771,23 @@ const theme = at.theme(
   ),
 );
 
+function getLayerSchemeQuery(fallback: Value, native: Value) {
+  return [
+    fn.style(vars.layerScheme, fallback),
+    fn.style(vars.layerScheme, native),
+  ]
+    .map((query) => `(${query})`)
+    .join(" or ");
+}
+
 const dark = createVariant(
   "ak-dark",
-  at.container(fn.style(vars.layerScheme, "oklch(1 0 0)"), set("@slot")),
+  at.container(getLayerSchemeQuery(fn.oklch({ l: 1 }), "white"), set("@slot")),
 );
 
 const light = createVariant(
   "ak-light",
-  at.container(fn.style(vars.layerScheme, "oklch(0 0 0)"), set("@slot")),
+  at.container(getLayerSchemeQuery(fn.oklch({ l: 0 }), "black"), set("@slot")),
 );
 
 const darkHigh = createVariant(
@@ -1271,6 +1280,8 @@ const layerScheme = fn.oklch(vars.layer, {
   c: 0,
   h: 0,
 });
+const nativeLayerScheme = fn.contrastColor(vars.layer);
+const nativeLayerSchemeSupport = fn.query("color", fn.contrastColor("black"));
 
 // Min alpha adapts to layer lightness — higher for mid-lightness backgrounds.
 const textMinimumAlphaBase = fn.add(
@@ -1305,6 +1316,10 @@ utility(
   set(vars.edge, edge),
   set(vars.layerBand, layerBand),
   set(vars.layerScheme, layerScheme),
+  at.supports(
+    nativeLayerSchemeSupport,
+    set(vars.layerScheme, nativeLayerScheme),
+  ),
   getBaseDeclarations(vars.layer),
   layerMathDeclarations,
   layerColorDeclarations,

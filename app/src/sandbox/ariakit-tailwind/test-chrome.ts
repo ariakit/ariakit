@@ -97,9 +97,26 @@ function extractComputedCSS() {
       .replace(/\s+/g, "_");
   };
 
+  const formatRgbBlackWhite = (str: string) => {
+    const match =
+      /^rgba?\(\s*(0|255)(?:\s*,\s*|\s+)\1(?:\s*,\s*|\s+)\1(?:\s*[,/]\s*1)?\s*\)$/.exec(
+        str.trim(),
+      );
+    if (!match) {
+      return null;
+    }
+    // contrast-color() serializes black/white as rgb() in Chromium; normalize
+    // equivalent colors so snapshots focus on color behavior.
+    return match[1] === "0" ? "oklch(0_0_0)" : "oklch(1_0_0)";
+  };
+
   const formatColor = (str: string): string | null => {
     if (!str || str === "transparent" || str === "rgba(0, 0, 0, 0)") {
       return null;
+    }
+    const blackWhite = formatRgbBlackWhite(str);
+    if (blackWhite) {
+      return blackWhite;
     }
     const polarColor = formatPolarColor(str);
     if (polarColor) {
@@ -578,6 +595,34 @@ withFramework(import.meta.dirname, async ({ test }) => {
         if (Object.keys(violations).length > 0) {
           throw new Error(JSON.stringify(violations, null, 2));
         }
+      });
+
+      test("scheme variants match layer foreground", async ({ page }) => {
+        await waitForPreviewReady(page);
+        await page.waitForSelector('[data-scheme-variant="light"]', {
+          state: "attached",
+        });
+        await page.waitForSelector('[data-scheme-variant="dark"]', {
+          state: "attached",
+        });
+        const values = await page.evaluate(() => {
+          const getSchemeVariant = (name: string) => {
+            const element = document.querySelector(
+              `[data-scheme-variant="${name}"]`,
+            );
+            if (!element) {
+              return null;
+            }
+            return getComputedStyle(element)
+              .getPropertyValue("--scheme-variant")
+              .trim();
+          };
+          return {
+            dark: getSchemeVariant("dark"),
+            light: getSchemeVariant("light"),
+          };
+        });
+        expect(values).toEqual({ dark: "dark", light: "light" });
       });
 
       for (const contrast of [false, true]) {

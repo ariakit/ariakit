@@ -704,6 +704,9 @@ export const fn = {
     return exp`color-mix(in ${method}, ${colorA}, ${colorB})`;
   },
 
+  /** Builds a contrast-color() expression. */
+  contrastColor: (color: Value) => exp`contrast-color(${color})`,
+
   /** Builds a var() reference with optional nested fallbacks. */
   var: (
     varObject: VarProperty | DashedIdent,

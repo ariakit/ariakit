@@ -274,6 +274,18 @@ function Layers() {
 export default function Example() {
   return (
     <div className="flex flex-col gap-4 p-4">
+      <section className="ak-layer ak-layer-white">
+        <span
+          data-scheme-variant="light"
+          className="[--scheme-variant:base] ak-light:[--scheme-variant:light]"
+        />
+      </section>
+      <section className="ak-layer ak-layer-black">
+        <span
+          data-scheme-variant="dark"
+          className="[--scheme-variant:base] ak-dark:[--scheme-variant:dark]"
+        />
+      </section>
       <Layer
         label="One-off"
         className="ak-layer ak-frame ak-frame-[1.25rem]/1 ak-frame-border flex-col"
