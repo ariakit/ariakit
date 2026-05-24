@@ -469,6 +469,15 @@ export default function Example() {
               />
             </Layer>
             <Layer
+              label="frame source"
+              className="ak-frame ak-frame-p-1 ak-frame-border flex-col"
+            >
+              <Layer
+                label="host"
+                className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
+              />
+            </Layer>
+            <Layer
               label="zero"
               className="ak-layer ak-layer-20 ak-edge-0 ak-frame ak-frame-p-1 ak-frame-border-0 flex-col"
             >

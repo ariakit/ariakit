@@ -329,7 +329,7 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 | `ak-edge-<chroma>`      | Sets chroma from a named preset.                                                                                                                              |
 | `ak-edge-<hue>`         | Sets hue from a named preset.                                                                                                                                 |
 | `ak-edge-raw`           | Applies the color exactly as specified — shorthand for `ak-edge-100` + `ak-edge-push-0`.                                                                      |
-| `ak-edge-inherit`       | Uses the edge from the nearest ancestor that explicitly sets a frame border, ring, or bordering width; falls back to the current edge when none exists.       |
+| `ak-edge-inherit`       | Uses the edge from the nearest ancestor that explicitly sets a frame border, ring, or bordering width; falls back to the current layer edge when none exists. |
 
 ### Adjustments
 

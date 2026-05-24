@@ -591,6 +591,7 @@ const layerColorVars = {
   layerOffset: _ak.prop.canvas("lo"),
   layerPush: _ak.prop.canvas("lp"),
   layer: ak.prop.canvas("layer", { inherits: true }),
+  layerEdge: _ak.prop.black("le", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
   layerEdgeContext: _ak.var("lec"),
   layerEdgeSourceContext: _ak.var("lesc"),
@@ -1297,6 +1298,7 @@ const inkText = fn.oklch(vars.layer, {
 });
 
 const layerContext = createContext();
+const edgeContext = createContext();
 
 utility(
   "layer",
@@ -1307,6 +1309,7 @@ utility(
   set(vars.layer, layer),
   set(vars.text, vars.layerScheme),
   set(vars.edge, edge),
+  set(vars.layerEdge, vars.edge),
   set(vars.layerBand, layerBand),
   set(vars.layerScheme, layerScheme),
   getBaseDeclarations(vars.layer),
@@ -1324,30 +1327,10 @@ utility(
     set(vars.layerPushDirectionToLight, 1),
     set(vars.edgePushDirection, 1),
   ),
-  layerContext(({ provide, inherit }) => {
-    const parentEdge = inherit(vars.layerEdgeContext, vars.edge);
-    const parentEdgeSource = inherit(vars.layerEdgeSourceContext, 0);
-    return [
-      set(provide(vars.layerParentContext), vars.layer),
-      set(
-        provide(vars.layerEdgeContext),
-        fn.colorMix(
-          "oklch",
-          parentEdge,
-          vars.edge,
-          fn.mul(inputs.frameBorderingContext, "100%"),
-        ),
-      ),
-      set(
-        provide(vars.layerEdgeSourceContext),
-        fn.add(
-          fn.mul(parentEdgeSource, fn.invert(inputs.frameBorderingContext)),
-          inputs.frameBorderingContext,
-        ),
-      ),
-      set(vars.layerParent, inherit(vars.layerParentContext)),
-    ];
-  }),
+  layerContext(({ provide, inherit }) => [
+    set(provide(vars.layerParentContext), vars.layer),
+    set(vars.layerParent, inherit(vars.layerParentContext)),
+  ]),
 );
 
 function getLayerOffsetDeclarations(arbitraryPattern = "[*]") {
@@ -1660,8 +1643,8 @@ utility("edge-raw", set(inputs.edgeA, 1), set(inputs.edgePushL, 0));
 
 utility(
   "edge-inherit",
-  layerContext.read(({ inherit }) => {
-    const parentEdge = inherit(vars.layerEdgeContext, vars.edge);
+  edgeContext.read(({ inherit }) => {
+    const parentEdge = inherit(vars.layerEdgeContext, vars.layer);
     const parentEdgeSource = inherit(vars.layerEdgeSourceContext, 0);
     return [
       set(
@@ -1675,16 +1658,13 @@ utility(
       ),
       set(
         inputs.edgePushL,
-        fn.add(
-          fn.invert(parentEdgeSource),
-          fn.mul(parentEdgeSource, fn.neg(vars.edgeContrastValue)),
-        ),
+        fn.sub(1, fn.mul(parentEdgeSource, fn.add1(vars.edgeContrastValue))),
       ),
       set(
         inputs.edgeA,
         fn.add(
-          fn.mul(fn.invert(parentEdgeSource), 0.1),
-          fn.mul(parentEdgeSource, fn.sub(alpha, vars.edgeContrastValue)),
+          0.1,
+          fn.mul(parentEdgeSource, fn.sub(alpha, vars.edgeContrastValue, 0.1)),
         ),
       ),
     ];
@@ -2087,6 +2067,13 @@ function getFrameBorderingContextDeclarations() {
   return set(inputs.frameBorderingContext, 1);
 }
 
+function getLayerEdgeContextDeclarations() {
+  return edgeContext(({ provide }) => [
+    set(provide(vars.layerEdgeContext), fn.important(vars.layerEdge)),
+    set(provide(vars.layerEdgeSourceContext), fn.important(1)),
+  ]);
+}
+
 const LAST_VISIBLE_SELECTOR = "&:not(:has(~ *:not([hidden],template)))";
 
 /**
@@ -2370,23 +2357,27 @@ utility(
   set(inputs.frameBorder, "1px"),
   set.borderWidth(inputs.frameBorder),
   getFrameBorderingContextDeclarations(),
+  getLayerEdgeContextDeclarations(),
 );
 utility(
   "frame-border-*",
   getFrameBorderWidthDeclarations(inputs.frameBorder),
   set.borderWidth(inputs.frameBorder),
   getFrameBorderingContextDeclarations(),
+  getLayerEdgeContextDeclarations(),
 );
 
 utility(
   "frame-ring",
   set(inputs.frameRing, "1px"),
   getFrameBorderingContextDeclarations(),
+  getLayerEdgeContextDeclarations(),
 );
 utility(
   "frame-ring-*",
   getFrameBorderWidthDeclarations(inputs.frameRing),
   getFrameBorderingContextDeclarations(),
+  getLayerEdgeContextDeclarations(),
 );
 
 function getFrameBorderingDarkLight() {
@@ -2422,6 +2413,7 @@ utility(
   set(inputs.frameBordering, "1px"),
   getFrameBorderingDarkLight(),
   getFrameBorderingContextDeclarations(),
+  getLayerEdgeContextDeclarations(),
 );
 
 utility(
@@ -2443,6 +2435,7 @@ utility(
   getFrameBorderWidthDeclarations(inputs.frameBordering),
   getFrameBorderingDarkLight(),
   getFrameBorderingContextDeclarations(),
+  getLayerEdgeContextDeclarations(),
 );
 
 export const input = [

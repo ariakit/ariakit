@@ -77,6 +77,12 @@
               "host": "bg-[oklch(0_0.245_262.881)] text-[oklch(1_0_0)] rounded-[5px] border-[1px] border-[oklch(1_0.245_27.325_/_0.7334)] p-[4px] shadow-[oklch(1_0.245_27.325_/_0.7334)_0px_0px_0px_0px]"
             }
           },
+          "frame source": {
+            "class": "text-[oklch(1_0_0)] rounded-[10px] border-[1px] border-[oklch(1_0_0)] p-[4px] shadow-[oklch(1_0_0)_0px_0px_0px_0px]",
+            "children": {
+              "host": "bg-[oklch(0_0.245_262.881)] text-[oklch(1_0_0)] rounded-[5px] border-[1px] border-[oklch(1_0.245_27.325_/_0.7334)] p-[4px] shadow-[oklch(1_0.245_27.325_/_0.7334)_0px_0px_0px_0px]"
+            }
+          },
           "zero": {
             "class": "bg-[oklch(0_0.245_262.881)] text-[oklch(1_0_0)] rounded-[10px] p-[4px] shadow-[oklch(1_0.245_262.881_/_0.3334)_0px_0px_0px_0px]",
             "children": {
