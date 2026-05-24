@@ -49,7 +49,7 @@ export const layer = cv({
      * If you want the opposite effect, where the offset increases as contrast
      * goes up, use `$lightnessPush` instead.
      */
-    $lightnessOffset: (value?: string | number | boolean) => {
+    $lightnessOffset(value?: string | number | boolean) {
       return getLightnessStyleClass({
         value,
         property: "--layer-lightness-offset",
@@ -66,7 +66,7 @@ export const layer = cv({
      * If you want the opposite effect, where the offset decreases as contrast
      * goes up, use `$lightnessOffset` instead.
      */
-    $lightnessPush: (value?: string | number | boolean) => {
+    $lightnessPush(value?: string | number | boolean) {
       return getLightnessStyleClass({
         value,
         property: "--layer-lightness-push",
@@ -77,7 +77,7 @@ export const layer = cv({
      * Lightens the layer by the specified amount. When set to `true`, it
      * lightens the layer by one step.
      */
-    $lighten: (value?: string | number | boolean) => {
+    $lighten(value?: string | number | boolean) {
       return getLightnessStyleClass({
         value,
         property: "--layer-lighten",
@@ -88,7 +88,7 @@ export const layer = cv({
      * Darkens the layer by the specified amount. When set to `true`, it darkens
      * the layer by one step.
      */
-    $darken: (value?: string | number | boolean) => {
+    $darken(value?: string | number | boolean) {
       return getLightnessStyleClass({
         value,
         property: "--layer-darken",
@@ -99,7 +99,7 @@ export const layer = cv({
      * Sets the minimum lightness of the background color after all other layer
      * variants have been applied.
      */
-    $lightnessMin: (value?: string | number | null) => {
+    $lightnessMin(value?: string | number | null) {
       return getScaledStyleClass({
         value,
         property: "--layer-lightness-min",
@@ -110,7 +110,7 @@ export const layer = cv({
      * Sets the maximum lightness of the background color after all other layer
      * variants have been applied.
      */
-    $lightnessMax: (value?: string | number | null) => {
+    $lightnessMax(value?: string | number | null) {
       return getScaledStyleClass({
         value,
         property: "--layer-lightness-max",
@@ -121,7 +121,7 @@ export const layer = cv({
      * Sets the absolute chroma of the background color. Higher values mean more
      * saturated colors.
      */
-    $chroma: (value?: ChromaValues | (string & {}) | number) => {
+    $chroma(value?: ChromaValues | (string & {}) | number) {
       if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
@@ -142,7 +142,7 @@ export const layer = cv({
      * Sets the minimum chroma of the background color after all other layer
      * variants have been applied.
      */
-    $chromaMin: (value?: ChromaValues | (string & {}) | number) => {
+    $chromaMin(value?: ChromaValues | (string & {}) | number) {
       if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
@@ -166,7 +166,7 @@ export const layer = cv({
      * layer with 100% lightness appears white instead of a very bright,
      * saturated color.
      */
-    $chromaMax: (value?: ChromaValues | "auto" | (string & {}) | number) => {
+    $chromaMax(value?: ChromaValues | "auto" | (string & {}) | number) {
       if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
@@ -189,7 +189,7 @@ export const layer = cv({
      * to `true`, it increases the chroma by one step. It's capped by
      * `$chromaMax`.
      */
-    $saturate: (value?: string | number | boolean) => {
+    $saturate(value?: string | number | boolean) {
       return getChromaStyleClass({
         value,
         property: "--layer-saturate",
@@ -201,7 +201,7 @@ export const layer = cv({
      * to `true`, it decreases the chroma by one step. It's capped by
      * `$chromaMin`.
      */
-    $desaturate: (value?: string | number | boolean) => {
+    $desaturate(value?: string | number | boolean) {
       return getChromaStyleClass({
         value,
         property: "--layer-desaturate",
@@ -213,7 +213,7 @@ export const layer = cv({
      * `"red"` or `"blue"`, a color harmony like `"complementary"`, or a degree
      * value like `240`.
      */
-    $hue: (value?: HueValues | (string & {}) | number) => {
+    $hue(value?: HueValues | (string & {}) | number) {
       if (!value) return;
       if (includes(HUE_VALUES, value)) {
         const valueMap = {
@@ -249,7 +249,7 @@ export const layer = cv({
      * Increases the contrast between the current layer and its parent. Setting
      * it to `true` usually means a 3:1 contrast ratio.
      */
-    $contrast: (value?: string | number | boolean) => {
+    $contrast(value?: string | number | boolean) {
       return getScaledStyleClass({
         value,
         defaultValue: DEFAULT_CONTRAST_AMOUNT,
@@ -279,7 +279,7 @@ export const layer = cv({
     $lightnessMin: (ctx) => (ctx.variants.$invert ? 23 : ctx.defaultValue),
     $lightnessMax: (ctx) => (ctx.variants.$invert ? 96 : ctx.defaultValue),
   },
-  refine: ({ variants, setVariants }) => {
+  refine({ variants, setVariants }) {
     if (variants.$layer !== "ghost") return;
     setVariants({
       $invert: false,

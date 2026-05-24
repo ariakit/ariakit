@@ -90,7 +90,7 @@ export const frame = cv({
      * calculations unless it's set to `1rem` or more, in which case the
      * concentric effect is no longer visually meaningful.
      */
-    $p: (value?: "unset" | "none" | (string & {}) | number) => {
+    $p(value?: "unset" | "none" | (string & {}) | number) {
       if (value == null) return;
       if (value === "unset") return;
       if (value === "none") return "ak-frame-p-0";
@@ -105,7 +105,7 @@ export const frame = cv({
      * padding and the child margin is at least `1rem`, in which case the
      * concentric effect is no longer visually meaningful.
      */
-    $m: (value?: "unset" | "none" | (string & {}) | number) => {
+    $m(value?: "unset" | "none" | (string & {}) | number) {
       if (value == null) return;
       if (value === "unset") return;
       if (value === "none") return "ak-frame-m-0";
@@ -167,7 +167,7 @@ export const frame = cv({
      * frame's border or ring width and color. When set to `true`, it defaults
      * to `1px`.
      */
-    $border: (value?: "inherit" | boolean | number) => {
+    $border(value?: "inherit" | boolean | number) {
       if (value == null) return;
       if (value === false) return;
       if (value === "inherit") {
@@ -184,7 +184,7 @@ export const frame = cv({
      * or use `$borderRaw` (which sets both alpha and lightness), to use the
      * exact lightness of the base border color.
      */
-    $borderPush: (value?: string | number) => {
+    $borderPush(value?: string | number) {
       return getScaledStyleClass({
         value,
         property: "--border-push",
@@ -194,7 +194,7 @@ export const frame = cv({
     /**
      * Lightens the border color by the specified amount (0-100).
      */
-    $borderLighten: (value?: string | number) => {
+    $borderLighten(value?: string | number) {
       return getScaledStyleClass({
         value,
         property: "--border-lighten",
@@ -204,7 +204,7 @@ export const frame = cv({
     /**
      * Darkens the border color by the specified amount (0-100).
      */
-    $borderDarken: (value?: string | number) => {
+    $borderDarken(value?: string | number) {
       return getScaledStyleClass({
         value,
         property: "--border-darken",
@@ -215,7 +215,7 @@ export const frame = cv({
      * Sets the minimum lightness (0-100) of the border color after all other
      * border variants have been applied.
      */
-    $borderLightnessMin: (value?: string | number) => {
+    $borderLightnessMin(value?: string | number) {
       return getScaledStyleClass({
         value,
         property: "--border-lightness-min",
@@ -226,7 +226,7 @@ export const frame = cv({
      * Sets the maximum lightness (0-100) of the border color after all other
      * border variants have been applied.
      */
-    $borderLightnessMax: (value?: string | number) => {
+    $borderLightnessMax(value?: string | number) {
       return getScaledStyleClass({
         value,
         property: "--border-lightness-max",
@@ -237,7 +237,7 @@ export const frame = cv({
      * Sets the absolute chroma (0-40) of the border color. Higher values mean
      * more saturated colors.
      */
-    $borderChroma: (value?: ChromaValues | (string & {}) | number) => {
+    $borderChroma(value?: ChromaValues | (string & {}) | number) {
       if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
@@ -257,7 +257,7 @@ export const frame = cv({
     /**
      * Increases the border chroma by the specified amount (0-40).
      */
-    $borderSaturate: (value?: string | number) => {
+    $borderSaturate(value?: string | number) {
       return getScaledStyleClass({
         value,
         property: "--border-saturate",
@@ -267,7 +267,7 @@ export const frame = cv({
     /**
      * Decreases the border chroma by the specified amount (0-40).
      */
-    $borderDesaturate: (value?: string | number) => {
+    $borderDesaturate(value?: string | number) {
       return getScaledStyleClass({
         value,
         property: "--border-desaturate",
@@ -278,7 +278,7 @@ export const frame = cv({
      * Sets the minimum chroma (0-40) of the border color after all other
      * border variants have been applied.
      */
-    $borderChromaMin: (value?: ChromaValues | (string & {}) | number) => {
+    $borderChromaMin(value?: ChromaValues | (string & {}) | number) {
       if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
@@ -299,7 +299,7 @@ export const frame = cv({
      * Sets the maximum chroma (0-40) of the border color after all other
      * border variants have been applied.
      */
-    $borderChromaMax: (value?: ChromaValues | (string & {}) | number) => {
+    $borderChromaMax(value?: ChromaValues | (string & {}) | number) {
       if (!value) return;
       if (includes(CHROMA_VALUES, value)) {
         const valueMap = {
@@ -321,7 +321,7 @@ export const frame = cv({
      * `"red"` or `"blue"`, a color harmony like `"complementary"`, or a degree
      * value like `240`.
      */
-    $borderHue: (value?: HueValues | (string & {}) | number) => {
+    $borderHue(value?: HueValues | (string & {}) | number) {
       if (!value) return;
       if (includes(HUE_VALUES, value)) {
         const valueMap = {
@@ -356,17 +356,23 @@ export const frame = cv({
   },
   defaultVariants: {
     $frame: true,
-    $borderType: (ctx) =>
-      ctx.variants.$border === "inherit" || ctx.variants.$border === false
-        ? "unset"
-        : (ctx.defaultValue ?? "auto"),
-    $borderColor: (ctx) =>
-      ctx.variants.$border === "inherit" || ctx.variants.$border === false
-        ? "unset"
-        : ctx.defaultValue,
-    $borderWeight: (ctx) =>
-      ctx.variants.$border === "inherit" || ctx.variants.$border === false
-        ? "unset"
-        : ctx.defaultValue,
+    $borderType({ variants, defaultValue }) {
+      if (variants.$border === "inherit" || variants.$border === false) {
+        return "unset";
+      }
+      return defaultValue ?? "auto";
+    },
+    $borderColor({ variants, defaultValue }) {
+      if (variants.$border === "inherit" || variants.$border === false) {
+        return "unset";
+      }
+      return defaultValue;
+    },
+    $borderWeight({ variants, defaultValue }) {
+      if (variants.$border === "inherit" || variants.$border === false) {
+        return "unset";
+      }
+      return defaultValue;
+    },
   },
 });
