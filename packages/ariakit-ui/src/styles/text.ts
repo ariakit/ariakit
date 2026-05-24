@@ -2,9 +2,11 @@ import { cv } from "clava";
 import { includes } from "../utils/includes.ts";
 import {
   CHROMA_VALUES,
+  COLOR_VALUES,
   HUE_VALUES,
   getScaledStyleClass,
   type ChromaValues,
+  type ColorValues,
   type HueValues,
 } from "../utils/styles.ts";
 
@@ -26,14 +28,26 @@ export const text = cv({
      * **Important**: When used on a `$layer` element, this applies to `$text`
      * or SVG elements inside it, not to text direclty inside the layer element.
      */
-    $text: {
-      true: "ui-text:ak-text",
-      primary: "ui-text:ak-text ui-text:ak-text-primary",
-      secondary: "ui-text:ak-text ui-text:ak-text-secondary",
-      brand: "ui-text:ak-text ui-text:ak-text-brand",
-      success: "ui-text:ak-text ui-text:ak-text-success",
-      warning: "ui-text:ak-text ui-text:ak-text-warning",
-      danger: "ui-text:ak-text ui-text:ak-text-danger",
+    $text(value?: ColorValues | (string & {}) | boolean) {
+      if (!value) return;
+      if (value === true) {
+        return "ui-text:ak-text";
+      }
+      if (includes(COLOR_VALUES, value)) {
+        const colorMap = {
+          canvas: "ui-text:ak-text ui-text:ak-text-color",
+          brand: "ui-text:ak-text ui-text:ak-text-brand",
+          secondary: "ui-text:ak-text ui-text:ak-text-secondary",
+          success: "ui-text:ak-text ui-text:ak-text-success",
+          warning: "ui-text:ak-text ui-text:ak-text-warning",
+          danger: "ui-text:ak-text ui-text:ak-text-danger",
+        } satisfies Record<ColorValues, string>;
+        return colorMap[value];
+      }
+      return {
+        class: "ui-text:ak-text ui-text:ak-text-color-(--text-color)",
+        style: { "--text-color": value },
+      };
     },
     /**
      * Pushes text lightness farther from the parent layer beyond the automatic
@@ -105,10 +119,10 @@ export const text = cv({
         class: "ui-text:ak-text-max-(--text-lightness-max)",
       });
     },
-
     /**
-     * Sets the exact chroma of the text color. Accepts a named chroma like
-     * `"muted"` or `"vivid"`, or a value like `40`.
+     * Sets the exact chroma of the text color. Accepts either a named chroma
+     * like `"muted"` (`5`), `"balanced"` (`15`), `"vivid"` (`22`), or `"neon"`
+     * (`32`), or a numeric value like `40`.
      *
      * **Important**: When used on a `$layer` element, this applies to `$text`
      * or SVG elements inside it, not to text direclty inside the layer element.
@@ -154,6 +168,32 @@ export const text = cv({
         value,
         property: "--text-desaturate",
         class: "ui-text:ak-text-desaturate-(--text-desaturate)",
+      });
+    },
+    /**
+     * Shifts the text hue toward the warm hue by the specified amount (0-100).
+     *
+     * **Important**: When used on a `$layer` element, this applies to `$text`
+     * or SVG elements inside it, not to text direclty inside the layer element.
+     */
+    $textWarm(value?: string | number) {
+      return getScaledStyleClass({
+        value,
+        property: "--text-warm",
+        class: "ui-text:ak-text-warm-(--text-warm)",
+      });
+    },
+    /**
+     * Shifts the text hue toward the cool hue by the specified amount (0-100).
+     *
+     * **Important**: When used on a `$layer` element, this applies to `$text`
+     * or SVG elements inside it, not to text direclty inside the layer element.
+     */
+    $textCool(value?: string | number) {
+      return getScaledStyleClass({
+        value,
+        property: "--text-cool",
+        class: "ui-text:ak-text-cool-(--text-cool)",
       });
     },
     /**
@@ -246,10 +286,10 @@ export const text = cv({
     },
   },
   defaultVariants: {
-    $text({ variants, defaultValue }) {
-      // Enable the text system if any text variant is set.
-      const hasValue = Object.values(variants).some(Boolean);
-      return hasValue ? true : defaultValue;
-    },
+    // $text({ variants, defaultValue }) {
+    //   // Enable the text system if any text variant is set.
+    //   const hasValue = Object.values(variants).some(Boolean);
+    //   return hasValue ? true : defaultValue;
+    // },
   },
 });

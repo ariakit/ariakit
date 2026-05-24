@@ -1,15 +1,6 @@
 import { cv } from "clava";
 import { control, controlLabel, controlSlot } from "./control.ts";
 
-function isColorLayer(value: unknown) {
-  return (
-    value === "brand" ||
-    value === "success" ||
-    value === "warning" ||
-    value === "danger"
-  );
-}
-
 function isFrameBorderColor(
   value: unknown,
 ): value is "brand" | "success" | "warning" | "danger" {
@@ -25,7 +16,6 @@ export const badge = cv({
   extend: [control],
   class: "font-medium",
   defaultVariants: {
-    $lightnessOffset: true,
     $rounded: "full",
     $size: "xs",
     $p: 1,
@@ -34,13 +24,21 @@ export const badge = cv({
     $border: true,
     $borderWeight: "adaptive",
     $borderType: "inset",
-    $mix: (ctx) => {
-      if (typeof ctx.variants.$layer !== "string") {
-        return ctx.defaultValue ?? false;
+    $text: true,
+    $textPush: 60,
+    $textChroma({ defaultValue, variants }) {
+      if (typeof variants.$layer !== "string") return defaultValue;
+      return defaultValue ?? "vivid";
+    },
+    $lightnessOffset({ defaultValue, variants }) {
+      if (typeof variants.$layer === "string") return false;
+      return defaultValue ?? true;
+    },
+    $mix({ defaultValue, variants }) {
+      if (typeof variants.$layer !== "string") {
+        return defaultValue;
       }
-      return isColorLayer(ctx.variants.$layer)
-        ? 15
-        : (ctx.defaultValue ?? false);
+      return defaultValue ?? 15;
     },
     $borderColor: (ctx) => {
       if (typeof ctx.variants.$layer !== "string") return ctx.defaultValue;

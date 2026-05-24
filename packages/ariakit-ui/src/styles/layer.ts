@@ -8,6 +8,8 @@ import {
   getLightnessStyleClass,
   type ChromaValues,
   type HueValues,
+  type ColorValues,
+  COLOR_VALUES,
 } from "../utils/styles.ts";
 
 const DEFAULT_MIX_AMOUNT = 50;
@@ -26,25 +28,40 @@ export const layer = cv({
      *
      * Set to `false` to disable the layer system.
      */
-    $layer: {
-      true: "ak-layer",
-      ghost: "ak-layer bg-transparent",
-      canvas: "ak-layer ak-layer-canvas",
-      brand: "ak-layer ak-layer-brand",
-      success: "ak-layer ak-layer-success",
-      warning: "ak-layer ak-layer-warning",
-      danger: "ak-layer ak-layer-danger",
+    $layer(value?: "ghost" | ColorValues | (string & {}) | boolean) {
+      if (!value) return;
+      if (value === true) {
+        return "ak-layer";
+      }
+      const mapValues = [...COLOR_VALUES, "ghost"] as const;
+      if (includes(mapValues, value)) {
+        const colorMap = {
+          ghost: "ak-layer bg-transparent",
+          canvas: "ak-layer ak-layer-canvas",
+          brand: "ak-layer ak-layer-brand",
+          secondary: "ak-layer ak-layer-secondary",
+          success: "ak-layer ak-layer-success",
+          warning: "ak-layer ak-layer-warning",
+          danger: "ak-layer ak-layer-danger",
+        } satisfies Record<(typeof mapValues)[number], string>;
+        return colorMap[value];
+      }
+      return {
+        class: "ak-layer ak-layer-color-(--layer-color)",
+        style: { "--layer-color": value },
+      };
     },
     /**
      * Inverts the layer's base background color.
      */
     $invert: "[--layer-lightness-multiplier:2]",
     /**
-     * Automatically adjusts the background color's lightness. The background
-     * color becomes lighter or darker depending on its current lightness. The
-     * value represents the **maximum** lightness offset, but it's not
-     * guaranteed. If the user has high-contrast preferences, the offset will be
-     * lower to allow for greater contrast between the layer and the text.
+     * Automatically adjusts the background color's lightness (0-20). The
+     * background color becomes lighter or darker depending on its current
+     * lightness. The value represents the **maximum** lightness offset, but
+     * it's not guaranteed. If the user has high-contrast preferences, the
+     * offset will be lower to allow for greater contrast between the layer and
+     * the text.
      *
      * If you want the opposite effect, where the offset increases as contrast
      * goes up, use `$lightnessPush` instead.
@@ -57,11 +74,11 @@ export const layer = cv({
       });
     },
     /**
-     * Automatically adjusts the background color's lightness. The background
-     * color becomes lighter or darker depending on its current lightness. The
-     * value represents the **minimum** guaranteed lightness shift. If the user
-     * has high-contrast preferences, the shift will be greater to allow for
-     * more contrast between the layer and its parent.
+     * Automatically adjusts the background color's lightness (0-20). The
+     * background color becomes lighter or darker depending on its current
+     * lightness. The value represents the **minimum** guaranteed lightness
+     * shift. If the user has high-contrast preferences, the shift will be
+     * greater to allow for more contrast between the layer and its parent.
      *
      * If you want the opposite effect, where the offset decreases as contrast
      * goes up, use `$lightnessOffset` instead.
@@ -74,7 +91,7 @@ export const layer = cv({
       });
     },
     /**
-     * Lightens the layer by the specified amount. When set to `true`, it
+     * Lightens the layer by the specified amount (0-20). When set to `true`, it
      * lightens the layer by one step.
      */
     $lighten(value?: string | number | boolean) {
@@ -85,8 +102,8 @@ export const layer = cv({
       });
     },
     /**
-     * Darkens the layer by the specified amount. When set to `true`, it darkens
-     * the layer by one step.
+     * Darkens the layer by the specified amount (0-20). When set to `true`, it
+     * darkens the layer by one step.
      */
     $darken(value?: string | number | boolean) {
       return getLightnessStyleClass({
@@ -96,8 +113,8 @@ export const layer = cv({
       });
     },
     /**
-     * Sets the minimum lightness of the background color after all other layer
-     * variants have been applied.
+     * Sets the minimum lightness (0-100) of the background color after all
+     * other layer variants have been applied.
      */
     $lightnessMin(value?: string | number | null) {
       return getScaledStyleClass({
@@ -107,8 +124,8 @@ export const layer = cv({
       });
     },
     /**
-     * Sets the maximum lightness of the background color after all other layer
-     * variants have been applied.
+     * Sets the maximum lightness (0-100) of the background color after all
+     * other layer variants have been applied.
      */
     $lightnessMax(value?: string | number | null) {
       return getScaledStyleClass({
@@ -118,8 +135,10 @@ export const layer = cv({
       });
     },
     /**
-     * Sets the absolute chroma of the background color. Higher values mean more
-     * saturated colors.
+     * Sets the absolute chroma (0-40) of the background color. Higher values
+     * mean more saturated colors. Accepts either a named chroma like `"muted"`
+     * (`5`), `"balanced"` (`15`), `"vivid"` (`22`), or `"neon"` (`32`), or a
+     * numeric value like `40`.
      */
     $chroma(value?: ChromaValues | (string & {}) | number) {
       if (!value) return;
@@ -139,8 +158,8 @@ export const layer = cv({
       });
     },
     /**
-     * Sets the minimum chroma of the background color after all other layer
-     * variants have been applied.
+     * Sets the minimum chroma (0-40) of the background color after all other
+     * layer variants have been applied.
      */
     $chromaMin(value?: ChromaValues | (string & {}) | number) {
       if (!value) return;
@@ -160,22 +179,23 @@ export const layer = cv({
       });
     },
     /**
-     * Sets the maximum chroma of the background color after all other layer
-     * variants have been applied. If set to `auto`, the maximum chroma is set
-     * to the highest value possible for the current lightness. This way, a
+     * Sets the maximum chroma (0-40) of the background color after all other
+     * layer variants have been applied. If set to `auto`, the maximum chroma is
+     * set to the highest value possible for the current lightness. This way, a
      * layer with 100% lightness appears white instead of a very bright,
      * saturated color.
      */
     $chromaMax(value?: ChromaValues | "auto" | (string & {}) | number) {
       if (!value) return;
-      if (includes(CHROMA_VALUES, value)) {
+      const mapValues = [...CHROMA_VALUES, "auto"] as const;
+      if (includes(mapValues, value)) {
         const valueMap = {
           muted: "ak-layer-max-c-muted",
           balanced: "ak-layer-max-c-balanced",
           vivid: "ak-layer-max-c-vivid",
           neon: "ak-layer-max-c-neon",
           auto: "ak-layer-max-c-auto",
-        } satisfies Record<ChromaValues | "auto", string>;
+        } satisfies Record<(typeof mapValues)[number], string>;
         return valueMap[value];
       }
       return getScaledStyleClass({
@@ -185,8 +205,8 @@ export const layer = cv({
       });
     },
     /**
-     * Increases the background color's chroma by the specified amount. When set
-     * to `true`, it increases the chroma by one step. It's capped by
+     * Increases the background color's chroma by the specified amount (0-40).
+     * When set to `true`, it increases the chroma by one step. It's capped by
      * `$chromaMax`.
      */
     $saturate(value?: string | number | boolean) {
@@ -197,8 +217,8 @@ export const layer = cv({
       });
     },
     /**
-     * Decreases the background color's chroma by the specified amount. When set
-     * to `true`, it decreases the chroma by one step. It's capped by
+     * Decreases the background color's chroma by the specified amount (0-40).
+     * When set to `true`, it decreases the chroma by one step. It's capped by
      * `$chromaMin`.
      */
     $desaturate(value?: string | number | boolean) {

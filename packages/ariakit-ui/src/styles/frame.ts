@@ -235,7 +235,9 @@ export const frame = cv({
     },
     /**
      * Sets the absolute chroma (0-40) of the border color. Higher values mean
-     * more saturated colors.
+     * more saturated colors. Accepts either a named chroma like `"muted"`
+     * (`5`), `"balanced"` (`15`), `"vivid"` (`22`), or `"neon"` (`32`), or a
+     * numeric value like `40`.
      */
     $borderChroma(value?: ChromaValues | (string & {}) | number) {
       if (!value) return;

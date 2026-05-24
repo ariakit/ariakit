@@ -3,6 +3,16 @@ import type { StyleClassValue } from "clava";
 const LIGHTNESS_MULTIPLIER = 5;
 const DEFAULT_CHROMA_OFFSET = 4;
 
+export const COLOR_VALUES = [
+  "canvas",
+  "brand",
+  "secondary",
+  "success",
+  "warning",
+  "danger",
+] as const;
+export type ColorValues = (typeof COLOR_VALUES)[number];
+
 export const CHROMA_VALUES = ["muted", "balanced", "vivid", "neon"] as const;
 export type ChromaValues = (typeof CHROMA_VALUES)[number];
 

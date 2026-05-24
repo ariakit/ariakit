@@ -260,7 +260,6 @@ type GetContextReadChildren = (
 interface Context {
   (getContextChildren: GetContextChildren): AtRuleChild[];
   read: (getContextChildren: GetContextReadChildren) => AtRuleChild[];
-  readPrevious: (getContextChildren: GetContextReadChildren) => AtRuleChild[];
 }
 
 let contextCounter = 0;
@@ -335,13 +334,6 @@ export function createContext(reset?: boolean): Context {
       read: (getContextChildren: GetContextReadChildren) =>
         withParityContainers((parity) =>
           getContextReadChildrenForParity(getContextChildren, parity),
-        ),
-      readPrevious: (getContextChildren: GetContextReadChildren) =>
-        withParityContainers((parity = "even") =>
-          getContextReadChildrenForParity(
-            getContextChildren,
-            parity === "even" ? "odd" : "even",
-          ),
         ),
     },
   );
