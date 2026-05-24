@@ -281,7 +281,7 @@ export default function Example() {
             $rounded="2xl"
             $border={1}
             $borderRaw
-            className="ak-edge-primary"
+            className="ak-edge-brand"
           >
             <TabList>
               <Tab>Profile</Tab>
@@ -295,7 +295,7 @@ export default function Example() {
               <Tab>Comments</Tab>
               <TabGlider $state="hover" />
               <TabGlider $state="selected" $kind="folder" />
-              <TabGlider $state="focus" $layer="primary" />
+              <TabGlider $state="focus" $layer="brand" />
             </TabList>
             <TabPanels>
               <TabPanel single className="grid">
@@ -450,7 +450,7 @@ export default function Example() {
         <Button $rounded="xl" $p={1} $layer="ghost" $border $size="sm">
           <ButtonSlot
             $kind="badge"
-            $layer="primary"
+            $layer="brand"
             $mix={15}
             // $border="medium"
             $size="xl"
@@ -473,7 +473,7 @@ export default function Example() {
           <ButtonContent $orientation="vertical">
             <ButtonLabel className="flex items-center gap-1">
               Haz{" "}
-              <VerifiedIcon className="size-4 ak-layer-contrast-primary-4 bg-transparent fill-(--ak-layer) [&_path:first-child]:stroke-0" />
+              <VerifiedIcon className="size-4 ak-layer ak-layer-brand ak-layer-contrast bg-transparent fill-(--ak-layer) [&_path:first-child]:stroke-0" />
             </ButtonLabel>
             <ButtonDescription>@hazdiego</ButtonDescription>
           </ButtonContent>

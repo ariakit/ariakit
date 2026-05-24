@@ -196,7 +196,7 @@ export const controlSlot = cv({
     $size: "md",
     $layer: (ctx) => {
       if (ctx.variants.$kind === "badge" && ctx.defaultValue === true) {
-        return "primary";
+        return "brand";
       }
       return ctx.defaultValue;
     },

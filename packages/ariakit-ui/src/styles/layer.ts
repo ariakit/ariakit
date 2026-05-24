@@ -30,8 +30,6 @@ export const layer = cv({
       true: "ak-layer",
       ghost: "ak-layer bg-transparent",
       canvas: "ak-layer ak-layer-canvas",
-      primary: "ak-layer ak-layer-primary",
-      secondary: "ak-layer ak-layer-secondary",
       brand: "ak-layer ak-layer-brand",
       success: "ak-layer ak-layer-success",
       warning: "ak-layer ak-layer-warning",

@@ -13,14 +13,14 @@ import { Badge as BadgeSolid } from "@ariakit/ui/html/badge.solid.tsx";
 import * as ButtonReact from "@ariakit/ui/html/button.react.tsx";
 import * as ButtonSolid from "@ariakit/ui/html/button.solid.tsx";
 import {
-  CheckboxCard,
-  CheckboxCardCheck,
+CheckboxCard,
+CheckboxCardCheck,
 } from "@ariakit/ui/html/checkbox-card.react.tsx";
 import {
-  CheckIcon,
-  ChevronDownIcon,
-  CircleCheckBigIcon,
-  CopyIcon,
+CheckIcon,
+ChevronDownIcon,
+CircleCheckBigIcon,
+CopyIcon,
 } from "lucide-react";
 import Layout from "./_layout.astro";
 ---
@@ -118,10 +118,10 @@ import Layout from "./_layout.astro";
         <span slot="description"
           >A nice description to test this<br />dsadsad</span
         >
-        <CopyIcon class="" />
+        <CopyIcon />
       </CheckboxCard>
       <ButtonSolid.Button>Button</ButtonSolid.Button>
-      <ButtonSolid.Button $layer="primary">
+      <ButtonSolid.Button $layer="brand">
         <ButtonSolid.ButtonSlot>
           <CopyIcon />
         </ButtonSolid.ButtonSlot>
@@ -166,7 +166,7 @@ import Layout from "./_layout.astro";
         <BadgeLabel>Badge</BadgeLabel>
       </Badge>
 
-      <Badge $layer="primary" $border>
+      <Badge $layer="brand" $border>
         <BadgeLabel>Badge Border</BadgeLabel>
       </Badge>
       <Badge>
@@ -175,13 +175,13 @@ import Layout from "./_layout.astro";
         </BadgeSlot>
         <BadgeLabel>Badge</BadgeLabel>
       </Badge>
-      <Badge $layer="secondary">
+      <Badge $layer="brand">
         <BadgeSlot>
           <CopyIcon />
         </BadgeSlot>
         <BadgeLabel>Badge</BadgeLabel>
       </Badge>
-      <Badge $layer="secondary" className="border-dashed">
+      <Badge $layer="brand" className="border-dashed">
         <BadgeSlot>
           <div class="size-full bg-blue-500 rounded-full"></div>
         </BadgeSlot>

@@ -3,8 +3,6 @@ import { control, controlLabel, controlSlot } from "./control.ts";
 
 function isColorLayer(value: unknown) {
   return (
-    value === "primary" ||
-    value === "secondary" ||
     value === "brand" ||
     value === "success" ||
     value === "warning" ||
