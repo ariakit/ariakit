@@ -25,17 +25,16 @@ function wrapRender<T extends (...args: any[]) => any>(
 }
 
 export async function render(ui: ReactNode, options?: RenderOptions) {
+  const { strictMode, wrapper: Wrapper, ...renderOptions } = options ?? {};
   const wrapper = (props: { children: ReactNode }) => {
-    const Wrapper = options?.wrapper;
     const element = Wrapper ? <Wrapper {...props} /> : props.children;
-    if (!options?.strictMode) return element;
+    if (!strictMode) return element;
     return <StrictMode>{element}</StrictMode>;
   };
 
   return wrapRender(() => {
     const { unmount, rerender } = ReactTestingLibrary.render(ui, {
-      ...options,
-      // @ts-ignore - We have mismatching types between React and React Testing Library, so we need to ignore this error.
+      ...renderOptions,
       wrapper,
     });
     return {

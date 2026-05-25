@@ -55,11 +55,12 @@ jobs:
         run: pnpm run build
 
   test:
-    name: Test (${{ matrix.shard }})
+    name: Test React ${{ matrix.react }} (${{ matrix.shard }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        react: ["18", "19"]
         shard: ["1/2", "2/2"]
 
     steps:
@@ -70,7 +71,7 @@ jobs:
         uses: ./.github/workflows/setup
 
       - name: Test
-        run: pnpm test --shard ${{ matrix.shard }}
+        run: pnpm run test-react-${{ matrix.react }} --shard ${{ matrix.shard }}
 
   website:
     name: Build website

@@ -3,6 +3,7 @@ packages:
   - templates/*
   - nextjs
   - examples
+  - test/*
   - guide
   - website
   - app

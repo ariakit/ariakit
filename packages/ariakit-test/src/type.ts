@@ -117,11 +117,6 @@ export function type(
               inputType,
               ...options,
             });
-            // Need to re-assign the selection state for React 17 and/or React
-            // Testing Library 12 (not sure which).
-            if (input.selectionStart !== nextCaretPosition) {
-              input.setSelectionRange(nextCaretPosition, nextCaretPosition);
-            }
           }
         }
       }

@@ -1,5 +1,4 @@
 import "@testing-library/jest-dom/vitest";
-import { render as renderReact } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
 import { createElement, Suspense as ReactSuspense } from "react";
 import {
@@ -56,6 +55,7 @@ async function loadReact(dir: string) {
     `./${dir}/index.react.tsx`,
   );
   if (failedImport) return false;
+  const { render: renderReact } = await import("@ariakit/test/react");
   const element = createElement(ReactSuspense, {
     fallback: null,
     // oxlint-disable-next-line react/no-children-prop -- createElement requires children prop
