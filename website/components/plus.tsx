@@ -28,7 +28,7 @@ import { loadStripe } from "@stripe/stripe-js/pure";
 import { useQueryClient } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link.js";
-import { useRouter, useSearchParams } from "next/navigation.js";
+import { usePathname, useRouter, useSearchParams } from "next/navigation.js";
 import type { CSSProperties } from "react";
 import {
   createContext,
@@ -46,7 +46,6 @@ import type { PlusPrice } from "@/lib/stripe.ts";
 import { useMedia } from "@/lib/use-media.ts";
 import { useSubscription } from "@/lib/use-subscription.ts";
 import { Command } from "./command.tsx";
-import { useRootPathname } from "./root-pathname.tsx";
 
 let stripePromise: ReturnType<typeof loadStripe> | null = null;
 
@@ -320,7 +319,7 @@ interface Session {
 export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const rootPathname = useRootPathname();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const priceId = searchParams.get("checkout");
   const subscription = useSubscription();
@@ -329,7 +328,10 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
   const [visibility, setVisibility] =
     useState<CSSProperties["visibility"]>("hidden");
 
-  const redirectUrl = `${rootPathname}?checkout=${priceId}`;
+  // Next 16's intercepting @modal route can shift useSelectedLayoutSegments,
+  // so prefer the actual pathname so the post-sign-in redirect always points
+  // back at the URL the user is currently viewing.
+  const redirectUrl = `${pathname}?checkout=${priceId}`;
   const userId = subscription.userId;
 
   useEffect(() => {
