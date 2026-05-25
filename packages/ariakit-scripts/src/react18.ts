@@ -53,7 +53,8 @@ const excludedSegments = new Set([
   "test-results",
 ]);
 
-const excludedFiles = new Set([".DS_Store"]);
+const excludedFiles = new Set([".DS_Store", ".dev.vars", "pnpm-lock.yaml"]);
+const excludedFilePatterns = [".env*", "*.pem"];
 
 const pathKey =
   Object.keys(process.env).find((key) => key.toLowerCase() === "path") ??
@@ -114,6 +115,8 @@ function shouldIgnoreRelativePath(path: string) {
   const filename = segments.at(-1);
 
   if (filename && excludedFiles.has(filename)) return true;
+  if (filename?.startsWith(".env")) return true;
+  if (filename?.endsWith(".pem")) return true;
   return segments.some((segment) => excludedSegments.has(segment));
 }
 
@@ -186,9 +189,11 @@ async function runChecked(
 }
 
 function getRsyncArgs(rootPath: string, workspacePath: string) {
-  const excludeArgs = [...excludedSegments, ...excludedFiles].flatMap(
-    (pattern) => ["--exclude", pattern],
-  );
+  const excludeArgs = [
+    ...excludedSegments,
+    ...excludedFiles,
+    ...excludedFilePatterns,
+  ].flatMap((pattern) => ["--exclude", pattern]);
 
   return [
     "-a",
@@ -390,7 +395,10 @@ async function getReact18Command(
   }
 
   const packageJson = await readRootPackageJson(rootPath);
+  // `react18` and `test-react-18` scripts would recurse here. Run the
+  // underlying test script directly instead.
   if (command === "react18" || command === "test-react-18") {
+    log(`Mapping ${command} to test to avoid recursion`);
     return {
       bin: "pnpm",
       args: ["run", "test", ...commandArgs],
@@ -443,6 +451,10 @@ async function removeWatchedPath(
   });
 }
 
+function logWatcherPromise(promise: Promise<unknown>) {
+  void promise.catch((error) => console.error(error));
+}
+
 function startWorkspaceWatcher(rootPath: string, workspacePath: string) {
   const watcher = watch(".", {
     cwd: rootPath,
@@ -451,19 +463,23 @@ function startWorkspaceWatcher(rootPath: string, workspacePath: string) {
   });
 
   watcher
-    .on("add", (path) => void copyWatchedFile(rootPath, workspacePath, path))
-    .on("change", (path) => void copyWatchedFile(rootPath, workspacePath, path))
+    .on("add", (path) =>
+      logWatcherPromise(copyWatchedFile(rootPath, workspacePath, path)),
+    )
+    .on("change", (path) =>
+      logWatcherPromise(copyWatchedFile(rootPath, workspacePath, path)),
+    )
     .on("addDir", (path) => {
       if (shouldIgnoreWatchPath(rootPath, path)) return;
-      void mkdir(join(workspacePath, normalizePath(path)), { recursive: true });
+      logWatcherPromise(
+        mkdir(join(workspacePath, normalizePath(path)), { recursive: true }),
+      );
     })
-    .on(
-      "unlink",
-      (path) => void removeWatchedPath(rootPath, workspacePath, path),
+    .on("unlink", (path) =>
+      logWatcherPromise(removeWatchedPath(rootPath, workspacePath, path)),
     )
-    .on(
-      "unlinkDir",
-      (path) => void removeWatchedPath(rootPath, workspacePath, path),
+    .on("unlinkDir", (path) =>
+      logWatcherPromise(removeWatchedPath(rootPath, workspacePath, path)),
     )
     .on("error", (error) => console.error(error));
 
