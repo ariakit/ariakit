@@ -1,4 +1,3 @@
-import Link from "next/link.js";
 import { PageContainer } from "@/app/(main)/page-container.tsx";
 import { InlineLink } from "@/components/inline-link.tsx";
 import {
@@ -21,10 +20,7 @@ export default function Page() {
       <PageContainer title="Ariakit Plus License Agreement">
         <PageParagraph>
           Ariakit Plus grants you a non-exclusive license and permission to use
-          the{" "}
-          <InlineLink render={<Link href="/tags/plus" />}>
-            Ariakit Plus examples
-          </InlineLink>{" "}
+          the <InlineLink href="/tags/plus">Ariakit Plus examples</InlineLink>{" "}
           (the Materials) available on the Ariakit website.
         </PageParagraph>
         <PageParagraph>

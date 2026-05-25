@@ -1,31 +1,17 @@
 "use client";
-import type {
-  HovercardAnchorProps,
-  HovercardProps,
-  HovercardProviderProps,
-  HovercardStore,
-} from "@ariakit/react";
-import {
-  Hovercard,
-  HovercardAnchor,
-  HovercardArrow,
-  Role,
-  useHovercardStore,
-} from "@ariakit/react";
+import type { HovercardProps } from "@ariakit/react";
+import { Hovercard, HovercardArrow } from "@ariakit/react";
 import Link from "next/link.js";
 import type { ReactNode } from "react";
-import {
-  createContext,
-  isValidElement,
-  useContext,
-  useMemo,
-  useRef,
-} from "react";
+import { isValidElement, useContext, useMemo, useRef } from "react";
 import { twJoin } from "tailwind-merge";
 import invariant from "tiny-invariant";
 import { useSubscription } from "@/lib/use-subscription.ts";
 import { Command } from "./command.tsx";
+import { PageHovercardContext } from "./page-hovercard-context.tsx";
 import { Popup } from "./popup.tsx";
+
+export { PageHovercardProvider } from "./page-hovercard-context.tsx";
 
 // Breadth-first search algorithm
 function findSection(node: ReactNode, id?: string | null): ReactNode {
@@ -40,37 +26,15 @@ function findSection(node: ReactNode, id?: string | null): ReactNode {
         queue.push(...currentNode);
         continue;
       }
-      if (!isValidElement(currentNode)) continue;
+      if (!isValidElement<{ id?: string; children?: ReactNode }>(currentNode)) {
+        continue;
+      }
       if (currentNode.props.id === id) return currentNode;
       queue.push(currentNode.props.children);
     }
   }
 
   return null;
-}
-
-const PageHovercardContext = createContext<HovercardStore | null>(null);
-
-export interface PageHovercardProviderProps extends HovercardProviderProps {}
-
-export function PageHovercardProvider({
-  children,
-  placement = "top-start",
-  showTimeout = 500,
-  hideTimeout = 250,
-  ...props
-}: PageHovercardProviderProps) {
-  const store = useHovercardStore({
-    placement,
-    showTimeout,
-    hideTimeout,
-    ...props,
-  });
-  return (
-    <PageHovercardContext.Provider value={store}>
-      {children}
-    </PageHovercardContext.Provider>
-  );
 }
 
 export interface PageHovercardProps extends HovercardProps {
@@ -145,22 +109,4 @@ export function PageHovercard({ contents, ...props }: PageHovercardProps) {
       </PageHovercardContext.Provider>
     </Hovercard>
   );
-}
-
-export interface PageHovercardAnchorProps extends HovercardAnchorProps {}
-
-export function PageHovercardAnchor(props: PageHovercardAnchorProps) {
-  const store = useContext(PageHovercardContext);
-  if (!store) {
-    return (
-      <Role.a
-        {...props}
-        className={twJoin(
-          props.className,
-          "[[data-dialog]_&]:decoration-solid [[data-dialog]_&]:decoration-[0.5px] [[data-dialog]_&]:hover:decoration-2",
-        )}
-      />
-    );
-  }
-  return <HovercardAnchor store={store} {...props} />;
 }

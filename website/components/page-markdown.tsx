@@ -106,14 +106,26 @@ export function PageMarkdown({
           rehypeWrapHeadings,
         ]}
         components={{
-          h1: PageHeading,
-          h2: PageHeading,
-          h3: PageHeading,
-          h4: PageHeading,
+          h1(props) {
+            return <PageHeading {...props} level={1} />;
+          },
+          h2(props) {
+            return <PageHeading {...props} level={2} />;
+          },
+          h3(props) {
+            return <PageHeading {...props} level={3} />;
+          },
+          h4(props) {
+            return <PageHeading {...props} level={4} />;
+          },
           hr: PageDivider,
           p: PageParagraph,
-          ol: PageList,
-          ul: PageList,
+          ol(props) {
+            return <PageList {...props} ordered />;
+          },
+          ul(props) {
+            return <PageList {...props} ordered={false} />;
+          },
           li: PageListItem,
           aside: PageAside,
           figure: PageFigure,

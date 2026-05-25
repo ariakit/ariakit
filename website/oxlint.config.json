@@ -1,0 +1,26 @@
+{
+  "plugins": ["react", "import"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "pedantic": "off"
+  },
+  "rules": {
+    "iframe-missing-sandbox": "off",
+    "no-shadow": "off",
+    "no-unassigned-import": "off",
+    "no-underscore-dangle": "off",
+    "no-unstable-nested-components": "off",
+    "react-in-jsx-scope": "off",
+    "no-unused-vars": [
+      "error",
+      {
+        "ignoreRestSiblings": true,
+        "caughtErrors": "none",
+        "args": "none",
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_"
+      }
+    ]
+  }
+}

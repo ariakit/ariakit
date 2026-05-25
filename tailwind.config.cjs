@@ -19,7 +19,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        current: "currentColor",
         inherit: "inherit",
+        transparent: "transparent",
         black,
         white,
         gray: {
@@ -71,29 +73,25 @@ module.exports = {
     },
 
     dropShadow: {
-      sm: "drop-shadow(0 1px 1px rgb(0 0 0 / 0.05))",
-      "sm-dark": "drop-shadow(0 1px 1px rgb(0 0 0 / 0.15))",
+      sm: "0 1px 1px rgb(0 0 0 / 0.05)",
+      "sm-dark": "0 1px 1px rgb(0 0 0 / 0.15)",
 
-      DEFAULT:
-        "drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06))",
-      dark: "drop-shadow(0 1px 2px rgb(0 0 0 / 0.3)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06))",
+      DEFAULT: "0 1px 2px rgb(0 0 0 / 0.1), 0 1px 1px rgb(0 0 0 / 0.06)",
+      dark: "0 1px 2px rgb(0 0 0 / 0.3), 0 1px 1px rgb(0 0 0 / 0.06)",
 
-      md: "drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))",
-      "md-dark":
-        "drop-shadow(0 4px 3px rgb(0 0 0 / 0.21)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06))",
+      md: "0 4px 3px rgb(0 0 0 / 0.07), 0 2px 2px rgb(0 0 0 / 0.06)",
+      "md-dark": "0 4px 3px rgb(0 0 0 / 0.21), 0 2px 2px rgb(0 0 0 / 0.06)",
 
-      lg: "drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1))",
-      "lg-dark":
-        "drop-shadow(0 10px 8px rgb(0 0 0 / 0.12)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1))",
+      lg: "0 10px 8px rgb(0 0 0 / 0.04), 0 4px 3px rgb(0 0 0 / 0.1)",
+      "lg-dark": "0 10px 8px rgb(0 0 0 / 0.12), 0 4px 3px rgb(0 0 0 / 0.1)",
 
-      xl: "drop-shadow(0 18px 10px rgb(0 0 0 / 0.04)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.1))",
-      "xl-dark":
-        "drop-shadow(0 18px 10px rgb(0 0 0 / 0.12)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.1))",
+      xl: "0 18px 10px rgb(0 0 0 / 0.04), 0 8px 5px rgb(0 0 0 / 0.1)",
+      "xl-dark": "0 18px 10px rgb(0 0 0 / 0.12), 0 8px 5px rgb(0 0 0 / 0.1)",
 
-      "2xl": "drop-shadow(0 25px 20px rgb(0 0 0 / 0.15))",
-      "2xl-dark": "drop-shadow(0 25px 20px rgb(0 0 0 / 0.34))",
+      "2xl": "0 25px 20px rgb(0 0 0 / 0.15)",
+      "2xl-dark": "0 25px 20px rgb(0 0 0 / 0.34)",
 
-      none: "drop-shadow(0 0 #0000)",
+      none: "0 0 #0000",
     },
 
     boxShadow: {
@@ -141,39 +139,11 @@ module.exports = {
     backgroundOpacity: false,
     borderOpacity: false,
     textOpacity: false,
-    dropShadow: false,
-    boxShadow: false,
   },
   plugins: [
     require("tailwindcss-animate"),
     {
       handler: ({ addUtilities, addVariant, theme }) => {
-        const dropShadow = theme("dropShadow");
-        const dropShadowUtils = Object.entries(dropShadow).reduce(
-          (acc, [key, shadow]) => {
-            acc[`.drop-shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
-              filter: shadow,
-            };
-            return acc;
-          },
-          {},
-        );
-
-        addUtilities(dropShadowUtils);
-
-        const boxShadow = theme("boxShadow");
-        const boxShadowUtils = Object.entries(boxShadow).reduce(
-          (acc, [key, shadow]) => {
-            acc[`.shadow${key === "DEFAULT" ? "" : `-${key}`}`] = {
-              "box-shadow": String(shadow),
-            };
-            return acc;
-          },
-          {},
-        );
-
-        addUtilities(boxShadowUtils);
-
         addUtilities({
           ".ariakit-outline": {
             outline: `2px solid ${theme("colors.blue.600")}`,

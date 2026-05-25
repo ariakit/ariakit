@@ -13,6 +13,7 @@
     "selector-class-pattern": null,
     "length-zero-no-unit": null,
     "value-keyword-case": null,
+    "import-notation": null,
     "custom-property-pattern": null,
     "color-function-notation": null,
     "declaration-property-value-no-unknown": null,
@@ -40,9 +41,20 @@
           "apply",
           "variants",
           "responsive",
-          "screen"
+          "screen",
+          "utility",
+          "config"
         ]
       }
     ]
-  }
+  },
+  "overrides": [
+    {
+      "files": ["examples/theme.css"],
+      "rules": {
+        "declaration-empty-line-before": null,
+        "nesting-selector-no-missing-scoping-root": null
+      }
+    }
+  ]
 }

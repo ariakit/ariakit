@@ -1,7 +1,6 @@
-import { currentUser } from "@clerk/nextjs";
 import type { NextRequest } from "next/server.ts";
 import { z } from "zod";
-import { getStripeId } from "@/lib/clerk.ts";
+import { getCurrentUser, getStripeId } from "@/lib/clerk.ts";
 import {
   cancelSubscription,
   filterPlusSubscriptions,
@@ -20,7 +19,7 @@ const paramsSchema = z
   }));
 
 export async function GET(req: NextRequest) {
-  const stripeId = getStripeId(await currentUser());
+  const stripeId = getStripeId(await getCurrentUser());
   if (!stripeId) return Response.json("Unauthorized", { status: 401 });
 
   const parsed = paramsSchema.safeParse(

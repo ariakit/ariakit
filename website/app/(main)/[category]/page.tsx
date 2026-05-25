@@ -9,7 +9,7 @@ import { PageSection } from "../page-section.tsx";
 import { ListPage } from "./list-page.tsx";
 
 interface Props {
-  params: { category: string };
+  params: Promise<{ category: string }>;
 }
 
 const meta = {
@@ -20,8 +20,8 @@ const meta = {
   reference: { size: "md" },
 } as const;
 
-export function generateMetadata({ params }: Props) {
-  const { category } = params;
+export async function generateMetadata({ params }: Props) {
+  const { category } = await params;
   const page = pagesConfig.pages.find((page) => page.slug === category);
   if (!page) return notFound();
   return getNextPageMetadata({ title: `${page.title} - Ariakit` });
@@ -31,8 +31,8 @@ export function generateStaticParams() {
   return pagesConfig.pages.map((page) => ({ category: page.slug }));
 }
 
-export default function Page({ params }: Props) {
-  const { category } = params;
+export default async function Page({ params }: Props) {
+  const { category } = await params;
   if (!(category in index)) return notFound();
   const key = category as keyof typeof meta;
   const pages = index[key]?.filter((page) => !page.unlisted);

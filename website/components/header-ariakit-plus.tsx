@@ -8,12 +8,7 @@ import {
   MenuProvider,
   MenuSeparator,
 } from "@ariakit/react";
-import {
-  ClerkLoading,
-  SignedIn,
-  SignedOut,
-  useClerk,
-} from "@clerk/clerk-react";
+import { ClerkLoading, Show, useClerk } from "@clerk/nextjs";
 import Link from "next/link.js";
 import {
   usePathname,
@@ -59,7 +54,7 @@ export function HeaderAriakitPlus() {
       <ClerkLoading>
         <div className="mx-2 h-6 w-10 animate-pulse rounded bg-black/10 sm:mx-3 sm:w-28 dark:bg-white/10" />
       </ClerkLoading>
-      <SignedOut>
+      <Show when="signed-out">
         {segments.length === 1 && segments.includes("plus") ? (
           <Suspense>
             <Command
@@ -89,8 +84,8 @@ export function HeaderAriakitPlus() {
             <span className="inline font-medium sm:hidden">Plus</span>
           </Button>
         )}
-      </SignedOut>
-      <SignedIn>
+      </Show>
+      <Show when="signed-in">
         <MenuProvider placement="bottom-end">
           <MenuButton
             className="px-3"
@@ -158,7 +153,7 @@ export function HeaderAriakitPlus() {
             </MenuItem>
           </Menu>
         </MenuProvider>
-      </SignedIn>
+      </Show>
     </>
   );
 }

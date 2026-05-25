@@ -34,17 +34,65 @@
 
 .components-button {
   @apply
-    button
-    dismiss
-    secondary
+    [--border:rgb(0_0_0/13%)]
+    [--highlight:rgb(255_255_255/20%)]
+    [--shadow:rgb(0_0_0/10%)]
+    active:pt-0.5
+    aria-disabled:opacity-50
+    bg-transparent
+    border-none
+    dark:[--border:rgb(255_255_255/10%)]
+    dark:[--highlight:rgb(255_255_255/5%)]
+    dark:[--shadow:rgb(0_0_0/25%)]
+    dark:active:[box-shadow:none]
+    dark:bg-transparent
+    dark:[box-shadow:none]
+    dark:text-white
     fill-black
+    flex
+    font-medium
+    gap-1
+    h-10
+    hover:bg-black/5
+    hover:[&:not(:active)]:[--border:rgb(0_0_0/33%)]
+    hover:[&:not(:active)]:dark:[--border:rgb(255_255_255/25%)]
+    items-center
+    justify-center
+    no-underline
+    outline-2
+    outline-blue-600
+    outline-offset-2
+    p-0
+    rounded-lg
+    select-none
+    sm:gap-2
+    text-base
+    text-current
+    w-10
+    whitespace-nowrap
+    [box-shadow:none]
     dark:fill-white
+    dark:hover:bg-white/5
   ;
 }
 
 .components-tooltip {
   @apply
-    tooltip
+    bg-gray-150
+    border
+    border-gray-300
+    cursor-default
+    dark:bg-gray-700
+    dark:border-gray-600
+    dark:shadow-sm-dark
+    dark:text-white
+    px-2
+    py-1
+    rounded-md
+    shadow-sm
+    text-black
+    text-sm
+    z-50
   ;
 }
 

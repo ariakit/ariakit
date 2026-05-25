@@ -17,7 +17,7 @@ export function PagePre({ node, hovercards, ...props }: PagePreProps) {
     <pre
       {...props}
       className={twJoin(
-        "w-full max-w-[--size-content]",
+        "w-full max-w-(--size-content)",
         "data-[api]:leading-8 data-[api]:tracking-wide data-[api]:text-black/60 dark:data-[api]:text-white/60",
         props.className,
       )}
@@ -76,7 +76,7 @@ export function PagePre({ node, hovercards, ...props }: PagePreProps) {
       lineNumbers={lineNumbers}
       highlightLines={highlightLines}
       highlightTokens={highlightTokens}
-      className={definition ? "max-w-[--size-content]" : "max-w-[--size-lg]"}
+      className={definition ? "max-w-(--size-content)" : "max-w-(--size-lg)"}
       onRender={deferred.resolve}
     />
   );

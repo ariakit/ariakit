@@ -1,5 +1,5 @@
 "use client";
-import { ClerkProvider } from "@clerk/clerk-react";
+import { ClerkProvider } from "@clerk/nextjs";
 import type { PropsWithChildren } from "react";
 import { useSubscription } from "@/lib/use-subscription.ts";
 
@@ -12,8 +12,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       publishableKey={key}
       signInUrl="/sign-in"
       signUpUrl="/sign-up"
-      afterSignInUrl="/"
-      afterSignUpUrl="/"
+      signInFallbackRedirectUrl="/"
+      signUpFallbackRedirectUrl="/"
       appearance={{
         layout: { logoPlacement: "none" },
         variables: {

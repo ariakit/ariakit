@@ -20,11 +20,11 @@ const searchParamsSchema = z.object({
 });
 
 interface PageProps {
-  searchParams: Record<string, string | string[]>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
-export default function Page(props: PageProps) {
-  const searchParams = searchParamsSchema.parse(props.searchParams);
+export default async function Page(props: PageProps) {
+  const searchParams = searchParamsSchema.parse(await props.searchParams);
   return (
     <div className="wrapper">
       <Select

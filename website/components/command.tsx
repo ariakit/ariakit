@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link.js";
+import type { LinkProps } from "next/link.js";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { Focusable } from "./focusable.tsx";
@@ -9,21 +11,24 @@ import { Role } from "./role.tsx";
 
 interface CommandProps extends RoleProps<"button"> {
   flat?: boolean;
+  href?: string;
+  scroll?: LinkProps["scroll"];
   variant?: "primary" | "secondary" | "danger" | "plus";
 }
 
 export const Command = forwardRef<HTMLButtonElement, CommandProps>(
-  function Command({ variant, flat = variant === "plus", ...props }, ref) {
+  function Command(
+    { href, render, scroll, variant, flat = variant === "plus", ...props },
+    ref,
+  ) {
+    const link =
+      !render && href ? <Link href={href} scroll={scroll} /> : render;
     const button = (
       <Role.button
         ref={ref}
         {...props}
         render={
-          variant === "plus" ? (
-            <PlusBordered thick render={props.render} />
-          ) : (
-            props.render
-          )
+          variant === "plus" ? <PlusBordered thick render={link} /> : link
         }
         className={twMerge(
           "relative flex h-10 select-none items-center justify-center gap-1 whitespace-nowrap rounded-lg border-none bg-white px-4 text-base text-black no-underline hover:bg-gray-100 aria-disabled:opacity-50 aria-expanded:bg-gray-100 sm:gap-2 dark:bg-white/5 dark:text-white dark:hover:bg-white/10 aria-expanded:dark:bg-white/10",

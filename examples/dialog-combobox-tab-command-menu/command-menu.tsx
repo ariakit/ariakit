@@ -91,7 +91,7 @@ export const CommandMenuInput = forwardRef<
 >(function CommandMenuInput(props, ref) {
   const tab = Ariakit.useTabContext();
   return (
-    <div className="ak-popup-cover grid flex-none grid-cols-[auto_max-content] items-center border-[--border] border-b p-0 pe-[7px] sm:pe-[11px]">
+    <div className="ak-popup-cover grid flex-none grid-cols-[auto_max-content] items-center border-(--border) border-b p-0 pe-[7px] sm:pe-[11px]">
       <Ariakit.Combobox
         ref={ref}
         autoSelect="always"
@@ -337,7 +337,7 @@ export const CommandMenuFooter = forwardRef<
       {...props}
       className={clsx(
         props.className,
-        "ak-popup-cover ak-popup-layer mt-auto flex flex-none gap-3 border-[--border] border-t p-2 text-sm whitespace-nowrap overflow-x-auto max-sm:hidden",
+        "ak-popup-cover ak-popup-layer mt-auto flex flex-none gap-3 border-(--border) border-t p-2 text-sm whitespace-nowrap overflow-x-auto max-sm:hidden",
       )}
     >
       <div className="flex items-center gap-1">

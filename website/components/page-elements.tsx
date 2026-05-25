@@ -1,7 +1,6 @@
 import type { Element, ElementContent } from "hast";
 import Image from "next/image.js";
-import Link from "next/link.js";
-import type { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { Children, cloneElement, isValidElement, useId } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
@@ -23,7 +22,6 @@ import { InlineLink } from "./inline-link.tsx";
 import { PageCards } from "./page-cards.tsx";
 import { PageHeroProvider } from "./page-context.tsx";
 import { PageExample } from "./page-example.tsx";
-import { PageHovercardAnchor } from "./page-hovercard.tsx";
 import { PageSidebar } from "./page-sidebar.tsx";
 import { PageTag, PageTagList } from "./page-tag.tsx";
 
@@ -37,12 +35,12 @@ export function PageHeading({ node, level, ...props }: PageHeadingProps) {
     // base styles
     "text-black text-pretty dark:text-white tracking-[-0.035em] dark:tracking-[-0.015em]",
     "[&_code]:font-monospace [&_code]:rounded [&_code]:px-[0.2em] [&_code]:py-[0.15em]",
-    "[&_code]:bg-black/[7.5%] dark:[&_code]:bg-white/[7.5%] max-w-[--size-content-box]",
+    "[&_code]:bg-black/[7.5%] dark:[&_code]:bg-white/[7.5%] max-w-(--size-content-box)",
     // sticky styles
     level < 4 && [
-      "max-md:flex items-center z-20 top-[--header-height]",
+      "max-md:flex items-center z-20 top-(--header-height)",
       "max-md:sticky max-md:min-h-[48px] max-md:pb-2 max-md:-mb-2 max-md:pr-12",
-      "max-md:-mx-[--page-padding] max-md:w-[calc(100%+var(--page-padding)*2)] max-md:px-[--page-padding]",
+      "max-md:-mx-(--page-padding) max-md:w-[calc(100%+var(--page-padding)*2)] max-md:px-(--page-padding)",
       "max-md:bg-gray-50 max-md:dark:bg-gray-800",
       "[[data-dialog]_&]:static [[data-dialog]_&]:mb-0 [[data-dialog]_&]:pb-0 [[data-dialog]_&]:bg-inherit",
     ],
@@ -59,7 +57,7 @@ export function PageHeading({ node, level, ...props }: PageHeadingProps) {
   if (level === 1) {
     return (
       <h1 {...props} className={className}>
-        <span className="max-w-[--size-content]">{props.children}</span>
+        <span className="max-w-(--size-content)">{props.children}</span>
       </h1>
     );
   }
@@ -90,7 +88,7 @@ export interface PageParagraphProps extends ComponentPropsWithoutRef<"p"> {
 export function PageParagraph({ node, ...props }: PageParagraphProps) {
   const className = twJoin(
     "dark:text-white/[85%] leading-7",
-    "max-w-[--size-content] text-pretty",
+    "max-w-(--size-content) text-pretty",
     "[p&_code]:rounded [p&_code]:text-[0.9375em] text-pretty",
     "[p&_code]:px-[0.25em] [p&_code]:py-[0.2em]",
     "[p&_code]:bg-black/[7.5%] dark:[p&_code]:bg-white/[7.5%]",
@@ -98,7 +96,7 @@ export function PageParagraph({ node, ...props }: PageParagraphProps) {
     props.className,
   );
   const paragraph = (
-    <div className="max-w-[--size-content-box]">
+    <div className="max-w-(--size-content-box)">
       <p {...props} className={className} />
     </div>
   );
@@ -108,9 +106,16 @@ export function PageParagraph({ node, ...props }: PageParagraphProps) {
 
   const [child] = children;
   if (!child) return paragraph;
-  if (!isValidElement(child)) return paragraph;
-
-  if (!child.props) return paragraph;
+  if (
+    !isValidElement<{
+      children?: ReactNode;
+      href?: unknown;
+      "data-large"?: unknown;
+      "data-playground"?: unknown;
+    }>(child)
+  ) {
+    return paragraph;
+  }
 
   if ("data-large" in child.props) return child;
   if (!("data-playground" in child.props)) return paragraph;
@@ -128,7 +133,7 @@ export function PageAside({ node, title, ...props }: PageAsideProps) {
   const className = twJoin(
     "flex flex-col items-start justify-center w-full gap-4 p-4 pl-5 sm:p-8",
     "rounded-lg sm:rounded-xl !rounded-l relative overflow-hidden",
-    "max-w-[--size-lg] *:w-full",
+    "max-w-(--size-lg) *:w-full",
     "before:absolute before:top-0 before:left-0 before:bottom-0 before:w-1",
 
     "data-[type=danger]:bg-red-100/70",
@@ -179,12 +184,12 @@ export function PageDescription({
   return cloneElement(paragraph, {
     ...props,
     children: (
-      <span className="block max-w-[--size-content]">
+      <span className="block max-w-(--size-content)">
         {paragraph.props.children}
       </span>
     ),
     className: twJoin(
-      "-translate-y-2 !max-w-[--size-content-box] [:has([data-call-to-action])_&]:md:grid grid-cols-[1fr_260px] w-full gap-4 md:gap-8 text-lg sm:text-xl sm:leading-8 text-black/70 dark:!text-white/60",
+      "-translate-y-2 !max-w-(--size-content-box) [:has([data-call-to-action])_&]:md:grid grid-cols-[1fr_260px] w-full gap-4 md:gap-8 text-lg sm:text-xl sm:leading-8 text-black/70 dark:!text-white/60",
       paragraph.props.className,
       props.className,
     ),
@@ -197,7 +202,7 @@ export interface PageDividerProps extends ComponentPropsWithoutRef<"hr"> {
 
 export function PageDivider({ node, ...props }: PageDividerProps) {
   const className = twJoin(
-    "w-full max-w-[--size-content] border-t border-black/10 dark:border-white/10",
+    "w-full max-w-(--size-content) border-t border-black/10 dark:border-white/10",
     "[[data-dialog]_section:last-of-type_&]:hidden",
     props.className,
   );
@@ -212,9 +217,9 @@ export function PageFigure({ node, ...props }: PageFigureProps) {
   const className = twJoin(
     "group gap-2 flex-col grid-cols-1 sm:grid-cols-2 overflow-hidden rounded-lg md:rounded-xl",
     "[&>img]:!rounded-none",
-    "data-[wide]:max-w-[--size-xl] data-[wide]:md:rounded-2xl",
+    "data-[wide]:max-w-(--size-xl) data-[wide]:md:rounded-2xl",
     "data-[media]:grid",
-    "data-[quote]:flex data-[quote]:max-w-[--size-quote]",
+    "data-[quote]:flex data-[quote]:max-w-(--size-quote)",
     "data-[bigquote]:flex data-[bigquote]:!w-auto data-[bigquote]:p-4",
     props.className,
   );
@@ -227,7 +232,7 @@ export interface PageBlockquoteProps extends ComponentPropsWithoutRef<"blockquot
 
 export function PageBlockquote({ node, ...props }: PageBlockquoteProps) {
   const className = twJoin(
-    "flex flex-col gap-4 px-4 max-w-[--size-quote] border-l-4 border-black/25 dark:border-white/25",
+    "flex flex-col gap-4 px-4 max-w-(--size-quote) border-l-4 border-black/25 dark:border-white/25",
     "group-data-[bigquote]:border-0",
     "group-data-[bigquote]:italic",
     "group-data-[bigquote]:p-0",
@@ -247,13 +252,20 @@ export interface PageListProps extends ComponentPropsWithoutRef<"ol"> {
 
 export function PageList({ node, ordered, ...props }: PageListProps) {
   const className = twJoin(
-    "flex flex-col gap-4 pl-8 list-none w-full max-w-[--size-content]",
+    "flex flex-col gap-4 pl-8 list-none w-full max-w-(--size-content)",
     props.className,
   );
   const Element = ordered ? "ol" : "ul";
+  let index = 0;
+  const children = Children.map(props.children, (child) => {
+    if (!isValidElement<PageListItemProps>(child)) return child;
+    return cloneElement(child, { ordered, index: index++ });
+  });
   return (
-    <div className="max-w-[--size-content-box]">
-      <Element {...props} className={className} />
+    <div className="max-w-(--size-content-box)">
+      <Element {...props} className={className}>
+        {children}
+      </Element>
     </div>
   );
 }
@@ -331,7 +343,7 @@ export function PageSection({
         "[[data-dialog]_&]:first-of-type:mt-0 [[data-dialog]_&]:data-[level='2']:mt-2",
         "[[data-dialog]_&]:bg-inherit",
         level === 1
-          ? "[--size-2xl:--size-wide] [--size-content-box:--size-md] [--size-lg:--size-4xl] [--size-md:--size-3xl] [--size-xl:--size-5xl]"
+          ? "[--size-2xl:var(--size-wide)] [--size-content-box:var(--size-md)] [--size-lg:var(--size-4xl)] [--size-md:var(--size-3xl)] [--size-xl:var(--size-5xl)]"
           : "",
         props.className,
       )}
@@ -360,7 +372,7 @@ export function PageSection({
             <AuthEnabled>
               <NotSubscribed>
                 <div className="mt-12 flex w-full flex-col items-start justify-center md:flex-row">
-                  <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-[--page-padding]">
+                  <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-(--page-padding)">
                     <PageSection level={2} id="learn-more-about-this-example">
                       <PageHeading level={2} id="learn-more-about-this-example">
                         Learn more about this example
@@ -383,17 +395,13 @@ export function PageSection({
                           </PageListItem>
                         ))}
                       </PageList>
-                      <div className="max-w-[--size-content-box]">
-                        <div className="max-w-[--size-content]">
+                      <div className="max-w-(--size-content-box)">
+                        <div className="max-w-(--size-content)">
                           <Command
                             variant="plus"
+                            href="/plus?feature=examples"
+                            scroll={false}
                             className="h-14 text-lg focus-visible:!ariakit-outline"
-                            render={
-                              <Link
-                                href="/plus?feature=examples"
-                                scroll={false}
-                              />
-                            }
                           >
                             Unlock Ariakit Plus
                           </Command>
@@ -488,7 +496,7 @@ export function PageDiv({
         ) : (
           sidebar
         )}
-        <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-[--page-padding] [[data-dialog]_&]:!px-0">
+        <div className="flex w-full min-w-[1px] max-w-5xl flex-col items-center gap-8 md:px-(--page-padding) [[data-dialog]_&]:!px-0">
           {props.children}
         </div>
       </div>
@@ -554,8 +562,12 @@ export function PageStrong({ node, ...props }: PageStrongProps) {
   return <strong {...props} className={className} />;
 }
 
-export interface PageImageProps extends ComponentPropsWithoutRef<"img"> {
+export interface PageImageProps extends Omit<
+  ComponentPropsWithoutRef<"img">,
+  "src"
+> {
   node?: Element;
+  src?: string;
 }
 
 export function PageImage({
@@ -567,7 +579,7 @@ export function PageImage({
   ...props
 }: PageImageProps) {
   const className = twJoin(
-    "overflow-hidden rounded-lg max-w-[--size-md] data-[large]:max-w-[--size-lg] data-[wide]:max-w-[--size-xl] md:rounded-xl data-[wide]:md:rounded-2xl",
+    "overflow-hidden rounded-lg max-w-(--size-md) data-[large]:max-w-(--size-lg) data-[wide]:max-w-(--size-xl) md:rounded-xl data-[wide]:md:rounded-2xl",
     props.className,
   );
   return (
@@ -686,14 +698,10 @@ export function PageA({
       );
       hovercards?.add(Promise.resolve(href));
       return (
-        <InlineLink
-          {...props}
-          className={className}
-          render={<PageHovercardAnchor render={<Link href={href} />} />}
-        />
+        <InlineLink {...props} href={href} hovercard className={className} />
       );
     }
-    return <InlineLink {...props} render={<Link href={href} />} />;
+    return <InlineLink {...props} href={href} />;
   }
   return <InlineLink {...props} />;
 }

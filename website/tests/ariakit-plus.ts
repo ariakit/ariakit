@@ -1,10 +1,14 @@
-import { createClerkClient } from "@clerk/clerk-sdk-node";
+import { createRequire } from "node:module";
+import type * as ClerkServer from "@clerk/nextjs/server";
 import type { FrameLocator, Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import dotenv from "dotenv";
-import { Stripe } from "stripe";
+import Stripe from "stripe";
 
 const DEFAULT_PASSWORD = "password";
+const require = createRequire(import.meta.url);
+const { createClerkClient } =
+  require("@clerk/nextjs/server") as typeof ClerkServer;
 
 dotenv.config({ path: new URL("../.env.local", import.meta.url) });
 
@@ -121,7 +125,7 @@ async function createCustomerWithOneTimePurchase(
 
   await stripe.invoiceItems.create({
     customer: customer.id,
-    price: price.id,
+    pricing: { price: price.id },
     quantity: 1,
     discounts: [{ coupon: coupon.id }],
   });
@@ -132,6 +136,76 @@ async function createCustomerWithOneTimePurchase(
   });
   await stripe.invoices.pay(invoice.id);
   await stripe.coupons.del(coupon.id);
+
+  return customer;
+}
+
+function getInvoicePaymentCharge(payment: Stripe.InvoicePayment) {
+  if (payment.payment.type === "charge") {
+    const charge = payment.payment.charge;
+    return typeof charge === "object" ? charge : null;
+  }
+  if (payment.payment.type === "payment_intent") {
+    const paymentIntent = payment.payment.payment_intent;
+    const charge =
+      typeof paymentIntent === "object" ? paymentIntent.latest_charge : null;
+    return typeof charge === "object" ? charge : null;
+  }
+  return null;
+}
+
+async function createCustomerWithRefundedOneTimePurchase(
+  lookupKey: string,
+  options: AuthOptions = {},
+) {
+  const stripe = getStripeClient();
+  const customer = await createCustomer(options);
+
+  const prices = await stripe.prices.list({ lookup_keys: [lookupKey] });
+  const price = prices.data[0];
+  if (!price) {
+    throw new Error(`No price found for lookup key ${lookupKey}`);
+  }
+
+  const paymentMethod = await stripe.paymentMethods.create({
+    type: "card",
+    card: { token: "tok_visa" },
+  });
+
+  await stripe.paymentMethods.attach(paymentMethod.id, {
+    customer: customer.id,
+  });
+  await stripe.customers.update(customer.id, {
+    invoice_settings: { default_payment_method: paymentMethod.id },
+  });
+
+  await stripe.invoiceItems.create({
+    customer: customer.id,
+    pricing: { price: price.id },
+    quantity: 1,
+  });
+
+  const invoice = await stripe.invoices.create({
+    customer: customer.id,
+    pending_invoice_items_behavior: "include",
+  });
+
+  const paidInvoice = await stripe.invoices.pay(invoice.id, {
+    expand: [
+      "payments.data.payment.charge",
+      "payments.data.payment.payment_intent.latest_charge",
+    ],
+  });
+
+  const charge = paidInvoice.payments?.data
+    .map(getInvoicePaymentCharge)
+    .find((charge) => charge?.paid);
+
+  if (!charge) {
+    throw new Error(`No paid charge found for invoice ${paidInvoice.id}`);
+  }
+
+  await stripe.refunds.create({ charge: charge.id });
 
   return customer;
 }
@@ -181,7 +255,7 @@ async function createCustomerWithSubscription(
   await stripe.subscriptions.create({
     customer: customer.id,
     items: [{ price: price.id, quantity: 1 }],
-    coupon: coupon.id,
+    discounts: [{ coupon: coupon.id }],
     backdate_start_date: Math.round(new Date("2023-11-01").getTime() / 1000),
   });
 
@@ -319,6 +393,30 @@ test("old one-time purchaser still has access to Plus", async ({ page }) => {
   await expect(q.text("Purchased")).toBeVisible();
 });
 
+test("refunded one-time purchaser does not have access to Plus", async ({
+  page,
+}) => {
+  test.setTimeout(60_000);
+
+  await page.goto("/sign-in", { waitUntil: "networkidle" });
+
+  const email = generateUserEmail();
+  await createCustomerWithRefundedOneTimePurchase("ariakit-plus-one-time-240", {
+    email,
+  });
+  await fillSignIn(page, { email, redirectUrl: "/" });
+
+  const subscription = await page.evaluate(async () => {
+    const response = await fetch("/api/subscription");
+    return {
+      status: response.status,
+      body: await response.json(),
+    };
+  });
+
+  expect(subscription).toEqual({ status: 404, body: null });
+});
+
 test("purchase Plus from /plus, sign out, sign in again, and access the billing page", async ({
   page,
 }) => {
@@ -443,7 +541,7 @@ test.describe("with coupon", () => {
     const customer = await createCustomer();
 
     await stripe.promotionCodes.create({
-      coupon: coupon!.id,
+      promotion: { type: "coupon", coupon: coupon!.id },
       max_redemptions: 1,
     });
 
@@ -478,7 +576,7 @@ test.describe("with coupon", () => {
     const customerWithDiscount = await createCustomer();
 
     await stripe.promotionCodes.create({
-      coupon: coupon!.id,
+      promotion: { type: "coupon", coupon: coupon!.id },
       customer: customerWithDiscount.id,
       max_redemptions: 1,
     });

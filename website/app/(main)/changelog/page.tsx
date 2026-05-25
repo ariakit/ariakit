@@ -17,9 +17,9 @@ export default function Page() {
   );
   const tree = getPageTreeFromContent(content);
 
-  const tableOfContentsChildren = tree.data?.tableOfContents as
-    | TableOfContents
-    | undefined;
+  const { tableOfContents: tableOfContentsChildren = [] } = tree.data as {
+    tableOfContents?: TableOfContents;
+  };
 
   const tableOfContents: TableOfContents = [
     {
@@ -27,10 +27,10 @@ export default function Page() {
       href: "#",
       text: "Changelog",
     },
-    ...(tableOfContentsChildren?.map(({ children, ...item }) => item) || []),
+    ...tableOfContentsChildren.map(({ children, ...item }) => item),
   ];
   return (
-    <main className="relative mt-12 flex w-full min-w-[1px] flex-col items-center gap-8 px-[--page-padding] md:mt-20">
+    <main className="relative mt-12 flex w-full min-w-[1px] flex-col items-center gap-8 px-(--page-padding) md:mt-20">
       <PageMarkdown
         file={file}
         content={content}

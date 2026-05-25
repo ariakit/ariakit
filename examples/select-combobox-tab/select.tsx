@@ -222,7 +222,7 @@ export function SelectSeparator(props: SelectSeparatorProps) {
     <div
       {...props}
       className={clsx(
-        "ak-popup-cover my-[--padding] h-px bg-[--border] p-0",
+        "ak-popup-cover my-(--padding) h-px bg-(--border) p-0",
         props.className,
       )}
     />

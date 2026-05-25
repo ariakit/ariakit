@@ -45,11 +45,11 @@ export function generateStaticParams() {
 }
 
 interface PageProps {
-  params: ReturnType<typeof generateStaticParams>[number];
+  params: Promise<ReturnType<typeof generateStaticParams>[number]>;
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  const { category, page } = params;
+  const { category, page } = await params;
   const data = pageIndex[category]?.find((item) => item.slug === page);
 
   if (!data) {
@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 export default async function ContentPage({ params }: PageProps) {
-  const { category, page } = params;
+  const { category, page } = await params;
 
   const config = pages.find((page) => page.slug === category);
   if (!config) return notFound();
@@ -86,7 +86,9 @@ export default async function ContentPage({ params }: PageProps) {
 
   if (!categoryDetail) return notFound();
 
-  const tableOfContentsData = tree.data?.tableOfContents as TableOfContentsData;
+  const { tableOfContents: tableOfContentsData = [] } = tree.data as {
+    tableOfContents?: TableOfContentsData;
+  };
   const tableOfContents: TableOfContentsData = [
     {
       id: "",
@@ -97,7 +99,7 @@ export default async function ContentPage({ params }: PageProps) {
   ];
 
   return (
-    <main className="relative mt-12 flex w-full min-w-[1px] flex-col items-center gap-8 px-[--page-padding] md:mt-20">
+    <main className="relative mt-12 flex w-full min-w-[1px] flex-col items-center gap-8 px-(--page-padding) md:mt-20">
       <PageMarkdown
         tableOfContents={tableOfContents}
         category={category}

@@ -19,7 +19,7 @@
   @apply
     [--inset:theme(spacing.3)]
     fixed
-    inset-[--inset]
+    inset-(--inset)
     sm:inset-y-[10vh]
     m-auto
     sm:mt-0

@@ -1,9 +1,23 @@
 import { hasOwnProperty, invariant } from "@ariakit/utils";
-import type { ProjectFiles } from "@stackblitz/sdk";
-import _sdk from "@stackblitz/sdk";
+import sdk, {
+  type EmbedOptions,
+  type OpenOptions,
+  type Project,
+  type ProjectFiles,
+} from "@stackblitz/sdk";
 import { pick } from "lodash-es";
 
-const sdk = _sdk as unknown as (typeof _sdk)["default"];
+const POSTCSS_VERSION = "8.5.15";
+const TAILWIND_VERSION = "4.3.0";
+const TYPES_NODE_VERSION = "24.12.4";
+const TYPES_REACT_VERSION = "19.2.15";
+const TYPES_REACT_DOM_VERSION = "19.2.3";
+const TYPESCRIPT_VERSION = "6.0.3";
+const NEXT_VERSION = "16.2.6";
+const REACT_VERSION = "19.2.6";
+const REACT_DOM_VERSION = "19.2.6";
+const VITE_VERSION = "8.0.14";
+const VITE_REACT_PLUGIN_VERSION = "6.0.2";
 
 export interface StackblitzProps {
   id: string;
@@ -41,6 +55,13 @@ function getFirstFilename(files: StackblitzProps["files"]) {
   return firstFile;
 }
 
+function toRecord(value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return {};
+  }
+  return value as Record<string, unknown>;
+}
+
 function getPackageJson(packageJson: Record<string, unknown>) {
   return {
     name: `@ariakit/${packageJson.name}`,
@@ -53,12 +74,13 @@ function getPackageJson(packageJson: Record<string, unknown>) {
     scripts: packageJson.scripts,
     dependencies: packageJson.dependencies,
     devDependencies: {
-      ...(packageJson.devDependencies || {}),
-      autoprefixer: "^10.0.0",
-      tailwindcss: "^3.0.0",
-      postcss: "^8.0.0",
-      "postcss-import": "^16.0.0",
-      typescript: "5.4.4",
+      ...toRecord(packageJson.devDependencies),
+      "@tailwindcss/postcss": TAILWIND_VERSION,
+      autoprefixer: "10.4.23",
+      tailwindcss: TAILWIND_VERSION,
+      postcss: POSTCSS_VERSION,
+      "postcss-import": "16.1.1",
+      typescript: TYPESCRIPT_VERSION,
     },
   };
 }
@@ -68,7 +90,7 @@ function getPostcssConfig() {
 export default {
   plugins: {
     "postcss-import": {},
-    tailwindcss: {},
+    "@tailwindcss/postcss": {},
     autoprefixer: {},
   },
 }
@@ -113,7 +135,7 @@ function getTSConfig(tsConfig?: Record<string, unknown>) {
       noUnusedLocals: true,
       noUnusedParameters: true,
       noFallthroughCasesInSwitch: true,
-      ...(tsConfig?.compilerOptions || {}),
+      ...toRecord(tsConfig?.compilerOptions),
     },
     include: tsConfig?.include,
     exclude: tsConfig?.exclude,
@@ -123,6 +145,7 @@ function getTSConfig(tsConfig?: Record<string, unknown>) {
 function getIndexCss(
   id: StackblitzProps["id"],
   theme: StackblitzProps["theme"] = "light",
+  tailwindConfigPath = "./tailwind.config.js",
 ) {
   const isRadix = /-radix/.test(id);
   theme = isRadix ? "light" : theme;
@@ -132,9 +155,8 @@ function getIndexCss(
       ? "hsl(204 20% 94%)"
       : "hsl(204 3% 12%)";
   const color = theme === "light" ? "hsl(204 10% 10%)" : "hsl(204 20% 100%)";
-  return `@import url("tailwindcss/base") layer(_base);
-@import url("tailwindcss/components") layer(theme);
-@import url("tailwindcss/utilities") layer(_utilities);
+  return `@import "tailwindcss";
+@config "${tailwindConfigPath}";
 
 html {
   color-scheme: ${theme};
@@ -192,8 +214,8 @@ function getViteProject(props: StackblitzProps) {
     dependencies: props.dependencies,
     devDependencies: {
       ...props.devDependencies,
-      "@vitejs/plugin-react": "^3.0.0",
-      vite: "^4.0.0",
+      "@vitejs/plugin-react": VITE_REACT_PLUGIN_VERSION,
+      vite: VITE_VERSION,
     },
   });
 
@@ -289,16 +311,20 @@ function getNextProject(props: StackblitzProps) {
   const packageJson = getPackageJson({
     name: props.id,
     scripts: {
-      dev: "next dev",
-      build: "next build",
+      dev: "next dev --webpack",
+      build: "next build --webpack",
       start: "next start",
     },
     dependencies: {
+      next: NEXT_VERSION,
+      react: REACT_VERSION,
+      "react-dom": REACT_DOM_VERSION,
       ...props.dependencies,
-      next: "14.2.0",
     },
     devDependencies: {
-      "@types/node": "latest",
+      "@types/node": TYPES_NODE_VERSION,
+      "@types/react": TYPES_REACT_VERSION,
+      "@types/react-dom": TYPES_REACT_DOM_VERSION,
       ...props.devDependencies,
     },
   });
@@ -319,9 +345,6 @@ function getNextProject(props: StackblitzProps) {
 
   const nextConfig = `/** @type {import("next").NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -331,13 +354,14 @@ export default nextConfig;
 `;
 
   const nextEnv = `/// <reference types="next" />
-/// <reference types="next/types/global" />
+/// <reference types="next/image-types/global" />
+import "./.next/types/routes.d.ts";
 
 // NOTE: This file should not be edited
-// see https://nextjs.org/docs/basic-features/typescript for more information.
+// see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
 `;
 
-  const layoutCss = getIndexCss(props.id, props.theme);
+  const layoutCss = getIndexCss(props.id, props.theme, "../tailwind.config.js");
 
   const theme = props.theme === "dark" ? "dark" : "light";
 
@@ -434,7 +458,7 @@ function getProject({ template = "vite", ...props }: StackblitzProps) {
     description: props.id,
     template: "node",
     files,
-  } satisfies _sdk.Project;
+  } satisfies Project;
 
   return { project, sourceFiles };
 }
@@ -445,7 +469,7 @@ export function openInStackblitz(props: StackblitzProps) {
   const options = {
     openFile: Object.keys(sourceFiles).reverse().join(","),
     theme: props.theme,
-  } satisfies _sdk.OpenOptions;
+  } satisfies OpenOptions;
 
   sdk.openProject(project, options);
 }
@@ -458,7 +482,7 @@ export function embedStackblitz(element: HTMLElement, props: StackblitzProps) {
     theme: props.theme,
     hideExplorer: true,
     height: element.parentElement?.clientHeight,
-  } satisfies _sdk.EmbedOptions;
+  } satisfies EmbedOptions;
 
   return sdk.embedProject(element, project, options);
 }
@@ -475,5 +499,5 @@ export function getThemedFiles(props: StackblitzProps) {
     return pick(project.files, ["index.css", "index.html"]);
   }
 
-  return pick(project.files, ["app/style.css", "app/layout.tsx"]);
+  return pick(project.files, ["app/layout.css", "app/layout.tsx"]);
 }

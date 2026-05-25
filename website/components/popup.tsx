@@ -25,7 +25,7 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(function Popup(
         "[--border-color:rgb(0_0_0/0.1)] dark:[--border-color:rgb(255_255_255/0.17)]",
         "[--shadow-color:rgb(0_0_0/0.25)] dark:[--shadow-color:rgb(0_0_0/0.35)]",
         "[--shadow-size:0_4px_8px_-4px] dark:[--shadow-size:0_6px_12px_-4px]",
-        "z-50 flex max-h-[min(var(--popover-available-height,800px),800px)] max-w-[--popover-available-width] flex-col rounded-lg bg-white text-black outline-none dark:bg-gray-700 dark:text-white",
+        "z-50 flex max-h-[min(var(--popover-available-height,800px),800px)] max-w-(--popover-available-width) flex-col rounded-lg bg-white text-black outline-none dark:bg-gray-700 dark:text-white",
         "[box-shadow:0_0_0_1px_var(--border-color),var(--shadow-size)_var(--shadow-color)]",
         size === "small" && "text-sm",
         size === "responsive" && "sm:text-sm",

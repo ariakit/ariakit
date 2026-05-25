@@ -1,6 +1,6 @@
-@import url("tailwindcss/base") layer(_base);
-@import url("tailwindcss/components") layer(theme);
-@import url("tailwindcss/utilities") layer(_utilities);
+@import "tailwindcss";
+
+@config "../../tailwind.config.cjs";
 
 [role="button"],
 button:not([type="submit"]) {
@@ -30,9 +30,9 @@ button:not([type="submit"]) {
     [--size-5xl:1232px]
     [--size-wide:1440px]
 
-    [--size-quote:--size-sm]
-    [--size-content:--size-md]
-    [--size-content-box:--size-md]
+    [--size-quote:var(--size-sm)]
+    [--size-content:var(--size-md)]
+    [--size-content-box:var(--size-md)]
 
     [--page-padding:12px]
     md:[--page-padding:16px]

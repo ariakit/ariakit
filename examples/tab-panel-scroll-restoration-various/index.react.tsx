@@ -356,7 +356,7 @@ function Parent() {
       <Ariakit.TabProvider>
         <TabList
           aria-label="Parent"
-          className="sticky top-[--negative-margin] z-10"
+          className="sticky top-(--negative-margin) z-10"
         >
           <Tab>Parent 1</Tab>
           <Tab>Parent 2</Tab>
@@ -380,7 +380,7 @@ function ParentReset() {
       <Ariakit.TabProvider>
         <TabList
           aria-label="ParentReset"
-          className="sticky top-[--negative-margin] z-10"
+          className="sticky top-(--negative-margin) z-10"
         >
           <Tab>ParentReset 1</Tab>
           <Tab>ParentReset 2</Tab>
@@ -404,7 +404,7 @@ function ParentUnmount() {
       <Ariakit.TabProvider>
         <TabList
           aria-label="ParentUnmount"
-          className="sticky top-[--negative-margin] z-10"
+          className="sticky top-(--negative-margin) z-10"
         >
           <Tab>ParentUnmount 1</Tab>
           <Tab>ParentUnmount 2</Tab>
@@ -430,7 +430,7 @@ function ParentUnmountReset() {
       <Ariakit.TabProvider>
         <TabList
           aria-label="ParentUnmountReset"
-          className="sticky top-[--negative-margin] z-10"
+          className="sticky top-(--negative-margin) z-10"
         >
           <Tab>ParentUnmountReset 1</Tab>
           <Tab>ParentUnmountReset 2</Tab>
@@ -457,7 +457,7 @@ function ParentSingle() {
       <Ariakit.TabProvider selectedId={tabId} setSelectedId={setTabId}>
         <TabList
           aria-label="ParentSingle"
-          className="sticky top-[--negative-margin] z-10"
+          className="sticky top-(--negative-margin) z-10"
         >
           <Tab>ParentSingle 1</Tab>
           <Tab>ParentSingle 2</Tab>
@@ -479,7 +479,7 @@ function ParentSingleReset() {
       <Ariakit.TabProvider selectedId={tabId} setSelectedId={setTabId}>
         <TabList
           aria-label="ParentSingleReset"
-          className="sticky top-[--negative-margin] z-10"
+          className="sticky top-(--negative-margin) z-10"
         >
           <Tab>ParentSingleReset 1</Tab>
           <Tab>ParentSingleReset 2</Tab>

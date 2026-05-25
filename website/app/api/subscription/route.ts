@@ -1,5 +1,4 @@
-import { currentUser } from "@clerk/nextjs/server";
-import { getStripeId } from "@/lib/clerk.ts";
+import { getCurrentUser, getStripeId } from "@/lib/clerk.ts";
 import {
   findSubscriptionPlusPrice,
   getActivePlusPrice,
@@ -8,7 +7,7 @@ import {
 } from "@/lib/stripe.ts";
 
 export async function GET() {
-  const stripeId = getStripeId(await currentUser());
+  const stripeId = getStripeId(await getCurrentUser());
   if (!stripeId) {
     return Response.json(null, { status: 404 });
   }

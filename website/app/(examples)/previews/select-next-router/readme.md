@@ -42,8 +42,8 @@ const schema = z.object({
   value: z.string().optional(),
 });
 
-export default function Page({ searchParams }) {
-  const { value } = schema.parse(searchParams);
+export default async function Page({ searchParams }) {
+  const { value } = schema.parse(await searchParams);
   // ...
 }
 ```

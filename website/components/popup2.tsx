@@ -35,7 +35,7 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(function Popup(
         "[--shadow-color:rgb(0_0_0/0.25)] dark:[--shadow-color:rgb(0_0_0/0.35)]",
         "[--shadow-size:0_4px_8px_-4px] dark:[--shadow-size:0_6px_12px_-4px]",
         "[box-shadow:0_0_0_1px_var(--border-color),var(--shadow-size)_var(--shadow-color)]",
-        "z-50 flex max-h-[min(var(--popover-available-height,800px),800px)] max-w-[--popover-available-width] rounded-[--rounded] bg-white text-black outline-none [--rounded:12px] dark:bg-gray-700 dark:text-white",
+        "z-50 flex max-h-[min(var(--popover-available-height,800px),800px)] max-w-(--popover-available-width) rounded-(--rounded) bg-white text-black outline-none [--rounded:12px] dark:bg-gray-700 dark:text-white",
         size === "small" && "text-sm [--rounded:8px]",
         size === "responsive" && "sm:text-sm sm:[--rounded:8px]",
         elevation === 1 &&
@@ -59,7 +59,7 @@ export const Popup = forwardRef<HTMLDivElement, PopupProps>(function Popup(
       <Role
         render={scroller}
         className={twJoin(
-          "flex w-full flex-col overflow-auto overscroll-contain rounded-[inherit] bg-inherit p-[--padding] [--padding:4px]",
+          "flex w-full flex-col overflow-auto overscroll-contain rounded-[inherit] bg-inherit p-(--padding) [--padding:4px]",
         )}
       >
         {children}
@@ -80,7 +80,7 @@ export const PopupItem = forwardRef<HTMLDivElement, PopupItemProps>(
           "[--block-padding:8px] sm:[--block-padding:6px]",
           "rounded-[calc(var(--rounded)-var(--padding))]",
           "data-[active-item]:bg-black/[8%] dark:data-[active-item]:bg-white/[8%]",
-          "cursor-default scroll-m-[--padding] gap-2 px-2 py-[--block-padding] ![outline:none] active:pb-[calc(var(--block-padding)-1px)] active:pt-[calc(var(--block-padding)+1px)]",
+          "cursor-default scroll-m-(--padding) gap-2 px-2 py-(--block-padding) ![outline:none] active:pb-[calc(var(--block-padding)-1px)] active:pt-[calc(var(--block-padding)+1px)]",
           props.className,
         )}
       />

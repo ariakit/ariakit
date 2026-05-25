@@ -1,16 +1,21 @@
 import { readFileSync } from "node:fs";
-import { basename, dirname, extname } from "node:path";
+import { basename, dirname, extname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import tailwindcss from "@tailwindcss/postcss";
 import postcss from "postcss";
 import combineDuplicatedSelectors from "postcss-combine-duplicated-selectors";
 import discardComments from "postcss-discard-comments";
 import postcssImport from "postcss-import";
 // @ts-expect-error
 import mergeSelectors from "postcss-merge-selectors";
+import postcssNesting from "postcss-nesting";
 // @ts-expect-error
 import prettify from "postcss-prettify";
 import { format } from "prettier";
 import { PurgeCSS } from "purgecss";
-import tailwindcss from "tailwindcss";
+import tailwindPrelude from "../../scripts/postcss-tailwind-prelude.cjs";
+
+const websiteRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 /** @type {import("postcss").PluginCreator<{ id?: string }>} */
 const plugin = (opts = {}) => {
@@ -29,6 +34,9 @@ const plugin = (opts = {}) => {
           if (rulesSeen.has(rule)) return;
           rulesSeen.add(rule);
           rule.selectors = rule.selectors.map((selector) => {
+            if (selector.includes("&")) {
+              return selector;
+            }
             if (selector.startsWith(":root")) {
               return selector;
             }
@@ -46,52 +54,92 @@ const plugin = (opts = {}) => {
 
 plugin.postcss = true;
 
+const purgeIgnoreStart = "purgecss start ignore";
+const purgeIgnoreEnd = "purgecss end ignore";
+
+/**
+ * @param {string} css
+ */
+function preservePurgeCSSIgnoreComments(css) {
+  return css
+    .replaceAll(`/* ${purgeIgnoreStart} */`, `/*! ${purgeIgnoreStart} */`)
+    .replaceAll(`/* ${purgeIgnoreEnd} */`, `/*! ${purgeIgnoreEnd} */`);
+}
+
+/**
+ * @param {string} css
+ */
+function removePurgeCSSIgnoreComments(css) {
+  return css
+    .replaceAll(`/*! ${purgeIgnoreStart} */`, "")
+    .replaceAll(`/*! ${purgeIgnoreEnd} */`, "");
+}
+
+/**
+ * @param {string} css
+ */
+async function optimizeCSS(css) {
+  const processor = postcss();
+  processor.use(discardComments());
+  processor.use(
+    combineDuplicatedSelectors({ removeDuplicatedProperties: true }),
+  );
+  processor.use(
+    mergeSelectors({
+      matchers: {
+        active: {
+          selectorFilter: /(:active|\[data-active\])/,
+          promote: true,
+        },
+        focusVisible: {
+          selectorFilter: /(:focus-visible|\[data-focus-visible\])/,
+          promote: true,
+        },
+      },
+    }),
+  );
+  processor.use(prettify());
+  const result = await processor.process(css, { from: undefined });
+  return result.css;
+}
+
 /**
  * @param {string} filename
  * @param {object} options
  * @param {string} [options.id]
  * @param {string} [options.tailwindConfig]
+ * @param {string} [options.globalCss]
  * @param {boolean} [options.format]
  * @param {Record<string, string>} [options.contents]
  */
 export async function parseCSSFile(filename, options) {
   const processor = postcss();
-  const raw = readFileSync(filename, "utf8");
+  const raw = preservePurgeCSSIgnoreComments(readFileSync(filename, "utf8"));
 
   const isTheme = filename.endsWith("/theme.css");
 
-  if (options.id) {
-    processor.use(plugin({ id: options.id }));
-  }
-
-  processor.use(postcssImport());
+  processor.use(
+    postcssImport({
+      load(filename) {
+        return preservePurgeCSSIgnoreComments(readFileSync(filename, "utf8"));
+      },
+    }),
+  );
 
   if (options.tailwindConfig) {
-    processor.use(tailwindcss({ config: options.tailwindConfig }));
-  }
-
-  if (!isTheme && options.format) {
-    processor.use(discardComments());
     processor.use(
-      combineDuplicatedSelectors({ removeDuplicatedProperties: true }),
-    );
-
-    processor.use(
-      mergeSelectors({
-        matchers: {
-          active: {
-            selectorFilter: /(:active|\[data-active\])/,
-            promote: true,
-          },
-          focusVisible: {
-            selectorFilter: /(:focus-visible|\[data-focus-visible\])/,
-            promote: true,
-          },
-        },
+      tailwindPrelude({
+        tailwindConfig: options.tailwindConfig,
+        globalCss: options.globalCss || resolve(websiteRoot, "app/global.css"),
       }),
     );
+    processor.use(tailwindcss({ base: websiteRoot }));
+  }
 
-    processor.use(prettify());
+  processor.use(postcssNesting());
+
+  if (options.id) {
+    processor.use(plugin({ id: options.id }));
   }
 
   const result = await processor.process(raw, { from: filename });
@@ -115,6 +163,12 @@ export async function parseCSSFile(filename, options) {
     if (purged?.css) {
       css = purged.css;
     }
+  }
+
+  css = removePurgeCSSIgnoreComments(css);
+
+  if (!isTheme && options.format) {
+    css = await optimizeCSS(css);
   }
 
   if (options.format) {

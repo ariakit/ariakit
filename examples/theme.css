@@ -3,6 +3,115 @@
  * This file is part of Ariakit Plus. For the full license, see
  * https://ariakit.com/plus/license
  */
+
+@utility ak-focusable {
+  --outline-offset: 0;
+  --outline: var(--color-primary);
+  outline-width: 2px;
+  outline-color: var(--outline);
+  outline-offset: var(--outline-offset);
+
+  &[data-focus-visible] {
+    outline-style: solid;
+  }
+
+  &[aria-disabled="true"] {
+    opacity: 0.5;
+  }
+}
+
+@utility ak-clickable {
+  --depth: 1px;
+  --padding-block: var(--depth);
+  user-select: none;
+  white-space: nowrap;
+  padding-block:
+    var(--padding-block-start, var(--padding-block))
+    var(--padding-block-end, var(--padding-block));
+
+  &:active,
+  &[data-active] {
+    padding-block:
+      calc(var(--padding-block-start, var(--padding-block)) + var(--depth, 0px))
+      calc(var(--padding-block-end, var(--padding-block)) - var(--depth, 0px));
+  }
+}
+
+@utility ak-input {
+  --outline-offset: -1px;
+  --background: var(--popup-background);
+  --border-size: 1px;
+  cursor: text;
+  flex: none;
+  background-color: var(--input-background);
+  box-shadow:
+    inset 0 -1px 0 0 var(--light),
+    inset 0 0 0 var(--border-size, 1px) var(--border),
+    inset 0 2px 5px 0 var(--shadow);
+
+  @apply
+    [--input-background:var(--color-white)]
+    dark:[--input-background:oklch(from_var(--background)_calc(l-.05)_c_h)]
+
+    [--border:oklch(from_var(--background)_calc(l-.33)_c_h)]
+    hover:[--border:oklch(from_var(--background)_calc(l-.55)_c_h)]
+
+    dark:[--border:oklch(from_var(--background)_calc(l+.32)_c_h)]
+    dark:hover:[--border:oklch(from_var(--background)_calc(l+.42)_c_h)]
+
+    [--shadow:theme(colors.black/10%)]
+    [--light:theme(colors.white/30%)]
+    dark:[--shadow:theme(colors.black/30%)]
+    dark:[--light:theme(colors.white/10%)];
+
+  &:focus-within {
+    outline-style: solid;
+  }
+
+  &::placeholder,
+  & ::placeholder {
+    @apply
+      text-[oklch(from_var(--input-background)_calc(l-.44)_0_0deg)]
+      dark:text-[oklch(from_var(--input-background)_calc(l+.42)_0_0deg)];
+  }
+}
+
+@utility ak-rounded-item {
+  scroll-margin: var(--padding);
+  border-radius: calc(var(--rounded) - var(--padding));
+}
+
+@utility ak-tab {
+  position: relative;
+  display: inline-block;
+  vertical-align: bottom;
+  cursor: default;
+  user-select: none;
+  white-space: nowrap;
+  background-color: var(--tab-background, var(--popup-background, var(--background, transparent)));
+  border-color: var(--border, transparent);
+  border-width: var(--border-size, 0px) var(--border-size, 0px);
+
+  @apply ak-clickable;
+
+  &[aria-disabled] {
+    opacity: 0.5;
+  }
+
+  &[aria-selected="true"] {
+    z-index: 20;
+  }
+
+  &[data-focus-visible] {
+    background-color: var(--accent-background);
+    color: var(--accent-text);
+  }
+
+  &[data-focus-visible]:not([aria-selected="true"]) {
+    --background: var(--accent-background);
+  }
+}
+
 @layer theme {
   @property --background {
     syntax: '<color>';
@@ -70,10 +179,10 @@
     @apply
       [--text:theme(colors.white)]
 
-      [--background:--color-primary]
+      [--background:var(--color-primary)]
       dark:[--background:oklch(from_var(--color-primary)_calc(l-.05)_c_h)]
       hover:[--background:oklch(from_var(--color-primary)_calc(l-.05)_c_h)]
-      hover:[&:not(:active)]:dark:[--background:--color-primary]
+      hover:[&:not(:active)]:dark:[--background:var(--color-primary)]
 
 
       [--border:theme(colors.black/15%)]
@@ -159,7 +268,7 @@
     --background: var(--popup-background);
     --border-size: 1px;
     @apply
-      [--input-background:--color-white]
+      [--input-background:var(--color-white)]
       dark:[--input-background:oklch(from_var(--background)_calc(l-.05)_c_h)]
 
       [--border:oklch(from_var(--background)_calc(l-.33)_c_h)]
@@ -199,7 +308,7 @@
     --rounded: theme(borderRadius.xl);
     --popup-background: var(--background);
     @apply
-      [--background:--color-white]
+      [--background:var(--color-white)]
       dark:[--background:theme(colors.gray.750)]
 
       [--border:theme(colors.black/10%)]

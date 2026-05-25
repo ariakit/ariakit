@@ -60,13 +60,14 @@ export function Preview({ path, id, css }: Props) {
 }
 
 export function SolidPreview(props: Props) {
+  const { path, id, css } = props;
   useEffect(
     () =>
       render(
-        () => createComponent(SolidPreviewContent as any, props),
+        () => createComponent(SolidPreviewContent as any, { path, id, css }),
         document.querySelector("[data-preview-render-target]")!,
       ),
-    [],
+    [path, id, css],
   );
   return null;
 }

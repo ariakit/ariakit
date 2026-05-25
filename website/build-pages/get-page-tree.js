@@ -2,6 +2,7 @@ import matter from "gray-matter";
 import { toString } from "hast-util-to-string";
 import { marked } from "marked";
 import rehypeParse from "rehype-parse";
+import rehypeSlug from "rehype-slug";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
 import { getPageContent } from "./get-page-content.js";
@@ -13,23 +14,29 @@ import { getPageContent } from "./get-page-content.js";
 export function getPageTreeFromContent(content) {
   const { data, content: contentWithoutMatter } = matter(content);
 
-  const tree = unified()
+  const processor = unified()
     .use(rehypeParse, { fragment: true })
-    .parse(marked(contentWithoutMatter));
+    .use(rehypeSlug);
+
+  const tree = processor.runSync(
+    processor.parse(marked.parse(contentWithoutMatter, { async: false })),
+  );
 
   /** @type {import("./types.js").TableOfContents} */
   const tableOfContents = [];
 
   visit(tree, "element", (node) => {
     if (node.tagName === "h2") {
-      const id = `${node.properties?.id}`;
+      const id = node.properties?.id;
+      if (typeof id !== "string") return;
       const text = toString(node);
       tableOfContents.push({ id, text, href: `#${id}` });
     }
     if (node.tagName === "h3") {
       const lastH2 = tableOfContents[tableOfContents.length - 1];
       if (!lastH2) return;
-      const id = `${node.properties?.id}`;
+      const id = node.properties?.id;
+      if (typeof id !== "string") return;
       const text = toString(node);
       lastH2.children = lastH2.children || [];
       lastH2.children.push({ id, text, href: `#${id}` });

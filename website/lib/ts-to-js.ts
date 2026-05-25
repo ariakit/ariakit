@@ -6,10 +6,7 @@ import { parse as parseBabel } from "@babel/parser";
 import { format } from "prettier";
 import { parse, print } from "recast";
 import type { Overrides } from "recast/parsers/_babel_options.js";
-import _getBabelOptions from "recast/parsers/_babel_options.js";
-
-const getBabelOptions =
-  _getBabelOptions as unknown as (typeof _getBabelOptions)["default"];
+import getBabelOptions from "recast/parsers/_babel_options.js";
 
 const parser = {
   parse(source: string, options: Overrides) {

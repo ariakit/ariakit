@@ -1,5 +1,4 @@
 import type { Element } from "hast";
-import Link from "next/link.js";
 import type { ComponentProps, ReactNode } from "react";
 import { Children, isValidElement } from "react";
 import { twJoin } from "tailwind-merge";
@@ -9,15 +8,15 @@ import { InlineLink } from "./inline-link.tsx";
 import { PageItem } from "./page-item.tsx";
 
 function findCardLinks(children: ReactNode): string[] {
-  return Children.toArray(children).flatMap((child) =>
-    isValidElement(child)
-      ? child.props?.href
-        ? child.props.href
-        : child.props?.children
-          ? findCardLinks(child.props.children)
-          : []
-      : [],
-  );
+  return Children.toArray(children).flatMap((child) => {
+    if (!isValidElement<{ href?: unknown; children?: ReactNode }>(child)) {
+      return [];
+    }
+    const { href, children } = child.props;
+    if (typeof href === "string") return [href];
+    if (children) return findCardLinks(children);
+    return [];
+  });
 }
 
 export interface PageCardsProps extends ComponentProps<"div"> {
@@ -72,13 +71,9 @@ export function PageCards({
         ))}
       </div>
       {isExamples && (
-        <div className="max-w-[--size-content]">
+        <div className="max-w-(--size-content)">
           <InlineLink
-            render={
-              <Link
-                href={`/examples${isComponentPage && page ? `#${page}` : ""}`}
-              />
-            }
+            href={`/examples${isComponentPage && page ? `#${page}` : ""}`}
           >
             View all
             {isComponentPage && title ? ` ${title}` : ""} examples
@@ -86,10 +81,8 @@ export function PageCards({
         </div>
       )}
       {isComponents && (
-        <div className="max-w-[--size-content]">
-          <InlineLink render={<Link href="/components" />}>
-            View all components
-          </InlineLink>
+        <div className="max-w-(--size-content)">
+          <InlineLink href="/components">View all components</InlineLink>
         </div>
       )}
     </>

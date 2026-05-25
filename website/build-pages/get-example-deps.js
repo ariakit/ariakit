@@ -7,7 +7,6 @@ import * as presetEnv from "@babel/preset-env";
 import * as presetReact from "@babel/preset-react";
 // @ts-expect-error
 import * as presetTypescript from "@babel/preset-typescript";
-import * as t from "@babel/types";
 import { globSync } from "glob";
 import { readPackageUpSync } from "read-package-up";
 import resolveFrom from "resolve-from";
@@ -21,7 +20,7 @@ let warnedAboutVersion = false;
  *  Record<string, string>, devDependencies: Record<string, string> }} Deps
  */
 
-/** @param {import("@babel/core").NodePath<t.Node>} nodePath */
+/** @param {import("@babel/core").NodePath<import("@babel/types").Node>} nodePath */
 function getSourceValue(nodePath) {
   // import("source")
   if (nodePath.isCallExpression()) {

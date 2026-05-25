@@ -4,32 +4,34 @@ import pagesConfig from "./build-pages/config.js";
 import PagesWebpackPlugin from "./build-pages/pages-webpack-plugin.js";
 import { redirects } from "./redirects.js";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   redirects,
   experimental: {
     webpackBuildWorker: true,
-    serverComponentsExternalPackages: [
-      "@babel/core",
-      "@babel/types",
-      "@babel/preset-env",
-      "@babel/preset-react",
-      "@babel/preset-typescript",
-      "typescript",
-      "ts-morph",
-      "onigasm",
-      "shiki",
-      "vscode-oniguruma",
-      "vscode-textmate",
-    ],
   },
+  serverExternalPackages: [
+    "@tailwindcss/oxide",
+    "@tailwindcss/postcss",
+    "@babel/core",
+    "@babel/types",
+    "@babel/preset-env",
+    "@babel/preset-react",
+    "@babel/preset-typescript",
+    "typescript",
+    "ts-morph",
+    "onigasm",
+    "shiki",
+    "tailwindcss",
+    "vscode-oniguruma",
+    "vscode-textmate",
+  ],
   images: {
     remotePatterns: [{ protocol: "https", hostname: "img.clerk.com" }],
   },
-  transpilePackages: ["@ariakit/*"],
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  transpilePackages: ["@ariakit/*", "@clerk/nextjs"],
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -60,6 +62,24 @@ const nextConfig = {
     };
     config.module.unknownContextCritical = false;
     config.module.exprContextCritical = false;
+    config.plugins.push(
+      new context.webpack.NormalModuleReplacementPlugin(
+        /react-platform\.mjs$/,
+        (resource) => {
+          if (
+            !resource.context.includes(
+              `${path.sep}@wordpress${path.sep}element${path.sep}build-module`,
+            )
+          ) {
+            return;
+          }
+          resource.request = path.resolve(
+            __dirname,
+            "lib/wordpress-react-platform.ts",
+          );
+        },
+      ),
+    );
 
     // Ignore optional dependencies that pnpm doesn't hoist
     config.resolve.alias = {
@@ -96,7 +116,6 @@ const nextConfig = {
       test: /\.solid\.tsx$/,
       ...solidRule,
     });
-    const __dirname = path.dirname(fileURLToPath(import.meta.url));
     config.module.rules.push({
       // .tsx files in the @ariakit/solid and @ariakit/solid-components packages
       test: /\.tsx?$/,

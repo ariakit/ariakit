@@ -149,20 +149,37 @@ const HeaderNavItem = memo(
     const path = keywords
       ? [
           <ComboboxItemValue
+            key="category"
             value={getPageTitle(category, true)}
             userValue={keywords}
           />,
           item.group && (
-            <ComboboxItemValue value={item.group} userValue={keywords} />
+            <ComboboxItemValue
+              key="group"
+              value={item.group}
+              userValue={keywords}
+            />
           ),
           section && (
-            <ComboboxItemValue value={item.title} userValue={keywords} />
+            <ComboboxItemValue
+              key="title"
+              value={item.title}
+              userValue={keywords}
+            />
           ),
           parentSection && (
-            <ComboboxItemValue value={parentSection} userValue={keywords} />
+            <ComboboxItemValue
+              key="parent-section"
+              value={parentSection}
+              userValue={keywords}
+            />
           ),
           !nested && section && (
-            <ComboboxItemValue value={section} userValue={keywords} />
+            <ComboboxItemValue
+              key="section"
+              value={section}
+              userValue={keywords}
+            />
           ),
         ]
       : undefined;
@@ -315,7 +332,7 @@ const HeaderNavMenu = memo(
       const items = groups.null || [];
       delete groups.null;
       return [items, groups];
-    }, [searchData, pages]);
+    }, [searchData, pages, categoryTitle]);
 
     const onItemClick = useEvent((event: MouseEvent<HTMLAnchorElement>) => {
       if (!searchValue) return;
@@ -378,15 +395,7 @@ const HeaderNavMenu = memo(
           </SelectRenderer>
         </>
       );
-    }, [
-      noResults,
-      items,
-      groups,
-      category,
-      hasSearchValue,
-      onItemClick,
-      categoryTitle,
-    ]);
+    }, [noResults, items, groups, category, hasSearchValue, onItemClick]);
 
     const otherItemElements = useMemo(() => {
       if (!searchAllData?.length) return null;

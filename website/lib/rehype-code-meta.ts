@@ -7,10 +7,11 @@ export const rehypeCodeMeta: Plugin<any[], Root> = () => {
     visit(tree, (node) => {
       if (node.type !== "element") return;
       if (node.tagName !== "code") return;
-      if (typeof node.data?.meta !== "string") return;
+      const meta = node.data && "meta" in node.data ? node.data.meta : null;
+      if (typeof meta !== "string") return;
       node.properties = {
         ...node.properties,
-        meta: node.data.meta,
+        meta,
       };
     });
   };

@@ -1,7 +1,9 @@
+"use client";
+
 import Link from "next/link.js";
 import type { ComponentProps } from "react";
 import { twJoin } from "tailwind-merge";
-import { getTagSlug } from "@/lib/tag.ts";
+import { getTagSlug } from "@/lib/tag-slug.ts";
 import { PlusBordered } from "./plus-bordered.tsx";
 
 export interface PageTagProps extends Omit<
@@ -33,12 +35,12 @@ export interface PageTagListProps extends ComponentProps<"div"> {}
 
 export function PageTagList({ ...props }: PageTagListProps) {
   return (
-    <div className="max-w-[--size-content-box] [:has([data-description])+&]:-translate-y-2 [[data-dialog]_&]:hidden">
+    <div className="max-w-(--size-content-box) [:has([data-description])+&]:-translate-y-2 [[data-dialog]_&]:hidden">
       <div
         {...props}
         className={twJoin(
           "flex gap-2 overflow-x-auto sm:flex-wrap sm:overflow-x-visible",
-          "max-w-[--size-content]",
+          "max-w-(--size-content)",
           props.className,
         )}
       />

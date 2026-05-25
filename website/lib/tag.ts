@@ -1,5 +1,7 @@
-import { kebabCase } from "lodash-es";
 import pageIndex from "@/build-pages/index.ts";
+import { getTagSlug } from "./tag-slug.ts";
+
+export { getTagSlug } from "./tag-slug.ts";
 
 const tags: string[] = [];
 const pages = Object.values(pageIndex).flat();
@@ -13,10 +15,6 @@ for (const page of pages) {
 
 export function getTags() {
   return tags;
-}
-
-export function getTagSlug(tag: string) {
-  return kebabCase(tag);
 }
 
 export function getTagTitle(tag: string) {

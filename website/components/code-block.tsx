@@ -1,13 +1,12 @@
 import { hasOwnProperty } from "@ariakit/utils";
 import { kebabCase } from "lodash-es";
-import Link from "next/link.js";
 import type { BundledLanguage, SpecialLanguage, ThemedToken } from "shiki";
-import { bundledLanguages, codeToTokensBase, FontStyle } from "shiki";
+import { bundledLanguages, codeToTokensBase } from "shiki";
 import { twJoin, twMerge } from "tailwind-merge";
 import pageLinks from "@/build-pages/links.ts";
 import { isValidHref } from "@/lib/is-valid-href.ts";
 import { CopyToClipboard } from "./copy-to-clipboard.tsx";
-import { PageHovercardAnchor } from "./page-hovercard.tsx";
+import { PageHovercardAnchor } from "./page-hovercard-anchor.tsx";
 
 interface Props {
   code: string;
@@ -27,18 +26,24 @@ const highlightBeforeStyle = twJoin(
   "relative before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:bg-blue-600",
 );
 
+const fontStyle = {
+  Italic: 1,
+  Bold: 2,
+  Underline: 4,
+} as const;
+
 function getExtension(filename?: string) {
   const extension = filename?.split(".").pop();
   if (!extension) return;
   return extension.toLowerCase();
 }
 
-function parseFontStyle(fontStyle?: FontStyle) {
-  if (!fontStyle) return;
+function parseFontStyle(style?: ThemedToken["fontStyle"]) {
+  if (!style) return;
   return twJoin(
-    fontStyle & FontStyle.Italic && "italic",
-    fontStyle & FontStyle.Bold && "font-bold",
-    fontStyle & FontStyle.Underline && "underline",
+    style & fontStyle.Italic && "italic",
+    style & fontStyle.Bold && "font-bold",
+    style & fontStyle.Underline && "underline",
   );
 }
 
@@ -259,8 +264,8 @@ export async function CodeBlock({
                         className,
                         "underline decoration-dotted decoration-1 underline-offset-[3px] hover:decoration-solid hover:decoration-2",
                       )}
+                      href={href}
                       data-scopes={getScopes()}
-                      render={<Link href={href} />}
                     >
                       {token.content}
                     </PageHovercardAnchor>

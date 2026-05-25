@@ -85,7 +85,7 @@ function Combobox({
           gutter={8}
           unmountOnHide={unmountOnHide}
           className={clsx(
-            "ak-popup ak-elevation-1 ak-popover w-[--popover-anchor-width]",
+            "ak-popup ak-elevation-1 ak-popover w-(--popover-anchor-width)",
             group ? "overflow-clip" : "ak-popup-scroll",
           )}
         >
@@ -158,7 +158,7 @@ function Select({
           gutter={8}
           unmountOnHide
           className={clsx(
-            "ak-popup ak-popup-enter ak-elevation-1 ak-popover w-[--popover-anchor-width]",
+            "ak-popup ak-popup-enter ak-elevation-1 ak-popover w-(--popover-anchor-width)",
             group ? "overflow-clip" : "ak-popup-scroll",
           )}
         >
@@ -257,7 +257,7 @@ function SelectCombobox({
             gutter={8}
             unmountOnHide
             className={clsx(
-              "ak-popup ak-popup-enter ak-elevation-1 ak-popover w-[--popover-anchor-width]",
+              "ak-popup ak-popup-enter ak-elevation-1 ak-popover w-(--popover-anchor-width)",
               group ? "overflow-clip" : "ak-popup-scroll",
             )}
           >

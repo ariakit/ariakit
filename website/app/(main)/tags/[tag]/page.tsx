@@ -12,11 +12,11 @@ import { getPagesByTag, getTagSlug, getTags, getTagTitle } from "@/lib/tag.ts";
 const tags = getTags();
 
 interface Props {
-  params: { tag: string };
+  params: Promise<{ tag: string }>;
 }
 
-export function generateMetadata({ params }: Props) {
-  const { tag } = params;
+export async function generateMetadata({ params }: Props) {
+  const { tag } = await params;
   const tagTitle = getTagTitle(tag);
   if (!tagTitle) return notFound();
   return getNextPageMetadata({ title: `All things ${tagTitle} - Ariakit` });
@@ -26,10 +26,11 @@ export function generateStaticParams() {
   return tags.map((tag) => ({ tag: getTagSlug(tag) }));
 }
 
-export default function Page({ params }: Props) {
-  const tagTitle = getTagTitle(params.tag);
+export default async function Page({ params }: Props) {
+  const { tag } = await params;
+  const tagTitle = getTagTitle(tag);
   if (!tagTitle) return notFound();
-  const pages = getPagesByTag(params.tag);
+  const pages = getPagesByTag(tag);
   const pagesByCategory = groupBy(pages, (page) => page.category);
   return (
     <div className="flex items-start justify-center">

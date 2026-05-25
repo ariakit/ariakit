@@ -225,8 +225,8 @@ export function PlaygroundClient({
   return (
     <div
       className={twJoin(
-        type === "code" && "max-w-[--size-lg]",
-        type === "compact" && "max-w-[--size-lg]",
+        type === "code" && "max-w-(--size-lg)",
+        type === "compact" && "max-w-(--size-lg)",
         type === "wide" &&
           "max-w-[calc(var(--size-2xl)-var(--page-padding)*2)]",
       )}
@@ -238,7 +238,7 @@ export function PlaygroundClient({
         <Suspense>
           <AuthEnabled>
             {inHero && (
-              <div className="grid w-full max-w-[calc(var(--size-content-box)+var(--page-padding)*2)] justify-end px-[--page-padding] max-md:hidden">
+              <div className="grid w-full max-w-[calc(var(--size-content-box)+var(--page-padding)*2)] justify-end px-(--page-padding) max-md:hidden">
                 <PlaygroundEditButton
                   type="call-to-action"
                   exampleId={id}
@@ -276,7 +276,7 @@ export function PlaygroundClient({
           "grid grid-cols-[repeat(auto-fit,minmax(min(520px,100%),1fr))] justify-items-center [direction:rtl] [[data-level='1']_&]:md:mt-12",
           "border-gray-300 dark:border-gray-650",
           type === "full"
-            ? "-mx-[--page-padding] w-[calc(100%+var(--page-padding)*2)] border-b"
+            ? "-mx-(--page-padding) w-[calc(100%+var(--page-padding)*2)] border-b"
             : "w-full gap-4 rounded-lg md:gap-6 md:gap-x-4 md:rounded-xl",
         )}
       >
@@ -336,13 +336,13 @@ export function PlaygroundClient({
         )}
         <div
           className={twJoin(
-            "sticky top-[--header-height] h-max w-full rounded-[inherit] border-[inherit] [direction:ltr]",
-            type !== "full" && "max-w-[--size-lg]",
+            "sticky top-(--header-height) h-max w-full rounded-[inherit] border-[inherit] [direction:ltr]",
+            type !== "full" && "max-w-(--size-lg)",
           )}
         >
           <div
             className={twJoin(
-              "relative z-[12] flex h-[--toolbar-height] items-center gap-2 rounded-t-[inherit] border-[inherit] bg-gray-100 dark:bg-gray-750",
+              "relative z-[12] flex h-(--toolbar-height) items-center gap-2 rounded-t-[inherit] border-[inherit] bg-gray-100 dark:bg-gray-750",
               type === "full" ? "border-y" : "border",
             )}
           >
@@ -383,7 +383,7 @@ export function PlaygroundClient({
                 "relative overflow-hidden rounded-b-[inherit] bg-white dark:bg-gray-850",
                 "border-[inherit] focus-visible:z-[13] focus-visible:ariakit-outline-input",
                 "min-h-[min(calc(100%-var(--toolbar-height)),var(--max-height))]",
-                "max-h-[--max-height]",
+                "max-h-(--max-height)",
                 type !== "full" && "border border-t-0",
                 collapsed && "[&_pre]:!overflow-y-hidden",
               )}
@@ -391,7 +391,7 @@ export function PlaygroundClient({
               {subscriptionOnly ? (
                 <AuthEnabled>
                   <AuthLoading>
-                    <div className="relative h-[--max-height] bg-white dark:bg-gray-850">
+                    <div className="relative h-(--max-height) bg-white dark:bg-gray-850">
                       <div className="absolute left-0 top-0 p-4 pl-8">
                         <CodePlaceholder />
                       </div>
@@ -399,7 +399,7 @@ export function PlaygroundClient({
                   </AuthLoading>
                   <Subscribed>{codeBlockElement}</Subscribed>
                   <NotSubscribed>
-                    <div className="relative z-[1] flex h-[--max-height] flex-col items-center justify-center bg-white p-4 dark:bg-gray-850">
+                    <div className="relative z-[1] flex h-(--max-height) flex-col items-center justify-center bg-white p-4 dark:bg-gray-850">
                       <div className="absolute left-0 top-0 p-4 pl-8">
                         <CodePlaceholder />
                       </div>

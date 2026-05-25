@@ -1,7 +1,6 @@
-import { currentUser } from "@clerk/nextjs";
 import type { NextRequest } from "next/server.ts";
 import { z } from "zod";
-import { getStripeId } from "@/lib/clerk.ts";
+import { getCurrentUser, getStripeId } from "@/lib/clerk.ts";
 import { getStripeClient, listActiveSubscriptions } from "@/lib/stripe.ts";
 
 const schema = z
@@ -22,7 +21,7 @@ async function getRequestBody(request: Request) {
 }
 
 export async function POST(request: NextRequest) {
-  const stripeId = getStripeId(await currentUser());
+  const stripeId = getStripeId(await getCurrentUser());
   if (!stripeId) return Response.json("Unauthorized", { status: 401 });
 
   const stripe = getStripeClient();

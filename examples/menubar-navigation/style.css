@@ -63,7 +63,7 @@
     rounded-xl
     border
     border-solid
-    max-w-[--popover-available-width]
+    max-w-(--popover-available-width)
     max-h-[max(max-content,var(--popover-available-height))]
     border-gray-250
     dark:border-gray-600

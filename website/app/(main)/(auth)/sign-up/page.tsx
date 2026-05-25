@@ -1,5 +1,5 @@
 "use client";
-import { SignUp } from "@clerk/clerk-react";
+import { SignUp } from "@clerk/nextjs";
 import { useSearchParams } from "next/navigation.js";
 import { Suspense } from "react";
 
@@ -9,7 +9,8 @@ function ClientPage() {
   return (
     <SignUp
       routing="hash"
-      redirectUrl={redirectUrl}
+      forceRedirectUrl={redirectUrl}
+      signInForceRedirectUrl={redirectUrl}
       appearance={{ layout: { showOptionalFields: false } }}
     />
   );

@@ -38,7 +38,7 @@
     max-h-[280px]
     rounded
     overflow-y-auto
-    w-[--radix-popover-trigger-width]
+    w-(--radix-popover-trigger-width)
     bg-white
     text-black
     [box-shadow:rgba(14,18,22,0.35)_0px_10px_38px_-10px,rgba(14,18,22,0.2)_0px_10px_20px_-15px]
