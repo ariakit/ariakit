@@ -19,7 +19,7 @@ import { useStore, useStoreProps } from "@ariakit/react-store";
 import { useEvent } from "@ariakit/react-utils";
 import { createStore, sync } from "@ariakit/store";
 import { scrollIntoViewIfNeeded } from "@ariakit/utils";
-import { SignedIn, SignedOut, SignUp } from "@clerk/clerk-react";
+import { Show, SignUp } from "@clerk/nextjs";
 import {
   EmbeddedCheckout,
   EmbeddedCheckoutProvider,
@@ -429,15 +429,15 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
         props.className,
       )}
     >
-      <SignedOut>
+      <Show when="signed-out">
         <SignUp
           routing="virtual"
-          redirectUrl={redirectUrl}
+          fallbackRedirectUrl={redirectUrl}
           signInUrl={`/sign-in?redirect_url=${encodeURIComponent(redirectUrl)}`}
-          appearance={{ layout: { showOptionalFields: false } }}
+          appearance={{ options: { showOptionalFields: false } }}
         />
-      </SignedOut>
-      <SignedIn>
+      </Show>
+      <Show when="signed-in">
         {visibility === "hidden" && (
           <div className="h-full w-full animate-pulse bg-gray-100 dark:bg-black/20" />
         )}
@@ -459,7 +459,7 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
             </EmbeddedCheckoutProvider>
           </div>
         )}
-      </SignedIn>
+      </Show>
     </Role.div>
   );
 }

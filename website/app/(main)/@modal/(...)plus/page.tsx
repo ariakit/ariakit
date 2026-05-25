@@ -1,6 +1,6 @@
 "use client";
 import { Button, Dialog } from "@ariakit/react";
-import { SignedOut } from "@clerk/clerk-react";
+import { Show } from "@clerk/nextjs";
 import Link from "next/link.js";
 import { usePathname, useRouter, useSearchParams } from "next/navigation.js";
 import type { ComponentPropsWithoutRef, ElementRef } from "react";
@@ -64,7 +64,7 @@ export default function Page() {
               esc
             </div>
           </Button>
-          <SignedOut>
+          <Show when="signed-out">
             <Suspense>
               <div className="flex items-center gap-2">
                 <span className="hidden sm:block">Already purchased? </span>
@@ -78,7 +78,7 @@ export default function Page() {
                 </Command>
               </div>
             </Suspense>
-          </SignedOut>
+          </Show>
         </header>
         <Suspense>
           <PlusScreen />

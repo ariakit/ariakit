@@ -29,10 +29,16 @@ import { PageTag, PageTagList } from "./page-tag.tsx";
 
 export interface PageHeadingProps extends ComponentPropsWithoutRef<"h1"> {
   node?: Element;
-  level: number;
+  level?: number;
 }
 
-export function PageHeading({ node, level, ...props }: PageHeadingProps) {
+export function PageHeading({
+  node,
+  level = node?.tagName
+    ? Number.parseInt(node.tagName.replace(/^h/, ""), 10)
+    : 1,
+  ...props
+}: PageHeadingProps) {
   const className = twJoin(
     // base styles
     "text-black text-pretty dark:text-white tracking-[-0.035em] dark:tracking-[-0.015em]",
@@ -245,15 +251,31 @@ export interface PageListProps extends ComponentPropsWithoutRef<"ol"> {
   ordered?: boolean;
 }
 
-export function PageList({ node, ordered, ...props }: PageListProps) {
+export function PageList({
+  node,
+  ordered = node?.tagName === "ol",
+  ...props
+}: PageListProps) {
   const className = twJoin(
     "flex flex-col gap-4 pl-8 list-none w-full max-w-[--size-content]",
     props.className,
   );
   const Element = ordered ? "ol" : "ul";
+  let liIndex = 0;
+  const children = Children.map(props.children, (child) => {
+    if (!isValidElement(child)) return child;
+    if (child.type !== PageListItem) return child;
+    const props = child.props as PageListItemProps;
+    return cloneElement(child, {
+      ordered: props.ordered ?? ordered,
+      index: props.index ?? liIndex++,
+    } as Partial<PageListItemProps>);
+  });
   return (
     <div className="max-w-[--size-content-box]">
-      <Element {...props} className={className} />
+      <Element {...props} className={className}>
+        {children}
+      </Element>
     </div>
   );
 }
@@ -272,21 +294,23 @@ export function PageListItem({
   multiline,
   ...props
 }: PageListItemProps) {
+  const isOrdered = ordered ?? false;
+  const itemIndex = index ?? 0;
   const isMultiline =
     multiline ?? Children.toArray(props.children).at(0) === "\n";
   const className = twJoin(
     "relative flex flex-col",
-    ordered ? "gap-4" : "gap-2",
-    ordered &&
+    isOrdered ? "gap-4" : "gap-2",
+    isOrdered &&
       isMultiline &&
       "before:absolute before:top-9 before:-left-5 before:w-px before:h-[calc(100%-theme(spacing.7))] before:bg-black/10 dark:before:bg-white/10",
     props.className,
   );
   return (
     <li {...props} className={className}>
-      {ordered ? (
+      {isOrdered ? (
         <span className="absolute flex size-6 -translate-x-8 translate-y-0.5 items-center justify-center rounded-full bg-blue-600 text-sm text-white">
-          {(index || 0) + 1}
+          {(itemIndex || 0) + 1}
         </span>
       ) : (
         <ArrowRight className="absolute w-7 -translate-x-8 p-1.5 text-black/50 dark:text-white/50" />

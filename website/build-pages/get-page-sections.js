@@ -31,12 +31,12 @@ export function getPageSections(filename, category, getGroup) {
     if (node.tagName === "h2") {
       parentSection = null;
       section = toString(node).trim();
-      sectionId = `${node.properties?.id}`;
+      sectionId = node.properties?.id ? String(node.properties.id) : null;
     }
     if (node.tagName === "h3") {
       parentSection = parentSection || section;
       section = toString(node).trim();
-      sectionId = `${node.properties?.id}`;
+      sectionId = node.properties?.id ? String(node.properties.id) : null;
     }
     if (node.tagName === "p") {
       if (isPlaygroundParagraphNode(node)) return;

@@ -1,17 +1,18 @@
-import type { User } from "@clerk/clerk-sdk-node";
-import { clerkClient, currentUser } from "@clerk/nextjs";
-import type { UserResource } from "@clerk/types";
+import type { User } from "@clerk/backend";
+import { clerkClient, currentUser } from "@clerk/nextjs/server";
+import type { UserResource } from "@clerk/shared/types";
 
-const clerk = process.env.CLERK_SECRET_KEY ? clerkClient : null;
+const enabled = !!process.env.CLERK_SECRET_KEY;
 
 export type { User, UserResource };
 
-export function getClerkClient() {
-  return clerk;
+export async function getClerkClient() {
+  if (!enabled) return null;
+  return clerkClient();
 }
 
 export async function getCurrentUser() {
-  if (!clerk) return null;
+  if (!enabled) return null;
   return currentUser();
 }
 
@@ -21,6 +22,7 @@ export function getStripeId(user?: User | UserResource | null) {
 }
 
 export async function updateUserWithStripeId(userId: string, stripeId: string) {
+  const clerk = await getClerkClient();
   if (!clerk) return null;
   const user = await clerk.users.updateUser(userId, {
     publicMetadata: { stripeId },

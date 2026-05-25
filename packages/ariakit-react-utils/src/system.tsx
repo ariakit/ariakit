@@ -50,7 +50,7 @@ export function createElement(
       ref: mergedRef,
     };
     element = React.cloneElement(render, mergeProps(rest, renderProps));
-  } else if (render) {
+  } else if (typeof render === "function") {
     element = render(rest) as React.ReactElement;
   } else {
     element = <Type {...rest} />;

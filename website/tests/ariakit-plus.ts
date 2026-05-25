@@ -1,4 +1,4 @@
-import { createClerkClient } from "@clerk/clerk-sdk-node";
+import { createClerkClient } from "@clerk/backend";
 import type { FrameLocator, Locator, Page } from "@playwright/test";
 import { expect, test } from "@playwright/test";
 import dotenv from "dotenv";
@@ -27,7 +27,9 @@ function getClerkClient() {
 }
 
 function getStripeClient() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY!);
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2024-12-18.acacia" as Stripe.LatestApiVersion,
+  });
 }
 
 function generateUserEmail() {

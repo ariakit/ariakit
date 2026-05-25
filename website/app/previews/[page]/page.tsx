@@ -14,13 +14,20 @@ import { Preview, SolidPreview } from "@/components/preview.tsx";
 import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
 
 interface Props {
-  params: ReturnType<typeof generateStaticParams>[number];
+  params: Promise<ReturnType<typeof generateStaticParams>[number]>;
 }
+
+// Examples that we can't prerender (e.g. @wordpress/components uses React
+// 18-era APIs like findDOMNode that React 19 dropped, see the alias in
+// next.config.js).
+const ignoredPreviewPages = new Set(["menu-wordpress-modal"]);
 
 export function generateStaticParams() {
   const config = pagesConfig.pages.find((page) => page.slug === "examples");
   if (!config) return notFound();
-  const params = getPageNames(config).map((page) => ({ page }));
+  const params = getPageNames(config)
+    .filter((page) => !ignoredPreviewPages.has(page))
+    .map((page) => ({ page }));
   return params;
 }
 
@@ -40,7 +47,7 @@ async function parseStyles(cssFiles: string[]) {
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { page } = params;
+  const { page } = await params;
   const data = pageIndex.examples?.find((item) => item.slug === page);
 
   return getNextPageMetadata({
@@ -51,7 +58,8 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function PreviewPage({ params }: Props) {
-  const { page } = params;
+  const { page } = await params;
+  if (ignoredPreviewPages.has(page)) return notFound();
 
   const config = pagesConfig.pages.find((page) => page.slug === "examples");
   if (!config) return notFound();

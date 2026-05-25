@@ -7,29 +7,32 @@ import { redirects } from "./redirects.js";
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   redirects,
-  experimental: {
-    webpackBuildWorker: true,
-    serverComponentsExternalPackages: [
-      "@babel/core",
-      "@babel/types",
-      "@babel/preset-env",
-      "@babel/preset-react",
-      "@babel/preset-typescript",
-      "typescript",
-      "ts-morph",
-      "onigasm",
-      "shiki",
-      "vscode-oniguruma",
-      "vscode-textmate",
-    ],
-  },
+  serverExternalPackages: [
+    "@babel/core",
+    "@babel/types",
+    "@babel/preset-env",
+    "@babel/preset-react",
+    "@babel/preset-typescript",
+    "typescript",
+    "ts-morph",
+    "onigasm",
+    "shiki",
+    "vscode-oniguruma",
+    "vscode-textmate",
+    "tailwindcss",
+    "postcss",
+    "postcss-import",
+    "postcss-combine-duplicated-selectors",
+    "postcss-discard-comments",
+    "postcss-merge-selectors",
+    "postcss-prettify",
+    "purgecss",
+    "sharp",
+  ],
   images: {
     remotePatterns: [{ protocol: "https", hostname: "img.clerk.com" }],
   },
   transpilePackages: ["@ariakit/*"],
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -62,10 +65,21 @@ const nextConfig = {
     config.module.exprContextCritical = false;
 
     // Ignore optional dependencies that pnpm doesn't hoist
+    const wordpressStub = path.resolve(
+      path.dirname(fileURLToPath(import.meta.url)),
+      "./build-pages/wordpress-stub.js",
+    );
     config.resolve.alias = {
       ...config.resolve.alias,
       sugarss: false,
       babylon: false,
+      // The menu-wordpress-modal example is ignored at runtime (see
+      // ignoredExampleIds in components/preview.tsx). Alias the @wordpress
+      // packages to a stub that returns a noop for any export so React 19
+      // builds don't fail on the legacy findDOMNode import inside
+      // @wordpress/element.
+      "@wordpress/components": wordpressStub,
+      "@wordpress/element": wordpressStub,
     };
 
     // Solid support

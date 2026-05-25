@@ -1,4 +1,4 @@
-import type { Clerk } from "@clerk/types";
+import type { Clerk } from "@clerk/shared/types";
 
 declare global {
   interface Window {

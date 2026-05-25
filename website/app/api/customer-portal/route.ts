@@ -1,4 +1,4 @@
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 import type { NextRequest } from "next/server.ts";
 import { z } from "zod";
 import { getStripeId } from "@/lib/clerk.ts";

@@ -18,7 +18,11 @@ const PLUS_ONE_TIME = "ariakit-plus-one-time";
 const PLUS_PRICES = [PLUS_MONTHLY, PLUS_YEARLY, PLUS_ONE_TIME];
 
 const key = process.env.STRIPE_SECRET_KEY;
-const stripe = key ? new Stripe(key) : null;
+const stripe = key
+  ? new Stripe(key, {
+      apiVersion: "2024-12-18.acacia" as Stripe.LatestApiVersion,
+    })
+  : null;
 
 export function getStripeClient() {
   return stripe;

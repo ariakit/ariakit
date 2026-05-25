@@ -45,11 +45,11 @@ export function generateStaticParams() {
 }
 
 interface PageProps {
-  params: ReturnType<typeof generateStaticParams>[number];
+  params: Promise<ReturnType<typeof generateStaticParams>[number]>;
 }
 
 export async function generateMetadata({ params }: PageProps) {
-  const { category, page } = params;
+  const { category, page } = await params;
   const data = pageIndex[category]?.find((item) => item.slug === page);
 
   if (!data) {
@@ -67,7 +67,7 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 export default async function ContentPage({ params }: PageProps) {
-  const { category, page } = params;
+  const { category, page } = await params;
 
   const config = pages.find((page) => page.slug === category);
   if (!config) return notFound();
