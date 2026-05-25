@@ -2,6 +2,14 @@ import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
 import { test } from "../test-utils.ts";
 
+// @wordpress/components calls findDOMNode which was removed in React 19, so
+// the example is stubbed out in the website's webpack config and never
+// rendered. Skip these tests until @wordpress/components ships a React 19
+// build.
+test.beforeEach(() => {
+  test.skip();
+});
+
 type PopupRole = "dialog" | "menu" | "tooltip";
 
 const getButton = (page: Page, name: string) =>

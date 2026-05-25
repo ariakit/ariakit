@@ -272,7 +272,10 @@ for (const plan of ["month", "year"] as const) {
 
     const email = generateUserEmail();
     const customer = await createCustomerWithSubscription(plan, { email });
-    await fillSignIn(page, { email, redirectUrl: /\/plus/ });
+    // Next 16's intercepted @modal route can land the user on
+    // /components?checkout=... instead of /plus after sign-in; both URLs render
+    // the same Plus checkout dialog.
+    await fillSignIn(page, { email, redirectUrl: /(\/plus|\?checkout=)/ });
 
     const nextPrice = await getDisplayedPrice(page);
     expect(nextPrice).toBeLessThan(price);
@@ -331,7 +334,7 @@ test("purchase Plus from /plus, sign out, sign in again, and access the billing 
 
   await q.link("Buy now").click();
   const email = generateUserEmail();
-  await fillSignUp(page, { email, redirectUrl: /\/plus/ });
+  await fillSignUp(page, { email, redirectUrl: /(\/plus|\?checkout=)/ });
 
   const frame = await fillCheckout(page, email);
   const fq = query(frame);
@@ -380,7 +383,7 @@ test("purchase Plus from /components, sign out, sign in again, and access the bi
 
   await q.link("Buy now").click();
   const email = generateUserEmail();
-  await fillSignUp(page, { email, redirectUrl: /\/plus/ });
+  await fillSignUp(page, { email, redirectUrl: /(\/plus|\?checkout=)/ });
 
   const frame = await fillCheckout(page, email);
   const fq = query(frame);
