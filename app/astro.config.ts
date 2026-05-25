@@ -9,6 +9,7 @@
  */
 import { join } from "node:path";
 import { loadEnvFile } from "node:process";
+import { getReactViteAliases, reactDedupe } from "@ariakit/scripts/react";
 import cloudflare from "@astrojs/cloudflare";
 import { rehypeHeadingIds } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
@@ -58,6 +59,10 @@ export default defineConfig({
   }),
 
   vite: {
+    resolve: {
+      alias: getReactViteAliases(),
+      dedupe: reactDedupe,
+    },
     plugins: [
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),

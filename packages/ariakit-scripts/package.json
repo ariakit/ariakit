@@ -6,6 +6,9 @@
   "bin": {
     "ariakit": "src/index.ts"
   },
+  "exports": {
+    "./react": "./src/react.ts"
+  },
   "dependencies": {
     "chokidar": "5.0.0",
     "commander": "14.0.3",

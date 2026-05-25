@@ -1,5 +1,8 @@
+import { getReactResolverAliases } from "@ariakit/scripts/react";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import type { NextConfig } from "next";
+
+const reactAliases = getReactResolverAliases();
 
 const config: NextConfig = {
   reactCompiler: true,
@@ -8,6 +11,17 @@ const config: NextConfig = {
     ignoreBuildErrors: true,
   },
   cacheComponents: true,
+  turbopack: {
+    resolveAlias: reactAliases,
+  },
+  webpack(config) {
+    config.resolve ??= {};
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      ...reactAliases,
+    };
+    return config;
+  },
 
   // Allow cross-origin iframe embedding from the Astro app
   async headers() {

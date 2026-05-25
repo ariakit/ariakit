@@ -3,6 +3,7 @@
 import { program } from "commander";
 import { build, clean } from "./build.ts";
 import { dev } from "./dev.ts";
+import { react18 } from "./react18.ts";
 
 program.name("ariakit");
 
@@ -27,4 +28,17 @@ program
   .option("--no-clean", "Use current package exports without cleaning")
   .action(dev);
 
-program.parse();
+program
+  .command("react18")
+  .description("Run a command in an isolated React 18 workspace")
+  .argument("[command...]", "Root script or command to run")
+  .allowUnknownOption()
+  .helpOption(false)
+  .action(react18);
+
+try {
+  await program.parseAsync();
+} catch (error) {
+  console.error(error);
+  process.exitCode = 1;
+}

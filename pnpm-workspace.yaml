@@ -3,8 +3,6 @@ packages:
   - templates/*
   - nextjs
   - examples
-  # React version-specific peer-resolution anchors for Vitest.
-  - test/*
   - guide
   - website
   - app
@@ -34,6 +32,17 @@ overrides:
 
 patchedDependencies:
   "@changesets/apply-release-plan@7.1.1": "patches/@changesets__apply-release-plan@7.1.1.patch"
+
+peerDependencyRules:
+  allowedVersions:
+    "@wordpress/components>react": "19"
+    "@wordpress/components>react-dom": "19"
+    "@wordpress/compose>react": "19"
+    "@wordpress/data>react": "19"
+    "@wordpress/icons>react": "19"
+    "@wordpress/primitives>react": "19"
+    "@wordpress/rich-text>react": "19"
+    "use-memo-one>react": "19"
 
 publicHoistPattern:
   - "*react*"
