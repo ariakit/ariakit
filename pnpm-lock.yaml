@@ -880,6 +880,9 @@ importers:
       '@babel/core':
         specifier: 7.29.0
         version: 7.29.0
+      '@babel/parser':
+        specifier: 7.29.2
+        version: 7.29.2
       '@babel/preset-env':
         specifier: 7.29.2
         version: 7.29.2(@babel/core@7.29.0)
