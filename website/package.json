@@ -21,6 +21,7 @@
     "@ariakit/store": "workspace:*",
     "@ariakit/utils": "workspace:*",
     "@babel/core": "7.29.0",
+    "@babel/parser": "7.29.2",
     "@babel/preset-env": "7.29.2",
     "@babel/preset-react": "7.28.5",
     "@babel/preset-typescript": "7.28.5",

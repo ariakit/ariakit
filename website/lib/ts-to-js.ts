@@ -2,11 +2,11 @@
 
 import type { TransformOptions } from "@babel/core";
 import { transformFromAstSync } from "@babel/core";
+import { parse as parseBabel } from "@babel/parser";
 import { format } from "prettier";
 import { parse, print } from "recast";
 import type { Overrides } from "recast/parsers/_babel_options.js";
 import _getBabelOptions from "recast/parsers/_babel_options.js";
-import { parser as babelParser } from "recast/parsers/babel.js";
 
 const getBabelOptions =
   _getBabelOptions as unknown as (typeof _getBabelOptions)["default"];
@@ -15,7 +15,7 @@ const parser = {
   parse(source: string, options: Overrides) {
     const babelOptions = getBabelOptions(options);
     babelOptions.plugins.push("typescript", "jsx");
-    return babelParser.parse(source, babelOptions);
+    return parseBabel(source, babelOptions);
   },
 };
 
