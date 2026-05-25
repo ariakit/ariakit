@@ -35,14 +35,8 @@ patchedDependencies:
 
 peerDependencyRules:
   allowedVersions:
-    "@wordpress/components>react": "19"
-    "@wordpress/components>react-dom": "19"
-    "@wordpress/compose>react": "19"
-    "@wordpress/data>react": "19"
-    "@wordpress/icons>react": "19"
-    "@wordpress/primitives>react": "19"
-    "@wordpress/rich-text>react": "19"
-    "use-memo-one>react": "19"
+    react: "19"
+    react-dom: "19"
 
 publicHoistPattern:
   - "*react*"

@@ -129,12 +129,6 @@
       "enabled": false
     },
     {
-      "matchPackageNames": ["next"],
-      "matchUpdateTypes": ["major"],
-      "matchFileNames": ["package.json"],
-      "enabled": true
-    },
-    {
       "matchPackageNames": [
         "next",
         "react",

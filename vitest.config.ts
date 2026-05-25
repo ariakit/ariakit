@@ -1,6 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
-import { createRequire } from "node:module";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import { getReactViteAliases, reactDedupe } from "@ariakit/scripts/react";
 import reactPlugin from "@vitejs/plugin-react";
 import type { PluginOption } from "vite";
@@ -8,16 +6,14 @@ import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./app/src/lib/source-plugin.ts";
 import examplesPackageJson from "./examples/package.json" with { type: "json" };
-import rootPackageJson from "./package.json" with { type: "json" };
 
 interface PackageJson {
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
-  peerDependencies?: Record<string, string>;
 }
 
 const rootDir = process.cwd();
-const requireExamples = createRequire(join(rootDir, "examples/package.json"));
+const examplesDir = join(rootDir, "examples");
 
 const includeWithStyles = [
   /combobox-tabs-animated/,
@@ -26,12 +22,6 @@ const includeWithStyles = [
   /disclosure-content-animating/,
 ];
 
-const ignoredReactPeerPackages = new Set([
-  "@playwright/test",
-  "@wordpress/components",
-  "vitest",
-]);
-
 function getDependencyNames(packageJson: PackageJson) {
   return [
     ...Object.keys(packageJson.dependencies ?? {}),
@@ -39,49 +29,17 @@ function getDependencyNames(packageJson: PackageJson) {
   ];
 }
 
-function shouldAliasPackage(pkg: string) {
+function shouldAliasExamplePackage(pkg: string) {
   if (pkg.startsWith("@ariakit/")) return false;
   if (pkg.startsWith("@types/")) return false;
-  return !ignoredReactPeerPackages.has(pkg);
+  if (pkg === "@playwright/test") return false;
+  if (pkg === "vitest") return false;
+  return true;
 }
 
-function resolvePkg(pkg: string) {
-  try {
-    return dirname(requireExamples.resolve(`${pkg}/package.json`));
-  } catch {
-    let dir = dirname(requireExamples.resolve(pkg));
-    while (!existsSync(join(dir, "package.json"))) {
-      const parent = dirname(dir);
-      if (parent === dir) throw new Error(`Could not resolve package: ${pkg}`);
-      dir = parent;
-    }
-    return dir;
-  }
-}
-
-function readPackageJson(pkg: string): PackageJson {
-  return JSON.parse(
-    readFileSync(join(resolvePkg(pkg), "package.json"), "utf-8"),
-  );
-}
-
-function hasReactPeerDependency(pkg: string) {
-  const peerDependencies = readPackageJson(pkg).peerDependencies ?? {};
-  return "react" in peerDependencies || "react-dom" in peerDependencies;
-}
-
-const rootDependencies = new Set(getDependencyNames(rootPackageJson));
-const examplesDependencies = getDependencyNames(examplesPackageJson);
-const reactPeerPackages = examplesDependencies.filter((pkg) => {
-  if (!shouldAliasPackage(pkg)) return false;
-
-  const isRootDependency = rootDependencies.has(pkg);
-  if (!isRootDependency && hasReactPeerDependency(pkg)) {
-    throw new Error(`${pkg} must be declared in root package.json`);
-  }
-
-  return isRootDependency;
-});
+const reactAliasPackages = getDependencyNames(examplesPackageJson).filter(
+  shouldAliasExamplePackage,
+);
 
 const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;
 export type AllowedTestLoader = (typeof ALLOWED_TEST_LOADERS)[number];
@@ -108,8 +66,8 @@ export default defineConfig({
   plugins: PLUGINS_BY_LOADER[LOADER],
   resolve: {
     alias: getReactViteAliases({
-      rootPath: rootDir,
-      packages: reactPeerPackages,
+      rootPath: examplesDir,
+      packages: reactAliasPackages,
     }),
     dedupe: reactDedupe,
   },
