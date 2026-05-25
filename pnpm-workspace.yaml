@@ -3,6 +3,7 @@ packages:
   - templates/*
   - nextjs
   - examples
+  # React version-specific peer-resolution anchors for Vitest.
   - test/*
   - guide
   - website

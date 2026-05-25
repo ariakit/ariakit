@@ -55,6 +55,7 @@ async function loadReact(dir: string) {
     `./${dir}/index.react.tsx`,
   );
   if (failedImport) return false;
+  // Defer React Testing Library until a React example actually needs it.
   const { render: renderReact } = await import("@ariakit/test/react");
   const element = createElement(ReactSuspense, {
     fallback: null,

@@ -7,10 +7,18 @@ import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./app/src/lib/source-plugin.ts";
 
+interface PackageJson {
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+}
+
 // In a pnpm monorepo, each workspace package may resolve its own copy of
 // react from its node_modules. We pin all imports to a single copy via
 // resolve.alias to prevent "multiple React instances" errors in tests.
 const require = createRequire(import.meta.url);
+const examplesPackageJson = require("./examples/package.json") as PackageJson;
+const react19PackageJson =
+  require("./test/react-19/package.json") as PackageJson;
 const requireReact18 = createRequire(
   new URL("./examples/package.json", import.meta.url),
 );
@@ -51,6 +59,13 @@ const includeWithStyles = [
   /disclosure-content-animating/,
 ];
 
+function getDependencyNames(packageJson: PackageJson) {
+  return [
+    ...Object.keys(packageJson.dependencies ?? {}),
+    ...Object.keys(packageJson.devDependencies ?? {}),
+  ];
+}
+
 const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;
 export type AllowedTestLoader = (typeof ALLOWED_TEST_LOADERS)[number];
 const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
@@ -68,20 +83,19 @@ if (!ALLOWED_REACT_VERSIONS.includes(REACT_VERSION)) {
 
 const reactResolver = REACT_VERSION === "18" ? requireReact18 : requireReact19;
 
-// Keep this in sync with React-peered packages imported by Vitest examples and
-// declared in examples/package.json and test/react-19/package.json.
-const reactPeerPackages = [
-  "@radix-ui/react-popover",
-  "@radix-ui/react-select",
-  "@testing-library/react",
-  "motion",
-  "react",
-  "react-dom",
-  "react-router",
-  "react-shadow",
-  "react-toastify",
-  "use-sync-external-store",
-];
+// test/react-19 lists the React-peered example dependencies that need a
+// separate React 19 peer graph. Keep those dependencies mirrored here.
+const typeOnlyPackages = new Set(["@types/react", "@types/react-dom"]);
+const examplesDependencies = new Set(getDependencyNames(examplesPackageJson));
+const reactPeerPackages = getDependencyNames(react19PackageJson).filter(
+  (pkg) => {
+    if (typeOnlyPackages.has(pkg)) return false;
+    if (!examplesDependencies.has(pkg)) {
+      throw new Error(`${pkg} must be declared in examples/package.json`);
+    }
+    return true;
+  },
+);
 
 // sourcePlugin is typed against the app workspace's Vite copy, while Vitest
 // consumes the root Vite types. The runtime plugin shape is compatible.

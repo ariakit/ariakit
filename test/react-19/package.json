@@ -2,6 +2,7 @@
   "name": "ariakit-test-react-19",
   "version": "0.0.0",
   "private": true,
+  "description": "React 19 peer dependency graph for Vitest",
   "type": "module",
   "dependencies": {
     "@radix-ui/react-popover": "1.1.15",

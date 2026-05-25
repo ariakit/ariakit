@@ -104,6 +104,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
   }, [autoFocusOnSubmit, submitFailed, items]);
 
   const onSubmitProp = props.onSubmit;
+  // React 19 types submit handlers with SubmitEvent instead of FormEvent.
   type SubmitEvent = Parameters<NonNullable<typeof onSubmitProp>>[0];
 
   const onSubmit = useEvent((event: SubmitEvent) => {
