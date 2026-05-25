@@ -48,17 +48,3 @@ export function getReactViteAliases({
     };
   });
 }
-
-export function getReactResolverAliases(rootPath = process.cwd()) {
-  const reactPath = resolvePkg("react", rootPath);
-  const reactDomPath = resolvePkg("react-dom", rootPath);
-
-  return {
-    react: reactPath,
-    "react/jsx-runtime": join(reactPath, "jsx-runtime.js"),
-    "react/jsx-dev-runtime": join(reactPath, "jsx-dev-runtime.js"),
-    "react-dom": reactDomPath,
-    "react-dom/client": join(reactDomPath, "client.js"),
-    "react-dom/server": join(reactDomPath, "server.node.js"),
-  };
-}

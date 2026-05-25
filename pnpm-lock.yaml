@@ -574,9 +574,6 @@ importers:
         specifier: 19.2.6
         version: 19.2.6(react@19.2.6)
     devDependencies:
-      '@ariakit/scripts':
-        specifier: workspace:*
-        version: link:../packages/ariakit-scripts
       '@opennextjs/cloudflare':
         specifier: 1.19.11
         version: 1.19.11(encoding@0.1.13)(next@16.2.6(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(wrangler@4.93.1)
