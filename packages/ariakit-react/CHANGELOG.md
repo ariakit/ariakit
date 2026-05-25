@@ -1,5 +1,15 @@
 # @ariakit/react
 
+## 0.4.28
+
+- Release artifacts now include npm trusted publishing provenance.
+- Updated dependencies: `@ariakit/react-components@0.1.1`
+
+## 0.4.27
+
+- Fixed [`Menu`](https://ariakit.com/reference/menu) to respect the [`autoFocusOnShow`](https://ariakit.com/reference/menu#autofocusonshow) prop when set to `false` or when a callback returns `false`, while still allowing arrow keys to move focus into an already-open menu.
+- Updated dependencies: `@ariakit/react-components@0.1.0`
+
 ## 0.4.26
 
 This version focuses on bug fixes across [`Dialog`](https://ariakit.com/reference/dialog), [`Portal`](https://ariakit.com/reference/portal), [`Radio`](https://ariakit.com/reference/radio), [`Combobox`](https://ariakit.com/reference/combobox), and [`MenuButton`](https://ariakit.com/reference/menu-button), along with improvements to how portals behave inside fullscreen elements, how dialogs handle events in popup windows, and how [`Radio`](https://ariakit.com/reference/radio) groups automatically generate unique `name` attributes.

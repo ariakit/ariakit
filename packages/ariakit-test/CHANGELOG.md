@@ -1,5 +1,34 @@
 # @ariakit/test
 
+## 0.5.1
+
+- Release artifacts now include npm trusted publishing provenance.
+- Updated dependencies: `@ariakit/utils@0.1.1`
+
+## 0.5.0
+
+### Removed CommonJS builds
+
+**BREAKING** if your code loads `@ariakit/test` with CommonJS `require()`.
+
+`@ariakit/test` now publishes ESM-only exports.
+
+Before:
+
+```js
+const test = require("@ariakit/test");
+```
+
+After:
+
+```js
+import * as test from "@ariakit/test";
+```
+
+### Other updates
+
+- Updated dependencies: `@ariakit/utils@0.1.0`
+
 ## 0.4.15
 
 - Changed the [`query`](https://ariakit.com/reference/query) helper to use `exact: true` by default for role and text queries in Playwright tests.

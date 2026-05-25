@@ -1,5 +1,6 @@
 {
   "name": "@ariakit/scripts",
+  "version": "0.0.0",
   "private": true,
   "type": "module",
   "bin": {
@@ -8,7 +9,7 @@
   "dependencies": {
     "chokidar": "5.0.0",
     "commander": "14.0.3",
-    "rolldown": "1.0.1",
+    "rolldown": "1.0.2",
     "rolldown-plugin-dts": "0.25.1",
     "vite-plugin-solid": "2.11.12"
   }

@@ -30,8 +30,7 @@
         "/rehype/",
         "/remark/",
         "/unified/",
-        "/unist/",
-        "/react-markdown/"
+        "/unist/"
       ]
     },
     {
@@ -84,30 +83,27 @@
         "@wordpress/components",
         "cross-env",
         "cross-spawn",
-        "dotenv",
         "motion",
         "fs-extra",
         "glob",
         "jsdom",
         "lodash-es",
         "match-sorter",
-        "null-loader",
         "react",
         "react-dom",
         "react-router",
         "react-shadow",
         "react-toastify",
+        "rolldown",
+        "rolldown-plugin-dts",
         "pnpm",
         "textarea-caret",
         "tsup",
         "typescript",
         "playwright",
-        "webpack",
         "zod",
-        "/^@babel//",
         "/^@playwright//",
         "/^@radix-ui//",
-        "/^@rollup//",
         "/^@testing-library//",
         "/^@types//",
         "/^@vitest//",
@@ -141,12 +137,12 @@
         "@types/react-dom"
       ],
       "matchUpdateTypes": ["major"],
-      "matchFileNames": ["nextjs/**"],
+      "matchFileNames": ["nextjs/**", "templates/**"],
       "enabled": true
     },
     {
       "matchManagers": ["github-actions"],
-      "matchPackageNames": ["actions/**", "github/**"],
+      "matchPackageNames": ["actions/**"],
       "pinDigests": false
     }
   ]
