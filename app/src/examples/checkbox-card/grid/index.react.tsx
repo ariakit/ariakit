@@ -318,14 +318,14 @@ export default function Example() {
             </TabPanels>
           </Tabs>
         </div>
-        <div className="ak-frame ak-frame-xl ak-frame-bordering shadow-lg ak-layer ak-layer-3 overflow-clip">
+        <div className="ak-frame ak-frame-xl/px ak-frame-bordering shadow-lg ak-layer ak-layer-3 overflow-clip">
           <Tabs
-            $p="none"
-            $rounded="xl"
-            $border={true}
+            // $p="none"
+            // $rounded="xl"
+            // $border={true}
             className="overflow-clip"
           >
-            <TabList>
+            <TabList $p={1}>
               <Tab $border={false}>Tab 1</Tab>
               <TabSeparator />
               <Tab $border={false}>Tab 2</Tab>
@@ -338,7 +338,7 @@ export default function Example() {
                 className="rounded-b-none -z-2 [clip-path:inset(-0.25em_-0.25em_0.25em_-0.25em)]"
               />
             </TabList>
-            <TabPanel single className="grid">
+            <TabPanel single className="grid ak-layer ak-layer-5">
               <ButtonGroup $layout="vertical" className="overflow-clip">
                 <Button $layer="ghost" $border={false}>
                   Panel 1
