@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
@@ -38,6 +40,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Set up environment
         uses: ./.github/workflows/setup
@@ -194,6 +198,7 @@ jobs:
       # enough signal for noisy results.
       PERF_ITERATIONS: 5
       PERF_WARMUP: 1
+      PERF_RESULTS_TITLE: Chrome
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -335,6 +340,12 @@ jobs:
             echo "No significant changes detected; skipping confirmation rounds."
           fi
 
+      - name: Write performance metadata
+        if: always()
+        run: |
+          mkdir -p app/.perf-results
+          printf '%s\n' "$PERF_RESULTS_TITLE" > app/.perf-results/title.txt
+
       - name: Upload performance results
         if: always()
         uses: actions/upload-artifact@v7
@@ -401,10 +412,23 @@ jobs:
                 .join(' ');
             }
 
+            function readTitle(dir, fallback) {
+              try {
+                const title = fs.readFileSync(path.join(dir, 'title.txt'), 'utf-8').trim();
+                return title || fallback;
+              } catch {
+                return fallback;
+              }
+            }
+
+            function formatBody(body) {
+              return body.replace(/^## Performance\s+/, '').trim();
+            }
+
             function readComparison(file, title, options = {}) {
               try {
-                const body = fs.readFileSync(file, 'utf-8').trim();
-                return `## ${title}\n\n${body}`;
+                const body = formatBody(fs.readFileSync(file, 'utf-8'));
+                return { title, body };
               } catch {
                 if (!options.optional) {
                   core.warning(`No performance comparison found for ${title}.`);
@@ -420,26 +444,33 @@ jobs:
                 return [];
               }
 
-              const sections = [];
+              const groups = new Map();
+              function addComparison(comparison) {
+                if (!comparison) return;
+                const bodies = groups.get(comparison.title) ?? [];
+                bodies.push(comparison.body);
+                groups.set(comparison.title, bodies);
+              }
+
               const rootComparison = path.join(resultsDir, 'comparison.md');
-              const rootSection = readComparison(rootComparison, defaultTitle, {
+              const rootTitle = readTitle(resultsDir, defaultTitle);
+              const rootSection = readComparison(rootComparison, rootTitle, {
                 optional: true,
               });
-              if (rootSection) {
-                sections.push(rootSection);
-              }
+              addComparison(rootSection);
 
               for (const entry of entries
                 .filter((entry) => entry.isDirectory())
                 .sort((a, b) => a.name.localeCompare(b.name))) {
-                  const title = formatName(entry.name);
-                  const file = path.join(resultsDir, entry.name, 'comparison.md');
+                  const dir = path.join(resultsDir, entry.name);
+                  const title = readTitle(dir, formatName(entry.name));
+                  const file = path.join(dir, 'comparison.md');
                   const section = readComparison(file, title);
-                  if (section) {
-                    sections.push(section);
-                  }
+                  addComparison(section);
                 }
-              return sections;
+              return Array.from(groups, ([title, bodies]) => {
+                return `### ${title}\n\n${bodies.join('\n\n')}`;
+              });
             }
 
             const sections = readSections();
@@ -447,7 +478,7 @@ jobs:
               core.notice('No performance comparisons found; leaving the PR comment unchanged.');
               return;
             }
-            const content = sections.join('\n\n');
+            const content = `## Performance\n\n${sections.join('\n\n')}`;
             const body = `${marker}\n${content}`;
 
             const comments = await github.paginate(github.rest.issues.listComments, {
