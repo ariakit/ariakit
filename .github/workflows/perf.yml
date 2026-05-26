@@ -57,8 +57,33 @@ jobs:
           retention-days: 7
           include-hidden-files: true
 
-  baseline:
-    name: Prepare baseline
+  build-packages:
+    name: Build packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: package-build
+          path: |
+            packages/*/dist
+            packages/*/solid
+            packages/*/package.json
+          retention-days: 7
+
+  chrome-baseline:
+    name: Prepare Chrome baseline
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -74,14 +99,17 @@ jobs:
         id: find-base-artifact
         continue-on-error: true
         uses: actions/github-script@v9
+        env:
+          BRANCH_REF: ${{ github.event.pull_request.base.ref }}
         with:
           script: |
             const baseSha = '${{ github.event.pull_request.base.sha }}';
+            const branchRef = process.env.BRANCH_REF;
             const runs = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'app.yml',
-              branch: '${{ github.event.pull_request.base.ref }}',
+              branch: branchRef,
               head_sha: baseSha,
               status: 'success',
               per_page: 1,
@@ -169,7 +197,7 @@ jobs:
 
       - name: Pack baseline artifacts
         run: |
-          tar -czf "$RUNNER_TEMP/perf-baseline-build.tar.gz" \
+          tar -czf "$RUNNER_TEMP/perf-chrome-baseline-build.tar.gz" \
             -C . \
             app/dist \
             app/.wrangler/deploy/config.json \
@@ -178,13 +206,72 @@ jobs:
       - name: Upload baseline artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: perf-baseline-build
-          path: ${{ runner.temp }}/perf-baseline-build.tar.gz
+          name: perf-chrome-baseline-build
+          path: ${{ runner.temp }}/perf-chrome-baseline-build.tar.gz
+          retention-days: 7
+
+  node-baseline:
+    name: Prepare Node baseline
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
+
+      - name: Set up baseline worktree
+        run: |
+          BASELINE_DIR="$RUNNER_TEMP/perf-node-baseline"
+          echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"
+          git worktree add --detach "$BASELINE_DIR" \
+            ${{ github.event.pull_request.base.sha }}
+
+      - name: Install dependencies (baseline)
+        working-directory: ${{ runner.temp }}/perf-node-baseline
+        env:
+          # The baseline worktree shares `.git/config` with the main checkout,
+          # so husky's prepare step would otherwise rewrite `core.hooksPath`
+          # to a relative path under a temporary worktree.
+          HUSKY: 0
+        run: pnpm install --frozen-lockfile
+
+      - name: Copy benchmark files to baseline
+        run: |
+          cp vitest.bench.config.ts "$BASELINE_DIR/vitest.bench.config.ts"
+          shopt -s nullglob
+          for file in packages/*/benchmark/*.bench.ts; do
+            mkdir -p "$BASELINE_DIR/$(dirname "$file")"
+            cp "$file" "$BASELINE_DIR/$file"
+          done
+
+      - name: Build baseline packages
+        working-directory: ${{ runner.temp }}/perf-node-baseline
+        run: pnpm build
+
+      - name: Pack baseline artifacts
+        run: |
+          cd "$BASELINE_DIR"
+          tar -czf "$RUNNER_TEMP/perf-node-baseline-build.tar.gz" \
+            packages/*/dist \
+            packages/*/solid \
+            packages/*/package.json \
+            vitest.bench.config.ts \
+            packages/*/benchmark
+
+      - name: Upload baseline artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: perf-node-baseline-build
+          path: ${{ runner.temp }}/perf-node-baseline-build.tar.gz
           retention-days: 7
 
   chrome:
     name: Chrome
-    needs: [build, build-nextjs, baseline]
+    needs: [build, build-nextjs, chrome-baseline]
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -237,13 +324,13 @@ jobs:
       - name: Download baseline artifacts
         uses: actions/download-artifact@v8
         with:
-          name: perf-baseline-build
-          path: ${{ runner.temp }}/perf-baseline-build
+          name: perf-chrome-baseline-build
+          path: ${{ runner.temp }}/perf-chrome-baseline-build
 
       - name: Extract baseline artifacts
         run: |
           tar -xzf \
-            "${{ runner.temp }}/perf-baseline-build/perf-baseline-build.tar.gz" \
+            "${{ runner.temp }}/perf-chrome-baseline-build/perf-chrome-baseline-build.tar.gz" \
             -C "$BASELINE_DIR"
 
       - name: Clean current app artifacts
@@ -356,14 +443,157 @@ jobs:
           include-hidden-files: true
           retention-days: 7
 
+  node:
+    name: Node
+    needs: [build-packages, node-baseline]
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    env:
+      # Clean runs stop after two paired rounds. Significant deltas get three
+      # extra confirmation rounds before the PR comment is published.
+      PERF_INITIAL_ROUNDS: 2
+      PERF_CONFIRMATION_ROUNDS: 3
+      PERF_RESULTS_TITLE: Node
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
+
+      - name: Set up baseline worktree
+        run: |
+          BASELINE_DIR="$RUNNER_TEMP/perf-node-baseline"
+          echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"
+          git worktree add --detach "$BASELINE_DIR" \
+            ${{ github.event.pull_request.base.sha }}
+
+      - name: Install dependencies (baseline)
+        working-directory: ${{ runner.temp }}/perf-node-baseline
+        env:
+          # The baseline worktree shares `.git/config` with the main checkout,
+          # so husky's prepare step would otherwise rewrite `core.hooksPath`
+          # to a relative path under a temporary worktree.
+          HUSKY: 0
+        run: pnpm install --frozen-lockfile
+
+      - name: Download baseline artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: perf-node-baseline-build
+          path: ${{ runner.temp }}/perf-node-baseline-build
+
+      - name: Extract baseline artifacts
+        run: |
+          tar -xzf \
+            "${{ runner.temp }}/perf-node-baseline-build/perf-node-baseline-build.tar.gz" \
+            -C "$BASELINE_DIR"
+
+      - name: Download package artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: package-build
+          path: packages
+
+      - name: Run interleaved benchmarks
+        run: |
+          mkdir -p .perf-results
+
+          run_bench_round() {
+            local i="$1"
+
+            echo "::group::Round $i - baseline"
+            local baseline_failed=0
+            if ! (
+              cd "$BASELINE_DIR" || exit 1
+              pnpm exec vitest bench \
+                --config vitest.bench.config.ts \
+                --outputJson "$GITHUB_WORKSPACE/.perf-results/baseline-$i.json"
+            ); then
+              echo "::warning::Baseline benchmark run failed for round $i; writing an empty baseline."
+              baseline_failed=1
+            fi
+            if [ "$baseline_failed" -eq 1 ] || [ ! -f ".perf-results/baseline-$i.json" ]; then
+              if [ "$baseline_failed" -eq 0 ]; then
+                echo "::warning::No baseline benchmark results for round $i; writing an empty baseline."
+              fi
+              printf '{"files":[]}\n' > ".perf-results/baseline-$i.json"
+            fi
+            echo "::endgroup::"
+
+            echo "::group::Round $i - current"
+            pnpm exec vitest bench \
+              --config vitest.bench.config.ts \
+              --outputJson ".perf-results/current-$i.json"
+            if [ ! -f ".perf-results/current-$i.json" ]; then
+              echo "Missing current benchmark results for round $i" >&2
+              exit 1
+            fi
+            echo "::endgroup::"
+          }
+
+          for i in $(seq 1 "$PERF_INITIAL_ROUNDS"); do
+            run_bench_round "$i"
+          done
+
+          echo "::group::Preliminary comparison"
+          pnpm exec ariakit perf-compare --node
+          has_significant_changes=$(
+            node --input-type=module <<'NODE'
+          import { readFileSync } from "node:fs";
+
+          const summary = JSON.parse(
+            readFileSync(".perf-results/comparison.json", "utf-8"),
+          );
+
+          console.log(summary.hasSignificantChanges ? "true" : "false");
+          NODE
+          )
+          echo "::endgroup::"
+
+          if [ "$has_significant_changes" = "true" ]; then
+            echo "Significant benchmark changes detected; running confirmation rounds."
+            start_round=$((PERF_INITIAL_ROUNDS + 1))
+            end_round=$((PERF_INITIAL_ROUNDS + PERF_CONFIRMATION_ROUNDS))
+            for i in $(seq "$start_round" "$end_round"); do
+              run_bench_round "$i"
+            done
+          else
+            echo "No significant changes detected; skipping confirmation rounds."
+          fi
+
+      - name: Compare benchmark results
+        run: pnpm exec ariakit perf-compare --node
+
+      - name: Write performance metadata
+        if: always()
+        run: |
+          mkdir -p .perf-results
+          printf '%s\n' "$PERF_RESULTS_TITLE" > .perf-results/title.txt
+
+      - name: Upload performance results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: perf-results-node
+          path: .perf-results
+          if-no-files-found: ignore
+          include-hidden-files: true
+          retention-days: 7
+
   post:
     name: Post PR comment
     # Add future performance jobs here. Each one should upload a
     # perf-results-* artifact with its comparison files.
-    needs: [chrome]
+    needs: [chrome, node]
     if: >
       always() &&
-      needs.chrome.result == 'success' &&
+      (needs.chrome.result == 'success' || needs.node.result == 'success') &&
       github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
@@ -393,6 +623,8 @@ jobs:
         env:
           PERF_RESULTS_DIR: ${{ runner.temp }}/perf-results
           PERF_RESULTS_DEFAULT_TITLE: Chrome
+          PERF_RESULTS_CHROME_ENABLED: ${{ needs.chrome.result == 'success' }}
+          PERF_RESULTS_NODE_ENABLED: ${{ needs.node.result == 'success' }}
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
@@ -402,6 +634,13 @@ jobs:
             const marker = '<!-- perf-results -->';
             const resultsDir = process.env.PERF_RESULTS_DIR;
             const defaultTitle = process.env.PERF_RESULTS_DEFAULT_TITLE;
+            const enabledArtifacts = new Set();
+            if (process.env.PERF_RESULTS_CHROME_ENABLED === 'true') {
+              enabledArtifacts.add('perf-results-chrome');
+            }
+            if (process.env.PERF_RESULTS_NODE_ENABLED === 'true') {
+              enabledArtifacts.add('perf-results-node');
+            }
 
             function formatName(name) {
               return name
@@ -461,6 +700,7 @@ jobs:
 
               for (const entry of entries
                 .filter((entry) => entry.isDirectory())
+                .filter((entry) => enabledArtifacts.has(entry.name))
                 .sort((a, b) => a.name.localeCompare(b.name))) {
                   const dir = path.join(resultsDir, entry.name);
                   const title = readTitle(dir, formatName(entry.name));

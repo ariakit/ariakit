@@ -36,6 +36,16 @@ program
   .helpOption(false)
   .action(react18);
 
+program
+  .command("perf-compare")
+  .description("Compare performance results")
+  .option("--node", "Compare Vitest benchmark results")
+  .action(async (options) => {
+    const { runPerfCompare } = await import("./perf-compare.ts");
+    const { markdown } = runPerfCompare({ node: options.node });
+    console.log(markdown);
+  });
+
 try {
   await program.parseAsync();
 } catch (error) {

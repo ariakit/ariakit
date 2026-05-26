@@ -1,5 +1,3 @@
-import { query } from "@ariakit/test/playwright";
-import { test as base } from "@playwright/test";
 import {
   appendResults,
   createPerfMeasure,
@@ -7,7 +5,9 @@ import {
   type PerfMeasureOptions,
   type PerfMetrics,
   type PerfResult,
-} from "./perf.ts";
+} from "@ariakit/scripts/perf";
+import { query } from "@ariakit/test/playwright";
+import { test as base } from "@playwright/test";
 import { visual, type ScreenshotOptions } from "./visual.ts";
 
 export const test = base.extend<{

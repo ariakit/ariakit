@@ -16,6 +16,7 @@
     "generate-images": "pnpm run playwright -u -c generate-images.config.ts",
     "react18": "ariakit react18",
     "test": "vitest",
+    "bench": "vitest bench --config vitest.bench.config.ts",
     "test-react-18": "pnpm react18 test",
     "test-solid": "ARIAKIT_TEST_LOADER=solid vitest",
     "test-watch": "vitest watch",

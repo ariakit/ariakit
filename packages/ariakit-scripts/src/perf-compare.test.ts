@@ -1,13 +1,3 @@
-/**
- * @license
- * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
- *
- * This software is proprietary. See the license.md file in the root of this
- * package for licensing terms.
- *
- * SPDX-License-Identifier: UNLICENSED
- */
-
 import { execFileSync, spawnSync } from "node:child_process";
 import {
   mkdirSync,
@@ -21,15 +11,42 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, expect, test } from "vitest";
-import type {
-  PerfMetrics,
-  PerfProfiles,
-  PerfResult,
-  PerfScriptProfileEntry,
-} from "./perf.ts";
+
+interface PerfMetrics {
+  scripting: number;
+  layout: number;
+  styleRecalc: number;
+  painting: number;
+  rendering: number;
+  inp: number;
+  total: number;
+}
+
+interface PerfScriptProfileEntry {
+  functionName: string;
+  url: string;
+  line: number;
+  column: number;
+  selfTime: number;
+  totalTime: number;
+  hitCount: number;
+}
+
+interface PerfProfiles {
+  script?: PerfScriptProfileEntry[];
+}
+
+interface PerfResult {
+  testFile: string;
+  testTitle: string;
+  label: string;
+  metrics: PerfMetrics;
+  raw: PerfMetrics[];
+  profiles?: PerfProfiles;
+}
 
 const resultsDir = ".perf-results";
-const scriptPath = path.join(import.meta.dirname, "perf-compare.ts");
+const scriptPath = path.join(import.meta.dirname, "index.ts");
 const tempDirs: string[] = [];
 
 function createTempDir() {
@@ -97,6 +114,47 @@ function createScriptProfileEntry(
   };
 }
 
+function createBenchmarkReport(
+  groups: Array<{
+    benchmarks: Array<{ hz?: number; mean?: number; name: string }>;
+    fullName: string;
+  }>,
+  filepath = path.join(
+    "/repo",
+    "packages/ariakit-store/benchmark/store.bench.ts",
+  ),
+) {
+  return {
+    files: [
+      {
+        filepath,
+        groups,
+      },
+    ],
+  };
+}
+
+function createBenchmarkReportFromFiles(
+  files: Array<{
+    filepath: string;
+    groups: Array<{
+      benchmarks: Array<{ hz?: number; mean?: number; name: string }>;
+      fullName: string;
+    }>;
+  }>,
+) {
+  return { files };
+}
+
+function createStoreBenchmarkReport(hz?: number, mean?: number) {
+  return createBenchmarkReport([
+    {
+      fullName: "packages/ariakit-store/benchmark/store.bench.ts",
+      benchmarks: [{ name: "set state", hz, mean }],
+    },
+  ]);
+}
+
 function writeJson(dir: string, file: string, data: unknown) {
   const outputDir = path.join(dir, resultsDir);
   mkdirSync(outputDir, { recursive: true });
@@ -112,8 +170,8 @@ function writeRound(
   writeJson(dir, `${prefix}-${round}-worker0.json`, [createResult(total)]);
 }
 
-function runCompare(dir: string) {
-  execFileSync(process.execPath, [scriptPath], {
+function runCompare(dir: string, args: string[] = []) {
+  execFileSync(process.execPath, [scriptPath, "perf-compare", ...args], {
     cwd: dir,
     encoding: "utf-8",
   });
@@ -121,7 +179,7 @@ function runCompare(dir: string) {
 }
 
 function runCompareFailure(dir: string) {
-  const result = spawnSync(process.execPath, [scriptPath], {
+  const result = spawnSync(process.execPath, [scriptPath, "perf-compare"], {
     cwd: dir,
     encoding: "utf-8",
   });
@@ -146,6 +204,132 @@ test("keeps single-run comparison behavior", () => {
 
   expect(markdown).toContain("100.0ms → 120.0ms (+20%) :warning:");
   expect(markdown).not.toContain("Aggregated across");
+});
+
+test("compares Vitest benchmark reports in node mode", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-1.json", createStoreBenchmarkReport(1000));
+  writeJson(dir, "current-1.json", createStoreBenchmarkReport(500));
+
+  const markdown = runCompare(dir, ["--node"]);
+
+  expect(markdown).toContain(
+    "#### packages/ariakit-store/benchmark/store.bench.ts",
+  );
+  expect(markdown).toContain("| Benchmark | Baseline | Current | Change |");
+  expect(markdown).toContain(
+    "| set state | 1,000 ops/sec | 500 ops/sec | -500 ops/sec (-50%) :warning: |",
+  );
+});
+
+test("keeps Vitest benchmark groups distinct in node mode", () => {
+  const dir = createTempDir();
+  writeJson(
+    dir,
+    "baseline-1.json",
+    createBenchmarkReport([
+      {
+        fullName: "packages/ariakit-store/benchmark/store.bench.ts > store",
+        benchmarks: [{ name: "set state", hz: 1000 }],
+      },
+      {
+        fullName:
+          "packages/ariakit-store/benchmark/store.bench.ts > collection",
+        benchmarks: [{ name: "set state", hz: 1000 }],
+      },
+    ]),
+  );
+  writeJson(
+    dir,
+    "current-1.json",
+    createBenchmarkReport([
+      {
+        fullName: "packages/ariakit-store/benchmark/store.bench.ts > store",
+        benchmarks: [{ name: "set state", hz: 500 }],
+      },
+      {
+        fullName:
+          "packages/ariakit-store/benchmark/store.bench.ts > collection",
+        benchmarks: [{ name: "set state", hz: 1000 }],
+      },
+    ]),
+  );
+
+  const markdown = runCompare(dir, ["--node"]);
+
+  expect(markdown).toContain(
+    "| store > set state | 1,000 ops/sec | 500 ops/sec | -500 ops/sec (-50%) :warning: |",
+  );
+  expect(markdown).toContain("| collection > set state |");
+});
+
+test("groups Vitest benchmark tables by file in node mode", () => {
+  const dir = createTempDir();
+  const storeFile = path.join(
+    "/repo",
+    "packages/ariakit-store/benchmark/store.bench.ts",
+  );
+  const utilsFile = path.join(
+    "/repo",
+    "packages/ariakit-utils/benchmark/utils.bench.ts",
+  );
+  const report = createBenchmarkReportFromFiles([
+    {
+      filepath: storeFile,
+      groups: [
+        {
+          fullName: storeFile,
+          benchmarks: [{ name: "set state", hz: 1000 }],
+        },
+      ],
+    },
+    {
+      filepath: utilsFile,
+      groups: [
+        {
+          fullName: utilsFile,
+          benchmarks: [{ name: "get value", hz: 2000 }],
+        },
+      ],
+    },
+  ]);
+  writeJson(dir, "current-1.json", report);
+
+  const markdown = runCompare(dir, ["--node"]);
+
+  expect(markdown).toContain(
+    "#### packages/ariakit-store/benchmark/store.bench.ts",
+  );
+  expect(markdown).toContain(
+    "#### packages/ariakit-utils/benchmark/utils.bench.ts",
+  );
+  expect(markdown.match(/\| Benchmark \| Ops\/sec \|/g)).toHaveLength(2);
+});
+
+test("uses Vitest benchmark mean in node mode", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-1.json", createStoreBenchmarkReport(0, 0.00002));
+  writeJson(dir, "current-1.json", createStoreBenchmarkReport(0, 0.00004));
+
+  const markdown = runCompare(dir, ["--node"]);
+
+  expect(markdown).toContain(
+    "50,000,000 ops/sec | 25,000,000 ops/sec | -25,000,000 ops/sec (-50%) :warning:",
+  );
+});
+
+test("does not flag empty Vitest benchmark metrics in node mode", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-1.json", createStoreBenchmarkReport());
+  writeJson(dir, "current-1.json", createStoreBenchmarkReport());
+
+  const markdown = runCompare(dir, ["--node"]);
+
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain(
+    "| set state | 0 ops/sec | 0 ops/sec | +0 ops/sec |",
+  );
+  expect(markdown).not.toContain("+0 ops/sec :rocket:");
 });
 
 test("does not flag noisy rounds that disagree on direction", () => {
