@@ -164,6 +164,9 @@ importers:
       postcss-import:
         specifier: 16.1.1
         version: 16.1.1(postcss@8.5.8)
+      postcss-nesting:
+        specifier: 14.0.0
+        version: 14.0.0(postcss@8.5.8)
       prettier:
         specifier: 3.8.3
         version: 3.8.3
@@ -17434,6 +17437,13 @@ snapshots:
       '@csstools/selector-resolve-nested': 4.0.0(postcss-selector-parser@7.1.1)
       '@csstools/selector-specificity': 6.0.0(postcss-selector-parser@7.1.1)
       postcss: 8.5.15
+      postcss-selector-parser: 7.1.1
+
+  postcss-nesting@14.0.0(postcss@8.5.8):
+    dependencies:
+      '@csstools/selector-resolve-nested': 4.0.0(postcss-selector-parser@7.1.1)
+      '@csstools/selector-specificity': 6.0.0(postcss-selector-parser@7.1.1)
+      postcss: 8.5.8
       postcss-selector-parser: 7.1.1
 
   postcss-prettify@0.3.4:

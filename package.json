@@ -109,6 +109,7 @@
     "oxlint-tsgolint": "0.23.0",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
+    "postcss-nesting": "14.0.0",
     "prettier": "3.8.3",
     "prettier-plugin-tailwindcss": "0.8.0",
     "react": "19.2.6",

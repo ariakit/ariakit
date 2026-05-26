@@ -35,18 +35,30 @@ function afterPaint(cb: () => void) {
 }
 
 function parseCSSTime(...times: string[]) {
-  return times
-    .join(", ")
-    .split(", ")
-    .reduce((longestTime, currentTimeString) => {
-      const multiplier = currentTimeString.endsWith("ms") ? 1 : 1000;
-      const currentTime =
-        Number.parseFloat(currentTimeString || "0s") * multiplier;
+  let longestTime = 0;
+
+  for (const timeString of times) {
+    const timeRegex = /(^|[^-\w.])(-?(?:\d+|\d*\.\d+))(ms|s)\b/g;
+    let match: RegExpExecArray | null;
+
+    while ((match = timeRegex.exec(timeString))) {
+      const valueString = match[2];
+      const unit = match[3];
+
+      if (!valueString) continue;
+      if (unit !== "ms" && unit !== "s") continue;
+
+      const multiplier = unit === "ms" ? 1 : 1000;
+      const currentTime = Number.parseFloat(valueString) * multiplier;
       // When multiple times are specified, we want to use the longest one so we
       // wait until the longest transition has finished.
-      if (currentTime > longestTime) return currentTime;
-      return longestTime;
-    }, 0);
+      if (currentTime > longestTime) {
+        longestTime = currentTime;
+      }
+    }
+  }
+
+  return longestTime;
 }
 
 export function isHidden(

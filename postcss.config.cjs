@@ -17,6 +17,7 @@ module.exports = {
     "@tailwindcss/postcss": {
       base: path.join(__dirname, "website"),
     },
+    "postcss-nesting": {},
     autoprefixer: {},
   },
 };
