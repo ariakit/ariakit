@@ -381,6 +381,7 @@ jobs:
         uses: actions/github-script@v9
         env:
           PERF_RESULTS_DIR: ${{ runner.temp }}/perf-results
+          PERF_RESULTS_DEFAULT_TITLE: Chrome
         with:
           github-token: ${{ steps.app-token.outputs.token }}
           script: |
@@ -389,6 +390,7 @@ jobs:
 
             const marker = '<!-- perf-results -->';
             const resultsDir = process.env.PERF_RESULTS_DIR;
+            const defaultTitle = process.env.PERF_RESULTS_DEFAULT_TITLE;
 
             function formatName(name) {
               return name
@@ -397,6 +399,17 @@ jobs:
                 .filter(Boolean)
                 .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
                 .join(' ');
+            }
+
+            function readComparison(file, title, options = {}) {
+              try {
+                const body = fs.readFileSync(file, 'utf-8').trim();
+                return `## ${title}\n\n${body}`;
+              } catch {
+                if (!options.optional) {
+                  core.warning(`No performance comparison found for ${title}.`);
+                }
+              }
             }
 
             function readSections() {
@@ -408,19 +421,23 @@ jobs:
               }
 
               const sections = [];
+              const rootComparison = path.join(resultsDir, 'comparison.md');
+              const rootSection = readComparison(rootComparison, defaultTitle, {
+                optional: true,
+              });
+              if (rootSection) {
+                sections.push(rootSection);
+              }
+
               for (const entry of entries
                 .filter((entry) => entry.isDirectory())
                 .sort((a, b) => a.name.localeCompare(b.name))) {
                   const title = formatName(entry.name);
                   const file = path.join(resultsDir, entry.name, 'comparison.md');
-                  let body;
-                  try {
-                    body = fs.readFileSync(file, 'utf-8').trim();
-                  } catch {
-                    core.warning(`No performance comparison found for ${title}.`);
-                    continue;
+                  const section = readComparison(file, title);
+                  if (section) {
+                    sections.push(section);
                   }
-                  sections.push(`## ${title}\n\n${body}`);
                 }
               return sections;
             }
