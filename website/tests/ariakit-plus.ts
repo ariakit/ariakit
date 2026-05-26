@@ -121,7 +121,8 @@ async function createCustomerWithOneTimePurchase(
 
   await stripe.invoiceItems.create({
     customer: customer.id,
-    price: price.id,
+    // Stripe v22: top-level `price` was replaced by `pricing.price`.
+    pricing: { price: price.id },
     quantity: 1,
     discounts: [{ coupon: coupon.id }],
   });
