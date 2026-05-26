@@ -28,7 +28,9 @@ export async function GET(req: NextRequest) {
   );
 
   if (!parsed.success) {
-    return Response.json(parsed.error.flatten().fieldErrors, { status: 400 });
+    return Response.json(z.flattenError(parsed.error).fieldErrors, {
+      status: 400,
+    });
   }
 
   const { sessionId, redirectUrl } = parsed.data;

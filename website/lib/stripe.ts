@@ -24,12 +24,16 @@ export function getStripeClient() {
   return stripe;
 }
 
-function getDiscountCoupon(discount: Discount): Stripe.Coupon;
-function getDiscountCoupon(discount?: Discount): Stripe.Coupon | undefined;
-function getDiscountCoupon(discount?: Discount) {
+// NOTE: this function assumes any `PromotionCode` passed in was listed with
+// `expand: ["data.promotion.coupon"]` (Stripe v19 moved the coupon under
+// `promotion.coupon`). Without that expand, the nested coupon is a bare id and
+// this returns `undefined`.
+function getDiscountCoupon(discount?: Discount): Stripe.Coupon | undefined {
   if (!discount) return;
   if (discount.object === "coupon") return discount;
-  return discount.coupon;
+  const coupon = discount.promotion?.coupon;
+  if (!coupon || typeof coupon === "string") return;
+  return coupon;
 }
 
 function getDiscountExpirationDateMs(discount?: Discount) {
@@ -47,8 +51,8 @@ function getHighestDiscount(discounts?: Discount[]) {
   const highestDiscount = discounts.reduce((highest, discount) => {
     const highestCoupon = getDiscountCoupon(highest);
     const coupon = getDiscountCoupon(discount);
-    const percent = coupon.percent_off ?? 0;
-    if (!highestCoupon.percent_off) return discount;
+    const percent = coupon?.percent_off ?? 0;
+    if (!highestCoupon?.percent_off) return discount;
     if (percent > highestCoupon.percent_off) return discount;
     return highest;
   });
@@ -199,25 +203,12 @@ export async function getActivePlusPrice(customer?: string) {
   const product = await getPlusProduct(plusPrices);
   invariant(product, "Product not found");
 
-  for await (const invoice of stripe.invoices.list({
-    customer,
-    expand: ["data.charge"],
-    status: "paid",
-    limit: 100,
-  })) {
-    if (invoice.charge && typeof invoice.charge === "object") {
-      if (!invoice.charge.paid) continue;
-      if (invoice.charge.refunded) continue;
-    }
-    for (const line of invoice.lines.data) {
-      if (!line.price?.product) continue;
-      if (line.price?.type !== "one_time") continue;
-      if (line.price.product !== product.id) continue;
-      const price = line.price;
-      return Object.assign(price, { product });
-    }
-  }
-
+  // Stripe v18 (Basil) removed `Invoice.charge`. We can't expand the new
+  // `payments` path deep enough to inspect refund state on the underlying
+  // charge in one call (Stripe enforces a four-level expand limit), so the
+  // charges-based loop runs first; it can detect refunds directly. The
+  // invoice loop below covers invoiced purchases without payment-intent
+  // metadata.
   for await (const charge of stripe.charges.list({
     customer,
     expand: ["data.payment_intent"],
@@ -236,7 +227,75 @@ export async function getActivePlusPrice(customer?: string) {
     return Object.assign(price, { product });
   }
 
+  // Basil also restructured invoice line items: the price is no longer inlined
+  // on the line. The id lives under `line.pricing.price_details`, and we
+  // retrieve the full Price separately. This fallback covers invoiced one-time
+  // purchases that lack payment-intent metadata.
+  for await (const invoice of stripe.invoices.list({
+    customer,
+    status: "paid",
+    limit: 100,
+  })) {
+    for (const line of invoice.lines.data) {
+      // `price` is typed `string | Price` (only an inlined Price when expanded,
+      // which we don't do); `product` is always a string id on this surface.
+      const linePrice = line.pricing?.price_details?.price;
+      const lineProductId = line.pricing?.price_details?.product;
+      if (!linePrice || !lineProductId) continue;
+      if (lineProductId !== product.id) continue;
+      const price = await stripe.prices.retrieve(getObjectId(linePrice));
+      if (price.type !== "one_time") continue;
+      // Verify the invoice's payments haven't been refunded. v18 (Basil)
+      // removed the inlined `invoice.charge`; we list this invoice's payments
+      // explicitly and check refunds per payment_intent or charge id.
+      if (await invoicePaymentsRefunded(invoice.id)) continue;
+      return Object.assign(price, { product });
+    }
+  }
+
   return;
+}
+
+async function invoicePaymentsRefunded(invoiceId: string) {
+  if (!stripe) return false;
+  // `invoice.payments` on a list response is unhydrated, so list payments for
+  // this invoice explicitly. v22 `InvoicePayment.Payment.Type` can be
+  // 'payment_intent' | 'charge' | 'payment_record'. We refund-check the first
+  // two; 'payment_record' has no comparable refund concept exposed here.
+  // $0 invoices created via 100% discount have no payments and stay treated
+  // as not refunded.
+  //
+  // Note: this returns true on ANY refund (including partial), which is
+  // stricter than the `charge.refunded` boolean used by the charges loop
+  // above (which fires only on full refunds). The asymmetry is acceptable
+  // because invoiced-only Plus purchases are rare and a partial refund
+  // revoking access is the safer side to err on.
+  for await (const payment of stripe.invoicePayments.list({
+    invoice: invoiceId,
+    status: "paid",
+    limit: 100,
+  })) {
+    if (payment.payment.type === "payment_intent") {
+      const pi = payment.payment.payment_intent;
+      const piId = typeof pi === "string" ? pi : pi?.id;
+      if (!piId) continue;
+      const refunds = await stripe.refunds.list({
+        payment_intent: piId,
+        limit: 1,
+      });
+      if (refunds.data.length > 0) return true;
+    } else if (payment.payment.type === "charge") {
+      const c = payment.payment.charge;
+      const chargeId = typeof c === "string" ? c : c?.id;
+      if (!chargeId) continue;
+      const refunds = await stripe.refunds.list({
+        charge: chargeId,
+        limit: 1,
+      });
+      if (refunds.data.length > 0) return true;
+    }
+  }
+  return false;
 }
 
 interface GetDiscountParams {
@@ -263,6 +322,7 @@ export async function getDiscount({
         customer,
         active: true,
         limit: 100,
+        expand: ["data.promotion.coupon"],
       }),
     );
   }
@@ -282,6 +342,7 @@ export async function getDiscount({
         coupon: coupon.id,
         active: true,
         limit: 100,
+        expand: ["data.promotion.coupon"],
       }),
     );
   }
@@ -389,6 +450,7 @@ export async function createCheckout({
     const code = await stripe.promotionCodes.list({
       active: true,
       code: promotionCode,
+      expand: ["data.promotion.coupon"],
     });
     externalDiscount = code.data.find(
       (c) => !c.customer || c.customer === customer,
@@ -411,7 +473,10 @@ export async function createCheckout({
     customer,
     line_items: [{ price: price.id, quantity: 1 }],
     mode: "payment",
-    ui_mode: "embedded",
+    // v21 (API `2026-03-25.dahlia`) renamed `ui_mode: "embedded"` to
+    // `"embedded_page"`. The embedded-checkout client surface
+    // (`<EmbeddedCheckoutProvider>` + session `client_secret`) is unchanged.
+    ui_mode: "embedded_page",
     invoice_creation: { enabled: true },
     redirect_on_completion: "if_required",
     return_url: returnUrl

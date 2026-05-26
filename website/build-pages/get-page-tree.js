@@ -1,10 +1,16 @@
 import matter from "gray-matter";
 import { toString } from "hast-util-to-string";
 import { marked } from "marked";
+import { gfmHeadingId } from "marked-gfm-heading-id";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
 import { getPageContent } from "./get-page-content.js";
+
+// marked changed the `headerIds` default from `true` to `false` starting in
+// v7, so the v4→v18 bump requires registering the GFM heading-id extension
+// explicitly. The downstream rehype TOC builder reads `<h2 id="...">` ids.
+marked.use(gfmHeadingId());
 
 /**
  * Returns the page tree from a markdown content string.

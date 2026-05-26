@@ -31,7 +31,9 @@ export async function POST(request: NextRequest) {
   const parsed = schema.safeParse(await getRequestBody(request));
 
   if (!parsed.success) {
-    return Response.json(parsed.error.flatten().fieldErrors, { status: 400 });
+    return Response.json(z.flattenError(parsed.error).fieldErrors, {
+      status: 400,
+    });
   }
 
   const { priceId } = parsed.data || {};

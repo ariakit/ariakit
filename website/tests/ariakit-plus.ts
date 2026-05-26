@@ -181,7 +181,9 @@ async function createCustomerWithSubscription(
   await stripe.subscriptions.create({
     customer: customer.id,
     items: [{ price: price.id, quantity: 1 }],
-    coupon: coupon.id,
+    // Stripe v18 (Basil): the top-level `coupon` param was removed in favor
+    // of `discounts`.
+    discounts: [{ coupon: coupon.id }],
     backdate_start_date: Math.round(new Date("2023-11-01").getTime() / 1000),
   });
 
@@ -443,7 +445,9 @@ test.describe("with coupon", () => {
     const customer = await createCustomer();
 
     await stripe.promotionCodes.create({
-      coupon: coupon!.id,
+      // Stripe v19 removed the `coupon` parameter on `promotionCodes.create`;
+      // pass it via the new `promotion` discriminated union instead.
+      promotion: { type: "coupon", coupon: coupon!.id },
       max_redemptions: 1,
     });
 
@@ -478,7 +482,7 @@ test.describe("with coupon", () => {
     const customerWithDiscount = await createCustomer();
 
     await stripe.promotionCodes.create({
-      coupon: coupon!.id,
+      promotion: { type: "coupon", coupon: coupon!.id },
       customer: customerWithDiscount.id,
       max_redemptions: 1,
     });

@@ -6,7 +6,10 @@ const searchParamsSchema = z.object({
   lang: z
     .string()
     .optional()
-    .default("en")
+    // Zod v4: `.default()` now bypasses the transform when the value is
+    // missing. `.prefault()` keeps the v3 behavior of treating the default as
+    // input that still flows through the transform's validity filter.
+    .prefault("en")
     // Remove invalid values
     .transform((value) => (value in languages ? value : undefined)),
   status: z
