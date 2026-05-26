@@ -6,20 +6,60 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
-import {
-  mergeScriptProfiles,
-  mergeSelectorProfiles,
-  type PerfMetrics,
-  type PerfProfiles,
-  type PerfResult,
-  type PerfScriptProfileEntry,
-  type PerfSelectorProfileEntry,
-} from "./perf.ts";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const PROFILE_LIMIT = 10;
 const THRESHOLD_PERCENT = 10;
 const MIN_SIGNIFICANT_DELTA_MS = 5;
+
+interface PerfMetrics {
+  scripting: number;
+  layout: number;
+  styleRecalc: number;
+  painting: number;
+  rendering: number;
+  inp: number;
+  total: number;
+}
+
+interface PerfScriptProfileEntry {
+  functionName: string;
+  url: string;
+  line: number;
+  column: number;
+  selfTime: number;
+  totalTime: number;
+  hitCount: number;
+}
+
+interface PerfSelectorProfileEntry {
+  selector: string;
+  styleSheetId: string;
+  styleSheetUrl: string;
+  elapsed: number;
+  matchAttempts: number;
+  matchCount: number;
+  slowPathNonMatchPercent: number;
+  invalidationCount: number;
+}
+
+interface PerfProfiles {
+  script?: PerfScriptProfileEntry[];
+  selectors?: PerfSelectorProfileEntry[];
+}
+
+interface PerfResult {
+  testFile: string;
+  testTitle: string;
+  label: string;
+  metrics: PerfMetrics;
+  raw: PerfMetrics[];
+  profiles?: PerfProfiles;
+}
+
+interface SelectorProfileAccumulator extends PerfSelectorProfileEntry {
+  weightedSlowPathSum: number;
+}
 
 type MetricKey = keyof PerfMetrics;
 
@@ -89,6 +129,35 @@ interface DiscoveredRoundFile {
   roundIndex: number;
 }
 
+interface BenchmarkReport {
+  files?: BenchmarkReportFile[];
+}
+
+interface BenchmarkReportFile {
+  filepath?: string;
+  groups?: BenchmarkReportGroup[];
+}
+
+interface BenchmarkReportGroup {
+  fullName?: string;
+  benchmarks?: BenchmarkReportEntry[];
+}
+
+interface BenchmarkReportEntry {
+  name?: string;
+  hz?: number;
+  mean?: number;
+}
+
+export interface PerfCompareOptions {
+  node?: boolean;
+}
+
+export interface PerfCompareRunResult {
+  summary: PersistedComparisonSummary;
+  markdown: string;
+}
+
 // Primary metrics shown in the summary table.
 const PRIMARY_METRICS: MetricKey[] = ["scripting", "rendering", "total"];
 
@@ -120,6 +189,26 @@ const RENDERING_SUB_METRICS = new Set<MetricKey>([
   "painting",
 ]);
 
+function getPrimaryMetrics(options: PerfCompareOptions): MetricKey[] {
+  return options.node ? ["total"] : PRIMARY_METRICS;
+}
+
+function getAllMetrics(options: PerfCompareOptions): MetricKey[] {
+  return options.node ? ["total"] : ALL_METRICS;
+}
+
+function getResultName(options: PerfCompareOptions) {
+  return options.node ? "Benchmark" : "Test";
+}
+
+function getResultsName(options: PerfCompareOptions) {
+  return options.node ? "benchmarks" : "tests";
+}
+
+function getMinSignificantDelta(options: PerfCompareOptions) {
+  return options.node ? 0 : MIN_SIGNIFICANT_DELTA_MS;
+}
+
 function readJsonFile(filePath: string): unknown {
   let contents: string;
   try {
@@ -141,6 +230,109 @@ function readJsonFile(filePath: string): unknown {
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getNumber(value: unknown): number {
+  if (typeof value !== "number") return 0;
+  if (!Number.isFinite(value)) return 0;
+  return value;
+}
+
+function normalizeBenchmarkFilePath(filePath: string) {
+  if (!filePath) return "";
+  const rooted = filePath.match(/(?:^|[\\/])((?:packages|benchmark)[\\/].+)$/);
+  if (rooted?.[1]) {
+    return rooted[1];
+  }
+  return path.relative(process.cwd(), filePath);
+}
+
+function normalizeBenchmarkName(name: string) {
+  return name.replace(/@\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/, "");
+}
+
+function normalizeBenchmarkGroupName(name: string, filePath: string) {
+  const fileName = path.basename(filePath);
+  return name
+    .split(" > ")
+    .map((part) => part.trim())
+    .filter((part) => {
+      if (!part) return false;
+      if (part === fileName) return false;
+      return normalizeBenchmarkFilePath(part) !== filePath;
+    });
+}
+
+function getBenchmarkPackageName(filePath: string) {
+  const [workspace, packageName] = filePath.split(/[\\/]/);
+  if (workspace === "packages" && packageName) {
+    return packageName;
+  }
+  return workspace ?? "";
+}
+
+function formatBenchmarkLabel({
+  file,
+  groupName,
+  name,
+}: {
+  file: string;
+  groupName: string;
+  name: string;
+}) {
+  const parts = [
+    getBenchmarkPackageName(file),
+    path.basename(file),
+    ...normalizeBenchmarkGroupName(groupName, file),
+    name,
+  ].filter(Boolean);
+  return parts.join(" > ");
+}
+
+function createNodeMetrics({ hz, mean }: { hz: number; mean: number }) {
+  const total = mean > 0 ? mean : hz > 0 ? 1000 / hz : 0;
+  return {
+    scripting: 0,
+    layout: 0,
+    styleRecalc: 0,
+    painting: 0,
+    rendering: 0,
+    inp: 0,
+    total,
+  };
+}
+
+function resultsFromBenchmarkReport(report: BenchmarkReport): PerfResult[] {
+  const results: PerfResult[] = [];
+  for (const file of report.files ?? []) {
+    const filePath = normalizeBenchmarkFilePath(file.filepath ?? "");
+    for (const group of file.groups ?? []) {
+      const groupName = group.fullName ?? "";
+      for (const benchmark of group.benchmarks ?? []) {
+        const name = benchmark.name ?? "";
+        const normalizedName = normalizeBenchmarkName(name);
+        const metrics = createNodeMetrics({
+          hz: getNumber(benchmark.hz),
+          mean: getNumber(benchmark.mean),
+        });
+        const label = formatBenchmarkLabel({
+          file: filePath,
+          groupName,
+          name: normalizedName,
+        });
+        results.push({
+          testFile: filePath,
+          testTitle: groupName
+            ? `${groupName} > ${normalizedName}`
+            : normalizedName,
+          label,
+          metrics,
+          raw: [metrics],
+        });
+      }
+    }
+  }
+  return results;
 }
 
 // Discover round files like `baseline-1-worker0.json` and
@@ -179,10 +371,21 @@ function discoverRoundFiles(prefix: string): DiscoveredRoundFile[] {
   }));
 }
 
-function loadRounds(prefix: string): RoundPerfResult[] {
+function loadRounds(
+  prefix: string,
+  options: PerfCompareOptions,
+): RoundPerfResult[] {
   const rounds: RoundPerfResult[] = [];
   for (const { filePath, roundIndex } of discoverRoundFiles(prefix)) {
     const data = readJsonFile(filePath);
+    if (options.node && !Array.isArray(data)) {
+      for (const result of resultsFromBenchmarkReport(
+        data as BenchmarkReport,
+      )) {
+        rounds.push({ roundIndex, result });
+      }
+      continue;
+    }
     if (!Array.isArray(data)) {
       throw new Error(
         `Invalid perf results format at ${filePath}: expected an array of results.`,
@@ -217,6 +420,67 @@ function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
     inp: median(all.map((m) => m.inp)),
     total: median(all.map((m) => m.total)),
   };
+}
+
+function mergeScriptProfiles(
+  profiles: PerfScriptProfileEntry[][],
+  limit: number,
+): PerfScriptProfileEntry[] {
+  const entries = new Map<string, PerfScriptProfileEntry>();
+
+  for (const profile of profiles) {
+    for (const item of profile) {
+      const key = [item.functionName, item.url, item.line, item.column].join(
+        "\0",
+      );
+      const existingItem = entries.get(key);
+      if (existingItem) {
+        existingItem.selfTime += item.selfTime;
+        existingItem.totalTime += item.totalTime;
+        existingItem.hitCount += item.hitCount;
+        continue;
+      }
+      entries.set(key, { ...item });
+    }
+  }
+
+  return [...entries.values()]
+    .sort((a, b) => b.selfTime - a.selfTime || b.totalTime - a.totalTime)
+    .slice(0, limit);
+}
+
+function mergeSelectorProfiles(
+  profiles: PerfSelectorProfileEntry[][],
+  limit: number,
+): PerfSelectorProfileEntry[] {
+  const entries = new Map<string, SelectorProfileAccumulator>();
+
+  for (const profile of profiles) {
+    for (const item of profile) {
+      const key = `${item.styleSheetId}\0${item.selector}`;
+      const weightedSlowPathSum =
+        item.matchAttempts * item.slowPathNonMatchPercent;
+      const existingItem = entries.get(key);
+      if (existingItem) {
+        existingItem.elapsed += item.elapsed;
+        existingItem.matchAttempts += item.matchAttempts;
+        existingItem.matchCount += item.matchCount;
+        existingItem.invalidationCount += item.invalidationCount;
+        existingItem.weightedSlowPathSum += weightedSlowPathSum;
+        continue;
+      }
+      entries.set(key, { ...item, weightedSlowPathSum });
+    }
+  }
+
+  return [...entries.values()]
+    .sort((a, b) => b.elapsed - a.elapsed)
+    .slice(0, limit)
+    .map(({ weightedSlowPathSum, ...item }) => ({
+      ...item,
+      slowPathNonMatchPercent:
+        item.matchAttempts > 0 ? weightedSlowPathSum / item.matchAttempts : 0,
+    }));
 }
 
 function mergeProfiles(results: PerfResult[]): PerfProfiles | undefined {
@@ -322,13 +586,15 @@ function requiredAgreement(roundsCount: number) {
 function computeSignificance({
   baseline,
   current,
-  metric,
+  minDelta,
+  primary,
   percent,
   perRoundDeltas,
 }: {
   baseline: number;
   current: number;
-  metric: MetricKey;
+  minDelta: number;
+  primary: boolean;
   percent: number;
   perRoundDeltas: number[];
 }) {
@@ -346,29 +612,41 @@ function computeSignificance({
   }
 
   const percentOk = Math.abs(percent) > THRESHOLD_PERCENT;
-  const deltaOk = Math.abs(delta) >= MIN_SIGNIFICANT_DELTA_MS;
-  const zeroBaselineOk =
-    baseline === 0 && Math.abs(current) >= MIN_SIGNIFICANT_DELTA_MS;
+  const deltaOk = Math.abs(delta) >= minDelta;
+  const zeroBaselineOk = baseline === 0 && Math.abs(current) >= minDelta;
   const magnitudeOk = baseline === 0 ? zeroBaselineOk : percentOk && deltaOk;
   const agreementOk = agreement >= requiredAgreement(perRoundDeltas.length);
-  const primaryMetric = PRIMARY_METRICS.includes(metric);
 
   return {
     agreement,
-    significant: primaryMetric && magnitudeOk && agreementOk,
+    significant: primary && magnitudeOk && agreementOk,
   };
 }
 
-function formatMs(value: number): string {
-  return `${value.toFixed(1)}ms`;
+function formatMs(value: number, options: PerfCompareOptions = {}): string {
+  if (options.node) {
+    const abs = Math.abs(value);
+    if (abs > 0 && abs < 0.001) {
+      return `${(value * 1_000_000).toFixed(1)}ns`;
+    }
+    if (abs > 0 && abs < 1) {
+      return `${(value * 1000).toFixed(abs < 0.1 ? 2 : 1)}us`;
+    }
+  }
+  return `${value.toFixed(options.node ? 4 : 1)}ms`;
 }
 
-function formatDelta(delta: number, percent: number, baseline: number): string {
+function formatDelta(
+  delta: number,
+  percent: number,
+  baseline: number,
+  options: PerfCompareOptions,
+): string {
   const sign = delta >= 0 ? "+" : "";
   if (baseline === 0) {
-    return `${sign}${formatMs(delta)}`;
+    return `${sign}${formatMs(delta, options)}`;
   }
-  return `${sign}${formatMs(delta)} (${sign}${percent.toFixed(0)}%)`;
+  return `${sign}${formatMs(delta, options)} (${sign}${percent.toFixed(0)}%)`;
 }
 
 function formatPercent(value: number): string {
@@ -394,9 +672,12 @@ function hasProfile(
   return (result.result.profiles?.[profile]?.length ?? 0) > 0;
 }
 
-function compare(): ComparisonSummary {
-  const baseline = aggregateByKey(loadRounds("baseline"));
-  const current = aggregateByKey(loadRounds("current"));
+function compare(options: PerfCompareOptions): ComparisonSummary {
+  const baseline = aggregateByKey(loadRounds("baseline", options));
+  const current = aggregateByKey(loadRounds("current", options));
+  const primaryMetrics = getPrimaryMetrics(options);
+  const allMetrics = getAllMetrics(options);
+  const minDelta = getMinSignificantDelta(options);
 
   const rows: ComparisonRow[] = [];
   const profileModeMismatches: ProfileModeMismatch[] = [];
@@ -434,7 +715,7 @@ function compare(): ComparisonSummary {
       continue;
     }
 
-    for (const metric of ALL_METRICS) {
+    for (const metric of allMetrics) {
       const baselineValues: number[] = [];
       const currentValues: number[] = [];
       const perRoundDeltas: number[] = [];
@@ -456,7 +737,8 @@ function compare(): ComparisonSummary {
       const { agreement, significant } = computeSignificance({
         baseline: baseVal,
         current: curVal,
-        metric,
+        minDelta,
+        primary: primaryMetrics.includes(metric),
         percent,
         perRoundDeltas,
       });
@@ -510,22 +792,34 @@ function formatRoundList(rounds: number[]): string {
   return rounds.join(", ");
 }
 
-function formatSummaryTable(rows: ComparisonRow[], keys: string[]): string[] {
+function formatSummaryTable(
+  rows: ComparisonRow[],
+  keys: string[],
+  options: PerfCompareOptions,
+): string[] {
   const lines: string[] = [];
-  lines.push("| Test | Scripting | Rendering | Total |");
-  lines.push("|------|-----------|-----------|-------|");
+  const primaryMetrics = getPrimaryMetrics(options);
+  const headers = [
+    getResultName(options),
+    ...primaryMetrics.map((metric) => METRIC_LABELS[metric]),
+  ];
+  lines.push(`| ${headers.join(" | ")} |`);
+  lines.push(`| ${headers.map(() => "---").join(" | ")} |`);
 
   for (const key of keys) {
     const testRows = rows.filter((r) => rowKey(r) === key);
     const label = testRows[0]?.label ?? key;
     const cells: string[] = [label];
-    for (const metric of PRIMARY_METRICS) {
+    for (const metric of primaryMetrics) {
       const row = testRows.find((r) => r.metric === metric);
       if (!row) {
         cells.push("--");
         continue;
       }
-      let cell = `${formatMs(row.baseline)} \u2192 ${formatMs(row.current)}`;
+      let cell = `${formatMs(row.baseline, options)} \u2192 ${formatMs(
+        row.current,
+        options,
+      )}`;
       cell +=
         row.baseline === 0
           ? " (n/a)"
@@ -615,8 +909,10 @@ function formatDetailedBreakdown(
   rows: ComparisonRow[],
   keys: string[],
   currentByKey: Map<string, AggregatedPerfResult>,
+  options: PerfCompareOptions,
 ): string[] {
   const lines: string[] = [];
+  const allMetrics = getAllMetrics(options);
   for (const key of keys) {
     const testRows = rows.filter((r) => rowKey(r) === key);
     const label = testRows[0]?.label ?? key;
@@ -624,18 +920,23 @@ function formatDetailedBreakdown(
     lines.push("");
     lines.push("| Metric | Baseline | Current | Delta |");
     lines.push("|--------|----------|---------|-------|");
-    for (const metric of ALL_METRICS) {
+    for (const metric of allMetrics) {
       const row = testRows.find((r) => r.metric === metric);
       if (!row) continue;
       const prefix = RENDERING_SUB_METRICS.has(metric) ? "- " : "";
       const metricLabel = `${prefix}${METRIC_LABELS[metric]}`;
-      const deltaStr = formatDelta(row.delta, row.percent, row.baseline);
+      const deltaStr = formatDelta(
+        row.delta,
+        row.percent,
+        row.baseline,
+        options,
+      );
       let icon = "";
       if (row.significant) {
         icon = row.delta > 0 ? " :warning:" : " :rocket:";
       }
       lines.push(
-        `| ${metricLabel} | ${formatMs(row.baseline)} | ${formatMs(row.current)} | ${deltaStr}${icon} |`,
+        `| ${metricLabel} | ${formatMs(row.baseline, options)} | ${formatMs(row.current, options)} | ${deltaStr}${icon} |`,
       );
     }
     lines.push("");
@@ -644,7 +945,10 @@ function formatDetailedBreakdown(
   return lines;
 }
 
-function formatMarkdown(summary: ComparisonSummary): string {
+function formatMarkdown(
+  summary: ComparisonSummary,
+  options: PerfCompareOptions,
+): string {
   const {
     rows,
     hasSignificantChanges,
@@ -670,13 +974,15 @@ function formatMarkdown(summary: ComparisonSummary): string {
     newTests.length +
     removedTests.length +
     unpairedTests.length;
+  const resultsName = getResultsName(options);
+  const resultName = getResultName(options);
 
   const lines: string[] = [];
   lines.push("## Performance");
   lines.push("");
 
   if (hasSignificantChanges) {
-    lines.push(...formatSummaryTable(rows, significantKeys));
+    lines.push(...formatSummaryTable(rows, significantKeys, options));
   } else if (rows.length === 0 && newTests.length > 0) {
     lines.push("No baseline results available for comparison.");
   } else if (rows.length === 0 && unpairedTests.length > 0) {
@@ -691,7 +997,8 @@ function formatMarkdown(summary: ComparisonSummary): string {
     const visibleUnpairedTests = unpairedTests.slice(0, 5);
     const hiddenUnpairedTests =
       unpairedTests.length - visibleUnpairedTests.length;
-    const label = unpairedTests.length === 1 ? "test" : "tests";
+    const label =
+      unpairedTests.length === 1 ? resultName.toLowerCase() : resultsName;
     const verb = unpairedTests.length === 1 ? "was" : "were";
     lines.push("");
     lines.push(
@@ -708,19 +1015,26 @@ function formatMarkdown(summary: ComparisonSummary): string {
   lines.push("");
   lines.push(...formatProfileModeWarning(profileModeMismatches));
   lines.push(`<details>`);
-  lines.push(`<summary>Full breakdown (${totalTests} tests)</summary>`);
+  lines.push(
+    `<summary>Full breakdown (${totalTests} ${resultsName})</summary>`,
+  );
   lines.push("");
-  lines.push(...formatDetailedBreakdown(rows, allKeys, currentByKey));
+  lines.push(...formatDetailedBreakdown(rows, allKeys, currentByKey, options));
 
   if (newTests.length > 0) {
-    lines.push("### New tests (no baseline)");
+    const primaryMetrics = getPrimaryMetrics(options);
+    lines.push(`### New ${resultsName} (no baseline)`);
     lines.push("");
-    lines.push("| Test | Scripting | Rendering | Total |");
-    lines.push("|------|-----------|-----------|-------|");
+    const headers = [
+      resultName,
+      ...primaryMetrics.map((metric) => METRIC_LABELS[metric]),
+    ];
+    lines.push(`| ${headers.join(" | ")} |`);
+    lines.push(`| ${headers.map(() => "---").join(" | ")} |`);
     for (const { result } of newTests) {
       const cells: string[] = [result.label];
-      for (const metric of PRIMARY_METRICS) {
-        cells.push(formatMs(result.metrics[metric]));
+      for (const metric of primaryMetrics) {
+        cells.push(formatMs(result.metrics[metric], options));
       }
       lines.push(`| ${cells.join(" | ")} |`);
     }
@@ -736,13 +1050,13 @@ function formatMarkdown(summary: ComparisonSummary): string {
   }
 
   if (unpairedTests.length > 0) {
-    lines.push("### Unpaired tests");
+    lines.push(`### Unpaired ${resultsName}`);
     lines.push("");
     lines.push(
-      "These tests produced baseline and current results, but no shared round index.",
+      `These ${resultsName} produced baseline and current results, but no shared round index.`,
     );
     lines.push("");
-    lines.push("| Test | Baseline rounds | Current rounds |");
+    lines.push(`| ${resultName} | Baseline rounds | Current rounds |`);
     lines.push("|------|-----------------|----------------|");
     for (const result of unpairedTests) {
       lines.push(
@@ -753,7 +1067,7 @@ function formatMarkdown(summary: ComparisonSummary): string {
   }
 
   if (removedTests.length > 0) {
-    lines.push("### Removed tests");
+    lines.push(`### Removed ${resultsName}`);
     lines.push("");
     for (const { result } of removedTests) {
       lines.push(`- ${result.label}`);
@@ -765,12 +1079,14 @@ function formatMarkdown(summary: ComparisonSummary): string {
   lines.push("");
 
   lines.push(
-    `:warning: = regression above ${THRESHOLD_PERCENT}% and ${formatMs(MIN_SIGNIFICANT_DELTA_MS)} · :rocket: = improvement above ${THRESHOLD_PERCENT}% and ${formatMs(MIN_SIGNIFICANT_DELTA_MS)}`,
+    options.node
+      ? `:warning: = regression above ${THRESHOLD_PERCENT}% · :rocket: = improvement above ${THRESHOLD_PERCENT}%`
+      : `:warning: = regression above ${THRESHOLD_PERCENT}% and ${formatMs(MIN_SIGNIFICANT_DELTA_MS)} · :rocket: = improvement above ${THRESHOLD_PERCENT}% and ${formatMs(MIN_SIGNIFICANT_DELTA_MS)}`,
   );
   if (pairedRoundsCount == null) {
     lines.push("");
     lines.push(
-      "Compared tests used mixed interleaved round counts; a change is flagged only when the median exceeds the threshold and rounds agree on direction.",
+      `Compared ${resultsName} used mixed interleaved round counts; a change is flagged only when the median exceeds the threshold and rounds agree on direction.`,
     );
   } else if (pairedRoundsCount > 1) {
     lines.push("");
@@ -796,15 +1112,19 @@ function toPersistedSummary(
   };
 }
 
-// Main
-const summary = compare();
-const markdown = formatMarkdown(summary);
+export function runPerfCompare(
+  options: PerfCompareOptions = {},
+): PerfCompareRunResult {
+  const summary = compare(options);
+  const persistedSummary = toPersistedSummary(summary);
+  const markdown = formatMarkdown(summary, options);
 
-mkdirSync(RESULTS_DIR, { recursive: true });
-writeFileSync(
-  path.join(RESULTS_DIR, "comparison.json"),
-  JSON.stringify(toPersistedSummary(summary), null, 2),
-);
-writeFileSync(path.join(RESULTS_DIR, "comparison.md"), markdown);
+  mkdirSync(RESULTS_DIR, { recursive: true });
+  writeFileSync(
+    path.join(RESULTS_DIR, "comparison.json"),
+    JSON.stringify(persistedSummary, null, 2),
+  );
+  writeFileSync(path.join(RESULTS_DIR, "comparison.md"), markdown);
 
-console.log(markdown);
+  return { summary: persistedSummary, markdown };
+}

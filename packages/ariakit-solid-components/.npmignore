@@ -1,5 +1,6 @@
 # Automatically generated
 coverage
+benchmark
 tsconfig*.json
 *.log
 *.config.*
