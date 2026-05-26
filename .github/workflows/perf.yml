@@ -251,8 +251,8 @@ jobs:
 
       - name: Pack baseline artifacts
         run: |
+          cd "$BASELINE_DIR"
           tar -czf "$RUNNER_TEMP/perf-node-baseline-build.tar.gz" \
-            -C "$BASELINE_DIR" \
             packages/*/dist \
             packages/*/solid \
             packages/*/package.json \
