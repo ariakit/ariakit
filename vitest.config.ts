@@ -1,22 +1,11 @@
-import { createRequire } from "node:module";
-import { dirname, join } from "node:path";
+import { join } from "node:path";
 import reactPlugin from "@vitejs/plugin-react";
 import type { PluginOption } from "vite";
 import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./app/src/lib/source-plugin.ts";
 
-// In a pnpm monorepo, each workspace package may resolve its own copy of
-// react from its node_modules. We pin all imports to a single copy via
-// resolve.alias to prevent "multiple React instances" errors in tests.
-const require = createRequire(import.meta.url);
-
-function resolvePkg(pkg: string) {
-  return dirname(require.resolve(`${pkg}/package.json`));
-}
-
-const reactDir = resolvePkg("react");
-const reactDomDir = resolvePkg("react-dom");
+const rootDir = process.cwd();
 
 const includeWithStyles = [
   /combobox-tabs-animated/,
@@ -37,7 +26,7 @@ if (!ALLOWED_TEST_LOADERS.includes(LOADER))
 // TODO: Remove this cast when Astro and the root test stack use the same Vite
 // major again; this may happen with Astro 7 and Vite 8.
 const sourcePluginInstance = sourcePlugin(
-  join(import.meta.dirname, "app/src/examples/"),
+  join(rootDir, "app/src/examples/"),
 ) as unknown as PluginOption;
 
 const PLUGINS_BY_LOADER: Record<string, Array<PluginOption> | undefined> = {
@@ -46,19 +35,13 @@ const PLUGINS_BY_LOADER: Record<string, Array<PluginOption> | undefined> = {
 };
 
 export default defineConfig({
+  root: rootDir,
   plugins: PLUGINS_BY_LOADER[LOADER],
-  resolve: {
-    alias: [
-      { find: /^react-dom($|\/)/, replacement: `${reactDomDir}$1` },
-      { find: /^react($|\/)/, replacement: `${reactDir}$1` },
-    ],
-    dedupe: ["react", "react-dom"],
-  },
   test: {
     watch: false,
     testTimeout: 10_000,
     environment: "jsdom",
-    setupFiles: ["vitest.setup.ts"],
+    setupFiles: [join(rootDir, "vitest.setup.ts")],
     exclude: [...configDefaults.exclude, ".claude/**"],
     include: ["**/*test.{ts,tsx}", `**/*test.${LOADER}.{ts,tsx}`],
     css: {

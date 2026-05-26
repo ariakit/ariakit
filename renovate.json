@@ -118,29 +118,6 @@
       "platformAutomerge": true
     },
     {
-      "matchPackageNames": [
-        "next",
-        "react",
-        "react-dom",
-        "@types/react",
-        "@types/react-dom"
-      ],
-      "matchUpdateTypes": ["major"],
-      "enabled": false
-    },
-    {
-      "matchPackageNames": [
-        "next",
-        "react",
-        "react-dom",
-        "@types/react",
-        "@types/react-dom"
-      ],
-      "matchUpdateTypes": ["major"],
-      "matchFileNames": ["nextjs/**", "templates/**"],
-      "enabled": true
-    },
-    {
       "matchManagers": ["github-actions"],
       "matchPackageNames": ["actions/**"],
       "pinDigests": false

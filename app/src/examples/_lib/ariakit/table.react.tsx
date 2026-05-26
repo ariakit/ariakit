@@ -14,6 +14,14 @@ export type TableRows<K extends keyof any> = TableRow<K>[];
 
 const TableRowGroupContext = React.createContext<TableRowGroup>("body");
 
+function isTableCellProps(value: unknown): value is TableCellProps {
+  if (!value) return false;
+  if (typeof value !== "object") return false;
+  if (React.isValidElement(value)) return false;
+  if (isIterable(value)) return false;
+  return Object.hasOwn(value, "numeric");
+}
+
 export interface TableProps<
   K extends keyof any,
 > extends React.ComponentProps<"table"> {
@@ -103,9 +111,7 @@ export function Table<K extends keyof any>({
     if (React.isValidElement<TableCellProps>(cell)) {
       return Boolean(cell.props.numeric);
     }
-    if (isIterable(cell)) return false;
-    if (React.isValidElement<any>(cell)) return false;
-    if (!Object.hasOwn(cell, "numeric")) return false;
+    if (!isTableCellProps(cell)) return false;
     return Boolean(cell.numeric);
   };
 

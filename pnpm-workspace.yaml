@@ -36,6 +36,11 @@ overrides:
 patchedDependencies:
   "@changesets/apply-release-plan@7.1.1": "patches/@changesets__apply-release-plan@7.1.1.patch"
 
+peerDependencyRules:
+  allowedVersions:
+    react: "19"
+    react-dom: "19"
+
 publicHoistPattern:
   - "*react*"
   - "*testing-library*"

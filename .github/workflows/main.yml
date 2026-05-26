@@ -72,6 +72,24 @@ jobs:
       - name: Test
         run: pnpm test --shard ${{ matrix.shard }}
 
+  test-react-18:
+    name: Test React 18 (${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ["1/2", "2/2"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
+
+      - name: Test
+        run: pnpm test-react-18 --shard ${{ matrix.shard }}
+
   website:
     name: Build website
     runs-on: ubuntu-latest
