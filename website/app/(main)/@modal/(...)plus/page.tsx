@@ -15,15 +15,16 @@ const SignInLink = forwardRef<
   ElementRef<typeof Link>,
   Omit<ComponentPropsWithoutRef<typeof Link>, "href">
 >(function SignInLink(props, ref) {
-  const rootPathname = useRootPathname();
   const searchParams = useSearchParams();
   const search = searchParams.size ? `?${searchParams}` : "";
+  // Always return the user to the Plus surface after sign-in. Using
+  // useRootPathname here used to resolve to the underlying base page (e.g.
+  // /components) under Next 14, but Next 16's parallel-route handling makes
+  // that unreliable, so anchor the resume URL at /plus directly.
   return (
     <Link
       ref={ref}
-      href={`/sign-in?redirect_url=${encodeURIComponent(
-        `${rootPathname}${search}`,
-      )}`}
+      href={`/sign-in?redirect_url=${encodeURIComponent(`/plus${search}`)}`}
       {...props}
     />
   );
