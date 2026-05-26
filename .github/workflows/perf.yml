@@ -82,8 +82,8 @@ jobs:
             packages/*/package.json
           retention-days: 7
 
-  baseline:
-    name: Prepare baseline
+  chrome-baseline:
+    name: Prepare Chrome baseline
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -194,7 +194,7 @@ jobs:
 
       - name: Pack baseline artifacts
         run: |
-          tar -czf "$RUNNER_TEMP/perf-baseline-build.tar.gz" \
+          tar -czf "$RUNNER_TEMP/perf-chrome-baseline-build.tar.gz" \
             -C . \
             app/dist \
             app/.wrangler/deploy/config.json \
@@ -203,13 +203,72 @@ jobs:
       - name: Upload baseline artifacts
         uses: actions/upload-artifact@v7
         with:
-          name: perf-baseline-build
-          path: ${{ runner.temp }}/perf-baseline-build.tar.gz
+          name: perf-chrome-baseline-build
+          path: ${{ runner.temp }}/perf-chrome-baseline-build.tar.gz
+          retention-days: 7
+
+  node-baseline:
+    name: Prepare Node baseline
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
+
+      - name: Set up baseline worktree
+        run: |
+          BASELINE_DIR="$RUNNER_TEMP/perf-node-baseline"
+          echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"
+          git worktree add --detach "$BASELINE_DIR" \
+            ${{ github.event.pull_request.base.sha }}
+
+      - name: Install dependencies (baseline)
+        working-directory: ${{ runner.temp }}/perf-node-baseline
+        env:
+          # The baseline worktree shares `.git/config` with the main checkout,
+          # so husky's prepare step would otherwise rewrite `core.hooksPath`
+          # to a relative path under a temporary worktree.
+          HUSKY: 0
+        run: pnpm install --frozen-lockfile
+
+      - name: Copy benchmark files to baseline
+        run: |
+          cp vitest.bench.config.ts "$BASELINE_DIR/vitest.bench.config.ts"
+          shopt -s nullglob
+          for file in packages/*/benchmark/*.bench.ts; do
+            mkdir -p "$BASELINE_DIR/$(dirname "$file")"
+            cp "$file" "$BASELINE_DIR/$file"
+          done
+
+      - name: Build baseline packages
+        working-directory: ${{ runner.temp }}/perf-node-baseline
+        run: pnpm build
+
+      - name: Pack baseline artifacts
+        run: |
+          tar -czf "$RUNNER_TEMP/perf-node-baseline-build.tar.gz" \
+            -C "$BASELINE_DIR" \
+            packages/*/dist \
+            packages/*/solid \
+            packages/*/package.json \
+            vitest.bench.config.ts \
+            packages/*/benchmark
+
+      - name: Upload baseline artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: perf-node-baseline-build
+          path: ${{ runner.temp }}/perf-node-baseline-build.tar.gz
           retention-days: 7
 
   chrome:
     name: Chrome
-    needs: [build, build-nextjs, baseline]
+    needs: [build, build-nextjs, chrome-baseline]
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -262,13 +321,13 @@ jobs:
       - name: Download baseline artifacts
         uses: actions/download-artifact@v8
         with:
-          name: perf-baseline-build
-          path: ${{ runner.temp }}/perf-baseline-build
+          name: perf-chrome-baseline-build
+          path: ${{ runner.temp }}/perf-chrome-baseline-build
 
       - name: Extract baseline artifacts
         run: |
           tar -xzf \
-            "${{ runner.temp }}/perf-baseline-build/perf-baseline-build.tar.gz" \
+            "${{ runner.temp }}/perf-chrome-baseline-build/perf-chrome-baseline-build.tar.gz" \
             -C "$BASELINE_DIR"
 
       - name: Clean current app artifacts
@@ -383,7 +442,7 @@ jobs:
 
   node:
     name: Node
-    needs: [build-packages]
+    needs: [build-packages, node-baseline]
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -406,13 +465,13 @@ jobs:
 
       - name: Set up baseline worktree
         run: |
-          BASELINE_DIR="$RUNNER_TEMP/perf-baseline"
+          BASELINE_DIR="$RUNNER_TEMP/perf-node-baseline"
           echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"
           git worktree add --detach "$BASELINE_DIR" \
             ${{ github.event.pull_request.base.sha }}
 
       - name: Install dependencies (baseline)
-        working-directory: ${{ runner.temp }}/perf-baseline
+        working-directory: ${{ runner.temp }}/perf-node-baseline
         env:
           # The baseline worktree shares `.git/config` with the main checkout,
           # so husky's prepare step would otherwise rewrite `core.hooksPath`
@@ -420,22 +479,23 @@ jobs:
           HUSKY: 0
         run: pnpm install --frozen-lockfile
 
-      - name: Build baseline packages
-        working-directory: ${{ runner.temp }}/perf-baseline
-        run: pnpm build
+      - name: Download baseline artifacts
+        uses: actions/download-artifact@v8
+        with:
+          name: perf-node-baseline-build
+          path: ${{ runner.temp }}/perf-node-baseline-build
+
+      - name: Extract baseline artifacts
+        run: |
+          tar -xzf \
+            "${{ runner.temp }}/perf-node-baseline-build/perf-node-baseline-build.tar.gz" \
+            -C "$BASELINE_DIR"
 
       - name: Download package artifact
         uses: actions/download-artifact@v8
         with:
           name: package-build
           path: packages
-
-      - name: Copy benchmark files to baseline
-        run: |
-          cp vitest.bench.config.ts "$BASELINE_DIR/vitest.bench.config.ts"
-          mkdir -p "$BASELINE_DIR/packages/ariakit-store/benchmark"
-          cp packages/ariakit-store/benchmark/*.bench.ts \
-            "$BASELINE_DIR/packages/ariakit-store/benchmark/"
 
       - name: Run interleaved benchmarks
         run: |
@@ -445,15 +505,21 @@ jobs:
             local i="$1"
 
             echo "::group::Round $i - baseline"
-            (
+            local baseline_failed=0
+            if ! (
               cd "$BASELINE_DIR" || exit 1
               pnpm exec vitest bench \
                 --config vitest.bench.config.ts \
                 --outputJson "$GITHUB_WORKSPACE/.perf-results/baseline-$i.json"
-            )
-            if [ ! -f ".perf-results/baseline-$i.json" ]; then
-              echo "Missing baseline benchmark results for round $i" >&2
-              exit 1
+            ); then
+              echo "::warning::Baseline benchmark run failed for round $i; writing an empty baseline."
+              baseline_failed=1
+            fi
+            if [ "$baseline_failed" -eq 1 ] || [ ! -f ".perf-results/baseline-$i.json" ]; then
+              if [ "$baseline_failed" -eq 0 ]; then
+                echo "::warning::No baseline benchmark results for round $i; writing an empty baseline."
+              fi
+              printf '{"files":[]}\n' > ".perf-results/baseline-$i.json"
             fi
             echo "::endgroup::"
 
@@ -502,11 +568,13 @@ jobs:
         run: pnpm exec ariakit perf-compare --node
 
       - name: Write performance metadata
+        if: always()
         run: |
           mkdir -p .perf-results
           printf '%s\n' "$PERF_RESULTS_TITLE" > .perf-results/title.txt
 
       - name: Upload performance results
+        if: always()
         uses: actions/upload-artifact@v7
         with:
           name: perf-results-node

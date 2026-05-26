@@ -6,60 +6,20 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
+import {
+  mergeScriptProfiles,
+  mergeSelectorProfiles,
+  type PerfMetrics,
+  type PerfProfiles,
+  type PerfResult,
+  type PerfScriptProfileEntry,
+  type PerfSelectorProfileEntry,
+} from "./perf.ts";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const PROFILE_LIMIT = 10;
 const THRESHOLD_PERCENT = 10;
 const MIN_SIGNIFICANT_DELTA_MS = 5;
-
-interface PerfMetrics {
-  scripting: number;
-  layout: number;
-  styleRecalc: number;
-  painting: number;
-  rendering: number;
-  inp: number;
-  total: number;
-}
-
-interface PerfScriptProfileEntry {
-  functionName: string;
-  url: string;
-  line: number;
-  column: number;
-  selfTime: number;
-  totalTime: number;
-  hitCount: number;
-}
-
-interface PerfSelectorProfileEntry {
-  selector: string;
-  styleSheetId: string;
-  styleSheetUrl: string;
-  elapsed: number;
-  matchAttempts: number;
-  matchCount: number;
-  slowPathNonMatchPercent: number;
-  invalidationCount: number;
-}
-
-interface PerfProfiles {
-  script?: PerfScriptProfileEntry[];
-  selectors?: PerfSelectorProfileEntry[];
-}
-
-interface PerfResult {
-  testFile: string;
-  testTitle: string;
-  label: string;
-  metrics: PerfMetrics;
-  raw: PerfMetrics[];
-  profiles?: PerfProfiles;
-}
-
-interface SelectorProfileAccumulator extends PerfSelectorProfileEntry {
-  weightedSlowPathSum: number;
-}
 
 type MetricKey = keyof PerfMetrics;
 
@@ -209,6 +169,13 @@ function getMinSignificantDelta(options: PerfCompareOptions) {
   return options.node ? 0 : MIN_SIGNIFICANT_DELTA_MS;
 }
 
+function getMetricLabel(metric: MetricKey, options: PerfCompareOptions) {
+  if (options.node && metric === "total") {
+    return "Ops/sec";
+  }
+  return METRIC_LABELS[metric];
+}
+
 function readJsonFile(filePath: string): unknown {
   let contents: string;
   try {
@@ -263,14 +230,6 @@ function normalizeBenchmarkGroupName(name: string, filePath: string) {
     });
 }
 
-function getBenchmarkPackageName(filePath: string) {
-  const [workspace, packageName] = filePath.split(/[\\/]/);
-  if (workspace === "packages" && packageName) {
-    return packageName;
-  }
-  return workspace ?? "";
-}
-
 function formatBenchmarkLabel({
   file,
   groupName,
@@ -280,17 +239,14 @@ function formatBenchmarkLabel({
   groupName: string;
   name: string;
 }) {
-  const parts = [
-    getBenchmarkPackageName(file),
-    path.basename(file),
-    ...normalizeBenchmarkGroupName(groupName, file),
-    name,
-  ].filter(Boolean);
+  const parts = [...normalizeBenchmarkGroupName(groupName, file), name].filter(
+    Boolean,
+  );
   return parts.join(" > ");
 }
 
 function createNodeMetrics({ hz, mean }: { hz: number; mean: number }) {
-  const total = mean > 0 ? mean : hz > 0 ? 1000 / hz : 0;
+  const total = hz > 0 ? hz : mean > 0 ? 1000 / mean : 0;
   return {
     scripting: 0,
     layout: 0,
@@ -420,67 +376,6 @@ function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
     inp: median(all.map((m) => m.inp)),
     total: median(all.map((m) => m.total)),
   };
-}
-
-function mergeScriptProfiles(
-  profiles: PerfScriptProfileEntry[][],
-  limit: number,
-): PerfScriptProfileEntry[] {
-  const entries = new Map<string, PerfScriptProfileEntry>();
-
-  for (const profile of profiles) {
-    for (const item of profile) {
-      const key = [item.functionName, item.url, item.line, item.column].join(
-        "\0",
-      );
-      const existingItem = entries.get(key);
-      if (existingItem) {
-        existingItem.selfTime += item.selfTime;
-        existingItem.totalTime += item.totalTime;
-        existingItem.hitCount += item.hitCount;
-        continue;
-      }
-      entries.set(key, { ...item });
-    }
-  }
-
-  return [...entries.values()]
-    .sort((a, b) => b.selfTime - a.selfTime || b.totalTime - a.totalTime)
-    .slice(0, limit);
-}
-
-function mergeSelectorProfiles(
-  profiles: PerfSelectorProfileEntry[][],
-  limit: number,
-): PerfSelectorProfileEntry[] {
-  const entries = new Map<string, SelectorProfileAccumulator>();
-
-  for (const profile of profiles) {
-    for (const item of profile) {
-      const key = `${item.styleSheetId}\0${item.selector}`;
-      const weightedSlowPathSum =
-        item.matchAttempts * item.slowPathNonMatchPercent;
-      const existingItem = entries.get(key);
-      if (existingItem) {
-        existingItem.elapsed += item.elapsed;
-        existingItem.matchAttempts += item.matchAttempts;
-        existingItem.matchCount += item.matchCount;
-        existingItem.invalidationCount += item.invalidationCount;
-        existingItem.weightedSlowPathSum += weightedSlowPathSum;
-        continue;
-      }
-      entries.set(key, { ...item, weightedSlowPathSum });
-    }
-  }
-
-  return [...entries.values()]
-    .sort((a, b) => b.elapsed - a.elapsed)
-    .slice(0, limit)
-    .map(({ weightedSlowPathSum, ...item }) => ({
-      ...item,
-      slowPathNonMatchPercent:
-        item.matchAttempts > 0 ? weightedSlowPathSum / item.matchAttempts : 0,
-    }));
 }
 
 function mergeProfiles(results: PerfResult[]): PerfProfiles | undefined {
@@ -623,17 +518,26 @@ function computeSignificance({
   };
 }
 
-function formatMs(value: number, options: PerfCompareOptions = {}): string {
+function formatMs(value: number): string {
+  return `${value.toFixed(1)}ms`;
+}
+
+function formatOpsPerSecond(value: number) {
+  const abs = Math.abs(value);
+  const maximumFractionDigits = abs >= 100 ? 0 : abs >= 10 ? 1 : 2;
+  return `${value.toLocaleString("en-US", { maximumFractionDigits })} ops/sec`;
+}
+
+function formatMetricValue(
+  value: number,
+  options: PerfCompareOptions,
+  signed = false,
+) {
+  const sign = signed && value >= 0 ? "+" : "";
   if (options.node) {
-    const abs = Math.abs(value);
-    if (abs > 0 && abs < 0.001) {
-      return `${(value * 1_000_000).toFixed(1)}ns`;
-    }
-    if (abs > 0 && abs < 1) {
-      return `${(value * 1000).toFixed(abs < 0.1 ? 2 : 1)}us`;
-    }
+    return `${sign}${formatOpsPerSecond(value)}`;
   }
-  return `${value.toFixed(options.node ? 4 : 1)}ms`;
+  return `${sign}${formatMs(value)}`;
 }
 
 function formatDelta(
@@ -642,11 +546,11 @@ function formatDelta(
   baseline: number,
   options: PerfCompareOptions,
 ): string {
-  const sign = delta >= 0 ? "+" : "";
   if (baseline === 0) {
-    return `${sign}${formatMs(delta, options)}`;
+    return formatMetricValue(delta, options, true);
   }
-  return `${sign}${formatMs(delta, options)} (${sign}${percent.toFixed(0)}%)`;
+  const sign = delta >= 0 ? "+" : "";
+  return `${formatMetricValue(delta, options, true)} (${sign}${percent.toFixed(0)}%)`;
 }
 
 function formatPercent(value: number): string {
@@ -670,6 +574,15 @@ function hasProfile(
   profile: "script" | "selectors",
 ) {
   return (result.result.profiles?.[profile]?.length ?? 0) > 0;
+}
+
+function isRegression(row: ComparisonRow, options: PerfCompareOptions) {
+  return options.node ? row.delta < 0 : row.delta > 0;
+}
+
+function getSignificanceIcon(row: ComparisonRow, options: PerfCompareOptions) {
+  if (!row.significant) return "";
+  return isRegression(row, options) ? " :warning:" : " :rocket:";
 }
 
 function compare(options: PerfCompareOptions): ComparisonSummary {
@@ -792,16 +705,105 @@ function formatRoundList(rounds: number[]): string {
   return rounds.join(", ");
 }
 
+function groupRowsByFile(rows: ComparisonRow[]) {
+  const grouped = new Map<string, ComparisonRow[]>();
+  for (const row of rows) {
+    const rowsForFile = grouped.get(row.testFile);
+    if (rowsForFile) {
+      rowsForFile.push(row);
+    } else {
+      grouped.set(row.testFile, [row]);
+    }
+  }
+  return grouped;
+}
+
+function groupResultsByFile(results: AggregatedPerfResult[]) {
+  const grouped = new Map<string, AggregatedPerfResult[]>();
+  for (const result of results) {
+    const resultsForFile = grouped.get(result.result.testFile);
+    if (resultsForFile) {
+      resultsForFile.push(result);
+    } else {
+      grouped.set(result.result.testFile, [result]);
+    }
+  }
+  return grouped;
+}
+
+function formatFileHeading(file: string) {
+  return file || "Unknown file";
+}
+
+function sortEntriesByFile<T>(entries: Iterable<[string, T]>) {
+  return [...entries].sort(([a], [b]) => a.localeCompare(b));
+}
+
+function formatNodeComparisonTables(
+  rows: ComparisonRow[],
+  keys: string[],
+  options: PerfCompareOptions,
+) {
+  const lines: string[] = [];
+  const keySet = new Set(keys);
+  const visibleRows = rows.filter((row) => {
+    if (row.metric !== "total") return false;
+    return keySet.has(rowKey(row));
+  });
+  for (const [file, fileRows] of sortEntriesByFile(
+    groupRowsByFile(visibleRows),
+  )) {
+    lines.push(`#### ${formatFileHeading(file)}`);
+    lines.push("");
+    lines.push("| Benchmark | Baseline | Current | Change |");
+    lines.push("|-----------|----------|---------|--------|");
+    for (const row of fileRows) {
+      const delta = formatDelta(row.delta, row.percent, row.baseline, options);
+      const icon = getSignificanceIcon(row, options);
+      lines.push(
+        `| ${escapeTableCell(row.label)} | ${formatMetricValue(row.baseline, options)} | ${formatMetricValue(row.current, options)} | ${delta}${icon} |`,
+      );
+    }
+    lines.push("");
+  }
+  return lines;
+}
+
+function formatNodeResultTables(
+  results: AggregatedPerfResult[],
+  options: PerfCompareOptions,
+) {
+  const lines: string[] = [];
+  for (const [file, fileResults] of sortEntriesByFile(
+    groupResultsByFile(results),
+  )) {
+    lines.push(`#### ${formatFileHeading(file)}`);
+    lines.push("");
+    lines.push(`| Benchmark | ${getMetricLabel("total", options)} |`);
+    lines.push("|-----------|---------|");
+    for (const { result } of fileResults) {
+      lines.push(
+        `| ${escapeTableCell(result.label)} | ${formatMetricValue(result.metrics.total, options)} |`,
+      );
+    }
+    lines.push("");
+  }
+  return lines;
+}
+
 function formatSummaryTable(
   rows: ComparisonRow[],
   keys: string[],
   options: PerfCompareOptions,
 ): string[] {
+  if (options.node) {
+    return formatNodeComparisonTables(rows, keys, options);
+  }
   const lines: string[] = [];
   const primaryMetrics = getPrimaryMetrics(options);
   const headers = [
     getResultName(options),
-    ...primaryMetrics.map((metric) => METRIC_LABELS[metric]),
+    ...primaryMetrics.map((metric) => getMetricLabel(metric, options)),
   ];
   lines.push(`| ${headers.join(" | ")} |`);
   lines.push(`| ${headers.map(() => "---").join(" | ")} |`);
@@ -816,7 +818,7 @@ function formatSummaryTable(
         cells.push("--");
         continue;
       }
-      let cell = `${formatMs(row.baseline, options)} \u2192 ${formatMs(
+      let cell = `${formatMetricValue(row.baseline, options)} \u2192 ${formatMetricValue(
         row.current,
         options,
       )}`;
@@ -825,7 +827,7 @@ function formatSummaryTable(
           ? " (n/a)"
           : ` (${row.delta >= 0 ? "+" : ""}${row.percent.toFixed(0)}%)`;
       if (row.significant) {
-        cell += row.delta > 0 ? " :warning:" : " :rocket:";
+        cell += getSignificanceIcon(row, options);
       }
       cells.push(cell);
     }
@@ -911,6 +913,9 @@ function formatDetailedBreakdown(
   currentByKey: Map<string, AggregatedPerfResult>,
   options: PerfCompareOptions,
 ): string[] {
+  if (options.node) {
+    return formatNodeComparisonTables(rows, keys, options);
+  }
   const lines: string[] = [];
   const allMetrics = getAllMetrics(options);
   for (const key of keys) {
@@ -924,19 +929,16 @@ function formatDetailedBreakdown(
       const row = testRows.find((r) => r.metric === metric);
       if (!row) continue;
       const prefix = RENDERING_SUB_METRICS.has(metric) ? "- " : "";
-      const metricLabel = `${prefix}${METRIC_LABELS[metric]}`;
+      const metricLabel = `${prefix}${getMetricLabel(metric, options)}`;
       const deltaStr = formatDelta(
         row.delta,
         row.percent,
         row.baseline,
         options,
       );
-      let icon = "";
-      if (row.significant) {
-        icon = row.delta > 0 ? " :warning:" : " :rocket:";
-      }
+      const icon = getSignificanceIcon(row, options);
       lines.push(
-        `| ${metricLabel} | ${formatMs(row.baseline, options)} | ${formatMs(row.current, options)} | ${deltaStr}${icon} |`,
+        `| ${metricLabel} | ${formatMetricValue(row.baseline, options)} | ${formatMetricValue(row.current, options)} | ${deltaStr}${icon} |`,
       );
     }
     lines.push("");
@@ -1025,20 +1027,24 @@ function formatMarkdown(
     const primaryMetrics = getPrimaryMetrics(options);
     lines.push(`### New ${resultsName} (no baseline)`);
     lines.push("");
-    const headers = [
-      resultName,
-      ...primaryMetrics.map((metric) => METRIC_LABELS[metric]),
-    ];
-    lines.push(`| ${headers.join(" | ")} |`);
-    lines.push(`| ${headers.map(() => "---").join(" | ")} |`);
-    for (const { result } of newTests) {
-      const cells: string[] = [result.label];
-      for (const metric of primaryMetrics) {
-        cells.push(formatMs(result.metrics[metric], options));
+    if (options.node) {
+      lines.push(...formatNodeResultTables(newTests, options));
+    } else {
+      const headers = [
+        resultName,
+        ...primaryMetrics.map((metric) => getMetricLabel(metric, options)),
+      ];
+      lines.push(`| ${headers.join(" | ")} |`);
+      lines.push(`| ${headers.map(() => "---").join(" | ")} |`);
+      for (const { result } of newTests) {
+        const cells: string[] = [result.label];
+        for (const metric of primaryMetrics) {
+          cells.push(formatMetricValue(result.metrics[metric], options));
+        }
+        lines.push(`| ${cells.join(" | ")} |`);
       }
-      lines.push(`| ${cells.join(" | ")} |`);
+      lines.push("");
     }
-    lines.push("");
 
     for (const { result } of newTests) {
       const profileLines = formatProfiles(result);
@@ -1069,10 +1075,23 @@ function formatMarkdown(
   if (removedTests.length > 0) {
     lines.push(`### Removed ${resultsName}`);
     lines.push("");
-    for (const { result } of removedTests) {
-      lines.push(`- ${result.label}`);
+    if (options.node) {
+      for (const [file, fileResults] of sortEntriesByFile(
+        groupResultsByFile(removedTests),
+      )) {
+        lines.push(`#### ${formatFileHeading(file)}`);
+        lines.push("");
+        for (const { result } of fileResults) {
+          lines.push(`- ${result.label}`);
+        }
+        lines.push("");
+      }
+    } else {
+      for (const { result } of removedTests) {
+        lines.push(`- ${result.label}`);
+      }
+      lines.push("");
     }
-    lines.push("");
   }
 
   lines.push("</details>");

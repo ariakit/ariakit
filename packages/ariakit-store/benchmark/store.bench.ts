@@ -6,7 +6,7 @@ import {
   pick,
   subscribe,
 } from "@ariakit/store";
-import { bench, describe } from "vitest";
+import { bench } from "vitest";
 
 interface BenchmarkState {
   activeId: string | null;
@@ -84,103 +84,101 @@ batch(batchStore, ["count", "value"], (state) => {
 
 init(syncedStore);
 
-describe("store", () => {
-  bench(
-    "create store",
-    () => {
-      const store = createBenchmarkStore(nextValue());
-      consume(store.getState());
-    },
-    options,
-  );
+bench(
+  "create store",
+  () => {
+    const store = createBenchmarkStore(nextValue());
+    consume(store.getState());
+  },
+  options,
+);
 
-  bench(
-    "read state",
-    () => {
-      consume(readStore.getState());
-    },
-    options,
-  );
+bench(
+  "read state",
+  () => {
+    consume(readStore.getState());
+  },
+  options,
+);
 
-  bench(
-    "set state",
-    async () => {
-      updateStore.setState("count", nextValue());
-      await flushBatch();
-      consume(updateStore.getState().count);
-    },
-    options,
-  );
+bench(
+  "set state",
+  async () => {
+    updateStore.setState("count", nextValue());
+    await flushBatch();
+    consume(updateStore.getState().count);
+  },
+  options,
+);
 
-  bench(
-    "set state with selected subscribers",
-    async () => {
-      selectedSubscribersStore.setState("count", nextValue());
-      await flushBatch();
-    },
-    options,
-  );
+bench(
+  "set state with selected subscribers",
+  async () => {
+    selectedSubscribersStore.setState("count", nextValue());
+    await flushBatch();
+  },
+  options,
+);
 
-  bench(
-    "set state with unrelated subscribers",
-    async () => {
-      unrelatedSubscribersStore.setState("count", nextValue());
-      await flushBatch();
-      consume(unrelatedSubscribersStore.getState().count);
-    },
-    options,
-  );
+bench(
+  "set state with unrelated subscribers",
+  async () => {
+    unrelatedSubscribersStore.setState("count", nextValue());
+    await flushBatch();
+    consume(unrelatedSubscribersStore.getState().count);
+  },
+  options,
+);
 
-  bench(
-    "batch multiple updates",
-    async () => {
-      const value = nextValue();
-      batchStore.setState("count", value);
-      batchStore.setState("value", String(value));
-      await flushBatch();
-    },
-    options,
-  );
+bench(
+  "batch multiple updates",
+  async () => {
+    const value = nextValue();
+    batchStore.setState("count", value);
+    batchStore.setState("value", String(value));
+    await flushBatch();
+  },
+  options,
+);
 
-  bench(
-    "set synced parent state",
-    async () => {
-      syncedStore.setState("count", nextValue());
-      await flushBatch();
-      consume(parentStore.getState().count);
-    },
-    options,
-  );
+bench(
+  "set synced parent state",
+  async () => {
+    syncedStore.setState("count", nextValue());
+    await flushBatch();
+    consume(parentStore.getState().count);
+  },
+  options,
+);
 
-  bench(
-    "create picked store",
-    () => {
-      const store = createBenchmarkStore(nextValue());
-      const pickedStore = pick(store, ["count", "open", "value"]);
-      const cleanup = init(pickedStore);
-      consume(pickedStore?.getState());
-      cleanup?.();
-    },
-    options,
-  );
+bench(
+  "create picked store",
+  () => {
+    const store = createBenchmarkStore(nextValue());
+    const pickedStore = pick(store, ["count", "open", "value"]);
+    const cleanup = init(pickedStore);
+    consume(pickedStore?.getState());
+    cleanup?.();
+  },
+  options,
+);
 
-  bench(
-    "merge stores",
-    () => {
-      const firstStore = createStore({
-        ...initialState,
-        count: nextValue(),
-        open: false,
-      });
-      const secondStore = createStore({
-        ...initialState,
-        mounted: true,
-        value: "value",
-      });
-      consume(mergeStore(firstStore, secondStore).getState());
-    },
-    options,
-  );
-});
+bench(
+  "merge stores",
+  () => {
+    const firstStore = createStore({
+      ...initialState,
+      count: nextValue(),
+      open: false,
+    });
+    const secondStore = createStore({
+      ...initialState,
+      mounted: true,
+      value: "value",
+    });
+    consume(mergeStore(firstStore, secondStore).getState());
+  },
+  options,
+);
 
 export { sink };

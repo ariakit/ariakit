@@ -5,7 +5,7 @@ export default defineConfig({
     environment: "node",
     watch: false,
     benchmark: {
-      include: ["packages/ariakit-store/benchmark/*.bench.ts"],
+      include: ["packages/*/benchmark/*.bench.ts"],
     },
   },
 });

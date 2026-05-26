@@ -6,6 +6,9 @@
   "bin": {
     "ariakit": "src/index.ts"
   },
+  "exports": {
+    "./perf": "./src/perf.ts"
+  },
   "dependencies": {
     "chokidar": "5.0.0",
     "commander": "14.0.3",
@@ -14,6 +17,7 @@
     "vite-plugin-solid": "2.11.12"
   },
   "devDependencies": {
+    "@playwright/test": "1.60.0",
     "vitest": "4.1.7"
   }
 }

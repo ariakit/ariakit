@@ -119,24 +119,37 @@ function createBenchmarkReport(
     benchmarks: Array<{ hz?: number; mean?: number; name: string }>;
     fullName: string;
   }>,
+  filepath = path.join(
+    "/repo",
+    "packages/ariakit-store/benchmark/store.bench.ts",
+  ),
 ) {
   return {
     files: [
       {
-        filepath: path.join(
-          "/repo",
-          "packages/ariakit-store/benchmark/store.bench.ts",
-        ),
+        filepath,
         groups,
       },
     ],
   };
 }
 
-function createStoreBenchmarkReport(hz: number, mean?: number) {
+function createBenchmarkReportFromFiles(
+  files: Array<{
+    filepath: string;
+    groups: Array<{
+      benchmarks: Array<{ hz?: number; mean?: number; name: string }>;
+      fullName: string;
+    }>;
+  }>,
+) {
+  return { files };
+}
+
+function createStoreBenchmarkReport(hz?: number, mean?: number) {
   return createBenchmarkReport([
     {
-      fullName: "packages/ariakit-store/benchmark/store.bench.ts > store",
+      fullName: "packages/ariakit-store/benchmark/store.bench.ts",
       benchmarks: [{ name: "set state", hz, mean }],
     },
   ]);
@@ -200,11 +213,13 @@ test("compares Vitest benchmark reports in node mode", () => {
 
   const markdown = runCompare(dir, ["--node"]);
 
-  expect(markdown).toContain("| Benchmark | Total |");
   expect(markdown).toContain(
-    "ariakit-store > store.bench.ts > store > set state",
+    "#### packages/ariakit-store/benchmark/store.bench.ts",
   );
-  expect(markdown).toContain("1.0000ms → 2.0000ms (+100%) :warning:");
+  expect(markdown).toContain("| Benchmark | Baseline | Current | Change |");
+  expect(markdown).toContain(
+    "| set state | 1,000 ops/sec | 500 ops/sec | -500 ops/sec (-50%) :warning: |",
+  );
 });
 
 test("keeps Vitest benchmark groups distinct in node mode", () => {
@@ -243,22 +258,64 @@ test("keeps Vitest benchmark groups distinct in node mode", () => {
   const markdown = runCompare(dir, ["--node"]);
 
   expect(markdown).toContain(
-    "ariakit-store > store.bench.ts > store > set state",
+    "| store > set state | 1,000 ops/sec | 500 ops/sec | -500 ops/sec (-50%) :warning: |",
+  );
+  expect(markdown).toContain("| collection > set state |");
+});
+
+test("groups Vitest benchmark tables by file in node mode", () => {
+  const dir = createTempDir();
+  const storeFile = path.join(
+    "/repo",
+    "packages/ariakit-store/benchmark/store.bench.ts",
+  );
+  const utilsFile = path.join(
+    "/repo",
+    "packages/ariakit-utils/benchmark/utils.bench.ts",
+  );
+  const report = createBenchmarkReportFromFiles([
+    {
+      filepath: storeFile,
+      groups: [
+        {
+          fullName: storeFile,
+          benchmarks: [{ name: "set state", hz: 1000 }],
+        },
+      ],
+    },
+    {
+      filepath: utilsFile,
+      groups: [
+        {
+          fullName: utilsFile,
+          benchmarks: [{ name: "get value", hz: 2000 }],
+        },
+      ],
+    },
+  ]);
+  writeJson(dir, "current-1.json", report);
+
+  const markdown = runCompare(dir, ["--node"]);
+
+  expect(markdown).toContain(
+    "#### packages/ariakit-store/benchmark/store.bench.ts",
   );
   expect(markdown).toContain(
-    "ariakit-store > store.bench.ts > collection > set state",
+    "#### packages/ariakit-utils/benchmark/utils.bench.ts",
   );
-  expect(markdown).toContain("1.0000ms → 2.0000ms (+100%) :warning:");
+  expect(markdown.match(/\| Benchmark \| Ops\/sec \|/g)).toHaveLength(2);
 });
 
 test("uses Vitest benchmark mean in node mode", () => {
   const dir = createTempDir();
-  writeJson(dir, "baseline-1.json", createStoreBenchmarkReport(1, 0.00002));
-  writeJson(dir, "current-1.json", createStoreBenchmarkReport(1, 0.00004));
+  writeJson(dir, "baseline-1.json", createStoreBenchmarkReport(0, 0.00002));
+  writeJson(dir, "current-1.json", createStoreBenchmarkReport(0, 0.00004));
 
   const markdown = runCompare(dir, ["--node"]);
 
-  expect(markdown).toContain("20.0ns → 40.0ns (+100%) :warning:");
+  expect(markdown).toContain(
+    "50,000,000 ops/sec | 25,000,000 ops/sec | -25,000,000 ops/sec (-50%) :warning:",
+  );
 });
 
 test("does not flag noisy rounds that disagree on direction", () => {
