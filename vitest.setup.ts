@@ -120,14 +120,11 @@ Note: test files can also be named `test-<browser target>.` instead of `test.` t
 function parseTest(filename?: string) {
   if (!filename) return false;
   const match = filename.match(
-    /(?<dir>.*)\/test\.((?<loader>react|solid)\.)?ts$/,
+    /^(?<dir>(?:.*\/)?(?:examples|sandbox)\/.+?)\/test\.((?<loader>react|solid)\.)?ts$/,
   );
   if (!match?.groups) return false;
   const { dir, loader } = match.groups;
   if (!dir) return false;
-  if (!dir.startsWith("examples/") && !dir.includes("app/src/examples/")) {
-    return false;
-  }
   return {
     dir,
     loader: (loader ?? "all") as AllowedTestLoader | "all",

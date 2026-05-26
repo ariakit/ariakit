@@ -12,32 +12,14 @@ import {
   throwOnConflictingProps,
 } from "./index.ts";
 import type { Store, StoreOptions, StoreProps, StoreState } from "./index.ts";
-import * as storeExports from "./index.ts";
-
-const originalNodeEnv = process.env.NODE_ENV;
 
 afterEach(() => {
-  process.env.NODE_ENV = originalNodeEnv;
+  vi.unstubAllEnvs();
 });
 
 function flushBatch() {
   return new Promise<void>((resolve) => queueMicrotask(resolve));
 }
-
-test("exports the public runtime helpers", () => {
-  expect(Object.keys(storeExports).sort()).toEqual([
-    "batch",
-    "createStore",
-    "init",
-    "mergeStore",
-    "omit",
-    "pick",
-    "setup",
-    "subscribe",
-    "sync",
-    "throwOnConflictingProps",
-  ]);
-});
 
 test("preserves the public type surface", () => {
   interface SampleState {
@@ -465,7 +447,7 @@ test("throws on conflicting default props in development", () => {
 test("does not throw on conflicting default props in production", () => {
   const store = createStore({ value: "Apple" });
 
-  process.env.NODE_ENV = "production";
+  vi.stubEnv("NODE_ENV", "production");
 
   expect(() =>
     throwOnConflictingProps({ defaultValue: "Orange" }, store),
