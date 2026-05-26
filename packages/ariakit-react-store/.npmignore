@@ -1,6 +1,9 @@
 # Automatically generated
 coverage
 benchmark
+src/test.ts
+src/**/*.test.*
+src/**/__tests__/**
 tsconfig*.json
 *.log
 *.config.*
