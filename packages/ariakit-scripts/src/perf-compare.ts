@@ -508,7 +508,8 @@ function computeSignificance({
 
   const percentOk = Math.abs(percent) > THRESHOLD_PERCENT;
   const deltaOk = Math.abs(delta) >= minDelta;
-  const zeroBaselineOk = baseline === 0 && Math.abs(current) >= minDelta;
+  const zeroBaselineOk =
+    baseline === 0 && current !== baseline && Math.abs(current) >= minDelta;
   const magnitudeOk = baseline === 0 ? zeroBaselineOk : percentOk && deltaOk;
   const agreementOk = agreement >= requiredAgreement(perRoundDeltas.length);
 

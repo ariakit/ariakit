@@ -99,14 +99,17 @@ jobs:
         id: find-base-artifact
         continue-on-error: true
         uses: actions/github-script@v9
+        env:
+          BRANCH_REF: ${{ github.event.pull_request.base.ref }}
         with:
           script: |
             const baseSha = '${{ github.event.pull_request.base.sha }}';
+            const branchRef = process.env.BRANCH_REF;
             const runs = await github.rest.actions.listWorkflowRuns({
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'app.yml',
-              branch: '${{ github.event.pull_request.base.ref }}',
+              branch: branchRef,
               head_sha: baseSha,
               status: 'success',
               per_page: 1,

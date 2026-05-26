@@ -318,6 +318,20 @@ test("uses Vitest benchmark mean in node mode", () => {
   );
 });
 
+test("does not flag empty Vitest benchmark metrics in node mode", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-1.json", createStoreBenchmarkReport());
+  writeJson(dir, "current-1.json", createStoreBenchmarkReport());
+
+  const markdown = runCompare(dir, ["--node"]);
+
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain(
+    "| set state | 0 ops/sec | 0 ops/sec | +0 ops/sec |",
+  );
+  expect(markdown).not.toContain("+0 ops/sec :rocket:");
+});
+
 test("does not flag noisy rounds that disagree on direction", () => {
   const dir = createTempDir();
   for (let round = 1; round <= 5; round++) {
