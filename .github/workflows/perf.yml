@@ -53,9 +53,134 @@ jobs:
           retention-days: 7
           include-hidden-files: true
 
+  baseline:
+    name: Prepare baseline
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+    steps:
+      - name: Checkout baseline repository
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+
+      - name: Find base app artifact
+        id: find-base-artifact
+        continue-on-error: true
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const baseSha = '${{ github.event.pull_request.base.sha }}';
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'app.yml',
+              branch: '${{ github.event.pull_request.base.ref }}',
+              head_sha: baseSha,
+              status: 'success',
+              per_page: 1,
+            });
+            const run = runs.data.workflow_runs[0];
+            if (!run) {
+              core.notice(
+                `No successful app.yml run found for base SHA ${baseSha}. ` +
+                  'Building base artifacts in this job.',
+              );
+              return;
+            }
+            core.setOutput('run-id', String(run.id));
+
+      - name: Download base app artifact
+        id: base-artifact
+        if: steps.find-base-artifact.outputs.run-id != ''
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: app-build
+          path: app
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.find-base-artifact.outputs.run-id }}
+
+      - name: Download base Next.js artifact
+        id: base-nextjs-artifact
+        if: steps.find-base-artifact.outputs.run-id != ''
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          name: nextjs-dist
+          path: nextjs/.open-next
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.find-base-artifact.outputs.run-id }}
+
+      - name: Clean partial base artifacts
+        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
+        run: |
+          rm -rf \
+            app/dist \
+            app/.wrangler \
+            nextjs/.open-next
+
+      - name: Install pnpm
+        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
+        with:
+          cache: true
+
+      - name: Set up Node
+        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install dependencies
+        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
+        env:
+          HUSKY: 0
+        run: pnpm install --frozen-lockfile
+
+      - name: Build base app
+        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
+        env:
+          CLOUDFLARE_ENV: preview
+        run: pnpm -F app run build-lite
+
+      - name: Build base Next.js app
+        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
+        run: pnpm -F nextjs run build-worker
+
+      - name: Check baseline artifacts
+        run: |
+          for path in \
+            app/dist \
+            app/.wrangler/deploy/config.json \
+            nextjs/.open-next
+          do
+            if [ ! -e "$path" ]; then
+              echo "Missing baseline path: $path" >&2
+              exit 1
+            fi
+          done
+
+      - name: Pack baseline artifacts
+        run: |
+          tar -czf "$RUNNER_TEMP/perf-baseline-build.tar.gz" \
+            -C . \
+            app/dist \
+            app/.wrangler/deploy/config.json \
+            nextjs/.open-next
+
+      - name: Upload baseline artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: perf-baseline-build
+          path: ${{ runner.temp }}/perf-baseline-build.tar.gz
+          retention-days: 7
+
   chrome:
     name: Chrome
-    needs: [build, build-nextjs]
+    needs: [build, build-nextjs, baseline]
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -104,73 +229,17 @@ jobs:
         working-directory: ${{ runner.temp }}/perf-baseline
         run: pnpm exec playwright install --with-deps chromium
 
-      - name: Find base app artifact
-        id: find-base-artifact
-        continue-on-error: true
-        uses: actions/github-script@v9
-        with:
-          script: |
-            const baseSha = '${{ github.event.pull_request.base.sha }}';
-            const runs = await github.rest.actions.listWorkflowRuns({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'app.yml',
-              branch: '${{ github.event.pull_request.base.ref }}',
-              head_sha: baseSha,
-              status: 'success',
-              per_page: 1,
-            });
-            const run = runs.data.workflow_runs[0];
-            if (!run) {
-              core.notice(
-                `No successful app.yml run found for base SHA ${baseSha}. ` +
-                  'Building base artifacts in this job.',
-              );
-              return;
-            }
-            core.setOutput('run-id', String(run.id));
-
-      - name: Download base app artifact
-        id: base-artifact
-        if: steps.find-base-artifact.outputs.run-id != ''
-        continue-on-error: true
+      - name: Download baseline artifacts
         uses: actions/download-artifact@v8
         with:
-          name: app-build
-          path: ${{ runner.temp }}/perf-baseline/app
-          github-token: ${{ github.token }}
-          run-id: ${{ steps.find-base-artifact.outputs.run-id }}
+          name: perf-baseline-build
+          path: ${{ runner.temp }}/perf-baseline-build
 
-      - name: Download base Next.js artifact
-        id: base-nextjs-artifact
-        if: steps.find-base-artifact.outputs.run-id != ''
-        continue-on-error: true
-        uses: actions/download-artifact@v8
-        with:
-          name: nextjs-dist
-          path: ${{ runner.temp }}/perf-baseline/nextjs/.open-next
-          github-token: ${{ github.token }}
-          run-id: ${{ steps.find-base-artifact.outputs.run-id }}
-
-      - name: Clean partial base artifacts
-        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
+      - name: Extract baseline artifacts
         run: |
-          rm -rf \
-            "$BASELINE_DIR/app/dist" \
-            "$BASELINE_DIR/app/.wrangler" \
-            "$BASELINE_DIR/nextjs/.open-next"
-
-      - name: Build base app
-        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
-        working-directory: ${{ runner.temp }}/perf-baseline
-        env:
-          CLOUDFLARE_ENV: preview
-        run: pnpm -F app run build-lite
-
-      - name: Build base Next.js app
-        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success'
-        working-directory: ${{ runner.temp }}/perf-baseline
-        run: pnpm -F nextjs run build-worker
+          tar -xzf \
+            "${{ runner.temp }}/perf-baseline-build/perf-baseline-build.tar.gz" \
+            -C "$BASELINE_DIR"
 
       - name: Clean current app artifacts
         run: rm -rf app/dist app/.wrangler nextjs/.open-next
