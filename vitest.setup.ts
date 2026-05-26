@@ -125,6 +125,9 @@ function parseTest(filename?: string) {
   if (!match?.groups) return false;
   const { dir, loader } = match.groups;
   if (!dir) return false;
+  if (!dir.startsWith("examples/") && !dir.includes("app/src/examples/")) {
+    return false;
+  }
   return {
     dir,
     loader: (loader ?? "all") as AllowedTestLoader | "all",
