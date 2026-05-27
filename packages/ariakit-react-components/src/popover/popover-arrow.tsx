@@ -163,7 +163,7 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
         height: "1em",
         pointerEvents: "none",
         fill: `var(--ak-layer, ${fill})`,
-        stroke: `var(--ak-layer-border, ${stroke})`,
+        stroke: `var(--ak-edge, ${stroke})`,
         strokeWidth,
         ...props.style,
       },

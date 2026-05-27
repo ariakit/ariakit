@@ -591,12 +591,11 @@ const layerColorVars = {
   layerOffset: _ak.prop.canvas("lo"),
   layerPush: _ak.prop.canvas("lp"),
   layer: ak.prop.canvas("layer", { inherits: true }),
-  layerEdge: _ak.prop.black("le", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
   layerEdgeContext: _ak.var("lec"),
   layerEdgeSourceContext: _ak.var("lesc"),
   layerParent: ak.var("layer-parent", "canvas"),
-  edge: ak.prop.black("edge"),
+  edge: ak.prop.black("edge", { inherits: true }),
   text: ak.prop.black("text", { inherits: true }),
   outline: ak.var("outline", "canvastext"),
 };
@@ -1309,7 +1308,6 @@ utility(
   set(vars.layer, layer),
   set(vars.text, vars.layerScheme),
   set(vars.edge, edge),
-  set(vars.layerEdge, vars.edge),
   set(vars.layerBand, layerBand),
   set(vars.layerScheme, layerScheme),
   getBaseDeclarations(vars.layer),
@@ -2069,7 +2067,7 @@ function getFrameBorderingContextDeclarations() {
 
 function getLayerEdgeContextDeclarations() {
   return edgeContext(({ provide }) => [
-    set(provide(vars.layerEdgeContext), vars.layerEdge),
+    set(provide(vars.layerEdgeContext), vars.edge),
     set(provide(vars.layerEdgeSourceContext), 1),
   ]);
 }

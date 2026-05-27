@@ -119,7 +119,6 @@
   --ak-layer: oklch(from var(--_ak-lp) var(--_ak-sl) clamp(var(--_ak-layer-chroma-min), c, var(--_ak-layer-chroma-max, var(--chroma-p3-max, 0.368))) h);
   --ak-text: var(--_ak-ls);
   --ak-edge: oklch(from oklch(from var(--_ak-edge-color, var(--ak-layer)) clamp(0, (l + ((var(--_ak-edge-push-lightness) + var(--_ak-ecv)) * var(--_ak-epd, -1))), 1) c h) clamp(var(--_ak-edge-lightness-min), var(--_ak-edge-lightness, (l + var(--_ak-edge-relative-lightness) + (clamp(0, (var(--_ak-edge-relative-lightness) * 1000000), 1) * var(--_ak-llfb)))), var(--_ak-edge-lightness-max)) clamp(var(--_ak-edge-chroma-min), var(--_ak-edge-chroma, (c + var(--_ak-edge-relative-chroma))), var(--_ak-edge-chroma-max, var(--chroma-p3-max, 0.368))) var(--_ak-edge-h, calc(h + var(--_ak-edge-relative-hue))) / clamp(0, (var(--_ak-edge-alpha) + var(--_ak-ecv)), 1));
-  --_ak-le: var(--ak-edge);
   --_ak-lbd: oklch(from var(--ak-layer) calc(0.5 + (var(--_ak-bdh) * -0.5) + (var(--_ak-bdl) * -0.25) + (var(--_ak-bll) * 0.25) + (var(--_ak-blh) * 0.5)) 0 0);
   --_ak-ls: oklch(from var(--ak-layer) var(--_ak-tfcl) 0 0);
   --_ak-ll: oklch(from var(--ak-layer) round(l, 0.125) 0 0);
@@ -1142,12 +1141,12 @@
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --_ak-lec-odd: var(--_ak-le);
+    --_ak-lec-odd: var(--ak-edge);
     --_ak-lesc-odd: 1;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --_ak-lec-even: var(--_ak-le);
+    --_ak-lec-even: var(--ak-edge);
     --_ak-lesc-even: 1;
   }
 }
@@ -1159,12 +1158,12 @@
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --_ak-lec-odd: var(--_ak-le);
+    --_ak-lec-odd: var(--ak-edge);
     --_ak-lesc-odd: 1;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --_ak-lec-even: var(--_ak-le);
+    --_ak-lec-even: var(--ak-edge);
     --_ak-lesc-even: 1;
   }
 }
@@ -1174,12 +1173,12 @@
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --_ak-lec-odd: var(--_ak-le);
+    --_ak-lec-odd: var(--ak-edge);
     --_ak-lesc-odd: 1;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --_ak-lec-even: var(--_ak-le);
+    --_ak-lec-even: var(--ak-edge);
     --_ak-lesc-even: 1;
   }
 }
@@ -1190,12 +1189,12 @@
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --_ak-lec-odd: var(--_ak-le);
+    --_ak-lec-odd: var(--ak-edge);
     --_ak-lesc-odd: 1;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --_ak-lec-even: var(--_ak-le);
+    --_ak-lec-even: var(--ak-edge);
     --_ak-lesc-even: 1;
   }
 }
@@ -1216,12 +1215,12 @@
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --_ak-lec-odd: var(--_ak-le);
+    --_ak-lec-odd: var(--ak-edge);
     --_ak-lesc-odd: 1;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --_ak-lec-even: var(--_ak-le);
+    --_ak-lec-even: var(--ak-edge);
     --_ak-lesc-even: 1;
   }
 }
@@ -1274,12 +1273,12 @@
   --_ak-frame-bordering-context: 1;
   @container (style(--_context-1: even)) or (not style(--_context-1)) {
     --_context-1: odd;
-    --_ak-lec-odd: var(--_ak-le);
+    --_ak-lec-odd: var(--ak-edge);
     --_ak-lesc-odd: 1;
   }
   @container style(--_context-1: odd) {
     --_context-1: even;
-    --_ak-lec-even: var(--_ak-le);
+    --_ak-lec-even: var(--ak-edge);
     --_ak-lesc-even: 1;
   }
 }
@@ -1571,15 +1570,9 @@
   initial-value: canvas;
 }
 
-@property --_ak-le {
-  syntax: "<color>";
-  inherits: true;
-  initial-value: black;
-}
-
 @property --ak-edge {
   syntax: "<color>";
-  inherits: false;
+  inherits: true;
   initial-value: black;
 }
 
