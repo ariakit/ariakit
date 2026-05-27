@@ -567,6 +567,24 @@ test("syncs reentrant parent setStates to an earlier key during a child's initia
   cleanup();
 });
 
+test("fires a sync listener registered on the parent after init with the child already updated", () => {
+  const parent = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, parent);
+
+  const cleanup = init(child);
+
+  const calls: number[] = [];
+  const unsubscribe = sync(parent, ["count"], () => {
+    calls.push(child.getState().count);
+  });
+
+  parent.setState("count", 1);
+  expect(calls).toEqual([0, 1]);
+
+  unsubscribe();
+  cleanup();
+});
+
 test("keeps the batch baseline current across idle setStates between subscriptions", async () => {
   const store = createStore({ count: 0 });
 

@@ -16,12 +16,6 @@ type Sync<S, K extends keyof S> = (
   listener: Listener<Pick<S, K>>,
 ) => () => void;
 
-type ParentSyncListener<S> = (state: S, updatedKey: keyof S | null) => void;
-type ParentSync<S> = (
-  keys: Array<keyof S>,
-  listener: ParentSyncListener<S>,
-) => () => void;
-
 type StoreSetup = (callback: () => void | (() => void)) => () => void;
 type StoreInit = () => () => void;
 type StoreSubscribe<S = State, K extends keyof S = keyof S> = Sync<S, K>;
@@ -36,7 +30,6 @@ type StoreOmit<
   K extends ReadonlyArray<keyof S> = ReadonlyArray<keyof S>,
 > = (keys: K) => Store<Omit<S, K[number]>>;
 type ListenerMap<S> = Map<keyof S, Set<Listener<S>>>;
-type ParentSyncMap<S> = Map<keyof S, Set<ParentSyncListener<S>>>;
 type UpdatedKey<S> = keyof S | Set<keyof S>;
 
 interface ListenerGroup<S> {
@@ -55,7 +48,6 @@ interface StoreInternals<S = State> {
   batch: StoreBatch<S>;
   pick: StorePick<S>;
   omit: StoreOmit<S>;
-  parentSync: ParentSync<S>;
 }
 
 function getInternal<K extends keyof StoreInternals>(
@@ -143,10 +135,6 @@ export function createStore<S extends State>(
     disposables: new Map(),
     listenerKeys: new WeakMap(),
   };
-  // Per-key fan-out for child stores that extend this one. Stays undefined
-  // until a child store registers a parent-sync listener so isolated stores
-  // pay no extra cost on every setState.
-  let parentSyncByKey: ParentSyncMap<S> | undefined;
 
   const storeSetup: StoreSetup = (callback) => {
     setups.add(callback);
@@ -173,39 +161,42 @@ export function createStore<S extends State>(
     const stateKeys = getKeys(state);
     const desyncs: Array<void | (() => void)> = [];
     for (const store of stores) {
-      if (!store) continue;
-      const storeState = store.getState?.();
+      const storeState = store?.getState?.();
       if (!storeState) continue;
       const keys = stateKeys.filter((key) => hasOwnProperty(storeState, key));
       if (!keys.length) continue;
-      const parentSync = getInternal(store, "parentSync") as ParentSync<S>;
-      desyncs.push(
-        parentSync(keys, (parentState, updatedKey) => {
-          if (updatedKey === null) {
-            // Initial registration: push every parent key into the child so
-            // this parent's values take precedence in argument order. Re-read
-            // the parent's state per key to mirror the original per-key sync
-            // behavior, where a reentrant setState earlier in the loop could
-            // observe the updated parent state on the next iteration.
-            for (const key of keys) {
+      const shouldSyncByKey =
+        stores.length === 1 || keys.length === stateKeys.length;
+      if (shouldSyncByKey) {
+        for (const key of keys) {
+          desyncs.push(
+            sync(store, [key], (state) => {
               setState(
                 key,
-                store.getState()[key],
+                state[key],
                 // @ts-expect-error - Not public API. This is just to prevent
                 // infinite loops.
                 true,
               );
-            }
-            return;
-          }
-          // Update: propagate only the changed key.
-          setState(
-            updatedKey,
-            parentState[updatedKey],
-            // @ts-expect-error - Not public API. This is just to prevent
-            // infinite loops.
-            true,
+            }),
           );
+        }
+        continue;
+      }
+      let didSyncInitialState = false;
+      desyncs.push(
+        sync(store, keys, (state, prevState) => {
+          for (const key of keys) {
+            if (didSyncInitialState && state[key] === prevState[key]) continue;
+            setState(
+              key,
+              state[key],
+              // @ts-expect-error - Not public API. This is just to prevent
+              // infinite loops.
+              true,
+            );
+          }
+          didSyncInitialState = true;
         }),
       );
     }
@@ -301,40 +292,6 @@ export function createStore<S extends State>(
     return sub(keys, listener, batchListenerGroup);
   };
 
-  // Internal, init-only counterpart to `sync` for parent → child propagation.
-  // Registering once with N keys is dramatically cheaper than N separate
-  // `sync` calls, and dispatch stays O(1) per setState because the listener
-  // is told which key changed.
-  const storeParentSync: ParentSync<S> = (keys, listener) => {
-    parentSyncByKey ??= new Map();
-    // Register before firing the initial sync. The original per-key `sync`
-    // implementation registered each key before pushing the next, so a child
-    // listener that reentrantly mutated an already-pushed parent key would
-    // see the update propagate back. With a single registration after the
-    // initial fire, those reentrant updates would be lost.
-    for (const key of keys) {
-      let listeners = parentSyncByKey.get(key);
-      if (!listeners) {
-        listeners = new Set();
-        parentSyncByKey.set(key, listeners);
-      }
-      listeners.add(listener);
-    }
-    // Fire once on registration so the child can mirror the parent's current
-    // values. `updatedKey` is null to signal the initial sync.
-    listener(state, null);
-    return () => {
-      if (!parentSyncByKey) return;
-      for (const key of keys) {
-        const listeners = parentSyncByKey.get(key);
-        if (!listeners) continue;
-        listeners.delete(listener);
-        if (!listeners.size) parentSyncByKey.delete(key);
-      }
-      if (!parentSyncByKey.size) parentSyncByKey = undefined;
-    };
-  };
-
   const storePick: StorePick<S, ReadonlyArray<keyof S>> = (keys) =>
     createStore(_pick(state, keys), finalStore);
 
@@ -427,16 +384,6 @@ export function createStore<S extends State>(
     inDispatch = true;
     try {
       runListeners(syncListeners, prevState, key);
-
-      // Direct fan-out to child stores extending this one. Each parentSync
-      // listener receives the changed key and forwards the value to the
-      // child's setState in O(1).
-      const parentSyncs = parentSyncByKey?.get(key);
-      if (parentSyncs) {
-        for (const listener of parentSyncs) {
-          listener(state, key);
-        }
-      }
     } finally {
       inDispatch = wasInDispatch;
     }
@@ -498,7 +445,6 @@ export function createStore<S extends State>(
       batch: storeBatch,
       pick: storePick,
       omit: storeOmit,
-      parentSync: storeParentSync,
     },
   };
 
