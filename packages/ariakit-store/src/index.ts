@@ -1,7 +1,6 @@
 import {
   omit as _omit,
   pick as _pick,
-  applyState,
   chain,
   getKeys,
   hasOwnProperty,
@@ -15,6 +14,12 @@ type Listener<S> = (state: S, prevState: S) => void | (() => void);
 type Sync<S, K extends keyof S> = (
   keys: K[] | null,
   listener: Listener<Pick<S, K>>,
+) => () => void;
+
+type ParentSyncListener<S> = (state: S, updatedKey: keyof S | null) => void;
+type ParentSync<S> = (
+  keys: Array<keyof S>,
+  listener: ParentSyncListener<S>,
 ) => () => void;
 
 type StoreSetup = (callback: () => void | (() => void)) => () => void;
@@ -31,13 +36,14 @@ type StoreOmit<
   K extends ReadonlyArray<keyof S> = ReadonlyArray<keyof S>,
 > = (keys: K) => Store<Omit<S, K[number]>>;
 type ListenerMap<S> = Map<keyof S, Set<Listener<S>>>;
+type ParentSyncMap<S> = Map<keyof S, Set<ParentSyncListener<S>>>;
 type UpdatedKey<S> = keyof S | Set<keyof S>;
 
 interface ListenerGroup<S> {
   listeners: Set<Listener<S>>;
   listenersByKey?: ListenerMap<S>;
   allKeysListeners?: Set<Listener<S>>;
-  disposables: WeakMap<Listener<S>, void | (() => void)>;
+  disposables: Map<Listener<S>, () => void>;
   listenerKeys: WeakMap<Listener<S>, Array<keyof S> | null>;
 }
 
@@ -49,6 +55,7 @@ interface StoreInternals<S = State> {
   batch: StoreBatch<S>;
   pick: StorePick<S>;
   omit: StoreOmit<S>;
+  parentSync: ParentSync<S>;
 }
 
 function getInternal<K extends keyof StoreInternals>(
@@ -119,22 +126,27 @@ export function createStore<S extends State>(
 ): Store<S> {
   let state = initialState;
   let prevStateBatch = state;
-  let lastUpdate = 0;
   let destroy = noop;
+  let batchPending = false;
+  let inDispatch = false;
+  let updatedKeys = new Set<keyof S>();
   const instances = new Set<symbol>();
-  const updatedKeys = new Set<keyof S>();
 
   const setups = new Set<() => void | (() => void)>();
   const syncListeners: ListenerGroup<S> = {
     listeners: new Set(),
-    disposables: new WeakMap(),
+    disposables: new Map(),
     listenerKeys: new WeakMap(),
   };
   const batchListenerGroup: ListenerGroup<S> = {
     listeners: new Set(),
-    disposables: new WeakMap(),
+    disposables: new Map(),
     listenerKeys: new WeakMap(),
   };
+  // Per-key fan-out for child stores that extend this one. Stays undefined
+  // until a child store registers a parent-sync listener so isolated stores
+  // pay no extra cost on every setState.
+  let parentSyncByKey: ParentSyncMap<S> | undefined;
 
   const storeSetup: StoreSetup = (callback) => {
     setups.add(callback);
@@ -161,42 +173,39 @@ export function createStore<S extends State>(
     const stateKeys = getKeys(state);
     const desyncs: Array<void | (() => void)> = [];
     for (const store of stores) {
-      const storeState = store?.getState?.();
+      if (!store) continue;
+      const storeState = store.getState?.();
       if (!storeState) continue;
       const keys = stateKeys.filter((key) => hasOwnProperty(storeState, key));
       if (!keys.length) continue;
-      const shouldSyncByKey =
-        stores.length === 1 || keys.length === stateKeys.length;
-      if (shouldSyncByKey) {
-        for (const key of keys) {
-          desyncs.push(
-            sync(store, [key], (state) => {
+      const parentSync = getInternal(store, "parentSync") as ParentSync<S>;
+      desyncs.push(
+        parentSync(keys, (parentState, updatedKey) => {
+          if (updatedKey === null) {
+            // Initial registration: push every parent key into the child so
+            // this parent's values take precedence in argument order. Re-read
+            // the parent's state per key to mirror the original per-key sync
+            // behavior, where a reentrant setState earlier in the loop could
+            // observe the updated parent state on the next iteration.
+            for (const key of keys) {
               setState(
                 key,
-                state[key],
+                store.getState()[key],
                 // @ts-expect-error - Not public API. This is just to prevent
                 // infinite loops.
                 true,
               );
-            }),
-          );
-        }
-        continue;
-      }
-      let didSyncInitialState = false;
-      desyncs.push(
-        sync(store, keys, (state, prevState) => {
-          for (const key of keys) {
-            if (didSyncInitialState && state[key] === prevState[key]) continue;
-            setState(
-              key,
-              state[key],
-              // @ts-expect-error - Not public API. This is just to prevent
-              // infinite loops.
-              true,
-            );
+            }
+            return;
           }
-          didSyncInitialState = true;
+          // Update: propagate only the changed key.
+          setState(
+            updatedKey,
+            parentState[updatedKey],
+            // @ts-expect-error - Not public API. This is just to prevent
+            // infinite loops.
+            true,
+          );
         }),
       );
     }
@@ -261,16 +270,69 @@ export function createStore<S extends State>(
     sub(keys, listener);
 
   const storeSync: StoreSync<S> = (keys, listener) => {
-    syncListeners.disposables.set(listener, listener(state, state));
+    const cleanup = listener(state, state);
+    // Always reconcile the disposables entry. Skipping the delete when the
+    // listener returned no cleanup would leave a stale cleanup from a
+    // previous registration of the same listener in place.
+    if (cleanup) {
+      syncListeners.disposables.set(listener, cleanup);
+    } else {
+      syncListeners.disposables.delete(listener);
+    }
     return sub(keys, listener);
   };
 
   const storeBatch: StoreBatch<S> = (keys, listener) => {
-    batchListenerGroup.disposables.set(
-      listener,
-      listener(state, prevStateBatch),
-    );
+    // When the first batch listener is registered while the store is idle,
+    // refresh prevStateBatch to the current state. setState skips updating
+    // prevStateBatch while no batch listeners exist, so this avoids leaking
+    // stale state into the new listener. During an active dispatch, leave
+    // prevStateBatch alone so the upcoming microtask flush still reports the
+    // current setState's diff to the newly registered listener.
+    if (!batchListenerGroup.listeners.size && !inDispatch) {
+      prevStateBatch = state;
+    }
+    const cleanup = listener(state, prevStateBatch);
+    if (cleanup) {
+      batchListenerGroup.disposables.set(listener, cleanup);
+    } else {
+      batchListenerGroup.disposables.delete(listener);
+    }
     return sub(keys, listener, batchListenerGroup);
+  };
+
+  // Internal, init-only counterpart to `sync` for parent → child propagation.
+  // Registering once with N keys is dramatically cheaper than N separate
+  // `sync` calls, and dispatch stays O(1) per setState because the listener
+  // is told which key changed.
+  const storeParentSync: ParentSync<S> = (keys, listener) => {
+    parentSyncByKey ??= new Map();
+    // Register before firing the initial sync. The original per-key `sync`
+    // implementation registered each key before pushing the next, so a child
+    // listener that reentrantly mutated an already-pushed parent key would
+    // see the update propagate back. With a single registration after the
+    // initial fire, those reentrant updates would be lost.
+    for (const key of keys) {
+      let listeners = parentSyncByKey.get(key);
+      if (!listeners) {
+        listeners = new Set();
+        parentSyncByKey.set(key, listeners);
+      }
+      listeners.add(listener);
+    }
+    // Fire once on registration so the child can mirror the parent's current
+    // values. `updatedKey` is null to signal the initial sync.
+    listener(state, null);
+    return () => {
+      if (!parentSyncByKey) return;
+      for (const key of keys) {
+        const listeners = parentSyncByKey.get(key);
+        if (!listeners) continue;
+        listeners.delete(listener);
+        if (!listeners.size) parentSyncByKey.delete(key);
+      }
+      if (!parentSyncByKey.size) parentSyncByKey = undefined;
+    };
   };
 
   const storePick: StorePick<S, ReadonlyArray<keyof S>> = (keys) =>
@@ -281,40 +343,74 @@ export function createStore<S extends State>(
 
   const getState: Store<S>["getState"] = () => state;
 
-  const run = (group: ListenerGroup<S>, listener: Listener<S>, prev: S) => {
-    group.disposables.get(listener)?.();
-    group.disposables.set(listener, listener(state, prev));
-  };
-
   const runListeners = (
     group: ListenerGroup<S>,
     prevState: S,
     updatedKey: UpdatedKey<S>,
   ) => {
+    const { disposables } = group;
     if (!(updatedKey instanceof Set) && !group.allKeysListeners?.size) {
       const keyedListeners = group.listenersByKey?.get(updatedKey);
       if (!keyedListeners) return;
       for (const listener of keyedListeners) {
-        if (!group.listeners.has(listener)) continue;
-        run(group, listener, prevState);
+        // Skip the cleanup lookup when no listener has registered a cleanup.
+        const cleanup = disposables.size && disposables.get(listener);
+        if (cleanup) cleanup();
+        const result = listener(state, prevState);
+        if (result) {
+          disposables.set(listener, result);
+        } else if (cleanup) {
+          disposables.delete(listener);
+        }
+      }
+      return;
+    }
+    const allKeysListeners = group.allKeysListeners;
+    if (allKeysListeners && allKeysListeners.size === group.listeners.size) {
+      // Fast path: every listener is an all-keys listener, no keys to check.
+      // Listeners re-keyed to a non-null key during this iteration are dropped
+      // from allKeysListeners and therefore skipped for the current update;
+      // they fire normally on subsequent setStates.
+      for (const listener of allKeysListeners) {
+        const cleanup = disposables.size && disposables.get(listener);
+        if (cleanup) cleanup();
+        const result = listener(state, prevState);
+        if (result) {
+          disposables.set(listener, result);
+        } else if (cleanup) {
+          disposables.delete(listener);
+        }
       }
       return;
     }
     for (const listener of group.listeners) {
-      const keys = group.listenerKeys.get(listener);
-      if (!hasUpdatedKey(keys, updatedKey)) continue;
-      run(group, listener, prevState);
+      if (!allKeysListeners?.has(listener)) {
+        const keys = group.listenerKeys.get(listener);
+        if (!hasUpdatedKey(keys, updatedKey)) continue;
+      }
+      const cleanup = disposables.size && disposables.get(listener);
+      if (cleanup) cleanup();
+      const result = listener(state, prevState);
+      if (result) {
+        disposables.set(listener, result);
+      } else if (cleanup) {
+        disposables.delete(listener);
+      }
     }
   };
 
   const setState: Store<S>["setState"] = (key, value, fromStores = false) => {
     if (!hasOwnProperty(state, key)) return;
 
-    const nextValue = applyState(value, state[key]);
+    const currentValue = state[key];
+    const nextValue =
+      typeof value === "function"
+        ? (value as (current: S[typeof key]) => S[typeof key])(currentValue)
+        : value;
 
-    if (nextValue === state[key]) return;
+    if (nextValue === currentValue) return;
 
-    if (!fromStores) {
+    if (!fromStores && stores.length) {
       for (const store of stores) {
         store?.setState?.(key, nextValue);
       }
@@ -323,24 +419,71 @@ export function createStore<S extends State>(
     const prevState = state;
     state = { ...state, [key]: nextValue };
 
-    lastUpdate += 1;
-    const thisUpdate = lastUpdate;
+    // Track the active dispatch so storeBatch can distinguish idle
+    // registration (refresh prevStateBatch) from registration during an
+    // in-flight setState (keep prevStateBatch so the upcoming microtask
+    // reports the correct diff).
+    const wasInDispatch = inDispatch;
+    inDispatch = true;
+    try {
+      runListeners(syncListeners, prevState, key);
+
+      // Direct fan-out to child stores extending this one. Each parentSync
+      // listener receives the changed key and forwards the value to the
+      // child's setState in O(1).
+      const parentSyncs = parentSyncByKey?.get(key);
+      if (parentSyncs) {
+        for (const listener of parentSyncs) {
+          listener(state, key);
+        }
+      }
+    } finally {
+      inDispatch = wasInDispatch;
+    }
+
+    // Skip the microtask when no batch listeners are registered. Their
+    // bookkeeping (microtask, updatedKeys) is only observable through batch
+    // listeners. Still keep prevStateBatch in sync with the current state at
+    // the end of every outermost setState so a future batch listener — whether
+    // registered idle or mid-dispatch during a later setState — observes the
+    // correct previous state. A reentrant setState leaves prevStateBatch
+    // alone so the outer setState's snapshot remains intact for batch
+    // listeners registered inside its dispatch.
+    if (!batchListenerGroup.listeners.size) {
+      if (!inDispatch) prevStateBatch = state;
+      return;
+    }
+
     updatedKeys.add(key);
 
-    runListeners(syncListeners, prevState, key);
-
+    // Coalesce multiple setStates in the same microtask via a pending flag.
+    // Any setStates queued before the microtask runs share the same flush.
+    if (batchPending) return;
+    batchPending = true;
     queueMicrotask(() => {
-      // If setState is called again before this microtask runs, skip this
-      // update. This is to prevent unnecessary updates when multiple keys are
-      // updated in a single microtask.
-      if (lastUpdate !== thisUpdate) return;
+      batchPending = false;
       // Take snapshots before running batch listeners. This is necessary
-      // because batch listeners can setState.
+      // because batch listeners can setState reentrantly: swapping the Set
+      // ensures reentrant updates land in a fresh set that flushes in a new
+      // microtask.
       const snapshot = state;
-      const updatedKeysSnapshot = new Set(updatedKeys);
-      updatedKeys.clear();
-      runListeners(batchListenerGroup, prevStateBatch, updatedKeysSnapshot);
-      prevStateBatch = snapshot;
+      const updatedKeysSnapshot = updatedKeys;
+      updatedKeys = new Set();
+      const prevStateBatchBefore = prevStateBatch;
+      runListeners(
+        batchListenerGroup,
+        prevStateBatchBefore,
+        updatedKeysSnapshot,
+      );
+      // Anchor the next batch period to the pre-flush snapshot so surviving
+      // listeners see the diff "since the start of the last flush". When the
+      // flush already updated prevStateBatch through other paths — a
+      // reentrant setState's early-return refresh, or storeBatch refreshing
+      // on a successor listener — leave that fresher value in place rather
+      // than overwriting it with the stale snapshot.
+      if (prevStateBatch === prevStateBatchBefore) {
+        prevStateBatch = snapshot;
+      }
     });
   };
 
@@ -355,6 +498,7 @@ export function createStore<S extends State>(
       batch: storeBatch,
       pick: storePick,
       omit: storeOmit,
+      parentSync: storeParentSync,
     },
   };
 
