@@ -323,23 +323,6 @@ export function createStore<S extends State>(
       return;
     }
     const allKeysListeners = group.allKeysListeners;
-    if (allKeysListeners && allKeysListeners.size === group.listeners.size) {
-      // Fast path: every listener is an all-keys listener, no keys to check.
-      // Listeners re-keyed to a non-null key during this iteration are dropped
-      // from allKeysListeners and therefore skipped for the current update;
-      // they fire normally on subsequent setStates.
-      for (const listener of allKeysListeners) {
-        const cleanup = disposables.size && disposables.get(listener);
-        if (cleanup) cleanup();
-        const result = listener(state, prevState);
-        if (result) {
-          disposables.set(listener, result);
-        } else if (cleanup) {
-          disposables.delete(listener);
-        }
-      }
-      return;
-    }
     for (const listener of group.listeners) {
       if (!allKeysListeners?.has(listener)) {
         const keys = group.listenerKeys.get(listener);

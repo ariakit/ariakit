@@ -505,6 +505,25 @@ test("registers a batch listener during dispatch and still sees the in-flight di
   ]);
 });
 
+test("fires a re-keyed listener for the currently dispatched key", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+
+  const second = () => {
+    events.push("second");
+  };
+
+  subscribe(store, null, () => {
+    events.push("first");
+    subscribe(store, ["count"], second);
+  });
+  subscribe(store, null, second);
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["first", "second"]);
+});
+
 test("unsubscribes a keyed listener from inside another keyed listener", () => {
   const store = createStore({ count: 0 });
   const events: string[] = [];
