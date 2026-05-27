@@ -246,6 +246,10 @@ function writeNpmignore(rootPath: string) {
   const contents = [
     "# Automatically generated",
     "coverage",
+    "benchmark",
+    "src/test.ts",
+    "src/**/*.test.*",
+    "src/**/__tests__/**",
     "tsconfig*.json",
     "*.log",
     "*.config.*",

@@ -89,6 +89,35 @@ interface DiscoveredRoundFile {
   roundIndex: number;
 }
 
+interface BenchmarkReport {
+  files?: BenchmarkReportFile[];
+}
+
+interface BenchmarkReportFile {
+  filepath?: string;
+  groups?: BenchmarkReportGroup[];
+}
+
+interface BenchmarkReportGroup {
+  fullName?: string;
+  benchmarks?: BenchmarkReportEntry[];
+}
+
+interface BenchmarkReportEntry {
+  name?: string;
+  hz?: number;
+  mean?: number;
+}
+
+export interface PerfCompareOptions {
+  node?: boolean;
+}
+
+export interface PerfCompareRunResult {
+  summary: PersistedComparisonSummary;
+  markdown: string;
+}
+
 // Primary metrics shown in the summary table.
 const PRIMARY_METRICS: MetricKey[] = ["scripting", "rendering", "total"];
 
@@ -120,6 +149,33 @@ const RENDERING_SUB_METRICS = new Set<MetricKey>([
   "painting",
 ]);
 
+function getPrimaryMetrics(options: PerfCompareOptions): MetricKey[] {
+  return options.node ? ["total"] : PRIMARY_METRICS;
+}
+
+function getAllMetrics(options: PerfCompareOptions): MetricKey[] {
+  return options.node ? ["total"] : ALL_METRICS;
+}
+
+function getResultName(options: PerfCompareOptions) {
+  return options.node ? "Benchmark" : "Test";
+}
+
+function getResultsName(options: PerfCompareOptions) {
+  return options.node ? "benchmarks" : "tests";
+}
+
+function getMinSignificantDelta(options: PerfCompareOptions) {
+  return options.node ? 0 : MIN_SIGNIFICANT_DELTA_MS;
+}
+
+function getMetricLabel(metric: MetricKey, options: PerfCompareOptions) {
+  if (options.node && metric === "total") {
+    return "Ops/sec";
+  }
+  return METRIC_LABELS[metric];
+}
+
 function readJsonFile(filePath: string): unknown {
   let contents: string;
   try {
@@ -141,6 +197,98 @@ function readJsonFile(filePath: string): unknown {
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getNumber(value: unknown): number {
+  if (typeof value !== "number") return 0;
+  if (!Number.isFinite(value)) return 0;
+  return value;
+}
+
+function normalizeBenchmarkFilePath(filePath: string) {
+  if (!filePath) return "";
+  const rooted = filePath.match(/(?:^|[\\/])((?:packages|benchmark)[\\/].+)$/);
+  if (rooted?.[1]) {
+    return rooted[1];
+  }
+  return path.relative(process.cwd(), filePath);
+}
+
+function normalizeBenchmarkName(name: string) {
+  return name.replace(/@\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.-]+)?$/, "");
+}
+
+function normalizeBenchmarkGroupName(name: string, filePath: string) {
+  const fileName = path.basename(filePath);
+  return name
+    .split(" > ")
+    .map((part) => part.trim())
+    .filter((part) => {
+      if (!part) return false;
+      if (part === fileName) return false;
+      return normalizeBenchmarkFilePath(part) !== filePath;
+    });
+}
+
+function formatBenchmarkLabel({
+  file,
+  groupName,
+  name,
+}: {
+  file: string;
+  groupName: string;
+  name: string;
+}) {
+  const parts = [...normalizeBenchmarkGroupName(groupName, file), name].filter(
+    Boolean,
+  );
+  return parts.join(" > ");
+}
+
+function createNodeMetrics({ hz, mean }: { hz: number; mean: number }) {
+  const total = hz > 0 ? hz : mean > 0 ? 1000 / mean : 0;
+  return {
+    scripting: 0,
+    layout: 0,
+    styleRecalc: 0,
+    painting: 0,
+    rendering: 0,
+    inp: 0,
+    total,
+  };
+}
+
+function resultsFromBenchmarkReport(report: BenchmarkReport): PerfResult[] {
+  const results: PerfResult[] = [];
+  for (const file of report.files ?? []) {
+    const filePath = normalizeBenchmarkFilePath(file.filepath ?? "");
+    for (const group of file.groups ?? []) {
+      const groupName = group.fullName ?? "";
+      for (const benchmark of group.benchmarks ?? []) {
+        const name = benchmark.name ?? "";
+        const normalizedName = normalizeBenchmarkName(name);
+        const metrics = createNodeMetrics({
+          hz: getNumber(benchmark.hz),
+          mean: getNumber(benchmark.mean),
+        });
+        const label = formatBenchmarkLabel({
+          file: filePath,
+          groupName,
+          name: normalizedName,
+        });
+        results.push({
+          testFile: filePath,
+          testTitle: groupName
+            ? `${groupName} > ${normalizedName}`
+            : normalizedName,
+          label,
+          metrics,
+          raw: [metrics],
+        });
+      }
+    }
+  }
+  return results;
 }
 
 // Discover round files like `baseline-1-worker0.json` and
@@ -179,10 +327,21 @@ function discoverRoundFiles(prefix: string): DiscoveredRoundFile[] {
   }));
 }
 
-function loadRounds(prefix: string): RoundPerfResult[] {
+function loadRounds(
+  prefix: string,
+  options: PerfCompareOptions,
+): RoundPerfResult[] {
   const rounds: RoundPerfResult[] = [];
   for (const { filePath, roundIndex } of discoverRoundFiles(prefix)) {
     const data = readJsonFile(filePath);
+    if (options.node && !Array.isArray(data)) {
+      for (const result of resultsFromBenchmarkReport(
+        data as BenchmarkReport,
+      )) {
+        rounds.push({ roundIndex, result });
+      }
+      continue;
+    }
     if (!Array.isArray(data)) {
       throw new Error(
         `Invalid perf results format at ${filePath}: expected an array of results.`,
@@ -322,13 +481,15 @@ function requiredAgreement(roundsCount: number) {
 function computeSignificance({
   baseline,
   current,
-  metric,
+  minDelta,
+  primary,
   percent,
   perRoundDeltas,
 }: {
   baseline: number;
   current: number;
-  metric: MetricKey;
+  minDelta: number;
+  primary: boolean;
   percent: number;
   perRoundDeltas: number[];
 }) {
@@ -346,16 +507,15 @@ function computeSignificance({
   }
 
   const percentOk = Math.abs(percent) > THRESHOLD_PERCENT;
-  const deltaOk = Math.abs(delta) >= MIN_SIGNIFICANT_DELTA_MS;
+  const deltaOk = Math.abs(delta) >= minDelta;
   const zeroBaselineOk =
-    baseline === 0 && Math.abs(current) >= MIN_SIGNIFICANT_DELTA_MS;
+    baseline === 0 && current !== baseline && Math.abs(current) >= minDelta;
   const magnitudeOk = baseline === 0 ? zeroBaselineOk : percentOk && deltaOk;
   const agreementOk = agreement >= requiredAgreement(perRoundDeltas.length);
-  const primaryMetric = PRIMARY_METRICS.includes(metric);
 
   return {
     agreement,
-    significant: primaryMetric && magnitudeOk && agreementOk,
+    significant: primary && magnitudeOk && agreementOk,
   };
 }
 
@@ -363,12 +523,35 @@ function formatMs(value: number): string {
   return `${value.toFixed(1)}ms`;
 }
 
-function formatDelta(delta: number, percent: number, baseline: number): string {
-  const sign = delta >= 0 ? "+" : "";
-  if (baseline === 0) {
-    return `${sign}${formatMs(delta)}`;
+function formatOpsPerSecond(value: number) {
+  const abs = Math.abs(value);
+  const maximumFractionDigits = abs >= 100 ? 0 : abs >= 10 ? 1 : 2;
+  return `${value.toLocaleString("en-US", { maximumFractionDigits })} ops/sec`;
+}
+
+function formatMetricValue(
+  value: number,
+  options: PerfCompareOptions,
+  signed = false,
+) {
+  const sign = signed && value >= 0 ? "+" : "";
+  if (options.node) {
+    return `${sign}${formatOpsPerSecond(value)}`;
   }
-  return `${sign}${formatMs(delta)} (${sign}${percent.toFixed(0)}%)`;
+  return `${sign}${formatMs(value)}`;
+}
+
+function formatDelta(
+  delta: number,
+  percent: number,
+  baseline: number,
+  options: PerfCompareOptions,
+): string {
+  if (baseline === 0) {
+    return formatMetricValue(delta, options, true);
+  }
+  const sign = delta >= 0 ? "+" : "";
+  return `${formatMetricValue(delta, options, true)} (${sign}${percent.toFixed(0)}%)`;
 }
 
 function formatPercent(value: number): string {
@@ -394,9 +577,21 @@ function hasProfile(
   return (result.result.profiles?.[profile]?.length ?? 0) > 0;
 }
 
-function compare(): ComparisonSummary {
-  const baseline = aggregateByKey(loadRounds("baseline"));
-  const current = aggregateByKey(loadRounds("current"));
+function isRegression(row: ComparisonRow, options: PerfCompareOptions) {
+  return options.node ? row.delta < 0 : row.delta > 0;
+}
+
+function getSignificanceIcon(row: ComparisonRow, options: PerfCompareOptions) {
+  if (!row.significant) return "";
+  return isRegression(row, options) ? " :warning:" : " :rocket:";
+}
+
+function compare(options: PerfCompareOptions): ComparisonSummary {
+  const baseline = aggregateByKey(loadRounds("baseline", options));
+  const current = aggregateByKey(loadRounds("current", options));
+  const primaryMetrics = getPrimaryMetrics(options);
+  const allMetrics = getAllMetrics(options);
+  const minDelta = getMinSignificantDelta(options);
 
   const rows: ComparisonRow[] = [];
   const profileModeMismatches: ProfileModeMismatch[] = [];
@@ -434,7 +629,7 @@ function compare(): ComparisonSummary {
       continue;
     }
 
-    for (const metric of ALL_METRICS) {
+    for (const metric of allMetrics) {
       const baselineValues: number[] = [];
       const currentValues: number[] = [];
       const perRoundDeltas: number[] = [];
@@ -456,7 +651,8 @@ function compare(): ComparisonSummary {
       const { agreement, significant } = computeSignificance({
         baseline: baseVal,
         current: curVal,
-        metric,
+        minDelta,
+        primary: primaryMetrics.includes(metric),
         percent,
         perRoundDeltas,
       });
@@ -510,28 +706,129 @@ function formatRoundList(rounds: number[]): string {
   return rounds.join(", ");
 }
 
-function formatSummaryTable(rows: ComparisonRow[], keys: string[]): string[] {
+function groupRowsByFile(rows: ComparisonRow[]) {
+  const grouped = new Map<string, ComparisonRow[]>();
+  for (const row of rows) {
+    const rowsForFile = grouped.get(row.testFile);
+    if (rowsForFile) {
+      rowsForFile.push(row);
+    } else {
+      grouped.set(row.testFile, [row]);
+    }
+  }
+  return grouped;
+}
+
+function groupResultsByFile(results: AggregatedPerfResult[]) {
+  const grouped = new Map<string, AggregatedPerfResult[]>();
+  for (const result of results) {
+    const resultsForFile = grouped.get(result.result.testFile);
+    if (resultsForFile) {
+      resultsForFile.push(result);
+    } else {
+      grouped.set(result.result.testFile, [result]);
+    }
+  }
+  return grouped;
+}
+
+function formatFileHeading(file: string) {
+  return file || "Unknown file";
+}
+
+function sortEntriesByFile<T>(entries: Iterable<[string, T]>) {
+  return [...entries].sort(([a], [b]) => a.localeCompare(b));
+}
+
+function formatNodeComparisonTables(
+  rows: ComparisonRow[],
+  keys: string[],
+  options: PerfCompareOptions,
+) {
   const lines: string[] = [];
-  lines.push("| Test | Scripting | Rendering | Total |");
-  lines.push("|------|-----------|-----------|-------|");
+  const keySet = new Set(keys);
+  const visibleRows = rows.filter((row) => {
+    if (row.metric !== "total") return false;
+    return keySet.has(rowKey(row));
+  });
+  for (const [file, fileRows] of sortEntriesByFile(
+    groupRowsByFile(visibleRows),
+  )) {
+    lines.push(`#### ${formatFileHeading(file)}`);
+    lines.push("");
+    lines.push("| Benchmark | Baseline | Current | Change |");
+    lines.push("|-----------|----------|---------|--------|");
+    for (const row of fileRows) {
+      const delta = formatDelta(row.delta, row.percent, row.baseline, options);
+      const icon = getSignificanceIcon(row, options);
+      lines.push(
+        `| ${escapeTableCell(row.label)} | ${formatMetricValue(row.baseline, options)} | ${formatMetricValue(row.current, options)} | ${delta}${icon} |`,
+      );
+    }
+    lines.push("");
+  }
+  return lines;
+}
+
+function formatNodeResultTables(
+  results: AggregatedPerfResult[],
+  options: PerfCompareOptions,
+) {
+  const lines: string[] = [];
+  for (const [file, fileResults] of sortEntriesByFile(
+    groupResultsByFile(results),
+  )) {
+    lines.push(`#### ${formatFileHeading(file)}`);
+    lines.push("");
+    lines.push(`| Benchmark | ${getMetricLabel("total", options)} |`);
+    lines.push("|-----------|---------|");
+    for (const { result } of fileResults) {
+      lines.push(
+        `| ${escapeTableCell(result.label)} | ${formatMetricValue(result.metrics.total, options)} |`,
+      );
+    }
+    lines.push("");
+  }
+  return lines;
+}
+
+function formatSummaryTable(
+  rows: ComparisonRow[],
+  keys: string[],
+  options: PerfCompareOptions,
+): string[] {
+  if (options.node) {
+    return formatNodeComparisonTables(rows, keys, options);
+  }
+  const lines: string[] = [];
+  const primaryMetrics = getPrimaryMetrics(options);
+  const headers = [
+    getResultName(options),
+    ...primaryMetrics.map((metric) => getMetricLabel(metric, options)),
+  ];
+  lines.push(`| ${headers.join(" | ")} |`);
+  lines.push(`| ${headers.map(() => "---").join(" | ")} |`);
 
   for (const key of keys) {
     const testRows = rows.filter((r) => rowKey(r) === key);
     const label = testRows[0]?.label ?? key;
     const cells: string[] = [label];
-    for (const metric of PRIMARY_METRICS) {
+    for (const metric of primaryMetrics) {
       const row = testRows.find((r) => r.metric === metric);
       if (!row) {
         cells.push("--");
         continue;
       }
-      let cell = `${formatMs(row.baseline)} \u2192 ${formatMs(row.current)}`;
+      let cell = `${formatMetricValue(row.baseline, options)} \u2192 ${formatMetricValue(
+        row.current,
+        options,
+      )}`;
       cell +=
         row.baseline === 0
           ? " (n/a)"
           : ` (${row.delta >= 0 ? "+" : ""}${row.percent.toFixed(0)}%)`;
       if (row.significant) {
-        cell += row.delta > 0 ? " :warning:" : " :rocket:";
+        cell += getSignificanceIcon(row, options);
       }
       cells.push(cell);
     }
@@ -615,8 +912,13 @@ function formatDetailedBreakdown(
   rows: ComparisonRow[],
   keys: string[],
   currentByKey: Map<string, AggregatedPerfResult>,
+  options: PerfCompareOptions,
 ): string[] {
+  if (options.node) {
+    return formatNodeComparisonTables(rows, keys, options);
+  }
   const lines: string[] = [];
+  const allMetrics = getAllMetrics(options);
   for (const key of keys) {
     const testRows = rows.filter((r) => rowKey(r) === key);
     const label = testRows[0]?.label ?? key;
@@ -624,18 +926,20 @@ function formatDetailedBreakdown(
     lines.push("");
     lines.push("| Metric | Baseline | Current | Delta |");
     lines.push("|--------|----------|---------|-------|");
-    for (const metric of ALL_METRICS) {
+    for (const metric of allMetrics) {
       const row = testRows.find((r) => r.metric === metric);
       if (!row) continue;
       const prefix = RENDERING_SUB_METRICS.has(metric) ? "- " : "";
-      const metricLabel = `${prefix}${METRIC_LABELS[metric]}`;
-      const deltaStr = formatDelta(row.delta, row.percent, row.baseline);
-      let icon = "";
-      if (row.significant) {
-        icon = row.delta > 0 ? " :warning:" : " :rocket:";
-      }
+      const metricLabel = `${prefix}${getMetricLabel(metric, options)}`;
+      const deltaStr = formatDelta(
+        row.delta,
+        row.percent,
+        row.baseline,
+        options,
+      );
+      const icon = getSignificanceIcon(row, options);
       lines.push(
-        `| ${metricLabel} | ${formatMs(row.baseline)} | ${formatMs(row.current)} | ${deltaStr}${icon} |`,
+        `| ${metricLabel} | ${formatMetricValue(row.baseline, options)} | ${formatMetricValue(row.current, options)} | ${deltaStr}${icon} |`,
       );
     }
     lines.push("");
@@ -644,7 +948,10 @@ function formatDetailedBreakdown(
   return lines;
 }
 
-function formatMarkdown(summary: ComparisonSummary): string {
+function formatMarkdown(
+  summary: ComparisonSummary,
+  options: PerfCompareOptions,
+): string {
   const {
     rows,
     hasSignificantChanges,
@@ -670,13 +977,15 @@ function formatMarkdown(summary: ComparisonSummary): string {
     newTests.length +
     removedTests.length +
     unpairedTests.length;
+  const resultsName = getResultsName(options);
+  const resultName = getResultName(options);
 
   const lines: string[] = [];
   lines.push("## Performance");
   lines.push("");
 
   if (hasSignificantChanges) {
-    lines.push(...formatSummaryTable(rows, significantKeys));
+    lines.push(...formatSummaryTable(rows, significantKeys, options));
   } else if (rows.length === 0 && newTests.length > 0) {
     lines.push("No baseline results available for comparison.");
   } else if (rows.length === 0 && unpairedTests.length > 0) {
@@ -691,7 +1000,8 @@ function formatMarkdown(summary: ComparisonSummary): string {
     const visibleUnpairedTests = unpairedTests.slice(0, 5);
     const hiddenUnpairedTests =
       unpairedTests.length - visibleUnpairedTests.length;
-    const label = unpairedTests.length === 1 ? "test" : "tests";
+    const label =
+      unpairedTests.length === 1 ? resultName.toLowerCase() : resultsName;
     const verb = unpairedTests.length === 1 ? "was" : "were";
     lines.push("");
     lines.push(
@@ -708,23 +1018,34 @@ function formatMarkdown(summary: ComparisonSummary): string {
   lines.push("");
   lines.push(...formatProfileModeWarning(profileModeMismatches));
   lines.push(`<details>`);
-  lines.push(`<summary>Full breakdown (${totalTests} tests)</summary>`);
+  lines.push(
+    `<summary>Full breakdown (${totalTests} ${resultsName})</summary>`,
+  );
   lines.push("");
-  lines.push(...formatDetailedBreakdown(rows, allKeys, currentByKey));
+  lines.push(...formatDetailedBreakdown(rows, allKeys, currentByKey, options));
 
   if (newTests.length > 0) {
-    lines.push("### New tests (no baseline)");
+    const primaryMetrics = getPrimaryMetrics(options);
+    lines.push(`### New ${resultsName} (no baseline)`);
     lines.push("");
-    lines.push("| Test | Scripting | Rendering | Total |");
-    lines.push("|------|-----------|-----------|-------|");
-    for (const { result } of newTests) {
-      const cells: string[] = [result.label];
-      for (const metric of PRIMARY_METRICS) {
-        cells.push(formatMs(result.metrics[metric]));
+    if (options.node) {
+      lines.push(...formatNodeResultTables(newTests, options));
+    } else {
+      const headers = [
+        resultName,
+        ...primaryMetrics.map((metric) => getMetricLabel(metric, options)),
+      ];
+      lines.push(`| ${headers.join(" | ")} |`);
+      lines.push(`| ${headers.map(() => "---").join(" | ")} |`);
+      for (const { result } of newTests) {
+        const cells: string[] = [result.label];
+        for (const metric of primaryMetrics) {
+          cells.push(formatMetricValue(result.metrics[metric], options));
+        }
+        lines.push(`| ${cells.join(" | ")} |`);
       }
-      lines.push(`| ${cells.join(" | ")} |`);
+      lines.push("");
     }
-    lines.push("");
 
     for (const { result } of newTests) {
       const profileLines = formatProfiles(result);
@@ -736,13 +1057,13 @@ function formatMarkdown(summary: ComparisonSummary): string {
   }
 
   if (unpairedTests.length > 0) {
-    lines.push("### Unpaired tests");
+    lines.push(`### Unpaired ${resultsName}`);
     lines.push("");
     lines.push(
-      "These tests produced baseline and current results, but no shared round index.",
+      `These ${resultsName} produced baseline and current results, but no shared round index.`,
     );
     lines.push("");
-    lines.push("| Test | Baseline rounds | Current rounds |");
+    lines.push(`| ${resultName} | Baseline rounds | Current rounds |`);
     lines.push("|------|-----------------|----------------|");
     for (const result of unpairedTests) {
       lines.push(
@@ -753,24 +1074,39 @@ function formatMarkdown(summary: ComparisonSummary): string {
   }
 
   if (removedTests.length > 0) {
-    lines.push("### Removed tests");
+    lines.push(`### Removed ${resultsName}`);
     lines.push("");
-    for (const { result } of removedTests) {
-      lines.push(`- ${result.label}`);
+    if (options.node) {
+      for (const [file, fileResults] of sortEntriesByFile(
+        groupResultsByFile(removedTests),
+      )) {
+        lines.push(`#### ${formatFileHeading(file)}`);
+        lines.push("");
+        for (const { result } of fileResults) {
+          lines.push(`- ${result.label}`);
+        }
+        lines.push("");
+      }
+    } else {
+      for (const { result } of removedTests) {
+        lines.push(`- ${result.label}`);
+      }
+      lines.push("");
     }
-    lines.push("");
   }
 
   lines.push("</details>");
   lines.push("");
 
   lines.push(
-    `:warning: = regression above ${THRESHOLD_PERCENT}% and ${formatMs(MIN_SIGNIFICANT_DELTA_MS)} · :rocket: = improvement above ${THRESHOLD_PERCENT}% and ${formatMs(MIN_SIGNIFICANT_DELTA_MS)}`,
+    options.node
+      ? `:warning: = regression above ${THRESHOLD_PERCENT}% · :rocket: = improvement above ${THRESHOLD_PERCENT}%`
+      : `:warning: = regression above ${THRESHOLD_PERCENT}% and ${formatMs(MIN_SIGNIFICANT_DELTA_MS)} · :rocket: = improvement above ${THRESHOLD_PERCENT}% and ${formatMs(MIN_SIGNIFICANT_DELTA_MS)}`,
   );
   if (pairedRoundsCount == null) {
     lines.push("");
     lines.push(
-      "Compared tests used mixed interleaved round counts; a change is flagged only when the median exceeds the threshold and rounds agree on direction.",
+      `Compared ${resultsName} used mixed interleaved round counts; a change is flagged only when the median exceeds the threshold and rounds agree on direction.`,
     );
   } else if (pairedRoundsCount > 1) {
     lines.push("");
@@ -796,15 +1132,19 @@ function toPersistedSummary(
   };
 }
 
-// Main
-const summary = compare();
-const markdown = formatMarkdown(summary);
+export function runPerfCompare(
+  options: PerfCompareOptions = {},
+): PerfCompareRunResult {
+  const summary = compare(options);
+  const persistedSummary = toPersistedSummary(summary);
+  const markdown = formatMarkdown(summary, options);
 
-mkdirSync(RESULTS_DIR, { recursive: true });
-writeFileSync(
-  path.join(RESULTS_DIR, "comparison.json"),
-  JSON.stringify(toPersistedSummary(summary), null, 2),
-);
-writeFileSync(path.join(RESULTS_DIR, "comparison.md"), markdown);
+  mkdirSync(RESULTS_DIR, { recursive: true });
+  writeFileSync(
+    path.join(RESULTS_DIR, "comparison.json"),
+    JSON.stringify(persistedSummary, null, 2),
+  );
+  writeFileSync(path.join(RESULTS_DIR, "comparison.md"), markdown);
 
-console.log(markdown);
+  return { summary: persistedSummary, markdown };
+}
