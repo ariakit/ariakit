@@ -3,20 +3,42 @@ import {
   createStore,
   init,
   mergeStore,
+  omit,
   pick,
+  setup,
   subscribe,
+  sync,
 } from "@ariakit/store";
 import { bench } from "vitest";
 
+interface BenchmarkItem {
+  id: string;
+  value: string;
+  disabled?: boolean;
+}
+
 interface BenchmarkState {
   activeId: string | null;
+  activeValue?: string;
+  animating: boolean;
+  anchorElement: unknown;
+  arrowElement: unknown;
+  baseElement: unknown;
   busy: boolean;
+  contentElement: unknown;
   count: number;
   disabled: boolean;
+  disclosureElement: unknown;
   focused: boolean;
-  items: string[];
+  focusLoop: boolean;
+  focusWrap: boolean;
+  items: BenchmarkItem[];
   mounted: boolean;
+  moves: number;
   open: boolean;
+  popoverElement: unknown;
+  renderedItems: BenchmarkItem[];
+  rtl: boolean;
   selectedId: string | null;
   value: string;
 }
@@ -27,16 +49,31 @@ const options = {
 };
 
 const itemIds = Array.from({ length: 100 }, (_, index) => `item-${index}`);
+const items = itemIds.map((id) => ({ id, value: id }));
+const itemById = new Map(items.map((item) => [item.id, item]));
 
 const initialState: BenchmarkState = {
   activeId: null,
+  activeValue: undefined,
+  animating: false,
+  anchorElement: null,
+  arrowElement: null,
+  baseElement: null,
   busy: false,
+  contentElement: null,
   count: 0,
   disabled: false,
+  disclosureElement: null,
   focused: false,
-  items: itemIds,
+  focusLoop: true,
+  focusWrap: true,
+  items,
   mounted: false,
+  moves: 0,
   open: false,
+  popoverElement: null,
+  renderedItems: items,
+  rtl: false,
   selectedId: null,
   value: "",
 };
@@ -57,6 +94,74 @@ function createBenchmarkStore(count = 0) {
   return createStore({ ...initialState, count });
 }
 
+function getItem(id: string | null) {
+  if (id == null) return;
+  return itemById.get(id);
+}
+
+function setupBenchmarkDerivedState(
+  store: ReturnType<typeof createBenchmarkStore>,
+) {
+  setup(store, () =>
+    sync(store, ["open", "animating"], (state) => {
+      store.setState("mounted", state.open || state.animating);
+    }),
+  );
+
+  setup(store, () =>
+    sync(store, ["moves", "activeId"], (state, prevState) => {
+      if (state.moves !== prevState.moves) return;
+      store.setState("activeValue", undefined);
+    }),
+  );
+
+  setup(store, () =>
+    batch(store, ["moves", "renderedItems"], (state, prevState) => {
+      if (state.moves === prevState.moves) return;
+      const { activeId } = store.getState();
+      const activeItem = getItem(activeId);
+      store.setState("activeValue", activeItem?.value);
+    }),
+  );
+}
+
+function createMergedStoreChain(count = 0) {
+  const externalStore = createBenchmarkStore(count);
+  const tagStore = createBenchmarkStore(count);
+  const popoverStore = createBenchmarkStore(count);
+  // Keep a direct parent store to model component stores that extend composite
+  // state alongside merged external state.
+  const compositeStore = createBenchmarkStore(count);
+
+  const mergedStore = mergeStore(
+    externalStore,
+    pick(tagStore, ["value", "rtl"]),
+    omit(popoverStore, [
+      "arrowElement",
+      "anchorElement",
+      "baseElement",
+      "contentElement",
+      "disclosureElement",
+      "items",
+      "popoverElement",
+      "renderedItems",
+    ]),
+  );
+
+  const state: BenchmarkState = {
+    ...initialState,
+    ...mergedStore.getState(),
+    count,
+    activeId: itemIds[0] ?? null,
+  };
+
+  const store = createStore(state, compositeStore, mergedStore);
+
+  setupBenchmarkDerivedState(store);
+
+  return { externalStore, popoverStore, store, tagStore };
+}
+
 function flushBatch() {
   return new Promise<void>((resolve) => queueMicrotask(resolve));
 }
@@ -65,9 +170,12 @@ const readStore = createBenchmarkStore();
 const updateStore = createBenchmarkStore();
 const selectedSubscribersStore = createBenchmarkStore();
 const unrelatedSubscribersStore = createBenchmarkStore();
+const reactSubscribersStore = createBenchmarkStore();
 const batchStore = createBenchmarkStore();
+const cascadingStore = createBenchmarkStore();
 const parentStore = createBenchmarkStore();
 const syncedStore = createStore({ ...initialState }, parentStore);
+const mergedChain = createMergedStoreChain();
 
 for (let i = 0; i < 200; i += 1) {
   subscribe(selectedSubscribersStore, ["count"], (state) => {
@@ -76,13 +184,20 @@ for (let i = 0; i < 200; i += 1) {
   subscribe(unrelatedSubscribersStore, ["activeId"], (state) => {
     consume(state.activeId);
   });
+  subscribe(reactSubscribersStore, null, () => {
+    consume(counter);
+  });
 }
 
 batch(batchStore, ["count", "value"], (state) => {
   consume(state.count);
 });
 
+setupBenchmarkDerivedState(cascadingStore);
+
 init(syncedStore);
+init(cascadingStore);
+init(mergedChain.store);
 
 bench(
   "create store",
@@ -142,11 +257,46 @@ bench(
 );
 
 bench(
-  "set synced parent state",
+  "set synced child state",
   async () => {
     syncedStore.setState("count", nextValue());
     await flushBatch();
     consume(parentStore.getState().count);
+  },
+  options,
+);
+
+bench(
+  "set synced source state",
+  async () => {
+    parentStore.setState("count", nextValue());
+    await flushBatch();
+    consume(syncedStore.getState().count);
+  },
+  options,
+);
+
+bench(
+  "set state with React subscribers",
+  async () => {
+    reactSubscribersStore.setState("count", nextValue());
+    await flushBatch();
+  },
+  options,
+);
+
+bench(
+  "cascade setup listeners",
+  async () => {
+    const value = nextValue();
+    cascadingStore.setState("open", value % 2 === 0);
+    cascadingStore.setState(
+      "activeId",
+      itemIds[value % itemIds.length] ?? null,
+    );
+    cascadingStore.setState("moves", value);
+    await flushBatch();
+    consume(cascadingStore.getState().activeValue);
   },
   options,
 );
@@ -159,6 +309,17 @@ bench(
     const cleanup = init(pickedStore);
     consume(pickedStore?.getState());
     cleanup?.();
+  },
+  options,
+);
+
+bench(
+  "initialize merged store chain",
+  () => {
+    const { store } = createMergedStoreChain(nextValue());
+    const cleanup = init(store);
+    consume(store.getState());
+    cleanup();
   },
   options,
 );
@@ -177,6 +338,53 @@ bench(
       value: "value",
     });
     consume(mergeStore(firstStore, secondStore).getState());
+  },
+  options,
+);
+
+bench(
+  "set merged source state",
+  async () => {
+    mergedChain.externalStore.setState("count", nextValue());
+    await flushBatch();
+    consume(mergedChain.store.getState().count);
+  },
+  options,
+);
+
+bench(
+  "set merged picked source state",
+  async () => {
+    mergedChain.tagStore.setState("value", String(nextValue()));
+    await flushBatch();
+    consume(mergedChain.store.getState().value);
+  },
+  options,
+);
+
+bench(
+  "set merged omitted source state",
+  async () => {
+    // Use a non-derived popover key so this isolates omit propagation.
+    mergedChain.popoverStore.setState("focused", nextValue() % 2 === 0);
+    await flushBatch();
+    consume(mergedChain.store.getState().focused);
+  },
+  options,
+);
+
+bench(
+  "set merged derived state",
+  async () => {
+    const value = nextValue();
+    mergedChain.store.setState("open", value % 2 === 0);
+    mergedChain.store.setState(
+      "activeId",
+      itemIds[value % itemIds.length] ?? null,
+    );
+    mergedChain.store.setState("moves", value);
+    await flushBatch();
+    consume(mergedChain.store.getState().activeValue);
   },
   options,
 );
