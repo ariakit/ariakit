@@ -145,6 +145,26 @@ test("does not notify listeners for strict-equal values", () => {
   expect(store.getState()).toEqual({ count: 0, object: { id: 1 } });
 });
 
+test("passes immutable state snapshots to listeners", () => {
+  const store = createStore({ count: 0, label: "a" });
+  const initialState = store.getState();
+  const calls: Array<[StoreState<typeof store>, StoreState<typeof store>]> = [];
+
+  subscribe(store, null, (state, prevState) => {
+    calls.push([state, prevState]);
+  });
+
+  store.setState("count", 1);
+
+  const nextState = store.getState();
+
+  expect(nextState).not.toBe(initialState);
+  expect(initialState).toEqual({ count: 0, label: "a" });
+  expect(calls).toHaveLength(1);
+  expect(calls[0]?.[0]).toBe(nextState);
+  expect(calls[0]?.[1]).toBe(initialState);
+});
+
 test("subscribes to selected state changes", () => {
   const store = createStore({ count: 0, label: "a" });
   const calls: Array<[number, number]> = [];
@@ -165,6 +185,44 @@ test("subscribes to selected state changes", () => {
   store.setState("count", 2);
 
   expect(calls).toEqual([[1, 0]]);
+});
+
+test("captures selected state keys when subscribing", () => {
+  const store = createStore({ count: 0, label: "a" });
+  const keys: Array<"count" | "label"> = ["count"];
+  const listener = vi.fn();
+
+  subscribe(store, keys, listener);
+
+  keys[0] = "label";
+
+  store.setState("label", "b");
+  expect(listener).not.toHaveBeenCalled();
+
+  store.setState("count", 1);
+  expect(listener).toHaveBeenCalledOnce();
+});
+
+test("keeps reused listener callbacks on their latest keys", () => {
+  const store = createStore({ count: 0, label: "a" });
+  const listener = vi.fn();
+
+  subscribe(store, ["count"], listener);
+  const unsubscribe = subscribe(store, ["label"], listener);
+
+  store.setState("count", 1);
+  expect(listener).not.toHaveBeenCalled();
+
+  store.setState("label", "b");
+  expect(listener).toHaveBeenCalledOnce();
+
+  listener.mockClear();
+  unsubscribe();
+
+  store.setState("count", 2);
+  store.setState("label", "c");
+
+  expect(listener).not.toHaveBeenCalled();
 });
 
 test("sync runs immediately and cleans up before rerun and unsubscribe", () => {
@@ -208,6 +266,27 @@ test("subscribe cleans up before rerun and unsubscribe", () => {
 
   unsubscribe();
   expect(events).toEqual(["run 1", "cleanup 1", "run 2", "cleanup 2"]);
+});
+
+test("sync listeners can set state reentrantly", () => {
+  const store = createStore({ open: false, mounted: false });
+  const calls: Array<[boolean, boolean, boolean, boolean]> = [];
+
+  sync(store, ["open", "mounted"], (state, prevState) => {
+    calls.push([prevState.open, state.open, prevState.mounted, state.mounted]);
+    if (state.mounted !== state.open) {
+      store.setState("mounted", state.open);
+    }
+  });
+
+  store.setState("open", true);
+
+  expect(store.getState()).toEqual({ open: true, mounted: true });
+  expect(calls).toEqual([
+    [false, false, false, false],
+    [false, true, false, false],
+    [true, true, false, true],
+  ]);
 });
 
 test("batch runs immediately and coalesces state changes", async () => {
@@ -260,6 +339,52 @@ test("batch runs immediately and coalesces state changes", async () => {
   await flushBatch();
 
   expect(calls).toHaveLength(2);
+});
+
+test("batch listeners can set state for later batch listeners", async () => {
+  const store = createStore({ count: 0, derived: 0 });
+  const derived = vi.fn();
+
+  batch(store, ["count"], (state) => {
+    store.setState("derived", state.count * 2);
+  });
+
+  batch(store, ["derived"], (state, prevState) => {
+    derived(state.derived, prevState.derived);
+  });
+
+  derived.mockClear();
+
+  store.setState("count", 1);
+  await flushBatch();
+  await flushBatch();
+
+  expect(store.getState()).toEqual({ count: 1, derived: 2 });
+  expect(derived).toHaveBeenCalledOnce();
+  expect(derived).toHaveBeenLastCalledWith(2, 0);
+});
+
+test("batch listeners can set state for earlier batch listeners", async () => {
+  const store = createStore({ count: 0, derived: 0 });
+  const derived = vi.fn();
+
+  batch(store, ["derived"], (state, prevState) => {
+    derived(state.derived, prevState.derived);
+  });
+
+  batch(store, ["count"], (state) => {
+    store.setState("derived", state.count * 2);
+  });
+
+  derived.mockClear();
+
+  store.setState("count", 1);
+  await flushBatch();
+  await flushBatch();
+
+  expect(store.getState()).toEqual({ count: 1, derived: 2 });
+  expect(derived).toHaveBeenCalledOnce();
+  expect(derived).toHaveBeenLastCalledWith(2, 0);
 });
 
 test("does not rerun empty-key sync and batch listeners after registration", async () => {
@@ -347,6 +472,94 @@ test("keeps extended stores in sync while initialized", () => {
 
   parent.setState("count", 3);
   expect(child.getState().count).toBe(2);
+});
+
+test("keeps a shared parent initialized until every child is cleaned up", () => {
+  const parent = createStore({ count: 0 });
+  const events: string[] = [];
+
+  setup(parent, () => {
+    events.push("setup");
+    return () => events.push("teardown");
+  });
+
+  const childA = createStore({ count: 0 }, parent);
+  const childB = createStore({ count: 0 }, parent);
+
+  const cleanupA = init(childA);
+  const cleanupB = init(childB);
+
+  expect(events).toEqual(["setup"]);
+
+  cleanupA();
+  expect(events).toEqual(["setup"]);
+
+  parent.setState("count", 1);
+  expect(childA.getState().count).toBe(0);
+  expect(childB.getState().count).toBe(1);
+
+  cleanupB();
+  expect(events).toEqual(["setup", "teardown"]);
+});
+
+test("initializes extended stores with argument-order precedence", () => {
+  const first = createStore({ count: 1 });
+  const second = createStore({ count: 2 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+
+  expect(child.getState().count).toBe(2);
+
+  first.setState("count", 3);
+  expect(child.getState().count).toBe(3);
+
+  second.setState("count", 4);
+  expect(child.getState().count).toBe(4);
+
+  child.setState("count", 5);
+  expect(first.getState().count).toBe(5);
+  expect(second.getState().count).toBe(5);
+
+  cleanup();
+});
+
+test("keeps partial extended stores in sync while initialized", () => {
+  const first = createStore({ first: "first", shared: "first" });
+  const second = createStore({ shared: "second" });
+  const child = createStore(
+    { first: "child", shared: "child", child: "child" },
+    first,
+    second,
+  );
+
+  const cleanup = init(child);
+
+  expect(child.getState()).toEqual({
+    first: "first",
+    shared: "second",
+    child: "child",
+  });
+
+  first.setState("first", "updated first");
+  expect(child.getState().first).toBe("updated first");
+
+  first.setState("shared", "updated first shared");
+  expect(child.getState().shared).toBe("updated first shared");
+
+  second.setState("shared", "updated second shared");
+  expect(child.getState().shared).toBe("updated second shared");
+
+  child.setState("first", "updated child first");
+  child.setState("shared", "updated child shared");
+
+  expect(first.getState()).toEqual({
+    first: "updated child first",
+    shared: "updated child shared",
+  });
+  expect(second.getState()).toEqual({ shared: "updated child shared" });
+
+  cleanup();
 });
 
 test("creates live picked and omitted stores", () => {
