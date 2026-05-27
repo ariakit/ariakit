@@ -2,4 +2,4 @@
 "@ariakit/store": patch
 ---
 
-Improved store update performance for keyed subscriptions and merged stores.
+Improved store update performance with a focus on listener dispatch, microtask batching, and merged store initialization.
