@@ -37,6 +37,8 @@ interface ListenerGroup<S> {
   listeners: Set<Listener<S>>;
   listenersByKey?: ListenerMap<S>;
   allKeysListeners?: Set<Listener<S>>;
+  disposables: WeakMap<Listener<S>, void | (() => void)>;
+  listenerKeys: WeakMap<Listener<S>, Array<keyof S> | null>;
 }
 
 interface StoreInternals<S = State> {
@@ -123,10 +125,16 @@ export function createStore<S extends State>(
   const updatedKeys = new Set<keyof S>();
 
   const setups = new Set<() => void | (() => void)>();
-  const syncListeners: ListenerGroup<S> = { listeners: new Set() };
-  const batchListenerGroup: ListenerGroup<S> = { listeners: new Set() };
-  const disposables = new WeakMap<Listener<S>, void | (() => void)>();
-  const listenerKeys = new WeakMap<Listener<S>, Array<keyof S> | null>();
+  const syncListeners: ListenerGroup<S> = {
+    listeners: new Set(),
+    disposables: new WeakMap(),
+    listenerKeys: new WeakMap(),
+  };
+  const batchListenerGroup: ListenerGroup<S> = {
+    listeners: new Set(),
+    disposables: new WeakMap(),
+    listenerKeys: new WeakMap(),
+  };
 
   const storeSetup: StoreSetup = (callback) => {
     setups.add(callback);
@@ -138,7 +146,7 @@ export function createStore<S extends State>(
     // other stores. However, the store can't be destroyed until all instances
     // are unmounted. See https://github.com/ariakit/ariakit/issues/3147. See
     // select-default-open-controlled tests.
-    const initialized = instances.size;
+    const initializedInstances = instances.size;
     const instance = Symbol();
     instances.add(instance);
 
@@ -148,7 +156,7 @@ export function createStore<S extends State>(
       destroy();
     };
 
-    if (initialized) return maybeDestroy;
+    if (initializedInstances) return maybeDestroy;
 
     const stateKeys = getKeys(state);
     const desyncs: Array<void | (() => void)> = [];
@@ -175,11 +183,11 @@ export function createStore<S extends State>(
         }
         continue;
       }
-      let initialized = false;
+      let didSyncInitialState = false;
       desyncs.push(
         sync(store, keys, (state, prevState) => {
           for (const key of keys) {
-            if (initialized && state[key] === prevState[key]) continue;
+            if (didSyncInitialState && state[key] === prevState[key]) continue;
             setState(
               key,
               state[key],
@@ -188,7 +196,7 @@ export function createStore<S extends State>(
               true,
             );
           }
-          initialized = true;
+          didSyncInitialState = true;
         }),
       );
     }
@@ -225,7 +233,7 @@ export function createStore<S extends State>(
   ) => {
     const listenerKeysValue = keys ? [...keys] : null;
     if (group.listeners.has(listener)) {
-      deleteListenerIndexes(group, listener, listenerKeys.get(listener));
+      deleteListenerIndexes(group, listener, group.listenerKeys.get(listener));
     }
     group.listeners.add(listener);
     if (listenerKeysValue) {
@@ -235,16 +243,16 @@ export function createStore<S extends State>(
       group.allKeysListeners ??= new Set();
       group.allKeysListeners.add(listener);
     }
-    listenerKeys.set(listener, listenerKeysValue);
+    group.listenerKeys.set(listener, listenerKeysValue);
     return () => {
-      disposables.get(listener)?.();
-      disposables.delete(listener);
-      const currentKeys = listenerKeys.get(listener);
+      group.disposables.get(listener)?.();
+      group.disposables.delete(listener);
+      const currentKeys = group.listenerKeys.get(listener);
       deleteListenerIndexes(group, listener, listenerKeysValue);
       if (currentKeys !== listenerKeysValue) {
         deleteListenerIndexes(group, listener, currentKeys);
       }
-      listenerKeys.delete(listener);
+      group.listenerKeys.delete(listener);
       group.listeners.delete(listener);
     };
   };
@@ -253,12 +261,15 @@ export function createStore<S extends State>(
     sub(keys, listener);
 
   const storeSync: StoreSync<S> = (keys, listener) => {
-    disposables.set(listener, listener(state, state));
+    syncListeners.disposables.set(listener, listener(state, state));
     return sub(keys, listener);
   };
 
   const storeBatch: StoreBatch<S> = (keys, listener) => {
-    disposables.set(listener, listener(state, prevStateBatch));
+    batchListenerGroup.disposables.set(
+      listener,
+      listener(state, prevStateBatch),
+    );
     return sub(keys, listener, batchListenerGroup);
   };
 
@@ -270,19 +281,9 @@ export function createStore<S extends State>(
 
   const getState: Store<S>["getState"] = () => state;
 
-  const run = (listener: Listener<S>, prev: S) => {
-    disposables.get(listener)?.();
-    disposables.set(listener, listener(state, prev));
-  };
-
-  const runIfNeeded = (
-    listener: Listener<S>,
-    prevState: S,
-    updatedKey: UpdatedKey<S>,
-  ) => {
-    const keys = listenerKeys.get(listener);
-    if (!hasUpdatedKey(keys, updatedKey)) return;
-    run(listener, prevState);
+  const run = (group: ListenerGroup<S>, listener: Listener<S>, prev: S) => {
+    group.disposables.get(listener)?.();
+    group.disposables.set(listener, listener(state, prev));
   };
 
   const runListeners = (
@@ -295,12 +296,14 @@ export function createStore<S extends State>(
       if (!keyedListeners) return;
       for (const listener of keyedListeners) {
         if (!group.listeners.has(listener)) continue;
-        run(listener, prevState);
+        run(group, listener, prevState);
       }
       return;
     }
     for (const listener of group.listeners) {
-      runIfNeeded(listener, prevState, updatedKey);
+      const keys = group.listenerKeys.get(listener);
+      if (!hasUpdatedKey(keys, updatedKey)) continue;
+      run(group, listener, prevState);
     }
   };
 

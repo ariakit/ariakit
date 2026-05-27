@@ -225,6 +225,47 @@ test("keeps reused listener callbacks on their latest keys", () => {
   expect(listener).not.toHaveBeenCalled();
 });
 
+test("keeps reused callbacks isolated between listener groups", async () => {
+  const store = createStore({ count: 0, label: "a" });
+  const events: string[] = [];
+  let runs = 0;
+  const listener = vi.fn(() => {
+    runs += 1;
+    const run = runs;
+    events.push(`run ${run}`);
+    return () => events.push(`cleanup ${run}`);
+  });
+
+  subscribe(store, null, () => {});
+  subscribe(store, ["count"], listener);
+  batch(store, ["label"], listener);
+
+  expect(events).toEqual(["run 1"]);
+
+  events.length = 0;
+  listener.mockClear();
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["run 2"]);
+  expect(listener).toHaveBeenCalledOnce();
+
+  events.length = 0;
+
+  await flushBatch();
+
+  expect(events).toEqual([]);
+
+  store.setState("label", "b");
+
+  expect(events).toEqual([]);
+
+  await flushBatch();
+
+  expect(events).toEqual(["cleanup 1", "run 3"]);
+  expect(listener).toHaveBeenCalledTimes(2);
+});
+
 test("sync runs immediately and cleans up before rerun and unsubscribe", () => {
   const store = createStore({ count: 0, label: "a" });
   const events: string[] = [];
