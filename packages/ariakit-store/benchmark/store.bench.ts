@@ -118,7 +118,8 @@ function setupBenchmarkDerivedState(
   setup(store, () =>
     batch(store, ["moves", "renderedItems"], (state, prevState) => {
       if (state.moves === prevState.moves) return;
-      const activeItem = getItem(state.activeId);
+      const { activeId } = store.getState();
+      const activeItem = getItem(activeId);
       store.setState("activeValue", activeItem?.value);
     }),
   );
@@ -128,6 +129,8 @@ function createMergedStoreChain(count = 0) {
   const externalStore = createBenchmarkStore(count);
   const tagStore = createBenchmarkStore(count);
   const popoverStore = createBenchmarkStore(count);
+  // Keep a direct parent store to model component stores that extend composite
+  // state alongside merged external state.
   const compositeStore = createBenchmarkStore(count);
 
   const mergedStore = mergeStore(
@@ -145,15 +148,14 @@ function createMergedStoreChain(count = 0) {
     ]),
   );
 
-  const store = createStore(
-    {
-      ...mergedStore.getState(),
-      count,
-      activeId: itemIds[0] ?? null,
-    },
-    compositeStore,
-    mergedStore,
-  );
+  const state: BenchmarkState = {
+    ...initialState,
+    ...mergedStore.getState(),
+    count,
+    activeId: itemIds[0] ?? null,
+  };
+
+  const store = createStore(state, compositeStore, mergedStore);
 
   setupBenchmarkDerivedState(store);
 
@@ -277,18 +279,6 @@ bench(
 bench(
   "set state with React subscribers",
   async () => {
-    reactSubscribersStore.setState(
-      "activeId",
-      itemIds[nextValue() % itemIds.length] ?? null,
-    );
-    await flushBatch();
-  },
-  options,
-);
-
-bench(
-  "set unrelated state with React subscribers",
-  async () => {
     reactSubscribersStore.setState("count", nextValue());
     await flushBatch();
   },
@@ -375,9 +365,10 @@ bench(
 bench(
   "set merged omitted source state",
   async () => {
-    mergedChain.popoverStore.setState("open", nextValue() % 2 === 0);
+    // Use a non-derived popover key so this isolates omit propagation.
+    mergedChain.popoverStore.setState("focused", nextValue() % 2 === 0);
     await flushBatch();
-    consume(mergedChain.store.getState().open);
+    consume(mergedChain.store.getState().focused);
   },
   options,
 );
