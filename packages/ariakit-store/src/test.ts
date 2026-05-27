@@ -446,6 +446,286 @@ test("does not rerun empty-key sync and batch listeners after registration", asy
   expect(batchListener).toHaveBeenCalledOnce();
 });
 
+test("re-registers a listener without dragging a stale cleanup forward", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+  let runCount = 0;
+  let withCleanup = true;
+  const listener = (): (() => void) | undefined => {
+    runCount += 1;
+    const id = runCount;
+    events.push(`run ${id}`);
+    if (!withCleanup) return undefined;
+    return () => events.push(`cleanup ${id}`);
+  };
+
+  sync(store, null, listener);
+  store.setState("count", 1);
+  expect(events).toEqual(["run 1", "cleanup 1", "run 2"]);
+
+  withCleanup = false;
+  sync(store, null, listener);
+  store.setState("count", 2);
+
+  // "cleanup 2" must not appear: re-registering without a cleanup must clear
+  // the stale cleanup from the previous registration.
+  expect(events).toEqual(["run 1", "cleanup 1", "run 2", "run 3", "run 4"]);
+});
+
+test("registers a batch listener during dispatch and still sees the in-flight diff", async () => {
+  const store = createStore({ count: 0, registered: false });
+  const calls: Array<[number, number]> = [];
+
+  sync(store, ["count"], (state) => {
+    if (!state.count) return;
+    if (store.getState().registered) return;
+    store.setState("registered", true);
+    batch(store, ["count"], (s, p) => {
+      calls.push([s.count, p.count]);
+    });
+  });
+
+  store.setState("count", 1);
+  expect(calls).toEqual([[1, 0]]);
+
+  await flushBatch();
+
+  expect(calls).toEqual([
+    [1, 0],
+    [1, 0],
+  ]);
+
+  store.setState("count", 2);
+  await flushBatch();
+
+  expect(calls).toEqual([
+    [1, 0],
+    [1, 0],
+    [2, 1],
+  ]);
+});
+
+test("fires a re-keyed listener for the currently dispatched key", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+
+  const second = () => {
+    events.push("second");
+  };
+
+  subscribe(store, null, () => {
+    events.push("first");
+    subscribe(store, ["count"], second);
+  });
+  subscribe(store, null, second);
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["first", "second"]);
+});
+
+test("unsubscribes a keyed listener from inside another keyed listener", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+  let dispose = () => {};
+
+  sync(store, ["count"], (state) => {
+    events.push(`outer ${state.count}`);
+    dispose();
+  });
+
+  dispose = subscribe(store, ["count"], (state) => {
+    events.push(`inner ${state.count}`);
+  });
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["outer 0", "outer 1"]);
+});
+
+test("syncs reentrant parent setStates during a child's initial push", () => {
+  const parent = createStore({ a: "parent-a", b: "parent-b" });
+  const child = createStore({ a: "child-a", b: "child-b", c: "c" }, parent);
+
+  sync(child, ["a"], (state) => {
+    if (state.a === "parent-a") {
+      parent.setState("b", "updated-b");
+    }
+  });
+
+  const cleanup = init(child);
+
+  expect(child.getState()).toEqual({
+    a: "parent-a",
+    b: "updated-b",
+    c: "c",
+  });
+  expect(parent.getState()).toEqual({ a: "parent-a", b: "updated-b" });
+
+  cleanup();
+});
+
+test("syncs reentrant parent setStates to an earlier key during a child's initial push", () => {
+  const parent = createStore({ a: "parent-a", b: "parent-b" });
+  const child = createStore({ a: "child-a", b: "child-b" }, parent);
+
+  sync(child, ["b"], (state) => {
+    if (state.b === "parent-b") {
+      parent.setState("a", "updated-a");
+    }
+  });
+
+  const cleanup = init(child);
+
+  expect(child.getState()).toEqual({
+    a: "updated-a",
+    b: "parent-b",
+  });
+  expect(parent.getState()).toEqual({ a: "updated-a", b: "parent-b" });
+
+  cleanup();
+});
+
+test("fires a sync listener registered on the parent after init with the child already updated", () => {
+  const parent = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, parent);
+
+  const cleanup = init(child);
+
+  const calls: number[] = [];
+  const unsubscribe = sync(parent, ["count"], () => {
+    calls.push(child.getState().count);
+  });
+
+  parent.setState("count", 1);
+  expect(calls).toEqual([0, 1]);
+
+  unsubscribe();
+  cleanup();
+});
+
+test("keeps the batch baseline current across idle setStates between subscriptions", async () => {
+  const store = createStore({ count: 0 });
+
+  // Prime prevStateBatch via a first subscription + flush, then unsubscribe.
+  const firstUnsubscribe = batch(store, ["count"], () => {});
+  store.setState("count", 1);
+  await flushBatch();
+  firstUnsubscribe();
+
+  // Idle setStates while no batch listeners are registered.
+  store.setState("count", 2);
+  store.setState("count", 3);
+
+  // Register a new batch listener mid-dispatch. The listener registered
+  // here must see (4, 3) — not (4, 1) — as its initial diff, even though
+  // the idle setStates produced no batch microtask.
+  const laterCalls: Array<[number, number]> = [];
+  let registered = false;
+  sync(store, ["count"], (state) => {
+    if (registered) return;
+    if (state.count !== 4) return;
+    registered = true;
+    batch(store, ["count"], (s, p) => {
+      laterCalls.push([s.count, p.count]);
+    });
+  });
+
+  store.setState("count", 4);
+
+  expect(laterCalls).toEqual([[4, 3]]);
+});
+
+test("keeps the batch baseline current when a batch listener unsubscribes itself and setStates mid-flush", async () => {
+  const store = createStore({ count: 0 });
+
+  let firstUnsub = () => {};
+  firstUnsub = batch(store, ["count"], (state) => {
+    if (state.count === 1) {
+      firstUnsub();
+      store.setState("count", 2);
+    }
+  });
+
+  store.setState("count", 1);
+  await flushBatch();
+
+  expect(store.getState().count).toBe(2);
+
+  const laterCalls: Array<[number, number]> = [];
+  let registered = false;
+  sync(store, ["count"], (state) => {
+    if (registered) return;
+    if (state.count !== 3) return;
+    registered = true;
+    batch(store, ["count"], (s, p) => {
+      laterCalls.push([s.count, p.count]);
+    });
+  });
+
+  store.setState("count", 3);
+
+  // The new batch listener registered mid-dispatch must see [3, 2] — the
+  // diff from the post-flush state, not the pre-flush snapshot ([3, 1]).
+  expect(laterCalls).toEqual([[3, 2]]);
+});
+
+test("keeps the batch baseline current when the only batch listener unsubscribes itself mid-flush", async () => {
+  const store = createStore({ count: 0 });
+
+  let firstUnsub = () => {};
+  firstUnsub = batch(store, ["count"], () => {
+    firstUnsub();
+  });
+
+  store.setState("count", 1);
+  await flushBatch();
+
+  const laterCalls: Array<[number, number]> = [];
+  let registered = false;
+  sync(store, ["count"], (state) => {
+    if (registered) return;
+    if (state.count !== 2) return;
+    registered = true;
+    batch(store, ["count"], (s, p) => {
+      laterCalls.push([s.count, p.count]);
+    });
+  });
+
+  store.setState("count", 2);
+
+  // The new batch listener registered mid-dispatch must see [2, 1] — the
+  // diff from the post-flush state, not the pre-flush snapshot ([2, 0]).
+  expect(laterCalls).toEqual([[2, 1]]);
+});
+
+test("keeps the batch baseline current when a batch listener registers a successor mid-flush", async () => {
+  const store = createStore({ count: 0 });
+  const laterCalls: Array<[number, number]> = [];
+
+  let firstUnsub = () => {};
+  firstUnsub = batch(store, ["count"], (state) => {
+    if (state.count !== 1) return;
+    firstUnsub();
+    store.setState("count", 2);
+    batch(store, ["count"], (s, p) => {
+      laterCalls.push([s.count, p.count]);
+    });
+  });
+
+  store.setState("count", 1);
+  await flushBatch();
+
+  store.setState("count", 3);
+  await flushBatch();
+
+  // The successor batch listener was registered when state was {count: 2},
+  // so the next flush must diff against that baseline, not the pre-flush
+  // snapshot from the original listener's flush ({count: 1}).
+  const lastCall = laterCalls.at(-1);
+  expect(lastCall).toEqual([3, 2]);
+});
+
 test("runs setup callbacks during init and tears down after the last cleanup", () => {
   const store = createStore({ count: 0 });
   const events: string[] = [];
