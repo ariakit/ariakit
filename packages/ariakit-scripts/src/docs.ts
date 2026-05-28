@@ -13,10 +13,13 @@ interface GenerateDocsOptions {
   rootPath?: string;
   entry?: string;
   tsconfig?: string;
+  heading?: string;
+  exclude?: string[];
 }
 
 interface InjectDocsOptions extends GenerateDocsOptions {
   readme?: string;
+  marker?: string;
 }
 
 interface DocsOptions extends InjectDocsOptions {
@@ -59,8 +62,7 @@ interface SignatureItem {
 
 type LocalTypeDeclaration = InterfaceDeclaration | TypeAliasDeclaration;
 
-const startMarker = "<!-- ariakit-docs:start -->";
-const endMarker = "<!-- ariakit-docs:end -->";
+const defaultHeading = "API reference";
 const maxDeclarationLines = 24;
 const declarationHeadLines = 14;
 const declarationTailLines = 4;
@@ -68,6 +70,14 @@ const declarationTailLines = 4;
 function resolvePath(rootPath: string, path: string) {
   if (isAbsolute(path)) return path;
   return resolve(rootPath, path);
+}
+
+export function getDocsMarkers(name = "") {
+  const suffix = name ? ` ${name}` : "";
+  return {
+    start: `<!-- ariakit-docs:start${suffix} -->`,
+    end: `<!-- ariakit-docs:end${suffix} -->`,
+  };
 }
 
 function getTsConfigPath(rootPath: string, path?: string) {
@@ -181,8 +191,58 @@ function compareEntries(a: ApiEntry, b: ApiEntry) {
   return declarationA.getStart() - declarationB.getStart();
 }
 
-function getApiGroups(entrySourceFile: SourceFile) {
+function getExcludeSourceFile(
+  project: Project,
+  entrySourceFile: SourceFile,
+  exclude: string,
+  rootPath: string,
+) {
+  // Prefer the module the entry re-exports under this specifier so excluding
+  // an external package like `@playwright/test` resolves to its declarations.
+  for (const declaration of entrySourceFile.getExportDeclarations()) {
+    if (declaration.getModuleSpecifierValue() !== exclude) continue;
+    const sourceFile = declaration.getModuleSpecifierSourceFile();
+    if (sourceFile) return sourceFile;
+  }
+
+  // Otherwise treat the value as a file path relative to the package root.
+  const path = resolvePath(rootPath, exclude);
+  if (!existsSync(path)) return undefined;
+  return project.getSourceFile(path) || project.addSourceFileAtPath(path);
+}
+
+function getExcludedNames(
+  project: Project,
+  entrySourceFile: SourceFile,
+  excludes: string[],
+  rootPath: string,
+) {
+  const names = new Set<string>();
+
+  for (const exclude of excludes) {
+    const sourceFile = getExcludeSourceFile(
+      project,
+      entrySourceFile,
+      exclude,
+      rootPath,
+    );
+    // Fail fast on a misconfigured exclude. Skipping silently would leave the
+    // re-exported declarations in the output, and the readme sync check would
+    // not catch it because it applies the same exclude on both sides.
+    if (!sourceFile) {
+      throw new Error(`Could not resolve --exclude entry "${exclude}"`);
+    }
+    for (const [name] of sourceFile.getExportedDeclarations()) {
+      names.add(name);
+    }
+  }
+
+  return names;
+}
+
+function getApiGroups(entrySourceFile: SourceFile, excludedNames: Set<string>) {
   const entries = [...entrySourceFile.getExportedDeclarations()]
+    .filter(([name]) => !excludedNames.has(name))
     .map(([name, declarations]) => ({ name, declarations }))
     .sort(compareEntries);
   const moduleInfoByFile = new Map<string, ModuleInfo | undefined>();
@@ -531,13 +591,17 @@ function renderCodeBlock(code: string) {
   return ["```ts", code, "```"].join("\n");
 }
 
-function isFencedCodeBlock(code: string) {
-  return /^```[\s\S]*\n```$/.test(code.trim());
+function hasFencedCodeBlock(code: string) {
+  return /(^|\n)```/.test(code.trim());
 }
 
 function renderExample(example: string) {
-  if (isFencedCodeBlock(example)) return example.trim();
-  return renderCodeBlock(example);
+  const trimmed = example.trim();
+  // Examples that already contain a fenced code block (optionally with
+  // surrounding prose) are treated as Markdown and emitted as-is. Wrapping
+  // them in another code fence would nest fences and break rendering.
+  if (hasFencedCodeBlock(trimmed)) return trimmed;
+  return renderCodeBlock(trimmed);
 }
 
 function renderEntry(entry: ApiEntry) {
@@ -616,8 +680,15 @@ export function generateDocsMarkdown(options: GenerateDocsOptions = {}) {
   const entryPath = resolvePath(rootPath, options.entry || "src/index.ts");
   const project = createProject(rootPath, options.tsconfig);
   const entrySourceFile = getEntrySourceFile(project, entryPath);
-  const groups = getApiGroups(entrySourceFile);
-  const lines = ["## API reference", ""];
+  const excludedNames = getExcludedNames(
+    project,
+    entrySourceFile,
+    options.exclude || [],
+    rootPath,
+  );
+  const groups = getApiGroups(entrySourceFile, excludedNames);
+  const heading = options.heading || defaultHeading;
+  const lines = [`## ${heading}`, ""];
 
   const contents = renderContents(groups);
   if (contents) {
@@ -634,6 +705,7 @@ export function generateDocsMarkdown(options: GenerateDocsOptions = {}) {
 export function injectDocsMarkdown(options: InjectDocsOptions = {}) {
   const rootPath = options.rootPath || process.cwd();
   const readmePath = resolvePath(rootPath, options.readme || "readme.md");
+  const { start: startMarker, end: endMarker } = getDocsMarkers(options.marker);
   const markdown = generateDocsMarkdown(options).trimEnd();
   const readme = readFileSync(readmePath, "utf-8");
   const block = `${startMarker}\n\n${markdown}\n\n${endMarker}`;
@@ -649,7 +721,9 @@ export function injectDocsMarkdown(options: InjectDocsOptions = {}) {
   }
 
   if (hasStartMarker && hasEndMarker) {
-    const pattern = new RegExp(`${startMarker}[\\s\\S]*?${endMarker}`);
+    const pattern = new RegExp(
+      `${escapeRegExp(startMarker)}[\\s\\S]*?${escapeRegExp(endMarker)}`,
+    );
     if (!pattern.test(readme)) {
       throw new Error(
         `${startMarker} must appear before ${endMarker} in ${readmePath}`,

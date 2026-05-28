@@ -22,7 +22,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "ariakit build",
-    "clean": "ariakit clean"
+    "clean": "ariakit clean",
+    "docs": "ariakit docs --write && ariakit docs --write --entry src/react.tsx --marker react --heading 'React API reference' --exclude src/index.ts && ariakit docs --write --entry src/playwright.ts --marker playwright --heading 'Playwright API reference' --exclude @playwright/test"
   },
   "dependencies": {
     "@ariakit/utils": "workspace:*",

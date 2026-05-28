@@ -8,7 +8,11 @@ import {
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, expect, test } from "vitest";
-import { generateDocsMarkdown, injectDocsMarkdown } from "./docs.ts";
+import {
+  generateDocsMarkdown,
+  getDocsMarkers,
+  injectDocsMarkdown,
+} from "./docs.ts";
 
 const roots: string[] = [];
 
@@ -401,19 +405,206 @@ test("throws on partial readme markers", () => {
   );
 });
 
-test("@ariakit/utils readme docs are up to date", () => {
-  const root = join(process.cwd(), "packages/ariakit-utils");
-  const readme = readFileSync(join(root, "readme.md"), "utf-8");
-  const startMarker = "<!-- ariakit-docs:start -->";
-  const endMarker = "<!-- ariakit-docs:end -->";
-  const startIndex = readme.indexOf(startMarker);
-  const endIndex = readme.indexOf(endMarker);
-  const markdown = generateDocsMarkdown({ rootPath: root }).trimEnd();
-  const readmeMarkdown = readme
-    .slice(startIndex + startMarker.length, endIndex)
-    .trim();
+test("applies a custom heading", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
 
-  expect(startIndex).toBeGreaterThanOrEqual(0);
-  expect(endIndex).toBeGreaterThan(startIndex);
-  expect(readmeMarkdown).toBe(markdown);
+  const markdown = generateDocsMarkdown({ rootPath: root, heading: "Foo API" });
+
+  expect(markdown).toContain("## Foo API");
+  expect(markdown).not.toContain("## API reference");
 });
+
+test("excludes exports re-exported from another file", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(
+    join(sourcePath, "base.ts"),
+    [
+      "/** Base helper. */",
+      "export function base() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(sourcePath, "extra.ts"),
+    [
+      'export * from "./base.ts";',
+      "",
+      "/** Extra helper. */",
+      "export function extra() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({
+    rootPath: root,
+    entry: "src/extra.ts",
+    exclude: ["src/base.ts"],
+  });
+
+  expect(markdown).toContain("#### `extra`");
+  expect(markdown).not.toContain("#### `base`");
+});
+
+test("throws when an exclude entry cannot be resolved", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(
+    join(sourcePath, "index.ts"),
+    ["/** Foo helper. */", "export function foo() {}", ""].join("\n"),
+  );
+
+  expect(() =>
+    generateDocsMarkdown({ rootPath: root, exclude: ["src/missing.ts"] }),
+  ).toThrow('Could not resolve --exclude entry "src/missing.ts"');
+});
+
+test("renders examples that contain fenced code blocks as-is", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/**",
+      " * Foo helper.",
+      " * @example",
+      " * Using foo:",
+      " * ```js",
+      " * foo();",
+      " * ```",
+      " */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("Using foo:");
+  expect(markdown).toContain("```js");
+  // The prose + fenced block must not be wrapped in another code fence.
+  expect(markdown).not.toContain("```ts\nUsing foo:");
+});
+
+test("injects into a named marker block and leaves others untouched", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(root, "readme.md"),
+    [
+      "# Test",
+      "",
+      "<!-- ariakit-docs:start -->",
+      "<!-- ariakit-docs:end -->",
+      "",
+      "<!-- ariakit-docs:start extra -->",
+      "<!-- ariakit-docs:end extra -->",
+      "",
+    ].join("\n"),
+  );
+
+  injectDocsMarkdown({ rootPath: root, marker: "extra", heading: "Extra API" });
+
+  const readme = readFileSync(join(root, "readme.md"), "utf-8");
+  const { start, end } = getDocsMarkers("extra");
+  const extraBlock = readme.slice(
+    readme.indexOf(start) + start.length,
+    readme.indexOf(end),
+  );
+
+  expect(extraBlock).toContain("## Extra API");
+  expect(extraBlock).toContain("#### `foo`");
+  // The default block is left empty because it was not targeted.
+  expect(readme).toContain(
+    "<!-- ariakit-docs:start -->\n<!-- ariakit-docs:end -->",
+  );
+});
+
+interface DocsTarget {
+  entry?: string;
+  marker?: string;
+  heading?: string;
+  exclude?: string[];
+}
+
+const docsPackages: Array<{ dir: string; targets: DocsTarget[] }> = [
+  { dir: "ariakit-utils", targets: [{}] },
+  { dir: "ariakit-react-utils", targets: [{}] },
+  { dir: "ariakit-store", targets: [{}] },
+  { dir: "ariakit-react-store", targets: [{ entry: "src/index.tsx" }] },
+  { dir: "ariakit-solid-utils", targets: [{}] },
+  { dir: "ariakit-solid-store", targets: [{}] },
+  {
+    dir: "ariakit-test",
+    targets: [
+      {},
+      {
+        entry: "src/react.tsx",
+        marker: "react",
+        heading: "React API reference",
+        exclude: ["src/index.ts"],
+      },
+      {
+        entry: "src/playwright.ts",
+        marker: "playwright",
+        heading: "Playwright API reference",
+        exclude: ["@playwright/test"],
+      },
+    ],
+  },
+];
+
+test.each(docsPackages)(
+  "$dir readme docs are up to date",
+  ({ dir, targets }) => {
+    const root = join(process.cwd(), "packages", dir);
+    const readme = readFileSync(join(root, "readme.md"), "utf-8");
+
+    for (const target of targets) {
+      const { start, end } = getDocsMarkers(target.marker);
+      const startIndex = readme.indexOf(start);
+      const endIndex = readme.indexOf(end);
+      const markdown = generateDocsMarkdown({
+        rootPath: root,
+        ...target,
+      }).trimEnd();
+      const readmeMarkdown = readme
+        .slice(startIndex + start.length, endIndex)
+        .trim();
+
+      expect(startIndex).toBeGreaterThanOrEqual(0);
+      expect(endIndex).toBeGreaterThan(startIndex);
+      expect(readmeMarkdown).toBe(markdown);
+    }
+  },
+);
