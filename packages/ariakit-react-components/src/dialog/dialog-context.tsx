@@ -1,6 +1,6 @@
 import { createStoreContext } from "@ariakit/react-utils";
 import type { SetState } from "@ariakit/utils";
-import { createContext } from "react";
+import { createContext, useContext } from "react";
 import {
   DisclosureContextProvider,
   DisclosureScopedContextProvider,
@@ -34,6 +34,12 @@ export const useDialogProviderContext = ctx.useProviderContext;
 export const DialogContextProvider = ctx.ContextProvider;
 
 export const DialogScopedContextProvider = ctx.ScopedContextProvider;
+
+export const DialogDismissContext = createContext<DialogStore["hide"] | null>(
+  null,
+);
+
+export const useDialogDismissContext = () => useContext(DialogDismissContext);
 
 export const DialogHeadingContext = createContext<
   SetState<string | undefined> | undefined

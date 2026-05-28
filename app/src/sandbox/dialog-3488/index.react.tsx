@@ -2,6 +2,16 @@ import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
 import "./style.css";
 
+function ContextHideButton() {
+  const dialog = Ariakit.useDialogContext();
+
+  return (
+    <Ariakit.Button className="px-2 py-1" onClick={() => dialog?.hide()}>
+      Close programmatically with context
+    </Ariakit.Button>
+  );
+}
+
 export default function Example() {
   const [open, setOpen] = useState(false);
   const [closeCount, setCloseCount] = useState(0);
@@ -40,6 +50,10 @@ export default function Example() {
         <Ariakit.DialogDismiss store={dialog} className="px-2 py-1">
           Close with explicit store
         </Ariakit.DialogDismiss>
+        <Ariakit.Button className="px-2 py-1" onClick={() => setOpen(false)}>
+          Close programmatically with setOpen
+        </Ariakit.Button>
+        <ContextHideButton />
       </Ariakit.Dialog>
 
       <Ariakit.PopoverDisclosure store={popover} className="px-2 py-1">

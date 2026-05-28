@@ -52,6 +52,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeHidden();
     await test.expect(q.text("Close count: 4")).toBeVisible();
 
+    await q.button("Show modal").click();
+    await test.expect(q.dialog("Success")).toBeVisible();
+
+    await q.button("Close programmatically with setOpen").click();
+
+    await test
+      .expect(q.dialog("Success", { includeHidden: true }))
+      .toBeHidden();
+    await test.expect(q.text("Close count: 4")).toBeVisible();
+
+    await q.button("Show modal").click();
+    await test.expect(q.dialog("Success")).toBeVisible();
+
+    await q.button("Close programmatically with context").click();
+
+    await test
+      .expect(q.dialog("Success", { includeHidden: true }))
+      .toBeHidden();
+    await test.expect(q.text("Close count: 4")).toBeVisible();
+
     await q.button("Show popover").click();
     await test.expect(q.dialog("Popover content")).toBeVisible();
 

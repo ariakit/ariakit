@@ -9,7 +9,10 @@ import type { ElementType, MouseEvent } from "react";
 import { useMemo } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
-import { useDialogScopedContext } from "./dialog-context.tsx";
+import {
+  useDialogDismissContext,
+  useDialogScopedContext,
+} from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -40,18 +43,17 @@ function hasSameContentElement(store?: DialogStore, context?: DialogStore) {
 export const useDialogDismiss = createHook<TagName, DialogDismissOptions>(
   function useDialogDismiss({ store, ...props }) {
     const context = useDialogScopedContext();
-    if (hasSameContentElement(store, context)) {
-      store = context;
-    } else {
-      store = store || context;
-    }
+    const dismiss = useDialogDismissContext();
+    store = store || context;
+    const hide =
+      hasSameContentElement(store, context) && dismiss ? dismiss : store?.hide;
 
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      store?.hide();
+      hide?.();
     });
 
     const children = useMemo(

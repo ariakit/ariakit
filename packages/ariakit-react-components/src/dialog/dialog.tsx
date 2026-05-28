@@ -49,6 +49,7 @@ import { usePortal } from "../portal/portal.tsx";
 import { DialogBackdrop } from "./dialog-backdrop.tsx";
 import {
   DialogDescriptionContext,
+  DialogDismissContext,
   DialogHeadingContext,
   DialogScopedContextProvider,
   useDialogProviderContext,
@@ -564,15 +565,17 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   props = useWrapElement(
     props,
     (element) => (
-      <DialogScopedContextProvider value={scopedStore}>
-        <DialogHeadingContext.Provider value={setHeadingId}>
-          <DialogDescriptionContext.Provider value={setDescriptionId}>
-            {element}
-          </DialogDescriptionContext.Provider>
-        </DialogHeadingContext.Provider>
+      <DialogScopedContextProvider value={store}>
+        <DialogDismissContext.Provider value={hide}>
+          <DialogHeadingContext.Provider value={setHeadingId}>
+            <DialogDescriptionContext.Provider value={setDescriptionId}>
+              {element}
+            </DialogDescriptionContext.Provider>
+          </DialogHeadingContext.Provider>
+        </DialogDismissContext.Provider>
       </DialogScopedContextProvider>
     ),
-    [scopedStore],
+    [store, hide],
   );
 
   props = {
@@ -695,13 +698,13 @@ export interface DialogOptions<T extends ElementType = TagName>
    * It's important to note that this event only fires when the dialog is
    * requested to close through Ariakit's built-in dismiss mechanisms, such as
    * [`DialogDismiss`](https://ariakit.com/reference/dialog-dismiss), pressing
-   * the <kbd>Esc</kbd> key, or interacting outside the dialog. If the
-   * controlled [`open`](https://ariakit.com/reference/dialog#open) prop value
-   * changes, the store
-   * [`open`](https://ariakit.com/reference/use-dialog-store#open) state is set
-   * programmatically, or if the dialog's visibility is altered in any other way
-   * (such as unmounting the dialog without adjusting the open state), this
-   * event won't be triggered.
+   * the <kbd>Esc</kbd> key, or interacting outside the dialog. It doesn't fire
+   * when the dialog's visibility changes programmatically, including when a
+   * controlled [`open`](https://ariakit.com/reference/dialog#open) prop changes,
+   * when [`useDialogStore`](https://ariakit.com/reference/use-dialog-store)
+   * receives a new `open` value, when `setOpen(false)` or `store.hide()` updates
+   * controlled state directly, or when the dialog is unmounted without going
+   * through one of Ariakit's dismiss mechanisms.
    *
    * Live examples:
    * - [Dialog with scrollable
