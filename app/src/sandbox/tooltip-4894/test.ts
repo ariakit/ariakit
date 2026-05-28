@@ -1,9 +1,34 @@
-import { q } from "@ariakit/test";
+import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // See https://github.com/ariakit/ariakit/issues/4894
-test("does not hide multiple controlled open tooltips", () => {
-  expect(q.tooltip("HELLO!")).toBeVisible();
-  expect(q.tooltip("HELLO 222!")).toBeVisible();
-  expect(q.text("Close requests: 0")).toBeVisible();
+test("does not loop when multiple tooltips are forced open", async () => {
+  await click(q.button("Show forced tooltips"));
+  expect(q.tooltip("FORCED ONE")).toBeVisible();
+  expect(q.tooltip("FORCED TWO")).toBeVisible();
+  expect(q.tooltip("FORCED THREE")).toBeVisible();
+  expect(q.text(/Forced close requests: [1-9]\d*/)).toBeVisible();
+});
+
+test("hides controlled tooltips that accept setOpen updates", async () => {
+  await click(q.button("Open managed one"));
+  expect(q.tooltip("MANAGED ONE")).toBeVisible();
+  expect(q.tooltip("MANAGED TWO")).not.toBeInTheDocument();
+
+  await click(q.button("Open managed two"));
+  expect(q.tooltip("MANAGED ONE")).not.toBeInTheDocument();
+  expect(q.tooltip("MANAGED TWO")).toBeVisible();
+});
+
+test("keeps managed tooltips active after forced tooltips reopen", async () => {
+  await click(q.button("Show forced tooltips"));
+  await click(q.button("Open managed one"));
+  expect(q.tooltip("MANAGED ONE")).toBeVisible();
+
+  await click(q.button("Open managed two"));
+  expect(q.tooltip("MANAGED ONE")).not.toBeInTheDocument();
+  expect(q.tooltip("MANAGED TWO")).toBeVisible();
+  expect(q.tooltip("FORCED ONE")).toBeVisible();
+  expect(q.tooltip("FORCED TWO")).toBeVisible();
+  expect(q.tooltip("FORCED THREE")).toBeVisible();
 });

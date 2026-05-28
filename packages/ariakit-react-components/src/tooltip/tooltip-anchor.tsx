@@ -13,7 +13,6 @@ import { useEffect, useRef } from "react";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
 import { useTooltipProviderContext } from "./tooltip-context.tsx";
-import { isTooltipStoreOpenControlled } from "./tooltip-store.ts";
 import type { TooltipStore } from "./tooltip-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -26,12 +25,21 @@ const globalStore = createStore<{ activeStore: TooltipStore | null }>({
   activeStore: null,
 });
 
+const hidingStores = new WeakSet<TooltipStore>();
+
 function createRemoveStoreCallback(store: TooltipStore) {
   return () => {
     const { activeStore } = globalStore.getState();
     if (activeStore !== store) return;
     globalStore.setState("activeStore", null);
   };
+}
+
+function hideStore(store: TooltipStore | null) {
+  if (!store) return;
+  hidingStores.add(store);
+  store.hide();
+  queueMicrotask(() => hidingStores.delete(store));
 }
 
 /**
@@ -79,16 +87,18 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
         sync(store, ["mounted", "skipTimeout"], (state) => {
           if (!store) return;
           // If the current tooltip is open, we should immediately hide the
-          // active one and set the current one as the active tooltip. We
-          // skip controlled open stores because useStoreProps would force
-          // them open again, causing a re-entrant loop between tooltips.
+          // active one and set the current one as the active tooltip. If a
+          // tooltip we just hid gets forced open again, we leave the current
+          // active store in place to avoid a re-entrant loop between forced
+          // open tooltips.
           if (state.mounted) {
             const { activeStore } = globalStore.getState();
-            if (
-              activeStore !== store &&
-              !isTooltipStoreOpenControlled(activeStore)
-            ) {
-              activeStore?.hide();
+            if (activeStore !== store) {
+              if (hidingStores.has(store)) {
+                return;
+              } else {
+                hideStore(activeStore);
+              }
             }
             return globalStore.setState("activeStore", store);
           }
