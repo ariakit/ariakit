@@ -12,7 +12,8 @@ import {
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { delimiter, dirname, isAbsolute, join, relative, sep } from "node:path";
-import { watch, type FSWatcher } from "chokidar";
+import { watch } from "chokidar";
+import type { FSWatcher } from "chokidar";
 
 interface PackageJson {
   scripts?: Record<string, string>;
