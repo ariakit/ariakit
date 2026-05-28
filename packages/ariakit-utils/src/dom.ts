@@ -1,3 +1,8 @@
+/**
+ * DOM helpers for browser, iframe, text input, popup, and scrolling behavior.
+ * @module DOM utilities
+ */
+
 import type { AriaHasPopup, AriaRole } from "./types.ts";
 
 /**
@@ -207,7 +212,7 @@ export function getTextboxSelection(element: HTMLElement) {
 }
 
 /**
- * Returns the element's role attribute, if it has one.
+ * Returns the popup role from the element's role attribute, if it has one.
  */
 export function getPopupRole(
   element?: Element | null,
@@ -307,9 +312,9 @@ export function isPartiallyHidden(element: Element) {
 
 /**
  * SelectionRange only works on a few types of input. Calling
- * `setSelectionRange` on a unsupported input type may throw an error on certain
- * browsers. To avoid it, we check if its type supports SelectionRange first. It
- * will be a noop to non-supported types until we find a workaround.
+ * `setSelectionRange` on an unsupported input type may throw an error on
+ * certain browsers. To avoid it, we check if its type supports SelectionRange
+ * first. It will be a noop to non-supported types until we find a workaround.
  *
  * @see
  * https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange

@@ -1,4 +1,9 @@
 /**
+ * Shared type utilities used across Ariakit packages.
+ * @module Type utilities
+ */
+
+/**
  * Any object.
  */
 export type AnyObject = Record<string, any>;

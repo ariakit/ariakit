@@ -684,6 +684,9 @@ importers:
       rolldown-plugin-dts:
         specifier: 0.25.1
         version: 0.25.1(rolldown@1.0.2)(typescript@6.0.3)
+      ts-morph:
+        specifier: 28.0.0
+        version: 28.0.0
       vite-plugin-solid:
         specifier: 2.11.12
         version: 2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.13)(vite@8.0.14(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.8.4))

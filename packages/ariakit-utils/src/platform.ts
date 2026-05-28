@@ -1,3 +1,8 @@
+/**
+ * Browser and platform detection helpers.
+ * @module Platform utilities
+ */
+
 import { canUseDOM } from "./dom.ts";
 
 /**

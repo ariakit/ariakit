@@ -1,4 +1,9 @@
 /**
+ * Array helpers used by Ariakit packages.
+ * @module Array utilities
+ */
+
+/**
  * Transforms `arg` into an array if it's not already.
  * @example
  * toArray("a"); // ["a"]
@@ -13,7 +18,7 @@ export function toArray<T>(arg: T) {
 }
 
 /**
- * Immutably adds an index to an array.
+ * Immutably adds an item to an array.
  * @example
  * addItemToArray(["a", "b", "d"], "c", 2); // ["a", "b", "c", "d"]
  * @returns {Array} A new array with the item in the passed array index.
