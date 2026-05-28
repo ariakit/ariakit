@@ -96,11 +96,8 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
           if (state.mounted) {
             const { activeStore } = globalStore.getState();
             if (activeStore !== store) {
-              if (hidingStores.has(store)) {
-                return;
-              } else {
-                hideStore(activeStore);
-              }
+              if (hidingStores.has(store)) return;
+              hideStore(activeStore);
             }
             return globalStore.setState("activeStore", store);
           }
