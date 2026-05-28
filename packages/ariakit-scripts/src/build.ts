@@ -1,7 +1,8 @@
 import { lstatSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
-import { build as rolldownBuild, type Plugin } from "rolldown";
+import { build as rolldownBuild } from "rolldown";
+import type { Plugin } from "rolldown";
 import { dts } from "rolldown-plugin-dts";
 import solidPlugin from "vite-plugin-solid";
 
