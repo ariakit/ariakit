@@ -116,6 +116,9 @@ export default function Example() {
         <Ariakit.PopoverHeading className="m-0 text-xl font-semibold">
           Popover content
         </Ariakit.PopoverHeading>
+        <Ariakit.PopoverDismiss className="px-2 py-1">
+          Close popover
+        </Ariakit.PopoverDismiss>
         <Ariakit.PopoverDismiss store={popover} className="px-2 py-1">
           Close popover with explicit store
         </Ariakit.PopoverDismiss>
@@ -125,6 +128,7 @@ export default function Example() {
         Show parent dialog
       </Ariakit.Button>
       <p>Parent close count: {parentCloseCount}</p>
+      <p>Child close count: {childCloseCount}</p>
       <Ariakit.Dialog
         store={parent}
         unmountOnHide
@@ -145,7 +149,6 @@ export default function Example() {
         >
           Show child dialog
         </Ariakit.Button>
-        <p>Child close count: {childCloseCount}</p>
         <Ariakit.Dialog
           store={child}
           backdrop={false}

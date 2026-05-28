@@ -85,12 +85,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Show popover").click();
     await test.expect(q.dialog("Popover content")).toBeVisible();
 
-    await q.button("Close popover with explicit store").click();
+    await q.button("Close popover").click();
 
     await test
       .expect(q.dialog("Popover content", { includeHidden: true }))
       .toBeHidden();
     await test.expect(q.text("Popover close count: 1")).toBeVisible();
+
+    await q.button("Show popover").click();
+    await test.expect(q.dialog("Popover content")).toBeVisible();
+
+    await q.button("Close popover with explicit store").click();
+
+    await test
+      .expect(q.dialog("Popover content", { includeHidden: true }))
+      .toBeHidden();
+    await test.expect(q.text("Popover close count: 2")).toBeVisible();
 
     await q.button("Show parent dialog").click();
     await test.expect(q.dialog("Parent dialog")).toBeVisible();
@@ -115,5 +125,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(q.dialog("Parent dialog", { includeHidden: true }))
       .toBeHidden();
     await test.expect(q.text("Parent close count: 1")).toBeVisible();
+    await test.expect(q.text("Child close count: 1")).toBeVisible();
   });
 });
