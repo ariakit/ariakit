@@ -5,6 +5,7 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
+import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, expect, test } from "vitest";
@@ -692,7 +693,16 @@ const docsPackages: Array<{ dir: string; targets: DocsTarget[] }> = [
   },
 ];
 
-test.each(docsPackages)(
+// Generated React signatures depend on the installed React types (e.g.
+// `RefObject` vs `MutableRefObject`), so the committed readmes are only
+// canonical under the repo's React version. Skip this check on the older
+// React 18 test run, where regeneration would infer different signatures.
+const reactMajor = Number.parseInt(
+  createRequire(import.meta.url)("react/package.json").version,
+  10,
+);
+
+test.skipIf(reactMajor < 19).each(docsPackages)(
   "$dir readme docs are up to date",
   ({ dir, targets }) => {
     const root = join(process.cwd(), "packages", dir);
