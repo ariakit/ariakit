@@ -12,7 +12,7 @@ import type { ElementType } from "react";
 import { useMemo } from "react";
 import {
   CompositeRowContext,
-  useCompositeContext,
+  useCompositeScopedContext,
 } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 
@@ -44,7 +44,7 @@ export const useCompositeRow = createHook<TagName, CompositeRowOptions>(
     "aria-posinset": ariaPosInSet,
     ...props
   }) {
-    const context = useCompositeContext();
+    const context = useCompositeScopedContext();
     store = store || context;
 
     invariant(
