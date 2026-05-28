@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import type { ComponentProps } from "react";
+import type { ComponentProps, MouseEvent } from "react";
 import { useFormStatus } from "react-dom";
 
 function AriakitButton(props: Ariakit.ButtonProps) {
@@ -15,7 +15,11 @@ interface NativeButtonProps extends ComponentProps<"button"> {
   accessibleWhenDisabled?: boolean;
 }
 
-function NativeButton({ accessibleWhenDisabled, ...props }: NativeButtonProps) {
+function NativeButton({
+  accessibleWhenDisabled,
+  onClick,
+  ...props
+}: NativeButtonProps) {
   const { pending } = useFormStatus();
   if (accessibleWhenDisabled) {
     props["aria-disabled"] = pending;
@@ -23,7 +27,17 @@ function NativeButton({ accessibleWhenDisabled, ...props }: NativeButtonProps) {
     props.disabled = pending;
   }
   return (
-    <button type="submit" {...props}>
+    <button
+      type="submit"
+      {...props}
+      onClick={(event) => {
+        if (accessibleWhenDisabled && pending) {
+          event.preventDefault();
+          return;
+        }
+        onClick?.(event);
+      }}
+    >
       {pending ? "Pending" : props.children}
     </button>
   );
@@ -45,6 +59,12 @@ function Form({ label, ...props }: FormProps) {
   );
 }
 
+function countClicks(event: MouseEvent<HTMLButtonElement>) {
+  const { currentTarget } = event;
+  const clickCount = Number(currentTarget.dataset.clickCount ?? 0) + 1;
+  currentTarget.dataset.clickCount = String(clickCount);
+}
+
 export default function Example() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -60,7 +80,7 @@ export default function Example() {
         <NativeButton>NativeButton</NativeButton>
       </Form>
       <Form label="NativeButton focusable">
-        <NativeButton accessibleWhenDisabled>
+        <NativeButton accessibleWhenDisabled onClick={countClicks}>
           NativeButton (focusable)
         </NativeButton>
       </Form>
