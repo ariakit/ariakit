@@ -31,6 +31,11 @@ function getFocusedTab(items: TabStoreItem[]) {
   return items.find((item) => item.element === activeElement);
 }
 
+function getTabById(items: TabStoreItem[], id: string | null | undefined) {
+  if (id == null) return;
+  return items.find((item) => item.id === id);
+}
+
 export function createTabStore({
   composite: parentComposite,
   combobox,
@@ -126,10 +131,11 @@ export function createTabStore({
       // activeId state with the initial selectedId state. The parent composite
       // widget should handle the initial activeId state.
       if (parentComposite && state.selectedId === prev.selectedId) return;
-      const { renderedItems } = tab.getState();
+      const { activeId, renderedItems } = tab.getState();
       const focusedTab = getFocusedTab(renderedItems);
-      if (focusedTab) {
-        tab.setState("activeId", focusedTab.id);
+      const selectedTab = getTabById(renderedItems, state.selectedId);
+      if (focusedTab && selectedTab && activeId !== selectedTab.id) {
+        composite.move(selectedTab.id);
         return;
       }
       tab.setState("activeId", state.selectedId);
@@ -259,8 +265,9 @@ export interface TabStoreState extends CompositeStoreState<TabStoreItem> {
 export interface TabStoreFunctions extends CompositeStoreFunctions<TabStoreItem> {
   /**
    * Sets the
-   * [`selectedId`](https://ariakit.com/reference/tab-provider#selectedid) state
-   * without moving focus. If you want to move focus, use the
+   * [`selectedId`](https://ariakit.com/reference/tab-provider#selectedid) state.
+   * If another tab has DOM focus, focus will move to the selected tab. If you
+   * want to always move focus, use the
    * [`select`](https://ariakit.com/reference/use-tab-store#select) function
    * instead.
    * @example
@@ -284,7 +291,7 @@ export interface TabStoreFunctions extends CompositeStoreFunctions<TabStoreItem>
   /**
    * Selects the tab for the given id and moves focus to it. If you want to set
    * the [`selectedId`](https://ariakit.com/reference/tab-provider#selectedid)
-   * state without moving focus, use the
+   * state without always moving focus, use the
    * [`setSelectedId`](https://ariakit.com/reference/use-tab-store#setselectedid-1)
    * function instead.
    * @example

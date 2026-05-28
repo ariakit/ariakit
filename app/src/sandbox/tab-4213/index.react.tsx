@@ -28,6 +28,9 @@ export default function Example() {
         Carrots, onions, and potatoes
       </ak.TabPanel>
       <ak.TabPanel tabId="meat">Beef, chicken, and pork</ak.TabPanel>
+      <button type="button" onClick={() => setSelectedTab("vegetables")}>
+        Select vegetables
+      </button>
     </ak.TabProvider>
   );
 }
