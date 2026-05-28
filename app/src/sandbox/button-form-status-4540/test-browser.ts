@@ -1,0 +1,32 @@
+import { withFramework } from "#app/test-utils/preview.ts";
+
+withFramework(import.meta.dirname, async ({ query, test }) => {
+  test("button shows pending state when submitted with Enter", async ({
+    page,
+    q,
+  }) => {
+    const form = query(q.form("AriakitButton"));
+    const button = form.button();
+
+    await button.focus();
+    await page.keyboard.press("Enter");
+
+    await test.expect(button).toHaveText("Pending");
+  });
+
+  test("focusable button keeps pending state after losing focus", async ({
+    page,
+    q,
+  }) => {
+    const form = query(q.form("AriakitButton focusable"));
+    const button = form.button();
+
+    await button.focus();
+    await page.keyboard.press("Enter");
+    await test.expect(button).toHaveText("Pending");
+
+    await page.keyboard.press("Tab");
+
+    await test.expect(button).toHaveText("Pending");
+  });
+});
