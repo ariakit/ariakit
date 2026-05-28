@@ -30,6 +30,23 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(button).toHaveText("Pending");
   });
 
+  test("focusable button prevents activation while pending", async ({
+    page,
+    q,
+  }) => {
+    const form = query(q.form("AriakitButton focusable"));
+    const button = form.button();
+
+    await button.focus();
+    await page.keyboard.press("Enter");
+    await test.expect(button).toHaveText("Pending");
+    await test.expect(button).toHaveAttribute("data-click-count", "1");
+
+    await page.keyboard.press("Enter");
+
+    await test.expect(button).toHaveAttribute("data-click-count", "1");
+  });
+
   test("focusable native button prevents activation while pending", async ({
     page,
     q,

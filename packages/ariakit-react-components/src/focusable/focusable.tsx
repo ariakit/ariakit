@@ -239,6 +239,12 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     const [focusVisible, setFocusVisible] = useState(false);
     const focusVisibleRef = useRef(false);
     const nativeSubmitObserverCleanupRef = useRef<(() => void) | null>(null);
+    const cleanupFocusVisible = useEvent((element: HTMLElement | null) => {
+      nativeSubmitObserverCleanupRef.current?.();
+      nativeSubmitObserverCleanupRef.current = null;
+      focusVisibleRef.current = false;
+      element?.removeAttribute("data-focus-visible");
+    });
 
     // When the focusable element is disabled, it doesn't trigger a blur event
     // so we can't set focusVisible to false there. Instead, we have to do it
@@ -246,15 +252,11 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     useEffect(() => {
       if (!focusable) return;
       if (!trulyDisabled) return;
-      const element = ref.current;
-      nativeSubmitObserverCleanupRef.current?.();
-      nativeSubmitObserverCleanupRef.current = null;
-      focusVisibleRef.current = false;
-      element?.removeAttribute("data-focus-visible");
+      cleanupFocusVisible(ref.current);
       if (focusVisible) {
         setFocusVisible(false);
       }
-    }, [focusable, trulyDisabled, focusVisible]);
+    }, [focusable, trulyDisabled, focusVisible, cleanupFocusVisible]);
 
     // When an element that has focus becomes hidden, it doesn't trigger a blur
     // event so we can't set focusVisible to false there. We observe the element
@@ -320,10 +322,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         if (typeof IntersectionObserver !== "undefined") {
           const observer = new IntersectionObserver(() => {
             if (isFocusable(element)) return;
-            nativeSubmitObserverCleanupRef.current?.();
-            nativeSubmitObserverCleanupRef.current = null;
-            focusVisibleRef.current = false;
-            element.removeAttribute("data-focus-visible");
+            cleanupFocusVisible(element);
           });
           observer.observe(element);
           nativeSubmitObserverCleanupRef.current = () => observer.disconnect();
@@ -380,10 +379,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       // Since we set the data-focus-visible attribute on the element in the
       // handleFocusVisible function, we remove it directly here. Otherwise, the
       // attribute might not be removed on lower-end devices.
-      nativeSubmitObserverCleanupRef.current?.();
-      nativeSubmitObserverCleanupRef.current = null;
-      focusVisibleRef.current = false;
-      event.currentTarget.removeAttribute("data-focus-visible");
+      cleanupFocusVisible(event.currentTarget);
       setFocusVisible(false);
     });
 
