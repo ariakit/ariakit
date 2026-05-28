@@ -57,6 +57,10 @@ function createStore<S extends State>(
 
 Creates a store.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `setup`
 
 ```ts
@@ -70,6 +74,10 @@ function setup<T extends Store>(
 
 Register a callback function that's called when the store is initialized.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `init`
 
 ```ts
@@ -82,6 +90,10 @@ function init<T extends Store>(
 ```
 
 Function that should be called when the store is initialized.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `subscribe`
 
@@ -103,6 +115,10 @@ function subscribe<T extends Store, K extends keyof StoreState<T>>(
 
 Registers a listener function that's called after state changes in the store.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `sync`
 
 ```ts
@@ -122,6 +138,10 @@ function sync<T extends Store, K extends keyof StoreState<T>>(
 ```
 
 Registers a listener function that's called immediately and synchronously whenever the store state changes.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `batch`
 
@@ -143,6 +163,10 @@ function batch<T extends Store, K extends keyof StoreState<T>>(
 
 Registers a listener function that's called immediately and after a batch of state changes in the store.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `omit`
 
 ```ts
@@ -158,6 +182,10 @@ function omit<T extends Store, K extends ReadonlyArray<keyof StoreState<T>>>(
 ```
 
 Creates a new store with a subset of the current store state and keeps them in sync.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `pick`
 
@@ -175,6 +203,10 @@ function pick<T extends Store, K extends ReadonlyArray<keyof StoreState<T>>>(
 
 Creates a new store with a subset of the current store state and keeps them in sync.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `mergeStore`
 
 ```ts
@@ -185,6 +217,10 @@ function mergeStore<S extends State>(
 
 Merges multiple stores into a single store.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `throwOnConflictingProps`
 
 ```ts
@@ -192,6 +228,10 @@ function throwOnConflictingProps(props: AnyObject, store?: Store): void;
 ```
 
 Throws when a store prop is passed in conjunction with a default state.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `State`
 
@@ -201,6 +241,10 @@ type State = AnyObject;
 
 Store state type.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `StoreOptions`
 
 ```ts
@@ -208,6 +252,10 @@ type StoreOptions<S extends State, K extends keyof S> = Partial<Pick<S, K>>;
 ```
 
 Initial state that can be passed to a store creator function.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `StoreProps`
 
@@ -225,6 +273,10 @@ interface StoreProps<S extends State = State> {
 
 Props that can be passed to a store creator function.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `StoreState`
 
 ```ts
@@ -232,6 +284,10 @@ type StoreState<T> = T extends Store<infer S> ? S : never;
 ```
 
 Extracts the state type from a store type.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `Store`
 
@@ -249,5 +305,9 @@ interface Store<S = State> {
 ```
 
 Store.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 <!-- ariakit-docs:end -->

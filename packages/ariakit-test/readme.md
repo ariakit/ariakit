@@ -56,6 +56,10 @@ The `@ariakit/test/react` entry point renders React components for testing, and 
 function blur(element?: DirtiableElement | null): Promise<void>;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `click`
 
 ```ts
@@ -65,6 +69,10 @@ function click(
   tap = false,
 ): Promise<void>;
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `dispatch`
 
@@ -80,11 +88,19 @@ type EventsObject = {
 const dispatch: typeof baseDispatch & EventsObject;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `focus`
 
 ```ts
 function focus(element: Element | null): Promise<void>;
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `hover`
 
@@ -95,6 +111,10 @@ function hover(
 ): Promise<void>;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `mouseDown`
 
 ```ts
@@ -103,6 +123,10 @@ function mouseDown(
   options?: PointerEventInit,
 ): Promise<void>;
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `mouseUp`
 
@@ -113,6 +137,10 @@ function mouseUp(
 ): Promise<void>;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `press`
 
 ```ts
@@ -122,6 +150,10 @@ function press(
   options: KeyboardEventInit = {},
 ): Promise<void>;
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `query`
 
@@ -143,6 +175,10 @@ interface QueryObject extends RoleQueries {
 const query: QueryObject;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `q`
 
 ```ts
@@ -163,6 +199,10 @@ interface QueryObject extends RoleQueries {
 const q: QueryObject;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `select`
 
 ```ts
@@ -173,11 +213,19 @@ function select(
 ): Promise<void>;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `sleep`
 
 ```ts
 function sleep(ms = defaultMs): Promise<void>;
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `tap`
 
@@ -187,6 +235,10 @@ function tap(
   options?: PointerEventInit,
 ): Promise<void>;
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `type`
 
@@ -198,6 +250,10 @@ function type(
 ): Promise<void>;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `waitFor`
 
 ```ts
@@ -206,6 +262,10 @@ function waitFor<T>(
   options?: DOMTestingLibrary.waitForOptions,
 ): Promise<T>;
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 <!-- ariakit-docs:end -->
 
@@ -227,6 +287,10 @@ interface RenderOptions extends Omit<
 }
 ```
 
+<div align="right">
+  <a href="#react-api-reference">&uarr; back to top</a>
+</div>
+
 ### `render`
 
 ```ts
@@ -238,6 +302,10 @@ function render(
   rerender: (newUi: ReactNode) => Promise<void>;
 }>;
 ```
+
+<div align="right">
+  <a href="#react-api-reference">&uarr; back to top</a>
+</div>
 
 <!-- ariakit-docs:end react -->
 
@@ -264,6 +332,10 @@ type Queries = RoleQueries & { text: TextQuery };
 
 function query(locator: Page | Locator | FrameLocator): Queries;
 ```
+
+<div align="right">
+  <a href="#playwright-api-reference">&uarr; back to top</a>
+</div>
 
 <!-- ariakit-docs:end playwright -->
 

@@ -604,7 +604,15 @@ function renderExample(example: string) {
   return renderCodeBlock(trimmed);
 }
 
-function renderEntry(entry: ApiEntry, heading: string) {
+function renderBackToTop(anchor: string) {
+  return [
+    '<div align="right">',
+    `  <a href="#${anchor}">&uarr; back to top</a>`,
+    "</div>",
+  ].join("\n");
+}
+
+function renderEntry(entry: ApiEntry, heading: string, topAnchor: string) {
   const jsDoc = getJsDocParts(entry.declarations);
   const signatures = getEntrySignatures(entry);
   const lines = [`${heading} \`${entry.name}\``, ""];
@@ -628,6 +636,8 @@ function renderEntry(entry: ApiEntry, heading: string) {
   for (const example of jsDoc.examples) {
     lines.push("Example:", "", renderExample(example), "");
   }
+
+  lines.push(renderBackToTop(topAnchor));
 
   return lines.join("\n").trimEnd();
 }
@@ -690,7 +700,11 @@ function renderContents(groups: ApiGroup[]) {
     .join("\n");
 }
 
-function renderGroup(group: ApiGroup, memberHeading: string) {
+function renderGroup(
+  group: ApiGroup,
+  memberHeading: string,
+  topAnchor: string,
+) {
   const lines = group.title ? [`### ${group.title}`, ""] : [];
 
   if (group.description) {
@@ -698,7 +712,7 @@ function renderGroup(group: ApiGroup, memberHeading: string) {
   }
 
   for (const entry of group.entries) {
-    lines.push(renderEntry(entry, memberHeading), "");
+    lines.push(renderEntry(entry, memberHeading, topAnchor), "");
   }
 
   return lines.join("\n").trimEnd();
@@ -740,9 +754,12 @@ export function generateDocsMarkdown(options: GenerateDocsOptions = {}) {
   // section heading, so they use `###` to keep the heading levels incremental.
   const hasModules = groups.some((group) => group.title);
   const memberHeading = hasModules ? "####" : "###";
+  // Each member links back to the section heading (which sits above the table
+  // of contents), e.g. `#api-reference` or `#playwright-api-reference`.
+  const topAnchor = slugifyHeading(heading);
 
   for (const group of groups) {
-    lines.push(renderGroup(group, memberHeading), "");
+    lines.push(renderGroup(group, memberHeading, topAnchor), "");
   }
 
   return formatMarkdown(`${lines.join("\n").trimEnd()}\n`);

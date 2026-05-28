@@ -61,6 +61,10 @@ interface UseState<S> {
 }
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `useStoreState`
 
 ```ts
@@ -131,6 +135,10 @@ const combobox = Ariakit.useComboboxContext();
 const value = Ariakit.useStoreState(combobox, "value");
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `useStoreStateObject`
 
 ```ts
@@ -169,6 +177,10 @@ function useStoreStateObject<
 
 Receives an Ariakit store object (which can be `null` or `undefined`) and returns the current state. Unlike `useStoreState`, this hook receives an object with keys that map to store keys or selector functions.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `useStoreProps`
 
 ```ts
@@ -182,6 +194,10 @@ function useStoreProps<
 
 Synchronizes the store with the props, including parent store props.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### `useStore`
 
 ```ts
@@ -192,6 +208,10 @@ function useStore<T extends CoreStore, P>(
 ```
 
 Creates a React store from a core store object and returns a tuple with the store and a function to update the store.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `Store`
 
@@ -206,5 +226,9 @@ type Store<T extends CoreStore = CoreStore> = T & {
   useState: UseState<StoreState<T>>;
 };
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 <!-- ariakit-docs:end -->

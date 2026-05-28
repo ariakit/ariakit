@@ -535,6 +535,28 @@ test("applies a custom heading", () => {
   expect(markdown).not.toContain("## API reference");
 });
 
+test("adds a back-to-top link to the section heading after each member", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root, heading: "Foo API" });
+
+  // The link targets the section heading slug, not the member.
+  expect(markdown).toContain('<div align="right">');
+  expect(markdown).toContain('<a href="#foo-api">&uarr; back to top</a>');
+});
+
 test("excludes exports re-exported from another file", () => {
   const root = createPackage();
   const sourcePath = join(root, "src");

@@ -70,6 +70,10 @@ function createId(
 
 Generates a unique ID.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `extractTagName`
 
 ```ts
@@ -90,6 +94,10 @@ function Component(props) {
   return <div ref={setRef} {...props} />;
 }
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### Reactivity utilities
 
@@ -112,6 +120,10 @@ value = 100;
 accessor(); // 1
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `ExtractPropsWithDefaultsExtractedProps`
 
 ```ts
@@ -128,6 +140,10 @@ type ExtractPropsWithDefaultsExtractedProps<
 };
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `ExtractPropsWithDefaultsRestProps`
 
 ```ts
@@ -137,6 +153,10 @@ type ExtractPropsWithDefaultsRestProps<P, D extends Partial<P>> = Omit<
 >;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `ExtractPropsWithDefaultsReturn`
 
 ```ts
@@ -145,6 +165,10 @@ type ExtractPropsWithDefaultsReturn<P, D extends Partial<P>> = [
   ExtractPropsWithDefaultsRestProps<P, D>,
 ];
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `extractPropsWithDefaults`
 
@@ -166,6 +190,10 @@ const [extractedProps, restProps] = extractPropsWithDefaults(props, {
   orientation: "horizontal",
 });
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `RefStore`
 
@@ -206,6 +234,10 @@ ref.set(buttonElement);
 ref.reset();
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `createRef`
 
 ```ts
@@ -225,6 +257,10 @@ createEffect(() => {
 <button ref={ref.set}>Button</button>;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `mergeProps`
 
 ```ts
@@ -236,6 +272,10 @@ function mergeProps<T extends JSX.HTMLAttributes<any>>(
 ```
 
 Merges two sets of props.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### System utilities
 
@@ -252,6 +292,10 @@ function createInstance(
 
 Creates a Solid component instance that supports the `render` and `wrapInstance` props.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `wrapInstance`
 
 ```ts
@@ -263,6 +307,10 @@ function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
 
 Returns props with an additional `wrapInstance` prop.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `createHook`
 
 ```ts
@@ -273,6 +321,10 @@ function createHook<
 ```
 
 Creates a component hook that accepts props and returns props so they can be passed to a Solid component.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `withOptions`
 
@@ -310,6 +362,10 @@ export const useMyComponent = createHook<TagName, MyComponentOptions>(
 );
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### Type utilities
 
 Shared types for Ariakit Solid components.
@@ -322,6 +378,10 @@ type RenderValue<P extends AnyObject> = JSX.Element | Component<P>;
 
 A value that can be rendered when passed to the `render` prop or the `wrapInstance` prop.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `WrapInstanceValue`
 
 ```ts
@@ -330,6 +390,10 @@ type WrapInstanceValue = RenderValue<ParentProps>;
 
 A value passed to the `wrapInstance` prop.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `WrapInstance`
 
 ```ts
@@ -337,6 +401,10 @@ type WrapInstance = Array<WrapInstanceValue>;
 ```
 
 The `wrapInstance` prop.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `Options`
 
@@ -358,6 +426,10 @@ interface Options {
 
 Custom props including the `render` prop.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `HTMLProps`
 
 ```ts
@@ -377,6 +449,10 @@ Example:
 type ButtonHTMLProps = HTMLProps<"button", { custom?: boolean }>;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `Props`
 
 ```ts
@@ -385,6 +461,10 @@ type Props<T extends ValidComponent, P extends AnyObject = EmptyObject> = P &
 ```
 
 Props based on the element type, including custom props.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `Hook`
 
@@ -403,5 +483,9 @@ Example:
 ```ts
 type UseButton = Hook<"button", { custom?: boolean }>;
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 <!-- ariakit-docs:end -->

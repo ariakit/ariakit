@@ -82,6 +82,10 @@ const useSafeLayoutEffect: typeof React.useLayoutEffect;
 
 `React.useLayoutEffect` that fallbacks to `React.useEffect` on server side.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `useInitialValue`
 
 ```ts
@@ -97,6 +101,10 @@ function Component({ prop }) {
   const initialProp = useInitialValue(prop);
 }
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `useLazyValue`
 
@@ -114,6 +122,10 @@ function Component() {
 }
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `useLiveRef`
 
 ```ts
@@ -130,6 +142,10 @@ function Component({ prop }) {
 }
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `usePreviousValue`
 
 ```ts
@@ -137,6 +153,10 @@ function usePreviousValue<T>(value: T): T;
 ```
 
 Keeps the reference of the previous value to be used in the render phase.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `useEvent`
 
@@ -155,6 +175,10 @@ function Component(props) {
 }
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `useTransactionState`
 
 ```ts
@@ -164,6 +188,10 @@ function useTransactionState<T>(
 ```
 
 Creates a React state that calls a callback function whenever the state changes and rolls back to the previous state on cleanup.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `useMergeRefs`
 
@@ -184,6 +212,10 @@ const Component = React.forwardRef((props, ref) => {
 });
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `useId`
 
 ```ts
@@ -192,6 +224,10 @@ function useId(defaultId?: string): string | undefined;
 
 Generates a unique ID. Uses React's useId if available.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `useDeferredValue`
 
 ```ts
@@ -199,6 +235,10 @@ function useDeferredValue<T>(value: T): T;
 ```
 
 Uses React's useDeferredValue if available.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `useTagName`
 
@@ -220,6 +260,10 @@ function Component(props) {
   return <div ref={ref} {...props} />;
 }
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `useAttribute`
 
@@ -243,6 +287,10 @@ function Component(props) {
 }
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `useUpdateEffect`
 
 ```ts
@@ -250,6 +298,10 @@ function useUpdateEffect(effect: EffectCallback, deps?: DependencyList): void;
 ```
 
 A `React.useEffect` that will not run on the first render.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `useUpdateLayoutEffect`
 
@@ -262,6 +314,10 @@ function useUpdateLayoutEffect(
 
 A `React.useLayoutEffect` that will not run on the first render.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `useForceUpdate`
 
 ```ts
@@ -269,6 +325,10 @@ function useForceUpdate(): [never[], React.ActionDispatch<[]>];
 ```
 
 A React hook similar to `useState` and `useReducer`, but with the only purpose of re-rendering the component.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `useBooleanEvent`
 
@@ -279,6 +339,10 @@ function useBooleanEvent<T extends unknown[]>(
 ```
 
 Returns an event callback similar to `useEvent`, but this also accepts a boolean value, which will be turned into a function.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `useWrapElement`
 
@@ -291,6 +355,10 @@ function useWrapElement<P>(
 ```
 
 Returns props with an additional `wrapElement` prop.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `usePortalRef`
 
@@ -309,6 +377,10 @@ function usePortalRef(
 
 Merges the portalRef prop and returns a `domReady` to be used in the components that use Portal underneath.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `useMetadataProps`
 
 ```ts
@@ -324,6 +396,10 @@ function useMetadataProps<T, K extends keyof any>(
 
 A hook that passes metadata props around without leaking them to the DOM.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `useIsMouseMoving`
 
 ```ts
@@ -331,6 +407,10 @@ function useIsMouseMoving(): () => boolean;
 ```
 
 Returns a function that checks whether the mouse is moving.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### General utilities
 
@@ -347,6 +427,10 @@ function setRef<T>(
 
 Sets both a function and object React ref.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isValidElementWithRef`
 
 ```ts
@@ -357,6 +441,10 @@ function isValidElementWithRef<P extends { ref?: Ref<any> }>(
 
 Checks if an element is a valid React element with a ref.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getRefProperty`
 
 ```ts
@@ -365,6 +453,10 @@ function getRefProperty(element: unknown): Ref<any> | undefined;
 
 Gets the ref property from a React element.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `mergeProps`
 
 ```ts
@@ -372,6 +464,10 @@ function mergeProps<T extends HTMLAttributes<any>>(base: T, overrides: T): T;
 ```
 
 Merges two sets of props.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### System utilities
 
@@ -384,6 +480,10 @@ function forwardRef<T extends React.FC<any>>(render: T): T;
 ```
 
 The same as `React.forwardRef` but passes the `ref` as a prop and returns a component with the same generic type.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `memo`
 
@@ -399,6 +499,10 @@ function memo<T extends React.FC<any>>(
 
 The same as `React.memo` but returns a component with the same generic type.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `createElement`
 
 ```ts
@@ -410,6 +514,10 @@ function createElement(
 
 Creates a React element that supports the `render` and `wrapElement` props.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `createHook`
 
 ```ts
@@ -420,6 +528,10 @@ function createHook<
 ```
 
 Creates a component hook that accepts props and returns props so they can be passed to a React element.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `createStoreContext`
 
@@ -449,6 +561,10 @@ function createStoreContext<T extends Store>(
 
 Creates an Ariakit store context with hooks and provider components.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### Type utilities
 
 Shared types for Ariakit React components.
@@ -469,6 +585,10 @@ Example:
 const children: RenderProp = (props) => <div {...props} />;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `WrapElement`
 
 ```ts
@@ -476,6 +596,10 @@ type WrapElement = (element: React.ReactElement) => React.ReactElement;
 ```
 
 The `wrapElement` prop.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `Options`
 
@@ -497,6 +621,10 @@ interface Options {
 
 Custom props including the `render` prop.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `HTMLProps`
 
 ```ts
@@ -516,6 +644,10 @@ Example:
 type ButtonHTMLProps = HTMLProps<"button", { custom?: boolean }>;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `Props`
 
 ```ts
@@ -524,6 +656,10 @@ type Props<T extends React.ElementType, P extends AnyObject = EmptyObject> = P &
 ```
 
 Props based on the element type, including custom props.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `Hook`
 
@@ -542,5 +678,9 @@ Example:
 ```ts
 type UseButton = Hook<"button", { custom?: boolean }>;
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 <!-- ariakit-docs:end -->
