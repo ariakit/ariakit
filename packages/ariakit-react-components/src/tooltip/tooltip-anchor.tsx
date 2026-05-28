@@ -13,6 +13,7 @@ import { useEffect, useRef } from "react";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
 import { useTooltipProviderContext } from "./tooltip-context.tsx";
+import { isTooltipStoreOpenControlled } from "./tooltip-store.ts";
 import type { TooltipStore } from "./tooltip-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -81,7 +82,10 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
           // active one and set the current one as the active tooltip.
           if (state.mounted) {
             const { activeStore } = globalStore.getState();
-            if (activeStore !== store) {
+            if (
+              activeStore !== store &&
+              !isTooltipStoreOpenControlled(activeStore)
+            ) {
               activeStore?.hide();
             }
             return globalStore.setState("activeStore", store);
