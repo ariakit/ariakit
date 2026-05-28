@@ -3,8 +3,10 @@ import { withFramework } from "#app/test-utils/preview.ts";
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/4213
   test("moves focus after controlled tab selection", async ({ page, q }) => {
-    await q.tab("Vegetables").click();
+    await q.tab("Vegetables").focus();
     await test.expect(q.tab("Vegetables")).toBeFocused();
+
+    await q.tab("Vegetables").click();
 
     await test.expect(q.tab("Meat")).toHaveAttribute("aria-selected", "true");
     await test.expect(q.tab("Meat")).toBeFocused();
@@ -36,5 +38,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(q.tab("Meat")).toHaveAttribute("aria-selected", "true");
     await test.expect(textbox).toBeFocused();
+  });
+
+  test("does not move focus after controlled selection of a disabled tab", async ({
+    page,
+    q,
+  }) => {
+    await q.tab("Fruits").focus();
+    await test.expect(q.tab("Fruits")).toBeFocused();
+
+    await page.keyboard.press("d");
+
+    await test.expect(q.tab("Dairy")).toHaveAttribute("aria-selected", "true");
+    await test.expect(q.tab("Fruits")).toBeFocused();
   });
 });

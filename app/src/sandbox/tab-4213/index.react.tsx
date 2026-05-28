@@ -19,7 +19,18 @@ export default function Example() {
   return (
     <ak.TabProvider store={tab}>
       <ak.TabList aria-label="Groceries">
-        <ak.Tab id="fruits">Fruits</ak.Tab>
+        <ak.Tab
+          id="fruits"
+          onKeyDown={(event) => {
+            if (event.key.toLowerCase() !== "d") return;
+            setSelectedTab("dairy");
+          }}
+        >
+          Fruits
+        </ak.Tab>
+        <ak.Tab id="dairy" disabled>
+          Dairy
+        </ak.Tab>
         <ak.Tab id="vegetables">Vegetables</ak.Tab>
         <ak.Tab id="meat">Meat</ak.Tab>
       </ak.TabList>
@@ -37,6 +48,7 @@ export default function Example() {
         Carrots, onions, and potatoes
       </ak.TabPanel>
       <ak.TabPanel tabId="meat">Beef, chicken, and pork</ak.TabPanel>
+      <ak.TabPanel tabId="dairy">Milk, cheese, and yogurt</ak.TabPanel>
       {/* WebKit keeps focus on the clicked button only when explicitly tabbable. */}
       <button
         type="button"

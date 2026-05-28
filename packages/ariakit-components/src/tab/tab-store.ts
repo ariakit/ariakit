@@ -36,6 +36,15 @@ function getTabById(items: TabStoreItem[], id: string | null | undefined) {
   return items.find((item) => item.id === id);
 }
 
+function isEnabledTab(
+  item: TabStoreItem | null | undefined,
+): item is TabStoreItem {
+  if (!item) return false;
+  if (item.disabled) return false;
+  if (item.dimmed) return false;
+  return true;
+}
+
 export function createTabStore({
   composite: parentComposite,
   combobox,
@@ -108,9 +117,7 @@ export function createTabStore({
       if (!selectOnMove) return;
       if (!activeId) return;
       const tabItem = composite.item(activeId);
-      if (!tabItem) return;
-      if (tabItem.dimmed) return;
-      if (tabItem.disabled) return;
+      if (!isEnabledTab(tabItem)) return;
       tab.setState("selectedId", tabItem.id);
     }),
   );
@@ -134,7 +141,11 @@ export function createTabStore({
       const { activeId, renderedItems } = tab.getState();
       const focusedTab = getFocusedTab(renderedItems);
       const selectedTab = getTabById(renderedItems, state.selectedId);
-      if (focusedTab && selectedTab && activeId !== selectedTab.id) {
+      if (
+        focusedTab &&
+        isEnabledTab(selectedTab) &&
+        activeId !== selectedTab.id
+      ) {
         composite.move(selectedTab.id);
         return;
       }
@@ -149,15 +160,13 @@ export function createTabStore({
       // First, we try to set selectedId based on the current active tab.
       const { activeId, renderedItems } = tab.getState();
       const tabItem = composite.item(activeId);
-      if (tabItem && !tabItem.disabled && !tabItem.dimmed) {
+      if (isEnabledTab(tabItem)) {
         tab.setState("selectedId", tabItem.id);
       }
       // If there's no active tab or the active tab is dimmed, we get the
       // first enabled tab instead.
       else {
-        const tabItem = renderedItems.find(
-          (item) => !item.disabled && !item.dimmed,
-        );
+        const tabItem = renderedItems.find(isEnabledTab);
         tab.setState("selectedId", tabItem?.id);
       }
     }),
@@ -266,8 +275,8 @@ export interface TabStoreFunctions extends CompositeStoreFunctions<TabStoreItem>
   /**
    * Sets the
    * [`selectedId`](https://ariakit.com/reference/tab-provider#selectedid) state.
-   * If another tab has DOM focus, focus will move to the selected tab. If you
-   * want to always move focus, use the
+   * If another tab has DOM focus and the selected tab is enabled, focus will
+   * move to the selected tab. If you want to always move focus, use the
    * [`select`](https://ariakit.com/reference/use-tab-store#select) function
    * instead.
    * @example
