@@ -15,13 +15,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(dialog).toHaveAttribute("data-leave", "true");
   });
 
-  test("controlled dialog without explicit store waits for leave transition before unmount", async ({
+  test("controlled dialog with workaround waits for leave transition before unmount", async ({
     q,
   }) => {
     // See https://github.com/ariakit/ariakit/issues/3403
-    await q.button("Show dialog without store").click();
+    await q.button("Show dialog with workaround").click();
 
-    const dialog = q.dialog("Dialog without store", { includeHidden: true });
+    const dialog = q.dialog("Dialog with workaround", { includeHidden: true });
     await test.expect(dialog).toBeVisible();
 
     await q.button("Close").click();
