@@ -5,7 +5,12 @@ import { useFormStatus } from "react-dom";
 function AriakitButton(props: Ariakit.ButtonProps) {
   const { pending } = useFormStatus();
   return (
-    <Ariakit.Button type="submit" disabled={pending} {...props}>
+    <Ariakit.Button
+      type="submit"
+      disabled={pending}
+      onFocusVisible={(event) => event.preventDefault()}
+      {...props}
+    >
       {pending ? "Pending" : props.children}
     </Ariakit.Button>
   );
