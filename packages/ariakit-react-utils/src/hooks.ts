@@ -1,3 +1,8 @@
+/**
+ * React hooks for refs, events, ids, effects, and element metadata.
+ * @module Hooks
+ */
+
 import { canUseDOM, addGlobalEventListener } from "@ariakit/utils";
 import type { AnyFunction } from "@ariakit/utils";
 import type {

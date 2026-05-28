@@ -1,3 +1,8 @@
+/**
+ * Helpers for working with refs, elements, and props.
+ * @module General utilities
+ */
+
 import { hasOwnProperty } from "@ariakit/utils";
 import type {
   HTMLAttributes,

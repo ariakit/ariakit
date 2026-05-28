@@ -13,10 +13,13 @@ interface GenerateDocsOptions {
   rootPath?: string;
   entry?: string;
   tsconfig?: string;
+  heading?: string;
+  exclude?: string[];
 }
 
 interface InjectDocsOptions extends GenerateDocsOptions {
   readme?: string;
+  marker?: string;
 }
 
 interface DocsOptions extends InjectDocsOptions {
@@ -59,8 +62,7 @@ interface SignatureItem {
 
 type LocalTypeDeclaration = InterfaceDeclaration | TypeAliasDeclaration;
 
-const startMarker = "<!-- ariakit-docs:start -->";
-const endMarker = "<!-- ariakit-docs:end -->";
+const defaultHeading = "API reference";
 const maxDeclarationLines = 24;
 const declarationHeadLines = 14;
 const declarationTailLines = 4;
@@ -68,6 +70,14 @@ const declarationTailLines = 4;
 function resolvePath(rootPath: string, path: string) {
   if (isAbsolute(path)) return path;
   return resolve(rootPath, path);
+}
+
+export function getDocsMarkers(name = "") {
+  const suffix = name ? ` ${name}` : "";
+  return {
+    start: `<!-- ariakit-docs:start${suffix} -->`,
+    end: `<!-- ariakit-docs:end${suffix} -->`,
+  };
 }
 
 function getTsConfigPath(rootPath: string, path?: string) {
@@ -181,8 +191,58 @@ function compareEntries(a: ApiEntry, b: ApiEntry) {
   return declarationA.getStart() - declarationB.getStart();
 }
 
-function getApiGroups(entrySourceFile: SourceFile) {
+function getExcludeSourceFile(
+  project: Project,
+  entrySourceFile: SourceFile,
+  exclude: string,
+  rootPath: string,
+) {
+  // Prefer the module the entry re-exports under this specifier so excluding
+  // an external package like `@playwright/test` resolves to its declarations.
+  for (const declaration of entrySourceFile.getExportDeclarations()) {
+    if (declaration.getModuleSpecifierValue() !== exclude) continue;
+    const sourceFile = declaration.getModuleSpecifierSourceFile();
+    if (sourceFile) return sourceFile;
+  }
+
+  // Otherwise treat the value as a file path relative to the package root.
+  const path = resolvePath(rootPath, exclude);
+  if (!existsSync(path)) return undefined;
+  return project.getSourceFile(path) || project.addSourceFileAtPath(path);
+}
+
+function getExcludedNames(
+  project: Project,
+  entrySourceFile: SourceFile,
+  excludes: string[],
+  rootPath: string,
+) {
+  const names = new Set<string>();
+
+  for (const exclude of excludes) {
+    const sourceFile = getExcludeSourceFile(
+      project,
+      entrySourceFile,
+      exclude,
+      rootPath,
+    );
+    // Fail fast on a misconfigured exclude. Skipping silently would leave the
+    // re-exported declarations in the output, and the readme sync check would
+    // not catch it because it applies the same exclude on both sides.
+    if (!sourceFile) {
+      throw new Error(`Could not resolve --exclude entry "${exclude}"`);
+    }
+    for (const [name] of sourceFile.getExportedDeclarations()) {
+      names.add(name);
+    }
+  }
+
+  return names;
+}
+
+function getApiGroups(entrySourceFile: SourceFile, excludedNames: Set<string>) {
   const entries = [...entrySourceFile.getExportedDeclarations()]
+    .filter(([name]) => !excludedNames.has(name))
     .map(([name, declarations]) => ({ name, declarations }))
     .sort(compareEntries);
   const moduleInfoByFile = new Map<string, ModuleInfo | undefined>();
@@ -531,19 +591,31 @@ function renderCodeBlock(code: string) {
   return ["```ts", code, "```"].join("\n");
 }
 
-function isFencedCodeBlock(code: string) {
-  return /^```[\s\S]*\n```$/.test(code.trim());
+function hasFencedCodeBlock(code: string) {
+  return /(^|\n)```/.test(code.trim());
 }
 
 function renderExample(example: string) {
-  if (isFencedCodeBlock(example)) return example.trim();
-  return renderCodeBlock(example);
+  const trimmed = example.trim();
+  // Examples that already contain a fenced code block (optionally with
+  // surrounding prose) are treated as Markdown and emitted as-is. Wrapping
+  // them in another code fence would nest fences and break rendering.
+  if (hasFencedCodeBlock(trimmed)) return trimmed;
+  return renderCodeBlock(trimmed);
 }
 
-function renderEntry(entry: ApiEntry) {
+function renderBackToTop(anchor: string) {
+  return [
+    '<div align="right">',
+    `  <a href="#${anchor}">&uarr; back to top</a>`,
+    "</div>",
+  ].join("\n");
+}
+
+function renderEntry(entry: ApiEntry, heading: string, topAnchor: string) {
   const jsDoc = getJsDocParts(entry.declarations);
   const signatures = getEntrySignatures(entry);
-  const lines = [`#### \`${entry.name}\``, ""];
+  const lines = [`${heading} \`${entry.name}\``, ""];
 
   if (signatures.length) {
     lines.push(renderCodeBlock(signatures.join("\n")), "");
@@ -565,6 +637,8 @@ function renderEntry(entry: ApiEntry) {
     lines.push("Example:", "", renderExample(example), "");
   }
 
+  lines.push(renderBackToTop(topAnchor));
+
   return lines.join("\n").trimEnd();
 }
 
@@ -577,16 +651,60 @@ function slugifyHeading(heading: string) {
     .replace(/\s+/g, "-");
 }
 
+// Mirrors how GitHub (`github-slugger`) assigns heading anchors: the first
+// heading with a given slug keeps it, and later collisions get a `-1`, `-2`,
+// ... suffix, probing until the slug is unused so a generated suffix never
+// clashes with a natural slug (e.g. `foo`, `foo-1`, `foo` -> `foo-2`). Headings
+// must be slugged in the order the body renders them so the table of contents
+// links match. This matters for case-only collisions such as `wrapInstance`
+// and `WrapInstance`, which share a lowercased slug.
+function createSlugger() {
+  const occurrences = new Map<string, number>();
+  return (heading: string) => {
+    const base = slugifyHeading(heading);
+    let slug = base;
+    while (occurrences.has(slug)) {
+      const next = (occurrences.get(base) ?? 0) + 1;
+      occurrences.set(base, next);
+      slug = `${base}-${next}`;
+    }
+    occurrences.set(slug, 0);
+    return slug;
+  };
+}
+
 function renderContents(groups: ApiGroup[]) {
+  const entryCount = groups.reduce(
+    (count, group) => count + group.entries.length,
+    0,
+  );
+  // A single entry has nothing to navigate, so the table of contents is noise.
+  if (entryCount <= 1) return "";
+
+  const slug = createSlugger();
+  const renderEntryContents = (entry: ApiEntry, indent: string) =>
+    `${indent}- [\`${entry.name}\`](#${slug(entry.name)})`;
+
   return groups
     .flatMap((group) => {
-      if (!group.title) return [];
-      return `- [${group.title}](#${slugifyHeading(group.title)})`;
+      // Without a module title, list the members at the top level. With one,
+      // nest the members under a link to the module heading.
+      if (!group.title) {
+        return group.entries.map((entry) => renderEntryContents(entry, ""));
+      }
+      return [
+        `- [${group.title}](#${slug(group.title)})`,
+        ...group.entries.map((entry) => renderEntryContents(entry, "  ")),
+      ];
     })
     .join("\n");
 }
 
-function renderGroup(group: ApiGroup) {
+function renderGroup(
+  group: ApiGroup,
+  memberHeading: string,
+  topAnchor: string,
+) {
   const lines = group.title ? [`### ${group.title}`, ""] : [];
 
   if (group.description) {
@@ -594,7 +712,7 @@ function renderGroup(group: ApiGroup) {
   }
 
   for (const entry of group.entries) {
-    lines.push(renderEntry(entry), "");
+    lines.push(renderEntry(entry, memberHeading, topAnchor), "");
   }
 
   return lines.join("\n").trimEnd();
@@ -616,16 +734,32 @@ export function generateDocsMarkdown(options: GenerateDocsOptions = {}) {
   const entryPath = resolvePath(rootPath, options.entry || "src/index.ts");
   const project = createProject(rootPath, options.tsconfig);
   const entrySourceFile = getEntrySourceFile(project, entryPath);
-  const groups = getApiGroups(entrySourceFile);
-  const lines = ["## API reference", ""];
+  const excludedNames = getExcludedNames(
+    project,
+    entrySourceFile,
+    options.exclude || [],
+    rootPath,
+  );
+  const groups = getApiGroups(entrySourceFile, excludedNames);
+  const heading = options.heading || defaultHeading;
+  const lines = [`## ${heading}`, ""];
 
   const contents = renderContents(groups);
   if (contents) {
     lines.push(contents, "");
   }
 
+  // Members sit one level below their heading. With modules they nest under a
+  // `### Module` heading; without modules they sit directly under the `##`
+  // section heading, so they use `###` to keep the heading levels incremental.
+  const hasModules = groups.some((group) => group.title);
+  const memberHeading = hasModules ? "####" : "###";
+  // Each member links back to the section heading (which sits above the table
+  // of contents), e.g. `#api-reference` or `#playwright-api-reference`.
+  const topAnchor = slugifyHeading(heading);
+
   for (const group of groups) {
-    lines.push(renderGroup(group), "");
+    lines.push(renderGroup(group, memberHeading, topAnchor), "");
   }
 
   return formatMarkdown(`${lines.join("\n").trimEnd()}\n`);
@@ -634,6 +768,7 @@ export function generateDocsMarkdown(options: GenerateDocsOptions = {}) {
 export function injectDocsMarkdown(options: InjectDocsOptions = {}) {
   const rootPath = options.rootPath || process.cwd();
   const readmePath = resolvePath(rootPath, options.readme || "readme.md");
+  const { start: startMarker, end: endMarker } = getDocsMarkers(options.marker);
   const markdown = generateDocsMarkdown(options).trimEnd();
   const readme = readFileSync(readmePath, "utf-8");
   const block = `${startMarker}\n\n${markdown}\n\n${endMarker}`;
@@ -649,7 +784,9 @@ export function injectDocsMarkdown(options: InjectDocsOptions = {}) {
   }
 
   if (hasStartMarker && hasEndMarker) {
-    const pattern = new RegExp(`${startMarker}[\\s\\S]*?${endMarker}`);
+    const pattern = new RegExp(
+      `${escapeRegExp(startMarker)}[\\s\\S]*?${escapeRegExp(endMarker)}`,
+    );
     if (!pattern.test(readme)) {
       throw new Error(
         `${startMarker} must appear before ${endMarker} in ${readmePath}`,

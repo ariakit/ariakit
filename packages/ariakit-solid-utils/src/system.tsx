@@ -1,3 +1,8 @@
+/**
+ * Helpers for creating and composing Ariakit Solid components.
+ * @module System utilities
+ */
+
 import type { AnyObject, EmptyObject } from "@ariakit/utils";
 import type { ValidComponent } from "solid-js";
 import { mergeProps, splitProps } from "solid-js";
