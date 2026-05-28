@@ -119,6 +119,18 @@ function needsSafariTabIndex(tagName?: string, inputType?: string) {
   return false;
 }
 
+function isNativeSubmitControl(element: HTMLElement) {
+  if (element.tagName === "BUTTON") {
+    const { type } = element as HTMLButtonElement;
+    return type === "submit";
+  }
+  if (element.tagName === "INPUT") {
+    const { type } = element as HTMLInputElement;
+    return type === "submit" || type === "image";
+  }
+  return false;
+}
+
 function getTabIndex({
   focusable,
   trulyDisabled,
@@ -225,13 +237,21 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     const disabled = focusable && disabledFromProps(props);
     const trulyDisabled = disabled && !accessibleWhenDisabled;
     const [focusVisible, setFocusVisible] = useState(false);
+    const focusVisibleRef = useRef(false);
+    const nativeSubmitObserverCleanupRef = useRef<(() => void) | null>(null);
 
     // When the focusable element is disabled, it doesn't trigger a blur event
     // so we can't set focusVisible to false there. Instead, we have to do it
     // here by checking the element's disabled attribute.
     useEffect(() => {
       if (!focusable) return;
-      if (trulyDisabled && focusVisible) {
+      if (!trulyDisabled) return;
+      const element = ref.current;
+      nativeSubmitObserverCleanupRef.current?.();
+      nativeSubmitObserverCleanupRef.current = null;
+      focusVisibleRef.current = false;
+      element?.removeAttribute("data-focus-visible");
+      if (focusVisible) {
         setFocusVisible(false);
       }
     }, [focusable, trulyDisabled, focusVisible]);
@@ -248,12 +268,17 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if (typeof IntersectionObserver === "undefined") return;
       const observer = new IntersectionObserver(() => {
         if (!isFocusable(element)) {
+          focusVisibleRef.current = false;
           setFocusVisible(false);
         }
       });
       observer.observe(element);
       return () => observer.disconnect();
     }, [focusable, focusVisible]);
+
+    useEffect(() => {
+      return () => nativeSubmitObserverCleanupRef.current?.();
+    }, []);
 
     // Disable events when the element is disabled.
     const onKeyPressCapture = useDisableEvent(
@@ -286,6 +311,25 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       // other data attributes like data-active-item. See
       // https://github.com/ariakit/ariakit/issues/4083
       element.dataset.focusVisible = "true";
+      focusVisibleRef.current = true;
+      // React 19's useFormStatus may lose the pending state when local
+      // component state changes while a native submit control is pending.
+      if (isNativeSubmitControl(element)) {
+        nativeSubmitObserverCleanupRef.current?.();
+        nativeSubmitObserverCleanupRef.current = null;
+        if (typeof IntersectionObserver !== "undefined") {
+          const observer = new IntersectionObserver(() => {
+            if (isFocusable(element)) return;
+            nativeSubmitObserverCleanupRef.current?.();
+            nativeSubmitObserverCleanupRef.current = null;
+            focusVisibleRef.current = false;
+            element.removeAttribute("data-focus-visible");
+          });
+          observer.observe(element);
+          nativeSubmitObserverCleanupRef.current = () => observer.disconnect();
+        }
+        return;
+      }
       setFocusVisible(true);
     };
 
@@ -296,6 +340,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       if (event.defaultPrevented) return;
       if (!focusable) return;
       if (focusVisible) return;
+      if (focusVisibleRef.current) return;
       if (event.metaKey) return;
       if (event.altKey) return;
       if (event.ctrlKey) return;
@@ -335,6 +380,9 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       // Since we set the data-focus-visible attribute on the element in the
       // handleFocusVisible function, we remove it directly here. Otherwise, the
       // attribute might not be removed on lower-end devices.
+      nativeSubmitObserverCleanupRef.current?.();
+      nativeSubmitObserverCleanupRef.current = null;
+      focusVisibleRef.current = false;
       event.currentTarget.removeAttribute("data-focus-visible");
       setFocusVisible(false);
     });
