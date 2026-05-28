@@ -527,6 +527,14 @@ export interface PopoverOptions<
    */
   fixed?: boolean;
   /**
+   * @default false
+   */
+  modal?: DialogOptions<T>["modal"];
+  /**
+   * @default false
+   */
+  portal?: DialogOptions<T>["portal"];
+  /**
    * The distance between the popover and the anchor element.
    *
    * Live examples:
