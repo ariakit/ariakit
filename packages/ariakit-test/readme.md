@@ -2,33 +2,61 @@
 
 **Important:** This package is experimental and does not follow semantic versioning, meaning breaking changes may occur in patch and minor versions.
 
+Utilities for simulating user interactions in Ariakit's unit and end-to-end tests.
+
+## Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [API reference](#api-reference)
+- [React API reference](#react-api-reference)
+- [Playwright API reference](#playwright-api-reference)
+- [Core Team](#core-team)
+- [Contributing](#contributing)
+
 ## Installation
 
-```
+```sh
 npm i @ariakit/test
 ```
 
-## Core Team
+## Usage
 
-- [Diego Haz](https://bsky.app/profile/haz.dev)
-- [Ben Rodri](https://bsky.app/profile/ben.ariakit.org)
-- [Dani Guardiola](https://bsky.app/profile/dio.la)
+Import helpers from the package root to simulate user interactions:
 
-## Contributing
+```ts
+import { click, press, type } from "@ariakit/test";
+```
 
-Follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/main/contributing.md).
+The `@ariakit/test/react` entry point renders React components for testing, and the `@ariakit/test/playwright` entry point provides query helpers for Playwright tests.
 
 <!-- ariakit-docs:start -->
 
 ## API reference
 
-#### `blur`
+- [`blur`](#blur)
+- [`click`](#click)
+- [`dispatch`](#dispatch)
+- [`focus`](#focus)
+- [`hover`](#hover)
+- [`mouseDown`](#mousedown)
+- [`mouseUp`](#mouseup)
+- [`press`](#press)
+- [`query`](#query)
+- [`q`](#q)
+- [`select`](#select)
+- [`sleep`](#sleep)
+- [`tap`](#tap)
+- [`type`](#type)
+- [`waitFor`](#waitfor)
+
+### `blur`
 
 ```ts
 function blur(element?: DirtiableElement | null): Promise<void>;
 ```
 
-#### `click`
+### `click`
 
 ```ts
 function click(
@@ -38,7 +66,7 @@ function click(
 ): Promise<void>;
 ```
 
-#### `dispatch`
+### `dispatch`
 
 ```ts
 type Target = Document | Window | Node | Element | null;
@@ -52,13 +80,13 @@ type EventsObject = {
 const dispatch: typeof baseDispatch & EventsObject;
 ```
 
-#### `focus`
+### `focus`
 
 ```ts
 function focus(element: Element | null): Promise<void>;
 ```
 
-#### `hover`
+### `hover`
 
 ```ts
 function hover(
@@ -67,7 +95,7 @@ function hover(
 ): Promise<void>;
 ```
 
-#### `mouseDown`
+### `mouseDown`
 
 ```ts
 function mouseDown(
@@ -76,7 +104,7 @@ function mouseDown(
 ): Promise<void>;
 ```
 
-#### `mouseUp`
+### `mouseUp`
 
 ```ts
 function mouseUp(
@@ -85,7 +113,7 @@ function mouseUp(
 ): Promise<void>;
 ```
 
-#### `press`
+### `press`
 
 ```ts
 function press(
@@ -95,7 +123,7 @@ function press(
 ): Promise<void>;
 ```
 
-#### `query`
+### `query`
 
 ```ts
 type Query = ReturnType<typeof createRoleQuery>;
@@ -115,7 +143,7 @@ interface QueryObject extends RoleQueries {
 const query: QueryObject;
 ```
 
-#### `q`
+### `q`
 
 ```ts
 type Query = ReturnType<typeof createRoleQuery>;
@@ -135,7 +163,7 @@ interface QueryObject extends RoleQueries {
 const q: QueryObject;
 ```
 
-#### `select`
+### `select`
 
 ```ts
 function select(
@@ -145,13 +173,13 @@ function select(
 ): Promise<void>;
 ```
 
-#### `sleep`
+### `sleep`
 
 ```ts
 function sleep(ms = defaultMs): Promise<void>;
 ```
 
-#### `tap`
+### `tap`
 
 ```ts
 function tap(
@@ -160,7 +188,7 @@ function tap(
 ): Promise<void>;
 ```
 
-#### `type`
+### `type`
 
 ```ts
 function type(
@@ -170,7 +198,7 @@ function type(
 ): Promise<void>;
 ```
 
-#### `waitFor`
+### `waitFor`
 
 ```ts
 function waitFor<T>(
@@ -185,7 +213,10 @@ function waitFor<T>(
 
 ## React API reference
 
-#### `RenderOptions`
+- [`RenderOptions`](#renderoptions)
+- [`render`](#render)
+
+### `RenderOptions`
 
 ```ts
 interface RenderOptions extends Omit<
@@ -196,7 +227,7 @@ interface RenderOptions extends Omit<
 }
 ```
 
-#### `render`
+### `render`
 
 ```ts
 function render(
@@ -214,7 +245,7 @@ function render(
 
 ## Playwright API reference
 
-#### `query`
+### `query`
 
 ```ts
 type RoleQuery = (
@@ -235,3 +266,13 @@ function query(locator: Page | Locator | FrameLocator): Queries;
 ```
 
 <!-- ariakit-docs:end playwright -->
+
+## Core Team
+
+- [Diego Haz](https://bsky.app/profile/haz.dev)
+- [Ben Rodri](https://bsky.app/profile/ben.ariakit.org)
+- [Dani Guardiola](https://bsky.app/profile/dio.la)
+
+## Contributing
+
+Follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/main/contributing.md).

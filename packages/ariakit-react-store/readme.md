@@ -30,7 +30,14 @@ This package is ESM-only and exposes a single public entrypoint.
 
 ## API reference
 
-#### `UseState`
+- [`UseState`](#usestate)
+- [`useStoreState`](#usestorestate)
+- [`useStoreStateObject`](#usestorestateobject)
+- [`useStoreProps`](#usestoreprops)
+- [`useStore`](#usestore)
+- [`Store`](#store)
+
+### `UseState`
 
 ```ts
 interface UseState<S> {
@@ -54,7 +61,7 @@ interface UseState<S> {
 }
 ```
 
-#### `useStoreState`
+### `useStoreState`
 
 ```ts
 type StateStore<T = CoreStore> = T | null | undefined;
@@ -124,7 +131,7 @@ const combobox = Ariakit.useComboboxContext();
 const value = Ariakit.useStoreState(combobox, "value");
 ```
 
-#### `useStoreStateObject`
+### `useStoreStateObject`
 
 ```ts
 type StateStore<T = CoreStore> = T | null | undefined;
@@ -162,7 +169,7 @@ function useStoreStateObject<
 
 Receives an Ariakit store object (which can be `null` or `undefined`) and returns the current state. Unlike `useStoreState`, this hook receives an object with keys that map to store keys or selector functions.
 
-#### `useStoreProps`
+### `useStoreProps`
 
 ```ts
 function useStoreProps<
@@ -175,7 +182,7 @@ function useStoreProps<
 
 Synchronizes the store with the props, including parent store props.
 
-#### `useStore`
+### `useStore`
 
 ```ts
 function useStore<T extends CoreStore, P>(
@@ -186,7 +193,7 @@ function useStore<T extends CoreStore, P>(
 
 Creates a React store from a core store object and returns a tuple with the store and a function to update the store.
 
-#### `Store`
+### `Store`
 
 ```ts
 type Store<T extends CoreStore = CoreStore> = T & {

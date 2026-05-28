@@ -31,9 +31,30 @@ This package is ESM-only and exposes a single public entrypoint.
 ## API reference
 
 - [General utilities](#general-utilities)
+  - [`createId`](#createid)
+  - [`extractTagName`](#extracttagname)
 - [Reactivity utilities](#reactivity-utilities)
+  - [`stableAccessor`](#stableaccessor)
+  - [`ExtractPropsWithDefaultsExtractedProps`](#extractpropswithdefaultsextractedprops)
+  - [`ExtractPropsWithDefaultsRestProps`](#extractpropswithdefaultsrestprops)
+  - [`ExtractPropsWithDefaultsReturn`](#extractpropswithdefaultsreturn)
+  - [`extractPropsWithDefaults`](#extractpropswithdefaults)
+  - [`RefStore`](#refstore)
+  - [`createRef`](#createref)
+  - [`mergeProps`](#mergeprops)
 - [System utilities](#system-utilities)
+  - [`createInstance`](#createinstance)
+  - [`wrapInstance`](#wrapinstance)
+  - [`createHook`](#createhook)
+  - [`withOptions`](#withoptions)
 - [Type utilities](#type-utilities)
+  - [`RenderValue`](#rendervalue)
+  - [`WrapInstanceValue`](#wrapinstancevalue)
+  - [`WrapInstance`](#wrapinstance-1)
+  - [`Options`](#options)
+  - [`HTMLProps`](#htmlprops)
+  - [`Props`](#props)
+  - [`Hook`](#hook)
 
 ### General utilities
 

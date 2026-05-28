@@ -30,7 +30,23 @@ This package is ESM-only and exposes a single public entrypoint.
 
 ## API reference
 
-#### `createStore`
+- [`createStore`](#createstore)
+- [`setup`](#setup)
+- [`init`](#init)
+- [`subscribe`](#subscribe)
+- [`sync`](#sync)
+- [`batch`](#batch)
+- [`omit`](#omit)
+- [`pick`](#pick)
+- [`mergeStore`](#mergestore)
+- [`throwOnConflictingProps`](#throwonconflictingprops)
+- [`State`](#state)
+- [`StoreOptions`](#storeoptions)
+- [`StoreProps`](#storeprops)
+- [`StoreState`](#storestate)
+- [`Store`](#store)
+
+### `createStore`
 
 ```ts
 function createStore<S extends State>(
@@ -41,7 +57,7 @@ function createStore<S extends State>(
 
 Creates a store.
 
-#### `setup`
+### `setup`
 
 ```ts
 type StoreSetup = (callback: () => void | (() => void)) => () => void;
@@ -54,7 +70,7 @@ function setup<T extends Store>(
 
 Register a callback function that's called when the store is initialized.
 
-#### `init`
+### `init`
 
 ```ts
 type StoreInit = () => () => void;
@@ -67,7 +83,7 @@ function init<T extends Store>(
 
 Function that should be called when the store is initialized.
 
-#### `subscribe`
+### `subscribe`
 
 ```ts
 type Listener<S> = (state: S, prevState: S) => void | (() => void);
@@ -87,7 +103,7 @@ function subscribe<T extends Store, K extends keyof StoreState<T>>(
 
 Registers a listener function that's called after state changes in the store.
 
-#### `sync`
+### `sync`
 
 ```ts
 type Listener<S> = (state: S, prevState: S) => void | (() => void);
@@ -107,7 +123,7 @@ function sync<T extends Store, K extends keyof StoreState<T>>(
 
 Registers a listener function that's called immediately and synchronously whenever the store state changes.
 
-#### `batch`
+### `batch`
 
 ```ts
 type Listener<S> = (state: S, prevState: S) => void | (() => void);
@@ -127,7 +143,7 @@ function batch<T extends Store, K extends keyof StoreState<T>>(
 
 Registers a listener function that's called immediately and after a batch of state changes in the store.
 
-#### `omit`
+### `omit`
 
 ```ts
 type StoreOmit<
@@ -143,7 +159,7 @@ function omit<T extends Store, K extends ReadonlyArray<keyof StoreState<T>>>(
 
 Creates a new store with a subset of the current store state and keeps them in sync.
 
-#### `pick`
+### `pick`
 
 ```ts
 type StorePick<
@@ -159,7 +175,7 @@ function pick<T extends Store, K extends ReadonlyArray<keyof StoreState<T>>>(
 
 Creates a new store with a subset of the current store state and keeps them in sync.
 
-#### `mergeStore`
+### `mergeStore`
 
 ```ts
 function mergeStore<S extends State>(
@@ -169,7 +185,7 @@ function mergeStore<S extends State>(
 
 Merges multiple stores into a single store.
 
-#### `throwOnConflictingProps`
+### `throwOnConflictingProps`
 
 ```ts
 function throwOnConflictingProps(props: AnyObject, store?: Store): void;
@@ -177,7 +193,7 @@ function throwOnConflictingProps(props: AnyObject, store?: Store): void;
 
 Throws when a store prop is passed in conjunction with a default state.
 
-#### `State`
+### `State`
 
 ```ts
 type State = AnyObject;
@@ -185,7 +201,7 @@ type State = AnyObject;
 
 Store state type.
 
-#### `StoreOptions`
+### `StoreOptions`
 
 ```ts
 type StoreOptions<S extends State, K extends keyof S> = Partial<Pick<S, K>>;
@@ -193,7 +209,7 @@ type StoreOptions<S extends State, K extends keyof S> = Partial<Pick<S, K>>;
 
 Initial state that can be passed to a store creator function.
 
-#### `StoreProps`
+### `StoreProps`
 
 ```ts
 interface StoreProps<S extends State = State> {
@@ -209,7 +225,7 @@ interface StoreProps<S extends State = State> {
 
 Props that can be passed to a store creator function.
 
-#### `StoreState`
+### `StoreState`
 
 ```ts
 type StoreState<T> = T extends Store<infer S> ? S : never;
@@ -217,7 +233,7 @@ type StoreState<T> = T extends Store<infer S> ? S : never;
 
 Extracts the state type from a store type.
 
-#### `Store`
+### `Store`
 
 ```ts
 interface Store<S = State> {

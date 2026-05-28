@@ -93,6 +93,8 @@ test("generates markdown from exported JSDoc and TypeScript declarations", () =>
 
   expect(markdown).toContain("## API reference");
   expect(markdown).toContain("- [Math utilities](#math-utilities)");
+  // Members are nested under their module in the table of contents.
+  expect(markdown).toContain("  - [`add`](#add)");
   expect(markdown).toContain("### Math utilities");
   expect(markdown).toContain("Math helpers.");
   expect(markdown).toContain("#### `add`");
@@ -107,7 +109,39 @@ test("generates markdown from exported JSDoc and TypeScript declarations", () =>
   expect(markdown).not.toContain("| Utility");
 });
 
-test("omits the table of contents when modules are missing", () => {
+test("lists members at the top level when modules are missing", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+      "/** Bar helper. */",
+      "export function bar() {",
+      "  return false;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  // Without modules, members are listed at the top level of the table of
+  // contents and sit one level below the section heading.
+  expect(markdown).toContain("- [`foo`](#foo)");
+  expect(markdown).toContain("- [`bar`](#bar)");
+  expect(markdown).toContain("### `foo`");
+  expect(markdown).not.toContain("#### `foo`");
+  expect(markdown).not.toContain("- [Foo exports]");
+  expect(markdown).not.toContain("### Foo exports");
+});
+
+test("omits the table of contents for a single member", () => {
   const root = createPackage();
   const sourcePath = join(root, "src");
   writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
@@ -124,9 +158,83 @@ test("omits the table of contents when modules are missing", () => {
 
   const markdown = generateDocsMarkdown({ rootPath: root });
 
-  expect(markdown).toContain("#### `foo`");
-  expect(markdown).not.toContain("- [Foo exports]");
-  expect(markdown).not.toContain("### Foo exports");
+  // A single entry has nothing to navigate, so no table of contents is added.
+  expect(markdown).toContain("### `foo`");
+  expect(markdown).not.toContain("- [`foo`](#foo)");
+});
+
+test("disambiguates contents links for case-only slug collisions", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Wraps a value. */",
+      "export function wrapValue() {",
+      "  return true;",
+      "}",
+      "",
+      "/** Wrapped value type. */",
+      "export type WrapValue = boolean;",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  // `wrapValue` and `WrapValue` share the `wrapvalue` slug, so the second link
+  // gets GitHub's `-1` suffix to match the anchor of the second heading.
+  expect(markdown).toContain("- [`wrapValue`](#wrapvalue)");
+  expect(markdown).toContain("- [`WrapValue`](#wrapvalue-1)");
+});
+
+test("probes past taken suffixes when building contents links", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(
+    join(sourcePath, "index.ts"),
+    ['export * from "./a.ts";', 'export * from "./b.ts";', ""].join("\n"),
+  );
+  writeFileSync(
+    join(sourcePath, "a.ts"),
+    [
+      "/**",
+      " * First group.",
+      " * @module Value",
+      " */",
+      "",
+      "/** A value. */",
+      "export function value() {",
+      "  return 1;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(sourcePath, "b.ts"),
+    [
+      "/**",
+      " * Second group.",
+      " * @module Value 1",
+      " */",
+      "",
+      "/** Another value. */",
+      "export function other() {",
+      "  return 2;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  // Headings slug to `value`, then `value-1` (the member), then `value-1` again
+  // (the "Value 1" module), which GitHub resolves to `value-1-1` by probing
+  // past the taken suffix. The contents links must follow the same assignment.
+  expect(markdown).toContain("- [Value](#value)");
+  expect(markdown).toContain("  - [`value`](#value-1)");
+  expect(markdown).toContain("- [Value 1](#value-1-1)");
 });
 
 test("uses later JSDoc descriptions after tag-only blocks", () => {
@@ -226,7 +334,7 @@ test("injects generated markdown into a readme", () => {
   const readme = readFileSync(join(root, "readme.md"), "utf-8");
   expect(readme).toContain("<!-- ariakit-docs:start -->");
   expect(readme).toContain("<!-- ariakit-docs:end -->");
-  expect(readme).toContain("#### `foo`");
+  expect(readme).toContain("### `foo`");
   expect(readme).toContain("Foo helper.");
   expect(readme).not.toContain("Old docs");
 });
@@ -252,7 +360,7 @@ test("appends generated markdown to a readme without markers", () => {
   const readme = readFileSync(join(root, "readme.md"), "utf-8");
   expect(readme).toContain("# Test");
   expect(readme).toContain("<!-- ariakit-docs:start -->");
-  expect(readme).toContain("#### `foo`");
+  expect(readme).toContain("### `foo`");
   expect(readme).toContain("<!-- ariakit-docs:end -->");
 });
 
@@ -458,8 +566,8 @@ test("excludes exports re-exported from another file", () => {
     exclude: ["src/base.ts"],
   });
 
-  expect(markdown).toContain("#### `extra`");
-  expect(markdown).not.toContain("#### `base`");
+  expect(markdown).toContain("### `extra`");
+  expect(markdown).not.toContain("### `base`");
 });
 
 test("throws when an exclude entry cannot be resolved", () => {
@@ -543,7 +651,7 @@ test("injects into a named marker block and leaves others untouched", () => {
   );
 
   expect(extraBlock).toContain("## Extra API");
-  expect(extraBlock).toContain("#### `foo`");
+  expect(extraBlock).toContain("### `foo`");
   // The default block is left empty because it was not targeted.
   expect(readme).toContain(
     "<!-- ariakit-docs:start -->\n<!-- ariakit-docs:end -->",

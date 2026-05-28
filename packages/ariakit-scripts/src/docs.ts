@@ -604,10 +604,10 @@ function renderExample(example: string) {
   return renderCodeBlock(trimmed);
 }
 
-function renderEntry(entry: ApiEntry) {
+function renderEntry(entry: ApiEntry, heading: string) {
   const jsDoc = getJsDocParts(entry.declarations);
   const signatures = getEntrySignatures(entry);
-  const lines = [`#### \`${entry.name}\``, ""];
+  const lines = [`${heading} \`${entry.name}\``, ""];
 
   if (signatures.length) {
     lines.push(renderCodeBlock(signatures.join("\n")), "");
@@ -641,16 +641,56 @@ function slugifyHeading(heading: string) {
     .replace(/\s+/g, "-");
 }
 
+// Mirrors how GitHub (`github-slugger`) assigns heading anchors: the first
+// heading with a given slug keeps it, and later collisions get a `-1`, `-2`,
+// ... suffix, probing until the slug is unused so a generated suffix never
+// clashes with a natural slug (e.g. `foo`, `foo-1`, `foo` -> `foo-2`). Headings
+// must be slugged in the order the body renders them so the table of contents
+// links match. This matters for case-only collisions such as `wrapInstance`
+// and `WrapInstance`, which share a lowercased slug.
+function createSlugger() {
+  const occurrences = new Map<string, number>();
+  return (heading: string) => {
+    const base = slugifyHeading(heading);
+    let slug = base;
+    while (occurrences.has(slug)) {
+      const next = (occurrences.get(base) ?? 0) + 1;
+      occurrences.set(base, next);
+      slug = `${base}-${next}`;
+    }
+    occurrences.set(slug, 0);
+    return slug;
+  };
+}
+
 function renderContents(groups: ApiGroup[]) {
+  const entryCount = groups.reduce(
+    (count, group) => count + group.entries.length,
+    0,
+  );
+  // A single entry has nothing to navigate, so the table of contents is noise.
+  if (entryCount <= 1) return "";
+
+  const slug = createSlugger();
+  const renderEntryContents = (entry: ApiEntry, indent: string) =>
+    `${indent}- [\`${entry.name}\`](#${slug(entry.name)})`;
+
   return groups
     .flatMap((group) => {
-      if (!group.title) return [];
-      return `- [${group.title}](#${slugifyHeading(group.title)})`;
+      // Without a module title, list the members at the top level. With one,
+      // nest the members under a link to the module heading.
+      if (!group.title) {
+        return group.entries.map((entry) => renderEntryContents(entry, ""));
+      }
+      return [
+        `- [${group.title}](#${slug(group.title)})`,
+        ...group.entries.map((entry) => renderEntryContents(entry, "  ")),
+      ];
     })
     .join("\n");
 }
 
-function renderGroup(group: ApiGroup) {
+function renderGroup(group: ApiGroup, memberHeading: string) {
   const lines = group.title ? [`### ${group.title}`, ""] : [];
 
   if (group.description) {
@@ -658,7 +698,7 @@ function renderGroup(group: ApiGroup) {
   }
 
   for (const entry of group.entries) {
-    lines.push(renderEntry(entry), "");
+    lines.push(renderEntry(entry, memberHeading), "");
   }
 
   return lines.join("\n").trimEnd();
@@ -695,8 +735,14 @@ export function generateDocsMarkdown(options: GenerateDocsOptions = {}) {
     lines.push(contents, "");
   }
 
+  // Members sit one level below their heading. With modules they nest under a
+  // `### Module` heading; without modules they sit directly under the `##`
+  // section heading, so they use `###` to keep the heading levels incremental.
+  const hasModules = groups.some((group) => group.title);
+  const memberHeading = hasModules ? "####" : "###";
+
   for (const group of groups) {
-    lines.push(renderGroup(group), "");
+    lines.push(renderGroup(group, memberHeading), "");
   }
 
   return formatMarkdown(`${lines.join("\n").trimEnd()}\n`);
