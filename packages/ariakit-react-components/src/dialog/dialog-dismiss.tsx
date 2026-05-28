@@ -16,6 +16,15 @@ const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
+function hasSameContentElement(store?: DialogStore, context?: DialogStore) {
+  if (!store) return false;
+  if (!context) return false;
+  if (store === context) return true;
+  const contentElement = store.getState().contentElement;
+  if (!contentElement) return false;
+  return contentElement === context.getState().contentElement;
+}
+
 /**
  * Returns props to create a `DialogDismiss` component.
  * @see https://ariakit.com/components/dialog
@@ -31,7 +40,11 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 export const useDialogDismiss = createHook<TagName, DialogDismissOptions>(
   function useDialogDismiss({ store, ...props }) {
     const context = useDialogScopedContext();
-    store = store || context;
+    if (hasSameContentElement(store, context)) {
+      store = context;
+    } else {
+      store = store || context;
+    }
 
     const onClickProp = props.onClick;
 

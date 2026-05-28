@@ -1,0 +1,8 @@
+.dialog-3488 {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.dialog-3488[data-enter] {
+  opacity: 1;
+}

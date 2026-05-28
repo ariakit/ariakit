@@ -34,7 +34,7 @@ import type {
   RefObject,
   SyntheticEvent,
 } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import {
   isHidden,
@@ -121,23 +121,35 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 }) {
   const context = useDialogProviderContext();
   const ref = useRef<HTMLType>(null);
+  // Tracks whether the dialog was hidden by an outside click or context menu.
+  // When true, focusOnHide skips focus restoration to match native HTML
+  // behavior where trigger buttons don't receive focus when you click outside.
+  // Reset when the dialog opens to avoid stale flags from prevented closes
+  // (e.g., onClose calling event.preventDefault), async closes with
+  // animations, or when autoFocusOnHide is disabled.
+  const interactedOutsideRef = useRef(false);
 
   const store = useDialogStore({
     store: storeProp || context,
     open: openProp,
-    setOpen(open) {
-      if (open) return;
-      const dialog = ref.current;
-      if (!dialog) return;
+  });
+  const hide = useEvent(() => {
+    if (!store.getState().open) return;
+    const dialog = ref.current;
+    if (dialog) {
       const event = new Event("close", { bubbles: false, cancelable: true });
       if (onClose) {
         dialog.addEventListener("close", onClose, { once: true });
       }
       dialog.dispatchEvent(event);
-      if (!event.defaultPrevented) return;
-      store.setOpen(true);
-    },
+      if (event.defaultPrevented) {
+        interactedOutsideRef.current = false;
+        return;
+      }
+    }
+    store.hide();
   });
+  const scopedStore = useMemo(() => ({ ...store, hide }), [store, hide]);
 
   // domReady can be also the portal node element so it's updated when the
   // portal node changes (like in between re-renders), triggering effects
@@ -158,13 +170,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
 
-  // Tracks whether the dialog was hidden by an outside click or context menu.
-  // When true, focusOnHide skips focus restoration to match native HTML
-  // behavior where trigger buttons don't receive focus when you click outside.
-  // Reset when the dialog opens to avoid stale flags from prevented closes
-  // (e.g., onClose calling event.preventDefault), async closes with
-  // animations, or when autoFocusOnHide is disabled.
-  const interactedOutsideRef = useRef(false);
   useSafeLayoutEffect(() => {
     return sync(store, ["open"], (state) => {
       if (!state.open) return;
@@ -172,7 +177,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     });
   }, [store]);
   useHideOnInteractOutside(
-    store,
+    scopedStore,
     hideOnInteractOutside,
     domReady,
     interactedOutsideRef,
@@ -259,8 +264,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // If there's already a DialogDismiss component, it does nothing.
     const existingDismiss = dialog.querySelector("[data-dialog-dismiss]");
     if (existingDismiss) return;
-    return prependHiddenDismiss(dialog, store.hide);
-  }, [store, modal, mounted, domReady]);
+    return prependHiddenDismiss(dialog, hide);
+  }, [hide, modal, mounted, domReady]);
 
   // When the dialog is animated, the open state will be false and the mounted
   // state will be true. The dialog will still be visible until the animation is
@@ -511,7 +516,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       };
       if (!isValidTarget()) return;
       if (!hideOnEscapeProp(event)) return;
-      store.hide();
+      hide();
     };
     // We're attatching the listener to the document instead of the dialog
     // element so we can listen to the Escape key anywhere in the document, even
@@ -519,7 +524,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // call `event.stopPropagation()` on the `hideOnEscape` function prop.
     const win = contentElement ? getWindow(contentElement) : undefined;
     return addGlobalEventListener("keydown", onKeyDown, true, win);
-  }, [store, domReady, mounted, contentElement, hideOnEscapeProp]);
+  }, [store, domReady, mounted, contentElement, hideOnEscapeProp, hide]);
 
   // Resets the heading levels inside the modal dialog so they start with h1.
   props = useWrapElement(
@@ -559,7 +564,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   props = useWrapElement(
     props,
     (element) => (
-      <DialogScopedContextProvider value={store}>
+      <DialogScopedContextProvider value={scopedStore}>
         <DialogHeadingContext.Provider value={setHeadingId}>
           <DialogDescriptionContext.Provider value={setDescriptionId}>
             {element}
@@ -567,7 +572,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         </DialogHeadingContext.Provider>
       </DialogScopedContextProvider>
     ),
-    [store],
+    [scopedStore],
   );
 
   props = {
@@ -687,13 +692,16 @@ export interface DialogOptions<T extends ElementType = TagName>
    * event. The only difference is that this event can be canceled with
    * `event.preventDefault()`, which will prevent the dialog from hiding.
    *
-   * It's important to note that this event only fires when the dialog store's
+   * It's important to note that this event only fires when the dialog is
+   * requested to close through Ariakit's built-in dismiss mechanisms, such as
+   * [`DialogDismiss`](https://ariakit.com/reference/dialog-dismiss), pressing
+   * the <kbd>Esc</kbd> key, or interacting outside the dialog. If the
+   * controlled [`open`](https://ariakit.com/reference/dialog#open) prop value
+   * changes, the store
    * [`open`](https://ariakit.com/reference/use-dialog-store#open) state is set
-   * to `false`. If the controlled
-   * [`open`](https://ariakit.com/reference/dialog#open) prop value changes, or
-   * if the dialog's visibility is altered in any other way (such as unmounting
-   * the dialog without adjusting the open state), this event won't be
-   * triggered.
+   * programmatically, or if the dialog's visibility is altered in any other way
+   * (such as unmounting the dialog without adjusting the open state), this
+   * event won't be triggered.
    *
    * Live examples:
    * - [Dialog with scrollable
