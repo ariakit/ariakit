@@ -6,14 +6,13 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
-import {
-  mergeScriptProfiles,
-  mergeSelectorProfiles,
-  type PerfMetrics,
-  type PerfProfiles,
-  type PerfResult,
-  type PerfScriptProfileEntry,
-  type PerfSelectorProfileEntry,
+import { mergeScriptProfiles, mergeSelectorProfiles } from "./perf.ts";
+import type {
+  PerfMetrics,
+  PerfProfiles,
+  PerfResult,
+  PerfScriptProfileEntry,
+  PerfSelectorProfileEntry,
 } from "./perf.ts";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");

@@ -21,6 +21,7 @@ export default defineConfig({
     "consistent-return": "off",
     "no-unnecessary-type-arguments": "off",
     "consistent-type-imports": ["error", { fixStyle: "separate-type-imports" }],
+    "consistent-type-specifier-style": ["error", "prefer-top-level"],
     "no-unused-vars": [
       "error",
       {
