@@ -608,6 +608,23 @@ export function createDialogComponent<T extends DialogOptions>(
   });
 }
 
+const DialogImpl = forwardRef(function DialogImpl(props: DialogProps) {
+  const htmlProps = useDialog(props);
+  return createElement(TagName, htmlProps);
+});
+
+const DialogWithStore = createDialogComponent(
+  DialogImpl,
+  useDialogProviderContext,
+);
+
+const DialogWithInternalStore = forwardRef(function DialogWithInternalStore(
+  props: DialogProps,
+) {
+  const store = useDialogStore({ open: props.open });
+  return <DialogWithStore {...props} store={store} />;
+});
+
 /**
  * Renders a dialog similar to the native `dialog` element that's rendered in a
  * [`portal`](https://ariakit.com/reference/dialog#portal) by default.
@@ -628,23 +645,6 @@ export function createDialogComponent<T extends DialogOptions>(
  * </Dialog>
  * ```
  */
-const DialogImpl = forwardRef(function DialogImpl(props: DialogProps) {
-  const htmlProps = useDialog(props);
-  return createElement(TagName, htmlProps);
-});
-
-const DialogWithStore = createDialogComponent(
-  DialogImpl,
-  useDialogProviderContext,
-);
-
-const DialogWithInternalStore = forwardRef(function DialogWithInternalStore(
-  props: DialogProps,
-) {
-  const store = useDialogStore({ open: props.open });
-  return <DialogWithStore {...props} store={store} />;
-});
-
 export const Dialog = forwardRef(function Dialog(props: DialogProps) {
   const context = useDialogProviderContext();
   // The hoisted store is only needed for the unmountOnHide mounted-state gate.
