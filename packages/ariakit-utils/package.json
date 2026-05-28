@@ -22,7 +22,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "ariakit build --index-only",
-    "clean": "ariakit clean"
+    "clean": "ariakit clean",
+    "docs": "ariakit docs --write"
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*"

@@ -1,0 +1,419 @@
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, expect, test } from "vitest";
+import { generateDocsMarkdown, injectDocsMarkdown } from "./docs.ts";
+
+const roots: string[] = [];
+
+function createPackage() {
+  const root = mkdtempSync(join(tmpdir(), "ariakit-docs-"));
+  roots.push(root);
+
+  writeFileSync(
+    join(root, "tsconfig.node.json"),
+    JSON.stringify({
+      compilerOptions: {
+        module: "NodeNext",
+        moduleResolution: "NodeNext",
+        strict: true,
+        target: "ESNext",
+      },
+      include: ["src"],
+    }),
+  );
+  mkdirSync(join(root, "src"));
+
+  return root;
+}
+
+afterEach(() => {
+  for (const root of roots.splice(0)) {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("generates markdown from exported JSDoc and TypeScript declarations", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(
+    join(sourcePath, "index.ts"),
+    [
+      'export * from "./facade.ts";',
+      'export { add } from "./math.ts";',
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(join(sourcePath, "facade.ts"), 'export * from "./math.ts";\n');
+  writeFileSync(
+    join(sourcePath, "math.ts"),
+    [
+      "/**",
+      " * Math helpers.",
+      " * @module Math utilities",
+      " */",
+      "",
+      "/**",
+      " * Adds two numbers.",
+      " * @example",
+      " * add(1, 2); // 3",
+      " */",
+      "export function add(a: number, b: number) {",
+      "  return a + b;",
+      "}",
+      "",
+      "/**",
+      " * Subtracts two numbers.",
+      " * @example",
+      " * ```ts",
+      " * subtract(2, 1);",
+      " * ```",
+      " */",
+      "export function subtract(a: number, b: number) {",
+      "  return a - b;",
+      "}",
+      "",
+      "/** User name. */",
+      "export type UserName = string;",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("## API reference");
+  expect(markdown).toContain("- [Math utilities](#math-utilities)");
+  expect(markdown).toContain("### Math utilities");
+  expect(markdown).toContain("Math helpers.");
+  expect(markdown).toContain("#### `add`");
+  expect(markdown).toContain("function add(a: number, b: number): number;");
+  expect(markdown).toContain("Adds two numbers.");
+  expect(markdown).toContain("add(1, 2); // 3");
+  expect(markdown.match(/#### `add`/g)).toHaveLength(1);
+  expect(markdown).toContain("#### `subtract`");
+  expect(markdown).toContain("```ts\nsubtract(2, 1);\n```");
+  expect(markdown).not.toContain("```ts\n```ts");
+  expect(markdown).toContain("#### `UserName`");
+  expect(markdown).not.toContain("| Utility");
+});
+
+test("omits the table of contents when modules are missing", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("#### `foo`");
+  expect(markdown).not.toContain("- [Foo exports]");
+  expect(markdown).not.toContain("### Foo exports");
+});
+
+test("uses later JSDoc descriptions after tag-only blocks", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** @deprecated Use bar instead. */",
+      "/**",
+      " * The real description.",
+      " */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("The real description.");
+});
+
+test("groups untagged exports separately when modules are present", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(
+    join(sourcePath, "index.ts"),
+    ['export * from "./foo.ts";', 'export * from "./bar.ts";', ""].join("\n"),
+  );
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/**",
+      " * Foo helpers.",
+      " * @module Foo utilities",
+      " */",
+      "",
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(sourcePath, "bar.ts"),
+    [
+      "/** Bar helper. */",
+      "export function bar() {",
+      "  return false;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("- [Foo utilities](#foo-utilities)");
+  expect(markdown).toContain("- [Other exports](#other-exports)");
+  expect(markdown).toContain("### Foo utilities");
+  expect(markdown).toContain("### Other exports");
+  expect(markdown).toContain("#### `foo`");
+  expect(markdown).toContain("#### `bar`");
+});
+
+test("injects generated markdown into a readme", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(root, "readme.md"),
+    [
+      "# Test",
+      "",
+      "<!-- ariakit-docs:start -->",
+      "Old docs",
+      "<!-- ariakit-docs:end -->",
+      "",
+    ].join("\n"),
+  );
+
+  injectDocsMarkdown({ rootPath: root });
+
+  const readme = readFileSync(join(root, "readme.md"), "utf-8");
+  expect(readme).toContain("<!-- ariakit-docs:start -->");
+  expect(readme).toContain("<!-- ariakit-docs:end -->");
+  expect(readme).toContain("#### `foo`");
+  expect(readme).toContain("Foo helper.");
+  expect(readme).not.toContain("Old docs");
+});
+
+test("appends generated markdown to a readme without markers", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(join(root, "readme.md"), ["# Test", ""].join("\n"));
+
+  injectDocsMarkdown({ rootPath: root });
+
+  const readme = readFileSync(join(root, "readme.md"), "utf-8");
+  expect(readme).toContain("# Test");
+  expect(readme).toContain("<!-- ariakit-docs:start -->");
+  expect(readme).toContain("#### `foo`");
+  expect(readme).toContain("<!-- ariakit-docs:end -->");
+});
+
+test("includes local private types referenced by public signatures", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./value.ts";\n');
+  writeFileSync(
+    join(sourcePath, "value.ts"),
+    [
+      "/**",
+      " * Value helpers.",
+      " * @module Value utilities",
+      " */",
+      "",
+      "type T = string;",
+      "",
+      "type $Value<T> = T | undefined;",
+      "",
+      "interface Options {",
+      "  value?: $Value<string>;",
+      "}",
+      "",
+      "/** Creates a value. */",
+      "export function createValue<T>(",
+      "  { value }: Options = {},",
+      "): $Value<T> {",
+      "  return value as $Value<T>;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("type $Value<T> = T | undefined;");
+  expect(markdown).not.toContain("type T = string;");
+  expect(markdown).toContain("interface Options");
+  expect(markdown).toContain("value?: $Value<string>;");
+  expect(markdown).toContain(
+    "function createValue<T>({ value }: Options = {}): $Value<T>;",
+  );
+});
+
+test("does not include private types shadowed by type parameters", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./value.ts";\n');
+  writeFileSync(
+    join(sourcePath, "value.ts"),
+    [
+      "type T = string;",
+      "",
+      "/** Generic value. */",
+      "export type Value<T> = {",
+      "  value: T;",
+      "};",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("type Value<T> = {");
+  expect(markdown).not.toContain("type T = string;");
+});
+
+test("includes private types referenced by non-generic overloads", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./value.ts";\n');
+  writeFileSync(
+    join(sourcePath, "value.ts"),
+    [
+      "type T = string;",
+      "",
+      "/** Gets a value. */",
+      "export function getValue<T>(value: T): T;",
+      "export function getValue(): T;",
+      "export function getValue(value?: unknown) {",
+      "  return value;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("type T = string;");
+  expect(markdown).toContain("function getValue<T>(value: T): T;");
+  expect(markdown).toContain("function getValue(): T;");
+});
+
+test("truncates oversized TypeScript declarations", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  const roleValues = Array.from({ length: 35 }, (_, index) => {
+    const suffix = index === 34 ? ";" : "";
+    return `  | "item-${index + 1}"${suffix}`;
+  });
+
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./roles.ts";\n');
+  writeFileSync(
+    join(sourcePath, "roles.ts"),
+    [
+      "/**",
+      " * Role helpers.",
+      " * @module Role utilities",
+      " */",
+      "",
+      "/** Supported role names. */",
+      "export type Role =",
+      ...roleValues,
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("#### `Role`");
+  expect(markdown).toContain("type Role =");
+  expect(markdown).toContain('  | "item-1"');
+  expect(markdown).toContain("// ...");
+  expect(markdown).toContain('  | "item-35";');
+  expect(markdown).not.toContain('  | "item-20"');
+  expect(markdown).toContain("Supported role names.");
+});
+
+test("throws on partial readme markers", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(root, "readme.md"),
+    ["# Test", "", "<!-- ariakit-docs:start -->", ""].join("\n"),
+  );
+
+  expect(() => injectDocsMarkdown({ rootPath: root })).toThrow(
+    "must be present",
+  );
+});
+
+test("@ariakit/utils readme docs are up to date", () => {
+  const root = join(process.cwd(), "packages/ariakit-utils");
+  const readme = readFileSync(join(root, "readme.md"), "utf-8");
+  const startMarker = "<!-- ariakit-docs:start -->";
+  const endMarker = "<!-- ariakit-docs:end -->";
+  const startIndex = readme.indexOf(startMarker);
+  const endIndex = readme.indexOf(endMarker);
+  const markdown = generateDocsMarkdown({ rootPath: root }).trimEnd();
+  const readmeMarkdown = readme
+    .slice(startIndex + startMarker.length, endIndex)
+    .trim();
+
+  expect(startIndex).toBeGreaterThanOrEqual(0);
+  expect(endIndex).toBeGreaterThan(startIndex);
+  expect(readmeMarkdown).toBe(markdown);
+});

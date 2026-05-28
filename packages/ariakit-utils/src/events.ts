@@ -1,3 +1,8 @@
+/**
+ * Event helpers for dispatching and interpreting browser events.
+ * @module Event utilities
+ */
+
 import { contains } from "./dom.ts";
 import { isApple } from "./platform.ts";
 
