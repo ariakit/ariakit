@@ -18,12 +18,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    const textbox = page.getByRole("textbox", { name: "Outside note" });
-    await textbox.focus();
-    await test.expect(textbox).toBeFocused();
+    const button = page.getByRole("button", { name: "Select vegetables" });
+    await button.click();
+    await test.expect(button).toBeFocused();
 
     await test.expect(q.tab("Meat")).toHaveAttribute("aria-selected", "true");
-    await test.expect(textbox).toBeFocused();
+    await test.expect(button).toBeFocused();
   });
 
   test("does not move focus after controlled tab selection inside a tab panel", async ({

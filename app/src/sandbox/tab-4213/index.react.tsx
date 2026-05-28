@@ -37,13 +37,14 @@ export default function Example() {
         Carrots, onions, and potatoes
       </ak.TabPanel>
       <ak.TabPanel tabId="meat">Beef, chicken, and pork</ak.TabPanel>
-      <label>
-        Outside note
-        <input
-          type="text"
-          onFocus={() => setTimeout(() => setSelectedTab("vegetables"), 100)}
-        />
-      </label>
+      {/* WebKit keeps focus on the clicked button only when explicitly tabbable. */}
+      <button
+        type="button"
+        tabIndex={0}
+        onClick={() => setSelectedTab("vegetables")}
+      >
+        Select vegetables
+      </button>
     </ak.TabProvider>
   );
 }
