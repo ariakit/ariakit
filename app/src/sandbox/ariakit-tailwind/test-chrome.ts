@@ -1,5 +1,6 @@
 import { AxeBuilder } from "@axe-core/playwright";
-import { expect, type Page } from "@playwright/test";
+import { expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 type ColorContrastViolationMap = Record<string, string>;

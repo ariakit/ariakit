@@ -22,8 +22,8 @@ import {
   PlusCheckoutStepSchema,
   PlusTypeSchema,
   URLSchema,
-  type PlusCheckoutStep,
 } from "#app/lib/schemas.ts";
+import type { PlusCheckoutStep } from "#app/lib/schemas.ts";
 import { capitalize } from "#app/lib/string.ts";
 import { getPlusPrice, processCheckout } from "#app/lib/stripe.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "#app/lib/url.ts";

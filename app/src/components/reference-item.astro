@@ -8,10 +8,11 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { type ReferenceItem as ReferenceSectionItem } from "#app/lib/reference.ts";
+import type { ReferenceItem as ReferenceSectionItem } from "#app/lib/reference.ts";
 import { getReferencePath } from "#app/lib/url.ts";
 import type { ComponentProps } from "astro/types";
-import { getEntry, type CollectionEntry } from "astro:content";
+import { getEntry } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 import { encode } from "html-entities";
 import pluralize from "pluralize";
 import ContentAdmonition from "./content-admonition.astro";
