@@ -37,9 +37,13 @@ export default function Example() {
         Carrots, onions, and potatoes
       </ak.TabPanel>
       <ak.TabPanel tabId="meat">Beef, chicken, and pork</ak.TabPanel>
-      <button type="button" onClick={() => setSelectedTab("vegetables")}>
-        Select vegetables
-      </button>
+      <label>
+        Outside note
+        <input
+          type="text"
+          onFocus={() => setTimeout(() => setSelectedTab("vegetables"), 100)}
+        />
+      </label>
     </ak.TabProvider>
   );
 }

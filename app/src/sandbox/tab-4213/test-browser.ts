@@ -18,13 +18,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    const button = page.getByRole("button", { name: "Select vegetables" });
-    await button.click();
-    await test.expect(button).toBeFocused();
+    const textbox = page.getByRole("textbox", { name: "Outside note" });
+    await textbox.focus();
+    await test.expect(textbox).toBeFocused();
 
-    // Selecting Vegetables triggers a delayed controlled update to Meat.
     await test.expect(q.tab("Meat")).toHaveAttribute("aria-selected", "true");
-    await test.expect(button).toBeFocused();
+    await test.expect(textbox).toBeFocused();
   });
 
   test("does not move focus after controlled tab selection inside a tab panel", async ({
