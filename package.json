@@ -58,7 +58,7 @@
     "build-website": "pnpm -F website run build",
     "build-website-lite": "cross-env DISABLE_SHIKI=true pnpm run build-website",
     "clean": "pnpm -r run --if-present clean",
-    "docs": "pnpm -F \"./packages/*\" run --if-present docs",
+    "docs": "pnpm -F './packages/*' run --if-present docs",
     "changeset": "changeset",
     "version": "changeset version && pnpm install --lockfile-only --ignore-scripts",
     "publish": "pnpm run build && changeset publish",
