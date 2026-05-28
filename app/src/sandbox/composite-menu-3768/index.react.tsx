@@ -7,9 +7,9 @@ export default function Example() {
         <Ariakit.CompositeRow>
           <Ariakit.CompositeItem>Button A1</Ariakit.CompositeItem>
           <Ariakit.MenuProvider>
-            <Ariakit.CompositeItem
-              render={<Ariakit.MenuButton>Menu A2</Ariakit.MenuButton>}
-            />
+            <Ariakit.CompositeItem render={<Ariakit.MenuButton />}>
+              Menu A2
+            </Ariakit.CompositeItem>
             <Ariakit.Menu>
               <Ariakit.MenuItem>Item A</Ariakit.MenuItem>
             </Ariakit.Menu>
@@ -19,9 +19,9 @@ export default function Example() {
         <Ariakit.CompositeRow>
           <Ariakit.CompositeItem>Button B1</Ariakit.CompositeItem>
           <Ariakit.MenuProvider>
-            <Ariakit.CompositeItem
-              render={<Ariakit.MenuButton>Menu B2</Ariakit.MenuButton>}
-            />
+            <Ariakit.CompositeItem render={<Ariakit.MenuButton />}>
+              Menu B2
+            </Ariakit.CompositeItem>
             <Ariakit.Menu>
               <Ariakit.MenuItem>Item B</Ariakit.MenuItem>
             </Ariakit.Menu>
