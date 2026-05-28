@@ -79,7 +79,9 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
         sync(store, ["mounted", "skipTimeout"], (state) => {
           if (!store) return;
           // If the current tooltip is open, we should immediately hide the
-          // active one and set the current one as the active tooltip.
+          // active one and set the current one as the active tooltip. We
+          // skip controlled open stores because useStoreProps would force
+          // them open again, causing a re-entrant loop between tooltips.
           if (state.mounted) {
             const { activeStore } = globalStore.getState();
             if (
