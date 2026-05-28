@@ -1,9 +1,10 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 export default function Example() {
   const [open, setOpen] = useState(false);
   const [closeCount, setCloseCount] = useState(0);
+  const closingRef = useRef(false);
   const dialog = Ariakit.useDialogStore({ open, setOpen });
 
   return (
@@ -15,9 +16,18 @@ export default function Example() {
       <Ariakit.Dialog
         store={dialog}
         onClose={(event) => {
+          // TODO: Remove this guard once
+          // https://github.com/ariakit/ariakit/issues/3488 is fixed. Deferring
+          // the controlled close keeps the programmatic update from running
+          // this handler again.
+          if (closingRef.current) return;
           event.preventDefault();
+          closingRef.current = true;
           setCloseCount((count) => count + 1);
-          setOpen(false);
+          queueMicrotask(() => {
+            setOpen(false);
+            closingRef.current = false;
+          });
         }}
         className="fixed inset-3 m-auto flex h-fit max-h-[calc(100dvh-1.5rem)] w-96 max-w-[calc(100dvw-1.5rem)] flex-col gap-4 overflow-auto rounded-lg bg-white p-6 text-black shadow-xl"
       >
