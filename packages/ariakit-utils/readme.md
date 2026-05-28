@@ -309,7 +309,7 @@ function setSelectionRange(
 ): void;
 ```
 
-SelectionRange only works on a few types of input. Calling `setSelectionRange` on a unsupported input type may throw an error on certain browsers. To avoid it, we check if its type supports SelectionRange first. It will be a noop to non-supported types until we find a workaround.
+SelectionRange only works on a few types of input. Calling `setSelectionRange` on an unsupported input type may throw an error on certain browsers. To avoid it, we check if its type supports SelectionRange first. It will be a noop to non-supported types until we find a workaround.
 
 See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange
 

@@ -1,14 +1,12 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, extname, isAbsolute, join, resolve } from "node:path";
-import {
-  Node,
-  Project,
-  SyntaxKind,
-  type FunctionDeclaration,
-  type InterfaceDeclaration,
-  type SourceFile,
-  type TypeAliasDeclaration,
+import { Node, Project, SyntaxKind } from "ts-morph";
+import type {
+  FunctionDeclaration,
+  InterfaceDeclaration,
+  SourceFile,
+  TypeAliasDeclaration,
 } from "ts-morph";
 
 interface GenerateDocsOptions {
@@ -52,6 +50,11 @@ interface JsDocTag {
 interface ModuleInfo {
   description?: string;
   title: string;
+}
+
+interface SignatureItem {
+  declarations: Node[];
+  text: string;
 }
 
 type LocalTypeDeclaration = InterfaceDeclaration | TypeAliasDeclaration;
@@ -217,12 +220,14 @@ function getApiGroups(entrySourceFile: SourceFile) {
 }
 
 function normalizeComment(text: string | undefined) {
-  return text
+  const result = text
     ?.trim()
     .split(/\n\s*\n/g)
     .map((paragraph) => paragraph.replace(/\s*\n\s*/g, " ").trim())
     .filter(Boolean)
     .join("\n\n");
+
+  return result || undefined;
 }
 
 function normalizeJsDocTagText(text: string) {
@@ -365,8 +370,33 @@ function getLocalTypeDeclarations(sourceFile: SourceFile) {
     .sort((a, b) => a.getStart() - b.getStart());
 }
 
+function escapeRegExp(text: string) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function getTypeParameterNames(declaration: Node) {
+  const names = new Set<string>();
+
+  if (
+    !Node.isFunctionDeclaration(declaration) &&
+    !Node.isInterfaceDeclaration(declaration) &&
+    !Node.isTypeAliasDeclaration(declaration)
+  ) {
+    return names;
+  }
+
+  for (const typeParameter of declaration.getTypeParameters()) {
+    names.add(typeParameter.getName());
+  }
+
+  return names;
+}
+
 function referencesIdentifier(text: string, name: string) {
-  return new RegExp(`\\b${name}\\b`).test(text);
+  const identifierCharacter = "A-Za-z0-9_$";
+  return new RegExp(
+    `(^|[^${identifierCharacter}])${escapeRegExp(name)}(?=$|[^${identifierCharacter}])`,
+  ).test(text);
 }
 
 function formatLocalTypeDeclaration(declaration: LocalTypeDeclaration) {
@@ -375,31 +405,54 @@ function formatLocalTypeDeclaration(declaration: LocalTypeDeclaration) {
   );
 }
 
-function getReferencedLocalTypes(text: string, declarations: Node[]) {
-  const localTypes = new Map<string, LocalTypeDeclaration>();
+function getSignatureTypeParameterNames(declarations: Node[]) {
+  const names = new Set<string>();
   for (const declaration of declarations) {
-    for (const localType of getLocalTypeDeclarations(
-      declaration.getSourceFile(),
-    )) {
-      const path = localType.getSourceFile().getFilePath();
-      localTypes.set(`${path}:${localType.getName()}`, localType);
+    for (const name of getTypeParameterNames(declaration)) {
+      names.add(name);
     }
   }
+  return names;
+}
+
+function getReferencedLocalTypes(items: SignatureItem[]) {
+  const localTypes = new Map<string, LocalTypeDeclaration>();
+  for (const item of items) {
+    for (const declaration of item.declarations) {
+      for (const localType of getLocalTypeDeclarations(
+        declaration.getSourceFile(),
+      )) {
+        const path = localType.getSourceFile().getFilePath();
+        localTypes.set(`${path}:${localType.getName()}`, localType);
+      }
+    }
+  }
+
+  const searchItems = items.map((item) => ({
+    ...item,
+    typeParameterNames: getSignatureTypeParameterNames(item.declarations),
+  }));
   const referencedTypes = new Map<string, LocalTypeDeclaration>();
-  let searchText = text;
 
   let foundReference = true;
   while (foundReference) {
     foundReference = false;
 
-    for (const [key, declaration] of localTypes) {
-      const name = declaration.getName();
-      if (referencedTypes.has(key)) continue;
-      if (!referencesIdentifier(searchText, name)) continue;
+    for (const item of searchItems) {
+      for (const [key, declaration] of localTypes) {
+        const name = declaration.getName();
+        if (referencedTypes.has(key)) continue;
+        if (item.typeParameterNames.has(name)) continue;
+        if (!referencesIdentifier(item.text, name)) continue;
 
-      referencedTypes.set(key, declaration);
-      searchText += `\n${declaration.getText()}`;
-      foundReference = true;
+        referencedTypes.set(key, declaration);
+        searchItems.push({
+          declarations: [declaration],
+          text: declaration.getText(),
+          typeParameterNames: getTypeParameterNames(declaration),
+        });
+        foundReference = true;
+      }
     }
   }
 
@@ -408,11 +461,9 @@ function getReferencedLocalTypes(text: string, declarations: Node[]) {
   );
 }
 
-function addReferencedLocalTypes(signatures: string[], declarations: Node[]) {
-  const referencedTypes = getReferencedLocalTypes(
-    signatures.join("\n"),
-    declarations,
-  );
+function addReferencedLocalTypes(items: SignatureItem[]) {
+  const referencedTypes = getReferencedLocalTypes(items);
+  const signatures = items.map((item) => item.text);
   const localTypeSignatures = referencedTypes
     .map(formatLocalTypeDeclaration)
     .join("\n\n");
@@ -447,8 +498,12 @@ function getEntrySignatures(entry: ApiEntry) {
     entry.declarations,
   );
   if (functionDeclarations.length) {
-    const signatures = functionDeclarations.map(formatFunctionSignature);
-    return addReferencedLocalTypes(signatures, functionDeclarations);
+    return addReferencedLocalTypes(
+      functionDeclarations.map((declaration) => ({
+        declarations: [declaration],
+        text: formatFunctionSignature(declaration),
+      })),
+    );
   }
 
   const [declaration] = entry.declarations;
@@ -456,16 +511,20 @@ function getEntrySignatures(entry: ApiEntry) {
 
   const variableSignature = formatVariableSignature(declaration);
   if (variableSignature) {
-    return addReferencedLocalTypes(
-      [truncateDeclarationText(variableSignature)],
-      [declaration],
-    );
+    return addReferencedLocalTypes([
+      {
+        declarations: [declaration],
+        text: truncateDeclarationText(variableSignature),
+      },
+    ]);
   }
 
-  return addReferencedLocalTypes(
-    [formatDeclarationText(declaration)],
-    [declaration],
-  );
+  return addReferencedLocalTypes([
+    {
+      declarations: [declaration],
+      text: formatDeclarationText(declaration),
+    },
+  ]);
 }
 
 function renderCodeBlock(code: string) {

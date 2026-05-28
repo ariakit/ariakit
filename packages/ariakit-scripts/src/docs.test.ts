@@ -125,6 +125,29 @@ test("omits the table of contents when modules are missing", () => {
   expect(markdown).not.toContain("### Foo exports");
 });
 
+test("uses later JSDoc descriptions after tag-only blocks", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** @deprecated Use bar instead. */",
+      "/**",
+      " * The real description.",
+      " */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("The real description.");
+});
+
 test("groups untagged exports separately when modules are present", () => {
   const root = createPackage();
   const sourcePath = join(root, "src");
@@ -241,17 +264,19 @@ test("includes local private types referenced by public signatures", () => {
       " * @module Value utilities",
       " */",
       "",
-      "type Value<T> = T | undefined;",
+      "type T = string;",
+      "",
+      "type $Value<T> = T | undefined;",
       "",
       "interface Options {",
-      "  value?: Value<string>;",
+      "  value?: $Value<string>;",
       "}",
       "",
       "/** Creates a value. */",
       "export function createValue<T>(",
       "  { value }: Options = {},",
-      "): Value<T> {",
-      "  return value as Value<T>;",
+      "): $Value<T> {",
+      "  return value as $Value<T>;",
       "}",
       "",
     ].join("\n"),
@@ -259,12 +284,62 @@ test("includes local private types referenced by public signatures", () => {
 
   const markdown = generateDocsMarkdown({ rootPath: root });
 
-  expect(markdown).toContain("type Value<T> = T | undefined;");
+  expect(markdown).toContain("type $Value<T> = T | undefined;");
+  expect(markdown).not.toContain("type T = string;");
   expect(markdown).toContain("interface Options");
-  expect(markdown).toContain("value?: Value<string>;");
+  expect(markdown).toContain("value?: $Value<string>;");
   expect(markdown).toContain(
-    "function createValue<T>({ value }: Options = {}): Value<T>;",
+    "function createValue<T>({ value }: Options = {}): $Value<T>;",
   );
+});
+
+test("does not include private types shadowed by type parameters", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./value.ts";\n');
+  writeFileSync(
+    join(sourcePath, "value.ts"),
+    [
+      "type T = string;",
+      "",
+      "/** Generic value. */",
+      "export type Value<T> = {",
+      "  value: T;",
+      "};",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("type Value<T> = {");
+  expect(markdown).not.toContain("type T = string;");
+});
+
+test("includes private types referenced by non-generic overloads", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./value.ts";\n');
+  writeFileSync(
+    join(sourcePath, "value.ts"),
+    [
+      "type T = string;",
+      "",
+      "/** Gets a value. */",
+      "export function getValue<T>(value: T): T;",
+      "export function getValue(): T;",
+      "export function getValue(value?: unknown) {",
+      "  return value;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("type T = string;");
+  expect(markdown).toContain("function getValue<T>(value: T): T;");
+  expect(markdown).toContain("function getValue(): T;");
 });
 
 test("truncates oversized TypeScript declarations", () => {
