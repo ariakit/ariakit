@@ -1,3 +1,8 @@
+/**
+ * Focus management helpers for focusable and tabbable elements.
+ * @module Focus utilities
+ */
+
 import { contains, getActiveElement, isFrame, isVisible } from "./dom.ts";
 
 const selector =

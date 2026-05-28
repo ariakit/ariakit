@@ -1,3 +1,8 @@
+/**
+ * DOM helpers for browser, iframe, text input, popup, and scrolling behavior.
+ * @module DOM utilities
+ */
+
 import type { AriaHasPopup, AriaRole } from "./types.ts";
 
 /**
@@ -207,7 +212,7 @@ export function getTextboxSelection(element: HTMLElement) {
 }
 
 /**
- * Returns the element's role attribute, if it has one.
+ * Returns the popup role from the element's role attribute, if it has one.
  */
 export function getPopupRole(
   element?: Element | null,
