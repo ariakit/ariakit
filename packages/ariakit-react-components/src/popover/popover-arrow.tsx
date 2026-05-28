@@ -128,7 +128,7 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
               // the appearance of borders on HTML elements.
               <path
                 fill="none"
-                stroke={`var(--ak-layer, ${fill})`}
+                stroke={fill}
                 d={POPOVER_ARROW_PATH}
                 mask={`url(#${maskId})`}
               />
@@ -162,8 +162,8 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
         width: "1em",
         height: "1em",
         pointerEvents: "none",
-        fill: `var(--ak-layer, ${fill})`,
-        stroke: `var(--ak-edge, ${stroke})`,
+        fill,
+        stroke,
         strokeWidth,
         ...props.style,
       },
