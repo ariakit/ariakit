@@ -25,29 +25,26 @@ function DialogWithStore() {
   );
 }
 
-function DialogWithWorkaround() {
+function DialogWithoutStore() {
   const [open, setOpen] = useState(false);
-  // TODO: Remove this explicit store workaround once
-  // https://github.com/ariakit/ariakit/issues/3403 is fixed.
-  const dialog = Ariakit.useDialogStore({
-    open,
-    setOpen,
-  });
   return (
     <div>
       <Ariakit.Button className="button" onClick={() => setOpen(true)}>
-        Show dialog with workaround
+        Show dialog without store
       </Ariakit.Button>
       <Ariakit.Dialog
-        store={dialog}
+        open={open}
+        onClose={() => setOpen(false)}
         unmountOnHide
         backdrop={<div className="backdrop" />}
         className="dialog"
       >
         <Ariakit.DialogHeading className="heading">
-          Dialog with workaround
+          Dialog without store
         </Ariakit.DialogHeading>
-        <p>This dialog waits for the closing animation before unmounting.</p>
+        <p>
+          This dialog should wait for the closing animation before unmounting.
+        </p>
         <Ariakit.DialogDismiss className="button">Close</Ariakit.DialogDismiss>
       </Ariakit.Dialog>
     </div>
@@ -58,7 +55,7 @@ export default function Example() {
   return (
     <div className="root">
       <DialogWithStore />
-      <DialogWithWorkaround />
+      <DialogWithoutStore />
     </div>
   );
 }
