@@ -572,6 +572,22 @@ async function collectInpValues(page: Page): Promise<number[]> {
 }
 
 /**
+ * Navigates to `url` for a perf measurement. Waits for the bounded `load` event
+ * instead of `networkidle`: under CI contention, networkidle's unbounded "no
+ * requests for 500ms" wait can stall past the test timeout (these preview pages
+ * have no long-lived connections, so `load` already covers them). After `load`,
+ * still give late work such as island hydration a chance to settle by waiting
+ * for network idle, but cap it so a stalled request degrades to a short wait
+ * rather than consuming the entire test budget.
+ */
+async function gotoForPerf(page: Page, url: string) {
+  await page.goto(url, { waitUntil: "load" });
+  await page
+    .waitForLoadState("networkidle", { timeout: 5_000 })
+    .catch(() => {});
+}
+
+/**
  * Runs a single interaction measurement cycle: snapshot CDP metrics before and
  * after the interaction, collect INP entries, and return the deltas.
  */
@@ -769,7 +785,7 @@ export async function createPerfMeasure(
     for (let i = 0; i < warmup + iterations; i++) {
       if (resetPage) {
         // Re-navigate for a clean state on every iteration.
-        await page.goto(url, { waitUntil: "networkidle" });
+        await gotoForPerf(page, url);
       }
 
       const result = await measureOnce(page, cdp, interaction, {
@@ -833,7 +849,7 @@ export async function createPerfPageLoadMeasure(
   return createPerfMeasure(
     page,
     async () => {
-      await page.goto(url, { waitUntil: "networkidle" });
+      await gotoForPerf(page, url);
     },
     results,
     testInfo,

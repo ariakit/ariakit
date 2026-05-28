@@ -49,7 +49,11 @@ export function withFramework(
     test.describe(framework, { tag: `@${framework}` }, () => {
       test.beforeEach(async ({ page }) => {
         await page.goto(`/${framework}/previews/${id}/`, {
-          waitUntil: "networkidle",
+          // Perf runs re-navigate this page repeatedly under a single timeout,
+          // where `networkidle`'s unbounded wait can stall on a contended CI
+          // runner. Use the bounded `load` event for them; keep `networkidle`
+          // for visual and browser tests so async content settles first.
+          waitUntil: process.env.PERF_TEST === "true" ? "load" : "networkidle",
         });
       });
       return callback({ id, framework, query, test });
