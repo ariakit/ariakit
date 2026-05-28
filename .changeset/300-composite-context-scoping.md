@@ -9,15 +9,14 @@ Fixed [`CompositeItem`](https://ariakit.com/reference/composite-item) to registe
 
 Before this fix, you had to pass the enclosing composite store explicitly:
 
-```tsx {6}
+```tsx {5}
 const composite = Ariakit.useCompositeStore();
 
 <Ariakit.Composite store={composite}>
   <Ariakit.MenuProvider>
-    <Ariakit.CompositeItem
-      store={composite}
-      render={<Ariakit.MenuButton>Menu</Ariakit.MenuButton>}
-    />
+    <Ariakit.CompositeItem store={composite} render={<Ariakit.MenuButton />}>
+      Menu
+    </Ariakit.CompositeItem>
     <Ariakit.Menu>
       <Ariakit.MenuItem>Edit</Ariakit.MenuItem>
     </Ariakit.Menu>
@@ -32,9 +31,9 @@ const composite = Ariakit.useCompositeStore();
 
 <Ariakit.Composite store={composite}>
   <Ariakit.MenuProvider>
-    <Ariakit.CompositeItem
-      render={<Ariakit.MenuButton>Menu</Ariakit.MenuButton>}
-    />
+    <Ariakit.CompositeItem render={<Ariakit.MenuButton />}>
+      Menu
+    </Ariakit.CompositeItem>
     <Ariakit.Menu>
       <Ariakit.MenuItem>Edit</Ariakit.MenuItem>
     </Ariakit.Menu>
