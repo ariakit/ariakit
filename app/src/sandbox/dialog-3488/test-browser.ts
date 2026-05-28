@@ -72,6 +72,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeHidden();
     await test.expect(q.text("Close count: 4")).toBeVisible();
 
+    await q.button("Show external dialog").click();
+    await test.expect(q.dialog("External dialog")).toBeVisible();
+
+    await q.button("Close external dialog").click();
+
+    await test
+      .expect(q.dialog("External dialog", { includeHidden: true }))
+      .toBeHidden();
+    await test.expect(q.text("External close count: 1")).toBeVisible();
+
     await q.button("Show popover").click();
     await test.expect(q.dialog("Popover content")).toBeVisible();
 
@@ -81,5 +91,29 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(q.dialog("Popover content", { includeHidden: true }))
       .toBeHidden();
     await test.expect(q.text("Popover close count: 1")).toBeVisible();
+
+    await q.button("Show parent dialog").click();
+    await test.expect(q.dialog("Parent dialog")).toBeVisible();
+
+    await q.button("Show child dialog").click();
+    await test.expect(q.dialog("Child dialog")).toBeVisible();
+
+    await q.button("Close child").click();
+
+    await test
+      .expect(q.dialog("Child dialog", { includeHidden: true }))
+      .toBeHidden();
+    await test.expect(q.text("Child close count: 1")).toBeVisible();
+    await test.expect(q.dialog("Parent dialog")).toBeVisible();
+
+    await q.button("Show child dialog").click();
+    await test.expect(q.dialog("Child dialog")).toBeVisible();
+
+    await q.button("Close parent from child").click();
+
+    await test
+      .expect(q.dialog("Parent dialog", { includeHidden: true }))
+      .toBeHidden();
+    await test.expect(q.text("Parent close count: 1")).toBeVisible();
   });
 });

@@ -443,6 +443,16 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       [store, position, wrapperProps],
     );
 
+    props = useWrapElement(
+      props,
+      (element) => (
+        <PopoverScopedContextProvider value={store}>
+          {element}
+        </PopoverScopedContextProvider>
+      ),
+      [store],
+    );
+
     props = {
       // data-placing is not part of the public API. We're setting this here so
       // we can wait for the popover to be positioned before other components
@@ -466,16 +476,6 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       ...props,
       portalRef,
     });
-
-    props = useWrapElement(
-      props,
-      (element) => (
-        <PopoverScopedContextProvider value={store}>
-          {element}
-        </PopoverScopedContextProvider>
-      ),
-      [store],
-    );
 
     return props;
   },

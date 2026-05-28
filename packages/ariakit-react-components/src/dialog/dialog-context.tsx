@@ -1,6 +1,6 @@
 import { createStoreContext } from "@ariakit/react-utils";
 import type { SetState } from "@ariakit/utils";
-import { createContext, useContext } from "react";
+import { createContext } from "react";
 import {
   DisclosureContextProvider,
   DisclosureScopedContextProvider,
@@ -35,11 +35,23 @@ export const DialogContextProvider = ctx.ContextProvider;
 
 export const DialogScopedContextProvider = ctx.ScopedContextProvider;
 
-export const DialogDismissContext = createContext<DialogStore["hide"] | null>(
-  null,
-);
+const dismisses = new WeakMap<DialogStore, DialogStore["hide"]>();
 
-export const useDialogDismissContext = () => useContext(DialogDismissContext);
+export function setDialogDismiss(
+  store: DialogStore,
+  hide: DialogStore["hide"],
+) {
+  dismisses.set(store, hide);
+  return () => {
+    if (dismisses.get(store) !== hide) return;
+    dismisses.delete(store);
+  };
+}
+
+export function getDialogDismiss(store?: DialogStore) {
+  if (!store) return;
+  return dismisses.get(store);
+}
 
 export const DialogHeadingContext = createContext<
   SetState<string | undefined> | undefined

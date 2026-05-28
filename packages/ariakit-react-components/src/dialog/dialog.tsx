@@ -49,9 +49,9 @@ import { usePortal } from "../portal/portal.tsx";
 import { DialogBackdrop } from "./dialog-backdrop.tsx";
 import {
   DialogDescriptionContext,
-  DialogDismissContext,
   DialogHeadingContext,
   DialogScopedContextProvider,
+  setDialogDismiss,
   useDialogProviderContext,
 } from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
@@ -151,6 +151,18 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     store.hide();
   });
   const scopedStore = useMemo(() => ({ ...store, hide }), [store, hide]);
+  useSafeLayoutEffect(() => {
+    const cleanups = [setDialogDismiss(store, hide)];
+    const sourceStore = storeProp || context;
+    if (sourceStore && sourceStore !== store) {
+      cleanups.push(setDialogDismiss(sourceStore, hide));
+    }
+    return () => {
+      for (const cleanup of cleanups) {
+        cleanup();
+      }
+    };
+  }, [context, store, storeProp, hide]);
 
   // domReady can be also the portal node element so it's updated when the
   // portal node changes (like in between re-renders), triggering effects
@@ -566,16 +578,14 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     props,
     (element) => (
       <DialogScopedContextProvider value={store}>
-        <DialogDismissContext.Provider value={hide}>
-          <DialogHeadingContext.Provider value={setHeadingId}>
-            <DialogDescriptionContext.Provider value={setDescriptionId}>
-              {element}
-            </DialogDescriptionContext.Provider>
-          </DialogHeadingContext.Provider>
-        </DialogDismissContext.Provider>
+        <DialogHeadingContext.Provider value={setHeadingId}>
+          <DialogDescriptionContext.Provider value={setDescriptionId}>
+            {element}
+          </DialogDescriptionContext.Provider>
+        </DialogHeadingContext.Provider>
       </DialogScopedContextProvider>
     ),
-    [store, hide],
+    [store],
   );
 
   props = {

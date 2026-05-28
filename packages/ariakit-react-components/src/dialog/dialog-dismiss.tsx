@@ -9,24 +9,12 @@ import type { ElementType, MouseEvent } from "react";
 import { useMemo } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
-import {
-  useDialogDismissContext,
-  useDialogScopedContext,
-} from "./dialog-context.tsx";
+import { getDialogDismiss, useDialogScopedContext } from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-
-function hasSameContentElement(store?: DialogStore, context?: DialogStore) {
-  if (!store) return false;
-  if (!context) return false;
-  if (store === context) return true;
-  const contentElement = store.getState().contentElement;
-  if (!contentElement) return false;
-  return contentElement === context.getState().contentElement;
-}
 
 /**
  * Returns props to create a `DialogDismiss` component.
@@ -43,16 +31,14 @@ function hasSameContentElement(store?: DialogStore, context?: DialogStore) {
 export const useDialogDismiss = createHook<TagName, DialogDismissOptions>(
   function useDialogDismiss({ store, ...props }) {
     const context = useDialogScopedContext();
-    const dismiss = useDialogDismissContext();
     store = store || context;
-    const hide =
-      hasSameContentElement(store, context) && dismiss ? dismiss : store?.hide;
 
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
+      const hide = getDialogDismiss(store) || store?.hide;
       hide?.();
     });
 

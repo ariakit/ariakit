@@ -16,11 +16,29 @@ export default function Example() {
   const [open, setOpen] = useState(false);
   const [closeCount, setCloseCount] = useState(0);
   const dialog = Ariakit.useDialogStore({ open, setOpen });
+  const [externalOpen, setExternalOpen] = useState(false);
+  const [externalCloseCount, setExternalCloseCount] = useState(0);
+  const external = Ariakit.useDialogStore({
+    open: externalOpen,
+    setOpen: setExternalOpen,
+  });
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [popoverCloseCount, setPopoverCloseCount] = useState(0);
   const popover = Ariakit.usePopoverStore({
     open: popoverOpen,
     setOpen: setPopoverOpen,
+  });
+  const [parentOpen, setParentOpen] = useState(false);
+  const [parentCloseCount, setParentCloseCount] = useState(0);
+  const parent = Ariakit.useDialogStore({
+    open: parentOpen,
+    setOpen: setParentOpen,
+  });
+  const [childOpen, setChildOpen] = useState(false);
+  const [childCloseCount, setChildCloseCount] = useState(0);
+  const child = Ariakit.useDialogStore({
+    open: childOpen,
+    setOpen: setChildOpen,
   });
 
   return (
@@ -56,6 +74,32 @@ export default function Example() {
         <ContextHideButton />
       </Ariakit.Dialog>
 
+      <Ariakit.Button
+        className="px-2 py-1"
+        onClick={() => setExternalOpen(true)}
+      >
+        Show external dialog
+      </Ariakit.Button>
+      <Ariakit.DialogDismiss store={external} className="px-2 py-1">
+        Close external dialog
+      </Ariakit.DialogDismiss>
+      <p>External close count: {externalCloseCount}</p>
+      <Ariakit.Dialog
+        store={external}
+        modal={false}
+        unmountOnHide
+        onClose={(event) => {
+          event.preventDefault();
+          setExternalCloseCount((count) => count + 1);
+          setExternalOpen(false);
+        }}
+        className="fixed inset-3 m-auto flex h-fit max-h-[calc(100dvh-1.5rem)] w-96 max-w-[calc(100dvw-1.5rem)] flex-col gap-4 overflow-auto rounded-lg bg-white p-6 text-black shadow-xl"
+      >
+        <Ariakit.DialogHeading className="m-0 text-xl font-semibold">
+          External dialog
+        </Ariakit.DialogHeading>
+      </Ariakit.Dialog>
+
       <Ariakit.PopoverDisclosure store={popover} className="px-2 py-1">
         Show popover
       </Ariakit.PopoverDisclosure>
@@ -76,6 +120,50 @@ export default function Example() {
           Close popover with explicit store
         </Ariakit.PopoverDismiss>
       </Ariakit.Popover>
+
+      <Ariakit.Button className="px-2 py-1" onClick={() => setParentOpen(true)}>
+        Show parent dialog
+      </Ariakit.Button>
+      <p>Parent close count: {parentCloseCount}</p>
+      <Ariakit.Dialog
+        store={parent}
+        unmountOnHide
+        onClose={(event) => {
+          event.preventDefault();
+          setParentCloseCount((count) => count + 1);
+          setChildOpen(false);
+          setParentOpen(false);
+        }}
+        className="fixed inset-3 m-auto flex h-fit max-h-[calc(100dvh-1.5rem)] w-96 max-w-[calc(100dvw-1.5rem)] flex-col gap-4 overflow-auto rounded-lg bg-white p-6 text-black shadow-xl"
+      >
+        <Ariakit.DialogHeading className="m-0 text-xl font-semibold">
+          Parent dialog
+        </Ariakit.DialogHeading>
+        <Ariakit.Button
+          className="px-2 py-1"
+          onClick={() => setChildOpen(true)}
+        >
+          Show child dialog
+        </Ariakit.Button>
+        <p>Child close count: {childCloseCount}</p>
+        <Ariakit.Dialog
+          store={child}
+          backdrop={false}
+          onClose={(event) => {
+            event.preventDefault();
+            setChildCloseCount((count) => count + 1);
+            setChildOpen(false);
+          }}
+        >
+          <Ariakit.DialogHeading>Child dialog</Ariakit.DialogHeading>
+          <Ariakit.DialogDismiss className="px-2 py-1">
+            Close child
+          </Ariakit.DialogDismiss>
+          <Ariakit.DialogDismiss store={parent} className="px-2 py-1">
+            Close parent from child
+          </Ariakit.DialogDismiss>
+        </Ariakit.Dialog>
+      </Ariakit.Dialog>
     </>
   );
 }
