@@ -23,7 +23,16 @@ export default function Example() {
         <ak.Tab id="vegetables">Vegetables</ak.Tab>
         <ak.Tab id="meat">Meat</ak.Tab>
       </ak.TabList>
-      <ak.TabPanel tabId="fruits">Apples, grapes, and oranges</ak.TabPanel>
+      <ak.TabPanel tabId="fruits" alwaysVisible>
+        Apples, grapes, and oranges
+        <label>
+          Fruit note
+          <input
+            type="text"
+            onFocus={() => setTimeout(() => setSelectedTab("vegetables"), 100)}
+          />
+        </label>
+      </ak.TabPanel>
       <ak.TabPanel tabId="vegetables">
         Carrots, onions, and potatoes
       </ak.TabPanel>

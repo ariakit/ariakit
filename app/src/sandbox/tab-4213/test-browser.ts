@@ -22,7 +22,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await button.click();
     await test.expect(button).toBeFocused();
 
+    // Selecting Vegetables triggers a delayed controlled update to Meat.
     await test.expect(q.tab("Meat")).toHaveAttribute("aria-selected", "true");
     await test.expect(button).toBeFocused();
+  });
+
+  test("does not move focus after controlled tab selection inside a tab panel", async ({
+    page,
+    q,
+  }) => {
+    const textbox = page.getByRole("textbox", { name: "Fruit note" });
+    await textbox.focus();
+    await test.expect(textbox).toBeFocused();
+
+    await test.expect(q.tab("Meat")).toHaveAttribute("aria-selected", "true");
+    await test.expect(textbox).toBeFocused();
   });
 });
