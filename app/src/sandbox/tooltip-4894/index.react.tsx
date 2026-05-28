@@ -2,12 +2,12 @@ import * as Ariakit from "@ariakit/react";
 import { StrictMode, useState } from "react";
 
 export default function Example() {
-  const [closeRequests, setCloseRequests] = useState(0);
+  const [activeTooltip, setActiveTooltip] = useState<"one" | "two" | null>(
+    null,
+  );
 
-  const setOpen = (open: boolean) => {
-    if (open) return;
-    setCloseRequests((count) => count + 1);
-  };
+  const openFirstTooltip = () => setActiveTooltip("one");
+  const openSecondTooltip = () => setActiveTooltip("two");
 
   return (
     <StrictMode>
@@ -19,13 +19,19 @@ export default function Example() {
           padding: 40,
         }}
       >
-        <div>Close requests: {closeRequests}</div>
+        <button type="button" onClick={openFirstTooltip}>
+          Open first tooltip
+        </button>
+        <button type="button" onClick={openSecondTooltip}>
+          Open second tooltip
+        </button>
+        {/* TODO: Remove this one-at-a-time workaround once https://github.com/ariakit/ariakit/issues/4894 is fixed. */}
         <div style={{ display: "flex", gap: 40 }}>
-          <Ariakit.TooltipProvider open setOpen={setOpen}>
+          <Ariakit.TooltipProvider open={activeTooltip === "one"}>
             <Ariakit.TooltipAnchor>one</Ariakit.TooltipAnchor>
             <Ariakit.Tooltip>HELLO!</Ariakit.Tooltip>
           </Ariakit.TooltipProvider>
-          <Ariakit.TooltipProvider open setOpen={setOpen}>
+          <Ariakit.TooltipProvider open={activeTooltip === "two"}>
             <Ariakit.TooltipAnchor>two</Ariakit.TooltipAnchor>
             <Ariakit.Tooltip>HELLO 222!</Ariakit.Tooltip>
           </Ariakit.TooltipProvider>
