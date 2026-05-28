@@ -647,7 +647,8 @@ const DialogWithInternalStore = forwardRef(function DialogWithInternalStore(
 
 export const Dialog = forwardRef(function Dialog(props: DialogProps) {
   const context = useDialogProviderContext();
-  if (props.store || context) {
+  // The hoisted store is only needed for the unmountOnHide mounted-state gate.
+  if (props.store || context || !props.unmountOnHide) {
     return <DialogWithStore {...props} />;
   }
   return <DialogWithInternalStore {...props} />;

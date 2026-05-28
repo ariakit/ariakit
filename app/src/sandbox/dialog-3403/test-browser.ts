@@ -30,4 +30,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(dialog).toHaveAttribute("data-leave", "true");
     await test.expect(dialog).not.toBeAttached();
   });
+
+  test("route dialog without unmountOnHide preserves close behavior", async ({
+    q,
+    page,
+  }) => {
+    await q.button("Show route dialog without unmountOnHide").click();
+
+    const dialog = q.dialog("Route dialog without unmountOnHide", {
+      includeHidden: true,
+    });
+    await test.expect(dialog).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await test.expect(dialog).toBeAttached();
+    await test.expect(dialog).not.toBeVisible();
+  });
 });

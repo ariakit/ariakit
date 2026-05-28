@@ -51,11 +51,43 @@ function DialogWithoutStore() {
   );
 }
 
+function RouteDialogWithoutUnmountOnHide() {
+  const [route, setRoute] = useState("/");
+  return (
+    <div>
+      <Ariakit.Button className="button" onClick={() => setRoute("/plus")}>
+        Show route dialog without unmountOnHide
+      </Ariakit.Button>
+      <Ariakit.Dialog
+        open={route === "/plus"}
+        onClose={(event) => {
+          event.preventDefault();
+          setRoute("/");
+        }}
+        backdrop={false}
+        className="dialog"
+        render={(props) => (
+          <div hidden={props.hidden}>
+            <div {...props} />
+          </div>
+        )}
+      >
+        <Ariakit.DialogHeading className="heading">
+          Route dialog without unmountOnHide
+        </Ariakit.DialogHeading>
+        <p>This dialog should keep the previous route close behavior.</p>
+        <Ariakit.DialogDismiss className="button">Close</Ariakit.DialogDismiss>
+      </Ariakit.Dialog>
+    </div>
+  );
+}
+
 export default function Example() {
   return (
     <div className="root">
       <DialogWithStore />
       <DialogWithoutStore />
+      <RouteDialogWithoutUnmountOnHide />
     </div>
   );
 }
