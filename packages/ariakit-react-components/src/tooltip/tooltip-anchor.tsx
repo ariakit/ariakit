@@ -39,6 +39,8 @@ function hideStore(store: TooltipStore | null) {
   if (!store) return;
   hidingStores.add(store);
   store.hide();
+  // Cleanup runs after `hide()` so controlled `open` props still see this
+  // store in `hidingStores` when their batch microtask forces them open again.
   queueMicrotask(() => hidingStores.delete(store));
 }
 
