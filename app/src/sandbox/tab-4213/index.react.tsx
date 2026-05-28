@@ -9,12 +9,28 @@ export default function Example() {
     selectedId: selectedTab,
     setSelectedId: setSelectedTab,
   });
+  const activeId = ak.useStoreState(tab, "activeId");
+  const renderedItems = ak.useStoreState(tab, "renderedItems");
 
   useEffect(() => {
     if (selectedTab !== "vegetables") return;
     const timeout = setTimeout(() => setSelectedTab("meat"), 100);
     return () => clearTimeout(timeout);
   }, [selectedTab]);
+
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      const activeElement =
+        renderedItems[0]?.element?.ownerDocument.activeElement;
+      const focusedItem = renderedItems.find(
+        (item) => item.element === activeElement,
+      );
+      if (!focusedItem) return;
+      if (activeId === focusedItem.id) return;
+      tab.setActiveId(focusedItem.id);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [activeId, renderedItems, tab]);
 
   return (
     <ak.TabProvider store={tab}>
