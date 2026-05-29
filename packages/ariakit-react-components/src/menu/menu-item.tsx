@@ -108,6 +108,12 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       "contentElement" in state ? state.contentElement : null,
     );
 
+    // Whether the menu is currently mounted. Menubar items (whose store has no
+    // `mounted` state) are always considered mounted.
+    const mounted = useStoreState(store, (state) =>
+      "mounted" in state ? state.mounted : true,
+    );
+
     const role = getPopupItemRole(contentElement, "menuitem");
 
     props = {
@@ -120,6 +126,13 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       store,
       preventScrollOnKeyDown,
       ...props,
+      // Skip registering items while the menu is closed. Unlike a Select,
+      // a Menu doesn't interact with its items while hidden, so registering
+      // them isn't useful. Registering many closed menus' items at once on
+      // mount can also cascade into React's "Maximum update depth exceeded"
+      // error. Items register once the menu is shown.
+      // See https://github.com/ariakit/ariakit/issues/3214.
+      shouldRegisterItem: mounted ? props.shouldRegisterItem : false,
     });
 
     props = useCompositeHover({
