@@ -81,6 +81,14 @@ function useEventOutside({
       const target = event.target as Element | null;
       if (!contentElement) return;
       if (!target) return;
+      // `event.target` is typed as an Element but can be any EventTarget at
+      // runtime; third-party code may dispatch events whose target is not a
+      // node (e.g. window or an XMLHttpRequest). The checks below call
+      // `contains` and other Element-only methods on it, so we ignore those.
+      // We test `nodeType` rather than `instanceof Element` so that elements
+      // from child frames, which `addGlobalEventListener` also listens on,
+      // aren't wrongly rejected for belonging to another realm.
+      if (target.nodeType !== Node.ELEMENT_NODE) return;
       // When an element is unmounted right after it receives focus, the focus
       // event is triggered after that, when the element isn't part of the
       // current document anymore. We just ignore it.

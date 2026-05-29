@@ -499,6 +499,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       if (isElementMarked(dialog)) return;
       const target = event.target as Element | null;
       if (!target) return;
+      // `event.target` is typed as an Element but can be any EventTarget at
+      // runtime; the checks below call `contains`/`tagName` on it, so we ignore
+      // non-element targets (e.g. a synthetic event dispatched on window) to
+      // avoid throwing. See https://github.com/ariakit/ariakit/issues/5156
+      if (target.nodeType !== Node.ELEMENT_NODE) return;
       const { disclosureElement } = store.getState();
       // This considers valid targets only the disclosure element or descendants
       // of the dialog element.
