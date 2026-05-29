@@ -111,8 +111,6 @@
     "@ariakit/test": "workspace:*",
     "@axe-core/playwright": "4.11.3",
     "@playwright/test": "1.60.0",
-    "@testing-library/react": "16.3.2",
-    "@testing-library/user-event": "14.6.1",
     "@types/canvas-confetti": "1.9.0",
     "@types/hast": "3.0.4",
     "@types/lodash-es": "4.17.12",

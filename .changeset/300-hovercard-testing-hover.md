@@ -14,5 +14,4 @@
 "@ariakit/utils": patch
 ---
 
-Fixed runtime `process.env.NODE_ENV` checks in published package output,
-including test-only behavior and development warnings.
+Fixed runtime `process.env.NODE_ENV` checks in published package output, including test-only behavior and development warnings.
