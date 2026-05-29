@@ -243,7 +243,7 @@ jobs:
           retention-days: 7
 
   chrome:
-    name: Chrome (${{ matrix.shard }} / ${{ strategy.job-total }})
+    name: Chrome (${{ matrix.shard }}/${{ strategy.job-total }})
     needs: [build, build-nextjs, chrome-baseline]
     runs-on: ubuntu-latest
     strategy:
@@ -253,8 +253,9 @@ jobs:
       # fine; a failed shard stays visibly red in CI).
       fail-fast: false
       matrix:
-        # Raise the shard count (and PERF_SHARD_TOTAL below) as the number of
-        # perf-chrome test files grows; the file partition handles any count.
+        # `shard` is the only matrix dimension, so the job count equals the
+        # shard count; PERF_SHARD_TOTAL below derives from strategy.job-total.
+        # Raise this list as the number of perf-chrome test files grows.
         shard: [1, 2]
     permissions:
       actions: read
@@ -273,7 +274,7 @@ jobs:
       # paired same-runner comparison is preserved. The post job runs
       # perf-compare once over every shard's raw round files.
       PERF_SHARD_INDEX: ${{ matrix.shard }}
-      PERF_SHARD_TOTAL: 2
+      PERF_SHARD_TOTAL: ${{ strategy.job-total }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
