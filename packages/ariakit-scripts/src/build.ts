@@ -304,6 +304,13 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
   await rolldownBuild({
     input,
     external: getExternal(packageJson),
+    transform: {
+      define: {
+        // Rolldown otherwise inlines this at build time, which breaks runtime
+        // test-environment checks in published packages.
+        "process.env.NODE_ENV": "process.env.NODE_ENV",
+      },
+    },
     output: {
       dir: distDir,
       cleanDir: false,

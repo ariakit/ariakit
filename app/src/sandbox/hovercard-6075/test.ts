@@ -86,8 +86,8 @@ afterAll(async () => {
 });
 
 // See https://github.com/ariakit/ariakit/issues/6075
-// TODO: Switch back to userEvent.hover after this issue is fixed.
-test("tracks Testing Library pointer coordinates as mouse movement in the package build", async () => {
+// This must use Testing Library userEvent.hover with built package output.
+test("tracks Testing Library hover as mouse movement in the package build", async () => {
   const user = userEvent.setup();
   let isMouseMoving = () => false;
 
@@ -99,13 +99,7 @@ test("tracks Testing Library pointer coordinates as mouse movement in the packag
   render(createElement(Test));
   expect(isMouseMoving()).toBe(false);
 
-  await user.pointer({
-    target: q.button.ensure("Hover"),
-    coords: {
-      screenX: 1,
-      screenY: 1,
-    },
-  });
+  await user.hover(q.button.ensure("Hover"));
 
   expect(isMouseMoving()).toBe(true);
 });
