@@ -379,6 +379,36 @@ test("aggregates displayed values from shared rounds", () => {
   expect(markdown).toContain("Aggregated across 2 interleaved rounds");
 });
 
+test("merges sharded round files with shard-suffixed names", () => {
+  const dir = createTempDir();
+  // Mirrors the CI Chrome sharding: each shard writes round files carrying a
+  // `-s<shard>` suffix (e.g. baseline-1-s1-worker0.json) for its own subset of
+  // tests, and chrome-merge runs a single comparison over all of them. Locks
+  // that discoverRoundFiles accepts the suffix, pairs by round index, and
+  // merges the shards' disjoint tests into one comparison.
+  for (const round of [1, 2]) {
+    writeJson(dir, `baseline-${round}-s1-worker0.json`, [
+      createResultWithLabel("shard one test", 100),
+    ]);
+    writeJson(dir, `current-${round}-s1-worker0.json`, [
+      createResultWithLabel("shard one test", 101),
+    ]);
+    writeJson(dir, `baseline-${round}-s2-worker0.json`, [
+      createResultWithLabel("shard two test", 100),
+    ]);
+    writeJson(dir, `current-${round}-s2-worker0.json`, [
+      createResultWithLabel("shard two test", 130),
+    ]);
+  }
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("Aggregated across 2 interleaved rounds");
+  expect(markdown).toContain("shard one test");
+  expect(markdown).toContain("shard two test");
+  expect(markdown).toContain("100.0ms → 130.0ms (+30%) :warning:");
+});
+
 test("does not overstate mixed paired round counts", () => {
   const dir = createTempDir();
   writeJson(dir, "baseline-1-worker0.json", [
