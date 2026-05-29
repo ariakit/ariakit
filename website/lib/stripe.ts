@@ -2,13 +2,13 @@ import { differenceInMonths } from "date-fns/differenceInMonths";
 import get from "lodash-es/get.js";
 import { Stripe } from "stripe";
 import invariant from "tiny-invariant";
+import type { User, UserResource } from "./clerk.ts";
 import {
   getCurrentUser,
   getPrimaryEmailAddress,
   getStripeId,
   updateUserWithStripeId,
 } from "./clerk.ts";
-import type { User, UserResource } from "./clerk.ts";
 
 type Discount = Stripe.Coupon | Stripe.PromotionCode;
 

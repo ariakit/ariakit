@@ -17,7 +17,7 @@ Animating a [Combobox](/components/combobox) using CSS transitions in React. The
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

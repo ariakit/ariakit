@@ -1,9 +1,3 @@
-import pageLinks from "@/build-pages/links.ts";
-import type { PageIndexDetail, TableOfContents } from "@/build-pages/types.ts";
-import { ArrowRight } from "@/icons/arrow-right.tsx";
-import { Hashtag } from "@/icons/hashtag.tsx";
-import { NewWindow } from "@/icons/new-window.tsx";
-import { isValidHref } from "@/lib/is-valid-href.ts";
 import type { Element, ElementContent } from "hast";
 import Image from "next/image.js";
 import Link from "next/link.js";
@@ -11,6 +5,12 @@ import type { ComponentPropsWithoutRef } from "react";
 import { Children, cloneElement, isValidElement, useId } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
 import invariant from "tiny-invariant";
+import pageLinks from "@/build-pages/links.ts";
+import type { PageIndexDetail, TableOfContents } from "@/build-pages/types.ts";
+import { ArrowRight } from "@/icons/arrow-right.tsx";
+import { Hashtag } from "@/icons/hashtag.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { isValidHref } from "@/lib/is-valid-href.ts";
 import {
   AuthDisabled,
   AuthEnabled,
@@ -221,8 +221,7 @@ export function PageFigure({ node, ...props }: PageFigureProps) {
   return <figure {...props} className={className} />;
 }
 
-export interface PageBlockquoteProps
-  extends ComponentPropsWithoutRef<"blockquote"> {
+export interface PageBlockquoteProps extends ComponentPropsWithoutRef<"blockquote"> {
   node?: Element;
 }
 
@@ -318,7 +317,7 @@ export function PageSection({
   level =
     level ??
     ("data-level" in props
-      ? Number.parseInt(props["data-level"] as string)
+      ? Number.parseInt(props["data-level"] as string, 10)
       : undefined);
 
   const section = (
@@ -403,7 +402,7 @@ export function PageSection({
                     </PageSection>
                   </div>
                   <div className="my-4 flex w-full gap-4 md:mx-4 md:w-60 md:flex-col">
-                    {media?.slice(0, 3).map((item) => {
+                    {/* {media?.slice(0, 3).map((item) => {
                       if (item.type === "image") {
                         return (
                           <PageImage
@@ -414,7 +413,7 @@ export function PageSection({
                         );
                       }
                       return null;
-                    })}
+                    })} */}
                   </div>
                 </div>
               </NotSubscribed>
@@ -621,7 +620,7 @@ export function PageA({
       />
     );
   }
-  href = href?.replace(/^https:\/\/(www\.)?ariakit.org/, "");
+  href = href?.replace(/^https:\/\/(www\.)?ariakit\.(com|org)/, "");
   if (href?.startsWith("http")) {
     return (
       <InlineLink
@@ -656,7 +655,7 @@ export function PageA({
     if (!isValidHref(href, pageLinks)) {
       throw new Error(`Invalid link: ${href}`);
     }
-    const url = new URL(href, "https://ariakit.org");
+    const url = new URL(href, "https://ariakit.com");
     const [, category, page] = url.pathname.split("/");
     if (category === "reference" && page && node) {
       if (

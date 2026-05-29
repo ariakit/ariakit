@@ -1,6 +1,3 @@
-import { Edit } from "@/icons/edit.tsx";
-import { JavaScript } from "@/icons/javascript.tsx";
-import { TypeScript } from "@/icons/typescript.tsx";
 import {
   PopoverHeading,
   Select,
@@ -13,10 +10,13 @@ import {
   ToolbarItem,
 } from "@ariakit/react";
 import { twJoin } from "tailwind-merge";
+import { Edit } from "@/icons/edit.tsx";
+import { JavaScript } from "@/icons/javascript.tsx";
+import { TypeScript } from "@/icons/typescript.tsx";
 import { AuthEnabled } from "./auth.tsx";
 import { CopyToClipboard } from "./copy-to-clipboard.tsx";
-import { PlaygroundEditToolbarButton } from "./playground-edit.tsx";
 import type { PlaygroundEditProps } from "./playground-edit.tsx";
+import { PlaygroundEditToolbarButton } from "./playground-edit.tsx";
 import { Popup, PopupItem, PopupLabel } from "./popup2.tsx";
 import { TooltipButton } from "./tooltip-button.tsx";
 

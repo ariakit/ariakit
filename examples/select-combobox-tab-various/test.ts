@@ -1,4 +1,5 @@
 import { click, press, q } from "@ariakit/test";
+import { describe, expect, test } from "vitest";
 
 const SELECT_TAB = "Select with manual Tab";
 const SELECT_COMBOBOX_TAB = "Select with Combobox and manual Tab";

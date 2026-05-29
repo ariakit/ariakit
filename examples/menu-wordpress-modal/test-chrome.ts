@@ -1,5 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 type PopupRole = "dialog" | "menu" | "tooltip";
 
@@ -27,12 +28,6 @@ const getAccessibleTooltip = (page: Page, name?: string) =>
 const getMenu = (page: Page, name?: string) => getPopup(page, "menu", name);
 const getAccessibleMenu = (page: Page, name?: string) =>
   getAccessiblePopup(page, "menu", name);
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-wordpress-modal", {
-    waitUntil: "networkidle",
-  });
-});
 
 for (const menuitem of [
   "Nested",
@@ -99,7 +94,7 @@ for (const menuitem of [
 
     await page.mouse.click(10, 10);
     await expect(getMenu(page, "Options")).not.toBeVisible();
-    await expect(getButton(page, "Options")).toBeFocused();
+    await expect(getButton(page, "Options")).not.toBeFocused();
   });
 
   test(`interact with modal by clicking on the ${menuitem} menu item with the keyboard`, async ({

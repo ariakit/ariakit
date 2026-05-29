@@ -1,0 +1,58 @@
+{
+  "name": "@ariakit/components",
+  "version": "0.1.1",
+  "description": "Ariakit components",
+  "keywords": [
+    "ariakit",
+    "components"
+  ],
+  "homepage": "https://ariakit.com",
+  "license": "MIT",
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-components"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "ariakit build",
+    "clean": "ariakit clean"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./checkbox/checkbox-store": "./src/checkbox/checkbox-store.ts",
+    "./collection/collection-store": "./src/collection/collection-store.ts",
+    "./combobox/combobox-store": "./src/combobox/combobox-store.ts",
+    "./composite/composite-overflow-store": "./src/composite/composite-overflow-store.ts",
+    "./composite/composite-store": "./src/composite/composite-store.ts",
+    "./dialog/dialog-store": "./src/dialog/dialog-store.ts",
+    "./disclosure/disclosure-store": "./src/disclosure/disclosure-store.ts",
+    "./form/form-store": "./src/form/form-store.ts",
+    "./form/types": "./src/form/types.ts",
+    "./hovercard/hovercard-store": "./src/hovercard/hovercard-store.ts",
+    "./menu/menu-bar-store": "./src/menu/menu-bar-store.ts",
+    "./menu/menu-store": "./src/menu/menu-store.ts",
+    "./menubar/menubar-store": "./src/menubar/menubar-store.ts",
+    "./popover/popover-store": "./src/popover/popover-store.ts",
+    "./radio/radio-store": "./src/radio/radio-store.ts",
+    "./select/select-store": "./src/select/select-store.ts",
+    "./tab/tab-store": "./src/tab/tab-store.ts",
+    "./tag/tag-store": "./src/tag/tag-store.ts",
+    "./toolbar/toolbar-store": "./src/toolbar/toolbar-store.ts",
+    "./tooltip/tooltip-store": "./src/tooltip/tooltip-store.ts",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@ariakit/store": "workspace:*",
+    "@ariakit/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@ariakit/scripts": "workspace:*"
+  }
+}

@@ -1,13 +1,10 @@
 import { query } from "@ariakit/test/playwright";
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const SELECT_TAB = "Select with Tab";
 const SELECT_COMBOBOX_TAB = "Select with Combobox and Tab";
 const TAB = [SELECT_TAB, SELECT_COMBOBOX_TAB];
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/select-combobox-tab");
-});
 
 for (const label of TAB) {
   test(`${label} - reset scroll position when switching tabs`, async ({

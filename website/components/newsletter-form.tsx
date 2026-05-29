@@ -1,7 +1,7 @@
 "use client";
 
-import { Role } from "@ariakit/react";
 import type { RoleProps } from "@ariakit/react";
+import { Role } from "@ariakit/react";
 import { track } from "@vercel/analytics";
 import { forwardRef } from "react";
 
@@ -14,7 +14,7 @@ export const NewsletterForm = forwardRef<HTMLFormElement, NewsletterFormProps>(
     return (
       <Role.form
         ref={ref}
-        action="https://newsletter.ariakit.org/api/v1/free?email="
+        action="https://newsletter.ariakit.com/api/v1/free?email="
         method="post"
         target="_blank"
         {...props}

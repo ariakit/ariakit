@@ -1,4 +1,5 @@
 import { click, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("popover can be toggled", async () => {
   expect(q.listbox()).toBeVisible();

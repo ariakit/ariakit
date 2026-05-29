@@ -1,13 +1,4 @@
 "use client";
-import { CheckCircle } from "@/icons/check-circle.tsx";
-import { Check } from "@/icons/check.tsx";
-import { ChevronRight } from "@/icons/chevron-right.tsx";
-import { Heart } from "@/icons/heart.tsx";
-import type { PlusPrice } from "@/lib/stripe.ts";
-import { useMedia } from "@/lib/use-media.ts";
-import { useSubscription } from "@/lib/use-subscription.ts";
-import { scrollIntoViewIfNeeded } from "@ariakit/core/utils/dom";
-import { createStore, sync } from "@ariakit/core/utils/store";
 import type {
   ButtonProps,
   HovercardAnchorProps,
@@ -24,9 +15,11 @@ import {
   Role,
   VisuallyHidden,
 } from "@ariakit/react";
-import { useEvent } from "@ariakit/react-core/utils/hooks";
-import { useStore, useStoreProps } from "@ariakit/react-core/utils/store";
-import { SignUp, SignedIn, SignedOut } from "@clerk/clerk-react";
+import { useStore, useStoreProps } from "@ariakit/react-store";
+import { useEvent } from "@ariakit/react-utils";
+import { createStore, sync } from "@ariakit/store";
+import { scrollIntoViewIfNeeded } from "@ariakit/utils";
+import { SignedIn, SignedOut, SignUp } from "@clerk/clerk-react";
 import {
   EmbeddedCheckout,
   EmbeddedCheckoutProvider,
@@ -45,6 +38,13 @@ import {
   useState,
 } from "react";
 import { twJoin, twMerge } from "tailwind-merge";
+import { CheckCircle } from "@/icons/check-circle.tsx";
+import { Check } from "@/icons/check.tsx";
+import { ChevronRight } from "@/icons/chevron-right.tsx";
+import { Heart } from "@/icons/heart.tsx";
+import type { PlusPrice } from "@/lib/stripe.ts";
+import { useMedia } from "@/lib/use-media.ts";
+import { useSubscription } from "@/lib/use-subscription.ts";
 import { Command } from "./command.tsx";
 import { useRootPathname } from "./root-pathname.tsx";
 
@@ -87,8 +87,7 @@ function usePlusStore(props: PlusStoreProps) {
 }
 
 export interface PlusProviderProps
-  extends PlusStoreProps,
-    HovercardProviderProps {}
+  extends PlusStoreProps, HovercardProviderProps {}
 
 export function PlusProvider(props: PlusProviderProps) {
   const store = usePlusStore(props);

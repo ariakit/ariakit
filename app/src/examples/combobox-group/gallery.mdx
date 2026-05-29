@@ -1,0 +1,12 @@
+import CodeBlockTabs from "#app/components/code-block-tabs.astro";
+import PreviewGallery from "#app/components/preview-gallery.astro";
+import { source as s0 } from "./preview.astro";
+import { source as s1 } from "./custom-items/preview.astro";
+import { source as s2 } from "./sticky-group-labels/preview.astro";
+
+<CodeBlockTabs source={s0} clickAndWait scrollTop={108} />
+
+<PreviewGallery>
+  <CodeBlockTabs source={s1} clickAndWait scrollTop={108} />
+  <CodeBlockTabs source={s2} clickAndWait scrollTop={108} />
+</PreviewGallery>

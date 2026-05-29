@@ -13,7 +13,7 @@ Display visual information related to an anchor element when the element receive
 
 <div data-tags></div>
 
-<a href="../examples/tooltip/index.tsx" data-playground>Example</a>
+<a href="../examples/tooltip/index.react.tsx" data-playground>Example</a>
 
 ## Examples
 

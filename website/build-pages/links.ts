@@ -1,5 +1,5 @@
 // @ts-ignore
-import links from "../.pages/links.json" assert { type: "json" };
+import links from "../.pages/links.json" with { type: "json" };
 
 export interface PageLink {
   path: string;

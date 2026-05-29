@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
+import type { AnchorHTMLAttributes } from "react";
 import pagesConfig from "@/build-pages/config.js";
 import { getCSSFilesFromDeps } from "@/build-pages/get-css-files-from-deps.js";
 import { getExampleDeps } from "@/build-pages/get-example-deps.js";
@@ -7,10 +8,9 @@ import { getPageEntryFilesCached } from "@/build-pages/get-page-entry-files.js";
 import { getPageName } from "@/build-pages/get-page-name.js";
 import { parseCSSFile } from "@/build-pages/parse-css-file.js";
 import { Playground } from "@/components/playground.tsx";
-import { Preview } from "@/components/preview.tsx";
+import { Preview, SolidPreview } from "@/components/preview.tsx";
 import { defer } from "@/lib/defer.ts";
 import { getExampleId } from "@/lib/get-example-id.js";
-import type { AnchorHTMLAttributes } from "react";
 
 interface Props extends AnchorHTMLAttributes<HTMLAnchorElement> {
   pageFilename: string;
@@ -45,6 +45,12 @@ function getGithubLink(path: string) {
   ).href;
 }
 
+function stripLoader(filename: string) {
+  return filename
+    .replaceAll(/\.(react|solid)\.tsx/g, ".tsx")
+    .replaceAll(/\.(react|solid)\.ts/g, ".ts");
+}
+
 export async function PageExample({
   pageFilename,
   href,
@@ -57,6 +63,7 @@ export async function PageExample({
   hovercards?.add(deferred);
 
   const path = resolve(dirname(pageFilename), href);
+  const isSolid = path.endsWith(".solid.tsx");
   const previewLink = getPreviewLink(path);
   const id = getExampleId(path);
   const { dependencies, devDependencies, ...files } = getExampleDeps(path);
@@ -66,8 +73,8 @@ export async function PageExample({
   const filesKeys = Object.keys(files);
 
   for (const file of filesKeys) {
-    const relativePath = getPathFromExample(file, path);
-    contents[relativePath] = readFileSync(file, "utf8");
+    const relativePath = stripLoader(getPathFromExample(file, path));
+    contents[relativePath] = stripLoader(readFileSync(file, "utf8"));
   }
 
   let css = "";
@@ -86,6 +93,8 @@ export async function PageExample({
   const isAppDir = pageFilename.startsWith(process.cwd());
   const showPreview = type !== "code" && !isAppDir;
 
+  const PreviewComponent = isSolid ? SolidPreview : Preview;
+
   return (
     <Playground
       id={id}
@@ -95,7 +104,9 @@ export async function PageExample({
       devDependencies={devDependencies}
       githubLink={getGithubLink(path)}
       previewLink={previewLink}
-      preview={showPreview ? <Preview id={id} path={path} css={css} /> : null}
+      preview={
+        showPreview ? <PreviewComponent id={id} path={path} css={css} /> : null
+      }
       onRender={deferred.resolve}
       abstracted={abstracted}
       plus={plus}

@@ -1,5 +1,5 @@
-import type { PageLink } from "@/build-pages/links.ts";
 import invariant from "tiny-invariant";
+import type { PageLink } from "@/build-pages/links.ts";
 import { getTagSlug, getTags } from "./tag.ts";
 
 const cache = new WeakMap<PageLink[], Map<string, boolean>>();
@@ -22,7 +22,7 @@ export function isValidHref(href: string, links: PageLink[]) {
   };
 
   if (href.endsWith("#")) return setResult(false);
-  const url = new URL(href, "https://ariakit.org");
+  const url = new URL(href, "https://ariakit.com");
   const link = links.find((link) => link.path === url.pathname);
   const hash = url.hash.replace("#", "");
   if (!link) {

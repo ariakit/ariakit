@@ -1,0 +1,52 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { Polymorphic } from "astro/types";
+
+type Props = Polymorphic<{ as: "li" }>;
+
+const { as: Tag = "li", ...props } = Astro.props;
+
+// Extract the first child to check if it's a disabled checkbox
+const children = await Astro.slots.render("default");
+
+// Check if the content starts with a disabled checkbox using regex
+let isChecked = false;
+let hasDisabledCheckbox = false;
+let finalHtml = children;
+
+// Check for disabled checkbox (at root level or inside paragraph)
+const checkboxRegex = /<input\s+[^>]*type=["']checkbox["'][^>]*disabled[^>]*>/i;
+const match = children.match(checkboxRegex);
+
+if (match) {
+  hasDisabledCheckbox = true;
+  // Check if the checkbox is checked
+  isChecked = match[0].includes("checked");
+
+  // Create the check span
+  const checkClass = isChecked
+    ? "ak-list-item-check ak-list-item-check_checked"
+    : "ak-list-item-check ak-list-item-check-progress-50";
+  const checkSpan = `<span class="${checkClass}"></span>`;
+
+  // Remove only the input element from the children
+  const contentWithoutCheckbox = children.replace(checkboxRegex, checkSpan);
+
+  // Prepend the check span to the entire content
+  finalHtml = contentWithoutCheckbox;
+}
+---
+
+<Tag
+  class:list={["ak-list-item", props.class]}
+  {...props}
+  set:html={finalHtml}
+/>

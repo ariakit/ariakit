@@ -14,7 +14,7 @@ Select one or more options in a list or toggle a single option using a native or
 
 <div data-tags></div>
 
-<a href="../examples/checkbox/index.tsx" data-playground>Example</a>
+<a href="../examples/checkbox/index.react.tsx" data-playground>Example</a>
 
 ## Examples
 

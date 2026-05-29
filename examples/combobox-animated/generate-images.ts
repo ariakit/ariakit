@@ -1,10 +1,5 @@
 import { query } from "@ariakit/test/playwright";
-import { test } from "@playwright/test";
-import { screenshot } from "../test-utils.ts";
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/combobox-animated", { waitUntil: "networkidle" });
-});
+import { screenshot, test } from "../test-utils.ts";
 
 test("generate images", async ({ page }) => {
   const q = query(page);

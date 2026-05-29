@@ -17,7 +17,7 @@ Using plain CSS transitions to slide in and out [`TabPanel`](/reference/tab-pane
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -63,7 +63,7 @@ This can be implemented inside our custom `TabPanel` component by following thes
    ```tsx
    const wasPanelOpen = panel?.tabId && previousTabId === panel.tabId;
 
-   <Ariakit.TabPanel data-was-open={wasPanelOpen || undefined} />
+   <Ariakit.TabPanel data-was-open={wasPanelOpen || undefined} />;
    ```
 
 ## Setting up the CSS transition

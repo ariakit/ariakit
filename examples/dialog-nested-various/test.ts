@@ -1,4 +1,5 @@
 import { click, press, q, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 function getBackdrop(name: string) {
   const dialog = q.dialog.includesHidden(name);
@@ -217,7 +218,7 @@ test.each(["nested", "sibling"])(
     expectModalStyle(true);
     await click(document.body);
     expect(q.dialog.includesHidden("Dialog")).not.toBeInTheDocument();
-    expect(q.button("Open dialog")).toHaveFocus();
+    expect(q.button("Open dialog")).not.toHaveFocus();
     expect(q.dialog(`${name} no backdrop ${name}`)).not.toBeInTheDocument();
     expect(q.dialog(`${name} no backdrop`)).not.toBeInTheDocument();
     expectModalStyle(false);

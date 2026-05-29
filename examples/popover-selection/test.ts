@@ -1,4 +1,5 @@
 import { click, press, q, select } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 Range.prototype.getBoundingClientRect = () => ({
   bottom: 0,

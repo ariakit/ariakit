@@ -1,6 +1,3 @@
-// import type { IVSCodeTheme } from "monaco-vscode-textmate-theme-converter";
-// import { convertTheme } from "monaco-vscode-textmate-theme-converter";
-// import darkPlus from "shiki/themes/dark-plus.json" assert { type: "json" };
 import { defer } from "@/lib/defer.ts";
 import { tsToJsFilename } from "@/lib/ts-to-js-filename.ts";
 import { tsToJs } from "@/lib/ts-to-js.ts";
@@ -8,8 +5,10 @@ import { CodeBlock } from "./code-block.tsx";
 import type { PlaygroundClientProps } from "./playground-client.tsx";
 import { PlaygroundClient } from "./playground-client.tsx";
 
-export interface PlaygroundProps
-  extends Omit<PlaygroundClientProps, "theme" | "codeBlocks" | "javascript"> {
+export interface PlaygroundProps extends Omit<
+  PlaygroundClientProps,
+  "theme" | "codeBlocks" | "javascript"
+> {
   onRender?: (hrefs: Iterable<string>) => void;
 }
 

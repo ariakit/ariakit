@@ -1,0 +1,4 @@
+import ContentLink from "#app/components/content-link.astro";
+import { getFramework } from "#app/lib/frameworks.ts";
+
+Rendering a visually hidden <ContentLink href={`/${props.framework}/components/checkbox/`}>Checkbox</ContentLink> component with a custom checkbox presentation in {getFramework(props.framework).label}.

@@ -1,4 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("default value", () => {
   expect(q.combobox("Favorite food")).toHaveTextContent("2 food selected");

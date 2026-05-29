@@ -1,4 +1,5 @@
 import { click, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("tab to listbox", async () => {
   expect(q.listbox()).not.toHaveFocus();

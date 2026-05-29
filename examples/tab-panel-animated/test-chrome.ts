@@ -1,13 +1,10 @@
 import { query } from "@ariakit/test/playwright";
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const tab1 = "Popular";
 const tab2 = "Recent";
 const tab3 = "Explore";
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/tab-panel-animated", { waitUntil: "networkidle" });
-});
 
 test.describe.configure({ retries: 2 });
 
@@ -35,7 +32,7 @@ test("switch tabs", async ({ page }) => {
   await expect(q.tabpanel(tab2)).toHaveCSS("opacity", /0\./);
 
   // Pressing the right arrow key before the animation is complete
-  page.keyboard.press("ArrowRight");
+  await page.keyboard.press("ArrowRight");
 
   // [1]←[ ]←[2]←[3]
 
@@ -78,7 +75,7 @@ test("switch tabs", async ({ page }) => {
   await expect(q.tabpanel(tab3)).toBeVisible();
 
   // Pressing the Home key after the animation is complete
-  page.keyboard.press("Home");
+  await page.keyboard.press("Home");
 
   // [1]→[ ]→[3]
 
