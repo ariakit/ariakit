@@ -20,7 +20,7 @@ import {
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
 import { useCallback } from "react";
-import { useCompositeContext } from "./composite-context.tsx";
+import { useCompositeScopedContext } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -75,7 +75,7 @@ export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
     blurOnHoverEnd = !!focusOnHover,
     ...props
   }) {
-    const context = useCompositeContext();
+    const context = useCompositeScopedContext();
     store = store || context;
 
     invariant(

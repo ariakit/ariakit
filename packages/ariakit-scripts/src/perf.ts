@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { errors } from "@playwright/test";
 import type { CDPSession, Page, TestInfo } from "@playwright/test";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
@@ -572,6 +573,27 @@ async function collectInpValues(page: Page): Promise<number[]> {
 }
 
 /**
+ * Navigates to `url` and waits for it to be ready for a browser test. Waits for
+ * the bounded `load` event rather than `networkidle`: under CI contention,
+ * networkidle's unbounded "no requests for 500ms" wait can stall past the test
+ * timeout. After `load`, still wait for network idle so late work (such as
+ * `client:load` island hydration) settles, but cap it so a stalled or chatty
+ * request degrades to a short wait instead of consuming the test budget. Only
+ * the bounded settle timing out is expected; rethrow real failures such as the
+ * page or context closing.
+ *
+ * Kept in sync with the copy in `app/src/test-utils/preview.ts`.
+ */
+async function gotoAndSettle(page: Page, url: string) {
+  await page.goto(url, { waitUntil: "load" });
+  await page
+    .waitForLoadState("networkidle", { timeout: 5_000 })
+    .catch((error) => {
+      if (!(error instanceof errors.TimeoutError)) throw error;
+    });
+}
+
+/**
  * Runs a single interaction measurement cycle: snapshot CDP metrics before and
  * after the interaction, collect INP entries, and return the deltas.
  */
@@ -769,7 +791,7 @@ export async function createPerfMeasure(
     for (let i = 0; i < warmup + iterations; i++) {
       if (resetPage) {
         // Re-navigate for a clean state on every iteration.
-        await page.goto(url, { waitUntil: "networkidle" });
+        await gotoAndSettle(page, url);
       }
 
       const result = await measureOnce(page, cdp, interaction, {
@@ -833,7 +855,7 @@ export async function createPerfPageLoadMeasure(
   return createPerfMeasure(
     page,
     async () => {
-      await page.goto(url, { waitUntil: "networkidle" });
+      await gotoAndSettle(page, url);
     },
     results,
     testInfo,

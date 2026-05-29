@@ -4,9 +4,8 @@ import {
   CHROMA_VALUES,
   HUE_VALUES,
   getScaledStyleClass,
-  type ChromaValues,
-  type HueValues,
 } from "../utils/styles.ts";
+import type { ChromaValues, HueValues } from "../utils/styles.ts";
 import { layer } from "./layer.ts";
 
 function getSpacingValue(value: string | number) {

@@ -16,7 +16,7 @@ import {
   useCollectionRenderer,
 } from "../collection/collection-renderer.tsx";
 import type { CollectionStoreItem } from "../collection/collection-store.ts";
-import { useCompositeContext } from "./composite-context.tsx";
+import { useCompositeScopedContext } from "./composite-context.tsx";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -102,7 +102,7 @@ export function useCompositeRenderer<T extends Item = any>({
   "aria-posinset": ariaPosInSet = 1,
   ...props
 }: CompositeRendererProps<T>) {
-  const context = useCompositeContext();
+  const context = useCompositeScopedContext();
   store = store || (context as typeof store);
 
   const orientation = useStoreState(store, (state) =>

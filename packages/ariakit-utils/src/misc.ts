@@ -1,3 +1,9 @@
+/**
+ * General-purpose helpers for state, objects, strings, scheduling, and
+ * assertions.
+ * @module General utilities
+ */
+
 import type {
   AnyFunction,
   AnyObject,
@@ -145,7 +151,7 @@ export function cx(...args: Array<string | null | false | 0 | undefined>) {
 }
 
 /**
- * Removes diatrics from a string.
+ * Removes diacritics from a string.
  */
 export function normalizeString(str: string) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");

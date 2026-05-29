@@ -129,7 +129,7 @@ export const tabGlider = cv({
       return defaultValue;
     },
   },
-  refine({ variants, addClass }) {
+  refine({ variants }) {
     if (variants.$kind === "folder" && variants.$border !== false) {
       // addClass("ak-frame-border-(--fb)");
     }
@@ -179,7 +179,7 @@ export const tabPanels = cv({
     $rounded: "unset",
     $border: "inherit",
   },
-  refine({ variants, addClass }) {
+  refine({ variants }) {
     if (variants.$border !== false) {
       // addClass("ak-frame-border-(--fb)");
     }

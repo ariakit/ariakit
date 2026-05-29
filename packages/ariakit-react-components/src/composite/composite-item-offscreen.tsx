@@ -8,7 +8,7 @@ import { useCollectionItemOffscreen } from "../collection/collection-item-offscr
 import type { ComboboxStoreState } from "../combobox/combobox-store.ts";
 import { Role } from "../role/role.tsx";
 import type { SelectStoreState } from "../select/select-store.ts";
-import { useCompositeContext } from "./composite-context.tsx";
+import { useCompositeScopedContext } from "./composite-context.tsx";
 import * as Base from "./composite-item.tsx";
 import type { CompositeStoreState } from "./composite-store.ts";
 
@@ -20,7 +20,7 @@ export function useCompositeItemOffscreen<
   // oxlint-disable-next-line no-unnecessary-type-parameters
   P extends CompositeItemProps<T>,
 >({ store, offscreenMode = "active", disabled, value, ...props }: P) {
-  const context = useCompositeContext();
+  const context = useCompositeScopedContext();
   store = store || context;
 
   const id = useId(props.id);

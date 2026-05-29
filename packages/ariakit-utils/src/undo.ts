@@ -1,3 +1,8 @@
+/**
+ * Undo and redo manager utilities.
+ * @module Undo utilities
+ */
+
 type Callback = void | (() => Callback | Promise<Callback>);
 
 interface CreateUndoManagerOptions {
@@ -14,8 +19,14 @@ function createUndoCallback(callback: Callback) {
   };
 }
 
+/**
+ * Shared undo manager instance.
+ */
 export const UndoManager = createUndoManager();
 
+/**
+ * Creates an undo manager with undo and redo stacks.
+ */
 export function createUndoManager({
   limit = 100,
 }: CreateUndoManagerOptions = {}) {

@@ -5,10 +5,8 @@ import {
   COLOR_VALUES,
   HUE_VALUES,
   getScaledStyleClass,
-  type ChromaValues,
-  type ColorValues,
-  type HueValues,
 } from "../utils/styles.ts";
+import type { ChromaValues, ColorValues, HueValues } from "../utils/styles.ts";
 
 export const text = cv({
   class: "text",

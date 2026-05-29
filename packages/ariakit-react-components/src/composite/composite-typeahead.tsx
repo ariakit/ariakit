@@ -16,7 +16,7 @@ import {
 } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
 import { useRef } from "react";
-import { useCompositeContext } from "./composite-context.tsx";
+import { useCompositeScopedContext } from "./composite-context.tsx";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 import { flipItems } from "./utils.ts";
 
@@ -112,7 +112,7 @@ export const useCompositeTypeahead = createHook<
   TagName,
   CompositeTypeaheadOptions
 >(function useCompositeTypeahead({ store, typeahead = true, ...props }) {
-  const context = useCompositeContext();
+  const context = useCompositeScopedContext();
   store = store || context;
 
   invariant(

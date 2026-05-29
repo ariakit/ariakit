@@ -20,7 +20,7 @@ import {
 } from "@ariakit/utils";
 import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
-import { useCompositeContext } from "./composite-context.tsx";
+import { useCompositeScopedContext } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 import { selectTextField } from "./utils.ts";
 
@@ -56,7 +56,7 @@ export const useCompositeContainer = createHook<
   TagName,
   CompositeContainerOptions
 >(function useCompositeContainer({ store, ...props }) {
-  const context = useCompositeContext();
+  const context = useCompositeScopedContext();
   store = store || context;
 
   const ref = useRef<HTMLType>(null);

@@ -6,11 +6,9 @@ import {
   getChromaStyleClass,
   getScaledStyleClass,
   getLightnessStyleClass,
-  type ChromaValues,
-  type HueValues,
-  type ColorValues,
   COLOR_VALUES,
 } from "../utils/styles.ts";
+import type { ChromaValues, HueValues, ColorValues } from "../utils/styles.ts";
 
 const DEFAULT_MIX_AMOUNT = 50;
 const DEFAULT_CONTRAST_AMOUNT = 25;
