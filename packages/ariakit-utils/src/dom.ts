@@ -83,10 +83,11 @@ export function contains(parent: Node, child: Node): boolean {
 /**
  * Checks whether the given event target is an element.
  *
- * `event.target` and `event.relatedTarget` are typed as `Element`, but at
- * runtime they can be any `EventTarget` (for example `window` or an
- * `XMLHttpRequest` when an event is dispatched programmatically). Calling
- * `Element`-only methods such as `contains` on those would throw.
+ * `event.target` and `event.relatedTarget` are `EventTarget`s, which aren't
+ * necessarily nodes — for example `window` or an `XMLHttpRequest` when an event
+ * is dispatched programmatically. Calling `Element`-only methods such as
+ * `contains` on those throws, so guard with this before treating them as
+ * elements.
  *
  * It tests `nodeType` rather than `instanceof Element` so that elements coming
  * from same-origin child frames (which `addGlobalEventListener` also listens
