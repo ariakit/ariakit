@@ -16,7 +16,7 @@ export default function Layout(props: LayoutProps<"/tab-nextjs">) {
       </p>
       <div className="p-10 grid gap-2">
         <RouterTabs>
-          <TabList>
+          <TabList aria-label="Posts">
             <RouterTab href="/tab-nextjs">Hot</RouterTab>
             <RouterTab href="/tab-nextjs/new">New</RouterTab>
           </TabList>

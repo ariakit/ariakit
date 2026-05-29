@@ -23,8 +23,18 @@ export function Tabs({
   selectedId,
   setSelectedId,
   defaultSelectedId,
+  children,
   ...props
 }: TabsProps) {
+  // Use an explicit, stable store id. Without it the composite store falls back
+  // to a `Math.random()`-based id, which Next.js forbids inside a Client
+  // Component during prerender when `cacheComponents` is enabled.
+  const store = ak.useTabStore({
+    id: "tab-nextjs",
+    selectedId,
+    setSelectedId,
+    defaultSelectedId,
+  });
   return (
     <div
       {...props}
@@ -33,12 +43,7 @@ export function Tabs({
         props.className,
       )}
     >
-      <ak.TabProvider
-        selectedId={selectedId}
-        setSelectedId={setSelectedId}
-        defaultSelectedId={defaultSelectedId}
-        {...props}
-      />
+      <ak.TabProvider store={store}>{children}</ak.TabProvider>
     </div>
   );
 }
