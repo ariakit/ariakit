@@ -15,7 +15,7 @@ Select a value from a list of options presented in a dropdown menu, similar to t
 
 <div data-tags></div>
 
-<a href="../examples/select/index.tsx" data-playground>Example</a>
+<a href="../examples/select/index.react.tsx" data-playground>Example</a>
 
 ## Examples
 
@@ -23,6 +23,7 @@ Select a value from a list of options presented in a dropdown menu, similar to t
 
 - [](/examples/select-animated)
 - [](/examples/select-combobox)
+- [](/examples/select-combobox-tab)
 - [](/examples/select-next-router)
 
 </div>
@@ -36,19 +37,23 @@ useSelectContext()
 <SelectProvider>
   <SelectLabel />
   <Select>
+    <SelectValue />
     <SelectArrow />
   </Select>
-  <SelectList />
   <SelectPopover>
-    <SelectGroup>
-      <SelectGroupLabel />
-      <SelectRow>
-        <SelectItem>
-          <SelectItemCheck />
-        </SelectItem>
-        <SelectSeparator />
-      </SelectRow>
-    </SelectGroup>
+    <SelectHeading />
+    <SelectDismiss />
+    <SelectList>
+      <SelectGroup>
+        <SelectGroupLabel />
+        <SelectRow>
+          <SelectItem>
+            <SelectItemCheck />
+          </SelectItem>
+          <SelectSeparator />
+        </SelectRow>
+      </SelectGroup>
+    </SelectList>
   </SelectPopover>
 </SelectProvider>
 ```

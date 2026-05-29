@@ -1,7 +1,12 @@
+/**
+ * @license
+ * This file is part of Ariakit Plus. For the full license, see
+ * https://ariakit.com/plus/license
+ */
+import * as Ariakit from "@ariakit/react";
+import { clsx } from "clsx";
 import type { ReactNode } from "react";
 import { forwardRef, startTransition } from "react";
-import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
 
 export interface CommandMenuProps extends Ariakit.DialogProps {
   open?: Ariakit.DialogStoreProps["open"];

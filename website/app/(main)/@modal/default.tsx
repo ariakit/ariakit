@@ -1,7 +1,7 @@
 "use client";
 
-import { Suspense, useEffect, useRef } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation.js";
+import { Suspense, useEffect, useRef } from "react";
 
 function ClientDefault() {
   const router = useRouter();

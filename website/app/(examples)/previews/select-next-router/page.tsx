@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { getLabel, languages, statuses } from "./filters.js";
-import { Select, SelectItem } from "./router-select.jsx";
+import { getLabel, languages, statuses } from "./filters.ts";
+import { Select, SelectItem } from "./router-select.tsx";
 
 const searchParamsSchema = z.object({
   lang: z

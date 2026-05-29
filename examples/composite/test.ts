@@ -1,8 +1,11 @@
-import { press, q } from "@ariakit/test";
+import { dispatch, press, q, sleep, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("navigate through items with keyboard", async () => {
   expect(q.button("🍎 Apple")).not.toHaveFocus();
-  expect(q.button("🍎 Apple")).toHaveAttribute("data-active-item");
+  await waitFor(() =>
+    expect(q.button("🍎 Apple")).toHaveAttribute("data-active-item"),
+  );
 
   await press.Tab();
   expect(q.button("🍎 Apple")).toHaveFocus();
@@ -32,4 +35,26 @@ test("navigate through items with keyboard", async () => {
   await press.ArrowDown(); // should not loop
   expect(q.button("🍊 Orange")).toHaveFocus();
   expect(q.button("🍊 Orange")).toHaveAttribute("data-active-item");
+});
+
+test("https://github.com/ariakit/ariakit/issues/4083", async () => {
+  expect.assertions(6);
+
+  await press.Tab();
+
+  expect(q.button("🍎 Apple")).toHaveAttribute("data-focus-visible", "true");
+  expect(q.button("🍎 Apple")).toHaveAttribute("data-active-item", "true");
+
+  await dispatch.keyDown(document.activeElement, {
+    cancelable: true,
+    bubbles: true,
+    key: "ArrowDown",
+  });
+  await sleep(0);
+
+  expect(q.button("🍎 Apple")).not.toHaveAttribute("data-focus-visible");
+  expect(q.button("🍎 Apple")).not.toHaveAttribute("data-active-item");
+
+  expect(q.button("🍇 Grape")).toHaveAttribute("data-active-item", "true");
+  expect(q.button("🍇 Grape")).toHaveAttribute("data-focus-visible", "true");
 });

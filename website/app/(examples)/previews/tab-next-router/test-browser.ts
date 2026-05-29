@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../../../../../examples/test-utils.ts";
 
 const getLink = (page: Page, name: string) => page.getByRole("link", { name });
 
@@ -7,10 +8,6 @@ const getTab = (page: Page, name: string) => page.getByRole("tab", { name });
 
 const getTabPanel = (page: Page, name: string) =>
   page.getByRole("tabpanel", { name });
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/tab-next-router", { waitUntil: "networkidle" });
-});
 
 test("click on links", async ({ page }) => {
   await expect(getTabPanel(page, "Hot")).toBeVisible();

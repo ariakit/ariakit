@@ -15,7 +15,7 @@ Rendering a [`modal`](/reference/dialog#modal) [Dialog](/components/dialog) to c
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -65,6 +65,7 @@ This applies to all components that use [Dialog](/components/dialog) under the h
 - [](/examples/dialog-animated)
 - [](/examples/dialog-backdrop-scrollable)
 - [](/examples/dialog-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/dialog-combobox-command-menu)
 - [](/examples/menu-nested)
 - [](/examples/menubar-navigation)

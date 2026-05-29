@@ -16,7 +16,7 @@ Animating a modal [Dialog](/components/dialog) and its [`backdrop`](/reference/d
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -61,7 +61,7 @@ You can learn more about these `data-*` attributes on the [Styling](/guide/styli
 - [](/examples/combobox-animated)
 - [](/examples/select-animated)
 - [](/examples/tab-panel-animated)
-- [](/examples/dialog-combobox-command-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/menubar-navigation)
 
 </div>

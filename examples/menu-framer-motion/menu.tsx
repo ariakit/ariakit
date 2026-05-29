@@ -1,8 +1,8 @@
-import * as React from "react";
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
-import type { MotionProps } from "framer-motion";
-import { AnimatePresence, MotionConfig, motion } from "framer-motion";
+import { clsx } from "clsx";
+import type { MotionProps } from "motion/react";
+import { AnimatePresence, MotionConfig, motion } from "motion/react";
+import * as React from "react";
 
 export interface MenuProps extends Ariakit.MenuButtonProps {
   open?: boolean;
@@ -31,8 +31,8 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   ref,
 ) {
   const menu = Ariakit.useMenuStore({ open, setOpen });
-  const currentPlacement = menu.useState("currentPlacement");
-  const mounted = menu.useState("mounted");
+  const currentPlacement = Ariakit.useStoreState(menu, "currentPlacement");
+  const mounted = Ariakit.useStoreState(menu, "mounted");
   return (
     <MotionConfig reducedMotion="user">
       <Ariakit.MenuButton
@@ -72,13 +72,14 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   );
 });
 
-export interface MenuItemProps
-  extends React.ComponentPropsWithoutRef<typeof MotionMenuItem> {}
+export interface MenuItemProps extends React.ComponentPropsWithoutRef<
+  typeof MotionMenuItem
+> {}
 
-// Instead of using the Ariakit `render` prop, we give control to Framer Motion
+// Instead of using the Ariakit `render` prop, we give control to Motion
 // so it can process the props before we pass the remainder to
 // `Ariakit.MenuItem`.
-const MotionMenuItem = motion(Ariakit.MenuItem);
+const MotionMenuItem = motion.create(Ariakit.MenuItem);
 
 export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
   function MenuItem(props, ref) {

@@ -1,4 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
+import { beforeEach, expect, test, vi } from "vitest";
 
 const spyOnLog = () => vi.spyOn(console, "log").mockImplementation(() => {});
 
@@ -54,7 +55,7 @@ test("default values", async () => {
 });
 
 test("interact with checkboxControlled items", async () => {
-  await click(q.button());
+  await click(q.button("Menu"));
   await click(q.menuitemcheckbox("Apple (checkboxControlled)"));
   await click(q.menuitemcheckbox("Banana (checkboxControlled)"));
   await click(q.menuitemcheckbox.includesHidden("Grape (checkboxControlled)"));
@@ -68,7 +69,7 @@ test("interact with checkboxControlled items", async () => {
 });
 
 test("interact with checkboxUncontrolled items", async () => {
-  await click(q.button());
+  await click(q.button("Menu"));
   await click(q.menuitemcheckbox("Apple (checkboxUncontrolled)"));
   await click(q.menuitemcheckbox("Banana (checkboxUncontrolled)"));
   await click(
@@ -93,7 +94,7 @@ test("interact with checkboxUncontrolled items", async () => {
 });
 
 test("interact with checkboxParent items", async () => {
-  await click(q.button());
+  await click(q.button("Menu"));
   await click(q.menuitemcheckbox("Apple (checkboxParent)"));
   await click(q.menuitemcheckbox("Banana (checkboxParent)"));
   await click(q.menuitemcheckbox.includesHidden("Grape (checkboxParent)"));
@@ -107,7 +108,7 @@ test("interact with checkboxParent items", async () => {
 });
 
 test("interact with radioControlled items", async () => {
-  await click(q.button());
+  await click(q.button("Menu"));
   log.mockClear();
   await click(q.menuitemradio("Apple (radioControlled)"));
   expect(getVisualState().radioControlled).toBe("Banana");
@@ -131,7 +132,7 @@ test("interact with radioControlled items", async () => {
 });
 
 test("interact with radioUncontrolled items", async () => {
-  await click(q.button());
+  await click(q.button("Menu"));
   log.mockClear();
   await click(q.menuitemradio("Apple (radioUncontrolled)"));
   expect(getVisualState().radioUncontrolled).toBe("Apple");
@@ -151,7 +152,7 @@ test("interact with radioUncontrolled items", async () => {
 });
 
 test("interact with radioParent items", async () => {
-  await click(q.button());
+  await click(q.button("Menu"));
   log.mockClear();
   await click(q.menuitemradio("Apple (radioParent)"));
   expect(getVisualState().radioParent).toBe("Orange");
@@ -188,4 +189,22 @@ test("navigate with keyboard ignoring disabled items", async () => {
   expect(q.menuitemradio("Banana (radioControlled)")).toHaveFocus();
   await press.ArrowDown();
   expect(q.menuitemradio("Orange (radioControlled)")).toHaveFocus();
+});
+
+test("reset radioControlled externally", async () => {
+  await click(q.button("Menu"));
+  const orange = q.menuitemradio.ensure("Orange (radioControlled)");
+  expect(orange).toHaveAttribute("aria-checked", "false");
+  expect(orange.querySelector("svg")).toBeNull();
+  await click(orange);
+  expect(orange).toHaveAttribute("aria-checked", "true");
+  expect(orange.querySelector("svg")).not.toBeNull();
+  await click(q.button("Reset radioControlled"));
+  expect(
+    document.querySelector("[data-radio-controlled-value]")?.textContent,
+  ).toBe("");
+  await click(q.button("Menu"));
+  const resetOrange = q.menuitemradio.ensure("Orange (radioControlled)");
+  expect(resetOrange).toHaveAttribute("aria-checked", "false");
+  expect(resetOrange.querySelector("svg")).toBeNull();
 });

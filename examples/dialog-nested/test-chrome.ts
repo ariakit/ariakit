@@ -1,15 +1,12 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const getButton = (page: Page | Locator, name: string) =>
   page.getByRole("button", { name });
 
 const getDialog = (page: Page | Locator, name: string) =>
   page.getByRole("dialog", { name });
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-nested", { waitUntil: "networkidle" });
-});
 
 test("remove product", async ({ page }) => {
   await getButton(page, "View Cart").click();

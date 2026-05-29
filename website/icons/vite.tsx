@@ -1,5 +1,5 @@
-import { useId } from "react";
 import type { SVGAttributes } from "react";
+import { useId } from "react";
 
 export function Vite(props: SVGAttributes<SVGSVGElement>) {
   const id = useId();

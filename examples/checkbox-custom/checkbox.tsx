@@ -1,6 +1,6 @@
-import { forwardRef, useState } from "react";
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import * as Ariakit from "@ariakit/react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { forwardRef, useState } from "react";
 
 interface CheckboxProps extends ComponentPropsWithoutRef<"input"> {
   children?: ReactNode;

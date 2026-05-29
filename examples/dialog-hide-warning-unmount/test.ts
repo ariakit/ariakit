@@ -1,1 +1,1 @@
-import "../dialog-hide-warning/test.js";
+import "../dialog-hide-warning/test.ts";

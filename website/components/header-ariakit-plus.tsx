@@ -1,6 +1,4 @@
 "use client";
-import { Suspense, forwardRef } from "react";
-import type { ComponentPropsWithoutRef, ElementRef } from "react";
 import {
   Button,
   Menu,
@@ -16,17 +14,19 @@ import {
   SignedOut,
   useClerk,
 } from "@clerk/clerk-react";
-import { NewWindow } from "icons/new-window.jsx";
 import Link from "next/link.js";
 import {
   usePathname,
   useSearchParams,
   useSelectedLayoutSegments,
 } from "next/navigation.js";
-import { useSubscription } from "utils/use-subscription.js";
-import { Command } from "./command.jsx";
-import { DropdownItem } from "./dropdown-item.jsx";
-import { Popup } from "./popup.jsx";
+import type { ComponentPropsWithoutRef, ElementRef } from "react";
+import { forwardRef, Suspense } from "react";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { useSubscription } from "@/lib/use-subscription.ts";
+import { Command } from "./command.tsx";
+import { DropdownItem } from "./dropdown-item.tsx";
+import { Popup } from "./popup.tsx";
 
 const SignInLink = forwardRef<
   ElementRef<typeof Link>,
@@ -38,7 +38,9 @@ const SignInLink = forwardRef<
   return (
     <Link
       ref={ref}
-      href={`/sign-in?redirect_url=${encodeURIComponent(`${pathname}?${search}`)}`}
+      href={`/sign-in?redirect_url=${encodeURIComponent(
+        `${pathname}?${search}`,
+      )}`}
       {...props}
     />
   );
@@ -55,7 +57,7 @@ export function HeaderAriakitPlus() {
   return (
     <>
       <ClerkLoading>
-        <div className="mx-2 h-6 w-10 animate-pulse rounded bg-black/10 dark:bg-white/10 sm:mx-3 sm:w-28" />
+        <div className="mx-2 h-6 w-10 animate-pulse rounded bg-black/10 sm:mx-3 sm:w-28 dark:bg-white/10" />
       </ClerkLoading>
       <SignedOut>
         {segments.length === 1 && segments.includes("plus") ? (
@@ -63,7 +65,7 @@ export function HeaderAriakitPlus() {
             <Command
               flat
               variant="secondary"
-              className="border border-solid border-black/60 px-3 font-medium outline-offset-2 focus-visible:![outline:2px_solid_theme(colors.blue.600)] dark:border-white/60 sm:h-9"
+              className="border border-solid border-black/60 px-3 font-medium outline-offset-2 focus-visible:![outline:2px_solid_theme(colors.blue.600)] sm:h-9 dark:border-white/60"
               render={<SignInLink />}
             >
               Sign in
@@ -134,6 +136,7 @@ export function HeaderAriakitPlus() {
                   method="post"
                   target="_blank"
                   action="/api/customer-portal"
+                  rel="noopener"
                 >
                   <MenuItem
                     className="w-full"

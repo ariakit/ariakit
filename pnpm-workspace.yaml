@@ -1,0 +1,45 @@
+packages:
+  - packages/*
+  - templates/*
+  - nextjs
+  - examples
+  - guide
+  - website
+  - app
+
+allowBuilds:
+  "@clerk/shared": false
+  core-js: false
+  esbuild: true
+  msw: false
+  sharp: true
+  workerd: true
+
+overrides:
+  "@ariakit/components": "workspace:*"
+  "@ariakit/react": "workspace:*"
+  "@ariakit/react-components": "workspace:*"
+  "@ariakit/react-store": "workspace:*"
+  "@ariakit/react-utils": "workspace:*"
+  "@ariakit/solid": "workspace:*"
+  "@ariakit/solid-components": "workspace:*"
+  "@ariakit/solid-store": "workspace:*"
+  "@ariakit/solid-utils": "workspace:*"
+  "@ariakit/store": "workspace:*"
+  "@ariakit/tailwind": "workspace:*"
+  "@ariakit/test": "workspace:*"
+  "@ariakit/utils": "workspace:*"
+
+patchedDependencies:
+  "@changesets/apply-release-plan@7.1.1": "patches/@changesets__apply-release-plan@7.1.1.patch"
+
+peerDependencyRules:
+  allowedVersions:
+    react: "19"
+    react-dom: "19"
+
+publicHoistPattern:
+  - "*react*"
+  - "*testing-library*"
+
+saveExact: true

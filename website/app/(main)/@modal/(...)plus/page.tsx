@@ -1,15 +1,15 @@
 "use client";
-import { Suspense, forwardRef } from "react";
-import type { ComponentPropsWithoutRef, ElementRef } from "react";
 import { Button, Dialog } from "@ariakit/react";
 import { SignedOut } from "@clerk/clerk-react";
-import { AuthEnabled } from "components/auth.jsx";
-import { Command } from "components/command.jsx";
-import { PlusScreen } from "components/plus-screen.jsx";
-import { useRootPathname } from "components/root-pathname.jsx";
-import { ArrowLeft } from "icons/arrow-left.jsx";
 import Link from "next/link.js";
 import { usePathname, useRouter, useSearchParams } from "next/navigation.js";
+import type { ComponentPropsWithoutRef, ElementRef } from "react";
+import { forwardRef, Suspense } from "react";
+import { AuthEnabled } from "@/components/auth.tsx";
+import { Command } from "@/components/command.tsx";
+import { PlusScreen } from "@/components/plus-screen.tsx";
+import { useRootPathname } from "@/components/root-pathname.tsx";
+import { ArrowLeft } from "@/icons/arrow-left.tsx";
 
 const SignInLink = forwardRef<
   ElementRef<typeof Link>,
@@ -21,7 +21,9 @@ const SignInLink = forwardRef<
   return (
     <Link
       ref={ref}
-      href={`/sign-in?redirect_url=${encodeURIComponent(`${rootPathname}${search}`)}`}
+      href={`/sign-in?redirect_url=${encodeURIComponent(
+        `${rootPathname}${search}`,
+      )}`}
       {...props}
     />
   );
@@ -58,7 +60,7 @@ export default function Page() {
           >
             <ArrowLeft className="size-4" />
             Back to page
-            <div className="-mr-1.5 hidden rounded-md border border-black/10 px-1.5 py-0.5 text-black/80 dark:border-white/10 dark:text-white/80 sm:block">
+            <div className="-mr-1.5 hidden rounded-md border border-black/10 px-1.5 py-0.5 text-black/80 sm:block dark:border-white/10 dark:text-white/80">
               esc
             </div>
           </Button>
@@ -69,7 +71,7 @@ export default function Page() {
                 <Command
                   flat
                   variant="secondary"
-                  className="border border-solid border-black/60 px-3 font-medium focus-visible:!ariakit-outline dark:border-white/60 sm:h-9"
+                  className="border border-solid border-black/60 px-3 font-medium focus-visible:!ariakit-outline sm:h-9 dark:border-white/60"
                   render={<SignInLink />}
                 >
                   Sign in

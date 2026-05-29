@@ -1,8 +1,8 @@
 import { currentUser } from "@clerk/nextjs";
-import type { NextRequest } from "next/server.js";
-import { getStripeId } from "utils/clerk.js";
-import { getStripeClient, listActiveSubscriptions } from "utils/stripe.js";
+import type { NextRequest } from "next/server.ts";
 import { z } from "zod";
+import { getStripeId } from "@/lib/clerk.ts";
+import { getStripeClient, listActiveSubscriptions } from "@/lib/stripe.ts";
 
 const schema = z
   .object({

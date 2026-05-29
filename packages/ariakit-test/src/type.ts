@@ -1,10 +1,9 @@
-import { getActiveElement, isTextField } from "@ariakit/core/utils/dom";
-import { isFocusable } from "@ariakit/core/utils/focus";
-import type { DirtiableElement, TextField } from "./__utils.js";
-import { wrapAsync } from "./__utils.js";
-import { dispatch } from "./dispatch.js";
-import { focus } from "./focus.js";
-import { sleep } from "./sleep.js";
+import { getActiveElement, isTextField, isFocusable } from "@ariakit/utils";
+import type { DirtiableElement, TextField } from "./__utils.ts";
+import { wrapAsync } from "./__utils.ts";
+import { dispatch } from "./dispatch.ts";
+import { focus } from "./focus.ts";
+import { sleep } from "./sleep.ts";
 
 function getKeyFromChar(key: string) {
   if (key === "\x7f") return "Delete";
@@ -56,7 +55,7 @@ export function type(
 
       // After key down, focus may change and be on a text field, so we get the
       // active element again.
-      element = (getActiveElement(element) || element) as HTMLElement;
+      element = getActiveElement(element) || element;
 
       if (isTextField(element)) {
         const input = element as TextField;
@@ -118,11 +117,6 @@ export function type(
               inputType,
               ...options,
             });
-            // Need to re-assign the selection state for React 17 and/or React
-            // Testing Library 12 (not sure which).
-            if (input.selectionStart !== nextCaretPosition) {
-              input.setSelectionRange(nextCaretPosition, nextCaretPosition);
-            }
           }
         }
       }

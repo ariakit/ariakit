@@ -13,4 +13,4 @@ Distinguish sections of content or groups of <a href="/components/composite">Com
 
 <div data-tags></div>
 
-<a href="../examples/separator/index.tsx" data-playground>example</a>
+<a href="../examples/separator/index.react.tsx" data-playground>example</a>

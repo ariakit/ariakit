@@ -1,12 +1,12 @@
-import { Children, isValidElement } from "react";
-import type { ComponentProps, ReactNode } from "react";
-import pageIndex from "build-pages/index.js";
 import type { Element } from "hast";
 import Link from "next/link.js";
+import type { ComponentProps, ReactNode } from "react";
+import { Children, isValidElement } from "react";
 import { twJoin } from "tailwind-merge";
-import { getPageIcon } from "utils/get-page-icon.jsx";
-import { InlineLink } from "./inline-link.jsx";
-import { PageItem } from "./page-item.jsx";
+import pageIndex from "@/build-pages/index.ts";
+import { getPageIcon } from "@/lib/get-page-icon.tsx";
+import { InlineLink } from "./inline-link.tsx";
+import { PageItem } from "./page-item.tsx";
 
 function findCardLinks(children: ReactNode): string[] {
   return Children.toArray(children).flatMap((child) =>
@@ -25,7 +25,6 @@ export interface PageCardsProps extends ComponentProps<"div"> {
   category?: string;
   page?: string;
   title?: string;
-  // eslint-disable-next-line @typescript-eslint/ban-types
   type?: "components" | "examples" | (string & {});
 }
 
@@ -41,7 +40,7 @@ export function PageCards({
   const links = findCardLinks(children);
 
   const pages = links.flatMap((link) => {
-    const url = new URL(link, "https://ariakit.org");
+    const url = new URL(link, "https://ariakit.com");
     const [, category, slug] = url.pathname.split("/");
     if (!category || !slug) return [];
     const page = pageIndex[category]?.find((item) => item.slug === slug);
@@ -58,7 +57,7 @@ export function PageCards({
         {...props}
         className={twJoin(
           props.className,
-          "z-[1] grid !max-w-[792px] grid-cols-1 gap-4 md:grid-cols-2 [[data-dialog]_&]:grid-cols-1",
+          "z-[1] grid max-w-[calc(var(--size-content-box)+1.5rem)] grid-cols-1 gap-4 md:grid-cols-2 [[data-dialog]_&]:grid-cols-1",
         )}
       >
         {pages.map((page) => (
@@ -73,7 +72,7 @@ export function PageCards({
         ))}
       </div>
       {isExamples && (
-        <div className="flex justify-center">
+        <div className="max-w-[--size-content]">
           <InlineLink
             render={
               <Link
@@ -87,7 +86,7 @@ export function PageCards({
         </div>
       )}
       {isComponents && (
-        <div className="flex justify-center">
+        <div className="max-w-[--size-content]">
           <InlineLink render={<Link href="/components" />}>
             View all components
           </InlineLink>

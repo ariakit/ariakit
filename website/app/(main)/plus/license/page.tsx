@@ -1,5 +1,6 @@
-import { PageContainer } from "app/(main)/page-container.jsx";
-import { InlineLink } from "components/inline-link.jsx";
+import Link from "next/link.js";
+import { PageContainer } from "@/app/(main)/page-container.tsx";
+import { InlineLink } from "@/components/inline-link.tsx";
 import {
   PageDivider,
   PageHeading,
@@ -7,9 +8,8 @@ import {
   PageListItem,
   PageParagraph,
   PageSection,
-} from "components/page-elements.jsx";
-import Link from "next/link.js";
-import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
+} from "@/components/page-elements.tsx";
+import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
 
 export function generateMetadata() {
   return getNextPageMetadata({ title: "Ariakit Plus License Agreement" });
@@ -102,8 +102,8 @@ export default function Page() {
         <PageSection>
           <PageParagraph>
             For any further questions, please contact us at{" "}
-            <InlineLink href="mailto:support@ariakit.org">
-              support@ariakit.org
+            <InlineLink href="mailto:contact@ariakit.com">
+              contact@ariakit.com
             </InlineLink>
             .
           </PageParagraph>

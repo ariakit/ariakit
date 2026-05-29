@@ -22,7 +22,7 @@ export default function Icon() {
                   d="M53 15H5V19C5 21.7614 2.76141 24 0 24H58C55.2386 24 53 21.7614 53 19V15Z"
                 />
               </svg>
-              <div className="mt-[-0.5px] h-full w-full bg-white p-2 dark:bg-gray-500"></div>
+              <div className="mt-[-0.5px] h-full w-full bg-white p-2 dark:bg-gray-500" />
             </div>
           </div>
         </div>

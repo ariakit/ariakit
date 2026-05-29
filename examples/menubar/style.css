@@ -9,7 +9,6 @@
     dark:bg-gray-700
     shadow
     dark:shadow-dark
-  ;
 }
 
 .menubar-item {
@@ -26,7 +25,6 @@
     focus:text-white
     focus:bg-blue-600
     focus:dark:bg-blue-600
-  ;
 }
 
 .menu {
@@ -35,7 +33,6 @@
     max-w-[max(var(--popover-available-width),calc(100%-calc(var(--popover-overflow-padding)*2)))]
     [&_.menu-item>.label]:flex-1
     [&_.menu-item>.label]:pr-8
-  ;
 }
 
 .menu-item {
@@ -43,5 +40,4 @@
     [.menu:not(:focus-within)_&]:aria-expanded:text-current
     [.menu:not(:focus-within)_&]:aria-expanded:bg-black/[7.5%]
     [.menu:not(:focus-within)_&]:aria-expanded:dark:bg-white/10
-  ;
 }

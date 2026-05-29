@@ -1,6 +1,6 @@
-import type { NextRequest } from "next/server.js";
-import { createCheckout } from "utils/stripe.js";
+import type { NextRequest } from "next/server.ts";
 import { z } from "zod";
+import { createCheckout } from "@/lib/stripe.ts";
 
 export async function POST(req: NextRequest) {
   const schema = z.object({

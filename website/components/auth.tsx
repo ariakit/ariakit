@@ -1,7 +1,7 @@
 "use client";
-import type { PropsWithChildren } from "react";
 import { ClerkProvider } from "@clerk/clerk-react";
-import { useSubscription } from "utils/use-subscription.js";
+import type { PropsWithChildren } from "react";
+import { useSubscription } from "@/lib/use-subscription.ts";
 
 const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
@@ -43,18 +43,29 @@ export function AuthDisabled({ children }: PropsWithChildren) {
 }
 
 export function AuthLoading({ children }: PropsWithChildren) {
+  if (!key) return null;
   const sub = useSubscription();
   if (sub.isLoaded && !sub.isLoading) return null;
   return children;
 }
 
+export function AuthLoaded({ children }: PropsWithChildren) {
+  if (!key) return null;
+  const sub = useSubscription();
+  if (!sub.isLoaded) return null;
+  if (sub.isLoading) return null;
+  return children;
+}
+
 export function Subscribed({ children }: PropsWithChildren) {
+  if (!key) return null;
   const sub = useSubscription();
   if (!sub.data) return null;
   return children;
 }
 
 export function NotSubscribed({ children }: PropsWithChildren) {
+  if (!key) return children;
   const sub = useSubscription();
   if (!sub.isLoaded) return null;
   if (sub.isLoading) return null;

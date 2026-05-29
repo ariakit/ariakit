@@ -1,6 +1,6 @@
-import { forwardRef } from "react";
 import * as Ariakit from "@ariakit/react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
+import { forwardRef } from "react";
 
 interface TooltipAnchorProps extends Ariakit.TooltipAnchorProps {
   description: string;
@@ -9,11 +9,11 @@ interface TooltipAnchorProps extends Ariakit.TooltipAnchorProps {
 export const TooltipAnchor = forwardRef<HTMLDivElement, TooltipAnchorProps>(
   function TooltipAnchor({ description, ...props }, ref) {
     const tooltip = Ariakit.useTooltipStore();
-    const mounted = tooltip.useState("mounted");
+    const mounted = Ariakit.useStoreState(tooltip, "mounted");
 
     // We move the tooltip up or down depending on the current placement.
-    const y = tooltip.useState((state) => {
-      const dir = state.currentPlacement.split("-")[0]!;
+    const y = Ariakit.useStoreState(tooltip, (state) => {
+      const dir = state.currentPlacement.split("-")[0];
       return dir === "top" ? -8 : 8;
     });
 

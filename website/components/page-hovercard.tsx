@@ -1,12 +1,4 @@
 "use client";
-import {
-  createContext,
-  isValidElement,
-  useContext,
-  useMemo,
-  useRef,
-} from "react";
-import type { ReactNode } from "react";
 import type {
   HovercardAnchorProps,
   HovercardProps,
@@ -21,11 +13,19 @@ import {
   useHovercardStore,
 } from "@ariakit/react";
 import Link from "next/link.js";
+import type { ReactNode } from "react";
+import {
+  createContext,
+  isValidElement,
+  useContext,
+  useMemo,
+  useRef,
+} from "react";
 import { twJoin } from "tailwind-merge";
 import invariant from "tiny-invariant";
-import { useSubscription } from "utils/use-subscription.js";
-import { Command } from "./command.jsx";
-import { Popup } from "./popup.jsx";
+import { useSubscription } from "@/lib/use-subscription.ts";
+import { Command } from "./command.tsx";
+import { Popup } from "./popup.tsx";
 
 // Breadth-first search algorithm
 function findSection(node: ReactNode, id?: string | null): ReactNode {
@@ -84,7 +84,7 @@ export function PageHovercard({ contents, ...props }: PageHovercardProps) {
   const sub = useSubscription();
   const ref = useRef<HTMLDivElement>(null);
   const href = store.useState("anchorElement")?.getAttribute("href");
-  const url = new URL(href || "", "https://ariakit.org");
+  const url = new URL(href || "", "https://ariakit.com");
   const [, , page] = url.pathname.split("/");
   const id = url.hash.slice(1);
 
@@ -113,10 +113,13 @@ export function PageHovercard({ contents, ...props }: PageHovercardProps) {
       {...props}
       className={twJoin("max-h-96 max-w-md", props.className)}
       render={
-        <Popup render={props.render} scroller={<div className="gap-4" />} />
+        <Popup
+          render={props.render}
+          arrow={<HovercardArrow />}
+          scroller={<div className="gap-4" />}
+        />
       }
     >
-      <HovercardArrow />
       <PageHovercardContext.Provider value={null}>
         {subscribed ? (
           content
