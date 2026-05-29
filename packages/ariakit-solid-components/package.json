@@ -58,6 +58,8 @@
     "./heading/heading-context": "./src/heading/heading-context.tsx",
     "./heading/heading-level": "./src/heading/heading-level.tsx",
     "./heading/utils": "./src/heading/utils.ts",
+    "./portal/portal": "./src/portal/portal.tsx",
+    "./portal/portal-context": "./src/portal/portal-context.tsx",
     "./role/role": "./src/role/role.tsx",
     "./separator/separator": "./src/separator/separator.tsx",
     "./visually-hidden/visually-hidden": "./src/visually-hidden/visually-hidden.tsx",
