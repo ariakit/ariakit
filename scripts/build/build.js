@@ -36,7 +36,7 @@ const cjsDir = getCJSDir();
 const solidSourceDir = getSolidSourceDir();
 
 spawn.sync(
-  "tsc",
+  "tsgo",
   [
     "--emitDeclarationOnly",
     "--project",
