@@ -20,7 +20,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    const button = page.getByRole("button", { name: "Select vegetables" });
+    const button = q.button("Select vegetables");
     await button.click();
     await test.expect(button).toBeFocused();
 
@@ -29,10 +29,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   test("does not move focus after controlled tab selection inside a tab panel", async ({
-    page,
     q,
   }) => {
-    const textbox = page.getByRole("textbox", { name: "Fruit note" });
+    const textbox = q.textbox("Fruit note");
     await textbox.focus();
     await test.expect(textbox).toBeFocused();
 
