@@ -7,7 +7,10 @@ import type { AnyObject } from "@ariakit/utils";
 import { combineProps } from "@solid-primitives/props";
 import type { Accessor, JSX, Setter } from "solid-js";
 import {
+  createEffect,
   createSignal,
+  on,
+  onCleanup,
   mergeProps as solidMergeProps,
   splitProps,
   untrack,
@@ -151,6 +154,32 @@ export function createRef<T>(initialValue?: any): RefStore<T> {
     set,
     reset: () => set(initialValue),
   };
+}
+
+/**
+ * Runs an effect after the dependencies change, skipping the initial run.
+ * Mirrors React's `useUpdateEffect`. The dependencies are passed as a thunk
+ * (the idiomatic Solid dependency form), and the effect is deferred so it does
+ * not run on mount.
+ * @example
+ * useUpdateEffect(() => {
+ *   console.log("value changed");
+ * }, () => [value()]);
+ */
+export function useUpdateEffect(
+  effect: () => void | (() => void),
+  deps: Accessor<readonly unknown[]>,
+) {
+  createEffect(
+    on(
+      deps,
+      () => {
+        const cleanup = effect();
+        if (cleanup) onCleanup(cleanup);
+      },
+      { defer: true },
+    ),
+  );
 }
 
 /**

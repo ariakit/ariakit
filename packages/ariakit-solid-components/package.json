@@ -33,6 +33,8 @@
     "clean": "ariakit clean"
   },
   "dependencies": {
+    "@ariakit/components": "workspace:*",
+    "@ariakit/solid-store": "workspace:*",
     "@ariakit/solid-utils": "workspace:*",
     "@ariakit/utils": "workspace:*"
   },
@@ -45,6 +47,12 @@
   "exports": {
     "./as/as": "./src/as/as.tsx",
     "./button/button": "./src/button/button.tsx",
+    "./checkbox/checkbox": "./src/checkbox/checkbox.tsx",
+    "./checkbox/checkbox-check": "./src/checkbox/checkbox-check.tsx",
+    "./checkbox/checkbox-checked-context": "./src/checkbox/checkbox-checked-context.tsx",
+    "./checkbox/checkbox-context": "./src/checkbox/checkbox-context.tsx",
+    "./checkbox/checkbox-provider": "./src/checkbox/checkbox-provider.tsx",
+    "./checkbox/checkbox-store": "./src/checkbox/checkbox-store.ts",
     "./command/command": "./src/command/command.tsx",
     "./focus-trap/focus-trap": "./src/focus-trap/focus-trap.tsx",
     "./focus-trap/focus-trap-region": "./src/focus-trap/focus-trap-region.tsx",

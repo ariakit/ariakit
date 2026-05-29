@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Checkbox, CheckboxProvider, Group, GroupLabel } from "@ariakit/solid";
 import "./style.css";
 

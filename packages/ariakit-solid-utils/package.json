@@ -34,6 +34,7 @@
     "docs": "ariakit docs --write"
   },
   "dependencies": {
+    "@ariakit/store": "workspace:*",
     "@ariakit/utils": "workspace:*",
     "@solid-primitives/props": "^3.2.3",
     "@solid-primitives/utils": "^6.4.0"

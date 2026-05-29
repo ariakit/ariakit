@@ -3,9 +3,22 @@
  * @module System utilities
  */
 
+import type { Store } from "@ariakit/store";
 import type { AnyObject, EmptyObject } from "@ariakit/utils";
-import type { ValidComponent } from "solid-js";
-import { createMemo, mergeProps, splitProps } from "solid-js";
+import type {
+  Accessor,
+  Component,
+  ComponentProps,
+  JSX,
+  ValidComponent,
+} from "solid-js";
+import {
+  createMemo,
+  mergeProps,
+  splitProps,
+  createContext as solidCreateContext,
+  useContext as solidUseContext,
+} from "solid-js";
 import { Dynamic } from "solid-js/web";
 import type {
   ExtractPropsWithDefaultsExtractedProps,
@@ -169,4 +182,80 @@ export function createMetadataProps<T, K extends keyof any>(
       },
     },
   ] as const;
+}
+
+type StoreProvider<T extends Store> = Component<{
+  value: Accessor<T | undefined>;
+  children?: JSX.Element;
+}>;
+
+type RenderFn = () => JSX.Element;
+
+/**
+ * Creates an Ariakit store context with hooks and provider components. Unlike
+ * the React equivalent, the context value is an `Accessor<T>` rather than the
+ * store object itself, because Ariakit Solid stores are accessors.
+ */
+export function createStoreContext<T extends Store>(
+  providers: StoreProvider<T>[] = [],
+  scopedProviders: StoreProvider<T>[] = [],
+) {
+  const context = solidCreateContext<Accessor<T | undefined>>(() => undefined);
+  const scopedContext = solidCreateContext<Accessor<T | undefined>>(
+    () => undefined,
+  );
+
+  const useContext = () => solidUseContext(context);
+
+  const useScopedContext = (onlyScoped = false) => {
+    const scoped = solidUseContext(scopedContext);
+    const store = useContext();
+    if (onlyScoped) return scoped;
+    return () => scoped() || store();
+  };
+
+  const useProviderContext = () => {
+    const scoped = solidUseContext(scopedContext);
+    const store = useContext();
+    return () => {
+      const $scoped = scoped();
+      const $store = store();
+      if ($scoped && $scoped === $store) return;
+      return $store;
+    };
+  };
+
+  const ContextProvider = (props: ComponentProps<typeof context.Provider>) => {
+    return providers.reduceRight<RenderFn>(
+      (children, Provider) => () => (
+        <Provider {...props}>{children()}</Provider>
+      ),
+      () => <context.Provider {...props} />,
+    )();
+  };
+
+  const ScopedContextProvider = (
+    props: ComponentProps<typeof scopedContext.Provider>,
+  ) => {
+    return (
+      <ContextProvider {...props}>
+        {scopedProviders.reduceRight<RenderFn>(
+          (children, Provider) => () => (
+            <Provider {...props}>{children()}</Provider>
+          ),
+          () => <scopedContext.Provider {...props} />,
+        )()}
+      </ContextProvider>
+    );
+  };
+
+  return {
+    context,
+    scopedContext,
+    useContext,
+    useScopedContext,
+    useProviderContext,
+    ContextProvider,
+    ScopedContextProvider,
+  };
 }

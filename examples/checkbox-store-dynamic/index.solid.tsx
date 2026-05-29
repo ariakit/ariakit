@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Checkbox, useCheckboxStore } from "@ariakit/solid";
 import "./style.css";
 import { createSignal } from "solid-js";

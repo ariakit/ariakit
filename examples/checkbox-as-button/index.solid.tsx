@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { As, Checkbox, useCheckboxStore, useStoreState } from "@ariakit/solid";
 import "./style.css";
 
@@ -9,7 +8,7 @@ export default function Example() {
   );
   return (
     <Checkbox store={checkbox} class="button" render={<As.button />}>
-      {label}
+      {label()}
     </Checkbox>
   );
 }
