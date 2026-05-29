@@ -391,7 +391,25 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         // are disabled), we should move the focus to the input (null),
         // otherwise, with async items, the activeValue won't be reset. TODO:
         // Test this.
-        store.move(autoSelectId ?? null);
+        const nextActiveId = autoSelectId ?? null;
+        // Only move when the auto-select target isn't already the active item.
+        // store.move() always increments the `moves` counter, which makes the
+        // Composite component re-focus the active item. When the rendered items
+        // change without the target changing (for example, a virtualized list
+        // resizing because a mobile keyboard's autocomplete bar changed the
+        // available height), re-moving would bounce focus off the input and back
+        // and drop characters as the user types. See
+        // https://github.com/ariakit/ariakit/issues/3837
+        if (nextActiveId !== activeId) {
+          store.move(nextActiveId);
+        } else {
+          // The target is already the active item, so we skip the move to avoid
+          // the focus bounce above. But the active item's value may have changed
+          // (for example, async items reusing the same id), so we keep
+          // activeValue in sync the way store.move() would, without bumping
+          // `moves`. This is a no-op when the value hasn't changed.
+          store.setState("activeValue", store.item(nextActiveId)?.value);
+        }
       } else {
         // Reset the scroll position to the active item when an item is selected
         // and the combobox value is reset, which might move the active item
