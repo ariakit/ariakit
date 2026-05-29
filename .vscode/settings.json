@@ -1,38 +1,39 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
   "editor.tabSize": 2,
   "editor.insertSpaces": true,
   "files.eol": "\n",
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
-  "tailwindCSS.experimental.classRegex": [
-    "tw`([^`]*)`",
-    ["(?:twMerge|twJoin)\\(([^\\);]*)[\\);]", "[`'\"`]([^'\"`,;]*)[`'\"`]"]
-  ],
+  "js/ts.preferences.preferTypeOnlyAutoImports": true,
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
+  "tailwindCSS.classFunctions": ["cv", "clsx", "twMerge", "twJoin"],
+  "tailwindCSS.experimental.configFile": {
+    "app/src/styles/global.css": ["app/**", "nextjs/**"],
+    "templates/react/src/style.css": "templates/react/**"
+  },
   "css.validate": false,
-  "stylelint.enable": true,
   "editor.snippetSuggestions": "bottom",
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnType": false,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit",
-    "source.organizeImports.biome": "explicit"
+    "source.fixAll.oxc": "explicit"
   },
-  "[css]": {
-    "editor.defaultFormatter": "stylelint.vscode-stylelint"
+  "[astro]": {
+    "editor.defaultFormatter": "astro-build.astro-vscode",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.removeUnusedImports": "explicit"
+    }
   },
-  "[json]": {
-    "editor.defaultFormatter": "biomejs.biome"
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-action.json": [
+      ".github/workflows/*/action.y*ml"
+    ]
   },
-  "[javascript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "biomejs.biome"
+  "[jsonc]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   }
 }

@@ -9,11 +9,11 @@ export default function Example() {
       <Ariakit.ComboboxPopover gutter={8} sameWidth className="popover">
         <Ariakit.ComboboxItem
           className="combobox-item"
-          value="email1@ariakit.org"
+          value="email1@ariakit.com"
         />
         <Ariakit.ComboboxItem
           className="combobox-item"
-          value="email2@ariakit.org"
+          value="email2@ariakit.com"
         />
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>

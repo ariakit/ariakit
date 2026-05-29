@@ -1,6 +1,5 @@
-export { Button } from "@ariakit/react-core/button/button";
-
 export type {
   ButtonOptions,
   ButtonProps,
-} from "@ariakit/react-core/button/button";
+} from "@ariakit/react-components/button/button";
+export { Button } from "@ariakit/react-components/button/button";

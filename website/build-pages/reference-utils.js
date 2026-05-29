@@ -1,10 +1,13 @@
 import { join } from "node:path";
 import invariant from "tiny-invariant";
-import { FunctionLikeDeclaration, Node, Project, ts } from "ts-morph";
+import { Node, Project, ts } from "ts-morph";
 import { getPageName } from "./get-page-name.js";
 
 const project = new Project({
-  tsConfigFilePath: join(process.cwd(), "../tsconfig.json"),
+  tsConfigFilePath: join(
+    process.cwd(),
+    "../packages/ariakit-react/tsconfig.json",
+  ),
 });
 
 /**
@@ -227,7 +230,7 @@ function getProps(node) {
  */
 function getFunction(node) {
   if (Node.isFunctionLikeDeclaration(node)) return node;
-  /** @type {FunctionLikeDeclaration} */
+  /** @type {import("ts-morph").FunctionLikeDeclaration} */
   return node.getFirstDescendant(Node.isFunctionLikeDeclaration);
 }
 

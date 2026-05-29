@@ -1,6 +1,6 @@
-// @ts-nocheck
 import { As, Role } from "@ariakit/solid";
-import { type JSX, createSignal } from "solid-js";
+import { createSignal } from "solid-js";
+import type { JSX } from "solid-js";
 
 export default function Fixture() {
   const [values2, setValues2] = createSignal<Array<string>>([]);
@@ -87,7 +87,7 @@ export default function Fixture() {
           aria-label="merged2"
           data-outer
           data-both="outer"
-          className="outer"
+          class="outer"
           style={{ "--outer": "value" } as JSX.CSSProperties}
           render={
             dynamic() ? (
@@ -96,7 +96,7 @@ export default function Fixture() {
                 data-p
                 data-inner
                 data-both="inner-p"
-                className="inner-p"
+                class="inner-p"
                 style={{ "--inner-p": "value-p" } as JSX.CSSProperties}
               />
             ) : (
@@ -104,7 +104,7 @@ export default function Fixture() {
                 data-span
                 data-inner
                 data-both="inner-span"
-                className="inner-span"
+                class="inner-span"
                 style={{ "--inner-span": "value-span" } as JSX.CSSProperties}
               />
             )

@@ -1,8 +1,6 @@
-import { getActiveElement } from "@ariakit/core/utils/dom";
-import { isFocusable } from "@ariakit/core/utils/focus";
-import { invariant } from "@ariakit/core/utils/misc";
-import { flushMicrotasks, wrapAsync } from "./__utils.ts";
+import { getActiveElement, isFocusable, invariant } from "@ariakit/utils";
 import type { DirtiableElement } from "./__utils.ts";
+import { flushMicrotasks, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 
 export function focus(element: Element | null) {

@@ -1,6 +1,6 @@
-import { hasOwnProperty, invariant } from "@ariakit/core/utils/misc";
-import _sdk from "@stackblitz/sdk";
+import { hasOwnProperty, invariant } from "@ariakit/utils";
 import type { ProjectFiles } from "@stackblitz/sdk";
+import _sdk from "@stackblitz/sdk";
 import { pick } from "lodash-es";
 
 const sdk = _sdk as unknown as (typeof _sdk)["default"];
@@ -24,7 +24,6 @@ function getPackageName(source: string) {
 
 function normalizeDeps(deps: StackblitzProps["dependencies"] = {}) {
   return Object.entries(deps).reduce(
-    // biome-ignore lint/performance/noAccumulatingSpread: TODO
     (acc, [pkg, version]) => ({ ...acc, [getPackageName(pkg)]: version }),
     {},
   );
@@ -33,7 +32,7 @@ function normalizeDeps(deps: StackblitzProps["dependencies"] = {}) {
 function getExampleName(id: StackblitzProps["id"]) {
   const [_category, ...names] = id.split("-");
   const exampleName = names.join("-");
-  return exampleName.replace(/^.+-previews\-(.+)$/, "$1");
+  return exampleName.replace(/^.+-previews-(.+)$/, "$1");
 }
 
 function getFirstFilename(files: StackblitzProps["files"]) {
@@ -125,7 +124,7 @@ function getIndexCss(
   id: StackblitzProps["id"],
   theme: StackblitzProps["theme"] = "light",
 ) {
-  const isRadix = /\-radix/.test(id);
+  const isRadix = /-radix/.test(id);
   theme = isRadix ? "light" : theme;
   const background = isRadix
     ? "linear-gradient(to bottom right, hsl(204 100% 40%), #9333ea)"

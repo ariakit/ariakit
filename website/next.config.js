@@ -1,6 +1,5 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-// import MonacoWebpackPlugin from "monaco-editor-webpack-plugin";
 import pagesConfig from "./build-pages/config.js";
 import PagesWebpackPlugin from "./build-pages/pages-webpack-plugin.js";
 import { redirects } from "./redirects.js";
@@ -22,7 +21,6 @@ const nextConfig = {
       "shiki",
       "vscode-oniguruma",
       "vscode-textmate",
-      "monaco-vscode-textmate-theme-converter",
     ],
   },
   images: {
@@ -46,20 +44,6 @@ const nextConfig = {
 
     if (!context.isServer) {
       config.plugins.unshift(new PagesWebpackPlugin(pagesConfig));
-      // config.plugins.push(
-      //   new MonacoWebpackPlugin({
-      //     filename: context.dev
-      //       ? "static/monaco/[name].worker.js"
-      //       : "static/monaco/[name].[contenthash].worker.js",
-      //     features: [
-      //       "!hover",
-      //       "!gotoError",
-      //       "!colorPicker",
-      //       "!stickyScroll",
-      //       "!contextmenu",
-      //     ],
-      //   }),
-      // );
     }
     config.module.rules.push({
       test: /\.wasm$/,
@@ -76,6 +60,13 @@ const nextConfig = {
     };
     config.module.unknownContextCritical = false;
     config.module.exprContextCritical = false;
+
+    // Ignore optional dependencies that pnpm doesn't hoist
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      sugarss: false,
+      babylon: false,
+    };
 
     // Solid support
     const solidRule = {
@@ -107,11 +98,11 @@ const nextConfig = {
     });
     const __dirname = path.dirname(fileURLToPath(import.meta.url));
     config.module.rules.push({
-      // .tsx files in the @ariakit/solid and @ariakit/solid-core packages
+      // .tsx files in the @ariakit/solid and @ariakit/solid-components packages
       test: /\.tsx?$/,
       include: [
         path.resolve(__dirname, "../packages/ariakit-solid"),
-        path.resolve(__dirname, "../packages/ariakit-solid-core"),
+        path.resolve(__dirname, "../packages/ariakit-solid-components"),
       ],
       ...solidRule,
     });

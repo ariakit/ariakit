@@ -1,5 +1,6 @@
 import { Role } from "@ariakit/react";
-import { type CSSProperties, useState } from "react";
+import { useState } from "react";
+import type { CSSProperties } from "react";
 
 export default function Fixture() {
   const [values2, setValues2] = useState<Array<string>>([]);

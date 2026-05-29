@@ -55,7 +55,7 @@ export default function Example() {
                 id={getTabId(category, prefix)}
                 disabled={!currentPages?.length}
               >
-                {category}
+                {category}{" "}
                 <span className="count">{currentPages?.length || 0}</span>
               </ComboboxTab>
             );

@@ -1,8 +1,8 @@
-import { getPageTitle } from "@/build-pages/get-page-title.js";
-import { NewWindow } from "@/icons/new-window.tsx";
 import Link from "next/link.js";
 import { useId } from "react";
 import { twJoin } from "tailwind-merge";
+import { getPageTitle } from "@/build-pages/get-page-title.js";
+import { NewWindow } from "@/icons/new-window.tsx";
 import { Logo } from "./logo.tsx";
 
 const year = new Date().getFullYear();
@@ -23,13 +23,14 @@ const links = [
       // { title: "Blog", href: "/blog" },
       { title: "All updates", href: "/updates" },
       { title: "Changelog", href: "/changelog" },
-      { title: "Newsletter", href: "https://newsletter.ariakit.org" },
+      { title: "Newsletter", href: "https://newsletter.ariakit.com" },
     ],
   },
   {
     title: "Community",
     links: [
-      { title: "Bluesky", href: "https://bsky.app/profile/ariakit.org" },
+      { title: "Bluesky", href: "https://bsky.app/profile/ariakit.com" },
+      { title: "Discord", href: "https://discord.gg/WyHvnXsvMs" },
       { title: "GitHub", href: "https://github.com/ariakit/ariakit" },
       {
         title: "Discussions",

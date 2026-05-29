@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { As, Command } from "@ariakit/solid";
 import "./style.css";
 

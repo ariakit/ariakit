@@ -1,6 +1,5 @@
-export { Button } from "@ariakit/solid-core/button/button";
-
 export type {
   ButtonOptions,
   ButtonProps,
-} from "@ariakit/solid-core/button/button";
+} from "@ariakit/solid-components/button/button";
+export { Button } from "@ariakit/solid-components/button/button";

@@ -1,9 +1,10 @@
 /**
+ * @license
  * This file is part of Ariakit Plus. For the full license, see
- * https://ariakit.org/plus/license
+ * https://ariakit.com/plus/license
  */
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
 
 const SearchableContext = React.createContext(false);
@@ -134,8 +135,10 @@ export const MenuGroup = React.forwardRef<HTMLDivElement, MenuGroupProps>(
   },
 );
 
-export interface MenuItemProps
-  extends Omit<Ariakit.ComboboxItemProps, "store"> {
+export interface MenuItemProps extends Omit<
+  Ariakit.ComboboxItemProps,
+  "store"
+> {
   name?: string;
 }
 
@@ -178,7 +181,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
             // element to indicate whether the item is checked or not, ensuring
             // cross-browser/AT compatibility.
             <Ariakit.VisuallyHidden>
-              {checked ? "checked" : "not checked"}
+              {checked ? " checked" : " not checked"}
             </Ariakit.VisuallyHidden>
           )}
         </React.Fragment>

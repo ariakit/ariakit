@@ -1,5 +1,5 @@
-import { Role } from "@ariakit/react";
 import type { RoleProps } from "@ariakit/react";
+import { Role } from "@ariakit/react";
 import { forwardRef } from "react";
 import { twMerge } from "tailwind-merge";
 import { Command } from "./command.tsx";

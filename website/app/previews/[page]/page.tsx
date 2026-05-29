@@ -1,4 +1,6 @@
 import { resolve } from "node:path";
+import { notFound } from "next/navigation.js";
+import { twJoin } from "tailwind-merge";
 import pagesConfig from "@/build-pages/config.js";
 import { getCSSFilesFromDeps } from "@/build-pages/get-css-files-from-deps.js";
 import { getExampleDeps } from "@/build-pages/get-example-deps.js";
@@ -10,8 +12,6 @@ import { parseCSSFile } from "@/build-pages/parse-css-file.js";
 import type { Page } from "@/build-pages/types.ts";
 import { Preview, SolidPreview } from "@/components/preview.tsx";
 import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
-import { notFound } from "next/navigation.js";
-import { twJoin } from "tailwind-merge";
 
 interface Props {
   params: ReturnType<typeof generateStaticParams>[number];
@@ -74,7 +74,7 @@ export default async function PreviewPage({ params }: Props) {
       data-preview-render-target
       className={twJoin(
         "flex min-h-[200vh] w-full flex-col items-center pt-[min(30vh,400px)]",
-        /\-radix/.test(page)
+        /-radix/.test(page)
           ? "bg-gradient-to-br from-blue-600 to-purple-600"
           : "bg-gray-150 dark:bg-gray-850",
       )}

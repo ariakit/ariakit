@@ -6,7 +6,7 @@ import "./style.css";
 
 const links = [
   {
-    href: "https://bsky.app/profile/ariakit.org",
+    href: "https://bsky.app/profile/ariakit.com",
     children: "Bluesky",
     target: "_blank",
   },
@@ -20,7 +20,12 @@ const links = [
     children: "Instagram",
     target: "_blank",
   },
-  { href: "https://ariakit.org", children: "Ariakit.org" },
+  {
+    href: "https://discord.gg/WyHvnXsvMs",
+    children: "Discord",
+    target: "_blank",
+  },
+  { href: "https://ariakit.com", children: "Ariakit.com" },
 ];
 
 export default function Example() {
@@ -42,7 +47,7 @@ export default function Example() {
     >
       <Ariakit.ComboboxLabel className="label">Links</Ariakit.ComboboxLabel>
       <Ariakit.Combobox
-        placeholder="e.g., Twitter"
+        placeholder="e.g., Bluesky"
         className="combobox"
         autoSelect
       />

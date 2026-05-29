@@ -1,8 +1,9 @@
 {
   "recommendations": [
-    "biomejs.biome",
+    "oxc.oxc-vscode",
     "editorconfig.editorconfig",
-    "bradlc.vscode-tailwindcss"
+    "bradlc.vscode-tailwindcss",
+    "astro-build.astro-vscode"
   ],
   "unwantedRecommendations": []
 }

@@ -1,6 +1,6 @@
 import { query } from "@ariakit/test/playwright";
-import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
 import { test } from "../../../../../examples/test-utils.ts";
 
 async function getNewTabModifier(page: Page) {
@@ -109,7 +109,7 @@ test("select statuses with a mouse", async ({ page }) => {
   );
   await expect(q.combobox("Status")).toHaveText("3 selected");
 
-  await q.option("published").click();
+  await q.option("Published").click();
   await page.waitForURL(hasSearchParam("status", ["draft", "archived"]));
   await expect(q.combobox("Status")).toHaveText("2 selected");
 });

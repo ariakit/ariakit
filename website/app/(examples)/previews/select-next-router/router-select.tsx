@@ -1,13 +1,14 @@
 /**
+ * @license
  * This file is part of Ariakit Plus. For the full license, see
- * https://ariakit.org/plus/license
+ * https://ariakit.com/plus/license
  */
 "use client";
 
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
-import Link from "next/link.js";
+import { clsx } from "clsx";
 import type { LinkProps } from "next/link.js";
+import Link from "next/link.js";
 import { useRouter, useSearchParams } from "next/navigation.js";
 import type { ElementRef } from "react";
 import * as React from "react";
@@ -76,8 +77,7 @@ export const Select = React.forwardRef<
 });
 
 export interface SelectItemProps
-  extends Omit<LinkProps, "href">,
-    Ariakit.SelectItemProps<"a"> {}
+  extends Omit<LinkProps, "href">, Ariakit.SelectItemProps<"a"> {}
 
 export const SelectItem = React.forwardRef<
   ElementRef<typeof Link>,

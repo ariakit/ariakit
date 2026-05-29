@@ -1,6 +1,6 @@
 import { useAuth } from "@clerk/clerk-react";
-import { useQuery } from "@tanstack/react-query";
 import type { UseQueryResult } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 interface Subscription {
   price: string;

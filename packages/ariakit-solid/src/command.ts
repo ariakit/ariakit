@@ -1,6 +1,5 @@
-export { Command } from "@ariakit/solid-core/command/command";
-
 export type {
   CommandOptions,
   CommandProps,
-} from "@ariakit/solid-core/command/command";
+} from "@ariakit/solid-components/command/command";
+export { Command } from "@ariakit/solid-components/command/command";

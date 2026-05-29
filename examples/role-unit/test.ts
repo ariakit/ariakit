@@ -1,4 +1,5 @@
 import { click, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("render as", async () => {
   expect(q.group("render-as")).toMatchInlineSnapshot(`

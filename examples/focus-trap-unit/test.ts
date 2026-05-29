@@ -1,6 +1,7 @@
 import { click, focus, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
-test("traps focus", async () => {
+test("correctly traps focus", async () => {
   const qq = q.within(q.group("trap"));
 
   await focus(qq.text("Start"));
@@ -12,7 +13,7 @@ test("traps focus", async () => {
   expect(qq.text("After")).toHaveFocus();
 });
 
-test("redirects focus", async () => {
+test("correctly redirects focus", async () => {
   const qq = q.within(q.group("redirect"));
 
   await focus(qq.text("Start"));

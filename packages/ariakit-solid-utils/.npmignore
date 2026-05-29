@@ -1,0 +1,11 @@
+# Automatically generated
+coverage
+benchmark
+port-utils
+src/test.ts
+src/**/*.test.*
+src/**/__tests__/**
+tsconfig*.json
+*.log
+*.config.*
+*.lock

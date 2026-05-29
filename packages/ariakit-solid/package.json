@@ -1,19 +1,17 @@
 {
   "name": "@ariakit/solid",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "Toolkit for building accessible web apps with Solid",
-  "sideEffects": false,
+  "keywords": [
+    "a11y",
+    "ariakit",
+    "components",
+    "solid",
+    "toolkit",
+    "ui"
+  ],
+  "homepage": "https://solid.ariakit.com",
   "license": "MIT",
-  "homepage": "https://solid.ariakit.org",
-  "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ariakit/ariakit.git",
-    "directory": "packages/ariakit-solid"
-  },
   "author": {
     "name": "Dani Guardiola",
     "email": "hi@daniguardio.la",
@@ -26,36 +24,42 @@
       "url": "https://github.com/diegohaz"
     }
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-solid"
+  },
   "funding": {
     "type": "opencollective",
     "url": "https://opencollective.com/ariakit"
   },
+  "type": "module",
+  "sideEffects": false,
   "scripts": {
-    "lint": "biome check .",
-    "build": "node ../../scripts/build/build.js",
-    "clean": "node ../../scripts/build/clean.js"
+    "build": "ariakit build",
+    "clean": "ariakit clean"
   },
-  "keywords": ["ariakit", "solid", "a11y", "ui", "toolkit", "components"],
   "dependencies": {
-    "@ariakit/solid-core": "0.1.0"
+    "@ariakit/solid-components": "workspace:*"
+  },
+  "devDependencies": {
+    "@ariakit/scripts": "workspace:*"
   },
   "peerDependencies": {
     "solid-js": "^1.8"
   },
   "exports": {
     ".": "./src/index.ts",
-    "./visually-hidden": "./src/visually-hidden.ts",
-    "./store": "./src/store.ts",
-    "./separator": "./src/separator.ts",
-    "./role": "./src/role.ts",
-    "./heading": "./src/heading.ts",
-    "./group": "./src/group.ts",
-    "./focusable": "./src/focusable.ts",
-    "./focus-trap": "./src/focus-trap.ts",
-    "./command": "./src/command.ts",
-    "./checkbox": "./src/checkbox.ts",
-    "./button": "./src/button.ts",
     "./as": "./src/as.ts",
+    "./button": "./src/button.ts",
+    "./command": "./src/command.ts",
+    "./focus-trap": "./src/focus-trap.ts",
+    "./focusable": "./src/focusable.ts",
+    "./group": "./src/group.ts",
+    "./heading": "./src/heading.ts",
+    "./role": "./src/role.ts",
+    "./separator": "./src/separator.ts",
+    "./visually-hidden": "./src/visually-hidden.ts",
     "./package.json": "./package.json"
   }
 }
