@@ -57,6 +57,7 @@
     "./focusable": "./src/focusable.ts",
     "./group": "./src/group.ts",
     "./heading": "./src/heading.ts",
+    "./portal": "./src/portal.ts",
     "./role": "./src/role.ts",
     "./separator": "./src/separator.ts",
     "./visually-hidden": "./src/visually-hidden.ts",
