@@ -302,7 +302,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const autoSelectMovedRef = useRef<{
       id: string | null;
       value?: string;
-      search?: string;
     }>(undefined);
     const userScrolledRef = useRef(false);
     const isAutoScrollingRef = useRef(false);
@@ -413,28 +412,24 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         const nextActiveValue = store.item(nextActiveId)?.value;
         const moved = autoSelectMovedRef.current;
         // Move when the auto-select target changes: a different active item, a
-        // different target id, the same id now holding a different value (e.g. a
-        // list keyed by index whose first item's value changes after filtering,
-        // or asynchronously loaded items), or a new input value (the user typed,
-        // so we re-run the auto-select move just like before, which also updates
-        // the keyboard focus-visible state). We only skip re-moving to the exact
-        // same item with the same input value, because store.move() always
+        // different target id, or the same id now holding a different value
+        // (for example, a list keyed by index whose first item's value changes
+        // after filtering, or asynchronously loaded items). We avoid re-moving
+        // to the exact item we already moved to, because store.move() always
         // increments the `moves` counter, which makes the Composite component
         // re-focus the active item. Re-focusing when only the rendered items
-        // changed (e.g. a virtualized list resizing because a mobile keyboard's
-        // autocomplete bar changed the available height) would bounce focus off
-        // the input and back and drop characters as the user types. See
-        // https://github.com/ariakit/ariakit/issues/3837
+        // changed (for example, a virtualized list resizing because a mobile
+        // keyboard's autocomplete bar changed the available height) would bounce
+        // focus off the input and back and drop characters as the user types.
+        // See https://github.com/ariakit/ariakit/issues/3837
         if (
           nextActiveId !== activeId ||
           moved?.id !== nextActiveId ||
-          moved?.value !== nextActiveValue ||
-          moved?.search !== storeValue
+          moved?.value !== nextActiveValue
         ) {
           autoSelectMovedRef.current = {
             id: nextActiveId,
             value: nextActiveValue,
-            search: storeValue,
           };
           store.move(nextActiveId);
         } else {
