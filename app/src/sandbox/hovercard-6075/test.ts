@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { q } from "@ariakit/test";
 import { render } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { userEvent } from "@testing-library/user-event";
 import { createElement } from "react";
 import { afterAll, beforeAll, expect, test } from "vitest";
 
