@@ -41,6 +41,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`extractPropsWithDefaults`](#extractpropswithdefaults)
   - [`RefStore`](#refstore)
   - [`createRef`](#createref)
+  - [`useUpdateEffect`](#useupdateeffect)
   - [`mergeProps`](#mergeprops)
 - [System utilities](#system-utilities)
   - [`createInstance`](#createinstance)
@@ -48,6 +49,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`createHook`](#createhook)
   - [`withOptions`](#withoptions)
   - [`createMetadataProps`](#createmetadataprops)
+  - [`createStoreContext`](#createstorecontext)
 - [Type utilities](#type-utilities)
   - [`RenderValue`](#rendervalue)
   - [`WrapInstanceValue`](#wrapinstancevalue)
@@ -262,6 +264,32 @@ createEffect(() => {
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
+#### `useUpdateEffect`
+
+```ts
+function useUpdateEffect(
+  effect: () => void | (() => void),
+  deps: Accessor<readonly unknown[]>,
+): void;
+```
+
+Runs an effect after the dependencies change, skipping the initial run. Mirrors React's `useUpdateEffect`. The dependencies are passed as a thunk (the idiomatic Solid dependency form), and the effect is deferred so it does not run on mount.
+
+Example:
+
+```ts
+useUpdateEffect(
+  () => {
+    console.log("value changed");
+  },
+  () => [value()],
+);
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `mergeProps`
 
 ```ts
@@ -288,7 +316,7 @@ Helpers for creating and composing Ariakit Solid components.
 function createInstance(
   Component: ValidComponent,
   props: Props<ValidComponent, Options>,
-): import("solid-js").JSX.Element;
+): JSX.Element;
 ```
 
 Creates a Solid component instance that supports the `render` and `wrapInstance` props.
@@ -396,6 +424,42 @@ function useCommand(props) {
   // isDuplicate() is true when a parent already set the symbol.
 }
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `createStoreContext`
+
+```ts
+type StoreProvider<T extends Store> = Component<{
+  value: Accessor<T | undefined>;
+  children?: JSX.Element;
+}>;
+
+function createStoreContext<T extends Store>(
+  providers: StoreProvider<T>[] = [],
+  scopedProviders: StoreProvider<T>[] = [],
+): {
+  context: import("solid-js").Context<Accessor<T | undefined>>;
+  scopedContext: import("solid-js").Context<Accessor<T | undefined>>;
+  useContext: () => Accessor<T | undefined>;
+  useScopedContext: (onlyScoped?: boolean) => Accessor<T | undefined>;
+  useProviderContext: () => () => T | undefined;
+  ContextProvider: (
+    props: ComponentProps<
+      import("solid-js").ContextProviderComponent<Accessor<T | undefined>>
+    >,
+  ) => JSX.Element;
+  ScopedContextProvider: (
+    props: ComponentProps<
+      import("solid-js").ContextProviderComponent<Accessor<T | undefined>>
+    >,
+  ) => JSX.Element;
+};
+```
+
+Creates an Ariakit store context with hooks and provider components. Unlike the React equivalent, the context value is an `Accessor<T>` rather than the store object itself, because Ariakit Solid stores are accessors.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>

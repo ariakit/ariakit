@@ -1,5 +1,6 @@
 export * from "./as.ts";
 export * from "./button.ts";
+export * from "./checkbox.ts";
 export * from "./command.ts";
 export * from "./focus-trap.ts";
 export * from "./focusable.ts";
@@ -8,4 +9,5 @@ export * from "./heading.ts";
 export * from "./portal.ts";
 export * from "./role.ts";
 export * from "./separator.ts";
+export * from "./store.ts";
 export * from "./visually-hidden.ts";
