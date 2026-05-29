@@ -30,6 +30,14 @@ This package is ESM-only and exposes a single public entrypoint.
 
 ## API reference
 
+- [`MaybeAccessor`](#maybeaccessor)
+- [`UseState`](#usestate)
+- [`useStoreState`](#usestorestate)
+- [`useStoreStateObject`](#usestorestateobject)
+- [`useStoreProps`](#usestoreprops)
+- [`useStore`](#usestore)
+- [`useDynamicStoreState`](#usedynamicstorestate)
+- [`Store`](#store)
 - [`createStore`](#createstore)
 - [`setup`](#setup)
 - [`init`](#init)
@@ -44,7 +52,240 @@ This package is ESM-only and exposes a single public entrypoint.
 - [`StoreOptions`](#storeoptions)
 - [`StoreProps`](#storeprops)
 - [`StoreState`](#storestate)
-- [`Store`](#store)
+
+### `MaybeAccessor`
+
+```ts
+type MaybeAccessor<T> = T | Accessor<T>;
+```
+
+A value that may be a plain value or a reactive accessor that returns it. Mirrors `@solid-primitives/utils`'s `MaybeAccessor`, kept local so the store bindings stay self-contained.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `UseState`
+
+```ts
+interface UseState<S> {
+  /**
+   * Re-renders the component when state changes and returns the current state.
+   * @deprecated Use
+   * [`useStoreState`](https://solid.ariakit.com/reference/use-store-state) instead.
+   * @example
+   * const state = store.useState();
+   */
+  (): S;
+  /**
+   * Re-renders the component when the state changes and returns the current
+   * state given the passed key. Changes on other keys will not trigger a
+   * re-render.
+   * @param key The state key.
+   // ... 15 more lines
+   * const foo = store.useState((state) => state.foo);
+   */
+  <V>(selector: (state: S) => V): V;
+}
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `useStoreState`
+
+```ts
+type StateStore<T = CoreStore> = T | null | undefined;
+
+type StateKey<T = CoreStore> = keyof StoreState<T>;
+
+function useStoreState<T extends CoreStore>(
+  store: MaybeAccessor<T>,
+): Accessor<StoreState<T>>;
+function useStoreState<T extends CoreStore>(
+  store: MaybeAccessor<StateStore<T>>,
+): Accessor<StoreState<T> | undefined>;
+function useStoreState<T extends CoreStore, K extends StateKey<T>>(
+  store: MaybeAccessor<T>,
+  key: K,
+): Accessor<StoreState<T>[K]>;
+function useStoreState<T extends CoreStore, K extends StateKey<T>>(
+  store: MaybeAccessor<StateStore<T>>,
+  key: K,
+): Accessor<StoreState<T>[K] | undefined>;
+function useStoreState<T extends CoreStore, V>(
+  store: MaybeAccessor<T>,
+  selector: (state: StoreState<T>) => V,
+): Accessor<V>;
+function useStoreState<T extends CoreStore, V>(
+  store: MaybeAccessor<StateStore<T>>,
+  selector: (state?: StoreState<T>) => V,
+): Accessor<V>;
+```
+
+Receives an Ariakit store object (which can be `null` or `undefined`) and returns an accessor to the current state. If a key is provided as the second argument, the accessor returns the value of that key. If a selector function is provided, the state is passed to it, and its return value is used.
+
+Unlike React, this returns an accessor rather than the value itself, so downstream Solid reactive scopes that read it track the underlying signal.
+
+Example:
+
+Accessing the whole combobox state:
+
+```js
+const combobox = Ariakit.useComboboxStore();
+const state = Ariakit.useStoreState(combobox);
+```
+
+Example:
+
+Accessing a specific value from the combobox state:
+
+```js
+const combobox = Ariakit.useComboboxStore();
+const value = Ariakit.useStoreState(combobox, "value");
+```
+
+Example:
+
+Accessing a value using a selector function:
+
+```js
+const combobox = Ariakit.useComboboxStore();
+const value = Ariakit.useStoreState(combobox, (state) => state.value);
+```
+
+Example:
+
+Accessing the state of a store that may be `null` or `undefined` (for
+example, using a context):
+
+```js
+const combobox = Ariakit.useComboboxContext();
+const value = Ariakit.useStoreState(combobox, "value");
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `useStoreStateObject`
+
+```ts
+type StateStore<T = CoreStore> = T | null | undefined;
+
+type StateKey<T = CoreStore> = keyof StoreState<T>;
+
+type StoreStateObject<
+  T extends StateStore,
+  S extends StoreState<T> | undefined,
+> = Record<string, StateKey<T> | ((state: S) => any)>;
+
+type StoreStateObjectResult<
+  T extends StateStore,
+  S extends StoreState<T> | undefined,
+  O extends StoreStateObject<T, S>,
+> = {
+  [K in keyof O]: O[K] extends keyof StoreState<T>
+    ? O[K] extends keyof S
+      ? S[O[K]]
+      : StoreState<T>[O[K]] | undefined
+    : O[K] extends (state: S) => infer R
+      ? R
+      : never;
+};
+
+function useStoreStateObject<
+  T extends CoreStore,
+  O extends StoreStateObject<T, StoreState<T>>,
+>(
+  store: MaybeAccessor<T>,
+  object: O,
+): Accessor<StoreStateObjectResult<T, StoreState<T>, O>>;
+function useStoreStateObject<
+  T extends StateStore,
+  O extends StoreStateObject<T, StoreState<T> | undefined>,
+>(
+  store: MaybeAccessor<T>,
+  object: O,
+): Accessor<StoreStateObjectResult<T, StoreState<T> | undefined, O>>;
+```
+
+Receives an Ariakit store object (which can be `null` or `undefined`) and returns an accessor to the current state. Unlike `useStoreState`, this hook receives an object with keys that map to store keys or selector functions.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `useStoreProps`
+
+```ts
+function useStoreProps<
+  S extends State,
+  P extends Partial<S>,
+  K extends keyof S,
+  SK extends keyof PickByValue<P, SetState<P[K]>>,
+>(
+  store: MaybeAccessor<CoreStore<S>>,
+  props: P,
+  key: MaybeAccessor<K>,
+  setKey?: SK,
+): void;
+```
+
+Synchronizes the store with the props, including parent store props.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `useStore`
+
+```ts
+function useStore<T extends CoreStore, P>(
+  createStore: (props: P) => T,
+  props: P,
+): readonly [Accessor<T & { useState: UseState<StoreState<T>> }>, () => void];
+```
+
+Creates a Solid store from a core store object and returns a tuple with an accessor to the store and a function to update the store.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `useDynamicStoreState`
+
+```ts
+function useDynamicStoreState<T extends CoreStore, V>(
+  store: Accessor<T | undefined>,
+  selector: (state?: StoreState<T>) => V,
+): Accessor<V>;
+```
+
+Reads derived state from a store whose identity may change, re-subscribing when the store swaps. This is the #4616 helper, generalized: wrapping `useStoreState` in a memo keyed on the store accessor makes the whole derivation re-instantiate its subscription when the store identity changes.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `Store`
+
+```ts
+type Store<T extends CoreStore = CoreStore> = T & {
+  /**
+   * Re-renders the component when the state changes and returns the current
+   * state.
+   * @deprecated Use
+   * [`useStoreState`](https://solid.ariakit.com/reference/use-store-state) instead.
+   */
+  useState: UseState<StoreState<T>>;
+};
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### `createStore`
 
@@ -284,27 +525,6 @@ type StoreState<T> = T extends Store<infer S> ? S : never;
 ```
 
 Extracts the state type from a store type.
-
-<div align="right">
-  <a href="#api-reference">&uarr; back to top</a>
-</div>
-
-### `Store`
-
-```ts
-interface Store<S = State> {
-  /**
-   * Returns the current store state.
-   */
-  getState(): S;
-  /**
-   * Sets a state value.
-   */
-  setState<K extends keyof S>(key: K, value: SetStateAction<S[K]>): void;
-}
-```
-
-Store.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
