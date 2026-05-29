@@ -1,3 +1,8 @@
+/**
+ * Helpers for ids and tag names.
+ * @module General utilities
+ */
+
 import type { MaybeAccessor } from "@solid-primitives/utils";
 import { access } from "@solid-primitives/utils";
 import type { Accessor, ValidComponent } from "solid-js";

@@ -31,13 +31,115 @@ This package is ESM-only and exposes a single public entrypoint.
 ## API reference
 
 - [Array utilities](#array-utilities)
+  - [`toArray`](#toarray)
+  - [`addItemToArray`](#additemtoarray)
+  - [`flatten2DArray`](#flatten2darray)
+  - [`reverseArray`](#reversearray)
 - [DOM utilities](#dom-utilities)
+  - [`canUseDOM`](#canusedom)
+  - [`getDocument`](#getdocument)
+  - [`getWindow`](#getwindow)
+  - [`getActiveElement`](#getactiveelement)
+  - [`contains`](#contains)
+  - [`isFrame`](#isframe)
+  - [`isButton`](#isbutton)
+  - [`isVisible`](#isvisible)
+  - [`isTextField`](#istextfield)
+  - [`isTextbox`](#istextbox)
+  - [`getTextboxValue`](#gettextboxvalue)
+  - [`getTextboxSelection`](#gettextboxselection)
+  - [`getPopupRole`](#getpopuprole)
+  - [`getPopupItemRole`](#getpopupitemrole)
+  - [`scrollIntoViewIfNeeded`](#scrollintoviewifneeded)
+  - [`getScrollingElement`](#getscrollingelement)
+  - [`isPartiallyHidden`](#ispartiallyhidden)
+  - [`setSelectionRange`](#setselectionrange)
+  - [`sortBasedOnDOMPosition`](#sortbasedondomposition)
 - [Event utilities](#event-utilities)
+  - [`isPortalEvent`](#isportalevent)
+  - [`isSelfTarget`](#isselftarget)
+  - [`isOpeningInNewTab`](#isopeninginnewtab)
+  - [`isDownloading`](#isdownloading)
+  - [`fireEvent`](#fireevent)
+  - [`fireBlurEvent`](#fireblurevent)
+  - [`fireFocusEvent`](#firefocusevent)
+  - [`fireKeyboardEvent`](#firekeyboardevent)
+  - [`fireClickEvent`](#fireclickevent)
+  - [`isFocusEventOutside`](#isfocuseventoutside)
+  - [`getInputType`](#getinputtype)
+  - [`queueBeforeEvent`](#queuebeforeevent)
+  - [`addGlobalEventListener`](#addglobaleventlistener)
 - [Focus utilities](#focus-utilities)
+  - [`isFocusable`](#isfocusable)
+  - [`isTabbable`](#istabbable)
+  - [`getAllFocusableIn`](#getallfocusablein)
+  - [`getAllFocusable`](#getallfocusable)
+  - [`getFirstFocusableIn`](#getfirstfocusablein)
+  - [`getFirstFocusable`](#getfirstfocusable)
+  - [`getAllTabbableIn`](#getalltabbablein)
+  - [`getAllTabbable`](#getalltabbable)
+  - [`getFirstTabbableIn`](#getfirsttabbablein)
+  - [`getFirstTabbable`](#getfirsttabbable)
+  - [`getLastTabbableIn`](#getlasttabbablein)
+  - [`getLastTabbable`](#getlasttabbable)
+  - [`getNextTabbableIn`](#getnexttabbablein)
+  - [`getNextTabbable`](#getnexttabbable)
+  - [`getPreviousTabbableIn`](#getprevioustabbablein)
+  - [`getPreviousTabbable`](#getprevioustabbable)
+  - [`getClosestFocusable`](#getclosestfocusable)
+  - [`hasFocus`](#hasfocus)
+  - [`hasFocusWithin`](#hasfocuswithin)
+  - [`focusIfNeeded`](#focusifneeded)
+  - [`disableFocus`](#disablefocus)
+  - [`disableFocusIn`](#disablefocusin)
+  - [`restoreFocusIn`](#restorefocusin)
+  - [`focusIntoView`](#focusintoview)
 - [General utilities](#general-utilities)
+  - [`noop`](#noop)
+  - [`shallowEqual`](#shallowequal)
+  - [`applyState`](#applystate)
+  - [`isObject`](#isobject)
+  - [`isEmpty`](#isempty)
+  - [`isInteger`](#isinteger)
+  - [`hasOwnProperty`](#hasownproperty)
+  - [`chain`](#chain)
+  - [`cx`](#cx)
+  - [`normalizeString`](#normalizestring)
+  - [`omit`](#omit)
+  - [`pick`](#pick)
+  - [`identity`](#identity)
+  - [`beforePaint`](#beforepaint)
+  - [`afterPaint`](#afterpaint)
+  - [`invariant`](#invariant)
+  - [`getKeys`](#getkeys)
+  - [`isFalsyBooleanCallback`](#isfalsybooleancallback)
+  - [`disabledFromProps`](#disabledfromprops)
+  - [`disabledFromElement`](#disabledfromelement)
+  - [`removeUndefinedValues`](#removeundefinedvalues)
+  - [`defaultValue`](#defaultvalue)
 - [Platform utilities](#platform-utilities)
+  - [`isTouchDevice`](#istouchdevice)
+  - [`isApple`](#isapple)
+  - [`isSafari`](#issafari)
+  - [`isFirefox`](#isfirefox)
+  - [`isMac`](#ismac)
 - [Type utilities](#type-utilities)
+  - [`AnyObject`](#anyobject)
+  - [`EmptyObject`](#emptyobject)
+  - [`AnyFunction`](#anyfunction)
+  - [`BivariantCallback`](#bivariantcallback)
+  - [`SetStateAction`](#setstateaction)
+  - [`SetState`](#setstate)
+  - [`BooleanOrCallback`](#booleanorcallback)
+  - [`StringWithValue`](#stringwithvalue)
+  - [`ToPrimitive`](#toprimitive)
+  - [`PickByValue`](#pickbyvalue)
+  - [`PickRequired`](#pickrequired)
+  - [`AriaHasPopup`](#ariahaspopup)
+  - [`AriaRole`](#ariarole)
 - [Undo utilities](#undo-utilities)
+  - [`UndoManager`](#undomanager)
+  - [`createUndoManager`](#createundomanager)
 
 ### Array utilities
 
@@ -57,6 +159,10 @@ Example:
 toArray("a"); // ["a"]
 toArray(["a"]); // ["a"]
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `addItemToArray`
 
@@ -78,6 +184,10 @@ Example:
 addItemToArray(["a", "b", "d"], "c", 2); // ["a", "b", "c", "d"]
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `flatten2DArray`
 
 ```ts
@@ -94,6 +204,10 @@ Example:
 flatten2DArray([["a"], ["b"], ["c"]]); // ["a", "b", "c"]
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `reverseArray`
 
 ```ts
@@ -109,6 +223,10 @@ Example:
 ```ts
 reverseArray(["a", "b", "c"]); // ["c", "b", "a"]
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### DOM utilities
 
@@ -128,6 +246,10 @@ Example:
 const title = canUseDOM ? document.title : "";
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getDocument`
 
 ```ts
@@ -136,6 +258,10 @@ function getDocument(node?: Window | Document | Node | null): Document;
 
 Returns `element.ownerDocument || document`.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getWindow`
 
 ```ts
@@ -143,6 +269,10 @@ function getWindow(node?: Window | Document | Node | null): Window;
 ```
 
 Returns `element.ownerDocument.defaultView || window`.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `getActiveElement`
 
@@ -154,6 +284,10 @@ function getActiveElement(
 ```
 
 Returns `element.ownerDocument.activeElement`.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `contains`
 
@@ -169,6 +303,10 @@ Example:
 contains(document.getElementById("parent"), document.getElementById("child"));
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isFrame`
 
 ```ts
@@ -176,6 +314,10 @@ function isFrame(element: Element): element is HTMLIFrameElement;
 ```
 
 Checks whether `element` is a frame element.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `isButton`
 
@@ -195,6 +337,10 @@ isButton(document.querySelector("input[type='text']")); // false
 isButton(document.querySelector("div[role='button']")); // false
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isVisible`
 
 ```ts
@@ -202,6 +348,10 @@ function isVisible(element: Element): boolean;
 ```
 
 Checks if the element is visible or not.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `isTextField`
 
@@ -222,6 +372,10 @@ isTextField(document.querySelector("input[type='button']")); // false
 isTextField(document.querySelector("textarea")); // true
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isTextbox`
 
 ```ts
@@ -230,6 +384,10 @@ function isTextbox(element: HTMLElement): boolean;
 
 Check whether the given element is a text field or a content editable element.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getTextboxValue`
 
 ```ts
@@ -237,6 +395,10 @@ function getTextboxValue(element: HTMLElement): string;
 ```
 
 Returns the value of the text field or content editable element as a string.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `getTextboxSelection`
 
@@ -249,6 +411,10 @@ function getTextboxSelection(element: HTMLElement): {
 
 Returns the start and end offsets of the selection in the element.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getPopupRole`
 
 ```ts
@@ -259,6 +425,10 @@ function getPopupRole(
 ```
 
 Returns the popup role from the element's role attribute, if it has one.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `getPopupItemRole`
 
@@ -271,6 +441,10 @@ function getPopupItemRole(
 
 Returns the item role attribute based on the popup's role.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `scrollIntoViewIfNeeded`
 
 ```ts
@@ -282,6 +456,10 @@ function scrollIntoViewIfNeeded(
 
 Calls `element.scrollIntoView()` if the element is hidden or partly hidden in the viewport.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getScrollingElement`
 
 ```ts
@@ -292,6 +470,10 @@ function getScrollingElement(
 
 Returns the scrolling container element of a given element.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isPartiallyHidden`
 
 ```ts
@@ -299,6 +481,10 @@ function isPartiallyHidden(element: Element): boolean;
 ```
 
 Determines whether an element is hidden or partially hidden in the viewport.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `setSelectionRange`
 
@@ -313,6 +499,10 @@ SelectionRange only works on a few types of input. Calling `setSelectionRange` o
 
 See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `sortBasedOnDOMPosition`
 
 ```ts
@@ -323,6 +513,10 @@ function sortBasedOnDOMPosition<T>(
 ```
 
 Sort the items based on their DOM position.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### Event utilities
 
@@ -336,6 +530,10 @@ function isPortalEvent(event: Pick<Event, "currentTarget" | "target">): boolean;
 
 Returns `true` if `event` has been fired within a React Portal element.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isSelfTarget`
 
 ```ts
@@ -343,6 +541,10 @@ function isSelfTarget(event: Pick<Event, "target" | "currentTarget">): boolean;
 ```
 
 Returns `true` if `event.target` and `event.currentTarget` are the same.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `isOpeningInNewTab`
 
@@ -354,6 +556,10 @@ function isOpeningInNewTab(
 
 Checks whether the user event is triggering a page navigation in a new tab.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isDownloading`
 
 ```ts
@@ -363,6 +569,10 @@ function isDownloading(
 ```
 
 Checks whether the user event is triggering a download.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `fireEvent`
 
@@ -385,6 +595,10 @@ fireEvent(document.getElementById("id"), "blur", {
 });
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `fireBlurEvent`
 
 ```ts
@@ -399,6 +613,10 @@ Example:
 fireBlurEvent(document.getElementById("id"));
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `fireFocusEvent`
 
 ```ts
@@ -412,6 +630,10 @@ Example:
 ```ts
 fireFocusEvent(document.getElementById("id"));
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `fireKeyboardEvent`
 
@@ -434,6 +656,10 @@ fireKeyboardEvent(document.getElementById("id"), "keydown", {
 });
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `fireClickEvent`
 
 ```ts
@@ -450,6 +676,10 @@ Example:
 ```ts
 fireClickEvent(document.getElementById("id"));
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `isFocusEventOutside`
 
@@ -473,6 +703,10 @@ element.addEventListener("blur", (event) => {
 });
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getInputType`
 
 ```ts
@@ -482,6 +716,10 @@ function getInputType(
 ```
 
 Returns the `inputType` property of the event, if available.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `queueBeforeEvent`
 
@@ -495,6 +733,10 @@ function queueBeforeEvent(
 ```
 
 Runs a callback on the next animation frame, but before a certain event.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `addGlobalEventListener`
 
@@ -514,6 +756,10 @@ function addGlobalEventListener(
 ```
 
 Adds a global event listener, including on child frames.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### Focus utilities
 
@@ -536,6 +782,10 @@ isFocusable(document.querySelector("input[hidden]")); // false
 isFocusable(document.querySelector("input:disabled")); // false
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isTabbable`
 
 ```ts
@@ -555,6 +805,10 @@ isTabbable(document.querySelector("input[hidden]")); // false
 isTabbable(document.querySelector("input:disabled")); // false
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getAllFocusableIn`
 
 ```ts
@@ -566,6 +820,10 @@ function getAllFocusableIn(
 
 Returns all the focusable elements in `container`.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getAllFocusable`
 
 ```ts
@@ -573,6 +831,10 @@ function getAllFocusable(includeBody?: boolean): HTMLElement[];
 ```
 
 Returns all the focusable elements in the document.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `getFirstFocusableIn`
 
@@ -585,6 +847,10 @@ function getFirstFocusableIn(
 
 Returns the first focusable element in `container`.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getFirstFocusable`
 
 ```ts
@@ -592,6 +858,10 @@ function getFirstFocusable(includeBody?: boolean): HTMLElement | null;
 ```
 
 Returns the first focusable element in the document.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `getAllTabbableIn`
 
@@ -605,6 +875,10 @@ function getAllTabbableIn(
 
 Returns all the tabbable elements in `container`, including the container itself.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getAllTabbable`
 
 ```ts
@@ -612,6 +886,10 @@ function getAllTabbable(fallbackToFocusable?: boolean): HTMLElement[];
 ```
 
 Returns all the tabbable elements in the document.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `getFirstTabbableIn`
 
@@ -625,6 +903,10 @@ function getFirstTabbableIn(
 
 Returns the first tabbable element in `container`, including the container itself if it's tabbable.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getFirstTabbable`
 
 ```ts
@@ -632,6 +914,10 @@ function getFirstTabbable(fallbackToFocusable?: boolean): HTMLElement | null;
 ```
 
 Returns the first tabbable element in the document.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `getLastTabbableIn`
 
@@ -645,6 +931,10 @@ function getLastTabbableIn(
 
 Returns the last tabbable element in `container`, including the container itself if it's tabbable.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getLastTabbable`
 
 ```ts
@@ -652,6 +942,10 @@ function getLastTabbable(fallbackToFocusable?: boolean): HTMLElement | null;
 ```
 
 Returns the last tabbable element in the document.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `getNextTabbableIn`
 
@@ -666,6 +960,10 @@ function getNextTabbableIn(
 
 Returns the next tabbable element in `container`.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getNextTabbable`
 
 ```ts
@@ -676,6 +974,10 @@ function getNextTabbable(
 ```
 
 Returns the next tabbable element in the document.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `getPreviousTabbableIn`
 
@@ -690,6 +992,10 @@ function getPreviousTabbableIn(
 
 Returns the previous tabbable element in `container`.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getPreviousTabbable`
 
 ```ts
@@ -701,6 +1007,10 @@ function getPreviousTabbable(
 
 Returns the previous tabbable element in the document.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getClosestFocusable`
 
 ```ts
@@ -708,6 +1018,10 @@ function getClosestFocusable(element?: HTMLElement | null): HTMLElement | null;
 ```
 
 Returns the closest focusable element.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `hasFocus`
 
@@ -723,6 +1037,10 @@ Example:
 hasFocus(document.getElementById("id"));
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `hasFocusWithin`
 
 ```ts
@@ -737,6 +1055,10 @@ Example:
 hasFocusWithin(document.getElementById("id"));
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `focusIfNeeded`
 
 ```ts
@@ -745,6 +1067,10 @@ function focusIfNeeded(element: HTMLElement): void;
 
 Focus on an element only if it's not already focused.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `disableFocus`
 
 ```ts
@@ -752,6 +1078,10 @@ function disableFocus(element: HTMLElement): void;
 ```
 
 Disable focus on `element`.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `disableFocusIn`
 
@@ -764,6 +1094,10 @@ function disableFocusIn(
 
 Makes elements inside container not tabbable.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `restoreFocusIn`
 
 ```ts
@@ -771,6 +1105,10 @@ function restoreFocusIn(container: HTMLElement): void;
 ```
 
 Restores tabbable elements inside container that were affected by disableFocusIn.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `focusIntoView`
 
@@ -783,6 +1121,10 @@ function focusIntoView(
 
 Focus on element and scroll into view.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### General utilities
 
 General-purpose helpers for state, objects, strings, scheduling, and assertions.
@@ -794,6 +1136,10 @@ function noop(..._: any[]): any;
 ```
 
 Empty function.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `shallowEqual`
 
@@ -811,6 +1157,10 @@ shallowEqual({ a: "a" }, { b: "b" }); // false
 shallowEqual({ a: "a" }, { a: "a" }); // true
 shallowEqual({ a: "a" }, { a: "a", b: "b" }); // false
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `applyState`
 
@@ -830,6 +1180,10 @@ applyState((value) => value + 1, 1); // 2
 applyState(2, 1); // 2
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isObject`
 
 ```ts
@@ -837,6 +1191,10 @@ function isObject(arg: any): arg is Record<any, unknown>;
 ```
 
 Checks whether `arg` is an object or not.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `isEmpty`
 
@@ -859,6 +1217,10 @@ isEmpty(undefined); // true
 isEmpty(""); // true
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isInteger`
 
 ```ts
@@ -876,6 +1238,10 @@ isInteger("1"); // true
 isInteger("1.5"); // false
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `hasOwnProperty`
 
 ```ts
@@ -887,6 +1253,10 @@ function hasOwnProperty<T extends AnyObject>(
 
 Checks whether `prop` is an own property of `obj` or not.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `chain`
 
 ```ts
@@ -896,6 +1266,10 @@ function chain<T>(
 ```
 
 Receives functions as arguments and returns a new function that calls all.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `cx`
 
@@ -907,6 +1281,10 @@ function cx(
 
 Returns a string with the truthy values of `args` separated by space.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `normalizeString`
 
 ```ts
@@ -914,6 +1292,10 @@ function normalizeString(str: string): string;
 ```
 
 Removes diacritics from a string.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `omit`
 
@@ -932,6 +1314,10 @@ Example:
 omit({ a: "a", b: "b" }, ["a"]); // { b: "b" }
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `pick`
 
 ```ts
@@ -949,6 +1335,10 @@ Example:
 pick({ a: "a", b: "b" }, ["a"]); // { a: "a" }
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `identity`
 
 ```ts
@@ -956,6 +1346,10 @@ function identity<T>(value: T): T;
 ```
 
 Returns the same argument.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `beforePaint`
 
@@ -965,6 +1359,10 @@ function beforePaint(cb: () => void = noop): () => void;
 
 Runs right before the next paint.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `afterPaint`
 
 ```ts
@@ -972,6 +1370,10 @@ function afterPaint(cb: () => void = noop): () => void;
 ```
 
 Runs after the next paint.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `invariant`
 
@@ -993,6 +1395,10 @@ invariant(
 );
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getKeys`
 
 ```ts
@@ -1000,6 +1406,10 @@ function getKeys<T extends object>(obj: T): (keyof T)[];
 ```
 
 Similar to `Object.keys` but returns a type-safe array of keys.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `isFalsyBooleanCallback`
 
@@ -1012,6 +1422,10 @@ function isFalsyBooleanCallback<T extends unknown[]>(
 
 Checks whether a boolean event prop (e.g., hideOnInteractOutside) was intentionally set to false, either with a boolean value or a callback that returns false.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `disabledFromProps`
 
 ```ts
@@ -1023,6 +1437,10 @@ function disabledFromProps(props: {
 
 Checks whether something is disabled or not based on its props.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `disabledFromElement`
 
 ```ts
@@ -1031,6 +1449,10 @@ function disabledFromElement(element: Element): boolean;
 
 Checks whether something is disabled or not based on its DOM attributes.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `removeUndefinedValues`
 
 ```ts
@@ -1038,6 +1460,10 @@ function removeUndefinedValues<T extends AnyObject>(obj: T): T;
 ```
 
 Removes undefined values from an object.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `defaultValue`
 
@@ -1058,6 +1484,10 @@ function defaultValue<T extends readonly any[]>(...values: T): DefaultValue<T>;
 
 Returns the first value that is not `undefined`.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### Platform utilities
 
 Browser and platform detection helpers.
@@ -1070,6 +1500,10 @@ function isTouchDevice(): boolean;
 
 Detects if the device has touch capabilities.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isApple`
 
 ```ts
@@ -1077,6 +1511,10 @@ function isApple(): boolean;
 ```
 
 Detects Apple device.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `isSafari`
 
@@ -1086,6 +1524,10 @@ function isSafari(): boolean;
 
 Detects Safari browser.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isFirefox`
 
 ```ts
@@ -1094,6 +1536,10 @@ function isFirefox(): boolean;
 
 Detects Firefox browser.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isMac`
 
 ```ts
@@ -1101,6 +1547,10 @@ function isMac(): boolean;
 ```
 
 Detects Mac computer.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 ### Type utilities
 
@@ -1114,6 +1564,10 @@ type AnyObject = Record<string, any>;
 
 Any object.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `EmptyObject`
 
 ```ts
@@ -1122,6 +1576,10 @@ type EmptyObject = Record<keyof any, never>;
 
 Empty object.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `AnyFunction`
 
 ```ts
@@ -1129,6 +1587,10 @@ type AnyFunction = (...args: any) => any;
 ```
 
 Any function.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `BivariantCallback`
 
@@ -1140,11 +1602,19 @@ type BivariantCallback<T extends AnyFunction> = {
 
 Workaround for variance issues.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `SetStateAction`
 
 ```ts
 type SetStateAction<T> = T | BivariantCallback<(prevState: T) => T>;
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `SetState`
 
@@ -1154,6 +1624,10 @@ type SetState<T> = BivariantCallback<(value: SetStateAction<T>) => void>;
 
 The type of the `setState` function in `[state, setState] = useState()`.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `BooleanOrCallback`
 
 ```ts
@@ -1162,6 +1636,10 @@ type BooleanOrCallback<T> = boolean | BivariantCallback<(arg: T) => boolean>;
 
 A boolean value or a callback that returns a boolean value.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `StringWithValue`
 
 ```ts
@@ -1169,6 +1647,10 @@ type StringWithValue<T extends string> = T | (string & Record<never, never>);
 ```
 
 A string that will provide autocomplete for specific strings.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `ToPrimitive`
 
@@ -1195,6 +1677,10 @@ ToPrimitive<"a">;
 ToPrimitive<1>;
 ```
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `PickByValue`
 
 ```ts
@@ -1209,6 +1695,10 @@ type PickByValue<T, Value> = {
 
 Picks only the properties from a type that have a specific value.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `PickRequired`
 
 ```ts
@@ -1219,6 +1709,10 @@ type PickRequired<T, P extends keyof T> = T &
 ```
 
 Picks only the required properties from a type.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `AriaHasPopup`
 
@@ -1236,6 +1730,10 @@ type AriaHasPopup =
 ```
 
 Indicates the availability and type of interactive popup element, such as menu or dialog, that can be triggered by an element.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 #### `AriaRole`
 
@@ -1263,6 +1761,10 @@ type AriaRole =
 
 All the WAI-ARIA 1.1 role attribute values from https://www.w3.org/TR/wai-aria-1.1/#role_definitions
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 ### Undo utilities
 
 Undo and redo manager utilities.
@@ -1283,6 +1785,10 @@ const UndoManager: {
 
 Shared undo manager instance.
 
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `createUndoManager`
 
 ```ts
@@ -1302,5 +1808,9 @@ function createUndoManager({ limit = 100 }: CreateUndoManagerOptions = {}): {
 ```
 
 Creates an undo manager with undo and redo stacks.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
 
 <!-- ariakit-docs:end -->

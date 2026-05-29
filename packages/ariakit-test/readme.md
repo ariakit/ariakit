@@ -2,11 +2,342 @@
 
 **Important:** This package is experimental and does not follow semantic versioning, meaning breaking changes may occur in patch and minor versions.
 
+Utilities for simulating user interactions in Ariakit's unit and end-to-end tests.
+
+## Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [API reference](#api-reference)
+- [React API reference](#react-api-reference)
+- [Playwright API reference](#playwright-api-reference)
+- [Core Team](#core-team)
+- [Contributing](#contributing)
+
 ## Installation
 
-```
+```sh
 npm i @ariakit/test
 ```
+
+## Usage
+
+Import helpers from the package root to simulate user interactions:
+
+```ts
+import { click, press, type } from "@ariakit/test";
+```
+
+The `@ariakit/test/react` entry point renders React components for testing, and the `@ariakit/test/playwright` entry point provides query helpers for Playwright tests.
+
+<!-- ariakit-docs:start -->
+
+## API reference
+
+- [`blur`](#blur)
+- [`click`](#click)
+- [`dispatch`](#dispatch)
+- [`focus`](#focus)
+- [`hover`](#hover)
+- [`mouseDown`](#mousedown)
+- [`mouseUp`](#mouseup)
+- [`press`](#press)
+- [`query`](#query)
+- [`q`](#q)
+- [`select`](#select)
+- [`sleep`](#sleep)
+- [`tap`](#tap)
+- [`type`](#type)
+- [`waitFor`](#waitfor)
+
+### `blur`
+
+```ts
+function blur(element?: DirtiableElement | null): Promise<void>;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `click`
+
+```ts
+function click(
+  element: Element | null,
+  options?: PointerEventInit,
+  tap = false,
+): Promise<void>;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `dispatch`
+
+```ts
+type Target = Document | Window | Node | Element | null;
+
+type EventFunction = (element: Target, options?: object) => Promise<boolean>;
+
+type EventsObject = {
+  [K in EventType]: EventFunction;
+};
+
+const dispatch: typeof baseDispatch & EventsObject;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `focus`
+
+```ts
+function focus(element: Element | null): Promise<void>;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `hover`
+
+```ts
+function hover(
+  element: Element | null,
+  options?: PointerEventInit,
+): Promise<void>;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `mouseDown`
+
+```ts
+function mouseDown(
+  element: Element | null,
+  options?: PointerEventInit,
+): Promise<void>;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `mouseUp`
+
+```ts
+function mouseUp(
+  element: Element | null,
+  options?: PointerEventInit,
+): Promise<void>;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `press`
+
+```ts
+function press(
+  key: string,
+  element?: Element | null,
+  options: KeyboardEventInit = {},
+): Promise<void>;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `query`
+
+```ts
+type Query = ReturnType<typeof createRoleQuery>;
+
+type TextQuery = ReturnType<typeof createTextQuery>;
+
+type LabeledQuery = ReturnType<typeof createLabeledQuery>;
+
+type RoleQueries = Record<AriaRole, Query>;
+
+interface QueryObject extends RoleQueries {
+  text: TextQuery;
+  labeled: LabeledQuery;
+  within: (element?: HTMLElement | null) => QueryObject;
+}
+
+const query: QueryObject;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `q`
+
+```ts
+type Query = ReturnType<typeof createRoleQuery>;
+
+type TextQuery = ReturnType<typeof createTextQuery>;
+
+type LabeledQuery = ReturnType<typeof createLabeledQuery>;
+
+type RoleQueries = Record<AriaRole, Query>;
+
+interface QueryObject extends RoleQueries {
+  text: TextQuery;
+  labeled: LabeledQuery;
+  within: (element?: HTMLElement | null) => QueryObject;
+}
+
+const q: QueryObject;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `select`
+
+```ts
+function select(
+  text: string,
+  element: Element | null = document.body,
+  options?: PointerEventInit,
+): Promise<void>;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `sleep`
+
+```ts
+function sleep(ms = defaultMs): Promise<void>;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `tap`
+
+```ts
+function tap(
+  element: Element | null,
+  options?: PointerEventInit,
+): Promise<void>;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `type`
+
+```ts
+function type(
+  text: string,
+  element?: (DirtiableElement & HTMLElement) | null,
+  options: InputEventInit | KeyboardEventInit = {},
+): Promise<void>;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `waitFor`
+
+```ts
+function waitFor<T>(
+  callback: () => T,
+  options?: DOMTestingLibrary.waitForOptions,
+): Promise<T>;
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+<!-- ariakit-docs:end -->
+
+<!-- ariakit-docs:start react -->
+
+## React API reference
+
+- [`RenderOptions`](#renderoptions)
+- [`render`](#render)
+
+### `RenderOptions`
+
+```ts
+interface RenderOptions extends Omit<
+  ReactTestingLibrary.RenderOptions,
+  "queries"
+> {
+  strictMode?: boolean;
+}
+```
+
+<div align="right">
+  <a href="#react-api-reference">&uarr; back to top</a>
+</div>
+
+### `render`
+
+```ts
+function render(
+  ui: ReactNode,
+  options?: RenderOptions,
+): Promise<{
+  unmount: () => void;
+  rerender: (newUi: ReactNode) => Promise<void>;
+}>;
+```
+
+<div align="right">
+  <a href="#react-api-reference">&uarr; back to top</a>
+</div>
+
+<!-- ariakit-docs:end react -->
+
+<!-- ariakit-docs:start playwright -->
+
+## Playwright API reference
+
+### `query`
+
+```ts
+type RoleQuery = (
+  name?: string | RegExp,
+  options?: Parameters<Page["getByRole"]>[1],
+) => Locator;
+
+type TextQuery = (
+  name: Parameters<Page["getByText"]>[0],
+  options?: Parameters<Page["getByText"]>[1],
+) => Locator;
+
+type RoleQueries = Record<AriaRole, RoleQuery>;
+
+type Queries = RoleQueries & { text: TextQuery };
+
+function query(locator: Page | Locator | FrameLocator): Queries;
+```
+
+<div align="right">
+  <a href="#playwright-api-reference">&uarr; back to top</a>
+</div>
+
+<!-- ariakit-docs:end playwright -->
 
 ## Core Team
 

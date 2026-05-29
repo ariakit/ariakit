@@ -7,9 +7,16 @@ type RoleQuery = (
   options?: Parameters<Page["getByRole"]>[1],
 ) => Locator;
 
+type TextQuery = (
+  name: Parameters<Page["getByText"]>[0],
+  options?: Parameters<Page["getByText"]>[1],
+) => Locator;
+
 type RoleQueries = Record<AriaRole, RoleQuery>;
 
-export function query(locator: Page | Locator | FrameLocator) {
+type Queries = RoleQueries & { text: TextQuery };
+
+export function query(locator: Page | Locator | FrameLocator): Queries {
   const roleQueries = roles.reduce((acc, role) => {
     acc[role] = (name, options) =>
       locator.getByRole(role, { name, exact: true, ...options });

@@ -1,3 +1,8 @@
+/**
+ * Reactivity helpers for accessors, signals, props, and refs.
+ * @module Reactivity utilities
+ */
+
 import type { AnyObject } from "@ariakit/utils";
 import { combineProps } from "@solid-primitives/props";
 import type { Accessor, JSX, Setter } from "solid-js";

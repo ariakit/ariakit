@@ -34,6 +34,12 @@ program
   .option("--entry <path>", "Entry file path", "src/index.ts")
   .option("--tsconfig <path>", "TypeScript config path")
   .option("--readme <path>", "Readme path used with --write", "readme.md")
+  .option("--marker <name>", "Marker block name used with --write")
+  .option("--heading <text>", "API reference heading")
+  .option(
+    "--exclude <path...>",
+    "Omit exports re-exported from these files or packages",
+  )
   .option("--write", "Inject generated markdown into the readme")
   .action(async (options) => {
     const { docs } = await import("./docs.ts");
