@@ -1,0 +1,60 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid hsl(204 10% 80%);
+  border-radius: 0.5rem;
+  background: white;
+  padding: 0.5rem 1rem;
+  font: inherit;
+}
+
+.backdrop {
+  background: hsl(204 10% 10% / 0.1);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.backdrop[data-enter] {
+  opacity: 1;
+}
+
+.dialog {
+  position: fixed;
+  inset: 0.75rem;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 24rem;
+  height: fit-content;
+  max-width: calc(100vw - 1.5rem);
+  margin: auto;
+  border-radius: 1rem;
+  background: white;
+  padding: 1.5rem;
+  color: hsl(204 10% 10%);
+  opacity: 0;
+  transform: scale(0.95);
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+}
+
+.dialog[data-enter] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.heading {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}

@@ -1,17 +1,40 @@
-import { basename, dirname } from "node:path";
+import fs from "node:fs";
+import { basename, dirname, resolve } from "node:path";
 import {
   getTextboxSelection,
   getTextboxValue,
   isTextbox,
-} from "@ariakit/core/utils/dom";
-import { test as base } from "@playwright/test";
+} from "@ariakit/utils";
 import type { Locator, Page, PageScreenshotOptions } from "@playwright/test";
+import { test as base } from "@playwright/test";
+import type { AllowedTestLoader } from "../vitest.config.ts";
+
+const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
+  "react") as AllowedTestLoader;
+
+export function preview(name: string) {
+  switch (LOADER) {
+    case "react":
+      return `/previews/${name}`;
+    case "solid":
+      return `/previews/${name}__solid`;
+    default:
+      throw new Error(`Unknown test loader: ${String(LOADER)}`);
+  }
+}
 
 export const test = base.extend<{ forEachTest: void }>({
   forEachTest: [
     async ({ page }, use, testInfo) => {
-      const name = basename(dirname(testInfo.file));
-      await page.goto(`/previews/${name}`, { waitUntil: "networkidle" });
+      const examplePath = dirname(testInfo.file);
+      const isWebsitePath = examplePath.includes("website/app");
+      const name = basename(examplePath);
+      const exampleExists = isWebsitePath
+        ? LOADER === "react" // for now, assume all website examples are React
+        : fs.existsSync(resolve(examplePath, `index.${LOADER}.tsx`));
+      if (!exampleExists) return testInfo.skip();
+
+      await page.goto(preview(name), { waitUntil: "networkidle" });
       await use();
     },
     { auto: true },
@@ -73,8 +96,10 @@ export async function screenshot({
     Promise.all(
       document.body
         .getAnimations({ subtree: true })
-        .map(
-          (animation) => animation.playState === "paused" || animation.finished,
+        .map((animation) =>
+          animation.playState === "paused"
+            ? Promise.resolve()
+            : animation.finished,
         ),
     ),
   );
@@ -122,7 +147,7 @@ export async function screenshot({
   }
 
   for (const colorScheme of colorSchemes) {
-    page.emulateMedia({ colorScheme });
+    await page.emulateMedia({ colorScheme });
 
     const folder = `${dirname(test.info().file)}/images`;
     const path = `${folder}/${name}-${colorScheme}.png`;

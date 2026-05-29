@@ -15,7 +15,7 @@ Fill in a React input field with autocomplete &amp; autosuggest functionalities.
 
 <div data-tags></div>
 
-<a href="../examples/combobox/index.tsx" data-playground>Example</a>
+<a href="../examples/combobox/index.react.tsx" data-playground>Example</a>
 
 ## Examples
 

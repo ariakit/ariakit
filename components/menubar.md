@@ -15,7 +15,7 @@ Render a visually persistent menu similar to those found near the top of the win
 
 <div data-tags></div>
 
-<a href="../examples/menubar/index.tsx" data-playground>Example</a>
+<a href="../examples/menubar/index.react.tsx" data-playground>Example</a>
 
 ## Examples
 

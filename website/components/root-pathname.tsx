@@ -1,8 +1,8 @@
 "use client";
 
 import { useSelectedLayoutSegments } from "next/navigation.js";
-import { createContext, useContext } from "react";
 import type { PropsWithChildren } from "react";
+import { createContext, useContext } from "react";
 
 const RootPathnameContext = createContext("/");
 

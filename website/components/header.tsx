@@ -1,6 +1,6 @@
+import Link from "next/link.js";
 import { getUpdates } from "@/lib/get-updates.ts";
 import { getPagesByTag } from "@/lib/tag.ts";
-import Link from "next/link.js";
 import { AuthEnabled } from "./auth.tsx";
 import { HeaderAriakitPlus } from "./header-ariakit-plus.tsx";
 import { HeaderLogo } from "./header-logo.tsx";

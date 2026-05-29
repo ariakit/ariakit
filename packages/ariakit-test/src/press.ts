@@ -1,9 +1,10 @@
-import { isTextField, setSelectionRange } from "@ariakit/core/utils/dom";
 import {
+  isTextField,
+  setSelectionRange,
   getNextTabbable,
   getPreviousTabbable,
   isFocusable,
-} from "@ariakit/core/utils/focus";
+} from "@ariakit/utils";
 import { wrapAsync } from "./__utils.ts";
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
@@ -82,7 +83,7 @@ const keyDownMap: KeyActionMap = {
     if (isClickable) {
       await dispatch.click(element, options);
     } else if (isSubmittable) {
-      await submitFormByPressingEnterOn(element as HTMLInputElement, options);
+      await submitFormByPressingEnterOn(element, options);
     }
   },
 
@@ -241,7 +242,7 @@ export function press(
     // If keydown effect changed focus (e.g. Tab), keyup will be triggered on the
     // next element.
     if (element.ownerDocument?.activeElement !== element) {
-      element = element.ownerDocument!.activeElement!;
+      element = element.ownerDocument.activeElement!;
     }
 
     if (!(await dispatch.keyUp(element, { key, ...options }))) {

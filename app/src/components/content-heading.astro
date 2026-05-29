@@ -1,0 +1,34 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { HTMLTag, Polymorphic } from "astro/types";
+
+type Props<T extends HTMLTag> = Polymorphic<{ as: T }> & {
+  hasSidebar?: boolean;
+};
+
+const {
+  as: Tag = "h1",
+  hasSidebar = true,
+  ...props
+} = Astro.props as Props<HTMLTag>;
+---
+
+<Tag
+  class:list={[
+    "relative scroll-mt-[calc(var(--header-height)+1.25em)]",
+    "ak-container",
+    hasSidebar ? "ak-container-size-content/0" : "ak-container-size-default/0",
+    props.class,
+  ]}
+  {...props}
+>
+  <slot />
+</Tag>

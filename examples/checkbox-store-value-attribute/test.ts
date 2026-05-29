@@ -1,4 +1,5 @@
 import { click, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("check checkbox on click", async () => {
   expect(q.checkbox()).not.toBeChecked();

@@ -1,8 +1,8 @@
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import * as React from "react";
-import { Select } from "./select.tsx";
 import type { SelectProps } from "./select.tsx";
+import { Select } from "./select.tsx";
 
 export { useFormStore } from "@ariakit/react";
 
@@ -66,7 +66,8 @@ export const FormSubmit = React.forwardRef<HTMLButtonElement, FormSubmitProps>(
 );
 
 export interface FormSelectProps
-  extends Ariakit.FormControlProps<"button">,
+  extends
+    Ariakit.FormControlProps<"button">,
     Omit<SelectProps, keyof Ariakit.FormControlProps<"button">> {}
 
 export const FormSelect = React.forwardRef<HTMLButtonElement, FormSelectProps>(

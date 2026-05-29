@@ -1,9 +1,9 @@
+import { camelCase } from "lodash-es";
 import { icons } from "@/build-pages/icons.ts";
 import { images } from "@/build-pages/images.ts";
 import { ThemeImage } from "@/components/theme-image.tsx";
 import { APIReference } from "@/icons/api-reference.tsx";
 import { Document } from "@/icons/document.tsx";
-import { camelCase } from "lodash-es";
 
 export function getPageIcon(category: string, page?: string) {
   if (!page) return <Document />;

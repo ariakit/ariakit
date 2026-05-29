@@ -5,8 +5,10 @@ import { flushMicrotasks, nextFrame, wrapAsync } from "./__utils.ts";
 
 export * from "./index.ts";
 
-export interface RenderOptions
-  extends Omit<ReactTestingLibrary.RenderOptions, "queries"> {
+export interface RenderOptions extends Omit<
+  ReactTestingLibrary.RenderOptions,
+  "queries"
+> {
   strictMode?: boolean;
 }
 
@@ -23,16 +25,16 @@ function wrapRender<T extends (...args: any[]) => any>(
 }
 
 export async function render(ui: ReactNode, options?: RenderOptions) {
+  const { strictMode, wrapper: Wrapper, ...renderOptions } = options ?? {};
   const wrapper = (props: { children: ReactNode }) => {
-    const Wrapper = options?.wrapper;
     const element = Wrapper ? <Wrapper {...props} /> : props.children;
-    if (!options?.strictMode) return element;
+    if (!strictMode) return element;
     return <StrictMode>{element}</StrictMode>;
   };
 
   return wrapRender(() => {
     const { unmount, rerender } = ReactTestingLibrary.render(ui, {
-      ...options,
+      ...renderOptions,
       wrapper,
     });
     return {

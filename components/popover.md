@@ -14,7 +14,7 @@ Show a popup dialog positioned relative to an anchor element. This component can
 
 <div data-tags></div>
 
-<a href="../examples/popover/index.tsx" data-playground>Example</a>
+<a href="../examples/popover/index.react.tsx" data-playground>Example</a>
 
 ## API
 

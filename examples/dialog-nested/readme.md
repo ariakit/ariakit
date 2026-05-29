@@ -15,7 +15,7 @@ Rendering a [`modal`](/reference/dialog#modal) [Dialog](/components/dialog) to c
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

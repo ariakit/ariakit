@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/previews/", "/profile", "/sign-in", "/sign-up"],
     },
-    sitemap: "https://ariakit.org/sitemap.xml",
+    sitemap: "https://ariakit.com/sitemap.xml",
   };
 }

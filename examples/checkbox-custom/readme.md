@@ -15,7 +15,7 @@ Rendering a visually hidden <a href="/components/checkbox">Checkbox</a> using th
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

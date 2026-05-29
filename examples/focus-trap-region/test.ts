@@ -1,4 +1,5 @@
 import { press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 function setup() {
   const before = document.createElement("div");

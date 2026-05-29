@@ -15,7 +15,7 @@ Rendering [Select](/components/select) as a [`ToolbarItem`](/reference/toolbar-i
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 

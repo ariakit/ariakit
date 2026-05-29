@@ -1,117 +1,100 @@
-export { useMenuStore } from "@ariakit/react-core/menu/menu-store";
-export {
-  useMenuContext,
-  useMenuBarContext,
-} from "@ariakit/react-core/menu/menu-context";
-export { useMenuBarStore } from "@ariakit/react-core/menu/menu-bar-store";
-export { Menu } from "@ariakit/react-core/menu/menu";
-export { MenuProvider } from "@ariakit/react-core/menu/menu-provider";
-export { MenuBar } from "@ariakit/react-core/menu/menu-bar";
-export { MenuBarProvider } from "@ariakit/react-core/menu/menu-bar-provider";
-export { MenuArrow } from "@ariakit/react-core/menu/menu-arrow";
-export { MenuButtonArrow } from "@ariakit/react-core/menu/menu-button-arrow";
-export { MenuButton } from "@ariakit/react-core/menu/menu-button";
-export { MenuDescription } from "@ariakit/react-core/menu/menu-description";
-export { MenuDismiss } from "@ariakit/react-core/menu/menu-dismiss";
-export { MenuGroupLabel } from "@ariakit/react-core/menu/menu-group-label";
-export { MenuGroup } from "@ariakit/react-core/menu/menu-group";
-export { MenuHeading } from "@ariakit/react-core/menu/menu-heading";
-export { MenuItemCheck } from "@ariakit/react-core/menu/menu-item-check";
-export { MenuItemCheckbox } from "@ariakit/react-core/menu/menu-item-checkbox";
-export { MenuItemRadio } from "@ariakit/react-core/menu/menu-item-radio";
-export { MenuItem } from "@ariakit/react-core/menu/menu-item";
-export { MenuList } from "@ariakit/react-core/menu/menu-list";
-export { MenuSeparator } from "@ariakit/react-core/menu/menu-separator";
-
 export type {
-  MenuStore,
-  MenuStoreProps,
-  MenuStoreState,
-} from "@ariakit/react-core/menu/menu-store";
-
+  MenuOptions,
+  MenuProps,
+} from "@ariakit/react-components/menu/menu";
+export { Menu } from "@ariakit/react-components/menu/menu";
+export type {
+  MenuArrowOptions,
+  MenuArrowProps,
+} from "@ariakit/react-components/menu/menu-arrow";
+export { MenuArrow } from "@ariakit/react-components/menu/menu-arrow";
+export type {
+  MenuBarOptions,
+  MenuBarProps,
+} from "@ariakit/react-components/menu/menu-bar";
+export { MenuBar } from "@ariakit/react-components/menu/menu-bar";
+export type { MenuBarProviderProps } from "@ariakit/react-components/menu/menu-bar-provider";
+export { MenuBarProvider } from "@ariakit/react-components/menu/menu-bar-provider";
 export type {
   MenuBarStore,
   MenuBarStoreProps,
   MenuBarStoreState,
-} from "@ariakit/react-core/menu/menu-bar-store";
-
-export type { MenuProps, MenuOptions } from "@ariakit/react-core/menu/menu";
-
-export type { MenuProviderProps } from "@ariakit/react-core/menu/menu-provider";
-
+} from "@ariakit/react-components/menu/menu-bar-store";
+export { useMenuBarStore } from "@ariakit/react-components/menu/menu-bar-store";
 export type {
-  MenuBarProps,
-  MenuBarOptions,
-} from "@ariakit/react-core/menu/menu-bar";
-
-export type { MenuBarProviderProps } from "@ariakit/react-core/menu/menu-bar-provider";
-
-export type {
-  MenuArrowProps,
-  MenuArrowOptions,
-} from "@ariakit/react-core/menu/menu-arrow";
-
-export type {
-  MenuButtonArrowProps,
-  MenuButtonArrowOptions,
-} from "@ariakit/react-core/menu/menu-button-arrow";
-
-export type {
-  MenuButtonProps,
   MenuButtonOptions,
-} from "@ariakit/react-core/menu/menu-button";
-
+  MenuButtonProps,
+} from "@ariakit/react-components/menu/menu-button";
+export { MenuButton } from "@ariakit/react-components/menu/menu-button";
 export type {
-  MenuDescriptionProps,
+  MenuButtonArrowOptions,
+  MenuButtonArrowProps,
+} from "@ariakit/react-components/menu/menu-button-arrow";
+export { MenuButtonArrow } from "@ariakit/react-components/menu/menu-button-arrow";
+export {
+  useMenuBarContext,
+  useMenuContext,
+} from "@ariakit/react-components/menu/menu-context";
+export type {
   MenuDescriptionOptions,
-} from "@ariakit/react-core/menu/menu-description";
-
+  MenuDescriptionProps,
+} from "@ariakit/react-components/menu/menu-description";
+export { MenuDescription } from "@ariakit/react-components/menu/menu-description";
 export type {
-  MenuDismissProps,
   MenuDismissOptions,
-} from "@ariakit/react-core/menu/menu-dismiss";
-
+  MenuDismissProps,
+} from "@ariakit/react-components/menu/menu-dismiss";
+export { MenuDismiss } from "@ariakit/react-components/menu/menu-dismiss";
 export type {
-  MenuGroupLabelProps,
-  MenuGroupLabelOptions,
-} from "@ariakit/react-core/menu/menu-group-label";
-
-export type {
-  MenuGroupProps,
   MenuGroupOptions,
-} from "@ariakit/react-core/menu/menu-group";
-
+  MenuGroupProps,
+} from "@ariakit/react-components/menu/menu-group";
+export { MenuGroup } from "@ariakit/react-components/menu/menu-group";
 export type {
-  MenuHeadingProps,
+  MenuGroupLabelOptions,
+  MenuGroupLabelProps,
+} from "@ariakit/react-components/menu/menu-group-label";
+export { MenuGroupLabel } from "@ariakit/react-components/menu/menu-group-label";
+export type {
   MenuHeadingOptions,
-} from "@ariakit/react-core/menu/menu-heading";
-
+  MenuHeadingProps,
+} from "@ariakit/react-components/menu/menu-heading";
+export { MenuHeading } from "@ariakit/react-components/menu/menu-heading";
 export type {
-  MenuItemCheckProps,
-  MenuItemCheckOptions,
-} from "@ariakit/react-core/menu/menu-item-check";
-
-export type {
-  MenuItemCheckboxProps,
-  MenuItemCheckboxOptions,
-} from "@ariakit/react-core/menu/menu-item-checkbox";
-
-export type {
-  MenuItemRadioProps,
-  MenuItemRadioOptions,
-} from "@ariakit/react-core/menu/menu-item-radio";
-
-export type {
-  MenuItemProps,
   MenuItemOptions,
-} from "@ariakit/react-core/menu/menu-item";
-
+  MenuItemProps,
+} from "@ariakit/react-components/menu/menu-item";
+export { MenuItem } from "@ariakit/react-components/menu/menu-item";
 export type {
-  MenuListProps,
+  MenuItemCheckOptions,
+  MenuItemCheckProps,
+} from "@ariakit/react-components/menu/menu-item-check";
+export { MenuItemCheck } from "@ariakit/react-components/menu/menu-item-check";
+export type {
+  MenuItemCheckboxOptions,
+  MenuItemCheckboxProps,
+} from "@ariakit/react-components/menu/menu-item-checkbox";
+export { MenuItemCheckbox } from "@ariakit/react-components/menu/menu-item-checkbox";
+export type {
+  MenuItemRadioOptions,
+  MenuItemRadioProps,
+} from "@ariakit/react-components/menu/menu-item-radio";
+export { MenuItemRadio } from "@ariakit/react-components/menu/menu-item-radio";
+export type {
   MenuListOptions,
-} from "@ariakit/react-core/menu/menu-list";
-
+  MenuListProps,
+} from "@ariakit/react-components/menu/menu-list";
+export { MenuList } from "@ariakit/react-components/menu/menu-list";
+export type { MenuProviderProps } from "@ariakit/react-components/menu/menu-provider";
+export { MenuProvider } from "@ariakit/react-components/menu/menu-provider";
 export type {
-  MenuSeparatorProps,
   MenuSeparatorOptions,
-} from "@ariakit/react-core/menu/menu-separator";
+  MenuSeparatorProps,
+} from "@ariakit/react-components/menu/menu-separator";
+export { MenuSeparator } from "@ariakit/react-components/menu/menu-separator";
+export type {
+  MenuStore,
+  MenuStoreProps,
+  MenuStoreState,
+} from "@ariakit/react-components/menu/menu-store";
+export { useMenuStore } from "@ariakit/react-components/menu/menu-store";
