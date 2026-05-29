@@ -75,16 +75,10 @@ const cjsInternalPackages = [
   /^@ariakit\/utils($|\/)/,
 ];
 
-const preserveNodeEnv = {
-  // Keep runtime NODE_ENV checks in published output.
-  replaceNodeEnv: false,
-};
-
 /** @param {{ format: import("tsup").Format, outDir: string }} options */
 function buildStandard({ format, outDir }) {
   if (isFramework) return;
   return build({
-    ...preserveNodeEnv,
     entry,
     format,
     outDir,
@@ -108,7 +102,6 @@ function buildStandard({ format, outDir }) {
 function buildReact({ format, outDir }) {
   if (!isReact) return;
   return build({
-    ...preserveNodeEnv,
     entry,
     format,
     outDir,
@@ -131,7 +124,6 @@ function buildReact({ format, outDir }) {
 function buildSolid({ format, outDir }) {
   if (!isSolid) return;
   return build({
-    ...preserveNodeEnv,
     entry,
     format,
     outDir,
@@ -149,7 +141,6 @@ function buildSolid({ format, outDir }) {
 function buildSolidSource() {
   if (!isSolid) return;
   return build({
-    ...preserveNodeEnv,
     entry,
     format: "esm",
     outDir: solidSourceDir,
