@@ -17,7 +17,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   test("does not move focus after controlled tab selection outside the tab list", async ({
-    page,
     q,
   }) => {
     const button = q.button("Select vegetables");
