@@ -6,7 +6,9 @@ function RowMenu({ index }: { index: number }) {
   return (
     <Ariakit.MenuProvider>
       <Ariakit.MenuButton>Row {index} actions</Ariakit.MenuButton>
-      <Ariakit.Menu gutter={4}>
+      {/* TODO: Remove unmountOnHide once the library fix for
+          https://github.com/ariakit/ariakit/issues/3214 lands. */}
+      <Ariakit.Menu gutter={4} unmountOnHide>
         <Ariakit.MenuItem>Edit</Ariakit.MenuItem>
         <Ariakit.MenuItem>Duplicate</Ariakit.MenuItem>
         <Ariakit.MenuItem>Delete</Ariakit.MenuItem>
