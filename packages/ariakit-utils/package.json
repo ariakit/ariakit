@@ -29,10 +29,7 @@
     "@ariakit/scripts": "workspace:*"
   },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
+    ".": "./src/index.ts",
     "./package.json": "./package.json"
   }
 }

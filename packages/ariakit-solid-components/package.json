@@ -43,71 +43,19 @@
     "solid-js": "^1.8"
   },
   "exports": {
-    "./as/as": {
-      "types": "./dist/as/as.d.ts",
-      "solid": "./solid/as/as.jsx",
-      "import": "./dist/as/as.js"
-    },
-    "./focus-trap/focus-trap": {
-      "types": "./dist/focus-trap/focus-trap.d.ts",
-      "solid": "./solid/focus-trap/focus-trap.jsx",
-      "import": "./dist/focus-trap/focus-trap.js"
-    },
-    "./focus-trap/focus-trap-region": {
-      "types": "./dist/focus-trap/focus-trap-region.d.ts",
-      "solid": "./solid/focus-trap/focus-trap-region.jsx",
-      "import": "./dist/focus-trap/focus-trap-region.js"
-    },
-    "./group/group": {
-      "types": "./dist/group/group.d.ts",
-      "solid": "./solid/group/group.jsx",
-      "import": "./dist/group/group.js"
-    },
-    "./group/group-label": {
-      "types": "./dist/group/group-label.d.ts",
-      "solid": "./solid/group/group-label.jsx",
-      "import": "./dist/group/group-label.js"
-    },
-    "./group/group-label-context": {
-      "types": "./dist/group/group-label-context.d.ts",
-      "solid": "./solid/group/group-label-context.jsx",
-      "import": "./dist/group/group-label-context.js"
-    },
-    "./heading/heading": {
-      "types": "./dist/heading/heading.d.ts",
-      "solid": "./solid/heading/heading.jsx",
-      "import": "./dist/heading/heading.js"
-    },
-    "./heading/heading-context": {
-      "types": "./dist/heading/heading-context.d.ts",
-      "solid": "./solid/heading/heading-context.jsx",
-      "import": "./dist/heading/heading-context.js"
-    },
-    "./heading/heading-level": {
-      "types": "./dist/heading/heading-level.d.ts",
-      "solid": "./solid/heading/heading-level.jsx",
-      "import": "./dist/heading/heading-level.js"
-    },
-    "./heading/utils": {
-      "types": "./dist/heading/utils.d.ts",
-      "solid": "./solid/heading/utils.jsx",
-      "import": "./dist/heading/utils.js"
-    },
-    "./role/role": {
-      "types": "./dist/role/role.d.ts",
-      "solid": "./solid/role/role.jsx",
-      "import": "./dist/role/role.js"
-    },
-    "./separator/separator": {
-      "types": "./dist/separator/separator.d.ts",
-      "solid": "./solid/separator/separator.jsx",
-      "import": "./dist/separator/separator.js"
-    },
-    "./visually-hidden/visually-hidden": {
-      "types": "./dist/visually-hidden/visually-hidden.d.ts",
-      "solid": "./solid/visually-hidden/visually-hidden.jsx",
-      "import": "./dist/visually-hidden/visually-hidden.js"
-    },
+    "./as/as": "./src/as/as.tsx",
+    "./focus-trap/focus-trap": "./src/focus-trap/focus-trap.tsx",
+    "./focus-trap/focus-trap-region": "./src/focus-trap/focus-trap-region.tsx",
+    "./group/group": "./src/group/group.tsx",
+    "./group/group-label": "./src/group/group-label.tsx",
+    "./group/group-label-context": "./src/group/group-label-context.tsx",
+    "./heading/heading": "./src/heading/heading.tsx",
+    "./heading/heading-context": "./src/heading/heading-context.tsx",
+    "./heading/heading-level": "./src/heading/heading-level.tsx",
+    "./heading/utils": "./src/heading/utils.ts",
+    "./role/role": "./src/role/role.tsx",
+    "./separator/separator": "./src/separator/separator.tsx",
+    "./visually-hidden/visually-hidden": "./src/visually-hidden/visually-hidden.tsx",
     "./package.json": "./package.json"
   }
 }

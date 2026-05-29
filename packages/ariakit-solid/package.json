@@ -49,46 +49,14 @@
     "solid-js": "^1.8"
   },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "solid": "./solid/index.jsx",
-      "import": "./dist/index.js"
-    },
-    "./as": {
-      "types": "./dist/as.d.ts",
-      "solid": "./solid/as.jsx",
-      "import": "./dist/as.js"
-    },
-    "./focus-trap": {
-      "types": "./dist/focus-trap.d.ts",
-      "solid": "./solid/focus-trap.jsx",
-      "import": "./dist/focus-trap.js"
-    },
-    "./group": {
-      "types": "./dist/group.d.ts",
-      "solid": "./solid/group.jsx",
-      "import": "./dist/group.js"
-    },
-    "./heading": {
-      "types": "./dist/heading.d.ts",
-      "solid": "./solid/heading.jsx",
-      "import": "./dist/heading.js"
-    },
-    "./role": {
-      "types": "./dist/role.d.ts",
-      "solid": "./solid/role.jsx",
-      "import": "./dist/role.js"
-    },
-    "./separator": {
-      "types": "./dist/separator.d.ts",
-      "solid": "./solid/separator.jsx",
-      "import": "./dist/separator.js"
-    },
-    "./visually-hidden": {
-      "types": "./dist/visually-hidden.d.ts",
-      "solid": "./solid/visually-hidden.jsx",
-      "import": "./dist/visually-hidden.js"
-    },
+    ".": "./src/index.ts",
+    "./as": "./src/as.ts",
+    "./focus-trap": "./src/focus-trap.ts",
+    "./group": "./src/group.ts",
+    "./heading": "./src/heading.ts",
+    "./role": "./src/role.ts",
+    "./separator": "./src/separator.ts",
+    "./visually-hidden": "./src/visually-hidden.ts",
     "./package.json": "./package.json"
   }
 }

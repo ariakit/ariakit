@@ -53,74 +53,23 @@
     }
   },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./blur": {
-      "types": "./dist/blur.d.ts",
-      "import": "./dist/blur.js"
-    },
-    "./click": {
-      "types": "./dist/click.d.ts",
-      "import": "./dist/click.js"
-    },
-    "./dispatch": {
-      "types": "./dist/dispatch.d.ts",
-      "import": "./dist/dispatch.js"
-    },
-    "./focus": {
-      "types": "./dist/focus.d.ts",
-      "import": "./dist/focus.js"
-    },
-    "./hover": {
-      "types": "./dist/hover.d.ts",
-      "import": "./dist/hover.js"
-    },
-    "./mouse-down": {
-      "types": "./dist/mouse-down.d.ts",
-      "import": "./dist/mouse-down.js"
-    },
-    "./mouse-up": {
-      "types": "./dist/mouse-up.d.ts",
-      "import": "./dist/mouse-up.js"
-    },
-    "./playwright": {
-      "types": "./dist/playwright.d.ts",
-      "import": "./dist/playwright.js"
-    },
-    "./press": {
-      "types": "./dist/press.d.ts",
-      "import": "./dist/press.js"
-    },
-    "./query": {
-      "types": "./dist/query.d.ts",
-      "import": "./dist/query.js"
-    },
-    "./react": {
-      "types": "./dist/react.d.ts",
-      "import": "./dist/react.js"
-    },
-    "./select": {
-      "types": "./dist/select.d.ts",
-      "import": "./dist/select.js"
-    },
-    "./sleep": {
-      "types": "./dist/sleep.d.ts",
-      "import": "./dist/sleep.js"
-    },
-    "./tap": {
-      "types": "./dist/tap.d.ts",
-      "import": "./dist/tap.js"
-    },
-    "./type": {
-      "types": "./dist/type.d.ts",
-      "import": "./dist/type.js"
-    },
-    "./wait-for": {
-      "types": "./dist/wait-for.d.ts",
-      "import": "./dist/wait-for.js"
-    },
+    ".": "./src/index.ts",
+    "./blur": "./src/blur.ts",
+    "./click": "./src/click.ts",
+    "./dispatch": "./src/dispatch.ts",
+    "./focus": "./src/focus.ts",
+    "./hover": "./src/hover.ts",
+    "./mouse-down": "./src/mouse-down.ts",
+    "./mouse-up": "./src/mouse-up.ts",
+    "./playwright": "./src/playwright.ts",
+    "./press": "./src/press.ts",
+    "./query": "./src/query.ts",
+    "./react": "./src/react.tsx",
+    "./select": "./src/select.ts",
+    "./sleep": "./src/sleep.ts",
+    "./tap": "./src/tap.ts",
+    "./type": "./src/type.ts",
+    "./wait-for": "./src/wait-for.ts",
     "./package.json": "./package.json"
   }
 }

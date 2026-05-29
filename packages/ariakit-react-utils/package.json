@@ -38,10 +38,7 @@
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
+    ".": "./src/index.ts",
     "./package.json": "./package.json"
   }
 }

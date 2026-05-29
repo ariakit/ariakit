@@ -28,9 +28,9 @@
   },
   "type": "module",
   "sideEffects": false,
-  "main": "cjs/index.cjs",
-  "module": "esm/index.js",
-  "types": "cjs/index.d.ts",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
@@ -47,202 +47,34 @@
     "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "exports": {
-    ".": {
-      "import": "./esm/index.js",
-      "require": {
-        "types": "./cjs/index.d.cts",
-        "default": "./cjs/index.cjs"
-      }
-    },
-    "./button": {
-      "import": "./esm/button.js",
-      "require": {
-        "types": "./cjs/button.d.cts",
-        "default": "./cjs/button.cjs"
-      }
-    },
-    "./checkbox": {
-      "import": "./esm/checkbox.js",
-      "require": {
-        "types": "./cjs/checkbox.d.cts",
-        "default": "./cjs/checkbox.cjs"
-      }
-    },
-    "./collection": {
-      "import": "./esm/collection.js",
-      "require": {
-        "types": "./cjs/collection.d.cts",
-        "default": "./cjs/collection.cjs"
-      }
-    },
-    "./combobox": {
-      "import": "./esm/combobox.js",
-      "require": {
-        "types": "./cjs/combobox.d.cts",
-        "default": "./cjs/combobox.cjs"
-      }
-    },
-    "./command": {
-      "import": "./esm/command.js",
-      "require": {
-        "types": "./cjs/command.d.cts",
-        "default": "./cjs/command.cjs"
-      }
-    },
-    "./composite": {
-      "import": "./esm/composite.js",
-      "require": {
-        "types": "./cjs/composite.d.cts",
-        "default": "./cjs/composite.cjs"
-      }
-    },
-    "./dialog": {
-      "import": "./esm/dialog.js",
-      "require": {
-        "types": "./cjs/dialog.d.cts",
-        "default": "./cjs/dialog.cjs"
-      }
-    },
-    "./disclosure": {
-      "import": "./esm/disclosure.js",
-      "require": {
-        "types": "./cjs/disclosure.d.cts",
-        "default": "./cjs/disclosure.cjs"
-      }
-    },
-    "./focus-trap": {
-      "import": "./esm/focus-trap.js",
-      "require": {
-        "types": "./cjs/focus-trap.d.cts",
-        "default": "./cjs/focus-trap.cjs"
-      }
-    },
-    "./focusable": {
-      "import": "./esm/focusable.js",
-      "require": {
-        "types": "./cjs/focusable.d.cts",
-        "default": "./cjs/focusable.cjs"
-      }
-    },
-    "./form": {
-      "import": "./esm/form.js",
-      "require": {
-        "types": "./cjs/form.d.cts",
-        "default": "./cjs/form.cjs"
-      }
-    },
-    "./group": {
-      "import": "./esm/group.js",
-      "require": {
-        "types": "./cjs/group.d.cts",
-        "default": "./cjs/group.cjs"
-      }
-    },
-    "./heading": {
-      "import": "./esm/heading.js",
-      "require": {
-        "types": "./cjs/heading.d.cts",
-        "default": "./cjs/heading.cjs"
-      }
-    },
-    "./hovercard": {
-      "import": "./esm/hovercard.js",
-      "require": {
-        "types": "./cjs/hovercard.d.cts",
-        "default": "./cjs/hovercard.cjs"
-      }
-    },
-    "./menu": {
-      "import": "./esm/menu.js",
-      "require": {
-        "types": "./cjs/menu.d.cts",
-        "default": "./cjs/menu.cjs"
-      }
-    },
-    "./menubar": {
-      "import": "./esm/menubar.js",
-      "require": {
-        "types": "./cjs/menubar.d.cts",
-        "default": "./cjs/menubar.cjs"
-      }
-    },
-    "./popover": {
-      "import": "./esm/popover.js",
-      "require": {
-        "types": "./cjs/popover.d.cts",
-        "default": "./cjs/popover.cjs"
-      }
-    },
-    "./portal": {
-      "import": "./esm/portal.js",
-      "require": {
-        "types": "./cjs/portal.d.cts",
-        "default": "./cjs/portal.cjs"
-      }
-    },
-    "./radio": {
-      "import": "./esm/radio.js",
-      "require": {
-        "types": "./cjs/radio.d.cts",
-        "default": "./cjs/radio.cjs"
-      }
-    },
-    "./role": {
-      "import": "./esm/role.js",
-      "require": {
-        "types": "./cjs/role.d.cts",
-        "default": "./cjs/role.cjs"
-      }
-    },
-    "./select": {
-      "import": "./esm/select.js",
-      "require": {
-        "types": "./cjs/select.d.cts",
-        "default": "./cjs/select.cjs"
-      }
-    },
-    "./separator": {
-      "import": "./esm/separator.js",
-      "require": {
-        "types": "./cjs/separator.d.cts",
-        "default": "./cjs/separator.cjs"
-      }
-    },
-    "./store": {
-      "import": "./esm/store.js",
-      "require": {
-        "types": "./cjs/store.d.cts",
-        "default": "./cjs/store.cjs"
-      }
-    },
-    "./tab": {
-      "import": "./esm/tab.js",
-      "require": {
-        "types": "./cjs/tab.d.cts",
-        "default": "./cjs/tab.cjs"
-      }
-    },
-    "./toolbar": {
-      "import": "./esm/toolbar.js",
-      "require": {
-        "types": "./cjs/toolbar.d.cts",
-        "default": "./cjs/toolbar.cjs"
-      }
-    },
-    "./tooltip": {
-      "import": "./esm/tooltip.js",
-      "require": {
-        "types": "./cjs/tooltip.d.cts",
-        "default": "./cjs/tooltip.cjs"
-      }
-    },
-    "./visually-hidden": {
-      "import": "./esm/visually-hidden.js",
-      "require": {
-        "types": "./cjs/visually-hidden.d.cts",
-        "default": "./cjs/visually-hidden.cjs"
-      }
-    },
+    ".": "./src/index.ts",
+    "./button": "./src/button.ts",
+    "./checkbox": "./src/checkbox.ts",
+    "./collection": "./src/collection.ts",
+    "./combobox": "./src/combobox.ts",
+    "./command": "./src/command.ts",
+    "./composite": "./src/composite.ts",
+    "./dialog": "./src/dialog.ts",
+    "./disclosure": "./src/disclosure.ts",
+    "./focus-trap": "./src/focus-trap.ts",
+    "./focusable": "./src/focusable.ts",
+    "./form": "./src/form.ts",
+    "./group": "./src/group.ts",
+    "./heading": "./src/heading.ts",
+    "./hovercard": "./src/hovercard.ts",
+    "./menu": "./src/menu.ts",
+    "./menubar": "./src/menubar.ts",
+    "./popover": "./src/popover.ts",
+    "./portal": "./src/portal.ts",
+    "./radio": "./src/radio.ts",
+    "./role": "./src/role.ts",
+    "./select": "./src/select.ts",
+    "./separator": "./src/separator.ts",
+    "./store": "./src/store.ts",
+    "./tab": "./src/tab.ts",
+    "./toolbar": "./src/toolbar.ts",
+    "./tooltip": "./src/tooltip.ts",
+    "./visually-hidden": "./src/visually-hidden.ts",
     "./package.json": "./package.json"
   }
 }
