@@ -34,6 +34,9 @@ type ExportMode = "source" | "build";
 const sourceDir = "src";
 const distDir = "dist";
 const solidDir = "solid";
+// Use the neutral platform for published libraries so Rolldown doesn't inline
+// runtime process.env.NODE_ENV checks for browser builds.
+const buildPlatform = "neutral";
 
 function normalizePath(path: string) {
   return path.split(sep).join("/");
@@ -266,6 +269,7 @@ async function buildSolidSource(
   await rolldownBuild({
     input,
     external: getExternal(readPackageJson(rootPath)),
+    platform: buildPlatform,
     output: {
       dir: solidDir,
       cleanDir: true,
@@ -286,6 +290,7 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
   await rolldownBuild({
     input,
     external: getExternal(packageJson),
+    platform: buildPlatform,
     output: {
       dir: distDir,
       cleanDir: true,
@@ -304,6 +309,7 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
   await rolldownBuild({
     input,
     external: getExternal(packageJson),
+    platform: buildPlatform,
     output: {
       dir: distDir,
       cleanDir: false,
