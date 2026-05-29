@@ -35,7 +35,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import {
-  CompositeContextProvider,
+  CompositeScopedContextProvider,
   useCompositeProviderContext,
 } from "./composite-context.tsx";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
@@ -445,9 +445,9 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <CompositeContextProvider value={store}>
+        <CompositeScopedContextProvider value={store}>
           {element}
-        </CompositeContextProvider>
+        </CompositeScopedContextProvider>
       ),
       [store],
     );

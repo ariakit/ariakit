@@ -5,7 +5,7 @@ import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { SeparatorOptions } from "../separator/separator.tsx";
 import { useSeparator } from "../separator/separator.tsx";
-import { useCompositeContext } from "./composite-context.tsx";
+import { useCompositeScopedContext } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 
 const TagName = "hr" satisfies ElementType;
@@ -29,7 +29,7 @@ export const useCompositeSeparator = createHook<
   TagName,
   CompositeSeparatorOptions
 >(function useCompositeSeparator({ store, ...props }) {
-  const context = useCompositeContext();
+  const context = useCompositeScopedContext();
   store = store || context;
 
   invariant(
