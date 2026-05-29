@@ -13,7 +13,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { invariant } from "@ariakit/utils";
 import type { LoaderContext } from "astro/loaders";
 import type { z } from "astro/zod";
-import type { FunctionLikeDeclaration } from "ts-morph";
+import type { FunctionLikeDeclaration, SourceFile } from "ts-morph";
 import { Node, Project, ts } from "ts-morph";
 import { createLogger } from "./logger.ts";
 import type { FrameworkSchema, Reference } from "./schemas.ts";
@@ -42,6 +42,126 @@ interface ComponentCache {
 interface FrameworkCache {
   components: Record<string, ComponentCache>;
   sharedFiles?: Record<string, number>;
+}
+
+interface ReExportStatement {
+  exportList: string;
+  fromPath: string;
+  typeOnly: boolean;
+}
+
+interface GetReExportStatementsOptions {
+  includeTypeOnly?: boolean;
+}
+
+type ExportedDeclarations = ReturnType<SourceFile["getExportedDeclarations"]>;
+
+interface JsDocInfo {
+  description: string;
+  liveExamples: string[];
+  tags: any[];
+}
+
+const emptyJsDocInfo: JsDocInfo = {
+  description: "",
+  liveExamples: [],
+  tags: [],
+};
+
+const sourceDeclarationsCache = new WeakMap<SourceFile, Map<string, Node[]>>();
+const exportedDeclarationsCache = new WeakMap<
+  SourceFile,
+  ExportedDeclarations
+>();
+const jsDocInfoCache = new WeakMap<Node, JsDocInfo>();
+const typeTextCache = new WeakMap<Node, string>();
+const baseInterfacesCache = new WeakMap<Node, Node[]>();
+const basePropDeclsCache = new WeakMap<Node, Map<string, Node[]>>();
+const propsCache = new WeakMap<Node, Reference["params"]>();
+const functionDeclarationCache = new WeakMap<
+  Node,
+  FunctionLikeDeclaration | null
+>();
+
+function getExportedDeclarations(sourceFile: SourceFile) {
+  const cached = exportedDeclarationsCache.get(sourceFile);
+  if (cached) return cached;
+  const declarations = sourceFile.getExportedDeclarations();
+  exportedDeclarationsCache.set(sourceFile, declarations);
+  return declarations;
+}
+
+function addSourceDeclaration(
+  declarations: Map<string, Node[]>,
+  name: string | undefined,
+  node: Node,
+) {
+  if (!name) return;
+  const nodes = declarations.get(name) ?? [];
+  nodes.push(node);
+  declarations.set(name, nodes);
+}
+
+function getSourceDeclarations(sourceFile: SourceFile) {
+  const cached = sourceDeclarationsCache.get(sourceFile);
+  if (cached) return cached;
+
+  const declarations = new Map<string, Node[]>();
+  for (const statement of sourceFile.getStatements()) {
+    if (Node.isVariableStatement(statement)) {
+      for (const declaration of statement.getDeclarations()) {
+        addSourceDeclaration(declarations, declaration.getName(), declaration);
+      }
+    } else if (
+      Node.isFunctionDeclaration(statement) ||
+      Node.isInterfaceDeclaration(statement) ||
+      Node.isTypeAliasDeclaration(statement) ||
+      Node.isClassDeclaration(statement) ||
+      Node.isEnumDeclaration(statement)
+    ) {
+      addSourceDeclaration(declarations, statement.getName(), statement);
+    }
+  }
+
+  sourceDeclarationsCache.set(sourceFile, declarations);
+  return declarations;
+}
+
+function getSourceDeclaration(sourceFile: SourceFile, name: string) {
+  const declarations = getSourceDeclarations(sourceFile).get(name);
+  if (declarations?.length) return declarations;
+  return getExportedDeclarations(sourceFile).get(name) ?? [];
+}
+
+function getLocalSourceDeclaration(sourceFile: SourceFile, name: string) {
+  return getSourceDeclarations(sourceFile).get(name) ?? [];
+}
+
+function hasSourceDeclaration(sourceFile: SourceFile, name: string) {
+  return getSourceDeclarations(sourceFile).has(name);
+}
+
+function getReExportStatements(
+  content: string,
+  { includeTypeOnly = true }: GetReExportStatementsOptions = {},
+) {
+  const reExportPattern =
+    /export\s*(type\s*)?\{\s*([^}]+)\s*\}\s*from\s*["']([^"']+)["']/g;
+  const statements: ReExportStatement[] = [];
+  let match: RegExpExecArray | null;
+
+  while ((match = reExportPattern.exec(content)) !== null) {
+    const typeOnly = !!match[1];
+    if (typeOnly && !includeTypeOnly) continue;
+
+    const exportList = match[2];
+    const fromPath = match[3];
+    if (!exportList || !fromPath) continue;
+
+    statements.push({ exportList, fromPath, typeOnly });
+  }
+
+  return statements;
 }
 
 /**
@@ -105,25 +225,11 @@ function getComponentSourceFilePaths(
   const content = readFileSync(publicModulePath, "utf-8");
   const componentDir = join(corePath, "src", component);
 
-  const reExportPattern =
-    /export\s*(?:type\s*)?\{\s*[^}]+\s*\}\s*from\s*["']([^"']+)["']/g;
-  const corePackagePrefix = `@ariakit/${framework}-components/`;
-  let match: RegExpExecArray | null;
-
   // Seed the walk with directly re-exported core source files
   const queue: string[] = [];
 
-  while ((match = reExportPattern.exec(content)) !== null) {
-    const fromPath = match[1];
-    if (!fromPath) continue;
-
-    const resolvedPath = join(
-      corePath,
-      "src",
-      fromPath.replace(new RegExp(`^${corePackagePrefix}`), ""),
-    );
-
-    const finalPath = resolveExtension(resolvedPath);
+  for (const { fromPath } of getReExportStatements(content)) {
+    const finalPath = getCoreSourceFilePath(fromPath, corePath, framework);
     if (finalPath && !files.has(finalPath)) {
       files.add(finalPath);
       queue.push(finalPath);
@@ -467,7 +573,9 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
         // extends CompositeOptions) must also be rebuilt even if their own
         // files haven't changed.
         let changedComponents: Set<string>;
-        if (directlyChanged.size > 0) {
+        if (directlyChanged.size === componentModules.length) {
+          changedComponents = directlyChanged;
+        } else if (directlyChanged.size > 0) {
           const depGraph = buildComponentDependencyGraph(
             componentModules,
             sourceFilesByComponent,
@@ -508,9 +616,18 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
 
         // Parse only changed components
         let totalReferences = 0;
+        const project = getProject();
+        prepareProjectSourceFiles({
+          project,
+          components: changedComponents,
+          packagePath,
+          corePath,
+          framework,
+        });
+
         for (const comp of changedComponents) {
           const references = parseComponentReferences({
-            project: getProject(),
+            project,
             component: comp,
             packagePath,
             corePath,
@@ -639,7 +756,66 @@ function createProject() {
       import.meta.dirname,
       "../../../tsconfig.base.json",
     ),
+    skipAddingFilesFromTsConfig: true,
   });
+}
+
+function getCoreSourceFilePath(
+  fromPath: string,
+  corePath: string,
+  framework: string,
+) {
+  const corePackagePrefix = `@ariakit/${framework}-components/`;
+  const sourcePath = fromPath.startsWith(corePackagePrefix)
+    ? fromPath.slice(corePackagePrefix.length)
+    : fromPath;
+  const resolvedPath = join(corePath, "src", sourcePath);
+  return resolveExtension(resolvedPath);
+}
+
+function addProjectSourceFile(project: Project, filePath: string) {
+  const sourceFile = project.getSourceFile(filePath);
+  if (sourceFile) return false;
+  project.addSourceFileAtPath(filePath);
+  return true;
+}
+
+interface PrepareProjectSourceFilesParams {
+  project: Project;
+  components: Iterable<string>;
+  packagePath: string;
+  corePath: string;
+  framework: z.infer<typeof FrameworkSchema>;
+}
+
+function prepareProjectSourceFiles({
+  project,
+  components,
+  packagePath,
+  corePath,
+  framework,
+}: PrepareProjectSourceFilesParams) {
+  let added = false;
+
+  for (const component of components) {
+    const publicModulePath = join(packagePath, "src", `${component}.ts`);
+    if (!existsSync(publicModulePath)) continue;
+
+    const content = readFileSync(publicModulePath, "utf-8");
+    const statements = getReExportStatements(content, {
+      includeTypeOnly: false,
+    });
+
+    for (const { fromPath } of statements) {
+      const finalPath = getCoreSourceFilePath(fromPath, corePath, framework);
+      if (!finalPath) continue;
+      added = addProjectSourceFile(project, finalPath) || added;
+    }
+  }
+
+  if (added) {
+    project.resolveSourceFileDependencies();
+  }
 }
 
 /**
@@ -659,9 +835,9 @@ function getExportKind(name: string, node: Node) {
   // types This must come BEFORE the function check since components can also be
   // functions
   const sourceFile = node.getSourceFile();
-  const exportedDecls = sourceFile.getExportedDeclarations();
   const hasComponentOptions =
-    exportedDecls.has(`${name}Options`) || exportedDecls.has(`${name}Props`);
+    hasSourceDeclaration(sourceFile, `${name}Options`) ||
+    hasSourceDeclaration(sourceFile, `${name}Props`);
   if (hasComponentOptions) {
     return "component";
   }
@@ -711,17 +887,26 @@ function extractLiveExamples(text: string) {
   return { description: cleanedDescription, liveExamples };
 }
 
-/**
- * Extracts description from JSDoc comments
- */
-function getDescription(node: Node) {
-  if (!Node.isJSDocable(node)) return "";
+function getJsDocInfo(node: Node): JsDocInfo {
+  const cached = jsDocInfoCache.get(node);
+  if (cached) return cached;
+  if (!Node.isJSDocable(node)) return emptyJsDocInfo;
+
   const jsDocs = node.getJsDocs();
-  if (!jsDocs.length) return "";
-  // Get description from first JSDoc block
+  if (!jsDocs.length) return emptyJsDocInfo;
+
   const firstJsDoc = jsDocs[0];
-  const description = firstJsDoc?.getDescription();
-  return description ? description.trim() : "";
+  const rawDescription = firstJsDoc?.getDescription() || "";
+  const { description, liveExamples } = extractLiveExamples(rawDescription);
+  const tags: any[] = [];
+
+  for (const jsDoc of jsDocs) {
+    tags.push(...jsDoc.getTags());
+  }
+
+  const info = { description, liveExamples, tags };
+  jsDocInfoCache.set(node, info);
+  return info;
 }
 
 /**
@@ -731,24 +916,15 @@ function getDescriptionAndLiveExamples(node: Node): {
   description: string;
   liveExamples: string[];
 } {
-  const rawDescription = getDescription(node);
-  return extractLiveExamples(rawDescription);
+  const { description, liveExamples } = getJsDocInfo(node);
+  return { description, liveExamples };
 }
 
 /**
  * Extracts JSDoc tags from a node
  */
 function getTags(node: Node) {
-  if (!Node.isJSDocable(node)) return [];
-  const jsDocs = node.getJsDocs();
-  if (!jsDocs.length) return [];
-  // Collect all tags from all JSDoc blocks
-  const allTags: any[] = [];
-  for (const jsDoc of jsDocs) {
-    const tags = jsDoc.getTags();
-    allTags.push(...tags);
-  }
-  return allTags;
+  return getJsDocInfo(node).tags;
 }
 
 /**
@@ -812,7 +988,9 @@ function getExamples(node: Node) {
  * Gets type information from a TypeScript node
  */
 function getTypeText(node: Node) {
-  return node
+  const cached = typeTextCache.get(node);
+  if (cached !== undefined) return cached;
+  const type = node
     .getType()
     .getText(
       undefined,
@@ -820,12 +998,16 @@ function getTypeText(node: Node) {
         ts.TypeFormatFlags.AddUndefined |
         ts.TypeFormatFlags.UseFullyQualifiedType,
     );
+  typeTextCache.set(node, type);
+  return type;
 }
 
 /**
  * Gets all direct base interface declarations for a given interface declaration
  */
 function getBaseInterfaces(iface: Node) {
+  const cached = baseInterfacesCache.get(iface);
+  if (cached) return cached;
   const bases: Node[] = [];
   if (!Node.isInterfaceDeclaration(iface)) {
     return bases;
@@ -840,6 +1022,7 @@ function getBaseInterfaces(iface: Node) {
       bases.push(d);
     }
   }
+  baseInterfacesCache.set(iface, bases);
   return bases;
 }
 
@@ -848,12 +1031,16 @@ function getBaseInterfaces(iface: Node) {
  * of the provided owner interface, in nearest-first order.
  */
 function findPropDeclsInBaseHierarchy(owner: Node, propName: string) {
+  const cachedByName = basePropDeclsCache.get(owner);
+  const cached = cachedByName?.get(propName);
+  if (cached) return cached;
+
   const results: Node[] = [];
   if (!Node.isInterfaceDeclaration(owner)) {
     return results;
   }
   const visited = new Set<Node>();
-  const queue = getBaseInterfaces(owner);
+  const queue = [...getBaseInterfaces(owner)];
   while (queue.length) {
     const current = queue.shift();
     if (!current) break;
@@ -870,6 +1057,9 @@ function findPropDeclsInBaseHierarchy(owner: Node, propName: string) {
       queue.push(base);
     }
   }
+  const nextCachedByName = cachedByName ?? new Map<string, Node[]>();
+  nextCachedByName.set(propName, results);
+  basePropDeclsCache.set(owner, nextCachedByName);
   return results;
 }
 
@@ -877,8 +1067,13 @@ function findPropDeclsInBaseHierarchy(owner: Node, propName: string) {
  * Extracts props from a type or interface
  */
 function getProps(node: Node) {
+  const cached = propsCache.get(node);
+  if (cached) return cached;
+
   const nodeProps = node.getType().getProperties();
   const props: Reference["params"] = [];
+  // Cache before descending so recursive object types don't recurse forever.
+  propsCache.set(node, props);
 
   for (const prop of nodeProps) {
     const decl = prop.getDeclarations().at(0);
@@ -951,10 +1146,14 @@ function getProps(node: Node) {
 function getFunctionDeclaration(
   node: Node,
 ): FunctionLikeDeclaration | undefined {
+  const cached = functionDeclarationCache.get(node);
+  if (cached !== undefined) return cached ?? undefined;
   if (Node.isFunctionLikeDeclaration(node)) return node;
-  return node.getFirstDescendant((node) =>
+  const declaration = node.getFirstDescendant((node) =>
     Node.isFunctionLikeDeclaration(node),
   );
+  functionDeclarationCache.set(node, declaration ?? null);
+  return declaration;
 }
 
 /**
@@ -1007,8 +1206,7 @@ function getStoreState(name: string, node: Node) {
     .replace(/^use/, "")
     .replace(/Store$/, "StoreState");
   const sourceFile = node.getSourceFile();
-  const exportedDecls = sourceFile.getExportedDeclarations();
-  const stateDecl = exportedDecls.get(stateTypeName)?.at(0);
+  const stateDecl = getLocalSourceDeclaration(sourceFile, stateTypeName).at(0);
   if (!stateDecl) return [];
   return getProps(stateDecl);
 }
@@ -1037,7 +1235,7 @@ function getReturnValue(
 function getFinalFunctionImplementation(node: Node) {
   const name = getSymbolName(node);
   const sourceFile = node.getSourceFile();
-  const declarations = sourceFile.getExportedDeclarations().get(name) || [];
+  const declarations = getSourceDeclaration(sourceFile, name);
 
   // Find function declarations with bodies (implementations)
   const implementations: FunctionLikeDeclaration[] = [];
@@ -1107,11 +1305,10 @@ function createReference({
     // For components, use ComponentNameOptions or ComponentNameProps type for
     // params
     const sourceFile = node.getSourceFile();
-    const exportedDecls = sourceFile.getExportedDeclarations();
     const optionsDecl =
       propsNode ||
-      exportedDecls.get(`${name}Options`)?.at(0) ||
-      exportedDecls.get(`${name}Props`)?.at(0) ||
+      getLocalSourceDeclaration(sourceFile, `${name}Options`).at(0) ||
+      getLocalSourceDeclaration(sourceFile, `${name}Props`).at(0) ||
       fn?.getParameters()?.at(0);
 
     if (optionsDecl) {
@@ -1246,21 +1443,10 @@ function parseReExportedReferences({
   const publicModulePath = join(packagePath, "src", `${component}.ts`);
   const content = readFileSync(publicModulePath, "utf-8");
   const references: Reference[] = [];
-  // Parse all re-export statements to find source files
-  const reExportPattern =
-    /export\s*(?:type\s*)?\{\s*([^}]+)\s*\}\s*from\s*["']([^"']+)["']/g;
-  const directExportPattern =
-    /export\s*\{\s*([^}]+)\s*\}\s*from\s*["']([^"']+)["']/g;
 
-  let match: RegExpExecArray | null;
-
-  // Process re-exports with type exports
-  while ((match = reExportPattern.exec(content)) !== null) {
-    const exportList = match[1];
-    const fromPath = match[2];
-
-    if (!exportList || !fromPath) continue;
-
+  // Type-only re-exports don't create reference entries.
+  const statements = getReExportStatements(content, { includeTypeOnly: false });
+  for (const { exportList, fromPath } of statements) {
     const sourceReferences = parseSourceFileExports({
       project,
       component,
@@ -1272,23 +1458,6 @@ function parseReExportedReferences({
     });
     references.push(...sourceReferences);
   }
-
-  // Reset regex and process direct exports
-  content.replace(directExportPattern, (_, exportList, fromPath) => {
-    if (!exportList || !fromPath) return "";
-
-    const sourceReferences = parseSourceFileExports({
-      project,
-      component,
-      fromPath,
-      exportList,
-      publicExports,
-      corePath,
-      framework,
-    });
-    references.push(...sourceReferences);
-    return "";
-  });
 
   return references.sort((a, b) => {
     const order = { function: 0, store: 1, component: 2 };
@@ -1322,31 +1491,14 @@ function parseSourceFileExports({
   corePath,
   framework,
 }: ParseSourceFileExportsParams) {
-  // Resolve the actual file path - handle framework component paths
-  const corePackagePrefix = `@ariakit/${framework}-components/`;
-  const resolvedPath = join(
-    corePath,
-    "src",
-    fromPath.replace(new RegExp(`^${corePackagePrefix}`), ""),
-  );
-
-  if (!existsSync(`${resolvedPath}.ts`) && !existsSync(`${resolvedPath}.tsx`)) {
-    return [];
-  }
-
-  const finalPath = existsSync(`${resolvedPath}.tsx`)
-    ? `${resolvedPath}.tsx`
-    : `${resolvedPath}.ts`;
+  const finalPath = getCoreSourceFilePath(fromPath, corePath, framework);
+  if (!finalPath) return [];
 
   let sourceFile = project.getSourceFile(finalPath);
   if (!sourceFile) {
     sourceFile = project.addSourceFileAtPath(finalPath);
-    project.resolveSourceFileDependencies();
-  } else {
-    sourceFile.refreshFromFileSystemSync();
   }
 
-  const exportedDecls = sourceFile.getExportedDeclarations();
   const references: Reference[] = [];
   // Prevent duplicate declarations
   const processedNames = new Set<string>();
@@ -1367,8 +1519,7 @@ function parseSourceFileExports({
     if (processedNames.has(name)) continue;
     processedNames.add(name);
 
-    const decls = exportedDecls.get(name);
-    const decl = decls?.at(0);
+    const decl = getSourceDeclaration(sourceFile, name).at(0);
     if (!decl) continue;
 
     // Skip private exports
@@ -1380,7 +1531,10 @@ function parseSourceFileExports({
     // Skip types (when kind is null) - only include functions, components, and
     // stores
     if (kind !== null) {
-      const optionsType = exportedDecls.get(`${name}Options`)?.at(0);
+      const optionsType = getLocalSourceDeclaration(
+        sourceFile,
+        `${name}Options`,
+      ).at(0);
 
       references.push(
         createReference({
@@ -1421,15 +1575,8 @@ function parseDirectExportReferences({
   const references: Reference[] = [];
 
   // Parse the public module file to find where exports come from
-  const reExportPattern = /export\s*{\s*([^}]+)\s*}\s*from\s*["']([^"']+)["']/g;
-  let match: RegExpExecArray | null;
-
-  while ((match = reExportPattern.exec(content)) !== null) {
-    const exportList = match[1];
-    const fromPath = match[2];
-
-    if (!exportList || !fromPath) continue;
-
+  const statements = getReExportStatements(content, { includeTypeOnly: false });
+  for (const { exportList, fromPath } of statements) {
     const sourceReferences = parseSourceFileExports({
       project,
       component,
@@ -1538,6 +1685,13 @@ function loadReferences({
   const project = createProject();
   const componentModules = getComponentModules(packagePath);
   const allReferences: Reference[] = [];
+  prepareProjectSourceFiles({
+    project,
+    components: componentModules,
+    packagePath,
+    corePath,
+    framework,
+  });
 
   for (const component of componentModules) {
     const references = parseComponentReferences({
