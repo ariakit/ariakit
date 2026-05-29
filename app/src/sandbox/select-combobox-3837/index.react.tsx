@@ -64,7 +64,16 @@ export default function Example() {
           />
         </div>
         <Ariakit.ComboboxList store={combobox}>
-          <SelectRenderer store={select} items={matches} itemSize={40}>
+          {/* TODO: Remove `renderOnResize={false}` once
+              https://github.com/ariakit/ariakit/issues/3837 is fixed. It keeps
+              the popover resize from re-rendering the virtualized items, which
+              is what bounces focus away from the input while auto-selecting. */}
+          <SelectRenderer
+            store={select}
+            items={matches}
+            itemSize={40}
+            renderOnResize={false}
+          >
             {({ value, ...item }) => (
               <Ariakit.ComboboxItem
                 key={item.id}
