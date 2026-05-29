@@ -1,6 +1,6 @@
 "use client";
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import Link from "next/link.js";
 import { usePathname, useRouter } from "next/navigation.js";
 import * as React from "react";

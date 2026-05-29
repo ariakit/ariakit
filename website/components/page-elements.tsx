@@ -221,8 +221,7 @@ export function PageFigure({ node, ...props }: PageFigureProps) {
   return <figure {...props} className={className} />;
 }
 
-export interface PageBlockquoteProps
-  extends ComponentPropsWithoutRef<"blockquote"> {
+export interface PageBlockquoteProps extends ComponentPropsWithoutRef<"blockquote"> {
   node?: Element;
 }
 
@@ -621,7 +620,7 @@ export function PageA({
       />
     );
   }
-  href = href?.replace(/^https:\/\/(www\.)?ariakit.org/, "");
+  href = href?.replace(/^https:\/\/(www\.)?ariakit\.(com|org)/, "");
   if (href?.startsWith("http")) {
     return (
       <InlineLink
@@ -656,7 +655,7 @@ export function PageA({
     if (!isValidHref(href, pageLinks)) {
       throw new Error(`Invalid link: ${href}`);
     }
-    const url = new URL(href, "https://ariakit.org");
+    const url = new URL(href, "https://ariakit.com");
     const [, category, page] = url.pathname.split("/");
     if (category === "reference" && page && node) {
       if (

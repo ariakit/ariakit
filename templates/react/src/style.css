@@ -17,5 +17,5 @@
 }
 
 body {
-  @apply ak-layer-canvas p-10;
+  @apply ak-layer ak-layer-canvas p-10;
 }

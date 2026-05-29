@@ -15,14 +15,14 @@ test("popover responsive", async ({ page }) => {
   await expect(getButton(getPopover(page), "Accept")).toBeFocused();
   await page.mouse.click(10, 10);
   await expect(getPopover(page)).not.toBeVisible();
-  await expect(getButton(page, "Accept invite")).toBeFocused();
-  await page.keyboard.press("Enter");
+  await expect(getButton(page, "Accept invite")).not.toBeFocused();
+  await getButton(page, "Accept invite").click();
   await page.setViewportSize({ width: 480, height: 768 });
   expect(await page.screenshot()).toMatchSnapshot();
   await expect(getButton(getPopover(page), "Accept")).toBeFocused();
   await page.mouse.click(10, 700);
   await expect(getPopover(page)).not.toBeVisible();
-  await expect(getButton(page, "Accept invite")).toBeFocused();
-  await page.keyboard.press(" ");
+  await expect(getButton(page, "Accept invite")).not.toBeFocused();
+  await getButton(page, "Accept invite").click();
   await expect(getButton(getPopover(page), "Accept")).toBeFocused();
 });

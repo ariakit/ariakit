@@ -59,11 +59,9 @@ export function getPackageJson(rootPath, prod = false) {
   const moduleExports = Object.entries(publicFiles).reduce(
     (acc, [name, path]) => {
       if (name === "index") {
-        // biome-ignore lint/performance/noAccumulatingSpread: TODO
         return { ".": getExports(path), ...acc };
       }
       const pathname = `./${name.replace(/\/index$/, "")}`;
-      // biome-ignore lint/performance/noAccumulatingSpread: TODO
       return { ...acc, [pathname]: getExports(path) };
     },
     {},
@@ -321,7 +319,7 @@ export function makeProxies(rootPath) {
       [
         "",
         `Created proxies in ${chalk.bold(pkg.name)}:`,
-        `${created.join(", ")}`,
+        created.join(", "),
       ].join("\n"),
     );
   }

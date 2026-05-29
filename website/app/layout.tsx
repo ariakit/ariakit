@@ -1,5 +1,4 @@
 import "./global.css";
-
 import { Analytics } from "@vercel/analytics/react";
 import { QueryProvider } from "components/query-provider.tsx";
 import { GeistSans } from "geist/font/sans";

@@ -1,4 +1,5 @@
 import { click, hover, press, q, type, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 async function hoverOutside() {
   await hover(document.body);
@@ -24,7 +25,7 @@ test("open dialog with click and hide by clicking outside", async () => {
   expect(q.combobox("Search for apps and commands...")).toHaveFocus();
   await click(document.body);
   expect(q.option("Search Contacts")).not.toHaveAttribute("data-active-item");
-  expect(q.button("Open Command Menu")).toHaveFocus();
+  expect(q.button("Open Command Menu")).not.toHaveFocus();
   await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
 });
 

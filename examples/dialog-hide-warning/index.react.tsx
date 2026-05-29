@@ -1,7 +1,7 @@
 /**
  * @license
  * This file is part of Ariakit Plus. For the full license, see
- * https://ariakit.org/plus/license
+ * https://ariakit.com/plus/license
  */
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";

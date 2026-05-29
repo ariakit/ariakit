@@ -1,5 +1,9 @@
 coverage
 tsconfig.json
+tsconfig.build.json
 *.log
 *.config.js
 *.lock
+src/input.ts
+src/lib.ts
+src/build.ts

@@ -21,7 +21,7 @@ interface Props {
 export function getNextPageMetadata({
   title = "Ariakit - Toolkit for building accessible UIs",
   description = "Lower-level component library for building accessible higher-level UI libraries, design systems and web applications with React.",
-  url = "https://ariakit.org",
+  url = "https://ariakit.com",
   keywords = "react, accessibility, components, ui, a11y, accessible",
   type = "website",
   image = "/thumbnail.png",

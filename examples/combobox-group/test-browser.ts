@@ -81,7 +81,7 @@ test("set value on tab after moving to another item", async ({ page }) => {
   expect(await getSelectionValue(page)).toBe("ple");
   await page.keyboard.press("ArrowDown");
   await page.keyboard.press("ArrowDown");
-  expect(getCombobox(page)).toHaveValue("Papaya");
+  await expect(getCombobox(page)).toHaveValue("Papaya");
   await page.keyboard.press("Tab");
   await expect(getCombobox(page)).not.toBeFocused();
   await expect(getPopover(page)).not.toBeVisible();
@@ -99,7 +99,7 @@ test("set value on click outside", async ({ page }) => {
   await page.mouse.down();
   await expect(getCombobox(page)).toHaveValue("Avocado");
   await expect(getPopover(page)).toBeVisible();
-  expect(await page.getByRole("option").all()).toHaveLength(1);
+  await expect(page.getByRole("option")).toHaveCount(1);
   await page.mouse.up();
   await expect(getPopover(page)).not.toBeVisible();
 });

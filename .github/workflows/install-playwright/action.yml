@@ -15,7 +15,7 @@ runs:
       with:
         path: |
           ${{ runner.os == 'macOS' && '~/Library/Caches/ms-playwright' || runner.os == 'Windows' && '~\\AppData\\Local\\ms-playwright' || '~/.cache/ms-playwright' }}
-        key: playwright-${{ runner.os }}-${{ inputs.engine }}-${{ hashFiles('package-lock.json', '.nvmrc') }}
+        key: playwright-${{ runner.os }}-${{ inputs.engine }}-${{ hashFiles('pnpm-lock.yaml', '.nvmrc') }}
         restore-keys: |
           playwright-${{ runner.os }}-${{ inputs.engine }}-
           playwright-${{ runner.os }}-
@@ -23,4 +23,4 @@ runs:
     - name: Install Playwright
       if: steps.cache-playwright.outputs.cache-hit != 'true'
       shell: bash
-      run: npx playwright install --with-deps ${{ inputs.engine }}
+      run: pnpm exec playwright install --with-deps ${{ inputs.engine }}

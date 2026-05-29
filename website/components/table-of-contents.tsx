@@ -1,10 +1,7 @@
 "use client";
 
-import {
-  getScrollingElement,
-  scrollIntoViewIfNeeded,
-} from "@ariakit/core/utils/dom";
 import * as Ariakit from "@ariakit/react";
+import { getScrollingElement, scrollIntoViewIfNeeded } from "@ariakit/utils";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Popup } from "@/components/popup.tsx";

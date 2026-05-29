@@ -1,7 +1,28 @@
 {
-  "extends": ["config:recommended"],
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "minimumReleaseAge": "3 days",
   "semanticCommits": "disabled",
   "packageRules": [
+    {
+      "matchFileNames": ["website/package.json"],
+      "enabled": false
+    },
+    {
+      "matchFileNames": ["package.json"],
+      "matchPackageNames": ["postcss"],
+      "enabled": false
+    },
+    {
+      "matchFileNames": ["app/package.json"],
+      "matchPackageNames": ["vite"],
+      "allowedVersions": "/^7\\./"
+    },
+    {
+      "matchPackageNames": ["tailwindcss"],
+      "matchCurrentVersion": "/^3\\./",
+      "enabled": false
+    },
     {
       "groupName": "unified",
       "matchPackageNames": [
@@ -9,62 +30,85 @@
         "/rehype/",
         "/remark/",
         "/unified/",
-        "/unist/",
-        "/react-markdown/"
+        "/unist/"
       ]
     },
     {
+      "groupName": "changesets",
+      "matchPackageNames": ["/^@changesets\\//"]
+    },
+    {
       "groupName": "clerk",
-      "matchPackageNames": ["/clerk/"]
+      "matchPackageNames": ["/^@clerk\\//"]
     },
     {
       "groupName": "stripe",
-      "matchPackageNames": ["/stripe/"]
-    },
-    {
-      "groupName": "monaco",
-      "matchPackageNames": ["/monaco/"]
+      "matchPackageNames": ["stripe", "/^@stripe/"]
     },
     {
       "groupName": "testing-library",
-      "matchPackageNames": ["/@testing-library//"]
+      "matchPackageNames": ["/^@testing-library/"]
     },
     {
       "groupName": "radix",
-      "matchPackageNames": ["/@radix-ui//"]
+      "matchPackageNames": ["/^@radix-ui/"]
+    },
+    {
+      "groupName": "react",
+      "matchPackageNames": ["react", "react-dom"]
+    },
+    {
+      "groupName": "vite",
+      "matchPackageNames": ["vite", "/^@vitejs/"]
+    },
+    {
+      "groupName": "oxc",
+      "matchPackageNames": ["/^oxlint/", "/^oxfmt/"]
+    },
+    {
+      "matchPackageNames": ["@types/node"],
+      "allowedVersions": "/^24\\./"
+    },
+    {
+      "matchPackageNames": ["lint-staged", "vite", "/^@vitejs/"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
     },
     {
       "matchPackageNames": [
+        "@astrojs/check",
+        "@axe-core/playwright",
         "@wordpress/components",
         "cross-env",
         "cross-spawn",
-        "dotenv",
-        "framer-motion",
+        "motion",
         "fs-extra",
         "glob",
         "jsdom",
-        "lerna",
         "lodash-es",
         "match-sorter",
-        "null-loader",
         "react",
         "react-dom",
         "react-router",
         "react-shadow",
         "react-toastify",
+        "rolldown",
+        "rolldown-plugin-dts",
+        "pnpm",
         "textarea-caret",
         "tsup",
         "typescript",
-        "webpack",
+        "playwright",
         "zod",
-        "/^@babel//",
-        "/^@biomejs//",
         "/^@playwright//",
         "/^@radix-ui//",
-        "/^@rollup//",
         "/^@testing-library//",
         "/^@types//",
         "/^@vitest//",
+        "/^oxlint/",
+        "/^oxfmt/",
         "/^prettier/",
         "/^vitest/",
         "/^stylelint/"
@@ -72,6 +116,11 @@
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
+    },
+    {
+      "matchManagers": ["github-actions"],
+      "matchPackageNames": ["actions/**"],
+      "pinDigests": false
     }
   ]
 }

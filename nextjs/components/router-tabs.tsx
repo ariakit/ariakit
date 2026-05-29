@@ -4,17 +4,81 @@ import type { Route } from "next";
 import type { LinkProps } from "next/link";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import type * as React from "react";
 import { useOptimistic, useTransition } from "react";
-import type { TabPanelProps, TabsProps } from "site/ariakit/tabs.react.tsx";
-import { Tab, TabPanel, Tabs } from "site/ariakit/tabs.react.tsx";
 
-export * from "site/ariakit/tabs.react.tsx";
+function clsx(...classes: Array<string | false | null | undefined>) {
+  return classes.filter(Boolean).join(" ");
+}
 
-export interface RouterTabsProps
-  extends Omit<
-    TabsProps,
-    "selectedId" | "setSelectedId" | "defaultSelectedId"
-  > {
+export interface TabsProps
+  extends
+    ak.RoleProps,
+    Pick<
+      ak.TabProviderProps,
+      "selectedId" | "setSelectedId" | "defaultSelectedId"
+    > {}
+
+export function Tabs({
+  selectedId,
+  setSelectedId,
+  defaultSelectedId,
+  ...props
+}: TabsProps) {
+  return (
+    <div
+      {...props}
+      className={clsx(
+        "ak-tabs ak-layer-2 ak-frame-container/0 ak-border overflow-visible",
+        props.className,
+      )}
+    >
+      <ak.TabProvider
+        selectedId={selectedId}
+        setSelectedId={setSelectedId}
+        defaultSelectedId={defaultSelectedId}
+        {...props}
+      />
+    </div>
+  );
+}
+
+export interface TabListProps extends ak.TabListProps {}
+
+export function TabList(props: TabListProps) {
+  return (
+    <ak.TabList {...props} className={clsx("ak-tab-list", props.className)} />
+  );
+}
+
+export interface TabProps extends ak.TabProps {}
+
+export function Tab(props: TabProps) {
+  return (
+    <ak.Tab
+      {...props}
+      className={clsx(
+        "ak-tab-folder data-focus-visible:ak-tab-folder_focus",
+        props.className,
+      )}
+    >
+      <span>{props.children}</span>
+    </ak.Tab>
+  );
+}
+
+export interface TabPanelProps extends ak.TabPanelProps {}
+
+export function TabPanel(props: TabPanelProps) {
+  return (
+    <ak.TabPanel {...props} className={clsx("ak-tab-panel", props.className)} />
+  );
+}
+
+export interface RouterTabsProps extends Omit<
+  TabsProps,
+  "selectedId" | "setSelectedId" | "defaultSelectedId"
+> {
   selectedId?: Route;
   setSelectedId?: (id: Route) => void;
 }
@@ -46,10 +110,13 @@ export function RouterTabs({
   );
 }
 
-export interface RouterTabProps extends LinkProps<Route> {}
+export interface RouterTabProps extends Omit<LinkProps<Route>, "href"> {
+  href: Route;
+  children?: React.ReactNode;
+}
 
 export function RouterTab({ children, ...props }: RouterTabProps) {
-  const id = props.href.toString();
+  const id = props.href;
   return (
     <Tab id={id} render={<Link {...props} />}>
       {children}

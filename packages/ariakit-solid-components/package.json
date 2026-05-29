@@ -1,0 +1,61 @@
+{
+  "name": "@ariakit/solid-components",
+  "version": "0.1.1",
+  "description": "Ariakit Solid components",
+  "keywords": [
+    "ariakit",
+    "solid",
+    "components"
+  ],
+  "homepage": "https://ariakit.com",
+  "license": "MIT",
+  "author": {
+    "name": "Dani Guardiola",
+    "email": "hi@daniguardio.la",
+    "url": "https://dio.la"
+  },
+  "contributors": [
+    {
+      "name": "Diego Haz",
+      "email": "hazdiego@gmail.com",
+      "url": "https://github.com/diegohaz"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-solid-components"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "ariakit build",
+    "clean": "ariakit clean"
+  },
+  "dependencies": {
+    "@ariakit/solid-utils": "workspace:*",
+    "@ariakit/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@ariakit/scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.8"
+  },
+  "exports": {
+    "./as/as": "./src/as/as.tsx",
+    "./focus-trap/focus-trap": "./src/focus-trap/focus-trap.tsx",
+    "./focus-trap/focus-trap-region": "./src/focus-trap/focus-trap-region.tsx",
+    "./group/group": "./src/group/group.tsx",
+    "./group/group-label": "./src/group/group-label.tsx",
+    "./group/group-label-context": "./src/group/group-label-context.tsx",
+    "./heading/heading": "./src/heading/heading.tsx",
+    "./heading/heading-context": "./src/heading/heading-context.tsx",
+    "./heading/heading-level": "./src/heading/heading-level.tsx",
+    "./heading/utils": "./src/heading/utils.ts",
+    "./role/role": "./src/role/role.tsx",
+    "./separator/separator": "./src/separator/separator.tsx",
+    "./visually-hidden/visually-hidden": "./src/visually-hidden/visually-hidden.tsx",
+    "./package.json": "./package.json"
+  }
+}

@@ -1,4 +1,4 @@
-import { hasOwnProperty, invariant } from "@ariakit/core/utils/misc";
+import { hasOwnProperty, invariant } from "@ariakit/utils";
 import type { ProjectFiles } from "@stackblitz/sdk";
 import _sdk from "@stackblitz/sdk";
 import { pick } from "lodash-es";
@@ -24,7 +24,6 @@ function getPackageName(source: string) {
 
 function normalizeDeps(deps: StackblitzProps["dependencies"] = {}) {
   return Object.entries(deps).reduce(
-    // biome-ignore lint/performance/noAccumulatingSpread: TODO
     (acc, [pkg, version]) => ({ ...acc, [getPackageName(pkg)]: version }),
     {},
   );

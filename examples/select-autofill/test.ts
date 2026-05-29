@@ -1,4 +1,5 @@
 import { dispatch, focus, q, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 const getNativeSelect = () => q.labeled("Role", { selector: "select" });
 

@@ -1,12 +1,8 @@
 "use client";
 
-import { batch } from "@ariakit/core/utils/store";
 import * as Ariakit from "@ariakit/react";
-import {
-  useEvent,
-  useId,
-  useSafeLayoutEffect,
-} from "@ariakit/react-core/utils/hooks";
+import { useEvent, useId, useSafeLayoutEffect } from "@ariakit/react-utils";
+import { batch } from "@ariakit/store";
 import Link from "next/link.js";
 import type {
   ComponentPropsWithoutRef,
@@ -43,11 +39,10 @@ const FooterContext = createContext(false);
 const HideAllContext = createContext<(() => void) | null>(null);
 const HasTitleContext = createContext(false);
 
-export interface HeaderMenuProps
-  extends Omit<
-    ComponentPropsWithoutRef<"button">,
-    "value" | "onChange" | "onToggle"
-  > {
+export interface HeaderMenuProps extends Omit<
+  ComponentPropsWithoutRef<"button">,
+  "value" | "onChange" | "onToggle"
+> {
   label?: ReactNode;
   open?: boolean;
   onToggle?: (open: boolean) => void;

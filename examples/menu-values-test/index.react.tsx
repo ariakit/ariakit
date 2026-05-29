@@ -47,6 +47,16 @@ export default function Example() {
           Menu
           <Ariakit.MenuButtonArrow />
         </Ariakit.MenuButton>
+        <button
+          type="button"
+          className="button"
+          onClick={() => setControlledValue("")}
+        >
+          Reset radioControlled
+        </button>
+        <span hidden data-radio-controlled-value>
+          {controlledValue}
+        </span>
         <Ariakit.Menu gutter={8} className="menu">
           {fruits.map((value) => (
             <Ariakit.MenuItemCheckbox

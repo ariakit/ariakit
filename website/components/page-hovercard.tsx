@@ -84,7 +84,7 @@ export function PageHovercard({ contents, ...props }: PageHovercardProps) {
   const sub = useSubscription();
   const ref = useRef<HTMLDivElement>(null);
   const href = store.useState("anchorElement")?.getAttribute("href");
-  const url = new URL(href || "", "https://ariakit.org");
+  const url = new URL(href || "", "https://ariakit.com");
   const [, , page] = url.pathname.split("/");
   const id = url.hash.slice(1);
 

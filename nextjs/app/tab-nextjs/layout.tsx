@@ -16,22 +16,8 @@ export default function Layout(props: LayoutProps<"/tab-nextjs">) {
       </p>
       <div className="p-10 grid gap-2">
         <RouterTabs>
-          <TabList className="ak-tabs-lol">
-            <RouterTab href="/tab-nextjs">Hot</RouterTab>
-            <RouterTab href="/tab-nextjs/new">New</RouterTab>
-          </TabList>
-          <RouterTabPanel>{props.tabs}</RouterTabPanel>
-        </RouterTabs>
-        <RouterTabs>
           <TabList>
             <RouterTab href="/tab-nextjs">Hot</RouterTab>
-            <RouterTab href="/tab-nextjs/new">New</RouterTab>
-          </TabList>
-          <RouterTabPanel>{props.tabs}</RouterTabPanel>
-        </RouterTabs>
-        <RouterTabs className="ak-frame-2xl/2!">
-          <TabList>
-            <RouterTab href="/tab-nextjs">Hots</RouterTab>
             <RouterTab href="/tab-nextjs/new">New</RouterTab>
           </TabList>
           <RouterTabPanel>{props.tabs}</RouterTabPanel>

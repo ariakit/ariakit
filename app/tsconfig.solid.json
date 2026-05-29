@@ -1,0 +1,8 @@
+{
+  "extends": "../tsconfig.solid.json",
+  "compilerOptions": {
+    "types": []
+  },
+  "include": [".astro/content.d.ts", "env.d.ts", "**/*.solid.tsx"],
+  "exclude": ["dist", "**/*test.solid.tsx"]
+}

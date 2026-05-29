@@ -7,5 +7,12 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["website", "site", "examples", "template-*"]
+  "ignore": [
+    "website",
+    "app",
+    "examples",
+    "nextjs",
+    "@ariakit/scripts",
+    "template-*"
+  ]
 }

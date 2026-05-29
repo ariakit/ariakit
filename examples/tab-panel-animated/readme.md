@@ -63,7 +63,7 @@ This can be implemented inside our custom `TabPanel` component by following thes
    ```tsx
    const wasPanelOpen = panel?.tabId && previousTabId === panel.tabId;
 
-   <Ariakit.TabPanel data-was-open={wasPanelOpen || undefined} />
+   <Ariakit.TabPanel data-was-open={wasPanelOpen || undefined} />;
    ```
 
 ## Setting up the CSS transition

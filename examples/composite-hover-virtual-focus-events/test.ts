@@ -1,4 +1,5 @@
 import { click, hover, press, q } from "@ariakit/test";
+import { expect, test, vi } from "vitest";
 import type { MockInstance } from "vitest";
 
 function expectCalls(mock: MockInstance) {
@@ -12,7 +13,7 @@ test("events", async () => {
   externalButton.textContent = "External button";
   document.body.append(externalButton);
 
-  const log = vi.spyOn(console, "log").mockImplementation(() => {});
+  using log = vi.spyOn(console, "log").mockImplementation(() => {});
 
   await press.Tab();
   await press.Tab();
@@ -124,8 +125,6 @@ test("events", async () => {
   expect(q.button("item-1")).toHaveAttribute("data-active-item");
   expect(q.button("item-2")).not.toHaveAttribute("data-focus-visible");
   expect(q.button("item-2")).not.toHaveAttribute("data-active-item");
-
-  log.mockReset();
 
   externalButton.remove();
 });

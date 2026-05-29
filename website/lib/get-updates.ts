@@ -1,4 +1,4 @@
-import type { AnyObject } from "@ariakit/core/utils/types";
+import type { AnyObject } from "@ariakit/utils";
 import spawn from "cross-spawn";
 import type { UpdateItem } from "@/updates.ts";
 import updates from "@/updates.ts";
@@ -44,7 +44,7 @@ async function getSubstackUpdates() {
   }
   try {
     const response = await fetch(
-      "https://newsletter.ariakit.org/api/v1/archive?limit=50&sort=new",
+      "https://newsletter.ariakit.com/api/v1/archive?limit=50&sort=new",
     );
     const data: AnyObject[] = await response.json();
     const items = data.map<UpdateItem>((item) => ({

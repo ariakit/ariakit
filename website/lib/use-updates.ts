@@ -1,4 +1,4 @@
-import { useEvent } from "@ariakit/react-core/utils/hooks";
+import { useEvent } from "@ariakit/react-utils";
 import { useMemo, useState } from "react";
 import useLocalStorageState from "use-local-storage-state";
 import type { UpdateItem } from "@/updates.ts";

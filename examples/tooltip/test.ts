@@ -1,6 +1,7 @@
 import { click, hover, press, q } from "@ariakit/test";
+import { afterEach, expect, test } from "vitest";
 
-const tooltip = "https://ariakit.org/components/tooltip";
+const tooltip = "https://ariakit.com/components/tooltip";
 
 const hoverOutside = async () => {
   await hover(document.body);
@@ -53,7 +54,7 @@ test("click on tooltip and press esc", async () => {
   expect(q.tooltip(tooltip)).not.toBeInTheDocument();
   await hover(q.link());
   expect(await q.tooltip.wait(tooltip)).toBeVisible();
-  await click(q.tooltip(tooltip)!);
+  await click(q.tooltip(tooltip));
   expect(q.tooltip(tooltip)).toBeVisible();
   await press.Escape();
   expect(q.link()).toHaveFocus();

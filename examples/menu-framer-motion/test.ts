@@ -1,4 +1,5 @@
 import { click, press, q, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("show/hide on click", async () => {
   expect(q.menu()).not.toBeInTheDocument();
@@ -50,7 +51,7 @@ test("hide on click outside", async () => {
   expect(q.menu()).not.toBeInTheDocument();
   await click(q.button("Options"));
   await click(document.body);
-  expect(q.button("Options")).toHaveFocus();
+  expect(q.button("Options")).not.toHaveFocus();
   expect(q.menu.includesHidden()).toBeVisible();
   await waitFor(() => expect(q.menu()).not.toBeInTheDocument());
 });

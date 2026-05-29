@@ -1,4 +1,5 @@
 import { click, hover, press, q, sleep, waitFor } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 const waitForHovercardToShow = (timeout = 600) =>
   waitFor(() => expect(q.dialog()).toBeVisible(), { timeout });
@@ -13,13 +14,13 @@ const hoverOutside = async () => {
 
 test("show hovercard on hover after timeout", async () => {
   expect(q.dialog()).not.toBeInTheDocument();
-  await hover(q.link("@ariakit.org"));
+  await hover(q.link("@ariakit.com"));
   expect(q.dialog()).not.toBeInTheDocument();
   await waitForHovercardToShow();
 });
 
 test("hide hovercard on hover outside after timeout", async () => {
-  await hover(q.link("@ariakit.org"));
+  await hover(q.link("@ariakit.com"));
   await waitForHovercardToShow();
   await hoverOutside();
   expect(q.dialog()).toBeVisible();
@@ -27,7 +28,7 @@ test("hide hovercard on hover outside after timeout", async () => {
 });
 
 test("keep hovercard open when it has focus", async () => {
-  await hover(q.link("@ariakit.org"));
+  await hover(q.link("@ariakit.com"));
   await waitForHovercardToShow();
   await click(q.dialog());
   await hoverOutside();
@@ -36,11 +37,11 @@ test("keep hovercard open when it has focus", async () => {
 });
 
 test("keep hovercard open when hovering out and in quickly", async () => {
-  await hover(q.link("@ariakit.org"));
+  await hover(q.link("@ariakit.com"));
   await waitForHovercardToShow();
   await hoverOutside();
   await sleep(200);
-  await hover(q.link("@ariakit.org"));
+  await hover(q.link("@ariakit.com"));
   expect(q.dialog()).toBeVisible();
   await hoverOutside();
   await sleep(200);
@@ -50,19 +51,19 @@ test("keep hovercard open when hovering out and in quickly", async () => {
 });
 
 test("hide unfocused hovercard on escape", async () => {
-  await hover(q.link("@ariakit.org"));
+  await hover(q.link("@ariakit.com"));
   await waitForHovercardToShow();
   await sleep();
   await press.Escape();
   expect(q.dialog()).not.toBeInTheDocument();
-  expect(q.link("@ariakit.org")).not.toHaveFocus();
+  expect(q.link("@ariakit.com")).not.toHaveFocus();
 });
 
 test("hide focused hovercard on escape", async () => {
-  await hover(q.link("@ariakit.org"));
+  await hover(q.link("@ariakit.com"));
   await waitForHovercardToShow();
   await click(q.dialog());
   await press.Escape();
   expect(q.dialog()).not.toBeInTheDocument();
-  expect(q.link("@ariakit.org")).toHaveFocus();
+  expect(q.link("@ariakit.com")).toHaveFocus();
 });

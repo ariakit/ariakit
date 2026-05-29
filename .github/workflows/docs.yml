@@ -1,0 +1,66 @@
+name: docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build:
+    name: Generate docs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      WRITEBACK_ALLOWED: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          # Check out the PR branch tip (not the merge ref) so `commit-or-pr`
+          # can fetch and rebase onto `origin/$HEAD_REF` cleanly. Otherwise
+          # the merge ref includes commits from `main` that are absent from
+          # the PR branch, which causes rebase conflicts.
+          ref: ${{ github.head_ref || github.ref_name }}
+          persist-credentials: false
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
+
+      - name: Generate docs
+        run: pnpm run docs
+
+      - name: Detect changes
+        id: patch
+        # Scope the diff check to the generated readmes. Other tree changes
+        # from earlier steps (e.g., `pnpm install` rewriting `pnpm-lock.yaml`
+        # to re-add pnpm's self-managed `packageManagerDependencies` section)
+        # must not trigger a docs commit.
+        run: |
+          git add -A -- 'packages/*/readme.md'
+          if git diff --cached --quiet --exit-code; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "has_changes=true" >> "$GITHUB_OUTPUT"
+
+      - name: Commit or create PR
+        if: >
+          steps.patch.outputs.has_changes == 'true' &&
+          env.WRITEBACK_ALLOWED == 'true'
+        uses: ./.github/workflows/commit-or-pr
+        with:
+          # This write-back step intentionally assumes PRs come from branches
+          # on this repository instead of forks.
+          # On pull requests we push back to the branch; on pushes to `main`
+          # this opens or updates the long-lived bot PR for generated docs.
+          event: ${{ github.event_name }}
+          message: Update docs
+          head-branch: ${{ github.head_ref || github.ref_name }}
+          new-branch: chore/update-docs
+          paths: packages/*/readme.md
+          app-client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
+          app-private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}

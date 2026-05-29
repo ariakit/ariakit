@@ -1,4 +1,5 @@
 import { click, dispatch, hover, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 function getSelectionValue(element: Element | HTMLInputElement | null) {
   if (!element || !("value" in element)) {

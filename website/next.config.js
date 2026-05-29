@@ -61,6 +61,13 @@ const nextConfig = {
     config.module.unknownContextCritical = false;
     config.module.exprContextCritical = false;
 
+    // Ignore optional dependencies that pnpm doesn't hoist
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      sugarss: false,
+      babylon: false,
+    };
+
     // Solid support
     const solidRule = {
       use: [
@@ -91,11 +98,11 @@ const nextConfig = {
     });
     const __dirname = path.dirname(fileURLToPath(import.meta.url));
     config.module.rules.push({
-      // .tsx files in the @ariakit/solid and @ariakit/solid-core packages
+      // .tsx files in the @ariakit/solid and @ariakit/solid-components packages
       test: /\.tsx?$/,
       include: [
         path.resolve(__dirname, "../packages/ariakit-solid"),
-        path.resolve(__dirname, "../packages/ariakit-solid-core"),
+        path.resolve(__dirname, "../packages/ariakit-solid-components"),
       ],
       ...solidRule,
     });

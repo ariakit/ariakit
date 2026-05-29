@@ -1,7 +1,7 @@
 "use client";
-import { invariant } from "@ariakit/core/utils/misc";
 import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
-import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
+import { useUpdateEffect } from "@ariakit/react-utils";
+import { invariant } from "@ariakit/utils";
 import Link from "next/link.js";
 import type { ReactNode } from "react";
 import {
@@ -154,7 +154,6 @@ export function PlaygroundClient({
     () =>
       Object.entries(files).reduce<typeof files>(
         (acc, [file, code]) => ({
-          // biome-ignore lint/performance/noAccumulatingSpread: TODO
           ...acc,
           [tsToJsFilename(file)]: javascript?.[file]?.code ?? code,
         }),

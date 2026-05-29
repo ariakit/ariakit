@@ -1,6 +1,6 @@
 import "./style.css";
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { forwardRef, useState } from "react";
 
 function Content() {

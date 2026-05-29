@@ -1,5 +1,6 @@
 // https://github.com/ariakit/ariakit/issues/3232
 import { press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 function setup() {
   const before = document.createElement("button");

@@ -66,6 +66,15 @@ const builds = /** @type {const} */ ([
   { format: "cjs", outDir: cjsDir },
 ]);
 
+const cjsInternalPackages = [
+  /^@ariakit\/components($|\/)/,
+  /^@ariakit\/react-components($|\/)/,
+  /^@ariakit\/react-store($|\/)/,
+  /^@ariakit\/react-utils($|\/)/,
+  /^@ariakit\/store($|\/)/,
+  /^@ariakit\/utils($|\/)/,
+];
+
 /** @param {{ format: import("tsup").Format, outDir: string }} options */
 function buildStandard({ format, outDir }) {
   if (isFramework) return;
@@ -73,12 +82,13 @@ function buildStandard({ format, outDir }) {
     entry,
     format,
     outDir,
+    noExternal: format === "cjs" ? cjsInternalPackages : undefined,
     // dts: true,
     // tsconfig: "tsconfig.build.json",
     splitting: true,
     esbuildOptions(options) {
       options.chunkNames = "__chunks/[hash]";
-      // TODO: this might not be necessary for anything other than react and react-core
+      // TODO: this might not be necessary for anything other than react and react-components
       if (format === "esm") {
         options.banner = {
           js: '"use client";',
@@ -95,6 +105,7 @@ function buildReact({ format, outDir }) {
     entry,
     format,
     outDir,
+    noExternal: format === "cjs" ? cjsInternalPackages : undefined,
     // dts: true,
     // tsconfig: "tsconfig.build.json",
     splitting: true,
@@ -123,10 +134,7 @@ function buildSolid({ format, outDir }) {
       options.chunkNames = "__chunks/[hash]";
       options.jsx = "preserve";
     },
-    esbuildPlugins: [
-      // @ts-expect-error there are multiple esbuild dependencies installed
-      solidPlugin({ solid: { generate: "dom" } }),
-    ],
+    esbuildPlugins: [solidPlugin({ solid: { generate: "dom" } })],
   });
 }
 

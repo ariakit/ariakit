@@ -15,16 +15,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Install node modules
-        uses: ./.github/workflows/install-node-modules
-        with:
-          cache-npm: true
+      - name: Set up environment
+        uses: ./.github/workflows/setup
 
       - name: Build app
-        run: npm run build-site
+        run: pnpm run build-app
 
       - name: Deploy Next.js app to Cloudflare
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -33,9 +31,10 @@ jobs:
           command: deploy
 
       - name: Deploy app to Cloudflare
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          command: deploy --env=""
+          workingDirectory: app
+          command: deploy
