@@ -1283,12 +1283,6 @@
   }
 }
 
-@property --_ak-tcl {
-  syntax: "*";
-  inherits: false;
-  initial-value: calc((0.645 - l) * 1000000);
-}
-
 @property --_ak-tfcl {
   syntax: "*";
   inherits: false;
@@ -1488,7 +1482,7 @@
 
 @property --_ak-licv {
   syntax: "<number>";
-  inherits: true;
+  inherits: false;
   initial-value: 0;
 }
 
