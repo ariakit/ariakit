@@ -8,10 +8,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
 
-    // Focusing the disclosure shows it, which attaches its global focusout
-    // listener to the document.
+    // Focusing the disclosure shows it and attaches its global focusout listener
+    // to the document; pressing Enter then opens the hovercard. Waiting for the
+    // hovercard content confirms that flow completed before we dispatch below.
     await q.button("More details").focus();
-    await test.expect(q.button("More details")).toBeVisible();
+    await page.keyboard.press("Enter");
+    await test
+      .expect(q.text("Toolkit for building accessible web apps."))
+      .toBeVisible();
 
     // A focusout whose relatedTarget is a non-Node EventTarget (such as one
     // dispatched on window or an XMLHttpRequest) used to make the listener call
