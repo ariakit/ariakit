@@ -28,14 +28,9 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
-  if (isElement(event.relatedTarget)) return event.relatedTarget;
-  return null;
-}
-
 function hoveringInside(event: ReactMouseEvent<HTMLElement>) {
-  const nextElement = getMouseDestination(event);
-  if (!nextElement) return false;
+  const nextElement = event.relatedTarget;
+  if (!isElement(nextElement)) return false;
   return contains(event.currentTarget, nextElement);
 }
 
@@ -43,8 +38,8 @@ const symbol = Symbol("composite-hover");
 type ElementWithSymbol = HTMLElement & { [symbol]?: boolean };
 
 function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
-  let dest = getMouseDestination(event);
-  if (!dest) return false;
+  if (!isElement(event.relatedTarget)) return false;
+  let dest: Element | null = event.relatedTarget;
   do {
     if (hasOwnProperty(dest, symbol) && dest[symbol]) return true;
     dest = dest.parentElement;
