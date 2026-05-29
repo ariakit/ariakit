@@ -3,7 +3,7 @@
  * @module Event utilities
  */
 
-import { contains } from "./dom.ts";
+import { contains, isElement } from "./dom.ts";
 import { isApple } from "./platform.ts";
 
 /**
@@ -12,10 +12,13 @@ import { isApple } from "./platform.ts";
 export function isPortalEvent(
   event: Pick<Event, "currentTarget" | "target">,
 ): boolean {
-  return Boolean(
-    event.currentTarget &&
-    !contains(event.currentTarget as Node, event.target as Element),
-  );
+  const { currentTarget, target } = event;
+  if (!currentTarget) return false;
+  // A non-element target can't be contained by `currentTarget`, so treat it the
+  // same as a target rendered outside of it (e.g. through a portal) instead of
+  // letting `contains` throw on a non-node.
+  if (!isElement(target)) return true;
+  return !contains(currentTarget as Node, target);
 }
 
 /**
@@ -155,8 +158,13 @@ export function isFocusEventOutside(
   container?: Element | null,
 ) {
   const containerElement = container || (event.currentTarget as Element);
-  const relatedTarget = event.relatedTarget as HTMLElement | null;
-  return !relatedTarget || !contains(containerElement, relatedTarget);
+  const relatedTarget = event.relatedTarget;
+  // A non-element relatedTarget (e.g. one set on a programmatically dispatched
+  // event) can't be inside the container, so it counts as outside instead of
+  // letting `contains` throw on a non-node.
+  return (
+    !isElement(relatedTarget) || !contains(containerElement, relatedTarget)
+  );
 }
 
 /**
