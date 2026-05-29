@@ -19,7 +19,7 @@ import { test } from "./fixtures.ts";
  *
  * Kept in sync with the copy in `packages/ariakit-scripts/src/perf.ts`.
  */
-async function gotoAndSettle(page: Page, url: string) {
+export async function gotoAndSettle(page: Page, url: string) {
   await page.goto(url, { waitUntil: "load" });
   await page
     .waitForLoadState("networkidle", { timeout: 5_000 })

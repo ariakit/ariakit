@@ -1,5 +1,4 @@
-import { errors } from "@playwright/test";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { gotoAndSettle, withFramework } from "#app/test-utils/preview.ts";
 
 // React's "Maximum update depth exceeded" error. In production builds React
 // throws the minified variant that links to https://react.dev/errors/185.
@@ -23,17 +22,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
     page.on("pageerror", (error) => collect(error.message));
 
-    // The error is thrown while the React island hydrates, so reload with the
-    // listeners already attached to capture it from the very first render.
-    await page.reload({ waitUntil: "load" });
-    // Bounded settle that only swallows the timeout, mirroring the shared
-    // `gotoAndSettle` helper so a stalled request can't consume the test budget
-    // and real failures (such as the page closing) still surface.
-    await page
-      .waitForLoadState("networkidle", { timeout: 5_000 })
-      .catch((error) => {
-        if (!(error instanceof errors.TimeoutError)) throw error;
-      });
+    // The error is thrown while the React island hydrates, so re-navigate with
+    // the listeners already attached to capture it from the very first render.
+    await gotoAndSettle(page, page.url());
 
     // Confirm the island actually hydrated and the menus still work.
     await q.button("Row 0 actions").click();
