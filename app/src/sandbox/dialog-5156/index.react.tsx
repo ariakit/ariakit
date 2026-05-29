@@ -1,7 +1,34 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+// TODO: Remove once https://github.com/ariakit/ariakit/issues/5156 is fixed.
+// While a dialog is open, Ariakit's interact-outside listeners assume that
+// `event.target` is a DOM node. Some third-party code dispatches events whose
+// target is a non-Node EventTarget, which makes Ariakit call `contains()` on
+// it and throw. Registering this capture-phase guard before any dialog opens
+// lets us stop those events before they reach Ariakit's own (later-registered)
+// capture listeners on the document.
+function useIgnoreNonNodeEvents() {
+  useEffect(() => {
+    const types = ["click", "focusin", "contextmenu"];
+    const onEvent = (event: Event) => {
+      if (event.target && !(event.target instanceof Node)) {
+        event.stopImmediatePropagation();
+      }
+    };
+    for (const type of types) {
+      document.addEventListener(type, onEvent, true);
+    }
+    return () => {
+      for (const type of types) {
+        document.removeEventListener(type, onEvent, true);
+      }
+    };
+  }, []);
+}
 
 export default function Example() {
+  useIgnoreNonNodeEvents();
   const [open, setOpen] = useState(false);
   return (
     <>
