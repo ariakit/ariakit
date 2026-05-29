@@ -47,6 +47,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`wrapInstance`](#wrapinstance)
   - [`createHook`](#createhook)
   - [`withOptions`](#withoptions)
+  - [`createMetadataProps`](#createmetadataprops)
 - [Type utilities](#type-utilities)
   - [`RenderValue`](#rendervalue)
   - [`WrapInstanceValue`](#wrapinstancevalue)
@@ -360,6 +361,40 @@ export const useMyComponent = createHook<TagName, MyComponentOptions>(
     },
   ),
 );
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `createMetadataProps`
+
+```ts
+function createMetadataProps<T, K extends keyof any>(
+  props: { _metadataProps?: { [key in K]?: T } },
+  key: K,
+  value: () => T,
+): readonly [
+  () => { [P in K]?: T | undefined }[K] | undefined,
+  { readonly _metadataProps: { [P in K]?: T | undefined } & { [key]: T } },
+];
+```
+
+Passes metadata props around the component tree without leaking them to the DOM. The metadata is carried on the internal `_metadataProps` prop, which `createInstance` strips before rendering a host element. A plain (non-`on*`) prop is used on purpose: `mergeProps`/`combineProps` would chain an `on*` carrier into a wrapper function and drop the attached symbols during composition, whereas a plain prop survives the merge with its symbols intact. Returns a reactive accessor for the parent value and the props that forward the augmented metadata to descendants.
+
+Example:
+
+```jsx
+const symbol = Symbol("command");
+function useCommand(props) {
+  const [isDuplicate, metadataProps] = createMetadataProps(
+    props,
+    symbol,
+    () => true,
+  );
+  props = mergeProps(props, metadataProps);
+  // isDuplicate() is true when a parent already set the symbol.
+}
 ```
 
 <div align="right">
