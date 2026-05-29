@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { FocusTrap, FocusTrapRegion } from "@ariakit/solid";
 import { createSignal } from "solid-js";
 

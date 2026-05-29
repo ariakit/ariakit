@@ -51,7 +51,10 @@
   "exports": {
     ".": "./src/index.ts",
     "./as": "./src/as.ts",
+    "./button": "./src/button.ts",
+    "./command": "./src/command.ts",
     "./focus-trap": "./src/focus-trap.ts",
+    "./focusable": "./src/focusable.ts",
     "./group": "./src/group.ts",
     "./heading": "./src/heading.ts",
     "./role": "./src/role.ts",

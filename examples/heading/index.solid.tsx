@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Heading, HeadingLevel } from "@ariakit/solid";
 import "./style.css";
 

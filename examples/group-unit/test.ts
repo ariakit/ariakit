@@ -1,4 +1,5 @@
 import { q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("has role", () => {
   const qq = q.within(document.getElementById("role"));

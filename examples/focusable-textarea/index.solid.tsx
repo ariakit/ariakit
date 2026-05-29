@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { As, Focusable, Role } from "@ariakit/solid";
 import type { FocusableProps } from "@ariakit/solid";
 import "./style.css";
@@ -19,7 +18,7 @@ function Textarea(props: TextareaProps) {
 
 export default function Example() {
   return (
-    <label className="label">
+    <label class="label">
       Comment
       <Textarea class="textarea" placeholder="Write your comment, be kind" />
     </label>

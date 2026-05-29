@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Button } from "@ariakit/solid";
 import "./button.css";
 

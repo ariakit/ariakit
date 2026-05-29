@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Group, GroupLabel } from "@ariakit/solid";
 
 export default function Example() {
