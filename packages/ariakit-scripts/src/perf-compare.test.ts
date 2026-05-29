@@ -383,7 +383,7 @@ test("merges sharded round files with shard-suffixed names", () => {
   const dir = createTempDir();
   // Mirrors the CI Chrome sharding: each shard writes round files carrying a
   // `-s<shard>` suffix (e.g. baseline-1-s1-worker0.json) for its own subset of
-  // tests, and chrome-merge runs a single comparison over all of them. Locks
+  // tests, and the post job runs a single comparison over all of them. Locks
   // that discoverRoundFiles accepts the suffix, pairs by round index, and
   // merges the shards' disjoint tests into one comparison.
   for (const round of [1, 2]) {
