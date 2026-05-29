@@ -1,5 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-import type { RefObject } from "react";
 import { useRef, useState } from "react";
 import { Dialog } from "./dialog.tsx";
 import { add, playlistAdd } from "./icons.tsx";
@@ -20,7 +19,7 @@ function useDisclosure(defaultOpen = false) {
 
 export default function Example() {
   const [menuInitialFocusRef, setMenuInitialFocusRef] =
-    useState<RefObject<HTMLElement>>();
+    useState<Ariakit.MenuProps["initialFocus"]>();
 
   const createDialogInitialFocusRef = useRef<HTMLElement | null>(null);
   const manageDialogDisclosureRef = useRef<HTMLButtonElement>(null);

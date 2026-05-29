@@ -1,19 +1,17 @@
 import "@testing-library/jest-dom/vitest";
-
 import { render as renderReact } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
-import { Suspense as ReactSuspense, createElement, version } from "react";
+import { createElement, Suspense as ReactSuspense } from "react";
 import {
-  Suspense as SolidSuspense,
   createComponent,
   render as renderSolid,
+  Suspense as SolidSuspense,
 } from "solid-js/web";
+import { expect, beforeEach } from "vitest";
 import failOnConsole from "vitest-fail-on-console";
 import type { AllowedTestLoader } from "./vitest.config.ts";
 
-if (!version.startsWith("17")) {
-  failOnConsole();
-}
+failOnConsole();
 
 expect.extend({
   toHaveFocus(element: HTMLElement, expected, options) {
@@ -47,20 +45,6 @@ expect.extend({
   },
 });
 
-if (version.startsWith("17")) {
-  vi.mock("react", async () => {
-    const actual = await vi.importActual<typeof import("react")>("react");
-    let id = 0;
-    const mocks = {
-      startTransition: (v: () => any) => v(),
-      useDeferredValue: <T>(v: T) => v,
-      useTransition: () => [false, (v: () => any) => v()],
-      useId: () => actual.useMemo(() => `id-${id++}`, []),
-    };
-    return { ...mocks, ...actual };
-  });
-}
-
 async function tryImport(path: string) {
   return import(path)
     .then(({ default: component }) => ({ component, failedImport: false }))
@@ -69,12 +53,12 @@ async function tryImport(path: string) {
 
 async function loadReact(dir: string) {
   const { component, failedImport } = await tryImport(
-    `./examples/${dir}/index.react.tsx`,
+    `./${dir}/index.react.tsx`,
   );
   if (failedImport) return false;
   const element = createElement(ReactSuspense, {
     fallback: null,
-    // biome-ignore lint/correctness/noChildrenProp:
+    // oxlint-disable-next-line react/no-children-prop -- createElement requires children prop
     children: createElement(component),
   });
   const { unmount } = await renderReact(element, { strictMode: true });
@@ -83,7 +67,7 @@ async function loadReact(dir: string) {
 
 async function loadSolid(dir: string) {
   const { component, failedImport } = await tryImport(
-    `./examples/${dir}/index.solid.tsx`,
+    `./${dir}/index.solid.tsx`,
   );
   if (failedImport) return false;
   const div = document.createElement("div");
@@ -136,8 +120,7 @@ Note: test files can also be named `test-<browser target>.` instead of `test.` t
 function parseTest(filename?: string) {
   if (!filename) return false;
   const match = filename.match(
-    // @ts-expect-error Test runner is not limited by ES2017 target.
-    /examples\/(?<dir>.*)\/test\.((?<loader>react|solid)\.)?ts$/,
+    /^(?<dir>(?:.*\/)?(?:examples|sandbox)\/.+?)\/test\.((?<loader>react|solid)\.)?ts$/,
   );
   if (!match?.groups) return false;
   const { dir, loader } = match.groups;

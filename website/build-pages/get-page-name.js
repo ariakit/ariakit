@@ -20,5 +20,5 @@ export function getPageName(filename) {
     ? `${basename(dirname(filename))}${isSolid ? "__solid" : ""}`
     : `${basename(filename, extname(filename))}`;
   // Remove leading digits.
-  return name.replace(/^\d+\-/, "");
+  return name.replace(/^\d+-/, "");
 }

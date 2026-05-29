@@ -1,0 +1,4 @@
+{
+  "extends": "../../tsconfig.react.json",
+  "files": ["src/react.tsx"]
+}

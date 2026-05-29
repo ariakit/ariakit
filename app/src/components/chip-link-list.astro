@@ -1,0 +1,23 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"ul"> {}
+
+const props = Astro.props;
+---
+
+<ul
+  class:list={["flex items-center gap-3 p-3 float-start", props.class]}
+  {...props}
+>
+  <slot />
+</ul>

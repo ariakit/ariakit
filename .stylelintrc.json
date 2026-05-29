@@ -1,5 +1,11 @@
 {
   "extends": "stylelint-config-standard",
+  "ignoreFiles": [
+    "packages/ariakit-tailwind/**",
+    "app/**",
+    "templates/**",
+    "nextjs/**"
+  ],
   "rules": {
     "no-duplicate-at-import-rules": null,
     "no-descending-specificity": null,
@@ -8,6 +14,9 @@
     "length-zero-no-unit": null,
     "value-keyword-case": null,
     "custom-property-pattern": null,
+    "color-function-notation": null,
+    "declaration-property-value-no-unknown": null,
+    "layer-name-pattern": null,
     "function-no-unknown": [true, { "ignoreFunctions": ["theme"] }],
     "selector-pseudo-class-no-unknown": [
       true,

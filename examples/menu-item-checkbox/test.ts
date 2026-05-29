@@ -1,4 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("update menu button label on menu item check", async () => {
   expect(q.button("Unwatch")).toBeInTheDocument();

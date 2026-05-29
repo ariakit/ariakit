@@ -42,7 +42,9 @@ export default function Example() {
 
   // Re-calculates the position of the combobox popover in case the changes on
   // the textarea value have shifted the trigger character.
-  React.useEffect(combobox.render, [combobox, value]);
+  React.useEffect(() => {
+    return combobox.render();
+  }, [combobox, value]);
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "ArrowLeft" || event.key === "ArrowRight") {

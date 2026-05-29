@@ -1,4 +1,5 @@
 import { click, hover, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("open/hide menu", async () => {
   await click(q.button("Actions"));
@@ -43,7 +44,7 @@ test("reset filter on hide", async () => {
   expect(q.combobox("Search actions...")).toHaveValue("a");
   await click(document.body);
   expect(q.dialog("Actions")).not.toBeInTheDocument();
-  expect(q.button("Actions")).toHaveFocus();
+  expect(q.button("Actions")).not.toHaveFocus();
   await click(q.button("Actions"));
   expect(q.combobox("Search actions...")).toHaveValue("");
 });

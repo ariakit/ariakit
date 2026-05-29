@@ -1,4 +1,5 @@
 import { click, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("move through grid without focus shift", async () => {
   await click(q.gridcell("0A1"));

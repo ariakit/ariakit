@@ -2,14 +2,14 @@
 tags:
   - Tooltip
   - Animated
-  - Framer Motion
+  - Motion
 ---
 
-# Tooltip with Framer Motion
+# Tooltip with Motion
 
 <div data-description>
 
-Abstracting [Tooltip](/components/tooltip) into a reusable custom component that uses [Framer Motion](https://www.framer.com/motion/) to create smooth initial and exit animations.
+Abstracting [Tooltip](/components/tooltip) into a reusable custom component that uses [Motion](https://motion.dev/) to create smooth initial and exit animations.
 
 </div>
 

@@ -22,7 +22,7 @@ export default function Example() {
         <input
           type="text"
           value={timeout}
-          onChange={(e) => setTimeout(Number.parseInt(e.target.value) || 0)}
+          onChange={(e) => setTimeout(Number.parseInt(e.target.value, 10) || 0)}
         />
       </label>
       <MenuProvider>

@@ -1,4 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
+import { beforeEach, describe, expect, test } from "vitest";
 
 const SIMPLE = "Simple";
 const WITH_TABS = "With Tabs";

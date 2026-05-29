@@ -1,8 +1,10 @@
 import * as Ariakit from "@ariakit/react";
 import * as React from "react";
 
-interface FilterSelectProps
-  extends Omit<Ariakit.SelectProps, "store" | "onChange" | "onToggle"> {
+interface FilterSelectProps extends Omit<
+  Ariakit.SelectProps,
+  "store" | "onChange" | "onToggle"
+> {
   label: string;
   defaultValue?: Ariakit.SelectStoreProps["defaultValue"];
   value?: Ariakit.SelectStoreProps["value"];

@@ -1,12 +1,11 @@
-export { FocusTrapRegion } from "@ariakit/solid-core/focus-trap/focus-trap-region";
-export { FocusTrap } from "@ariakit/solid-core/focus-trap/focus-trap";
+export type {
+  FocusTrapOptions,
+  FocusTrapProps,
+} from "@ariakit/solid-components/focus-trap/focus-trap";
+export { FocusTrap } from "@ariakit/solid-components/focus-trap/focus-trap";
 
 export type {
   FocusTrapRegionOptions,
   FocusTrapRegionProps,
-} from "@ariakit/solid-core/focus-trap/focus-trap-region";
-
-export type {
-  FocusTrapOptions,
-  FocusTrapProps,
-} from "@ariakit/solid-core/focus-trap/focus-trap";
+} from "@ariakit/solid-components/focus-trap/focus-trap-region";
+export { FocusTrapRegion } from "@ariakit/solid-components/focus-trap/focus-trap-region";

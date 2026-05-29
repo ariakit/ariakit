@@ -1,7 +1,7 @@
 "use client";
 
 import { Role } from "@ariakit/react";
-import { forwardRef } from "@ariakit/react-core/utils/system";
+import { forwardRef } from "@ariakit/react-utils";
 import { Button } from "@ariakit/react/button";
 import type {
   TooltipAnchorProps,
@@ -16,8 +16,10 @@ import {
 import type { ReactNode } from "react";
 import { twJoin } from "tailwind-merge";
 
-export interface TooltipButtonProps
-  extends Omit<TooltipAnchorProps<"button">, "title"> {
+export interface TooltipButtonProps extends Omit<
+  TooltipAnchorProps<"button">,
+  "title"
+> {
   title: ReactNode;
   placement?: TooltipProviderProps["placement"];
   timeout?: TooltipProviderProps["timeout"];

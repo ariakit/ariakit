@@ -1,4 +1,5 @@
 import { click, hover, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("open/close select with the mouse", async () => {
   expect(q.dialog()).not.toBeInTheDocument();

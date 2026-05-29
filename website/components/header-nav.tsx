@@ -1,20 +1,14 @@
 "use client";
 
-import type { PageContent } from "@/build-pages/contents.ts";
-import { getPageTitle, getSearchTitle } from "@/build-pages/get-page-title.js";
-import type { PageIndexDetail } from "@/build-pages/index.ts";
-import pageIndex from "@/build-pages/index.ts";
-import { getPageIcon } from "@/lib/get-page-icon.tsx";
-import { getKeys } from "@ariakit/core/utils/misc";
-import { isApple } from "@ariakit/core/utils/platform";
 import {
   ComboboxItemValue,
   PopoverDisclosureArrow,
   PopoverDismiss,
 } from "@ariakit/react";
-import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
-import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
-import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
+import type { SelectRendererItem } from "@ariakit/react-components/select/select-renderer";
+import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
+import { useEvent, useSafeLayoutEffect } from "@ariakit/react-utils";
+import { getKeys, isApple } from "@ariakit/utils";
 import { track } from "@vercel/analytics";
 import { groupBy } from "lodash-es";
 import { useSelectedLayoutSegments } from "next/navigation.js";
@@ -30,6 +24,11 @@ import {
   useState,
 } from "react";
 import { twJoin } from "tailwind-merge";
+import type { PageContent } from "@/build-pages/contents.ts";
+import { getPageTitle, getSearchTitle } from "@/build-pages/get-page-title.js";
+import type { PageIndexDetail } from "@/build-pages/index.ts";
+import pageIndex from "@/build-pages/index.ts";
+import { getPageIcon } from "@/lib/get-page-icon.tsx";
 import type { HeaderMenuItemProps } from "./header-menu.tsx";
 import {
   HeaderMenu,
@@ -314,7 +313,6 @@ const HeaderNavMenu = memo(
         "group",
       );
       const items = groups.null || [];
-      // biome-ignore lint/performance/noDelete: TODO
       delete groups.null;
       return [items, groups];
     }, [searchData, pages]);
@@ -598,7 +596,7 @@ export function HeaderNav() {
         <HeaderMenuItem href="https://github.com/ariakit/ariakit/discussions">
           Discussions
         </HeaderMenuItem>
-        <HeaderMenuItem href="https://newsletter.ariakit.org">
+        <HeaderMenuItem href="https://newsletter.ariakit.com">
           Newsletter
         </HeaderMenuItem>
       </>

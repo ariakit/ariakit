@@ -1,11 +1,12 @@
 // Based on https://github.com/ritz078/transform/blob/ade2922f12616acde27616fd5841c2ed7e2fa815/pages/api/typescript-to-javascript.ts
-import { transformFromAstSync } from "@babel/core";
+
 import type { TransformOptions } from "@babel/core";
+import { transformFromAstSync } from "@babel/core";
+import { parse as parseBabel } from "@babel/parser";
 import { format } from "prettier";
 import { parse, print } from "recast";
-import _getBabelOptions from "recast/parsers/_babel_options.js";
 import type { Overrides } from "recast/parsers/_babel_options.js";
-import { parser as babelParser } from "recast/parsers/babel.js";
+import _getBabelOptions from "recast/parsers/_babel_options.js";
 
 const getBabelOptions =
   _getBabelOptions as unknown as (typeof _getBabelOptions)["default"];
@@ -14,7 +15,7 @@ const parser = {
   parse(source: string, options: Overrides) {
     const babelOptions = getBabelOptions(options);
     babelOptions.plugins.push("typescript", "jsx");
-    return babelParser.parse(source, babelOptions);
+    return parseBabel(source, babelOptions);
   },
 };
 

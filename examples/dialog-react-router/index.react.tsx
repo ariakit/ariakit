@@ -13,9 +13,9 @@ import "./style.css";
 function Post() {
   const navigate = useNavigate();
 
-  const close = (event?: Event | SyntheticEvent) => {
+  const close = async (event?: Event | SyntheticEvent) => {
     event?.preventDefault();
-    navigate("/");
+    await navigate("/");
   };
 
   return (

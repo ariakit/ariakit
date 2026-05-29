@@ -5,7 +5,7 @@ export default defineConfig({
   retries: 1,
   reportSlowTests: null,
   webServer: {
-    command: "npm start",
+    command: "pnpm start",
     reuseExistingServer: true,
     stdout: "ignore",
     port: 3000,

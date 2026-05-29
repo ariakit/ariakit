@@ -3,8 +3,10 @@
 <p align="center">
   Toolkit for building accessible web apps with <a href="https://www.solidjs.com">Solid</a>.
   <br>
-  <a href="https://solid.ariakit.org"><strong>Explore website »</strong></a>
+  <a href="https://solid.ariakit.com"><strong>Explore website »</strong></a>
 </p>
+
+**Important:** This package is experimental and does not follow semantic versioning, meaning breaking changes may occur in patch and minor versions.
 
 <br>
 
@@ -27,15 +29,16 @@
     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/ariakit/ariakit?style=social">
   </a>
   &nbsp;
-  <a href="https://x.com/ariakitjs">
-    <img alt="Follow Ariakit on Twitter" src="https://img.shields.io/twitter/follow/ariakitjs.svg">
+  <a href="https://bsky.app/profile/ariakit.com">
+    <img alt="Follow Ariakit on Bluesky" src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff">
+  </a>
+  &nbsp;
+  <a href="https://discord.gg/WyHvnXsvMs">
+    <img alt="Join the Ariakit Discord server" src="https://img.shields.io/badge/Discord-%235865F2.svg?&logo=discord&logoColor=white">
   </a>
 </div>
 
 <br>
-
-> [!CAUTION]
-> Ariakit Solid is currently under development and is not ready for production use. See [#4117](https://github.com/ariakit/ariakit/issues/4117) for more information.
 
 ## Installation
 
@@ -84,12 +87,9 @@ render(() => <App />, document.getElementById("root")!);
 
 ## Core Team
 
-- [Diego Haz](https://x.com/diegohaz)
-- [Ben Rodri](https://x.com/benrodrs)
-
-## Ariakit Solid Maintainers
-
-- [Dani Guardiola](https://x.com/daniguardio_la)
+- [Diego Haz](https://bsky.app/profile/haz.dev)
+- [Ben Rodri](https://bsky.app/profile/ben.ariakit.org)
+- [Dani Guardiola](https://bsky.app/profile/dio.la)
 
 ## Attribution
 
@@ -98,4 +98,4 @@ Browser testing provided by
 
 ## Contributing
 
-Follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/solid/next/packages/ariakit-solid/contributing.md).
+Follow the instructions on the [contributing guide](https://github.com/ariakit/ariakit/blob/main/contributing.md).
