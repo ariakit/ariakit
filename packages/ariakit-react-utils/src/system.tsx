@@ -1,3 +1,8 @@
+/**
+ * Helpers for creating and composing Ariakit React components.
+ * @module System utilities
+ */
+
 import type { Store } from "@ariakit/store";
 import type { AnyObject, EmptyObject } from "@ariakit/utils";
 import * as React from "react";

@@ -1,3 +1,8 @@
+/**
+ * Shared types for Ariakit Solid components.
+ * @module Type utilities
+ */
+
 import type { AnyObject, EmptyObject } from "@ariakit/utils";
 import type {
   Component,
