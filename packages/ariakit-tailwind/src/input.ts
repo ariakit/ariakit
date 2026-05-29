@@ -473,7 +473,6 @@ function getLayerTextLightness() {
 // Constants registered once as @property initial values. They only depend on
 // color channels or fixed numeric constants.
 const constantMathVars = {
-  textContrastL: _ak.prop("tcl", { initial: TEXT_CONTRAST_L }),
   textForegroundContrastL: _ak.prop("tfcl", {
     initial: TEXT_FOREGROUND_CONTRAST_L,
   }),
@@ -563,7 +562,10 @@ const layerMathVars = {
   layerPushDirectionToLight: _ak.prop.zero("lpdtl"),
   layerPushBaseL: _ak.prop("lpbl", { initial: l }),
   layerPushL: _ak.prop("lpl", { initial: l }),
-  layerIdleContrastValue: _ak.prop.zero("licv", { inherits: true }),
+  // Set and read only within ak-layer (resolving --_ak-li); no descendant
+  // utility reads it, so inheritance would just push a dead value into every
+  // descendant's computed style. Keep it non-inherited (the default).
+  layerIdleContrastValue: _ak.prop.zero("licv"),
   edgeContrastValue: _ak.prop.zero("ecv", { inherits: true }),
   edgePushDirection: _ak.var("epd", -1),
 };
