@@ -17,13 +17,14 @@
 
 .dialog {
   @apply
+    [--inset:theme(spacing.3)]
     fixed
-    inset-3
+    inset-[--inset]
     sm:inset-y-[10vh]
     m-auto
     sm:mt-0
     h-fit
-    max-h-[calc(100dvh-2*theme(spacing.3))]
+    max-h-[calc(100dvh-var(--inset)*2)]
     sm:max-h-[80vh]
     sm:w-[420px]
     overflow-auto

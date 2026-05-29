@@ -98,16 +98,16 @@ const select = useSelectStore({
 
 ## Reading the state
 
-Component stores in the `@ariakit/react` package expose a `useState` method. It's a custom React hook that you can use to read the state in a performant way.
+Ariakit exposes a generic [`useStoreState`](/reference/use-store-state) hook that you can use to read the state in a performant way.
 
 ### Watching the entire state
 
-Calling `store.useState()` without any arguments returns the entire state object and re-renders the component whenever the state changes.
+Calling [`useStoreState`](/reference/use-store-state) without a second argument returns the entire state object and re-renders the component whenever the state changes.
 
 ```js "useState"
 function MyCombobox() {
   const combobox = useComboboxStore();
-  const state = combobox.useState();
+  const state = useStoreState(combobox);
 
   console.log(state.value);
 }
@@ -115,16 +115,16 @@ function MyCombobox() {
 
 ### Watching a specific state property
 
-Alternatively, you can pass a string to `store.useState()` to read the value of a specific state property. The component will only re-render when the requested value changes.
+Alternatively, you can pass a string to [`useStoreState`](/reference/use-store-state) to read the value of a specific state property. The component will only re-render when the requested value changes.
 
 ```js ""value"" ""open""
-const value = combobox.useState("value");
-const isOpen = combobox.useState("open");
+const value = useStoreState(combobox, "value");
+const isOpen = useStoreState(combobox, "open");
 ```
 
 ### Computed values
 
-Finally, `store.useState()` accepts a selector function as an argument. The function will receive the state as a parameter and should return a value, which can be computed inside the function body.
+Finally, [`useStoreState`](/reference/use-store-state) accepts a selector function as the second argument. The function will receive the state as a parameter and should return a value, which can be computed inside the function body.
 
 You're free to use other variables within this function. The selector will be called whenever the state is updated and on every render, but the component will only re-render when the returned value changes.
 
@@ -132,13 +132,13 @@ You're free to use other variables within this function. The selector will be ca
 function MyComboboxItem({ store, id }) {
   // This component will only re-render when isActive becomes true or false,
   // rather than on any activeId change.
-  const isActive = store.useState((state) => state.activeId === id);
+  const isActive = useStoreState(store, (state) => state.activeId === id);
 }
 ```
 
 ### Reading the state on events
 
-If you're reading the state inside an event handler, you don't need to use `store.useState()`. You can read the current state directly from the store using `store.getState()`, which won't trigger a re-render on the component.
+If you're reading the state inside an event handler, you don't need to use [`useStoreState`](/reference/use-store-state). You can read the current state directly from the store using `store.getState()`, which won't trigger a re-render on the component.
 
 ```js {4}
 const combobox = useComboboxStore();

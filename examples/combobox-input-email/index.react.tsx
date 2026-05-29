@@ -1,0 +1,21 @@
+import * as Ariakit from "@ariakit/react";
+import "./style.css";
+
+export default function Example() {
+  return (
+    <Ariakit.ComboboxProvider>
+      <Ariakit.ComboboxLabel className="label">Email</Ariakit.ComboboxLabel>
+      <Ariakit.Combobox type="email" className="combobox" />
+      <Ariakit.ComboboxPopover gutter={8} sameWidth className="popover">
+        <Ariakit.ComboboxItem
+          className="combobox-item"
+          value="email1@ariakit.com"
+        />
+        <Ariakit.ComboboxItem
+          className="combobox-item"
+          value="email2@ariakit.com"
+        />
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}

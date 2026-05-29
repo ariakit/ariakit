@@ -1,3 +1,11 @@
+import matter from "gray-matter";
+import type { ReactNode } from "react";
+import { Fragment } from "react";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import rehypeSlug from "rehype-slug";
+import remarkGfm from "remark-gfm";
+import invariant from "tiny-invariant";
 import pagesConfig from "@/build-pages/config.js";
 import { getPageContent } from "@/build-pages/get-page-content.js";
 import { getPageEntryFilesCached } from "@/build-pages/get-page-entry-files.js";
@@ -7,14 +15,6 @@ import { getReferences } from "@/build-pages/reference-utils.js";
 import type { Page, TableOfContents } from "@/build-pages/types.ts";
 import { rehypeCodeMeta } from "@/lib/rehype-code-meta.ts";
 import { rehypeWrapHeadings } from "@/lib/rehype-wrap-headings.ts";
-import matter from "gray-matter";
-import type { ReactNode } from "react";
-import { Fragment, cache } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import rehypeSlug from "rehype-slug";
-import remarkGfm from "remark-gfm";
-import invariant from "tiny-invariant";
 import { AuthEnabled } from "./auth.tsx";
 import {
   PageA,
@@ -35,25 +35,23 @@ import { PageHovercard, PageHovercardProvider } from "./page-hovercard.tsx";
 import { PagePre } from "./page-pre.tsx";
 import { PageVideo } from "./page-video.tsx";
 
-export const getFile = cache((config: Page, page: string) => {
+export const getFile = (config: Page, page: string) => {
   const entryFiles = getPageEntryFilesCached(config);
   const file = config.reference
     ? [...entryFiles]
         .reverse()
-        .find((file) =>
-          page.replace(/^use\-/, "").startsWith(getPageName(file)),
-        )
+        .find((file) => page.replace(/^use-/, "").startsWith(getPageName(file)))
     : entryFiles.find((file) => getPageName(file) === page);
   return file;
-});
+};
 
-export const getContent = cache((config: Page, file: string, page: string) => {
+export const getContent = (config: Page, file: string, page: string) => {
   const reference = config.reference
     ? getReferences(file).find((reference) => getPageName(reference) === page)
     : undefined;
   if (config.reference && !reference) return;
   return getPageContent(reference || file);
-});
+};
 
 export interface PageMarkdownProps {
   category?: string;
@@ -70,10 +68,12 @@ export function PageMarkdown({
   page,
   content,
   file,
-  showHovercards = true,
+  showHovercards = false,
   tableOfContents,
 }: PageMarkdownProps) {
   const hovercards = new Set<Promise<string | Iterable<string>>>();
+
+  const isSolid = category === "examples" && page?.endsWith("__solid");
 
   if (!content || !file) {
     invariant(category && page);
@@ -85,8 +85,10 @@ export function PageMarkdown({
     if (!content) return null;
   }
 
+  const originalPage = !isSolid ? page : page?.replace("__solid", "");
+
   const pageDetail = category
-    ? pageIndex[category]?.find((item) => item.slug === page)
+    ? pageIndex[category]?.find((item) => item.slug === originalPage)
     : null;
 
   const { content: contentWithoutMatter } = matter(content);
@@ -149,6 +151,7 @@ export function PageMarkdown({
                 {...props}
                 category={category}
                 page={page}
+                // TODO: add " (Solid)" to title?
                 title={pageDetail?.title}
                 tags={pageDetail?.tags}
                 media={pageDetail?.media}

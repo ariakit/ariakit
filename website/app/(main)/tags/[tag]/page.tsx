@@ -1,13 +1,13 @@
+import { groupBy } from "lodash-es";
+import { notFound } from "next/navigation.js";
+import { twJoin } from "tailwind-merge";
 import { PageContainer } from "@/app/(main)/page-container.tsx";
 import { PageSection } from "@/app/(main)/page-section.tsx";
 import { getPageTitle } from "@/build-pages/get-page-title.js";
 import { PageItem } from "@/components/page-item.tsx";
 import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
 import { getPageIcon } from "@/lib/get-page-icon.tsx";
-import { getPagesByTag, getTagSlug, getTagTitle, getTags } from "@/lib/tag.ts";
-import { groupBy } from "lodash-es";
-import { notFound } from "next/navigation.js";
-import { twJoin } from "tailwind-merge";
+import { getPagesByTag, getTagSlug, getTags, getTagTitle } from "@/lib/tag.ts";
 
 const tags = getTags();
 

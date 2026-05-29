@@ -13,7 +13,7 @@ Click a button to either [`show`](/reference/use-disclosure-store#show) (expand,
 
 <div data-tags></div>
 
-<a href="../examples/disclosure/index.tsx" data-playground>Example</a>
+<a href="../examples/disclosure/index.react.tsx" data-playground>Example</a>
 
 ## Examples
 

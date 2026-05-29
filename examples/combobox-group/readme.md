@@ -18,7 +18,7 @@ Organizing [Combobox](/components/combobox) items into labelled groups using the
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -39,6 +39,6 @@ Organizing [Combobox](/components/combobox) items into labelled groups using the
 - [](/examples/combobox-links)
 - [](/examples/combobox-multiple)
 - [](/examples/combobox-tabs)
-- [](/examples/dialog-combobox-command-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 
 </div>

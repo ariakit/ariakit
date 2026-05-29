@@ -1,12 +1,16 @@
-import { getDocument, isVisible } from "@ariakit/core/utils/dom";
-import { getClosestFocusable, isFocusable } from "@ariakit/core/utils/focus";
-import { invariant } from "@ariakit/core/utils/misc";
+import {
+  getDocument,
+  isVisible,
+  getClosestFocusable,
+  isFocusable,
+  invariant,
+} from "@ariakit/utils";
 import { wrapAsync } from "./__utils.ts";
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
 
-export function mouseDown(element: Element | null, options?: MouseEventInit) {
+export function mouseDown(element: Element | null, options?: PointerEventInit) {
   return wrapAsync(async () => {
     invariant(element, "Unable to mouseDown on null element");
 

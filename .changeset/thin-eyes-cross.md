@@ -1,7 +1,6 @@
 ---
-"@ariakit/react-core": patch
+"@ariakit/react-components": patch
 "@ariakit/react": patch
-"examples": patch
 ---
 
-Fix `PopoverAnchor` not taking precedence over `PopoverDisclosure` when placing Popover
+Fixed [`PopoverAnchor`](https://ariakit.com/reference/popover-anchor) not taking precedence over [`PopoverDisclosure`](https://ariakit.com/reference/popover-disclosure) when placing the [`Popover`](https://ariakit.com/reference/popover).

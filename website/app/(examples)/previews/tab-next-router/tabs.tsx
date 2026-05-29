@@ -1,6 +1,6 @@
 "use client";
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import Link from "next/link.js";
 import { usePathname, useRouter } from "next/navigation.js";
 import * as React from "react";
@@ -46,10 +46,7 @@ export const Tab = React.forwardRef<
 export const TabPanel = React.forwardRef<HTMLDivElement, Ariakit.TabPanelProps>(
   function TabPanel(props, ref) {
     const tab = Ariakit.useTabContext();
-    if (!tab) throw new Error("TabPanel must be wrapped in a Tabs component");
-
-    const tabId = tab.useState("selectedId");
-
+    const tabId = Ariakit.useStoreState(tab, "selectedId");
     return (
       <Ariakit.TabPanel
         ref={ref}

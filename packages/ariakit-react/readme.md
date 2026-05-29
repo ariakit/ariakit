@@ -3,7 +3,7 @@
 <p align="center">
   Toolkit for building accessible web apps with <a href="https://reactjs.org">React</a>.
   <br>
-  <a href="https://ariakit.org"><strong>Explore website »</strong></a>
+  <a href="https://ariakit.com"><strong>Explore website »</strong></a>
 </p>
 
 <br>
@@ -27,8 +27,12 @@
     <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/ariakit/ariakit?style=social">
   </a>
   &nbsp;
-  <a href="https://twitter.com/ariakitjs">
-    <img alt="Follow Ariakit on Twitter" src="https://img.shields.io/twitter/follow/ariakitjs.svg">
+  <a href="https://bsky.app/profile/ariakit.com">
+    <img alt="Follow Ariakit on Bluesky" src="https://img.shields.io/badge/Bluesky-0285FF?logo=bluesky&logoColor=fff">
+  </a>
+  &nbsp;
+  <a href="https://discord.gg/WyHvnXsvMs">
+    <img alt="Join the Ariakit Discord server" src="https://img.shields.io/badge/Discord-%235865F2.svg?&logo=discord&logoColor=white">
   </a>
 </div>
 
@@ -76,6 +80,12 @@ function App() {
 
 createRoot(document.getElementById("root")).render(<App />);
 ```
+
+## Core Team
+
+- [Diego Haz](https://bsky.app/profile/haz.dev)
+- [Ben Rodri](https://bsky.app/profile/ben.ariakit.org)
+- [Dani Guardiola](https://bsky.app/profile/dio.la)
 
 ## Attribution
 

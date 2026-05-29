@@ -1,36 +1,32 @@
 "use client";
 
-import { ChevronRight } from "@/icons/chevron-right.tsx";
-import { NewWindow } from "@/icons/new-window.tsx";
-import { Search } from "@/icons/search.tsx";
-import { Spinner } from "@/icons/spinner.tsx";
-import { useMedia } from "@/lib/use-media.ts";
-import { whenIdle } from "@/lib/when-idle.ts";
-import { batch } from "@ariakit/core/utils/store";
 import * as Ariakit from "@ariakit/react";
-import {
-  useEvent,
-  useId,
-  useSafeLayoutEffect,
-} from "@ariakit/react-core/utils/hooks";
+import { useEvent, useId, useSafeLayoutEffect } from "@ariakit/react-utils";
+import { batch } from "@ariakit/store";
 import Link from "next/link.js";
 import type {
-  ComponentPropsWithRef,
   ComponentPropsWithoutRef,
+  ComponentPropsWithRef,
   HTMLAttributes,
   MouseEvent,
   ReactNode,
   RefObject,
 } from "react";
 import {
-  Fragment,
   createContext,
+  Fragment,
   forwardRef,
   useContext,
   useEffect,
   useRef,
 } from "react";
 import { twJoin } from "tailwind-merge";
+import { ChevronRight } from "@/icons/chevron-right.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { Search } from "@/icons/search.tsx";
+import { Spinner } from "@/icons/spinner.tsx";
+import { useMedia } from "@/lib/use-media.ts";
+import { whenIdle } from "@/lib/when-idle.ts";
 import { Command } from "./command.tsx";
 import { PlusBordered } from "./plus-bordered.tsx";
 import { Popup } from "./popup.tsx";
@@ -43,8 +39,10 @@ const FooterContext = createContext(false);
 const HideAllContext = createContext<(() => void) | null>(null);
 const HasTitleContext = createContext(false);
 
-export interface HeaderMenuProps
-  extends Omit<ComponentPropsWithoutRef<"button">, "value" | "onChange"> {
+export interface HeaderMenuProps extends Omit<
+  ComponentPropsWithoutRef<"button">,
+  "value" | "onChange" | "onToggle"
+> {
   label?: ReactNode;
   open?: boolean;
   onToggle?: (open: boolean) => void;

@@ -17,7 +17,7 @@ Listing suggestions in a [Combobox](/components/combobox) component based on the
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -67,7 +67,7 @@ matches.map((value) => <ComboboxItem key={value} value={value} />);
 - [](/examples/combobox-links)
 - [](/examples/combobox-multiple)
 - [](/examples/combobox-tabs)
-- [](/examples/dialog-combobox-command-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/menu-nested-combobox)
 
 </div>

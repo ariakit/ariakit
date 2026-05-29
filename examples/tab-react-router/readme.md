@@ -16,7 +16,7 @@ Using [React Router](https://reactrouter.com/) to create [Tab](/components/tab) 
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -43,7 +43,7 @@ You can learn more about controlled state on the [Component providers](/guide/co
 It's possible to render a single [`TabPanel`](/reference/tab-panel) component and use the [`tabId`](/reference/tab-panel#tabid) prop to control the selected tab.
 
 ```jsx
-const selectedId = tab.useState("selectedId");
+const selectedId = useStoreState(tab, "selectedId");
 
 <TabPanel tabId={selectedId}>
   <Outlet />

@@ -75,7 +75,7 @@ You can use both component providers and [component stores](/guide/component-sto
 
 ```jsx "store"
 const select = useSelectStore({ defaultValue: "Banana" });
-const value = select.useState("value");
+const value = useStoreState(select, "value");
 
 <SelectProvider store={select}>
 ```

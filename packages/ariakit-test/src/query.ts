@@ -1,22 +1,32 @@
-import { invariant } from "@ariakit/core/utils/misc";
-import { queries as baseQueries } from "@testing-library/dom";
+// oxlint-disable unbound-method
+import { invariant } from "@ariakit/utils";
 import type {
   ByRoleMatcher,
   ByRoleOptions,
   getQueriesForElement,
 } from "@testing-library/dom";
-import { roles } from "./__aria-role.ts";
+import { queries as baseQueries } from "@testing-library/dom";
 import type { AriaRole } from "./__aria-role.ts";
+import { roles } from "./__aria-role.ts";
 
-type RoleQueries = Record<AriaRole, ReturnType<typeof createRoleQuery>>;
+type Query = ReturnType<typeof createRoleQuery>;
+type TextQuery = ReturnType<typeof createTextQuery>;
+type LabeledQuery = ReturnType<typeof createLabeledQuery>;
+type RoleQueries = Record<AriaRole, Query>;
 type ElementQueries = ReturnType<
   typeof getQueriesForElement<typeof baseQueries>
 >;
 
-function createQueries(container: HTMLElement = document.body) {
+interface QueryObject extends RoleQueries {
+  text: TextQuery;
+  labeled: LabeledQuery;
+  within: (element?: HTMLElement | null) => QueryObject;
+}
+
+function createQueries(container?: HTMLElement) {
   return Object.entries(baseQueries).reduce((queries, [key, query]) => {
     // @ts-expect-error
-    queries[key] = (...args) => query(container, ...args);
+    queries[key] = (...args) => query(container || document.body, ...args);
     return queries;
   }, {} as ElementQueries);
 }
@@ -148,7 +158,7 @@ function createLabeledQuery(queries = documentQueries) {
   return Object.assign(queries.queryByLabelText, { all, wait, ensure });
 }
 
-function createQueryObject(queries = documentQueries) {
+function createQueryObject(queries = documentQueries): QueryObject {
   return {
     ...createRoleQueries(queries),
     text: createTextQuery(queries),

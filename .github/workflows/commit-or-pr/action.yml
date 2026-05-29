@@ -1,0 +1,169 @@
+name: commit-or-pr
+description: Commit or create a pull request
+
+inputs:
+  event:
+    description: Event type (push or pull_request)
+    required: true
+  message:
+    description: Commit message and PR title
+    required: true
+  head-branch:
+    description: Branch name when committing to existing PR
+    required: true
+  expected-head-sha:
+    description: >
+      Expected current SHA for the head branch when committing to an existing
+      PR. When set, the action refuses to rebase generated changes onto a
+      different branch tip.
+    required: false
+    default: ""
+  new-branch:
+    description: Branch name when creating a new PR
+    required: true
+  token:
+    description: Token used for GitHub writes (defaults to app credentials or GITHUB_TOKEN)
+    required: false
+    default: ""
+  app-client-id:
+    description: GitHub App client ID used to create a write token
+    required: false
+    default: ""
+  app-private-key:
+    description: GitHub App private key used to create a write token
+    required: false
+    default: ""
+  working-directory:
+    description: Directory where the repository is checked out
+    required: false
+    default: "."
+  paths:
+    description: >
+      Newline-separated pathspecs to stage and commit. When empty, all working
+      tree changes are included. Set this to the generator's output paths so
+      unrelated tree changes (e.g., a `pnpm install` rewriting `pnpm-lock.yaml`)
+      are not captured by the commit.
+    required: false
+    default: ""
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create GitHub App token
+      id: app-token
+      if: inputs.token == '' && inputs.app-client-id != '' && inputs.app-private-key != ''
+      uses: actions/create-github-app-token@v3
+      with:
+        client-id: ${{ inputs.app-client-id }}
+        private-key: ${{ inputs.app-private-key }}
+        permission-contents: write
+        permission-pull-requests: write
+
+    - name: Configure git
+      shell: bash
+      run: |
+        cd "${{ inputs.working-directory }}"
+        git config user.name "ariakito[bot]"
+        git config user.email "283989922+ariakito[bot]@users.noreply.github.com"
+
+    - name: Create PR
+      if: inputs.event == 'push'
+      uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
+      with:
+        # Push workflows should not write directly to `main`; they publish
+        # generated changes through a dedicated maintenance PR instead.
+        path: ${{ inputs.working-directory }}
+        add-paths: ${{ inputs.paths }}
+        commit-message: ${{ inputs.message }}
+        title: ${{ inputs.message }}
+        base: ${{ inputs.head-branch }}
+        branch: ${{ inputs.new-branch }}
+        delete-branch: true
+        token: ${{ inputs.token != '' && inputs.token || steps.app-token.outputs.token != '' && steps.app-token.outputs.token || github.token }}
+        author: ariakito[bot] <283989922+ariakito[bot]@users.noreply.github.com>
+        committer: ariakito[bot] <283989922+ariakito[bot]@users.noreply.github.com>
+
+    - name: Commit changes
+      id: commit
+      shell: bash
+      if: inputs.event == 'pull_request'
+      env:
+        MESSAGE: ${{ inputs.message }}
+        PATHS: ${{ inputs.paths }}
+      run: |
+        cd "${{ inputs.working-directory }}"
+        if [ -n "$PATHS" ]; then
+          # macOS runners ship bash 3.2, which lacks `mapfile`. Fall back to a
+          # read loop that's portable across the bash versions GitHub hosts.
+          path_args=()
+          while IFS= read -r path; do
+            [ -n "${path//[[:space:]]/}" ] && path_args+=("$path")
+          done < <(printf '%s\n' "$PATHS")
+          git add -A -- "${path_args[@]}"
+        else
+          git add -A
+        fi
+        if git diff --cached --quiet --exit-code; then
+          echo "No files to commit."
+          echo "did_commit=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        git commit -m "$MESSAGE"
+        echo "did_commit=true" >> "$GITHUB_OUTPUT"
+
+    - name: Push to PR head branch
+      shell: bash
+      if: ${{ inputs.event == 'pull_request' && steps.commit.outputs.did_commit == 'true' }}
+      env:
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        HEAD_REF: ${{ inputs.head-branch }}
+        EXPECTED_HEAD_SHA: ${{ inputs.expected-head-sha }}
+        GH_TOKEN: ${{ inputs.token != '' && inputs.token || steps.app-token.outputs.token != '' && steps.app-token.outputs.token || github.token }}
+      # Rebase onto the latest branch tip so generated-file commits do not
+      # fail just because another commit landed while the workflow was running.
+      # Abort the rebase on conflicts instead of swallowing the error; otherwise
+      # the working tree is left with conflict markers that break later steps
+      # (e.g., composite action YAML parsing on post-job cleanup).
+      run: |
+        cd "${{ inputs.working-directory }}"
+        set -e
+        # `gh auth git-credential` reads GH_TOKEN from the environment, so no
+        # explicit `gh auth login` is needed — and calling it under `set -e`
+        # would fail the step because gh exits 1 when GH_TOKEN is already set.
+        export GIT_CONFIG_GLOBAL="${RUNNER_TEMP:-/tmp}/commit-or-pr-gitconfig"
+        export GIT_CONFIG_NOSYSTEM=1
+        unset GIT_CONFIG_COUNT GIT_CONFIG_PARAMETERS
+        : > "$GIT_CONFIG_GLOBAL"
+        git config --local --unset-all credential.helper || true
+        git config --local --unset-all http.https://github.com/.extraheader || true
+        set +e
+        url_keys=$(git config --local --name-only --get-regexp '^url\.')
+        status=$?
+        set -e
+        if [ "$status" -gt 1 ]; then
+          exit "$status"
+        fi
+        printf '%s\n' "$url_keys" | sort -u | while IFS= read -r key; do
+          if [ -n "$key" ]; then
+            git config --local --unset-all "$key" || true
+          fi
+        done
+        git remote set-url origin "https://github.com/$GITHUB_REPOSITORY.git"
+        git remote set-url --push origin "https://github.com/$GITHUB_REPOSITORY.git"
+        gh auth setup-git
+        git fetch --no-tags origin "$HEAD_REF"
+        if [ -n "$EXPECTED_HEAD_SHA" ]; then
+          remote_sha="$(git rev-parse FETCH_HEAD)"
+          if [ "$remote_sha" != "$EXPECTED_HEAD_SHA" ]; then
+            echo "Branch advanced from $EXPECTED_HEAD_SHA to $remote_sha; refusing write-back." >&2
+            exit 1
+          fi
+        fi
+        if ! git rebase "origin/$HEAD_REF"; then
+          # `|| true` so a non-zero `--abort` (e.g., no in-progress rebase)
+          # doesn't swallow the explicit diagnostic under `set -e`.
+          git rebase --abort || true
+          echo "Failed to rebase onto origin/$HEAD_REF." >&2
+          exit 1
+        fi
+        git push origin HEAD:"${HEAD_REF}"

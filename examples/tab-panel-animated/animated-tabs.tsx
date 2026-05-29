@@ -1,5 +1,10 @@
+/**
+ * @license
+ * This file is part of Ariakit Plus. For the full license, see
+ * https://ariakit.com/plus/license
+ */
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import type { ElementRef } from "react";
 import { forwardRef, useEffect, useId, useRef } from "react";
 
@@ -34,11 +39,14 @@ export const TabPanel = forwardRef<
   ElementRef<typeof Ariakit.TabPanel>,
   Ariakit.TabPanelProps
 >(function TabPanel(props, ref) {
-  const tab = Ariakit.useTabContext()!;
+  const tab = Ariakit.useTabContext();
   const defaultId = useId();
   const id = props.id ?? defaultId;
-  const tabId = tab.useState(() => props.tabId ?? tab.panels.item(id)?.tabId);
-  const previousTabId = usePrevious(tab.useState("selectedId"));
+  const tabId = Ariakit.useStoreState(
+    tab,
+    () => props.tabId ?? tab?.panels.item(id)?.tabId,
+  );
+  const previousTabId = usePrevious(Ariakit.useStoreState(tab, "selectedId"));
   const wasOpen = tabId && previousTabId === tabId;
   return (
     <Ariakit.TabPanel
@@ -53,7 +61,7 @@ export const TabPanel = forwardRef<
 });
 
 function usePrevious<T>(value: T) {
-  const ref = useRef<T>();
+  const ref = useRef<T | undefined>(undefined);
   useEffect(() => {
     ref.current = value;
   }, [value]);

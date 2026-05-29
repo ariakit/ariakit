@@ -1,5 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 import chalk from "chalk";
 import fse from "fs-extra";
 import { camelCase, groupBy } from "lodash-es";
@@ -92,8 +92,11 @@ function writeFiles(buildDir, pages) {
   const examples = [...new Set(sourceFilesWithoutAppDir)];
   const examplesFile = join(buildDir, "examples.js");
 
-  const examplesContents = `import { lazy } from "react";\n\nexport default {\n${examples
-    .map((path) => `  "${path}": lazy(() => import("${pathToImport(path)}"))`)
+  const examplesContents = `// @ts-nocheck\nimport { lazy } from "react";\nimport { lazy as solidLazy } from "solid-js";\n\nexport default {\n${examples
+    .map(
+      (path) =>
+        `  "${path}": ${path.includes(".solid.") ? "solidLazy" : "lazy"}(() => import("${pathToImport(path)}"))`,
+    )
     .join(",\n")}\n};\n`;
 
   writeFileIfNeeded(examplesFile, examplesContents);
@@ -221,6 +224,45 @@ function writeFiles(buildDir, pages) {
     .join("");
 
   writeFileIfNeeded(iconsFile, iconsContents);
+
+  // images.ts
+  const imagesFile = join(buildDir, "images.ts");
+  const sizes = ["small", "medium", "large"];
+  const modes = ["light", "dark"];
+
+  const images = markdownFiles.reduce(
+    /** @param {Record<string, string[]>} acc */
+    (acc, file) => {
+      const images = sizes.flatMap((size) =>
+        modes.map((mode) => join(dirname(file), `images/${size}-${mode}.png`)),
+      );
+      acc[file] = images.filter((image) => existsSync(image));
+      return acc;
+    },
+    {},
+  );
+
+  const imagesContents = Object.entries(images)
+    .map(([file, imagePaths]) => {
+      const category = pages.find((page) => {
+        const context = Array.isArray(page.sourceContext)
+          ? page.sourceContext
+          : [page.sourceContext];
+        return context.some((context) => file.startsWith(context));
+      });
+      invariant(category);
+      const pageName = getPageName(file);
+      return imagePaths
+        .map((imagePath) => {
+          return `export { default as ${camelCase(
+            `${category.slug}/${pageName}/${basename(imagePath, ".png")}`,
+          )} } from "${pathToImport(imagePath)}";\n`;
+        })
+        .join("");
+    })
+    .join("");
+
+  writeFileIfNeeded(imagesFile, imagesContents);
 
   performance.mark("writeFiles:end");
   const { duration } = performance.measure(

@@ -41,7 +41,7 @@ body:
       label: Workaround
       description: >
         If you have implemented this feature in userland, please describe or link to your solution here to help others.
-        [Why are workarounds important?](https://twitter.com/diegohaz/status/1551476114027069441)
+        [Why are workarounds important?](https://x.com/diegohaz/status/1551476114027069441)
   - type: textarea
     attributes:
       label: Possible implementations

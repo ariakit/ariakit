@@ -7,7 +7,25 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
-    title: "Improved example: Combobox with tabs",
+    title: "New example: Command Menu with Tabs",
+    type: "page",
+    href: "/examples/dialog-combobox-tab-command-menu",
+    dateTime: "2025-01-09T08:36Z",
+  },
+  {
+    title: "Improved example: Dialog with React Router",
+    type: "page",
+    href: "/examples/dialog-react-router",
+    dateTime: "2024-11-30T23:24Z",
+  },
+  {
+    title: "New example: Select with Combobox and Tabs",
+    type: "page",
+    href: "/examples/select-combobox-tab",
+    dateTime: "2024-04-26T14:53Z",
+  },
+  {
+    title: "Improved example: Combobox with Tabs",
     type: "page",
     href: "/examples/combobox-tabs",
     dateTime: "2024-03-04T22:34Z",
@@ -73,7 +91,7 @@ const updates: UpdateItem[] = [
     dateTime: "2023-12-27T13:18Z",
   },
   {
-    title: "New example: Combobox with tabs",
+    title: "New example: Combobox with Tabs",
     type: "page",
     href: "/examples/combobox-tabs",
     dateTime: "2023-12-23T17:34Z",

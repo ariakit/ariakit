@@ -1,11 +1,12 @@
-import { getTextboxSelection } from "@ariakit/core/utils/dom";
 import { press, q, type } from "@ariakit/test";
+import { getTextboxSelection } from "@ariakit/utils";
+import { expect, test } from "vitest";
 
 function getSelectionText(element: HTMLElement | HTMLInputElement | null) {
   if (!element) return null;
   const { start, end } = getTextboxSelection(element);
   const content =
-    "value" in element ? element.value : element.textContent ?? "";
+    "value" in element ? element.value : (element.textContent ?? "");
   const selectionValue = content.slice(start, end);
   return selectionValue;
 }

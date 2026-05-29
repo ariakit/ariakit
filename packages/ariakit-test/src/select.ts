@@ -1,5 +1,4 @@
-import { isVisible } from "@ariakit/core/utils/dom";
-import { invariant } from "@ariakit/core/utils/misc";
+import { isVisible, invariant } from "@ariakit/utils";
 import { wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { hover } from "./hover.ts";
@@ -10,7 +9,7 @@ import { sleep } from "./sleep.ts";
 export function select(
   text: string,
   element: Element | null = document.body,
-  options?: MouseEventInit,
+  options?: PointerEventInit,
 ) {
   return wrapAsync(async () => {
     invariant(element, "Unable to select text on null element");

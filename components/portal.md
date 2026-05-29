@@ -13,7 +13,7 @@ Attach an element to a DOM node outside the parent component's hierarchy.
 
 <div data-tags></div>
 
-<a href="../examples/portal/index.tsx" data-playground>Example</a>
+<a href="../examples/portal/index.react.tsx" data-playground>Example</a>
 
 ## API
 

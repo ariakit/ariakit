@@ -1,9 +1,13 @@
 import { join } from "node:path";
 import invariant from "tiny-invariant";
-import { FunctionLikeDeclaration, Node, Project, ts } from "ts-morph";
+import { Node, Project, ts } from "ts-morph";
+import { getPageName } from "./get-page-name.js";
 
 const project = new Project({
-  tsConfigFilePath: join(process.cwd(), "../tsconfig.json"),
+  tsConfigFilePath: join(
+    process.cwd(),
+    "../packages/ariakit-react/tsconfig.json",
+  ),
 });
 
 /**
@@ -178,6 +182,7 @@ function getExamples(node) {
     const text = tag.text?.toString();
     if (!text) continue;
     const match = text.match(
+      // @ts-expect-error
       /^(?<description>(.|\n)*)```(?<language>[^\n]+)\n(?<code>(.|\n)+)\n```$/m,
     );
     examples.push({
@@ -205,11 +210,12 @@ function getProps(node) {
     if (isPrivate(decl)) continue;
     const description = getDescription(decl);
     if (!description) continue;
+    const type = getType(decl);
     props.push({
       name: prop.getEscapedName(),
-      type: getType(decl),
+      type,
       description,
-      optional: prop.isOptional(),
+      optional: prop.isOptional() || type.endsWith(" | undefined"),
       defaultValue: getDefaultValue(decl),
       deprecated: getDeprecated(decl),
       examples: getExamples(decl),
@@ -224,7 +230,7 @@ function getProps(node) {
  */
 function getFunction(node) {
   if (Node.isFunctionLikeDeclaration(node)) return node;
-  /** @type {FunctionLikeDeclaration} */
+  /** @type {import("ts-morph").FunctionLikeDeclaration} */
   return node.getFirstDescendant(Node.isFunctionLikeDeclaration);
 }
 
@@ -253,7 +259,11 @@ function getReference(filename, node, props, returnedProps) {
     ? node.getVariableStatementOrThrow()
     : node;
 
-  props = props || getFunction(node)?.getParameters()?.at(0);
+  const hasProps = getPageName(filename) !== "store";
+  if (hasProps) {
+    props = props || getFunction(node)?.getParameters()?.at(0);
+  }
+
   returnedProps =
     returnedProps ||
     (name.endsWith("Store")

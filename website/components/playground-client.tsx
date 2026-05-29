@@ -1,11 +1,7 @@
 "use client";
-import { ChevronDown } from "@/icons/chevron-down.tsx";
-import { ChevronUp } from "@/icons/chevron-up.tsx";
-import { NewWindow } from "@/icons/new-window.tsx";
-import { tsToJsFilename } from "@/lib/ts-to-js-filename.ts";
-import { invariant } from "@ariakit/core/utils/misc";
 import { Button, Tab, TabList, TabPanel, useTabStore } from "@ariakit/react";
-import { useUpdateEffect } from "@ariakit/react-core/utils/hooks";
+import { useUpdateEffect } from "@ariakit/react-utils";
+import { invariant } from "@ariakit/utils";
 import Link from "next/link.js";
 import type { ReactNode } from "react";
 import {
@@ -20,6 +16,10 @@ import {
 import { createPortal, flushSync } from "react-dom";
 import { twJoin } from "tailwind-merge";
 import useLocalStorageState from "use-local-storage-state";
+import { ChevronDown } from "@/icons/chevron-down.tsx";
+import { ChevronUp } from "@/icons/chevron-up.tsx";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { tsToJsFilename } from "@/lib/ts-to-js-filename.ts";
 import {
   AuthEnabled,
   AuthLoaded,
@@ -29,16 +29,17 @@ import {
 } from "./auth.tsx";
 import { CodePlaceholder } from "./code-placeholder.tsx";
 import { Command } from "./command.tsx";
-import type { EditorProps } from "./editor.ts";
-// import { Editor } from "./editor.ts";
 import { PageHeroContext } from "./page-context.tsx";
 import { PlaygroundBrowser } from "./playground-browser.tsx";
 import { PlaygroundEditButton } from "./playground-edit.tsx";
 import { PlaygroundToolbar } from "./playground-toolbar.tsx";
 import { TooltipButton } from "./tooltip-button.tsx";
 
-export interface PlaygroundClientProps extends EditorProps {
+export interface PlaygroundClientProps {
   id: string;
+  files: Record<string, string>;
+  codeBlocks: Record<string, ReactNode>;
+  javascript?: Record<string, { code: string; codeBlock: ReactNode }>;
   dependencies?: Record<string, string>;
   devDependencies?: Record<string, string>;
   githubLink?: string;
@@ -65,13 +66,13 @@ export function PlaygroundClient({
   type = "wide",
 }: PlaygroundClientProps) {
   const getTabId = (file: string) =>
-    `${id}-${file.replace("/", "__").replace(/\.([^\.]+)$/, "-$1")}`;
+    `${id}-${file.replace("/", "__").replace(/\.([^.]+)$/, "-$1")}`;
 
   const getFileFromTabId = (tabId: string) =>
     tabId
       .replace(`${id}-`, "")
       .replace("__", "/")
-      .replace(/\-([^\-]+)$/, ".$1");
+      .replace(/-([^-]+)$/, ".$1");
 
   const firstFile = Object.keys(files)[0];
 
@@ -108,7 +109,7 @@ export function PlaygroundClient({
   const tabPanelRef = useRef<HTMLDivElement>(null);
   const collapseRef = useRef<HTMLButtonElement>(null);
   const expandRef = useRef<HTMLButtonElement>(null);
-  const isRadix = /\-radix/.test(id);
+  const isRadix = /-radix/.test(id);
 
   const [callToActionSlot, setCallToActionSlot] = useState<HTMLElement | null>(
     null,
@@ -147,13 +148,12 @@ export function PlaygroundClient({
       resizeObserver.disconnect();
       mutationObserver.disconnect();
     };
-  }, []);
+  }, [selectedId]);
 
   const javascriptFiles = useMemo(
     () =>
       Object.entries(files).reduce<typeof files>(
         (acc, [file, code]) => ({
-          // biome-ignore lint/performance/noAccumulatingSpread: TODO
           ...acc,
           [tsToJsFilename(file)]: javascript?.[file]?.code ?? code,
         }),
@@ -315,7 +315,10 @@ export function PlaygroundClient({
                 </TooltipButton>
               )}
             </div>
-            <div className="flex size-full flex-col justify-center overflow-auto p-4 *:mx-auto">
+            <div
+              data-preview-render-target
+              className="flex size-full flex-col justify-center overflow-auto p-4 *:mx-auto"
+            >
               {preview}
             </div>
           </div>
@@ -371,6 +374,8 @@ export function PlaygroundClient({
               ref={tabPanelRef}
               store={tab}
               tabId={selectedId}
+              scrollRestoration
+              scrollElement={(panel) => panel.querySelector("pre")}
               className={twJoin(
                 collapsed
                   ? "[--max-height:256px] [[data-level='1']_&]:md:[--max-height:440px]"
@@ -380,7 +385,7 @@ export function PlaygroundClient({
                 "min-h-[min(calc(100%-var(--toolbar-height)),var(--max-height))]",
                 "max-h-[--max-height]",
                 type !== "full" && "border border-t-0",
-                collapsed && "[&_pre]:!overflow-hidden",
+                collapsed && "[&_pre]:!overflow-y-hidden",
               )}
             >
               {subscriptionOnly ? (

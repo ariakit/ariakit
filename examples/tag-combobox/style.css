@@ -1,6 +1,6 @@
 @import url("../tag/style.css");
 
-.tag-avatar {
+.ak-tag-avatar {
   @apply
     size-4
     rounded-full
@@ -9,13 +9,13 @@
     dark:bg-gray-700
 }
 
-.tag-name {
+.ak-tag-name {
   @apply
     flex-1
     truncate
 }
 
-.tag-email {
+.ak-tag-email {
   @apply
     text-sm
     opacity-80

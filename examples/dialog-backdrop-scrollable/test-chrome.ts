@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const getDialog = (page: Page) =>
   page.getByRole("dialog", { name: "Homemade Cake" });
@@ -19,12 +20,6 @@ const waitForBackdropScrollTop = async (page: Page, value: number) => {
     { backdrop, value },
   );
 };
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/dialog-backdrop-scrollable", {
-    waitUntil: "networkidle",
-  });
-});
 
 test.use({ headless: false });
 

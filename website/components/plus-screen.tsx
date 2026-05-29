@@ -1,11 +1,11 @@
 "use client";
+import { Heading, HeadingLevel } from "@ariakit/react";
+import Link from "next/link.js";
+import { useSearchParams } from "next/navigation.js";
 import { Heart } from "@/icons/heart.tsx";
 import { Nextjs } from "@/icons/nextjs.tsx";
 import { Vite } from "@/icons/vite.tsx";
 import { usePrice } from "@/lib/use-price.ts";
-import { Heading, HeadingLevel } from "@ariakit/react";
-import Link from "next/link.js";
-import { useSearchParams } from "next/navigation.js";
 import { CodePlaceholder } from "./code-placeholder.tsx";
 import { Focusable } from "./focusable.tsx";
 import { InlineLink } from "./inline-link.tsx";
@@ -60,9 +60,14 @@ export function PlusScreen() {
                   </PlusFeature>
                   <PlusFeature
                     feature="preview-docs"
+                    disabled
+                    className="aria-disabled:opacity-50"
                     render={<Focusable flat render={<li />} />}
                   >
-                    Preview API docs
+                    Preview API docs{" "}
+                    <span className="uppercase ms-2 text-xs px-1.5 py-1 rounded bg-black/60 dark:bg-white/60 text-white dark:text-black font-semibold">
+                      Soon
+                    </span>
                   </PlusFeature>
                   <PlusFeature
                     feature="support"

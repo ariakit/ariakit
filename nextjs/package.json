@@ -1,0 +1,35 @@
+{
+  "name": "nextjs",
+  "version": "0.0.2",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#app/*": "./*"
+  },
+  "exports": {
+    "./pages/*": "./app/*/page.tsx"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "build-worker": "opennextjs-cloudflare build",
+    "preview": "opennextjs-cloudflare preview",
+    "start": "next start",
+    "tsc": "next typegen && tsc"
+  },
+  "dependencies": {
+    "@ariakit/react": "workspace:*",
+    "next": "16.2.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@opennextjs/cloudflare": "1.19.11",
+    "@tailwindcss/postcss": "4.3.0",
+    "@types/node": "24.12.4",
+    "@types/react": "19.2.15",
+    "@types/react-dom": "19.2.3",
+    "babel-plugin-react-compiler": "1.0.0",
+    "tailwindcss": "4.3.0"
+  }
+}

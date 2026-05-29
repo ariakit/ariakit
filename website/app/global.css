@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url("tailwindcss/base") layer(_base);
+@import url("tailwindcss/components") layer(theme);
+@import url("tailwindcss/utilities") layer(_utilities);
 
 [role="button"],
 button:not([type="submit"]) {

@@ -1,10 +1,10 @@
-import pageIndex from "@/build-pages/index.ts";
-import { getPageIcon } from "@/lib/get-page-icon.tsx";
 import type { Element } from "hast";
 import Link from "next/link.js";
 import type { ComponentProps, ReactNode } from "react";
 import { Children, isValidElement } from "react";
 import { twJoin } from "tailwind-merge";
+import pageIndex from "@/build-pages/index.ts";
+import { getPageIcon } from "@/lib/get-page-icon.tsx";
 import { InlineLink } from "./inline-link.tsx";
 import { PageItem } from "./page-item.tsx";
 
@@ -40,7 +40,7 @@ export function PageCards({
   const links = findCardLinks(children);
 
   const pages = links.flatMap((link) => {
-    const url = new URL(link, "https://ariakit.org");
+    const url = new URL(link, "https://ariakit.com");
     const [, category, slug] = url.pathname.split("/");
     if (!category || !slug) return [];
     const page = pageIndex[category]?.find((item) => item.slug === slug);

@@ -17,7 +17,7 @@ Using plain CSS transitions to slide in and out [`TabPanel`](/reference/tab-pane
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -45,25 +45,25 @@ This can be implemented inside our custom `TabPanel` component by following thes
    }
 
    function TabPanel(props) {
-     const tab = Ariakit.useTabContext()!;
-     const selectedTabId = tab.useState("selectedId");
+     const tab = Ariakit.useTabContext();
+     const selectedTabId = Ariakit.useStoreState(tab, "selectedId");
      const previousTabId = usePrevious(selectedTabId);
    ```
 
 2. Get the current tab panel object from the tab store:
 
    ```tsx
-   const panel = tab.useState(() => tab.panels.item(props.id));
+   const panel = Ariakit.useStoreState(tab, () => tab?.panels.item(props.id));
    ```
 
-   It's important to use the [`useState`](/reference/use-tab-store#usestate) hook to ensure that the component re-renders when the tab panel object changes.
+   It's important to use the [`useStoreState`](/reference/use-store-state) hook to ensure that the component re-renders when the tab panel object changes.
 
 3. Determine if the current tab panel was the last one opened by comparing the current tab id with the previously selected tab id and set the `data-was-open` attribute accordingly:
 
    ```tsx
    const wasPanelOpen = panel?.tabId && previousTabId === panel.tabId;
 
-   <Ariakit.TabPanel data-was-open={wasPanelOpen || undefined} />
+   <Ariakit.TabPanel data-was-open={wasPanelOpen || undefined} />;
    ```
 
 ## Setting up the CSS transition

@@ -1,11 +1,11 @@
-import pageLinks from "@/build-pages/links.ts";
-import { isValidHref } from "@/lib/is-valid-href.ts";
-import { hasOwnProperty } from "@ariakit/core/utils/misc";
+import { hasOwnProperty } from "@ariakit/utils";
 import { kebabCase } from "lodash-es";
 import Link from "next/link.js";
 import type { BundledLanguage, SpecialLanguage, ThemedToken } from "shiki";
-import { FontStyle, bundledLanguages, codeToTokensBase } from "shiki";
+import { bundledLanguages, codeToTokensBase, FontStyle } from "shiki";
 import { twJoin, twMerge } from "tailwind-merge";
+import pageLinks from "@/build-pages/links.ts";
+import { isValidHref } from "@/lib/is-valid-href.ts";
 import { CopyToClipboard } from "./copy-to-clipboard.tsx";
 import { PageHovercardAnchor } from "./page-hovercard.tsx";
 
@@ -119,7 +119,7 @@ function getTokenHref(
   }
   const type = getLinkableType(token);
   if (!type) return;
-  const word = token.content.replace("Ariakit.", "").replace(/\:$/, "");
+  const word = token.content.replace("Ariakit.", "").replace(/:$/, "");
   const id = type === "prop" ? word.toLowerCase() : kebabCase(word);
 
   const href =
@@ -152,7 +152,7 @@ async function getTokensFromCache(
   const tokens = await codeToTokensBase(code, {
     lang,
     theme: dark ? "dark-plus" : "light-plus",
-    includeExplanation: true,
+    includeExplanation: /[jt]sx?/.test(lang),
   });
   cache.set(code, tokens);
   return tokens;

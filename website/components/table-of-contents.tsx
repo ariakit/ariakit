@@ -1,15 +1,12 @@
 "use client";
 
+import * as Ariakit from "@ariakit/react";
+import { getScrollingElement, scrollIntoViewIfNeeded } from "@ariakit/utils";
+import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { Popup } from "@/components/popup.tsx";
 import { List } from "@/icons/list.tsx";
 import { useMedia } from "@/lib/use-media.ts";
-import {
-  getScrollingElement,
-  scrollIntoViewIfNeeded,
-} from "@ariakit/core/utils/dom";
-import * as Ariakit from "@ariakit/react";
-import type { ReactNode } from "react";
-import { useEffect, useState } from "react";
 
 interface TableOfContentsProps {
   ids: string[];
@@ -34,7 +31,7 @@ export function TableOfContents({
         if (!element) return false;
         const { top } = element.getBoundingClientRect();
         const { scrollMarginTop } = getComputedStyle(element);
-        return top - Number.parseInt(scrollMarginTop) <= 64;
+        return top - Number.parseInt(scrollMarginTop, 10) <= 64;
       });
       setActiveId(activeId ?? null);
     };

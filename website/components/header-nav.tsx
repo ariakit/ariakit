@@ -1,20 +1,18 @@
 "use client";
 
-import type { PageContent } from "@/build-pages/contents.ts";
-import { getPageTitle, getSearchTitle } from "@/build-pages/get-page-title.js";
-import type { PageIndexDetail } from "@/build-pages/index.ts";
-import pageIndex from "@/build-pages/index.ts";
-import { getPageIcon } from "@/lib/get-page-icon.tsx";
-import { getKeys } from "@ariakit/core/utils/misc";
-import { isApple } from "@ariakit/core/utils/platform";
-import { PopoverDisclosureArrow, PopoverDismiss } from "@ariakit/react";
-import type { SelectRendererItem } from "@ariakit/react-core/select/select-renderer";
-import { SelectRenderer } from "@ariakit/react-core/select/select-renderer";
-import { useEvent, useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
+import {
+  ComboboxItemValue,
+  PopoverDisclosureArrow,
+  PopoverDismiss,
+} from "@ariakit/react";
+import type { SelectRendererItem } from "@ariakit/react-components/select/select-renderer";
+import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
+import { useEvent, useSafeLayoutEffect } from "@ariakit/react-utils";
+import { getKeys, isApple } from "@ariakit/utils";
 import { track } from "@vercel/analytics";
 import { groupBy } from "lodash-es";
 import { useSelectedLayoutSegments } from "next/navigation.js";
-import type { MouseEvent, ReactElement, ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import {
   createContext,
   forwardRef,
@@ -26,6 +24,11 @@ import {
   useState,
 } from "react";
 import { twJoin } from "tailwind-merge";
+import type { PageContent } from "@/build-pages/contents.ts";
+import { getPageTitle, getSearchTitle } from "@/build-pages/get-page-title.js";
+import type { PageIndexDetail } from "@/build-pages/index.ts";
+import pageIndex from "@/build-pages/index.ts";
+import { getPageIcon } from "@/lib/get-page-icon.tsx";
 import type { HeaderMenuItemProps } from "./header-menu.tsx";
 import {
   HeaderMenu,
@@ -99,75 +102,6 @@ function getItemHref(
   }`;
 }
 
-function getAllIndexes(string: string, values: string[]) {
-  const indexes = [] as Array<[number, number]>;
-  for (const value of values) {
-    let pos = 0;
-    const length = value.length;
-    while (string.indexOf(value, pos) !== -1) {
-      const index = string.indexOf(value, pos);
-      if (index !== -1) {
-        indexes.push([index, length]);
-      }
-      pos = index + 1;
-    }
-  }
-  return indexes;
-}
-
-function highlightValue(
-  itemValue: string | null | undefined,
-  userValues: string[],
-) {
-  if (!itemValue) return itemValue;
-  userValues = userValues.filter(Boolean);
-  const parts: ReactElement[] = [];
-
-  const wrap = (value: string, autocomplete = false) => (
-    <span
-      key={parts.length}
-      data-autocomplete-value={autocomplete ? "" : undefined}
-      data-user-value={autocomplete ? undefined : ""}
-    >
-      {value}
-    </span>
-  );
-
-  const allIndexes = getAllIndexes(itemValue, userValues)
-    .filter(
-      ([index, length], i, arr) =>
-        index !== -1 &&
-        !arr.some(
-          ([idx, l], j) => j !== i && idx <= index && idx + l >= index + length,
-        ),
-    )
-    .sort(([a], [b]) => a - b);
-
-  if (!allIndexes.length) {
-    parts.push(wrap(itemValue, true));
-    return parts;
-  }
-
-  const [firstIndex] = allIndexes[0]!;
-
-  const values = [
-    itemValue.slice(0, firstIndex),
-    ...allIndexes.flatMap(([index, length], i) => {
-      const value = itemValue.slice(index, index + length);
-      const nextIndex = allIndexes[i + 1]?.[0];
-      const nextValue = itemValue.slice(index + length, nextIndex);
-      return [value, nextValue];
-    }),
-  ];
-
-  values.forEach((value, i) => {
-    if (value) {
-      parts.push(wrap(value, i % 2 === 0));
-    }
-  });
-  return parts;
-}
-
 function Shortcut() {
   const [platform, setPlatform] = useState<"mac" | "pc" | null>(null);
   useSafeLayoutEffect(() => {
@@ -207,16 +141,29 @@ const HeaderNavItem = memo(
     const parentSection = "parentSection" in item ? item.parentSection : null;
     const nested = "nested" in item ? item.nested : false;
     const href = getItemHref(item, category);
-    const description = keywords
-      ? highlightValue(item.content, keywords)
-      : item.content;
+    const description = keywords ? (
+      <ComboboxItemValue value={item.content} userValue={keywords} />
+    ) : (
+      item.content
+    );
     const path = keywords
       ? [
-          highlightValue(getPageTitle(category, true), keywords),
-          highlightValue(item.group, keywords),
-          section && highlightValue(item.title, keywords),
-          highlightValue(parentSection, keywords),
-          !nested && highlightValue(section, keywords),
+          <ComboboxItemValue
+            value={getPageTitle(category, true)}
+            userValue={keywords}
+          />,
+          item.group && (
+            <ComboboxItemValue value={item.group} userValue={keywords} />
+          ),
+          section && (
+            <ComboboxItemValue value={item.title} userValue={keywords} />
+          ),
+          parentSection && (
+            <ComboboxItemValue value={parentSection} userValue={keywords} />
+          ),
+          !nested && section && (
+            <ComboboxItemValue value={section} userValue={keywords} />
+          ),
         ]
       : undefined;
     return (
@@ -366,7 +313,6 @@ const HeaderNavMenu = memo(
         "group",
       );
       const items = groups.null || [];
-      // biome-ignore lint/performance/noDelete: TODO
       delete groups.null;
       return [items, groups];
     }, [searchData, pages]);
@@ -650,7 +596,7 @@ export function HeaderNav() {
         <HeaderMenuItem href="https://github.com/ariakit/ariakit/discussions">
           Discussions
         </HeaderMenuItem>
-        <HeaderMenuItem href="https://newsletter.ariakit.org">
+        <HeaderMenuItem href="https://newsletter.ariakit.com">
           Newsletter
         </HeaderMenuItem>
       </>

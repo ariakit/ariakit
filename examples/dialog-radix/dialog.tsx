@@ -57,7 +57,7 @@ interface TriggerProps extends React.ComponentPropsWithoutRef<"button"> {
 export const Trigger = React.forwardRef<HTMLButtonElement, TriggerProps>(
   function Trigger({ asChild, ...props }, ref) {
     const { store } = React.useContext(DialogContext)!;
-    const open = store.useState("open");
+    const open = Ariakit.useStoreState(store, "open");
     return (
       <Ariakit.DialogDisclosure
         {...props}
@@ -85,7 +85,10 @@ export function Portal({
 }: PortalProps) {
   const { store } = React.useContext(DialogContext)!;
   const portalContext = React.useContext(Ariakit.PortalContext);
-  const mounted = store.useState((state) => forceMount || state.mounted);
+  const mounted = Ariakit.useStoreState(
+    store,
+    (state) => forceMount || state.mounted,
+  );
   if (!mounted) return null;
   return (
     <Ariakit.PortalContext.Provider value={container ?? portalContext}>
@@ -108,9 +111,12 @@ export const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
     const { store } = React.useContext(DialogContext)!;
     const forceMountContext = React.useContext(ForceMountContext);
     forceMount = forceMount ?? forceMountContext;
-    const mounted = store.useState((state) => forceMount || state.mounted);
+    const mounted = Ariakit.useStoreState(
+      store,
+      (state) => forceMount || state.mounted,
+    );
 
-    const open = store.useState("open");
+    const open = Ariakit.useStoreState(store, "open");
     const [state, setState] = React.useState("closed");
 
     // Sets the state on the next animation frame so that the transition can be
@@ -170,10 +176,13 @@ export const Content = React.forwardRef<HTMLDivElement, ContentProps>(
     const { store, modal } = React.useContext(DialogContext)!;
     const forceMountContext = React.useContext(ForceMountContext);
     forceMount = forceMount ?? forceMountContext;
-    const mounted = store.useState((state) => forceMount || state.mounted);
-    const contentElement = store.useState("contentElement");
+    const mounted = Ariakit.useStoreState(
+      store,
+      (state) => forceMount || state.mounted,
+    );
+    const contentElement = Ariakit.useStoreState(store, "contentElement");
 
-    const open = store.useState("open");
+    const open = Ariakit.useStoreState(store, "open");
     const [state, setState] = React.useState("closed");
 
     // Sets the state on the next animation frame so that the transition can be

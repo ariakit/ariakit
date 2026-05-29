@@ -1,6 +1,4 @@
-import { isVisible } from "@ariakit/core/utils/dom";
-import { isFocusable } from "@ariakit/core/utils/focus";
-import { invariant } from "@ariakit/core/utils/misc";
+import { isVisible, isFocusable, invariant } from "@ariakit/utils";
 import { wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
@@ -127,7 +125,7 @@ async function clickOption(
 
 export function click(
   element: Element | null,
-  options?: MouseEventInit,
+  options?: PointerEventInit,
   tap = false,
 ) {
   return wrapAsync(async () => {

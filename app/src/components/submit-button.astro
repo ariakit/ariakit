@@ -1,0 +1,53 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"button"> {}
+---
+
+<button {...Astro.props} type="submit" data-submit-button>
+  <slot />
+</button>
+
+<script>
+  function onSubmit(event: SubmitEvent) {
+    const button = event.submitter as HTMLButtonElement | null;
+    if (!button) return;
+    const isDisabled = button.disabled;
+    button.disabled = true;
+    button.setAttribute("data-loading", "true");
+    button.setAttribute(
+      "data-previous-disabled",
+      isDisabled ? "true" : "false"
+    );
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    const buttons = document.querySelectorAll<HTMLButtonElement>(
+      "[data-submit-button]"
+    );
+
+    for (const button of buttons) {
+      const form = button.form;
+      if (!form) continue;
+
+      form.addEventListener("submit", onSubmit);
+
+      const hasBeenProcessed = button.hasAttribute("data-previous-disabled");
+      if (!hasBeenProcessed) continue;
+
+      button.disabled =
+        button.getAttribute("data-previous-disabled") === "true";
+      button.removeAttribute("data-previous-disabled");
+      button.removeAttribute("data-loading");
+    }
+  });
+</script>

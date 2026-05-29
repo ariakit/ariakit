@@ -1,9 +1,10 @@
-import { isTextField, setSelectionRange } from "@ariakit/core/utils/dom";
 import {
+  isTextField,
+  setSelectionRange,
   getNextTabbable,
   getPreviousTabbable,
   isFocusable,
-} from "@ariakit/core/utils/focus";
+} from "@ariakit/utils";
 import { wrapAsync } from "./__utils.ts";
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
@@ -82,14 +83,14 @@ const keyDownMap: KeyActionMap = {
     if (isClickable) {
       await dispatch.click(element, options);
     } else if (isSubmittable) {
-      await submitFormByPressingEnterOn(element as HTMLInputElement, options);
+      await submitFormByPressingEnterOn(element, options);
     }
   },
 
   async Home(element, { shiftKey }) {
     if (isTextField(element)) {
       const { value, selectionEnd } = element;
-      const end = Math.min(value.length, shiftKey ? selectionEnd ?? 0 : 0);
+      const end = Math.min(value.length, shiftKey ? (selectionEnd ?? 0) : 0);
       setSelectionRange(element, 0, end, "backward");
     }
   },
@@ -97,7 +98,7 @@ const keyDownMap: KeyActionMap = {
   async End(element, { shiftKey }) {
     if (isTextField(element)) {
       const { value, selectionStart } = element;
-      const start = shiftKey ? selectionStart ?? 0 : value.length;
+      const start = shiftKey ? (selectionStart ?? 0) : value.length;
       setSelectionRange(element, start, value.length, "forward");
     }
   },
@@ -140,14 +141,13 @@ const keyDownMap: KeyActionMap = {
     if (isTextField(element)) {
       if (!shiftKey) {
         return setSelectionRange(element, 0, 0);
+      }
+      const { selectionStart, selectionEnd, selectionDirection } = element;
+      const [start, end] = [selectionStart ?? 0, selectionEnd ?? 0];
+      if (selectionDirection === "forward") {
+        setSelectionRange(element, start, start);
       } else {
-        const { selectionStart, selectionEnd, selectionDirection } = element;
-        const [start, end] = [selectionStart ?? 0, selectionEnd ?? 0];
-        if (selectionDirection === "forward") {
-          setSelectionRange(element, start, start);
-        } else {
-          setSelectionRange(element, 0, end, "backward");
-        }
+        setSelectionRange(element, 0, end, "backward");
       }
     } else if (isNumberInput(element)) {
       await incrementNumberInput(element);
@@ -242,7 +242,7 @@ export function press(
     // If keydown effect changed focus (e.g. Tab), keyup will be triggered on the
     // next element.
     if (element.ownerDocument?.activeElement !== element) {
-      element = element.ownerDocument!.activeElement!;
+      element = element.ownerDocument.activeElement!;
     }
 
     if (!(await dispatch.keyUp(element, { key, ...options }))) {

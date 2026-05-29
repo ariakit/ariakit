@@ -1,4 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 const validationError = () =>
   q.text(
@@ -8,14 +9,18 @@ const submitErrors = () =>
   q.text.all("Field - Abstract Form 1 - Abstract Form 2 - Form 1 - Form 2");
 
 test("validation on sync input", async () => {
-  await click(q.textbox.all().at(0)!);
+  const input = q.textbox.all().at(0);
+  if (!input) throw new Error("Missing textbox");
+  await click(input);
   expect(validationError()).not.toBeInTheDocument();
   await click(document.body);
   expect(validationError()).toBeInTheDocument();
 });
 
 test("validation on async input", async () => {
-  await click(q.textbox.all().at(1)!);
+  const input = q.textbox.all().at(1);
+  if (!input) throw new Error("Missing textbox");
+  await click(input);
   expect(validationError()).not.toBeInTheDocument();
   await click(document.body);
   expect(validationError()).toBeInTheDocument();

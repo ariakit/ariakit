@@ -1,5 +1,4 @@
-import { isVisible } from "@ariakit/core/utils/dom";
-import { invariant } from "@ariakit/core/utils/misc";
+import { isVisible, invariant } from "@ariakit/utils";
 import { wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { sleep } from "./sleep.ts";
@@ -12,7 +11,7 @@ function isPointerEventsEnabled(element: Element) {
   return getComputedStyle(element).pointerEvents !== "none";
 }
 
-export function hover(element: Element | null, options?: MouseEventInit) {
+export function hover(element: Element | null, options?: PointerEventInit) {
   return wrapAsync(async () => {
     invariant(element, "Unable to hover on null element");
 

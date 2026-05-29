@@ -1,7 +1,7 @@
 "use client";
 
 import { Role } from "@ariakit/react";
-import { forwardRef } from "@ariakit/react-core/utils/system";
+import { forwardRef } from "@ariakit/react-utils";
 import { Button } from "@ariakit/react/button";
 import type {
   TooltipAnchorProps,
@@ -16,14 +16,16 @@ import {
 import type { ReactNode } from "react";
 import { twJoin } from "tailwind-merge";
 
-export interface TooltipButtonProps
-  extends Omit<TooltipAnchorProps<"button">, "title"> {
+export interface TooltipButtonProps extends Omit<
+  TooltipAnchorProps<"button">,
+  "title"
+> {
   title: ReactNode;
   placement?: TooltipProviderProps["placement"];
   timeout?: TooltipProviderProps["timeout"];
   showTimeout?: TooltipProviderProps["showTimeout"];
   hideTimeout?: TooltipProviderProps["hideTimeout"];
-  popover?: TooltipProps["render"];
+  popup?: TooltipProps["render"];
   gutter?: TooltipProps["gutter"];
   shift?: TooltipProps["shift"];
   fixed?: boolean;
@@ -35,7 +37,7 @@ export const TooltipButton = forwardRef(function TooltipButton({
   timeout,
   showTimeout,
   hideTimeout,
-  popover,
+  popup,
   gutter,
   shift,
   fixed,
@@ -59,7 +61,7 @@ export const TooltipButton = forwardRef(function TooltipButton({
         gutter={gutter}
         shift={shift}
         unmountOnHide
-        render={popover}
+        render={popup}
         className={twJoin(
           "z-50 cursor-default rounded-md px-2 py-1 text-sm",
           "drop-shadow-sm dark:drop-shadow-sm-dark",

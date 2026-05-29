@@ -5,24 +5,41 @@ import { flushMicrotasks, nextFrame, wrapAsync } from "./__utils.ts";
 
 export * from "./index.ts";
 
-export interface RenderOptions
-  extends Omit<ReactTestingLibrary.RenderOptions, "queries"> {
+export interface RenderOptions extends Omit<
+  ReactTestingLibrary.RenderOptions,
+  "queries"
+> {
   strictMode?: boolean;
 }
 
-export async function render(ui: ReactNode, options?: RenderOptions) {
-  const wrapper = (props: { children: ReactNode }) => {
-    const Wrapper = options?.wrapper;
-    const element = Wrapper ? <Wrapper {...props} /> : props.children;
-    if (!options?.strictMode) return element;
-    return <StrictMode>{element}</StrictMode>;
-  };
-
+function wrapRender<T extends (...args: any[]) => any>(
+  renderFn: T,
+): Promise<ReturnType<T>> {
   return wrapAsync(async () => {
-    const { unmount } = ReactTestingLibrary.render(ui, { ...options, wrapper });
+    const output: ReturnType<T> = renderFn();
     await flushMicrotasks();
     await nextFrame();
     await flushMicrotasks();
-    return unmount;
+    return output;
+  });
+}
+
+export async function render(ui: ReactNode, options?: RenderOptions) {
+  const { strictMode, wrapper: Wrapper, ...renderOptions } = options ?? {};
+  const wrapper = (props: { children: ReactNode }) => {
+    const element = Wrapper ? <Wrapper {...props} /> : props.children;
+    if (!strictMode) return element;
+    return <StrictMode>{element}</StrictMode>;
+  };
+
+  return wrapRender(() => {
+    const { unmount, rerender } = ReactTestingLibrary.render(ui, {
+      ...renderOptions,
+      wrapper,
+    });
+    return {
+      unmount,
+      rerender: (newUi: ReactNode) => wrapRender(() => rerender(newUi)),
+    };
   });
 }

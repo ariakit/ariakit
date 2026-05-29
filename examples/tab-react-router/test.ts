@@ -1,4 +1,5 @@
 import { click, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("default selected tab", () => {
   expect(q.tab("Fruits")).toHaveAttribute("aria-selected", "true");

@@ -1,9 +1,8 @@
-import { isVisible } from "@ariakit/core/utils/dom";
-import { invariant } from "@ariakit/core/utils/misc";
+import { isVisible, invariant } from "@ariakit/utils";
 import { wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 
-export function mouseUp(element: Element | null, options?: MouseEventInit) {
+export function mouseUp(element: Element | null, options?: PointerEventInit) {
   return wrapAsync(async () => {
     invariant(element, "Unable to mouseUp on null element");
 
