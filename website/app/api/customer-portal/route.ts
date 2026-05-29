@@ -1,8 +1,8 @@
 import { currentUser } from "@clerk/nextjs";
-import type { NextRequest } from "next/server.js";
-import { getStripeId } from "utils/clerk.js";
-import { getActiveSubscriptions, getStripeClient } from "utils/stripe.js";
+import type { NextRequest } from "next/server.ts";
 import { z } from "zod";
+import { getStripeId } from "@/lib/clerk.ts";
+import { getStripeClient, listActiveSubscriptions } from "@/lib/stripe.ts";
 
 const schema = z
   .object({
@@ -23,10 +23,10 @@ async function getRequestBody(request: Request) {
 
 export async function POST(request: NextRequest) {
   const stripeId = getStripeId(await currentUser());
-  if (!stripeId) return new Response("Unauthorized", { status: 401 });
+  if (!stripeId) return Response.json("Unauthorized", { status: 401 });
 
   const stripe = getStripeClient();
-  if (!stripe) return new Response("Server error", { status: 500 });
+  if (!stripe) return Response.json("Server error", { status: 500 });
 
   const parsed = schema.safeParse(await getRequestBody(request));
 
@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
   const { priceId } = parsed.data || {};
 
   if (priceId) {
-    const subscriptions = await getActiveSubscriptions(stripeId);
-    const subscription = subscriptions?.data[0];
+    const subscriptions = await listActiveSubscriptions(stripeId);
+    const subscription = subscriptions?.[0];
     const item = subscription?.items.data[0];
 
     if (subscription && item) {

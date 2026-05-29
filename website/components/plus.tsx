@@ -1,24 +1,4 @@
 "use client";
-
-import {
-  createContext,
-  forwardRef,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import type { CSSProperties } from "react";
-import { scrollIntoViewIfNeeded } from "@ariakit/core/utils/dom";
-import { createStore, sync } from "@ariakit/core/utils/store";
-import {
-  Button,
-  Heading,
-  HeadingLevel,
-  Hovercard,
-  HovercardAnchor,
-  HovercardProvider,
-  Role,
-} from "@ariakit/react";
 import type {
   ButtonProps,
   HovercardAnchorProps,
@@ -26,21 +6,47 @@ import type {
   HovercardProviderProps,
   RoleProps,
 } from "@ariakit/react";
-import { useStore, useStoreProps } from "@ariakit/react-core/utils/store";
+import {
+  Heading,
+  HeadingLevel,
+  Hovercard,
+  HovercardAnchor,
+  HovercardProvider,
+  Role,
+  VisuallyHidden,
+} from "@ariakit/react";
+import { useStore, useStoreProps } from "@ariakit/react-store";
+import { useEvent } from "@ariakit/react-utils";
+import { createStore, sync } from "@ariakit/store";
+import { scrollIntoViewIfNeeded } from "@ariakit/utils";
+import { SignedIn, SignedOut, SignUp } from "@clerk/clerk-react";
 import {
   EmbeddedCheckout,
   EmbeddedCheckoutProvider,
 } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js/pure.js";
-import { Check } from "icons/check.jsx";
-import { ChevronRight } from "icons/chevron-right.jsx";
-import { Heart } from "icons/heart.jsx";
-import { twMerge } from "tailwind-merge";
-import invariant from "tiny-invariant";
-import type { Price } from "utils/stripe.js";
-import { useMedia } from "utils/use-media.js";
-import { useSubscription } from "utils/use-subscription.js";
-import { Command } from "./command.jsx";
+import { loadStripe } from "@stripe/stripe-js/pure";
+import { useQueryClient } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
+import Link from "next/link.js";
+import { useRouter, useSearchParams } from "next/navigation.js";
+import type { CSSProperties } from "react";
+import {
+  createContext,
+  forwardRef,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { twJoin, twMerge } from "tailwind-merge";
+import { CheckCircle } from "@/icons/check-circle.tsx";
+import { Check } from "@/icons/check.tsx";
+import { ChevronRight } from "@/icons/chevron-right.tsx";
+import { Heart } from "@/icons/heart.tsx";
+import type { PlusPrice } from "@/lib/stripe.ts";
+import { useMedia } from "@/lib/use-media.ts";
+import { useSubscription } from "@/lib/use-subscription.ts";
+import { Command } from "./command.tsx";
+import { useRootPathname } from "./root-pathname.tsx";
 
 let stripePromise: ReturnType<typeof loadStripe> | null = null;
 
@@ -59,10 +65,6 @@ interface PlusStoreProps {
   feature?: string;
   defaultFeature?: string;
   setFeature?: (feature: string) => void;
-  clientSecret?: string;
-  setClientSecret?: (secret: string) => void;
-  priceId?: string;
-  setPriceId?: (priceId: string) => void;
 }
 
 function usePlusStore(props: PlusStoreProps) {
@@ -70,13 +72,9 @@ function usePlusStore(props: PlusStoreProps) {
 
   const [store] = useStore(createStore, {
     feature: props.feature ?? props.defaultFeature ?? "",
-    clientSecret: props.clientSecret ?? "",
-    priceId: props.priceId ?? "",
   });
 
   useStoreProps(store, props, "feature", "setFeature");
-  useStoreProps(store, props, "clientSecret", "setClientSecret");
-  useStoreProps(store, props, "priceId", "setPriceId");
 
   useEffect(() => {
     if (isMedium) return;
@@ -89,12 +87,13 @@ function usePlusStore(props: PlusStoreProps) {
 }
 
 export interface PlusProviderProps
-  extends PlusStoreProps,
-    HovercardProviderProps {}
+  extends PlusStoreProps, HovercardProviderProps {}
 
 export function PlusProvider(props: PlusProviderProps) {
   const store = usePlusStore(props);
-  const isOpen = store.useState((state) => !!state.feature && !state.priceId);
+  const searchParams = useSearchParams();
+  const priceId = searchParams.get("checkout");
+  const isOpen = store.useState((state) => !priceId && !!state.feature);
   return (
     <PlusContext.Provider value={store}>
       <HovercardProvider open={isOpen} {...props} />
@@ -105,16 +104,15 @@ export function PlusProvider(props: PlusProviderProps) {
 export interface PlusFeatureProps extends HovercardAnchorProps<"div"> {
   feature: string;
   icon?: "heart" | "check";
-  children?: React.ReactNode;
 }
 
 export const PlusFeature = forwardRef<HTMLDivElement, PlusFeatureProps>(
   function PlusFeature({ icon = "check", feature, ...props }, ref) {
-    const store = useContext(PlusContext);
-    invariant(store);
-
+    const store = useContext(PlusContext)!;
+    const searchParams = useSearchParams();
+    const priceId = searchParams.get("checkout");
     const isActive = store.useState(
-      (state) => !state.priceId && state.feature === feature,
+      (state) => !priceId && state.feature === feature,
     );
 
     const showOnHover = () => {
@@ -128,7 +126,8 @@ export const PlusFeature = forwardRef<HTMLDivElement, PlusFeatureProps>(
         {...props}
         data-active={isActive || undefined}
         className={twMerge(
-          "group relative flex gap-2 rounded-md p-2 data-[active]:bg-black/5 dark:data-[active]:bg-white/5",
+          "group relative flex gap-2 rounded-md p-2",
+          "before:absolute before:inset-4 before:rounded-[inherit] before:transition-[background-color,inset] data-[active]:before:inset-0 data-[active]:before:bg-black/5 dark:data-[active]:before:bg-white/5",
           props.className,
         )}
         render={
@@ -148,7 +147,7 @@ export const PlusFeature = forwardRef<HTMLDivElement, PlusFeatureProps>(
           <Heart className="h-4 w-4 flex-none translate-y-1 fill-pink-600 dark:fill-pink-500" />
         ) : null}
         <p>{props.children}</p>
-        <ChevronRight className="ml-auto hidden h-4 w-4 flex-none translate-y-1 opacity-60 group-data-[active]:block" />
+        <ChevronRight className="ml-auto h-4 w-4 flex-none translate-y-1 opacity-0 transition-opacity group-data-[active]:opacity-60" />
       </Role.div>
     );
   },
@@ -189,17 +188,17 @@ export const PlusFeaturePreviewContainer = forwardRef<
 export interface PlusFeaturePreviewProps extends RoleProps<"div"> {
   feature: string;
   heading?: React.ReactNode;
-  children?: React.ReactNode;
 }
 
 export const PlusFeaturePreview = forwardRef<
   HTMLDivElement,
   PlusFeaturePreviewProps
 >(function PlusFeaturePreview({ feature, heading, children, ...props }, ref) {
-  const store = useContext(PlusContext);
-  invariant(store);
+  const store = useContext(PlusContext)!;
+  const searchParams = useSearchParams();
+  const priceId = searchParams.get("checkout");
   const isActive = store.useState(
-    (state) => !state.priceId && state.feature === feature,
+    (state) => !priceId && state.feature === feature,
   );
   if (!isActive) return null;
   return (
@@ -221,113 +220,163 @@ export const PlusFeaturePreview = forwardRef<
 });
 
 export interface PlusCheckoutButtonProps extends ButtonProps {
-  price?: Price;
-  monthlyPrice?: Price;
+  price?: PlusPrice;
 }
 
 export const PlusCheckoutButton = forwardRef<
   HTMLButtonElement,
   PlusCheckoutButtonProps
->(function PlusCheckoutButton({ price, monthlyPrice, ...props }, ref) {
-  const store = useContext(PlusContext);
-  invariant(store);
-
-  const selected = store.useState(
-    (state) => !!state.priceId && state.priceId === price?.id,
-  );
-
+>(function PlusCheckoutButton({ price, ...props }, ref) {
   const subscription = useSubscription();
+  const searchParams = useSearchParams();
+  const priceId = searchParams.get("checkout");
+  const selected = !!priceId && priceId === price?.id;
 
   if (!price || subscription.isLoading) {
     return (
-      <div className="h-24 animate-pulse rounded-lg border-2 border-transparent bg-black/5 dark:bg-white/5" />
+      <div className="h-[162px] animate-pulse rounded-lg border-2 border-transparent bg-black/5 dark:bg-white/5" />
     );
   }
 
-  const isCurrentSubscription = subscription.data === price?.id;
+  const purchased =
+    !!subscription.data &&
+    !subscription.data.recurring &&
+    subscription.data.product === price.product;
+
+  if (purchased) {
+    return (
+      <div className="flex h-[162px] flex-col items-center justify-center gap-2 rounded-lg bg-black/5 dark:bg-white/5">
+        <CheckCircle className="size-16 stroke-1 text-emerald-800 dark:text-emerald-300" />
+        <div className="text-xl">Purchased</div>
+      </div>
+    );
+  }
 
   return (
-    <form
-      action="/api/customer-portal"
-      method="post"
-      target="_blank"
-      onSubmit={async (event) => {
-        if (subscription.data) return;
-        event.preventDefault();
-        store.setState("priceId", price.id);
-        store.setState("feature", "");
-        store.setState("clientSecret", "");
-        const res = await fetch("/api/checkout", {
-          method: "post",
-          body: JSON.stringify({ priceId: price.id }),
-        });
-        const clientSecret = await res.json();
-        if (!clientSecret) return;
-        const state = store.getState();
-        if (state.priceId !== price.id) return;
-        store.setState("clientSecret", clientSecret);
-      }}
-    >
-      <Button
-        type="submit"
-        name="priceId"
-        value={price.id}
+    <div className="relative flex flex-col items-center gap-4 rounded-xl bg-black/5 p-4 pt-8 dark:bg-white/5">
+      {!!price.expiresAt && (
+        <div className="-mt-11 flex items-center gap-2 rounded-full border border-black/10 bg-white px-4 py-1 text-[13px] leading-[18px] text-black/80 dark:border-white/10 dark:bg-gray-700 dark:text-white/80">
+          <div className="-ml-1.5 size-2 flex-none animate-pulse rounded-full bg-yellow-800 dark:bg-amber-400" />
+          <span className="line-clamp-1">
+            Promotion ends on{" "}
+            {new Date(price.expiresAt).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            })}{" "}
+            ({formatDistanceToNow(price.expiresAt)} left)
+          </span>
+        </div>
+      )}
+      <div className="flex items-center gap-4 px-6">
+        <div className="relative flex items-center text-[42px] font-semibold leading-[42px] tracking-wide">
+          <span className="absolute -left-6 top-0.5 text-base font-normal opacity-60">
+            US
+          </span>
+          <span className="text-[36px] font-extralight">$</span>
+          {Math.ceil(price.amount / 100)}
+        </div>
+        {!!price.percentOff && (
+          <div className="text-sm text-black/80 dark:text-white/80">
+            <del className="tracking-wider opacity-70">
+              <VisuallyHidden>Original price: </VisuallyHidden>$
+              {Math.ceil(price.originalAmount / 100)}
+            </del>
+            <div className="font-semibold text-yellow-800 dark:text-amber-400">
+              Save {price.percentOff}%
+            </div>
+          </div>
+        )}
+      </div>
+      <Command
         ref={ref}
-        data-selected={selected || isCurrentSubscription || undefined}
-        accessibleWhenDisabled
-        disabled={selected || isCurrentSubscription}
+        flat={selected}
+        variant={selected ? "secondary" : "primary"}
         {...props}
+        className={twJoin(
+          "h-14 w-full text-lg font-medium focus-visible:!ariakit-outline",
+          selected && "bg-black/5 dark:bg-white/5",
+        )}
         render={
-          <Command
-            flat
-            render={props.render}
-            className="group flex h-24 w-full justify-between border-2 border-solid border-black/10 px-8 text-lg hover:cursor-pointer aria-disabled:cursor-default aria-disabled:opacity-100 data-[selected]:border-blue-600 dark:border-white/10 dark:data-[selected]:border-blue-500"
+          <Link
+            href={selected ? "/plus" : `/plus?checkout=${price.id}`}
+            scroll={false}
+            replace
           />
         }
       >
-        {isCurrentSubscription ? (
-          <span className="absolute left-1 top-1 flex items-center gap-1 rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white">
-            <Check strokeWidth={3} className="h-3 w-3" /> Current plan
-          </span>
-        ) : (
-          !!price.difference && (
-            <span className="absolute left-1 top-1 rounded bg-blue-600 p-1 text-xs text-white">
-              {price.difference * 100}%
-            </span>
-          )
-        )}
-        <span className="font-medium">
-          {price.yearly ? "Yearly" : "Monthly"}
-        </span>
-        <span className="text-end font-light text-black/70 dark:text-white/70">
-          <span className="text-2xl tracking-wide text-black dark:text-white">
-            $<span className="font-semibold">{price.amountByMonth / 100}</span>
-          </span>{" "}
-          / month
-        </span>
-        {price.yearly && monthlyPrice && (
-          <span className="absolute bottom-3 text-xs font-medium tracking-wider group-active:bottom-[11px]">
-            <del className="opacity-70">${monthlyPrice.amountByYear / 100}</del>{" "}
-            ${price.amountByYear / 100} / year
-          </span>
-        )}
-      </Button>
-    </form>
+        {selected ? "Cancel" : "Buy now"}
+      </Command>
+    </div>
   );
 });
 
 export interface PlusCheckoutFrameProps extends RoleProps<"div"> {}
 
+interface Session {
+  id: string | null;
+  clientSecret: string | null;
+}
+
 export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
-  const store = useContext(PlusContext);
-  invariant(store);
-
-  const hasPriceId = store.useState((state) => !!state.priceId);
-  const clientSecret = store.useState("clientSecret");
-
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const rootPathname = useRootPathname();
+  const searchParams = useSearchParams();
+  const priceId = searchParams.get("checkout");
+  const subscription = useSubscription();
+  const [session, setSession] = useState<Session | null>(null);
   const [wrapper, setWrapper] = useState<HTMLDivElement | null>(null);
   const [visibility, setVisibility] =
     useState<CSSProperties["visibility"]>("hidden");
+
+  const redirectUrl = `${rootPathname}?checkout=${priceId}`;
+  const userId = subscription.userId;
+
+  useEffect(() => {
+    if (!userId) return;
+    if (!priceId) return;
+
+    const controller = new AbortController();
+    const onAbort = () => {
+      setSession(null);
+    };
+    controller.signal.addEventListener("abort", onAbort);
+
+    const processClientSecret = async () => {
+      const signal = controller.signal;
+      const response = await fetch("/api/checkout", {
+        method: "post",
+        body: JSON.stringify({ priceId, redirectUrl }),
+        signal,
+      });
+      if (!response.ok) {
+        setSession(null);
+        return;
+      }
+      if (signal.aborted) return;
+      const session = (await response.json()) as {
+        id: string | null;
+        clientSecret: string | null;
+      };
+      if (signal.aborted) return;
+      if (!session.clientSecret) {
+        setSession(null);
+        const url = new URL(location.href);
+        url.searchParams.delete("checkout");
+        router.replace(url.toString(), { scroll: false });
+        return;
+      }
+      setSession(session);
+    };
+
+    processClientSecret();
+    return () => {
+      try {
+        controller.abort();
+      } catch {}
+      controller.signal.removeEventListener("abort", onAbort);
+    };
+  }, [userId, priceId, redirectUrl]);
 
   useEffect(() => {
     if (!wrapper) return;
@@ -337,7 +386,10 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
     const onLoad = () => {
       setVisibility("visible");
       if (iframe) {
-        scrollIntoViewIfNeeded(iframe, { behavior: "smooth" });
+        scrollIntoViewIfNeeded(iframe, {
+          block: "nearest",
+          behavior: "smooth",
+        });
       }
     };
 
@@ -357,29 +409,57 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
     };
   }, [wrapper]);
 
+  const onCheckoutComplete = useEvent(async () => {
+    queryClient.invalidateQueries({ queryKey: ["subscription"] });
+    if (!session?.id) return;
+    await fetch(`/api/checkout-success?session_id=${session.id}`);
+  });
+
   const stripePromise = getStripe();
 
   if (!stripePromise) return null;
-  if (!hasPriceId) return null;
+  if (!priceId) return null;
 
   return (
     <Role.div
       {...props}
-      className={twMerge("relative h-full", props.className)}
+      className={twMerge(
+        "relative",
+        visibility === "hidden" && "h-full",
+        props.className,
+      )}
     >
-      {visibility === "hidden" && (
-        <div className="h-full w-full animate-pulse bg-gray-100 dark:bg-black/20" />
-      )}
-      {clientSecret && (
-        <div ref={setWrapper} style={{ visibility }} key={clientSecret}>
-          <EmbeddedCheckoutProvider
-            stripe={stripePromise}
-            options={{ clientSecret }}
+      <SignedOut>
+        <SignUp
+          routing="virtual"
+          redirectUrl={redirectUrl}
+          signInUrl={`/sign-in?redirect_url=${encodeURIComponent(redirectUrl)}`}
+          appearance={{ layout: { showOptionalFields: false } }}
+        />
+      </SignedOut>
+      <SignedIn>
+        {visibility === "hidden" && (
+          <div className="h-full w-full animate-pulse bg-gray-100 dark:bg-black/20" />
+        )}
+        {session?.clientSecret && (
+          <div
+            ref={setWrapper}
+            style={{ visibility }}
+            key={session.clientSecret}
           >
-            <EmbeddedCheckout />
-          </EmbeddedCheckoutProvider>
-        </div>
-      )}
+            <EmbeddedCheckoutProvider
+              key={session.clientSecret}
+              stripe={stripePromise}
+              options={{
+                clientSecret: session.clientSecret,
+                onComplete: onCheckoutComplete,
+              }}
+            >
+              <EmbeddedCheckout key={session.clientSecret} />
+            </EmbeddedCheckoutProvider>
+          </div>
+        )}
+      </SignedIn>
     </Role.div>
   );
 }

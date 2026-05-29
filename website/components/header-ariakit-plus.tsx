@@ -14,13 +14,37 @@ import {
   SignedOut,
   useClerk,
 } from "@clerk/clerk-react";
-import { NewWindow } from "icons/new-window.jsx";
 import Link from "next/link.js";
-import { useSelectedLayoutSegments } from "next/navigation.js";
-import { useSubscription } from "utils/use-subscription.js";
-import { Command } from "./command.jsx";
-import { DropdownItem } from "./dropdown-item.jsx";
-import { Popup } from "./popup.jsx";
+import {
+  usePathname,
+  useSearchParams,
+  useSelectedLayoutSegments,
+} from "next/navigation.js";
+import type { ComponentPropsWithoutRef, ElementRef } from "react";
+import { forwardRef, Suspense } from "react";
+import { NewWindow } from "@/icons/new-window.tsx";
+import { useSubscription } from "@/lib/use-subscription.ts";
+import { Command } from "./command.tsx";
+import { DropdownItem } from "./dropdown-item.tsx";
+import { Popup } from "./popup.tsx";
+
+const SignInLink = forwardRef<
+  ElementRef<typeof Link>,
+  Omit<ComponentPropsWithoutRef<typeof Link>, "href">
+>(function SignInLink(props, ref) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const search = searchParams.size ? `?${searchParams}` : "";
+  return (
+    <Link
+      ref={ref}
+      href={`/sign-in?redirect_url=${encodeURIComponent(
+        `${pathname}?${search}`,
+      )}`}
+      {...props}
+    />
+  );
+});
 
 export function HeaderAriakitPlus() {
   const clerk = useClerk();
@@ -33,41 +57,53 @@ export function HeaderAriakitPlus() {
   return (
     <>
       <ClerkLoading>
-        <div className="h-10 w-10 animate-pulse rounded-lg bg-black/10 sm:w-28 dark:bg-white/10" />
+        <div className="mx-2 h-6 w-10 animate-pulse rounded bg-black/10 sm:mx-3 sm:w-28 dark:bg-white/10" />
       </ClerkLoading>
       <SignedOut>
-        {!segments.includes("plus") && (
+        {segments.length === 1 && segments.includes("plus") ? (
+          <Suspense>
+            <Command
+              flat
+              variant="secondary"
+              className="border border-solid border-black/60 px-3 font-medium outline-offset-2 focus-visible:![outline:2px_solid_theme(colors.blue.600)] sm:h-9 dark:border-white/60"
+              render={<SignInLink />}
+            >
+              Sign in
+            </Command>
+          </Suspense>
+        ) : (
           <Button
-            className="text-sm max-sm:px-3"
+            className="max-sm:px-3"
             aria-label="Unlock Ariakit Plus"
             render={
               <Command
-                variant="plus"
+                flat
+                variant="secondary"
                 render={<Link href="/plus" scroll={false} />}
               />
             }
           >
             <span className="hidden sm:inline">
-              Unlock <span className="font-semibold">Ariakit Plus</span>
+              Unlock <span className="font-medium">Ariakit Plus</span>
             </span>
-            <span className="inline font-semibold sm:hidden">Plus</span>
+            <span className="inline font-medium sm:hidden">Plus</span>
           </Button>
         )}
       </SignedOut>
       <SignedIn>
-        <MenuProvider placement="bottom-end" animated>
+        <MenuProvider placement="bottom-end">
           <MenuButton
-            className="px-3 text-sm"
-            render={<Command variant="plus" />}
+            className="px-3"
+            render={<Command flat variant="secondary" />}
           >
-            <span className="font-semibold">Plus</span>
-            <MenuButtonArrow className="hidden md:block" />
+            Plus
+            <MenuButtonArrow className="hidden md:block [&>svg]:stroke-[1pt]" />
           </MenuButton>
           <Menu
             gutter={4}
             shift={-8}
             unmountOnHide
-            className="origin-top-right animate-in fade-in zoom-in-95 data-[leave]:animate-out data-[leave]:fade-out data-[leave]:zoom-out-95"
+            className="min-w-40 origin-top-right data-[open]:animate-in data-[leave]:animate-out data-[leave]:fade-out data-[open]:fade-in data-[leave]:zoom-out-95 data-[open]:zoom-in-95"
             render={<Popup />}
           >
             <MenuItem
@@ -100,12 +136,14 @@ export function HeaderAriakitPlus() {
                   method="post"
                   target="_blank"
                   action="/api/customer-portal"
+                  rel="noopener"
                 >
                   <MenuItem
+                    className="w-full"
                     render={<DropdownItem render={<button type="submit" />} />}
                   >
-                    <span className="pr-4">Subscription</span>
-                    <NewWindow className="h-4 w-4 opacity-75" />
+                    <span className="flex-1 pr-4 text-left">Billing</span>
+                    <NewWindow className="size-4 opacity-75" />
                   </MenuItem>
                 </form>
               </>

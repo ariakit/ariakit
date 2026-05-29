@@ -17,16 +17,16 @@ export default function Icon() {
               </svg>
             </div>
             <div className="mx-auto flex justify-center gap-1.5">
-              <div className="-mt-2 h-16 w-px bg-black/60 dark:bg-white/30" />
-              <div className="h-20 w-px bg-black/60 dark:bg-white/30" />
+              <div className="-mt-2 h-16 w-px bg-black/55 dark:bg-white/30" />
+              <div className="h-20 w-px bg-black/55 dark:bg-white/30" />
               <div className="mx-auto flex w-20 flex-col gap-2 rounded border border-black/25 bg-white p-2 shadow dark:border-white/[15%] dark:bg-gray-600 dark:shadow-dark">
-                <div className="h-3 w-full rounded-[1px] bg-black/40 dark:bg-white/40" />
+                <div className="h-3 w-full rounded-[1px] bg-black/35 dark:bg-white/40" />
                 <div className="h-3 w-full rounded-[1px] bg-blue-600 dark:bg-blue-500" />
-                <div className="h-3 w-full rounded-[1px] bg-black/40 dark:bg-white/40" />
-                <div className="h-3 w-full rounded-[1px] bg-black/40 dark:bg-white/40" />
+                <div className="h-3 w-full rounded-[1px] bg-black/35 dark:bg-white/40" />
+                <div className="h-3 w-full rounded-[1px] bg-black/35 dark:bg-white/40" />
               </div>
-              <div className="h-20 w-px bg-black/60 dark:bg-white/30" />
-              <div className="-mt-2 h-16 w-px bg-black/60 dark:bg-white/30" />
+              <div className="h-20 w-px bg-black/55 dark:bg-white/30" />
+              <div className="-mt-2 h-16 w-px bg-black/55 dark:bg-white/30" />
             </div>
           </div>
         </div>

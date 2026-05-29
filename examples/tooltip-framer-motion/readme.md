@@ -2,20 +2,20 @@
 tags:
   - Tooltip
   - Animated
-  - Framer Motion
+  - Motion
 ---
 
-# Tooltip with Framer Motion
+# Tooltip with Motion
 
 <div data-description>
 
-Abstracting [Tooltip](/components/tooltip) into a reusable custom component that uses [Framer Motion](https://www.framer.com/motion/) to create smooth initial and exit animations.
+Abstracting [Tooltip](/components/tooltip) into a reusable custom component that uses [Motion](https://motion.dev/) to create smooth initial and exit animations.
 
 </div>
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -27,7 +27,7 @@ Abstracting [Tooltip](/components/tooltip) into a reusable custom component that
 
 ## Composing with other components
 
-In the custom `TooltipAnchor` component we've created in this example, we're exposing the [`render`](/apis/tooltip-anchor#render) prop to allow the user to render the anchor element however they want.
+In the custom `TooltipAnchor` component we've created in this example, we're exposing the [`render`](/reference/tooltip-anchor#render) prop to allow the user to render the anchor element however they want.
 
 ```jsx
 <TooltipAnchor render={<a />} />

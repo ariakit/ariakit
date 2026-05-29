@@ -1,11 +1,10 @@
-import { forwardRef } from "react";
-import type { ReactNode } from "react";
 import * as Ariakit from "@ariakit/react";
-import clsx from "clsx";
+import { clsx } from "clsx";
+import type { ReactNode } from "react";
+import { forwardRef } from "react";
 
 interface MenuProps extends Ariakit.MenuButtonProps {
   label: ReactNode;
-  children?: ReactNode;
   values?: Ariakit.MenuStoreProps["values"];
   onValuesChange?: Ariakit.MenuStoreProps["setValues"];
   defaultValues?: Ariakit.MenuStoreProps["defaultValues"];
@@ -37,9 +36,7 @@ export const Menu = forwardRef<HTMLButtonElement, MenuProps>(function Menu(
   );
 });
 
-interface MenuItemCheckboxProps extends Ariakit.MenuItemCheckboxProps {
-  children?: ReactNode;
-}
+interface MenuItemCheckboxProps extends Ariakit.MenuItemCheckboxProps {}
 
 export const MenuItemCheckbox = forwardRef<
   HTMLDivElement,

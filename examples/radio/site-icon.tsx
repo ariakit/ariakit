@@ -6,7 +6,7 @@ function getItem(filled = false) {
           <div className="h-full w-full rounded-full bg-blue-600 dark:bg-blue-500" />
         )}
       </div>
-      <div className="h-1.5 w-10 bg-black/70 dark:bg-white/70" />
+      <div className="h-1.5 w-10 rounded-[1px] bg-black/60 dark:bg-white/70" />
     </div>
   );
 }

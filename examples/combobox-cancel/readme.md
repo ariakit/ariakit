@@ -15,7 +15,7 @@ Reseting the value of a [Combobox](/components/combobox) with a button rendered 
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -35,5 +35,6 @@ Reseting the value of a [Combobox](/components/combobox) with a button rendered 
 - [](/examples/combobox-links)
 - [](/examples/combobox-multiple)
 - [](/examples/combobox-animated)
+- [](/examples/dialog-combobox-command-menu)
 
 </div>

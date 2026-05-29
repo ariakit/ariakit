@@ -7,6 +7,7 @@ const categoryTitles = {
   examples: "Examples",
   blog: "Blog",
   reference: "API Reference",
+  changelog: "Changelog",
 };
 
 /** @type {Record<string,string>} */

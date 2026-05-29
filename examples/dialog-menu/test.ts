@@ -1,4 +1,5 @@
 import { click, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 const backdrop = () => {
   const dialog = q.dialog();
@@ -46,7 +47,7 @@ test("hide menu by clicking on dialog", async () => {
   await click(q.button("Share"));
   expect(q.dialog()).toBeVisible();
   expect(q.menu()).toBeVisible();
-  await click(q.dialog()!);
+  await click(q.dialog());
   expect(q.dialog()).toBeVisible();
   expect(q.menu()).not.toBeInTheDocument();
   expect(q.dialog()).toHaveFocus();
@@ -60,5 +61,13 @@ test("hide both menu and dialog by clicking outside dialog", async () => {
   await click(backdrop());
   expect(q.dialog()).not.toBeInTheDocument();
   expect(q.menu()).not.toBeInTheDocument();
-  expect(q.button("View recipe")).toHaveFocus();
+  expect(q.button("View recipe")).not.toHaveFocus();
+});
+
+test("move back to menu button with Shift+Tab", async () => {
+  await click(q.button("View recipe"));
+  await click(q.button("Share"));
+  expect(q.menu()).toBeVisible();
+  await press.ShiftTab();
+  expect(q.button("Share")).toHaveFocus();
 });

@@ -18,7 +18,7 @@ Using [React Router](https://reactrouter.com) to create a modal [Dialog](/compon
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -49,9 +49,9 @@ const navigate = useNavigate();
 
 - [](/examples/tab-react-router)
 - [](/examples/dialog-next-router)
+- [](/examples/select-next-router)
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)
 - [](/examples/dialog-hide-warning)
-- [](/examples/menubar-navigation)
 
 </div>

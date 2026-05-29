@@ -2,7 +2,7 @@ export function GlobalNotification() {
   return null;
   // return (
   //   <a
-  //     href="https://newsletter.ariakit.org"
+  //     href="https://newsletter.ariakit.com"
   //     target="_blank"
   //     rel="noopener noreferrer"
   //     className="group flex h-10 items-center gap-2 truncate rounded-lg bg-black/5 px-4 hover:bg-black/10 focus-visible:ariakit-outline-input dark:bg-white/5 dark:hover:bg-white/10"

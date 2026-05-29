@@ -1,8 +1,8 @@
-import * as React from "react";
 import * as Ariakit from "@ariakit/react";
 import { createSlotFill } from "@wordpress/components";
-import clsx from "clsx";
-import { ModalContext } from "./modal.js";
+import { clsx } from "clsx";
+import * as React from "react";
+import { ModalContext } from "./modal.tsx";
 
 export const MenuContext = React.createContext<
   Ariakit.MenuStore | null | undefined
@@ -26,7 +26,6 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
 
 export interface MenuProps extends Ariakit.MenuButtonProps {
   label: React.ReactNode;
-  children?: React.ReactNode;
 }
 
 export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
@@ -48,7 +47,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   // relying on (2). This ensures parent menus won't close when we interact with
   // nested menus, even when they're not nested in the React tree, which is the
   // case when using the WordPress SlotFill module.
-  const mounted = menu.useState("mounted");
+  const mounted = Ariakit.useStoreState(menu, "mounted");
 
   return (
     <>
@@ -115,14 +114,19 @@ export function createMenuSlot(name: string, bubblesVirtually = false) {
     );
   };
 
-  const Fill = (props: { children: React.ReactNode }) => {
-    if (!bubblesVirtually) return <SlotFill.Fill {...props} />;
+  const Fill = ({
+    children,
+    ...props
+  }: React.ComponentProps<typeof SlotFill.Fill>) => {
+    if (!bubblesVirtually) {
+      return <SlotFill.Fill {...props}>{children}</SlotFill.Fill>;
+    }
     return (
-      <SlotFill.Fill>
+      <SlotFill.Fill {...props}>
         {(menu) => (
           // Re-create the menu context within the fill tree
           <MenuContext.Provider value={menu as Ariakit.MenuStore}>
-            {props.children}
+            {typeof children === "function" ? children(menu) : children}
           </MenuContext.Provider>
         )}
       </SlotFill.Fill>

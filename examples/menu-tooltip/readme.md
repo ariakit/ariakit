@@ -15,7 +15,7 @@ Rendering [Menu](/components/menu) with a [Tooltip](/components/tooltip) that ap
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -28,7 +28,7 @@ Rendering [Menu](/components/menu) with a [Tooltip](/components/tooltip) that ap
 
 ## Composing `MenuButton` and `TooltipAnchor`
 
-In this example, we're combining [`MenuButton`](/reference/menu-button) and [`TooltipAnchor`](/reference/tooltip-anchor) using the [`render`](/apis/tooltip-anchor#render) prop to create a button that opens a menu when clicked and shows a tooltip when hovered.
+In this example, we're combining [`MenuButton`](/reference/menu-button) and [`TooltipAnchor`](/reference/tooltip-anchor) using the [`render`](/reference/tooltip-anchor#render) prop to create a button that opens a menu when clicked and shows a tooltip when hovered.
 
 ```jsx
 <TooltipAnchor render={<MenuButton />}>
@@ -42,5 +42,7 @@ You can learn more about this pattern on the [Composition](/guide/composition) g
 
 - [](/examples/menu-item-checkbox)
 - [](/examples/dialog-menu)
+- [](/examples/dialog-combobox-tab-command-menu)
+- [](/examples/dialog-combobox-command-menu)
 
 </div>

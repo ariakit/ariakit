@@ -1,0 +1,46 @@
+@import url("tailwindcss/base") layer(_base);
+@import url("tailwindcss/components") layer(theme);
+@import url("tailwindcss/utilities") layer(_utilities);
+
+[role="button"],
+button:not([type="submit"]) {
+  cursor: default;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+.light {
+  color-scheme: light;
+}
+
+:root {
+  @apply
+    [--header-height:56px]
+    md:[--header-height:72px]
+
+    [--size-sm:736px]
+    [--size-md:768px]
+    [--size-lg:832px]
+    [--size-xl:960px]
+    [--size-2xl:1024px]
+    [--size-3xl:1040px]
+    [--size-4xl:1104px]
+    [--size-5xl:1232px]
+    [--size-wide:1440px]
+
+    [--size-quote:--size-sm]
+    [--size-content:--size-md]
+    [--size-content-box:--size-md]
+
+    [--page-padding:12px]
+    md:[--page-padding:16px]
+}
+
+@keyframes appear {
+  from {
+    display: none;
+    opacity: 0;
+  }
+}

@@ -1,39 +1,38 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
-import type { ComponentPropsWithoutRef } from "react";
-import { isDownloading, isOpeningInNewTab } from "@ariakit/core/utils/events";
 import * as Ariakit from "@ariakit/react";
-import { useSafeLayoutEffect } from "@ariakit/react-core/utils/hooks";
+import { useSafeLayoutEffect } from "@ariakit/react-utils";
+import { isDownloading, isOpeningInNewTab } from "@ariakit/utils";
 import { track } from "@vercel/analytics";
-import { Bell } from "icons/bell.jsx";
 import { partition } from "lodash-es";
 import Link from "next/link.js";
-import { twJoin, twMerge } from "tailwind-merge";
-import type { UpdateItem } from "updates.js";
-import { useMedia } from "utils/use-media.js";
-import { useUpdates } from "utils/use-updates.js";
-// import { NewsletterForm } from "./newsletter-form.jsx";
-import { Command } from "./command.jsx";
-import { Popup } from "./popup.jsx";
-import { TooltipButton } from "./tooltip-button.jsx";
-import { UpdateLink } from "./update-link.jsx";
+import type { ComponentPropsWithoutRef } from "react";
+import { useId, useMemo, useState } from "react";
+import { twJoin } from "tailwind-merge";
+import { Bell } from "@/icons/bell.tsx";
+import { useMedia } from "@/lib/use-media.ts";
+import { useUpdates } from "@/lib/use-updates.ts";
+import type { UpdateItem } from "@/updates.ts";
+// import { NewsletterForm } from "./newsletter-form.tsx";
+import { Command } from "./command.tsx";
+import { Popup } from "./popup.tsx";
+import { TooltipButton } from "./tooltip-button.tsx";
+import { UpdateLink } from "./update-link.tsx";
 
 export interface HeaderUpdatesProps extends ComponentPropsWithoutRef<"button"> {
   updates: UpdateItem[];
-  newPages: string[];
+  plusPages: string[];
 }
 
 export function HeaderUpdates({
   updates,
-  newPages,
+  plusPages,
   ...props
 }: HeaderUpdatesProps) {
   const id = useId();
   const isLarge = useMedia("(min-width: 640px)", true);
   const { seen, previousSeen, seeNow } = useUpdates({ updates });
   const popover = Ariakit.usePopoverStore({
-    animated: true,
     placement: isLarge ? "bottom-end" : "bottom",
     setOpen(open) {
       if (open) {
@@ -87,7 +86,7 @@ export function HeaderUpdates({
         store={popover}
         unmountOnHide
         shift={-8}
-        className="max-w-[min(var(--popover-available-width),480px)] origin-top-right animate-in fade-in zoom-in-95 data-[leave]:animate-out data-[leave]:fade-out data-[leave]:zoom-out-95"
+        className="max-w-[min(var(--popover-available-width),480px)] origin-top-right data-[open]:animate-in data-[leave]:animate-out data-[leave]:fade-out data-[open]:fade-in data-[leave]:zoom-out-95 data-[open]:zoom-in-95"
         onClick={(event) => {
           if (!(event.target instanceof Element)) return;
           const closestAnchor = event.target.closest("a");
@@ -99,15 +98,8 @@ export function HeaderUpdates({
         }}
         render={
           <Popup
-            scroller={(props) => (
-              <>
-                <Ariakit.PopoverArrow />
-                <div
-                  {...props}
-                  className={twMerge(props.className, "flex flex-col py-0")}
-                />
-              </>
-            )}
+            arrow={<Ariakit.PopoverArrow />}
+            scroller={<div className="!py-0" />}
           />
         }
       >
@@ -170,7 +162,7 @@ export function HeaderUpdates({
                         layer="popup"
                         unread
                         connected={index !== 0}
-                        plus={newPages.some((page) =>
+                        plus={plusPages.some((page) =>
                           item.href.startsWith(page),
                         )}
                         {...item}
@@ -197,7 +189,7 @@ export function HeaderUpdates({
                         dateStyle="fromNow"
                         layer="popup"
                         connected={index !== 0}
-                        plus={newPages.some((page) =>
+                        plus={plusPages.some((page) =>
                           item.href.startsWith(page),
                         )}
                         {...item}

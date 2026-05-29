@@ -1,6 +1,6 @@
 "use client";
+import { formatDistanceToNow } from "date-fns/formatDistanceToNow";
 import { useEffect, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
 
 export function DateFromNow({ dateTime }: { dateTime: string }) {
   const date = new Date(dateTime);

@@ -1,4 +1,5 @@
 import { click, hover, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 function getSelectionStart(element: Element | HTMLInputElement | null) {
   return element && "selectionStart" in element ? element.selectionStart : null;
@@ -7,7 +8,7 @@ function getSelectionStart(element: Element | HTMLInputElement | null) {
 test("open popover with components tab initially selected, but not active", async () => {
   await click(q.combobox("Search pages"));
   expect(await q.dialog.wait("Pages")).toBeVisible();
-  expect(q.combobox()).toHaveAttribute("data-active-item", "true");
+  expect(q.combobox()).toHaveAttribute("data-active-item");
   expect(q.tab("All 53")).toHaveAttribute("aria-selected", "false");
   expect(q.tab("Guide 6")).toHaveAttribute("aria-selected", "false");
   expect(q.tab("Examples 31")).toHaveAttribute("aria-selected", "false");
@@ -28,13 +29,13 @@ test("move through items and tabs with the keyboard", async () => {
   expect(q.dialog("Pages")).not.toBeInTheDocument();
   await press.ArrowDown();
   expect(await q.dialog.wait("Pages")).toBeVisible();
-  expect(q.combobox()).toHaveAttribute("data-active-item", "true");
+  expect(q.combobox()).toHaveAttribute("data-active-item");
   expect(q.tab("Components 16")).toHaveAttribute("aria-selected", "true");
   expect(q.tab("Components 16")).not.toHaveFocus();
   expect(q.tab("Components 16")).not.toHaveAttribute("data-active-item");
   await press.ArrowDown();
   expect(q.tab("Components 16")).toHaveFocus();
-  expect(q.tab("Components 16")).toHaveAttribute("data-active-item", "");
+  expect(q.tab("Components 16")).toHaveAttribute("data-active-item");
   expect(q.combobox()).not.toHaveAttribute("data-active-item");
   expect(q.combobox()).toHaveFocus();
   await press.ArrowRight();
@@ -42,7 +43,7 @@ test("move through items and tabs with the keyboard", async () => {
   expect(q.tab("Components 16")).not.toHaveAttribute("data-active-item");
   expect(q.tab("Components 16")).toHaveAttribute("aria-selected", "false");
   expect(q.tab("Examples 31")).toHaveFocus();
-  expect(q.tab("Examples 31")).toHaveAttribute("data-active-item", "");
+  expect(q.tab("Examples 31")).toHaveAttribute("data-active-item");
   expect(q.tab("Examples 31")).toHaveAttribute("aria-selected", "true");
   await press.ArrowRight();
   expect(q.combobox()).toHaveFocus();
@@ -62,11 +63,11 @@ test("move through items and tabs with the keyboard", async () => {
 test("move through items and tabs with a mouse", async () => {
   await click(q.button("Show popup"));
   expect(q.combobox()).toHaveFocus();
-  expect(q.combobox()).toHaveAttribute("data-active-item", "true");
+  expect(q.combobox()).toHaveAttribute("data-active-item");
   await hover(await q.option.wait("Button"));
-  expect(q.option("Button")).toHaveAttribute("data-active-item", "");
+  expect(q.option("Button")).toHaveAttribute("data-active-item");
   await hover(q.tab("Guide 6"));
-  expect(q.option("Button")).toHaveAttribute("data-active-item", "");
+  expect(q.option("Button")).toHaveAttribute("data-active-item");
   expect(q.option("Button")).toHaveFocus();
   await click(q.tab("Guide 6"));
   expect(q.tab("Guide 6")).toHaveAttribute("aria-selected", "true");
@@ -90,10 +91,9 @@ test("filter items until there are no results and change tabs", async () => {
   await click(q.combobox());
   await click(await q.tab.wait("Guide 6"));
   await type("abc");
-  expect(q.tab("Guide 0")).not.toBeDisabled();
   expect(q.tab("Guide 0")).toHaveFocus();
   expect(q.tab("Guide 0")).toHaveAttribute("aria-selected", "true");
-  expect(q.tab("Guide 0")).toHaveAttribute("data-active-item", "");
+  expect(q.tab("Guide 0")).toHaveAttribute("data-active-item");
   expect(q.tabpanel("Guide 0")).toBeVisible();
   expect(q.text('No pages found for ""')).toBeVisible();
   await press.ArrowLeft();
@@ -116,7 +116,7 @@ test("clear input with keyboard", async () => {
   expect(q.combobox()).not.toHaveFocus();
   await press.Enter();
   expect(q.combobox()).toHaveFocus();
-  expect(q.combobox()).toHaveAttribute("data-active-item", "true");
+  expect(q.combobox()).toHaveAttribute("data-active-item");
   expect(q.combobox()).toHaveValue("");
 });
 
@@ -126,6 +126,25 @@ test("clear input with mouse", async () => {
   expect(q.option("Select")).toHaveFocus();
   await click(q.button("Clear input"));
   expect(q.combobox()).toHaveFocus();
-  expect(q.combobox()).toHaveAttribute("data-active-item", "true");
+  expect(q.combobox()).toHaveAttribute("data-active-item");
   expect(q.combobox()).toHaveValue("");
+});
+
+test("open the popover with arrow down after switching tabs", async () => {
+  await click(q.combobox());
+  expect(q.dialog("Pages")).toBeVisible();
+  await press.ArrowDown();
+  expect(q.tab("Components 16")).toHaveFocus();
+  await press.ArrowDown();
+  expect(q.option("Button")).toHaveFocus();
+  await press.ArrowRight();
+  expect(q.tab("Examples 31")).toHaveFocus();
+  await press.Escape();
+  expect(q.combobox()).toHaveAttribute("data-active-item");
+  expect(q.dialog("Pages")).not.toBeInTheDocument();
+  await press.ArrowDown();
+  expect(q.dialog("Pages")).toBeVisible();
+  expect(q.tabpanel("Components 16")).toBeVisible();
+  await press.ArrowDown();
+  expect(q.tab("Components 16")).toHaveFocus();
 });

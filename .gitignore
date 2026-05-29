@@ -2,8 +2,12 @@
 
 .nx
 .cache
+dist
 test-results
+.perf-results
 playwright-report
+.playwright
+.playwright-cli
 
 # dependencies
 node_modules
@@ -23,13 +27,23 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+.dev.vars
 
 # vercel
 .vercel
 
+# cloudflare
+.wrangler
+
 # typescript
 *.tsbuildinfo
+.typescript
+
+# generated types
+.astro/
+worker-configuration.d.ts
+
+# claude code
+.claude/worktrees
+.claude/scheduled_tasks.lock

@@ -5,10 +5,10 @@ export default function Icon() {
         <div className="h-full overflow-hidden">
           <div className="-mx-1 -mt-5">
             <div className="flex w-full flex-col gap-2 rounded-md border border-black/20 bg-white p-2 shadow-md dark:border-white/10 dark:bg-white/10 dark:shadow-md-dark">
-              <div className="ml-2 h-2 w-10 rounded-sm bg-black/70 dark:bg-white/70" />
-              <div className="h-10 w-full rounded border border-black/30 bg-white px-2 py-1 dark:border-white/30 dark:bg-black">
+              <div className="ml-2 h-2 w-10 rounded-sm bg-black/65 dark:bg-white/70" />
+              <div className="h-10 w-full rounded border border-black/30 bg-white px-2 py-1 dark:border-white/30 dark:bg-gray-900">
                 <div className="flex items-center gap-1">
-                  <div className="h-2 w-6 rounded-sm bg-black/60 dark:bg-white/60" />
+                  <div className="h-2 w-6 rounded-sm bg-black/55 dark:bg-white/60" />
                   <div className="h-4 w-px bg-black dark:bg-white" />
                 </div>
               </div>

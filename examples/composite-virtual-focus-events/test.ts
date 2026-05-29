@@ -1,4 +1,5 @@
 import { click, press, q } from "@ariakit/test";
+import { expect, test, vi } from "vitest";
 import type { MockInstance } from "vitest";
 
 function expectCalls(mock: MockInstance) {
@@ -12,7 +13,7 @@ test("events", async () => {
   externalButton.textContent = "External button";
   document.body.append(externalButton);
 
-  const log = vi.spyOn(console, "log").mockImplementation(() => {});
+  using log = vi.spyOn(console, "log").mockImplementation(() => {});
 
   await press.Tab();
   await press.Tab();
@@ -52,8 +53,6 @@ test("events", async () => {
       "event: focus | currentTarget: toolbar | target: item-2 | relatedTarget: toolbar",
     ]
   `);
-
-  log.mockReset();
 
   externalButton.remove();
 });

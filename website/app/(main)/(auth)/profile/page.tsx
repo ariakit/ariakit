@@ -1,6 +1,15 @@
 "use client";
-import { UserProfile } from "@clerk/clerk-react";
+import { RedirectToSignIn, SignedOut, UserProfile } from "@clerk/clerk-react";
+import { usePathname } from "next/navigation.js";
 
 export default function Page() {
-  return <UserProfile routing="hash" />;
+  const pathname = usePathname();
+  return (
+    <>
+      <SignedOut>
+        <RedirectToSignIn afterSignInUrl={pathname} afterSignUpUrl={pathname} />
+      </SignedOut>
+      <UserProfile routing="hash" />
+    </>
+  );
 }

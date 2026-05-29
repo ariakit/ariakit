@@ -22,7 +22,7 @@ This example is designed for those who are already using Radix UI in their proje
 
 </aside>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -59,7 +59,7 @@ We can share state between Ariakit and Radix UI by passing our own `open` state 
 ```jsx
 const [open, setOpen] = useState(false);
 
-<RadixSelect.RadixPopover.Root open={open} onOpenChange={setOpen}>
+<RadixSelect.Root open={open} onOpenChange={setOpen}>
   <ComboboxProvider open={open} setOpen={setOpen}>
 ```
 

@@ -1,6 +1,6 @@
 ---
 tags:
-  - New
+  - Plus
   - Menubar
   - Menu
   - Portal
@@ -26,7 +26,7 @@ Using [Menubar](/components/menubar), [Menu](/components/menu), and [Portal](/co
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -37,6 +37,14 @@ Using [Menubar](/components/menubar), [Menu](/components/menu), and [Portal](/co
 - [](/components/portal)
 
 </div>
+
+<aside data-type="note" title="This is an advanced example">
+
+This example employs sophisticated methods to ensure maximum accessibility across different browsers, devices, and assistive technologies. You can easily copy and paste the provided code into your project and use it as a foundation.
+
+Refer to the documentation below for a deeper understanding of the implementation details. As time progresses, we may introduce additional features to the Ariakit library to further simplify the implementation of this example.
+
+</aside>
 
 ## Focusing on menubar items with <kbd>Tab</kbd>
 
@@ -83,7 +91,8 @@ To accomplish this:
    This also means that we can use the `anchorElement` state to determine the `open` state of the child menu:
 
    ```js
-   const open = menu.useState(
+   const open = useStoreState(
+     menu,
      (state) => state.mounted && state.anchorElement === button,
    );
    ```
@@ -91,7 +100,7 @@ To accomplish this:
 3. Finally, if the child menu is open, we can render the [`Portal`](/reference/portal) component to append the menu items to the parent [`Menu`](/reference/menu) component using the [`portalElement`](/reference/portal#portalelement) prop:
 
    ```jsx
-   const parentMenu = menu.useState("contentElement");
+   const parentMenu = useStoreState(menu, "contentElement");
 
    if (open) {
      return <Portal portalElement={parentMenu}>{children}</Portal>;

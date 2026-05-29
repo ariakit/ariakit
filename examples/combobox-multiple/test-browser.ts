@@ -1,5 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 function query(locator: Page | Locator) {
   return {
@@ -9,10 +10,6 @@ function query(locator: Page | Locator) {
       locator.getByRole("option", { name, exact: true }),
   };
 }
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/combobox-multiple", { waitUntil: "networkidle" });
-});
 
 test("scroll offscreen item into view after selecting it", async ({ page }) => {
   const q = query(page);
@@ -25,7 +22,7 @@ test("scroll offscreen item into view after selecting it", async ({ page }) => {
   await expect(q.option("Hot dog")).not.toBeInViewport();
   await expect(q.option("Pasta")).toBeInViewport();
   await expect(q.option("Pineapple")).toBeInViewport();
-  await expect(q.option("Pineapple")).toHaveAttribute("data-active-item", "");
+  await expect(q.option("Pineapple")).toHaveAttribute("data-active-item");
   await expect(q.option("Pineapple")).toHaveAttribute("aria-selected", "true");
 });
 

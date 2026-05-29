@@ -1,76 +1,248 @@
 {
   "name": "@ariakit/react",
-  "version": "0.3.12",
+  "version": "0.4.28",
   "description": "Toolkit for building accessible web apps with React",
-  "sideEffects": false,
+  "keywords": [
+    "a11y",
+    "ariakit",
+    "components",
+    "react",
+    "toolkit",
+    "ui"
+  ],
+  "homepage": "https://ariakit.com",
   "license": "MIT",
-  "homepage": "https://ariakit.org",
-  "type": "module",
-  "main": "src/index.ts",
-  "module": "src/index.ts",
-  "types": "src/index.ts",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/ariakit/ariakit.git",
-    "directory": "packages/ariakit-react"
-  },
   "author": {
     "name": "Diego Haz",
     "email": "hazdiego@gmail.com",
     "url": "https://github.com/diegohaz"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-react"
+  },
   "funding": {
     "type": "opencollective",
     "url": "https://opencollective.com/ariakit"
   },
+  "type": "module",
+  "sideEffects": false,
+  "main": "cjs/index.cjs",
+  "module": "esm/index.js",
+  "types": "cjs/index.d.ts",
   "scripts": {
-    "lint": "eslint . --ext js,ts,tsx",
     "build": "node ../../scripts/build/build.js",
     "clean": "node ../../scripts/build/clean.js"
   },
-  "keywords": [
-    "ariakit",
-    "react",
-    "a11y",
-    "ui",
-    "toolkit",
-    "components"
-  ],
   "dependencies": {
-    "@ariakit/react-core": "0.3.12"
+    "@ariakit/react-components": "workspace:*"
+  },
+  "devDependencies": {
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
   },
   "peerDependencies": {
-    "react": "^17.0.0 || ^18.0.0",
-    "react-dom": "^17.0.0 || ^18.0.0"
+    "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0 || ^19.0.0"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./visually-hidden": "./src/visually-hidden.ts",
-    "./tooltip": "./src/tooltip.ts",
-    "./toolbar": "./src/toolbar.ts",
-    "./tab": "./src/tab.ts",
-    "./separator": "./src/separator.ts",
-    "./select": "./src/select.ts",
-    "./role": "./src/role.ts",
-    "./radio": "./src/radio.ts",
-    "./portal": "./src/portal.ts",
-    "./popover": "./src/popover.ts",
-    "./menubar": "./src/menubar.ts",
-    "./menu": "./src/menu.ts",
-    "./hovercard": "./src/hovercard.ts",
-    "./heading": "./src/heading.ts",
-    "./group": "./src/group.ts",
-    "./form": "./src/form.ts",
-    "./focusable": "./src/focusable.ts",
-    "./focus-trap": "./src/focus-trap.ts",
-    "./disclosure": "./src/disclosure.ts",
-    "./dialog": "./src/dialog.ts",
-    "./composite": "./src/composite.ts",
-    "./command": "./src/command.ts",
-    "./combobox": "./src/combobox.ts",
-    "./collection": "./src/collection.ts",
-    "./checkbox": "./src/checkbox.ts",
-    "./button": "./src/button.ts",
+    ".": {
+      "import": "./esm/index.js",
+      "require": {
+        "types": "./cjs/index.d.cts",
+        "default": "./cjs/index.cjs"
+      }
+    },
+    "./button": {
+      "import": "./esm/button.js",
+      "require": {
+        "types": "./cjs/button.d.cts",
+        "default": "./cjs/button.cjs"
+      }
+    },
+    "./checkbox": {
+      "import": "./esm/checkbox.js",
+      "require": {
+        "types": "./cjs/checkbox.d.cts",
+        "default": "./cjs/checkbox.cjs"
+      }
+    },
+    "./collection": {
+      "import": "./esm/collection.js",
+      "require": {
+        "types": "./cjs/collection.d.cts",
+        "default": "./cjs/collection.cjs"
+      }
+    },
+    "./combobox": {
+      "import": "./esm/combobox.js",
+      "require": {
+        "types": "./cjs/combobox.d.cts",
+        "default": "./cjs/combobox.cjs"
+      }
+    },
+    "./command": {
+      "import": "./esm/command.js",
+      "require": {
+        "types": "./cjs/command.d.cts",
+        "default": "./cjs/command.cjs"
+      }
+    },
+    "./composite": {
+      "import": "./esm/composite.js",
+      "require": {
+        "types": "./cjs/composite.d.cts",
+        "default": "./cjs/composite.cjs"
+      }
+    },
+    "./dialog": {
+      "import": "./esm/dialog.js",
+      "require": {
+        "types": "./cjs/dialog.d.cts",
+        "default": "./cjs/dialog.cjs"
+      }
+    },
+    "./disclosure": {
+      "import": "./esm/disclosure.js",
+      "require": {
+        "types": "./cjs/disclosure.d.cts",
+        "default": "./cjs/disclosure.cjs"
+      }
+    },
+    "./focus-trap": {
+      "import": "./esm/focus-trap.js",
+      "require": {
+        "types": "./cjs/focus-trap.d.cts",
+        "default": "./cjs/focus-trap.cjs"
+      }
+    },
+    "./focusable": {
+      "import": "./esm/focusable.js",
+      "require": {
+        "types": "./cjs/focusable.d.cts",
+        "default": "./cjs/focusable.cjs"
+      }
+    },
+    "./form": {
+      "import": "./esm/form.js",
+      "require": {
+        "types": "./cjs/form.d.cts",
+        "default": "./cjs/form.cjs"
+      }
+    },
+    "./group": {
+      "import": "./esm/group.js",
+      "require": {
+        "types": "./cjs/group.d.cts",
+        "default": "./cjs/group.cjs"
+      }
+    },
+    "./heading": {
+      "import": "./esm/heading.js",
+      "require": {
+        "types": "./cjs/heading.d.cts",
+        "default": "./cjs/heading.cjs"
+      }
+    },
+    "./hovercard": {
+      "import": "./esm/hovercard.js",
+      "require": {
+        "types": "./cjs/hovercard.d.cts",
+        "default": "./cjs/hovercard.cjs"
+      }
+    },
+    "./menu": {
+      "import": "./esm/menu.js",
+      "require": {
+        "types": "./cjs/menu.d.cts",
+        "default": "./cjs/menu.cjs"
+      }
+    },
+    "./menubar": {
+      "import": "./esm/menubar.js",
+      "require": {
+        "types": "./cjs/menubar.d.cts",
+        "default": "./cjs/menubar.cjs"
+      }
+    },
+    "./popover": {
+      "import": "./esm/popover.js",
+      "require": {
+        "types": "./cjs/popover.d.cts",
+        "default": "./cjs/popover.cjs"
+      }
+    },
+    "./portal": {
+      "import": "./esm/portal.js",
+      "require": {
+        "types": "./cjs/portal.d.cts",
+        "default": "./cjs/portal.cjs"
+      }
+    },
+    "./radio": {
+      "import": "./esm/radio.js",
+      "require": {
+        "types": "./cjs/radio.d.cts",
+        "default": "./cjs/radio.cjs"
+      }
+    },
+    "./role": {
+      "import": "./esm/role.js",
+      "require": {
+        "types": "./cjs/role.d.cts",
+        "default": "./cjs/role.cjs"
+      }
+    },
+    "./select": {
+      "import": "./esm/select.js",
+      "require": {
+        "types": "./cjs/select.d.cts",
+        "default": "./cjs/select.cjs"
+      }
+    },
+    "./separator": {
+      "import": "./esm/separator.js",
+      "require": {
+        "types": "./cjs/separator.d.cts",
+        "default": "./cjs/separator.cjs"
+      }
+    },
+    "./store": {
+      "import": "./esm/store.js",
+      "require": {
+        "types": "./cjs/store.d.cts",
+        "default": "./cjs/store.cjs"
+      }
+    },
+    "./tab": {
+      "import": "./esm/tab.js",
+      "require": {
+        "types": "./cjs/tab.d.cts",
+        "default": "./cjs/tab.cjs"
+      }
+    },
+    "./toolbar": {
+      "import": "./esm/toolbar.js",
+      "require": {
+        "types": "./cjs/toolbar.d.cts",
+        "default": "./cjs/toolbar.cjs"
+      }
+    },
+    "./tooltip": {
+      "import": "./esm/tooltip.js",
+      "require": {
+        "types": "./cjs/tooltip.d.cts",
+        "default": "./cjs/tooltip.cjs"
+      }
+    },
+    "./visually-hidden": {
+      "import": "./esm/visually-hidden.js",
+      "require": {
+        "types": "./cjs/visually-hidden.d.cts",
+        "default": "./cjs/visually-hidden.cjs"
+      }
+    },
     "./package.json": "./package.json"
   }
 }

@@ -1,52 +1,77 @@
 "use client";
 
-import type { ElementType, ReactNode } from "react";
-import { cx } from "@ariakit/core/utils/misc";
 import { Role } from "@ariakit/react";
+import { forwardRef } from "@ariakit/react-utils";
 import { Button } from "@ariakit/react/button";
 import type {
-  TooltipAnchorOptions,
+  TooltipAnchorProps,
   TooltipProps,
+  TooltipProviderProps,
 } from "@ariakit/react/tooltip";
 import {
   Tooltip,
   TooltipAnchor,
   TooltipProvider,
 } from "@ariakit/react/tooltip";
-import { createComponent } from "@ariakit/react-core/utils/system";
+import type { ReactNode } from "react";
+import { twJoin } from "tailwind-merge";
 
-export interface TooltipButtonOptions<T extends ElementType = "button">
-  extends TooltipAnchorOptions<T> {
+export interface TooltipButtonProps extends Omit<
+  TooltipAnchorProps<"button">,
+  "title"
+> {
   title: ReactNode;
-  tooltipProps?: TooltipProps;
+  placement?: TooltipProviderProps["placement"];
+  timeout?: TooltipProviderProps["timeout"];
+  showTimeout?: TooltipProviderProps["showTimeout"];
+  hideTimeout?: TooltipProviderProps["hideTimeout"];
+  popup?: TooltipProps["render"];
+  gutter?: TooltipProps["gutter"];
+  shift?: TooltipProps["shift"];
   fixed?: boolean;
-  isLabel?: boolean;
 }
 
-export const TooltipButton = createComponent<TooltipButtonOptions>(
-  ({ title, tooltipProps, fixed, isLabel, store, ...props }) => {
-    return (
-      <TooltipProvider store={store} type={isLabel ? "label" : "description"}>
-        <Role.button
-          {...props}
-          render={<TooltipAnchor render={<Button render={props.render} />} />}
-        />
-        <Tooltip
-          {...tooltipProps}
-          fixed
-          unmountOnHide
-          className={cx(
-            "z-50 cursor-default rounded-md px-2 py-1 text-sm",
-            "drop-shadow-sm dark:drop-shadow-sm-dark",
-            "bg-gray-150 dark:bg-gray-700",
-            "text-black dark:text-white",
-            "border border-gray-300 dark:border-gray-600",
-            tooltipProps?.className,
-          )}
-        >
-          {title}
-        </Tooltip>
-      </TooltipProvider>
-    );
-  },
-);
+export const TooltipButton = forwardRef(function TooltipButton({
+  title,
+  placement,
+  timeout,
+  showTimeout,
+  hideTimeout,
+  popup,
+  gutter,
+  shift,
+  fixed,
+  store,
+  ...props
+}: TooltipButtonProps) {
+  return (
+    <TooltipProvider
+      placement={placement}
+      timeout={timeout}
+      showTimeout={showTimeout}
+      hideTimeout={hideTimeout}
+      store={store}
+    >
+      <Role.button
+        {...props}
+        render={<TooltipAnchor render={<Button render={props.render} />} />}
+      />
+      <Tooltip
+        fixed={fixed}
+        gutter={gutter}
+        shift={shift}
+        unmountOnHide
+        render={popup}
+        className={twJoin(
+          "z-50 cursor-default rounded-md px-2 py-1 text-sm",
+          "drop-shadow-sm dark:drop-shadow-sm-dark",
+          "bg-gray-150 dark:bg-gray-700",
+          "text-black dark:text-white",
+          "border border-gray-300 dark:border-gray-600",
+        )}
+      >
+        {title}
+      </Tooltip>
+    </TooltipProvider>
+  );
+});

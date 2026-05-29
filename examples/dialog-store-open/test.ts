@@ -1,4 +1,5 @@
 import { click, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("keep dialog open when pressing escape", async () => {
   expect(q.dialog()).toBeVisible();

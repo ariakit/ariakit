@@ -1,0 +1,16 @@
+@import url("examples/select/style.css");
+
+.select-item {
+  @apply
+    cursor-pointer
+    select-none
+  ;
+}
+
+.button {
+  @apply
+    transition-opacity
+    delay-75
+    aria-busy:opacity-60
+  ;
+}

@@ -1,5 +1,5 @@
-import { readFileSync } from "fs";
-import { basename, extname } from "path";
+import { readFileSync } from "node:fs";
+import { basename, extname } from "node:path";
 import { camelCase, upperFirst } from "lodash-es";
 import { getPageName } from "./get-page-name.js";
 import { pathToPosix } from "./path-to-posix.js";
@@ -60,9 +60,7 @@ export function createReferencePageContent(reference) {
   };
 
   const requiredProps = props.filter((prop) => !prop.optional).sort(sortProp);
-  const optionalProps = props
-    .filter((prop) => prop.optional && prop.name !== "as")
-    .sort(sortProp);
+  const optionalProps = props.filter((prop) => prop.optional).sort(sortProp);
 
   /** @param {string | boolean} [deprecated] */
   const renderDeprecated = (deprecated, warn = false) => {

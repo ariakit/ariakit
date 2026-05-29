@@ -1,12 +1,12 @@
-import pagesConfig from "build-pages/config.js";
-import index from "build-pages/index.js";
-import { PageItem } from "components/page-item.jsx";
 import { groupBy } from "lodash-es";
 import { notFound } from "next/navigation.js";
-import { getNextPageMetadata } from "utils/get-next-page-metadata.js";
-import { getPageIcon } from "utils/get-page-icon.js";
-import { PageSection } from "../page-section.jsx";
-import { ListPage } from "./list-page.js";
+import pagesConfig from "@/build-pages/config.js";
+import index from "@/build-pages/index.ts";
+import { PageItem } from "@/components/page-item.tsx";
+import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
+import { getPageIcon } from "@/lib/get-page-icon.tsx";
+import { PageSection } from "../page-section.tsx";
+import { ListPage } from "./list-page.tsx";
 
 interface Props {
   params: { category: string };
@@ -58,7 +58,7 @@ export default function Page({ params }: Props) {
               description={page.content}
               size={size}
               thumbnail={getPageIcon(page.category, page.slug) || <span />}
-              plus={page.tags.includes("New")}
+              plus={page.tags.includes("Plus")}
             />
           ))}
         </div>
@@ -74,7 +74,7 @@ export default function Page({ params }: Props) {
                 description={page.content}
                 size={size}
                 thumbnail={getPageIcon(page.category, page.slug) || <span />}
-                plus={page.tags.includes("New")}
+                plus={page.tags.includes("Plus")}
               />
             ))}
           </div>

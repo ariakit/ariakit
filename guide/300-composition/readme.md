@@ -42,7 +42,7 @@ When rendering custom components using the `render` prop, be aware that [custom 
 
 Besides changing the underlying HTML element, the `render` prop can be used to render a custom component.
 
-In the [Menu with Framer Motion](/examples/menu-framer-motion) example, the `render` prop is used to render the [Menu](/components/menu) component as a `motion.div` element:
+In the [Menu with Motion](/examples/menu-framer-motion) example, the `render` prop is used to render the [Menu](/components/menu) component as a `motion.div` element:
 
 ```jsx "Menu" "motion.div"
 <Menu render={<motion.div animate={{ y: 100 }} />} />
@@ -92,12 +92,12 @@ This also applies to the `children` prop. You don't need to nest children within
 
 - Children passed directly to the rendered element will override the original component children:
 
-  ```jsx "Ariakit.org"
-  <ComboboxItem render={<a>Ariakit.org</a>}>Ariakit</ComboboxItem>
+  ```jsx "Ariakit.com"
+  <ComboboxItem render={<a>Ariakit.com</a>}>Ariakit</ComboboxItem>
   ```
 
-  ```html "Ariakit.org"
-  <a>Ariakit.org</a>
+  ```html "Ariakit.com"
+  <a>Ariakit.com</a>
   ```
 
 <aside data-type="note" title="Flat is better than nested">
@@ -174,7 +174,7 @@ When a function is passed to the `render` prop, the HTML props will **not** be a
 
 With this in mind, it's generally recommended to pass all the HTML props you intend to merge to a transitional [Role](/components/role) element passed directly to the `render` prop, as it can handle the merging process for you in a type-safe manner:
 
-<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-x-2 gap-y-4 !max-w-[832px] [&_pre]:h-full">
+<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-x-2 gap-y-4 max-w-[--size-lg] [&_pre]:h-full">
 
 ```jsx "ref" "onClick"
 // ❌ Manually merging props
@@ -240,3 +240,14 @@ const CustomButton = forwardRef(function CustomButton(props, forwardedRef) {
   );
 });
 ```
+
+## Next steps
+
+Continue reading our [Guide](/guide) to learn more about Ariakit:
+
+<div data-cards>
+
+- [](/guide/styling)
+- [](/guide/component-providers)
+
+</div>

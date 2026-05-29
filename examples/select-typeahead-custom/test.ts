@@ -1,4 +1,5 @@
 import { press, q, sleep, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("typeahead open", async () => {
   await press.Tab();

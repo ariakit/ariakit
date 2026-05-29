@@ -20,7 +20,7 @@ This example demonstrates the rendering of a button element. However, if you int
 
 </aside>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -36,11 +36,11 @@ By default, native checkbox elements are activated on <kbd>Space</kbd>, but not 
 
 ## Reading the state
 
-In this example, we're reading the [`value`](/reference/use-checkbox-store#value) state from the checkbox store to render the button's text. This is done by using the selector form of the [`useState`](/reference/use-checkbox-store#usestate) hook:
+In this example, we're reading the [`value`](/reference/use-checkbox-store#value) state from the checkbox store to render the button's text. This is done by using the selector form of the [`useStoreState`](/reference/use-store-state) hook:
 
 ```jsx
-const label = checkbox.useState((state) =>
-  state.value ? "Checked" : "Unchecked"
+const label = useStoreState(checkbox, (state) =>
+  state.value ? "Checked" : "Unchecked",
 );
 ```
 

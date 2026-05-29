@@ -1,106 +1,37 @@
-import { queries as baseQueries } from "@testing-library/dom";
+// oxlint-disable unbound-method
+import { invariant } from "@ariakit/utils";
 import type {
   ByRoleMatcher,
   ByRoleOptions,
   getQueriesForElement,
 } from "@testing-library/dom";
+import { queries as baseQueries } from "@testing-library/dom";
+import type { AriaRole } from "./__aria-role.ts";
+import { roles } from "./__aria-role.ts";
 
-const roles = [
-  "alert",
-  "alertdialog",
-  "application",
-  "article",
-  "banner",
-  "blockquote",
-  "button",
-  "caption",
-  "cell",
-  "checkbox",
-  "code",
-  "columnheader",
-  "combobox",
-  "complementary",
-  "contentinfo",
-  "definition",
-  "deletion",
-  "dialog",
-  "directory",
-  "document",
-  "emphasis",
-  "feed",
-  "figure",
-  "form",
-  "generic",
-  "grid",
-  "gridcell",
-  "group",
-  "heading",
-  "img",
-  "insertion",
-  "link",
-  "list",
-  "listbox",
-  "listitem",
-  "log",
-  "main",
-  "marquee",
-  "math",
-  "menu",
-  "menubar",
-  "menuitem",
-  "menuitemcheckbox",
-  "menuitemradio",
-  "meter",
-  "navigation",
-  "none",
-  "note",
-  "option",
-  "paragraph",
-  "presentation",
-  "progressbar",
-  "radio",
-  "radiogroup",
-  "region",
-  "row",
-  "rowgroup",
-  "rowheader",
-  "scrollbar",
-  "search",
-  "searchbox",
-  "separator",
-  "slider",
-  "spinbutton",
-  "status",
-  "strong",
-  "subscript",
-  "superscript",
-  "switch",
-  "tab",
-  "table",
-  "tablist",
-  "tabpanel",
-  "term",
-  "textbox",
-  "time",
-  "timer",
-  "toolbar",
-  "tooltip",
-  "tree",
-  "treegrid",
-  "treeitem",
-] as const;
-
-type AriaRole = (typeof roles)[number];
-type RoleQueries = Record<AriaRole, ReturnType<typeof createRoleQuery>>;
+type Query = ReturnType<typeof createRoleQuery>;
+type TextQuery = ReturnType<typeof createTextQuery>;
+type LabeledQuery = ReturnType<typeof createLabeledQuery>;
+type RoleQueries = Record<AriaRole, Query>;
 type ElementQueries = ReturnType<
   typeof getQueriesForElement<typeof baseQueries>
 >;
 
-const queries = Object.entries(baseQueries).reduce((queries, [key, query]) => {
-  // @ts-expect-error
-  queries[key] = (...args) => query(document.body, ...args);
-  return queries;
-}, {} as ElementQueries);
+interface QueryObject extends RoleQueries {
+  text: TextQuery;
+  labeled: LabeledQuery;
+  within: (element?: HTMLElement | null) => QueryObject;
+}
+
+function createQueries(container?: HTMLElement) {
+  return Object.entries(baseQueries).reduce((queries, [key, query]) => {
+    // @ts-expect-error
+    queries[key] = (...args) => query(container || document.body, ...args);
+    return queries;
+  }, {} as ElementQueries);
+}
+
+const documentQueries = createQueries();
 
 function matchName(name: string | RegExp, accessibleName: string | null) {
   if (accessibleName == null) return false;
@@ -110,8 +41,10 @@ function matchName(name: string | RegExp, accessibleName: string | null) {
   return name.test(accessibleName);
 }
 
-function getNameOption(name: string | RegExp) {
+function getNameOption(name?: string | RegExp, includesHidden?: boolean) {
   return (accessibleName: string, element: Element | HTMLInputElement) => {
+    if (!includesHidden && element.closest("[inert]")) return false;
+    if (!name) return true;
     if (matchName(name, accessibleName)) return true;
     if (element.getAttribute("aria-label")) return false;
     const labeledBy = element.getAttribute("aria-labelledby");
@@ -128,15 +61,15 @@ function getNameOption(name: string | RegExp) {
   };
 }
 
-function createRoleQuery(role: AriaRole) {
+function createRoleQuery(role: AriaRole, queries = documentQueries) {
   type GenericQuery = (role: ByRoleMatcher, options?: ByRoleOptions) => any;
 
   const createQuery = <T extends GenericQuery>(query: T) => {
     return (name?: string | RegExp, options?: ByRoleOptions): ReturnType<T> => {
-      if (!name) {
-        return query(role, options);
-      }
-      return query(role, { name: getNameOption(name), ...options });
+      return query(role, {
+        name: getNameOption(name, options?.hidden),
+        ...options,
+      });
     };
   };
 
@@ -184,7 +117,14 @@ function createRoleQuery(role: AriaRole) {
   });
 }
 
-function createTextQuery() {
+function createRoleQueries(queries = documentQueries) {
+  return roles.reduce((acc, role) => {
+    acc[role] = createRoleQuery(role, queries);
+    return acc;
+  }, {} as RoleQueries);
+}
+
+function createTextQuery(queries = documentQueries) {
   const all = Object.assign(queries.queryAllByText, {
     wait: queries.findAllByText,
     ensure: queries.getAllByText,
@@ -201,7 +141,7 @@ function createTextQuery() {
   return Object.assign(queries.queryByText, { all, wait, ensure });
 }
 
-function createLabeledQuery() {
+function createLabeledQuery(queries = documentQueries) {
   const all = Object.assign(queries.queryAllByLabelText, {
     wait: queries.findAllByLabelText,
     ensure: queries.getAllByLabelText,
@@ -218,15 +158,18 @@ function createLabeledQuery() {
   return Object.assign(queries.queryByLabelText, { all, wait, ensure });
 }
 
-const roleQueries = roles.reduce((acc, role) => {
-  acc[role] = createRoleQuery(role);
-  return acc;
-}, {} as RoleQueries);
+function createQueryObject(queries = documentQueries): QueryObject {
+  return {
+    ...createRoleQueries(queries),
+    text: createTextQuery(queries),
+    labeled: createLabeledQuery(queries),
+    within: (element?: HTMLElement | null) => {
+      invariant(element, "Unable to create queries for null element");
+      return createQueryObject(createQueries(element));
+    },
+  };
+}
 
-export const query = {
-  ...roleQueries,
-  text: createTextQuery(),
-  labeled: createLabeledQuery(),
-};
+export const query = createQueryObject();
 
 export const q = query;

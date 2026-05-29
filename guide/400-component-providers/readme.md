@@ -75,7 +75,7 @@ You can use both component providers and [component stores](/guide/component-sto
 
 ```jsx "store"
 const select = useSelectStore({ defaultValue: "Banana" });
-const value = select.useState("value");
+const value = useStoreState(select, "value");
 
 <SelectProvider store={select}>
 ```
@@ -93,3 +93,14 @@ function MenuButton(props) {
   return <Ariakit.MenuButton {...props} render={render} />;
 }
 ```
+
+## Next steps
+
+Continue reading our [Guide](/guide) to learn more about Ariakit:
+
+<div data-cards>
+
+- [](/guide/composition)
+- [](/guide/component-stores)
+
+</div>

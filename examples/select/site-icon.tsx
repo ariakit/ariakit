@@ -16,10 +16,10 @@ export default function Icon() {
             </svg>
           </div>
           <div className="flex w-16 flex-col gap-1.5 rounded border border-black/20 bg-white p-1.5 shadow dark:border-white/10 dark:bg-white/10 dark:shadow-dark">
-            <div className="h-2 w-full rounded-[1px] bg-black/40 dark:bg-white/40" />
+            <div className="h-2 w-full rounded-[1px] bg-black/35 dark:bg-white/40" />
             <div className="h-2 w-full rounded-[1px] bg-blue-600 dark:bg-blue-500" />
-            <div className="h-2 w-full rounded-[1px] bg-black/40 dark:bg-white/40" />
-            <div className="h-2 w-full rounded-[1px] bg-black/40 dark:bg-white/40" />
+            <div className="h-2 w-full rounded-[1px] bg-black/35 dark:bg-white/40" />
+            <div className="h-2 w-full rounded-[1px] bg-black/35 dark:bg-white/40" />
           </div>
         </div>
       </foreignObject>

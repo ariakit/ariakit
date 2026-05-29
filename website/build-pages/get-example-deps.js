@@ -1,5 +1,5 @@
-import { readFileSync } from "fs";
-import { dirname, join } from "path";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { parseSync, traverse } from "@babel/core";
 // @ts-expect-error
 import * as presetEnv from "@babel/preset-env";
@@ -9,7 +9,7 @@ import * as presetReact from "@babel/preset-react";
 import * as presetTypescript from "@babel/preset-typescript";
 import * as t from "@babel/types";
 import { globSync } from "glob";
-import { readPackageUpSync } from "read-pkg-up";
+import { readPackageUpSync } from "read-package-up";
 import resolveFrom from "resolve-from";
 import ts from "typescript";
 
@@ -37,7 +37,7 @@ function getSourceValue(nodePath) {
   return source.node.value;
 }
 
-/** @type {Map<string, import("read-pkg-up").NormalizedReadResult>}} */
+/** @type {Map<string, import("read-package-up").NormalizedReadResult>} */
 const packageCache = new Map();
 
 /** @param {string} source */
@@ -109,51 +109,58 @@ export function getExampleDeps(
   if (deps[filename]) return deps;
   deps[filename] = {};
 
-  const content = readFileSync(filename, "utf8");
-  const parsed = parseSync(content, {
-    filename,
-    presets: [
-      presetEnv.default,
-      presetTypescript.default,
-      [presetReact.default, { runtime: "automatic" }],
-    ],
-  });
-
-  assignExternal(deps, "react", filename);
-  assignExternal(deps, "react-dom", filename);
-
-  const isAppDir = /\/app\/.*\/(page|layout)\.[mc]?[tj]sx?$/.test(filename);
-
-  if (isAppDir) {
-    const dir = dirname(filename);
-    const files = globSync("**/{page,default,layout,loading}.{js,jsx,ts,tsx}", {
-      cwd: dir,
-      dotRelative: true,
-      ignore: Object.keys(deps),
+  try {
+    const content = readFileSync(filename, "utf8");
+    const parsed = parseSync(content, {
+      filename,
+      presets: [
+        presetEnv.default,
+        presetTypescript.default,
+        [presetReact.default, { runtime: "automatic" }],
+      ],
     });
 
-    files.forEach((file) => {
-      getExampleDeps(join(dir, file), deps);
-    });
-  }
+    assignExternal(deps, "react", filename);
+    assignExternal(deps, "react-dom", filename);
 
-  traverse(parsed, {
-    enter(nodePath) {
-      const source = getSourceValue(nodePath);
+    const isAppDir = /\/app\/.*\/(page|layout)\.[mc]?[tj]sx?$/.test(filename);
 
-      if (!source) return;
+    if (isAppDir) {
+      const dir = dirname(filename);
+      const files = globSync(
+        "**/{page,default,layout,loading}.{js,jsx,ts,tsx}",
+        {
+          cwd: dir,
+          dotRelative: true,
+          ignore: Object.keys(deps),
+        },
+      );
 
-      const resolved = assignExternal(deps, source, filename);
-      const { resolvedSource, external } = resolved;
-
-      if (external) return;
-
-      if (!deps[filename]?.[source]) {
-        deps[filename] = { ...deps[filename], [source]: resolvedSource };
-        getExampleDeps(resolvedSource, deps);
+      for (const file of files) {
+        getExampleDeps(join(dir, file), deps);
       }
-    },
-  });
+    }
+
+    traverse(parsed, {
+      enter(nodePath) {
+        const source = getSourceValue(nodePath);
+
+        if (!source) return;
+
+        const resolved = assignExternal(deps, source, filename);
+        const { resolvedSource, external } = resolved;
+
+        if (external) return;
+
+        if (!deps[filename]?.[source]) {
+          deps[filename] = { ...deps[filename], [source]: resolvedSource };
+          getExampleDeps(resolvedSource, deps);
+        }
+      },
+    });
+  } catch (error) {
+    console.error("Error getting example dependencies", error);
+  }
 
   return deps;
 }

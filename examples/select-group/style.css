@@ -2,12 +2,9 @@
 @import url("../separator/style.css");
 
 .group-label {
-  @apply
-    text-sm
-    p-2
-    font-medium
-    opacity-60
-    cursor-default
-    [&+*]:scroll-mt-10
-  ;
+  @apply cursor-default p-2 text-sm font-medium opacity-60 [&+*]:scroll-mt-10;
+}
+
+.group-separator {
+  @apply mt-2 border-t border-gray-250 pt-2 dark:border-t-gray-550;
 }

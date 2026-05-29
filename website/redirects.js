@@ -11,5 +11,15 @@ export async function redirects() {
       destination: "/components/menubar",
       permanent: true,
     },
+    {
+      source: "/tags/new",
+      destination: "/tags/plus",
+      permanent: true,
+    },
+    {
+      source: "/tags/framer-motion",
+      destination: "/tags/motion",
+      permanent: true,
+    },
   ];
 }

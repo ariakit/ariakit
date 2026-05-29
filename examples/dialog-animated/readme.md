@@ -10,13 +10,22 @@ tags:
 
 <div data-description>
 
-Animating a modal <a href="/components/dialog">Dialog</a> and its <a href="/reference/dialog#backdrop"><code>backdrop</code></a> element using CSS. The component waits for the transition to finish before completely hiding the dialog or removing it from the React tree.
+Animating a modal [Dialog](/components/dialog) and its [`backdrop`](/reference/dialog#backdrop) element using CSS. The component waits for the transition to finish before completely hiding the dialog or removing it from the React tree.
 
 </div>
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
+
+## Components
+
+<div data-cards="components">
+
+- [](/components/dialog)
+- [](/components/button)
+
+</div>
 
 ## Styling
 
@@ -48,6 +57,11 @@ You can learn more about these `data-*` attributes on the [Styling](/guide/styli
 
 <div data-cards="examples">
 
+- [](/examples/disclosure-animated)
+- [](/examples/combobox-animated)
+- [](/examples/select-animated)
+- [](/examples/tab-panel-animated)
+- [](/examples/dialog-combobox-tab-command-menu)
 - [](/examples/menubar-navigation)
 
 </div>

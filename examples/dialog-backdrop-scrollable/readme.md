@@ -15,7 +15,7 @@ taller than the viewport.
 
 <div data-tags></div>
 
-<a href="./index.tsx" data-playground>Example</a>
+<a href="./index.react.tsx" data-playground>Example</a>
 
 ## Components
 
@@ -28,7 +28,7 @@ taller than the viewport.
 
 ## Rendering a custom backdrop
 
-In this example, the default backdrop element, which is typically rendered as a sibling, is disabled by setting the [`backdrop`](/reference/dialog#backdrop) prop to `false`. Then, the dialog is wrapped with a custom backdrop element using the [`render`](/apis/dialog#render) prop. The element that receives the `props` parameter becomes the dialog itself:
+In this example, the default backdrop element, which is typically rendered as a sibling, is disabled by setting the [`backdrop`](/reference/dialog#backdrop) prop to `false`. Then, the dialog is wrapped with a custom backdrop element using the [`render`](/reference/dialog#render) prop. The element that receives the `props` parameter becomes the dialog itself:
 
 ```jsx {4-6} "dialogProps"
 <Dialog
@@ -60,5 +60,6 @@ However, Ariakit will make sure the dialog is not closed when users interact wit
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)
 - [](/examples/dialog-hide-warning)
+- [](/examples/dialog-combobox-tab-command-menu)
 
 </div>

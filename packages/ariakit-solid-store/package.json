@@ -1,0 +1,49 @@
+{
+  "name": "@ariakit/solid-store",
+  "version": "0.1.1",
+  "description": "Ariakit Solid store utilities",
+  "keywords": [
+    "ariakit",
+    "solid",
+    "store"
+  ],
+  "homepage": "https://solid.ariakit.com",
+  "license": "MIT",
+  "author": {
+    "name": "Dani Guardiola",
+    "email": "hi@daniguardio.la",
+    "url": "https://dio.la"
+  },
+  "contributors": [
+    {
+      "name": "Diego Haz",
+      "email": "hazdiego@gmail.com",
+      "url": "https://github.com/diegohaz"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-solid-store"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "ariakit build --index-only",
+    "clean": "ariakit clean",
+    "docs": "ariakit docs --write"
+  },
+  "dependencies": {
+    "@ariakit/store": "workspace:*"
+  },
+  "devDependencies": {
+    "@ariakit/scripts": "workspace:*"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  }
+}

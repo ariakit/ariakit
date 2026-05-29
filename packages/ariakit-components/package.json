@@ -1,0 +1,121 @@
+{
+  "name": "@ariakit/components",
+  "version": "0.1.1",
+  "description": "Ariakit components",
+  "keywords": [
+    "ariakit",
+    "components"
+  ],
+  "homepage": "https://ariakit.com",
+  "license": "MIT",
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-components"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "ariakit build",
+    "clean": "ariakit clean"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./checkbox/checkbox-store": {
+      "types": "./dist/checkbox/checkbox-store.d.ts",
+      "import": "./dist/checkbox/checkbox-store.js"
+    },
+    "./collection/collection-store": {
+      "types": "./dist/collection/collection-store.d.ts",
+      "import": "./dist/collection/collection-store.js"
+    },
+    "./combobox/combobox-store": {
+      "types": "./dist/combobox/combobox-store.d.ts",
+      "import": "./dist/combobox/combobox-store.js"
+    },
+    "./composite/composite-overflow-store": {
+      "types": "./dist/composite/composite-overflow-store.d.ts",
+      "import": "./dist/composite/composite-overflow-store.js"
+    },
+    "./composite/composite-store": {
+      "types": "./dist/composite/composite-store.d.ts",
+      "import": "./dist/composite/composite-store.js"
+    },
+    "./dialog/dialog-store": {
+      "types": "./dist/dialog/dialog-store.d.ts",
+      "import": "./dist/dialog/dialog-store.js"
+    },
+    "./disclosure/disclosure-store": {
+      "types": "./dist/disclosure/disclosure-store.d.ts",
+      "import": "./dist/disclosure/disclosure-store.js"
+    },
+    "./form/form-store": {
+      "types": "./dist/form/form-store.d.ts",
+      "import": "./dist/form/form-store.js"
+    },
+    "./form/types": {
+      "types": "./dist/form/types.d.ts",
+      "import": "./dist/form/types.js"
+    },
+    "./hovercard/hovercard-store": {
+      "types": "./dist/hovercard/hovercard-store.d.ts",
+      "import": "./dist/hovercard/hovercard-store.js"
+    },
+    "./menu/menu-bar-store": {
+      "types": "./dist/menu/menu-bar-store.d.ts",
+      "import": "./dist/menu/menu-bar-store.js"
+    },
+    "./menu/menu-store": {
+      "types": "./dist/menu/menu-store.d.ts",
+      "import": "./dist/menu/menu-store.js"
+    },
+    "./menubar/menubar-store": {
+      "types": "./dist/menubar/menubar-store.d.ts",
+      "import": "./dist/menubar/menubar-store.js"
+    },
+    "./popover/popover-store": {
+      "types": "./dist/popover/popover-store.d.ts",
+      "import": "./dist/popover/popover-store.js"
+    },
+    "./radio/radio-store": {
+      "types": "./dist/radio/radio-store.d.ts",
+      "import": "./dist/radio/radio-store.js"
+    },
+    "./select/select-store": {
+      "types": "./dist/select/select-store.d.ts",
+      "import": "./dist/select/select-store.js"
+    },
+    "./tab/tab-store": {
+      "types": "./dist/tab/tab-store.d.ts",
+      "import": "./dist/tab/tab-store.js"
+    },
+    "./tag/tag-store": {
+      "types": "./dist/tag/tag-store.d.ts",
+      "import": "./dist/tag/tag-store.js"
+    },
+    "./toolbar/toolbar-store": {
+      "types": "./dist/toolbar/toolbar-store.d.ts",
+      "import": "./dist/toolbar/toolbar-store.js"
+    },
+    "./tooltip/tooltip-store": {
+      "types": "./dist/tooltip/tooltip-store.d.ts",
+      "import": "./dist/tooltip/tooltip-store.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@ariakit/store": "workspace:*",
+    "@ariakit/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@ariakit/scripts": "workspace:*"
+  }
+}

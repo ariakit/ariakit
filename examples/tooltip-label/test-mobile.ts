@@ -1,12 +1,9 @@
-import { expect, test } from "@playwright/test";
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/tooltip-label", { waitUntil: "networkidle" });
-});
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 test("tooltip does not appear on mobile click", async ({ page }) => {
-  await expect(page.getByRole("tooltip")).not.toBeVisible();
-  await page.getByRole("button").click();
+  await expect(page.getByRole("tooltip", { name: "Bold" })).not.toBeVisible();
+  await page.getByRole("button").tap();
   await page.waitForTimeout(600);
-  await expect(page.getByRole("tooltip")).not.toBeVisible();
+  await expect(page.getByRole("tooltip", { name: "Bold" })).not.toBeVisible();
 });

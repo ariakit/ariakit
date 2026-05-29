@@ -1,4 +1,5 @@
 import { q } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 test("markup", () => {
   expect(q.group()).toMatchInlineSnapshot(`

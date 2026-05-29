@@ -1,5 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
-import { expect, test } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test } from "../test-utils.ts";
 
 const getMenuButton = (locator: Page | Locator, count: number | string = "") =>
   locator.getByRole("button", {
@@ -32,12 +33,6 @@ const getError = (locator: Page | Locator) => locator.getByText("Please fill");
 const repeat = async (fn: () => unknown, count: number) => {
   await [...new Array(count)].reduce((p) => p.then(fn), Promise.resolve());
 };
-
-test.beforeEach(async ({ page }) => {
-  await page.goto("/previews/menu-dialog-animated", {
-    waitUntil: "networkidle",
-  });
-});
 
 test("interact with menu", async ({ page }) => {
   await getMenuButton(page).click();
@@ -80,10 +75,7 @@ test("create list", async ({ page }) => {
   await getTextbox(page).click();
   await page.keyboard.press("Enter");
   // Wait for the submission to complete.
-  await expect(getButton(page, "Create")).not.toHaveAttribute(
-    "aria-disabled",
-    "true",
-  );
+  await expect(getButton(page, "Create")).not.toHaveAttribute("aria-disabled");
   await expect(getError(page)).toBeVisible();
   await page.keyboard.type("F");
   await expect(getError(page)).not.toBeVisible();

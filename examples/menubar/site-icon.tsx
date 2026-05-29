@@ -9,10 +9,10 @@ export default function Icon() {
             <div className="h-4 w-7 rounded-sm bg-black/20 dark:bg-white/20" />
           </div>
           <div className="ml-7 flex w-[70px] flex-col gap-2.5 rounded border border-black/20 bg-white p-2 shadow dark:border-white/10 dark:bg-white/10 dark:shadow-dark">
-            <div className="h-1.5 w-12 bg-black/50 dark:bg-white/50" />
-            <div className="h-1.5 w-8 bg-blue-600 dark:bg-blue-500" />
-            <div className="h-1.5 w-10 bg-black/50 dark:bg-white/50" />
-            <div className="h-1.5 w-6 bg-black/50 dark:bg-white/50" />
+            <div className="h-1.5 w-12 rounded-[1px] bg-black/40 dark:bg-white/50" />
+            <div className="h-1.5 w-8 rounded-[1px] bg-blue-600 dark:bg-blue-500" />
+            <div className="h-1.5 w-10 rounded-[1px] bg-black/40 dark:bg-white/50" />
+            <div className="h-1.5 w-6 rounded-[1px] bg-black/40 dark:bg-white/50" />
           </div>
         </div>
       </foreignObject>

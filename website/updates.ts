@@ -7,6 +7,72 @@ export interface UpdateItem {
 
 const updates: UpdateItem[] = [
   {
+    title: "New example: Command Menu with Tabs",
+    type: "page",
+    href: "/examples/dialog-combobox-tab-command-menu",
+    dateTime: "2025-01-09T08:36Z",
+  },
+  {
+    title: "Improved example: Dialog with React Router",
+    type: "page",
+    href: "/examples/dialog-react-router",
+    dateTime: "2024-11-30T23:24Z",
+  },
+  {
+    title: "New example: Select with Combobox and Tabs",
+    type: "page",
+    href: "/examples/select-combobox-tab",
+    dateTime: "2024-04-26T14:53Z",
+  },
+  {
+    title: "Improved example: Combobox with Tabs",
+    type: "page",
+    href: "/examples/combobox-tabs",
+    dateTime: "2024-03-04T22:34Z",
+  },
+  {
+    title: "New example: Animated Disclosure",
+    type: "page",
+    href: "/examples/disclosure-animated",
+    dateTime: "2024-02-23T12:36Z",
+  },
+  {
+    title: "New example: Animated TabPanel",
+    type: "page",
+    href: "/examples/tab-panel-animated",
+    dateTime: "2024-02-19T13:39Z",
+  },
+  {
+    title: "Improved example: Animated Select",
+    type: "page",
+    href: "/examples/select-animated",
+    dateTime: "2024-02-15T04:20Z",
+  },
+  {
+    title: "Improved example: Animated Dialog",
+    type: "page",
+    href: "/examples/dialog-animated",
+    dateTime: "2024-02-14T22:34Z",
+  },
+  {
+    title: "Improved example: Animated Combobox",
+    type: "page",
+    href: "/examples/combobox-animated",
+    dateTime: "2024-02-13T21:18Z",
+  },
+  {
+    title: "New example: Select with Next.js App Router",
+    type: "page",
+    href: "/examples/select-next-router",
+    dateTime: "2024-02-07T14:06Z",
+  },
+  {
+    title: "New example: Command Menu",
+    type: "page",
+    href: "/examples/dialog-combobox-command-menu",
+    dateTime: "2024-01-26T12:38Z",
+  },
+  {
     title: "Improved docs: Combobox",
     type: "page",
     href: "/reference#combobox",
@@ -25,7 +91,7 @@ const updates: UpdateItem[] = [
     dateTime: "2023-12-27T13:18Z",
   },
   {
-    title: "New example: Combobox with tabs",
+    title: "New example: Combobox with Tabs",
     type: "page",
     href: "/examples/combobox-tabs",
     dateTime: "2023-12-23T17:34Z",

@@ -1,0 +1,94 @@
+{
+  "name": "@ariakit/solid",
+  "version": "0.2.1",
+  "description": "Toolkit for building accessible web apps with Solid",
+  "keywords": [
+    "a11y",
+    "ariakit",
+    "components",
+    "solid",
+    "toolkit",
+    "ui"
+  ],
+  "homepage": "https://solid.ariakit.com",
+  "license": "MIT",
+  "author": {
+    "name": "Dani Guardiola",
+    "email": "hi@daniguardio.la",
+    "url": "https://dio.la"
+  },
+  "contributors": [
+    {
+      "name": "Diego Haz",
+      "email": "hazdiego@gmail.com",
+      "url": "https://github.com/diegohaz"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-solid"
+  },
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/ariakit"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "scripts": {
+    "build": "ariakit build",
+    "clean": "ariakit clean"
+  },
+  "dependencies": {
+    "@ariakit/solid-components": "workspace:*"
+  },
+  "devDependencies": {
+    "@ariakit/scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.8"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "solid": "./solid/index.jsx",
+      "import": "./dist/index.js"
+    },
+    "./as": {
+      "types": "./dist/as.d.ts",
+      "solid": "./solid/as.jsx",
+      "import": "./dist/as.js"
+    },
+    "./focus-trap": {
+      "types": "./dist/focus-trap.d.ts",
+      "solid": "./solid/focus-trap.jsx",
+      "import": "./dist/focus-trap.js"
+    },
+    "./group": {
+      "types": "./dist/group.d.ts",
+      "solid": "./solid/group.jsx",
+      "import": "./dist/group.js"
+    },
+    "./heading": {
+      "types": "./dist/heading.d.ts",
+      "solid": "./solid/heading.jsx",
+      "import": "./dist/heading.js"
+    },
+    "./role": {
+      "types": "./dist/role.d.ts",
+      "solid": "./solid/role.jsx",
+      "import": "./dist/role.js"
+    },
+    "./separator": {
+      "types": "./dist/separator.d.ts",
+      "solid": "./solid/separator.jsx",
+      "import": "./dist/separator.js"
+    },
+    "./visually-hidden": {
+      "types": "./dist/visually-hidden.d.ts",
+      "solid": "./solid/visually-hidden.jsx",
+      "import": "./dist/visually-hidden.js"
+    },
+    "./package.json": "./package.json"
+  }
+}
