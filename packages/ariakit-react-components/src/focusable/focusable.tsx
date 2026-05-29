@@ -10,6 +10,7 @@ import {
 import type { Options, Props } from "@ariakit/react-utils";
 import {
   addGlobalEventListener,
+  isElement,
   isFocusEventOutside,
   isSelfTarget,
   queueBeforeEvent,
@@ -182,13 +183,11 @@ let hasInstalledGlobalEventListeners = false;
 let isKeyboardModality = true;
 
 function onGlobalMouseDown(event: MouseEvent) {
-  const target = event.target as HTMLElement | EventTarget | null;
-  if (target && "hasAttribute" in target) {
-    // If the target element is already focus-visible, we keep the keyboard
-    // modality.
-    if (!target.hasAttribute("data-focus-visible")) {
-      isKeyboardModality = false;
-    }
+  const target = event.target;
+  // If the target element is already focus-visible, we keep the keyboard
+  // modality.
+  if (isElement(target) && !target.hasAttribute("data-focus-visible")) {
+    isKeyboardModality = false;
   }
 }
 

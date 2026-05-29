@@ -7,7 +7,12 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
-import { contains, addGlobalEventListener, invariant } from "@ariakit/utils";
+import {
+  contains,
+  addGlobalEventListener,
+  invariant,
+  isElement,
+} from "@ariakit/utils";
 import type {
   ElementType,
   MouseEvent,
@@ -58,8 +63,8 @@ export const useHovercardDisclosure = createHook<
     if (!visible) return;
     const onBlur = (event: FocusEvent) => {
       if (!store) return;
-      const nextActiveElement = event.relatedTarget as Element | null;
-      if (nextActiveElement) {
+      const nextActiveElement = event.relatedTarget;
+      if (isElement(nextActiveElement)) {
         const {
           anchorElement: anchor,
           popoverElement: popover,

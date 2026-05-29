@@ -20,6 +20,7 @@ import {
   getWindow,
   addGlobalEventListener,
   getFirstTabbableIn,
+  isElement,
   isFocusable,
   chain,
   isSafari,
@@ -497,13 +498,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // Ignore the event if the current dialog is marked by another dialog.
       // This guarantees that only the topmost dialog will close on Escape.
       if (isElementMarked(dialog)) return;
-      const target = event.target as Element | null;
-      if (!target) return;
-      // `event.target` is typed as an Element but can be any EventTarget at
-      // runtime; the checks below call `contains`/`tagName` on it, so we ignore
-      // non-element targets (e.g. a synthetic event dispatched on window) to
-      // avoid throwing. See https://github.com/ariakit/ariakit/issues/5156
-      if (target.nodeType !== Node.ELEMENT_NODE) return;
+      const target = event.target;
+      if (!isElement(target)) return;
       const { disclosureElement } = store.getState();
       // This considers valid targets only the disclosure element or descendants
       // of the dialog element.

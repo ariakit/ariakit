@@ -15,6 +15,7 @@ import {
   hasFocusWithin,
   hasOwnProperty,
   invariant,
+  isElement,
   removeUndefinedValues,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
@@ -28,10 +29,7 @@ type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
 function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
-  const relatedTarget = event.relatedTarget as Node | null;
-  if (relatedTarget?.nodeType === Node.ELEMENT_NODE) {
-    return relatedTarget as Element;
-  }
+  if (isElement(event.relatedTarget)) return event.relatedTarget;
   return null;
 }
 
