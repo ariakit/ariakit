@@ -41,6 +41,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`getWindow`](#getwindow)
   - [`getActiveElement`](#getactiveelement)
   - [`contains`](#contains)
+  - [`isElement`](#iselement)
   - [`isFrame`](#isframe)
   - [`isButton`](#isbutton)
   - [`isVisible`](#isvisible)
@@ -301,6 +302,30 @@ Example:
 
 ```ts
 contains(document.getElementById("parent"), document.getElementById("child"));
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `isElement`
+
+```ts
+function isElement(target: EventTarget | null | undefined): target is Element;
+```
+
+Checks whether the given event target is an element.
+
+`event.target` and `event.relatedTarget` are typed as `Element`, but at runtime they can be any `EventTarget` (for example `window` or an `XMLHttpRequest` when an event is dispatched programmatically). Calling `Element`-only methods such as `contains` on those would throw.
+
+It tests `nodeType` rather than `instanceof Element` so that elements coming from same-origin child frames (which `addGlobalEventListener` also listens on) aren't wrongly rejected for belonging to a different realm.
+
+Example:
+
+```ts
+if (isElement(event.target)) {
+  contains(element, event.target);
+}
 ```
 
 <div align="right">

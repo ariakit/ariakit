@@ -81,6 +81,31 @@ export function contains(parent: Node, child: Node): boolean {
 }
 
 /**
+ * Checks whether the given event target is an element.
+ *
+ * `event.target` and `event.relatedTarget` are typed as `Element`, but at
+ * runtime they can be any `EventTarget` (for example `window` or an
+ * `XMLHttpRequest` when an event is dispatched programmatically). Calling
+ * `Element`-only methods such as `contains` on those would throw.
+ *
+ * It tests `nodeType` rather than `instanceof Element` so that elements coming
+ * from same-origin child frames (which `addGlobalEventListener` also listens
+ * on) aren't wrongly rejected for belonging to a different realm.
+ * @example
+ * if (isElement(event.target)) {
+ *   contains(element, event.target);
+ * }
+ */
+export function isElement(
+  target: EventTarget | null | undefined,
+): target is Element {
+  // Reading `nodeType` on a non-node target yields `undefined`. The numeric
+  // literal (Node.ELEMENT_NODE === 1) avoids referencing the `Node` global, so
+  // the guard stays safe even if it's ever evaluated during SSR.
+  return (target as Node | null)?.nodeType === 1;
+}
+
+/**
  * Checks whether `element` is a frame element.
  */
 export function isFrame(element: Element): element is HTMLIFrameElement {
