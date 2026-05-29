@@ -381,7 +381,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       popoverElement,
       arrowElement,
       anchorElement,
-      popoverElement,
+      disclosureElement,
       placement,
       mounted,
       domReady,
