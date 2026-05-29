@@ -1419,7 +1419,7 @@ function getPublicExports({
   return exports;
 }
 
-interface ParseReExportedReferencesParams {
+interface ParseModuleReferencesParams {
   project: Project;
   component: string;
   publicExports: Set<string>;
@@ -1429,17 +1429,16 @@ interface ParseReExportedReferencesParams {
 }
 
 /**
- * Parses references from re-exported modules (most components)
- * This handles cases where the public module re-exports from multiple source files
+ * Parses public module re-export statements into component references.
  */
-function parseReExportedReferences({
+function parseModuleReferences({
   project,
   component,
   publicExports,
   packagePath,
   corePath,
   framework,
-}: ParseReExportedReferencesParams) {
+}: ParseModuleReferencesParams) {
   const publicModulePath = join(packagePath, "src", `${component}.ts`);
   const content = readFileSync(publicModulePath, "utf-8");
   const references: Reference[] = [];
@@ -1550,55 +1549,6 @@ function parseSourceFileExports({
   return references;
 }
 
-interface ParseDirectExportReferencesParams {
-  project: Project;
-  component: string;
-  publicExports: Set<string>;
-  packagePath: string;
-  corePath: string;
-  framework: z.infer<typeof FrameworkSchema>;
-}
-
-/**
- * Parses references from direct exports (like store.ts)
- */
-function parseDirectExportReferences({
-  project,
-  component,
-  publicExports,
-  packagePath,
-  corePath,
-  framework,
-}: ParseDirectExportReferencesParams) {
-  const publicModulePath = join(packagePath, "src", `${component}.ts`);
-  const content = readFileSync(publicModulePath, "utf-8");
-  const references: Reference[] = [];
-
-  // Parse the public module file to find where exports come from
-  const statements = getReExportStatements(content, { includeTypeOnly: false });
-  for (const { exportList, fromPath } of statements) {
-    const sourceReferences = parseSourceFileExports({
-      project,
-      component,
-      fromPath,
-      exportList,
-      publicExports,
-      corePath,
-      framework,
-    });
-    references.push(...sourceReferences);
-  }
-
-  return references.sort((a, b) => {
-    const order = { function: 0, store: 1, component: 2 };
-    const aOrder = order[a.kind];
-    const bOrder = order[b.kind];
-
-    if (aOrder !== bOrder) return aOrder - bOrder;
-    return a.name.localeCompare(b.name);
-  });
-}
-
 interface ParseComponentReferencesParams {
   project: Project;
   component: string;
@@ -1623,22 +1573,7 @@ function parseComponentReferences({
     console.warn(`No public exports found for component: ${component}`);
     return [];
   }
-  // Check if this is a direct export module (like store.ts)
-  const publicModulePath = join(packagePath, "src", `${component}.ts`);
-  const publicContent = readFileSync(publicModulePath, "utf-8");
-  // Handle direct exports (e.g., export { useStoreState } from "path")
-  if (publicContent.includes('from "')) {
-    return parseReExportedReferences({
-      project,
-      component,
-      publicExports,
-      packagePath,
-      corePath,
-      framework,
-    });
-  }
-  // Handle direct function/const exports in the public module
-  return parseDirectExportReferences({
+  return parseModuleReferences({
     project,
     component,
     publicExports,
