@@ -412,7 +412,6 @@ export const admin = {
         throw new ActionError({ code: "UNAUTHORIZED" });
       }
       await setPrice(input);
-      return "Hello, world!";
     },
   }),
 
