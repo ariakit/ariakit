@@ -12,9 +12,7 @@ import { createCompositeStore } from "../composite/composite-store.ts";
 /**
  * Creates a radio store.
  */
-export function createRadioStore({
-  ...props
-}: RadioStoreProps = {}): RadioStore {
+export function createRadioStore(props: RadioStoreProps = {}): RadioStore {
   const syncState = props.store?.getState();
 
   const composite = createCompositeStore({
