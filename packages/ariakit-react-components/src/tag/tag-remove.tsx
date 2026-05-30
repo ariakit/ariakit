@@ -66,7 +66,6 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      if (!store) return;
       if (!value) return;
       if (!removeOnClickProp(event)) return;
       const { inputElement } = store.getState();
