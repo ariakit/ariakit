@@ -81,11 +81,12 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
 
     useEffect(() => {
       if (!store) return;
+      const removeStore = createRemoveStoreCallback(store);
       return chain(
         // Immediately remove the current store from the global store when
         // the component unmounts. This is useful, for example, to avoid
         // showing tooltips immediately on serial tests.
-        createRemoveStoreCallback(store),
+        removeStore,
         sync(store, ["mounted", "skipTimeout"], (state) => {
           if (!store) return;
           // If the current tooltip is open, we should immediately hide the
@@ -105,10 +106,7 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
           // timeout to hide the active tooltip in the global store. This is so
           // we can show other tooltips without a delay when there's already an
           // active tooltip (see the showOnHover method below).
-          const id = setTimeout(
-            createRemoveStoreCallback(store),
-            state.skipTimeout,
-          );
+          const id = setTimeout(removeStore, state.skipTimeout);
           return () => clearTimeout(id);
         }),
       );
