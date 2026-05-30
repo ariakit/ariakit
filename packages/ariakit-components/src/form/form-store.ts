@@ -476,8 +476,9 @@ export interface FormStoreFunctions<
    * The array length is preserved: the removed index is replaced with `null`
    * so indices stay stable for field keys, touched state, errors, and
    * [`FormRemove`](https://ariakit.com/reference/form-remove) focus handling.
-   * Filter out `null` values before submitting if your payload should omit
-   * removed items.
+   * Validation and submission callbacks receive these `null` entries in
+   * `state.values`, so filter them only when your payload should omit removed
+   * items.
    * @example
    * store.removeValue("tags", 0);
    * store.removeValue("tags", 1);
