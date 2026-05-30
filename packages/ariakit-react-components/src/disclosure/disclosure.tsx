@@ -12,7 +12,7 @@ import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useDisclosureProviderContext } from "./disclosure-context.tsx";
@@ -47,21 +47,17 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
     );
 
     const ref = useRef<HTMLType>(null);
-    const [expanded, setExpanded] = useState(false);
     const disclosureElement = useStoreState(store, "disclosureElement");
     const open = useStoreState(store, "open");
+    const expanded =
+      open && (disclosureElement == null || disclosureElement === ref.current);
 
     // Assigns the disclosure element whenever it's undefined or disconnected
-    // from the DOM. If the current element is the disclosure element, it will
-    // get the `aria-expanded` attribute set to `true` when the disclosure
-    // content is open.
+    // from the DOM. Re-run on open changes so a stale disconnected disclosure
+    // element is claimed before deriving aria-expanded for the next open state.
     useEffect(() => {
-      let isCurrentDisclosure = disclosureElement === ref.current;
-      if (!disclosureElement?.isConnected) {
-        store?.setDisclosureElement(ref.current);
-        isCurrentDisclosure = true;
-      }
-      setExpanded(open && isCurrentDisclosure);
+      if (disclosureElement?.isConnected) return;
+      store?.setDisclosureElement(ref.current);
     }, [disclosureElement, store, open]);
 
     const onClickProp = props.onClick;
