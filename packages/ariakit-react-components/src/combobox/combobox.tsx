@@ -293,6 +293,16 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const scrollingElementRef = useRef<Element | null>(null);
     const getAutoSelectIdProp = useEvent(getAutoSelectId);
     const autoSelectIdRef = useRef<string | null | undefined>(null);
+    // Tracks the item (id and value) the autoSelect behavior last moved focus
+    // to, so we can tell an already-focused item apart from one that only looks
+    // the same, such as a different value under the same id (e.g. an index-keyed
+    // list after filtering) or an item that became active without focus. This is
+    // distinct from autoSelectIdRef above, which tracks the current target for
+    // the scroll guard. Reset when the popover closes so reopening re-focuses.
+    const autoSelectMovedRef = useRef<{
+      id: string | null;
+      value?: string;
+    }>(undefined);
     const userScrolledRef = useRef(false);
     const isAutoScrollingRef = useRef(false);
 
@@ -358,6 +368,13 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       canAutoSelectRef.current = open;
     }, [autoSelect, open]);
 
+    // Reset the auto-moved item when the popover closes so reopening re-focuses
+    // the auto-selected item.
+    useSafeLayoutEffect(() => {
+      if (open) return;
+      autoSelectMovedRef.current = undefined;
+    }, [open]);
+
     const resetValueOnSelect = useStoreState(store, "resetValueOnSelect");
 
     // Auto select the first item on type. This effect runs both when the value
@@ -391,7 +408,36 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         // are disabled), we should move the focus to the input (null),
         // otherwise, with async items, the activeValue won't be reset. TODO:
         // Test this.
-        store.move(autoSelectId ?? null);
+        const nextActiveId = autoSelectId ?? null;
+        const nextActiveValue = store.item(nextActiveId)?.value;
+        const moved = autoSelectMovedRef.current;
+        // Move when the auto-select target changes: a different active item, a
+        // different target id, or the same id now holding a different value
+        // (for example, a list keyed by index whose first item's value changes
+        // after filtering, or asynchronously loaded items). We avoid re-moving
+        // to the exact item we already moved to, because store.move() always
+        // increments the `moves` counter, which makes the Composite component
+        // re-focus the active item. Re-focusing when only the rendered items
+        // changed (for example, a virtualized list resizing because a mobile
+        // keyboard's autocomplete bar changed the available height) would bounce
+        // focus off the input and back and drop characters as the user types.
+        // See https://github.com/ariakit/ariakit/issues/3837
+        if (
+          nextActiveId !== activeId ||
+          moved?.id !== nextActiveId ||
+          moved?.value !== nextActiveValue
+        ) {
+          autoSelectMovedRef.current = {
+            id: nextActiveId,
+            value: nextActiveValue,
+          };
+          store.move(nextActiveId);
+        } else {
+          // The same item is already the focused active item, so we skip the
+          // move to avoid re-focusing it. Keep activeValue in sync (a no-op
+          // here since the value is unchanged) the way store.move() would.
+          store.setState("activeValue", nextActiveValue);
+        }
       } else {
         // Reset the scroll position to the active item when an item is selected
         // and the combobox value is reset, which might move the active item
