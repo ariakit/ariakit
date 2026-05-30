@@ -2,6 +2,9 @@
 
 import * as Ariakit from "@ariakit/react";
 
+// Guards a regression where rendering tabs and panels with an explicit store
+// `id` under Next.js `cacheComponents` would break the tab/panel wiring. Keeping
+// the explicit `id` and two tab/panel pairs is what exercises that path.
 export default function TabPage() {
   const tab = Ariakit.useTabStore({ id: "my-tabs" });
 
