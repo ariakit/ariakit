@@ -175,6 +175,14 @@ export const edit: Icon = {
   html: `<g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M19.09 14.441v4.44a2.37 2.37 0 0 1-2.369 2.369H5.12a2.37 2.37 0 0 1-2.369-2.383V7.279a2.356 2.356 0 0 1 2.37-2.37H9.56"/><path d="M6.835 15.803v-2.165c.002-.357.144-.7.395-.953l9.532-9.532a1.36 1.36 0 0 1 1.934 0l2.151 2.151a1.36 1.36 0 0 1 0 1.934l-9.532 9.532a1.36 1.36 0 0 1-.953.395H8.197a1.36 1.36 0 0 1-1.362-1.362M19.09 8.995l-4.085-4.086"/></g>`,
 };
 
+export const shadcn: Icon = {
+  size: 256,
+  strokeWidth: 32,
+  fill: "none",
+  stroke: "currentColor",
+  html: `<line x1="208" y1="128" x2="128" y2="208" stroke-linecap="round" stroke-linejoin="round"></line><line x1="192" y1="40" x2="40" y2="192" stroke-linecap="round" stroke-linejoin="round"></line>`,
+};
+
 export const newWindow: Icon = {
   size: 24,
   html: `<g fill="none" stroke="currentColor" stroke-linecap="round"><path stroke-linejoin="round" d="M21 3h-6m6 0l-9 9m9-9v6"/><path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/></g>`,
@@ -293,4 +301,12 @@ export const group: Icon = {
   stroke: "currentColor",
   fill: "none",
   html: `<path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />`,
+};
+
+export const terminal: Icon = {
+  size: 24,
+  stroke: "currentColor",
+  fill: "none",
+  strokeWidth: 2,
+  html: `<g stroke-linecap="round" stroke-linejoin="round"><path d="M12 19h8"/><path d="m4 17 6-6-6-6"/></g>`,
 };
