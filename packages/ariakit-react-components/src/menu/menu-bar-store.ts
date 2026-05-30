@@ -27,8 +27,8 @@ export function useMenuBarStoreProps<T extends Core.MenuBarStore>(
  * instead.
  * @example
  * ```jsx
- * const menu = useMenuBarStore();
- * <MenuBar store={menu} />
+ * const menubar = useMenuBarStore();
+ * <MenuBar store={menubar} />
  * ```
  */
 export function useMenuBarStore(props: MenuBarStoreProps = {}): MenuBarStore {
