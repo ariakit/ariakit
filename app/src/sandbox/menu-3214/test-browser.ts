@@ -6,7 +6,7 @@ import { gotoAndSettle, withFramework } from "#app/test-utils/preview.ts";
 const updateDepthError =
   /maximum update depth exceeded|react\.dev\/errors\/185/i;
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFramework(import.meta.dirname, async ({ test, query }) => {
   test("renders many menus without exceeding React's update depth", async ({
     page,
     q,
@@ -26,9 +26,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // the listeners already attached to capture it from the very first render.
     await gotoAndSettle(page, page.url());
 
-    // Confirm the island actually hydrated and the menus still work.
+    // The alwaysVisible menu is shown even though its store is closed, so its
+    // items must still register. This also confirms the island hydrated.
+    const registered = q.list("Registered items");
+    await test.expect(query(registered).listitem()).toHaveCount(3);
+
+    // A closed menu still registers and renders its items once it's opened.
     await q.button("Row 0 actions").click();
-    await test.expect(q.menu()).toBeVisible();
+    await test.expect(q.menuitem("Edit")).toBeVisible();
 
     test.expect(depthErrors).toEqual([]);
   });

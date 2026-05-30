@@ -17,6 +17,7 @@ import {
   invariant,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
+import { useContext } from "react";
 import type { ElementType, MouseEvent } from "react";
 import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
@@ -24,7 +25,10 @@ import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useMenubarScopedContext } from "../menubar/menubar-context.tsx";
 import type { MenubarStore } from "../menubar/menubar-store.ts";
-import { useMenuScopedContext } from "./menu-context.tsx";
+import {
+  MenuListHiddenContext,
+  useMenuScopedContext,
+} from "./menu-context.tsx";
 import type { MenuStore, MenuStoreState } from "./menu-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -108,11 +112,9 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       "contentElement" in state ? state.contentElement : null,
     );
 
-    // Whether the menu is currently mounted. Menubar items (whose store has no
-    // `mounted` state) are always considered mounted.
-    const mounted = useStoreState(store, (state) =>
-      "mounted" in state ? state.mounted : true,
-    );
+    // Whether the enclosing menu list is currently hidden (provided by
+    // `MenuList`; see `MenuListHiddenContext`).
+    const menuListHidden = useContext(MenuListHiddenContext);
 
     const role = getPopupItemRole(contentElement, "menuitem");
 
@@ -126,13 +128,15 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       store,
       preventScrollOnKeyDown,
       ...props,
-      // Skip registering items while the menu is closed. Unlike a Select,
+      // Skip registering items while the menu list is hidden. Unlike a Select,
       // a Menu doesn't interact with its items while hidden, so registering
-      // them isn't useful. Registering many closed menus' items at once on
+      // them isn't useful. Registering many hidden menus' items at once on
       // mount can also cascade into React's "Maximum update depth exceeded"
-      // error. Items register once the menu is shown.
+      // error. Using the list's actual hidden state (rather than the store's
+      // `mounted` state) keeps items registered in `alwaysVisible` or
+      // `hidden={false}` menus, where the list is shown even while closed.
       // See https://github.com/ariakit/ariakit/issues/3214.
-      shouldRegisterItem: mounted ? props.shouldRegisterItem : false,
+      shouldRegisterItem: menuListHidden ? false : props.shouldRegisterItem,
     });
 
     props = useCompositeHover({
