@@ -149,20 +149,18 @@ const { title, headerBorder = false } = Astro.props;
   const themeToggle = document.getElementById("theme-toggle");
   const themeSidebar = document.getElementById("theme-sidebar");
 
-  themeToggle?.addEventListener("click", () => {
+  const toggleSidebar = () => {
     if (!themeSidebar) return;
-    console.log("clicked", themeSidebar.dataset.state);
     themeSidebar.dataset.state =
       themeSidebar.dataset.state !== "open" ? "open" : "closed";
-  });
+  };
+
+  themeToggle?.addEventListener("click", toggleSidebar);
 
   document.addEventListener("keydown", (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
     if (e.key === "t" || e.key === "T") {
-      if (!themeSidebar) return;
-      console.log("clicked", themeSidebar.dataset.state);
-      themeSidebar.dataset.state =
-        themeSidebar.dataset.state !== "open" ? "open" : "closed";
+      toggleSidebar();
     }
   });
 
