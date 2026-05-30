@@ -160,7 +160,7 @@ function isLinkItem(
 
 function getReferenceProps(item: SidebarMenuItem) {
   if (!("kind" in item) || item.kind === undefined) return;
-  const { href: _href, ...referenceProps } = item as any;
+  const { href: _href, ...referenceProps } = item;
   return referenceProps;
 }
 
@@ -247,19 +247,10 @@ function isCurrentHref(href: string, pathname = Astro.url.pathname) {
         <div
           class:list={[
             "grid grid-cols-[repeat(auto-fill,minmax(16rem,1fr))] gap-4 ak-container",
-            // "ak-container-size-wider/0",
             "ak-container-size-default/0",
           ]}
         >
-          {[
-            ...examples,
-            // ...examples,
-            // ...examples,
-            // ...examples,
-            // ...examples,
-            // ...examples,
-            // ...examples,
-          ].map((example) => (
+          {examples.map((example) => (
             <PageCardExample entry={example} />
           ))}
         </div>
