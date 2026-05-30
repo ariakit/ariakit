@@ -1335,7 +1335,7 @@ utility(
 
 function getLayerOffsetDeclarations(arbitraryPattern = "[*]") {
   const bareValue = getBarePercentTokenValue();
-  const arbitraryValue = fn.value(arbitraryPattern ?? "[*]");
+  const arbitraryValue = fn.value(arbitraryPattern);
   const bareDelta = fn.mul(bareValue, vars.lightnessOffsetDirection);
   const arbitraryDelta = fn.mul(arbitraryValue, vars.lightnessOffsetDirection);
   const getDeclarations = (
