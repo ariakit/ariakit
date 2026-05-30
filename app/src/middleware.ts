@@ -20,11 +20,6 @@ function getClerkMiddleware() {
   return clerk;
 }
 
-function isPublicRoute(url: URL) {
-  if (url.pathname.startsWith("/r/")) return true;
-  return false;
-}
-
 export async function onRequest(context: APIContext, next: MiddlewareNext) {
   const { action } = getActionContext(context);
   const isAdminAction = action?.name.startsWith("admin");
@@ -33,10 +28,6 @@ export async function onRequest(context: APIContext, next: MiddlewareNext) {
     if (isAdminAction) {
       return unauthorized();
     }
-    return next();
-  }
-
-  if (isPublicRoute(context.url)) {
     return next();
   }
 
