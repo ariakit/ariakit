@@ -21,6 +21,7 @@ import {
   addGlobalEventListener,
   getFirstTabbableIn,
   isElement,
+  isNode,
   isFocusable,
   chain,
   isSafari,
@@ -499,12 +500,15 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // This guarantees that only the topmost dialog will close on Escape.
       if (isElementMarked(dialog)) return;
       const target = event.target;
-      if (!isElement(target)) return;
+      // Guard against non-node targets (e.g. a synthetic event dispatched on
+      // window) so `contains` doesn't throw. `isNode` rather than `isElement`
+      // keeps non-element nodes working with `contains`, as before.
+      if (!isNode(target)) return;
       const { disclosureElement } = store.getState();
       // This considers valid targets only the disclosure element or descendants
       // of the dialog element.
       const isValidTarget = () => {
-        if (target.tagName === "BODY") return true;
+        if (isElement(target) && target.tagName === "BODY") return true;
         if (contains(dialog, target)) return true;
         if (!disclosureElement) return true;
         if (contains(disclosureElement, target)) return true;

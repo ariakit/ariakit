@@ -12,6 +12,7 @@ import {
   addGlobalEventListener,
   invariant,
   isElement,
+  isNode,
 } from "@ariakit/utils";
 import type {
   ElementType,
@@ -64,7 +65,10 @@ export const useHovercardDisclosure = createHook<
     const onBlur = (event: FocusEvent) => {
       if (!store) return;
       const nextActiveElement = event.relatedTarget;
-      if (isElement(nextActiveElement)) {
+      // `isNode` rather than `isElement` so non-element nodes keep working with
+      // `contains` (as before); a non-node relatedTarget (e.g. window) would
+      // make `contains` throw, so it falls through to hiding the disclosure.
+      if (isNode(nextActiveElement)) {
         const {
           anchorElement: anchor,
           popoverElement: popover,
@@ -77,7 +81,12 @@ export const useHovercardDisclosure = createHook<
         // it's going to render focus trap elements outside of the portal.
         // These elements may transfer focus to the disclosure button, so we
         // also ignore them here.
-        if (nextActiveElement.hasAttribute("data-focus-trap")) return;
+        if (
+          isElement(nextActiveElement) &&
+          nextActiveElement.hasAttribute("data-focus-trap")
+        ) {
+          return;
+        }
       }
       setVisible(false);
     };
