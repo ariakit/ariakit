@@ -38,8 +38,9 @@ const symbol = Symbol("composite-hover");
 type ElementWithSymbol = HTMLElement & { [symbol]?: boolean };
 
 function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
-  if (!isElement(event.relatedTarget)) return false;
-  let dest: Element | null = event.relatedTarget;
+  const { relatedTarget } = event;
+  if (!isElement(relatedTarget)) return false;
+  let dest: Element | null = relatedTarget;
   do {
     if (hasOwnProperty(dest, symbol) && dest[symbol]) return true;
     dest = dest.parentElement;
