@@ -123,7 +123,6 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
     const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
-      if (!store) return;
       const { value: prevValue } = store.getState();
       const inputType = getInputType(event);
       const currentTarget = event.currentTarget;
