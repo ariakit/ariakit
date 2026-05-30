@@ -19,6 +19,7 @@ import { useComposite } from "../composite/composite.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
+  MenuListHiddenContext,
   MenuScopedContextProvider,
   useMenuProviderContext,
 } from "./menu-context.tsx";
@@ -156,6 +157,20 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
     const mounted = useStoreState(store, "mounted");
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
+
+    // Expose the list's actual hidden state so MenuItem can avoid registering
+    // items while they're not shown. This accounts for `alwaysVisible` and
+    // `hidden={false}`, where the list is visible even though the store is
+    // closed. See https://github.com/ariakit/ariakit/issues/3214.
+    props = useWrapElement(
+      props,
+      (element) => (
+        <MenuListHiddenContext.Provider value={hidden}>
+          {element}
+        </MenuListHiddenContext.Provider>
+      ),
+      [hidden],
+    );
 
     props = {
       "aria-labelledby": ariaLabelledBy,
