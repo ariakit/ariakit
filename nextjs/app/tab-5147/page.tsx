@@ -2,6 +2,11 @@
 
 import * as Ariakit from "@ariakit/react";
 
+// Guards the regression from issue #5147, where rendering tabs and panels with
+// an explicit store `id` under Next.js `cacheComponents` broke the build. The
+// regression happens at build time, so this page is exercised whenever the
+// Next.js app is built in CI; keeping the explicit `id` and two tab/panel pairs
+// is what triggers it.
 export default function TabPage() {
   const tab = Ariakit.useTabStore({ id: "my-tabs" });
 
