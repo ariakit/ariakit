@@ -65,7 +65,7 @@ function isMovingOnHovercard(
   // The mouse is moving on an element inside the anchor element.
   if (anchor && contains(anchor, target)) return true;
   // The mouse is moving on an element inside a nested hovercard.
-  if (nested?.some((card) => isMovingOnHovercard(target, card, anchor))) {
+  if (nested?.some((card) => hasFocusWithin(card) || contains(card, target))) {
     return true;
   }
   return false;
