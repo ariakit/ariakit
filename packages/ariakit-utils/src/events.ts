@@ -3,7 +3,7 @@
  * @module Event utilities
  */
 
-import { contains } from "./dom.ts";
+import { contains, isNode } from "./dom.ts";
 import { isApple } from "./platform.ts";
 
 /**
@@ -12,10 +12,15 @@ import { isApple } from "./platform.ts";
 export function isPortalEvent(
   event: Pick<Event, "currentTarget" | "target">,
 ): boolean {
-  return Boolean(
-    event.currentTarget &&
-    !contains(event.currentTarget as Node, event.target as Element),
-  );
+  const { currentTarget, target } = event;
+  if (!currentTarget) return false;
+  // A non-node target (such as `window` on a programmatically dispatched event)
+  // can't be contained by `currentTarget`, so treat it the same as a target
+  // rendered outside of it (e.g. through a portal) instead of letting
+  // `contains` throw. `isNode` rather than `isElement` keeps the original
+  // behavior for non-element nodes that `contains` handles fine.
+  if (!isNode(target)) return true;
+  return !contains(currentTarget as Node, target);
 }
 
 /**
@@ -155,8 +160,12 @@ export function isFocusEventOutside(
   container?: Element | null,
 ) {
   const containerElement = container || (event.currentTarget as Element);
-  const relatedTarget = event.relatedTarget as HTMLElement | null;
-  return !relatedTarget || !contains(containerElement, relatedTarget);
+  const relatedTarget = event.relatedTarget;
+  // A non-node relatedTarget (such as `window` on a programmatically dispatched
+  // event) can't be inside the container, so it counts as outside instead of
+  // letting `contains` throw. `isNode` rather than `isElement` keeps the
+  // original behavior for non-element nodes that `contains` handles fine.
+  return !isNode(relatedTarget) || !contains(containerElement, relatedTarget);
 }
 
 /**
