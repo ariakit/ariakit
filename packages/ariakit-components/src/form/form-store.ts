@@ -472,6 +472,12 @@ export interface FormStoreFunctions<
   pushValue: <T>(name: StringLike, value: T) => void;
   /**
    * Removes a value from an array field.
+   *
+   * The array length is preserved: the removed index is replaced with `null`
+   * so indices stay stable for field keys, touched state, errors, and
+   * [`FormRemove`](https://ariakit.com/reference/form-remove) focus handling.
+   * Filter out `null` values before submitting if your payload should omit
+   * removed items.
    * @example
    * store.removeValue("tags", 0);
    * store.removeValue("tags", 1);
