@@ -1,7 +1,6 @@
 import type { StringLike } from "@ariakit/components/form/types";
 import { useStoreState } from "@ariakit/react-store";
 import {
-  useId,
   useMergeRefs,
   createElement,
   createHook,
@@ -9,12 +8,10 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
-import { useCallback, useRef } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
-import { useFormContext } from "./form-context.tsx";
+import { useFormItem } from "./form-context.tsx";
 import type { FormStore } from "./form-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -49,34 +46,25 @@ export const useFormError = createHook<TagName, FormErrorOptions>(
     getItem: getItemProp,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
-
-    invariant(
+    const {
+      store: form,
+      name,
+      id,
+      ref,
+      getItem,
+    } = useFormItem<HTMLType>({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "FormError must be wrapped in a Form component.",
-    );
+      name: nameProp,
+      id: props.id,
+      type: "error",
+      getItem: getItemProp,
+      component: "FormError",
+    });
 
-    const id = useId(props.id);
-    const ref = useRef<HTMLType>(null);
-    const name = String(nameProp);
-
-    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
-      (item) => {
-        const nextItem = { ...item, id: id || item.id, name, type: "error" };
-        if (getItemProp) {
-          return getItemProp(nextItem);
-        }
-        return nextItem;
-      },
-      [id, name, getItemProp],
-    );
-
-    const children = useStoreState(store, () => {
-      const error = store?.getError(name);
+    const children = useStoreState(form, () => {
+      const error = form.getError(name);
       if (error == null) return;
-      if (!store?.getFieldTouched(name)) return;
+      if (!form.getFieldTouched(name)) return;
       return error;
     });
 
@@ -88,7 +76,7 @@ export const useFormError = createHook<TagName, FormErrorOptions>(
       ref: useMergeRefs(ref, props.ref),
     };
 
-    props = useCollectionItem({ store, ...props, getItem });
+    props = useCollectionItem({ store: form, ...props, getItem });
 
     return props;
   },
