@@ -10,7 +10,7 @@
 import { join } from "node:path";
 import { loadEnvFile } from "node:process";
 import cloudflare from "@astrojs/cloudflare";
-import { rehypeHeadingIds } from "@astrojs/markdown-remark";
+import { rehypeHeadingIds, unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
@@ -66,13 +66,11 @@ export default defineConfig({
 
   markdown: {
     syntaxHighlight: false,
-  },
-
-  integrations: [
-    react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
-    solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
-    mdx({
-      extendMarkdownConfig: true,
+    // Configure rehype plugins on `markdown.processor` rather than on the
+    // `mdx()` integration: with `extendMarkdownConfig` the MDX pipeline inherits
+    // them, and the integration-level `rehypePlugins` option was deprecated in
+    // @astrojs/mdx 6.
+    processor: unified({
       rehypePlugins: [
         rehypeHeadingIds,
         rehypePreviousCode,
@@ -84,6 +82,12 @@ export default defineConfig({
         ],
       ],
     }),
+  },
+
+  integrations: [
+    react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
+    solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
+    mdx({ extendMarkdownConfig: true }),
     !hasClerk
       ? dummyClerkIntegration()
       : clerk({
