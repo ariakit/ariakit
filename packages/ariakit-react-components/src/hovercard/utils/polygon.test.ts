@@ -67,6 +67,9 @@ test("isPointInPolygon handles horizontal rays crossing slanted vertices", () =>
   expect(isPointInPolygon([3.5, 1], topPolygon)).toBe(true);
   expect(isPointInPolygon([3, 2], topPolygon)).toBe(true);
   expect(isPointInPolygon([5, 2], topPolygon)).toBe(false);
+  // The apex [3, 0] is a local extremum, so the horizontal ray grazing it must
+  // not be counted as a crossing. Without the vy guard this point would toggle.
+  expect(isPointInPolygon([5, 0], topPolygon)).toBe(false);
 
   const leftPolygon: Polygon = [
     [0, 3],
@@ -81,6 +84,25 @@ test("isPointInPolygon handles horizontal rays crossing slanted vertices", () =>
   expect(isPointInPolygon([1, 3], leftPolygon)).toBe(true);
   expect(isPointInPolygon([1, 3.5], leftPolygon)).toBe(true);
   expect(isPointInPolygon([1, 5], leftPolygon)).toBe(false);
+
+  // Mirror of topPolygon with a downward apex, exercising the same vertex guard
+  // on the opposite (y < vy) branch.
+  const bottomPolygon: Polygon = [
+    [3, 6],
+    [2, 4],
+    [2, 2],
+    [4, 2],
+    [4, 4],
+  ];
+
+  expect(isPointInPolygon([3, 6], bottomPolygon)).toBe(true);
+  expect(isPointInPolygon([2.5, 5], bottomPolygon)).toBe(true);
+  expect(isPointInPolygon([3.5, 5], bottomPolygon)).toBe(true);
+  expect(isPointInPolygon([3, 4], bottomPolygon)).toBe(true);
+  expect(isPointInPolygon([5, 4], bottomPolygon)).toBe(false);
+  // The downward apex [3, 6] is also a local extremum, so its grazing ray must
+  // not toggle either.
+  expect(isPointInPolygon([5, 6], bottomPolygon)).toBe(false);
 });
 
 test("isPointInPolygon returns false for malformed polygons", () => {
