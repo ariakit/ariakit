@@ -11,6 +11,7 @@ import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
 import { uniq } from "#app/lib/array.ts";
 import { getGuideDetail } from "#app/lib/content.ts";
+import { getOGImageItemKey } from "#app/lib/og-image-key.ts";
 import { trim } from "#app/lib/string.ts";
 
 const types = ["pages", "examples", "components", "styles"] as const;
@@ -36,14 +37,6 @@ export interface GetOGImageItemParams {
 
 let ogImageItemsPromise: Promise<OGImageItem[]> | undefined;
 let ogImageItemMapPromise: Promise<Map<string, OGImageItem>> | undefined;
-
-function getOGImageItemKey({
-  type = "pages",
-  framework,
-  id,
-}: GetOGImageItemParams) {
-  return `${type}|${framework ?? ""}|${id ?? ""}`;
-}
 
 async function getOGImageItemMap(): Promise<Map<string, OGImageItem>> {
   ogImageItemMapPromise ??= getOGImageItems().then((items) => {
