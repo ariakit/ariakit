@@ -8,6 +8,7 @@ import type {
   SourceFile,
   TypeAliasDeclaration,
 } from "ts-morph";
+import { escapeRegExp } from "./regexp.ts";
 
 interface GenerateDocsOptions {
   rootPath?: string;
@@ -428,10 +429,6 @@ function getLocalTypeDeclarations(sourceFile: SourceFile) {
   return [...sourceFile.getTypeAliases(), ...sourceFile.getInterfaces()]
     .filter((declaration) => !declaration.isExported())
     .sort((a, b) => a.getStart() - b.getStart());
-}
-
-function escapeRegExp(text: string) {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function getTypeParameterNames(declaration: Node) {

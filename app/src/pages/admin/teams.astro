@@ -12,9 +12,9 @@ import { InlineLink } from "#app/components/inline-link.react.tsx";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { isAdmin } from "#app/lib/auth.ts";
 import { clerkClient } from "@clerk/astro/server";
-import type { Organization } from "@clerk/astro/server";
 import LayoutPagination from "./_layout-pagination.astro";
 import {
+  getAvatarUrl,
   getClerkInstanceUrl,
   getPageUrls,
   getPaginationData,
@@ -51,13 +51,6 @@ async function getTeamData() {
 }
 
 const teams = await getTeamData();
-
-function getTeamAvatarUrl(team: Organization) {
-  const url = new URL(team.imageUrl);
-  url.searchParams.set("width", "32");
-  url.searchParams.set("height", "32");
-  return url.toString();
-}
 ---
 
 <LayoutPagination
@@ -80,7 +73,7 @@ function getTeamAvatarUrl(team: Organization) {
               <div class="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 size-full flex flex-col gap-2">
                 <div class="flex items-center gap-2">
                   <img
-                    src={getTeamAvatarUrl(team)}
+                    src={getAvatarUrl(team.imageUrl)}
                     alt=""
                     class="size-[1em] object-cover rounded-full"
                   />

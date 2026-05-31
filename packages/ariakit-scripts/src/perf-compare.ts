@@ -6,7 +6,12 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
-import { mergeScriptProfiles, mergeSelectorProfiles } from "./perf.ts";
+import {
+  computeMedianMetrics,
+  median,
+  mergeScriptProfiles,
+  mergeSelectorProfiles,
+} from "./perf.ts";
 import type {
   PerfMetrics,
   PerfProfiles,
@@ -14,6 +19,7 @@ import type {
   PerfScriptProfileEntry,
   PerfSelectorProfileEntry,
 } from "./perf.ts";
+import { escapeRegExp } from "./regexp.ts";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const PROFILE_LIMIT = 10;
@@ -194,10 +200,6 @@ function readJsonFile(filePath: string): unknown {
   }
 }
 
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 function getNumber(value: unknown): number {
   if (typeof value !== "number") return 0;
   if (!Number.isFinite(value)) return 0;
@@ -351,30 +353,6 @@ function loadRounds(
     }
   }
   return rounds;
-}
-
-function median(values: number[]): number {
-  if (values.length === 0) return 0;
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  const midValue = sorted[mid];
-  if (midValue == null) return 0;
-  if (sorted.length % 2 !== 0) return midValue;
-  const prevValue = sorted[mid - 1];
-  if (prevValue == null) return midValue;
-  return (prevValue + midValue) / 2;
-}
-
-function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
-  return {
-    scripting: median(all.map((m) => m.scripting)),
-    layout: median(all.map((m) => m.layout)),
-    styleRecalc: median(all.map((m) => m.styleRecalc)),
-    painting: median(all.map((m) => m.painting)),
-    rendering: median(all.map((m) => m.rendering)),
-    inp: median(all.map((m) => m.inp)),
-    total: median(all.map((m) => m.total)),
-  };
 }
 
 function mergeProfiles(results: PerfResult[]): PerfProfiles | undefined {

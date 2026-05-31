@@ -2,7 +2,6 @@ import type { StringLike } from "@ariakit/components/form/types";
 import { useStoreState } from "@ariakit/react-store";
 import {
   useEvent,
-  useId,
   useMergeRefs,
   useTagName,
   createElement,
@@ -11,12 +10,11 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getFirstTabbableIn, invariant } from "@ariakit/utils";
+import { getFirstTabbableIn } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
-import { useCallback, useRef } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
-import { useFormContext } from "./form-context.tsx";
+import { useFormItem } from "./form-context.tsx";
 import type { FormStore } from "./form-store.ts";
 
 const TagName = "label" satisfies ElementType;
@@ -57,31 +55,22 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
     getItem: getItemProp,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
-
-    invariant(
+    const {
+      store: form,
+      name,
+      id,
+      ref,
+      getItem,
+    } = useFormItem<HTMLType>({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "FormLabel must be wrapped in a Form component.",
-    );
+      name: nameProp,
+      id: props.id,
+      type: "label",
+      getItem: getItemProp,
+      component: "FormLabel",
+    });
 
-    const id = useId(props.id);
-    const ref = useRef<HTMLType>(null);
-    const name = String(nameProp);
-
-    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
-      (item) => {
-        const nextItem = { ...item, id: id || item.id, name, type: "label" };
-        if (getItemProp) {
-          return getItemProp(nextItem);
-        }
-        return nextItem;
-      },
-      [id, name, getItemProp],
-    );
-
-    const field = useStoreState(store, (state) =>
+    const field = useStoreState(form, (state) =>
       state.items.find((item) => item.type === "field" && item.name === name),
     );
     const fieldTagName = useTagName(field?.element, "input");
@@ -125,7 +114,7 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
       };
     }
 
-    props = useCollectionItem<TagName>({ store, ...props, getItem });
+    props = useCollectionItem<TagName>({ store: form, ...props, getItem });
 
     return props;
   },
