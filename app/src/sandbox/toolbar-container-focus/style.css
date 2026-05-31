@@ -1,0 +1,45 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.toolbar.vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.toolbar-container,
+.button,
+.input {
+  border: 1px solid rgb(209 213 219);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font: inherit;
+}
+
+.toolbar-container {
+  background: rgb(249 250 251);
+}
+
+.button {
+  background: rgb(243 244 246);
+}
+
+.field {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.field input,
+.input {
+  min-width: 120px;
+}
