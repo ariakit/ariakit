@@ -149,8 +149,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     );
 
     const ref = useRef<HTMLType>(null);
-    const [nestedHovercards, setNestedHovercards] = useState<HTMLElement[]>([]);
-    const nestedHovercardsRef = useLiveRef(nestedHovercards);
+    const nestedHovercardsRef = useRef<HTMLElement[]>([]);
     const hideTimeoutRef = useRef(0);
     const enterPointRef = useRef<Point | null>(null);
     const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
@@ -327,12 +326,12 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     const registerNestedHovercard = useCallback(
       (element: HTMLElement) => {
         clearHideTimeout();
-        setNestedHovercards((prevElements) => [...prevElements, element]);
+        nestedHovercardsRef.current = [...nestedHovercardsRef.current, element];
         const parentUnregister = registerOnParent?.(element);
         return () => {
           clearHideTimeout();
-          setNestedHovercards((prevElements) =>
-            prevElements.filter((item) => item !== element),
+          nestedHovercardsRef.current = nestedHovercardsRef.current.filter(
+            (item) => item !== element,
           );
           parentUnregister?.();
         };
