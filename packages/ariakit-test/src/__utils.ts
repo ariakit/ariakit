@@ -89,13 +89,43 @@ export function applyBrowserPolyfills() {
   };
 }
 
+let wrapAsyncDepth = 0;
+let restoreCurrentWrapAsyncEnvironment = noop;
+
+function setupWrapAsyncEnvironment() {
+  wrapAsyncDepth += 1;
+  if (wrapAsyncDepth > 1) return;
+
+  let restoreActEnvironment = noop;
+
+  try {
+    restoreActEnvironment = setActEnvironment(false);
+    const removeBrowserPolyfills = applyBrowserPolyfills();
+
+    restoreCurrentWrapAsyncEnvironment = () => {
+      restoreActEnvironment();
+      removeBrowserPolyfills();
+    };
+  } catch (error) {
+    wrapAsyncDepth -= 1;
+    restoreActEnvironment();
+    throw error;
+  }
+}
+
+function restoreWrapAsyncEnvironment() {
+  wrapAsyncDepth -= 1;
+  if (wrapAsyncDepth) return;
+
+  restoreCurrentWrapAsyncEnvironment();
+  restoreCurrentWrapAsyncEnvironment = noop;
+}
+
 export async function wrapAsync<T>(fn: () => Promise<T>) {
-  const restoreActEnvironment = setActEnvironment(false);
-  const removeBrowserPolyfills = applyBrowserPolyfills();
+  setupWrapAsyncEnvironment();
   try {
     return await fn();
   } finally {
-    restoreActEnvironment();
-    removeBrowserPolyfills();
+    restoreWrapAsyncEnvironment();
   }
 }
