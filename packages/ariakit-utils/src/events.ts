@@ -3,7 +3,7 @@
  * @module Event utilities
  */
 
-import { contains, isNode } from "./dom.ts";
+import { contains, isElement, isNode } from "./dom.ts";
 import { isApple } from "./platform.ts";
 
 /**
@@ -32,16 +32,12 @@ export function isSelfTarget(
   return event.target === event.currentTarget;
 }
 
-function isActivatableNavigationTarget(
-  element: EventTarget | null,
-): element is HTMLAnchorElement | HTMLButtonElement | HTMLInputElement {
+function isActivatableNavigationTarget(element: EventTarget | null) {
+  if (!isElement(element)) return false;
   const target = element as
     | HTMLAnchorElement
     | HTMLButtonElement
-    | HTMLInputElement
-    | null;
-  if (!target) return false;
-  if (!(target instanceof HTMLElement)) return false;
+    | HTMLInputElement;
   const tagName = target.tagName.toLowerCase();
   if (tagName === "a") return true;
   if (tagName === "button" && target.type === "submit") return true;
