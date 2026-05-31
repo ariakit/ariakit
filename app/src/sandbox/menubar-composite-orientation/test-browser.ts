@@ -25,7 +25,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    const menubar = page.getByLabel("Composite false menubar");
+    const menubar = page.getByLabel("Composite false menubar", {
+      exact: true,
+    });
     await test.expect(menubar).toBeAttached();
     await test.expect(menubar).not.toHaveAttribute("role");
     await test.expect(menubar).not.toHaveAttribute("aria-orientation");
