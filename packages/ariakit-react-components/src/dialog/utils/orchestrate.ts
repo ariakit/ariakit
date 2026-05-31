@@ -13,9 +13,12 @@ export function orchestrate(
   const prevCleanup = elementCleanups.get(key);
 
   if (!prevCleanup) {
-    elementCleanups.set(key, setup());
+    const cleanup = setup();
+    elementCleanups.set(key, cleanup);
     return () => {
-      elementCleanups.get(key)?.();
+      const isCurrent = elementCleanups.get(key) === cleanup;
+      if (!isCurrent) return;
+      cleanup();
       elementCleanups.delete(key);
     };
   }
