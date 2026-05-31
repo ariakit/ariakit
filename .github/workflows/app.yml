@@ -44,6 +44,9 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
 
+      - name: Type check Next.js app
+        run: pnpm -F nextjs run tsc
+
       - name: Build Next.js app
         run: pnpm -F nextjs run build-worker
 
