@@ -51,11 +51,25 @@ test.each([
       "https://pr-123.ariakit-nextjs.workers.dev/react/previews/counter-nextjs/",
   },
   {
+    name: "preserves the request protocol for aliased workers.dev requests",
+    requestUrl: "http://pr-123.ariakit-preview.workers.dev/react/previews/",
+    path: "/react/previews/counter-nextjs/",
+    expected:
+      "http://pr-123.ariakit-nextjs.workers.dev/react/previews/counter-nextjs/",
+  },
+  {
     name: "maps bare workers.dev preview requests",
     requestUrl: "https://ariakit-preview.workers.dev/react/previews/",
     path: "/react/previews/counter-nextjs/",
     expected:
       "https://ariakit-nextjs.workers.dev/react/previews/counter-nextjs/",
+  },
+  {
+    name: "preserves the request protocol for bare workers.dev requests",
+    requestUrl: "http://ariakit-preview.workers.dev/react/previews/",
+    path: "/react/previews/counter-nextjs/",
+    expected:
+      "http://ariakit-nextjs.workers.dev/react/previews/counter-nextjs/",
   },
   {
     name: "maps ariakit.com requests to the production Next.js domain",
@@ -68,6 +82,12 @@ test.each([
     requestUrl: "https://ariakit.com/react/previews/",
     path: "/react/previews/counter-nextjs/",
     expected: "https://nextjs.ariakit.com/react/previews/counter-nextjs/",
+  },
+  {
+    name: "preserves the request protocol for ariakit.com requests",
+    requestUrl: "http://next.ariakit.com/react/previews/",
+    path: "/react/previews/counter-nextjs/",
+    expected: "http://nextjs.ariakit.com/react/previews/counter-nextjs/",
   },
   {
     name: "maps ariakit.org requests to the production Next.js domain",
@@ -86,6 +106,12 @@ test.each([
     requestUrl: "https://example.com/react/previews/",
     path: "/react/previews/counter-nextjs/",
     expected: "https://nextjs.ariakit.com/react/previews/counter-nextjs/",
+  },
+  {
+    name: "preserves the request protocol for unknown hosts",
+    requestUrl: "http://example.com/react/previews/",
+    path: "/react/previews/counter-nextjs/",
+    expected: "http://nextjs.ariakit.com/react/previews/counter-nextjs/",
   },
   {
     name: "falls back to the production Next.js domain for malformed URLs",
