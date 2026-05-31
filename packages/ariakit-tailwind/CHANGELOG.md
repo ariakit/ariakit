@@ -1,5 +1,10 @@
 # @ariakit/tailwind
 
+## 0.2.3
+
+- Made the `--ak-edge` CSS custom property inheriting so descendants of an `.ak-layer` element can read it directly.
+- Improved the rendering performance of the layer utilities by reducing redundant per-element style work in the generated CSS.
+
 ## 0.2.2
 
 - Fixed `ak-edge-inherit` and `ak-frame-bordering-inherit` to inherit from the nearest ancestor that explicitly configures a frame border, ring, or bordering width.

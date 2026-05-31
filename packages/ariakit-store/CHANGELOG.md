@@ -1,5 +1,11 @@
 # @ariakit/store
 
+## 0.1.2
+
+- Improved store update performance with a focus on listener dispatch, microtask batching, and merged store initialization.
+- Fixed runtime `process.env.NODE_ENV` checks in published package output, including test-only behavior and development warnings.
+- Updated dependencies: `@ariakit/utils@0.1.2`
+
 ## 0.1.1
 
 - Release artifacts now include npm trusted publishing provenance.
