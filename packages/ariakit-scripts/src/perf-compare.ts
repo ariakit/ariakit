@@ -700,6 +700,20 @@ function rowKey(row: ComparisonRow): string {
   return `${row.testFile}::${row.label}`;
 }
 
+function groupRowsByKey(rows: ComparisonRow[]) {
+  const grouped = new Map<string, ComparisonRow[]>();
+  for (const row of rows) {
+    const key = rowKey(row);
+    const rowsForKey = grouped.get(key);
+    if (rowsForKey) {
+      rowsForKey.push(row);
+    } else {
+      grouped.set(key, [row]);
+    }
+  }
+  return grouped;
+}
+
 function formatRoundList(rounds: number[]): string {
   if (rounds.length === 0) return "-";
   return rounds.join(", ");
@@ -740,16 +754,20 @@ function sortEntriesByFile<T>(entries: Iterable<[string, T]>) {
 }
 
 function formatNodeComparisonTables(
-  rows: ComparisonRow[],
+  rowsByKey: Map<string, ComparisonRow[]>,
   keys: string[],
   options: PerfCompareOptions,
 ) {
   const lines: string[] = [];
-  const keySet = new Set(keys);
-  const visibleRows = rows.filter((row) => {
-    if (row.metric !== "total") return false;
-    return keySet.has(rowKey(row));
-  });
+  const visibleRows: ComparisonRow[] = [];
+  for (const key of keys) {
+    const testRows = rowsByKey.get(key);
+    if (!testRows) continue;
+    for (const row of testRows) {
+      if (row.metric !== "total") continue;
+      visibleRows.push(row);
+    }
+  }
   for (const [file, fileRows] of sortEntriesByFile(
     groupRowsByFile(visibleRows),
   )) {
@@ -792,12 +810,12 @@ function formatNodeResultTables(
 }
 
 function formatSummaryTable(
-  rows: ComparisonRow[],
+  rowsByKey: Map<string, ComparisonRow[]>,
   keys: string[],
   options: PerfCompareOptions,
 ): string[] {
   if (options.node) {
-    return formatNodeComparisonTables(rows, keys, options);
+    return formatNodeComparisonTables(rowsByKey, keys, options);
   }
   const lines: string[] = [];
   const primaryMetrics = getPrimaryMetrics(options);
@@ -809,7 +827,7 @@ function formatSummaryTable(
   lines.push(`| ${headers.map(() => "---").join(" | ")} |`);
 
   for (const key of keys) {
-    const testRows = rows.filter((r) => rowKey(r) === key);
+    const testRows = rowsByKey.get(key) ?? [];
     const label = testRows[0]?.label ?? key;
     const cells: string[] = [label];
     for (const metric of primaryMetrics) {
@@ -907,19 +925,26 @@ function formatProfileModeWarning(mismatches: ProfileModeMismatch[]): string[] {
   return lines;
 }
 
-function formatDetailedBreakdown(
-  rows: ComparisonRow[],
-  keys: string[],
-  currentByKey: Map<string, AggregatedPerfResult>,
-  options: PerfCompareOptions,
-): string[] {
+interface FormatDetailedBreakdownParams {
+  rowsByKey: Map<string, ComparisonRow[]>;
+  keys: string[];
+  currentByKey: Map<string, AggregatedPerfResult>;
+  options: PerfCompareOptions;
+}
+
+function formatDetailedBreakdown({
+  rowsByKey,
+  keys,
+  currentByKey,
+  options,
+}: FormatDetailedBreakdownParams): string[] {
   if (options.node) {
-    return formatNodeComparisonTables(rows, keys, options);
+    return formatNodeComparisonTables(rowsByKey, keys, options);
   }
   const lines: string[] = [];
   const allMetrics = getAllMetrics(options);
   for (const key of keys) {
-    const testRows = rows.filter((r) => rowKey(r) === key);
+    const testRows = rowsByKey.get(key) ?? [];
     const label = testRows[0]?.label ?? key;
     lines.push(`### ${label}`);
     lines.push("");
@@ -966,10 +991,12 @@ function formatMarkdown(
     currentByKey.set(result.key, result);
   }
 
-  const allKeys = [...new Set(rows.map((r) => rowKey(r)))];
-  const significantKeys = allKeys.filter((key) =>
-    rows.some((r) => rowKey(r) === key && r.significant),
-  );
+  const rowsByKey = groupRowsByKey(rows);
+  const allKeys = [...rowsByKey.keys()];
+  const significantKeys = allKeys.filter((key) => {
+    const testRows = rowsByKey.get(key);
+    return testRows?.some((row) => row.significant) ?? false;
+  });
 
   const totalTests =
     allKeys.length +
@@ -984,7 +1011,7 @@ function formatMarkdown(
   lines.push("");
 
   if (hasSignificantChanges) {
-    lines.push(...formatSummaryTable(rows, significantKeys, options));
+    lines.push(...formatSummaryTable(rowsByKey, significantKeys, options));
   } else if (rows.length === 0 && newTests.length > 0) {
     lines.push("No baseline results available for comparison.");
   } else if (rows.length === 0 && unpairedTests.length > 0) {
@@ -1021,7 +1048,14 @@ function formatMarkdown(
     `<summary>Full breakdown (${totalTests} ${resultsName})</summary>`,
   );
   lines.push("");
-  lines.push(...formatDetailedBreakdown(rows, allKeys, currentByKey, options));
+  lines.push(
+    ...formatDetailedBreakdown({
+      rowsByKey,
+      keys: allKeys,
+      currentByKey,
+      options,
+    }),
+  );
 
   if (newTests.length > 0) {
     const primaryMetrics = getPrimaryMetrics(options);
