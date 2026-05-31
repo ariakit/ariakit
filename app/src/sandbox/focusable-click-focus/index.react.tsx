@@ -2,10 +2,11 @@ import * as Ariakit from "@ariakit/react";
 import type { ComponentProps } from "react";
 import { forwardRef, useState } from "react";
 
-const CustomCheckbox = forwardRef<
-  HTMLInputElement,
-  ComponentProps<"input"> & { type?: string }
->((props, ref) => <input ref={ref} type="checkbox" {...props} />);
+const CustomCheckbox = forwardRef<HTMLInputElement, ComponentProps<"input">>(
+  function CustomCheckbox(props, ref) {
+    return <input ref={ref} {...props} type="checkbox" />;
+  },
+);
 
 export default function Example() {
   const [checked, setChecked] = useState(false);
