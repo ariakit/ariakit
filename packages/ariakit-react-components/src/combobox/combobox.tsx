@@ -469,27 +469,35 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 
     // If it has inline auto completion, set the store value when the combobox
     // input or the combobox list lose focus.
+    const onFocusOut = useEvent((event: FocusEvent) => {
+      const combobox = ref.current;
+      if (!combobox) return;
+      const currentElements = [combobox, contentElement].filter(
+        (element): element is HTMLElement => !!element,
+      );
+      if (
+        currentElements.every((element) => isFocusEventOutside(event, element))
+      ) {
+        store?.setValue(value);
+      }
+    });
+
     useEffect(() => {
       if (!inline) return;
       const combobox = ref.current;
       if (!combobox) return;
       const elements = [combobox, contentElement].filter(
-        (value): value is HTMLElement => !!value,
+        (element): element is HTMLElement => !!element,
       );
-      const onBlur = (event: FocusEvent) => {
-        if (elements.every((el) => isFocusEventOutside(event, el))) {
-          store?.setValue(value);
-        }
-      };
       for (const element of elements) {
-        element.addEventListener("focusout", onBlur);
+        element.addEventListener("focusout", onFocusOut);
       }
       return () => {
         for (const element of elements) {
-          element.removeEventListener("focusout", onBlur);
+          element.removeEventListener("focusout", onFocusOut);
         }
       };
-    }, [inline, contentElement, store, value]);
+    }, [inline, contentElement, onFocusOut]);
 
     const canShow = (event: SyntheticEvent) => {
       const currentTarget = event.currentTarget as HTMLType;
