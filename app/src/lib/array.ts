@@ -7,11 +7,21 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+export function findInOrder<T, K extends keyof T>(
+  array: T[],
+  key: K,
+  values: T[K][],
+): T | null;
 export function findInOrder<T, Value>(
   array: T[],
-  key: keyof T | ((item: T) => Value),
+  key: (item: T) => Value,
   values: Value[],
-) {
+): T | null;
+export function findInOrder<T>(
+  array: T[],
+  key: keyof T | ((item: T) => unknown),
+  values: unknown[],
+): T | null {
   for (const value of values) {
     const item = array.find((item) => {
       if (value == null) return false;
