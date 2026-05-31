@@ -4,7 +4,7 @@ import { forwardRef, useState } from "react";
 
 const CustomCheckbox = forwardRef<HTMLInputElement, ComponentProps<"input">>(
   function CustomCheckbox(props, ref) {
-    return <input ref={ref} type="checkbox" {...props} />;
+    return <input ref={ref} {...props} type="checkbox" />;
   },
 );
 
