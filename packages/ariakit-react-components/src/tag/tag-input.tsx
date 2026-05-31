@@ -147,7 +147,7 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
         const delimiters = getDelimiters(delimiter);
         // Split values and get the trailing value that will remain in the input
         let values = splitValueByDelimiter(value, delimiters);
-        const trailingvalue = values.pop() || "";
+        const trailingValue = values.pop() || "";
         values = values
           .map((value) => value.trim())
           .filter((value) => value !== "");
@@ -163,8 +163,8 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
             store.addValue(tagValue);
           }
           void UndoManager.execute(() => {
-            store.setValue(trailingvalue);
-            if (trailingvalue === prevValue) return;
+            store.setValue(trailingValue);
+            if (trailingValue === prevValue) return;
             return () => store.setValue(prevValue);
           }, inputType);
         }
