@@ -87,16 +87,7 @@ const galleries = defineCollection({
 });
 
 const previews = defineCollection({
-  loader: previewLoader({
-    roots: [
-      {
-        kind: "examples",
-        dir: new URL("./examples/", import.meta.url),
-        metadataRequired: true,
-      },
-      { kind: "sandbox", dir: new URL("./sandbox/", import.meta.url) },
-    ],
-  }),
+  loader: previewLoader(),
   schema: z.object({
     title: z.string(),
     fullscreen: z.boolean().optional(),

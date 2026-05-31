@@ -70,16 +70,7 @@ export default defineConfig({
   },
 
   integrations: [
-    previewIntegration({
-      roots: [
-        {
-          kind: "examples",
-          dir: new URL("./src/examples/", import.meta.url),
-          metadataRequired: true,
-        },
-        { kind: "sandbox", dir: new URL("./src/sandbox/", import.meta.url) },
-      ],
-    }),
+    previewIntegration(),
     react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
     solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
     mdx({

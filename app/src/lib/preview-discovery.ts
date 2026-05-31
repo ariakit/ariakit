@@ -54,8 +54,6 @@ export interface DiscoveredPreview {
   id: string;
   title: string;
   source: string;
-  dir: string;
-  relativeDir: string;
   frameworks: Framework[];
   entryFiles: Partial<Record<Framework, string>>;
   metadata: PreviewMetadata;
@@ -187,7 +185,7 @@ function isDirectoryIgnored(name: string) {
   return name === "node_modules";
 }
 
-function isPreviewEntryFile(filename: string) {
+export function isPreviewEntryFile(filename: string) {
   if (!filename.startsWith("index.")) return false;
   return !!getFrameworkByFilename(filename);
 }
@@ -226,13 +224,10 @@ function addPreview({
   if (frameworks.length === 0) return;
   const existing = context.previews.get(id);
   invariant(!existing, `Duplicate preview id: ${id}`);
-  const relativeDir = `${context.root.kind}/${id}`;
   context.previews.set(id, {
     id,
     title: metadata.title ?? getFallbackTitle(dir),
     source: context.root.kind,
-    dir,
-    relativeDir,
     frameworks,
     entryFiles,
     metadata,
