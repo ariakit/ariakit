@@ -61,7 +61,9 @@ export const Group = forwardRef(function Group(props: GroupProps) {
   return createElement(TagName, htmlProps);
 });
 
-export type GroupOptions<_T extends ElementType = TagName> = Options;
+export interface GroupOptions<
+  _T extends ElementType = TagName,
+> extends Options {}
 
 export type GroupProps<T extends ElementType = TagName> = Props<
   T,
