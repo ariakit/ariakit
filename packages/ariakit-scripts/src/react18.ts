@@ -369,10 +369,7 @@ function printHelp() {
   );
 }
 
-async function getReact18Command(
-  rootPath: string,
-  args: string[],
-): Promise<React18Command> {
+function getReact18Command(rootPath: string, args: string[]): React18Command {
   const [command, ...commandArgs] = stripLeadingSeparator(args);
 
   if (!command) {
@@ -514,7 +511,7 @@ export async function react18(args: string[]) {
     { cwd: workspacePath },
   );
 
-  const command = await getReact18Command(workspacePath, args);
+  const command = getReact18Command(workspacePath, args);
   const watcher = startWorkspaceWatcher(rootPath, workspacePath);
 
   try {
