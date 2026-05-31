@@ -26,12 +26,11 @@ function getOffsets(string: string, values: Iterable<string>) {
   for (const value of values) {
     let pos = 0;
     const length = value.length;
-    while (string.indexOf(value, pos) !== -1) {
-      const index = string.indexOf(value, pos);
-      if (index !== -1) {
-        offsets.push([index, length]);
-      }
+    let index = string.indexOf(value, pos);
+    while (index !== -1) {
+      offsets.push([index, length]);
       pos = index + 1;
+      index = string.indexOf(value, pos);
     }
   }
   return offsets;

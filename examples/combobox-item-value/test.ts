@@ -12,3 +12,13 @@ test("show highlighted text", async () => {
   await press.Enter();
   expect(q.combobox()).toHaveValue("Apple");
 });
+
+test("show repeated highlighted text", async () => {
+  await press.Tab();
+  await type("p");
+  await press.ArrowDown();
+  expect(q.option("Apple")).toHaveFocus();
+  expect(q.option("Apple")?.innerHTML).toMatchInlineSnapshot(
+    `"<span><span data-autocomplete-value="">A</span><span data-user-value="">p</span><span data-user-value="">p</span><span data-autocomplete-value="">le</span></span>"`,
+  );
+});
