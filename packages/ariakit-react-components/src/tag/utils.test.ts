@@ -36,6 +36,12 @@ test.each([
     expected: [],
   },
   {
+    name: "no matching delimiter",
+    value: "hello",
+    delimiters: [","],
+    expected: [],
+  },
+  {
     name: "capturing-group regex",
     value: "one,two;three",
     delimiters: [/([,;])/],
