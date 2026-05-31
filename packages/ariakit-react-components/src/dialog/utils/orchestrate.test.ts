@@ -1,12 +1,12 @@
 import { afterEach, expect, test } from "vitest";
-import { disableTreeOutside } from "../disable-tree.ts";
-import { isElementMarked, markTreeOutside } from "../mark-tree-outside.ts";
-import { assignStyle, setAttribute } from "../orchestrate.ts";
-import { supportsInert } from "../supports-inert.ts";
+import { disableTreeOutside } from "./disable-tree.ts";
+import { isElementMarked, markTreeOutside } from "./mark-tree-outside.ts";
+import { assignStyle, setAttribute } from "./orchestrate.ts";
+import { supportsInert } from "./supports-inert.ts";
 import {
   createWalkTreeSnapshot,
   walkTreeOutside,
-} from "../walk-tree-outside.ts";
+} from "./walk-tree-outside.ts";
 
 afterEach(() => {
   document.body.innerHTML = "";
