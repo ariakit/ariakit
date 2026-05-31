@@ -38,9 +38,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    const container = page.locator(
-      "[data-composite-container][aria-label='Font family']",
-    );
+    const container = q.group("Font family");
     const input = q.textbox("Font family");
 
     await q.button("Before toolbar").focus();
@@ -66,9 +64,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    const container = page.locator(
-      "[data-composite-container][aria-label='Font family']",
-    );
+    const container = q.group("Font family");
     const input = q.textbox("Text size");
     const apply = q.button("Apply");
 

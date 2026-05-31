@@ -9,6 +9,7 @@ export default function Example() {
         <Ariakit.ToolbarContainer
           aria-label="Font family"
           className="toolbar-container"
+          role="group"
         >
           <label className="field">
             <span>Font family</span>
