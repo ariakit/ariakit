@@ -28,9 +28,12 @@ interface NextOptions extends Pick<
   skip?: number;
 }
 
-const NULL_ITEM = { id: null as unknown as string };
+export const NULL_ITEM = { id: null as unknown as string };
 
-function findFirstEnabledItem(items: CompositeStoreItem[], excludeId?: string) {
+export function findFirstEnabledItem(
+  items: CompositeStoreItem[],
+  excludeId?: string,
+) {
   return items.find((item) => {
     if (excludeId) {
       return !item.disabled && item.id !== excludeId;
@@ -52,7 +55,7 @@ function getItemsInRow(items: CompositeStoreItem[], rowId?: string) {
   return items.filter((item) => item.rowId === rowId);
 }
 
-function flipItems(
+export function flipItems(
   items: CompositeStoreItem[],
   activeId: string,
   shouldInsertNullItem = false,
@@ -65,7 +68,7 @@ function flipItems(
   ];
 }
 
-function groupItemsByRows(items: CompositeStoreItem[]) {
+export function groupItemsByRows(items: CompositeStoreItem[]) {
   const rows: CompositeStoreItem[][] = [];
   for (const item of items) {
     const row = rows.find((currentRow) => currentRow[0]?.rowId === item.rowId);
