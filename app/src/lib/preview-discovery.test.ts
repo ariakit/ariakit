@@ -104,11 +104,33 @@ test("uses sandbox directory name without preview metadata", async () => {
   ]);
 });
 
+test("supports sandbox title metadata", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "sandbox/menu/index.react.tsx"));
+  await writeFile(
+    join(dir, "sandbox/menu/preview.json"),
+    JSON.stringify({ title: "Menu" }),
+  );
+
+  const previews = await discoverPreviews({
+    roots: [{ kind: "sandbox", dir: join(dir, "sandbox") }],
+  });
+
+  expect(previews).toMatchObject([
+    {
+      frameworks: ["react"],
+      id: "menu",
+      source: "sandbox",
+      title: "Menu",
+    },
+  ]);
+});
+
 test("supports metadata-only sandbox previews", async () => {
   const dir = await createDir();
   await writeFile(
     join(dir, "sandbox/counter-nextjs/preview.json"),
-    JSON.stringify({ frameworks: ["react"], title: "Counter Next.js" }),
+    JSON.stringify({ frameworks: ["react"] }),
   );
 
   const previews = await discoverPreviews({
@@ -121,7 +143,7 @@ test("supports metadata-only sandbox previews", async () => {
       frameworks: ["react"],
       id: "counter-nextjs",
       source: "sandbox",
-      title: "Counter Next.js",
+      title: "counter-nextjs",
     },
   ]);
 });
