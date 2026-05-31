@@ -6,11 +6,10 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { invariant } from "@ariakit/utils";
 import type { ChangeEvent, ElementType } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
-import { useFormContext } from "./form-context.tsx";
+import { useFormItemContext } from "./form-context.tsx";
 import type { FormControlOptions } from "./form-control.tsx";
 import { useFormControl } from "./form-control.tsx";
 
@@ -35,25 +34,20 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useFormInput = createHook<TagName, FormInputOptions>(
   function useFormInput({ store, name: nameProp, ...props }) {
-    const context = useFormContext();
-    store = store || context;
-
-    invariant(
+    const { store: form, name } = useFormItemContext({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "FormInput must be wrapped in a Form component.",
-    );
-
-    const name = String(nameProp);
+      name: nameProp,
+      component: "FormInput",
+    });
     const onChangeProp = props.onChange;
 
     const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
-      store?.setValue(name, event.target.value);
+      form.setValue(name, event.target.value);
     });
 
-    const value = store.useValue(name);
+    const value = form.useValue(name);
 
     props = {
       value,
@@ -62,7 +56,7 @@ export const useFormInput = createHook<TagName, FormInputOptions>(
     };
 
     props = useFocusable<TagName>(props);
-    props = useFormControl({ store, name, ...props });
+    props = useFormControl({ store: form, name, ...props });
 
     return props;
   },
