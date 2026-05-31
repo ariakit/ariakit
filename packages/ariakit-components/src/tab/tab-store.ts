@@ -48,92 +48,19 @@ function isEnabledTab(
 function createPanelsStore() {
   const panels = createCollectionStore<TabStorePanel>();
   const panelsByTabId = new Map<string, TabStorePanel>();
-  let panelItems = panels.getState().items;
 
-  const syncPanelItems = (items: TabStorePanel[]) => {
-    panelItems = items;
+  sync(panels, ["items"], (state) => {
     panelsByTabId.clear();
-    for (const panel of panelItems) {
+    for (const panel of state.items) {
       const { tabId } = panel;
       if (tabId == null) continue;
       if (panelsByTabId.has(tabId)) continue;
       panelsByTabId.set(tabId, panel);
     }
-  };
-
-  const syncPanelByTabId = (tabId: string | null | undefined) => {
-    if (tabId == null) return;
-    const panel = panelItems.find((item) => item.tabId === tabId);
-    if (panel) {
-      panelsByTabId.set(tabId, panel);
-    } else {
-      panelsByTabId.delete(tabId);
-    }
-  };
-
-  const syncPanelLookup = (
-    previousPanel: TabStorePanel | undefined,
-    nextPanel: TabStorePanel | undefined,
-  ) => {
-    syncPanelByTabId(previousPanel?.tabId);
-    if (nextPanel?.tabId !== previousPanel?.tabId) {
-      syncPanelByTabId(nextPanel?.tabId);
-    }
-  };
-
-  sync(panels, ["items"], (state) => {
-    syncPanelItems(state.items);
   });
 
-  const mergePanelItem = (item: TabStorePanel) => {
-    // Mirrors collection-store's merge behavior so panel() preserves the
-    // synchronous getter semantics of panels.item().
-    let previousPanel: TabStorePanel | undefined;
-    const index = panelItems.findIndex(({ id }) => id === item.id);
-    if (index !== -1) {
-      previousPanel = panelItems[index];
-      const nextPanel = { ...previousPanel, ...item };
-      const nextItems = panelItems.slice();
-      nextItems[index] = nextPanel;
-      panelItems = nextItems;
-      syncPanelLookup(previousPanel, nextPanel);
-    } else {
-      panelItems = [...panelItems, item];
-      syncPanelLookup(undefined, item);
-    }
-    return () => {
-      const currentPanel = panelItems.find(({ id }) => id === item.id);
-      if (!previousPanel) {
-        panelItems = panelItems.filter(({ id }) => id !== item.id);
-        syncPanelLookup(currentPanel, undefined);
-        return;
-      }
-      const index = panelItems.findIndex(({ id }) => id === item.id);
-      if (index === -1) return;
-      const nextItems = panelItems.slice();
-      nextItems[index] = previousPanel;
-      panelItems = nextItems;
-      syncPanelLookup(currentPanel, previousPanel);
-    };
-  };
-
-  const registerItem = panels.registerItem;
-  const renderItem = panels.renderItem;
-
   return {
-    panels: {
-      ...panels,
-      registerItem: (item) => {
-        const unregisterItem = registerItem(item);
-        const unmergePanelItem = mergePanelItem(item);
-        return chain(unregisterItem, unmergePanelItem);
-      },
-      renderItem: (item) => {
-        const unrenderItem = renderItem(item);
-        const unmergePanelItem = mergePanelItem(item);
-        return chain(unrenderItem, unmergePanelItem);
-      },
-    } satisfies CollectionStore<TabStorePanel>,
+    panels,
     panel: (tabId) => {
       if (tabId == null) return null;
       return panelsByTabId.get(tabId) || null;
