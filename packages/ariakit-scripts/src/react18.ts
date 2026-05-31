@@ -4,24 +4,21 @@ import {
   mkdir,
   copyFile,
   readdir,
-  readFile,
   readlink,
   rm,
   symlink,
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { delimiter, dirname, isAbsolute, join, relative, sep } from "node:path";
+import { delimiter, dirname, isAbsolute, join, relative } from "node:path";
 import { watch } from "chokidar";
 import type { FSWatcher } from "chokidar";
-
-interface PackageJson {
-  scripts?: Record<string, string>;
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-  optionalDependencies?: Record<string, string>;
-  [key: string]: unknown;
-}
+import {
+  normalizePath,
+  readPackageJson,
+  readPackageJsonAsync,
+} from "./utils.ts";
+import type { PackageJson } from "./utils.ts";
 
 interface React18Command {
   bin: string;
@@ -63,10 +60,6 @@ const pathKey =
 
 function log(message: string) {
   console.error(`[react18] ${message}`);
-}
-
-function normalizePath(path: string) {
-  return path.split(sep).join("/");
 }
 
 function isErrnoException(error: unknown): error is NodeJS.ErrnoException {
@@ -294,13 +287,8 @@ function getDependencyVersion(packageJson: PackageJson, name: string) {
   throw new Error(`${name} must be declared in website/package.json`);
 }
 
-async function readPackageJson(path: string) {
-  const contents = await readFile(path, "utf-8");
-  return JSON.parse(contents) as PackageJson;
-}
-
 async function getReact18DependencyVersions(rootPath: string) {
-  const packageJson = await readPackageJson(
+  const packageJson = await readPackageJsonAsync(
     join(rootPath, "website/package.json"),
   );
 
@@ -338,7 +326,7 @@ async function rewritePackageJson(
   path: string,
   versions: Record<string, string>,
 ) {
-  const packageJson = await readPackageJson(path);
+  const packageJson = await readPackageJsonAsync(path);
 
   if (!updateReactDependencies(packageJson, versions)) return false;
 
@@ -358,10 +346,6 @@ async function rewriteReactDependencies(rootPath: string) {
   }
 
   return updatedCount;
-}
-
-async function readRootPackageJson(rootPath: string) {
-  return await readPackageJson(join(rootPath, "package.json"));
 }
 
 function stripLeadingSeparator(args: string[]) {
@@ -395,7 +379,7 @@ async function getReact18Command(
     throw new Error("Missing command. Use `ariakit react18 <script>`.");
   }
 
-  const packageJson = await readRootPackageJson(rootPath);
+  const packageJson = readPackageJson(rootPath);
   // `react18` and `test-react-18` scripts would recurse here. Run the
   // underlying test script directly instead.
   if (command === "react18" || command === "test-react-18") {
