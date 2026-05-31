@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
-import type { Point, Polygon } from "../polygon.ts";
-import { isPointInPolygon } from "../polygon.ts";
+import type { Point, Polygon } from "./polygon.ts";
+import { isPointInPolygon } from "./polygon.ts";
 
 test("isPointInPolygon", () => {
   const polygon: Polygon = [

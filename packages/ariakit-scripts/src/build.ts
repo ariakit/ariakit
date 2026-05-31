@@ -1,6 +1,6 @@
 import { lstatSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
-import { join, relative, sep } from "node:path";
+import { join, sep } from "node:path";
 import { build as rolldownBuild } from "rolldown";
 import type { Plugin } from "rolldown";
 import { dts } from "rolldown-plugin-dts";
@@ -34,6 +34,17 @@ type ExportMode = "source" | "build";
 const sourceDir = "src";
 const distDir = "dist";
 const solidDir = "solid";
+const npmIgnoreEntries = [
+  "coverage",
+  "benchmark",
+  "src/test.ts",
+  "src/**/*.test.*",
+  "src/**/__tests__/**",
+  "tsconfig*.json",
+  "*.log",
+  "*.config.*",
+  "*.lock",
+];
 // Use the neutral platform for published libraries so Rolldown doesn't inline
 // runtime process.env.NODE_ENV checks for browser builds.
 const buildPlatform = "neutral";
@@ -52,6 +63,60 @@ function isTypeScriptSource(filename: string) {
 
 function isPrivateModule(filename: string) {
   return filename.startsWith("__");
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function matchesBasenamePattern(name: string, pattern: string) {
+  if (!pattern.includes("*")) {
+    return name === pattern;
+  }
+
+  const source = pattern.split("*").map(escapeRegExp).join(".*");
+  return new RegExp(`^${source}$`).test(name);
+}
+
+// Keep npmIgnoreEntries within this small subset: *, **, and slash-free
+// basename patterns. This is not a full gitignore parser.
+function matchesPathPattern(parts: string[], patternParts: string[]): boolean {
+  const pattern = patternParts[0];
+  if (pattern == null) {
+    return parts.length === 0;
+  }
+
+  if (pattern === "**") {
+    const remainingPatternParts = patternParts.slice(1);
+    if (!remainingPatternParts.length) return true;
+
+    for (let i = 0; i <= parts.length; i += 1) {
+      if (matchesPathPattern(parts.slice(i), remainingPatternParts)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  const part = parts[0];
+  if (part == null) return false;
+  if (!matchesBasenamePattern(part, pattern)) return false;
+  return matchesPathPattern(parts.slice(1), patternParts.slice(1));
+}
+
+function matchesNpmIgnoreEntry(path: string, entry: string) {
+  const parts = path.split("/");
+
+  if (!entry.includes("/")) {
+    return parts.some((part) => matchesBasenamePattern(part, entry));
+  }
+
+  return matchesPathPattern(parts, entry.split("/"));
+}
+
+function isNpmIgnored(path: string) {
+  return npmIgnoreEntries.some((entry) => matchesNpmIgnoreEntry(path, entry));
 }
 
 function readPackageJson(rootPath: string): PackageJson {
@@ -73,27 +138,21 @@ function isDirectory(path: string) {
   return lstatSync(path).isDirectory();
 }
 
-async function getPublicFiles(
-  sourcePath: string,
-  rootPath: string,
-  prefix = "",
-) {
+async function getPublicFiles(sourcePath: string, prefix = "") {
   const files: PublicFile[] = [];
   const entries = await readdir(sourcePath);
   const sortedEntries = entries.sort((a, b) => a.localeCompare(b));
 
   for (const entry of sortedEntries) {
-    if (isPrivateModule(entry)) continue;
-
     const entryPath = join(sourcePath, entry);
     const prefixedPath = join(prefix, entry);
+    const source = normalizePath(join(sourceDir, prefixedPath));
+
+    if (isNpmIgnored(source)) continue;
+    if (isPrivateModule(entry)) continue;
 
     if (isDirectory(entryPath)) {
-      const childFiles = await getPublicFiles(
-        entryPath,
-        rootPath,
-        prefixedPath,
-      );
+      const childFiles = await getPublicFiles(entryPath, prefixedPath);
       files.push(...childFiles);
       continue;
     }
@@ -103,15 +162,15 @@ async function getPublicFiles(
     files.push({
       name: removeExtension(normalizePath(prefixedPath)),
       path: entryPath,
-      source: `./${normalizePath(relative(rootPath, entryPath))}`,
+      source: `./${source}`,
     });
   }
 
   return files;
 }
 
-async function getIndexFile(sourcePath: string, rootPath: string) {
-  const files = await getPublicFiles(sourcePath, rootPath);
+async function getIndexFile(sourcePath: string) {
+  const files = await getPublicFiles(sourcePath);
   const indexFile = files.find((file) => file.name === "index");
 
   if (!indexFile) {
@@ -191,8 +250,8 @@ async function getPackagePublicFiles(rootPath: string, options: BuildOptions) {
   const sourcePath = join(rootPath, sourceDir);
   const packageJson = readPackageJson(rootPath);
   return shouldUseIndexOnly(packageJson, options)
-    ? await getIndexFile(sourcePath, rootPath)
-    : await getPublicFiles(sourcePath, rootPath);
+    ? await getIndexFile(sourcePath)
+    : await getPublicFiles(sourcePath);
 }
 
 export async function updateSourcePackageJson(
@@ -247,18 +306,7 @@ function writeGitignore(rootPath: string, isSolid: boolean) {
 }
 
 function writeNpmignore(rootPath: string) {
-  const contents = [
-    "# Automatically generated",
-    "coverage",
-    "benchmark",
-    "src/test.ts",
-    "src/**/*.test.*",
-    "src/**/__tests__/**",
-    "tsconfig*.json",
-    "*.log",
-    "*.config.*",
-    "*.lock",
-  ];
+  const contents = ["# Automatically generated", ...npmIgnoreEntries];
   writeFileSync(join(rootPath, ".npmignore"), `${contents.join("\n")}\n`);
 }
 

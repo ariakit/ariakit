@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import { useEffect } from "react";
 
 const eventNames = [
@@ -103,10 +104,7 @@ function getIdentifier(element: HTMLElement) {
   );
 }
 
-export function useAllEvents(
-  ref: React.RefObject<Element | null>,
-  stack: string[],
-) {
+export function useAllEvents(ref: RefObject<Element | null>, stack: string[]) {
   useEffect(() => {
     const element = ref.current;
     if (!element) return undefined;

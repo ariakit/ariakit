@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { expect, test } from "vitest";
-import { blur } from "../blur.ts";
-import { q, render } from "../react.tsx";
-import { useAllEvents } from "./use-all-events.ts";
+import { useAllEvents } from "./__use-all-events.test.helper.ts";
+import { blur } from "./blur.ts";
+import { q, render } from "./react.tsx";
 
 test("blur", async () => {
   const stack: string[] = [];

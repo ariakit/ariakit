@@ -1,6 +1,6 @@
 import { init } from "@ariakit/store";
 import { expect, test } from "vitest";
-import { createTabStore } from "../tab-store.ts";
+import { createTabStore } from "./tab-store.ts";
 
 function flushBatch() {
   return new Promise<void>((resolve) => queueMicrotask(resolve));

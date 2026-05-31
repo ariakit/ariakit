@@ -1,6 +1,6 @@
 // oxlint-disable unbound-method
 import { expect, test } from "vitest";
-import { isBrowser, wrapAsync } from "../__utils.ts";
+import { isBrowser, wrapAsync } from "./__utils.ts";
 
 test("wrapAsync does not reapply browser polyfills when nested", async () => {
   const originalFocus = HTMLElement.prototype.focus;
