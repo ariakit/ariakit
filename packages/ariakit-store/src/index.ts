@@ -571,7 +571,7 @@ export function pick<
  * Creates a new store with a subset of the current store state and keeps them
  * in sync.
  */
-export function pick(store: Store, ...args: Parameters<StorePick>) {
+export function pick(store?: Store, ...args: Parameters<StorePick>) {
   if (!store) return;
   return getInternal(store, "pick")(...args);
 }
