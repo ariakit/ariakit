@@ -171,8 +171,11 @@ function getItemObject(item: Item): ItemObject {
 
 function getItemId(item: Item, index: number, baseId?: string) {
   invariant(baseId, "CollectionRenderer must be given an `id` prop.");
-  const defaultId = `${baseId}/${index}`;
-  return getItemObject(item).id ?? defaultId;
+  if (item && typeof item === "object") {
+    const itemObject = getItemObject(item);
+    if (itemObject.id != null) return itemObject.id;
+  }
+  return `${baseId}/${index}`;
 }
 
 function getItem<T extends Item = any>(
@@ -364,7 +367,6 @@ function getData<T extends Item>(props: {
   horizontal: boolean;
   elements: Map<string, HTMLElement>;
   paddingStart: number;
-  itemSize?: number;
   estimatedItemSize: number;
 }) {
   const length = getItemsLength(props.items);
@@ -456,6 +458,21 @@ export function useCollectionRenderer<T extends Item = any>({
   const horizontal = orientation === "horizontal";
   const elements = useMemo(() => new Map<string, HTMLElement>(), []);
   const [elementsUpdated, updateElements] = useForceUpdate();
+  const computeData = useCallback(
+    (currentData: Data, currentBaseId: string, currentItems: Items<T>) => {
+      return getData({
+        baseId: currentBaseId,
+        items: currentItems,
+        data: currentData,
+        gap,
+        elements,
+        horizontal,
+        paddingStart,
+        estimatedItemSize,
+      });
+    },
+    [gap, elements, horizontal, paddingStart, estimatedItemSize],
+  );
 
   const [defaultVisibleIndices, setVisibleIndices] = useState<number[]>(() => {
     if (!initialItems) return [];
@@ -487,17 +504,7 @@ export function useCollectionRenderer<T extends Item = any>({
     const data = parentData?.get(baseId) || new Map();
     if (itemSize != null) return data;
     if (!items) return data;
-    const nextData = getData({
-      baseId,
-      items,
-      data,
-      gap,
-      elements,
-      horizontal,
-      paddingStart,
-      itemSize,
-      estimatedItemSize,
-    });
+    const nextData = computeData(data, baseId, items);
     return nextData || data;
   });
 
@@ -536,32 +543,11 @@ export function useCollectionRenderer<T extends Item = any>({
     if (itemSize != null) return;
     if (!baseId) return;
     if (!items) return;
-    const nextData = getData({
-      baseId,
-      items,
-      data,
-      gap,
-      elements,
-      horizontal,
-      paddingStart,
-      itemSize,
-      estimatedItemSize,
-    });
+    const nextData = computeData(data, baseId, items);
     if (nextData) {
       setData(nextData);
     }
-  }, [
-    elementsUpdated,
-    itemSize,
-    baseId,
-    items,
-    data,
-    gap,
-    elements,
-    horizontal,
-    paddingStart,
-    estimatedItemSize,
-  ]);
+  }, [elementsUpdated, itemSize, baseId, items, data, computeData]);
 
   const scroller = useScroller(items ? ref : null);
   const offsetsRef = useRef({ start: 0, end: 0 });
