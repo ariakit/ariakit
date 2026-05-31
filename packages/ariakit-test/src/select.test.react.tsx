@@ -1,6 +1,6 @@
 import { expect, test, vi } from "vitest";
-import { q, render } from "../react.tsx";
-import { select } from "../select.ts";
+import { q, render } from "./react.tsx";
+import { select } from "./select.ts";
 
 test("select", async () => {
   await render(

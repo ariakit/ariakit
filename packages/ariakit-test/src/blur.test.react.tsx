@@ -1,4 +1,8 @@
-import { useEffect } from "react";
+import type { RefObject } from "react";
+import { useEffect, useRef } from "react";
+import { expect, test } from "vitest";
+import { blur } from "./blur.ts";
+import { q, render } from "./react.tsx";
 
 const eventNames = [
   "abort",
@@ -103,10 +107,7 @@ function getIdentifier(element: HTMLElement) {
   );
 }
 
-export function useAllEvents(
-  ref: React.RefObject<Element | null>,
-  stack: string[],
-) {
+function useAllEvents(ref: RefObject<Element | null>, stack: string[]) {
   useEffect(() => {
     const element = ref.current;
     if (!element) return undefined;
@@ -122,3 +123,30 @@ export function useAllEvents(
     };
   }, [ref, stack]);
 }
+
+test("blur", async () => {
+  const stack: string[] = [];
+
+  const Test = () => {
+    const ref = useRef<HTMLButtonElement>(null);
+    useAllEvents(ref, stack);
+    return (
+      <button ref={ref} autoFocus>
+        button
+      </button>
+    );
+  };
+
+  await render(<Test />);
+
+  expect(q.button()).toHaveFocus();
+  await blur(q.button());
+  expect(document.body).toHaveFocus();
+
+  expect(stack).toMatchInlineSnapshot(`
+    [
+      "blur button",
+      "focusout button",
+    ]
+  `);
+});
