@@ -14,11 +14,15 @@ test("select", async () => {
   const onSelectionChange = vi.fn();
   document.addEventListener("selectionchange", onSelectionChange);
 
-  await select("second third", element);
+  try {
+    await select("second third", element);
 
-  const selection = document.getSelection();
+    const selection = document.getSelection();
 
-  expect(createNodeIterator).toHaveBeenCalledTimes(1);
-  expect(onSelectionChange).toHaveBeenCalledTimes(1);
-  expect(selection?.toString()).toBe("second third");
+    expect(createNodeIterator).toHaveBeenCalledTimes(1);
+    expect(onSelectionChange).toHaveBeenCalledTimes(1);
+    expect(selection?.toString()).toBe("second third");
+  } finally {
+    document.removeEventListener("selectionchange", onSelectionChange);
+  }
 });
