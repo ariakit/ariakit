@@ -1,5 +1,11 @@
 # @ariakit/test
 
+## 0.6.1
+
+- Improved text selection performance in `@ariakit/test`.
+- Fixed runtime `process.env.NODE_ENV` checks in published package output, including test-only behavior and development warnings.
+- Updated dependencies: `@ariakit/utils@0.1.2`
+
 ## 0.6.0
 
 ### Removed React 17 support from `@ariakit/test`
