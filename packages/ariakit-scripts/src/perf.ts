@@ -187,7 +187,7 @@ function getMetricValue(
   return metric.value;
 }
 
-function median(values: number[]): number {
+export function median(values: number[]): number {
   if (values.length === 0) return 0;
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
@@ -199,7 +199,7 @@ function median(values: number[]): number {
   return (prevValue + midValue) / 2;
 }
 
-function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
+export function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
   return {
     scripting: median(all.map((m) => m.scripting)),
     layout: median(all.map((m) => m.layout)),
