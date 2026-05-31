@@ -34,6 +34,8 @@ export default function Example() {
             <input
               checked={multipleEnabled}
               onChange={(event) => setMultipleEnabled(event.target.checked)}
+              // WebKit focuses the clicked checkbox only when explicitly tabbable.
+              tabIndex={0}
               type="checkbox"
             />{" "}
             Trap multiple
