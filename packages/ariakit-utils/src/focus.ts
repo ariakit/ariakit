@@ -211,6 +211,36 @@ export function getLastTabbable(fallbackToFocusable?: boolean) {
   return getLastTabbableIn(document.body, false, fallbackToFocusable);
 }
 
+interface GetTabbableInDirectionParams {
+  container: HTMLElement;
+  includeContainer?: boolean;
+  reverse?: boolean;
+  fallbackToEdge?: boolean;
+  fallbackToFocusable?: boolean;
+}
+
+function getTabbableInDirection({
+  container,
+  includeContainer,
+  reverse,
+  fallbackToEdge,
+  fallbackToFocusable,
+}: GetTabbableInDirectionParams) {
+  const activeElement = getActiveElement(container);
+  const allFocusable = getAllFocusableIn(container, includeContainer);
+  if (reverse) {
+    allFocusable.reverse();
+  }
+  const activeIndex = allFocusable.indexOf(activeElement as HTMLElement);
+  const candidates = allFocusable.slice(activeIndex + 1);
+  return (
+    candidates.find(isTabbable) ||
+    (fallbackToEdge ? allFocusable.find(isTabbable) : null) ||
+    (fallbackToFocusable ? candidates[0] : null) ||
+    null
+  );
+}
+
 /**
  * Returns the next tabbable element in `container`.
  */
@@ -220,16 +250,12 @@ export function getNextTabbableIn(
   fallbackToFirst?: boolean,
   fallbackToFocusable?: boolean,
 ) {
-  const activeElement = getActiveElement(container);
-  const allFocusable = getAllFocusableIn(container, includeContainer);
-  const activeIndex = allFocusable.indexOf(activeElement as HTMLElement);
-  const nextFocusableElements = allFocusable.slice(activeIndex + 1);
-  return (
-    nextFocusableElements.find(isTabbable) ||
-    (fallbackToFirst ? allFocusable.find(isTabbable) : null) ||
-    (fallbackToFocusable ? nextFocusableElements[0] : null) ||
-    null
-  );
+  return getTabbableInDirection({
+    container,
+    includeContainer,
+    fallbackToEdge: fallbackToFirst,
+    fallbackToFocusable,
+  });
 }
 
 /**
@@ -257,29 +283,26 @@ export function getPreviousTabbableIn(
   fallbackToLast?: boolean,
   fallbackToFocusable?: boolean,
 ) {
-  const activeElement = getActiveElement(container);
-  const allFocusable = getAllFocusableIn(container, includeContainer).reverse();
-  const activeIndex = allFocusable.indexOf(activeElement as HTMLElement);
-  const previousFocusableElements = allFocusable.slice(activeIndex + 1);
-  return (
-    previousFocusableElements.find(isTabbable) ||
-    (fallbackToLast ? allFocusable.find(isTabbable) : null) ||
-    (fallbackToFocusable ? previousFocusableElements[0] : null) ||
-    null
-  );
+  return getTabbableInDirection({
+    container,
+    includeContainer,
+    reverse: true,
+    fallbackToEdge: fallbackToLast,
+    fallbackToFocusable,
+  });
 }
 
 /**
  * Returns the previous tabbable element in the document.
  */
 export function getPreviousTabbable(
-  fallbackToFirst?: boolean,
+  fallbackToLast?: boolean,
   fallbackToFocusable?: boolean,
 ) {
   return getPreviousTabbableIn(
     document.body,
     false,
-    fallbackToFirst,
+    fallbackToLast,
     fallbackToFocusable,
   );
 }

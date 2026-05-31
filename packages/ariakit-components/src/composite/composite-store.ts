@@ -28,9 +28,15 @@ interface NextOptions extends Pick<
   skip?: number;
 }
 
-const NULL_ITEM = { id: null as unknown as string };
+export const NULL_ITEM = { id: null as unknown as string };
 
-function findFirstEnabledItem(items: CompositeStoreItem[], excludeId?: string) {
+/**
+ * Finds the first enabled item.
+ */
+export function findFirstEnabledItem(
+  items: CompositeStoreItem[],
+  excludeId?: string,
+) {
   return items.find((item) => {
     if (excludeId) {
       return !item.disabled && item.id !== excludeId;
@@ -52,7 +58,16 @@ function getItemsInRow(items: CompositeStoreItem[], rowId?: string) {
   return items.filter((item) => item.rowId === rowId);
 }
 
-function flipItems(
+/**
+ * Moves all the items before the passed `id` to the end of the array. This is
+ * useful when we want to loop through the items in the same row or column as
+ * the first items will be placed after the last items.
+ *
+ * The null item that's inserted when `shouldInsertNullItem` is set to `true`
+ * represents the composite container itself. When the active item is null, the
+ * composite container has focus.
+ */
+export function flipItems(
   items: CompositeStoreItem[],
   activeId: string,
   shouldInsertNullItem = false,
@@ -65,7 +80,10 @@ function flipItems(
   ];
 }
 
-function groupItemsByRows(items: CompositeStoreItem[]) {
+/**
+ * Creates a two-dimensional array with items grouped by their rowId's.
+ */
+export function groupItemsByRows(items: CompositeStoreItem[]) {
   const rows: CompositeStoreItem[][] = [];
   for (const item of items) {
     const row = rows.find((currentRow) => currentRow[0]?.rowId === item.rowId);
