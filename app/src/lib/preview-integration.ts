@@ -13,11 +13,7 @@ import { fileURLToPath } from "node:url";
 import { invariant } from "@ariakit/utils";
 import type { AstroConfig, AstroIntegration } from "astro";
 import type { Plugin, ViteDevServer } from "vite";
-import {
-  discoverPreviews,
-  resolvePreviewMetadataFile,
-  resolvePreviewRoots,
-} from "./preview-discovery.ts";
+import { discoverPreviews, resolvePreviewRoots } from "./preview-discovery.ts";
 import type {
   DiscoveredPreview,
   PreviewDiscoveryOptions,
@@ -169,12 +165,6 @@ function isInDirectory(file: string, dir: string) {
 }
 
 function shouldRegenerate(file: string, params: PreviewIntegrationParams) {
-  const metadataFile = resolvePreviewMetadataFile({
-    root: params.config.root,
-    srcDir: params.config.srcDir,
-    ...params.options,
-  });
-  if (metadataFile && file === metadataFile) return true;
   const roots = resolvePreviewRoots({
     root: params.config.root,
     srcDir: params.config.srcDir,
@@ -251,15 +241,7 @@ function previewCodegenPlugin(params: PreviewIntegrationParams): Plugin {
         srcDir: params.config.srcDir,
         ...params.options,
       });
-      const metadataFile = resolvePreviewMetadataFile({
-        root: params.config.root,
-        srcDir: params.config.srcDir,
-        ...params.options,
-      });
-      server.watcher.add([
-        ...roots.map((root) => root.dir),
-        ...(metadataFile ? [metadataFile] : []),
-      ]);
+      server.watcher.add(roots.map((root) => root.dir));
       const handleChange = async (file: string) => {
         if (!shouldRegenerate(file, params)) return;
         await regenerate();
@@ -287,14 +269,6 @@ export function previewIntegration(
         const codegenDir = fileURLToPath(createCodegenDir());
         const params = { config, codegenDir, options };
         await generatePreviewCodegen(params);
-        const metadataFile = resolvePreviewMetadataFile({
-          root: config.root,
-          srcDir: config.srcDir,
-          ...options,
-        });
-        if (metadataFile) {
-          addWatchFile(metadataFile);
-        }
         for (const root of resolvePreviewRoots({
           root: config.root,
           srcDir: config.srcDir,

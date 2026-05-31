@@ -71,9 +71,12 @@ export default defineConfig({
 
   integrations: [
     previewIntegration({
-      metadataFile: new URL("./src/previews.json", import.meta.url),
       roots: [
-        { kind: "examples", dir: new URL("./src/examples/", import.meta.url) },
+        {
+          kind: "examples",
+          dir: new URL("./src/examples/", import.meta.url),
+          metadataRequired: true,
+        },
         { kind: "sandbox", dir: new URL("./src/sandbox/", import.meta.url) },
       ],
     }),

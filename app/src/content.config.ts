@@ -88,9 +88,12 @@ const galleries = defineCollection({
 
 const previews = defineCollection({
   loader: previewLoader({
-    metadataFile: new URL("./previews.json", import.meta.url),
     roots: [
-      { kind: "examples", dir: new URL("./examples/", import.meta.url) },
+      {
+        kind: "examples",
+        dir: new URL("./examples/", import.meta.url),
+        metadataRequired: true,
+      },
       { kind: "sandbox", dir: new URL("./sandbox/", import.meta.url) },
     ],
   }),
