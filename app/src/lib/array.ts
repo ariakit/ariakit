@@ -7,11 +7,23 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+/**
+ * Returns the first item whose property value matches a value in `values`.
+ *
+ * Values are tried in order, so the match for the earliest value wins.
+ * `null` and `undefined` values are skipped.
+ */
 export function findInOrder<T, K extends keyof T>(
   array: T[],
   key: K,
   values: T[K][],
 ): T | null;
+/**
+ * Returns the first item whose selected value matches a value in `values`.
+ *
+ * Values are tried in order, so the match for the earliest value wins.
+ * `null` and `undefined` values are skipped.
+ */
 export function findInOrder<T, Value>(
   array: T[],
   key: (item: T) => Value,
