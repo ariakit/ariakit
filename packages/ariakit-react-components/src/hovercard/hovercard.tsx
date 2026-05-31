@@ -311,7 +311,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     }, [modal, portal, mounted, domReady]);
 
     const registerNestedHovercard = useCallback(
-      (element: any) => {
+      (element: HTMLElement) => {
         setNestedHovercards((prevElements) => [...prevElements, element]);
         const parentUnregister = registerOnParent?.(element);
         return () => {
