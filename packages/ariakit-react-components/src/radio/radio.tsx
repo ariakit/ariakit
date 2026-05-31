@@ -14,7 +14,7 @@ import type { Props } from "@ariakit/react-utils";
 import { disabledFromProps, removeUndefinedValues } from "@ariakit/utils";
 import type { BivariantCallback } from "@ariakit/utils";
 import type { ChangeEvent, ElementType, FocusEvent, MouseEvent } from "react";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useRadioContext } from "./radio-context.tsx";
@@ -73,7 +73,7 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   // Use the store's id as the default name to ensure radios in different
   // groups have unique names. This prevents the browser from treating all
   // radios as a single group. See https://github.com/ariakit/ariakit/issues/3833
-  const storeId = useMemo(() => store?.getState().id, [store]);
+  const storeId = useStoreState(store, "id");
   const name = nameProp ?? storeId;
 
   // When the radio store has a default value, we need to update the active id
