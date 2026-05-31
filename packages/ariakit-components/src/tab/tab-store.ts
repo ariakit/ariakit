@@ -45,6 +45,29 @@ function isEnabledTab(
   return true;
 }
 
+function createPanelsStore() {
+  const panels = createCollectionStore<TabStorePanel>();
+  const panelsByTabId = new Map<string, TabStorePanel>();
+
+  sync(panels, ["items"], (state) => {
+    panelsByTabId.clear();
+    for (const panel of state.items) {
+      const { tabId } = panel;
+      if (tabId == null) continue;
+      if (panelsByTabId.has(tabId)) continue;
+      panelsByTabId.set(tabId, panel);
+    }
+  });
+
+  return {
+    panels,
+    panel: (tabId) => {
+      if (tabId == null) return null;
+      return panelsByTabId.get(tabId) || null;
+    },
+  } satisfies Pick<TabStoreFunctions, "panels" | "panel">;
+}
+
 export function createTabStore({
   composite: parentComposite,
   combobox,
@@ -90,7 +113,7 @@ export function createTabStore({
     focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
   });
 
-  const panels = createCollectionStore<TabStorePanel>();
+  const { panels, panel } = createPanelsStore();
 
   const initialState: TabStoreState = {
     ...composite.getState(),
@@ -223,6 +246,7 @@ export function createTabStore({
     ...composite,
     ...tab,
     panels,
+    panel,
     setSelectedId: (id) => tab.setState("selectedId", id),
     select: (id) => {
       tab.setState("selectedId", id);
@@ -297,6 +321,12 @@ export interface TabStoreFunctions extends CompositeStoreFunctions<TabStoreItem>
    * - [Animated TabPanel](https://ariakit.com/examples/tab-panel-animated)
    */
   panels: CollectionStore<TabStorePanel>;
+  /**
+   * Gets the panel associated with the given tab id.
+   * @example
+   * const panel = store.panel("tab-1");
+   */
+  panel: (tabId: string | null | undefined) => TabStorePanel | null;
   /**
    * Selects the tab for the given id and moves focus to it. If you want to set
    * the [`selectedId`](https://ariakit.com/reference/tab-provider#selectedid)
