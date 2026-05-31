@@ -1,5 +1,6 @@
 import { mergeProps } from "@ariakit/solid-utils";
 import type { Component, ComponentProps, JSX, ValidComponent } from "solid-js";
+import { splitProps } from "solid-js";
 import { Dynamic } from "solid-js/web";
 
 type AsElements = {
@@ -11,6 +12,16 @@ type AsComponent = <T extends Component<any>, P = ComponentProps<T>>(
 ) => JSX.Element;
 
 const cache = new Map<string, Component<any>>();
+
+// Internal metadata props (see `createMetadataProps`) must keep flowing to a
+// composed component, but must not be spread onto a host element, where they'd
+// leak as a DOM attribute.
+function withoutMetadataOnHost<T>(props: T, component: unknown): T {
+  if (typeof component !== "string") return props;
+  return splitProps(props as Record<string, unknown>, [
+    "_metadataProps",
+  ])[1] as T;
+}
 
 /**
  * Allows a component to be rendered as a different HTML element or Solid
@@ -35,7 +46,10 @@ export const As = new Proxy(
     return ((parentProps: unknown) => (
       // TODO: replace with LazyDynamic
       <Dynamic
-        {...mergeProps(parentProps, props)}
+        {...withoutMetadataOnHost(
+          mergeProps(parentProps, props),
+          props.component,
+        )}
         component={props.component}
       />
     )) as unknown as JSX.Element;
@@ -47,7 +61,10 @@ export const As = new Proxy(
         component = function AsElement(props: any): JSX.Element {
           return ((parentProps: unknown) => (
             // TODO: replace with LazyDynamic
-            <Dynamic {...mergeProps(parentProps, props)} component={key} />
+            <Dynamic
+              {...withoutMetadataOnHost(mergeProps(parentProps, props), key)}
+              component={key}
+            />
           )) as unknown as JSX.Element;
         };
         cache.set(key, component);

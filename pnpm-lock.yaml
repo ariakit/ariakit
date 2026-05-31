@@ -700,6 +700,9 @@ importers:
       '@ariakit/solid-components':
         specifier: workspace:*
         version: link:../ariakit-solid-components
+      '@ariakit/solid-store':
+        specifier: workspace:*
+        version: link:../ariakit-solid-store
       solid-js:
         specifier: ^1.8
         version: 1.9.13
@@ -710,6 +713,12 @@ importers:
 
   packages/ariakit-solid-components:
     dependencies:
+      '@ariakit/components':
+        specifier: workspace:*
+        version: link:../ariakit-components
+      '@ariakit/solid-store':
+        specifier: workspace:*
+        version: link:../ariakit-solid-store
       '@ariakit/solid-utils':
         specifier: workspace:*
         version: link:../ariakit-solid-utils
@@ -729,6 +738,12 @@ importers:
       '@ariakit/store':
         specifier: workspace:*
         version: link:../ariakit-store
+      '@ariakit/utils':
+        specifier: workspace:*
+        version: link:../ariakit-utils
+      solid-js:
+        specifier: ^1.8
+        version: 1.9.13
     devDependencies:
       '@ariakit/scripts':
         specifier: workspace:*
@@ -736,6 +751,9 @@ importers:
 
   packages/ariakit-solid-utils:
     dependencies:
+      '@ariakit/store':
+        specifier: workspace:*
+        version: link:../ariakit-store
       '@ariakit/utils':
         specifier: workspace:*
         version: link:../ariakit-utils

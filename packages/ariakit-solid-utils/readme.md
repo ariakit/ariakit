@@ -41,12 +41,15 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`extractPropsWithDefaults`](#extractpropswithdefaults)
   - [`RefStore`](#refstore)
   - [`createRef`](#createref)
+  - [`useUpdateEffect`](#useupdateeffect)
   - [`mergeProps`](#mergeprops)
 - [System utilities](#system-utilities)
   - [`createInstance`](#createinstance)
   - [`wrapInstance`](#wrapinstance)
   - [`createHook`](#createhook)
   - [`withOptions`](#withoptions)
+  - [`createMetadataProps`](#createmetadataprops)
+  - [`createStoreContext`](#createstorecontext)
 - [Type utilities](#type-utilities)
   - [`RenderValue`](#rendervalue)
   - [`WrapInstanceValue`](#wrapinstancevalue)
@@ -261,6 +264,32 @@ createEffect(() => {
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
+#### `useUpdateEffect`
+
+```ts
+function useUpdateEffect(
+  effect: () => void | (() => void),
+  deps: Accessor<readonly unknown[]>,
+): void;
+```
+
+Runs an effect after the dependencies change, skipping the initial run. Mirrors React's `useUpdateEffect`. The dependencies are passed as a thunk (the idiomatic Solid dependency form), and the effect is deferred so it does not run on mount.
+
+Example:
+
+```ts
+useUpdateEffect(
+  () => {
+    console.log("value changed");
+  },
+  () => [value()],
+);
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `mergeProps`
 
 ```ts
@@ -287,7 +316,7 @@ Helpers for creating and composing Ariakit Solid components.
 function createInstance(
   Component: ValidComponent,
   props: Props<ValidComponent, Options>,
-): import("solid-js").JSX.Element;
+): JSX.Element;
 ```
 
 Creates a Solid component instance that supports the `render` and `wrapInstance` props.
@@ -361,6 +390,76 @@ export const useMyComponent = createHook<TagName, MyComponentOptions>(
   ),
 );
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `createMetadataProps`
+
+```ts
+function createMetadataProps<T, K extends keyof any>(
+  props: { _metadataProps?: { [key in K]?: T } },
+  key: K,
+  value: () => T,
+): readonly [
+  () => { [P in K]?: T | undefined }[K] | undefined,
+  { readonly _metadataProps: { [P in K]?: T | undefined } & { [key]: T } },
+];
+```
+
+Passes metadata props around the component tree without leaking them to the DOM. The metadata is carried on the internal `_metadataProps` prop, which `createInstance` strips before rendering a host element. A plain (non-`on*`) prop is used on purpose: `mergeProps`/`combineProps` would chain an `on*` carrier into a wrapper function and drop the attached symbols during composition, whereas a plain prop survives the merge with its symbols intact. Returns a reactive accessor for the parent value and the props that forward the augmented metadata to descendants.
+
+Example:
+
+```jsx
+const symbol = Symbol("command");
+function useCommand(props) {
+  const [isDuplicate, metadataProps] = createMetadataProps(
+    props,
+    symbol,
+    () => true,
+  );
+  props = mergeProps(props, metadataProps);
+  // isDuplicate() is true when a parent already set the symbol.
+}
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `createStoreContext`
+
+```ts
+type StoreProvider<T extends Store> = Component<{
+  value: Accessor<T | undefined>;
+  children?: JSX.Element;
+}>;
+
+function createStoreContext<T extends Store>(
+  providers: StoreProvider<T>[] = [],
+  scopedProviders: StoreProvider<T>[] = [],
+): {
+  context: import("solid-js").Context<Accessor<T | undefined>>;
+  scopedContext: import("solid-js").Context<Accessor<T | undefined>>;
+  useContext: () => Accessor<T | undefined>;
+  useScopedContext: (onlyScoped?: boolean) => Accessor<T | undefined>;
+  useProviderContext: () => () => T | undefined;
+  ContextProvider: (
+    props: ComponentProps<
+      import("solid-js").ContextProviderComponent<Accessor<T | undefined>>
+    >,
+  ) => JSX.Element;
+  ScopedContextProvider: (
+    props: ComponentProps<
+      import("solid-js").ContextProviderComponent<Accessor<T | undefined>>
+    >,
+  ) => JSX.Element;
+};
+```
+
+Creates an Ariakit store context with hooks and provider components. Unlike the React equivalent, the context value is an `Accessor<T>` rather than the store object itself, because Ariakit Solid stores are accessors.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>

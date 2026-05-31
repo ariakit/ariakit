@@ -1,4 +1,10 @@
-import { lstatSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  lstatSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { readdir } from "node:fs/promises";
 import { join, relative, sep } from "node:path";
 import { build as rolldownBuild } from "rolldown";
@@ -251,6 +257,10 @@ function writeNpmignore(rootPath: string) {
     "# Automatically generated",
     "coverage",
     "benchmark",
+    // Dev-only tooling (e.g. the Solid port scripts) kept outside `src`. Only
+    // added for packages that actually have the directory, to avoid changing
+    // other packages' generated ignore files.
+    ...(existsSync(join(rootPath, "port-utils")) ? ["port-utils"] : []),
     "src/test.ts",
     "src/**/*.test.*",
     "src/**/__tests__/**",
