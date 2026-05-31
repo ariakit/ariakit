@@ -78,6 +78,8 @@ function matchesBasenamePattern(name: string, pattern: string) {
   return new RegExp(`^${source}$`).test(name);
 }
 
+// Keep npmIgnoreEntries within this small subset: *, **, and slash-free
+// basename patterns. This is not a full gitignore parser.
 function matchesPathPattern(parts: string[], patternParts: string[]): boolean {
   const pattern = patternParts[0];
   if (pattern == null) {
