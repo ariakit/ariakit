@@ -13,7 +13,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { invariant } from "@ariakit/utils";
 import type { LoaderContext } from "astro/loaders";
 import type { z } from "astro/zod";
-import type { FunctionLikeDeclaration, SourceFile } from "ts-morph";
+import type { FunctionLikeDeclaration, JSDocTag, SourceFile } from "ts-morph";
 import { Node, Project, ts } from "ts-morph";
 import { createLogger } from "./logger.ts";
 import type { FrameworkSchema, Reference } from "./schemas.ts";
@@ -59,7 +59,7 @@ type ExportedDeclarations = ReturnType<SourceFile["getExportedDeclarations"]>;
 interface JsDocInfo {
   description: string;
   liveExamples: string[];
-  tags: any[];
+  tags: JSDocTag[];
 }
 
 const emptyJsDocInfo: JsDocInfo = {
@@ -898,7 +898,7 @@ function getJsDocInfo(node: Node): JsDocInfo {
   const firstJsDoc = jsDocs[0];
   const rawDescription = firstJsDoc?.getDescription() || "";
   const { description, liveExamples } = extractLiveExamples(rawDescription);
-  const tags: any[] = [];
+  const tags: JSDocTag[] = [];
 
   for (const jsDoc of jsDocs) {
     tags.push(...jsDoc.getTags());
@@ -932,7 +932,7 @@ function getTags(node: Node) {
  */
 function isPrivate(node: Node) {
   const tags = getTags(node);
-  return tags.some((tag: any) => tag.getTagName() === "private");
+  return tags.some((tag) => tag.getTagName() === "private");
 }
 
 /**
@@ -940,10 +940,10 @@ function isPrivate(node: Node) {
  */
 function getDeprecated(node: Node) {
   const tags = getTags(node);
-  const tag = tags.find((tag: any) => tag.getTagName() === "deprecated");
+  const tag = tags.find((tag) => tag.getTagName() === "deprecated");
   if (!tag) return false;
-  const comment = tag.getComment();
-  return comment ? String(comment) : true;
+  const comment = tag.getCommentText();
+  return comment ? comment : true;
 }
 
 /**
@@ -951,10 +951,10 @@ function getDeprecated(node: Node) {
  */
 function getDefaultValue(node: Node) {
   const tags = getTags(node);
-  const tag = tags.find((tag: any) => tag.getTagName() === "default");
-  const comment = tag?.getComment();
+  const tag = tags.find((tag) => tag.getTagName() === "default");
+  const comment = tag?.getCommentText();
   if (!comment) return;
-  return String(comment).trim();
+  return comment.trim();
 }
 
 /**
@@ -966,10 +966,8 @@ function getExamples(node: Node) {
 
   for (const tag of tags) {
     if (tag.getTagName() !== "example") continue;
-    const rawText = tag.getComment();
-    if (!rawText) continue;
-    // Ensure it's a string
-    const text = String(rawText);
+    const text = tag.getCommentText();
+    if (!text) continue;
     // Parse example with optional description and code block
     const match = text.match(
       /^(?<description>(.|\n)*)```(?<language>\S+)(?<modifiers>[^\n]*)\n(?<code>(.|\n)+)\n```$/m,
