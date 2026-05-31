@@ -1,7 +1,7 @@
 import { afterEach, expect, test } from "vitest";
 import { disableTreeOutside } from "../disable-tree.ts";
 import { isElementMarked, markTreeOutside } from "../mark-tree-outside.ts";
-import { orchestrate, setAttribute } from "../orchestrate.ts";
+import { setAttribute } from "../orchestrate.ts";
 import { supportsInert } from "../supports-inert.ts";
 import {
   createWalkTreeSnapshot,
@@ -18,24 +18,6 @@ function getElement(id: string) {
   return element;
 }
 
-function setAttributeWithOrchestrate(
-  element: Element,
-  attribute: string,
-  value: string,
-) {
-  return orchestrate(element, attribute, () => {
-    const previousValue = element.getAttribute(attribute);
-    element.setAttribute(attribute, value);
-    return () => {
-      if (previousValue == null) {
-        element.removeAttribute(attribute);
-      } else {
-        element.setAttribute(attribute, previousValue);
-      }
-    };
-  });
-}
-
 function getWalkedElementIds(id: string, elements: Array<Element | null>) {
   const ids: string[] = [];
   walkTreeOutside(id, elements, (element) => {
@@ -48,13 +30,9 @@ test("orchestrate restores cleanup stacks in LIFO order", () => {
   const element = document.createElement("div");
   element.setAttribute("data-value", "initial");
 
-  const restoreOne = setAttributeWithOrchestrate(element, "data-value", "one");
-  const restoreTwo = setAttributeWithOrchestrate(element, "data-value", "two");
-  const restoreThree = setAttributeWithOrchestrate(
-    element,
-    "data-value",
-    "three",
-  );
+  const restoreOne = setAttribute(element, "data-value", "one");
+  const restoreTwo = setAttribute(element, "data-value", "two");
+  const restoreThree = setAttribute(element, "data-value", "three");
 
   expect(element.getAttribute("data-value")).toBe("three");
 
@@ -99,13 +77,9 @@ test("orchestrate keeps element and key cleanup stacks independent", () => {
   const element = document.createElement("div");
   const otherElement = document.createElement("div");
 
-  const restoreElementValue = setAttributeWithOrchestrate(
-    element,
-    "data-value",
-    "value",
-  );
-  setAttributeWithOrchestrate(element, "data-other", "other");
-  setAttributeWithOrchestrate(otherElement, "data-value", "other-value");
+  const restoreElementValue = setAttribute(element, "data-value", "value");
+  setAttribute(element, "data-other", "other");
+  setAttribute(otherElement, "data-value", "other-value");
 
   restoreElementValue();
 
