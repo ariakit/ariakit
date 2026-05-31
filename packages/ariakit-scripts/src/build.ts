@@ -5,6 +5,7 @@ import { build as rolldownBuild } from "rolldown";
 import type { Plugin } from "rolldown";
 import { dts } from "rolldown-plugin-dts";
 import solidPlugin from "vite-plugin-solid";
+import { escapeRegExp } from "./regexp.ts";
 
 interface PackageJson {
   name: string;
@@ -63,10 +64,6 @@ function isTypeScriptSource(filename: string) {
 
 function isPrivateModule(filename: string) {
   return filename.startsWith("__");
-}
-
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function matchesBasenamePattern(name: string, pattern: string) {
