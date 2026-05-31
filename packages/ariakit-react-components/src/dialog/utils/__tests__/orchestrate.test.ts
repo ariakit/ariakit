@@ -1,7 +1,7 @@
 import { afterEach, expect, test } from "vitest";
 import { disableTreeOutside } from "../disable-tree.ts";
 import { isElementMarked, markTreeOutside } from "../mark-tree-outside.ts";
-import { setAttribute } from "../orchestrate.ts";
+import { assignStyle, setAttribute } from "../orchestrate.ts";
 import { supportsInert } from "../supports-inert.ts";
 import {
   createWalkTreeSnapshot,
@@ -36,10 +36,6 @@ test("orchestrate restores cleanup stacks in LIFO order", () => {
 
   expect(element.getAttribute("data-value")).toBe("three");
 
-  restoreTwo();
-
-  expect(element.getAttribute("data-value")).toBe("three");
-
   restoreThree();
 
   expect(element.getAttribute("data-value")).toBe("two");
@@ -53,7 +49,7 @@ test("orchestrate restores cleanup stacks in LIFO order", () => {
   expect(element.getAttribute("data-value")).toBe("initial");
 });
 
-test("orchestrate ignores the initial cleanup when it is no longer current", () => {
+test("orchestrate defers the initial cleanup until it is current", () => {
   const element = document.createElement("div");
   element.setAttribute("role", "original");
 
@@ -66,11 +62,48 @@ test("orchestrate ignores the initial cleanup when it is no longer current", () 
 
   restoreTwo();
 
-  expect(element.getAttribute("role")).toBe("one");
+  expect(element.getAttribute("role")).toBe("original");
 
   restoreOne();
 
   expect(element.getAttribute("role")).toBe("original");
+});
+
+test("orchestrate skips disposed entries when restoring previous cleanups", () => {
+  const element = document.createElement("div");
+  element.setAttribute("data-value", "initial");
+
+  const restoreOne = setAttribute(element, "data-value", "one");
+  const restoreTwo = setAttribute(element, "data-value", "two");
+  const restoreThree = setAttribute(element, "data-value", "three");
+
+  restoreTwo();
+
+  expect(element.getAttribute("data-value")).toBe("three");
+
+  restoreThree();
+
+  expect(element.getAttribute("data-value")).toBe("one");
+
+  restoreOne();
+
+  expect(element.getAttribute("data-value")).toBe("initial");
+});
+
+test("orchestrate defers stale style cleanups", () => {
+  const element = document.createElement("div");
+  element.style.display = "flex";
+
+  const restoreOne = assignStyle(element, { display: "block" });
+  const restoreTwo = assignStyle(element, { display: "none" });
+
+  restoreOne();
+
+  expect(element.style.display).toBe("none");
+
+  restoreTwo();
+
+  expect(element.style.display).toBe("flex");
 });
 
 test("orchestrate keeps element and key cleanup stacks independent", () => {

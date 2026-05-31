@@ -1,4 +1,27 @@
-const cleanups = new WeakMap<Element, Map<string, () => void>>();
+interface CleanupEntry {
+  cleanup: () => void;
+  disposed: boolean;
+}
+
+const cleanups = new WeakMap<Element, Map<string, CleanupEntry[]>>();
+
+function flushCleanupStack(
+  elementCleanups: Map<string, CleanupEntry[]>,
+  key: string,
+  stack: CleanupEntry[],
+) {
+  while (stack.length) {
+    const entry = stack[stack.length - 1];
+    if (!entry) {
+      elementCleanups.delete(key);
+      return;
+    }
+    if (!entry.disposed) return;
+    stack.pop();
+    entry.cleanup();
+  }
+  elementCleanups.delete(key);
+}
 
 export function orchestrate(
   element: Element,
@@ -10,34 +33,18 @@ export function orchestrate(
   }
 
   const elementCleanups = cleanups.get(element)!;
-  const prevCleanup = elementCleanups.get(key);
+  const stack = elementCleanups.get(key) ?? [];
+  const entry: CleanupEntry = { cleanup: setup(), disposed: false };
 
-  if (!prevCleanup) {
-    const cleanup = setup();
-    elementCleanups.set(key, cleanup);
-    return () => {
-      const isCurrent = elementCleanups.get(key) === cleanup;
-      if (!isCurrent) return;
-      cleanup();
-      elementCleanups.delete(key);
-    };
+  if (!stack.length) {
+    elementCleanups.set(key, stack);
   }
-
-  const cleanup = setup();
-
-  const nextCleanup = () => {
-    cleanup();
-    prevCleanup();
-    elementCleanups.delete(key);
-  };
-
-  elementCleanups.set(key, nextCleanup);
+  stack.push(entry);
 
   return () => {
-    const isCurrent = elementCleanups.get(key) === nextCleanup;
-    if (!isCurrent) return;
-    cleanup();
-    elementCleanups.set(key, prevCleanup);
+    if (!stack.includes(entry)) return;
+    entry.disposed = true;
+    flushCleanupStack(elementCleanups, key, stack);
   };
 }
 
