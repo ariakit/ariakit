@@ -150,12 +150,12 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       }
     });
 
-    const type = useStoreState(store, "type");
-    const contentId = useStoreState(store, (state) => state.contentElement?.id);
+    const labelledBy = useStoreState(store, (state) =>
+      state.type === "label" ? state.contentElement?.id : undefined,
+    );
 
     props = {
-      "aria-labelledby":
-        type === "label" && props["aria-label"] == null ? contentId : undefined,
+      "aria-labelledby": props["aria-label"] == null ? labelledBy : undefined,
       ...props,
       onMouseEnter,
       onFocusVisible,
