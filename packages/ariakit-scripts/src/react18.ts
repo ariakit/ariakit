@@ -16,7 +16,7 @@ import type { FSWatcher } from "chokidar";
 import {
   normalizePath,
   readPackageJson,
-  readPackageJsonAsync,
+  readPackageJsonFile,
 } from "./utils.ts";
 import type { PackageJson } from "./utils.ts";
 
@@ -288,7 +288,7 @@ function getDependencyVersion(packageJson: PackageJson, name: string) {
 }
 
 async function getReact18DependencyVersions(rootPath: string) {
-  const packageJson = await readPackageJsonAsync(
+  const packageJson = await readPackageJsonFile(
     join(rootPath, "website/package.json"),
   );
 
@@ -326,7 +326,7 @@ async function rewritePackageJson(
   path: string,
   versions: Record<string, string>,
 ) {
-  const packageJson = await readPackageJsonAsync(path);
+  const packageJson = await readPackageJsonFile(path);
 
   if (!updateReactDependencies(packageJson, versions)) return false;
 

@@ -28,7 +28,7 @@ export function readPackageJson(rootPath: string): PackageJson {
 /**
  * Reads a package.json file from a fully resolved file path.
  */
-export async function readPackageJsonAsync(path: string): Promise<PackageJson> {
+export async function readPackageJsonFile(path: string): Promise<PackageJson> {
   const contents = await readFile(path, "utf-8");
   return JSON.parse(contents);
 }
