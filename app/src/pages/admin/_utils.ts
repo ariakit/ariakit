@@ -77,6 +77,13 @@ export function getStripeDashboardUrl() {
   return `https://dashboard.stripe.com`;
 }
 
+export function getAvatarUrl(imageUrl: string, size = 32) {
+  const url = new URL(imageUrl);
+  url.searchParams.set("width", String(size));
+  url.searchParams.set("height", String(size));
+  return url.toString();
+}
+
 interface GetPageUrlsOptions {
   totalCount: number;
   limit: number;
