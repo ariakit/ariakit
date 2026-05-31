@@ -17,6 +17,12 @@ declare module "*?source" {
   export default source;
 }
 
+declare module "virtual:ariakit-previews/registry" {
+  export function loadPreview(id: string): Promise<{
+    default: import("astro/runtime/server/index.js").AstroComponentFactory;
+  }>;
+}
+
 declare module "#app/styles/styles.json" {
   const styles: import("./src/lib/styles-json-types.ts").StylesJson;
   export default styles;

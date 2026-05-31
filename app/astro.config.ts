@@ -19,6 +19,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
+import { previewIntegration } from "./src/lib/preview-integration.ts";
 import {
   rehypeAdmonitions,
   rehypeAsTagName,
@@ -69,6 +70,13 @@ export default defineConfig({
   },
 
   integrations: [
+    previewIntegration({
+      metadataFile: new URL("./src/previews.json", import.meta.url),
+      roots: [
+        { kind: "examples", dir: new URL("./src/examples/", import.meta.url) },
+        { kind: "sandbox", dir: new URL("./src/sandbox/", import.meta.url) },
+      ],
+    }),
     react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
     solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
     mdx({

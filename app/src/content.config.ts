@@ -13,6 +13,7 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { defineCollection, reference } from "astro:content";
 import { jsdoc } from "./lib/jsdoc-loader.ts";
+import { previewLoader } from "./lib/preview-discovery.ts";
 import { FrameworkSchema, TagSchema } from "./lib/schemas.ts";
 
 function generateExampleId(options: { entry: string }) {
@@ -86,15 +87,18 @@ const galleries = defineCollection({
 });
 
 const previews = defineCollection({
-  loader: glob({
-    pattern: ["examples/**/preview.mdx", "sandbox/**/preview.mdx"],
-    base: import.meta.dirname,
-    generateId: generateExampleId,
+  loader: previewLoader({
+    metadataFile: new URL("./previews.json", import.meta.url),
+    roots: [
+      { kind: "examples", dir: new URL("./examples/", import.meta.url) },
+      { kind: "sandbox", dir: new URL("./sandbox/", import.meta.url) },
+    ],
   }),
   schema: z.object({
     title: z.string(),
     fullscreen: z.boolean().optional(),
     frameworks: FrameworkSchema.array(),
+    source: z.string(),
   }),
 });
 
