@@ -15,6 +15,7 @@ import { clerkClient } from "@clerk/astro/server";
 import { formatDistanceToNow } from "date-fns";
 import LayoutPagination from "./_layout-pagination.astro";
 import {
+  getAvatarUrl,
   getClerkInstanceUrl,
   getPageUrls,
   getPaginationData,
@@ -53,13 +54,6 @@ async function getUserData() {
 }
 
 const users = await getUserData();
-
-function getUserAvatarUrl(user: User) {
-  const url = new URL(user.imageUrl);
-  url.searchParams.set("width", "32");
-  url.searchParams.set("height", "32");
-  return url.toString();
-}
 ---
 
 <LayoutPagination
@@ -79,7 +73,7 @@ function getUserAvatarUrl(user: User) {
           <div class="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 size-full flex flex-col gap-2">
             <div class="flex items-center gap-2">
               <img
-                src={getUserAvatarUrl(user)}
+                src={getAvatarUrl(user.imageUrl)}
                 alt=""
                 class="size-[1em] object-cover rounded-full"
               />
