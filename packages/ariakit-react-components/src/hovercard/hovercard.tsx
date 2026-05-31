@@ -150,6 +150,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
 
     const ref = useRef<HTMLType>(null);
     const [nestedHovercards, setNestedHovercards] = useState<HTMLElement[]>([]);
+    const nestedHovercardsRef = useLiveRef(nestedHovercards);
     const hideTimeoutRef = useRef(0);
     const enterPointRef = useRef<Point | null>(null);
     const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
@@ -165,6 +166,11 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
 
     const open = useStoreState(store, "open");
     const mounted = useStoreState(store, "mounted");
+
+    const clearHideTimeout = useCallback(() => {
+      window.clearTimeout(hideTimeoutRef.current);
+      hideTimeoutRef.current = 0;
+    }, []);
 
     // Checks whether the mouse is moving toward the hovercard. If not, hide the
     // card after a short delay (hideTimeout).
@@ -183,7 +189,14 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         const anchor = anchorElement;
         // Checks whether the hovercard element has focus or the mouse is moving
         // through valid hovercard elements.
-        if (isMovingOnHovercard(target, element, anchor, nestedHovercards)) {
+        if (
+          isMovingOnHovercard(
+            target,
+            element,
+            anchor,
+            nestedHovercardsRef.current,
+          )
+        ) {
           // While the mouse is moving over the anchor element while the hover
           // card is open, keep track of the mouse position so we can use the
           // last point before the mouse leaves the anchor element.
@@ -191,8 +204,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
             target && anchor && contains(anchor, target)
               ? getEventPoint(event)
               : null;
-          window.clearTimeout(hideTimeoutRef.current);
-          hideTimeoutRef.current = 0;
+          clearHideTimeout();
           return;
         }
         // If there's already a scheduled timeout to hide the hovercard, we do
@@ -223,8 +235,9 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
           store?.hide();
         }, hideTimeout ?? timeout);
       };
-      return chain(addGlobalEventListener("mousemove", onMouseMove, true), () =>
-        clearTimeout(hideTimeoutRef.current),
+      return chain(
+        addGlobalEventListener("mousemove", onMouseMove, true),
+        clearHideTimeout,
       );
     }, [
       store,
@@ -233,7 +246,8 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       mounted,
       mayHideOnHoverOutside,
       mayDisablePointerEvents,
-      nestedHovercards,
+      nestedHovercardsRef,
+      clearHideTimeout,
       disablePointerEventsProp,
       hideOnHoverOutsideProp,
     ]);
@@ -312,16 +326,18 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
 
     const registerNestedHovercard = useCallback(
       (element: HTMLElement) => {
+        clearHideTimeout();
         setNestedHovercards((prevElements) => [...prevElements, element]);
         const parentUnregister = registerOnParent?.(element);
         return () => {
+          clearHideTimeout();
           setNestedHovercards((prevElements) =>
             prevElements.filter((item) => item !== element),
           );
           parentUnregister?.();
         };
       },
-      [registerOnParent],
+      [clearHideTimeout, registerOnParent],
     );
 
     props = useWrapElement(
