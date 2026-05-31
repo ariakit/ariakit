@@ -53,6 +53,36 @@ test("isPointInPolygon", () => {
   expect(isPointInPolygon([5, 5], polygon)).toBe(false);
 });
 
+test("isPointInPolygon handles horizontal rays crossing slanted vertices", () => {
+  const topPolygon: Polygon = [
+    [3, 0],
+    [2, 2],
+    [2, 4],
+    [4, 4],
+    [4, 2],
+  ];
+
+  expect(isPointInPolygon([3, 0], topPolygon)).toBe(true);
+  expect(isPointInPolygon([2.5, 1], topPolygon)).toBe(true);
+  expect(isPointInPolygon([3.5, 1], topPolygon)).toBe(true);
+  expect(isPointInPolygon([3, 2], topPolygon)).toBe(true);
+  expect(isPointInPolygon([5, 2], topPolygon)).toBe(false);
+
+  const leftPolygon: Polygon = [
+    [0, 3],
+    [2, 2],
+    [4, 2],
+    [4, 4],
+    [2, 4],
+  ];
+
+  expect(isPointInPolygon([0, 3], leftPolygon)).toBe(true);
+  expect(isPointInPolygon([1, 2.5], leftPolygon)).toBe(true);
+  expect(isPointInPolygon([1, 3], leftPolygon)).toBe(true);
+  expect(isPointInPolygon([1, 3.5], leftPolygon)).toBe(true);
+  expect(isPointInPolygon([1, 5], leftPolygon)).toBe(false);
+});
+
 test("isPointInPolygon returns false for malformed polygons", () => {
   const polygon: Array<Point | undefined> = [
     [2, 2],
