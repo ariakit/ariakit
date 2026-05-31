@@ -41,6 +41,7 @@ function isActivatableNavigationTarget(
     | HTMLInputElement
     | null;
   if (!target) return false;
+  if (!(target instanceof HTMLElement)) return false;
   const tagName = target.tagName.toLowerCase();
   if (tagName === "a") return true;
   if (tagName === "button" && target.type === "submit") return true;
