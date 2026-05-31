@@ -106,6 +106,8 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
           // timeout to hide the active tooltip in the global store. This is so
           // we can show other tooltips without a delay when there's already an
           // active tooltip (see the showOnHover method below).
+          // Read skipTimeout lazily because this sync only subscribes to
+          // mounted.
           const id = setTimeout(removeStore, store.getState().skipTimeout);
           return () => clearTimeout(id);
         }),
