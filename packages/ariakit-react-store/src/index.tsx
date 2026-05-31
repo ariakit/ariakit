@@ -118,21 +118,22 @@ export function useStoreState(
   store: StateStore,
   keyOrSelector: StateKey | ((state?: AnyObject) => any) = identity,
 ) {
+  const key = typeof keyOrSelector === "string" ? keyOrSelector : null;
+  const selector = typeof keyOrSelector === "function" ? keyOrSelector : null;
+
   const storeSubscribe = React.useCallback(
     (callback: () => void) => {
       if (!store) return noopSubscribe();
-      return subscribe(store, null, callback);
+      return subscribe(store, key == null ? null : [key], callback);
     },
-    [store],
+    [store, key],
   );
 
   const getSnapshot = () => {
-    const key = typeof keyOrSelector === "string" ? keyOrSelector : null;
-    const selector = typeof keyOrSelector === "function" ? keyOrSelector : null;
     const state = store?.getState();
     if (selector) return selector(state);
     if (!state) return;
-    if (!key) return;
+    if (key == null) return;
     if (!hasOwnProperty(state, key)) return;
     return state[key];
   };
