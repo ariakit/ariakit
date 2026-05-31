@@ -134,7 +134,7 @@ const MULTI_TOKEN_HIGHLIGHT_CLASS = "ak-layer ak-layer-6 ak-edge-25";
 const LINE_DIV_BASE_CLASS = "pe-14 [content-visibility:auto] h-(--line-height)";
 
 function getTokenColors(token: ThemedToken) {
-  const style = token.htmlStyle as any;
+  const style = token.htmlStyle;
   const dark = style?.["--shiki-dark"] || token.color;
   const light = style?.color || token.color;
   return { dark, light } as const;
