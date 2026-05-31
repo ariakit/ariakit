@@ -3,7 +3,7 @@ import { click, press, q, waitFor } from "@ariakit/test";
 import { render } from "@ariakit/test/react";
 import { createElement, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import Example from "./index.react.tsx";
 
 const content = () => q.text(/Create an account/);
@@ -38,8 +38,25 @@ function ReclaimDisconnectedDisclosure() {
 }
 
 test("renders default open disclosure as expanded on server", () => {
-  const html = renderToStaticMarkup(createElement(Example));
-  expect(html).toContain('aria-expanded="true"');
+  const originalError = console.error;
+  const consoleError = vi
+    .spyOn(console, "error")
+    .mockImplementation((...args: Parameters<typeof console.error>) => {
+      const [message] = args;
+      if (
+        typeof message === "string" &&
+        message.includes("useLayoutEffect does nothing on the server")
+      ) {
+        return;
+      }
+      originalError(...args);
+    });
+  try {
+    const html = renderToStaticMarkup(createElement(Example));
+    expect(html).toMatch(/<button\b[^>]*aria-expanded="true"/);
+  } finally {
+    consoleError.mockRestore();
+  }
 });
 
 test("marks only the active shared-store disclosure as expanded", async () => {

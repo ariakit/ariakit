@@ -12,7 +12,7 @@ import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useDisclosureProviderContext } from "./disclosure-context.tsx";
@@ -46,19 +46,19 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
         "Disclosure must receive a `store` prop or be wrapped in a DisclosureProvider component.",
     );
 
-    const ref = useRef<HTMLType>(null);
+    const [element, setElement] = useState<HTMLType | null>(null);
     const disclosureElement = useStoreState(store, "disclosureElement");
     const open = useStoreState(store, "open");
     const expanded =
-      open && (disclosureElement == null || disclosureElement === ref.current);
+      open && (disclosureElement == null || disclosureElement === element);
 
     // Assigns the disclosure element whenever it's undefined or disconnected
     // from the DOM. Re-run on open changes so a stale disconnected disclosure
     // element is claimed before deriving aria-expanded for the next open state.
     useEffect(() => {
       if (disclosureElement?.isConnected) return;
-      store?.setDisclosureElement(ref.current);
-    }, [disclosureElement, store, open]);
+      store?.setDisclosureElement(element);
+    }, [disclosureElement, store, open, element]);
 
     const onClickProp = props.onClick;
     const toggleOnClickProp = useBooleanEvent(toggleOnClick);
@@ -80,7 +80,7 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
       "aria-controls": contentElement?.id,
       ...metadataProps,
       ...props,
-      ref: useMergeRefs(ref, props.ref),
+      ref: useMergeRefs(setElement, props.ref),
       onClick,
     };
 
