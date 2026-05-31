@@ -34,19 +34,40 @@ export interface GetOGImageItemParams {
   framework?: OGImageItem["framework"];
 }
 
+let ogImageItemsPromise: Promise<OGImageItem[]> | undefined;
+let ogImageItemMapPromise: Promise<Map<string, OGImageItem>> | undefined;
+
+function getOGImageItemKey({
+  type = "pages",
+  framework,
+  id,
+}: GetOGImageItemParams) {
+  return `${type}|${framework ?? ""}|${id ?? ""}`;
+}
+
+async function getOGImageItemMap(): Promise<Map<string, OGImageItem>> {
+  ogImageItemMapPromise ??= getOGImageItems().then((items) => {
+    const itemMap = new Map<string, OGImageItem>();
+    for (const item of items) {
+      const key = getOGImageItemKey(item);
+      if (itemMap.has(key)) continue;
+      itemMap.set(key, item);
+    }
+    return itemMap;
+  });
+  return ogImageItemMapPromise;
+}
+
 export async function getOGImageItem({
   type = "pages",
   framework,
   id,
 }: GetOGImageItemParams) {
-  const items = await getOGImageItems();
-  return items.find(
-    (item) =>
-      item.type === type && item.framework === framework && item.id === id,
-  );
+  const itemMap = await getOGImageItemMap();
+  return itemMap.get(getOGImageItemKey({ type, framework, id }));
 }
 
-export async function getOGImageItems(): Promise<OGImageItem[]> {
+async function computeOGImageItems(): Promise<OGImageItem[]> {
   const components = await getCollection("components");
   const examples = await getCollection("examples");
   const entries = [...components, ...examples];
@@ -128,6 +149,11 @@ export async function getOGImageItems(): Promise<OGImageItem[]> {
     ...componentIndexes,
     ...genericPages,
   ];
+}
+
+export function getOGImageItems(): Promise<OGImageItem[]> {
+  ogImageItemsPromise ??= computeOGImageItems();
+  return ogImageItemsPromise;
 }
 
 export const GET: APIRoute = async () => {
