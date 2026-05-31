@@ -9,7 +9,6 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
-  toArray,
   getTextboxSelection,
   setSelectionRange,
   getInputType,
@@ -28,6 +27,7 @@ import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useTagContext } from "./tag-context.tsx";
 import type { TagStore } from "./tag-store.ts";
+import { getDelimiters, splitValueByDelimiter } from "./utils.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
@@ -36,31 +36,6 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 type EventWithValues<T extends SyntheticEvent> = T & {
   values: string[];
 };
-
-const DEFAULT_DELIMITER = ["\n", ";", ",", /\s/];
-
-function getDelimiters(
-  delimiter: TagInputOptions["delimiter"],
-  defaultDelimiter: TagInputOptions["delimiter"] = DEFAULT_DELIMITER,
-) {
-  const finalDelimiter = delimiter === undefined ? defaultDelimiter : delimiter;
-  if (!finalDelimiter) return [];
-  return toArray(finalDelimiter);
-}
-
-function splitValueByDelimiter(value: string, delimiters: (string | RegExp)[]) {
-  for (const delimiter of delimiters) {
-    let match = value.match(delimiter);
-    // Remove delimiter from the start of the string
-    while (match?.index === 0) {
-      value = value.slice(match[0].length);
-      match = value.match(delimiter);
-    }
-    if (!match) continue;
-    return value.split(delimiter);
-  }
-  return [];
-}
 
 /**
  * Returns props to create a `TagInput` component.
