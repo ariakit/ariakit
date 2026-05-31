@@ -255,6 +255,14 @@ export function getTextboxSelection(element: HTMLElement) {
   return { start, end };
 }
 
+const allowedPopupRoles = ["dialog", "menu", "listbox", "tree", "grid"];
+
+const itemRoleByPopupRole = {
+  menu: "menuitem",
+  listbox: "option",
+  tree: "treeitem",
+};
+
 /**
  * Returns the popup role from the element's role attribute, if it has one.
  */
@@ -262,7 +270,6 @@ export function getPopupRole(
   element?: Element | null,
   fallback?: AriaHasPopup,
 ) {
-  const allowedPopupRoles = ["dialog", "menu", "listbox", "tree", "grid"];
   const role = element?.getAttribute("role");
   if (role && allowedPopupRoles.indexOf(role) !== -1) {
     return role as "dialog" | "menu" | "listbox" | "tree" | "grid";
@@ -277,11 +284,6 @@ export function getPopupItemRole(
   element?: Element | null,
   fallback?: AriaRole,
 ) {
-  const itemRoleByPopupRole = {
-    menu: "menuitem",
-    listbox: "option",
-    tree: "treeitem",
-  };
   const popupRole = getPopupRole(element);
   if (!popupRole) return fallback;
   const key = popupRole as keyof typeof itemRoleByPopupRole;
