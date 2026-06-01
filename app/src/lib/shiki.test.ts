@@ -20,7 +20,7 @@ vi.mock("shiki/engine/oniguruma", () => ({
 
 vi.mock("shiki/onig.wasm", () => ({}));
 
-const { getLangFromFilename } = await import("./shiki.ts");
+const { getLangFromFilename, isLangAlias } = await import("./shiki.ts");
 
 const cases = [
   ["index.js", "js"],
@@ -49,4 +49,13 @@ test("maps filenames to loaded Shiki languages", () => {
   for (const [filename, lang] of cases) {
     expect(getLangFromFilename(filename)).toBe(lang);
   }
+});
+
+test("identifies language aliases separately from filenames", () => {
+  expect(isLangAlias("sh", "bash")).toBe(true);
+  expect(isLangAlias("bash", "bash")).toBe(true);
+  expect(isLangAlias("typescript", "typescript")).toBe(true);
+  expect(isLangAlias("md", "text")).toBe(true);
+  expect(isLangAlias("script.sh", "bash")).toBe(false);
+  expect(isLangAlias("README.md", "text")).toBe(false);
 });

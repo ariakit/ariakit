@@ -10,7 +10,7 @@
  */
 import * as icons from "#app/icons/icons.ts";
 import { isJsxFramework } from "#app/lib/frameworks.ts";
-import { getLangFromFilename } from "#app/lib/shiki.ts";
+import { getLangFromFilename, isLangAlias } from "#app/lib/shiki.ts";
 import { invariant } from "@ariakit/utils";
 import type { ComponentProps } from "astro/types";
 import { decode } from "html-entities";
@@ -44,7 +44,7 @@ function parseLang(className?: string) {
   const [, filename] = className.match(/language\-(.+)/) ?? [];
   if (!filename) return { filename: undefined, lang: undefined };
   const lang = getLangFromFilename(filename);
-  const showFilename = filename !== lang;
+  const showFilename = !isLangAlias(filename, lang);
   return {
     filename: showFilename ? filename : undefined,
     showFilename,

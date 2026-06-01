@@ -74,3 +74,10 @@ export function getLangFromFilename(filename: string): CodeBlockLanguage {
   if (!extension) return "text";
   return langByExtension[extension] ?? "text";
 }
+
+export function isLangAlias(
+  filename: string,
+  lang: CodeBlockLanguage,
+): boolean {
+  return langByExtension[filename.toLowerCase()] === lang;
+}

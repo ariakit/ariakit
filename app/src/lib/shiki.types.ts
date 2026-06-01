@@ -7,6 +7,16 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { BundledLanguage } from "shiki";
-
-export type CodeBlockLanguage = BundledLanguage | "text";
+export type CodeBlockLanguage =
+  | "bash"
+  | "css"
+  | "html"
+  | "javascript"
+  | "js"
+  | "jsx"
+  | "json"
+  | "python"
+  | "text"
+  | "ts"
+  | "tsx"
+  | "typescript";
