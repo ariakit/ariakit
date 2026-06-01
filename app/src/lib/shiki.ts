@@ -31,6 +31,7 @@ const langByExtension = {
   javascript: "javascript",
   jsx: "jsx",
   json: "json",
+  markdown: "text",
   md: "text",
   mdx: "text",
   mjs: "javascript",
@@ -46,6 +47,11 @@ const langByExtension = {
   typescript: "typescript",
   vue: "html",
 } satisfies Record<string, CodeBlockLanguage>;
+
+function getMappedLang(map: Record<string, CodeBlockLanguage>, key: string) {
+  if (!Object.hasOwn(map, key)) return;
+  return map[key];
+}
 
 export const highlighter = await createHighlighterCore({
   themes: [
@@ -68,16 +74,16 @@ export const highlighter = await createHighlighterCore({
 
 export function getLangFromFilename(filename: string): CodeBlockLanguage {
   const normalizedFilename = filename.toLowerCase();
-  const lang = langByFilename[normalizedFilename];
+  const lang = getMappedLang(langByFilename, normalizedFilename);
   if (lang) return lang;
   const extension = normalizedFilename.split(".").pop();
   if (!extension) return "text";
-  return langByExtension[extension] ?? "text";
+  return getMappedLang(langByExtension, extension) ?? "text";
 }
 
 export function isLangAlias(
   filename: string,
   lang: CodeBlockLanguage,
 ): boolean {
-  return langByExtension[filename.toLowerCase()] === lang;
+  return getMappedLang(langByExtension, filename.toLowerCase()) === lang;
 }

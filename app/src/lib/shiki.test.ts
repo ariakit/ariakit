@@ -35,13 +35,21 @@ const cases = [
   ["index.cts", "typescript"],
   ["package.json", "json"],
   ["style.css", "css"],
+  ["index.htm", "html"],
   ["component.astro", "html"],
   ["component.vue", "html"],
   ["component.svelte", "html"],
   ["README.md", "text"],
+  ["markdown", "text"],
   ["index.unknown", "text"],
+  ["index.constructor", "text"],
+  ["constructor", "text"],
+  ["__proto__", "text"],
   ["Makefile", "text"],
   ["sh", "bash"],
+  ["npm", "bash"],
+  ["bun", "bash"],
+  ["yarn", "bash"],
   ["pnpm", "bash"],
 ] as const;
 
@@ -56,6 +64,9 @@ test("identifies language aliases separately from filenames", () => {
   expect(isLangAlias("bash", "bash")).toBe(true);
   expect(isLangAlias("typescript", "typescript")).toBe(true);
   expect(isLangAlias("md", "text")).toBe(true);
+  expect(isLangAlias("markdown", "text")).toBe(true);
+  expect(isLangAlias("npm", "bash")).toBe(false);
   expect(isLangAlias("script.sh", "bash")).toBe(false);
   expect(isLangAlias("README.md", "text")).toBe(false);
+  expect(isLangAlias("constructor", "text")).toBe(false);
 });
