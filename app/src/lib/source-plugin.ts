@@ -35,7 +35,10 @@ const APP_LIB_PATH = join(import.meta.dirname, "../examples/_lib");
 const NEXTJS_LIB_PATH = join(import.meta.dirname, "../../../nextjs/components");
 
 // Cache for package information to avoid repeated lookups
-const packageCache = new Map<string, any>();
+const packageCache = new Map<
+  string,
+  NonNullable<ReturnType<typeof readPackageUpSync>> | null
+>();
 
 // TypeScript compiler host for resolving modules
 const host = ts.createCompilerHost({});
@@ -73,13 +76,22 @@ function cacheKeyForFile(id: string, content: string) {
   return `${id}?h=${hashContent(content)}`;
 }
 
+function getPackage(source: string) {
+  const packageDir = dirname(source);
+  if (packageCache.has(packageDir)) {
+    return packageCache.get(packageDir) ?? null;
+  }
+  const result = readPackageUpSync({ cwd: packageDir }) ?? null;
+  packageCache.set(packageDir, result);
+  return result;
+}
+
 /**
  * Get the package version from the package.json
  */
 function getPackageVersion(source: string) {
-  const result = packageCache.get(source) || readPackageUpSync({ cwd: source });
+  const result = getPackage(source);
   if (!result) return "latest";
-  packageCache.set(source, result);
   const { version } = result.packageJson;
   if (!version) {
     console.log("No version found for", source);
@@ -91,9 +103,8 @@ function getPackageVersion(source: string) {
  * Get the package name from the package.json
  */
 function getPackageName(source: string) {
-  const result = packageCache.get(source) || readPackageUpSync({ cwd: source });
+  const result = getPackage(source);
   if (!result) return null;
-  packageCache.set(source, result);
   return result.packageJson.name;
 }
 

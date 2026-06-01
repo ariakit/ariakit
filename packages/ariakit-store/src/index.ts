@@ -18,6 +18,12 @@ type Sync<S, K extends keyof S> = (
 
 type StoreSetup = (callback: () => void | (() => void)) => () => void;
 type StoreInit = () => () => void;
+// These three are intentionally identical `Sync<S, K>` signatures; they differ
+// only in runtime timing semantics, not in types: subscribe fires after a
+// change; sync fires immediately on registration and synchronously on every
+// change; batch fires immediately on registration, then microtask-coalesced
+// on subsequent changes. See the storeSubscribe/storeSync/storeBatch
+// implementations in createStore.
 type StoreSubscribe<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 type StoreSync<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 type StoreBatch<S = State, K extends keyof S = keyof S> = Sync<S, K>;
@@ -125,7 +131,7 @@ export function createStore<S extends State>(
   const instances = new Set<symbol>();
 
   const setups = new Set<() => void | (() => void)>();
-  const syncListeners: ListenerGroup<S> = {
+  const syncListenerGroup: ListenerGroup<S> = {
     listeners: new Set(),
     disposables: new Map(),
     listenerKeys: new WeakMap(),
@@ -218,6 +224,12 @@ export function createStore<S extends State>(
     listener: Listener<S>,
     keys: Array<keyof S> | null | undefined,
   ) => {
+    // `keys` is a three-state sentinel: `undefined` means no prior registration
+    // was recorded for this listener, so there is nothing to remove (short
+    // circuit); `null` means an all-keys listener (delete from
+    // allKeysListeners); an array means a keyed listener (delete from
+    // listenersByKey). The undefined-vs-null distinction is load-bearing — the
+    // early return is not redundant with the falsy branch below.
     if (keys === undefined) return;
     if (keys) {
       deleteKeyedListener(group.listenersByKey, keys, listener);
@@ -226,10 +238,16 @@ export function createStore<S extends State>(
     }
   };
 
-  const sub = (
+  // Registers `listener` in `group` and returns its unsubscribe. Three jobs:
+  // (1) snapshot `keys` as a defensive copy (or null for an all-keys listener);
+  // (2) index the listener — re-registering the same listener first clears its
+  // previous index entries so a re-keyed listener is never left in a stale key
+  // bucket; (3) return a disposer that runs any pending cleanup and removes the
+  // listener from the set, the key index, and the disposables/keys maps.
+  const registerListener = (
     keys: Array<keyof S> | null,
     listener: Listener<S>,
-    group = syncListeners,
+    group = syncListenerGroup,
   ) => {
     const listenerKeysValue = keys ? [...keys] : null;
     if (group.listeners.has(listener)) {
@@ -258,19 +276,28 @@ export function createStore<S extends State>(
   };
 
   const storeSubscribe: StoreSubscribe<S> = (keys, listener) =>
-    sub(keys, listener);
+    registerListener(keys, listener);
+
+  // Records the cleanup returned by a listener's initial synchronous run, or
+  // clears any cleanup left from a previous registration of the same listener
+  // so it can't fire after the listener has been re-registered. Shared by
+  // storeSync and storeBatch, which differ only in their listener group.
+  const reconcileInitialCleanup = (
+    group: ListenerGroup<S>,
+    listener: Listener<S>,
+    cleanup: void | (() => void),
+  ) => {
+    if (cleanup) {
+      group.disposables.set(listener, cleanup);
+    } else {
+      group.disposables.delete(listener);
+    }
+  };
 
   const storeSync: StoreSync<S> = (keys, listener) => {
     const cleanup = listener(state, state);
-    // Always reconcile the disposables entry. Skipping the delete when the
-    // listener returned no cleanup would leave a stale cleanup from a
-    // previous registration of the same listener in place.
-    if (cleanup) {
-      syncListeners.disposables.set(listener, cleanup);
-    } else {
-      syncListeners.disposables.delete(listener);
-    }
-    return sub(keys, listener);
+    reconcileInitialCleanup(syncListenerGroup, listener, cleanup);
+    return registerListener(keys, listener);
   };
 
   const storeBatch: StoreBatch<S> = (keys, listener) => {
@@ -284,14 +311,14 @@ export function createStore<S extends State>(
       prevStateBatch = state;
     }
     const cleanup = listener(state, prevStateBatch);
-    if (cleanup) {
-      batchListenerGroup.disposables.set(listener, cleanup);
-    } else {
-      batchListenerGroup.disposables.delete(listener);
-    }
-    return sub(keys, listener, batchListenerGroup);
+    reconcileInitialCleanup(batchListenerGroup, listener, cleanup);
+    return registerListener(keys, listener, batchListenerGroup);
   };
 
+  // These reference `finalStore`, declared at the bottom of createStore. The
+  // forward reference is safe because these arrows only run after createStore
+  // returns, and it's intentional: the picked/omitted stores extend this store
+  // so they stay bidirectionally synced to it.
   const storePick: StorePick<S, ReadonlyArray<keyof S>> = (keys) =>
     createStore(_pick(state, keys), finalStore);
 
@@ -311,7 +338,10 @@ export function createStore<S extends State>(
       if (!keyedListeners) return;
       for (const listener of keyedListeners) {
         // Skip the cleanup lookup when no listener has registered a cleanup.
-        const cleanup = disposables.size && disposables.get(listener);
+        // The `.size` gate keeps an empty disposables map off this hot path.
+        const cleanup = disposables.size
+          ? disposables.get(listener)
+          : undefined;
         if (cleanup) cleanup();
         const result = listener(state, prevState);
         if (result) {
@@ -328,7 +358,9 @@ export function createStore<S extends State>(
         const keys = group.listenerKeys.get(listener);
         if (!hasUpdatedKey(keys, updatedKey)) continue;
       }
-      const cleanup = disposables.size && disposables.get(listener);
+      // Skip the cleanup lookup when no listener has registered a cleanup.
+      // The `.size` gate keeps an empty disposables map off this hot path.
+      const cleanup = disposables.size ? disposables.get(listener) : undefined;
       if (cleanup) cleanup();
       const result = listener(state, prevState);
       if (result) {
@@ -339,6 +371,10 @@ export function createStore<S extends State>(
     }
   };
 
+  // `fromStores` marks an update that originated from an extended parent store
+  // syncing its value down (set only by storeInit's sync wiring). Such updates
+  // must not be fanned back out to the parents, or the two stores would keep
+  // updating each other forever. Public callers always omit it.
   const setState: Store<S>["setState"] = (key, value, fromStores = false) => {
     if (!hasOwnProperty(state, key)) return;
 
@@ -350,6 +386,11 @@ export function createStore<S extends State>(
 
     if (nextValue === currentValue) return;
 
+    // Fan a locally-originated change out to extended parent stores so they
+    // stay in sync. Both short-circuits are load-bearing: `!fromStores`
+    // prevents the parent/child sync loop (storeInit pushes parent updates
+    // down with `fromStores`), and `stores.length` skips the iteration
+    // entirely on the common store-without-parents path.
     if (!fromStores && stores.length) {
       for (const store of stores) {
         store?.setState?.(key, nextValue);
@@ -366,7 +407,7 @@ export function createStore<S extends State>(
     const wasInDispatch = inDispatch;
     inDispatch = true;
     try {
-      runListeners(syncListeners, prevState, key);
+      runListeners(syncListenerGroup, prevState, key);
     } finally {
       inDispatch = wasInDispatch;
     }
@@ -530,7 +571,7 @@ export function pick<
  * Creates a new store with a subset of the current store state and keeps them
  * in sync.
  */
-export function pick(store: Store, ...args: Parameters<StorePick>) {
+export function pick(store?: Store, ...args: Parameters<StorePick>) {
   if (!store) return;
   return getInternal(store, "pick")(...args);
 }

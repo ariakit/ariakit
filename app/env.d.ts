@@ -49,6 +49,10 @@ declare interface UserPrivateMetadata {
   currency?: string | null;
 }
 
+declare interface OrganizationPrivateMetadata {
+  stripeCheckoutSessionId?: string;
+}
+
 declare interface CustomJwtSessionClaims {
   publicMetadata: UserPublicMetadata;
   teams: Record<string, string>;

@@ -3,7 +3,7 @@
  * @module Event utilities
  */
 
-import { contains } from "./dom.ts";
+import { contains, isElement, isNode } from "./dom.ts";
 import { isApple } from "./platform.ts";
 
 /**
@@ -12,10 +12,15 @@ import { isApple } from "./platform.ts";
 export function isPortalEvent(
   event: Pick<Event, "currentTarget" | "target">,
 ): boolean {
-  return Boolean(
-    event.currentTarget &&
-    !contains(event.currentTarget as Node, event.target as Element),
-  );
+  const { currentTarget, target } = event;
+  if (!currentTarget) return false;
+  // A non-node target (such as `window` on a programmatically dispatched event)
+  // can't be contained by `currentTarget`, so treat it the same as a target
+  // rendered outside of it (e.g. through a portal) instead of letting
+  // `contains` throw. `isNode` rather than `isElement` keeps the original
+  // behavior for non-element nodes that `contains` handles fine.
+  if (!isNode(target)) return true;
+  return !contains(currentTarget as Node, target);
 }
 
 /**
@@ -27,26 +32,29 @@ export function isSelfTarget(
   return event.target === event.currentTarget;
 }
 
+function isActivatableNavigationTarget(element: EventTarget | null) {
+  if (!isElement(element)) return false;
+  const target = element as
+    | HTMLAnchorElement
+    | HTMLButtonElement
+    | HTMLInputElement;
+  const tagName = target.tagName.toLowerCase();
+  if (tagName === "a") return true;
+  if (tagName === "button" && target.type === "submit") return true;
+  if (tagName === "input" && target.type === "submit") return true;
+  return false;
+}
+
 /**
  * Checks whether the user event is triggering a page navigation in a new tab.
  */
 export function isOpeningInNewTab(
   event: Pick<MouseEvent, "currentTarget" | "metaKey" | "ctrlKey">,
 ) {
-  const element = event.currentTarget as
-    | HTMLAnchorElement
-    | HTMLButtonElement
-    | HTMLInputElement
-    | null;
-  if (!element) return false;
   const isAppleDevice = isApple();
   if (isAppleDevice && !event.metaKey) return false;
   if (!isAppleDevice && !event.ctrlKey) return false;
-  const tagName = element.tagName.toLowerCase();
-  if (tagName === "a") return true;
-  if (tagName === "button" && element.type === "submit") return true;
-  if (tagName === "input" && element.type === "submit") return true;
-  return false;
+  return isActivatableNavigationTarget(event.currentTarget);
 }
 
 /**
@@ -55,18 +63,8 @@ export function isOpeningInNewTab(
 export function isDownloading(
   event: Pick<MouseEvent, "altKey" | "currentTarget">,
 ) {
-  const element = event.currentTarget as
-    | HTMLAnchorElement
-    | HTMLButtonElement
-    | HTMLInputElement
-    | null;
-  if (!element) return false;
-  const tagName = element.tagName.toLowerCase();
   if (!event.altKey) return false;
-  if (tagName === "a") return true;
-  if (tagName === "button" && element.type === "submit") return true;
-  if (tagName === "input" && element.type === "submit") return true;
-  return false;
+  return isActivatableNavigationTarget(event.currentTarget);
 }
 
 /**
@@ -155,8 +153,12 @@ export function isFocusEventOutside(
   container?: Element | null,
 ) {
   const containerElement = container || (event.currentTarget as Element);
-  const relatedTarget = event.relatedTarget as HTMLElement | null;
-  return !relatedTarget || !contains(containerElement, relatedTarget);
+  const relatedTarget = event.relatedTarget;
+  // A non-node relatedTarget (such as `window` on a programmatically dispatched
+  // event) can't be inside the container, so it counts as outside instead of
+  // letting `contains` throw. `isNode` rather than `isElement` keeps the
+  // original behavior for non-element nodes that `contains` handles fine.
+  return !isNode(relatedTarget) || !contains(containerElement, relatedTarget);
 }
 
 /**

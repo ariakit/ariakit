@@ -160,11 +160,16 @@ function getShiftMiddleware(
 
 function getSizeMiddleware(
   props: Pick<PopoverOptions, "sameWidth" | "fitViewport" | "overflowPadding">,
+  shouldCancel?: () => boolean,
 ) {
   // https://floating-ui.com/docs/size
   return size({
     padding: props.overflowPadding,
     apply({ elements, availableWidth, availableHeight, rects }) {
+      // The size middleware runs during computePosition, before the awaited
+      // call resolves. Ignore stale runs before mutating sizing styles.
+      if (shouldCancel?.()) return;
+
       const wrapper = elements.floating;
       const referenceWidth = Math.round(rects.reference.width);
 
@@ -281,7 +286,18 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
       const anchor = getAnchorElement(anchorElement, getAnchorRectProp);
 
+      // Each effect run owns this flag. Cleanup marks stale runs so in-flight
+      // async positioning work can skip state and style writes.
+      let canceled = false;
+
+      const shouldCancelUpdate = () => {
+        if (canceled) return true;
+        if (!popoverElement.isConnected) return true;
+        return false;
+      };
+
       const updatePosition = async () => {
+        if (shouldCancelUpdate()) return;
         if (!mounted) return;
 
         if (!arrowElement) {
@@ -296,11 +312,14 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           getFlipMiddleware({ flip, overflowPadding }),
           getShiftMiddleware({ slide, shift, overlap, overflowPadding }),
           getArrowMiddleware(arrow, { arrowPadding }),
-          getSizeMiddleware({
-            sameWidth,
-            fitViewport,
-            overflowPadding,
-          }),
+          getSizeMiddleware(
+            {
+              sameWidth,
+              fitViewport,
+              overflowPadding,
+            },
+            shouldCancelUpdate,
+          ),
         ];
 
         // https://floating-ui.com/docs/computePosition
@@ -309,6 +328,10 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           strategy: fixed ? "fixed" : "absolute",
           middleware,
         });
+
+        // autoUpdate cleanup doesn't abort an in-flight computePosition call.
+        // Check again before writing state or styles from an obsolete run.
+        if (shouldCancelUpdate()) return;
 
         store?.setState("currentPlacement", pos.placement);
         setPositioned(true);
@@ -354,8 +377,13 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       };
 
       const update = async () => {
+        if (shouldCancelUpdate()) return;
+
         if (hasCustomUpdatePosition) {
           await updatePositionProp({ updatePosition });
+          // User callbacks may keep awaiting after updatePosition has run, so
+          // make sure this effect is still current before marking it ready.
+          if (shouldCancelUpdate()) return;
           setPositioned(true);
         } else {
           await updatePosition();
@@ -369,6 +397,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       });
 
       return () => {
+        canceled = true;
         setPositioned(false);
         cancelAutoUpdate();
       };

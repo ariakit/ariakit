@@ -62,9 +62,10 @@ function findPushButton(
  * const values = useStoreState(store, "values");
  *
  * <Form store={store}>
- *   {values.languages.map((_, i) => (
- *     <FormInput key={i} name={store.names.languages[i]} />
- *   ))}
+ *   {values.languages.map((language, i) => {
+ *     if (language == null) return null;
+ *     return <FormInput key={i} name={store.names.languages[i]} />;
+ *   })}
  *   <Role {...props}>Remove first language</Role>
  * </Form>
  * ```
@@ -136,7 +137,7 @@ export const useFormRemove = createHook<TagName, FormRemoveOptions>(
  * prop to `false`.
  * @see https://ariakit.com/components/form
  * @example
- * ```jsx {13}
+ * ```jsx {15}
  * const form = useFormStore({
  *   defaultValues: {
  *     languages: ["JavaScript", "PHP"],
@@ -146,12 +147,15 @@ export const useFormRemove = createHook<TagName, FormRemoveOptions>(
  * const values = useStoreState(form, "values");
  *
  * <Form store={form}>
- *   {values.languages.map((_, i) => (
- *     <div key={i}>
- *       <FormInput name={form.names.languages[i]} />
- *       <FormRemove name={form.names.languages} index={i} />
- *     </div>
- *   ))}
+ *   {values.languages.map((language, i) => {
+ *     if (language == null) return null;
+ *     return (
+ *       <div key={i}>
+ *         <FormInput name={form.names.languages[i]} />
+ *         <FormRemove name={form.names.languages} index={i} />
+ *       </div>
+ *     );
+ *   })}
  * </Form>
  * ```
  */

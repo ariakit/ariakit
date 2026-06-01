@@ -23,7 +23,7 @@ function inSnapshot(id: string, element: Element) {
   } while (true);
 }
 
-export function isValidElement(
+function shouldWalkElement(
   id: string,
   element: Element,
   ignoredElements: Elements,
@@ -57,7 +57,7 @@ export function walkTreeOutside(
       ancestorCallback?.(element.parentElement, originalElement);
       if (!hasAncestorAlready) {
         for (const child of element.parentElement.children) {
-          if (isValidElement(id, child, elements)) {
+          if (shouldWalkElement(id, child, elements)) {
             callback(child, originalElement);
           }
         }

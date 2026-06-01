@@ -4,9 +4,6 @@ import type { NextConfig } from "next";
 const config: NextConfig = {
   reactCompiler: true,
   typedRoutes: true,
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   cacheComponents: true,
 
   // Allow cross-origin iframe embedding from the Astro app

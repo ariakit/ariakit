@@ -21,15 +21,14 @@ function NativeButton({
   ...props
 }: NativeButtonProps) {
   const { pending } = useFormStatus();
-  if (accessibleWhenDisabled) {
-    props["aria-disabled"] = pending;
-  } else {
-    props.disabled = pending;
-  }
+  const disabledProps = accessibleWhenDisabled
+    ? { "aria-disabled": pending }
+    : { disabled: pending };
   return (
     <button
       type="submit"
       {...props}
+      {...disabledProps}
       onClick={(event) => {
         if (accessibleWhenDisabled && pending) {
           event.preventDefault();

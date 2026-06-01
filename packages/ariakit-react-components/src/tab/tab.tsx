@@ -76,10 +76,7 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
     store?.setSelectedId(id);
   });
 
-  const panelId = useStoreState(
-    store.panels,
-    (state) => state.items.find((item) => item.tabId === id)?.id,
-  );
+  const panelId = useStoreState(store.panels, () => store.panel(id)?.id);
   const shouldRegisterItem = defaultId ? props.shouldRegisterItem : false;
 
   const isActive = useStoreState(

@@ -1,6 +1,5 @@
 import type { StringLike } from "@ariakit/components/form/types";
 import {
-  useId,
   useMergeRefs,
   createElement,
   createHook,
@@ -8,12 +7,10 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
-import { useCallback, useRef } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
-import { useFormContext } from "./form-context.tsx";
+import { useFormItem } from "./form-context.tsx";
 import type { FormStore } from "./form-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -41,34 +38,19 @@ export const useFormDescription = createHook<TagName, FormDescriptionOptions>(
     getItem: getItemProp,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
-
-    invariant(
+    const {
+      store: form,
+      id,
+      ref,
+      getItem,
+    } = useFormItem<HTMLType>({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "FormDescription must be wrapped in a Form component.",
-    );
-
-    const id = useId(props.id);
-    const ref = useRef<HTMLType>(null);
-    const name = String(nameProp);
-
-    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
-      (item) => {
-        const nextItem = {
-          ...item,
-          id: id || item.id,
-          name,
-          type: "description",
-        };
-        if (getItemProp) {
-          return getItemProp(nextItem);
-        }
-        return nextItem;
-      },
-      [id, name, getItemProp],
-    );
+      name: nameProp,
+      id: props.id,
+      type: "description",
+      getItem: getItemProp,
+      component: "FormDescription",
+    });
 
     props = {
       ...props,
@@ -76,7 +58,7 @@ export const useFormDescription = createHook<TagName, FormDescriptionOptions>(
       ref: useMergeRefs(ref, props.ref),
     };
 
-    props = useCollectionItem({ store, ...props, getItem });
+    props = useCollectionItem({ store: form, ...props, getItem });
 
     return props;
   },

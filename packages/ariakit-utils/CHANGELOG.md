@@ -1,5 +1,9 @@
 # @ariakit/utils
 
+## 0.1.2
+
+- Added the `isElement` and `isNode` utilities that check whether an `EventTarget` is an element or a node.
+
 ## 0.1.1
 
 - Release artifacts now include npm trusted publishing provenance.

@@ -7,7 +7,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
-import { useContext, useMemo, useRef } from "react";
+import { useContext, useRef } from "react";
 import { HeadingContext } from "./heading-context.tsx";
 import type { HeadingLevels } from "./utils.ts";
 
@@ -33,10 +33,7 @@ export const useHeading = createHook<TagName, HeadingOptions>(
     const level: HeadingLevels = useContext(HeadingContext) || 1;
     const Element = `h${level}` as const;
     const tagName = useTagName(ref, Element);
-    const isNativeHeading = useMemo(
-      () => !!tagName && /^h\d$/.test(tagName),
-      [tagName],
-    );
+    const isNativeHeading = !!tagName && /^h\d$/.test(tagName);
 
     props = {
       render: <Element />,

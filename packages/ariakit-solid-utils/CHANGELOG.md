@@ -1,5 +1,10 @@
 # @ariakit/solid-utils
 
+## 0.1.2
+
+- Fixed runtime `process.env.NODE_ENV` checks in published package output, including test-only behavior and development warnings.
+- Updated dependencies: `@ariakit/utils@0.1.2`
+
 ## 0.1.1
 
 - Release artifacts now include npm trusted publishing provenance.

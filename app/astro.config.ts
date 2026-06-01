@@ -10,7 +10,7 @@
 import { join } from "node:path";
 import { loadEnvFile } from "node:process";
 import cloudflare from "@astrojs/cloudflare";
-import { rehypeHeadingIds } from "@astrojs/markdown-remark";
+import { rehypeHeadingIds, unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
@@ -19,6 +19,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
+import { previewConfig } from "./src/lib/preview-config.ts";
+import { previewIntegration } from "./src/lib/preview-integration.ts";
 import {
   rehypeAdmonitions,
   rehypeAsTagName,
@@ -66,13 +68,7 @@ export default defineConfig({
 
   markdown: {
     syntaxHighlight: false,
-  },
-
-  integrations: [
-    react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
-    solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
-    mdx({
-      extendMarkdownConfig: true,
+    processor: unified({
       rehypePlugins: [
         rehypeHeadingIds,
         rehypePreviousCode,
@@ -84,6 +80,13 @@ export default defineConfig({
         ],
       ],
     }),
+  },
+
+  integrations: [
+    previewIntegration(previewConfig),
+    react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
+    solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
+    mdx({ extendMarkdownConfig: true }),
     !hasClerk
       ? dummyClerkIntegration()
       : clerk({

@@ -123,7 +123,7 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       return () => {
         element.removeEventListener("scroll", onScroll);
       };
-    }, [scrollRestoration, mounted, tabId, getScrollElement, store]);
+    }, [scrollRestoration, mounted, tabId, getScrollElement]);
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 

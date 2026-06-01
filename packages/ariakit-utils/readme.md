@@ -41,6 +41,8 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`getWindow`](#getwindow)
   - [`getActiveElement`](#getactiveelement)
   - [`contains`](#contains)
+  - [`isElement`](#iselement)
+  - [`isNode`](#isnode)
   - [`isFrame`](#isframe)
   - [`isButton`](#isbutton)
   - [`isVisible`](#isvisible)
@@ -301,6 +303,52 @@ Example:
 
 ```ts
 contains(document.getElementById("parent"), document.getElementById("child"));
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `isElement`
+
+```ts
+function isElement(target: EventTarget | null | undefined): target is Element;
+```
+
+Checks whether the given event target is an element.
+
+`event.target` and `event.relatedTarget` are `EventTarget`s, which aren't necessarily elements — for example `window` or an `XMLHttpRequest` when an event is dispatched programmatically. Calling `Element`-only methods such as `hasAttribute` on those throws, so guard with this before treating them as elements. When you only need a `Node` — for example to call `contains` — use `isNode` instead.
+
+It tests `nodeType` rather than `instanceof Element` so that elements coming from same-origin child frames (which `addGlobalEventListener` also listens on) aren't wrongly rejected for belonging to a different realm.
+
+Example:
+
+```ts
+if (isElement(event.target)) {
+  event.target.hasAttribute("data-active");
+}
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `isNode`
+
+```ts
+function isNode(target: EventTarget | null | undefined): target is Node;
+```
+
+Checks whether the given event target is a node.
+
+Like `isElement`, but only requires the target to be a `Node` rather than an element — useful before calling `contains`, which accepts any node. It still rejects non-node `EventTarget`s (such as `window` or an `XMLHttpRequest`) that would make `contains` throw.
+
+Example:
+
+```ts
+if (isNode(event.target)) {
+  contains(element, event.target);
+}
 ```
 
 <div align="right">
@@ -1000,7 +1048,7 @@ Returns the previous tabbable element in `container`.
 
 ```ts
 function getPreviousTabbable(
-  fallbackToFirst?: boolean,
+  fallbackToLast?: boolean,
   fallbackToFocusable?: boolean,
 ): HTMLElement | null;
 ```

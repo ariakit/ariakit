@@ -3,7 +3,6 @@ import { useStoreState } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
-  useId,
   useMergeRefs,
   createElement,
   createHook,
@@ -11,13 +10,12 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getDocument, cx, invariant } from "@ariakit/utils";
+import { getDocument, cx } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, FocusEvent, RefObject } from "react";
-import { useCallback, useRef } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
-import { useFormContext } from "./form-context.tsx";
+import { useFormItem } from "./form-context.tsx";
 import type { FormStore } from "./form-store.ts";
 
 const TagName = "input" satisfies ElementType;
@@ -77,39 +75,30 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
     touchOnBlur = true,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
-
-    invariant(
+    const {
+      store: form,
+      name,
+      id,
+      ref,
+      getItem,
+    } = useFormItem<HTMLType>({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "FormControl must be wrapped in a Form component.",
-    );
+      name: nameProp,
+      id: props.id,
+      type: "field",
+      getItem: getItemProp,
+      component: "FormControl",
+    });
 
-    const name = String(nameProp);
-    const id = useId(props.id);
-    const ref = useRef<HTMLType>(null);
-
-    store.useValidate(async () => {
+    form.useValidate(async () => {
       const element = getNamedElement(ref, name);
       if (!element) return;
       // Flush microtasks to make sure the validity state is up to date
       await Promise.resolve();
       if ("validity" in element && !element.validity.valid) {
-        store?.setError(name, element.validationMessage);
+        form.setError(name, element.validationMessage);
       }
     });
-
-    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
-      (item) => {
-        const nextItem = { ...item, id: id || item.id, name, type: "field" };
-        if (getItemProp) {
-          return getItemProp(nextItem);
-        }
-        return nextItem;
-      },
-      [id, name, getItemProp],
-    );
 
     const onBlurProp = props.onBlur;
     const touchOnBlurProp = useBooleanEvent(touchOnBlur);
@@ -118,12 +107,12 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
       if (!touchOnBlurProp(event)) return;
-      store?.setFieldTouched(name, true);
+      form.setFieldTouched(name, true);
     });
 
-    const label = useItem(store, name, "label");
-    const error = useItem(store, name, "error");
-    const description = useItem(store, name, "description");
+    const label = useItem(form, name, "label");
+    const error = useItem(form, name, "error");
+    const description = useItem(form, name, "description");
     const describedBy = cx(
       error?.id,
       description?.id,
@@ -131,8 +120,8 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
     );
 
     const invalid = useStoreState(
-      store,
-      () => !!store?.getError(name) && store.getFieldTouched(name),
+      form,
+      () => !!form.getError(name) && form.getFieldTouched(name),
     );
 
     props = {
@@ -145,7 +134,12 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
       onBlur,
     };
 
-    props = useCollectionItem<TagName>({ store, ...props, name, getItem });
+    props = useCollectionItem<TagName>({
+      store: form,
+      ...props,
+      name,
+      getItem,
+    });
 
     return props;
   },

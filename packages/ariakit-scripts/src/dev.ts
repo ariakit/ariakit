@@ -1,17 +1,13 @@
 import { spawn } from "node:child_process";
-import { readFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { createServer } from "node:net";
-import { isAbsolute, join, relative, sep } from "node:path";
+import { isAbsolute, join, relative } from "node:path";
 import { watch } from "chokidar";
 import { cleanPackage } from "./build.ts";
+import { normalizePath, readPackageJson } from "./utils.ts";
 
 interface DevOptions {
   clean?: boolean;
-}
-
-interface PackageJson {
-  scripts?: Record<string, string>;
 }
 
 interface CleanPackage {
@@ -20,14 +16,6 @@ interface CleanPackage {
 }
 
 const packageChangeGlobs = ["packages/*/package.json", "packages/*/src/**"];
-
-function normalizePath(path: string) {
-  return path.split(sep).join("/");
-}
-
-function readPackageJson(rootPath: string): PackageJson {
-  return JSON.parse(readFileSync(join(rootPath, "package.json"), "utf-8"));
-}
 
 function getCleanPackage(rootPath: string): CleanPackage | undefined {
   try {

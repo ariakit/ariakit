@@ -6,7 +6,12 @@ import {
   writeFileSync,
 } from "node:fs";
 import path from "node:path";
-import { mergeScriptProfiles, mergeSelectorProfiles } from "./perf.ts";
+import {
+  computeMedianMetrics,
+  median,
+  mergeScriptProfiles,
+  mergeSelectorProfiles,
+} from "./perf.ts";
 import type {
   PerfMetrics,
   PerfProfiles,
@@ -14,6 +19,7 @@ import type {
   PerfScriptProfileEntry,
   PerfSelectorProfileEntry,
 } from "./perf.ts";
+import { escapeRegExp } from "./regexp.ts";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const PROFILE_LIMIT = 10;
@@ -194,10 +200,6 @@ function readJsonFile(filePath: string): unknown {
   }
 }
 
-function escapeRegExp(value: string): string {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
 function getNumber(value: unknown): number {
   if (typeof value !== "number") return 0;
   if (!Number.isFinite(value)) return 0;
@@ -351,30 +353,6 @@ function loadRounds(
     }
   }
   return rounds;
-}
-
-function median(values: number[]): number {
-  if (values.length === 0) return 0;
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  const midValue = sorted[mid];
-  if (midValue == null) return 0;
-  if (sorted.length % 2 !== 0) return midValue;
-  const prevValue = sorted[mid - 1];
-  if (prevValue == null) return midValue;
-  return (prevValue + midValue) / 2;
-}
-
-function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
-  return {
-    scripting: median(all.map((m) => m.scripting)),
-    layout: median(all.map((m) => m.layout)),
-    styleRecalc: median(all.map((m) => m.styleRecalc)),
-    painting: median(all.map((m) => m.painting)),
-    rendering: median(all.map((m) => m.rendering)),
-    inp: median(all.map((m) => m.inp)),
-    total: median(all.map((m) => m.total)),
-  };
 }
 
 function mergeProfiles(results: PerfResult[]): PerfProfiles | undefined {
@@ -700,6 +678,20 @@ function rowKey(row: ComparisonRow): string {
   return `${row.testFile}::${row.label}`;
 }
 
+function groupRowsByKey(rows: ComparisonRow[]) {
+  const grouped = new Map<string, ComparisonRow[]>();
+  for (const row of rows) {
+    const key = rowKey(row);
+    const rowsForKey = grouped.get(key);
+    if (rowsForKey) {
+      rowsForKey.push(row);
+    } else {
+      grouped.set(key, [row]);
+    }
+  }
+  return grouped;
+}
+
 function formatRoundList(rounds: number[]): string {
   if (rounds.length === 0) return "-";
   return rounds.join(", ");
@@ -740,16 +732,20 @@ function sortEntriesByFile<T>(entries: Iterable<[string, T]>) {
 }
 
 function formatNodeComparisonTables(
-  rows: ComparisonRow[],
+  rowsByKey: Map<string, ComparisonRow[]>,
   keys: string[],
   options: PerfCompareOptions,
 ) {
   const lines: string[] = [];
-  const keySet = new Set(keys);
-  const visibleRows = rows.filter((row) => {
-    if (row.metric !== "total") return false;
-    return keySet.has(rowKey(row));
-  });
+  const visibleRows: ComparisonRow[] = [];
+  for (const key of keys) {
+    const testRows = rowsByKey.get(key);
+    if (!testRows) continue;
+    for (const row of testRows) {
+      if (row.metric !== "total") continue;
+      visibleRows.push(row);
+    }
+  }
   for (const [file, fileRows] of sortEntriesByFile(
     groupRowsByFile(visibleRows),
   )) {
@@ -792,12 +788,12 @@ function formatNodeResultTables(
 }
 
 function formatSummaryTable(
-  rows: ComparisonRow[],
+  rowsByKey: Map<string, ComparisonRow[]>,
   keys: string[],
   options: PerfCompareOptions,
 ): string[] {
   if (options.node) {
-    return formatNodeComparisonTables(rows, keys, options);
+    return formatNodeComparisonTables(rowsByKey, keys, options);
   }
   const lines: string[] = [];
   const primaryMetrics = getPrimaryMetrics(options);
@@ -809,7 +805,7 @@ function formatSummaryTable(
   lines.push(`| ${headers.map(() => "---").join(" | ")} |`);
 
   for (const key of keys) {
-    const testRows = rows.filter((r) => rowKey(r) === key);
+    const testRows = rowsByKey.get(key) ?? [];
     const label = testRows[0]?.label ?? key;
     const cells: string[] = [label];
     for (const metric of primaryMetrics) {
@@ -907,19 +903,26 @@ function formatProfileModeWarning(mismatches: ProfileModeMismatch[]): string[] {
   return lines;
 }
 
-function formatDetailedBreakdown(
-  rows: ComparisonRow[],
-  keys: string[],
-  currentByKey: Map<string, AggregatedPerfResult>,
-  options: PerfCompareOptions,
-): string[] {
+interface FormatDetailedBreakdownParams {
+  rowsByKey: Map<string, ComparisonRow[]>;
+  keys: string[];
+  currentByKey: Map<string, AggregatedPerfResult>;
+  options: PerfCompareOptions;
+}
+
+function formatDetailedBreakdown({
+  rowsByKey,
+  keys,
+  currentByKey,
+  options,
+}: FormatDetailedBreakdownParams): string[] {
   if (options.node) {
-    return formatNodeComparisonTables(rows, keys, options);
+    return formatNodeComparisonTables(rowsByKey, keys, options);
   }
   const lines: string[] = [];
   const allMetrics = getAllMetrics(options);
   for (const key of keys) {
-    const testRows = rows.filter((r) => rowKey(r) === key);
+    const testRows = rowsByKey.get(key) ?? [];
     const label = testRows[0]?.label ?? key;
     lines.push(`### ${label}`);
     lines.push("");
@@ -966,10 +969,12 @@ function formatMarkdown(
     currentByKey.set(result.key, result);
   }
 
-  const allKeys = [...new Set(rows.map((r) => rowKey(r)))];
-  const significantKeys = allKeys.filter((key) =>
-    rows.some((r) => rowKey(r) === key && r.significant),
-  );
+  const rowsByKey = groupRowsByKey(rows);
+  const allKeys = [...rowsByKey.keys()];
+  const significantKeys = allKeys.filter((key) => {
+    const testRows = rowsByKey.get(key);
+    return testRows?.some((row) => row.significant) ?? false;
+  });
 
   const totalTests =
     allKeys.length +
@@ -984,7 +989,7 @@ function formatMarkdown(
   lines.push("");
 
   if (hasSignificantChanges) {
-    lines.push(...formatSummaryTable(rows, significantKeys, options));
+    lines.push(...formatSummaryTable(rowsByKey, significantKeys, options));
   } else if (rows.length === 0 && newTests.length > 0) {
     lines.push("No baseline results available for comparison.");
   } else if (rows.length === 0 && unpairedTests.length > 0) {
@@ -1021,7 +1026,14 @@ function formatMarkdown(
     `<summary>Full breakdown (${totalTests} ${resultsName})</summary>`,
   );
   lines.push("");
-  lines.push(...formatDetailedBreakdown(rows, allKeys, currentByKey, options));
+  lines.push(
+    ...formatDetailedBreakdown({
+      rowsByKey,
+      keys: allKeys,
+      currentByKey,
+      options,
+    }),
+  );
 
   if (newTests.length > 0) {
     const primaryMetrics = getPrimaryMetrics(options);

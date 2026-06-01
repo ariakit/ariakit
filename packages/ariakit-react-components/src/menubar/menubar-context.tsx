@@ -1,5 +1,4 @@
 import { createStoreContext } from "@ariakit/react-utils";
-import { createContext } from "react";
 import {
   CompositeContextProvider,
   CompositeScopedContextProvider,
@@ -33,7 +32,3 @@ export const useMenubarProviderContext = menubar.useProviderContext;
 export const MenubarContextProvider = menubar.ContextProvider;
 
 export const MenubarScopedContextProvider = menubar.ScopedContextProvider;
-
-export const MenuItemCheckedContext = createContext<boolean | undefined>(
-  undefined,
-);

@@ -5,6 +5,7 @@ import {
   getDocument,
   getWindow,
   addGlobalEventListener,
+  isElement,
 } from "@ariakit/utils";
 import type { MutableRefObject } from "react";
 import { useEffect, useRef } from "react";
@@ -78,9 +79,9 @@ function useEventOutside({
     if (!open) return;
     const onEvent = (event: Event) => {
       const { contentElement, disclosureElement } = store.getState();
-      const target = event.target as Element | null;
+      const target = event.target;
       if (!contentElement) return;
-      if (!target) return;
+      if (!isElement(target)) return;
       // When an element is unmounted right after it receives focus, the focus
       // event is triggered after that, when the element isn't part of the
       // current document anymore. We just ignore it.

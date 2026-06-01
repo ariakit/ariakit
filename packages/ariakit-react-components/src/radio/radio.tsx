@@ -73,7 +73,7 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   // Use the store's id as the default name to ensure radios in different
   // groups have unique names. This prevents the browser from treating all
   // radios as a single group. See https://github.com/ariakit/ariakit/issues/3833
-  const storeId = useStoreState(store, (state) => state?.id);
+  const storeId = useStoreState(store, "id");
   const name = nameProp ?? storeId;
 
   // When the radio store has a default value, we need to update the active id

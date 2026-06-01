@@ -17,9 +17,9 @@
     "react18": "ariakit react18",
     "test": "vitest",
     "bench": "vitest bench --config vitest.bench.config.ts",
-    "test-react-18": "pnpm react18 test",
+    "test-react": "ARIAKIT_TEST_LOADER=react vitest",
+    "test-react18": "pnpm react18 test-react",
     "test-solid": "ARIAKIT_TEST_LOADER=solid vitest",
-    "test-watch": "vitest watch",
     "playwright": "playwright test",
     "test-browser": "pnpm run playwright --project=chrome --project=safari --project=firefox",
     "test-browser-solid": "cross-env ARIAKIT_TEST_LOADER=solid pnpm run playwright --project=chrome --project=safari --project=firefox",
@@ -94,7 +94,7 @@
     "autoprefixer": "10.5.0",
     "chalk": "5.6.2",
     "chokidar": "5.0.0",
-    "concurrently": "9.2.1",
+    "concurrently": "10.0.0",
     "cross-env": "10.1.0",
     "cross-spawn": "7.0.6",
     "esbuild-plugin-solid": "0.6.0",
@@ -105,8 +105,8 @@
     "lint-staged": "17.0.5",
     "next": "16.2.6",
     "open-cli": "9.0.0",
-    "oxfmt": "0.51.0",
-    "oxlint": "1.66.0",
+    "oxfmt": "0.52.0",
+    "oxlint": "1.67.0",
     "oxlint-tsgolint": "0.23.0",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
@@ -126,7 +126,7 @@
     "vite-plugin-solid": "2.11.12",
     "vitest": "4.1.7",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.94.0"
+    "wrangler": "4.95.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
@@ -135,5 +135,5 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@11.3.0"
+  "packageManager": "pnpm@11.4.0"
 }

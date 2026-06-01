@@ -22,9 +22,9 @@ export function useMenubarStoreProps<T extends Core.MenubarStore>(
  * @see https://ariakit.com/components/menubar
  * @example
  * ```jsx
- * const menu = useMenubarStore();
+ * const menubar = useMenubarStore();
  *
- * <Menubar store={menu} />
+ * <Menubar store={menubar} />
  * ```
  */
 export function useMenubarStore(props: MenubarStoreProps = {}): MenubarStore {
