@@ -7,10 +7,9 @@ import {
 } from "@ariakit/utils";
 import type { Locator, Page, PageScreenshotOptions } from "@playwright/test";
 import { test as base } from "@playwright/test";
-import type { AllowedTestLoader } from "../vitest.config.ts";
+import { getTestLoader } from "../test-loader.ts";
 
-const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
-  "react") as AllowedTestLoader;
+const LOADER = getTestLoader("react");
 
 export function preview(name: string) {
   switch (LOADER) {

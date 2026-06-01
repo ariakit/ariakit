@@ -386,9 +386,9 @@ function getReact18Command(rootPath: string, args: string[]): React18Command {
       args: ["run", "test", ...commandArgs],
     };
   }
-  // The `test-react-18` script delegates to `react18 test-react`. Preserve the
+  // The `test-react18` script delegates to `react18 test-react`. Preserve the
   // narrowed React test suite when users invoke it through the wrapper.
-  if (command === "test-react-18") {
+  if (command === "test-react18") {
     log(`Mapping ${command} to test-react to avoid recursion`);
     return {
       bin: "pnpm",

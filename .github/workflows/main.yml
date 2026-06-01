@@ -55,12 +55,27 @@ jobs:
         run: pnpm run build
 
   test:
-    name: Test (${{ matrix.shard }})
+    name: "Test${{ matrix.name && format(' {0}', matrix.name) || '' }}${{ matrix.shard && format(' ({0})', matrix.shard) || '' }}"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        shard: ["1/2", "2/2"]
+        include:
+          - script: test
+          - name: React
+            script: test-react
+            shard: "1/2"
+          - name: React
+            script: test-react
+            shard: "2/2"
+          - name: React 18
+            script: test-react18
+            shard: "1/2"
+          - name: React 18
+            script: test-react18
+            shard: "2/2"
+          - name: Solid
+            script: test-solid
 
     steps:
       - name: Checkout repository
@@ -70,25 +85,15 @@ jobs:
         uses: ./.github/workflows/setup
 
       - name: Test
-        run: pnpm test --shard ${{ matrix.shard }}
-
-  test-react-18:
-    name: Test React 18 (${{ matrix.shard }})
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: ["1/2", "2/2"]
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Set up environment
-        uses: ./.github/workflows/setup
-
-      - name: Test
-        run: pnpm test-react-18 --shard ${{ matrix.shard }}
+        env:
+          TEST_SCRIPT: ${{ matrix.script }}
+          TEST_SHARD: ${{ matrix.shard }}
+        run: |
+          if [ -n "$TEST_SHARD" ]; then
+            pnpm "$TEST_SCRIPT" --shard "$TEST_SHARD"
+          else
+            pnpm "$TEST_SCRIPT"
+          fi
 
   website:
     name: Build website

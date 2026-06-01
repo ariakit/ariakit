@@ -1,9 +1,12 @@
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import reactPlugin from "@vitejs/plugin-react";
+import { globSync } from "glob";
 import type { PluginOption } from "vite";
 import solidPlugin from "vite-plugin-solid";
 import { configDefaults, defineConfig } from "vitest/config";
 import { sourcePlugin } from "./app/src/lib/source-plugin.ts";
+import { getTestLoader } from "./test-loader.ts";
+import type { AllowedTestLoader } from "./test-loader.ts";
 
 const rootDir = process.cwd();
 
@@ -14,33 +17,50 @@ const includeWithStyles = [
   /disclosure-content-animating/,
 ];
 
-const allowedTestLoaders = ["react", "solid"] as const;
-export type AllowedTestLoader = (typeof allowedTestLoaders)[number];
-const loader = (process.env.ARIAKIT_TEST_LOADER ??
-  "react") as AllowedTestLoader;
-if (!allowedTestLoaders.includes(loader)) {
-  throw new Error(`Invalid loader: ${loader}`);
+export type { AllowedTestLoader } from "./test-loader.ts";
+
+const testLoader = getTestLoader();
+
+const defaultTestIncludes = ["**/*test.{ts,tsx}"];
+
+const defaultTestExcludes = [
+  "packages/ariakit-react*/src/**/*test.{ts,tsx}",
+  "packages/ariakit-solid*/src/**/*test.{ts,tsx}",
+  "examples/**/test.{ts,tsx}",
+  "app/src/{examples,sandbox}/**/test.{ts,tsx}",
+];
+
+function getFrameworkTestIncludes(loader: AllowedTestLoader) {
+  const entryFiles = globSync(
+    `{examples,app/src/{examples,sandbox}}/**/index.${loader}.tsx`,
+    { cwd: rootDir },
+  );
+  const exampleTests = entryFiles.flatMap((file) => {
+    const dir = dirname(file);
+    return [`${dir}/test.{ts,tsx}`, `${dir}/test.${loader}.{ts,tsx}`];
+  });
+  return [
+    `packages/ariakit-${loader}*/src/**/*test.{ts,tsx}`,
+    `packages/ariakit-${loader}*/src/**/*test.${loader}.{ts,tsx}`,
+    `packages/ariakit-test/src/**/*test.${loader}.{ts,tsx}`,
+    ...exampleTests,
+  ];
 }
 
-const allowedTestSuites = ["all", "react"] as const;
-type AllowedTestSuite = (typeof allowedTestSuites)[number];
-const suite = (process.env.ARIAKIT_TEST_SUITE ?? "all") as AllowedTestSuite;
-if (!allowedTestSuites.includes(suite)) {
-  throw new Error(`Invalid test suite: ${suite}`);
-}
+const testIncludesByLoader = {
+  react: getFrameworkTestIncludes("react"),
+  solid: getFrameworkTestIncludes("solid"),
+} satisfies Record<AllowedTestLoader, string[]>;
 
-const testIncludesBySuite: Record<AllowedTestSuite, string[]> = {
-  all: ["**/*test.{ts,tsx}", `**/*test.${loader}.{ts,tsx}`],
-  react: [
-    "packages/ariakit-react*/src/**/*test.{ts,tsx}",
-    "packages/ariakit-react*/src/**/*test.react.{ts,tsx}",
-    "packages/ariakit-test/src/**/*test.react.{ts,tsx}",
-    "examples/**/test.{ts,tsx}",
-    "examples/**/test.react.{ts,tsx}",
-    "app/src/{examples,sandbox}/**/test.{ts,tsx}",
-    "app/src/{examples,sandbox}/**/test.react.{ts,tsx}",
-  ],
-};
+const testIncludes = testLoader
+  ? testIncludesByLoader[testLoader]
+  : defaultTestIncludes;
+
+const testExcludes = [
+  ...configDefaults.exclude,
+  ".claude/**",
+  ...(testLoader ? [] : defaultTestExcludes),
+];
 
 // sourcePlugin is typed against the app workspace's Vite copy, while Vitest
 // consumes the root Vite types. The runtime plugin shape is compatible.
@@ -55,16 +75,20 @@ const pluginsByLoader: Record<AllowedTestLoader, Array<PluginOption>> = {
   solid: [solidPlugin(), sourcePluginInstance],
 };
 
+const plugins = testLoader
+  ? pluginsByLoader[testLoader]
+  : [sourcePluginInstance];
+
 export default defineConfig({
   root: rootDir,
-  plugins: pluginsByLoader[loader],
+  plugins,
   test: {
     watch: false,
     testTimeout: 10_000,
     environment: "jsdom",
     setupFiles: [join(rootDir, "vitest.setup.ts")],
-    exclude: [...configDefaults.exclude, ".claude/**"],
-    include: testIncludesBySuite[suite],
+    exclude: testExcludes,
+    include: testIncludes,
     css: {
       include: includeWithStyles,
     },
