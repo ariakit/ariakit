@@ -90,6 +90,23 @@ interface GetPageUrlsOptions {
   offset: number;
 }
 
+interface GetPaginationDisplayDataOptions {
+  totalCount: number;
+  limit: number;
+  offset: number;
+}
+
+export function getPaginationDisplayData(
+  options: GetPaginationDisplayDataOptions,
+) {
+  const { totalCount, limit, offset } = options;
+  const currentPage = Math.ceil(offset / limit) + 1;
+  const totalPages = Math.max(1, Math.ceil(totalCount / limit));
+  const firstResult = totalCount === 0 ? 0 : offset + 1;
+  const lastResult = Math.min(offset + limit, totalCount);
+  return { currentPage, totalPages, firstResult, lastResult };
+}
+
 export function getPageUrls(context: APIContext, options: GetPageUrlsOptions) {
   const { totalCount, limit, offset } = options;
   const hasMore = totalCount > offset + limit;
