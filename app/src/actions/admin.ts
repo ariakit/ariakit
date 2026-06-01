@@ -327,11 +327,54 @@ async function setPrice(input: SetPriceInput) {
   const key = getPlusPriceKey({ type, currency, countryCode });
   const amountWithCents = input.amount * 100;
   const formattedAmount = formatCurrency({ amount: input.amount, currency });
+  const taxBehavior = "exclusive";
+  const cachePrice = async (price: Stripe.Price) => {
+    await putPrice({
+      id: price.id,
+      type,
+      key,
+      product: objectId(price.product),
+      amount: price.unit_amount ?? amountWithCents,
+      currency: price.currency,
+      taxBehavior: price.tax_behavior || taxBehavior,
+    });
+  };
+  const deactivatePrice = async (priceId: string) => {
+    try {
+      await stripe.prices.update(priceId, { active: false });
+    } catch (error) {
+      logger.error(
+        "Error deactivating replaced price %s (%s)",
+        key,
+        priceId,
+        error,
+      );
+      throw error;
+    }
+  };
+  const getReplacedPrice = (price: Stripe.Price) => {
+    const replacedPrice = price.metadata.replacedPrice;
+    if (!replacedPrice) return null;
+    if (replacedPrice === price.id) return null;
+    return replacedPrice;
+  };
+  const deactivateReplacedPrice = async (priceId: string | null) => {
+    if (!priceId) return;
+    const price = await stripe.prices.retrieve(priceId);
+    if (price.active) {
+      await deactivatePrice(price.id);
+    }
+  };
   const {
     data: [price],
   } = await stripe.prices.list({ limit: 1, lookup_keys: [key] });
   if (price) {
-    if (price.unit_amount === amountWithCents) {
+    const replacedPrice = getReplacedPrice(price);
+    if (price.active) {
+      await cachePrice(price);
+      await deactivateReplacedPrice(replacedPrice);
+    }
+    if (price.active && price.unit_amount === amountWithCents) {
       logger.info("Price %s is already set to %s", key, formattedAmount);
       return;
     }
@@ -361,43 +404,35 @@ async function setPrice(input: SetPriceInput) {
     }
   }
 
-  const taxBehavior = "exclusive";
-
   // Create the replacement first so a failure leaves the old price active.
   let newPrice: Stripe.Price;
+  const createParams: Stripe.PriceCreateParams = {
+    currency,
+    product,
+    lookup_key: key,
+    unit_amount: amountWithCents,
+    tax_behavior: taxBehavior,
+    transfer_lookup_key: true,
+  };
+  if (price) {
+    createParams.metadata = {
+      replacedPrice: price.active
+        ? price.id
+        : getReplacedPrice(price) || price.id,
+    };
+  }
   try {
-    newPrice = await stripe.prices.create({
-      currency,
-      product,
-      lookup_key: key,
-      unit_amount: amountWithCents,
-      tax_behavior: taxBehavior,
-      transfer_lookup_key: true,
-    });
+    newPrice = await stripe.prices.create(createParams);
   } catch (error) {
     logger.error("Error creating price %s at %s", key, formattedAmount, error);
     throw error;
   }
-  await putPrice({
-    id: newPrice.id,
-    type,
-    key,
-    product,
-    amount: amountWithCents,
-    currency,
-    taxBehavior,
-  });
+  await cachePrice(newPrice);
   if (price) {
-    try {
-      await stripe.prices.update(price.id, { active: false });
-    } catch (error) {
-      logger.error(
-        "Error deactivating replaced price %s (%s)",
-        key,
-        price.id,
-        error,
-      );
-      throw error;
+    if (!price.active) {
+      await deactivateReplacedPrice(getReplacedPrice(price));
+    } else {
+      await deactivatePrice(price.id);
     }
   }
   logger.info("Set price %s to %s", key, formattedAmount);
