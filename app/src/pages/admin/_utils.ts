@@ -15,7 +15,7 @@ import { getFlagEmoji } from "#app/lib/locale.ts";
 const paramsSchema = z.object({
   query: z.string().optional(),
   offset: z.coerce.number().nonnegative().default(0),
-  limit: z.coerce.number().nonnegative().default(25),
+  limit: z.coerce.number().min(1).default(25),
 });
 
 type Params = z.infer<typeof paramsSchema>;
@@ -23,7 +23,7 @@ type Params = z.infer<typeof paramsSchema>;
 export async function getPaginationData(context: APIContext) {
   const session = await context.session?.get("admin");
   const schema = paramsSchema.extend({
-    limit: paramsSchema.shape.limit.default(session?.limit ?? 25),
+    limit: paramsSchema.shape.limit.default(Math.max(session?.limit ?? 25, 1)),
   });
   const { data, success } = schema.safeParse(
     Object.fromEntries(context.url.searchParams),
@@ -100,10 +100,11 @@ export function getPaginationDisplayData(
   options: GetPaginationDisplayDataOptions,
 ) {
   const { totalCount, limit, offset } = options;
-  const currentPage = Math.ceil(offset / limit) + 1;
-  const totalPages = Math.max(1, Math.ceil(totalCount / limit));
-  const firstResult = totalCount === 0 ? 0 : offset + 1;
-  const lastResult = Math.min(offset + limit, totalCount);
+  const safeLimit = limit > 0 ? limit : 1;
+  const totalPages = Math.max(1, Math.ceil(totalCount / safeLimit));
+  const currentPage = Math.min(Math.ceil(offset / safeLimit) + 1, totalPages);
+  const firstResult = totalCount === 0 ? 0 : Math.min(offset + 1, totalCount);
+  const lastResult = Math.min(offset + safeLimit, totalCount);
   return { currentPage, totalPages, firstResult, lastResult };
 }
 
