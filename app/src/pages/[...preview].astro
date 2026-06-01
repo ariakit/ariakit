@@ -12,8 +12,7 @@ import "#app/styles/global.css";
 import "@fontsource-variable/inter";
 import { isNextjsPreviewId } from "#app/lib/nextjs.ts";
 import type { GetStaticPaths } from "astro";
-import { getCollection } from "astro:content";
-import { loadPreview } from "virtual:ariakit-previews/registry";
+import { getCollection, render } from "astro:content";
 
 export const getStaticPaths = (async () => {
   const entries = await getCollection("previews");
@@ -28,7 +27,7 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { framework, entry } = Astro.props;
-const { default: Preview } = await loadPreview(entry.id);
+const { Content } = await render(entry);
 
 Astro.locals.framework = framework;
 
@@ -56,7 +55,7 @@ const fullscreen = entry.data.fullscreen;
         !fullscreen && "p-3 flex items-center-safe justify-center-safe",
       ]}
     >
-      <Preview {framework} />
+      <Content {framework} />
     </div>
   </body>
 </html>

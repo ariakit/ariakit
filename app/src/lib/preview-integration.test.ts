@@ -11,12 +11,10 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import { join } from "node:path";
 import { afterEach, expect, test } from "vitest";
+import { writePreviewCodegen } from "./preview-codegen.ts";
 import { resolvePreviewRoots } from "./preview-discovery.ts";
 import type { DiscoveredPreview } from "./preview-discovery.ts";
-import {
-  shouldRegeneratePreview,
-  writePreviewCodegen,
-} from "./preview-integration.ts";
+import { shouldRegeneratePreview } from "./preview-integration.ts";
 
 const dirs: string[] = [];
 
@@ -66,6 +64,7 @@ test("removes stale preview wrappers", async () => {
   const dir = await createDir();
   const codegenDir = join(dir, "codegen");
   const previewFile = join(codegenDir, "previews/menu/preview.astro");
+  const contentFile = join(codegenDir, "previews/menu/preview.mdx");
 
   await writePreviewCodegen({
     codegenDir,
@@ -74,7 +73,29 @@ test("removes stale preview wrappers", async () => {
   const result = await writePreviewCodegen({ codegenDir, previews: [] });
 
   await expect(fs.access(previewFile)).rejects.toThrow();
+  await expect(fs.access(contentFile)).rejects.toThrow();
   expect(result.changed).toBe(true);
+});
+
+test("generates deferred preview content modules", async () => {
+  const dir = await createDir();
+  const codegenDir = join(dir, "codegen");
+
+  await writePreviewCodegen({
+    codegenDir,
+    previews: [getPreview(dir)],
+  });
+
+  const content = await fs.readFile(
+    join(codegenDir, "previews/menu/preview.mdx"),
+    "utf8",
+  );
+  expect(content).toMatchInlineSnapshot(`
+    "import Preview from "./preview.astro";
+
+    <Preview />
+    "
+  `);
 });
 
 test("regenerates previews only for structural files", async () => {

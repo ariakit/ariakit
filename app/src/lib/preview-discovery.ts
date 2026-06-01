@@ -14,6 +14,11 @@ import { fileURLToPath } from "node:url";
 import { invariant } from "@ariakit/utils";
 import type { Loader } from "astro/loaders";
 import { getFrameworkByFilename, isFramework } from "./frameworks.ts";
+import {
+  getPreviewCodegenDir,
+  getPreviewContentFile,
+  writePreviewCodegen,
+} from "./preview-codegen.ts";
 import { FRAMEWORKS } from "./schemas.ts";
 import type { Framework } from "./schemas.ts";
 
@@ -304,6 +309,9 @@ export function previewLoader(options: PreviewDiscoveryOptions = {}): Loader {
         srcDir: config.srcDir,
         ...options,
       });
+      const codegenDir = getPreviewCodegenDir(config.root);
+      const previewsDir = join(codegenDir, "previews");
+      await writePreviewCodegen({ codegenDir, previews });
       store.clear();
       for (const root of resolvePreviewRoots({
         root: config.root,
@@ -320,6 +328,16 @@ export function previewLoader(options: PreviewDiscoveryOptions = {}): Loader {
           source: preview.source,
         };
         const data = await context.parseData({ id: preview.id, data: rawData });
+        const hasEntryFiles = Object.keys(preview.entryFiles).length > 0;
+        const contentFile = hasEntryFiles
+          ? getPreviewContentFile(previewsDir, preview.id)
+          : undefined;
+        const filePath = contentFile
+          ? toPosixPath(relative(fileURLToPath(config.root), contentFile))
+          : undefined;
+        if (filePath) {
+          store.addModuleImport(filePath);
+        }
         store.set({
           id: preview.id,
           data,
@@ -328,6 +346,7 @@ export function previewLoader(options: PreviewDiscoveryOptions = {}): Loader {
             entryFiles: preview.entryFiles,
             id: preview.id,
           }),
+          ...(filePath ? { deferredRender: true, filePath } : {}),
         });
       }
     },
