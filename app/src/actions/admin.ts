@@ -358,9 +358,44 @@ async function setPrice(input: SetPriceInput) {
     if (replacedPrice === price.id) return null;
     return replacedPrice;
   };
-  const deactivateReplacedPrice = async (priceId: string | null) => {
+  const deactivateReplacedPrice = async (
+    priceId: string | null,
+    expectedProduct: string,
+    expectedCurrency: string,
+  ) => {
     if (!priceId) return;
     const price = await stripe.prices.retrieve(priceId);
+    const product = objectId(price.product);
+    if (product !== expectedProduct) {
+      logger.error(
+        "Skipping replaced price for %s (%s): expected product %s, got %s",
+        key,
+        priceId,
+        expectedProduct,
+        product,
+      );
+      return;
+    }
+    if (price.currency !== expectedCurrency) {
+      logger.error(
+        "Skipping replaced price for %s (%s): expected currency %s, got %s",
+        key,
+        priceId,
+        expectedCurrency,
+        price.currency,
+      );
+      return;
+    }
+    if (price.lookup_key && price.lookup_key !== key) {
+      logger.error(
+        "Skipping replaced price for %s (%s): expected lookup key %s, got %s",
+        key,
+        priceId,
+        key,
+        price.lookup_key,
+      );
+      return;
+    }
     if (price.active) {
       await deactivatePrice(price.id);
     }
@@ -372,7 +407,11 @@ async function setPrice(input: SetPriceInput) {
     const replacedPrice = getReplacedPrice(price);
     if (price.active) {
       await cachePrice(price);
-      await deactivateReplacedPrice(replacedPrice);
+      await deactivateReplacedPrice(
+        replacedPrice,
+        objectId(price.product),
+        price.currency,
+      );
     }
     if (price.active && price.unit_amount === amountWithCents) {
       logger.info("Price %s is already set to %s", key, formattedAmount);
@@ -430,7 +469,11 @@ async function setPrice(input: SetPriceInput) {
   await cachePrice(newPrice);
   if (price) {
     if (!price.active) {
-      await deactivateReplacedPrice(getReplacedPrice(price));
+      await deactivateReplacedPrice(
+        getReplacedPrice(price),
+        objectId(newPrice.product),
+        newPrice.currency,
+      );
     } else {
       await deactivatePrice(price.id);
     }
