@@ -7,29 +7,34 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { basename, dirname, isAbsolute, relative, resolve } from "node:path";
+import { basename, dirname, isAbsolute, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { invariant } from "@ariakit/utils";
 import { glob } from "astro/loaders";
 import type { Loader, LoaderContext } from "astro/loaders";
+import type { z } from "astro/zod";
 import {
   getPreviewFrameworks,
+  isInDirectory,
   isPreviewEntryFile,
 } from "./preview-discovery.ts";
+import { FrameworkSchema } from "./schemas.ts";
 
 interface GenerateIdOptions {
   entry: string;
 }
 
-interface MdxLoaderOptions {
+interface MdxLoaderOptions<TShape extends z.ZodRawShape> {
   base: string | URL;
+  schema: z.ZodObject<TShape>;
 }
 
-interface InferredFrameworksLoaderParams {
+interface InferredFrameworksLoaderParams<TShape extends z.ZodRawShape> {
   base: string | URL;
   generateId?: (options: GenerateIdOptions) => string;
   name: string;
   pattern: string;
+  schema: z.ZodObject<TShape>;
 }
 
 interface WatchFrameworkEntryFilesParams {
@@ -53,16 +58,6 @@ function toFilePath(path: string | URL, base?: string | URL): string {
     return resolve(toFilePath(base), path);
   }
   return resolve(path);
-}
-
-function isInDirectory(file: string, dir: string) {
-  const relativePath = relative(dir, file);
-  return (
-    relativePath === "" ||
-    (!!relativePath &&
-      !relativePath.startsWith("..") &&
-      !isAbsolute(relativePath))
-  );
 }
 
 function getErrorMessage(error: unknown) {
@@ -99,17 +94,21 @@ function watchFrameworkEntryFiles({
   context.watcher.on("unlink", queueReload);
 }
 
-function withInferredFrameworks({
+function withInferredFrameworks<TShape extends z.ZodRawShape>({
   base,
   generateId,
   name,
   pattern,
-}: InferredFrameworksLoaderParams): Loader {
+  schema,
+}: InferredFrameworksLoaderParams<TShape>) {
   const loader = glob({ base, generateId, pattern });
   return {
     ...loader,
     name,
-    async load(context) {
+    schema: schema.extend({
+      frameworks: FrameworkSchema.array(),
+    }),
+    async load(context: LoaderContext) {
       const parseData: LoaderContext["parseData"] = async (options) => {
         const { filePath } = options;
         invariant(filePath, `Cannot infer frameworks for ${options.id}`);
@@ -128,10 +127,12 @@ function withInferredFrameworks({
       await loader.load({ ...context, parseData });
       watchFrameworkEntryFiles({ base, context, loader, parseData });
     },
-  };
+  } satisfies Loader;
 }
 
-export function exampleLoader(options: MdxLoaderOptions): Loader {
+export function exampleLoader<TShape extends z.ZodRawShape>(
+  options: MdxLoaderOptions<TShape>,
+) {
   return withInferredFrameworks({
     ...options,
     name: "ariakit-example-loader",
@@ -139,7 +140,9 @@ export function exampleLoader(options: MdxLoaderOptions): Loader {
   });
 }
 
-export function componentLoader(options: MdxLoaderOptions): Loader {
+export function componentLoader<TShape extends z.ZodRawShape>(
+  options: MdxLoaderOptions<TShape>,
+) {
   return withInferredFrameworks({
     ...options,
     name: "ariakit-component-loader",

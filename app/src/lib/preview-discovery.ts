@@ -14,13 +14,15 @@ import { basename, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { invariant } from "@ariakit/utils";
 import type { Loader } from "astro/loaders";
+import type { LoaderContext } from "astro/loaders";
+import { z } from "astro/zod";
 import { getFrameworkByFilename, isFramework } from "./frameworks.ts";
 import {
   getPreviewCodegenDir,
   getPreviewContentFile,
   writePreviewCodegen,
 } from "./preview-codegen.ts";
-import { FRAMEWORKS } from "./schemas.ts";
+import { FRAMEWORKS, FrameworkSchema } from "./schemas.ts";
 import type { Framework } from "./schemas.ts";
 
 type PathInput = string | URL;
@@ -64,6 +66,13 @@ export interface DiscoveredPreview {
   entryFiles: Partial<Record<Framework, string>>;
   metadata: PreviewMetadata;
 }
+
+export const PreviewDataSchema = z.object({
+  title: z.string(),
+  fullscreen: z.boolean().optional(),
+  frameworks: FrameworkSchema.array(),
+  source: z.string(),
+});
 
 interface DiscoverRootContext {
   root: ResolvedPreviewRoot;
@@ -177,9 +186,31 @@ function isDirectoryIgnored(name: string) {
   return name === "node_modules";
 }
 
+export function isInDirectory(file: string, dir: string) {
+  const relativePath = relative(dir, file);
+  return (
+    relativePath === "" ||
+    (!!relativePath &&
+      !relativePath.startsWith("..") &&
+      !isAbsolute(relativePath))
+  );
+}
+
 export function isPreviewEntryFile(filename: string) {
   if (!filename.startsWith("index.")) return false;
   return !!getFrameworkByFilename(filename);
+}
+
+export function shouldRegeneratePreview(
+  file: string,
+  roots: ResolvedPreviewRoot[],
+  metadataFileName = "preview.json",
+) {
+  const filename = basename(file);
+  if (filename !== metadataFileName) {
+    if (!isPreviewEntryFile(filename)) return false;
+  }
+  return roots.some((root) => isInDirectory(file, root.dir));
 }
 
 function sortFrameworks(frameworks: Iterable<Framework>) {
@@ -316,56 +347,99 @@ export async function discoverPreviews(options: PreviewDiscoveryOptions) {
   return [...previews.values()].sort((a, b) => a.id.localeCompare(b.id));
 }
 
-export function previewLoader(options: PreviewDiscoveryOptions): Loader {
+function getPreviewLoaderOptions(
+  context: Pick<LoaderContext, "config">,
+  options: PreviewDiscoveryOptions,
+) {
+  return {
+    root: context.config.root,
+    srcDir: context.config.srcDir,
+    ...options,
+  };
+}
+
+async function updatePreviewStore(
+  context: LoaderContext,
+  options: PreviewDiscoveryOptions,
+) {
+  const previewOptions = getPreviewLoaderOptions(context, options);
+  const previews = await discoverPreviews(previewOptions);
+  const codegenDir = getPreviewCodegenDir(context.config.root);
+  const previewsDir = join(codegenDir, "previews");
+  await writePreviewCodegen({ codegenDir, previews });
+  context.store.clear();
+  for (const preview of previews) {
+    const rawData = {
+      title: preview.title,
+      fullscreen: preview.metadata.fullscreen,
+      frameworks: preview.frameworks,
+      source: preview.source,
+    };
+    const data = await context.parseData({ id: preview.id, data: rawData });
+    const hasEntryFiles = Object.keys(preview.entryFiles).length > 0;
+    const contentFile = hasEntryFiles
+      ? getPreviewContentFile(previewsDir, preview.id)
+      : undefined;
+    const filePath = contentFile
+      ? toPosixPath(relative(fileURLToPath(context.config.root), contentFile))
+      : undefined;
+    if (filePath) {
+      context.store.addModuleImport(filePath);
+    }
+    context.store.set({
+      id: preview.id,
+      data,
+      digest: context.generateDigest({
+        data: rawData,
+        entryFiles: preview.entryFiles,
+        id: preview.id,
+      }),
+      ...(filePath ? { deferredRender: true, filePath } : {}),
+    });
+  }
+}
+
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+  return String(error);
+}
+
+function watchPreviews(
+  context: LoaderContext,
+  options: PreviewDiscoveryOptions,
+) {
+  if (!context.watcher) return;
+  const previewOptions = getPreviewLoaderOptions(context, options);
+  const roots = resolvePreviewRoots(previewOptions);
+  const metadataFileName = getPreviewMetadataFileName(previewOptions);
+  context.watcher.add(roots.map((root) => root.dir));
+  let pendingReload = Promise.resolve();
+  const queueReload = (file: string) => {
+    if (!shouldRegeneratePreview(file, roots, metadataFileName)) return;
+    const reload = async () => {
+      await updatePreviewStore({ ...context, watcher: undefined }, options);
+    };
+    const result = pendingReload.then(reload, reload);
+    pendingReload = result.catch(() => undefined);
+    result.catch((error: unknown) => {
+      context.logger.error(
+        `Failed to reload ${file}: ${getErrorMessage(error)}`,
+      );
+    });
+    return result;
+  };
+  context.watcher.on("add", queueReload);
+  context.watcher.on("change", queueReload);
+  context.watcher.on("unlink", queueReload);
+}
+
+export function previewLoader(options: PreviewDiscoveryOptions) {
   return {
     name: "ariakit-preview-loader",
-    async load(context) {
-      const { config, store, watcher } = context;
-      const previews = await discoverPreviews({
-        root: config.root,
-        srcDir: config.srcDir,
-        ...options,
-      });
-      const codegenDir = getPreviewCodegenDir(config.root);
-      const previewsDir = join(codegenDir, "previews");
-      await writePreviewCodegen({ codegenDir, previews });
-      store.clear();
-      for (const root of resolvePreviewRoots({
-        root: config.root,
-        srcDir: config.srcDir,
-        ...options,
-      })) {
-        watcher?.add(root.dir);
-      }
-      for (const preview of previews) {
-        const rawData = {
-          title: preview.title,
-          fullscreen: preview.metadata.fullscreen,
-          frameworks: preview.frameworks,
-          source: preview.source,
-        };
-        const data = await context.parseData({ id: preview.id, data: rawData });
-        const hasEntryFiles = Object.keys(preview.entryFiles).length > 0;
-        const contentFile = hasEntryFiles
-          ? getPreviewContentFile(previewsDir, preview.id)
-          : undefined;
-        const filePath = contentFile
-          ? toPosixPath(relative(fileURLToPath(config.root), contentFile))
-          : undefined;
-        if (filePath) {
-          store.addModuleImport(filePath);
-        }
-        store.set({
-          id: preview.id,
-          data,
-          digest: context.generateDigest({
-            data: rawData,
-            entryFiles: preview.entryFiles,
-            id: preview.id,
-          }),
-          ...(filePath ? { deferredRender: true, filePath } : {}),
-        });
-      }
+    schema: PreviewDataSchema,
+    async load(context: LoaderContext) {
+      await updatePreviewStore(context, options);
+      watchPreviews(context, options);
     },
-  };
+  } satisfies Loader;
 }

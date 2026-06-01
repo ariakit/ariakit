@@ -10,11 +10,14 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import { dirname, join } from "node:path";
-import { afterEach, expect, test } from "vitest";
+import type { LoaderContext } from "astro/loaders";
+import { afterEach, expect, test, vi } from "vitest";
 import {
   discoverPreviews,
   getPreviewFrameworks,
   getPreviewFrameworksSync,
+  PreviewDataSchema,
+  previewLoader,
 } from "./preview-discovery.ts";
 
 const dirs: string[] = [];
@@ -34,6 +37,69 @@ async function createDir() {
 async function writeFile(file: string, content = "") {
   await fs.mkdir(dirname(file), { recursive: true });
   await fs.writeFile(file, content);
+}
+
+type WatchCallback = (file: string) => void | Promise<void>;
+
+class TestWatcher {
+  add = vi.fn();
+
+  callbacks = new Map<string, WatchCallback[]>();
+
+  on(event: string, callback: WatchCallback) {
+    const callbacks = this.callbacks.get(event) ?? [];
+    callbacks.push(callback);
+    this.callbacks.set(event, callbacks);
+    return this;
+  }
+
+  async emit(event: string, file: string) {
+    const callbacks = this.callbacks.get(event) ?? [];
+    for (const callback of callbacks) {
+      await callback(file);
+    }
+  }
+}
+
+function getPreviewStoreContext(
+  dir: string,
+  loader: ReturnType<typeof previewLoader>,
+) {
+  const entries = new Map<string, { data: Record<string, unknown> }>();
+  const watcher = new TestWatcher();
+  const store = {
+    clear: vi.fn(() => {
+      entries.clear();
+    }),
+    addModuleImport: vi.fn(),
+    set: vi.fn((entry: { id: string; data: Record<string, unknown> }) => {
+      entries.set(entry.id, entry);
+      return true;
+    }),
+  };
+  const context = {
+    collection: "previews",
+    config: {
+      root: new URL(`${dir}/`, "file:"),
+      srcDir: new URL(`${dir}/`, "file:"),
+    },
+    generateDigest(value: Record<string, unknown> | string) {
+      return JSON.stringify(value);
+    },
+    logger: {
+      error: vi.fn(),
+    },
+    parseData: async <TData extends Record<string, unknown>>(options: {
+      data: TData;
+    }) => {
+      const result = await loader.schema.safeParseAsync(options.data);
+      if (!result.success) throw result.error;
+      return result.data as unknown as TData;
+    },
+    store,
+    watcher,
+  } as unknown as LoaderContext;
+  return { context, entries, store, watcher };
 }
 
 function getExamplesRoot(dir: string) {
@@ -247,4 +313,60 @@ test("supports metadata-only sandbox previews", async () => {
       title: "counter-nextjs",
     },
   ]);
+});
+
+test("preview loader defines generated data schema", () => {
+  const loader = previewLoader({
+    roots: [getSandboxRoot("/tmp")],
+  });
+
+  expect("schema" in loader && loader.schema).toBe(PreviewDataSchema);
+});
+
+test("preview loader reloads watched metadata changes", async () => {
+  const dir = await createDir();
+  const loader = previewLoader({
+    roots: [getExamplesRoot(dir)],
+  });
+  const { context, entries, watcher } = getPreviewStoreContext(dir, loader);
+  const metadataFile = join(dir, "examples/menu/preview.json");
+  await writeFile(join(dir, "examples/menu/index.react.tsx"));
+  await writeFile(metadataFile, JSON.stringify({ title: "Menu" }));
+
+  await loader.load(context);
+
+  expect(entries.get("menu")?.data.title).toBe("Menu");
+  await writeFile(metadataFile, JSON.stringify({ title: "Menu 2" }));
+  await watcher.emit("change", metadataFile);
+
+  expect(entries.get("menu")?.data.title).toBe("Menu 2");
+});
+
+test("preview loader reloads watched entry file changes", async () => {
+  const dir = await createDir();
+  const loader = previewLoader({
+    roots: [getExamplesRoot(dir)],
+  });
+  const { context, entries, watcher } = getPreviewStoreContext(dir, loader);
+  const metadataFile = join(dir, "examples/menu/preview.json");
+  const reactEntryFile = join(dir, "examples/menu/index.react.tsx");
+  const solidEntryFile = join(dir, "examples/menu/index.solid.tsx");
+  await writeFile(reactEntryFile);
+  await writeFile(metadataFile, JSON.stringify({ title: "Menu" }));
+
+  await loader.load(context);
+
+  expect(entries.get("menu")?.data.frameworks).toEqual(["react"]);
+  await writeFile(solidEntryFile);
+  await watcher.emit("add", solidEntryFile);
+
+  expect(entries.get("menu")?.data.frameworks).toEqual(["react", "solid"]);
+  await fs.rm(solidEntryFile);
+  await watcher.emit("unlink", solidEntryFile);
+
+  expect(entries.get("menu")?.data.frameworks).toEqual(["react"]);
+  await fs.rm(reactEntryFile);
+  await watcher.emit("unlink", reactEntryFile);
+
+  expect(entries.has("menu")).toBe(false);
 });

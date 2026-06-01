@@ -7,14 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import {
-  basename,
-  dirname,
-  isAbsolute,
-  join,
-  relative,
-  resolve,
-} from "node:path";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { AstroConfig, AstroIntegration } from "astro";
 import type { Plugin } from "vite";
@@ -26,8 +19,9 @@ import {
 } from "./preview-codegen.ts";
 import {
   discoverPreviews,
-  isPreviewEntryFile,
+  isInDirectory,
   resolvePreviewRoots,
+  shouldRegeneratePreview,
 } from "./preview-discovery.ts";
 import type { PreviewDiscoveryOptions } from "./preview-discovery.ts";
 
@@ -48,28 +42,6 @@ async function generatePreviewCodegen({
     ...options,
   });
   return writePreviewCodegen({ codegenDir, previews });
-}
-
-function isInDirectory(file: string, dir: string) {
-  const relativePath = relative(dir, file);
-  return (
-    relativePath === "" ||
-    (!!relativePath &&
-      !relativePath.startsWith("..") &&
-      !isAbsolute(relativePath))
-  );
-}
-
-export function shouldRegeneratePreview(
-  file: string,
-  roots: ReturnType<typeof resolvePreviewRoots>,
-  metadataFileName = "preview.json",
-) {
-  const filename = basename(file);
-  if (filename !== metadataFileName) {
-    if (!isPreviewEntryFile(filename)) return false;
-  }
-  return roots.some((root) => isInDirectory(file, root.dir));
 }
 
 function shouldRegenerate(file: string, params: PreviewIntegrationParams) {

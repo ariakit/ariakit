@@ -13,12 +13,12 @@ import { join } from "node:path";
 import { afterEach, expect, test } from "vitest";
 import { writePreviewCodegen } from "./preview-codegen.ts";
 import { previewConfig } from "./preview-config.ts";
-import { resolvePreviewRoots } from "./preview-discovery.ts";
-import type { DiscoveredPreview } from "./preview-discovery.ts";
 import {
-  resolvePreviewImport,
+  resolvePreviewRoots,
   shouldRegeneratePreview,
-} from "./preview-integration.ts";
+} from "./preview-discovery.ts";
+import type { DiscoveredPreview } from "./preview-discovery.ts";
+import { resolvePreviewImport } from "./preview-integration.ts";
 
 const dirs: string[] = [];
 

@@ -16,7 +16,7 @@ import { jsdoc } from "./lib/jsdoc-loader.ts";
 import { componentLoader, exampleLoader } from "./lib/mdx-loader.ts";
 import { previewConfig } from "./lib/preview-config.ts";
 import { previewLoader } from "./lib/preview-discovery.ts";
-import { FrameworkSchema, TagSchema } from "./lib/schemas.ts";
+import { TagSchema } from "./lib/schemas.ts";
 
 function generateExampleId(options: { entry: string }) {
   return options.entry
@@ -42,27 +42,31 @@ const guides = defineCollection({
   }),
 });
 
-const components = defineCollection({
-  loader: componentLoader({
-    base: join(import.meta.dirname, "examples"),
-  }),
+const componentContentLoader = componentLoader({
+  base: join(import.meta.dirname, "examples"),
   schema: z.object({
     title: z.string(),
-    frameworks: FrameworkSchema.array(),
     tags: TagSchema.array().default([]),
   }),
 });
 
-const examples = defineCollection({
-  loader: exampleLoader({
-    base: join(import.meta.dirname, "examples"),
-  }),
+const components = defineCollection({
+  loader: componentContentLoader,
+  schema: componentContentLoader.schema,
+});
+
+const exampleContentLoader = exampleLoader({
+  base: join(import.meta.dirname, "examples"),
   schema: z.object({
     title: z.string(),
-    frameworks: FrameworkSchema.array(),
     tags: TagSchema.array().default([]),
     components: z.array(reference("components")).default([]),
   }),
+});
+
+const examples = defineCollection({
+  loader: exampleContentLoader,
+  schema: exampleContentLoader.schema,
 });
 
 const descriptions = defineCollection({
@@ -81,14 +85,11 @@ const galleries = defineCollection({
   }),
 });
 
+const previewContentLoader = previewLoader(previewConfig);
+
 const previews = defineCollection({
-  loader: previewLoader(previewConfig),
-  schema: z.object({
-    title: z.string(),
-    fullscreen: z.boolean().optional(),
-    frameworks: FrameworkSchema.array(),
-    source: z.string(),
-  }),
+  loader: previewContentLoader,
+  schema: previewContentLoader.schema,
 });
 
 const references = defineCollection({
