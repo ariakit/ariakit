@@ -60,8 +60,8 @@ interface GetNextjsUrlFromRequestParams {
  * - {alias}.ariakit-preview.workers.dev → {alias}.ariakit-nextjs.workers.dev
  * - ariakit-preview.workers.dev → ariakit-nextjs.workers.dev
  * - next.ariakit.com → nextjs.ariakit.com
- * - *.ariakit.com → nextjs.ariakit.com
- * - *.ariakit.org → nextjs.ariakit.com (legacy, redirected during migration)
+ * - ariakit.com and *.ariakit.com → nextjs.ariakit.com
+ * - ariakit.org and *.ariakit.org → nextjs.ariakit.com (legacy, redirected during migration)
  */
 export function getNextjsUrlFromRequest({
   requestUrl,
