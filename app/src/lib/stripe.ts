@@ -376,12 +376,13 @@ export async function processCheckout({
     logger.info("Checkout session already processed", session.id);
     return session;
   }
-  await processEvent(session.id);
   if (type === "team") {
+    // Create or reuse the team before removing personal Plus credit so a
+    // failed upgrade retry doesn't take away the user's existing access.
+    await createTeam({ context, user: clerkId, checkoutSession: session.id });
     if (Number(creditUsed)) {
       await removePlusFromUser({ context, user: clerkId });
     }
-    await createTeam({ context, user: clerkId });
   } else {
     await addPlusToUser({
       context,
@@ -391,5 +392,8 @@ export async function processCheckout({
       currency: session.currency ?? "usd",
     });
   }
+  // Keep this marker last so webhook and return-page retries can rerun
+  // fulfillment when any entitlement update above fails.
+  await processEvent(session.id);
   return session;
 }
