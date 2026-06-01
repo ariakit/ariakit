@@ -277,32 +277,3 @@ export async function isAdmin(context: APIContext) {
   const orgRole = teams.get(orgId);
   return orgRole === "org:admin";
 }
-
-export interface GetAllUsersParams {
-  context: APIContext;
-  limit?: number;
-  offset?: number;
-}
-
-export async function getAllUsers({
-  context,
-  limit = 100,
-  offset = 0,
-}: GetAllUsersParams) {
-  if (!isClerkEnabled()) return [];
-  const clerk = clerkClient(context);
-  const allUsers: User[] = [];
-  let hasMore = false;
-  do {
-    const users = await clerk.users.getUserList({
-      limit: 100,
-      offset: offset,
-      orderBy: "+created_at",
-    });
-    if (users.data.length === 0) break;
-    allUsers.push(...users.data);
-    offset += users.data.length;
-    hasMore = users.data.length === limit;
-  } while (hasMore);
-  return allUsers;
-}
