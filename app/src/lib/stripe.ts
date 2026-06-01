@@ -376,12 +376,11 @@ export async function processCheckout({
     logger.info("Checkout session already processed", session.id);
     return session;
   }
-  await processEvent(session.id);
   if (type === "team") {
+    await createTeam({ context, user: clerkId, checkoutSession: session.id });
     if (Number(creditUsed)) {
       await removePlusFromUser({ context, user: clerkId });
     }
-    await createTeam({ context, user: clerkId });
   } else {
     await addPlusToUser({
       context,
@@ -391,5 +390,6 @@ export async function processCheckout({
       currency: session.currency ?? "usd",
     });
   }
+  await processEvent(session.id);
   return session;
 }
