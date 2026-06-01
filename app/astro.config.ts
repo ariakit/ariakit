@@ -19,6 +19,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
+import { previewConfig } from "./src/lib/preview-config.ts";
+import { previewIntegration } from "./src/lib/preview-integration.ts";
 import {
   rehypeAdmonitions,
   rehypeAsTagName,
@@ -66,10 +68,6 @@ export default defineConfig({
 
   markdown: {
     syntaxHighlight: false,
-    // Configure rehype plugins on `markdown.processor` rather than on the
-    // `mdx()` integration: with `extendMarkdownConfig` the MDX pipeline inherits
-    // them, and the integration-level `rehypePlugins` option was deprecated in
-    // @astrojs/mdx 6.
     processor: unified({
       rehypePlugins: [
         rehypeHeadingIds,
@@ -85,6 +83,7 @@ export default defineConfig({
   },
 
   integrations: [
+    previewIntegration(previewConfig),
     react({ include: ["**/*.react.*", "../packages/*react*/**"] }),
     solid({ include: ["**/*.solid.*", "../packages/*solid*/**"] }),
     mdx({ extendMarkdownConfig: true }),

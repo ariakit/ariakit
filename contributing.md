@@ -188,7 +188,27 @@ export default function Example() {
 }
 ```
 
+Each example directory also needs preview metadata:
+
+`examples/my-component/preview.json`
+
+```json
+{
+  "title": "My component"
+}
+```
+
 Now open http://localhost:3000/examples/my-component to see the example in action.
+
+The preview route itself is generated from the example files. Don't add
+`preview.mdx` or `preview.astro` files manually.
+
+Sandbox directories under `app/src/sandbox` usually don't need preview metadata.
+Their preview title defaults to the folder name. Add `preview.json` to a sandbox
+only when it needs metadata that can't be inferred, such as `fullscreen`, or when
+the sandbox is a metadata-only preview for another framework environment like
+Next.js. Metadata-only sandbox previews must declare their `frameworks`. Avoid
+adding sandbox preview metadata only to provide a humanized title.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -275,6 +295,16 @@ import { MyComponent } from "@ariakit/react-components/my-component/my-component
 
 export default function Example() {
   return <MyComponent className="my-component" customProp="Hello world" />;
+}
+```
+
+Since this is a separate example directory, it needs its own preview metadata:
+
+`examples/my-component-custom-prop/preview.json`
+
+```json
+{
+  "title": "My component with customProp"
 }
 ```
 

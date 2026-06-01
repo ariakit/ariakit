@@ -14,12 +14,33 @@ const includeWithStyles = [
   /disclosure-content-animating/,
 ];
 
-const ALLOWED_TEST_LOADERS = ["react", "solid"] as const;
-export type AllowedTestLoader = (typeof ALLOWED_TEST_LOADERS)[number];
-const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
+const allowedTestLoaders = ["react", "solid"] as const;
+export type AllowedTestLoader = (typeof allowedTestLoaders)[number];
+const loader = (process.env.ARIAKIT_TEST_LOADER ??
   "react") as AllowedTestLoader;
-if (!ALLOWED_TEST_LOADERS.includes(LOADER))
-  throw new Error(`Invalid loader: ${LOADER}`);
+if (!allowedTestLoaders.includes(loader)) {
+  throw new Error(`Invalid loader: ${loader}`);
+}
+
+const allowedTestSuites = ["all", "react"] as const;
+type AllowedTestSuite = (typeof allowedTestSuites)[number];
+const suite = (process.env.ARIAKIT_TEST_SUITE ?? "all") as AllowedTestSuite;
+if (!allowedTestSuites.includes(suite)) {
+  throw new Error(`Invalid test suite: ${suite}`);
+}
+
+const testIncludesBySuite: Record<AllowedTestSuite, string[]> = {
+  all: ["**/*test.{ts,tsx}", `**/*test.${loader}.{ts,tsx}`],
+  react: [
+    "packages/ariakit-react*/src/**/*test.{ts,tsx}",
+    "packages/ariakit-react*/src/**/*test.react.{ts,tsx}",
+    "packages/ariakit-test/src/**/*test.react.{ts,tsx}",
+    "examples/**/test.{ts,tsx}",
+    "examples/**/test.react.{ts,tsx}",
+    "app/src/{examples,sandbox}/**/test.{ts,tsx}",
+    "app/src/{examples,sandbox}/**/test.react.{ts,tsx}",
+  ],
+};
 
 // sourcePlugin is typed against the app workspace's Vite copy, while Vitest
 // consumes the root Vite types. The runtime plugin shape is compatible.
@@ -29,21 +50,21 @@ const sourcePluginInstance = sourcePlugin(
   join(rootDir, "app/src/examples/"),
 ) as unknown as PluginOption;
 
-const PLUGINS_BY_LOADER: Record<string, Array<PluginOption> | undefined> = {
+const pluginsByLoader: Record<AllowedTestLoader, Array<PluginOption>> = {
   react: [reactPlugin(), sourcePluginInstance],
   solid: [solidPlugin(), sourcePluginInstance],
 };
 
 export default defineConfig({
   root: rootDir,
-  plugins: PLUGINS_BY_LOADER[LOADER],
+  plugins: pluginsByLoader[loader],
   test: {
     watch: false,
     testTimeout: 10_000,
     environment: "jsdom",
     setupFiles: [join(rootDir, "vitest.setup.ts")],
     exclude: [...configDefaults.exclude, ".claude/**"],
-    include: ["**/*test.{ts,tsx}", `**/*test.${LOADER}.{ts,tsx}`],
+    include: testIncludesBySuite[suite],
     css: {
       include: includeWithStyles,
     },
