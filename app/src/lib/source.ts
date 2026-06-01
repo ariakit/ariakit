@@ -20,11 +20,12 @@ import type { StyleDependency } from "./styles.ts";
 // interpolation).
 const PATH_QUOTED = String.raw`(?:'(?<single>[^']+)'|"(?<double>[^"]+)"|\`(?<template>(?:[^\`$]|\$(?!\{))+?)\`)`;
 const FROM_CLAUSE = String.raw`\s+from\s+${PATH_QUOTED}`;
+const IMPORT_ATTRIBUTES = String.raw`(?<attributes>\s+(?:with|assert)\s+\{[\s\S]*?\})?`;
 
 // Import patterns
 const IMPORT_SIDE_EFFECT = new RegExp(String.raw`import\s+${PATH_QUOTED}`, "g");
 const IMPORT_NAMED = new RegExp(
-  String.raw`import\s+(?!type\b)\{[\s\S]*?\}${FROM_CLAUSE}[\t ]*;?`,
+  String.raw`import\s+(?!type\b)\{[\s\S]*?\}${FROM_CLAUSE}${IMPORT_ATTRIBUTES}[\t ]*;?`,
   "g",
 );
 const IMPORT_FROM_ANY = new RegExp(
@@ -32,7 +33,7 @@ const IMPORT_FROM_ANY = new RegExp(
   "g",
 );
 const IMPORT_TYPE_NAMED = new RegExp(
-  String.raw`import\s+type\s+\{[\s\S]*?\}${FROM_CLAUSE}`,
+  String.raw`import\s+type\s+\{[\s\S]*?\}${FROM_CLAUSE}${IMPORT_ATTRIBUTES}[\t ]*;?`,
   "g",
 );
 const IMPORT_TYPE_NAMESPACE = new RegExp(
@@ -191,6 +192,10 @@ function getQuoteFromGroups(groups: RegExpExecArray["groups"]): string {
   if (groups?.single != null) return "'";
   if (groups?.double != null) return '"';
   return "`";
+}
+
+function getAttributesFromGroups(groups: RegExpExecArray["groups"]): string {
+  return groups?.attributes ?? "";
 }
 
 /**
@@ -415,7 +420,7 @@ function buildHoistedImports(
 function buildRemainingImport(
   remainingRuntime: string[],
   remainingType: string[],
-  modulePath: string,
+  moduleSource: string,
 ): string {
   // All specifiers transformed - remove the line
   if (remainingRuntime.length === 0 && remainingType.length === 0) {
@@ -425,18 +430,18 @@ function buildRemainingImport(
   // Both kinds remain - split into two lines
   if (remainingRuntime.length > 0 && remainingType.length > 0) {
     return [
-      `import { ${remainingRuntime.join(", ")} } from "${modulePath}";`,
-      `import type { ${remainingType.join(", ")} } from "${modulePath}";`,
+      `import { ${remainingRuntime.join(", ")} } from ${moduleSource};`,
+      `import type { ${remainingType.join(", ")} } from ${moduleSource};`,
     ].join("\n");
   }
 
   // Only runtime specifiers remain
   if (remainingRuntime.length > 0) {
-    return `import { ${remainingRuntime.join(", ")} } from "${modulePath}";`;
+    return `import { ${remainingRuntime.join(", ")} } from ${moduleSource};`;
   }
 
   // Only type specifiers remain
-  return `import type { ${remainingType.join(", ")} } from "${modulePath}";`;
+  return `import type { ${remainingType.join(", ")} } from ${moduleSource};`;
 }
 
 /**
@@ -559,7 +564,7 @@ export function mergeImports(
         if (transformed === false) return match;
 
         // Entire declaration is transformed - remove it (will be hoisted)
-        return "";
+        return ";";
       }
 
       const { runtime, typeOnly } = parseNamedSpecifiers(inside);
@@ -573,8 +578,12 @@ export function mergeImports(
       // Keep specifiers that weren't transformed
       const remainingRuntime = transformedValue === false ? runtime : [];
       const remainingType = transformedType === false ? typeOnly : [];
+      const attributes = getAttributesFromGroups(groups);
+      const source = `"${path}"${attributes}`;
 
-      return buildRemainingImport(remainingRuntime, remainingType, path) || ";";
+      return (
+        buildRemainingImport(remainingRuntime, remainingType, source) || ";"
+      );
     });
   };
 

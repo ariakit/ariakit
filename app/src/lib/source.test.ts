@@ -210,6 +210,33 @@ test("mergeImports terminates rewritten mixed imports", () => {
   `);
 });
 
+test("mergeImports preserves attributes on remaining imports", () => {
+  const code = [
+    'import { A, type T } from "./data.json" with { type: "json" };',
+    "export const value = A;",
+  ].join("\n");
+  expect(
+    mergeImports(code, (_path, type) =>
+      type === "import-type" ? "./types" : false,
+    ),
+  ).toMatchInlineSnapshot(`
+    "import { A } from "./data.json" with { type: "json" };
+    import type { T } from "./types";
+    export const value = A;"
+  `);
+});
+
+test("mergeImports consumes attributes on transformed type imports", () => {
+  const code = [
+    'import type { T } from "./data.json" with { type: "json" };',
+    "export const value: T = {};",
+  ].join("\n");
+  expect(mergeImports(code, () => "./types")).toMatchInlineSnapshot(`
+    "import type { T } from "./types";
+    export const value: T = {};"
+  `);
+});
+
 test("mergeImports removes transformed imports at EOF", () => {
   expect(mergeImports('import { A } from "x"', (p) => p))
     .toMatchInlineSnapshot(`
