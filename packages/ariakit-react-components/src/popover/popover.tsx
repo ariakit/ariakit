@@ -166,6 +166,8 @@ function getSizeMiddleware(
   return size({
     padding: props.overflowPadding,
     apply({ elements, availableWidth, availableHeight, rects }) {
+      // The size middleware runs during computePosition, before the awaited
+      // call resolves. Ignore stale runs before mutating sizing styles.
       if (shouldCancel?.()) return;
 
       const wrapper = elements.floating;
@@ -284,6 +286,8 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
       const anchor = getAnchorElement(anchorElement, getAnchorRectProp);
 
+      // Each effect run owns this flag. Cleanup marks stale runs so in-flight
+      // async positioning work can skip state and style writes.
       let canceled = false;
 
       const shouldCancelUpdate = () => {
@@ -325,6 +329,8 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           middleware,
         });
 
+        // autoUpdate cleanup doesn't abort an in-flight computePosition call.
+        // Check again before writing state or styles from an obsolete run.
         if (shouldCancelUpdate()) return;
 
         store?.setState("currentPlacement", pos.placement);
@@ -375,6 +381,8 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
         if (hasCustomUpdatePosition) {
           await updatePositionProp({ updatePosition });
+          // User callbacks may keep awaiting after updatePosition has run, so
+          // make sure this effect is still current before marking it ready.
           if (shouldCancelUpdate()) return;
           setPositioned(true);
         } else {
