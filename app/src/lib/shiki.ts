@@ -8,9 +8,44 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 // @ts-nocheck Revisit this after we merge the app folder into root
-import type { BundledLanguage } from "shiki";
 import { createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
+import type { CodeBlockLanguage } from "./shiki.types.ts";
+
+const langByFilename = {
+  bun: "bash",
+  npm: "bash",
+  pnpm: "bash",
+  yarn: "bash",
+} satisfies Record<string, CodeBlockLanguage>;
+
+const langByExtension = {
+  astro: "html",
+  bash: "bash",
+  cjs: "javascript",
+  css: "css",
+  cts: "typescript",
+  html: "html",
+  htm: "html",
+  js: "js",
+  javascript: "javascript",
+  jsx: "jsx",
+  json: "json",
+  md: "text",
+  mdx: "text",
+  mjs: "javascript",
+  mts: "typescript",
+  py: "python",
+  python: "python",
+  sh: "bash",
+  svelte: "html",
+  text: "text",
+  ts: "ts",
+  tsx: "tsx",
+  txt: "text",
+  typescript: "typescript",
+  vue: "html",
+} satisfies Record<string, CodeBlockLanguage>;
 
 export const highlighter = await createHighlighterCore({
   themes: [
@@ -31,11 +66,11 @@ export const highlighter = await createHighlighterCore({
   engine: createOnigurumaEngine(import("shiki/onig.wasm")),
 });
 
-export function getLangFromFilename(filename: string): BundledLanguage {
-  if (filename === "npm") return "bash";
-  if (filename === "bun") return "bash";
-  if (filename === "yarn") return "bash";
-  if (filename === "pnpm") return "bash";
-  const extension = filename.split(".").pop()?.toLowerCase();
-  return extension as BundledLanguage;
+export function getLangFromFilename(filename: string): CodeBlockLanguage {
+  const normalizedFilename = filename.toLowerCase();
+  const lang = langByFilename[normalizedFilename];
+  if (lang) return lang;
+  const extension = normalizedFilename.split(".").pop();
+  if (!extension) return "text";
+  return langByExtension[extension] ?? "text";
 }
