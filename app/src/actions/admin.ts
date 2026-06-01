@@ -345,7 +345,6 @@ async function setPrice(input: SetPriceInput) {
       }),
       formattedAmount,
     );
-    await stripe.prices.update(price.id, { active: false });
   } else {
     logger.info("Creating new price %s at %s", key, formattedAmount);
   }
@@ -364,15 +363,21 @@ async function setPrice(input: SetPriceInput) {
 
   const taxBehavior = "exclusive";
 
-  // Create a new price
-  const newPrice = await stripe.prices.create({
-    currency,
-    product,
-    lookup_key: key,
-    unit_amount: amountWithCents,
-    tax_behavior: taxBehavior,
-    transfer_lookup_key: true,
-  });
+  // Create the replacement first so a failure leaves the old price active.
+  let newPrice: Stripe.Price;
+  try {
+    newPrice = await stripe.prices.create({
+      currency,
+      product,
+      lookup_key: key,
+      unit_amount: amountWithCents,
+      tax_behavior: taxBehavior,
+      transfer_lookup_key: true,
+    });
+  } catch (error) {
+    logger.error("Error creating price %s at %s", key, formattedAmount, error);
+    throw error;
+  }
   await putPrice({
     id: newPrice.id,
     type,
@@ -382,6 +387,19 @@ async function setPrice(input: SetPriceInput) {
     currency,
     taxBehavior,
   });
+  if (price) {
+    try {
+      await stripe.prices.update(price.id, { active: false });
+    } catch (error) {
+      logger.error(
+        "Error deactivating replaced price %s (%s)",
+        key,
+        price.id,
+        error,
+      );
+      throw error;
+    }
+  }
   logger.info("Set price %s to %s", key, formattedAmount);
 }
 
