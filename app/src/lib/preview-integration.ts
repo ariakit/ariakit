@@ -90,10 +90,10 @@ function getPreviewImportId(file: string, params: PreviewIntegrationParams) {
   for (const root of roots) {
     if (!isInDirectory(file, root.dir)) continue;
     const id = toPosixPath(relative(root.dir, dirname(file)));
-    if (!id) return undefined;
+    if (!id) return;
     return id;
   }
-  return undefined;
+  return;
 }
 
 export function resolvePreviewImport(
@@ -102,7 +102,8 @@ export function resolvePreviewImport(
   params: PreviewIntegrationParams,
 ) {
   const specifier = id.split("?")[0] ?? id;
-  if (basename(toPosixPath(specifier)) !== "preview.astro") return undefined;
+  const filename = specifier.split(/[/\\]/).pop();
+  if (filename !== "preview.astro") return;
   const file = isAbsolute(specifier)
     ? specifier
     : specifier.startsWith("#app/")
@@ -113,9 +114,9 @@ export function resolvePreviewImport(
       : importer
         ? resolve(dirname(importer), specifier)
         : undefined;
-  if (!file) return undefined;
+  if (!file) return;
   const previewId = getPreviewImportId(file, params);
-  if (!previewId) return undefined;
+  if (!previewId) return;
   return getPreviewFile(join(params.codegenDir, "previews"), previewId);
 }
 
