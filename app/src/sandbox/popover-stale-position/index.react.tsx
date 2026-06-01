@@ -78,8 +78,8 @@ export default function Example() {
         type="button"
         onClick={() => {
           delayStaleUpdateRef.current = true;
-          // T005: start a new positioning run without changing placement so
-          // it becomes stale after the next placement update.
+          // Start a new positioning run without changing placement so it
+          // becomes stale after the next placement update.
           popover.render();
         }}
       >
@@ -102,7 +102,7 @@ export default function Example() {
         flip={false}
         slide={false}
         updatePosition={updatePosition}
-        wrapperProps={{ id: "popover-t005-wrapper" }}
+        wrapperProps={{ id: "popover-stale-position-wrapper" }}
       >
         Popover
       </Ariakit.Popover>

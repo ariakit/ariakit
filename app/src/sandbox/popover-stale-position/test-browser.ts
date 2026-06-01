@@ -5,7 +5,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    const wrapper = page.locator("#popover-t005-wrapper");
+    const wrapper = page.locator("#popover-stale-position-wrapper");
 
     await q.button("Start stale update").click();
     await test.expect(q.text("Pending stale update: yes")).toBeVisible();
@@ -13,8 +13,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Move top").click();
     await test.expect(q.text("Pending latest update: yes")).toBeVisible();
     await test.expect(q.text("Current placement: top")).toBeVisible();
-    // T005: the latest run has applied real top positioning, but is still
-    // pending when the stale run below resolves.
+    // The latest run has applied real top positioning, but is still pending
+    // when the stale run below resolves.
     const topTransform = await wrapper.evaluate(
       (element) => element.style.transform,
     );
