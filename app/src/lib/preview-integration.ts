@@ -160,7 +160,7 @@ function previewCodegenPlugin(params: PreviewIntegrationParams): Plugin {
 }
 
 export function previewIntegration(
-  options: PreviewDiscoveryOptions = {},
+  options: PreviewDiscoveryOptions,
 ): AstroIntegration {
   return {
     name: "ariakit-previews",

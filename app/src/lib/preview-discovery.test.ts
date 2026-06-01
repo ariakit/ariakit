@@ -11,7 +11,11 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import { dirname, join } from "node:path";
 import { afterEach, expect, test } from "vitest";
-import { discoverPreviews } from "./preview-discovery.ts";
+import {
+  discoverPreviews,
+  getPreviewFrameworks,
+  getPreviewFrameworksSync,
+} from "./preview-discovery.ts";
 
 const dirs: string[] = [];
 
@@ -32,15 +36,95 @@ async function writeFile(file: string, content = "") {
   await fs.writeFile(file, content);
 }
 
+function getExamplesRoot(dir: string) {
+  return {
+    kind: "examples",
+    dir: join(dir, "examples"),
+    metadataRequired: true,
+  };
+}
+
+function getSandboxRoot(dir: string) {
+  return {
+    kind: "sandbox",
+    dir: join(dir, "sandbox"),
+    metadataRequired: false,
+  };
+}
+
 test("requires preview metadata for examples", async () => {
   const dir = await createDir();
   await writeFile(join(dir, "examples/menu/index.react.tsx"));
 
   const promise = discoverPreviews({
-    roots: [{ kind: "examples", dir: join(dir, "examples") }],
+    roots: [getExamplesRoot(dir)],
   });
 
   await expect(promise).rejects.toThrow("Missing preview.json for menu");
+});
+
+test("infers frameworks from preview entry files", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "examples/separator/index.solid.tsx"));
+  await writeFile(join(dir, "examples/separator/index.react.tsx"));
+  const previewDir = join(dir, "examples/separator");
+
+  await expect(getPreviewFrameworks(previewDir)).resolves.toEqual([
+    "react",
+    "solid",
+  ]);
+  expect(getPreviewFrameworksSync(previewDir)).toEqual(["react", "solid"]);
+});
+
+test("returns empty frameworks without preview entry files", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "examples/menu/index.ts"));
+  const previewDir = join(dir, "examples/menu");
+
+  await expect(getPreviewFrameworks(previewDir)).resolves.toEqual([]);
+  expect(getPreviewFrameworksSync(previewDir)).toEqual([]);
+});
+
+test("rejects duplicate framework entry files", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "examples/menu/index.react.tsx"));
+  await writeFile(join(dir, "examples/menu/index.custom.react.tsx"));
+  const previewDir = join(dir, "examples/menu");
+
+  await expect(getPreviewFrameworks(previewDir)).rejects.toThrow(
+    `Duplicate react preview in ${previewDir}`,
+  );
+  expect(() => getPreviewFrameworksSync(previewDir)).toThrow(
+    `Duplicate react preview in ${previewDir}`,
+  );
+});
+
+test("supports configured preview roots", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "fixtures/menu/index.react.tsx"));
+  await writeFile(
+    join(dir, "fixtures/menu/preview.json"),
+    JSON.stringify({ title: "Menu" }),
+  );
+
+  const previews = await discoverPreviews({
+    roots: [
+      {
+        kind: "examples",
+        dir: join(dir, "fixtures"),
+        metadataRequired: true,
+      },
+    ],
+  });
+
+  expect(previews).toMatchObject([
+    {
+      frameworks: ["react"],
+      id: "menu",
+      source: "examples",
+      title: "Menu",
+    },
+  ]);
 });
 
 test("requires title metadata for examples", async () => {
@@ -49,7 +133,7 @@ test("requires title metadata for examples", async () => {
   await writeFile(join(dir, "examples/menu/preview.json"), "{}");
 
   const promise = discoverPreviews({
-    roots: [{ kind: "examples", dir: join(dir, "examples") }],
+    roots: [getExamplesRoot(dir)],
   });
 
   await expect(promise).rejects.toThrow("Missing title metadata for menu");
@@ -63,7 +147,7 @@ test("requires title metadata for metadata-only examples", async () => {
   );
 
   const promise = discoverPreviews({
-    roots: [{ kind: "examples", dir: join(dir, "examples") }],
+    roots: [getExamplesRoot(dir)],
   });
 
   await expect(promise).rejects.toThrow("Missing title metadata for menu");
@@ -78,7 +162,7 @@ test("rejects unknown preview metadata keys", async () => {
   );
 
   const promise = discoverPreviews({
-    roots: [{ kind: "examples", dir: join(dir, "examples") }],
+    roots: [getExamplesRoot(dir)],
   });
 
   await expect(promise).rejects.toThrow(
@@ -91,7 +175,7 @@ test("uses sandbox directory name without preview metadata", async () => {
   await writeFile(join(dir, "sandbox/menu-4938/index.react.tsx"));
 
   const previews = await discoverPreviews({
-    roots: [{ kind: "sandbox", dir: join(dir, "sandbox") }],
+    roots: [getSandboxRoot(dir)],
   });
 
   expect(previews).toMatchObject([
@@ -113,7 +197,7 @@ test("supports sandbox title metadata", async () => {
   );
 
   const previews = await discoverPreviews({
-    roots: [{ kind: "sandbox", dir: join(dir, "sandbox") }],
+    roots: [getSandboxRoot(dir)],
   });
 
   expect(previews).toMatchObject([
@@ -134,7 +218,7 @@ test("supports metadata-only sandbox previews", async () => {
   );
 
   const previews = await discoverPreviews({
-    roots: [{ kind: "sandbox", dir: join(dir, "sandbox") }],
+    roots: [getSandboxRoot(dir)],
   });
 
   expect(previews).toMatchObject([

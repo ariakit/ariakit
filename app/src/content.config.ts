@@ -13,6 +13,8 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { defineCollection, reference } from "astro:content";
 import { jsdoc } from "./lib/jsdoc-loader.ts";
+import { componentLoader, exampleLoader } from "./lib/mdx-loader.ts";
+import { previewConfig } from "./lib/preview-config.ts";
 import { previewLoader } from "./lib/preview-discovery.ts";
 import { FrameworkSchema, TagSchema } from "./lib/schemas.ts";
 
@@ -41,14 +43,8 @@ const guides = defineCollection({
 });
 
 const components = defineCollection({
-  loader: glob({
-    pattern: "*/_component/index.mdx",
+  loader: componentLoader({
     base: join(import.meta.dirname, "examples"),
-    generateId(options) {
-      const [id] = options.entry.split("/");
-      invariant(id, "Component must have an id");
-      return id;
-    },
   }),
   schema: z.object({
     title: z.string(),
@@ -58,8 +54,7 @@ const components = defineCollection({
 });
 
 const examples = defineCollection({
-  loader: glob({
-    pattern: "*/index.mdx",
+  loader: exampleLoader({
     base: join(import.meta.dirname, "examples"),
   }),
   schema: z.object({
@@ -87,7 +82,7 @@ const galleries = defineCollection({
 });
 
 const previews = defineCollection({
-  loader: previewLoader(),
+  loader: previewLoader(previewConfig),
   schema: z.object({
     title: z.string(),
     fullscreen: z.boolean().optional(),

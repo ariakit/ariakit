@@ -12,6 +12,7 @@ import os from "node:os";
 import { join } from "node:path";
 import { afterEach, expect, test } from "vitest";
 import { writePreviewCodegen } from "./preview-codegen.ts";
+import { previewConfig } from "./preview-config.ts";
 import { resolvePreviewRoots } from "./preview-discovery.ts";
 import type { DiscoveredPreview } from "./preview-discovery.ts";
 import { shouldRegeneratePreview } from "./preview-integration.ts";
@@ -101,7 +102,7 @@ test("generates deferred preview content modules", async () => {
 test("regenerates previews only for structural files", async () => {
   const dir = await createDir();
   const srcDir = join(dir, "src");
-  const roots = resolvePreviewRoots({ srcDir });
+  const roots = resolvePreviewRoots({ ...previewConfig, srcDir });
 
   expect(
     shouldRegeneratePreview(

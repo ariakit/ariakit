@@ -7,6 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { readdirSync } from "node:fs";
 import type { Dirent } from "node:fs";
 import fs from "node:fs/promises";
 import { basename, isAbsolute, join, relative, resolve } from "node:path";
@@ -27,13 +28,13 @@ type PathInput = string | URL;
 export interface PreviewRootOptions {
   kind: string;
   dir: PathInput;
-  metadataRequired?: boolean;
+  metadataRequired: boolean;
 }
 
 export interface PreviewDiscoveryOptions {
   root?: PathInput;
   srcDir?: PathInput;
-  roots?: PreviewRootOptions[];
+  roots: PreviewRootOptions[];
   metadataFileName?: string;
 }
 
@@ -99,30 +100,16 @@ function getDefaultSrcDir(options: PreviewDiscoveryOptions) {
   return new URL("../", import.meta.url);
 }
 
-export function resolvePreviewRoots(options: PreviewDiscoveryOptions = {}) {
-  if (options.roots) {
-    return options.roots.map((root) => ({
-      kind: root.kind,
-      dir: toFilePath(root.dir, options.srcDir ?? options.root),
-      metadataRequired: root.metadataRequired ?? root.kind === "examples",
-    }));
-  }
+export function resolvePreviewRoots(options: PreviewDiscoveryOptions) {
   const srcDir = getDefaultSrcDir(options);
-  return [
-    {
-      kind: "examples",
-      dir: toFilePath("examples", srcDir),
-      metadataRequired: true,
-    },
-    {
-      kind: "sandbox",
-      dir: toFilePath("sandbox", srcDir),
-      metadataRequired: false,
-    },
-  ];
+  return options.roots.map((root) => ({
+    kind: root.kind,
+    dir: toFilePath(root.dir, srcDir),
+    metadataRequired: root.metadataRequired,
+  }));
 }
 
-function getPreviewMetadataFileName(options: PreviewDiscoveryOptions = {}) {
+function getPreviewMetadataFileName(options: PreviewDiscoveryOptions) {
   return options.metadataFileName ?? "preview.json";
 }
 
@@ -200,6 +187,37 @@ function sortFrameworks(frameworks: Iterable<Framework>) {
   return FRAMEWORKS.filter((framework) => set.has(framework));
 }
 
+function getPreviewEntryFiles(dir: string, entries: Dirent[]) {
+  const entryFiles: Partial<Record<Framework, string>> = {};
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    if (!isPreviewEntryFile(entry.name)) continue;
+    const framework = getFrameworkByFilename(entry.name);
+    invariant(framework, `Invalid preview entry file: ${entry.name}`);
+    invariant(
+      !entryFiles[framework],
+      `Duplicate ${framework} preview in ${dir}`,
+    );
+    entryFiles[framework] = join(dir, entry.name);
+  }
+  return entryFiles;
+}
+
+function getPreviewFrameworksFromEntries(dir: string, entries: Dirent[]) {
+  const entryFiles = getPreviewEntryFiles(dir, entries);
+  return sortFrameworks(Object.keys(entryFiles).filter(isFramework));
+}
+
+export async function getPreviewFrameworks(dir: string) {
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  return getPreviewFrameworksFromEntries(dir, entries);
+}
+
+export function getPreviewFrameworksSync(dir: string) {
+  const entries = readdirSync(dir, { withFileTypes: true });
+  return getPreviewFrameworksFromEntries(dir, entries);
+}
+
 function getFallbackTitle(dir: string) {
   return basename(dir);
 }
@@ -250,7 +268,7 @@ async function discoverRoot(
   } catch {
     return;
   }
-  const entryFiles: Partial<Record<Framework, string>> = {};
+  const entryFiles = getPreviewEntryFiles(dir, entries);
   let metadata: PreviewMetadata | undefined;
   for (const entry of entries) {
     if (!entry.isFile()) continue;
@@ -261,14 +279,6 @@ async function discoverRoot(
       );
       continue;
     }
-    if (!isPreviewEntryFile(entry.name)) continue;
-    const framework = getFrameworkByFilename(entry.name);
-    invariant(framework, `Invalid preview entry file: ${entry.name}`);
-    invariant(
-      !entryFiles[framework],
-      `Duplicate ${framework} preview in ${dir}`,
-    );
-    entryFiles[framework] = join(dir, entry.name);
   }
   const hasEntryFiles = Object.keys(entryFiles).length > 0;
   const hasMetadataFrameworks = !!metadata?.frameworks?.length;
@@ -289,7 +299,7 @@ async function discoverRoot(
   }
 }
 
-export async function discoverPreviews(options: PreviewDiscoveryOptions = {}) {
+export async function discoverPreviews(options: PreviewDiscoveryOptions) {
   const roots = resolvePreviewRoots(options);
   const previews = new Map<string, DiscoveredPreview>();
   const metadataFileName = getPreviewMetadataFileName(options);
@@ -299,7 +309,7 @@ export async function discoverPreviews(options: PreviewDiscoveryOptions = {}) {
   return [...previews.values()].sort((a, b) => a.id.localeCompare(b.id));
 }
 
-export function previewLoader(options: PreviewDiscoveryOptions = {}): Loader {
+export function previewLoader(options: PreviewDiscoveryOptions): Loader {
   return {
     name: "ariakit-preview-loader",
     async load(context) {
