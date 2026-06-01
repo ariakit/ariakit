@@ -24,7 +24,7 @@ const FROM_CLAUSE = String.raw`\s+from\s+${PATH_QUOTED}`;
 // Import patterns
 const IMPORT_SIDE_EFFECT = new RegExp(String.raw`import\s+${PATH_QUOTED}`, "g");
 const IMPORT_NAMED = new RegExp(
-  String.raw`import\s+(?!type\b)\{[\s\S]*?\}${FROM_CLAUSE}`,
+  String.raw`import\s+(?!type\b)\{[\s\S]*?\}${FROM_CLAUSE}[\t ]*;?`,
   "g",
 );
 const IMPORT_FROM_ANY = new RegExp(
@@ -156,7 +156,7 @@ function getOrCreate<K, V>(map: Map<K, V>, key: K, factory: () => V): V {
  * deleting import declarations via regex replacements.
  */
 function cleanSemicolonOnlyLines(text: string): string {
-  return text.replace(/^[\t ]*;[\t ]*\r?\n/gm, "");
+  return text.replace(/^[\t ]*;[\t ]*(?:\r?\n|$)/gm, "");
 }
 
 /**
@@ -425,18 +425,18 @@ function buildRemainingImport(
   // Both kinds remain - split into two lines
   if (remainingRuntime.length > 0 && remainingType.length > 0) {
     return [
-      `import { ${remainingRuntime.join(", ")} } from "${modulePath}"`,
-      `import type { ${remainingType.join(", ")} } from "${modulePath}"`,
+      `import { ${remainingRuntime.join(", ")} } from "${modulePath}";`,
+      `import type { ${remainingType.join(", ")} } from "${modulePath}";`,
     ].join("\n");
   }
 
   // Only runtime specifiers remain
   if (remainingRuntime.length > 0) {
-    return `import { ${remainingRuntime.join(", ")} } from "${modulePath}"`;
+    return `import { ${remainingRuntime.join(", ")} } from "${modulePath}";`;
   }
 
   // Only type specifiers remain
-  return `import type { ${remainingType.join(", ")} } from "${modulePath}"`;
+  return `import type { ${remainingType.join(", ")} } from "${modulePath}";`;
 }
 
 /**
@@ -574,7 +574,7 @@ export function mergeImports(
       const remainingRuntime = transformedValue === false ? runtime : [];
       const remainingType = transformedType === false ? typeOnly : [];
 
-      return buildRemainingImport(remainingRuntime, remainingType, path);
+      return buildRemainingImport(remainingRuntime, remainingType, path) || ";";
     });
   };
 
@@ -739,6 +739,8 @@ function stripInternalImports(
   const removeMatchingImports = (pattern: RegExp) => {
     body = body.replace(pattern, (match, ...args) => {
       const groups = args[args.length - 1] as RegExpExecArray["groups"];
+      const offset = (args[args.length - 3] as number) ?? 0;
+      const fullText = (args[args.length - 2] as string) ?? body;
       const specifier = getPathFromGroups(groups);
       if (!specifier) return match;
 
@@ -753,7 +755,10 @@ function stripInternalImports(
         );
       }
 
-      return "";
+      const unmatchedSemicolon = /^[\t ]*;/.test(
+        fullText.slice(offset + match.length),
+      );
+      return unmatchedSemicolon ? "" : ";";
     });
   };
 

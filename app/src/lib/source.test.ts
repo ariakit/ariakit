@@ -195,6 +195,29 @@ test("mergeImports filters imports", () => {
   `);
 });
 
+test("mergeImports terminates rewritten mixed imports", () => {
+  const code = [
+    'import { A, type T } from "keep";',
+    'import { B } from "move";',
+    "export const value = A + B;",
+  ].join("\n");
+  expect(mergeImports(code, (p) => (p === "move" ? "moved" : false)))
+    .toMatchInlineSnapshot(`
+    "import { A } from "keep";
+    import type { T } from "keep";
+    import { B } from "moved";
+    export const value = A + B;"
+  `);
+});
+
+test("mergeImports removes transformed imports at EOF", () => {
+  expect(mergeImports('import { A } from "x"', (p) => p))
+    .toMatchInlineSnapshot(`
+    "import { A } from "x";
+    "
+  `);
+});
+
 test("mergeImports ignores specific imports", () => {
   const code = [
     'import "side-effect";',
@@ -246,6 +269,24 @@ test("mergeFiles removes internal imports between merged files", () => {
     export function a() {
       return b + 1;
     }
+    "
+  `);
+});
+
+test("mergeFiles removes internal imports at EOF", () => {
+  const files = {
+    "/path/to/utils/a.ts": {
+      id: "/path/to/utils/a.ts",
+      content: 'import { b } from "./b";',
+    },
+    "/path/to/utils/b.ts": {
+      id: "/path/to/utils/b.ts",
+      content: "export const b = 1;",
+    },
+  };
+  const merged = mergeFiles(files);
+  expect(merged["/path/to/utils.ts"]?.content).toMatchInlineSnapshot(`
+    "export const b = 1;
     "
   `);
 });
