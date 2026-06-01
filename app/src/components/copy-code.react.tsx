@@ -26,7 +26,7 @@ export function CopyCode({
   title = label,
   ...props
 }: CopyCodeProps) {
-  const [state, setState] = useState<"idle" | "copying" | "copied">("idle");
+  const [state, setState] = useState<"idle" | "copied">("idle");
 
   useEffect(() => {
     if (state !== "copied") return;
@@ -55,7 +55,11 @@ export function CopyCode({
           props.onClick?.(event);
           if (event.defaultPrevented) return;
           if (state !== "idle") return;
-          await navigator.clipboard.writeText(text);
+          try {
+            await navigator.clipboard.writeText(text);
+          } catch {
+            return;
+          }
           setState("copied");
         }}
       >
