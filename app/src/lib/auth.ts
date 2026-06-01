@@ -157,6 +157,9 @@ export interface CreateTeamParams {
   user?: User | string | null;
 }
 
+// Clerk enforces unique organization slugs, so deriving one from the checkout
+// session gives retries and concurrent fulfillment an idempotency key.
+// Keep the slug compact while preserving 128 bits of the session hash.
 async function getCheckoutTeamSlug(checkoutSession: string) {
   const data = new TextEncoder().encode(checkoutSession);
   const hash = await crypto.subtle.digest("SHA-256", data);
@@ -208,18 +211,18 @@ export async function createTeam(params: CreateTeamParams) {
     info("Created team %s", name);
     return team;
   } catch (error) {
-    if (!checkoutSession) throw error;
     if (!checkoutSlug) throw error;
     const existingTeam = await clerk.organizations
       .getOrganization({ slug: checkoutSlug })
       .catch(() => null);
+    if (!existingTeam) throw error;
     if (
-      existingTeam?.privateMetadata.stripeCheckoutSessionId === checkoutSession
+      existingTeam.privateMetadata.stripeCheckoutSessionId !== checkoutSession
     ) {
-      info("Found team %s", existingTeam.name);
-      return existingTeam;
+      throw error;
     }
-    throw error;
+    info("Found team %s", existingTeam.name);
+    return existingTeam;
   }
 }
 
