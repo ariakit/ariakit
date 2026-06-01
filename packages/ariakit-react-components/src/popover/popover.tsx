@@ -281,7 +281,16 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
       const anchor = getAnchorElement(anchorElement, getAnchorRectProp);
 
+      let canceled = false;
+
+      const shouldCancelUpdate = () => {
+        if (canceled) return true;
+        if (!popoverElement.isConnected) return true;
+        return false;
+      };
+
       const updatePosition = async () => {
+        if (shouldCancelUpdate()) return;
         if (!mounted) return;
 
         if (!arrowElement) {
@@ -309,6 +318,8 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           strategy: fixed ? "fixed" : "absolute",
           middleware,
         });
+
+        if (shouldCancelUpdate()) return;
 
         store?.setState("currentPlacement", pos.placement);
         setPositioned(true);
@@ -354,8 +365,11 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       };
 
       const update = async () => {
+        if (shouldCancelUpdate()) return;
+
         if (hasCustomUpdatePosition) {
           await updatePositionProp({ updatePosition });
+          if (shouldCancelUpdate()) return;
           setPositioned(true);
         } else {
           await updatePosition();
@@ -369,6 +383,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       });
 
       return () => {
+        canceled = true;
         setPositioned(false);
         cancelAutoUpdate();
       };

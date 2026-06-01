@@ -5,7 +5,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    const wrapper = page.getByTestId("popover-wrapper");
+    const wrapper = page.locator("#popover-t005-wrapper");
 
     await q.button("Start stale update").click();
     await test.expect(q.text("Pending stale update: yes")).toBeVisible();
