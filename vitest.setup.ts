@@ -133,21 +133,20 @@ function parseTest(filename?: string) {
   };
 }
 
-const LOADER = getTestLoader();
-
 beforeEach(async ({ task, skip }) => {
   const parseResult = parseTest(task.file?.name);
   if (!parseResult) return;
-  if (!LOADER) {
+  const loader = getTestLoader();
+  if (!loader) {
     skip();
     return;
   }
-  const { dir, loader } = parseResult;
-  if (loader !== "all" && loader !== LOADER) {
+  const { dir, loader: testLoader } = parseResult;
+  if (testLoader !== "all" && testLoader !== loader) {
     skip();
     return;
   }
-  const result = await LOADERS[LOADER](dir);
+  const result = await LOADERS[loader](dir);
   if (result === false) skip();
   return result;
 });

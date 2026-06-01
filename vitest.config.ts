@@ -17,8 +17,6 @@ const includeWithStyles = [
   /disclosure-content-animating/,
 ];
 
-export type { AllowedTestLoader } from "./test-loader.ts";
-
 const testLoader = getTestLoader();
 
 const defaultTestIncludes = ["**/*test.{ts,tsx}"];
@@ -47,13 +45,8 @@ function getFrameworkTestIncludes(loader: AllowedTestLoader) {
   ];
 }
 
-const testIncludesByLoader = {
-  react: getFrameworkTestIncludes("react"),
-  solid: getFrameworkTestIncludes("solid"),
-} satisfies Record<AllowedTestLoader, string[]>;
-
 const testIncludes = testLoader
-  ? testIncludesByLoader[testLoader]
+  ? getFrameworkTestIncludes(testLoader)
   : defaultTestIncludes;
 
 const testExcludes = [
@@ -70,14 +63,12 @@ const sourcePluginInstance = sourcePlugin(
   join(rootDir, "app/src/examples/"),
 ) as unknown as PluginOption;
 
-const pluginsByLoader: Record<AllowedTestLoader, Array<PluginOption>> = {
-  react: [reactPlugin(), sourcePluginInstance],
-  solid: [solidPlugin(), sourcePluginInstance],
-};
-
-const plugins = testLoader
-  ? pluginsByLoader[testLoader]
-  : [sourcePluginInstance];
+const plugins = [sourcePluginInstance];
+if (testLoader === "react") {
+  plugins.unshift(reactPlugin());
+} else if (testLoader === "solid") {
+  plugins.unshift(solidPlugin());
+}
 
 export default defineConfig({
   root: rootDir,
