@@ -3,7 +3,7 @@
  * @module Event utilities
  */
 
-import { contains, isNode } from "./dom.ts";
+import { contains, isElement, isNode } from "./dom.ts";
 import { isApple } from "./platform.ts";
 
 /**
@@ -32,26 +32,29 @@ export function isSelfTarget(
   return event.target === event.currentTarget;
 }
 
+function isActivatableNavigationTarget(element: EventTarget | null) {
+  if (!isElement(element)) return false;
+  const target = element as
+    | HTMLAnchorElement
+    | HTMLButtonElement
+    | HTMLInputElement;
+  const tagName = target.tagName.toLowerCase();
+  if (tagName === "a") return true;
+  if (tagName === "button" && target.type === "submit") return true;
+  if (tagName === "input" && target.type === "submit") return true;
+  return false;
+}
+
 /**
  * Checks whether the user event is triggering a page navigation in a new tab.
  */
 export function isOpeningInNewTab(
   event: Pick<MouseEvent, "currentTarget" | "metaKey" | "ctrlKey">,
 ) {
-  const element = event.currentTarget as
-    | HTMLAnchorElement
-    | HTMLButtonElement
-    | HTMLInputElement
-    | null;
-  if (!element) return false;
   const isAppleDevice = isApple();
   if (isAppleDevice && !event.metaKey) return false;
   if (!isAppleDevice && !event.ctrlKey) return false;
-  const tagName = element.tagName.toLowerCase();
-  if (tagName === "a") return true;
-  if (tagName === "button" && element.type === "submit") return true;
-  if (tagName === "input" && element.type === "submit") return true;
-  return false;
+  return isActivatableNavigationTarget(event.currentTarget);
 }
 
 /**
@@ -60,18 +63,8 @@ export function isOpeningInNewTab(
 export function isDownloading(
   event: Pick<MouseEvent, "altKey" | "currentTarget">,
 ) {
-  const element = event.currentTarget as
-    | HTMLAnchorElement
-    | HTMLButtonElement
-    | HTMLInputElement
-    | null;
-  if (!element) return false;
-  const tagName = element.tagName.toLowerCase();
   if (!event.altKey) return false;
-  if (tagName === "a") return true;
-  if (tagName === "button" && element.type === "submit") return true;
-  if (tagName === "input" && element.type === "submit") return true;
-  return false;
+  return isActivatableNavigationTarget(event.currentTarget);
 }
 
 /**

@@ -13,7 +13,10 @@ import { glob } from "astro/loaders";
 import { z } from "astro/zod";
 import { defineCollection, reference } from "astro:content";
 import { jsdoc } from "./lib/jsdoc-loader.ts";
-import { FrameworkSchema, TagSchema } from "./lib/schemas.ts";
+import { componentLoader, exampleLoader } from "./lib/mdx-loader.ts";
+import { previewConfig } from "./lib/preview-config.ts";
+import { previewLoader } from "./lib/preview-discovery.ts";
+import { TagSchema } from "./lib/schemas.ts";
 
 function generateExampleId(options: { entry: string }) {
   return options.entry
@@ -40,33 +43,28 @@ const guides = defineCollection({
 });
 
 const components = defineCollection({
-  loader: glob({
-    pattern: "*/_component/index.mdx",
+  loader: componentLoader({
     base: join(import.meta.dirname, "examples"),
-    generateId(options) {
-      const [id] = options.entry.split("/");
-      invariant(id, "Component must have an id");
-      return id;
-    },
   }),
-  schema: z.object({
-    title: z.string(),
-    frameworks: FrameworkSchema.array(),
-    tags: TagSchema.array().default([]),
-  }),
+  schema: componentLoader.schema(
+    z.object({
+      title: z.string(),
+      tags: TagSchema.array().default([]),
+    }),
+  ),
 });
 
 const examples = defineCollection({
-  loader: glob({
-    pattern: "*/index.mdx",
+  loader: exampleLoader({
     base: join(import.meta.dirname, "examples"),
   }),
-  schema: z.object({
-    title: z.string(),
-    frameworks: FrameworkSchema.array(),
-    tags: TagSchema.array().default([]),
-    components: z.array(reference("components")).default([]),
-  }),
+  schema: exampleLoader.schema(
+    z.object({
+      title: z.string(),
+      tags: TagSchema.array().default([]),
+      components: z.array(reference("components")).default([]),
+    }),
+  ),
 });
 
 const descriptions = defineCollection({
@@ -86,16 +84,8 @@ const galleries = defineCollection({
 });
 
 const previews = defineCollection({
-  loader: glob({
-    pattern: ["examples/**/preview.mdx", "sandbox/**/preview.mdx"],
-    base: import.meta.dirname,
-    generateId: generateExampleId,
-  }),
-  schema: z.object({
-    title: z.string(),
-    fullscreen: z.boolean().optional(),
-    frameworks: FrameworkSchema.array(),
-  }),
+  loader: previewLoader(previewConfig),
+  schema: previewLoader.schema,
 });
 
 const references = defineCollection({

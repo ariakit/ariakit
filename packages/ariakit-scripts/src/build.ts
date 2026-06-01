@@ -1,20 +1,13 @@
 import { lstatSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
-import { join, sep } from "node:path";
+import { join } from "node:path";
 import { build as rolldownBuild } from "rolldown";
 import type { Plugin } from "rolldown";
 import { dts } from "rolldown-plugin-dts";
 import solidPlugin from "vite-plugin-solid";
 import { escapeRegExp } from "./regexp.ts";
-
-interface PackageJson {
-  name: string;
-  scripts?: Record<string, string>;
-  exports?: Record<string, unknown>;
-  dependencies?: Record<string, string>;
-  peerDependencies?: Record<string, string>;
-  [key: string]: unknown;
-}
+import { normalizePath, readPackageJson } from "./utils.ts";
+import type { PackageJson } from "./utils.ts";
 
 interface PublicFile {
   name: string;
@@ -49,10 +42,6 @@ const npmIgnoreEntries = [
 // Use the neutral platform for published libraries so Rolldown doesn't inline
 // runtime process.env.NODE_ENV checks for browser builds.
 const buildPlatform = "neutral";
-
-function normalizePath(path: string) {
-  return path.split(sep).join("/");
-}
 
 function removeExtension(path: string) {
   return path.replace(/\.[^.]+$/, "");
@@ -114,11 +103,6 @@ function matchesNpmIgnoreEntry(path: string, entry: string) {
 
 function isNpmIgnored(path: string) {
   return npmIgnoreEntries.some((entry) => matchesNpmIgnoreEntry(path, entry));
-}
-
-function readPackageJson(rootPath: string): PackageJson {
-  const packageJsonPath = join(rootPath, "package.json");
-  return JSON.parse(readFileSync(packageJsonPath, "utf-8"));
 }
 
 function writePackageJson(rootPath: string, packageJson: PackageJson) {

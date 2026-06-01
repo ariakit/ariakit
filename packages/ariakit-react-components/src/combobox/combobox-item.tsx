@@ -10,10 +10,11 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
+  hasFocus,
+  hasOwnProperty,
   isTextField,
   isDownloading,
   isOpeningInNewTab,
-  hasFocus,
   invariant,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
@@ -35,6 +36,12 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
+const itemRoleByPopupRole = {
+  menu: "menuitem",
+  listbox: "option",
+  tree: "treeitem",
+};
+
 function isSelected(
   storeValue?: string | readonly string[],
   itemValue?: string,
@@ -47,14 +54,13 @@ function isSelected(
   return storeValue === itemValue;
 }
 
-function getItemRole(popupRole?: string) {
-  const itemRoleByPopupRole = {
-    menu: "menuitem",
-    listbox: "option",
-    tree: "treeitem",
-  };
-  const key = popupRole as keyof typeof itemRoleByPopupRole;
-  return itemRoleByPopupRole[key] ?? "option";
+/**
+ * Returns the role for a combobox item based on the popup role.
+ */
+export function getItemRole(popupRole?: string) {
+  if (popupRole == null) return "option";
+  if (!hasOwnProperty(itemRoleByPopupRole, popupRole)) return "option";
+  return itemRoleByPopupRole[popupRole];
 }
 
 /**

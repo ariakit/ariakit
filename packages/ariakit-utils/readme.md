@@ -1048,7 +1048,7 @@ Returns the previous tabbable element in `container`.
 
 ```ts
 function getPreviousTabbable(
-  fallbackToFirst?: boolean,
+  fallbackToLast?: boolean,
   fallbackToFocusable?: boolean,
 ): HTMLElement | null;
 ```

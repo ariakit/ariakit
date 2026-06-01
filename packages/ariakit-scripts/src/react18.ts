@@ -4,24 +4,21 @@ import {
   mkdir,
   copyFile,
   readdir,
-  readFile,
   readlink,
   rm,
   symlink,
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { delimiter, dirname, isAbsolute, join, relative, sep } from "node:path";
+import { delimiter, dirname, isAbsolute, join, relative } from "node:path";
 import { watch } from "chokidar";
 import type { FSWatcher } from "chokidar";
-
-interface PackageJson {
-  scripts?: Record<string, string>;
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-  optionalDependencies?: Record<string, string>;
-  [key: string]: unknown;
-}
+import {
+  normalizePath,
+  readPackageJson,
+  readPackageJsonFile,
+} from "./utils.ts";
+import type { PackageJson } from "./utils.ts";
 
 interface React18Command {
   bin: string;
@@ -63,10 +60,6 @@ const pathKey =
 
 function log(message: string) {
   console.error(`[react18] ${message}`);
-}
-
-function normalizePath(path: string) {
-  return path.split(sep).join("/");
 }
 
 function isErrnoException(error: unknown): error is NodeJS.ErrnoException {
@@ -294,13 +287,8 @@ function getDependencyVersion(packageJson: PackageJson, name: string) {
   throw new Error(`${name} must be declared in website/package.json`);
 }
 
-async function readPackageJson(path: string) {
-  const contents = await readFile(path, "utf-8");
-  return JSON.parse(contents) as PackageJson;
-}
-
 async function getReact18DependencyVersions(rootPath: string) {
-  const packageJson = await readPackageJson(
+  const packageJson = await readPackageJsonFile(
     join(rootPath, "website/package.json"),
   );
 
@@ -338,7 +326,7 @@ async function rewritePackageJson(
   path: string,
   versions: Record<string, string>,
 ) {
-  const packageJson = await readPackageJson(path);
+  const packageJson = await readPackageJsonFile(path);
 
   if (!updateReactDependencies(packageJson, versions)) return false;
 
@@ -358,10 +346,6 @@ async function rewriteReactDependencies(rootPath: string) {
   }
 
   return updatedCount;
-}
-
-async function readRootPackageJson(rootPath: string) {
-  return await readPackageJson(join(rootPath, "package.json"));
 }
 
 function stripLeadingSeparator(args: string[]) {
@@ -385,24 +369,30 @@ function printHelp() {
   );
 }
 
-async function getReact18Command(
-  rootPath: string,
-  args: string[],
-): Promise<React18Command> {
+function getReact18Command(rootPath: string, args: string[]): React18Command {
   const [command, ...commandArgs] = stripLeadingSeparator(args);
 
   if (!command) {
     throw new Error("Missing command. Use `ariakit react18 <script>`.");
   }
 
-  const packageJson = await readRootPackageJson(rootPath);
-  // `react18` and `test-react-18` scripts would recurse here. Run the
-  // underlying test script directly instead.
-  if (command === "react18" || command === "test-react-18") {
+  const packageJson = readPackageJson(rootPath);
+  // The `react18` script would recurse here. Run the underlying test script
+  // directly instead.
+  if (command === "react18") {
     log(`Mapping ${command} to test to avoid recursion`);
     return {
       bin: "pnpm",
       args: ["run", "test", ...commandArgs],
+    };
+  }
+  // The `test-react-18` script delegates to `react18 test-react`. Preserve the
+  // narrowed React test suite when users invoke it through the wrapper.
+  if (command === "test-react-18") {
+    log(`Mapping ${command} to test-react to avoid recursion`);
+    return {
+      bin: "pnpm",
+      args: ["run", "test-react", ...commandArgs],
     };
   }
   if (packageJson.scripts?.[command]) {
@@ -530,7 +520,7 @@ export async function react18(args: string[]) {
     { cwd: workspacePath },
   );
 
-  const command = await getReact18Command(workspacePath, args);
+  const command = getReact18Command(workspacePath, args);
   const watcher = startWorkspaceWatcher(rootPath, workspacePath);
 
   try {
