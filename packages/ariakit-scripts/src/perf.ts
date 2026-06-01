@@ -289,7 +289,9 @@ function getScriptProfileEntry(
   return entry;
 }
 
-function parseScriptProfile(profile: CdpProfile): PerfScriptProfileEntry[] {
+export function parseScriptProfile(
+  profile: CdpProfile,
+): PerfScriptProfileEntry[] {
   const nodes = new Map<number, CdpProfileNode>();
   const parents = new Map<number, number>();
 
@@ -319,11 +321,16 @@ function parseScriptProfile(profile: CdpProfile): PerfScriptProfileEntry[] {
       entry.hitCount += 1;
     }
 
+    const totalTimeKeys = new Set<string>();
     let currentNode: CdpProfileNode | undefined = sampleNode;
     while (currentNode) {
       if (shouldIncludeScriptFrame(currentNode.callFrame)) {
-        const entry = getScriptProfileEntry(entries, currentNode.callFrame);
-        entry.totalTime += timeMs;
+        const key = scriptProfileKey(currentNode.callFrame);
+        if (!totalTimeKeys.has(key)) {
+          totalTimeKeys.add(key);
+          const entry = getScriptProfileEntry(entries, currentNode.callFrame);
+          entry.totalTime += timeMs;
+        }
       }
       const parentId = parents.get(currentNode.id);
       if (parentId == null) break;
