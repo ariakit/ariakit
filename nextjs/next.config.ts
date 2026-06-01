@@ -13,10 +13,6 @@ const config: NextConfig = {
         source: "/:path*",
         headers: [
           {
-            key: "X-Frame-Options",
-            value: "ALLOWALL",
-          },
-          {
             key: "Content-Security-Policy",
             // Allow embedding from ariakit.com/ariakit.org domains and workers.dev
             value:
