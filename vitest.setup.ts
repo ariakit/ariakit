@@ -9,7 +9,8 @@ import {
 } from "solid-js/web";
 import { expect, beforeEach } from "vitest";
 import failOnConsole from "vitest-fail-on-console";
-import type { AllowedTestLoader } from "./vitest.config.ts";
+import { getTestLoader, isAllowedTestLoader } from "./test-loader.ts";
+import type { AllowedTestLoader } from "./test-loader.ts";
 
 failOnConsole();
 
@@ -125,21 +126,27 @@ function parseTest(filename?: string) {
   if (!match?.groups) return false;
   const { dir, loader } = match.groups;
   if (!dir) return false;
+  if (loader && !isAllowedTestLoader(loader)) return false;
   return {
     dir,
-    loader: (loader ?? "all") as AllowedTestLoader | "all",
+    loader: loader ?? "all",
   };
 }
-
-const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
-  "react") as AllowedTestLoader;
 
 beforeEach(async ({ task, skip }) => {
   const parseResult = parseTest(task.file?.name);
   if (!parseResult) return;
-  const { dir, loader } = parseResult;
-  if (loader !== "all" && loader !== LOADER) skip();
-  const result = await LOADERS[LOADER](dir);
+  const loader = getTestLoader();
+  if (!loader) {
+    skip();
+    return;
+  }
+  const { dir, loader: testLoader } = parseResult;
+  if (testLoader !== "all" && testLoader !== loader) {
+    skip();
+    return;
+  }
+  const result = await LOADERS[loader](dir);
   if (result === false) skip();
   return result;
 });
