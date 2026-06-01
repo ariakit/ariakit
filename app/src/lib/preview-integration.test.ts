@@ -15,7 +15,10 @@ import { writePreviewCodegen } from "./preview-codegen.ts";
 import { previewConfig } from "./preview-config.ts";
 import { resolvePreviewRoots } from "./preview-discovery.ts";
 import type { DiscoveredPreview } from "./preview-discovery.ts";
-import { shouldRegeneratePreview } from "./preview-integration.ts";
+import {
+  resolvePreviewImport,
+  shouldRegeneratePreview,
+} from "./preview-integration.ts";
 
 const dirs: string[] = [];
 
@@ -125,4 +128,22 @@ test("regenerates previews only for structural files", async () => {
       roots,
     ),
   ).toBe(false);
+});
+
+test("resolves preview imports with windows separators", async () => {
+  const dir = await createDir();
+  const srcDir = join(dir, "src");
+  const codegenDir = join(dir, "codegen");
+  const importer = join(srcDir, "examples/menu/index.mdx");
+
+  const file = resolvePreviewImport(".\\preview.astro?source", importer, {
+    codegenDir,
+    config: {
+      root: new URL(`${dir}/`, "file:"),
+      srcDir: new URL(`${srcDir}/`, "file:"),
+    },
+    options: previewConfig,
+  });
+
+  expect(file).toBe(join(codegenDir, "previews/menu/preview.astro"));
 });

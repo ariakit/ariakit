@@ -99,6 +99,23 @@ test("rejects duplicate framework entry files", async () => {
   );
 });
 
+test("rejects framework metadata without matching entry files", async () => {
+  const dir = await createDir();
+  await writeFile(join(dir, "examples/menu/index.react.tsx"));
+  await writeFile(
+    join(dir, "examples/menu/preview.json"),
+    JSON.stringify({ frameworks: ["react", "solid"], title: "Menu" }),
+  );
+
+  const promise = discoverPreviews({
+    roots: [getExamplesRoot(dir)],
+  });
+
+  await expect(promise).rejects.toThrow(
+    'Preview "menu" declares "solid" without an index.solid entry file',
+  );
+});
+
 test("supports configured preview roots", async () => {
   const dir = await createDir();
   await writeFile(join(dir, "fixtures/menu/index.react.tsx"));

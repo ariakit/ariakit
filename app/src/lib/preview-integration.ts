@@ -32,7 +32,7 @@ import {
 import type { PreviewDiscoveryOptions } from "./preview-discovery.ts";
 
 interface PreviewIntegrationParams {
-  config: AstroConfig;
+  config: Pick<AstroConfig, "root" | "srcDir">;
   codegenDir: string;
   options: PreviewDiscoveryOptions;
 }
@@ -96,13 +96,13 @@ function getPreviewImportId(file: string, params: PreviewIntegrationParams) {
   return undefined;
 }
 
-function resolvePreviewImport(
+export function resolvePreviewImport(
   id: string,
   importer: string | undefined,
   params: PreviewIntegrationParams,
 ) {
   const specifier = id.split("?")[0] ?? id;
-  if (!specifier.endsWith("/preview.astro")) return undefined;
+  if (basename(toPosixPath(specifier)) !== "preview.astro") return undefined;
   const file = isAbsolute(specifier)
     ? specifier
     : specifier.startsWith("#app/")

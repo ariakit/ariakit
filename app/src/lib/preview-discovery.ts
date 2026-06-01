@@ -241,10 +241,17 @@ function addPreview({
 }: AddPreviewParams) {
   const id = getPreviewId(context.root, dir);
   if (!id) return;
-  const frameworks =
-    metadata.frameworks ??
-    sortFrameworks(Object.keys(entryFiles).filter(isFramework));
+  const entryFrameworks = sortFrameworks(
+    Object.keys(entryFiles).filter(isFramework),
+  );
+  const frameworks = metadata.frameworks ?? entryFrameworks;
   if (frameworks.length === 0) return;
+  for (const framework of frameworks) {
+    invariant(
+      entryFrameworks.length === 0 || !!entryFiles[framework],
+      `Preview "${id}" declares "${framework}" without an index.${framework} entry file`,
+    );
+  }
   const existing = context.previews.get(id);
   invariant(!existing, `Duplicate preview id: ${id}`);
   context.previews.set(id, {
