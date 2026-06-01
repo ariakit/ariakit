@@ -10,7 +10,20 @@
 // @ts-nocheck Revisit this after we merge the app folder into root
 import { createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
-import type { CodeBlockLanguage } from "./shiki.types.ts";
+
+export type CodeBlockLanguage =
+  | "bash"
+  | "css"
+  | "html"
+  | "javascript"
+  | "js"
+  | "jsx"
+  | "json"
+  | "python"
+  | "text"
+  | "ts"
+  | "tsx"
+  | "typescript";
 
 const langByFilename = {
   bun: "bash",

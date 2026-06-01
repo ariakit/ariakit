@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { CodeBlockLanguage } from "#app/lib/shiki.types.ts";
+import type { CodeBlockLanguage } from "#app/lib/shiki.ts";
 import type * as icons from "../icons/icons.ts";
 
 type IconName = keyof typeof icons;
