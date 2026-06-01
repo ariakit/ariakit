@@ -18,9 +18,9 @@ const config: NextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            // Allow embedding from any ariakit.com/ariakit.org subdomain and workers.dev
+            // Allow embedding from ariakit.com/ariakit.org domains and workers.dev
             value:
-              "frame-ancestors 'self' https://*.ariakit.com https://*.ariakit.org https://*.workers.dev http://localhost:*",
+              "frame-ancestors 'self' https://ariakit.com https://*.ariakit.com https://ariakit.org https://*.ariakit.org https://*.workers.dev http://localhost:*",
           },
         ],
       },
