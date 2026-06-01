@@ -160,11 +160,14 @@ function getShiftMiddleware(
 
 function getSizeMiddleware(
   props: Pick<PopoverOptions, "sameWidth" | "fitViewport" | "overflowPadding">,
+  shouldCancel?: () => boolean,
 ) {
   // https://floating-ui.com/docs/size
   return size({
     padding: props.overflowPadding,
     apply({ elements, availableWidth, availableHeight, rects }) {
+      if (shouldCancel?.()) return;
+
       const wrapper = elements.floating;
       const referenceWidth = Math.round(rects.reference.width);
 
@@ -305,11 +308,14 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           getFlipMiddleware({ flip, overflowPadding }),
           getShiftMiddleware({ slide, shift, overlap, overflowPadding }),
           getArrowMiddleware(arrow, { arrowPadding }),
-          getSizeMiddleware({
-            sameWidth,
-            fitViewport,
-            overflowPadding,
-          }),
+          getSizeMiddleware(
+            {
+              sameWidth,
+              fitViewport,
+              overflowPadding,
+            },
+            shouldCancelUpdate,
+          ),
         ];
 
         // https://floating-ui.com/docs/computePosition
