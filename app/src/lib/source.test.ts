@@ -226,7 +226,19 @@ test("mergeImports preserves attributes on remaining imports", () => {
   `);
 });
 
-test("mergeImports consumes attributes on transformed type imports", () => {
+test("mergeImports preserves attributes on hoisted imports", () => {
+  const code = [
+    'import { A, type T } from "./data.json" with { type: "json" };',
+    "export const value = A;",
+  ].join("\n");
+  expect(mergeImports(code, (p) => p)).toMatchInlineSnapshot(`
+    "import type { T } from "./data.json" with { type: "json" };
+    import { A } from "./data.json" with { type: "json" };
+    export const value = A;"
+  `);
+});
+
+test("mergeImports drops attributes when transformed type imports change paths", () => {
   const code = [
     'import type { T } from "./data.json" with { type: "json" };',
     "export const value: T = {};",
@@ -588,6 +600,17 @@ test("hoistImports hoists import type namespace", () => {
   ].join("\n");
   expect(hoistImports(code)).toBe(
     'import type * as React from "react";\n\nexport const a = 1;',
+  );
+});
+
+test("hoistImports preserves import attributes", () => {
+  const code = [
+    'import { A } from "./data.json" with { type: "json" };',
+    "",
+    "export const value = A;",
+  ].join("\n");
+  expect(hoistImports(code)).toBe(
+    'import { A } from "./data.json" with { type: "json" };\n\nexport const value = A;',
   );
 });
 
