@@ -17,16 +17,20 @@ const MenuItemRadioProbe = forwardRef<HTMLDivElement, MenuItemRadioProbeProps>(
   },
 );
 
+const defaultValues = {
+  // TODO T045: Use MenuItemRadio defaultChecked once the library fix lands.
+  density: "compact",
+};
+
 export default function Example() {
   return (
-    <Ariakit.MenuProvider>
+    <Ariakit.MenuProvider defaultValues={defaultValues}>
       <Ariakit.MenuButton>Preferences</Ariakit.MenuButton>
       <Ariakit.Menu alwaysVisible>
         <Ariakit.MenuItemRadio
           render={<MenuItemRadioProbe />}
           name="density"
           value="compact"
-          defaultChecked
         >
           Compact
         </Ariakit.MenuItemRadio>
