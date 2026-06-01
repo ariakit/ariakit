@@ -755,6 +755,8 @@ function stripInternalImports(
         );
       }
 
+      // Some import patterns consume the trailing semicolon. Others leave it
+      // behind for cleanSemicolonOnlyLines to remove.
       const unmatchedSemicolon = /^[\t ]*;/.test(
         fullText.slice(offset + match.length),
       );
