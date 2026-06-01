@@ -759,8 +759,6 @@ function stripInternalImports(
   const removeMatchingImports = (pattern: RegExp) => {
     body = body.replace(pattern, (match, ...args) => {
       const groups = args[args.length - 1] as RegExpExecArray["groups"];
-      const offset = (args[args.length - 3] as number) ?? 0;
-      const fullText = (args[args.length - 2] as string) ?? body;
       const specifier = getPathFromGroups(groups);
       if (!specifier) return match;
 
@@ -775,12 +773,7 @@ function stripInternalImports(
         );
       }
 
-      // Some import patterns consume the trailing semicolon. Others leave it
-      // behind for cleanSemicolonOnlyLines to remove.
-      const unmatchedSemicolon = /^[\t ]*;/.test(
-        fullText.slice(offset + match.length),
-      );
-      return unmatchedSemicolon ? "" : ";";
+      return ";";
     });
   };
 
