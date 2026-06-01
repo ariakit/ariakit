@@ -16,17 +16,26 @@ export default function Example() {
   const delayLatestUpdateRef = useRef(false);
   const latestPositionedRef = useRef(false);
   const latestUpdatePromiseRef = useRef<Promise<void> | null>(null);
+  const updateVersionRef = useRef(0);
   const popover = Ariakit.usePopoverStore({ open: true, placement });
   const currentPlacement = Ariakit.useStoreState(popover, "currentPlacement");
 
   const updatePosition = useCallback<UpdatePosition>(
     async ({ updatePosition }) => {
+      const updateVersion = updateVersionRef.current;
+
       if (delayStaleUpdateRef.current) {
         delayStaleUpdateRef.current = false;
         setStalePending(true);
         await new Promise<void>((resolve) => {
           releaseStaleUpdateRef.current = resolve;
         });
+        // TODO T005: Remove this userland stale-update guard once Ariakit
+        // ignores async positioning work after effect cleanup.
+        if (updateVersion !== updateVersionRef.current) {
+          setStalePending(false);
+          return;
+        }
         await updatePosition();
         setStalePending(false);
         return;
@@ -67,6 +76,7 @@ export default function Example() {
       <button
         type="button"
         onClick={() => {
+          updateVersionRef.current += 1;
           delayLatestUpdateRef.current = true;
           latestPositionedRef.current = false;
           setPlacement("top");
