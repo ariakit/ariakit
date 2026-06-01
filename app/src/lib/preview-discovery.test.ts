@@ -61,10 +61,7 @@ class TestWatcher {
   }
 }
 
-function getPreviewStoreContext(
-  dir: string,
-  loader: ReturnType<typeof previewLoader>,
-) {
+function getPreviewStoreContext(dir: string) {
   const entries = new Map<string, { data: Record<string, unknown> }>();
   const watcher = new TestWatcher();
   const store = {
@@ -92,7 +89,7 @@ function getPreviewStoreContext(
     parseData: async <TData extends Record<string, unknown>>(options: {
       data: TData;
     }) => {
-      const result = await loader.schema.safeParseAsync(options.data);
+      const result = await previewLoader.schema.safeParseAsync(options.data);
       if (!result.success) throw result.error;
       return result.data as unknown as TData;
     },
@@ -316,11 +313,7 @@ test("supports metadata-only sandbox previews", async () => {
 });
 
 test("preview loader defines generated data schema", () => {
-  const loader = previewLoader({
-    roots: [getSandboxRoot("/tmp")],
-  });
-
-  expect("schema" in loader && loader.schema).toBe(PreviewDataSchema);
+  expect(previewLoader.schema).toBe(PreviewDataSchema);
 });
 
 test("preview loader reloads watched metadata changes", async () => {
@@ -328,7 +321,7 @@ test("preview loader reloads watched metadata changes", async () => {
   const loader = previewLoader({
     roots: [getExamplesRoot(dir)],
   });
-  const { context, entries, watcher } = getPreviewStoreContext(dir, loader);
+  const { context, entries, watcher } = getPreviewStoreContext(dir);
   const metadataFile = join(dir, "examples/menu/preview.json");
   await writeFile(join(dir, "examples/menu/index.react.tsx"));
   await writeFile(metadataFile, JSON.stringify({ title: "Menu" }));
@@ -347,7 +340,7 @@ test("preview loader reloads watched entry file changes", async () => {
   const loader = previewLoader({
     roots: [getExamplesRoot(dir)],
   });
-  const { context, entries, watcher } = getPreviewStoreContext(dir, loader);
+  const { context, entries, watcher } = getPreviewStoreContext(dir);
   const metadataFile = join(dir, "examples/menu/preview.json");
   const reactEntryFile = join(dir, "examples/menu/index.react.tsx");
   const solidEntryFile = join(dir, "examples/menu/index.solid.tsx");

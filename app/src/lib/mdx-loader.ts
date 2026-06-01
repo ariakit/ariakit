@@ -24,17 +24,15 @@ interface GenerateIdOptions {
   entry: string;
 }
 
-interface MdxLoaderOptions<TShape extends z.ZodRawShape> {
+interface MdxLoaderOptions {
   base: string | URL;
-  schema: z.ZodObject<TShape>;
 }
 
-interface InferredFrameworksLoaderParams<TShape extends z.ZodRawShape> {
+interface InferredFrameworksLoaderParams {
   base: string | URL;
   generateId?: (options: GenerateIdOptions) => string;
   name: string;
   pattern: string;
-  schema: z.ZodObject<TShape>;
 }
 
 interface WatchFrameworkEntryFilesParams {
@@ -94,20 +92,24 @@ function watchFrameworkEntryFiles({
   context.watcher.on("unlink", queueReload);
 }
 
-function withInferredFrameworks<TShape extends z.ZodRawShape>({
+function withInferredFrameworksSchema<TShape extends z.ZodRawShape>(
+  schema: z.ZodObject<TShape>,
+) {
+  return schema.extend({
+    frameworks: FrameworkSchema.array(),
+  });
+}
+
+function withInferredFrameworks({
   base,
   generateId,
   name,
   pattern,
-  schema,
-}: InferredFrameworksLoaderParams<TShape>) {
+}: InferredFrameworksLoaderParams) {
   const loader = glob({ base, generateId, pattern });
   return {
     ...loader,
     name,
-    schema: schema.extend({
-      frameworks: FrameworkSchema.array(),
-    }),
     async load(context: LoaderContext) {
       const parseData: LoaderContext["parseData"] = async (options) => {
         const { filePath } = options;
@@ -130,27 +132,29 @@ function withInferredFrameworks<TShape extends z.ZodRawShape>({
   } satisfies Loader;
 }
 
-export function exampleLoader<TShape extends z.ZodRawShape>(
-  options: MdxLoaderOptions<TShape>,
-) {
-  return withInferredFrameworks({
-    ...options,
-    name: "ariakit-example-loader",
-    pattern: "*/index.mdx",
-  });
-}
+export const exampleLoader = Object.assign(
+  function exampleLoader(options: MdxLoaderOptions) {
+    return withInferredFrameworks({
+      ...options,
+      name: "ariakit-example-loader",
+      pattern: "*/index.mdx",
+    });
+  },
+  { schema: withInferredFrameworksSchema },
+);
 
-export function componentLoader<TShape extends z.ZodRawShape>(
-  options: MdxLoaderOptions<TShape>,
-) {
-  return withInferredFrameworks({
-    ...options,
-    name: "ariakit-component-loader",
-    pattern: "*/_component/index.mdx",
-    generateId(options) {
-      const [id] = options.entry.split("/");
-      invariant(id, "Component must have an id");
-      return id;
-    },
-  });
-}
+export const componentLoader = Object.assign(
+  function componentLoader(options: MdxLoaderOptions) {
+    return withInferredFrameworks({
+      ...options,
+      name: "ariakit-component-loader",
+      pattern: "*/_component/index.mdx",
+      generateId(options) {
+        const [id] = options.entry.split("/");
+        invariant(id, "Component must have an id");
+        return id;
+      },
+    });
+  },
+  { schema: withInferredFrameworksSchema },
+);

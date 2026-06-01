@@ -433,13 +433,15 @@ function watchPreviews(
   context.watcher.on("unlink", queueReload);
 }
 
-export function previewLoader(options: PreviewDiscoveryOptions) {
-  return {
-    name: "ariakit-preview-loader",
-    schema: PreviewDataSchema,
-    async load(context: LoaderContext) {
-      await updatePreviewStore(context, options);
-      watchPreviews(context, options);
-    },
-  } satisfies Loader;
-}
+export const previewLoader = Object.assign(
+  function previewLoader(options: PreviewDiscoveryOptions) {
+    return {
+      name: "ariakit-preview-loader",
+      async load(context: LoaderContext) {
+        await updatePreviewStore(context, options);
+        watchPreviews(context, options);
+      },
+    } satisfies Loader;
+  },
+  { schema: PreviewDataSchema },
+);

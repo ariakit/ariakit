@@ -42,31 +42,29 @@ const guides = defineCollection({
   }),
 });
 
-const componentContentLoader = componentLoader({
-  base: join(import.meta.dirname, "examples"),
-  schema: z.object({
-    title: z.string(),
-    tags: TagSchema.array().default([]),
-  }),
-});
-
 const components = defineCollection({
-  loader: componentContentLoader,
-  schema: componentContentLoader.schema,
-});
-
-const exampleContentLoader = exampleLoader({
-  base: join(import.meta.dirname, "examples"),
-  schema: z.object({
-    title: z.string(),
-    tags: TagSchema.array().default([]),
-    components: z.array(reference("components")).default([]),
+  loader: componentLoader({
+    base: join(import.meta.dirname, "examples"),
   }),
+  schema: componentLoader.schema(
+    z.object({
+      title: z.string(),
+      tags: TagSchema.array().default([]),
+    }),
+  ),
 });
 
 const examples = defineCollection({
-  loader: exampleContentLoader,
-  schema: exampleContentLoader.schema,
+  loader: exampleLoader({
+    base: join(import.meta.dirname, "examples"),
+  }),
+  schema: exampleLoader.schema(
+    z.object({
+      title: z.string(),
+      tags: TagSchema.array().default([]),
+      components: z.array(reference("components")).default([]),
+    }),
+  ),
 });
 
 const descriptions = defineCollection({
@@ -85,11 +83,9 @@ const galleries = defineCollection({
   }),
 });
 
-const previewContentLoader = previewLoader(previewConfig);
-
 const previews = defineCollection({
-  loader: previewContentLoader,
-  schema: previewContentLoader.schema,
+  loader: previewLoader(previewConfig),
+  schema: previewLoader.schema,
 });
 
 const references = defineCollection({
