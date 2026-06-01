@@ -11,6 +11,7 @@
 import { Icon } from "#app/icons/icon.react.tsx";
 import Select from "#app/components/select.astro";
 import Layout from "./_layout.astro";
+import { getPaginationDisplayData } from "./_utils.ts";
 
 interface Props {
   totalCount: number;
@@ -24,6 +25,8 @@ interface Props {
 const { totalCount, nextUrl, previousUrl, query, limit, offset } = Astro.props;
 
 const cursor = { query, limit, offset };
+const { currentPage, totalPages, firstResult, lastResult } =
+  getPaginationDisplayData({ totalCount, limit, offset });
 
 function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
   const keys = Object.keys(cursor) as typeof exclude;
@@ -66,8 +69,7 @@ function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
         </div>
         <div class="flex gap-2 items-center ak-ink-80 ms-auto">
           <div class="border-(--ak-edge) border-r px-2">
-            {offset + 1} - {Math.min(offset + limit, totalCount)} of{" "}
-            {totalCount}
+            {firstResult} - {lastResult} of {totalCount}
           </div>
           <div class="flex gap-2 items-center">
             Results per page
@@ -95,9 +97,7 @@ function getDefaultInputs(exclude: Array<keyof typeof cursor> = []) {
             <Icon name="chevronLeft" aria-label="Previous" />
           </a>
           <div class="tabular-nums">
-            {Math.ceil(offset / limit) + 1}/{
-              Math.max(Math.ceil(totalCount / limit), Math.ceil(offset / limit))
-            }
+            {currentPage}/{totalPages}
           </div>
           <a
             role="link"
