@@ -102,9 +102,12 @@ export function getPaginationDisplayData(
   const { totalCount, limit, offset } = options;
   const safeLimit = limit > 0 ? limit : 1;
   const totalPages = Math.max(1, Math.ceil(totalCount / safeLimit));
-  const currentPage = Math.min(Math.ceil(offset / safeLimit) + 1, totalPages);
-  const firstResult = totalCount === 0 ? 0 : Math.min(offset + 1, totalCount);
-  const lastResult = Math.min(offset + safeLimit, totalCount);
+  const currentPage = totalCount === 0 ? 1 : Math.ceil(offset / safeLimit) + 1;
+  const hasPageResults = offset < totalCount;
+  const firstResult = hasPageResults ? offset + 1 : 0;
+  const lastResult = hasPageResults
+    ? Math.min(offset + safeLimit, totalCount)
+    : 0;
   return { currentPage, totalPages, firstResult, lastResult };
 }
 
