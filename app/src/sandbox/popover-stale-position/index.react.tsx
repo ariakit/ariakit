@@ -74,6 +74,9 @@ export default function Example() {
       >
         Move top
       </button>
+      <button type="button" onClick={() => setPlacement("top")}>
+        Move top now
+      </button>
       <button
         type="button"
         onClick={() => {
@@ -84,6 +87,11 @@ export default function Example() {
         }}
       >
         Start stale update
+      </button>
+      {/* This skips the custom update delay so the sandbox component test can
+      delay the Floating UI compute step directly. */}
+      <button type="button" onClick={() => popover.render()}>
+        Update position
       </button>
       <button type="button" onClick={() => releaseStaleUpdateRef.current()}>
         Release stale update
@@ -101,6 +109,7 @@ export default function Example() {
         store={popover}
         flip={false}
         slide={false}
+        sameWidth
         updatePosition={updatePosition}
         wrapperProps={{ id: "popover-stale-position-wrapper" }}
       >
