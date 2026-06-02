@@ -26,10 +26,8 @@ const cases = [
 
 function getRenderedIndices(label: string) {
   const region = q.region.ensure(label);
-  return Array.from(
-    region.querySelectorAll(`[data-case="${label}"]`),
-    (element) => element.getAttribute("data-index"),
-  );
+  const items = q.within(region).button.all();
+  return items.map((element) => element.getAttribute("data-index"));
 }
 
 test.each(cases)("renders active item ancestor for $name", ({ label }) => {

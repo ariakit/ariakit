@@ -38,14 +38,16 @@ function Fixture({ activeId, baseId, items, label }: FixtureProps) {
         itemSize={10}
       >
         {(item) => (
-          <div
-            data-case={label}
+          <button
             data-index={item.index}
             id={item.id}
             key={item.id}
             ref={item.ref}
             style={item.style}
-          />
+            type="button"
+          >
+            {label} item {item.index}
+          </button>
         )}
       </CompositeRenderer>
     </section>
