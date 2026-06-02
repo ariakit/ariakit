@@ -873,6 +873,8 @@ test("notifies initialized child listeners once for shared local updates", () =>
   const syncCalls: Array<[number, number]> = [];
   const subscribeParentCounts: Array<[number, number]> = [];
   const syncParentCounts: Array<[number, number]> = [];
+  const firstParentChildCounts: number[] = [];
+  const secondParentChildCounts: number[] = [];
 
   const unsubscribeSubscribe = subscribe(
     child,
@@ -889,6 +891,14 @@ test("notifies initialized child listeners once for shared local updates", () =>
     syncCalls.push([state.count, prevState.count]);
     syncParentCounts.push([first.getState().count, second.getState().count]);
   });
+  const unsubscribeFirstParent = sync(first, ["count"], (state) => {
+    if (state.count === 0) return;
+    firstParentChildCounts.push(child.getState().count);
+  });
+  const unsubscribeSecondParent = sync(second, ["count"], (state) => {
+    if (state.count === 0) return;
+    secondParentChildCounts.push(child.getState().count);
+  });
 
   expect(syncCalls).toEqual([[0, 0]]);
   syncCalls.length = 0;
@@ -903,9 +913,47 @@ test("notifies initialized child listeners once for shared local updates", () =>
   expect(syncCalls).toEqual([[1, 0]]);
   expect(subscribeParentCounts).toEqual([[1, 1]]);
   expect(syncParentCounts).toEqual([[1, 1]]);
+  expect(firstParentChildCounts).toEqual([1]);
+  expect(secondParentChildCounts).toEqual([1]);
 
   unsubscribeSubscribe();
   unsubscribeSync();
+  unsubscribeFirstParent();
+  unsubscribeSecondParent();
+  cleanup();
+});
+
+test("keeps child batch diff for listeners registered during parent fan-out", async () => {
+  const parent = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, parent);
+
+  const cleanup = init(child);
+  const calls: Array<[number, number]> = [];
+  let unsubscribeBatch = () => {};
+  let registered = false;
+
+  const unsubscribeParent = sync(parent, ["count"], (state) => {
+    if (state.count === 0) return;
+    if (registered) return;
+    registered = true;
+    unsubscribeBatch = batch(child, ["count"], (state, prevState) => {
+      calls.push([state.count, prevState.count]);
+    });
+  });
+
+  child.setState("count", 1);
+
+  expect(calls).toEqual([[1, 0]]);
+
+  await flushBatch();
+
+  expect(calls).toEqual([
+    [1, 0],
+    [1, 0],
+  ]);
+
+  unsubscribeBatch();
+  unsubscribeParent();
   cleanup();
 });
 
