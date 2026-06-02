@@ -1,5 +1,9 @@
 import { afterEach, expect, test } from "vitest";
-import { getIntegerEnv, parseScriptProfile } from "./perf.ts";
+import {
+  getIntegerEnv,
+  getUniquePerfLabel,
+  parseScriptProfile,
+} from "./perf.ts";
 
 const envName = "PERF_ITERATIONS";
 const originalValue = process.env[envName];
@@ -23,6 +27,12 @@ test("gets integer env values with range validation", () => {
 
   process.env[envName] = "0";
   expect(getIntegerEnv(envName, 1, { min: 0 })).toBe(0);
+});
+
+test("resolves duplicate perf labels with exact label counts", () => {
+  expect(getUniquePerfLabel(["foo #2"], "foo")).toBe("foo");
+  expect(getUniquePerfLabel(["foo", "foo #2"], "foo")).toBe("foo #3");
+  expect(getUniquePerfLabel(["foo", "foo #3"], "foo")).toBe("foo #2");
 });
 
 test("does not double-count recursive script profile frames", () => {

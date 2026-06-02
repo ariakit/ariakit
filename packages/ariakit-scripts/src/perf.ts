@@ -211,6 +211,21 @@ export function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
   };
 }
 
+export function getUniquePerfLabel(
+  labels: Iterable<string>,
+  baseLabel: string,
+): string {
+  const used = new Set(labels);
+  if (!used.has(baseLabel)) return baseLabel;
+
+  let suffix = 2;
+  while (used.has(`${baseLabel} #${suffix}`)) {
+    suffix += 1;
+  }
+
+  return `${baseLabel} #${suffix}`;
+}
+
 function isTruthyEnv(name: string): boolean {
   return process.env[name] === "true" || process.env[name] === "1";
 }
@@ -834,11 +849,10 @@ export async function createPerfMeasure(
 
   const testTitle = testInfo.titlePath.filter(Boolean).join(" > ");
   const baseLabel = label ?? testTitle;
-  const duplicateCount = results.filter(
-    (r) => r.label === baseLabel || r.label.startsWith(`${baseLabel} #`),
-  ).length;
-  const resolvedLabel =
-    duplicateCount === 0 ? baseLabel : `${baseLabel} #${duplicateCount + 1}`;
+  const resolvedLabel = getUniquePerfLabel(
+    results.map((result) => result.label),
+    baseLabel,
+  );
 
   results.push({
     testFile: path.relative(process.cwd(), testInfo.file),
