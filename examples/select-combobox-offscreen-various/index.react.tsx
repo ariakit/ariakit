@@ -34,109 +34,84 @@ const itemsByGroup = groupItems(items);
 
 interface OffscreenProbeItem {
   value: string;
-  testId?:
-    | "disabled"
-    | "autofocus"
-    | "div-disabled"
-    | "callback-disabled"
-    | "element-disabled";
+  props?: Partial<ComboboxItemProps & SelectItemProps>;
+  render?: NonNullable<ComboboxItemProps["render"]>;
+  selectRender?: NonNullable<SelectItemProps["render"]>;
 }
 
-type OffscreenRender = Exclude<
+type ComboboxItemRender = Exclude<
   NonNullable<ComboboxItemProps["render"]>,
   ReactElement
 >;
+
+type SelectItemRender = Exclude<
+  NonNullable<SelectItemProps["render"]>,
+  ReactElement
+>;
+
+const offscreenProbeProps = {
+  shouldRegisterItem: false,
+  rowId: "offscreen-test-row",
+  preventScrollOnKeyDown: false,
+  moveOnKeyPress: false,
+  tabbable: true,
+  clickOnEnter: false,
+  clickOnSpace: false,
+  focusable: true,
+  onFocusVisible: () => {},
+  focusOnHover: true,
+  blurOnHoverEnd: false,
+} satisfies Partial<ComboboxItemProps & SelectItemProps>;
+
+const renderCallbackDisabledButton: ComboboxItemRender = (props) => {
+  return <button {...props} disabled />;
+};
 
 const offscreenProbeItems: OffscreenProbeItem[] = [
   { value: "Visible option" },
   ...Array.from({ length: 30 }, (_, index) => ({
     value: `Probe filler ${index + 1}`,
   })),
-  { value: "Disabled offscreen button", testId: "disabled" },
-  { value: "Autofocus offscreen button", testId: "autofocus" },
-  { value: "Disabled offscreen div", testId: "div-disabled" },
-  { value: "Callback disabled offscreen button", testId: "callback-disabled" },
-  { value: "Element disabled offscreen button", testId: "element-disabled" },
+  {
+    value: "Disabled offscreen button",
+    props: { disabled: true, accessibleWhenDisabled: true },
+    render: <button />,
+  },
+  {
+    value: "Autofocus offscreen button",
+    props: { autoFocus: true },
+    render: <button />,
+  },
+  {
+    value: "Disabled offscreen div",
+    props: { disabled: true },
+  },
+  {
+    value: "Callback disabled offscreen button",
+    props: { disabled: true },
+    render: renderCallbackDisabledButton,
+  },
+  {
+    value: "Element disabled offscreen button",
+    props: { disabled: true },
+    render: <button disabled />,
+    // This verifies render element props own native disabled in both fixtures.
+    selectRender: <button disabled />,
+  },
 ];
-
-function getOffscreenProbeProps(item: OffscreenProbeItem, prefix: string) {
-  if (!item.testId) return {};
-  const testProps = {
-    shouldRegisterItem: false,
-    rowId: "offscreen-test-row",
-    preventScrollOnKeyDown: false,
-    moveOnKeyPress: false,
-    tabbable: true,
-    clickOnEnter: false,
-    clickOnSpace: false,
-    onFocusVisible: () => {},
-    focusOnHover: true,
-    blurOnHoverEnd: false,
-  };
-  if (item.testId === "disabled") {
-    return {
-      ...testProps,
-      "data-testid": `${prefix}-offscreen-disabled`,
-      disabled: true,
-      accessibleWhenDisabled: true,
-    };
-  }
-  if (item.testId === "autofocus") {
-    return {
-      ...testProps,
-      "data-testid": `${prefix}-offscreen-autofocus`,
-      autoFocus: true,
-    };
-  }
-  if (item.testId === "div-disabled") {
-    return {
-      ...testProps,
-      "data-testid": `${prefix}-offscreen-div-disabled`,
-      disabled: true,
-    };
-  }
-  if (item.testId === "element-disabled") {
-    return {
-      ...testProps,
-      "data-testid": `${prefix}-offscreen-element-disabled`,
-      disabled: true,
-    };
-  }
-  return {
-    ...testProps,
-    "data-testid": `${prefix}-offscreen-callback-disabled`,
-    disabled: true,
-  };
-}
-
-const renderCallbackDisabledButton: OffscreenRender = (props) => {
-  return <button {...props} disabled />;
-};
-
-function getOffscreenProbeRender(item: OffscreenProbeItem) {
-  if (item.testId === "disabled") return <button />;
-  if (item.testId === "autofocus") return <button />;
-  if (item.testId === "callback-disabled") {
-    return renderCallbackDisabledButton;
-  }
-  if (item.testId === "element-disabled") {
-    return <button disabled />;
-  }
-  return;
-}
 
 function renderSelectComboboxProbeItem(
   item: OffscreenProbeItem,
-): OffscreenRender {
+): SelectItemRender {
   return (props) => {
     if ("data-offscreen" in props) {
-      if (item.testId === "callback-disabled") {
-        return renderCallbackDisabledButton(props);
+      if (typeof item.render === "function") {
+        return item.render(props);
       }
-      if (item.testId === "disabled" || item.testId === "autofocus") {
+      if (item.render) {
         return <button {...props} />;
       }
-      return <div {...props} />;
+      return <div {...props} role={props.role ?? "option"} />;
     }
     return (
       <ComboboxItem {...props} value={item.value} setValueOnClick={false} />
@@ -470,12 +445,12 @@ function OffscreenPropsCombobox() {
             {offscreenProbeItems.map((item, index) => (
               <ComboboxItem
                 key={item.value}
-                {...getOffscreenProbeProps(item, "combobox")}
+                {...(item.props && { ...offscreenProbeProps, ...item.props })}
                 value={item.value}
                 offscreenMode={index === 0 ? "active" : "passive"}
                 offscreenRoot={ref}
                 className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
-                render={getOffscreenProbeRender(item)}
+                render={item.render}
               />
             ))}
           </div>
@@ -513,17 +488,13 @@ function OffscreenPropsSelectCombobox() {
               {offscreenProbeItems.map((item, index) => (
                 <SelectItem
                   key={item.value}
-                  {...getOffscreenProbeProps(item, "select-combobox")}
+                  {...(item.props && { ...offscreenProbeProps, ...item.props })}
                   value={item.value}
                   offscreenRoot={ref}
                   offscreenMode={index === 0 ? "active" : "passive"}
                   className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
                   render={
-                    item.testId === "element-disabled" ? (
-                      <button disabled />
-                    ) : (
-                      renderSelectComboboxProbeItem(item)
-                    )
+                    item.selectRender || renderSelectComboboxProbeItem(item)
                   }
                 />
               ))}
