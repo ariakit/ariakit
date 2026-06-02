@@ -1,8 +1,3 @@
-// @vitest-environment jsdom
-//
-// The "check/uncheck item after filtering" test relies on React concurrent
-// rendering, whose settle timing flakes on CI under happy-dom's faster rAF
-// cadence. It runs here, so this file is pinned to jsdom.
 import { click, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 

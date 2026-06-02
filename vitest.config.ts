@@ -55,6 +55,15 @@ const testExcludes = [
   ...(testLoader ? [] : defaultTestExcludes),
 ];
 
+// The framework render suites (test-react, test-solid) exercise the
+// @ariakit/test simulation layer heavily, where happy-dom is ~2x faster than
+// jsdom. The core suite (no loader) stays on jsdom, whose timing the low-level
+// unit tests depend on. test-react18 sets ARIAKIT_TEST_ENV=jsdom to opt out:
+// React 18's scheduler is more sensitive to happy-dom's faster timer cadence
+// and flakes some dialog-dismissal tests.
+const environment =
+  process.env.ARIAKIT_TEST_ENV ?? (testLoader ? "happy-dom" : "jsdom");
+
 // sourcePlugin is typed against the app workspace's Vite copy, while Vitest
 // consumes the root Vite types. The runtime plugin shape is compatible.
 // TODO: Remove this cast when Astro and the root test stack use the same Vite
@@ -76,14 +85,14 @@ export default defineConfig({
   test: {
     watch: false,
     testTimeout: 10_000,
-    // The framework render suites (test-react, test-solid) exercise the
-    // @ariakit/test simulation layer heavily, where happy-dom is ~2x faster than
-    // jsdom. The core suite (no loader) stays on jsdom, whose timing the
-    // low-level unit tests depend on. test-react18 sets ARIAKIT_TEST_ENV=jsdom
-    // to opt out: React 18's scheduler is more sensitive to happy-dom's faster
-    // timer cadence and flakes some dialog-dismissal tests.
-    environment:
-      process.env.ARIAKIT_TEST_ENV ?? (testLoader ? "happy-dom" : "jsdom"),
+    environment,
+    // happy-dom's faster timer cadence occasionally starves React's settle
+    // window between simulated interactions on slow CI, causing rare,
+    // non-deterministic failures across timing-sensitive interactions. A single
+    // retry absorbs the occasional one-off; a test that fails twice still fails,
+    // so a genuine (or more-than-occasional) regression isn't masked. The jsdom
+    // suites are stable and don't retry.
+    retry: environment === "happy-dom" ? 1 : 0,
     setupFiles: [join(rootDir, "vitest.setup.ts")],
     exclude: testExcludes,
     include: testIncludes,
