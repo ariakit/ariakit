@@ -1,6 +1,8 @@
 import { dispatch, press, q } from "@ariakit/test";
 import { expect, test, vi } from "vitest";
 
+// Dispatch only keydown events so this stays compatible with fake timers;
+// @ariakit/test's type helper waits on timer sleeps between key steps.
 function typeahead(key: string) {
   const activeElement = document.activeElement;
   if (!activeElement) throw new Error("No active element");
@@ -14,6 +16,8 @@ function typeahead(key: string) {
 test("keeps typeahead characters scoped to each composite instance", async () => {
   await press.Tab();
 
+  // Keep the first composite's "ap" buffer alive so the old global buffer
+  // would leak into the second composite during the "b" keydown below.
   vi.useFakeTimers();
 
   try {
@@ -25,6 +29,8 @@ test("keeps typeahead characters scoped to each composite instance", async () =>
     await typeahead("p");
     expect(q.button("Apricot")).toHaveFocus();
 
+    // Cherry must not start with "b", otherwise same-initial looping would
+    // reset a leaked buffer and hide the regression.
     q.button.ensure("Cherry").focus();
     expect(q.button("Cherry")).toHaveFocus();
 
