@@ -53,13 +53,23 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
   const {
     store,
     value,
+    disabled,
+    shouldRegisterItem,
+    rowId,
     hideOnClick,
     setValueOnClick,
     selectValueOnClick,
     resetValueOnSelect,
+    preventScrollOnKeyDown,
     focusOnHover,
     blurOnHoverEnd,
     moveOnKeyPress,
+    tabbable,
+    clickOnEnter,
+    clickOnSpace,
+    focusable,
+    accessibleWhenDisabled,
+    onFocusVisible,
     getItem,
     ...htmlProps
   } = allProps;
