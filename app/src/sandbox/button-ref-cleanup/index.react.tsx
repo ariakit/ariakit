@@ -2,26 +2,43 @@ import * as Ariakit from "@ariakit/react";
 import { useMergeRefs } from "@ariakit/react-utils";
 import { useCallback, useState } from "react";
 
-const refEvents: string[] = [];
-const portalRefEvents: string[] = [];
-const connectedPortalRefEvents: string[] = [];
-const nonFunctionPortalRefEvents: string[] = [];
+const listenerEvents: string[] = [];
+const activeListeners = new Set<string>();
 const buttonObjectRef = { current: null as HTMLButtonElement | null };
+const plainButtonObjectRef = { current: null as HTMLButtonElement | null };
+let observedButton: HTMLButtonElement | null = null;
+let observedPortal: HTMLElement | null = null;
+let observedConnectedPortal: HTMLElement | null = null;
 
-function resetRefEvents() {
-  refEvents.length = 0;
-  portalRefEvents.length = 0;
-  connectedPortalRefEvents.length = 0;
-  nonFunctionPortalRefEvents.length = 0;
+function trackClickListener(element: HTMLElement, name: string) {
+  const onClick = () => listenerEvents.push(`${name} click`);
+  element.addEventListener("click", onClick);
+  activeListeners.add(name);
+  return (onCleanup?: () => void) => {
+    element.removeEventListener("click", onClick);
+    activeListeners.delete(name);
+    onCleanup?.();
+    listenerEvents.push(`${name} cleanup`);
+  };
+}
+
+function resetListenerEvents() {
+  listenerEvents.length = 0;
+}
+
+function getActiveListeners() {
+  return [...activeListeners].sort();
 }
 
 interface RefCleanupTestState {
   buttonObjectRef: typeof buttonObjectRef;
-  connectedPortalRefEvents: string[];
-  nonFunctionPortalRefEvents: string[];
-  portalRefEvents: string[];
-  refEvents: string[];
-  resetRefEvents: () => void;
+  clickObservedButton: () => void;
+  clickObservedConnectedPortal: () => void;
+  clickObservedPortal: () => void;
+  getActiveListeners: () => string[];
+  listenerEvents: string[];
+  plainButtonObjectRef: typeof plainButtonObjectRef;
+  resetListenerEvents: () => void;
 }
 
 declare global {
@@ -33,16 +50,19 @@ declare global {
 if (typeof window !== "undefined") {
   window.__refCleanupTest = {
     buttonObjectRef,
-    connectedPortalRefEvents,
-    nonFunctionPortalRefEvents,
-    portalRefEvents,
-    refEvents,
-    resetRefEvents,
+    clickObservedButton: () => observedButton?.click(),
+    clickObservedConnectedPortal: () => observedConnectedPortal?.click(),
+    clickObservedPortal: () => observedPortal?.click(),
+    getActiveListeners,
+    listenerEvents,
+    plainButtonObjectRef,
+    resetListenerEvents,
   };
 }
 
 export default function Example() {
   const [buttonMounted, setButtonMounted] = useState(true);
+  const [plainButtonMounted, setPlainButtonMounted] = useState(true);
   const [portalMounted, setPortalMounted] = useState(true);
   const [connectedPortalMounted, setConnectedPortalMounted] = useState(true);
   const [nonFunctionPortalMounted, setNonFunctionPortalMounted] =
@@ -50,42 +70,51 @@ export default function Example() {
   const [connectedPortalElement, setConnectedPortalElement] =
     useState<HTMLDivElement | null>(null);
 
-  const cleanupRef = useCallback((element: HTMLButtonElement | null) => {
-    refEvents.push(element ? "cleanup attach" : "cleanup detach");
+  const observedButtonRef = useCallback((element: HTMLButtonElement | null) => {
     if (!element) return;
-    return () => {
-      refEvents.push("cleanup");
-    };
+    observedButton = element;
+    const cleanup = trackClickListener(element, "button");
+    return () => cleanup(() => (observedButton = null));
   }, []);
 
-  const plainRef = useCallback((element: HTMLButtonElement | null) => {
-    refEvents.push(element ? "plain attach" : "plain detach");
+  const externalButtonRef = useCallback((element: HTMLButtonElement | null) => {
+    if (element) return;
+    listenerEvents.push("external button detach");
   }, []);
 
-  const buttonRef = useMergeRefs(plainRef, buttonObjectRef);
+  const buttonRef = useMergeRefs(externalButtonRef, buttonObjectRef);
+
+  const plainButtonCallbackRef = useCallback(
+    (element: HTMLButtonElement | null) => {
+      if (element) return;
+      listenerEvents.push("plain button detach");
+    },
+    [],
+  );
+
+  const plainButtonRef = useMergeRefs(
+    plainButtonCallbackRef,
+    plainButtonObjectRef,
+  );
 
   const portalRef = useCallback((element: HTMLElement | null) => {
-    portalRefEvents.push(element ? "portal attach" : "portal detach");
     if (!element) return;
-    return () => {
-      portalRefEvents.push("portal cleanup");
-    };
+    observedPortal = element;
+    const cleanup = trackClickListener(element, "portal");
+    return () => cleanup(() => (observedPortal = null));
   }, []);
 
   const connectedPortalRef = useCallback((element: HTMLElement | null) => {
-    connectedPortalRefEvents.push(
-      element ? "connected portal attach" : "connected portal detach",
-    );
     if (!element) return;
-    return () => {
-      connectedPortalRefEvents.push("connected portal cleanup");
-    };
+    observedConnectedPortal = element;
+    const cleanup = trackClickListener(element, "connected portal");
+    return () => cleanup(() => (observedConnectedPortal = null));
   }, []);
 
   const nonFunctionPortalRef = useCallback((element: HTMLElement | null) => {
-    nonFunctionPortalRefEvents.push(
-      element ? "non-function portal attach" : "non-function portal detach",
-    );
+    if (!element) {
+      listenerEvents.push("non-function portal detach");
+    }
     return element;
   }, []);
 
@@ -93,6 +122,9 @@ export default function Example() {
     <>
       <button type="button" onClick={() => setButtonMounted(false)}>
         Unmount button
+      </button>
+      <button type="button" onClick={() => setPlainButtonMounted(false)}>
+        Unmount plain button
       </button>
       <button type="button" onClick={() => setPortalMounted(false)}>
         Unmount portal
@@ -106,10 +138,13 @@ export default function Example() {
       {buttonMounted && (
         <Ariakit.Button
           ref={buttonRef}
-          render={<button ref={cleanupRef} type="button" />}
+          render={<button ref={observedButtonRef} type="button" />}
         >
-          Rendered button
+          Observed button
         </Ariakit.Button>
+      )}
+      {plainButtonMounted && (
+        <Ariakit.Button ref={plainButtonRef}>Plain button</Ariakit.Button>
       )}
       {portalMounted && (
         <Ariakit.Portal portalRef={portalRef}>
