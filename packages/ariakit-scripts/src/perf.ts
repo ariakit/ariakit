@@ -215,24 +215,15 @@ export function getUniquePerfLabel(
   labels: Iterable<string>,
   baseLabel: string,
 ): string {
-  const occurrences = new Map<string, number>();
+  const used = new Set(labels);
+  if (!used.has(baseLabel)) return baseLabel;
 
-  for (const label of labels) {
-    occurrences.set(label, (occurrences.get(label) ?? 0) + 1);
-  }
-
-  const duplicateCount = occurrences.get(baseLabel) ?? 0;
-  if (duplicateCount === 0) return baseLabel;
-
-  let suffix = duplicateCount + 1;
-  let label = `${baseLabel} #${suffix}`;
-
-  while (occurrences.has(label)) {
+  let suffix = 2;
+  while (used.has(`${baseLabel} #${suffix}`)) {
     suffix += 1;
-    label = `${baseLabel} #${suffix}`;
   }
 
-  return label;
+  return `${baseLabel} #${suffix}`;
 }
 
 function isTruthyEnv(name: string): boolean {
