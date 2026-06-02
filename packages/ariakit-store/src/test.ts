@@ -999,6 +999,108 @@ test("preserves nested child updates in prevState after parent fan-out", () => {
   cleanup();
 });
 
+test("skips superseded same-key child notifications after parent fan-out", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const calls: Array<[number, number]> = [];
+
+  const unsubscribeChild = sync(child, ["count"], (state, prevState) => {
+    if (state.count === 0) return;
+    calls.push([state.count, prevState.count]);
+  });
+  const unsubscribeParent = sync(first, ["count"], (state) => {
+    if (state.count !== 1) return;
+    if (child.getState().count !== 1) return;
+    child.setState("count", 2);
+  });
+
+  calls.length = 0;
+
+  child.setState("count", 1);
+
+  expect(child.getState().count).toBe(2);
+  expect(first.getState().count).toBe(2);
+  expect(second.getState().count).toBe(2);
+  expect(calls).toEqual([[2, 1]]);
+
+  unsubscribeChild();
+  unsubscribeParent();
+  cleanup();
+});
+
+test("refreshes child batch baseline after superseded same-key fan-out", async () => {
+  const parent = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, parent);
+
+  const cleanup = init(child);
+  const calls: Array<[number, number]> = [];
+  let unsubscribeBatch = () => {};
+  let didSupersede = false;
+  let didRegister = false;
+
+  const unsubscribeParent = sync(parent, ["count"], (state) => {
+    if (state.count === 1 && !didSupersede) {
+      didSupersede = true;
+      child.setState("count", 2);
+    }
+    if (state.count === 3 && !didRegister) {
+      didRegister = true;
+      unsubscribeBatch = batch(child, ["count"], (state, prevState) => {
+        calls.push([state.count, prevState.count]);
+      });
+    }
+  });
+
+  child.setState("count", 1);
+
+  expect(child.getState().count).toBe(2);
+
+  child.setState("count", 3);
+
+  expect(calls).toEqual([[3, 2]]);
+
+  await flushBatch();
+
+  expect(calls).toEqual([
+    [3, 2],
+    [3, 2],
+  ]);
+
+  unsubscribeBatch();
+  unsubscribeParent();
+  cleanup();
+});
+
+test("fans out NaN values to all parent stores", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const calls: Array<[number, number]> = [];
+
+  const unsubscribeChild = sync(child, ["count"], (state, prevState) => {
+    calls.push([state.count, prevState.count]);
+  });
+
+  calls.length = 0;
+
+  child.setState("count", Number.NaN);
+
+  expect(Number.isNaN(child.getState().count)).toBe(true);
+  expect(Number.isNaN(first.getState().count)).toBe(true);
+  expect(Number.isNaN(second.getState().count)).toBe(true);
+  expect(calls).toHaveLength(1);
+  expect(Number.isNaN(calls[0]?.[0])).toBe(true);
+  expect(calls[0]?.[1]).toBe(0);
+
+  unsubscribeChild();
+  cleanup();
+});
+
 test("keeps partial extended stores in sync while initialized", () => {
   const first = createStore({ first: "first", shared: "first" });
   const second = createStore({ shared: "second" });
