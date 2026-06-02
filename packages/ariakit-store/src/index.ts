@@ -407,6 +407,12 @@ export function createStore<S extends State>(
         }
       }
 
+      // Parent fan-out can reenter this store and commit nested updates to
+      // other keys before these listeners run, advancing `state` past
+      // `nextState`. Preserve those nested updates in the previous snapshot,
+      // restoring only `key` to its pre-update value so this notification still
+      // reports the original diff. When nothing reentered, reuse `prevState`
+      // directly and skip the allocation.
       const listenerPrevState =
         state === nextState ? prevState : { ...state, [key]: prevState[key] };
       runListeners(syncListenerGroup, listenerPrevState, key);
