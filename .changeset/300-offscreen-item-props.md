@@ -3,4 +3,4 @@
 "@ariakit/react": patch
 ---
 
-Fixed offscreen [`SelectItem`](https://ariakit.com/reference/select-item) and [`ComboboxItem`](https://ariakit.com/reference/combobox-item) elements to avoid passing non-DOM item props to React DOM nodes, and corrected [`Focusable`](https://ariakit.com/reference/focusable) native disabled handling on supported render targets.
+Fixed offscreen [`SelectItem`](https://ariakit.com/reference/select-item) and [`ComboboxItem`](https://ariakit.com/reference/combobox-item) elements to avoid passing item and focus props to inactive placeholder DOM nodes. Inactive offscreen placeholders rely on `aria-disabled`; custom render elements own any native `disabled` state they need.

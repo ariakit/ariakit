@@ -1,11 +1,9 @@
 import { useMergeRefs, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { disabledFromProps } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useContext } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item-offscreen.tsx";
 import { useCompositeItemOffscreen } from "../composite/composite-item-offscreen.tsx";
-import { getRenderWithDisabled } from "../composite/utils.ts";
 import { Role } from "../role/role.tsx";
 import {
   ComboboxListRoleContext,
@@ -48,14 +46,10 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
     ...props,
   });
   const allProps = { ...rest, ...props, ref: useMergeRefs(ref, props.ref) };
-  const trulyDisabled =
-    props.focusable !== false &&
-    disabledFromProps(allProps) &&
-    !props.accessibleWhenDisabled;
   if (active) {
     return <Base.ComboboxItem {...allProps} />;
   }
-  // Remove ComboboxItem props
+  // Remove ComboboxItem props. Custom renders own their native disabled state.
   const {
     store,
     value,
@@ -78,12 +72,10 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
     autoFocus,
     onFocusVisible,
     getItem,
-    render,
     ...htmlProps
   } = allProps;
-  const offscreenRender = getRenderWithDisabled(render, trulyDisabled);
   const Component = Role[TagName];
-  return <Component {...htmlProps} render={offscreenRender} />;
+  return <Component {...htmlProps} />;
 });
 
 export interface ComboboxItemOptions<T extends ElementType = TagName>

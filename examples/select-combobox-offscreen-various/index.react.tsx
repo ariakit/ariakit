@@ -8,8 +8,8 @@ import deburr from "lodash-es/deburr.js";
 import groupBy from "lodash-es/groupBy.js";
 import kebabCase from "lodash-es/kebabCase.js";
 import { matchSorter } from "match-sorter";
-import type { ComponentPropsWithoutRef, ReactElement } from "react";
-import { forwardRef, startTransition, useMemo, useRef, useState } from "react";
+import type { ReactElement } from "react";
+import { startTransition, useMemo, useRef, useState } from "react";
 import { countries } from "./countries.ts";
 import "./theme.css";
 
@@ -37,11 +37,9 @@ interface OffscreenProbeItem {
   testId?:
     | "disabled"
     | "autofocus"
-    | "div"
+    | "div-disabled"
     | "callback-disabled"
-    | "callback-prop-disabled"
-    | "element-prop-disabled"
-    | "custom-div-disabled";
+    | "element-disabled";
 }
 
 type OffscreenRender = Exclude<
@@ -56,26 +54,10 @@ const offscreenProbeItems: OffscreenProbeItem[] = [
   })),
   { value: "Disabled offscreen button", testId: "disabled" },
   { value: "Autofocus offscreen button", testId: "autofocus" },
-  { value: "Disabled offscreen div", testId: "div" },
+  { value: "Disabled offscreen div", testId: "div-disabled" },
   { value: "Callback disabled offscreen button", testId: "callback-disabled" },
-  {
-    value: "Callback prop disabled offscreen button",
-    testId: "callback-prop-disabled",
-  },
-  {
-    value: "Element prop disabled offscreen button",
-    testId: "element-prop-disabled",
-  },
-  {
-    value: "Custom div disabled offscreen item",
-    testId: "custom-div-disabled",
-  },
+  { value: "Element disabled offscreen button", testId: "element-disabled" },
 ];
-
-const OffscreenProbeDiv = forwardRef<
-  HTMLDivElement,
-  ComponentPropsWithoutRef<"div">
->((props, ref) => <div {...props} ref={ref} />);
 
 function getOffscreenProbeProps(item: OffscreenProbeItem, prefix: string) {
   if (!item.testId) return {};
@@ -96,6 +78,7 @@ function getOffscreenProbeProps(item: OffscreenProbeItem, prefix: string) {
       ...testProps,
       "data-testid": `${prefix}-offscreen-disabled`,
       disabled: true,
+      accessibleWhenDisabled: true,
     };
   }
   if (item.testId === "autofocus") {
@@ -105,53 +88,29 @@ function getOffscreenProbeProps(item: OffscreenProbeItem, prefix: string) {
       autoFocus: true,
     };
   }
-  if (item.testId === "div") {
+  if (item.testId === "div-disabled") {
     return {
       ...testProps,
-      "data-testid": `${prefix}-offscreen-div`,
-      disabled: true,
-      autoFocus: true,
-      focusable: false,
-      accessibleWhenDisabled: true,
-    };
-  }
-  if (item.testId === "callback-prop-disabled") {
-    return {
-      ...testProps,
-      "data-testid": `${prefix}-offscreen-callback-prop-disabled`,
+      "data-testid": `${prefix}-offscreen-div-disabled`,
       disabled: true,
     };
   }
-  if (item.testId === "element-prop-disabled") {
+  if (item.testId === "element-disabled") {
     return {
       ...testProps,
-      "data-testid": `${prefix}-offscreen-element-prop-disabled`,
-      disabled: true,
-    };
-  }
-  if (item.testId === "custom-div-disabled") {
-    return {
-      ...testProps,
-      "data-testid": `${prefix}-offscreen-custom-div-disabled`,
+      "data-testid": `${prefix}-offscreen-element-disabled`,
       disabled: true,
     };
   }
   return {
     ...testProps,
     "data-testid": `${prefix}-offscreen-callback-disabled`,
+    disabled: true,
   };
 }
 
 const renderCallbackDisabledButton: OffscreenRender = (props) => {
   return <button {...props} disabled />;
-};
-
-const renderCallbackPropDisabledButton: OffscreenRender = (props) => {
-  const disabled =
-    "disabled" in props && typeof props.disabled === "boolean"
-      ? props.disabled
-      : undefined;
-  return <button {...props} disabled={disabled} />;
 };
 
 function getOffscreenProbeRender(item: OffscreenProbeItem) {
@@ -160,14 +119,8 @@ function getOffscreenProbeRender(item: OffscreenProbeItem) {
   if (item.testId === "callback-disabled") {
     return renderCallbackDisabledButton;
   }
-  if (item.testId === "callback-prop-disabled") {
-    return renderCallbackPropDisabledButton;
-  }
-  if (item.testId === "element-prop-disabled") {
-    return <button disabled={undefined} />;
-  }
-  if (item.testId === "custom-div-disabled") {
-    return <OffscreenProbeDiv />;
+  if (item.testId === "element-disabled") {
+    return <button disabled />;
   }
   return;
 }
@@ -179,9 +132,6 @@ function renderSelectComboboxProbeItem(
     if ("data-offscreen" in props) {
       if (item.testId === "callback-disabled") {
         return renderCallbackDisabledButton(props);
-      }
-      if (item.testId === "callback-prop-disabled") {
-        return renderCallbackPropDisabledButton(props);
       }
       if (item.testId === "disabled" || item.testId === "autofocus") {
         return <button {...props} />;
@@ -569,10 +519,8 @@ function OffscreenPropsSelectCombobox() {
                   offscreenMode={index === 0 ? "active" : "passive"}
                   className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
                   render={
-                    item.testId === "element-prop-disabled" ? (
-                      <button disabled={undefined} />
-                    ) : item.testId === "custom-div-disabled" ? (
-                      <OffscreenProbeDiv />
+                    item.testId === "element-disabled" ? (
+                      <button disabled />
                     ) : (
                       renderSelectComboboxProbeItem(item)
                     )

@@ -1,8 +1,5 @@
 import * as Core from "@ariakit/components/composite/composite-store";
-import type { RenderProp } from "@ariakit/react-utils";
-import { getDocument, hasOwnProperty, isTextField } from "@ariakit/utils";
-import type { ReactElement } from "react";
-import { cloneElement, isValidElement } from "react";
+import { getDocument, isTextField } from "@ariakit/utils";
 import type { CompositeStore } from "./composite-store.ts";
 
 export const flipItems = Core.flipItems;
@@ -71,58 +68,4 @@ export function isItem(
   if (!item) return false;
   if (exclude && item.element === exclude) return false;
   return true;
-}
-
-export function getRenderElementTagName(render: unknown) {
-  if (!isValidElement(render)) return;
-  const { type } = render;
-  return typeof type === "string" ? type : undefined;
-}
-
-export function hasRenderElementProp(render: unknown, prop: string) {
-  if (!isValidElement(render)) return false;
-  const props = render.props as Record<string, unknown>;
-  if (!hasOwnProperty(props, prop)) return false;
-  return props[prop] !== undefined;
-}
-
-export function supportsDisabledRender(render: unknown) {
-  const tagName = getRenderElementTagName(render);
-  if (tagName) return supportsDisabledAttribute(tagName);
-  return false;
-}
-
-export function getRenderWithDisabled(
-  render: RenderProp | ReactElement | undefined,
-  disabled: boolean,
-) {
-  if (!disabled) return render;
-  const getElementWithDisabled = (
-    element: ReactElement<Record<string, unknown>>,
-  ) => {
-    if (hasRenderElementProp(element, "disabled")) return element;
-    if (!supportsDisabledRender(element)) return element;
-    return cloneElement(element, { disabled: true });
-  };
-  if (isValidElement<Record<string, unknown>>(render)) {
-    return getElementWithDisabled(render);
-  }
-  if (typeof render !== "function") return render;
-  return (props: Parameters<RenderProp>[0]) => {
-    const element = render(props);
-    if (!isValidElement<Record<string, unknown>>(element)) return element;
-    return getElementWithDisabled(element);
-  };
-}
-
-export function supportsDisabledAttribute(tagName?: string) {
-  return (
-    tagName === "button" ||
-    tagName === "fieldset" ||
-    tagName === "input" ||
-    tagName === "optgroup" ||
-    tagName === "option" ||
-    tagName === "select" ||
-    tagName === "textarea"
-  );
 }
