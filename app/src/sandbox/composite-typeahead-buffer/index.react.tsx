@@ -28,7 +28,7 @@ export default function Example() {
     <>
       <Fixture items={["Alpha", "Alpine", "Apricot"]} label="First composite" />
       <Fixture
-        items={["Banana", "Blueberry", "Blackberry"]}
+        items={["Cherry", "Banana", "Blueberry"]}
         label="Second composite"
       />
     </>

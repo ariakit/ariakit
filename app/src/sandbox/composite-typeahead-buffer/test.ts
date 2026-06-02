@@ -1,20 +1,36 @@
-import { click, press, q, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { dispatch, press, q } from "@ariakit/test";
+import { expect, test, vi } from "vitest";
+
+function typeahead(key: string) {
+  const activeElement = document.activeElement;
+  if (!activeElement) throw new Error("No active element");
+  return dispatch.keyDown(activeElement, {
+    bubbles: true,
+    cancelable: true,
+    key,
+  });
+}
 
 test("keeps typeahead characters scoped to each composite instance", async () => {
   await press.Tab();
 
-  expect(q.button("Alpha")).toHaveFocus();
+  vi.useFakeTimers();
 
-  await type("a");
-  expect(q.button("Alpine")).toHaveFocus();
+  try {
+    expect(q.button("Alpha")).toHaveFocus();
 
-  await type("p");
-  expect(q.button("Apricot")).toHaveFocus();
+    await typeahead("a");
+    expect(q.button("Alpine")).toHaveFocus();
 
-  await click(q.button("Banana"));
-  expect(q.button("Banana")).toHaveFocus();
+    await typeahead("p");
+    expect(q.button("Apricot")).toHaveFocus();
 
-  await type("b");
-  expect(q.button("Blueberry")).toHaveFocus();
+    q.button.ensure("Cherry").focus();
+    expect(q.button("Cherry")).toHaveFocus();
+
+    await typeahead("b");
+    expect(q.button("Banana")).toHaveFocus();
+  } finally {
+    vi.useRealTimers();
+  }
 });
