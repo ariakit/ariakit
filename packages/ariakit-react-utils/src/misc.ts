@@ -19,9 +19,9 @@ import { isValidElement } from "react";
 export function setRef<T>(
   ref: RefCallback<T> | MutableRefObject<T> | null | undefined,
   value: T,
-) {
+): void | (() => void) {
   if (typeof ref === "function") {
-    ref(value);
+    return ref(value);
   } else if (ref) {
     ref.current = value;
   }

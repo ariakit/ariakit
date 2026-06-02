@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
+    "@ariakit/test": "workspace:*",
     "react": "19.2.6"
   },
   "peerDependencies": {

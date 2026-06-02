@@ -666,6 +666,9 @@ importers:
       '@ariakit/scripts':
         specifier: workspace:*
         version: link:../ariakit-scripts
+      '@ariakit/test':
+        specifier: workspace:*
+        version: link:../ariakit-test
       react:
         specifier: 19.2.6
         version: 19.2.6
