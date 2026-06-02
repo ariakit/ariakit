@@ -15,13 +15,18 @@ import { isValidElement } from "react";
 
 /**
  * Sets both a function and object React ref.
+ *
+ * Returns a callback ref cleanup function when one is provided.
  */
 export function setRef<T>(
   ref: RefCallback<T> | MutableRefObject<T> | null | undefined,
   value: T,
-) {
+): void | (() => void) {
   if (typeof ref === "function") {
-    ref(value);
+    const cleanup = ref(value);
+    if (typeof cleanup === "function") {
+      return cleanup;
+    }
   } else if (ref) {
     ref.current = value;
   }

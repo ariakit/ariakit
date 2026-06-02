@@ -35,6 +35,11 @@ const useReactId = _React.useId;
 const useReactDeferredValue = _React.useDeferredValue;
 const useReactInsertionEffect = _React.useInsertionEffect;
 
+interface MergedRefEffect {
+  ref: Ref<any>;
+  cleanup?: () => void;
+}
+
 /**
  * `React.useLayoutEffect` that fallbacks to `React.useEffect` on server side.
  */
@@ -156,9 +161,31 @@ export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
   return useMemo(() => {
     if (!refs.some(Boolean)) return;
     return (value: unknown) => {
+      const refEffects: MergedRefEffect[] = [];
+
       for (const ref of refs) {
-        setRef(ref, value);
+        if (!ref) continue;
+        const cleanup = setRef(ref, value);
+        refEffects.push({
+          ref,
+          cleanup: typeof cleanup === "function" ? cleanup : undefined,
+        });
       }
+
+      if (!refEffects.some((effect) => effect.cleanup)) return;
+
+      return () => {
+        for (const { ref, cleanup } of refEffects) {
+          if (cleanup) {
+            cleanup();
+          } else {
+            // React only sees the merged ref, so its cleanup replaces the
+            // usual null call for all refs. Child refs that didn't return a
+            // cleanup still need the null detach they would receive alone.
+            setRef(ref, null);
+          }
+        }
+      };
     };
     // oxlint-disable-next-line exhaustive-deps
   }, refs);

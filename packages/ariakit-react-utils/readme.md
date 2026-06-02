@@ -198,7 +198,7 @@ Creates a React state that calls a callback function whenever the state changes 
 ```ts
 function useMergeRefs(
   ...refs: Array<Ref<any> | undefined>
-): ((value: unknown) => void) | undefined;
+): ((value: unknown) => (() => void) | undefined) | undefined;
 ```
 
 Merges React Refs into a single memoized function ref so you can pass it to an element.
@@ -369,7 +369,7 @@ function usePortalRef(
     | RefCallback<HTMLElement>
     | MutableRefObject<HTMLElement | null>,
 ): {
-  portalRef: ((value: unknown) => void) | undefined;
+  portalRef: ((value: unknown) => (() => void) | undefined) | undefined;
   portalNode: HTMLElement | null;
   domReady: true | HTMLElement | null;
 };
@@ -422,10 +422,12 @@ Helpers for working with refs, elements, and props.
 function setRef<T>(
   ref: RefCallback<T> | MutableRefObject<T> | null | undefined,
   value: T,
-): void;
+): void | (() => void);
 ```
 
 Sets both a function and object React ref.
+
+Returns a callback ref cleanup function when one is provided.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
