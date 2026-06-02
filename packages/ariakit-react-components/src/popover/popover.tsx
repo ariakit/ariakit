@@ -284,7 +284,10 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         `${overflowPadding}px`,
       );
 
-      const anchor = getAnchorElement(anchorElement, getAnchorRectProp);
+      const anchor = getAnchorElement(
+        anchorElement ?? disclosureElement,
+        getAnchorRectProp,
+      );
 
       // Each effect run owns this flag. Cleanup marks stale runs so in-flight
       // async positioning work can skip state and style writes.
@@ -407,7 +410,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       popoverElement,
       arrowElement,
       anchorElement,
-      popoverElement,
+      disclosureElement,
       placement,
       mounted,
       domReady,
