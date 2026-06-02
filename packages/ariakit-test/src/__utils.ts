@@ -5,11 +5,21 @@ export type DirtiableElement = Element & { dirty?: boolean };
 
 export type TextField = HTMLInputElement | HTMLTextAreaElement;
 
+export const isHappyDOM = typeof window !== "undefined" && "happyDOM" in window;
+
 export const isBrowser =
   typeof navigator !== "undefined" &&
   !navigator.userAgent.includes("jsdom") &&
   typeof window !== "undefined" &&
-  !("happyDOM" in window);
+  !isHappyDOM;
+
+// happy-dom doesn't implement window.alert (jsdom and real browsers do). Provide
+// a no-op so code that calls or spies on it works under happy-dom. This runs at
+// import — not in applyBrowserPolyfills — because tests may install a spy before
+// the first simulated interaction.
+if (isHappyDOM && typeof window.alert !== "function") {
+  window.alert = () => {};
+}
 
 export async function flushMicrotasks() {
   await Promise.resolve();
@@ -88,7 +98,7 @@ export function applyBrowserPolyfills() {
   // because jsdom already behaves correctly.
   const restoreHappyDOMShims: Array<() => void> = [];
 
-  if ("happyDOM" in window) {
+  if (isHappyDOM) {
     // happy-dom returns an empty validationMessage for built-in constraint
     // violations (only setCustomValidity populates it); jsdom and real browsers
     // return a non-empty message. Ariakit's form validation reads
@@ -168,6 +178,39 @@ export function applyBrowserPolyfills() {
     restoreHappyDOMShims.push(() => {
       window.FormData = OriginalFormData;
     });
+
+    // happy-dom dispatches the `selectionchange` event synchronously from inside
+    // Selection.removeAllRanges(). The spec — and jsdom and real browsers —
+    // queue it as a task instead, so it fires after the current synchronous work
+    // settles. @ariakit/test calls selection.removeAllRanges() before moving
+    // focus on mouse down, so a synchronous selectionchange runs listeners while
+    // document.activeElement is still stale (e.g. <body>), which can misfire
+    // selection-driven UI. Defer the dispatch triggered during removeAllRanges
+    // to a macrotask to match the spec/jsdom ordering.
+    const SelectionPrototype = window.Selection?.prototype;
+    const originalRemoveAllRanges = SelectionPrototype?.removeAllRanges;
+    if (SelectionPrototype && originalRemoveAllRanges) {
+      SelectionPrototype.removeAllRanges = function removeAllRanges() {
+        const originalDispatchEvent = window.document.dispatchEvent;
+        window.document.dispatchEvent = function dispatchEvent(event: Event) {
+          if (event.type === "selectionchange") {
+            setTimeout(() =>
+              originalDispatchEvent.call(window.document, event),
+            );
+            return true;
+          }
+          return originalDispatchEvent.call(this, event);
+        };
+        try {
+          return originalRemoveAllRanges.call(this);
+        } finally {
+          window.document.dispatchEvent = originalDispatchEvent;
+        }
+      };
+      restoreHappyDOMShims.push(() => {
+        SelectionPrototype.removeAllRanges = originalRemoveAllRanges;
+      });
+    }
   }
 
   return () => {
