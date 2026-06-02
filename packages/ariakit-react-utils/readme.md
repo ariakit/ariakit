@@ -427,6 +427,8 @@ function setRef<T>(
 
 Sets both a function and object React ref.
 
+Returns a callback ref cleanup function when one is provided.
+
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
 </div>

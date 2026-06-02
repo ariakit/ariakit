@@ -121,15 +121,15 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
     setPortalNode(portalEl);
     const cleanup = setRef(portalRef, portalEl);
     return () => {
-      if (!isPortalInDocument) {
-        portalEl.remove();
-      }
       // Connected portals keep their DOM node, but portalRef still needs the
       // same cleanup/null-detach behavior as any other React ref.
       if (typeof cleanup === "function") {
         cleanup();
       } else {
         setRef(portalRef, null);
+      }
+      if (!isPortalInDocument) {
+        portalEl.remove();
       }
     };
   }, [portal, portalElement, context, portalRef]);

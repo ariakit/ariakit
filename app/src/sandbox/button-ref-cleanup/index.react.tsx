@@ -25,6 +25,7 @@ export default function Example() {
   const [buttonCount, setButtonCount] = useState(0);
   const [portalCount, setPortalCount] = useState(0);
   const [connectedPortalCount, setConnectedPortalCount] = useState(0);
+  const [portalCleanupConnected, setPortalCleanupConnected] = useState(false);
   const [externalButtonDetached, setExternalButtonDetached] = useState(false);
   const [buttonObjectAttached, setButtonObjectAttached] = useState(false);
   const [buttonObjectDetached, setButtonObjectDetached] = useState(false);
@@ -81,7 +82,13 @@ export default function Example() {
 
   const portalRef = useCallback((element: HTMLElement | null) => {
     if (!element) return;
-    return trackDocumentKey("p", () => setPortalCount((count) => count + 1));
+    const cleanup = trackDocumentKey("p", () =>
+      setPortalCount((count) => count + 1),
+    );
+    return () => {
+      setPortalCleanupConnected(element.isConnected);
+      cleanup();
+    };
   }, []);
 
   const connectedPortalRef = useCallback((element: HTMLElement | null) => {
@@ -118,6 +125,7 @@ export default function Example() {
       <p>Button shortcut count: {buttonCount}</p>
       <p>Portal shortcut count: {portalCount}</p>
       <p>Connected portal shortcut count: {connectedPortalCount}</p>
+      <p>Portal cleanup connected: {portalCleanupConnected ? "yes" : "no"}</p>
       <p>External button detached: {externalButtonDetached ? "yes" : "no"}</p>
       <p>Button object ref attached: {buttonObjectAttached ? "yes" : "no"}</p>
       <p>Button object ref detached: {buttonObjectDetached ? "yes" : "no"}</p>
