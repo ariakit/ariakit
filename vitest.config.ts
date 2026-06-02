@@ -57,12 +57,13 @@ const testExcludes = [
 
 // The framework render suites (test-react, test-solid) exercise the
 // @ariakit/test simulation layer heavily, where happy-dom is ~2x faster than
-// jsdom. The core suite (no loader) stays on jsdom, whose timing the low-level
-// unit tests depend on. test-react18 sets ARIAKIT_TEST_ENV=jsdom to opt out:
-// React 18's scheduler is more sensitive to happy-dom's faster timer cadence
-// and flakes some dialog-dismissal tests.
+// jsdom. The core suite (no loader) runs on node — most of its tests are pure
+// logic — and the few that touch the DOM pin themselves to jsdom with a
+// `// @vitest-environment jsdom` comment. test-react18 sets ARIAKIT_TEST_ENV=jsdom
+// to opt out of happy-dom: React 18's scheduler is more sensitive to happy-dom's
+// faster timer cadence and flakes some dialog-dismissal tests.
 const environment =
-  process.env.ARIAKIT_TEST_ENV ?? (testLoader ? "happy-dom" : "jsdom");
+  process.env.ARIAKIT_TEST_ENV ?? (testLoader ? "happy-dom" : "node");
 
 // sourcePlugin is typed against the app workspace's Vite copy, while Vitest
 // consumes the root Vite types. The runtime plugin shape is compatible.

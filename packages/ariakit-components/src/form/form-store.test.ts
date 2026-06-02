@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+// Uses DOM APIs the default node test environment doesn't provide.
 import { expect, test } from "vitest";
 import { createFormStore } from "./form-store.ts";
 

@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+// Uses DOM APIs the default node test environment doesn't provide.
 import { init } from "@ariakit/store";
 import { afterEach, expect, test } from "vitest";
 import { createCollectionStore } from "./collection-store.ts";

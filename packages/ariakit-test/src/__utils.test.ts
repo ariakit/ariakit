@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+// Uses DOM APIs the default node test environment doesn't provide.
 // oxlint-disable unbound-method
 import { expect, test } from "vitest";
 import { isBrowser, wrapAsync } from "./__utils.ts";
