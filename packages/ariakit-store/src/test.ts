@@ -871,20 +871,28 @@ test("notifies initialized child listeners once for shared local updates", () =>
   const cleanup = init(child);
   const subscribeCalls: Array<[number, number]> = [];
   const syncCalls: Array<[number, number]> = [];
+  const subscribeParentCounts: Array<[number, number]> = [];
+  const syncParentCounts: Array<[number, number]> = [];
 
   const unsubscribeSubscribe = subscribe(
     child,
     ["count"],
     (state, prevState) => {
       subscribeCalls.push([state.count, prevState.count]);
+      subscribeParentCounts.push([
+        first.getState().count,
+        second.getState().count,
+      ]);
     },
   );
   const unsubscribeSync = sync(child, ["count"], (state, prevState) => {
     syncCalls.push([state.count, prevState.count]);
+    syncParentCounts.push([first.getState().count, second.getState().count]);
   });
 
   expect(syncCalls).toEqual([[0, 0]]);
   syncCalls.length = 0;
+  syncParentCounts.length = 0;
 
   child.setState("count", 1);
 
@@ -893,6 +901,8 @@ test("notifies initialized child listeners once for shared local updates", () =>
   expect(second.getState().count).toBe(1);
   expect(subscribeCalls).toEqual([[1, 0]]);
   expect(syncCalls).toEqual([[1, 0]]);
+  expect(subscribeParentCounts).toEqual([[1, 1]]);
+  expect(syncParentCounts).toEqual([[1, 1]]);
 
   unsubscribeSubscribe();
   unsubscribeSync();

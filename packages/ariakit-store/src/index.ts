@@ -128,6 +128,7 @@ export function createStore<S extends State>(
   let batchPending = false;
   let inDispatch = false;
   let updatedKeys = new Set<keyof S>();
+  let localPropagation: { key: keyof S; value: S[keyof S] } | null = null;
   const instances = new Set<symbol>();
 
   const setups = new Set<() => void | (() => void)>();
@@ -386,19 +387,36 @@ export function createStore<S extends State>(
 
     if (nextValue === currentValue) return;
 
+    // During a child-originated fan-out, parent sync listeners echo the same
+    // value back into this child. Let the outer update notify after every
+    // parent has been updated.
+    if (
+      fromStores &&
+      localPropagation?.key === key &&
+      localPropagation.value === nextValue
+    ) {
+      return;
+    }
+
     // Fan a locally-originated change out to extended parent stores so they
     // stay in sync. Both short-circuits are load-bearing: `!fromStores`
     // prevents the parent/child sync loop (storeInit pushes parent updates
     // down with `fromStores`), and `stores.length` skips the iteration
     // entirely on the common store-without-parents path.
     if (!fromStores && stores.length) {
-      for (const store of stores) {
-        store?.setState?.(key, nextValue);
+      const previousLocalPropagation = localPropagation;
+      localPropagation = { key, value: nextValue };
+      try {
+        for (const store of stores) {
+          store?.setState?.(key, nextValue);
+        }
+      } finally {
+        localPropagation = previousLocalPropagation;
       }
     }
 
-    // Parent propagation may synchronously sync back into this child store
-    // and notify listeners before this outer setState resumes.
+    // Other reentrant updates may have already applied this value while
+    // parents were being updated.
     if (state[key] === nextValue) return;
 
     const prevState = state;
