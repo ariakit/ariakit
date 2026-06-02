@@ -179,6 +179,8 @@ export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
           if (cleanup) {
             cleanup();
           } else {
+            // React doesn't call a ref with null when it returns a cleanup.
+            // Refs without their own cleanup still need to be detached.
             setRef(ref, null);
           }
         }

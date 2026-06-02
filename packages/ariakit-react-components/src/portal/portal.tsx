@@ -119,14 +119,16 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
     }
     // Set the internal portal node state and the portalRef prop.
     setPortalNode(portalEl);
-    setRef(portalRef, portalEl);
-    // If the portal element was already in the document, we don't need to
-    // remove it when the element is unmounted, so we just return.
-    if (isPortalInDocument) return;
-    // Otherwise, we need to remove the portal from the DOM.
+    const cleanup = setRef(portalRef, portalEl);
     return () => {
-      portalEl.remove();
-      setRef(portalRef, null);
+      if (!isPortalInDocument) {
+        portalEl.remove();
+      }
+      if (typeof cleanup === "function") {
+        cleanup();
+      } else {
+        setRef(portalRef, null);
+      }
     };
   }, [portal, portalElement, context, portalRef]);
 
