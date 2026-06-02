@@ -17,6 +17,49 @@ test("gets and sets nested values with array and object paths", () => {
   });
 });
 
+test("supports numeric array path segments at runtime", () => {
+  const store = createFormStore({});
+
+  Reflect.apply(store.setValue, store, [["users", 0, "name"], "Ada"]);
+
+  expect(store.getValue("users.0.name")).toBe("Ada");
+  expect(Array.isArray(store.getValue("users"))).toBe(true);
+  expect(store.getState().values).toEqual({
+    users: [{ name: "Ada" }],
+  });
+});
+
+test("uses object paths for non-array index segments", () => {
+  const store = createFormStore({});
+
+  store.setValue("users.-1.name", "Ada");
+  store.setValue("stats.Infinity.count", 1);
+  store.setValue("meta.NaN.value", true);
+  store.setValue("items.4294967295.name", "Grace");
+
+  expect(store.getValue("users.-1.name")).toBe("Ada");
+  expect(Array.isArray(store.getValue("users"))).toBe(false);
+  expect(Array.isArray(store.getValue("items"))).toBe(false);
+  expect(store.getState().values).toEqual({
+    users: { "-1": { name: "Ada" } },
+    stats: { Infinity: { count: 1 } },
+    meta: { NaN: { value: true } },
+    items: { "4294967295": { name: "Grace" } },
+  });
+});
+
+test("replaces an existing array container for non-array index segments", () => {
+  const store = createFormStore({});
+
+  store.setValue("users.0.name", "Ada");
+  store.setValue("users.-1.name", "Grace");
+
+  expect(Array.isArray(store.getValue("users"))).toBe(false);
+  expect(store.getState().values).toEqual({
+    users: { "0": { name: "Ada" }, "-1": { name: "Grace" } },
+  });
+});
+
 test("updates nested values with setter functions", () => {
   const store = createFormStore({
     defaultValues: { user: { visits: 1 } },
