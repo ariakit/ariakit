@@ -68,6 +68,7 @@ function useEventOutside({
     if (!open) return;
     if (!domReady) return;
     if (!contentElement) return;
+    focusedRef.current = false;
     const onFocus = () => {
       focusedRef.current = true;
     };
