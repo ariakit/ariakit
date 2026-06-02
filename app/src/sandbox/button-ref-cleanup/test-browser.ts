@@ -2,10 +2,7 @@ import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test("preserves React ref cleanup", async ({ page, q }) => {
-    test.setTimeout(60_000);
-    await test
-      .expect(q.button("Unmount button"))
-      .toBeVisible({ timeout: 30_000 });
+    await test.expect(q.button("Unmount button")).toBeVisible();
     await test.expect(q.text("Connected portal content")).toBeVisible();
     await test.expect(q.text("Button object ref attached: yes")).toBeVisible();
     await test
