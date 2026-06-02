@@ -21,6 +21,49 @@ export function nextFrame() {
   return new Promise(requestAnimationFrame);
 }
 
+// In jsdom/happy-dom, requestAnimationFrame fires on a ~16ms cadence. Because
+// simulated interactions (and the components they drive) wait for several frames
+// per action, that cadence dominates test time. We replace it with an immediate
+// macrotask so frames resolve at wall-clock speed. Callbacks scheduled before a
+// tick are still flushed together, in order, with a shared timestamp, so the
+// frame count and ordering that components rely on (e.g. afterPaint's nested
+// frames) are preserved — only the wall-clock duration is removed. The browser
+// path keeps the native rAF so real timing and painting are unaffected.
+if (!isBrowser) {
+  let nextRafId = 1;
+  let pendingRafs = new Map<number, FrameRequestCallback>();
+  let flushingRafs: Map<number, FrameRequestCallback> | null = null;
+  let rafScheduled = false;
+
+  globalThis.requestAnimationFrame = ((callback: FrameRequestCallback) => {
+    const id = nextRafId++;
+    pendingRafs.set(id, callback);
+    if (!rafScheduled) {
+      rafScheduled = true;
+      setTimeout(() => {
+        rafScheduled = false;
+        // Swap the queue so callbacks scheduled during the flush run on the
+        // next frame. Iterating the live map lets a callback cancel a sibling
+        // that hasn't run yet, matching the native behavior.
+        const frame = pendingRafs;
+        pendingRafs = new Map();
+        flushingRafs = frame;
+        const time = performance.now();
+        for (const frameCallback of frame.values()) {
+          frameCallback(time);
+        }
+        flushingRafs = null;
+      });
+    }
+    return id;
+  }) as typeof requestAnimationFrame;
+
+  globalThis.cancelAnimationFrame = ((id: number) => {
+    pendingRafs.delete(id);
+    flushingRafs?.delete(id);
+  }) as typeof cancelAnimationFrame;
+}
+
 export function setActEnvironment(value: boolean) {
   const scope = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };
   const previousValue = scope.IS_REACT_ACT_ENVIRONMENT;

@@ -1,6 +1,6 @@
 // oxlint-disable unbound-method
 import { expect, test } from "vitest";
-import { isBrowser, wrapAsync } from "./__utils.ts";
+import { isBrowser, nextFrame, wrapAsync } from "./__utils.ts";
 
 test("wrapAsync does not reapply browser polyfills when nested", async () => {
   const originalFocus = HTMLElement.prototype.focus;
@@ -60,3 +60,64 @@ test("wrapAsync does not reapply the act environment when nested", async () => {
     }
   }
 });
+
+test.skipIf(isBrowser)(
+  "requestAnimationFrame batches same-frame callbacks with a shared timestamp",
+  async () => {
+    const order: string[] = [];
+    const times: number[] = [];
+    requestAnimationFrame((time) => {
+      order.push("a");
+      times.push(time);
+    });
+    requestAnimationFrame((time) => {
+      order.push("b");
+      times.push(time);
+    });
+    await nextFrame();
+    expect(order).toEqual(["a", "b"]);
+    expect(times[0]).toBe(times[1]);
+  },
+);
+
+test.skipIf(isBrowser)(
+  "requestAnimationFrame scheduled during a flush runs on the next frame",
+  async () => {
+    const calls: string[] = [];
+    requestAnimationFrame(() => {
+      calls.push("a");
+      requestAnimationFrame(() => calls.push("nested"));
+    });
+    await nextFrame();
+    expect(calls).toEqual(["a"]);
+    await nextFrame();
+    expect(calls).toEqual(["a", "nested"]);
+  },
+);
+
+test.skipIf(isBrowser)(
+  "cancelAnimationFrame prevents a scheduled callback from running",
+  async () => {
+    const calls: string[] = [];
+    const id = requestAnimationFrame(() => calls.push("x"));
+    cancelAnimationFrame(id);
+    await nextFrame();
+    expect(calls).toEqual([]);
+  },
+);
+
+test.skipIf(isBrowser)(
+  "cancelAnimationFrame skips a sibling callback queued for the current frame",
+  async () => {
+    const calls: string[] = [];
+    let siblingId = 0;
+    requestAnimationFrame(() => {
+      calls.push("a");
+      cancelAnimationFrame(siblingId);
+    });
+    siblingId = requestAnimationFrame(() => calls.push("b"));
+    requestAnimationFrame(() => calls.push("c"));
+    await nextFrame();
+    expect(calls).toEqual(["a", "c"]);
+  },
+);
