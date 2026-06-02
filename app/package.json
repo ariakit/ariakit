@@ -74,7 +74,7 @@
     "astro-remote": "0.3.4",
     "canvas-confetti": "1.9.4",
     "clsx": "2.1.1",
-    "date-fns": "4.3.0",
+    "date-fns": "4.4.0",
     "diff": "9.0.0",
     "hast-util-to-text": "4.0.2",
     "html-entities": "2.6.0",
