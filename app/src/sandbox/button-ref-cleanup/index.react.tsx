@@ -1,66 +1,19 @@
 import * as Ariakit from "@ariakit/react";
 import { useMergeRefs } from "@ariakit/react-utils";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-const listenerEvents: string[] = [];
-const activeListeners = new Set<string>();
-const buttonObjectRef = { current: null as HTMLButtonElement | null };
-const plainButtonObjectRef = { current: null as HTMLButtonElement | null };
-let observedButton: HTMLButtonElement | null = null;
-let observedPortal: HTMLElement | null = null;
-let observedConnectedPortal: HTMLElement | null = null;
-
-function trackClickListener(element: HTMLElement, name: string) {
-  const onClick = () => listenerEvents.push(`${name} click`);
-  element.addEventListener("click", onClick);
-  activeListeners.add(name);
-  return (onCleanup?: () => void) => {
-    element.removeEventListener("click", onClick);
-    activeListeners.delete(name);
-    onCleanup?.();
-    listenerEvents.push(`${name} cleanup`);
+function trackDocumentKey(key: string, onKey: () => void) {
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== key) return;
+    onKey();
   };
-}
-
-function resetListenerEvents() {
-  listenerEvents.length = 0;
-}
-
-function getActiveListeners() {
-  return [...activeListeners].sort();
-}
-
-interface RefCleanupTestState {
-  buttonObjectRef: typeof buttonObjectRef;
-  clickObservedButton: () => void;
-  clickObservedConnectedPortal: () => void;
-  clickObservedPortal: () => void;
-  getActiveListeners: () => string[];
-  listenerEvents: string[];
-  plainButtonObjectRef: typeof plainButtonObjectRef;
-  resetListenerEvents: () => void;
-}
-
-declare global {
-  interface Window {
-    __refCleanupTest?: RefCleanupTestState;
-  }
-}
-
-if (typeof window !== "undefined") {
-  window.__refCleanupTest = {
-    buttonObjectRef,
-    clickObservedButton: () => observedButton?.click(),
-    clickObservedConnectedPortal: () => observedConnectedPortal?.click(),
-    clickObservedPortal: () => observedPortal?.click(),
-    getActiveListeners,
-    listenerEvents,
-    plainButtonObjectRef,
-    resetListenerEvents,
-  };
+  document.addEventListener("keydown", onKeyDown);
+  return () => document.removeEventListener("keydown", onKeyDown);
 }
 
 export default function Example() {
+  const buttonObjectRef = useRef<HTMLButtonElement>(null);
+  const plainButtonObjectRef = useRef<HTMLButtonElement>(null);
   const [buttonMounted, setButtonMounted] = useState(true);
   const [plainButtonMounted, setPlainButtonMounted] = useState(true);
   const [portalMounted, setPortalMounted] = useState(true);
@@ -69,17 +22,46 @@ export default function Example() {
     useState(true);
   const [connectedPortalElement, setConnectedPortalElement] =
     useState<HTMLDivElement | null>(null);
+  const [buttonCount, setButtonCount] = useState(0);
+  const [portalCount, setPortalCount] = useState(0);
+  const [connectedPortalCount, setConnectedPortalCount] = useState(0);
+  const [externalButtonDetached, setExternalButtonDetached] = useState(false);
+  const [buttonObjectAttached, setButtonObjectAttached] = useState(false);
+  const [buttonObjectDetached, setButtonObjectDetached] = useState(false);
+  const [plainButtonDetached, setPlainButtonDetached] = useState(false);
+  const [plainButtonObjectAttached, setPlainButtonObjectAttached] =
+    useState(false);
+  const [plainButtonObjectDetached, setPlainButtonObjectDetached] =
+    useState(false);
+  const [nonFunctionPortalDetached, setNonFunctionPortalDetached] =
+    useState(false);
+
+  useEffect(() => {
+    if (buttonMounted) {
+      setButtonObjectAttached(
+        buttonObjectRef.current?.textContent === "Observed button",
+      );
+    } else {
+      setButtonObjectDetached(buttonObjectRef.current === null);
+    }
+
+    if (plainButtonMounted) {
+      setPlainButtonObjectAttached(
+        plainButtonObjectRef.current?.textContent === "Plain button",
+      );
+    } else {
+      setPlainButtonObjectDetached(plainButtonObjectRef.current === null);
+    }
+  }, [buttonMounted, plainButtonMounted]);
 
   const observedButtonRef = useCallback((element: HTMLButtonElement | null) => {
     if (!element) return;
-    observedButton = element;
-    const cleanup = trackClickListener(element, "button");
-    return () => cleanup(() => (observedButton = null));
+    return trackDocumentKey("b", () => setButtonCount((count) => count + 1));
   }, []);
 
   const externalButtonRef = useCallback((element: HTMLButtonElement | null) => {
     if (element) return;
-    listenerEvents.push("external button detach");
+    setExternalButtonDetached(true);
   }, []);
 
   const buttonRef = useMergeRefs(externalButtonRef, buttonObjectRef);
@@ -87,7 +69,7 @@ export default function Example() {
   const plainButtonCallbackRef = useCallback(
     (element: HTMLButtonElement | null) => {
       if (element) return;
-      listenerEvents.push("plain button detach");
+      setPlainButtonDetached(true);
     },
     [],
   );
@@ -99,21 +81,19 @@ export default function Example() {
 
   const portalRef = useCallback((element: HTMLElement | null) => {
     if (!element) return;
-    observedPortal = element;
-    const cleanup = trackClickListener(element, "portal");
-    return () => cleanup(() => (observedPortal = null));
+    return trackDocumentKey("p", () => setPortalCount((count) => count + 1));
   }, []);
 
   const connectedPortalRef = useCallback((element: HTMLElement | null) => {
     if (!element) return;
-    observedConnectedPortal = element;
-    const cleanup = trackClickListener(element, "connected portal");
-    return () => cleanup(() => (observedConnectedPortal = null));
+    return trackDocumentKey("c", () =>
+      setConnectedPortalCount((count) => count + 1),
+    );
   }, []);
 
   const nonFunctionPortalRef = useCallback((element: HTMLElement | null) => {
     if (!element) {
-      listenerEvents.push("non-function portal detach");
+      setNonFunctionPortalDetached(true);
     }
     return element;
   }, []);
@@ -135,6 +115,24 @@ export default function Example() {
       <button type="button" onClick={() => setNonFunctionPortalMounted(false)}>
         Unmount non-function portal
       </button>
+      <p>Button shortcut count: {buttonCount}</p>
+      <p>Portal shortcut count: {portalCount}</p>
+      <p>Connected portal shortcut count: {connectedPortalCount}</p>
+      <p>External button detached: {externalButtonDetached ? "yes" : "no"}</p>
+      <p>Button object ref attached: {buttonObjectAttached ? "yes" : "no"}</p>
+      <p>Button object ref detached: {buttonObjectDetached ? "yes" : "no"}</p>
+      <p>Plain button detached: {plainButtonDetached ? "yes" : "no"}</p>
+      <p>
+        Plain button object ref attached:{" "}
+        {plainButtonObjectAttached ? "yes" : "no"}
+      </p>
+      <p>
+        Plain button object ref detached:{" "}
+        {plainButtonObjectDetached ? "yes" : "no"}
+      </p>
+      <p>
+        Non-function portal detached: {nonFunctionPortalDetached ? "yes" : "no"}
+      </p>
       {buttonMounted && (
         <Ariakit.Button
           ref={buttonRef}
@@ -151,7 +149,9 @@ export default function Example() {
           <div>Portal content</div>
         </Ariakit.Portal>
       )}
-      <div id="connected-portal-root" ref={setConnectedPortalElement} />
+      <div id="connected-portal-root" ref={setConnectedPortalElement}>
+        Connected portal root
+      </div>
       {connectedPortalMounted && connectedPortalElement && (
         <Ariakit.Portal
           portalElement={connectedPortalElement}
