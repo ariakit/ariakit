@@ -29,9 +29,6 @@ function getChildren(props: Pick<CheckboxCheckProps, "checked" | "children">) {
   if (props.checked) {
     return props.children || checkmark;
   }
-  if (typeof props.children === "function") {
-    return props.children;
-  }
   return null;
 }
 
