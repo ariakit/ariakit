@@ -86,6 +86,7 @@
         "motion",
         "fs-extra",
         "glob",
+        "happy-dom",
         "jsdom",
         "lodash-es",
         "match-sorter",
