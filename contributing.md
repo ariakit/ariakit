@@ -503,9 +503,9 @@ Once your pull request is merged into the `main` branch, the `Publish` PR will b
 
 ## Writing end-to-end tests
 
-Most of the time, we'll write unit and integration tests as described on [Testing the example](#testing-the-example). Those tests simulate real user interactions, but they don't run in the browser. They use [JSDOM](https://github.com/jsdom/jsdom), which implements JavaScript DOM APIs in a Node.js environment.
+Most of the time, we'll write unit and integration tests as described on [Testing the example](#testing-the-example). Those tests simulate real user interactions, but they don't run in the browser. They use [happy-dom](https://github.com/capricorn86/happy-dom), which implements JavaScript DOM APIs in a Node.js environment. A few environment-sensitive tests opt back into [JSDOM](https://github.com/jsdom/jsdom) with a `// @vitest-environment jsdom` comment.
 
-Combined with the [`@ariakit/test`](packages/ariakit-test) package, this is more than enough for most cases. However, sometimes we need a real browser to test specific interactions with our examples that aren't supported in JSDOM. For those cases, we use [Playwright](https://playwright.dev).
+Combined with the [`@ariakit/test`](packages/ariakit-test) package, this is more than enough for most cases. However, sometimes we need a real browser to test specific interactions with our examples that aren't supported in these environments. For those cases, we use [Playwright](https://playwright.dev).
 
 Let's create an end-to-end test for our example:
 

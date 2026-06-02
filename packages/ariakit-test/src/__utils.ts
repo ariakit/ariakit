@@ -83,9 +83,97 @@ export function applyBrowserPolyfills() {
     window.PointerEvent = class PointerEvent extends MouseEvent {};
   }
 
+  // The following shims patch gaps in happy-dom's DOM implementation so it
+  // matches real-browser (and HTML spec) behavior. They are scoped to happy-dom
+  // because jsdom already behaves correctly.
+  const restoreHappyDOMShims: Array<() => void> = [];
+
+  if ("happyDOM" in window) {
+    // happy-dom returns an empty validationMessage for built-in constraint
+    // violations (only setCustomValidity populates it); jsdom and real browsers
+    // return a non-empty message. Ariakit's form validation reads
+    // element.validationMessage to register errors, so mirror that here. The
+    // exact string matches jsdom's generic message so the shared form example
+    // tests assert the same text under both environments (real browsers use
+    // locale-specific text, which these tests don't depend on).
+    for (const Constructor of [
+      window.HTMLInputElement,
+      window.HTMLTextAreaElement,
+      window.HTMLSelectElement,
+    ]) {
+      const descriptor = Object.getOwnPropertyDescriptor(
+        Constructor.prototype,
+        "validationMessage",
+      );
+      if (!descriptor?.get || !descriptor.configurable) continue;
+      const originalGet = descriptor.get;
+      Object.defineProperty(Constructor.prototype, "validationMessage", {
+        configurable: true,
+        get(this: { validity?: ValidityState }) {
+          const message = originalGet.call(this) as string;
+          if (message) return message;
+          if (this.validity && !this.validity.valid) {
+            return "Constraints not satisfied";
+          }
+          return message;
+        },
+      });
+      restoreHappyDOMShims.push(() => {
+        Object.defineProperty(
+          Constructor.prototype,
+          "validationMessage",
+          descriptor,
+        );
+      });
+    }
+
+    // happy-dom's FormData constructor only checks `disabled` for <input>
+    // controls, so disabled <select>/<textarea> are wrongly included; the HTML
+    // spec (like real browsers) excludes all disabled controls. Temporarily
+    // blank their names so the constructor skips them, then restore the names.
+    // Blanking — rather than deleting entries afterwards — lets the constructor
+    // build the entry list correctly and avoids removing same-named entries that
+    // belong to other, enabled controls. (Controls disabled only via an ancestor
+    // <fieldset disabled> are not handled here: happy-dom doesn't propagate that
+    // to descendants for any control type, so it's a broader happy-dom gap, not
+    // specific to this <select>/<textarea> bug.)
+    const OriginalFormData = window.FormData;
+    class PatchedFormData extends OriginalFormData {
+      constructor(form?: HTMLFormElement, submitter?: HTMLElement | null) {
+        const renamed: Array<[Element, string]> = [];
+        if (form) {
+          for (const element of Array.from(form.elements)) {
+            const control = element as HTMLSelectElement | HTMLTextAreaElement;
+            if (!control.name || !control.disabled) continue;
+            if (
+              control.tagName !== "SELECT" &&
+              control.tagName !== "TEXTAREA"
+            ) {
+              continue;
+            }
+            renamed.push([control, control.name]);
+            control.removeAttribute("name");
+          }
+        }
+        try {
+          super(form, submitter);
+        } finally {
+          for (const [control, name] of renamed) {
+            control.setAttribute("name", name);
+          }
+        }
+      }
+    }
+    window.FormData = PatchedFormData;
+    restoreHappyDOMShims.push(() => {
+      window.FormData = OriginalFormData;
+    });
+  }
+
   return () => {
     HTMLElement.prototype.focus = originalFocus;
     Element.prototype.getClientRects = originalGetClientRects;
+    for (const restore of restoreHappyDOMShims) restore();
   };
 }
 

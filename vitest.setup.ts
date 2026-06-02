@@ -14,6 +14,13 @@ import type { AllowedTestLoader } from "./test-loader.ts";
 
 failOnConsole();
 
+// happy-dom does not implement window.alert (jsdom does). Provide a no-op so
+// examples that call it — and tests that spy on it — work under happy-dom. This
+// is a no-op under jsdom, where window.alert already exists.
+if (typeof window.alert !== "function") {
+  window.alert = () => {};
+}
+
 expect.extend({
   toHaveFocus(element: HTMLElement, expected, options) {
     const toHaveFocus = matchers.toHaveFocus.bind(this) as any;

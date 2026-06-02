@@ -76,7 +76,14 @@ export default defineConfig({
   test: {
     watch: false,
     testTimeout: 10_000,
-    environment: "jsdom",
+    // The framework render suites (test-react, test-solid) exercise the
+    // @ariakit/test simulation layer heavily, where happy-dom is ~2x faster than
+    // jsdom. The core suite (no loader) stays on jsdom, whose timing the
+    // low-level unit tests depend on. test-react18 sets ARIAKIT_TEST_ENV=jsdom
+    // to opt out: React 18's scheduler is more sensitive to happy-dom's faster
+    // timer cadence and flakes some dialog-dismissal tests.
+    environment:
+      process.env.ARIAKIT_TEST_ENV ?? (testLoader ? "happy-dom" : "jsdom"),
     setupFiles: [join(rootDir, "vitest.setup.ts")],
     exclude: testExcludes,
     include: testIncludes,

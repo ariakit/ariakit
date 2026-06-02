@@ -1,3 +1,8 @@
+// @vitest-environment jsdom
+//
+// happy-dom fires selectionchange synchronously inside Selection.removeAllRanges()
+// — real browsers queue it asynchronously — which closes the popover before
+// focus moves on mouse down. Pinned to jsdom.
 import { click, press, q, select } from "@ariakit/test";
 import { expect, test } from "vitest";
 
