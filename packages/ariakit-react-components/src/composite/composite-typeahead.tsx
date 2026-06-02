@@ -15,7 +15,6 @@ import {
   removeUndefinedValues,
 } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
-import { useRef } from "react";
 import { useCompositeScopedContext } from "./composite-context.tsx";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 import { flipItems } from "./utils.ts";
@@ -24,18 +23,35 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-let chars = "";
-
-function clearChars() {
-  chars = "";
+interface TypeaheadState {
+  chars: string;
+  cleanupTimeout: number;
 }
 
-function isValidTypeaheadEvent(event: KeyboardEvent) {
+const typeaheadStates = new WeakMap<CompositeStore, TypeaheadState>();
+
+function getTypeaheadState(store: CompositeStore) {
+  let typeaheadState = typeaheadStates.get(store);
+  if (!typeaheadState) {
+    typeaheadState = { chars: "", cleanupTimeout: 0 };
+    typeaheadStates.set(store, typeaheadState);
+  }
+  return typeaheadState;
+}
+
+function clearChars(typeaheadState: TypeaheadState) {
+  typeaheadState.chars = "";
+}
+
+function isValidTypeaheadEvent(
+  event: KeyboardEvent,
+  typeaheadState: TypeaheadState,
+) {
   const target = event.target as HTMLElement | null;
   if (target && isTextField(target)) return false;
   // If the spacebar is pressed, we'll only consider it a valid typeahead event
   // if there were already other characters typed.
-  if (event.key === " " && chars.length) return true;
+  if (event.key === " " && typeaheadState.chars.length) return true;
   return (
     event.key.length === 1 &&
     !event.ctrlKey &&
@@ -73,24 +89,33 @@ function itemTextStartsWith(item: CompositeStoreItem, text: string) {
     .startsWith(text.toLowerCase());
 }
 
-function getSameInitialItems(
-  items: CompositeStoreItem[],
-  char: string,
-  activeId?: string | null,
-) {
+interface GetSameInitialItemsParams {
+  activeId?: string | null;
+  char: string;
+  items: CompositeStoreItem[];
+  typeaheadState: TypeaheadState;
+}
+
+function getSameInitialItems({
+  activeId,
+  char,
+  items,
+  typeaheadState,
+}: GetSameInitialItemsParams) {
   if (!activeId) return items;
   const activeItem = items.find((item) => item.id === activeId);
   if (!activeItem) return items;
   if (!itemTextStartsWith(activeItem, char)) return items;
+  const { chars } = typeaheadState;
   // Typing "oo" will match "oof" instead of moving to the next item.
   if (chars !== char && itemTextStartsWith(activeItem, chars)) return items;
   // If we're looping through the items, we'll want to reset the chars so "oo"
   // becomes just "o".
-  chars = char;
+  typeaheadState.chars = char;
   // flipItems will put the previous items at the end of the list so we can loop
   // through them.
   return flipItems(
-    items.filter((item) => itemTextStartsWith(item, chars)),
+    items.filter((item) => itemTextStartsWith(item, char)),
     activeId,
   ).filter((item) => item.id !== activeId);
 }
@@ -122,7 +147,6 @@ export const useCompositeTypeahead = createHook<
   );
 
   const onKeyDownCaptureProp = props.onKeyDownCapture;
-  const cleanupTimeoutRef = useRef(0);
 
   // We have to listen to the event in the capture phase because the event
   // might be handled by a child component. For example, the space key may
@@ -133,8 +157,9 @@ export const useCompositeTypeahead = createHook<
     if (event.defaultPrevented) return;
     if (!typeahead) return;
     if (!store) return;
-    if (!isValidTypeaheadEvent(event)) {
-      return clearChars();
+    const typeaheadState = getTypeaheadState(store);
+    if (!isValidTypeaheadEvent(event, typeaheadState)) {
+      return clearChars(typeaheadState);
     }
     const { renderedItems, items, activeId, id } = store.getState();
     // We typically want to use the rendered items, as they're already sorted.
@@ -161,27 +186,36 @@ export const useCompositeTypeahead = createHook<
     if (offscreenItems.length) {
       enabledItems = sortBasedOnDOMPosition(enabledItems, (i) => i.element);
     }
-    if (!isSelfTargetOrItem(event, enabledItems)) return clearChars();
+    if (!isSelfTargetOrItem(event, enabledItems)) {
+      return clearChars(typeaheadState);
+    }
     event.preventDefault();
     // We need to clear the previous cleanup timeout so we can append the
     // pressed char to the existing one.
-    window.clearTimeout(cleanupTimeoutRef.current);
+    window.clearTimeout(typeaheadState.cleanupTimeout);
     // Schedule a new cleanup timeout. After a short delay we'll reset the
     // characters so the next one counts as a new start character.
-    cleanupTimeoutRef.current = window.setTimeout(() => {
-      chars = "";
+    typeaheadState.cleanupTimeout = window.setTimeout(() => {
+      clearChars(typeaheadState);
     }, 500);
     // Always consider the lowercase version of the key.
     const char = event.key.toLowerCase();
-    chars += char;
-    enabledItems = getSameInitialItems(enabledItems, char, activeId);
-    const item = enabledItems.find((item) => itemTextStartsWith(item, chars));
+    typeaheadState.chars += char;
+    enabledItems = getSameInitialItems({
+      activeId,
+      char,
+      items: enabledItems,
+      typeaheadState,
+    });
+    const item = enabledItems.find((item) =>
+      itemTextStartsWith(item, typeaheadState.chars),
+    );
     if (item) {
       store.move(item.id);
     } else {
       // Immediately clear the characters so the next keypress starts a new
       // search.
-      clearChars();
+      clearChars(typeaheadState);
     }
   });
 
