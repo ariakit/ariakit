@@ -1,4 +1,4 @@
-import { click, press, q } from "@ariakit/test";
+import { click, dispatch, press, q, waitFor } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("show on disclosure click", async () => {
@@ -47,6 +47,30 @@ test("hide on click outside", async () => {
   await click(document.body);
   expect(q.dialog()).not.toBeInTheDocument();
   expect(q.button("Show modal")).not.toHaveFocus();
+});
+
+test("hide on right-click outside does not restore focus", async () => {
+  await click(q.button("Show modal"));
+  expect(q.dialog()).toBeVisible();
+  await dispatch.contextMenu(document.body);
+  await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
+  expect(q.button("Show modal")).not.toHaveFocus();
+});
+
+test("restore focus on escape after a previous click-outside hide", async () => {
+  // Hiding by clicking outside must not restore focus to the disclosure.
+  await click(q.button("Show modal"));
+  await click(document.body);
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.button("Show modal")).not.toHaveFocus();
+  // Reopening must clear the outside-interaction state so a subsequent keyboard
+  // hide does restore focus to the disclosure (the flag must not leak across
+  // hides).
+  await click(q.button("Show modal"));
+  expect(q.dialog()).toBeVisible();
+  await press.Escape();
+  expect(q.dialog()).not.toBeInTheDocument();
+  expect(q.button("Show modal")).toHaveFocus();
 });
 
 test("hide on dismiss button click", async () => {

@@ -163,14 +163,26 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // Tracks whether the dialog was hidden by an outside click or context menu.
   // When true, focusOnHide skips focus restoration to match native HTML
   // behavior where trigger buttons don't receive focus when you click outside.
-  // Reset when the dialog opens to avoid stale flags from prevented closes
-  // (e.g., onClose calling event.preventDefault), async closes with
-  // animations, or when autoFocusOnHide is disabled.
+  // It's cleared again when the dialog genuinely reopens (the deferred reset
+  // below) so a stale flag from a prevented close, an async/animated close, or a
+  // close with autoFocusOnHide disabled can't leak into the next hide.
   const interactedOutsideRef = useRef(false);
   useSafeLayoutEffect(() => {
     return sync(store, ["open"], (state) => {
       if (!state.open) return;
-      interactedOutsideRef.current = false;
+      // Defer the reset and re-check the settled open state. On React 18 the
+      // controlled `open` prop can be momentarily re-applied to the store while
+      // the dialog is hiding (useStoreProps reasserts the prop value during the
+      // commit), producing a transient open:false->true->false within a single
+      // synchronous commit. Clearing the flag synchronously on that spurious
+      // `true` would wipe the interacted-outside marker before focusOnHide reads
+      // it, wrongly restoring focus to the disclosure on outside clicks. By the
+      // time this microtask runs, the synchronous flip has settled, so we only
+      // clear the flag for a genuine reopen (open still true).
+      queueMicrotask(() => {
+        if (!store.getState().open) return;
+        interactedOutsideRef.current = false;
+      });
     });
   }, [store]);
   useHideOnInteractOutside(

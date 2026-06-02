@@ -131,6 +131,23 @@ export function useHideOnInteractOutside(
   const previousMouseDownRef = usePreviousMouseDownRef(open, contentWindow);
   const props = { store, domReady, capture: true };
 
+  // Hides the dialog and records that it was hidden by an outside pointer
+  // interaction so focusOnHide skips restoring focus to the trigger (matching
+  // native dialogs). store.hide() dispatches the cancelable close event
+  // synchronously; if a controlled onClose prevents it, the dialog is still open
+  // and didn't actually hide, so we clear the flag again to avoid suppressing
+  // focus restoration on a later, real hide (e.g. a router unmount after the
+  // close handler navigates away).
+  const markInteractedOutsideAndHide = () => {
+    if (interactedOutsideRef) {
+      interactedOutsideRef.current = true;
+    }
+    store.hide();
+    if (interactedOutsideRef && store.getState().open) {
+      interactedOutsideRef.current = false;
+    }
+  };
+
   useEventOutside({
     ...props,
     type: "click",
@@ -149,10 +166,7 @@ export function useHideOnInteractOutside(
       // - https://github.com/ariakit/ariakit/issues/2330
       if (!isElementMarked(previousMouseDown, contentElement?.id)) return;
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
-      if (interactedOutsideRef) {
-        interactedOutsideRef.current = true;
-      }
-      store.hide();
+      markInteractedOutsideAndHide();
     },
   });
 
@@ -174,10 +188,7 @@ export function useHideOnInteractOutside(
     type: "contextmenu",
     listener: (event) => {
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
-      if (interactedOutsideRef) {
-        interactedOutsideRef.current = true;
-      }
-      store.hide();
+      markInteractedOutsideAndHide();
     },
   });
 }
