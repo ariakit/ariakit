@@ -1,14 +1,27 @@
-import { useMergeRefs, forwardRef } from "@ariakit/react-utils";
+import {
+  useMergeRefs,
+  useSafeLayoutEffect,
+  forwardRef,
+} from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
+import { disabledFromProps } from "@ariakit/utils";
 import type { ElementType } from "react";
+import { useRef } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item-offscreen.tsx";
 import { useCompositeItemOffscreen } from "../composite/composite-item-offscreen.tsx";
+import {
+  getRenderElementTagName,
+  hasCustomElementRender,
+  hasRenderElementProp,
+  supportsDisabledAttribute,
+} from "../composite/utils.ts";
 import { Role } from "../role/role.tsx";
 import { useSelectScopedContext } from "./select-context.tsx";
 import * as Base from "./select-item.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
+type DisabledElement = HTMLElement & { disabled: boolean };
 
 export function useSelectItemOffscreen<
   T extends ElementType,
@@ -30,10 +43,33 @@ export const SelectItem = forwardRef(function SelectItem({
     offscreenRoot,
     ...props,
   });
+  const tagNameRef = useRef<HTMLElement>(null);
+  const renderTagName = getRenderElementTagName(props.render);
+  const hasCustomRender =
+    typeof props.render === "function" || hasCustomElementRender(props.render);
   const allProps = { ...rest, ...props, ref: useMergeRefs(ref, props.ref) };
+  const offscreenRef = useMergeRefs(ref, tagNameRef, props.ref);
+  const trulyDisabled =
+    props.focusable !== false &&
+    disabledFromProps(allProps) &&
+    !props.accessibleWhenDisabled;
+  useSafeLayoutEffect(() => {
+    if (active) return;
+    if (!hasCustomRender) return;
+    if (hasRenderElementProp(props.render, "disabled")) return;
+    const element = tagNameRef.current;
+    if (!element) return;
+    const tagName = element.tagName.toLowerCase();
+    if (!supportsDisabledAttribute(tagName)) {
+      element.removeAttribute("disabled");
+      return;
+    }
+    (element as unknown as DisabledElement).disabled = trulyDisabled;
+  });
   if (active) {
     return <Base.SelectItem {...allProps} />;
   }
+  const offscreenProps = { ...allProps, ref: offscreenRef };
   // Remove SelectItem props
   const {
     store,
@@ -51,13 +87,19 @@ export const SelectItem = forwardRef(function SelectItem({
     clickOnSpace,
     focusable,
     accessibleWhenDisabled,
+    autoFocus,
     onFocusVisible,
     focusOnHover,
     blurOnHoverEnd,
+    render,
     ...htmlProps
-  } = allProps;
+  } = offscreenProps;
+  const disabledProps =
+    trulyDisabled && supportsDisabledAttribute(renderTagName)
+      ? { disabled: true }
+      : {};
   const Component = Role[TagName];
-  return <Component {...htmlProps} />;
+  return <Component {...htmlProps} {...disabledProps} render={render} />;
 });
 
 export interface SelectItemOptions<T extends ElementType = TagName>

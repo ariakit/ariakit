@@ -1,5 +1,6 @@
 import * as Core from "@ariakit/components/composite/composite-store";
-import { getDocument, isTextField } from "@ariakit/utils";
+import { getDocument, hasOwnProperty, isTextField } from "@ariakit/utils";
+import { isValidElement } from "react";
 import type { CompositeStore } from "./composite-store.ts";
 
 export const flipItems = Core.flipItems;
@@ -68,4 +69,29 @@ export function isItem(
   if (!item) return false;
   if (exclude && item.element === exclude) return false;
   return true;
+}
+
+export function getRenderElementTagName(render: unknown) {
+  if (!isValidElement(render)) return;
+  const { type } = render;
+  return typeof type === "string" ? type : undefined;
+}
+
+export function hasCustomElementRender(render: unknown) {
+  if (!isValidElement(render)) return false;
+  return typeof render.type !== "string";
+}
+
+export function hasRenderElementProp(render: unknown, prop: string) {
+  if (!isValidElement(render)) return false;
+  return hasOwnProperty(render.props as Record<string, unknown>, prop);
+}
+
+export function supportsDisabledAttribute(tagName?: string) {
+  return (
+    tagName === "button" ||
+    tagName === "input" ||
+    tagName === "select" ||
+    tagName === "textarea"
+  );
 }

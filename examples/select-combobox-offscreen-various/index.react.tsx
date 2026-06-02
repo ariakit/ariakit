@@ -31,6 +31,50 @@ function groupItems(items: ReturnType<typeof getItem>[]) {
 const items = countries.map(getItem);
 const itemsByGroup = groupItems(items);
 
+function getOffscreenTestProps(value?: string, prefix?: string) {
+  const testProps = {
+    shouldRegisterItem: false,
+    rowId: "offscreen-test-row",
+    preventScrollOnKeyDown: false,
+    moveOnKeyPress: false,
+    tabbable: true,
+    clickOnEnter: false,
+    clickOnSpace: false,
+    onFocusVisible: () => {},
+  };
+  if (value === "Yemen") {
+    return {
+      ...testProps,
+      "data-testid": `${prefix}-offscreen-disabled`,
+      disabled: true,
+    };
+  }
+  if (value === "Zambia") {
+    return {
+      ...testProps,
+      "data-testid": `${prefix}-offscreen-autofocus`,
+      autoFocus: true,
+    };
+  }
+  if (value === "Zimbabwe") {
+    return {
+      ...testProps,
+      "data-testid": `${prefix}-offscreen-div`,
+      disabled: true,
+      autoFocus: true,
+      focusable: false,
+      accessibleWhenDisabled: true,
+    };
+  }
+  return {};
+}
+
+function getOffscreenTestRender(value?: string) {
+  if (value === "Yemen") return <button />;
+  if (value === "Zambia") return <button />;
+  return;
+}
+
 interface ComboboxProps
   extends
     Pick<Ariakit.ComboboxProps, "autoSelect">,
@@ -100,12 +144,14 @@ function Combobox({
                     {group.items.map((item, j) => (
                       <ComboboxItem
                         key={j}
+                        {...getOffscreenTestProps(item.value, "combobox")}
                         value={item.value}
                         focusOnHover
                         blurOnHoverEnd={false}
                         offscreenMode={i + j === 0 ? "active" : offscreenMode}
                         offscreenRoot={ref}
                         className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                        render={getOffscreenTestRender(item.value)}
                       />
                     ))}
                   </div>
@@ -116,11 +162,13 @@ function Combobox({
             matches.map((item, i) => (
               <ComboboxItem
                 key={i}
+                {...getOffscreenTestProps(item.value, "combobox")}
                 value={item.value}
                 focusOnHover
                 blurOnHoverEnd={false}
                 offscreenMode={i === 0 ? "active" : offscreenMode}
                 className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                render={getOffscreenTestRender(item.value)}
               />
             ))
           )}
@@ -280,6 +328,10 @@ function SelectCombobox({
                         {group.items.map((item, j) => (
                           <SelectItem
                             key={j}
+                            {...getOffscreenTestProps(
+                              item.value,
+                              "select-combobox",
+                            )}
                             value={item.value}
                             blurOnHoverEnd={false}
                             offscreenRoot={ref}
@@ -289,6 +341,9 @@ function SelectCombobox({
                             className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
                             render={(props) => {
                               if ("data-offscreen" in props) {
+                                if (getOffscreenTestRender(item.value)) {
+                                  return <button {...props} />;
+                                }
                                 return <div {...props} />;
                               }
                               return (
@@ -307,6 +362,7 @@ function SelectCombobox({
                 : matches.map((item, i) => (
                     <SelectItem
                       key={i}
+                      {...getOffscreenTestProps(item.value, "select-combobox")}
                       value={item.value}
                       blurOnHoverEnd={false}
                       offscreenRoot={ref}
@@ -314,6 +370,9 @@ function SelectCombobox({
                       className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
                       render={(props) => {
                         if ("data-offscreen" in props) {
+                          if (getOffscreenTestRender(item.value)) {
+                            return <button {...props} />;
+                          }
                           return <div {...props} />;
                         }
                         return (

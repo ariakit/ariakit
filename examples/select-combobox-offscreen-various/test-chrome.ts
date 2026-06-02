@@ -52,6 +52,101 @@ async function getValue(combobox: Locator) {
   return (await combobox.textContent()) || (await combobox.inputValue());
 }
 
+const leakedAttributes = [
+  "accessiblewhendisabled",
+  "autofocus",
+  "clickonenter",
+  "clickonspace",
+  "focusable",
+  "moveonkeypress",
+  "onfocusvisible",
+  "preventscrollonkeydown",
+  "rowid",
+  "shouldregisteritem",
+  "tabbable",
+];
+
+async function expectNoLeakedAttributes(item: Locator) {
+  for (const attribute of leakedAttributes) {
+    await expect(item).not.toHaveAttribute(attribute);
+  }
+}
+
+test("offscreen placeholders omit item-only DOM props", async ({ page }) => {
+  const q = query(page);
+  await disableAnimations(page);
+
+  const warnings: string[] = [];
+  page.on("console", (message) => {
+    const text = message.text();
+    if (/React does not recognize|Invalid DOM property/.test(text)) {
+      warnings.push(text);
+    }
+  });
+
+  await test.step("select combobox offscreen render props", async () => {
+    const combobox = q.combobox("searchable passive", { exact: true });
+    await combobox.click();
+    const listbox = q.listbox();
+    const disabledItem = listbox.locator(
+      '[data-testid="select-combobox-offscreen-disabled"][data-offscreen]',
+    );
+    const autofocusItem = listbox.locator(
+      '[data-testid="select-combobox-offscreen-autofocus"][data-offscreen]',
+    );
+    const divItem = listbox.locator(
+      '[data-testid="select-combobox-offscreen-div"][data-offscreen]',
+    );
+
+    await expect(disabledItem).toHaveAttribute("data-offscreen");
+    await expect(disabledItem).toHaveAttribute("aria-disabled", "true");
+    await expect(disabledItem).toHaveAttribute("disabled");
+    await expectNoLeakedAttributes(disabledItem);
+
+    await expect(autofocusItem).toHaveAttribute("data-offscreen");
+    await expect(autofocusItem).not.toBeFocused();
+    await expectNoLeakedAttributes(autofocusItem);
+
+    await expect(divItem).toHaveAttribute("data-offscreen");
+    await expect(divItem).toHaveAttribute("aria-disabled", "true");
+    await expect(divItem).not.toHaveAttribute("disabled");
+    await expectNoLeakedAttributes(divItem);
+
+    await page.keyboard.press("Escape");
+  });
+
+  await test.step("combobox offscreen render props", async () => {
+    const combobox = q.combobox("passive", { exact: true });
+    await combobox.click();
+    const listbox = q.listbox();
+    const disabledItem = listbox.locator(
+      '[data-testid="combobox-offscreen-disabled"][data-offscreen]',
+    );
+    const autofocusItem = listbox.locator(
+      '[data-testid="combobox-offscreen-autofocus"][data-offscreen]',
+    );
+    const divItem = listbox.locator(
+      '[data-testid="combobox-offscreen-div"][data-offscreen]',
+    );
+
+    await expect(disabledItem).toHaveAttribute("data-offscreen");
+    await expect(disabledItem).toHaveAttribute("aria-disabled", "true");
+    await expect(disabledItem).toHaveAttribute("disabled");
+    await expectNoLeakedAttributes(disabledItem);
+
+    await expect(autofocusItem).toHaveAttribute("data-offscreen");
+    await expect(autofocusItem).not.toBeFocused();
+    await expectNoLeakedAttributes(autofocusItem);
+
+    await expect(divItem).toHaveAttribute("data-offscreen");
+    await expect(divItem).toHaveAttribute("aria-disabled", "true");
+    await expect(divItem).not.toHaveAttribute("disabled");
+    await expectNoLeakedAttributes(divItem);
+  });
+
+  expect(warnings).toEqual([]);
+});
+
 const defaultValue = labels.filter((value) => value.includes("defaultValue"));
 
 for (const label of defaultValue) {
