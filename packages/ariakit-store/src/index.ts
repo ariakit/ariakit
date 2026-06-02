@@ -393,7 +393,8 @@ export function createStore<S extends State>(
     const wasInDispatch = inDispatch;
     inDispatch = true;
     const prevState = state;
-    state = { ...state, [key]: nextValue };
+    const nextState = { ...state, [key]: nextValue };
+    state = nextState;
     try {
       // Fan a locally-originated change out to extended parent stores so they
       // stay in sync. Both short-circuits are load-bearing: `!fromStores`
@@ -406,7 +407,9 @@ export function createStore<S extends State>(
         }
       }
 
-      runListeners(syncListenerGroup, prevState, key);
+      const listenerPrevState =
+        state === nextState ? prevState : { ...state, [key]: prevState[key] };
+      runListeners(syncListenerGroup, listenerPrevState, key);
     } finally {
       inDispatch = wasInDispatch;
     }

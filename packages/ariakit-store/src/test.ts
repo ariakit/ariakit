@@ -957,6 +957,48 @@ test("keeps child batch diff for listeners registered during parent fan-out", as
   cleanup();
 });
 
+test("preserves nested child updates in prevState after parent fan-out", () => {
+  const parent = createStore({ a: "0", b: "0" });
+  const child = createStore({ a: "0", b: "0" }, parent);
+
+  const cleanup = init(child);
+  const calls: Array<{
+    state: { a: string; b: string };
+    prevState: { a: string; b: string };
+  }> = [];
+
+  const unsubscribeChild = sync(child, ["a", "b"], (state, prevState) => {
+    calls.push({
+      state: { a: state.a, b: state.b },
+      prevState: { a: prevState.a, b: prevState.b },
+    });
+  });
+  const unsubscribeParent = sync(parent, ["a"], (state) => {
+    if (state.a !== "1") return;
+    if (child.getState().b === "1") return;
+    child.setState("b", "1");
+  });
+
+  calls.length = 0;
+
+  child.setState("a", "1");
+
+  expect(calls).toEqual([
+    {
+      state: { a: "1", b: "1" },
+      prevState: { a: "1", b: "0" },
+    },
+    {
+      state: { a: "1", b: "1" },
+      prevState: { a: "0", b: "1" },
+    },
+  ]);
+
+  unsubscribeChild();
+  unsubscribeParent();
+  cleanup();
+});
+
 test("keeps partial extended stores in sync while initialized", () => {
   const first = createStore({ first: "first", shared: "first" });
   const second = createStore({ shared: "second" });
