@@ -53,10 +53,6 @@ export function createUndoManager({
   const execute = async (callback: Callback, group?: string) => {
     if (!callback) return;
 
-    while (undoStack.length > limit) {
-      undoStack.shift();
-    }
-
     const sameGroup = group === currentGroup;
     currentGroup = group ?? null;
 
@@ -78,6 +74,10 @@ export function createUndoManager({
         await callback?.();
       };
     });
+
+    while (undoStack.length > limit) {
+      undoStack.shift();
+    }
   };
 
   return {
