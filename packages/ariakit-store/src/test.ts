@@ -863,6 +863,42 @@ test("initializes extended stores with argument-order precedence", () => {
   cleanup();
 });
 
+test("notifies initialized child listeners once for shared local updates", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const subscribeCalls: Array<[number, number]> = [];
+  const syncCalls: Array<[number, number]> = [];
+
+  const unsubscribeSubscribe = subscribe(
+    child,
+    ["count"],
+    (state, prevState) => {
+      subscribeCalls.push([state.count, prevState.count]);
+    },
+  );
+  const unsubscribeSync = sync(child, ["count"], (state, prevState) => {
+    syncCalls.push([state.count, prevState.count]);
+  });
+
+  expect(syncCalls).toEqual([[0, 0]]);
+  syncCalls.length = 0;
+
+  child.setState("count", 1);
+
+  expect(child.getState().count).toBe(1);
+  expect(first.getState().count).toBe(1);
+  expect(second.getState().count).toBe(1);
+  expect(subscribeCalls).toEqual([[1, 0]]);
+  expect(syncCalls).toEqual([[1, 0]]);
+
+  unsubscribeSubscribe();
+  unsubscribeSync();
+  cleanup();
+});
+
 test("keeps partial extended stores in sync while initialized", () => {
   const first = createStore({ first: "first", shared: "first" });
   const second = createStore({ shared: "second" });

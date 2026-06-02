@@ -397,6 +397,10 @@ export function createStore<S extends State>(
       }
     }
 
+    // Parent propagation may synchronously sync back into this child store
+    // and notify listeners before this outer setState resumes.
+    if (state[key] === nextValue) return;
+
     const prevState = state;
     state = { ...state, [key]: nextValue };
 
