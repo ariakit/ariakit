@@ -1,20 +1,11 @@
-import {
-  useMergeRefs,
-  useSafeLayoutEffect,
-  forwardRef,
-} from "@ariakit/react-utils";
+import { useMergeRefs, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { disabledFromProps } from "@ariakit/utils";
 import type { ElementType } from "react";
-import { useContext, useRef } from "react";
+import { useContext } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item-offscreen.tsx";
 import { useCompositeItemOffscreen } from "../composite/composite-item-offscreen.tsx";
-import {
-  getRenderElementTagName,
-  hasCustomElementRender,
-  hasRenderElementProp,
-  supportsDisabledAttribute,
-} from "../composite/utils.ts";
+import { getRenderWithDisabled } from "../composite/utils.ts";
 import { Role } from "../role/role.tsx";
 import {
   ComboboxListRoleContext,
@@ -24,7 +15,6 @@ import * as Base from "./combobox-item.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
-type DisabledElement = HTMLElement & { disabled: boolean };
 
 export function useComboboxItemOffscreen<
   T extends ElementType,
@@ -57,33 +47,14 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
     offscreenRoot,
     ...props,
   });
-  const tagNameRef = useRef<HTMLElement>(null);
-  const renderTagName = getRenderElementTagName(props.render);
-  const hasCustomRender =
-    typeof props.render === "function" || hasCustomElementRender(props.render);
   const allProps = { ...rest, ...props, ref: useMergeRefs(ref, props.ref) };
-  const offscreenRef = useMergeRefs(ref, tagNameRef, props.ref);
   const trulyDisabled =
     props.focusable !== false &&
     disabledFromProps(allProps) &&
     !props.accessibleWhenDisabled;
-  useSafeLayoutEffect(() => {
-    if (active) return;
-    if (!hasCustomRender) return;
-    if (hasRenderElementProp(props.render, "disabled")) return;
-    const element = tagNameRef.current;
-    if (!element) return;
-    const tagName = element.tagName.toLowerCase();
-    if (!supportsDisabledAttribute(tagName)) {
-      element.removeAttribute("disabled");
-      return;
-    }
-    (element as unknown as DisabledElement).disabled = trulyDisabled;
-  });
   if (active) {
     return <Base.ComboboxItem {...allProps} />;
   }
-  const offscreenProps = { ...allProps, ref: offscreenRef };
   // Remove ComboboxItem props
   const {
     store,
@@ -109,13 +80,10 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
     getItem,
     render,
     ...htmlProps
-  } = offscreenProps;
-  const disabledProps =
-    trulyDisabled && supportsDisabledAttribute(renderTagName)
-      ? { disabled: true }
-      : {};
+  } = allProps;
+  const offscreenRender = getRenderWithDisabled(render, trulyDisabled);
   const Component = Role[TagName];
-  return <Component {...htmlProps} {...disabledProps} render={render} />;
+  return <Component {...htmlProps} render={offscreenRender} />;
 });
 
 export interface ComboboxItemOptions<T extends ElementType = TagName>

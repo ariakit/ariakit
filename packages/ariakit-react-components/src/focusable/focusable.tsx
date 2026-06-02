@@ -87,7 +87,10 @@ function supportsDisabledAttribute(tagName?: string) {
   if (!tagName) return true;
   return (
     tagName === "button" ||
+    tagName === "fieldset" ||
     tagName === "input" ||
+    tagName === "optgroup" ||
+    tagName === "option" ||
     tagName === "select" ||
     tagName === "textarea"
   );

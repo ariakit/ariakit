@@ -57,7 +57,9 @@ const leakedAttributes = [
   "autofocus",
   "clickonenter",
   "clickonspace",
+  "bluronhoverend",
   "focusable",
+  "focusonhover",
   "moveonkeypress",
   "onfocusvisible",
   "preventscrollonkeydown",
@@ -74,18 +76,22 @@ async function expectNoLeakedAttributes(item: Locator) {
 
 test("offscreen placeholders omit item-only DOM props", async ({ page }) => {
   const q = query(page);
-  await disableAnimations(page);
-
   const warnings: string[] = [];
   page.on("console", (message) => {
     const text = message.text();
-    if (/React does not recognize|Invalid DOM property/.test(text)) {
+    if (
+      /React does not recognize|Invalid DOM property|Received `(?:true|false)` for a non-boolean attribute|Unknown event handler property/.test(
+        text,
+      )
+    ) {
       warnings.push(text);
     }
   });
+  await page.reload({ waitUntil: "networkidle" });
+  await disableAnimations(page);
 
   await test.step("select combobox offscreen render props", async () => {
-    const combobox = q.combobox("searchable passive", { exact: true });
+    const combobox = q.combobox("offscreen props searchable", { exact: true });
     await combobox.click();
     const listbox = q.listbox();
     const disabledItem = listbox.locator(
@@ -97,6 +103,18 @@ test("offscreen placeholders omit item-only DOM props", async ({ page }) => {
     const divItem = listbox.locator(
       '[data-testid="select-combobox-offscreen-div"][data-offscreen]',
     );
+    const callbackDisabledItem = listbox.locator(
+      '[data-testid="select-combobox-offscreen-callback-disabled"][data-offscreen]',
+    );
+    const callbackPropDisabledItem = listbox.locator(
+      '[data-testid="select-combobox-offscreen-callback-prop-disabled"][data-offscreen]',
+    );
+    const elementPropDisabledItem = listbox.locator(
+      '[data-testid="select-combobox-offscreen-element-prop-disabled"][data-offscreen]',
+    );
+    const customDivDisabledItem = listbox.locator(
+      '[data-testid="select-combobox-offscreen-custom-div-disabled"][data-offscreen]',
+    );
 
     await expect(disabledItem).toHaveAttribute("data-offscreen");
     await expect(disabledItem).toHaveAttribute("aria-disabled", "true");
@@ -112,11 +130,39 @@ test("offscreen placeholders omit item-only DOM props", async ({ page }) => {
     await expect(divItem).not.toHaveAttribute("disabled");
     await expectNoLeakedAttributes(divItem);
 
+    await expect(callbackDisabledItem).toHaveAttribute("data-offscreen");
+    await expect(callbackDisabledItem).toHaveAttribute("disabled");
+    await expectNoLeakedAttributes(callbackDisabledItem);
+
+    await expect(callbackPropDisabledItem).toHaveAttribute("data-offscreen");
+    await expect(callbackPropDisabledItem).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    await expect(callbackPropDisabledItem).toHaveAttribute("disabled");
+    await expectNoLeakedAttributes(callbackPropDisabledItem);
+
+    await expect(elementPropDisabledItem).toHaveAttribute("data-offscreen");
+    await expect(elementPropDisabledItem).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    await expect(elementPropDisabledItem).toHaveAttribute("disabled");
+    await expectNoLeakedAttributes(elementPropDisabledItem);
+
+    await expect(customDivDisabledItem).toHaveAttribute("data-offscreen");
+    await expect(customDivDisabledItem).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    await expect(customDivDisabledItem).not.toHaveAttribute("disabled");
+    await expectNoLeakedAttributes(customDivDisabledItem);
+
     await page.keyboard.press("Escape");
   });
 
   await test.step("combobox offscreen render props", async () => {
-    const combobox = q.combobox("passive", { exact: true });
+    const combobox = q.combobox("offscreen props combobox", { exact: true });
     await combobox.click();
     const listbox = q.listbox();
     const disabledItem = listbox.locator(
@@ -128,6 +174,18 @@ test("offscreen placeholders omit item-only DOM props", async ({ page }) => {
     const divItem = listbox.locator(
       '[data-testid="combobox-offscreen-div"][data-offscreen]',
     );
+    const callbackDisabledItem = listbox.locator(
+      '[data-testid="combobox-offscreen-callback-disabled"][data-offscreen]',
+    );
+    const callbackPropDisabledItem = listbox.locator(
+      '[data-testid="combobox-offscreen-callback-prop-disabled"][data-offscreen]',
+    );
+    const elementPropDisabledItem = listbox.locator(
+      '[data-testid="combobox-offscreen-element-prop-disabled"][data-offscreen]',
+    );
+    const customDivDisabledItem = listbox.locator(
+      '[data-testid="combobox-offscreen-custom-div-disabled"][data-offscreen]',
+    );
 
     await expect(disabledItem).toHaveAttribute("data-offscreen");
     await expect(disabledItem).toHaveAttribute("aria-disabled", "true");
@@ -142,6 +200,34 @@ test("offscreen placeholders omit item-only DOM props", async ({ page }) => {
     await expect(divItem).toHaveAttribute("aria-disabled", "true");
     await expect(divItem).not.toHaveAttribute("disabled");
     await expectNoLeakedAttributes(divItem);
+
+    await expect(callbackDisabledItem).toHaveAttribute("data-offscreen");
+    await expect(callbackDisabledItem).toHaveAttribute("disabled");
+    await expectNoLeakedAttributes(callbackDisabledItem);
+
+    await expect(callbackPropDisabledItem).toHaveAttribute("data-offscreen");
+    await expect(callbackPropDisabledItem).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    await expect(callbackPropDisabledItem).toHaveAttribute("disabled");
+    await expectNoLeakedAttributes(callbackPropDisabledItem);
+
+    await expect(elementPropDisabledItem).toHaveAttribute("data-offscreen");
+    await expect(elementPropDisabledItem).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    await expect(elementPropDisabledItem).toHaveAttribute("disabled");
+    await expectNoLeakedAttributes(elementPropDisabledItem);
+
+    await expect(customDivDisabledItem).toHaveAttribute("data-offscreen");
+    await expect(customDivDisabledItem).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
+    await expect(customDivDisabledItem).not.toHaveAttribute("disabled");
+    await expectNoLeakedAttributes(customDivDisabledItem);
   });
 
   expect(warnings).toEqual([]);
