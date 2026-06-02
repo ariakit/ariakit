@@ -48,6 +48,18 @@ test("uses object paths for non-array index segments", () => {
   });
 });
 
+test("replaces an existing array container for non-array index segments", () => {
+  const store = createFormStore({});
+
+  store.setValue("users.0.name", "Ada");
+  store.setValue("users.-1.name", "Grace");
+
+  expect(Array.isArray(store.getValue("users"))).toBe(false);
+  expect(store.getState().values).toEqual({
+    users: { "0": { name: "Ada" }, "-1": { name: "Grace" } },
+  });
+});
+
 test("updates nested values with setter functions", () => {
   const store = createFormStore({
     defaultValues: { user: { visits: 1 } },
