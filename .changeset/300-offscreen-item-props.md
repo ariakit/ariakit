@@ -1,6 +1,5 @@
 ---
 "@ariakit/react-components": patch
-"@ariakit/react": patch
 ---
 
 Offscreen item placeholders omit internal props
