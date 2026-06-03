@@ -64,6 +64,26 @@ export default defineConfig({
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
+    // TODO: Remove this workaround once
+    // https://github.com/withastro/astro/issues/16853 is fixed. These bare
+    // specifiers are missed by the SSR dependency optimizer's initial scan.
+    // Some are re-exported from Astro virtual modules (astro:transitions,
+    // astro:actions); others are imported directly (astro/zod in
+    // content.config.ts, astro-remote in markdown.astro). With the Cloudflare
+    // adapter they get optimized lazily during the first cold dev request, and
+    // the mid-request optimizer reload resets React's hook dispatcher,
+    // producing "Invalid hook call" errors. Pre-including them forces the
+    // optimizer to bundle them at startup so no reload happens mid-request. The
+    // Cloudflare adapter merges this list into the SSR environment's
+    // optimizeDeps.include.
+    optimizeDeps: {
+      include: [
+        "astro/virtual-modules/transitions.js",
+        "astro/actions/runtime/entrypoints/server.js",
+        "astro/zod",
+        "astro-remote",
+      ],
+    },
   },
 
   markdown: {
