@@ -734,10 +734,22 @@ export function useCollectionRenderer<T extends Item = any>({
     });
   }, [updateElements]);
 
+  // Disconnect the observer when the renderer unmounts so it doesn't retain the
+  // measured item nodes or keep firing resize callbacks.
+  useEffect(() => {
+    return () => elementObserver?.disconnect();
+  }, [elementObserver]);
+
   const itemRef = useCallback<RefCallback<HTMLElement>>(
     (element) => {
       if (!element) return;
       if (itemSize) return;
+      // If an id is reassigned to a different node, stop observing the previous
+      // node so its detached element isn't retained.
+      const prevElement = elements.get(element.id);
+      if (prevElement && prevElement !== element) {
+        elementObserver?.unobserve(prevElement);
+      }
       updateElements();
       elements.set(element.id, element);
       elementObserver?.observe(element);
@@ -788,6 +800,21 @@ export function useCollectionRenderer<T extends Item = any>({
       })
       .filter((value): value is NonNullable<typeof value> => value != null);
   }, [items, visibleIndices, getItemProps]);
+
+  // Stop observing and forget item nodes that are no longer rendered (for
+  // example, dropped from the virtualized window), so neither the observer nor
+  // the `elements` map retains their detached nodes.
+  useEffect(() => {
+    // Mirror the `itemSize` guard in `itemRef`: when items aren't measured,
+    // nothing is observed or stored, so there's nothing to reconcile.
+    if (itemSize) return;
+    const renderedIds = new Set(itemsProps.map((itemProps) => itemProps.id));
+    for (const [id, element] of elements) {
+      if (renderedIds.has(id)) continue;
+      elementObserver?.unobserve(element);
+      elements.delete(id);
+    }
+  }, [itemsProps, itemSize, elements, elementObserver]);
 
   const children = itemsProps?.map((itemProps) => {
     return renderItem?.(itemProps);
