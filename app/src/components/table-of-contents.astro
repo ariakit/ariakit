@@ -116,7 +116,6 @@ const allHeadings = title
       if (tocElement.hasAttribute("data-table-of-contents-initialized")) {
         continue;
       }
-      tocElement.setAttribute("data-table-of-contents-initialized", "true");
 
       const topOffset = Number.parseInt(tocElement.dataset.topOffset || "0");
 
@@ -132,10 +131,9 @@ const allHeadings = title
         })
         .filter((heading): heading is HTMLElement => heading !== null);
 
-      if (headings.length === 0) {
-        tocElement.removeAttribute("data-table-of-contents-initialized");
-        continue;
-      }
+      if (headings.length === 0) continue;
+
+      tocElement.setAttribute("data-table-of-contents-initialized", "true");
 
       // Use IntersectionObserver to show indicators for headings that are
       // currently visible in the viewport.
