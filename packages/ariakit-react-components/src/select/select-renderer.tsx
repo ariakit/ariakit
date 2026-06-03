@@ -69,7 +69,6 @@ function findIndicesByValue(
 
 function useSelectRenderer<T extends Item = any>({
   store,
-  orientation: orientationProp,
   persistentIndices: persistentIndicesProp,
   items: itemsProp,
   value: valueProp,
