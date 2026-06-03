@@ -10,22 +10,25 @@
 import { join } from "node:path";
 import { loadEnvFile } from "node:process";
 import cloudflare from "@astrojs/cloudflare";
-import { rehypeHeadingIds, unified } from "@astrojs/markdown-remark";
+import { satteri } from "@astrojs/markdown-satteri";
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
 import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import type { HastPluginDefinition, HastPluginInput } from "satteri";
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
 import { previewConfig } from "./src/lib/preview-config.ts";
 import { previewIntegration } from "./src/lib/preview-integration.ts";
+import { AS_TAG_NAMES } from "./src/lib/rehype.ts";
 import {
-  rehypeAdmonitions,
-  rehypeAsTagName,
-  rehypePreviousCode,
-} from "./src/lib/rehype.ts";
+  satteriAdmonitions,
+  satteriAsTagName,
+  satteriAutolinkHeadings,
+  satteriMetaString,
+  satteriPreviousCode,
+} from "./src/lib/satteri-plugins.ts";
 import { sourcePlugin } from "./src/lib/source-plugin.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "./src/lib/url.ts";
 
@@ -35,6 +38,20 @@ try {
 
 const port = Number(process.env.APP_PORT) || 4321;
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+// `satteriPreviousCode` and `satteriAutolinkHeadings` are passed as factory
+// functions (not called) so Sätteri re-invokes them per document and their
+// per-file state (before/after tracking, heading slugger) resets between files.
+// The stateless plugins are called once to produce reusable definitions.
+// `satteri()` only types `hastPlugins` as resolved definitions while accepting
+// factories at runtime, so we assert the runtime-valid shape below.
+const hastPlugins = [
+  satteriMetaString(),
+  satteriPreviousCode,
+  satteriAdmonitions(),
+  satteriAutolinkHeadings,
+  satteriAsTagName({ tags: AS_TAG_NAMES }),
+] satisfies HastPluginInput[];
 
 // https://astro.build/config
 export default defineConfig({
@@ -88,17 +105,11 @@ export default defineConfig({
 
   markdown: {
     syntaxHighlight: false,
-    processor: unified({
-      rehypePlugins: [
-        rehypeHeadingIds,
-        rehypePreviousCode,
-        rehypeAdmonitions,
-        [rehypeAutolinkHeadings, { behavior: "wrap" }],
-        [
-          rehypeAsTagName,
-          { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
-        ],
-      ],
+    processor: satteri({
+      hastPlugins: hastPlugins as unknown as HastPluginDefinition[],
+      // Match the previous unified pipeline, which had neither math nor
+      // heading-attribute parsing enabled (both default to `true` in Sätteri).
+      features: { math: false, headingAttributes: false },
     }),
   },
 

@@ -15,7 +15,7 @@ import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";
 import { unified } from "unified";
 import { getFramework, isFramework } from "./frameworks.ts";
-import { rehypeAsTagName } from "./rehype.ts";
+import { AS_TAG_NAMES, rehypeAsTagName } from "./rehype.ts";
 import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
@@ -127,6 +127,9 @@ export function filterPreviews(
   return hasPreviews ? previewsOrParams.filter(filter) : filter;
 }
 
+// The runtime `astro-remote` rendering path stays on the unified processor:
+// it runs inside the Cloudflare worker, where Sätteri's native/WASM binding
+// cannot be bundled. The build-time pipeline (astro.config.ts) uses Sätteri.
 let markdownRenderer: MarkdownRenderer | null = null;
 
 async function getMarkdownRenderer() {
@@ -134,12 +137,7 @@ async function getMarkdownRenderer() {
     return markdownRenderer;
   }
   markdownRenderer = await createUnifiedProcessor({
-    rehypePlugins: [
-      [
-        rehypeAsTagName as RehypePlugin,
-        { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
-      ],
-    ],
+    rehypePlugins: [[rehypeAsTagName as RehypePlugin, { tags: AS_TAG_NAMES }]],
   }).createRenderer({
     syntaxHighlight: false,
   });
