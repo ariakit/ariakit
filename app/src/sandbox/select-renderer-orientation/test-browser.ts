@@ -1,6 +1,8 @@
 import { gotoAndSettle, withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  // Cold dev previews can serve a blank page while Vite re-optimizes deps.
+  // Give the retry below enough time to reload the route and find the control.
   test.setTimeout(60_000);
 
   test("SelectRenderer forwards horizontal orientation to item layout", async ({
