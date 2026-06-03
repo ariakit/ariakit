@@ -1,0 +1,41 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  font: inherit;
+  cursor: pointer;
+}
+
+.content {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  border: 1px solid hsl(204 10% 80%);
+  border-radius: 0.5rem;
+  /* The transition's end time (delay 500ms + duration 10ms = 510ms) is the
+     longest, but its longest part is the delay. */
+  opacity: 0;
+  transition-property: opacity;
+  transition-duration: 10ms;
+  transition-delay: 500ms;
+}
+
+.content[data-enter] {
+  opacity: 1;
+}
+
+/* The leave animation's end time (delay 0ms + duration 300ms = 300ms) is
+   shorter, but its longest part is the duration. Because the longest delay
+   (500ms, on the transition) and the longest duration (300ms, on this
+   animation) sit on different properties, max(delays) + max(durations) = 800ms
+   over-estimates the real 510ms end time. */
+.content[data-leave] {
+  animation: content-leave 300ms linear 0ms;
+}
+
+@keyframes content-leave {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-4px);
+  }
+}
