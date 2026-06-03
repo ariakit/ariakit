@@ -18,7 +18,6 @@ export default function Example() {
       <Ariakit.Select />
       <Ariakit.SelectPopover gutter={4} className="popover">
         <SelectRenderer
-          id="fruit-renderer"
           orientation="horizontal"
           items={items}
           initialItems={items.length}
