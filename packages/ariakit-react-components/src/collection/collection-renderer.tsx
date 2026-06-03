@@ -98,6 +98,8 @@ interface BaseItemProps {
   index: number;
 }
 
+type SetItemElement = (itemId: string, element: HTMLElement | null) => void;
+
 type ItemProps<
   T extends Item,
   P extends BaseItemProps = BaseItemProps,
@@ -198,35 +200,49 @@ function getItemSize(
   fallbackElement?: HTMLElement | null | false,
 ): number {
   const itemObject = getItemObject(item);
-  horizontal = itemObject.orientation === "horizontal" || horizontal;
   const prop = horizontal ? "width" : "height";
   const style = itemObject.style;
   if (style) {
     const size = style[prop];
     if (typeof size === "number") return size;
   }
-  const items = itemObject.items;
-  if (items?.length) {
-    const hasSameOrientation =
-      !itemObject.orientation ||
-      (horizontal && itemObject.orientation === "horizontal") ||
-      (!horizontal && itemObject.orientation === "vertical");
-    const paddingStart = itemObject.paddingStart ?? itemObject.padding ?? 0;
-    const paddingEnd = itemObject.paddingEnd ?? itemObject.padding ?? 0;
-    const padding = hasSameOrientation ? paddingStart + paddingEnd : 0;
-    const initialSize = (itemObject.gap ?? 0) * (items.length - 1) + padding;
-    if (hasSameOrientation && itemObject.itemSize) {
-      return initialSize + itemObject.itemSize * items.length;
-    }
-    // oxlint-disable-next-line no-unnecessary-type-arguments
-    const totalSize = items.reduce<number>(
-      (sum, item) => sum + getItemSize(item, horizontal),
-      initialSize,
-    );
-    if (totalSize !== initialSize) return totalSize;
-  }
   const element =
     fallbackElement !== false ? itemObject.element || fallbackElement : null;
+  const items = itemObject.items;
+  if (items?.length) {
+    const itemHorizontal =
+      itemObject.orientation === "horizontal"
+        ? true
+        : itemObject.orientation === "vertical"
+          ? false
+          : horizontal;
+    const hasSameOrientation = itemHorizontal === horizontal;
+    if (!hasSameOrientation) {
+      // oxlint-disable-next-line no-unnecessary-type-arguments
+      const maxSize = items.reduce<number>((size, item) => {
+        return Math.max(size, getItemSize(item, horizontal));
+      }, 0);
+      if (maxSize) return maxSize;
+      if (element?.isConnected) {
+        const size = element.getBoundingClientRect()[prop];
+        if (size) return size;
+      }
+    } else {
+      const paddingStart = itemObject.paddingStart ?? itemObject.padding ?? 0;
+      const paddingEnd = itemObject.paddingEnd ?? itemObject.padding ?? 0;
+      const padding = paddingStart + paddingEnd;
+      const initialSize = (itemObject.gap ?? 0) * (items.length - 1) + padding;
+      if (itemObject.itemSize) {
+        return initialSize + itemObject.itemSize * items.length;
+      }
+      // oxlint-disable-next-line no-unnecessary-type-arguments
+      const totalSize = items.reduce<number>(
+        (sum, item) => sum + getItemSize(item, horizontal),
+        initialSize,
+      );
+      if (totalSize !== initialSize) return totalSize;
+    }
+  }
   if (element?.isConnected) {
     return element.getBoundingClientRect()[prop];
   }
@@ -734,16 +750,71 @@ export function useCollectionRenderer<T extends Item = any>({
     });
   }, [updateElements]);
 
-  const itemRef = useCallback<RefCallback<HTMLElement>>(
-    (element) => {
-      if (!element) return;
-      if (itemSize) return;
-      updateElements();
-      elements.set(element.id, element);
-      elementObserver?.observe(element);
-    },
-    [itemSize, elements, updateElements, elementObserver],
+  const measuredItemRefs = useMemo(
+    () => new Map<string, RefCallback<HTMLElement>>(),
+    [],
   );
+
+  const fixedItemRefs = useMemo(
+    () => new Map<string, RefCallback<HTMLElement>>(),
+    [],
+  );
+
+  const itemRefs = itemSize == null ? measuredItemRefs : fixedItemRefs;
+
+  const setItemElementRef = useRef<SetItemElement>(() => {});
+
+  setItemElementRef.current = (itemId, element) => {
+    const cleanupElement = () => {
+      const currentElement = elements.get(itemId);
+      if (!currentElement) return;
+      elements.delete(itemId);
+      elementObserver?.unobserve(currentElement);
+    };
+
+    if (!element) {
+      cleanupElement();
+      return;
+    }
+
+    if (itemSize != null) {
+      cleanupElement();
+      return;
+    }
+
+    const previousElement = elements.get(itemId);
+    if (previousElement === element) return;
+
+    if (previousElement) {
+      elementObserver?.unobserve(previousElement);
+    }
+
+    elements.set(itemId, element);
+    elementObserver?.observe(element);
+    updateElements();
+  };
+
+  const getItemRef = useCallback(
+    (itemId: string) => {
+      const itemRef = itemRefs.get(itemId);
+      if (itemRef) return itemRef;
+      const nextItemRef: RefCallback<HTMLElement> = (element) => {
+        return setItemElementRef.current(itemId, element);
+      };
+      itemRefs.set(itemId, nextItemRef);
+      return nextItemRef;
+    },
+    [itemRefs],
+  );
+
+  useEffect(() => {
+    for (const element of elements.values()) {
+      elementObserver?.observe(element);
+    }
+    return () => {
+      elementObserver?.disconnect();
+    };
+  }, [elementObserver, elements]);
 
   const getItemProps = useCallback(
     <Item extends T = T>(item: RawItemProps<Item>, index: number) => {
@@ -753,7 +824,7 @@ export function useCollectionRenderer<T extends Item = any>({
         : (data.get(itemId)?.start ?? 0);
       const baseItemProps: BaseItemProps = {
         id: itemId,
-        ref: itemRef,
+        ref: getItemRef(itemId),
         index,
         style: {
           position: "absolute",
@@ -775,7 +846,7 @@ export function useCollectionRenderer<T extends Item = any>({
         },
       } as ItemProps<T>;
     },
-    [baseId, data, itemSize, paddingStart, gap, horizontal, itemRef],
+    [baseId, data, itemSize, paddingStart, gap, horizontal, getItemRef],
   );
 
   const itemsProps = useMemo(() => {
@@ -788,6 +859,21 @@ export function useCollectionRenderer<T extends Item = any>({
       })
       .filter((value): value is NonNullable<typeof value> => value != null);
   }, [items, visibleIndices, getItemProps]);
+
+  useEffect(() => {
+    const itemIds = new Set(itemsProps.map((item) => item.id));
+
+    const pruneItemRefs = (refs: Map<string, RefCallback<HTMLElement>>) => {
+      for (const itemId of refs.keys()) {
+        if (itemIds.has(itemId)) continue;
+        if (elements.has(itemId)) continue;
+        refs.delete(itemId);
+      }
+    };
+
+    pruneItemRefs(measuredItemRefs);
+    pruneItemRefs(fixedItemRefs);
+  }, [itemsProps, elements, measuredItemRefs, fixedItemRefs]);
 
   const children = itemsProps?.map((itemProps) => {
     return renderItem?.(itemProps);
