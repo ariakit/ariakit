@@ -60,4 +60,30 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(content).not.toBeAttached();
     await test.expect(section).toHaveAttribute("data-mounted-state", "false");
   });
+
+  test("treats a duration with animation-name: none as no animation", async ({
+    q,
+  }) => {
+    const section = q.region("No animation with duration");
+    const within = query(section);
+    const content = within.text("No animation content");
+    const toggle = within.button("Toggle No animation with duration");
+
+    await test.expect(content).not.toBeAttached();
+
+    // The content has `animation-duration: 500ms` but no `animation-name`
+    // (computed `animation-name: none`), so nothing actually animates. The end
+    // time must ignore the leftover duration: animation detection disables
+    // animations (`data-animated-state` becomes "false") instead of waiting
+    // 500ms. Counting the duration would keep the content animating.
+    await toggle.click();
+    await test.expect(content).toBeVisible();
+    await test.expect(section).toHaveAttribute("data-animated-state", "false");
+    await test.expect(section).toHaveAttribute("data-animating-state", "false");
+
+    // With animations disabled, hiding unmounts the content immediately.
+    await toggle.click();
+    await test.expect(content).not.toBeAttached();
+    await test.expect(section).toHaveAttribute("data-mounted-state", "false");
+  });
 });

@@ -39,3 +39,14 @@
     transform: translateY(-4px);
   }
 }
+
+/* A leftover `animation-duration` with no `animation-name` (computed
+   `animation-name: none`). Nothing actually animates, so the content must
+   unmount immediately instead of waiting out the 500ms duration. */
+.no-animation {
+  margin-top: 0.5rem;
+  padding: 1rem;
+  border: 1px solid hsl(204 10% 80%);
+  border-radius: 0.5rem;
+  animation-duration: 500ms;
+}

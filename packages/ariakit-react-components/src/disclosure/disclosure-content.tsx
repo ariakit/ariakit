@@ -34,19 +34,38 @@ function afterPaint(cb: () => void) {
   return () => cancelAnimationFrame(raf);
 }
 
-function parseCSSTime(...times: string[]) {
-  return times
-    .join(", ")
-    .split(", ")
-    .reduce((longestTime, currentTimeString) => {
-      const multiplier = currentTimeString.endsWith("ms") ? 1 : 1000;
-      const currentTime =
-        Number.parseFloat(currentTimeString || "0s") * multiplier;
-      // When multiple times are specified, we want to use the longest one so we
-      // wait until the longest transition has finished.
-      if (currentTime > longestTime) return currentTime;
-      return longestTime;
-    }, 0);
+function parseCSSTime(time: string | undefined) {
+  const value = time?.trim() || "0s";
+  const multiplier = value.endsWith("ms") ? 1 : 1000;
+  const parsed = Number.parseFloat(value) * multiplier;
+  // Non-numeric values such as `animation-duration: auto` parse to `NaN`; treat
+  // them as 0 so they don't poison the `Math.max` that combines end times.
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+// Returns the time a set of transitions or animations ends: the longest
+// per-item `delay + duration`. The number of items is the length of the
+// `transition-property`/`animation-name` list; CSS cycles the (possibly
+// shorter) delay and duration lists to match it, so we index them modulo their
+// own length. This is more accurate than adding the longest delay to the
+// longest duration, which overestimates when they belong to different items
+// (e.g. a transition with a long delay alongside an animation with a long
+// duration).
+function getEndTime(names: string, delays: string, durations: string) {
+  const nameList = names.split(",");
+  const delayList = delays.split(",");
+  const durationList = durations.split(",");
+  let endTime = 0;
+  for (let index = 0; index < nameList.length; index += 1) {
+    // `transition-property: none` and `animation-name: none` mean nothing runs
+    // for that item, so it doesn't contribute to the end time even if a delay
+    // or duration is still set.
+    if (nameList[index]?.trim() === "none") continue;
+    const delay = parseCSSTime(delayList[index % delayList.length]);
+    const duration = parseCSSTime(durationList[index % durationList.length]);
+    endTime = Math.max(endTime, delay + duration);
+  }
+  return endTime;
 }
 
 export function isHidden(
@@ -172,9 +191,11 @@ export const useDisclosureContent = createHook<
     // transitions or animations with different durations and delays, and we
     // need to consider the longest one.
     const {
+      transitionProperty,
       transitionDuration,
-      animationDuration,
       transitionDelay,
+      animationName,
+      animationDuration,
       animationDelay,
     } = getComputedStyle(contentElement);
     // If we're rendering a dialog backdrop, otherElement will be the dialog
@@ -182,24 +203,25 @@ export const useDisclosureContent = createHook<
     // animation/transition durations and delays because the dialog may be
     // animated while the backdrop is not.
     const {
+      transitionProperty: transitionProperty2 = "",
       transitionDuration: transitionDuration2 = "0",
-      animationDuration: animationDuration2 = "0",
       transitionDelay: transitionDelay2 = "0",
+      animationName: animationName2 = "",
+      animationDuration: animationDuration2 = "0",
       animationDelay: animationDelay2 = "0",
     } = otherElement ? getComputedStyle(otherElement) : {};
-    const delay = parseCSSTime(
-      transitionDelay,
-      animationDelay,
-      transitionDelay2,
-      animationDelay2,
+    // We compute each transition's and animation's end time separately (pairing
+    // each item's own delay with its own duration) and take the longest one,
+    // including the other element's. Combining them into a single max delay +
+    // max duration would overestimate when, for example, the longest delay
+    // belongs to a transition while the longest duration belongs to an
+    // animation.
+    const timeout = Math.max(
+      getEndTime(transitionProperty, transitionDelay, transitionDuration),
+      getEndTime(animationName, animationDelay, animationDuration),
+      getEndTime(transitionProperty2, transitionDelay2, transitionDuration2),
+      getEndTime(animationName2, animationDelay2, animationDuration2),
     );
-    const duration = parseCSSTime(
-      transitionDuration,
-      animationDuration,
-      transitionDuration2,
-      animationDuration2,
-    );
-    const timeout = delay + duration;
     // If the timeout is zero, there's no animation or transition, either
     // because they weren't defined in the CSS or the duration was explicitly
     // set to zero. In this scenario, we can halt the animation right away
