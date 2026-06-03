@@ -84,7 +84,7 @@ const allHeadings = title
    *   - when scrolling down: the last visible link
    *   - when scrolling up: the first visible link
    *
-   * The script is initialized on `DOMContentLoaded` and `astro:page-load`.
+   * The script is initialized on `astro:page-load`.
    */
   function initTableOfContents() {
     const tocElements = document.querySelectorAll<HTMLElement>(
@@ -113,6 +113,11 @@ const allHeadings = title
 
     for (const tocElement of tocElements) {
       if (tocElement.dataset.inert) continue;
+      if (tocElement.hasAttribute("data-table-of-contents-initialized")) {
+        continue;
+      }
+      tocElement.setAttribute("data-table-of-contents-initialized", "true");
+
       const topOffset = Number.parseInt(tocElement.dataset.topOffset || "0");
 
       // Get all the links within the table of contents.
@@ -127,12 +132,16 @@ const allHeadings = title
         })
         .filter((heading): heading is HTMLElement => heading !== null);
 
-      if (headings.length === 0) return;
+      if (headings.length === 0) {
+        tocElement.removeAttribute("data-table-of-contents-initialized");
+        continue;
+      }
 
       // Use IntersectionObserver to show indicators for headings that are
       // currently visible in the viewport.
+      let observer: IntersectionObserver | null = null;
       if ("IntersectionObserver" in window) {
-        const observer = new IntersectionObserver(
+        observer = new IntersectionObserver(
           (entries) => {
             for (const entry of entries) {
               const heading = entry.target;
@@ -163,13 +172,6 @@ const allHeadings = title
         for (const heading of headings) {
           observer.observe(heading);
         }
-
-        // Clean up the observer when the page is about to be torn down by Astro.
-        document.addEventListener("astro:before-preparation", () => {
-          for (const heading of headings) {
-            observer.unobserve(heading);
-          }
-        });
       }
 
       let activeLink: Element | null = null;
@@ -301,20 +303,25 @@ const allHeadings = title
         timeout = window.requestAnimationFrame(onScroll);
       };
 
+      const cleanup = () => {
+        observer?.disconnect();
+        window.removeEventListener("scroll", throttledScroll);
+        if (timeout) window.cancelAnimationFrame(timeout);
+        tocElement.removeAttribute("data-table-of-contents-initialized");
+      };
+
       window.addEventListener("scroll", throttledScroll, { passive: true });
       // Call onScroll once to set the initial state.
       onScroll();
 
-      // Clean up the scroll listener when the page is about to be torn down.
-      document.addEventListener("astro:before-preparation", () => {
-        window.removeEventListener("scroll", throttledScroll);
-        if (timeout) window.cancelAnimationFrame(timeout);
+      // Clean up when the page is about to be torn down by Astro.
+      document.addEventListener("astro:before-preparation", cleanup, {
+        once: true,
       });
     }
   }
 
-  // Initialize the table of contents script when the DOM is ready or when Astro
-  // navigates to a new page.
-  document.addEventListener("DOMContentLoaded", initTableOfContents);
+  // Initialize the table of contents script when Astro loads or navigates to a
+  // new page.
   document.addEventListener("astro:page-load", initTableOfContents);
 </script>
