@@ -1,30 +1,31 @@
 import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// Reproduces https://github.com/ariakit/ariakit/issues/6219
+// Validates the userland workaround for
+// https://github.com/ariakit/ariakit/issues/6219: with safe field names
+// (`relatedTags` instead of `tags2`, `cpp` instead of `c++`), FormPush and
+// FormRemove behave correctly on the unfixed library.
 
 function activeFieldName() {
   return document.activeElement?.getAttribute("name") ?? null;
 }
 
-test("FormPush keeps focus within the target array, not a sibling sharing the name prefix", async () => {
-  // `tags` and `tags2` are separate arrays, and `tags` is a prefix of `tags2`.
+test("workaround: FormPush keeps focus within the target array when no sibling shares its name prefix", async () => {
+  // `relatedTags` does not start with `tags`, so it isn't matched as part of
+  // the `tags` array and focus stays on a `tags` field.
   await click(q.button("Add tag"));
-  // Auto-focus must stay on a `tags` field and never leak into the `tags2`
-  // sibling, whose name shares the `tags` prefix.
   expect(activeFieldName()).toMatch(/^tags\.\d+$/);
 });
 
-test("FormPush keeps focus within an array whose name has regex metacharacters", async () => {
-  // The `c++` array name contains regex metacharacters. Building the auto-focus
-  // matcher must not throw, and focus must stay within the array.
+test("workaround: FormPush works with an array name free of regex metacharacters", async () => {
+  // `cpp` has no regex metacharacters, so building the auto-focus matcher does
+  // not throw.
   await click(q.button("Add version"));
-  expect(activeFieldName()?.startsWith("c++.")).toBe(true);
+  expect(activeFieldName()?.startsWith("cpp.")).toBe(true);
 });
 
-test("FormRemove moves focus to the next field when the array name has regex metacharacters", async () => {
-  // Removing the first `c++` item must move focus to the next field (`c++.1`)
-  // without throwing on the metacharacter name.
-  await click(q.button("Remove c++.0"));
-  expect(activeFieldName()).toBe("c++.1");
+test("workaround: FormRemove works with an array name free of regex metacharacters", async () => {
+  // `cpp` has no regex metacharacters, so focus moves to the next field.
+  await click(q.button("Remove cpp.0"));
+  expect(activeFieldName()).toBe("cpp.1");
 });

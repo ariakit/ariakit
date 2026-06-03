@@ -1,23 +1,29 @@
 import * as ak from "@ariakit/react";
 import { useState } from "react";
 
-// Array-field names are user-controlled (they come from `defaultValues` /
-// `names`), so they can be prefixes of sibling arrays (`tags` vs `tags2`) or
-// contain regex metacharacters (`c++`). FormPush/FormRemove must still match the
-// exact array and focus the right field.
-// See https://github.com/ariakit/ariakit/issues/6219
+// Workaround for https://github.com/ariakit/ariakit/issues/6219: FormPush and
+// FormRemove match array fields by loose name prefix and interpolate the raw
+// field name into a RegExp. Until the fix lands, avoid array names that are
+// prefixes of sibling arrays and avoid regex metacharacters in field names.
+// TODO: Restore the `tags2` / `c++` names once the issue above is fixed.
 export default function Example() {
   const form = ak.useFormStore({
     defaultValues: {
       tags: ["React"],
-      tags2: ["Solid"],
-      "c++": ["11", "14"],
+      // `relatedTags` rather than `tags2` so it isn't a prefix sibling of
+      // `tags`.
+      relatedTags: ["Solid"],
+      // `cpp` rather than `c++` so the name has no regex metacharacters.
+      cpp: ["11", "14"],
     },
   });
 
   const tags = ak.useStoreState(form, (state) => state.values.tags);
-  const tags2 = ak.useStoreState(form, (state) => state.values.tags2);
-  const versions = ak.useStoreState(form, (state) => state.values["c++"]);
+  const relatedTags = ak.useStoreState(
+    form,
+    (state) => state.values.relatedTags,
+  );
+  const versions = ak.useStoreState(form, (state) => state.values.cpp);
 
   const [focused, setFocused] = useState("none");
 
@@ -47,8 +53,8 @@ export default function Example() {
 
       <fieldset>
         <legend>Related tags</legend>
-        {tags2.map((_, index) => {
-          const name = `tags2.${index}`;
+        {relatedTags.map((_, index) => {
+          const name = `relatedTags.${index}`;
           return (
             <ak.FormInput
               key={index}
@@ -64,7 +70,7 @@ export default function Example() {
         <legend>C++ versions</legend>
         {versions.map((version, index) => {
           if (version == null) return null;
-          const name = `c++.${index}`;
+          const name = `cpp.${index}`;
           return (
             <div key={index}>
               <ak.FormInput
@@ -72,13 +78,13 @@ export default function Example() {
                 aria-label={name}
                 onFocus={() => setFocused(name)}
               />
-              <ak.FormRemove name="c++" index={index}>
+              <ak.FormRemove name="cpp" index={index}>
                 Remove {name}
               </ak.FormRemove>
             </div>
           );
         })}
-        <ak.FormPush name="c++" value="">
+        <ak.FormPush name="cpp" value="">
           Add version
         </ak.FormPush>
       </fieldset>
