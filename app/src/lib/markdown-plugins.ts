@@ -9,6 +9,7 @@
  */
 import type { SatteriProcessorOptions } from "@astrojs/markdown-satteri";
 import GithubSlugger from "github-slugger";
+import { encodeBase64 } from "./base64.ts";
 
 type MdastPlugin = NonNullable<SatteriProcessorOptions["mdastPlugins"]>[number];
 
@@ -41,7 +42,10 @@ function isAdjacentInSource(
   const start = previous.position?.end.offset;
   const end = next.position?.start.offset;
   if (start == null || end == null) return false;
-  return /^\s*$/.test(source.slice(start, end));
+  const bytes = new TextEncoder().encode(source);
+  if (start < 0 || end < start || end > bytes.length) return false;
+  const text = new TextDecoder().decode(bytes.subarray(start, end));
+  return /^\s*$/.test(text);
 }
 
 function getData(node: { data?: unknown }) {
@@ -97,7 +101,7 @@ export function satteriCodeBlockMdastPlugin() {
             ...data,
             hProperties: {
               ...hProperties,
-              previousCode: btoa(previousCode),
+              previousCode: encodeBase64(previousCode),
             },
           });
           if (

@@ -9,6 +9,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as icons from "#app/icons/icons.ts";
+import { decodeBase64 } from "#app/lib/base64.ts";
 import { isJsxFramework } from "#app/lib/frameworks.ts";
 import { getLangFromFilename, isLangAlias } from "#app/lib/shiki.ts";
 import { invariant } from "@ariakit/utils";
@@ -135,7 +136,7 @@ function parseCodeBlock(html: string): CodeBlockProps {
   const previousCode = attributes.match(/previousCode="([^"]*)"/)?.[1];
   return {
     code: decode(encodedContent).trim(),
-    previousCode: previousCode ? atob(previousCode) : undefined,
+    previousCode: previousCode ? decodeBase64(previousCode) : undefined,
     ...langInfo,
     ...parseMetaString(metaString),
   };

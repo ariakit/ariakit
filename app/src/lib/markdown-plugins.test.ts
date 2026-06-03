@@ -10,6 +10,7 @@
 import { createSatteriMarkdownProcessor } from "@astrojs/markdown-satteri";
 import { decode } from "html-entities";
 import { expect, test } from "vitest";
+import { decodeBase64 } from "./base64.ts";
 import {
   satteriAdmonitionsPlugin,
   satteriAsTagNamePlugin,
@@ -79,10 +80,12 @@ test("preserves code fence metadata", async () => {
 
 test("pairs previous code blocks with the following code block", async () => {
   const result = await renderMarkdown(`
+Intro: Café.
+
 Before:
 
 \`\`\`test.jsx {0-2} previousCode
-<ComboboxGroup label="Continents" />
+<ComboboxGroup label="América 🌎" />
 \`\`\`
 
 After:
@@ -97,10 +100,34 @@ After:
 
   expect(result.code).not.toContain("<p>Before:");
   expect(result.code).not.toContain("<p>After:");
-  expect(result.code).not.toContain("Continents");
+  expect(result.code).not.toContain("América");
   expect(previousCode).toBeTruthy();
-  expect(atob(previousCode!)).toBe('<ComboboxGroup label="Continents" />');
+  expect(decodeBase64(previousCode!)).toBe(
+    '<ComboboxGroup label="América 🌎" />',
+  );
   expect(decode(metastring)).toBe("{0-2}");
+});
+
+test("keeps marker paragraphs when they are not source-adjacent", async () => {
+  const result = await renderMarkdown(`
+${"😀".repeat(100)}
+
+Before:
+<!-- not adjacent -->
+
+\`\`\`test.jsx previousCode
+<Button>Before</Button>
+\`\`\`
+
+After:
+
+\`\`\`jsx
+<Button>After</Button>
+\`\`\`
+`);
+
+  expect(result.code).toContain("<p>Before:");
+  expect(result.code).toContain('previousCode="');
 });
 
 test("does not leak previous code across renders", async () => {
