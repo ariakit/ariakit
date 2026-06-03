@@ -10,22 +10,24 @@
 import { join } from "node:path";
 import { loadEnvFile } from "node:process";
 import cloudflare from "@astrojs/cloudflare";
-import { rehypeHeadingIds, unified } from "@astrojs/markdown-remark";
+import { satteri } from "@astrojs/markdown-satteri";
 import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import solid from "@astrojs/solid-js";
 import clerk from "@clerk/astro";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { dummyClerkIntegration } from "./src/lib/dummy-clerk-integration.ts";
+import {
+  satteriAdmonitionsPlugin,
+  satteriAsTagNamePlugin,
+  satteriAutolinkHeadingsPlugin,
+  satteriCodeBlockHastPlugin,
+  satteriCodeBlockMdastPlugin,
+  satteriHeadingIdsPlugin,
+} from "./src/lib/markdown-plugins.ts";
 import { previewConfig } from "./src/lib/preview-config.ts";
 import { previewIntegration } from "./src/lib/preview-integration.ts";
-import {
-  rehypeAdmonitions,
-  rehypeAsTagName,
-  rehypePreviousCode,
-} from "./src/lib/rehype.ts";
 import { sourcePlugin } from "./src/lib/source-plugin.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "./src/lib/url.ts";
 
@@ -88,16 +90,16 @@ export default defineConfig({
 
   markdown: {
     syntaxHighlight: false,
-    processor: unified({
-      rehypePlugins: [
-        rehypeHeadingIds,
-        rehypePreviousCode,
-        rehypeAdmonitions,
-        [rehypeAutolinkHeadings, { behavior: "wrap" }],
-        [
-          rehypeAsTagName,
-          { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
-        ],
+    processor: satteri({
+      mdastPlugins: [satteriCodeBlockMdastPlugin()],
+      hastPlugins: [
+        satteriCodeBlockHastPlugin(),
+        satteriHeadingIdsPlugin(),
+        satteriAutolinkHeadingsPlugin(),
+        satteriAdmonitionsPlugin(),
+        satteriAsTagNamePlugin({
+          tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"],
+        }),
       ],
     }),
   },

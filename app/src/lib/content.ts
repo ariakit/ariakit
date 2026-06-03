@@ -8,14 +8,19 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { invariant } from "@ariakit/utils";
-import { unified as createUnifiedProcessor } from "@astrojs/markdown-remark";
-import type { MarkdownRenderer, RehypePlugin } from "@astrojs/markdown-remark";
 import type { CollectionEntry } from "astro:content";
+import GithubSlugger from "github-slugger";
 import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";
+import rehypeRaw from "rehype-raw";
+import rehypeStringify from "rehype-stringify";
+import remarkGfm from "remark-gfm";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import remarkSmartypants from "remark-smartypants";
 import { unified } from "unified";
+import type { Plugin } from "unified";
 import { getFramework, isFramework } from "./frameworks.ts";
-import { rehypeAsTagName } from "./rehype.ts";
 import type { Framework } from "./schemas.ts";
 
 interface ContentGroup {
@@ -127,29 +132,78 @@ export function filterPreviews(
   return hasPreviews ? previewsOrParams.filter(filter) : filter;
 }
 
-let markdownRenderer: MarkdownRenderer | null = null;
+interface HastNode {
+  type?: string;
+  tagName?: string;
+  properties?: Record<string, unknown>;
+  children?: unknown[];
+}
 
-async function getMarkdownRenderer() {
-  if (markdownRenderer) {
-    return markdownRenderer;
+const asTagNameTags = new Set(["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"]);
+
+function isHastNode(value: unknown): value is HastNode {
+  return !!value && typeof value === "object";
+}
+
+function visitHast(node: unknown, callback: (node: HastNode) => void) {
+  if (!isHastNode(node)) return;
+  callback(node);
+  for (const child of node.children ?? []) {
+    visitHast(child, callback);
   }
-  markdownRenderer = await createUnifiedProcessor({
-    rehypePlugins: [
-      [
-        rehypeAsTagName as RehypePlugin,
-        { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
-      ],
-    ],
-  }).createRenderer({
-    syntaxHighlight: false,
+}
+
+const rehypeAsTagName: Plugin = () => (tree) => {
+  visitHast(tree, (node) => {
+    if (node.type !== "element") return;
+    if (!node.tagName) return;
+    if (!asTagNameTags.has(node.tagName)) return;
+    node.properties ??= {};
+    node.properties.as = node.tagName;
   });
-  return markdownRenderer;
+};
+
+const rehypeHeadingIds: Plugin = () => (tree) => {
+  const slugger = new GithubSlugger();
+  visitHast(tree, (node) => {
+    if (node.type !== "element") return;
+    if (!node.tagName) return;
+    if (!/^h[1-6]$/.test(node.tagName)) return;
+    node.properties ??= {};
+    if (typeof node.properties.id === "string") return;
+    node.properties.id = slugger.slug(
+      toText(node as Parameters<typeof toText>[0]),
+    );
+  });
+};
+
+function createMarkdownProcessor() {
+  // This helper runs inside Cloudflare prerendering. Keep it on unified until
+  // Satteri's WASI browser binding can load its wasm in workerd.
+  return unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkSmartypants)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
+    .use(rehypeHeadingIds)
+    .use(rehypeAsTagName)
+    .use(rehypeStringify, { allowDangerousHtml: true });
+}
+
+let markdownProcessor: ReturnType<typeof createMarkdownProcessor> | null = null;
+
+function getMarkdownProcessor() {
+  if (markdownProcessor) {
+    return markdownProcessor;
+  }
+  markdownProcessor = createMarkdownProcessor();
+  return markdownProcessor;
 }
 
 export async function markdownToHtml(markdownString: string) {
-  const renderer = await getMarkdownRenderer();
-  const result = await renderer.render(markdownString);
-  return result.code;
+  const result = await getMarkdownProcessor().process(markdownString);
+  return String(result);
 }
 
 function unwrapContentLinks(markdown: string) {

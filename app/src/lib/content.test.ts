@@ -11,7 +11,7 @@
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";
-import { descriptionToText } from "./content.ts";
+import { descriptionToText, markdownToHtml } from "./content.ts";
 
 function getDescriptionFiles(
   path = join(import.meta.dirname, "../examples"),
@@ -50,6 +50,24 @@ Second paragraph.
   await expect(descriptionToText(body, "react")).resolves.toBe(
     "First paragraph.",
   );
+});
+
+test("markdownToHtml preserves heading ids and mapped tag names", async () => {
+  const html = await markdownToHtml("## Heading\n\n## Heading");
+
+  expect(html).toContain(`id="heading"`);
+  expect(html).toContain(`id="heading-1"`);
+  expect(html).toContain(`as="h2"`);
+});
+
+test("markdownToHtml preserves Astro Markdown defaults", async () => {
+  const html = await markdownToHtml(
+    "It's accessible -- yes...\n\nPress <kbd>Tab</kbd>.\n\n| A |\n| - |",
+  );
+
+  expect(html).toContain("It\u2019s accessible \u2014 yes\u2026");
+  expect(html).toContain("<kbd>Tab</kbd>");
+  expect(html).toContain("<table>");
 });
 
 test("descriptionToText handles real descriptions", async () => {
