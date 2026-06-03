@@ -98,8 +98,6 @@ interface BaseItemProps {
   index: number;
 }
 
-type SetItemElement = (itemId: string, element: HTMLElement | null) => void;
-
 type ItemProps<
   T extends Item,
   P extends BaseItemProps = BaseItemProps,
@@ -750,71 +748,23 @@ export function useCollectionRenderer<T extends Item = any>({
     });
   }, [updateElements]);
 
-  const measuredItemRefs = useMemo(
-    () => new Map<string, RefCallback<HTMLElement>>(),
-    [],
-  );
-
-  const fixedItemRefs = useMemo(
-    () => new Map<string, RefCallback<HTMLElement>>(),
-    [],
-  );
-
-  const itemRefs = itemSize == null ? measuredItemRefs : fixedItemRefs;
-
-  const setItemElementRef = useRef<SetItemElement>(() => {});
-
-  setItemElementRef.current = (itemId, element) => {
-    const cleanupElement = () => {
-      const currentElement = elements.get(itemId);
-      if (!currentElement) return;
-      elements.delete(itemId);
-      elementObserver?.unobserve(currentElement);
-    };
-
-    if (!element) {
-      cleanupElement();
-      return;
-    }
-
-    if (itemSize != null) {
-      cleanupElement();
-      return;
-    }
-
-    const previousElement = elements.get(itemId);
-    if (previousElement === element) return;
-
-    if (previousElement) {
-      elementObserver?.unobserve(previousElement);
-    }
-
-    elements.set(itemId, element);
-    elementObserver?.observe(element);
-    updateElements();
-  };
-
-  const getItemRef = useCallback(
-    (itemId: string) => {
-      const itemRef = itemRefs.get(itemId);
-      if (itemRef) return itemRef;
-      const nextItemRef: RefCallback<HTMLElement> = (element) => {
-        return setItemElementRef.current(itemId, element);
-      };
-      itemRefs.set(itemId, nextItemRef);
-      return nextItemRef;
-    },
-    [itemRefs],
-  );
-
-  useEffect(() => {
-    for (const element of elements.values()) {
+  // Item elements assign their own `id` (see `getItemProps`), so this single
+  // ref can key the `elements` map by `element.id`. Replacing an item's DOM
+  // node calls the ref with the new element while the previous one is still
+  // tracked, so the stale node is unobserved before the new one is observed.
+  const itemRef = useCallback<RefCallback<HTMLElement>>(
+    (element) => {
+      if (!element) return;
+      if (itemSize != null) return;
+      const previousElement = elements.get(element.id);
+      if (previousElement === element) return;
+      if (previousElement) elementObserver?.unobserve(previousElement);
+      elements.set(element.id, element);
       elementObserver?.observe(element);
-    }
-    return () => {
-      elementObserver?.disconnect();
-    };
-  }, [elementObserver, elements]);
+      updateElements();
+    },
+    [itemSize, elements, elementObserver, updateElements],
+  );
 
   const getItemProps = useCallback(
     <Item extends T = T>(item: RawItemProps<Item>, index: number) => {
@@ -824,7 +774,7 @@ export function useCollectionRenderer<T extends Item = any>({
         : (data.get(itemId)?.start ?? 0);
       const baseItemProps: BaseItemProps = {
         id: itemId,
-        ref: getItemRef(itemId),
+        ref: itemRef,
         index,
         style: {
           position: "absolute",
@@ -846,7 +796,7 @@ export function useCollectionRenderer<T extends Item = any>({
         },
       } as ItemProps<T>;
     },
-    [baseId, data, itemSize, paddingStart, gap, horizontal, getItemRef],
+    [baseId, data, itemSize, paddingStart, gap, horizontal, itemRef],
   );
 
   const itemsProps = useMemo(() => {
@@ -860,20 +810,52 @@ export function useCollectionRenderer<T extends Item = any>({
       .filter((value): value is NonNullable<typeof value> => value != null);
   }, [items, visibleIndices, getItemProps]);
 
+  // Reconcile the observed elements with what's rendered: keep the live nodes
+  // whose current id is still rendered (re-keying them, since the shared ref
+  // only runs on mount and a node React reused for another item — e.g. when
+  // items are keyed by index — reports a new id without the ref firing), and
+  // unobserve+forget everything else so stale nodes can't trigger measurement
+  // updates after a replacement, removal, or scroll.
   useEffect(() => {
+    if (!elementObserver) return;
     const itemIds = new Set(itemsProps.map((item) => item.id));
-
-    const pruneItemRefs = (refs: Map<string, RefCallback<HTMLElement>>) => {
-      for (const itemId of refs.keys()) {
-        if (itemIds.has(itemId)) continue;
-        if (elements.has(itemId)) continue;
-        refs.delete(itemId);
+    const previousElements = [...elements];
+    elements.clear();
+    let rekeyed = false;
+    for (const [itemId, element] of previousElements) {
+      if (
+        element.isConnected &&
+        itemIds.has(element.id) &&
+        !elements.has(element.id)
+      ) {
+        elements.set(element.id, element);
+        if (element.id !== itemId) rekeyed = true;
+      } else {
+        elementObserver.unobserve(element);
       }
-    };
+    }
+    // A re-keyed node means the data computed from the stale map (the measure
+    // effect runs before this one) measured the wrong element, so refresh it.
+    // This only happens when a node is reused across item ids (index keys), not
+    // during ordinary scroll or removal, so it adds no per-frame work.
+    if (rekeyed) updateElements();
+  }, [itemsProps, elements, elementObserver, updateElements]);
 
-    pruneItemRefs(measuredItemRefs);
-    pruneItemRefs(fixedItemRefs);
-  }, [itemsProps, elements, measuredItemRefs, fixedItemRefs]);
+  // Observe the tracked elements on mount and disconnect on unmount. Re-running
+  // the observations also restores them after React 18 StrictMode replays
+  // effects. Fixed-size renderers don't measure their items, so skip observing
+  // and let the cleanup drop any observations left over from a size change.
+  useEffect(() => {
+    if (!elementObserver) return;
+    if (itemSize == null) {
+      for (const element of elements.values()) {
+        elementObserver.observe(element);
+      }
+    }
+    return () => {
+      elementObserver.disconnect();
+    };
+  }, [elements, elementObserver, itemSize]);
 
   const children = itemsProps?.map((itemProps) => {
     return renderItem?.(itemProps);
