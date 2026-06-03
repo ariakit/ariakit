@@ -207,7 +207,7 @@ function getItemSize(
     if (typeof size === "number") return size;
   }
   const element =
-    fallbackElement !== false ? itemObject.element || fallbackElement : null;
+    fallbackElement !== false ? fallbackElement || itemObject.element : null;
   const items = itemObject.items;
   if (items?.length) {
     const itemHorizontal =

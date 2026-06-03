@@ -21,8 +21,10 @@ function createResizeObserverStore(): ResizeObserverStore {
 
   class TrackingResizeObserver implements ResizeObserver {
     private readonly elements = new Set<Element>();
+    private readonly observer: ResizeObserver;
 
-    constructor(_callback: ResizeObserverCallback) {
+    constructor(callback: ResizeObserverCallback) {
+      this.observer = new originalResizeObserver(callback);
       observers.add(this);
     }
 
@@ -31,17 +33,20 @@ function createResizeObserverStore(): ResizeObserverStore {
     }
 
     observe(target: Element) {
+      this.observer.observe(target);
       observers.add(this);
       this.elements.add(target);
       emit();
     }
 
     unobserve(target: Element) {
+      this.observer.unobserve(target);
       this.elements.delete(target);
       emit();
     }
 
     disconnect() {
+      this.observer.disconnect();
       this.elements.clear();
       observers.delete(this);
       emit();
@@ -68,6 +73,9 @@ function createResizeObserverStore(): ResizeObserverStore {
     getSnapshot,
     restore: () => {
       window.ResizeObserver = originalResizeObserver;
+      for (const observer of observers) {
+        observer.disconnect();
+      }
       observers.clear();
       emit();
     },
