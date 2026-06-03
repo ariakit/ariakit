@@ -56,11 +56,11 @@ function getEndTime(names: string, delays: string, durations: string) {
   const delayList = delays.split(",");
   const durationList = durations.split(",");
   let endTime = 0;
-  for (let index = 0; index < nameList.length; index += 1) {
+  for (const [index, name] of nameList.entries()) {
     // `transition-property: none` and `animation-name: none` mean nothing runs
     // for that item, so it doesn't contribute to the end time even if a delay
     // or duration is still set.
-    if (nameList[index]?.trim() === "none") continue;
+    if (name.trim() === "none") continue;
     const delay = parseCSSTime(delayList[index % delayList.length]);
     const duration = parseCSSTime(durationList[index % durationList.length]);
     endTime = Math.max(endTime, delay + duration);
