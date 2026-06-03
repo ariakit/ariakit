@@ -16,25 +16,41 @@ const columns = Array.from({ length: 5 }, (_, index) => ({
 const items = [
   { id: "row-0", style: { height: ROW_HEIGHT } },
   { id: "row-1", style: { height: ROW_HEIGHT } },
-  // Workaround for https://github.com/ariakit/ariakit/issues/6216: omit the
-  // cross-axis `orientation` from the group's parent-facing metadata so the
-  // vertical parent measures the group's height from its rendered element
-  // instead of summing the columns' widths. A real app keeps the horizontal
-  // layout by setting `orientation` on the group's own nested renderer rather
-  // than on this parent item.
-  // TODO: Remove once the library fix lands.
-  { id: "group", items: columns },
+  { id: "group", orientation: "horizontal", items: columns },
   { id: "row-3", style: { height: ROW_HEIGHT } },
 ] satisfies readonly CompositeRendererItem[];
 
-export default function Example() {
+// A horizontal group nested one level deeper, inside a same-orientation wrapper.
+// The wrapper measures the group through metadata alone (no rendered element),
+// so the group's height comes from the largest column extent (max of 28 and 36)
+// rather than the sum of the columns' widths.
+const nestedColumns = [
+  { id: "nested-column-0", style: { width: COLUMN_WIDTH, height: 28 } },
+  { id: "nested-column-1", style: { width: COLUMN_WIDTH, height: 36 } },
+] satisfies readonly CompositeRendererItem[];
+
+const nestedItems = [
+  { id: "nested-row-0", style: { height: ROW_HEIGHT } },
+  {
+    id: "nested-group",
+    items: [{ orientation: "horizontal", items: nestedColumns }],
+  },
+  { id: "nested-row-2", style: { height: ROW_HEIGHT } },
+] satisfies readonly CompositeRendererItem[];
+
+interface ListProps {
+  label: string;
+  items: readonly CompositeRendererItem[];
+}
+
+function List({ label, items }: ListProps) {
   const store = useCompositeStore();
   return (
     <CompositeRenderer
       store={store}
       items={items}
       initialItems={items.length}
-      aria-label="Rows"
+      aria-label={label}
     >
       {(item) => (
         <button
@@ -49,5 +65,14 @@ export default function Example() {
         </button>
       )}
     </CompositeRenderer>
+  );
+}
+
+export default function Example() {
+  return (
+    <>
+      <List label="Rows" items={items} />
+      <List label="Nested rows" items={nestedItems} />
+    </>
   );
 }
