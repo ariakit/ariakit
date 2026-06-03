@@ -39,6 +39,11 @@ export default function Example() {
           id="composite"
           store={store}
           items={items}
+          // Workaround for https://github.com/ariakit/ariakit/issues/6215:
+          // passing a known `itemSize` skips the measuring `ResizeObserver`
+          // path, so no item node is ever observed and nothing can leak.
+          // TODO: Remove once #6215 is fixed.
+          itemSize={32}
           // CompositeRenderer always keeps the first and last items rendered, so
           // shrinking this still leaves the last item mounted; the middle items
           // it drops are what must stop being observed.

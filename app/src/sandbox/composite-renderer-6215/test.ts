@@ -7,9 +7,12 @@ import { afterAll, afterEach, expect, test } from "vitest";
 // instrument the global ResizeObserver (mirroring the issue's StackBlitz repro)
 // to make the otherwise-invisible leak observable. Item nodes that are no
 // longer rendered — re-rendered to a new node, dropped from the rendered set,
-// or removed when the whole list unmounts — must stop being observed, the items
-// that are still rendered must stay observed, and the observer must be
-// disconnected when the renderer unmounts.
+// or removed when the whole list unmounts — must stop being observed, and the
+// observer must be disconnected when the renderer unmounts. While the renderer
+// is measuring, the items that are still rendered must stay observed.
+//
+// The `itemSize` workaround skips the measuring/ResizeObserver path entirely, so
+// nothing is observed and nothing can leak; the assertions below hold then too.
 
 const observers: MockResizeObserver[] = [];
 
@@ -87,23 +90,35 @@ function renderedItemIds() {
   return ids;
 }
 
+// Whether the renderer is measuring items with the ResizeObserver. The
+// `itemSize` workaround skips this path, leaving no item ever observed.
+function isMeasuring() {
+  return observers.some((observer) => observer.observedItems);
+}
+
+// No detached item node may stay observed; and while measuring, every rendered
+// item must stay observed so an over-aggressive cleanup can't silently stop
+// measuring the items that are still on screen.
+function expectNoLeakedItems() {
+  expect(detachedObservedItemCount()).toBe(0);
+  if (isMeasuring()) {
+    expect(observedItemIds()).toEqual(renderedItemIds());
+  }
+}
+
 test("does not retain detached item nodes that are no longer rendered", async () => {
-  // The rendered items are observed so their sizes can be measured.
-  expect(observers.some((observer) => observer.observedItems)).toBe(true);
-  expect(observedItemIds()).toEqual(renderedItemIds());
+  expectNoLeakedItems();
 
   // Re-rendering items to new nodes (same id) must unobserve the old nodes
   // while keeping the new ones observed.
   await click(q.button("Refresh items"));
-  expect(detachedObservedItemCount()).toBe(0);
-  expect(observedItemIds()).toEqual(renderedItemIds());
+  expectNoLeakedItems();
 
   // Dropping items from the rendered set (here by shrinking `persistentIndices`,
   // the same node-detach path a scroll takes) must unobserve the removed items
   // while leaving the still-rendered items observed.
   await click(q.button("Show fewer items"));
-  expect(detachedObservedItemCount()).toBe(0);
-  expect(observedItemIds()).toEqual(renderedItemIds());
+  expectNoLeakedItems();
 
   // Unmounting the whole list must disconnect the observer — not merely
   // unobserve each item — so the observer and its callbacks aren't retained.
