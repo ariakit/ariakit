@@ -144,10 +144,11 @@ export function useCompositeRenderer<T extends Item = any>({
   const context = useCompositeScopedContext();
   store = store || (context as typeof store);
 
-  const orientation = useStoreState(store, (state) =>
-    (orientationProp ?? state?.orientation === "both")
-      ? "vertical"
-      : state?.orientation,
+  const orientation = useStoreState(
+    store,
+    (state) =>
+      orientationProp ??
+      (state?.orientation === "both" ? "vertical" : state?.orientation),
   );
 
   const items = useStoreState(store, (state) => {
