@@ -25,15 +25,22 @@ function getFirstFieldsByName(
   name: string,
 ) {
   if (!items) return [];
+  const prefix = `${name}.`;
   const fields: FormStoreState["items"] = [];
+  const seenIndexes = new Set<string>();
   for (const item of items) {
     if (item.type !== "field") continue;
-    if (!item.name.startsWith(name)) continue;
-    const nameWithIndex = item.name.replace(/(\.\d+)\..+$/, "$1");
-    const regex = new RegExp(`^${nameWithIndex}`);
-    if (!fields.some((i) => regex.test(i.name))) {
-      fields.push(item);
-    }
+    // Match the exact array boundary so sibling arrays whose names share this
+    // prefix (e.g. `tags` and `tags2`) aren't matched.
+    if (item.name !== name && !item.name.startsWith(prefix)) continue;
+    // Keep only the first field of each array index. The index is read off the
+    // known prefix instead of interpolating the user-controlled name into a
+    // RegExp, which could throw on regex metacharacters (e.g. `a(b`).
+    const index =
+      item.name.slice(prefix.length).match(/^\d+/)?.[0] ?? item.name;
+    if (seenIndexes.has(index)) continue;
+    seenIndexes.add(index);
+    fields.push(item);
   }
   return fields;
 }
