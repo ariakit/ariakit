@@ -6,9 +6,11 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     page,
   }) => {
     const section = q.region("Mixed transition and animation");
-    const within = query(section);
-    const content = within.text("Animated content");
-    const toggle = within.button("Toggle Mixed transition and animation");
+    const withinSection = query(section);
+    const content = withinSection.text("Animated content");
+    const toggle = withinSection.button(
+      "Toggle Mixed transition and animation",
+    );
 
     // The content is unmounted while closed.
     await test.expect(content).not.toBeAttached();
@@ -65,9 +67,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     q,
   }) => {
     const section = q.region("No animation with duration");
-    const within = query(section);
-    const content = within.text("No animation content");
-    const toggle = within.button("Toggle No animation with duration");
+    const withinSection = query(section);
+    const content = withinSection.text("No animation content");
+    const toggle = withinSection.button("Toggle No animation with duration");
 
     await test.expect(content).not.toBeAttached();
 
