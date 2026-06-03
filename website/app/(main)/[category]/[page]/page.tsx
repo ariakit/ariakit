@@ -18,6 +18,12 @@ import { getNextPageMetadata } from "@/lib/get-next-page-metadata.ts";
 
 const { pages } = pagesConfig;
 
+// Return a 404 for params that aren't generated below. This route already
+// calls notFound() for unknown pages, but on-demand rendering resolves it to a
+// soft 404 with a 200 status; disabling dynamic params returns a real 404 at
+// the routing layer instead.
+export const dynamicParams = false;
+
 function getPageNames(page: Page) {
   return getPageEntryFilesCached(page).map(getPageName);
 }
