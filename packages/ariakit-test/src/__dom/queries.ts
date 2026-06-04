@@ -115,6 +115,108 @@ function toAccessibleMatcher(
   return (content, element) => (element ? matcher(content, element) : false);
 }
 
+// Roles that support each non-global ARIA state, mirroring the
+// `roles.get(role).props` data `aria-query` exposes (which Testing Library's
+// `queryAllByRole` consults to reject unsupported state filters). Derived from
+// aria-query@5.3.0, intersected with the roles `@ariakit/test` exposes.
+const ROLE_STATE_SUPPORT: {
+  readonly [ariaAttribute: string]: ReadonlySet<string>;
+} = {
+  "aria-selected": new Set([
+    "columnheader",
+    "gridcell",
+    "option",
+    "row",
+    "rowheader",
+    "tab",
+    "treeitem",
+  ]),
+  "aria-checked": new Set([
+    "checkbox",
+    "menuitemcheckbox",
+    "menuitemradio",
+    "option",
+    "radio",
+    "switch",
+    "treeitem",
+  ]),
+  "aria-pressed": new Set(["button"]),
+  "aria-expanded": new Set([
+    "application",
+    "button",
+    "checkbox",
+    "columnheader",
+    "combobox",
+    "gridcell",
+    "link",
+    "listbox",
+    "menuitem",
+    "menuitemcheckbox",
+    "menuitemradio",
+    "row",
+    "rowheader",
+    "switch",
+    "tab",
+    "treeitem",
+  ]),
+  "aria-valuenow": new Set([
+    "meter",
+    "progressbar",
+    "scrollbar",
+    "separator",
+    "slider",
+    "spinbutton",
+  ]),
+  "aria-valuemax": new Set([
+    "meter",
+    "progressbar",
+    "scrollbar",
+    "separator",
+    "slider",
+    "spinbutton",
+  ]),
+  "aria-valuemin": new Set([
+    "meter",
+    "progressbar",
+    "scrollbar",
+    "separator",
+    "slider",
+    "spinbutton",
+  ]),
+  "aria-valuetext": new Set([
+    "meter",
+    "progressbar",
+    "scrollbar",
+    "separator",
+    "slider",
+    "spinbutton",
+  ]),
+};
+
+// `aria-busy` and `aria-current` are global states that every role supports
+// except `none`, which aria-query gives no ARIA props at all (`presentation`,
+// despite being its synonym, does carry the globals). They're validated through
+// the fallback branch in `assertRoleSupportsState` rather than their own set.
+const ROLES_WITHOUT_GLOBAL_STATES: ReadonlySet<string> = new Set(["none"]);
+
+// Throws when a role-state filter targets a role that can't carry that state,
+// matching Testing Library's `queryAllByRole`. Without it, a mistake like
+// `query.button("Save", { selected: true })` would silently return nothing
+// instead of surfacing the unsupported combination. Non-global states consult
+// their support set; the global `aria-busy`/`aria-current` fall back to every
+// role but `none`. `queryAllByRole` only ever receives one of the package's
+// known roles (the public `query.<role>()` API is built from that fixed list),
+// so the global fallback never sees an arbitrary role.
+function assertRoleSupportsState(role: string, ariaAttribute: string) {
+  const supportingRoles = ROLE_STATE_SUPPORT[ariaAttribute];
+  const supported = supportingRoles
+    ? supportingRoles.has(role)
+    : !ROLES_WITHOUT_GLOBAL_STATES.has(role);
+  if (!supported) {
+    throw new Error(`"${ariaAttribute}" is not supported on role "${role}".`);
+  }
+}
+
 /**
  * Returns every element under `container` whose ARIA role is `role` and that
  * satisfies the given {@link ByRoleOptions} (accessible name/description, ARIA
@@ -145,6 +247,22 @@ export function queryAllByRole(
     } = {},
   }: ByRoleOptions = {},
 ): HTMLElement[] {
+  // Reject state filters the role can't carry before querying, in the same order
+  // as Testing Library. `level` is valid only on `heading`.
+  if (selected !== undefined) assertRoleSupportsState(role, "aria-selected");
+  if (busy !== undefined) assertRoleSupportsState(role, "aria-busy");
+  if (checked !== undefined) assertRoleSupportsState(role, "aria-checked");
+  if (pressed !== undefined) assertRoleSupportsState(role, "aria-pressed");
+  if (current !== undefined) assertRoleSupportsState(role, "aria-current");
+  if (level !== undefined && role !== "heading") {
+    throw new Error(`Role "${role}" cannot have "level" property.`);
+  }
+  if (valueNow !== undefined) assertRoleSupportsState(role, "aria-valuenow");
+  if (valueMax !== undefined) assertRoleSupportsState(role, "aria-valuemax");
+  if (valueMin !== undefined) assertRoleSupportsState(role, "aria-valuemin");
+  if (valueText !== undefined) assertRoleSupportsState(role, "aria-valuetext");
+  if (expanded !== undefined) assertRoleSupportsState(role, "aria-expanded");
+
   // Cache `isSubtreeInaccessible` per element so the (potentially expensive)
   // visibility computation runs at most once per ancestor across the filter.
   const subtreeIsInaccessibleCache = new WeakMap<Element, boolean>();

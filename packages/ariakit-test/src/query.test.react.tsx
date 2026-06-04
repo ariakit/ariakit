@@ -87,6 +87,45 @@ test("native role mappings stay decoupled from the accessible name", async () =>
   expect(computeAccessibleName(q.button.ensure())).toBe("five");
 });
 
+test("role queries reject state filters the role can't carry", async () => {
+  await render(<button>Save</button>);
+  // `button` supports neither `aria-selected` nor range values, and `level` is
+  // only valid on `heading` — matching Testing Library, these throw instead of
+  // silently returning no match.
+  expect(() => q.button("Save", { selected: true })).toThrow(
+    '"aria-selected" is not supported on role "button".',
+  );
+  expect(() => q.button("Save", { checked: true })).toThrow(
+    '"aria-checked" is not supported on role "button".',
+  );
+  expect(() => q.button("Save", { value: { now: 1 } })).toThrow(
+    '"aria-valuenow" is not supported on role "button".',
+  );
+  expect(() => q.button("Save", { level: 2 })).toThrow(
+    'Role "button" cannot have "level" property.',
+  );
+  // `aria-busy`/`aria-current` are global, but the `none` role carries no ARIA
+  // props at all, so even those are rejected on it — matching Testing Library.
+  expect(() => q.none(undefined, { busy: true })).toThrow(
+    '"aria-busy" is not supported on role "none".',
+  );
+});
+
+test("role queries accept state filters the role supports", async () => {
+  await render(
+    <div>
+      <button aria-pressed="true">Bold</button>
+      <button aria-expanded="true">Menu</button>
+      <h2>Title</h2>
+    </div>,
+  );
+  expect(q.button("Bold", { pressed: true })).toBeInTheDocument();
+  expect(q.button("Menu", { expanded: true })).toBeInTheDocument();
+  expect(q.heading("Title", { level: 2 })).toBeInTheDocument();
+  // The global `aria-busy` is supported on a normal role like `button`.
+  expect(q.button("Bold", { busy: false })).toBeInTheDocument();
+});
+
 test("form and region landmarks require an accessible name", async () => {
   await render(
     <div>
