@@ -13,7 +13,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    const scroller = q.group("Items");
+    // The scroll container has no semantic role; it's only used for scrollTop/
+    // scrollHeight mechanics, not assertions.
+    const scroller = page.locator(".scroller");
     const detachedCount = q.status();
 
     // Let the virtualizer's scroll handler and effects settle across two frames.
@@ -25,8 +27,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
           ),
       );
 
-    // The list renders and measures items to begin with.
-    await test.expect(q.button("item 0")).toBeVisible();
+    // The list renders and measures items to begin with. Anchor the pattern so
+    // it doesn't also match the "Refresh items" control.
+    await test.expect(q.button(/^item /).first()).toBeVisible();
 
     // Scroll through the whole list so many item nodes mount and unmount.
     const maxScroll = await scroller.evaluate(

@@ -86,7 +86,7 @@ export default function Example() {
         Unmount the list
       </button>
       {mounted && (
-        <div className="scroller" role="group" aria-label="Items">
+        <div className="scroller">
           <CompositeRenderer id="composite" store={store} items={items}>
             {(item) => (
               <button
