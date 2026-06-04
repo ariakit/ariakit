@@ -17,24 +17,36 @@ const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
+// Reads the array index off the known `name.` prefix without interpolating the
+// user-controlled name into a RegExp, which could throw on regex metacharacters
+// (e.g. `a(b`). Returns `NaN` when the field doesn't belong to the array.
+function getArrayFieldIndex(fieldName: string, name: string) {
+  const prefix = `${name}.`;
+  if (!fieldName.startsWith(prefix)) return Number.NaN;
+  const index = fieldName.slice(prefix.length).match(/^\d+/)?.[0];
+  return index ? Number.parseInt(index, 10) : Number.NaN;
+}
+
 function findNextOrPreviousField(
   items: FormStoreState["items"] | undefined,
   name: string,
   index: number,
 ) {
+  const prefix = `${name}.`;
+  // Match the exact array boundary so sibling arrays whose names share this
+  // prefix (e.g. `tags` and `tags2`) aren't matched.
   const fields = items?.filter(
-    (item) => item.type === "field" && item.name.startsWith(name),
+    (item) =>
+      item.type === "field" &&
+      (item.name === name || item.name.startsWith(prefix)),
   );
-  const regex = new RegExp(`^${name}\\.(\\d+)`);
-  const nextField = fields?.find((field) => {
-    const fieldIndex = field.name.replace(regex, "$1");
-    return Number.parseInt(fieldIndex, 10) > index;
-  });
+  const nextField = fields?.find(
+    (field) => getArrayFieldIndex(field.name, name) > index,
+  );
   if (nextField) return nextField;
-  return fields?.reverse().find((field) => {
-    const fieldIndex = field.name.replace(regex, "$1");
-    return Number.parseInt(fieldIndex, 10) < index;
-  });
+  return fields
+    ?.reverse()
+    .find((field) => getArrayFieldIndex(field.name, name) < index);
 }
 
 function findPushButton(

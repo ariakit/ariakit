@@ -80,6 +80,10 @@ function hasUpdatedKey<S>(
   return false;
 }
 
+function isSameValue(value: unknown, other: unknown) {
+  return value === other || (value !== value && other !== other);
+}
+
 function addKeyedListener<S>(
   map: ListenerMap<S>,
   keys: Array<keyof S> | null,
@@ -384,21 +388,7 @@ export function createStore<S extends State>(
         ? (value as (current: S[typeof key]) => S[typeof key])(currentValue)
         : value;
 
-    if (nextValue === currentValue) return;
-
-    // Fan a locally-originated change out to extended parent stores so they
-    // stay in sync. Both short-circuits are load-bearing: `!fromStores`
-    // prevents the parent/child sync loop (storeInit pushes parent updates
-    // down with `fromStores`), and `stores.length` skips the iteration
-    // entirely on the common store-without-parents path.
-    if (!fromStores && stores.length) {
-      for (const store of stores) {
-        store?.setState?.(key, nextValue);
-      }
-    }
-
-    const prevState = state;
-    state = { ...state, [key]: nextValue };
+    if (isSameValue(nextValue, currentValue)) return;
 
     // Track the active dispatch so storeBatch can distinguish idle
     // registration (refresh prevStateBatch) from registration during an
@@ -406,8 +396,39 @@ export function createStore<S extends State>(
     // reports the correct diff).
     const wasInDispatch = inDispatch;
     inDispatch = true;
+    const prevState = state;
+    const nextState = { ...state, [key]: nextValue };
+    state = nextState;
+    let superseded = false;
     try {
-      runListeners(syncListenerGroup, prevState, key);
+      // Fan a locally-originated change out to extended parent stores so they
+      // stay in sync. Both short-circuits are load-bearing: `!fromStores`
+      // prevents the parent/child sync loop (storeInit pushes parent updates
+      // down with `fromStores`), and `stores.length` skips the iteration
+      // entirely on the common store-without-parents path.
+      if (!fromStores && stores.length) {
+        for (const store of stores) {
+          store?.setState?.(key, nextValue);
+          // Parent fan-out can reenter this child with a newer value for the
+          // same key. That nested update owns the final notification and
+          // propagation, so stop replaying the stale outer value.
+          if (isSameValue(state[key], nextValue)) continue;
+          superseded = true;
+          break;
+        }
+      }
+
+      // Parent fan-out can reenter this store and commit nested updates to
+      // other keys before these listeners run, advancing `state` past
+      // `nextState`. Preserve those nested updates in the previous snapshot,
+      // restoring only `key` to its pre-update value so this notification still
+      // reports the original diff. When nothing reentered, reuse `prevState`
+      // directly and skip the allocation.
+      if (!superseded) {
+        const listenerPrevState =
+          state === nextState ? prevState : { ...state, [key]: prevState[key] };
+        runListeners(syncListenerGroup, listenerPrevState, key);
+      }
     } finally {
       inDispatch = wasInDispatch;
     }

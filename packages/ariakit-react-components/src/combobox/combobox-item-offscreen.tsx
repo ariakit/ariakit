@@ -49,17 +49,28 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
   if (active) {
     return <Base.ComboboxItem {...allProps} />;
   }
-  // Remove ComboboxItem props
+  // Remove ComboboxItem props. Custom renders own their native disabled state.
   const {
     store,
     value,
+    disabled,
+    shouldRegisterItem,
+    rowId,
     hideOnClick,
     setValueOnClick,
     selectValueOnClick,
     resetValueOnSelect,
+    preventScrollOnKeyDown,
     focusOnHover,
     blurOnHoverEnd,
     moveOnKeyPress,
+    tabbable,
+    clickOnEnter,
+    clickOnSpace,
+    focusable,
+    accessibleWhenDisabled,
+    autoFocus,
+    onFocusVisible,
     getItem,
     ...htmlProps
   } = allProps;

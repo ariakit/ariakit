@@ -211,6 +211,21 @@ export function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
   };
 }
 
+export function getUniquePerfLabel(
+  labels: Iterable<string>,
+  baseLabel: string,
+): string {
+  const used = new Set(labels);
+  if (!used.has(baseLabel)) return baseLabel;
+
+  let suffix = 2;
+  while (used.has(`${baseLabel} #${suffix}`)) {
+    suffix += 1;
+  }
+
+  return `${baseLabel} #${suffix}`;
+}
+
 function isTruthyEnv(name: string): boolean {
   return process.env[name] === "true" || process.env[name] === "1";
 }
@@ -289,7 +304,9 @@ function getScriptProfileEntry(
   return entry;
 }
 
-function parseScriptProfile(profile: CdpProfile): PerfScriptProfileEntry[] {
+export function parseScriptProfile(
+  profile: CdpProfile,
+): PerfScriptProfileEntry[] {
   const nodes = new Map<number, CdpProfileNode>();
   const parents = new Map<number, number>();
 
@@ -319,11 +336,16 @@ function parseScriptProfile(profile: CdpProfile): PerfScriptProfileEntry[] {
       entry.hitCount += 1;
     }
 
+    const totalTimeKeys = new Set<string>();
     let currentNode: CdpProfileNode | undefined = sampleNode;
     while (currentNode) {
       if (shouldIncludeScriptFrame(currentNode.callFrame)) {
-        const entry = getScriptProfileEntry(entries, currentNode.callFrame);
-        entry.totalTime += timeMs;
+        const key = scriptProfileKey(currentNode.callFrame);
+        if (!totalTimeKeys.has(key)) {
+          totalTimeKeys.add(key);
+          const entry = getScriptProfileEntry(entries, currentNode.callFrame);
+          entry.totalTime += timeMs;
+        }
       }
       const parentId = parents.get(currentNode.id);
       if (parentId == null) break;
@@ -827,11 +849,10 @@ export async function createPerfMeasure(
 
   const testTitle = testInfo.titlePath.filter(Boolean).join(" > ");
   const baseLabel = label ?? testTitle;
-  const duplicateCount = results.filter(
-    (r) => r.label === baseLabel || r.label.startsWith(`${baseLabel} #`),
-  ).length;
-  const resolvedLabel =
-    duplicateCount === 0 ? baseLabel : `${baseLabel} #${duplicateCount + 1}`;
+  const resolvedLabel = getUniquePerfLabel(
+    results.map((result) => result.label),
+    baseLabel,
+  );
 
   results.push({
     testFile: path.relative(process.cwd(), testInfo.file),

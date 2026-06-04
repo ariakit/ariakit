@@ -81,16 +81,55 @@ function findLast(items: readonly Item[]) {
   return findFirst(items, -1);
 }
 
-function findById(items: readonly Item[], id: string, baseId: string): number {
+function findExactById(
+  items: readonly Item[],
+  id: string,
+  baseId: string,
+): number {
   return items.findIndex((item, index) => {
     const itemId = getCollectionRendererItemId(item, index, baseId);
     if (itemId === id) return true;
     const object = getItemObject(item);
-    if (object.items?.length) return findById(object.items, id, itemId) !== -1;
-    const ids = id.split("/");
-    if (ids.length === 1) return false;
-    return ids.some((id) => itemId === id);
+    if (object.items?.length) {
+      return findExactById(object.items, id, itemId) !== -1;
+    }
+    return false;
   });
+}
+
+interface FindPrefixByIdResult {
+  index: number;
+  length: number;
+}
+
+function findPrefixById(
+  items: readonly Item[],
+  id: string,
+  baseId: string,
+): FindPrefixByIdResult {
+  const result = { index: -1, length: -1 };
+
+  items.forEach((item, index) => {
+    const itemId = getCollectionRendererItemId(item, index, baseId);
+    let length = id.startsWith(`${itemId}/`) ? itemId.length : -1;
+    const object = getItemObject(item);
+    if (object.items?.length) {
+      const nestedResult = findPrefixById(object.items, id, itemId);
+      length = Math.max(length, nestedResult.length);
+    }
+    if (length > result.length) {
+      result.index = index;
+      result.length = length;
+    }
+  });
+
+  return result;
+}
+
+function findById(items: readonly Item[], id: string, baseId: string): number {
+  const exactIndex = findExactById(items, id, baseId);
+  if (exactIndex !== -1) return exactIndex;
+  return findPrefixById(items, id, baseId).index;
 }
 
 export function useCompositeRenderer<T extends Item = any>({
@@ -105,10 +144,11 @@ export function useCompositeRenderer<T extends Item = any>({
   const context = useCompositeScopedContext();
   store = store || (context as typeof store);
 
-  const orientation = useStoreState(store, (state) =>
-    (orientationProp ?? state?.orientation === "both")
-      ? "vertical"
-      : state?.orientation,
+  const orientation = useStoreState(
+    store,
+    (state) =>
+      orientationProp ??
+      (state?.orientation === "both" ? "vertical" : state?.orientation),
   );
 
   const items = useStoreState(store, (state) => {

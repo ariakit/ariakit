@@ -6,7 +6,7 @@ import {
   throwOnConflictingProps,
 } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
-import { applyState, defaultValue, isInteger, isObject } from "@ariakit/utils";
+import { applyState, defaultValue, isObject } from "@ariakit/utils";
 import type {
   AnyObject,
   PickRequired,
@@ -23,6 +23,7 @@ import { createCollectionStore } from "../collection/collection-store.ts";
 import type { DeepMap, DeepPartial, Names, StringLike } from "./types.ts";
 
 type ErrorMessage = string | undefined | null;
+const maxArrayIndex = 2 ** 32 - 2;
 
 function nextFrame() {
   return new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
@@ -52,32 +53,44 @@ export function get<T>(
   return get(values[key], rest, defaultValue);
 }
 
+function isArrayIndex(key: string | number) {
+  if (typeof key !== "string" && typeof key !== "number") return false;
+  const stringKey = String(key);
+  const index = Number(stringKey);
+  return (
+    Number.isInteger(index) &&
+    index >= 0 &&
+    index <= maxArrayIndex &&
+    String(index) === stringKey
+  );
+}
+
 // Returns the existing nested value if it is an array or object, otherwise
-// creates a new container based on whether the next key is an integer.
-function getOrCreateNested(nestedValues: unknown, nextKey: string) {
+// creates a new container based on whether the next key is an array index.
+function getOrCreateNested(nestedValues: unknown, nextKey: string | number) {
   if (Array.isArray(nestedValues) || isObject(nestedValues)) {
     return nestedValues;
   }
-  return isInteger(nextKey) ? [] : {};
+  return isArrayIndex(nextKey) ? [] : {};
 }
 
 function set<T extends FormStoreValues | unknown[]>(
   values: T,
-  path: StringLike | string[],
+  path: StringLike | Array<string | number>,
   value: unknown,
 ): T {
   const [k, ...rest] = Array.isArray(path) ? path : String(path).split(".");
   if (k == null) return values;
   const key = k as keyof T;
-  const isIntegerKey = isInteger(key);
-  const nextValues = isIntegerKey ? values || [] : values || {};
+  const isArrayIndexKey = isArrayIndex(k);
+  const nextValues = isArrayIndexKey ? values || [] : values || {};
   const nestedValues = nextValues[key];
   const nextKey = rest[0];
   const result =
     rest.length && nextKey != null
       ? set(getOrCreateNested(nestedValues, nextKey), rest, value)
       : value;
-  if (isIntegerKey) {
+  if (isArrayIndexKey) {
     const index = Number(key);
     if (values && Array.isArray(values)) {
       const copy = [...values];

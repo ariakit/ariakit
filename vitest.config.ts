@@ -55,6 +55,14 @@ const testExcludes = [
   ...(testLoader ? [] : defaultTestExcludes),
 ];
 
+// All suites default to happy-dom — it's ~2x faster than jsdom for the
+// @ariakit/test simulation layer and provides the DOM every suite needs.
+// Individual tests that hit a deterministic happy-dom divergence opt into jsdom
+// with a `// @vitest-environment jsdom` comment. test-react18 opts the whole
+// suite out via ARIAKIT_TEST_ENV=jsdom: React 18's scheduler is more sensitive
+// to happy-dom's faster timer cadence and flakes some dialog-dismissal tests.
+const environment = process.env.ARIAKIT_TEST_ENV ?? "happy-dom";
+
 // sourcePlugin is typed against the app workspace's Vite copy, while Vitest
 // consumes the root Vite types. The runtime plugin shape is compatible.
 // TODO: Remove this cast when Astro and the root test stack use the same Vite
@@ -76,7 +84,14 @@ export default defineConfig({
   test: {
     watch: false,
     testTimeout: 10_000,
-    environment: "jsdom",
+    environment,
+    // happy-dom's faster timer cadence occasionally starves React's settle
+    // window between simulated interactions on slow CI, causing rare,
+    // non-deterministic failures. A single retry — scoped to the framework
+    // render suites, where the @ariakit/test simulation runs — absorbs the
+    // occasional one-off; a test that fails twice still fails, so a genuine
+    // regression isn't masked. The core and jsdom suites don't retry.
+    retry: testLoader && environment === "happy-dom" ? 1 : 0,
     setupFiles: [join(rootDir, "vitest.setup.ts")],
     exclude: testExcludes,
     include: testIncludes,

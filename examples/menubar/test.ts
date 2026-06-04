@@ -88,6 +88,21 @@ test("show/hide on key down", async () => {
   expect(q.menu("File")).toBeVisible();
 });
 
+test("typeahead from menu button continues after focus moves to menu", async () => {
+  await press.Tab();
+  await press.Enter();
+  await press.ShiftTab();
+
+  expect(q.menu("File")).toBeVisible();
+  expect(q.menuitem("File")).toHaveFocus();
+
+  await type("s");
+  expect(q.menuitem("Save Page As")).toHaveFocus();
+
+  await type("h");
+  expect(q.menuitem("Share")).toHaveFocus();
+});
+
 test("show/hide on hover", async () => {
   await hover(q.menuitem("File"));
   expect(q.menu("File")).not.toBeInTheDocument();

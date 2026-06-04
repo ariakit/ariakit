@@ -8,6 +8,7 @@ import deburr from "lodash-es/deburr.js";
 import groupBy from "lodash-es/groupBy.js";
 import kebabCase from "lodash-es/kebabCase.js";
 import { matchSorter } from "match-sorter";
+import type { ReactElement } from "react";
 import { startTransition, useMemo, useRef, useState } from "react";
 import { countries } from "./countries.ts";
 import "./theme.css";
@@ -30,6 +31,93 @@ function groupItems(items: ReturnType<typeof getItem>[]) {
 
 const items = countries.map(getItem);
 const itemsByGroup = groupItems(items);
+
+interface OffscreenProbeItem {
+  value: string;
+  props?: Partial<ComboboxItemProps & SelectItemProps>;
+  render?: NonNullable<ComboboxItemProps["render"]>;
+  selectRender?: NonNullable<SelectItemProps["render"]>;
+}
+
+type ComboboxItemRender = Exclude<
+  NonNullable<ComboboxItemProps["render"]>,
+  ReactElement
+>;
+
+type SelectItemRender = Exclude<
+  NonNullable<SelectItemProps["render"]>,
+  ReactElement
+>;
+
+const offscreenProbeProps = {
+  shouldRegisterItem: false,
+  rowId: "offscreen-test-row",
+  preventScrollOnKeyDown: false,
+  moveOnKeyPress: false,
+  tabbable: true,
+  clickOnEnter: false,
+  clickOnSpace: false,
+  focusable: true,
+  onFocusVisible: () => {},
+  focusOnHover: true,
+  blurOnHoverEnd: false,
+} satisfies Partial<ComboboxItemProps & SelectItemProps>;
+
+const renderCallbackDisabledButton: ComboboxItemRender = (props) => {
+  return <button {...props} disabled />;
+};
+
+const offscreenProbeItems: OffscreenProbeItem[] = [
+  { value: "Visible option" },
+  ...Array.from({ length: 30 }, (_, index) => ({
+    value: `Probe filler ${index + 1}`,
+  })),
+  {
+    value: "Disabled offscreen button",
+    props: { disabled: true, accessibleWhenDisabled: true },
+    render: <button />,
+  },
+  {
+    value: "Autofocus offscreen button",
+    props: { autoFocus: true },
+    render: <button />,
+  },
+  {
+    value: "Disabled offscreen div",
+    props: { disabled: true },
+  },
+  {
+    value: "Callback disabled offscreen button",
+    props: { disabled: true },
+    render: renderCallbackDisabledButton,
+  },
+  {
+    value: "Element disabled offscreen button",
+    props: { disabled: true },
+    render: <button disabled />,
+    // This verifies render element props own native disabled in both fixtures.
+    selectRender: <button disabled />,
+  },
+];
+
+function renderSelectComboboxProbeItem(
+  item: OffscreenProbeItem,
+): SelectItemRender {
+  return (props) => {
+    if ("data-offscreen" in props) {
+      if (typeof item.render === "function") {
+        return item.render(props);
+      }
+      if (item.render) {
+        return <button {...props} />;
+      }
+      return <div {...props} role={props.role ?? "option"} />;
+    }
+    return (
+      <ComboboxItem {...props} value={item.value} setValueOnClick={false} />
+    );
+  };
+}
 
 interface ComboboxProps
   extends
@@ -334,6 +422,90 @@ function SelectCombobox({
   );
 }
 
+function OffscreenPropsCombobox() {
+  const ref = useRef(null);
+  return (
+    <div>
+      <Ariakit.ComboboxProvider placement="bottom">
+        <Ariakit.ComboboxLabel className="block px-3 py-2">
+          offscreen props combobox
+        </Ariakit.ComboboxLabel>
+        <Ariakit.Combobox
+          placeholder="Search..."
+          className="ak-combobox h-10 w-64 px-3"
+        />
+        <Ariakit.ComboboxPopover
+          gutter={8}
+          className="ak-popup ak-elevation-1 ak-popover w-[--popover-anchor-width]"
+        >
+          <div
+            ref={ref}
+            className="ak-popup-cover ak-popup-scroll h-24 min-h-0"
+          >
+            {offscreenProbeItems.map((item, index) => (
+              <ComboboxItem
+                key={item.value}
+                {...(item.props && { ...offscreenProbeProps, ...item.props })}
+                value={item.value}
+                offscreenMode={index === 0 ? "active" : "passive"}
+                offscreenRoot={ref}
+                className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                render={item.render}
+              />
+            ))}
+          </div>
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </div>
+  );
+}
+
+function OffscreenPropsSelectCombobox() {
+  const ref = useRef(null);
+  return (
+    <div>
+      <Ariakit.ComboboxProvider placement="bottom" resetValueOnHide>
+        <Ariakit.SelectProvider
+          placement="bottom"
+          defaultValue="Visible option"
+        >
+          <Ariakit.SelectLabel className="block px-3 py-2">
+            offscreen props searchable
+          </Ariakit.SelectLabel>
+          <Ariakit.Select className="ak-button ak-button-default h-10 w-64 justify-between px-3" />
+          <Ariakit.SelectPopover
+            gutter={8}
+            className="ak-popup ak-popup-enter ak-elevation-1 ak-popover w-[--popover-anchor-width]"
+          >
+            <Ariakit.Combobox
+              placeholder="Search..."
+              className="ak-combobox z-20 h-10 w-64 px-3"
+            />
+            <Ariakit.ComboboxList
+              ref={ref}
+              className="ak-popup-cover ak-popup-scroll h-24 min-h-0"
+            >
+              {offscreenProbeItems.map((item, index) => (
+                <SelectItem
+                  key={item.value}
+                  {...(item.props && { ...offscreenProbeProps, ...item.props })}
+                  value={item.value}
+                  offscreenRoot={ref}
+                  offscreenMode={index === 0 ? "active" : "passive"}
+                  className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                  render={
+                    item.selectRender || renderSelectComboboxProbeItem(item)
+                  }
+                />
+              ))}
+            </Ariakit.ComboboxList>
+          </Ariakit.SelectPopover>
+        </Ariakit.SelectProvider>
+      </Ariakit.ComboboxProvider>
+    </div>
+  );
+}
+
 const offscreenModes = ["lazy", "passive"] as const;
 const autoSelects = [false, true, "always"] as const;
 const unmountOnHides = [true, false] as const;
@@ -386,6 +558,10 @@ const selectComboboxExamples = offscreenModes.flatMap((offscreenMode) =>
 export default function Example() {
   return (
     <div className="wrapper ak-rounded-container grid w-full grid-cols-[repeat(auto-fit,minmax(420px,1fr))] gap-4 p-4">
+      <OffscreenPropsCombobox />
+
+      <OffscreenPropsSelectCombobox />
+
       {comboboxExamples.map((props, index) => (
         <Combobox key={index} {...props} />
       ))}

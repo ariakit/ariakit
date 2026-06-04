@@ -1,3 +1,4 @@
+import { join } from "node:path";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import type { NextConfig } from "next";
 
@@ -6,6 +7,14 @@ const config: NextConfig = {
   typedRoutes: true,
   cacheComponents: true,
 
+  // Pin the Turbopack root to the monorepo root (the parent of this workspace).
+  // Otherwise Next.js walks up the tree collecting every workspace/lockfile and
+  // picks the outermost one as the root. In a git worktree nested under the main
+  // checkout, that outermost match is the main checkout, which is the wrong root.
+  turbopack: {
+    root: join(import.meta.dirname, ".."),
+  },
+
   // Allow cross-origin iframe embedding from the Astro app
   async headers() {
     return [
@@ -13,14 +22,10 @@ const config: NextConfig = {
         source: "/:path*",
         headers: [
           {
-            key: "X-Frame-Options",
-            value: "ALLOWALL",
-          },
-          {
             key: "Content-Security-Policy",
-            // Allow embedding from any ariakit.com/ariakit.org subdomain and workers.dev
+            // Allow embedding from ariakit.com/ariakit.org domains and workers.dev
             value:
-              "frame-ancestors 'self' https://*.ariakit.com https://*.ariakit.org https://*.workers.dev http://localhost:*",
+              "frame-ancestors 'self' https://ariakit.com https://*.ariakit.com https://ariakit.org https://*.ariakit.org https://*.workers.dev http://localhost:*",
           },
         ],
       },

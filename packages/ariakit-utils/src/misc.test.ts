@@ -7,7 +7,7 @@ import {
   shallowEqual,
 } from "./misc.ts";
 
-test("isInteger preserves the form path discriminator contract", () => {
+test("isInteger preserves its loose numeric coercion behavior", () => {
   expect(isInteger(0)).toBe(true);
   expect(isInteger(1)).toBe(true);
   expect(isInteger(-1)).toBe(true);

@@ -56,6 +56,19 @@ jobs:
           if [ -z "$SAFE" ]; then
             SAFE="branch-$(printf "%s" "$HEAD_BRANCH" | shasum | cut -c1-12)"
           fi
+          # Cloudflare joins the alias and worker script name into a single
+          # "<alias>-<script>" label that must total less than 63 characters.
+          # Our longest script is "ariakit-preview" (15 chars), so cap the alias
+          # length at 46: worst case "<46chars>-ariakit-preview" is 62 chars.
+          # When truncating, append a short hash of the full branch name so two
+          # long branches that share a prefix keep distinct aliases.
+          MAX=46
+          if [ "${#SAFE}" -gt "$MAX" ]; then
+            HASH=$(printf "%s" "$HEAD_BRANCH" | shasum | cut -c1-7)
+            # Leave room in the 46-char budget for the "-" separator and hash.
+            SAFE=$(printf "%s" "$SAFE" | cut -c1-"$((MAX - ${#HASH} - 1))" | sed -E 's#-+$##')
+            SAFE="$SAFE-$HASH"
+          fi
           echo "slug=$SAFE" >> "$GITHUB_OUTPUT"
 
       - name: Set up environment

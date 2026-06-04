@@ -36,7 +36,7 @@ export const useComboboxGroup = createHook<TagName, ComboboxGroupOptions>(
     invariant(
       store,
       process.env.NODE_ENV !== "production" &&
-        "ComboboxRow must be wrapped in a ComboboxList or ComboboxPopover component",
+        "ComboboxGroup must be wrapped in a ComboboxList or ComboboxPopover component.",
     );
 
     const contentElement = useStoreState(store, "contentElement");

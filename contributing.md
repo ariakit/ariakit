@@ -482,14 +482,20 @@ When adding new features or fixing bugs, we'll need to bump the package versions
 
 > The action of adding a new example doesn't require a version bump. Only changes to the codebase that affect the public API or existing behavior (e.g., bugs) do.
 
-Let's craft a fresh changeset file for our component. You can use any name for the file, but it should begin with the pull request number, followed by a dash:
+Let's craft a fresh changeset file for our component. Name the file with a numeric prefix that determines its order in the changelog (lower numbers appear earlier), followed by a dash and a short kebab-case description:
 
-`.changeset/1271-my-component.md`
+- `100-` for major changes
+- `200-` for minor changes, such as features and improvements
+- `300-` for patch changes, such as bug fixes
+
+While the packages are still in `v0`, mark minor and patch changes as `patch` and major changes as `minor` in the frontmatter. The numeric prefix still reflects the actual change type:
+
+`.changeset/200-my-component.md`
 
 ```markdown
 ---
-"@ariakit/react": minor
 "@ariakit/react-components": patch
+"@ariakit/react": patch
 ---
 
 Added `MyComponent` component.
@@ -503,9 +509,9 @@ Once your pull request is merged into the `main` branch, the `Publish` PR will b
 
 ## Writing end-to-end tests
 
-Most of the time, we'll write unit and integration tests as described on [Testing the example](#testing-the-example). Those tests simulate real user interactions, but they don't run in the browser. They use [JSDOM](https://github.com/jsdom/jsdom), which implements JavaScript DOM APIs in a Node.js environment.
+Most of the time, we'll write unit and integration tests as described on [Testing the example](#testing-the-example). Those tests simulate real user interactions, but they don't run in the browser. The example test suites use [happy-dom](https://github.com/capricorn86/happy-dom), which implements JavaScript DOM APIs in a Node.js environment; environment-sensitive cases opt back into [JSDOM](https://github.com/jsdom/jsdom) with a `// @vitest-environment jsdom` comment.
 
-Combined with the [`@ariakit/test`](packages/ariakit-test) package, this is more than enough for most cases. However, sometimes we need a real browser to test specific interactions with our examples that aren't supported in JSDOM. For those cases, we use [Playwright](https://playwright.dev).
+Combined with the [`@ariakit/test`](packages/ariakit-test) package, this is more than enough for most cases. However, sometimes we need a real browser to test specific interactions with our examples that aren't supported in these environments. For those cases, we use [Playwright](https://playwright.dev).
 
 Let's create an end-to-end test for our example:
 

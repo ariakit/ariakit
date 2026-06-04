@@ -133,21 +133,30 @@ export const useCommand = createHook<TagName, CommandOptions>(
 
       if (event.defaultPrevented) return;
       if (isDuplicate) return;
-      if (disabled) return;
-      if (event.metaKey) return;
 
       const isSpace = clickOnSpace && event.key === " ";
+      if (!activeRef.current || !isSpace) return;
 
-      if (activeRef.current && isSpace) {
-        activeRef.current = false;
-        if (!isNativeClick(event)) {
-          event.preventDefault();
-          setActive(false);
-          const element = event.currentTarget;
-          const { view, ...eventInit } = event;
-          queueMicrotask(() => fireClickEvent(element, eventInit));
-        }
+      const nativeClick = isNativeClick(event);
+
+      // Clear the active state as soon as Space is released, before the
+      // `disabled` and `metaKey` guards below, so a short-circuited keyup (Meta
+      // still held on release, or the element becoming disabled between keydown
+      // and keyup) can't leave the element stuck in a visually "pressed" state.
+      // Firing the synthetic click is still gated by those guards.
+      activeRef.current = false;
+      if (!nativeClick) {
+        setActive(false);
       }
+
+      if (disabled) return;
+      if (event.metaKey) return;
+      if (nativeClick) return;
+
+      event.preventDefault();
+      const element = event.currentTarget;
+      const { view, ...eventInit } = event;
+      queueMicrotask(() => fireClickEvent(element, eventInit));
     });
 
     props = {
