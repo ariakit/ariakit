@@ -35,11 +35,19 @@ const defaultTestExcludes = [
   "app/src/{examples,sandbox}/**/test.{ts,tsx}",
 ];
 
-function getFrameworkTestIncludes(loader: AllowedTestLoader) {
-  const entryFiles = globSync(
-    `{examples,app/src/{examples,sandbox}}/**/index.${loader}.tsx`,
-    { cwd: rootDir },
-  );
+const frameworkEntryFiles = testLoader
+  ? globSync(
+      `{examples,app/src/{examples,sandbox}}/**/index.${testLoader}.tsx`,
+      {
+        cwd: rootDir,
+      },
+    )
+  : [];
+
+function getFrameworkTestIncludes(
+  loader: AllowedTestLoader,
+  entryFiles: string[],
+) {
   const exampleTests = entryFiles.flatMap((file) => {
     const dir = dirname(file);
     return [`${dir}/test.{ts,tsx}`, `${dir}/test.${loader}.{ts,tsx}`];
@@ -53,7 +61,7 @@ function getFrameworkTestIncludes(loader: AllowedTestLoader) {
 }
 
 const testIncludes = testLoader
-  ? getFrameworkTestIncludes(testLoader)
+  ? getFrameworkTestIncludes(testLoader, frameworkEntryFiles)
   : defaultTestIncludes;
 
 const testExcludes = [
@@ -83,34 +91,19 @@ if (testLoader === "react") {
   plugins.unshift(solidPlugin());
 }
 
-// Browser Mode reloads the test page when Vite discovers new optimized
-// dependencies mid-run. Keep lazy example dependencies pre-bundled so React and
-// Solid singletons stay stable throughout the suite.
-const optimizeDepsInclude = {
-  react: [
-    "@floating-ui/dom",
-    "@radix-ui/react-popover",
-    "@radix-ui/react-select",
-    "clsx",
-    "lodash-es/groupBy.js",
-    "lodash-es/startCase.js",
-    "match-sorter",
-    "motion/react",
-    "react-router",
-    "textarea-caret",
-    "tiny-invariant",
-    "use-sync-external-store/shim",
-  ],
-  solid: ["@solid-primitives/props", "@solid-primitives/utils"],
-} satisfies Record<AllowedTestLoader, string[]>;
-
 export default defineConfig({
   root: rootDir,
   plugins,
   ...(testLoader
     ? {
+        // Browser Mode reloads the test page when Vite discovers new optimized
+        // dependencies mid-run. Scan framework entries up front so lazy example
+        // dependencies are pre-bundled from their actual importer locations.
         optimizeDeps: {
-          include: optimizeDepsInclude[testLoader],
+          entries: [
+            ...frameworkEntryFiles,
+            `packages/ariakit-${testLoader}*/src/**/*.{ts,tsx}`,
+          ],
         },
       }
     : {}),
