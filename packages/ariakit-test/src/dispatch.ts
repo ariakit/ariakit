@@ -272,7 +272,7 @@ const events = getKeys(fireEvent).reduce((events, eventName) => {
  * await dispatch.keyDown(q.textbox(), { key: "Enter" });
  * await dispatch.click(q.button());
  * // Fire a custom event instance directly:
- * await dispatch(element, new Event("selectstart", { bubbles: true }));
+ * await dispatch(q.textbox(), new Event("selectstart", { bubbles: true }));
  * ```
  */
 export const dispatch = Object.assign(baseDispatch, events);
