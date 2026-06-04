@@ -84,6 +84,12 @@ Once in the project's root directory, run the following command to install the p
 pnpm install
 ```
 
+If you plan to run the framework test suites locally, install the Chromium browser and system dependencies used by Vitest Browser Mode:
+
+```bash
+pnpm exec playwright install --with-deps chromium
+```
+
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
@@ -269,7 +275,7 @@ test("my component", () => {
 });
 ```
 
-Now run the following command in your terminal to watch the test results:
+Now run the following command in your terminal to watch the test results. Framework test suites run in Vitest Browser Mode, so make sure Chromium is installed as described in [Installing dependencies](#installing-dependencies).
 
 ```bash
 pnpm test-react watch my-component
@@ -509,9 +515,9 @@ Once your pull request is merged into the `main` branch, the `Publish` PR will b
 
 ## Writing end-to-end tests
 
-Most of the time, we'll write unit and integration tests as described on [Testing the example](#testing-the-example). Those tests simulate real user interactions, but they don't run in the browser. The example test suites use [happy-dom](https://github.com/capricorn86/happy-dom), which implements JavaScript DOM APIs in a Node.js environment; environment-sensitive cases opt back into [JSDOM](https://github.com/jsdom/jsdom) with a `// @vitest-environment jsdom` comment.
+Most of the time, we'll write unit and integration tests as described on [Testing the example](#testing-the-example). Those tests use [Vitest Browser Mode](https://vitest.dev/guide/browser/) with Playwright-backed Chromium when you run framework suites such as `pnpm test-react` or `pnpm test-solid`. The default `pnpm test` suite still uses [happy-dom](https://github.com/capricorn86/happy-dom) for non-framework package tests that need DOM APIs without launching a browser.
 
-Combined with the [`@ariakit/test`](packages/ariakit-test) package, this is more than enough for most cases. However, sometimes we need a real browser to test specific interactions with our examples that aren't supported in these environments. For those cases, we use [Playwright](https://playwright.dev).
+Combined with the [`@ariakit/test`](packages/ariakit-test) package, Browser Mode is more than enough for most rendered example behavior. However, sometimes we need to test served previews, browser-specific projects, multiple engines, mobile devices, screenshots, or other end-to-end flows. For those cases, we use [Playwright](https://playwright.dev).
 
 Let's create an end-to-end test for our example:
 

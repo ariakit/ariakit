@@ -1,7 +1,3 @@
-// @vitest-environment jsdom
-// happy-dom's requestAnimationFrame fires almost immediately (~0ms) instead of
-// the ~16ms real browsers use, which collapses the CSS keyframe leave timing
-// these tests assert on. Pinned to jsdom.
 import { click, press, q, sleep, waitFor } from "@ariakit/test";
 import { expect, test } from "vitest";
 

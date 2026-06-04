@@ -1,7 +1,7 @@
 import { click, press, q, type } from "@ariakit/test";
 import { expect, test, vi } from "vitest";
 
-const errors = () => q.text.all("Constraints not satisfied");
+const errors = () => q.alert.all().filter((element) => element.textContent);
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 
 test("click on label", async () => {

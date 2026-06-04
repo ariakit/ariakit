@@ -2,9 +2,7 @@ import { click, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 const validationError = () =>
-  q.text(
-    "Constraints not satisfied - Field 1 - Field 2 - Abstract Form - Form",
-  );
+  q.text(/ - Field 1 - Field 2 - Abstract Form - Form$/);
 const submitErrors = () =>
   q.text.all("Field - Abstract Form 1 - Abstract Form 2 - Form 1 - Form 2");
 

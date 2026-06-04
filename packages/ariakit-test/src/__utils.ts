@@ -114,10 +114,7 @@ export function applyBrowserPolyfills() {
 // happy-dom returns an empty validationMessage for built-in constraint
 // violations (only setCustomValidity populates it); jsdom and real browsers
 // return a non-empty message. Ariakit's form validation reads
-// element.validationMessage to register errors, so mirror that here. The exact
-// string matches jsdom's generic message so the shared form example tests assert
-// the same text under both environments (real browsers use locale-specific text,
-// which these tests don't depend on).
+// element.validationMessage to register errors, so mirror that here.
 function patchHappyDOMValidationMessage() {
   const restores: Array<() => void> = [];
   for (const Constructor of [

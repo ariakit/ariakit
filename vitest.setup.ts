@@ -106,7 +106,9 @@ Example/test naming conventions:
   test.ts                        - test, runs for all loaders
   test.<react|solid>.ts          - test, runs only for the specified loader
 
-Note: test files can also be named `test-<browser target>.` instead of `test.` to run with Playwright. Available targets are:
+Note: Vitest `test.ts` files run in Browser Mode for framework render suites.
+Files named `test-<browser target>.` are separate Playwright preview tests.
+Available Playwright targets are:
 
 - browser (all desktop browsers)
 - chrome

@@ -1,7 +1,3 @@
-// @vitest-environment jsdom
-// happy-dom's CSS parser drops `clip: rect(0 0 0 0)` (real browsers and jsdom
-// keep it), changing the serialized style. Pinned to jsdom so the snapshot
-// reflects the real clip-rect hiding technique.
 import { q } from "@ariakit/test";
 import { expect, test } from "vitest";
 

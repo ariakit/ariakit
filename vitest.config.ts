@@ -1,5 +1,6 @@
 import { dirname, join } from "node:path";
 import reactPlugin from "@vitejs/plugin-react";
+import { playwright } from "@vitest/browser-playwright";
 import { globSync } from "glob";
 import type { PluginOption } from "vite";
 import solidPlugin from "vite-plugin-solid";
@@ -9,6 +10,12 @@ import { getTestLoader } from "./test-loader.ts";
 import type { AllowedTestLoader } from "./test-loader.ts";
 
 const rootDir = process.cwd();
+
+// Workaround: Playwright 1.59 syncs navigator.platform with the user agent,
+// causing "Win32" on macOS (since Desktop Chrome has a Windows UA). This breaks
+// modifier-key detection (Meta vs Control). Remove once resolved upstream.
+// https://github.com/microsoft/playwright/issues/40009
+process.env.PLAYWRIGHT_NO_UA_PLATFORM = "1";
 
 const includeWithStyles = [
   /combobox-tabs-animated/,
@@ -55,12 +62,10 @@ const testExcludes = [
   ...(testLoader ? [] : defaultTestExcludes),
 ];
 
-// All suites default to happy-dom — it's ~2x faster than jsdom for the
-// @ariakit/test simulation layer and provides the DOM every suite needs.
-// Individual tests that hit a deterministic happy-dom divergence opt into jsdom
-// with a `// @vitest-environment jsdom` comment. test-react18 opts the whole
-// suite out via ARIAKIT_TEST_ENV=jsdom: React 18's scheduler is more sensitive
-// to happy-dom's faster timer cadence and flakes some dialog-dismissal tests.
+// Framework render suites run in Vitest Browser Mode so example and sandbox
+// tests using @ariakit/test execute in Chromium instead of a simulated DOM.
+// Non-framework suites keep happy-dom because it provides the DOM they need
+// without paying the Browser Mode cost for pure package tests.
 const environment = process.env.ARIAKIT_TEST_ENV ?? "happy-dom";
 
 // sourcePlugin is typed against the app workspace's Vite copy, while Vitest
@@ -84,14 +89,16 @@ export default defineConfig({
   test: {
     watch: false,
     testTimeout: 10_000,
-    environment,
-    // happy-dom's faster timer cadence occasionally starves React's settle
-    // window between simulated interactions on slow CI, causing rare,
-    // non-deterministic failures. A single retry — scoped to the framework
-    // render suites, where the @ariakit/test simulation runs — absorbs the
-    // occasional one-off; a test that fails twice still fails, so a genuine
-    // regression isn't masked. The core and jsdom suites don't retry.
-    retry: testLoader && environment === "happy-dom" ? 1 : 0,
+    ...(testLoader
+      ? {
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright(),
+            instances: [{ browser: "chromium" }],
+          },
+        }
+      : { environment }),
     setupFiles: [join(rootDir, "vitest.setup.ts")],
     exclude: testExcludes,
     include: testIncludes,
