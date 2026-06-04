@@ -80,7 +80,9 @@ function click(
 ): Promise<void>;
 ```
 
-Clicks on an element, simulating the sequence of events a real mouse click produces — hovering the target, then `pointerdown`, `mousedown`, `focus`, `pointerup`, `mouseup`, and `click`. Hidden and disabled elements are handled the same way a browser would, and clicks on labels, `option` elements, and form controls behave like native interactions. Pass `options` to set event properties such as modifier keys (e.g. `{ shiftKey: true }`).
+Clicks on an element, simulating the sequence of events a real mouse click produces — hovering the target, then `pointerdown`, `mousedown`, `focus`, `pointerup`, `mouseup`, and `click`.
+
+Hidden and disabled elements are handled the same way a browser would, and clicks on labels, `option` elements, and form controls behave like native interactions. Pass `options` to set event properties such as modifier keys (e.g. `{ shiftKey: true }`).
 
 Example:
 
@@ -108,7 +110,9 @@ type EventsObject = {
 const dispatch: typeof baseDispatch & EventsObject;
 ```
 
-Creates and fires a DOM event on an element, then waits for the resulting microtasks to flush. Call `dispatch.<eventName>(element, options)` to build and fire a specific event (e.g. `dispatch.keyDown`, `dispatch.click`, `dispatch.input`), or call `dispatch(element, event)` directly with an `Event` instance. Unlike higher-level helpers such as `click` and `type`, this fires a single event without simulating the surrounding interaction sequence. Pointer and mouse events fired on an element with `pointer-events: none` are re-dispatched on the nearest ancestor that has pointer events enabled, matching how browsers route those events.
+Creates and fires a DOM event on an element, then waits for the resulting microtasks to flush. Call `dispatch.<eventName>(element, options)` to build and fire a specific event (e.g. `dispatch.keyDown`, `dispatch.click`, `dispatch.input`), or call `dispatch(element, event)` directly with an `Event` instance.
+
+Unlike higher-level helpers such as `click` and `type`, this fires a single event without simulating the surrounding interaction sequence. Pointer and mouse events fired on an element with `pointer-events: none` are re-dispatched on the nearest ancestor that has pointer events enabled, matching how browsers route those events.
 
 Returns: A promise that resolves to `false` when the event's default action was prevented with `event.preventDefault()`, and `true` otherwise.
 
@@ -153,7 +157,9 @@ function hover(
 ): Promise<void>;
 ```
 
-Moves the pointer over an element, simulating a real user hovering it. Fires the relevant `pointer`/`mouse` enter, over, and move events, and dispatches the matching leave events on the previously hovered element. Hidden elements and elements with `pointer-events: none` are handled the way a browser would. Pass `options` to set event properties such as modifier keys.
+Moves the pointer over an element, simulating a real user hovering it. Fires the relevant `pointer`/`mouse` enter, over, and move events, and dispatches the matching leave events on the previously hovered element.
+
+Hidden elements and elements with `pointer-events: none` are handled the way a browser would. Pass `options` to set event properties such as modifier keys.
 
 Example:
 
@@ -175,7 +181,9 @@ function mouseDown(
 ): Promise<void>;
 ```
 
-Presses the primary pointer button down on an element, firing `pointerdown` and `mousedown` and moving focus the way a browser would. Disabled elements still receive `pointerdown` but not `mousedown`, and focus falls back to the closest focusable ancestor when the target itself isn't focusable. This is one step of a full `click`; use it directly to test press-and-hold behavior. Pass `options` to set event properties such as modifier keys.
+Presses the primary pointer button down on an element, firing `pointerdown` and `mousedown` and moving focus the way a browser would. Disabled elements still receive `pointerdown` but not `mousedown`, and focus falls back to the closest focusable ancestor when the target itself isn't focusable.
+
+This is one step of a full `click`; use it directly to test press-and-hold behavior. Pass `options` to set event properties such as modifier keys.
 
 Example:
 
@@ -198,7 +206,9 @@ function mouseUp(
 ): Promise<void>;
 ```
 
-Releases the primary pointer button on an element, firing `pointerup` and `mouseup`. Disabled elements still receive `pointerup` but not `mouseup`. This is the counterpart to `mouseDown` and one step of a full `click`. Pass `options` to set event properties such as modifier keys.
+Releases the primary pointer button on an element, firing `pointerup` and `mouseup`. Disabled elements still receive `pointerup` but not `mouseup`.
+
+This is the counterpart to `mouseDown` and one step of a full `click`. Pass `options` to set event properties such as modifier keys.
 
 Example:
 
@@ -221,7 +231,9 @@ function press(
 ): Promise<void>;
 ```
 
-Presses a key on an element, simulating a real user keyboard interaction. Fires `keydown` and `keyup` and applies the browser's default behavior for that key — moving focus with `Tab`, activating buttons and submitting forms with `Enter`, clicking buttons, checkboxes, and radios with `Space`, moving the caret with the arrow and `Home`/`End` keys, and typing printable characters into text fields. When no element is passed, the currently focused element is used. Shortcuts such as `press.Enter()` and `press.Tab()` are provided for common keys, and `press.ShiftTab()` moves focus backwards.
+Presses a key on an element, simulating a real user keyboard interaction. Fires `keydown` and `keyup` and applies the browser's default behavior for that key — moving focus with `Tab`, activating buttons and submitting forms with `Enter`, clicking buttons, checkboxes, and radios with `Space`, moving the caret with the arrow and `Home`/`End` keys, and typing printable characters into text fields.
+
+When no element is passed, the currently focused element is used. Shortcuts such as `press.Enter()` and `press.Tab()` are provided for common keys, and `press.ShiftTab()` moves focus backwards.
 
 Example:
 
@@ -256,7 +268,9 @@ interface QueryObject extends RoleQueries {
 const query: QueryObject;
 ```
 
-Queries the DOM by ARIA role, accessible name, text, or label, built on top of Testing Library. Call a role method such as `query.button(name)` or `query.dialog()` to get the matching element (or `null`), passing a string or `RegExp` to match its accessible name. Use `query.text()` and `query.labeled()` to query by text content or associated label, and `query.within(element)` to scope queries to a subtree. Every query also exposes `.all` (return all matches), `.wait` (resolve once the element appears), and `.ensure` (throw when it's missing) variants, and role queries additionally expose `.includesHidden` to include otherwise-hidden elements.
+Queries the DOM by ARIA role, accessible name, text, or label, built on top of Testing Library. Call a role method such as `query.button(name)` or `query.dialog()` to get the matching element (or `null`), passing a string or `RegExp` to match its accessible name. Use `query.text()` and `query.labeled()` to query by text content or associated label, and `query.within(element)` to scope queries to a subtree.
+
+Every query also exposes `.all` (return all matches), `.wait` (resolve once the element appears), and `.ensure` (throw when it's missing) variants, and role queries additionally expose `.includesHidden` to include otherwise-hidden elements.
 
 Example:
 
@@ -315,7 +329,9 @@ function select(
 ): Promise<void>;
 ```
 
-Selects a range of text within an element, simulating a real user dragging across it. Hovers and presses on the element, finds the given `text` in its descendant text nodes, sets the document selection to cover it, then releases. When no element is passed, `document.body` is used. Pass `options` to set event properties such as modifier keys.
+Selects a range of text within an element, simulating a real user dragging across it. Hovers and presses on the element, finds the given `text` in its descendant text nodes, sets the document selection to cover it, then releases.
+
+When no element is passed, `document.body` is used. Pass `options` to set event properties such as modifier keys.
 
 Example:
 
@@ -334,7 +350,9 @@ expect(document.getSelection()?.toString()).toBe("hello world");
 function sleep(ms = defaultMs): Promise<void>;
 ```
 
-Waits for the DOM to settle between simulated interactions by yielding across two animation frames and a short timeout. The other helpers in this package call it internally, but you can await it directly to let pending updates, transitions, or effects flush before asserting. The default delay is small and environment-dependent; pass `ms` to override it.
+Waits for the DOM to settle between simulated interactions by yielding across two animation frames and a short timeout.
+
+The other helpers in this package call it internally, but you can await it directly to let pending updates, transitions, or effects flush before asserting. The default delay is small and environment-dependent; pass `ms` to override it.
 
 Example:
 
@@ -379,7 +397,9 @@ function type(
 ): Promise<void>;
 ```
 
-Types text into an element, simulating a real user pressing each key. Focuses the element, then for each character fires `keydown`, updates the value and caret position of text fields through an `input` event (preceded by `keypress` when inserting a printable character), and fires `keyup`. Special characters map to their keys: `"\b"` is Backspace, `"\x7f"` is Delete, `"\n"` is Enter, and `"\t"` is Tab. When no element is passed, the currently focused element is used. Pass `options` to set event properties such as modifier keys or composition state.
+Types text into an element, simulating a real user pressing each key. Focuses the element, then for each character fires `keydown`, updates the value and caret position of text fields through an `input` event (preceded by `keypress` when inserting a printable character), and fires `keyup`.
+
+Special characters map to their keys: `"\b"` is Backspace, `"\x7f"` is Delete, `"\n"` is Enter, and `"\t"` is Tab. When no element is passed, the currently focused element is used. Pass `options` to set event properties such as modifier keys or composition state.
 
 Example:
 
@@ -460,7 +480,9 @@ function render(
 }>;
 ```
 
-Renders a React element into the document for testing, waiting for effects and the next frame to flush before resolving. Built on Testing Library's `render`, it returns `unmount` to remove the tree and an async `rerender` to update it with new UI. Pass `strictMode: true` to wrap the element in React's `StrictMode`, or any other Testing Library render option.
+Renders a React element into the document for testing, waiting for effects and the next frame to flush before resolving.
+
+Built on Testing Library's `render`, it returns `unmount` to remove the tree and an async `rerender` to update it with new UI. Pass `strictMode: true` to wrap the element in React's `StrictMode`, or any other Testing Library render option.
 
 Example:
 
@@ -501,7 +523,9 @@ type Queries = RoleQueries & { text: TextQuery };
 function query(locator: Page | Locator | FrameLocator): Queries;
 ```
 
-Creates role- and text-based query helpers for a Playwright `Page`, `Locator`, or `FrameLocator`. Call a role method such as `query(page).button(name)` to get a `Locator` from `getByRole`, or `query(page).text(name)` to match by text content. Names are matched exactly by default. This mirrors the role-based `query` from the package root for end-to-end Playwright tests.
+Creates role- and text-based query helpers for a Playwright `Page`, `Locator`, or `FrameLocator`. Call a role method such as `query(page).button(name)` to get a `Locator` from `getByRole`, or `query(page).text(name)` to match by text content.
+
+Names are matched exactly by default. This mirrors the role-based `query` from the package root for end-to-end Playwright tests.
 
 Example:
 

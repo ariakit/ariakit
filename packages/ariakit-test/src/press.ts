@@ -196,6 +196,7 @@ const keyUpMap: KeyActionMap = {
  * moving focus with `Tab`, activating buttons and submitting forms with `Enter`,
  * clicking buttons, checkboxes, and radios with `Space`, moving the caret with the
  * arrow and `Home`/`End` keys, and typing printable characters into text fields.
+ *
  * When no element is passed, the currently focused element is used. Shortcuts such
  * as `press.Enter()` and `press.Tab()` are provided for common keys, and
  * `press.ShiftTab()` moves focus backwards.

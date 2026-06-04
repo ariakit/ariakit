@@ -36,10 +36,11 @@ function wrapRender<T extends (...args: any[]) => any>(
 
 /**
  * Renders a React element into the document for testing, waiting for effects and
- * the next frame to flush before resolving. Built on Testing Library's `render`,
- * it returns `unmount` to remove the tree and an async `rerender` to update it
- * with new UI. Pass `strictMode: true` to wrap the element in React's
- * `StrictMode`, or any other Testing Library render option.
+ * the next frame to flush before resolving.
+ *
+ * Built on Testing Library's `render`, it returns `unmount` to remove the tree and
+ * an async `rerender` to update it with new UI. Pass `strictMode: true` to wrap
+ * the element in React's `StrictMode`, or any other Testing Library render option.
  * @example
  * ```tsx
  * const { rerender, unmount } = await render(<Button>Submit</Button>);

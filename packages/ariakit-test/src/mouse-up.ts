@@ -4,9 +4,10 @@ import { dispatch } from "./dispatch.ts";
 
 /**
  * Releases the primary pointer button on an element, firing `pointerup` and
- * `mouseup`. Disabled elements still receive `pointerup` but not `mouseup`. This
- * is the counterpart to `mouseDown` and one step of a full `click`. Pass `options`
- * to set event properties such as modifier keys.
+ * `mouseup`. Disabled elements still receive `pointerup` but not `mouseup`.
+ *
+ * This is the counterpart to `mouseDown` and one step of a full `click`. Pass
+ * `options` to set event properties such as modifier keys.
  * @example
  * ```ts
  * await mouseDown(q.button("Resize"));

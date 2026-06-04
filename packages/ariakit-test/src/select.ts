@@ -10,6 +10,7 @@ import { sleep } from "./sleep.ts";
  * Selects a range of text within an element, simulating a real user dragging
  * across it. Hovers and presses on the element, finds the given `text` in its
  * descendant text nodes, sets the document selection to cover it, then releases.
+ *
  * When no element is passed, `document.body` is used. Pass `options` to set event
  * properties such as modifier keys.
  * @example

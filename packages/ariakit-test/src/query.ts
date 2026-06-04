@@ -176,10 +176,12 @@ function createQueryObject(queries = documentQueries): QueryObject {
  * `query.dialog()` to get the matching element (or `null`), passing a string or
  * `RegExp` to match its accessible name. Use `query.text()` and `query.labeled()`
  * to query by text content or associated label, and `query.within(element)` to
- * scope queries to a subtree. Every query also exposes `.all` (return all
- * matches), `.wait` (resolve once the element appears), and `.ensure` (throw when
- * it's missing) variants, and role queries additionally expose `.includesHidden`
- * to include otherwise-hidden elements.
+ * scope queries to a subtree.
+ *
+ * Every query also exposes `.all` (return all matches), `.wait` (resolve once the
+ * element appears), and `.ensure` (throw when it's missing) variants, and role
+ * queries additionally expose `.includesHidden` to include otherwise-hidden
+ * elements.
  * @example
  * ```ts
  * await click(query.button("Open"));

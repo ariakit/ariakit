@@ -14,9 +14,10 @@ function isPointerEventsEnabled(element: Element) {
 /**
  * Moves the pointer over an element, simulating a real user hovering it. Fires
  * the relevant `pointer`/`mouse` enter, over, and move events, and dispatches the
- * matching leave events on the previously hovered element. Hidden elements and
- * elements with `pointer-events: none` are handled the way a browser would. Pass
- * `options` to set event properties such as modifier keys.
+ * matching leave events on the previously hovered element.
+ *
+ * Hidden elements and elements with `pointer-events: none` are handled the way a
+ * browser would. Pass `options` to set event properties such as modifier keys.
  * @example
  * ```ts
  * await hover(q.button("More options"));
