@@ -268,7 +268,7 @@ interface QueryObject extends RoleQueries {
 const query: QueryObject;
 ```
 
-Queries the DOM by ARIA role, accessible name, text, or label, built on top of Testing Library. Call a role method such as `query.button(name)` or `query.dialog()` to get the matching element (or `null`), passing a string or `RegExp` to match its accessible name. Use `query.text()` and `query.labeled()` to query by text content or associated label, and `query.within(element)` to scope queries to a subtree.
+Queries the DOM by ARIA role, accessible name, text, or label. Call a role method such as `query.button(name)` or `query.dialog()` to get the matching element (or `null`), passing a string or `RegExp` to match its accessible name. Use `query.text()` and `query.labeled()` to query by text content or associated label, and `query.within(element)` to scope queries to a subtree.
 
 Every query also exposes `.all` (return all matches), `.wait` (resolve once the element appears), and `.ensure` (throw when it's missing) variants, and role queries additionally expose `.includesHidden` to include otherwise-hidden elements.
 
@@ -416,13 +416,10 @@ await type("\b");
 ### `waitFor`
 
 ```ts
-function waitFor<T>(
-  callback: () => T,
-  options?: DOMTestingLibrary.waitForOptions,
-): Promise<T>;
+function waitFor<T>(callback: () => T, options?: WaitForOptions): Promise<T>;
 ```
 
-Re-runs a callback until it stops throwing or the timeout is reached, re-exporting Testing Library's `waitFor` with this package's async batching applied. Use it to wait for an assertion to pass after an asynchronous update. Pass `options` to configure the `timeout`, `interval`, and other behavior.
+Re-runs a callback until it stops throwing or the timeout is reached, polling on an interval and on DOM mutations, with this package's async batching applied. Use it to wait for an assertion to pass after an asynchronous update. Pass `options` to configure the `timeout`, `interval`, and other behavior.
 
 Example:
 
@@ -447,15 +444,12 @@ await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
 ### `RenderOptions`
 
 ```ts
-interface RenderOptions extends Omit<
-  ReactTestingLibrary.RenderOptions,
-  "queries"
-> {
+interface RenderOptions extends Omit<BaseRenderOptions, "queries"> {
   strictMode?: boolean;
 }
 ```
 
-Options for the `render` function. Accepts every option from Testing Library's `render` (except `queries`), plus `strictMode` to wrap the rendered UI in React's `StrictMode`.
+Options for the `render` function. Accepts the standard DOM render options (`container`, `baseElement`, `wrapper`, `hydrate`, and so on, except `queries`), plus `strictMode` to wrap the rendered UI in React's `StrictMode`.
 
 Example:
 
@@ -482,7 +476,7 @@ function render(
 
 Renders a React element into the document for testing, waiting for effects and the next frame to flush before resolving.
 
-Built on Testing Library's `render`, it returns `unmount` to remove the tree and an async `rerender` to update it with new UI. Pass `strictMode: true` to wrap the element in React's `StrictMode`, or any other Testing Library render option.
+It returns `unmount` to remove the tree and an async `rerender` to update it with new UI. Pass `strictMode: true` to wrap the element in React's `StrictMode`, or any other supported render option.
 
 Example:
 

@@ -1,21 +1,21 @@
 // oxlint-disable unbound-method
 import { invariant } from "@ariakit/utils";
-import type {
-  ByRoleMatcher,
-  ByRoleOptions,
-  getQueriesForElement,
-} from "@testing-library/dom";
-import { queries as baseQueries } from "@testing-library/dom";
 import type { AriaRole } from "./__aria-role.ts";
 import { roles } from "./__aria-role.ts";
+import type { ByRoleOptions, SelectorMatcherOptions } from "./__dom/queries.ts";
+import {
+  queryAllByLabelText,
+  queryAllByRole,
+  queryAllByText,
+} from "./__dom/queries.ts";
+import type { Matcher } from "./__dom/text-content.ts";
+import type { WaitForOptions } from "./__dom/wait-for.ts";
+import { waitFor } from "./__dom/wait-for.ts";
 
 type Query = ReturnType<typeof createRoleQuery>;
 type TextQuery = ReturnType<typeof createTextQuery>;
 type LabeledQuery = ReturnType<typeof createLabeledQuery>;
 type RoleQueries = Record<AriaRole, Query>;
-type ElementQueries = ReturnType<
-  typeof getQueriesForElement<typeof baseQueries>
->;
 
 interface QueryObject extends RoleQueries {
   text: TextQuery;
@@ -23,15 +23,44 @@ interface QueryObject extends RoleQueries {
   within: (element?: HTMLElement | null) => QueryObject;
 }
 
-function createQueries(container?: HTMLElement) {
-  return Object.entries(baseQueries).reduce((queries, [key, query]) => {
-    // @ts-expect-error
-    queries[key] = (...args) => query(container || document.body, ...args);
-    return queries;
-  }, {} as ElementQueries);
+// Resolves the container a query runs against: the scoped element, or the
+// document body when the query is unscoped (`query`/`q`).
+function resolveContainer(container?: HTMLElement) {
+  return container ?? document.body;
 }
 
-const documentQueries = createQueries();
+// Returns the single match (or `null`), throwing when more than one element
+// matched. This is the default `q.<role>()`/`q.text()` behavior.
+function single(
+  elements: HTMLElement[],
+  description: string,
+): HTMLElement | null {
+  if (elements.length > 1) {
+    throw new Error(`Found multiple elements with the ${description}`);
+  }
+  return elements[0] ?? null;
+}
+
+// Returns the single match, throwing when none or more than one matched. Backs
+// the `.ensure()` variant and the eventual resolution of `.wait()`.
+function ensureSingle(
+  elements: HTMLElement[],
+  description: string,
+): HTMLElement {
+  const element = single(elements, description);
+  if (element) return element;
+  throw new Error(`Unable to find an element with the ${description}`);
+}
+
+// Returns all matches, throwing when none matched. Backs `.all.ensure()` and the
+// resolution of `.all.wait()`.
+function ensureAll(
+  elements: HTMLElement[],
+  description: string,
+): HTMLElement[] {
+  if (elements.length) return elements;
+  throw new Error(`Unable to find an element with the ${description}`);
+}
 
 function matchName(name: string | RegExp, accessibleName: string | null) {
   if (accessibleName == null) return false;
@@ -61,31 +90,65 @@ function getNameOption(name?: string | RegExp, includesHidden?: boolean) {
   };
 }
 
-function createRoleQuery(role: AriaRole, queries = documentQueries) {
-  type GenericQuery = (role: ByRoleMatcher, options?: ByRoleOptions) => any;
+function describeRole(role: AriaRole, name?: string | RegExp) {
+  if (name === undefined) return `role "${role}"`;
+  if (typeof name === "string") return `role "${role}" and name "${name}"`;
+  return `role "${role}" and name \`${String(name)}\``;
+}
 
-  const createQuery = <T extends GenericQuery>(query: T) => {
-    return (name?: string | RegExp, options?: ByRoleOptions): ReturnType<T> => {
-      return query(role, {
-        name: getNameOption(name, options?.hidden),
-        ...options,
-      });
-    };
-  };
+function createRoleQuery(role: AriaRole, container?: HTMLElement) {
+  // All elements matching `role` and the given name/options. `getNameOption`
+  // applies this package's accessible-name matching (placeholder/label
+  // fallbacks) on top of the role query.
+  const all = (
+    name?: string | RegExp,
+    options?: ByRoleOptions,
+  ): HTMLElement[] =>
+    queryAllByRole(resolveContainer(container), role, {
+      name: getNameOption(name, options?.hidden),
+      ...options,
+    });
+
+  const query = (name?: string | RegExp, options?: ByRoleOptions) =>
+    single(all(name, options), describeRole(role, name));
+
+  const allQuery = (name?: string | RegExp, options?: ByRoleOptions) =>
+    all(name, options);
+
+  const ensureQuery = (name?: string | RegExp, options?: ByRoleOptions) =>
+    ensureSingle(all(name, options), describeRole(role, name));
+
+  const ensureAllQuery = (name?: string | RegExp, options?: ByRoleOptions) =>
+    ensureAll(all(name, options), describeRole(role, name));
+
+  const waitQuery = (
+    name?: string | RegExp,
+    options?: ByRoleOptions,
+    waitOptions?: WaitForOptions,
+  ) =>
+    waitFor(() => ensureSingle(all(name, options), describeRole(role, name)), {
+      container: resolveContainer(container),
+      ...waitOptions,
+    });
+
+  const waitAllQuery = (
+    name?: string | RegExp,
+    options?: ByRoleOptions,
+    waitOptions?: WaitForOptions,
+  ) =>
+    waitFor(() => ensureAll(all(name, options), describeRole(role, name)), {
+      container: resolveContainer(container),
+      ...waitOptions,
+    });
 
   const createIncludesHidden =
-    <T extends ReturnType<typeof createQuery>>(query: T) =>
-    (name?: string | RegExp, options?: ByRoleOptions): ReturnType<T> =>
+    <Result>(
+      query: (name?: string | RegExp, options?: ByRoleOptions) => Result,
+    ) =>
+    (name?: string | RegExp, options?: ByRoleOptions): Result =>
       query(name, { hidden: true, ...options });
 
-  const query = createQuery(queries.queryByRole);
-  const allQuery = createQuery(queries.queryAllByRole);
-  const waitQuery = createQuery(queries.findByRole);
-  const waitAllQuery = createQuery(queries.findAllByRole);
-  const ensureQuery = createQuery(queries.getByRole);
-  const ensureAllQuery = createQuery(queries.getAllByRole);
-
-  const all = Object.assign(allQuery, {
+  const allVariant = Object.assign(allQuery, {
     includesHidden: createIncludesHidden(allQuery),
     wait: Object.assign(waitAllQuery, {
       includesHidden: createIncludesHidden(waitAllQuery),
@@ -95,14 +158,14 @@ function createRoleQuery(role: AriaRole, queries = documentQueries) {
     }),
   });
 
-  const wait = Object.assign(waitQuery, {
+  const waitVariant = Object.assign(waitQuery, {
     includesHidden: createIncludesHidden(waitQuery),
     all: Object.assign(waitAllQuery, {
       includesHidden: createIncludesHidden(waitAllQuery),
     }),
   });
 
-  const ensure = Object.assign(ensureQuery, {
+  const ensureVariant = Object.assign(ensureQuery, {
     includesHidden: createIncludesHidden(ensureQuery),
     all: Object.assign(ensureAllQuery, {
       includesHidden: createIncludesHidden(ensureAllQuery),
@@ -111,68 +174,101 @@ function createRoleQuery(role: AriaRole, queries = documentQueries) {
 
   return Object.assign(query, {
     includesHidden: createIncludesHidden(query),
-    all,
-    wait,
-    ensure,
+    all: allVariant,
+    wait: waitVariant,
+    ensure: ensureVariant,
   });
 }
 
-function createRoleQueries(queries = documentQueries) {
+function createRoleQueries(container?: HTMLElement) {
   return roles.reduce((acc, role) => {
-    acc[role] = createRoleQuery(role, queries);
+    acc[role] = createRoleQuery(role, container);
     return acc;
   }, {} as RoleQueries);
 }
 
-function createTextQuery(queries = documentQueries) {
-  const all = Object.assign(queries.queryAllByText, {
-    wait: queries.findAllByText,
-    ensure: queries.getAllByText,
-  });
+// Builds the `.all`/`.wait`/`.ensure` shape shared by the text and label-text
+// queries from a `queryAllBy*` primitive. These have no name option or
+// `.includesHidden` variant, so the structure is simpler than the role query.
+function createTextLikeQuery(
+  queryAll: (
+    container: HTMLElement,
+    text: Matcher,
+    options?: SelectorMatcherOptions,
+  ) => HTMLElement[],
+  describe: (text: Matcher) => string,
+  container?: HTMLElement,
+) {
+  const all = (text: Matcher, options?: SelectorMatcherOptions) =>
+    queryAll(resolveContainer(container), text, options);
 
-  const wait = Object.assign(queries.findByText, {
-    all: queries.findAllByText,
-  });
+  const queryBy = (text: Matcher, options?: SelectorMatcherOptions) =>
+    single(all(text, options), describe(text));
 
-  const ensure = Object.assign(queries.getByText, {
-    all: queries.getAllByText,
-  });
+  const getAllBy = (text: Matcher, options?: SelectorMatcherOptions) =>
+    ensureAll(all(text, options), describe(text));
 
-  return Object.assign(queries.queryByText, { all, wait, ensure });
+  const getBy = (text: Matcher, options?: SelectorMatcherOptions) =>
+    ensureSingle(all(text, options), describe(text));
+
+  const findAllBy = (
+    text: Matcher,
+    options?: SelectorMatcherOptions,
+    waitOptions?: WaitForOptions,
+  ) =>
+    waitFor(() => getAllBy(text, options), {
+      container: resolveContainer(container),
+      ...waitOptions,
+    });
+
+  const findBy = (
+    text: Matcher,
+    options?: SelectorMatcherOptions,
+    waitOptions?: WaitForOptions,
+  ) =>
+    waitFor(() => getBy(text, options), {
+      container: resolveContainer(container),
+      ...waitOptions,
+    });
+
+  return Object.assign(queryBy, {
+    all: Object.assign(all, { wait: findAllBy, ensure: getAllBy }),
+    wait: Object.assign(findBy, { all: findAllBy }),
+    ensure: Object.assign(getBy, { all: getAllBy }),
+  });
 }
 
-function createLabeledQuery(queries = documentQueries) {
-  const all = Object.assign(queries.queryAllByLabelText, {
-    wait: queries.findAllByLabelText,
-    ensure: queries.getAllByLabelText,
-  });
-
-  const wait = Object.assign(queries.findByLabelText, {
-    all: queries.findAllByLabelText,
-  });
-
-  const ensure = Object.assign(queries.getByLabelText, {
-    all: queries.getAllByLabelText,
-  });
-
-  return Object.assign(queries.queryByLabelText, { all, wait, ensure });
+function createTextQuery(container?: HTMLElement) {
+  return createTextLikeQuery(
+    queryAllByText,
+    (text) => `text: ${String(text)}`,
+    container,
+  );
 }
 
-function createQueryObject(queries = documentQueries): QueryObject {
+function createLabeledQuery(container?: HTMLElement) {
+  return createTextLikeQuery(
+    queryAllByLabelText,
+    (text) => `label text: ${String(text)}`,
+    container,
+  );
+}
+
+function createQueryObject(container?: HTMLElement): QueryObject {
   return {
-    ...createRoleQueries(queries),
-    text: createTextQuery(queries),
-    labeled: createLabeledQuery(queries),
+    ...createRoleQueries(container),
+    text: createTextQuery(container),
+    labeled: createLabeledQuery(container),
     within: (element?: HTMLElement | null) => {
       invariant(element, "Unable to create queries for null element");
-      return createQueryObject(createQueries(element));
+      return createQueryObject(element);
     },
   };
 }
 
 /**
- * Queries the DOM by ARIA role, accessible name, text, or label, built on top of
- * Testing Library. Call a role method such as `query.button(name)` or
+ * Queries the DOM by ARIA role, accessible name, text, or label. Call a role
+ * method such as `query.button(name)` or
  * `query.dialog()` to get the matching element (or `null`), passing a string or
  * `RegExp` to match its accessible name. Use `query.text()` and `query.labeled()`
  * to query by text content or associated label, and `query.within(element)` to
