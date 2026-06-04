@@ -47,7 +47,7 @@ expect.extend({
 });
 
 async function tryImport(path: string) {
-  return import(path)
+  return import(/* @vite-ignore */ path)
     .then(({ default: component }) => ({ component, failedImport: false }))
     .catch(() => ({ component: undefined, failedImport: true }));
 }

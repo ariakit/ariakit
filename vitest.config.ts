@@ -86,6 +86,13 @@ if (testLoader === "react") {
 export default defineConfig({
   root: rootDir,
   plugins,
+  ...(testLoader
+    ? {
+        define: {
+          "process.env.ARIAKIT_TEST_LOADER": JSON.stringify(testLoader),
+        },
+      }
+    : {}),
   test: {
     watch: false,
     testTimeout: 10_000,
