@@ -262,8 +262,10 @@ const queryOnlyRoleMappings: { [localName: string]: string } = {
  * follow `aria-query` rather than the accessible name algorithm's role table.
  * It extends {@link getImplicitRole} with the native mappings `aria-query`
  * recognizes, distinguishes `<th scope="row">` (`rowheader`) from other `<th>`
- * (`columnheader`), and reports `<summary>` as no role (it's only `button` for
- * the name algorithm's benefit).
+ * (`columnheader`), reports `<summary>` as no role (it's only `button` for the
+ * name algorithm's benefit), and overrides the `<select>`, `<img>`, and `<link>`
+ * cases where `aria-query`'s selector-based mapping diverges from
+ * `dom-accessibility-api`'s role resolution.
  */
 function getQueryImplicitRole(element: Element): string | null {
   const localName = getLocalName(element);
@@ -274,6 +276,31 @@ function getQueryImplicitRole(element: Element): string | null {
     const scope = element.getAttribute("scope");
     if (scope === "row" || scope === "rowgroup") return "rowheader";
     return "columnheader";
+  }
+  if (localName === "select") {
+    // `aria-query` maps `select[multiple]` and any `select[size]` — by attribute
+    // presence, not value — to `listbox`, and a bare `<select>` to `combobox`.
+    // `getImplicitRole` instead keys off the `size` *property* (`> 1`), which is
+    // right for the name algorithm but misclassifies `<select size="1">` (and,
+    // where `HTMLSelectElement.size` defaults to `undefined`, every sized
+    // select) as `combobox`.
+    if (element.hasAttribute("multiple") || element.hasAttribute("size")) {
+      return "listbox";
+    }
+    return "combobox";
+  }
+  if (localName === "img") {
+    // `aria-query` maps `<img alt="">` to `presentation` purely from the empty
+    // `alt`, whereas `getImplicitRole` applies the name algorithm's presentation
+    // conflict resolution and keeps it as `img` when it also has an
+    // `aria-label`/`aria-labelledby`. Queries follow `aria-query`.
+    return element.getAttribute("alt") === "" ? "presentation" : "img";
+  }
+  if (localName === "link") {
+    // `aria-query` has no mapping for the `<link>` element (only `<a>`/`<area>`
+    // with `href` are `link`), but `getImplicitRole` lumps `<link href>` in with
+    // them for the name algorithm. Queries must not treat `<link>` as a `link`.
+    return null;
   }
   return getImplicitRole(element);
 }
