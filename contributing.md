@@ -482,14 +482,20 @@ When adding new features or fixing bugs, we'll need to bump the package versions
 
 > The action of adding a new example doesn't require a version bump. Only changes to the codebase that affect the public API or existing behavior (e.g., bugs) do.
 
-Let's craft a fresh changeset file for our component. You can use any name for the file, but it should begin with the pull request number, followed by a dash:
+Let's craft a fresh changeset file for our component. Name the file with a numeric prefix that determines its order in the changelog (lower numbers appear earlier), followed by a dash and a short kebab-case description:
 
-`.changeset/1271-my-component.md`
+- `100-` for major changes
+- `200-` for minor changes, such as features and improvements
+- `300-` for patch changes, such as bug fixes
+
+While the packages are still in `v0`, mark minor and patch changes as `patch` and major changes as `minor` in the frontmatter. The numeric prefix still reflects the actual change type:
+
+`.changeset/200-my-component.md`
 
 ```markdown
 ---
-"@ariakit/react": minor
 "@ariakit/react-components": patch
+"@ariakit/react": patch
 ---
 
 Added `MyComponent` component.
