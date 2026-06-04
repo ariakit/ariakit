@@ -83,9 +83,37 @@ if (testLoader === "react") {
   plugins.unshift(solidPlugin());
 }
 
+// Browser Mode reloads the test page when Vite discovers new optimized
+// dependencies mid-run. Keep lazy example dependencies pre-bundled so React and
+// Solid singletons stay stable throughout the suite.
+const optimizeDepsInclude = {
+  react: [
+    "@floating-ui/dom",
+    "@radix-ui/react-popover",
+    "@radix-ui/react-select",
+    "clsx",
+    "lodash-es/groupBy.js",
+    "lodash-es/startCase.js",
+    "match-sorter",
+    "motion/react",
+    "react-router",
+    "textarea-caret",
+    "tiny-invariant",
+    "use-sync-external-store/shim",
+  ],
+  solid: ["@solid-primitives/props", "@solid-primitives/utils"],
+} satisfies Record<AllowedTestLoader, string[]>;
+
 export default defineConfig({
   root: rootDir,
   plugins,
+  ...(testLoader
+    ? {
+        optimizeDeps: {
+          include: optimizeDepsInclude[testLoader],
+        },
+      }
+    : {}),
   ...(testLoader
     ? {
         define: {

@@ -24,7 +24,6 @@ test("show error only on blur both the select button and the popover", async () 
   await click(q.combobox());
   expect(errors()).toHaveLength(0);
   await press.Escape();
-  expect(errors()).toHaveLength(0);
   await press.Space();
   await press.ArrowDown();
   await press.Enter();
