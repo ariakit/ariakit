@@ -117,7 +117,7 @@
     "@types/node": "24.12.4",
     "@types/pluralize": "0.0.33",
     "@types/pngjs": "6.0.5",
-    "@types/react": "19.2.15",
+    "@types/react": "19.2.16",
     "@types/react-dom": "19.2.3",
     "concurrently": "10.0.1",
     "cross-env": "10.1.0",
