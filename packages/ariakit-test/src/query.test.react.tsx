@@ -1,9 +1,17 @@
-import { expect, test } from "vitest";
+import { afterEach, expect, test } from "vitest";
 import { computeAccessibleName } from "./__dom/accessible-name.ts";
+import { cleanup } from "./__dom/render.ts";
 import { q, render } from "./react.tsx";
 
+// This file renders several different trees into `document.body` across tests.
+// This repo's Vitest doesn't enable `globals`, so there's no global `afterEach`
+// for `render`'s built-in auto-cleanup to hook into; register it here (mirroring
+// Testing Library's manual-cleanup pattern) so trees don't accumulate and
+// cross-match between tests.
+afterEach(cleanup);
+
 test("native elements resolve their implicit ARIA roles", async () => {
-  const { unmount } = await render(
+  await render(
     <div>
       <code>code</code>
       <blockquote>quote</blockquote>
@@ -15,39 +23,31 @@ test("native elements resolve their implicit ARIA roles", async () => {
       <meter value={0.5}>50%</meter>
     </div>,
   );
-  try {
-    expect(q.code()).toBeInTheDocument();
-    expect(q.blockquote()).toBeInTheDocument();
-    expect(q.paragraph()).toBeInTheDocument();
-    expect(q.time()).toBeInTheDocument();
-    expect(q.strong()).toBeInTheDocument();
-    expect(q.deletion()).toBeInTheDocument();
-    expect(q.insertion()).toBeInTheDocument();
-    expect(q.meter()).toBeInTheDocument();
-  } finally {
-    unmount();
-  }
+  expect(q.code()).toBeInTheDocument();
+  expect(q.blockquote()).toBeInTheDocument();
+  expect(q.paragraph()).toBeInTheDocument();
+  expect(q.time()).toBeInTheDocument();
+  expect(q.strong()).toBeInTheDocument();
+  expect(q.deletion()).toBeInTheDocument();
+  expect(q.insertion()).toBeInTheDocument();
+  expect(q.meter()).toBeInTheDocument();
 });
 
 test("a <summary> is not matched as a button", async () => {
-  const { unmount } = await render(
+  await render(
     <details>
       <summary>Toggle</summary>
       content
     </details>,
   );
-  try {
-    // `<summary>` resolves to `button` only for the accessible name algorithm;
-    // role-based button queries must not pick it up (matching Testing Library).
-    expect(q.button()).toBe(null);
-    expect(q.group()).toBeInTheDocument();
-  } finally {
-    unmount();
-  }
+  // `<summary>` resolves to `button` only for the accessible name algorithm;
+  // role-based button queries must not pick it up (matching Testing Library).
+  expect(q.button()).toBe(null);
+  expect(q.group()).toBeInTheDocument();
 });
 
 test("<th scope> resolves to columnheader or rowheader", async () => {
-  const { unmount } = await render(
+  await render(
     <table>
       <tbody>
         <tr>
@@ -57,16 +57,12 @@ test("<th scope> resolves to columnheader or rowheader", async () => {
       </tbody>
     </table>,
   );
-  try {
-    expect(q.columnheader()).toHaveTextContent("Column");
-    expect(q.rowheader()).toHaveTextContent("Row");
-  } finally {
-    unmount();
-  }
+  expect(q.columnheader()).toHaveTextContent("Column");
+  expect(q.rowheader()).toHaveTextContent("Row");
 });
 
 test("native role mappings stay decoupled from the accessible name", async () => {
-  const { unmount } = await render(
+  await render(
     <div>
       <code aria-label="labelled code">x</code>
       <strong aria-label="labelled strong">x</strong>
@@ -76,27 +72,23 @@ test("native role mappings stay decoupled from the accessible name", async () =>
       </button>
     </div>,
   );
-  try {
-    // Name-prohibited roles like `code`/`strong`/`paragraph` are recognized by
-    // the query but keep their authored accessible name — the query role table
-    // is decoupled from the accessible name algorithm, which still sees these
-    // elements as having no role.
-    expect(q.code("labelled code")).toBeInTheDocument();
-    expect(computeAccessibleName(q.code.ensure())).toBe("labelled code");
-    expect(computeAccessibleName(q.strong.ensure())).toBe("labelled strong");
-    expect(computeAccessibleName(q.paragraph.ensure())).toBe(
-      "labelled paragraph",
-    );
-    // A `<meter>` contributes its text content (not its range value) to a
-    // parent's accessible name.
-    expect(computeAccessibleName(q.button.ensure())).toBe("five");
-  } finally {
-    unmount();
-  }
+  // Name-prohibited roles like `code`/`strong`/`paragraph` are recognized by
+  // the query but keep their authored accessible name — the query role table
+  // is decoupled from the accessible name algorithm, which still sees these
+  // elements as having no role.
+  expect(q.code("labelled code")).toBeInTheDocument();
+  expect(computeAccessibleName(q.code.ensure())).toBe("labelled code");
+  expect(computeAccessibleName(q.strong.ensure())).toBe("labelled strong");
+  expect(computeAccessibleName(q.paragraph.ensure())).toBe(
+    "labelled paragraph",
+  );
+  // A `<meter>` contributes its text content (not its range value) to a
+  // parent's accessible name.
+  expect(computeAccessibleName(q.button.ensure())).toBe("five");
 });
 
 test("form and region landmarks require an accessible name", async () => {
-  const { unmount } = await render(
+  await render(
     <div>
       <form aria-label="named form">a</form>
       <form>unnamed form</form>
@@ -104,15 +96,11 @@ test("form and region landmarks require an accessible name", async () => {
       <section>unnamed section</section>
     </div>,
   );
-  try {
-    // Only the named landmarks match — an unnamed <form>/<section> is not a
-    // landmark (Testing Library treats it as generic; this package matches no
-    // role for it, since `generic` isn't queryable here).
-    expect(q.form.all()).toHaveLength(1);
-    expect(q.form()).toHaveAccessibleName("named form");
-    expect(q.region.all()).toHaveLength(1);
-    expect(q.region()).toHaveAccessibleName("named region");
-  } finally {
-    unmount();
-  }
+  // Only the named landmarks match — an unnamed <form>/<section> is not a
+  // landmark (Testing Library treats it as generic; this package matches no
+  // role for it, since `generic` isn't queryable here).
+  expect(q.form.all()).toHaveLength(1);
+  expect(q.form()).toHaveAccessibleName("named form");
+  expect(q.region.all()).toHaveLength(1);
+  expect(q.region()).toHaveAccessibleName("named region");
 });
