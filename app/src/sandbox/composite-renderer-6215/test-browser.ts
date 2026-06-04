@@ -13,8 +13,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    const scroller = page.locator(".scroller");
-    const detachedCount = page.locator("#detached-count");
+    const scroller = q.group("Items");
+    const detachedCount = q.status();
 
     // Let the virtualizer's scroll handler and effects settle across two frames.
     const settle = () =>
@@ -26,7 +26,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       );
 
     // The list renders and measures items to begin with.
-    await test.expect(page.locator(".item").first()).toBeVisible();
+    await test.expect(q.button("item 0")).toBeVisible();
 
     // Scroll through the whole list so many item nodes mount and unmount.
     const maxScroll = await scroller.evaluate(

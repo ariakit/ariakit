@@ -77,8 +77,7 @@ export default function Example() {
   return (
     <div className="wrapper">
       <p>
-        Detached observed item nodes:{" "}
-        <output id="detached-count">{detached}</output>
+        Detached observed item nodes: <output>{detached}</output>
       </p>
       <button type="button" onClick={() => setNonce((value) => value + 1)}>
         Refresh items
@@ -87,7 +86,7 @@ export default function Example() {
         Unmount the list
       </button>
       {mounted && (
-        <div className="scroller">
+        <div className="scroller" role="group" aria-label="Items">
           <CompositeRenderer id="composite" store={store} items={items}>
             {(item) => (
               <button
