@@ -218,7 +218,7 @@ function getItemSize(
     const paddingEnd = itemObject.paddingEnd ?? itemObject.padding ?? 0;
     const padding = paddingStart + paddingEnd;
     const initialSize = (itemObject.gap ?? 0) * (items.length - 1) + padding;
-    if (itemObject.itemSize) {
+    if (itemObject.itemSize != null) {
       return initialSize + itemObject.itemSize * items.length;
     }
     // oxlint-disable-next-line no-unnecessary-type-arguments
