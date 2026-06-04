@@ -385,9 +385,6 @@ export function render(
     reactStrictMode,
   }: RenderOptions = {},
 ): RenderResult {
-  // Install the act integration before rendering so the event dispatch and
-  // async polling that follow this render run inside React's `act`.
-  configureActIntegration();
   if (!baseElement) {
     // Default to document.body instead of documentElement to avoid output of
     // potentially-large head elements (such as JSS style blocks) in debug
@@ -456,43 +453,60 @@ export function cleanup() {
   mountedContainers.clear();
 }
 
-let actIntegrationConfigured = false;
+// The following two import-time side effects mirror @testing-library/react's
+// setup and run when `@ariakit/test/react` is loaded. They live in this
+// React-only module; the core (`@ariakit/test`) entry never imports it, so the
+// non-React utilities stay free of these effects.
 
-// Wires the act integration into the shared config so event dispatch and async
-// polling flush React updates — mirroring @testing-library/react's `configure`
-// call. It runs the first time `render` is used rather than at module import,
-// so the package keeps an honest `"sideEffects": false`: there is no import-time
-// side effect for a bundler to strip, yet any `render` call installs the
-// integration before the test interacts with the rendered tree.
-function configureActIntegration() {
-  if (actIntegrationConfigured) return;
-  actIntegrationConfigured = true;
-  configure({
-    eventWrapper: (callback) => {
-      let result: ReturnType<typeof callback> | undefined;
-      act(() => {
-        result = callback();
+// Wire the act integration into the shared config so event dispatch and async
+// polling flush React updates, mirroring @testing-library/react's `configure`.
+configure({
+  eventWrapper: (callback) => {
+    let result: ReturnType<typeof callback> | undefined;
+    act(() => {
+      result = callback();
+    });
+    // `act` is synchronous for synchronous callbacks, so `result` is set.
+    return result as ReturnType<typeof callback>;
+  },
+  // We just want to run `waitFor` without IS_REACT_ACT_ENVIRONMENT, but that's
+  // not necessarily how `asyncWrapper` is used since it's a public method.
+  asyncWrapper: async (callback) => {
+    const previousActEnvironment = getIsReactActEnvironment();
+    setReactActEnvironment(false);
+    try {
+      const result = await callback();
+      // Drain the microtask queue. Otherwise we'd restore the previous act()
+      // environment before resolving the `waitFor` call, leaving the caller no
+      // chance to wrap the in-flight promises in `act()`.
+      await new Promise<void>((resolve) => {
+        setTimeout(() => resolve(), 0);
       });
-      // `act` is synchronous for synchronous callbacks, so `result` is set.
-      return result as ReturnType<typeof callback>;
-    },
-    // We just want to run `waitFor` without IS_REACT_ACT_ENVIRONMENT, but that's
-    // not necessarily how `asyncWrapper` is used since it's a public method.
-    asyncWrapper: async (callback) => {
-      const previousActEnvironment = getIsReactActEnvironment();
-      setReactActEnvironment(false);
-      try {
-        const result = await callback();
-        // Drain the microtask queue. Otherwise we'd restore the previous act()
-        // environment before resolving the `waitFor` call, leaving the caller no
-        // chance to wrap the in-flight promises in `act()`.
-        await new Promise<void>((resolve) => {
-          setTimeout(() => resolve(), 0);
-        });
-        return result;
-      } finally {
-        setReactActEnvironment(previousActEnvironment);
-      }
-    },
-  });
+      return result;
+    } finally {
+      setReactActEnvironment(previousActEnvironment);
+    }
+  },
+});
+
+// Match @testing-library/react's import-time auto-cleanup: when the test runner
+// exposes a global `afterEach` (Jest, or Vitest with `globals: true`) — or a
+// global `teardown` (Mocha/uvu) — automatically unmount rendered trees between
+// tests, unless the consumer opted out via `RTL_SKIP_AUTO_CLEANUP` (honored for
+// parity with Testing Library). Runners that expose neither hook globally — like
+// this repo's Vitest, which imports its hooks — get no auto-cleanup, exactly as
+// before; those suites unmount explicitly or render via a per-test teardown.
+// Registering at import time (not on first render) is required so the hook is in
+// place before the test framework collects the suite's tests.
+const globalScope = getGlobalThis() as {
+  afterEach?: (callback: () => unknown) => void;
+  teardown?: (callback: () => unknown) => void;
+  process?: { env?: { RTL_SKIP_AUTO_CLEANUP?: string } };
+};
+if (!globalScope.process?.env?.RTL_SKIP_AUTO_CLEANUP) {
+  if (typeof globalScope.afterEach === "function") {
+    globalScope.afterEach(() => cleanup());
+  } else if (typeof globalScope.teardown === "function") {
+    globalScope.teardown(() => cleanup());
+  }
 }
