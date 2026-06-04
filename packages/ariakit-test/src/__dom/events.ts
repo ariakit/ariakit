@@ -662,11 +662,19 @@ for (const key of Object.keys(eventMap) as EventType[]) {
 }
 
 // Wire up alias methods (e.g. `doubleClick` -> `dblClick`) so they forward to
-// the canonical handler. Matching upstream, only `fireEvent` gets alias methods;
-// they live outside the static `FireEvent` key set (which must stay equal to
-// `EventType`) and are reached through dynamic indexing. They are collected here
-// and attached with `Object.assign` so the writes don't require alias keys to be
-// part of `FireEvent`.
+// the canonical handler. Both `createEvent` and `fireEvent` get them, so a
+// consumer that enumerates `fireEvent`'s keys and looks up the matching
+// `createEvent` method (as `dispatch` does) finds both. They live outside the
+// static key sets (which must stay equal to `EventType`) and are reached through
+// dynamic indexing, so they're attached with `Object.assign`. Upstream Testing
+// Library aliases only `fireEvent`, which leaves its `createEvent.doubleClick`
+// undefined — adding it here keeps the two surfaces in sync.
+const createEventAliases: Record<EventAlias, CreateEventMethod> = {
+  doubleClick: (node, init) =>
+    createEvent[eventAliasMap.doubleClick](node, init),
+};
+Object.assign(createEvent, createEventAliases);
+
 const fireEventAliases: Record<EventAlias, FireEventMethod> = {
   doubleClick: (node, init) => fireEvent[eventAliasMap.doubleClick](node, init),
 };
