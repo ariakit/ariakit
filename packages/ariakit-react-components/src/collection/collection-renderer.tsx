@@ -735,10 +735,16 @@ export function useCollectionRenderer<T extends Item = any>({
   }, [updateElements]);
 
   // Disconnect the observer when the renderer unmounts so it doesn't retain the
-  // measured item nodes or keep firing resize callbacks.
+  // measured item nodes or keep firing resize callbacks. Re-observe the tracked
+  // elements on setup so observation survives a simulated unmount/remount (e.g.,
+  // React StrictMode), which runs this cleanup but doesn't necessarily re-run
+  // the item ref callbacks.
   useEffect(() => {
+    for (const element of elements.values()) {
+      elementObserver?.observe(element);
+    }
     return () => elementObserver?.disconnect();
-  }, [elementObserver]);
+  }, [elementObserver, elements]);
 
   const itemRef = useCallback<RefCallback<HTMLElement>>(
     (element) => {
