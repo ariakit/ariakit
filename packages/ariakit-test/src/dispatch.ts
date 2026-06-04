@@ -255,4 +255,24 @@ const events = getKeys(fireEvent).reduce((events, eventName) => {
   return events;
 }, {} as EventsObject);
 
+/**
+ * Creates and fires a DOM event on an element, then waits for the resulting
+ * microtasks to flush. Call `dispatch.<eventName>(element, options)` to build and
+ * fire a specific event (e.g. `dispatch.keyDown`, `dispatch.click`,
+ * `dispatch.input`), or call `dispatch(element, event)` directly with an `Event`
+ * instance. Unlike higher-level helpers such as `click` and `type`, this fires a
+ * single event without simulating the surrounding interaction sequence. Pointer
+ * and mouse events fired on an element with `pointer-events: none` are
+ * re-dispatched on the nearest ancestor that has pointer events enabled, matching
+ * how browsers route those events.
+ * @returns A promise that resolves to `false` when the event's default action was
+ * prevented with `event.preventDefault()`, and `true` otherwise.
+ * @example
+ * ```ts
+ * await dispatch.keyDown(q.textbox(), { key: "Enter" });
+ * await dispatch.click(q.button());
+ * // Fire a custom event instance directly:
+ * await dispatch(element, new Event("selectstart", { bubbles: true }));
+ * ```
+ */
 export const dispatch = Object.assign(baseDispatch, events);
