@@ -198,7 +198,6 @@ function getItemSize(
   fallbackElement?: HTMLElement | null | false,
 ): number {
   const itemObject = getItemObject(item);
-  horizontal = itemObject.orientation === "horizontal" || horizontal;
   const prop = horizontal ? "width" : "height";
   const style = itemObject.style;
   if (style) {
@@ -206,16 +205,20 @@ function getItemSize(
     if (typeof size === "number") return size;
   }
   const items = itemObject.items;
-  if (items?.length) {
-    const hasSameOrientation =
-      !itemObject.orientation ||
-      (horizontal && itemObject.orientation === "horizontal") ||
-      (!horizontal && itemObject.orientation === "vertical");
+  const hasSameOrientation =
+    !itemObject.orientation ||
+    (horizontal && itemObject.orientation === "horizontal") ||
+    (!horizontal && itemObject.orientation === "vertical");
+  // When the nested items run along the axis being measured, the item's size is
+  // the sum of its children's sizes. When they run along the cross axis (e.g. a
+  // horizontal group inside a vertical list), summing would measure the wrong
+  // axis, so we fall through to the element/max-child measurement below instead.
+  if (items?.length && hasSameOrientation) {
     const paddingStart = itemObject.paddingStart ?? itemObject.padding ?? 0;
     const paddingEnd = itemObject.paddingEnd ?? itemObject.padding ?? 0;
-    const padding = hasSameOrientation ? paddingStart + paddingEnd : 0;
+    const padding = paddingStart + paddingEnd;
     const initialSize = (itemObject.gap ?? 0) * (items.length - 1) + padding;
-    if (hasSameOrientation && itemObject.itemSize) {
+    if (itemObject.itemSize) {
       return initialSize + itemObject.itemSize * items.length;
     }
     // oxlint-disable-next-line no-unnecessary-type-arguments
@@ -229,6 +232,16 @@ function getItemSize(
     fallbackElement !== false ? itemObject.element || fallbackElement : null;
   if (element?.isConnected) {
     return element.getBoundingClientRect()[prop];
+  }
+  // The nested items run along the cross axis, so the item's extent along the
+  // measured axis is the largest child extent rather than the sum.
+  if (items?.length && !hasSameOrientation) {
+    // oxlint-disable-next-line no-unnecessary-type-arguments
+    const maxSize = items.reduce<number>(
+      (max, item) => Math.max(max, getItemSize(item, horizontal)),
+      0,
+    );
+    if (maxSize) return maxSize;
   }
   return 0;
 }
