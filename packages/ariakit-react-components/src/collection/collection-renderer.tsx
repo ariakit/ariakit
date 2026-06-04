@@ -811,10 +811,13 @@ export function useCollectionRenderer<T extends Item = any>({
   // example, dropped from the virtualized window), so neither the observer nor
   // the `elements` map retains their detached nodes.
   useEffect(() => {
-    // Mirror the `itemSize` guard in `itemRef`: when items aren't measured,
-    // nothing is observed or stored, so there's nothing to reconcile.
-    if (itemSize) return;
-    const renderedIds = new Set(itemsProps.map((itemProps) => itemProps.id));
+    // When `itemSize` is set the renderer doesn't measure items, so nothing
+    // should stay observed; otherwise keep the items that are still rendered.
+    // The empty set also cleans up if `itemSize` switches from unset to a fixed
+    // size at runtime, which would otherwise leave already-measured nodes behind.
+    const renderedIds = itemSize
+      ? new Set<string>()
+      : new Set(itemsProps.map((itemProps) => itemProps.id));
     for (const [id, element] of elements) {
       if (renderedIds.has(id)) continue;
       elementObserver?.unobserve(element);
