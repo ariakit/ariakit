@@ -104,7 +104,7 @@ type Target = Document | Window | Node | Element | null;
 type EventFunction = (element: Target, options?: object) => Promise<boolean>;
 
 type EventsObject = {
-  [K in EventType]: EventFunction;
+  [K in EventType | EventAlias]: EventFunction;
 };
 
 const dispatch: typeof baseDispatch & EventsObject;

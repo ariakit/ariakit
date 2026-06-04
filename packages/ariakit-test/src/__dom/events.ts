@@ -433,7 +433,11 @@ export const eventAliasMap = {
  */
 export type EventType = keyof typeof eventMap;
 
-type EventAlias = keyof typeof eventAliasMap;
+/**
+ * Union of alias event names defined in {@link eventAliasMap} (e.g.
+ * `doubleClick`, which forwards to `dblClick`).
+ */
+export type EventAlias = keyof typeof eventAliasMap;
 
 // Nodes that `createEvent`/`fireEvent` accept as targets.
 type EventTargetNode = Document | Element | Window | Node;
@@ -460,18 +464,18 @@ interface FireEventFunction {
   (element: EventTargetNode, event: Event): boolean;
 }
 
-// Both objects expose a method per canonical event name. The mapped keys are
-// exactly `EventType` (not the aliases) so that `keyof typeof fireEvent` equals
-// `EventType`: consumers do `getKeys(fireEvent)` and index objects keyed by
-// `EventType`, which only type-checks when the two key sets match. Alias methods
-// (e.g. `fireEvent.doubleClick`) still exist at runtime; they are reached through
-// dynamic indexing rather than static property access.
+// Both objects expose a method per canonical event name and per alias (e.g.
+// `doubleClick`). The aliases are part of the mapped keys so they stay in the
+// public type — `fireEvent.doubleClick`/`dispatch.doubleClick` were typed before
+// `@ariakit/test` dropped its Testing Library dependency — and so
+// `keyof typeof fireEvent` matches the runtime keys `getKeys(fireEvent)`
+// enumerates (the canonical methods plus the aliases).
 type CreateEvent = CreateEventFunction & {
-  [K in EventType]: CreateEventMethod;
+  [K in EventType | EventAlias]: CreateEventMethod;
 };
 
 type FireEvent = FireEventFunction & {
-  [K in EventType]: FireEventMethod;
+  [K in EventType | EventAlias]: FireEventMethod;
 };
 
 // Structural view of the values `getWindowFromNode` probes. The upstream helper
@@ -664,11 +668,11 @@ for (const key of Object.keys(eventMap) as EventType[]) {
 // Wire up alias methods (e.g. `doubleClick` -> `dblClick`) so they forward to
 // the canonical handler. Both `createEvent` and `fireEvent` get them, so a
 // consumer that enumerates `fireEvent`'s keys and looks up the matching
-// `createEvent` method (as `dispatch` does) finds both. They live outside the
-// static key sets (which must stay equal to `EventType`) and are reached through
-// dynamic indexing, so they're attached with `Object.assign`. Upstream Testing
-// Library aliases only `fireEvent`, which leaves its `createEvent.doubleClick`
-// undefined — adding it here keeps the two surfaces in sync.
+// `createEvent` method (as `dispatch` does) finds both. The per-event loop above
+// only assigns the canonical `EventType` keys, so the aliases are attached
+// separately with `Object.assign`. Upstream Testing Library aliases only
+// `fireEvent`, which leaves its `createEvent.doubleClick` undefined — adding it
+// here keeps the two surfaces in sync.
 const createEventAliases: Record<EventAlias, CreateEventMethod> = {
   doubleClick: (node, init) =>
     createEvent[eventAliasMap.doubleClick](node, init),

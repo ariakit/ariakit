@@ -1,6 +1,6 @@
 // Part of this code is based on https://github.com/testing-library/user-event/blob/d7483f049a1ec2ebf1ca1e2c1f4367849fca5997/src/event/createEvent.ts
 import { getKeys, invariant } from "@ariakit/utils";
-import type { EventType } from "./__dom/events.ts";
+import type { EventAlias, EventType } from "./__dom/events.ts";
 import { createEvent, fireEvent } from "./__dom/events.ts";
 import { flushMicrotasks, wrapAsync } from "./__utils.ts";
 
@@ -23,7 +23,7 @@ type Target = Document | Window | Node | Element | null;
 type EventFunction = (element: Target, options?: object) => Promise<boolean>;
 
 type EventsObject = {
-  [K in EventType]: EventFunction;
+  [K in EventType | EventAlias]: EventFunction;
 };
 
 function assignProps<T extends object>(
