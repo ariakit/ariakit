@@ -190,6 +190,24 @@ const keyUpMap: KeyActionMap = {
   },
 };
 
+/**
+ * Presses a key on an element, simulating a real user keyboard interaction. Fires
+ * `keydown` and `keyup` and applies the browser's default behavior for that key —
+ * moving focus with `Tab`, activating buttons and submitting forms with `Enter`,
+ * clicking buttons, checkboxes, and radios with `Space`, moving the caret with the
+ * arrow and `Home`/`End` keys, and typing printable characters into text fields.
+ *
+ * When no element is passed, the currently focused element is used. Shortcuts such
+ * as `press.Enter()` and `press.Tab()` are provided for common keys, and
+ * `press.ShiftTab()` moves focus backwards.
+ * @example
+ * ```ts
+ * await press.Tab();
+ * await press.Enter();
+ * // `press.Enter(element)` is shorthand for `press("Enter", element)`:
+ * await press.Enter(q.button("Submit"));
+ * ```
+ */
 export function press(
   key: string,
   element?: Element | null,
