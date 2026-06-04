@@ -267,3 +267,19 @@ export async function wrapAsync<T>(fn: () => Promise<T>) {
     restoreWrapAsyncEnvironment();
   }
 }
+
+// Settles between the sub-steps of a single simulated interaction by yielding
+// across two animation frames and flushing microtasks — but without a
+// wall-clock delay. The components under test schedule their per-step updates
+// through microtasks and animation frames (`queueMicrotask`,
+// `requestAnimationFrame`), so this is enough to let a sub-step's work flush
+// before the next one. The wall-clock `sleep()` is reserved for the final
+// settle of an interaction, where a real timer can still be load-bearing (e.g.
+// hiding a dialog by clicking outside).
+export function settle() {
+  return wrapAsync(async () => {
+    await nextFrame();
+    await flushMicrotasks();
+    await nextFrame();
+  });
+}

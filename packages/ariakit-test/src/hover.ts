@@ -1,5 +1,5 @@
 import { isVisible, invariant } from "@ariakit/utils";
-import { wrapAsync } from "./__utils.ts";
+import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { sleep } from "./sleep.ts";
 
@@ -58,7 +58,9 @@ export function hover(element: Element | null, options?: PointerEventInit) {
       }
     }
 
-    await sleep();
+    // Settle between leaving the previously hovered element and entering the new
+    // one — a cheap settle covers the transition's microtask/rAF work.
+    await settle();
 
     if (pointerEventsEnabled) {
       const enterOptions = lastHovered
