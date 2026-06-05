@@ -4,6 +4,15 @@
   "minimumReleaseAge": "3 days",
   "semanticCommits": "disabled",
   "postUpdateOptions": ["pnpmDedupe"],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/vendor/**",
+    "**/__tests__/**",
+    "**/test/**",
+    "**/tests/**",
+    "**/__fixtures__/**"
+  ],
   "packageRules": [
     {
       "matchFileNames": ["website/package.json"],
@@ -56,7 +65,12 @@
     },
     {
       "groupName": "react",
-      "matchPackageNames": ["react", "react-dom"]
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ]
     },
     {
       "groupName": "vite",
