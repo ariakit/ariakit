@@ -1,8 +1,3 @@
-// @vitest-environment jsdom
-// The selected-tab restoration is deferred via startTransition/useDeferredValue;
-// under happy-dom's faster rAF cadence that concurrent-render update never
-// settles (the default tab isn't restored after reopening), unlike jsdom and
-// real browsers. Pinned to jsdom.
 import { click, press, q, sleep, waitFor } from "@ariakit/test";
 import { expect, test } from "vitest";
 

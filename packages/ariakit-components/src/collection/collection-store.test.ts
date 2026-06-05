@@ -1,7 +1,3 @@
-// @vitest-environment jsdom
-// "orders rendered items by DOM position" awaits a single nextFrame for the
-// store's requestAnimationFrame-batched flush; happy-dom's faster rAF cadence
-// doesn't settle it within that window. Pinned to jsdom.
 import { init } from "@ariakit/store";
 import { afterEach, expect, test } from "vitest";
 import { createCollectionStore } from "./collection-store.ts";
