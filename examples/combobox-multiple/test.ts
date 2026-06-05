@@ -50,6 +50,7 @@ test("check/uncheck item after filtering", async () => {
     .poll(() => q.option("Pineapple"))
     .toHaveAttribute("aria-selected", "true");
   expect(q.combobox()).toHaveValue("");
+  await expect.poll(() => q.option("Pizza")).toBeInTheDocument();
   await press.ArrowDown();
   await expect.poll(() => q.option("Pizza")).toHaveFocus();
 });
