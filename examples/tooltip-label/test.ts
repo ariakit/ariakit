@@ -1,4 +1,4 @@
-import { click, hover, q, waitFor } from "@ariakit/test";
+import { click, hover, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 const hoverOutside = async () => {
@@ -10,14 +10,14 @@ const hoverOutside = async () => {
 test("show tooltip on hover", async () => {
   expect(q.tooltip("Bold")).not.toBeInTheDocument();
   await hover(q.button("Bold"));
-  await waitFor(() => expect(q.tooltip("Bold")).toBeVisible());
+  await expect.poll(() => q.tooltip("Bold")).toBeVisible();
   await hoverOutside();
   expect(q.tooltip("Bold")).not.toBeInTheDocument();
 });
 
 test("do not hide tooltip on click", async () => {
   await hover(q.button("Bold"));
-  await waitFor(() => expect(q.tooltip("Bold")).toBeVisible());
+  await expect.poll(() => q.tooltip("Bold")).toBeVisible();
   await click(q.button("Bold"));
   expect(q.tooltip("Bold")).toBeVisible();
   await hoverOutside();

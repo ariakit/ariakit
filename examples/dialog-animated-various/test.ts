@@ -1,6 +1,5 @@
-// @vitest-environment jsdom need styles to be loaded
 import { click, press, q, sleep } from "@ariakit/test";
-import { expect, test, vi } from "vitest";
+import { expect, test } from "vitest";
 
 test.each([
   "Transition",
@@ -33,5 +32,5 @@ test.each([
     expect(q.dialog(name)).not.toHaveStyle("display: none");
   }
 
-  await vi.waitFor(() => expect(q.dialog(name)).not.toBeInTheDocument());
+  await expect.poll(() => q.dialog(name)).not.toBeInTheDocument();
 });

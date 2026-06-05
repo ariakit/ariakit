@@ -1,4 +1,4 @@
-import { click, press, q, waitFor } from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("show/hide on click", async () => {
@@ -9,7 +9,7 @@ test("show/hide on click", async () => {
   await click(q.button("Options"));
   expect(q.button("Options")).toHaveFocus();
   expect(q.menu.includesHidden()).toBeVisible();
-  await waitFor(() => expect(q.menu()).not.toBeInTheDocument());
+  await expect.poll(q.menu).not.toBeInTheDocument();
 });
 
 test("show/hide on enter", async () => {
@@ -22,7 +22,7 @@ test("show/hide on enter", async () => {
   await press.Enter();
   expect(q.button("Options")).toHaveFocus();
   expect(q.menu()).toBeVisible();
-  await waitFor(() => expect(q.menu()).not.toBeInTheDocument());
+  await expect.poll(q.menu).not.toBeInTheDocument();
 });
 
 test("show/hide on space", { retry: 2 }, async () => {
@@ -35,7 +35,7 @@ test("show/hide on space", { retry: 2 }, async () => {
   await press.Space();
   expect(q.button("Options")).toHaveFocus();
   expect(q.menu.includesHidden()).toBeVisible();
-  await waitFor(() => expect(q.menu()).not.toBeInTheDocument());
+  await expect.poll(q.menu).not.toBeInTheDocument();
 });
 
 test("hide on esc", async () => {
@@ -44,7 +44,7 @@ test("hide on esc", async () => {
   await press.Escape();
   expect(q.button("Options")).toHaveFocus();
   expect(q.menu()).toBeVisible();
-  await waitFor(() => expect(q.menu()).not.toBeInTheDocument());
+  await expect.poll(q.menu).not.toBeInTheDocument();
 });
 
 test("hide on click outside", async () => {
@@ -53,5 +53,5 @@ test("hide on click outside", async () => {
   await click(document.body);
   expect(q.button("Options")).not.toHaveFocus();
   expect(q.menu.includesHidden()).toBeVisible();
-  await waitFor(() => expect(q.menu()).not.toBeInTheDocument());
+  await expect.poll(q.menu).not.toBeInTheDocument();
 });

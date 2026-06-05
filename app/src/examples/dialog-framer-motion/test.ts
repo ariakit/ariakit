@@ -1,4 +1,4 @@
-import { click, press, q, waitFor } from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("show/hide on click", async () => {
@@ -9,7 +9,7 @@ test("show/hide on click", async () => {
   await click(q.button("OK"));
   expect(q.dialog()).toBeVisible();
   expect(q.button("Show modal")).toHaveFocus();
-  await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
+  await expect.poll(() => q.dialog()).not.toBeInTheDocument();
   expect(q.button("Show modal")).toHaveFocus();
 });
 
@@ -23,6 +23,6 @@ test("prevent body scroll", async () => {
   await press.Enter();
   expect(q.dialog()).toBeVisible();
   expect(document.body).toHaveStyle({ overflow: "hidden" });
-  await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
+  await expect.poll(q.dialog).not.toBeInTheDocument();
   expect(document.body).not.toHaveStyle({ overflow: "hidden" });
 });

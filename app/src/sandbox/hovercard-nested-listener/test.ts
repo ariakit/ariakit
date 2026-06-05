@@ -1,4 +1,4 @@
-import { click, q, waitFor } from "@ariakit/test";
+import { click, q } from "@ariakit/test";
 import { expect, test, vi } from "vitest";
 
 test("does not reinstall mousemove listener when nested hovercards change", async () => {
@@ -9,11 +9,11 @@ test("does not reinstall mousemove listener when nested hovercards change", asyn
 
   try {
     await click(q.button("Toggle nested"));
-    await waitFor(() => expect(q.dialog("Nested hovercard")).toBeVisible());
+    await expect.poll(() => q.dialog("Nested hovercard")).toBeVisible();
     await click(q.button("Toggle nested"));
-    await waitFor(() =>
-      expect(q.dialog("Nested hovercard")).not.toBeInTheDocument(),
-    );
+    await expect
+      .poll(() => q.dialog("Nested hovercard"))
+      .not.toBeInTheDocument();
 
     const addedMouseMoveListeners = new Set(
       addEventListener.mock.calls

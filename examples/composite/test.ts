@@ -1,11 +1,11 @@
-import { dispatch, press, q, sleep, waitFor } from "@ariakit/test";
+import { dispatch, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("navigate through items with keyboard", async () => {
   expect(q.button("🍎 Apple")).not.toHaveFocus();
-  await waitFor(() =>
-    expect(q.button("🍎 Apple")).toHaveAttribute("data-active-item"),
-  );
+  await expect
+    .poll(() => q.button("🍎 Apple"))
+    .toHaveAttribute("data-active-item");
 
   await press.Tab();
   expect(q.button("🍎 Apple")).toHaveFocus();
