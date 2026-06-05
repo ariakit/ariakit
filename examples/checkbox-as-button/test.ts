@@ -1,19 +1,16 @@
-import { click, press, q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, click, press, q } from "../../browser-test-utils.ts";
 
 test("markup", () => {
-  expect(document.body).toMatchInlineSnapshot(`
-    <body>
-      <div>
-        <button
-          aria-checked="false"
-          class="button"
-          role="checkbox"
-        >
-          Unchecked
-        </button>
-      </div>
-    </body>
+  expect(document.body.firstElementChild).toMatchInlineSnapshot(`
+    <div>
+      <button
+        aria-checked="false"
+        class="button"
+        role="checkbox"
+      >
+        Unchecked
+      </button>
+    </div>
   `);
 });
 

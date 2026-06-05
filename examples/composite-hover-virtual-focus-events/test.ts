@@ -1,6 +1,13 @@
-import { click, hover, press, q } from "@ariakit/test";
-import { expect, test, vi } from "vitest";
 import type { MockInstance } from "vitest";
+import {
+  expect,
+  test,
+  vi,
+  click,
+  hover,
+  press,
+  q,
+} from "../../browser-test-utils.ts";
 
 function expectCalls(mock: MockInstance) {
   const calls = mock.mock.calls.flat();

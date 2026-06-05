@@ -1,5 +1,4 @@
-import { press, q } from "@ariakit/test";
-import { expect, test, vi } from "vitest";
+import { expect, test, vi, press, q } from "../../browser-test-utils.ts";
 
 test("markup", () => {
   expect(q.button()).toMatchInlineSnapshot(`

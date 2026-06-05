@@ -1,5 +1,14 @@
-import { click, hover, press, q, sleep, type, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  hover,
+  press,
+  q,
+  sleep,
+  type,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 test("show/hide submenu on click", async () => {
   expect(q.menu("Edit")).not.toBeInTheDocument();
@@ -92,7 +101,7 @@ test("show/hide submenu on mouse hover", async () => {
   // Hover on an adjacent submenu button
   await hover(q.menuitem("Speech"));
   expect(q.menuitem("Speech")).toHaveFocus();
-  expect(q.menu("Find")).not.toBeInTheDocument();
+  await waitFor(() => expect(q.menu("Find")).not.toBeInTheDocument());
   expect(q.menu("Speech")).not.toBeInTheDocument();
   await waitFor(() => expect(q.menu("Speech")).toBeVisible());
 });

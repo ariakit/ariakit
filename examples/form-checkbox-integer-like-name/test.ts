@@ -1,5 +1,4 @@
-import { click, q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, click, q } from "../../browser-test-utils.ts";
 
 test("check checkbox with integer-like name on click", async () => {
   expect(q.checkbox("123")).toBeChecked();

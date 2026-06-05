@@ -1,5 +1,4 @@
-import { press, q, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, press, q, type } from "../../browser-test-utils.ts";
 
 test("@ at the beginning", async () => {
   await press.Tab();

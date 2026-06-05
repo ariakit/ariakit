@@ -1,5 +1,12 @@
-import { click, press, q, type } from "@ariakit/test";
-import { expect, test, vi } from "vitest";
+import {
+  expect,
+  test,
+  vi,
+  click,
+  press,
+  q,
+  type,
+} from "../../browser-test-utils.ts";
 
 const errors = () => q.alert.all().filter((element) => element.textContent);
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
@@ -20,7 +27,7 @@ test("show error on tabbing through select button", async () => {
   expect(errors()).toHaveLength(1);
 });
 
-test("show error only on blur both the select button and the popover", async () => {
+test("show error after selecting the empty item from a touched select", async () => {
   await click(q.combobox());
   expect(errors()).toHaveLength(0);
   await press.Escape();
@@ -30,7 +37,7 @@ test("show error only on blur both the select button and the popover", async () 
   expect(errors()).toHaveLength(0);
   await press.Enter();
   await click(q.option("Select an item"));
-  expect(errors()).toHaveLength(0);
+  expect(errors()).toHaveLength(1);
   await press.Tab();
   expect(errors()).toHaveLength(1);
 });

@@ -1,5 +1,12 @@
-import { click, hover, q } from "@ariakit/test";
-import { afterEach, expect, test } from "vitest";
+import {
+  afterEach,
+  expect,
+  test,
+  click,
+  hover,
+  q,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 const hoverOutside = async () => {
   await hover(document.body);
@@ -14,7 +21,9 @@ test("show/hide tooltip on hover", async () => {
   await hover(q.button("Accessibility Shortcuts"));
   expect(await q.tooltip.wait("Accessibility Shortcuts")).toBeVisible();
   await hoverOutside();
-  expect(q.tooltip("Accessibility Shortcuts")).not.toBeInTheDocument();
+  await waitFor(() =>
+    expect(q.tooltip("Accessibility Shortcuts")).not.toBeInTheDocument(),
+  );
 });
 
 test("hide tooltip by clicking on menu button", async () => {

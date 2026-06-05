@@ -1,5 +1,17 @@
-import { click, hover, press, q, sleep, type } from "@ariakit/test";
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  test,
+  click,
+  hover,
+  press,
+  q,
+  sleep,
+  type,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 const hoverOutside = async () => {
   await hover(document.body);
@@ -25,7 +37,7 @@ describe.each(labels)("%s", (label) => {
     await hover(q.button(label));
     expect(await q.tooltip.wait(label)).toBeVisible();
     await hoverOutside();
-    expect(q.tooltip(label)).not.toBeInTheDocument();
+    await waitFor(() => expect(q.tooltip(label)).not.toBeInTheDocument());
   });
 
   test("hide tooltip by clicking on menu button", async () => {

@@ -71,7 +71,7 @@ const testExcludes = [
 ];
 
 // Framework render suites run in Vitest Browser Mode so example and sandbox
-// tests using @ariakit/test execute in Chromium instead of a simulated DOM.
+// tests execute in Chromium instead of a simulated DOM.
 // Non-framework suites keep happy-dom because it provides the DOM they need
 // without paying the Browser Mode cost for pure package tests.
 const environment = process.env.ARIAKIT_TEST_ENV ?? "happy-dom";
@@ -134,7 +134,7 @@ export default defineConfig({
       include: includeWithStyles,
     },
     sequence: {
-      hooks: "parallel",
+      hooks: "stack",
     },
     coverage: {
       include: ["packages"],

@@ -1,5 +1,12 @@
-import { dispatch, press, q, sleep, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  dispatch,
+  press,
+  q,
+  sleep,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 test("navigate through items with keyboard", async () => {
   expect(q.button("🍎 Apple")).not.toHaveFocus();

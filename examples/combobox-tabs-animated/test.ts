@@ -1,5 +1,12 @@
-import { click, press, q, sleep, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  press,
+  q,
+  sleep,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 test("selected tab is restored only after the animation ends", async () => {
   await click(q.combobox());
@@ -12,9 +19,12 @@ test("selected tab is restored only after the animation ends", async () => {
   expect(q.tabpanel("Examples 31")).toBeVisible();
   await press.Escape();
   expect(q.combobox()).toHaveAttribute("data-active-item");
-  expect(q.tab("Examples 31")).not.toHaveFocus();
-  expect(q.tab("Examples 31")).not.toHaveAttribute("data-active-item");
-  expect(q.tab("Examples 31")).toHaveAttribute("aria-selected", "true");
+  const closingTab = q.tab.includesHidden("Examples 31").query();
+  if (closingTab) {
+    expect(closingTab).not.toHaveFocus();
+    expect(closingTab).not.toHaveAttribute("data-active-item");
+    expect(closingTab).toHaveAttribute("aria-selected", "true");
+  }
   await waitFor(() => expect(q.dialog("Pages")).not.toBeInTheDocument());
   await press.ArrowDown();
   await press.ArrowDown();

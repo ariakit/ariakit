@@ -1,5 +1,11 @@
-import { click, press, q, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  press,
+  q,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 test("show/hide on click", async () => {
   expect(q.menu()).not.toBeInTheDocument();

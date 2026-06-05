@@ -1,5 +1,4 @@
-import { click, q, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, click, q, type } from "../../browser-test-utils.ts";
 
 test("not call the onFocus callback on every key pressed", async () => {
   await click(q.combobox());

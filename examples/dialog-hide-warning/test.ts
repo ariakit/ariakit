@@ -1,8 +1,14 @@
-import { click, press, q, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  press,
+  q,
+  type,
+} from "../../browser-test-utils.ts";
 
 const backdrop = () => {
-  const dialog = q.dialog();
+  const dialog = q.dialog().query();
   const id = dialog?.id;
   const backdrop = document.querySelector(`[data-backdrop="${id}"]`);
   expect(backdrop).toBeInTheDocument();

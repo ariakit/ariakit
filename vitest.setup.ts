@@ -12,7 +12,12 @@ import failOnConsole from "vitest-fail-on-console";
 import { getTestLoader, isAllowedTestLoader } from "./test-loader.ts";
 import type { AllowedTestLoader } from "./test-loader.ts";
 
-failOnConsole();
+failOnConsole({
+  silenceMessage: (message: string) =>
+    message.includes(
+      "ResizeObserver loop completed with undelivered notifications.",
+    ),
+});
 
 expect.extend({
   toHaveFocus(element: HTMLElement, expected, options) {

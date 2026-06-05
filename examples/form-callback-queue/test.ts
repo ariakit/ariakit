@@ -1,5 +1,11 @@
-import { click, press, q, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  press,
+  q,
+  type,
+} from "../../browser-test-utils.ts";
 
 const validationError = () =>
   q.text(/ - Field 1 - Field 2 - Abstract Form - Form$/);

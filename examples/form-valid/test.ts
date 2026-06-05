@@ -1,5 +1,11 @@
-import { click, press, q, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  press,
+  q,
+  type,
+} from "../../browser-test-utils.ts";
 
 test("submit button is disabled by default", async () => {
   expect(q.button("Add")).toHaveAttribute("aria-disabled", "true");

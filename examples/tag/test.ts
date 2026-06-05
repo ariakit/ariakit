@@ -1,12 +1,29 @@
-import { click, press, q, type } from "@ariakit/test";
 import { getTextboxSelection } from "@ariakit/utils";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  press,
+  q,
+  type,
+} from "../../browser-test-utils.ts";
 
-function getSelectionText(element: HTMLElement | HTMLInputElement | null) {
+type MaybeLocatorElement =
+  | HTMLElement
+  | HTMLInputElement
+  | { query: () => Element | null }
+  | null;
+
+function getSelectionText(target: MaybeLocatorElement) {
+  const element = target && "query" in target ? target.query() : target;
+  if (!(element instanceof HTMLElement)) return null;
   if (!element) return null;
   const { start, end } = getTextboxSelection(element);
   const content =
-    "value" in element ? element.value : (element.textContent ?? "");
+    element instanceof HTMLInputElement ||
+    element instanceof HTMLTextAreaElement
+      ? element.value
+      : (element.textContent ?? "");
   const selectionValue = content.slice(start, end);
   return selectionValue;
 }

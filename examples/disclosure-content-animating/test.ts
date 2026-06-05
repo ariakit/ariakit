@@ -1,5 +1,4 @@
-import { click, q, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, click, q, waitFor } from "../../browser-test-utils.ts";
 
 const transitionTimeout = 1500;
 

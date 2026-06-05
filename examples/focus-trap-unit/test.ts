@@ -1,5 +1,4 @@
-import { focus, press, q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, focus, press, q } from "../../browser-test-utils.ts";
 
 test("correctly traps focus", async () => {
   const qq = q.within(q.group("trap"));

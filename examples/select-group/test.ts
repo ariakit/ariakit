@@ -1,5 +1,4 @@
-import { click, hover, q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, click, hover, q } from "../../browser-test-utils.ts";
 
 test("hover on item", async () => {
   await click(q.combobox("Favorite food"));

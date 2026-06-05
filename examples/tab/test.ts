@@ -1,5 +1,11 @@
-import { click, focus, press, q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  focus,
+  press,
+  q,
+} from "../../browser-test-utils.ts";
 
 test("default selected tab", () => {
   expect(q.tab("Vegetables")).toHaveAttribute("aria-selected", "true");

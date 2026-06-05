@@ -1,5 +1,13 @@
-import { click, press, q, type } from "@ariakit/test";
-import { beforeEach, describe, expect, test } from "vitest";
+import {
+  beforeEach,
+  describe,
+  expect,
+  test,
+  click,
+  press,
+  q,
+  type,
+} from "../../browser-test-utils.ts";
 
 const SIMPLE = "Simple";
 const WITH_TABS = "With Tabs";

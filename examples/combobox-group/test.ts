@@ -1,8 +1,26 @@
-import { click, dispatch, hover, press, q, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  dispatch,
+  hover,
+  press,
+  q,
+  type,
+} from "../../browser-test-utils.ts";
 
-function getSelectionValue(element: Element | HTMLInputElement | null) {
-  if (!element || !("value" in element)) {
+type MaybeLocatorElement =
+  | Element
+  | HTMLInputElement
+  | { query: () => Element | null }
+  | null;
+
+function getSelectionValue(target: MaybeLocatorElement) {
+  const element = target && "query" in target ? target.query() : target;
+  if (
+    !(element instanceof HTMLInputElement) &&
+    !(element instanceof HTMLTextAreaElement)
+  ) {
     throw new Error();
   }
   const { selectionStart, selectionEnd } = element;
@@ -102,7 +120,7 @@ test("autocomplete on focus on hover", async () => {
 });
 
 test("composition text", async () => {
-  // TODO: Add composition util to @ariakit/test
+  // TODO: Add composition util to browser-test-utils.ts
   await dispatch.compositionStart(q.combobox());
   await type("'", q.combobox(), { isComposing: true });
   expect(q.option("Apple")).not.toBeInTheDocument();

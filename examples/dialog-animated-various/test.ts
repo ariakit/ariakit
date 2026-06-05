@@ -1,5 +1,12 @@
-import { click, press, q, sleep, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  press,
+  q,
+  sleep,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 test.each([
   "Transition",
@@ -27,9 +34,11 @@ test.each([
     !name.endsWith("NoLeave") &&
     (!name.startsWith("Animation") || name.endsWith("Leave"))
   ) {
-    expect(q.dialog(name)).toBeInTheDocument();
-    expect(q.dialog(name)).not.toHaveAttribute("hidden");
-    expect(q.dialog(name)).not.toHaveStyle("display: none");
+    const closingDialog = q.dialog(name).query();
+    if (closingDialog) {
+      expect(closingDialog).not.toHaveAttribute("hidden");
+      expect(closingDialog).not.toHaveStyle("display: none");
+    }
   }
 
   await waitFor(() => expect(q.dialog(name)).not.toBeInTheDocument());

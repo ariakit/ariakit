@@ -1,5 +1,4 @@
-import { click, press, q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, click, press, q } from "../../browser-test-utils.ts";
 
 test("show on disclosure click", async () => {
   expect(q.dialog()).not.toBeInTheDocument();

@@ -1,18 +1,34 @@
-import { click, press, q, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  press,
+  q,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 function getBackdrop(name: string) {
-  const dialog = q.dialog.includesHidden(name);
-  const selector = `[data-backdrop="${dialog?.id}"]`;
+  const dialog = q.dialog.includesHidden(name).query();
+  if (!dialog) return null;
+  const selector = `[data-backdrop="${dialog.id}"]`;
   return document.querySelector<HTMLElement>(selector);
 }
 
 function expectModalStyle(toHaveStyle: boolean) {
   const { documentElement, body } = document;
-  const prop = toHaveStyle ? "itself" : "not";
-  expect(documentElement)[prop].toHaveStyle("--scrollbar-width: 1024px");
-  expect(body)[prop].toHaveStyle("overflow: hidden");
-  expect(body)[prop].toHaveStyle("padding-right: 1024px");
+  const scrollbarWidth = `${window.innerWidth - documentElement.clientWidth}px`;
+  if (toHaveStyle) {
+    expect(documentElement).toHaveStyle(`--scrollbar-width: ${scrollbarWidth}`);
+    expect(body).toHaveStyle("overflow: hidden");
+    expect(body).toHaveStyle(`padding-right: ${scrollbarWidth}`);
+  } else {
+    expect(documentElement.style.getPropertyValue("--scrollbar-width")).toBe(
+      "",
+    );
+    expect(body.style.overflow).toBe("");
+    expect(body.style.paddingLeft).toBe("");
+    expect(body.style.paddingRight).toBe("");
+  }
 }
 
 test("show dialog and hide with escape", async () => {

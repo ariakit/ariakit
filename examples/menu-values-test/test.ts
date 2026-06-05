@@ -1,5 +1,13 @@
-import { click, press, q, type } from "@ariakit/test";
-import { beforeEach, expect, test, vi } from "vitest";
+import {
+  beforeEach,
+  expect,
+  test,
+  vi,
+  click,
+  press,
+  q,
+  type,
+} from "../../browser-test-utils.ts";
 
 const spyOnLog = () => vi.spyOn(console, "log").mockImplementation(() => {});
 

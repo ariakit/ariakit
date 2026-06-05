@@ -1,8 +1,14 @@
-import { dispatch, press, q } from "@ariakit/test";
-import { expect, test, vi } from "vitest";
+import {
+  expect,
+  test,
+  vi,
+  dispatch,
+  press,
+  q,
+} from "../../../../browser-test-utils.ts";
 
 // Dispatch only keydown events so this stays compatible with fake timers;
-// @ariakit/test's type helper waits on timer sleeps between key steps.
+// browser-test-utils.ts's type helper waits on timer sleeps between key steps.
 function typeahead(key: string) {
   const activeElement = document.activeElement;
   if (!activeElement) throw new Error("No active element");

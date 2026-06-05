@@ -1,5 +1,11 @@
-import { click, press, q } from "@ariakit/test";
-import { describe, expect, test } from "vitest";
+import {
+  describe,
+  expect,
+  test,
+  click,
+  press,
+  q,
+} from "../../browser-test-utils.ts";
 
 const SELECT_TAB = "Select with manual Tab";
 const SELECT_COMBOBOX_TAB = "Select with Combobox and manual Tab";

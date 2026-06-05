@@ -1,5 +1,4 @@
-import { click, press, q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, click, press, q } from "../../browser-test-utils.ts";
 
 function backdrop(name: string) {
   const dialog = q.dialog.ensure(name);

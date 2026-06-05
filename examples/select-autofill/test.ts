@@ -1,7 +1,19 @@
-import { dispatch, focus, q, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  dispatch,
+  focus,
+  q,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
-const getNativeSelect = () => q.labeled("Role", { selector: "select" });
+function getNativeSelect() {
+  const select = document.querySelector<HTMLSelectElement>(
+    'select[name="role"]',
+  );
+  if (!select) throw new Error("Unable to find native select");
+  return select;
+}
 
 test("select has data-autofill attribute", async () => {
   expect(q.combobox()).not.toHaveAttribute("data-autofill");

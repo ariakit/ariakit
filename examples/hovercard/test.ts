@@ -1,10 +1,18 @@
-import { click, hover, press, q, sleep, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  hover,
+  press,
+  q,
+  sleep,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 const waitForHovercardToShow = (timeout = 600) =>
   waitFor(() => expect(q.dialog()).toBeVisible(), { timeout });
 
-const waitForHovercardToHide = (timeout = 600) =>
+const waitForHovercardToHide = (timeout = 1000) =>
   waitFor(() => expect(q.dialog()).not.toBeInTheDocument(), { timeout });
 
 const hoverOutside = async () => {

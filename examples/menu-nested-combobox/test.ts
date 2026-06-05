@@ -1,5 +1,13 @@
-import { click, hover, press, q, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  hover,
+  press,
+  q,
+  type,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 test("open/hide menu", async () => {
   await click(q.button("Actions"));
@@ -67,9 +75,11 @@ test("open/hide with search submenu", async () => {
   expect(q.combobox("Search pages to add in...")).toHaveFocus();
   expect(q.option("Private pages")).toHaveFocus();
   await press.ArrowLeft();
-  expect(q.dialog("Turn into page in")).not.toBeInTheDocument();
-  expect(option).toHaveFocus();
-  expect(option).toHaveAttribute("aria-expanded", "false");
+  await waitFor(() =>
+    expect(q.dialog("Turn into page in")).not.toBeInTheDocument(),
+  );
+  await waitFor(() => expect(option).toHaveFocus());
+  await waitFor(() => expect(option).toHaveAttribute("aria-expanded", "false"));
   expect(q.combobox("Search actions...")).toHaveFocus();
   await press.ArrowRight();
   expect(q.combobox("Search pages to add in...")).toHaveFocus();

@@ -1,5 +1,12 @@
-import { click, press, q, type } from "@ariakit/test";
-import { expect, test, vi } from "vitest";
+import {
+  expect,
+  test,
+  vi,
+  click,
+  press,
+  q,
+  type,
+} from "../../browser-test-utils.ts";
 
 const errors = () => q.alert.all().filter((element) => element.textContent);
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});

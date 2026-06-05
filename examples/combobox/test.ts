@@ -1,7 +1,20 @@
-import { click, press, q, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  press,
+  q,
+  type,
+} from "../../browser-test-utils.ts";
 
-function getSelectionStart(element: Element | HTMLInputElement | null) {
+type MaybeLocatorElement =
+  | Element
+  | HTMLInputElement
+  | { query: () => Element | null }
+  | null;
+
+function getSelectionStart(target: MaybeLocatorElement) {
+  const element = target && "query" in target ? target.query() : target;
   return element && "selectionStart" in element ? element.selectionStart : null;
 }
 

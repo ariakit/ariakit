@@ -1,5 +1,13 @@
-import { click, hover, press, q } from "@ariakit/test";
-import { afterEach, expect, test } from "vitest";
+import {
+  afterEach,
+  expect,
+  test,
+  click,
+  hover,
+  press,
+  q,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 const tooltip = "https://ariakit.com/components/tooltip";
 
@@ -18,14 +26,14 @@ test("show tooltip on hover", async () => {
   await hover(q.link());
   expect(await q.tooltip.wait(tooltip)).toBeVisible();
   await hoverOutside();
-  expect(q.tooltip(tooltip)).not.toBeInTheDocument();
+  await waitFor(() => expect(q.tooltip(tooltip)).not.toBeInTheDocument());
 });
 
 test("do not wait to show the tooltip if it was just hidden", async () => {
   await hover(q.link());
   expect(await q.tooltip.wait(tooltip)).toBeVisible();
   await hoverOutside();
-  expect(q.tooltip(tooltip)).not.toBeInTheDocument();
+  await waitFor(() => expect(q.tooltip(tooltip)).not.toBeInTheDocument());
   await hover(q.link());
   expect(q.tooltip(tooltip)).toBeVisible();
 });

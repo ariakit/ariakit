@@ -1,5 +1,11 @@
-import { dispatch, focus, q, sleep } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  dispatch,
+  focus,
+  q,
+  sleep,
+} from "../../../../browser-test-utils.ts";
 
 // See https://github.com/ariakit/ariakit/issues/6217
 

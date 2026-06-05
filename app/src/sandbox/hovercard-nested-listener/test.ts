@@ -1,5 +1,11 @@
-import { click, q, waitFor } from "@ariakit/test";
-import { expect, test, vi } from "vitest";
+import {
+  expect,
+  test,
+  vi,
+  click,
+  q,
+  waitFor,
+} from "../../../../browser-test-utils.ts";
 
 test("does not reinstall mousemove listener when nested hovercards change", async () => {
   expect(q.dialog("Parent hovercard")).toBeVisible();

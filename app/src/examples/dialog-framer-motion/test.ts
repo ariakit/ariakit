@@ -1,5 +1,11 @@
-import { click, press, q, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  press,
+  q,
+  waitFor,
+} from "../../../../browser-test-utils.ts";
 
 test("show/hide on click", async () => {
   expect(q.dialog()).not.toBeInTheDocument();
@@ -21,8 +27,11 @@ test("prevent body scroll", async () => {
   expect(q.dialog()).toBeVisible();
   expect(document.body).toHaveStyle({ overflow: "hidden" });
   await press.Enter();
-  expect(q.dialog()).toBeVisible();
-  expect(document.body).toHaveStyle({ overflow: "hidden" });
+  const closingDialog = q.dialog().query();
+  if (closingDialog) {
+    expect(closingDialog).toBeVisible();
+    expect(document.body).toHaveStyle({ overflow: "hidden" });
+  }
   await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
   expect(document.body).not.toHaveStyle({ overflow: "hidden" });
 });

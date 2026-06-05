@@ -1,5 +1,13 @@
-import { click, dispatch, press, q, sleep, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  dispatch,
+  press,
+  q,
+  sleep,
+  type,
+} from "../../browser-test-utils.ts";
 
 test("clear input with mouse", async () => {
   await click(q.combobox());

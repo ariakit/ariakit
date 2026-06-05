@@ -261,14 +261,14 @@ You'll notice that the transpiled CSS file has been also added to editor's files
 
 One of the goals of having use cases written like that is so we can write automated tests for them. Instead of testing the Ariakit components directly, we're testing the examples that represent the way people use Ariakit components.
 
-> We use [`@ariakit/test`](packages/ariakit-test), which is a wrapper around [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) with some additional features to ensure that events like clicks and key presses work similarly to actual user events.
+> Framework example tests use Vitest Browser Mode through the root [`browser-test-utils.ts`](browser-test-utils.ts) helper, which exposes browser-backed queries, assertions, and user events.
 
 Let's create a test for our example:
 
 `examples/my-component/test.ts`
 
 ```tsx
-import { q } from "@ariakit/test";
+import { expect, test, q } from "../../browser-test-utils.ts";
 
 test("my component", () => {
   expect(q.text("My component")).toBeInTheDocument();
@@ -517,7 +517,7 @@ Once your pull request is merged into the `main` branch, the `Publish` PR will b
 
 Most of the time, we'll write unit and integration tests as described on [Testing the example](#testing-the-example). Those tests use [Vitest Browser Mode](https://vitest.dev/guide/browser/) with Playwright-backed Chromium when you run framework suites such as `pnpm test-react` or `pnpm test-solid`. The default `pnpm test` suite still uses [happy-dom](https://github.com/capricorn86/happy-dom) for non-framework package tests that need DOM APIs without launching a browser.
 
-Combined with the [`@ariakit/test`](packages/ariakit-test) package, Browser Mode is more than enough for most rendered example behavior. However, sometimes we need to test served previews, browser-specific projects, multiple engines, mobile devices, screenshots, or other end-to-end flows. For those cases, we use [Playwright](https://playwright.dev).
+Combined with the root [`browser-test-utils.ts`](browser-test-utils.ts) helper, Browser Mode is more than enough for most rendered example behavior. However, sometimes we need to test served previews, browser-specific projects, multiple engines, mobile devices, screenshots, or other end-to-end flows. For those cases, we use [Playwright](https://playwright.dev).
 
 Let's create an end-to-end test for our example:
 

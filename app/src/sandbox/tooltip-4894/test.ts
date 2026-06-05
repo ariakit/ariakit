@@ -1,5 +1,4 @@
-import { click, q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, click, q } from "../../../../browser-test-utils.ts";
 
 // See https://github.com/ariakit/ariakit/issues/4894
 // In jsdom, this documents the stable forced-open state. The mixed test below

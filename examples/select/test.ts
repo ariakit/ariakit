@@ -1,5 +1,13 @@
-import { click, hover, press, q, sleep, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  hover,
+  press,
+  q,
+  sleep,
+  type,
+} from "../../browser-test-utils.ts";
 
 test("default value", () => {
   expect(q.combobox()).toHaveTextContent("Apple");

@@ -1,5 +1,14 @@
-import { click, hover, press, q, type, waitFor } from "@ariakit/test";
-import { expect, test, vi } from "vitest";
+import {
+  expect,
+  test,
+  vi,
+  click,
+  hover,
+  press,
+  q,
+  type,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 
@@ -243,5 +252,5 @@ test("https://github.com/ariakit/ariakit/issues/3342", async () => {
   const button = q.button.ensure("Actions");
   await click(button);
   const nextSibling = button.nextElementSibling;
-  expect(nextSibling).toBe(q.menu()?.parentElement);
+  expect(nextSibling).toBe(q.menu().query()?.parentElement);
 });

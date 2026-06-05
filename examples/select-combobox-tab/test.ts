@@ -1,5 +1,14 @@
-import { click, focus, press, q, sleep, type } from "@ariakit/test";
-import { describe, expect, test } from "vitest";
+import {
+  describe,
+  expect,
+  test,
+  click,
+  focus,
+  press,
+  q,
+  sleep,
+  type,
+} from "../../browser-test-utils.ts";
 
 const SELECT = "Select";
 const SELECT_COMBOBOX = "Select with Combobox";

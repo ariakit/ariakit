@@ -1,5 +1,13 @@
-import { click, focus, hover, press, q, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  focus,
+  hover,
+  press,
+  q,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 const waitForHovercardToShow = (timeout = 600) =>
   waitFor(() => expect(q.dialog()).toBeVisible(), { timeout });

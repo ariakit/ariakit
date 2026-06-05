@@ -1,5 +1,4 @@
-import { click, q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, click, q } from "../../../../browser-test-utils.ts";
 
 test("SelectRenderer forwards horizontal orientation to the item layout", async () => {
   await click(q.combobox("Favorite fruit"));

@@ -1,5 +1,4 @@
-import { q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, q } from "../../../../browser-test-utils.ts";
 
 test("does not leak defaultChecked to the rendered menu item", () => {
   const item = q.menuitemradio.ensure("Compact");

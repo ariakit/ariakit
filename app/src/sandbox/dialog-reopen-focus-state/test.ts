@@ -1,5 +1,10 @@
-import { click, q, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  click,
+  q,
+  waitFor,
+} from "../../../../browser-test-utils.ts";
 
 test("resets outside-interaction focus tracking when reopened", async () => {
   await click(q.button.ensure("Open dialog"));

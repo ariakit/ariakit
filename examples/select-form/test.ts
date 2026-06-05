@@ -1,5 +1,4 @@
-import { click, q } from "@ariakit/test";
-import { expect, test, vi } from "vitest";
+import { expect, test, vi, click, q } from "../../browser-test-utils.ts";
 
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 

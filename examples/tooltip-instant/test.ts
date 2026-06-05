@@ -1,5 +1,11 @@
-import { hover, press, q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import {
+  expect,
+  test,
+  hover,
+  press,
+  q,
+  waitFor,
+} from "../../browser-test-utils.ts";
 
 const hoverOutside = async () => {
   await hover(document.body);
@@ -12,7 +18,7 @@ test("show tooltip on hover", async () => {
   await hover(q.button());
   expect(q.tooltip("Tooltip")).toBeVisible();
   await hoverOutside();
-  expect(q.tooltip("Tooltip")).not.toBeInTheDocument();
+  await waitFor(() => expect(q.tooltip("Tooltip")).not.toBeInTheDocument());
 });
 
 test("show tooltip on focus", async () => {
