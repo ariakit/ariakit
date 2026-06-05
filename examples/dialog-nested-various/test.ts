@@ -1,4 +1,4 @@
-import { click, press, q } from "@ariakit/test";
+import { click, press, q, waitFor } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 function getBackdrop(name: string) {
@@ -230,7 +230,14 @@ test.each(["nested", "sibling"])(
   async (name) => {
     await click(q.button("Open dialog"));
     await click(q.button(`${name} dismiss`));
-    await expect.poll(() => q.button("Close")).toHaveFocus();
+    // Auto-focus into a dialog opened from within another dialog can land on
+    // the dialog container first, then move to the first tabbable only after a
+    // React state update commits. Under React 18 that commit happens while
+    // React's act environment is disabled, which `waitFor` does for its whole
+    // retry loop (it runs inside `wrapAsync`). `expect.poll` runs its predicate
+    // with the act environment still enabled, so focus can stay stuck on the
+    // container.
+    await waitFor(() => expect(q.button("Close")).toHaveFocus());
     expect(q.dialog(`${name} dismiss`)).toBeVisible();
     expect(q.dialog("Dialog")).not.toBeInTheDocument();
     expectModalStyle(true);
@@ -238,7 +245,7 @@ test.each(["nested", "sibling"])(
     await expect
       .poll(() => q.dialog.includesHidden(`${name} dismiss`))
       .not.toBeVisible();
-    await expect.poll(() => q.button("Close")).toHaveFocus();
+    await waitFor(() => expect(q.button("Close")).toHaveFocus());
     expect(q.dialog(`${name} dismiss ${name}`)).toBeVisible();
     expectModalStyle(true);
     await press.Escape();
