@@ -90,7 +90,6 @@ interface TextVariant<
 }
 
 interface TextQueryParams {
-  query: TextMethod<"nullable", TextQueryArgs>;
   all: TextMethod<"array", TextQueryArgs>;
   wait: TextMethod<"waitValue", TextWaitQueryArgs>;
   waitAll: TextMethod<"waitArray", TextWaitQueryArgs>;
@@ -235,33 +234,31 @@ function createRoleQueries(queries = documentQueries) {
   }, {} as RoleQueries);
 }
 
-function createTextQuery(params: TextQueryParams) {
-  const query = assignTextLazy(params.query);
+function createTextQuery(
+  defaultQuery: TextMethod<"nullable", TextQueryArgs>,
+  params: TextQueryParams,
+) {
+  const query = assignTextLazy(defaultQuery);
   const allQuery = assignTextLazy(params.all);
-  const waitQuery = assignTextLazy(params.wait);
-  const waitAllQuery = assignTextLazy(params.waitAll);
-  const ensureQuery = assignTextLazy(params.ensure);
-  const ensureAllQuery = assignTextLazy(params.ensureAll);
+
+  const wait = Object.assign(assignTextLazy(params.wait), {
+    all: assignTextLazy(params.waitAll),
+  });
+
+  const ensure = Object.assign(assignTextLazy(params.ensure), {
+    all: assignTextLazy(params.ensureAll),
+  });
 
   const all = Object.assign(allQuery, {
-    wait: waitAllQuery,
-    ensure: ensureAllQuery,
-  });
-
-  const wait = Object.assign(waitQuery, {
-    all: waitAllQuery,
-  });
-
-  const ensure = Object.assign(ensureQuery, {
-    all: ensureAllQuery,
+    wait: wait.all,
+    ensure: ensure.all,
   });
 
   return Object.assign(query, { all, wait, ensure });
 }
 
 function createTextQueryObject(queries = documentQueries) {
-  return createTextQuery({
-    query: queries.queryByText,
+  return createTextQuery(queries.queryByText, {
     all: queries.queryAllByText,
     wait: queries.findByText,
     waitAll: queries.findAllByText,
@@ -271,8 +268,7 @@ function createTextQueryObject(queries = documentQueries) {
 }
 
 function createLabeledQuery(queries = documentQueries) {
-  return createTextQuery({
-    query: queries.queryByLabelText,
+  return createTextQuery(queries.queryByLabelText, {
     all: queries.queryAllByLabelText,
     wait: queries.findByLabelText,
     waitAll: queries.findAllByLabelText,

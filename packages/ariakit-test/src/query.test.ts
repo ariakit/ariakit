@@ -68,3 +68,40 @@ test("lazy text and label queries run when called", () => {
   expect(text()).toBeInstanceOf(HTMLButtonElement);
   expect(input()).toBeInstanceOf(HTMLInputElement);
 });
+
+test("lazy text and label query variants run the matching variant", async () => {
+  const text = q.text.ensure.lazy("Ready");
+  const texts = q.text.all.lazy("Submit");
+  const waitedTexts = q.text.wait.all.lazy("Submit");
+  const allWaitedTexts = q.text.all.wait.lazy("Submit");
+  const ensuredTexts = q.text.ensure.all.lazy("Submit");
+  const allEnsuredTexts = q.text.all.ensure.lazy("Submit");
+  const label = q.labeled.ensure.lazy<HTMLInputElement>("Name");
+  const labels = q.labeled.all.lazy<HTMLInputElement>("Email");
+  const waitedLabels = q.labeled.wait.all.lazy<HTMLInputElement>("Email");
+  const allWaitedLabels = q.labeled.all.wait.lazy<HTMLInputElement>("Email");
+  const ensuredLabels = q.labeled.ensure.all.lazy<HTMLInputElement>("Email");
+  const allEnsuredLabels = q.labeled.all.ensure.lazy<HTMLInputElement>("Email");
+
+  document.body.innerHTML = `
+    <button>Submit</button>
+    <button>Submit</button>
+    <span>Ready</span>
+    <label>Name<input /></label>
+    <label>Email<input /></label>
+    <label>Email<input /></label>
+  `;
+
+  expect(text()).toHaveTextContent("Ready");
+  expect(texts()).toHaveLength(2);
+  await expect(waitedTexts()).resolves.toHaveLength(2);
+  await expect(allWaitedTexts()).resolves.toHaveLength(2);
+  expect(ensuredTexts()).toHaveLength(2);
+  expect(allEnsuredTexts()).toHaveLength(2);
+  expect(label()).toBeInstanceOf(HTMLInputElement);
+  expect(labels()).toHaveLength(2);
+  await expect(waitedLabels()).resolves.toHaveLength(2);
+  await expect(allWaitedLabels()).resolves.toHaveLength(2);
+  expect(ensuredLabels()).toHaveLength(2);
+  expect(allEnsuredLabels()).toHaveLength(2);
+});
