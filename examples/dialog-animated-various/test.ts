@@ -1,5 +1,6 @@
-import { click, press, q, sleep, waitFor } from "@ariakit/test";
-import { expect, test } from "vitest";
+// @vitest-environment jsdom need styles to be loaded
+import { click, press, q, sleep } from "@ariakit/test";
+import { expect, test, vi } from "vitest";
 
 test.each([
   "Transition",
@@ -27,10 +28,10 @@ test.each([
     !name.endsWith("NoLeave") &&
     (!name.startsWith("Animation") || name.endsWith("Leave"))
   ) {
-    await expect.poll(() => q.dialog(name)).toBeInTheDocument();
+    expect(q.dialog(name)).toBeInTheDocument();
     expect(q.dialog(name)).not.toHaveAttribute("hidden");
     expect(q.dialog(name)).not.toHaveStyle("display: none");
   }
 
-  await waitFor(() => expect(q.dialog(name)).not.toBeInTheDocument());
+  await vi.waitFor(() => expect(q.dialog(name)).not.toBeInTheDocument());
 });
