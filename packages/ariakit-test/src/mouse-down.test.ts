@@ -28,6 +28,11 @@ function setup() {
       </select>
     </label>
     <a href="#target">Link target</a>
+    <svg>
+      <a href="#svg-target">
+        <text>SVG link target</text>
+      </a>
+    </svg>
     <div tabindex="0">Focusable text target</div>
     <p>Plain text target</p>
   `;
@@ -78,6 +83,13 @@ test("mouseDown on a link preserves the document selection", async () => {
   setup();
   await selectParagraphText();
   await mouseDown(q.link("Link target"));
+  expect(document.getSelection()?.toString()).toBe(selectionText);
+});
+
+test("mouseDown on an SVG link preserves the document selection", async () => {
+  setup();
+  await selectParagraphText();
+  await mouseDown(q.link("SVG link target"));
   expect(document.getSelection()?.toString()).toBe(selectionText);
 });
 

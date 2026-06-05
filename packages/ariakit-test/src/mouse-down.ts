@@ -27,10 +27,10 @@ const selectionClearingInputTypes = [
 ];
 
 function preservesSelectionOnMouseDown(element: Element) {
-  const control = element.closest<HTMLElement>("button,input,select,a[href]");
+  const control = element.closest("button,input,select,a[href]");
   if (control instanceof HTMLButtonElement) return true;
   if (control instanceof HTMLSelectElement) return true;
-  if (control instanceof HTMLAnchorElement) return true;
+  if (control?.tagName.toLowerCase() === "a") return true;
   if (control instanceof HTMLInputElement) {
     return !selectionClearingInputTypes.includes(control.type);
   }
