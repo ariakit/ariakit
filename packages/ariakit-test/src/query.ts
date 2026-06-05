@@ -1,9 +1,11 @@
-// oxlint-disable unbound-method
+// oxlint-disable unbound-method typescript/no-unnecessary-type-parameters
 import { invariant } from "@ariakit/utils";
 import type {
   ByRoleMatcher,
   ByRoleOptions,
-  getQueriesForElement,
+  Matcher,
+  SelectorMatcherOptions,
+  waitForOptions,
 } from "@testing-library/dom";
 import { queries as baseQueries } from "@testing-library/dom";
 import type { AriaRole } from "./__aria-role.ts";
@@ -11,17 +13,130 @@ import { roles } from "./__aria-role.ts";
 
 type Query = ReturnType<typeof createRoleQuery>;
 type TextQuery = ReturnType<typeof createTextQuery>;
-type LabeledQuery = ReturnType<typeof createLabeledQuery>;
 type RoleQueries = Record<AriaRole, Query>;
-type ElementQueries = ReturnType<
-  typeof getQueriesForElement<typeof baseQueries>
->;
+type AnyQuery = (...args: any[]) => any;
+type LazyQuery<T extends AnyQuery> = (
+  ...args: Parameters<T>
+) => () => ReturnType<T>;
+
+interface ElementQueries {
+  queryByRole: RoleNullableMethod;
+  queryAllByRole: RoleArrayMethod;
+  findByRole: RoleWaitValueMethod;
+  findAllByRole: RoleWaitArrayMethod;
+  getByRole: RoleValueMethod;
+  getAllByRole: RoleArrayMethod;
+  queryByText: TextNullableMethod;
+  queryAllByText: TextArrayMethod;
+  findByText: TextWaitValueMethod;
+  findAllByText: TextWaitArrayMethod;
+  getByText: TextValueMethod;
+  getAllByText: TextArrayMethod;
+  queryByLabelText: TextNullableMethod;
+  queryAllByLabelText: TextArrayMethod;
+  findByLabelText: TextWaitValueMethod;
+  findAllByLabelText: TextWaitArrayMethod;
+  getByLabelText: TextValueMethod;
+  getAllByLabelText: TextArrayMethod;
+}
+
+interface RoleNullableMethod {
+  (role: ByRoleMatcher, options?: ByRoleOptions): HTMLElement | null;
+}
+
+interface RoleArrayMethod {
+  (role: ByRoleMatcher, options?: ByRoleOptions): HTMLElement[];
+}
+
+interface RoleValueMethod {
+  (role: ByRoleMatcher, options?: ByRoleOptions): HTMLElement;
+}
+
+interface RoleWaitArrayMethod {
+  (
+    role: ByRoleMatcher,
+    options?: ByRoleOptions,
+    waitForElementOptions?: waitForOptions,
+  ): Promise<HTMLElement[]>;
+}
+
+interface RoleWaitValueMethod {
+  (
+    role: ByRoleMatcher,
+    options?: ByRoleOptions,
+    waitForElementOptions?: waitForOptions,
+  ): Promise<HTMLElement>;
+}
+
+interface TextNullableMethod {
+  <T extends HTMLElement = HTMLElement>(...args: TextQueryArgs): T | null;
+}
+
+interface TextNullableQuery extends TextNullableMethod {
+  lazy<T extends HTMLElement = HTMLElement>(
+    ...args: TextQueryArgs
+  ): () => T | null;
+}
+
+interface TextArrayMethod {
+  <T extends HTMLElement = HTMLElement>(...args: TextQueryArgs): T[];
+}
+
+interface TextArrayQuery extends TextArrayMethod {
+  lazy<T extends HTMLElement = HTMLElement>(...args: TextQueryArgs): () => T[];
+}
+
+interface TextValueMethod {
+  <T extends HTMLElement = HTMLElement>(...args: TextQueryArgs): T;
+}
+
+interface TextValueQuery extends TextValueMethod {
+  lazy<T extends HTMLElement = HTMLElement>(...args: TextQueryArgs): () => T;
+}
+
+interface TextWaitValueMethod {
+  <T extends HTMLElement = HTMLElement>(...args: TextWaitQueryArgs): Promise<T>;
+}
+
+interface TextWaitValueQuery extends TextWaitValueMethod {
+  lazy<T extends HTMLElement = HTMLElement>(
+    ...args: TextWaitQueryArgs
+  ): () => Promise<T>;
+}
+
+interface TextWaitArrayMethod {
+  <T extends HTMLElement = HTMLElement>(
+    ...args: TextWaitQueryArgs
+  ): Promise<T[]>;
+}
+
+interface TextWaitArrayQuery extends TextWaitArrayMethod {
+  lazy<T extends HTMLElement = HTMLElement>(
+    ...args: TextWaitQueryArgs
+  ): () => Promise<T[]>;
+}
+
+interface TextQueryParams {
+  query: TextNullableMethod;
+  all: TextArrayMethod;
+  wait: TextWaitValueMethod;
+  waitAll: TextWaitArrayMethod;
+  ensure: TextValueMethod;
+  ensureAll: TextArrayMethod;
+}
 
 interface QueryObject extends RoleQueries {
   text: TextQuery;
-  labeled: LabeledQuery;
+  labeled: TextQuery;
   within: (element?: HTMLElement | null) => QueryObject;
 }
+
+type TextQueryArgs = [id: Matcher, options?: SelectorMatcherOptions];
+type TextWaitQueryArgs = [
+  id: Matcher,
+  options?: SelectorMatcherOptions,
+  waitForElementOptions?: waitForOptions,
+];
 
 function createQueries(container?: HTMLElement) {
   return Object.entries(baseQueries).reduce((queries, [key, query]) => {
@@ -32,6 +147,60 @@ function createQueries(container?: HTMLElement) {
 }
 
 const documentQueries = createQueries();
+
+function createLazyQuery<T extends AnyQuery>(query: T): LazyQuery<T> {
+  return (...args) => {
+    return () => query(...args);
+  };
+}
+
+function assignLazy<T extends AnyQuery>(query: T) {
+  return Object.assign(query, { lazy: createLazyQuery(query) });
+}
+
+function createTextNullableQuery(query: TextNullableMethod): TextNullableQuery {
+  return Object.assign(query, {
+    lazy: <T extends HTMLElement = HTMLElement>(...args: TextQueryArgs) => {
+      return () => query<T>(...args);
+    },
+  });
+}
+
+function createTextArrayQuery(query: TextArrayMethod): TextArrayQuery {
+  return Object.assign(query, {
+    lazy: <T extends HTMLElement = HTMLElement>(...args: TextQueryArgs) => {
+      return () => query<T>(...args);
+    },
+  });
+}
+
+function createTextValueQuery(query: TextValueMethod): TextValueQuery {
+  return Object.assign(query, {
+    lazy: <T extends HTMLElement = HTMLElement>(...args: TextQueryArgs) => {
+      return () => query<T>(...args);
+    },
+  });
+}
+
+function createTextWaitValueQuery(
+  query: TextWaitValueMethod,
+): TextWaitValueQuery {
+  return Object.assign(query, {
+    lazy: <T extends HTMLElement = HTMLElement>(...args: TextWaitQueryArgs) => {
+      return () => query<T>(...args);
+    },
+  });
+}
+
+function createTextWaitArrayQuery(
+  query: TextWaitArrayMethod,
+): TextWaitArrayQuery {
+  return Object.assign(query, {
+    lazy: <T extends HTMLElement = HTMLElement>(...args: TextWaitQueryArgs) => {
+      return () => query<T>(...args);
+    },
+  });
+}
 
 function matchName(name: string | RegExp, accessibleName: string | null) {
   if (accessibleName == null) return false;
@@ -73,17 +242,20 @@ function createRoleQuery(role: AriaRole, queries = documentQueries) {
     };
   };
 
-  const createIncludesHidden =
-    <T extends ReturnType<typeof createQuery>>(query: T) =>
-    (name?: string | RegExp, options?: ByRoleOptions): ReturnType<T> =>
-      query(name, { hidden: true, ...options });
+  const createIncludesHidden = <T extends ReturnType<typeof createQuery>>(
+    query: T,
+  ) =>
+    assignLazy(
+      (name?: string | RegExp, options?: ByRoleOptions): ReturnType<T> =>
+        query(name, { hidden: true, ...options }),
+    );
 
-  const query = createQuery(queries.queryByRole);
-  const allQuery = createQuery(queries.queryAllByRole);
-  const waitQuery = createQuery(queries.findByRole);
-  const waitAllQuery = createQuery(queries.findAllByRole);
-  const ensureQuery = createQuery(queries.getByRole);
-  const ensureAllQuery = createQuery(queries.getAllByRole);
+  const query = assignLazy(createQuery(queries.queryByRole));
+  const allQuery = assignLazy(createQuery(queries.queryAllByRole));
+  const waitQuery = assignLazy(createQuery(queries.findByRole));
+  const waitAllQuery = assignLazy(createQuery(queries.findAllByRole));
+  const ensureQuery = assignLazy(createQuery(queries.getByRole));
+  const ensureAllQuery = assignLazy(createQuery(queries.getAllByRole));
 
   const all = Object.assign(allQuery, {
     includesHidden: createIncludesHidden(allQuery),
@@ -124,44 +296,56 @@ function createRoleQueries(queries = documentQueries) {
   }, {} as RoleQueries);
 }
 
-function createTextQuery(queries = documentQueries) {
-  const all = Object.assign(queries.queryAllByText, {
-    wait: queries.findAllByText,
-    ensure: queries.getAllByText,
+function createTextQuery(params: TextQueryParams) {
+  const query = createTextNullableQuery(params.query);
+  const allQuery = createTextArrayQuery(params.all);
+  const waitQuery = createTextWaitValueQuery(params.wait);
+  const waitAllQuery = createTextWaitArrayQuery(params.waitAll);
+  const ensureQuery = createTextValueQuery(params.ensure);
+  const ensureAllQuery = createTextArrayQuery(params.ensureAll);
+
+  const all = Object.assign(allQuery, {
+    wait: waitAllQuery,
+    ensure: ensureAllQuery,
   });
 
-  const wait = Object.assign(queries.findByText, {
-    all: queries.findAllByText,
+  const wait = Object.assign(waitQuery, {
+    all: waitAllQuery,
   });
 
-  const ensure = Object.assign(queries.getByText, {
-    all: queries.getAllByText,
+  const ensure = Object.assign(ensureQuery, {
+    all: ensureAllQuery,
   });
 
-  return Object.assign(queries.queryByText, { all, wait, ensure });
+  return Object.assign(query, { all, wait, ensure });
+}
+
+function createTextQueryObject(queries = documentQueries) {
+  return createTextQuery({
+    query: queries.queryByText,
+    all: queries.queryAllByText,
+    wait: queries.findByText,
+    waitAll: queries.findAllByText,
+    ensure: queries.getByText,
+    ensureAll: queries.getAllByText,
+  });
 }
 
 function createLabeledQuery(queries = documentQueries) {
-  const all = Object.assign(queries.queryAllByLabelText, {
-    wait: queries.findAllByLabelText,
-    ensure: queries.getAllByLabelText,
+  return createTextQuery({
+    query: queries.queryByLabelText,
+    all: queries.queryAllByLabelText,
+    wait: queries.findByLabelText,
+    waitAll: queries.findAllByLabelText,
+    ensure: queries.getByLabelText,
+    ensureAll: queries.getAllByLabelText,
   });
-
-  const wait = Object.assign(queries.findByLabelText, {
-    all: queries.findAllByLabelText,
-  });
-
-  const ensure = Object.assign(queries.getByLabelText, {
-    all: queries.getAllByLabelText,
-  });
-
-  return Object.assign(queries.queryByLabelText, { all, wait, ensure });
 }
 
 function createQueryObject(queries = documentQueries): QueryObject {
   return {
     ...createRoleQueries(queries),
-    text: createTextQuery(queries),
+    text: createTextQueryObject(queries),
     labeled: createLabeledQuery(queries),
     within: (element?: HTMLElement | null) => {
       invariant(element, "Unable to create queries for null element");
@@ -178,14 +362,16 @@ function createQueryObject(queries = documentQueries): QueryObject {
  * to query by text content or associated label, and `query.within(element)` to
  * scope queries to a subtree.
  *
- * Every query also exposes `.all` (return all matches), `.wait` (resolve once the
+ * Every query also exposes `.lazy` (return a reusable function that runs the
+ * query when called), `.all` (return all matches), `.wait` (resolve once the
  * element appears), and `.ensure` (throw when it's missing) variants, and role
  * queries additionally expose `.includesHidden` to include otherwise-hidden
  * elements.
  * @example
  * ```ts
  * await click(query.button("Open"));
- * expect(query.dialog()).toBeVisible();
+ * const dialog = query.dialog.lazy();
+ * expect(dialog()).toBeVisible();
  * // Wait for an element to appear, or scope a query to a subtree:
  * await query.alert.wait();
  * query.within(query.dialog()).button("Close");
@@ -199,7 +385,8 @@ export const query = createQueryObject();
  * @example
  * ```ts
  * await click(q.button("Open"));
- * expect(q.dialog()).toBeVisible();
+ * const dialog = q.dialog.lazy();
+ * expect(dialog()).toBeVisible();
  * ```
  */
 export const q = query;
