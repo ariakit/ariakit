@@ -170,6 +170,36 @@ function createQueryObject(queries = documentQueries): QueryObject {
   };
 }
 
+/**
+ * Queries the DOM by ARIA role, accessible name, text, or label, built on top of
+ * Testing Library. Call a role method such as `query.button(name)` or
+ * `query.dialog()` to get the matching element (or `null`), passing a string or
+ * `RegExp` to match its accessible name. Use `query.text()` and `query.labeled()`
+ * to query by text content or associated label, and `query.within(element)` to
+ * scope queries to a subtree.
+ *
+ * Every query also exposes `.all` (return all matches), `.wait` (resolve once the
+ * element appears), and `.ensure` (throw when it's missing) variants, and role
+ * queries additionally expose `.includesHidden` to include otherwise-hidden
+ * elements.
+ * @example
+ * ```ts
+ * await click(query.button("Open"));
+ * expect(query.dialog()).toBeVisible();
+ * // Wait for an element to appear, or scope a query to a subtree:
+ * await query.alert.wait();
+ * query.within(query.dialog()).button("Close");
+ * ```
+ */
 export const query = createQueryObject();
 
+/**
+ * Short alias for `query`. Queries the DOM by ARIA role, accessible name, text, or
+ * label.
+ * @example
+ * ```ts
+ * await click(q.button("Open"));
+ * expect(q.dialog()).toBeVisible();
+ * ```
+ */
 export const q = query;

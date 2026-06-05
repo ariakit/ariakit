@@ -123,6 +123,22 @@ async function clickOption(
   await dispatch.click(element, eventOptions);
 }
 
+/**
+ * Clicks on an element, simulating the sequence of events a real mouse click
+ * produces — hovering the target, then `pointerdown`, `mousedown`, `focus`,
+ * `pointerup`, `mouseup`, and `click`.
+ *
+ * Hidden and disabled elements are handled the same way a browser would, and
+ * clicks on labels, `option` elements, and form controls behave like native
+ * interactions. Pass `options` to set event properties such as modifier keys
+ * (e.g. `{ shiftKey: true }`).
+ * @example
+ * ```ts
+ * await click(q.button("Submit"));
+ * // With a modifier key held down:
+ * await click(q.option("Item"), { shiftKey: true });
+ * ```
+ */
 export function click(
   element: Element | null,
   options?: PointerEventInit,

@@ -3,6 +3,7 @@
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
   "minimumReleaseAge": "3 days",
   "semanticCommits": "disabled",
+  "postUpdateOptions": ["pnpmDedupe"],
   "packageRules": [
     {
       "matchFileNames": ["website/package.json"],
