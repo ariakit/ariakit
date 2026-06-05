@@ -12,10 +12,13 @@ test("selected tab is restored only after the animation ends", async () => {
   expect(q.tabpanel("Examples 31")).toBeVisible();
   await press.Escape();
   expect(q.combobox()).toHaveAttribute("data-active-item");
-  expect(q.tab("Examples 31")).not.toHaveFocus();
-  expect(q.tab("Examples 31")).not.toHaveAttribute("data-active-item");
-  expect(q.tab("Examples 31")).toHaveAttribute("aria-selected", "true");
-  await expect.poll(() => q.dialog("Pages")).not.toBeInTheDocument();
+  const examplesTab = q.tab.includesHidden("Examples 31");
+  expect(examplesTab).not.toHaveFocus();
+  expect(examplesTab).not.toHaveAttribute("data-active-item");
+  expect(examplesTab).toHaveAttribute("aria-selected", "true");
+  await expect
+    .poll(() => q.dialog.includesHidden("Pages"))
+    .not.toBeInTheDocument();
   await press.ArrowDown();
   await press.ArrowDown();
   expect(q.tab("Components 16")).toHaveFocus();

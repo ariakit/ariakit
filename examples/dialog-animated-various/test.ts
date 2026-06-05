@@ -1,3 +1,11 @@
+// @vitest-environment jsdom
+// This suite opts out of the default happy-dom environment. The animation-based
+// leave cases (AnimationLeave/AnimationUnmountLeave) depend on
+// `data-[leave]:animate-out` playing while the dialog closes. Under happy-dom's
+// timer cadence, React commits a transient `mounted: false` render during close
+// that cancels the leave transition, so the animation never plays and the dialog
+// unmounts immediately. jsdom's requestAnimationFrame cadence keeps `mounted`
+// stable through the close, matching real browsers.
 import { click, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
