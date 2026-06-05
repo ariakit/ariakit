@@ -38,13 +38,15 @@ test("check/uncheck item after filtering", async () => {
   expect(q.option("Bacon")).toHaveAttribute("aria-selected", "true");
   await press.ArrowDown();
   await press.Enter();
-  await expect.poll(() => q.combobox()).toHaveValue("");
-  expect(q.option("Apple")).toHaveAttribute("aria-selected", "false");
+  await expect
+    .poll(() => q.option("Apple"))
+    .toHaveAttribute("aria-selected", "false");
   expect(q.option("Bacon")).toHaveAttribute("aria-selected", "false");
+  expect(q.combobox()).toHaveValue("");
   await type("ap");
   await press.ArrowUp();
   await press.Enter();
-  await expect.poll(() => q.combobox()).toHaveValue("");
+  await expect.poll(q.combobox).toHaveValue("");
   expect(q.option("Pineapple")).toHaveAttribute("aria-selected", "true");
   await press.ArrowDown();
   await expect.poll(() => q.option("Pizza")).toHaveFocus();
