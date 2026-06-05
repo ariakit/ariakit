@@ -13,6 +13,22 @@ function setup() {
       Editable target
       <input />
     </label>
+    <label>
+      Email target
+      <input type="email" />
+    </label>
+    <label>
+      Toggle target
+      <input type="checkbox" />
+    </label>
+    <label>
+      Select target
+      <select>
+        <option>One</option>
+      </select>
+    </label>
+    <a href="#target">Link target</a>
+    <div tabindex="0">Focusable text target</div>
     <p>Plain text target</p>
   `;
 }
@@ -24,22 +40,51 @@ async function selectParagraphText() {
 
 test("mouseDown on a button preserves the document selection", async () => {
   setup();
-  // TODO: Remove workaround for https://github.com/ariakit/ariakit/issues/6253.
-  // This preserves selection, but it also skips the focus path.
-  q.button
-    .ensure("Preserve selection")
-    .addEventListener("mousedown", (event) => {
-      event.preventDefault();
-    });
   await selectParagraphText();
   await mouseDown(q.button("Preserve selection"));
   expect(document.getSelection()?.toString()).toBe(selectionText);
+  expect(q.button("Preserve selection")).toHaveFocus();
 });
 
 test("mouseDown on an editable target clears the document selection", async () => {
   setup();
   await selectParagraphText();
   await mouseDown(q.textbox("Editable target"));
+  expect(document.getSelection()?.toString()).toBe("");
+});
+
+test("mouseDown on an email input clears the document selection", async () => {
+  setup();
+  await selectParagraphText();
+  await mouseDown(q.textbox("Email target"));
+  expect(document.getSelection()?.toString()).toBe("");
+});
+
+test("mouseDown on a non-text input preserves the document selection", async () => {
+  setup();
+  await selectParagraphText();
+  await mouseDown(q.checkbox("Toggle target"));
+  expect(document.getSelection()?.toString()).toBe(selectionText);
+});
+
+test("mouseDown on a select preserves the document selection", async () => {
+  setup();
+  await selectParagraphText();
+  await mouseDown(q.combobox("Select target"));
+  expect(document.getSelection()?.toString()).toBe(selectionText);
+});
+
+test("mouseDown on a link preserves the document selection", async () => {
+  setup();
+  await selectParagraphText();
+  await mouseDown(q.link("Link target"));
+  expect(document.getSelection()?.toString()).toBe(selectionText);
+});
+
+test("mouseDown on a focusable text target clears the document selection", async () => {
+  setup();
+  await selectParagraphText();
+  await mouseDown(q.text("Focusable text target"));
   expect(document.getSelection()?.toString()).toBe("");
 });
 
