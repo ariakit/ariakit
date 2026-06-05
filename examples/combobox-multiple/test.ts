@@ -1,5 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 
 test("default checked", async () => {
   await click(q.combobox());
@@ -51,7 +51,7 @@ test("check/uncheck item after filtering", async () => {
     .toHaveAttribute("aria-selected", "true");
   expect(q.combobox()).toHaveValue("");
   await press.ArrowDown();
-  await expect.poll(() => q.option("Pizza")).toHaveFocus();
+  await vi.waitFor(() => expect(q.option("Pizza")).toHaveFocus());
 });
 
 test("open with keyboard, then try to open again", async () => {
