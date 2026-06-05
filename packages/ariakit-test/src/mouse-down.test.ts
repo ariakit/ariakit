@@ -5,7 +5,7 @@ import { select } from "./select.ts";
 
 const selectionText = "sample paragraph text";
 
-function setup() {
+beforeEach(() => {
   document.body.innerHTML = `
     <p>Keep this ${selectionText} selected.</p>
     <button type="button">Preserve selection</button>
@@ -36,9 +36,7 @@ function setup() {
     <div tabindex="0">Focusable text target</div>
     <p>Plain text target</p>
   `;
-}
-
-beforeEach(setup);
+});
 
 async function selectParagraphText() {
   await select(selectionText, q.text.ensure(/Keep this/));
