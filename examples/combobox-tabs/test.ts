@@ -132,7 +132,7 @@ test("clear input with mouse", async () => {
 
 test("open the popover with arrow down after switching tabs", async () => {
   await click(q.combobox());
-  expect(q.dialog("Pages")).toBeVisible();
+  await expect.poll(() => q.dialog("Pages")).toBeVisible();
   await press.ArrowDown();
   await expect.poll(() => q.tab("Components 16")).toHaveFocus();
   await press.ArrowDown();
