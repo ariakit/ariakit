@@ -27,7 +27,7 @@ test.each([
     !name.endsWith("NoLeave") &&
     (!name.startsWith("Animation") || name.endsWith("Leave"))
   ) {
-    expect(q.dialog(name)).toBeInTheDocument();
+    await expect.poll(() => q.dialog(name)).toBeInTheDocument();
     expect(q.dialog(name)).not.toHaveAttribute("hidden");
     expect(q.dialog(name)).not.toHaveStyle("display: none");
   }
