@@ -18,6 +18,14 @@ type AnyQuery = (...args: any[]) => any;
 type LazyQuery<T extends AnyQuery> = (
   ...args: Parameters<T>
 ) => () => ReturnType<T>;
+type TextKind = "array" | "nullable" | "value" | "waitArray" | "waitValue";
+type TextResult<Kind extends TextKind, T extends HTMLElement> = {
+  array: T[];
+  nullable: T | null;
+  value: T;
+  waitArray: Promise<T[]>;
+  waitValue: Promise<T>;
+}[Kind];
 
 interface ElementQueries {
   queryByRole: RoleNullableMethod;
@@ -26,18 +34,18 @@ interface ElementQueries {
   findAllByRole: RoleWaitArrayMethod;
   getByRole: RoleValueMethod;
   getAllByRole: RoleArrayMethod;
-  queryByText: TextNullableMethod;
-  queryAllByText: TextArrayMethod;
-  findByText: TextWaitValueMethod;
-  findAllByText: TextWaitArrayMethod;
-  getByText: TextValueMethod;
-  getAllByText: TextArrayMethod;
-  queryByLabelText: TextNullableMethod;
-  queryAllByLabelText: TextArrayMethod;
-  findByLabelText: TextWaitValueMethod;
-  findAllByLabelText: TextWaitArrayMethod;
-  getByLabelText: TextValueMethod;
-  getAllByLabelText: TextArrayMethod;
+  queryByText: TextMethod<"nullable", TextQueryArgs>;
+  queryAllByText: TextMethod<"array", TextQueryArgs>;
+  findByText: TextMethod<"waitValue", TextWaitQueryArgs>;
+  findAllByText: TextMethod<"waitArray", TextWaitQueryArgs>;
+  getByText: TextMethod<"value", TextQueryArgs>;
+  getAllByText: TextMethod<"array", TextQueryArgs>;
+  queryByLabelText: TextMethod<"nullable", TextQueryArgs>;
+  queryAllByLabelText: TextMethod<"array", TextQueryArgs>;
+  findByLabelText: TextMethod<"waitValue", TextWaitQueryArgs>;
+  findAllByLabelText: TextMethod<"waitArray", TextWaitQueryArgs>;
+  getByLabelText: TextMethod<"value", TextQueryArgs>;
+  getAllByLabelText: TextMethod<"array", TextQueryArgs>;
 }
 
 interface RoleNullableMethod {
@@ -68,61 +76,26 @@ interface RoleWaitValueMethod {
   ): Promise<HTMLElement>;
 }
 
-interface TextNullableMethod {
-  <T extends HTMLElement = HTMLElement>(...args: TextQueryArgs): T | null;
+interface TextMethod<Kind extends TextKind, Args extends unknown[]> {
+  <T extends HTMLElement = HTMLElement>(...args: Args): TextResult<Kind, T>;
 }
 
-interface TextNullableQuery extends TextNullableMethod {
+interface TextVariant<
+  Kind extends TextKind,
+  Args extends unknown[],
+> extends TextMethod<Kind, Args> {
   lazy<T extends HTMLElement = HTMLElement>(
-    ...args: TextQueryArgs
-  ): () => T | null;
-}
-
-interface TextArrayMethod {
-  <T extends HTMLElement = HTMLElement>(...args: TextQueryArgs): T[];
-}
-
-interface TextArrayQuery extends TextArrayMethod {
-  lazy<T extends HTMLElement = HTMLElement>(...args: TextQueryArgs): () => T[];
-}
-
-interface TextValueMethod {
-  <T extends HTMLElement = HTMLElement>(...args: TextQueryArgs): T;
-}
-
-interface TextValueQuery extends TextValueMethod {
-  lazy<T extends HTMLElement = HTMLElement>(...args: TextQueryArgs): () => T;
-}
-
-interface TextWaitValueMethod {
-  <T extends HTMLElement = HTMLElement>(...args: TextWaitQueryArgs): Promise<T>;
-}
-
-interface TextWaitValueQuery extends TextWaitValueMethod {
-  lazy<T extends HTMLElement = HTMLElement>(
-    ...args: TextWaitQueryArgs
-  ): () => Promise<T>;
-}
-
-interface TextWaitArrayMethod {
-  <T extends HTMLElement = HTMLElement>(
-    ...args: TextWaitQueryArgs
-  ): Promise<T[]>;
-}
-
-interface TextWaitArrayQuery extends TextWaitArrayMethod {
-  lazy<T extends HTMLElement = HTMLElement>(
-    ...args: TextWaitQueryArgs
-  ): () => Promise<T[]>;
+    ...args: Args
+  ): () => TextResult<Kind, T>;
 }
 
 interface TextQueryParams {
-  query: TextNullableMethod;
-  all: TextArrayMethod;
-  wait: TextWaitValueMethod;
-  waitAll: TextWaitArrayMethod;
-  ensure: TextValueMethod;
-  ensureAll: TextArrayMethod;
+  query: TextMethod<"nullable", TextQueryArgs>;
+  all: TextMethod<"array", TextQueryArgs>;
+  wait: TextMethod<"waitValue", TextWaitQueryArgs>;
+  waitAll: TextMethod<"waitArray", TextWaitQueryArgs>;
+  ensure: TextMethod<"value", TextQueryArgs>;
+  ensureAll: TextMethod<"array", TextQueryArgs>;
 }
 
 interface QueryObject extends RoleQueries {
@@ -158,45 +131,11 @@ function assignLazy<T extends AnyQuery>(query: T) {
   return Object.assign(query, { lazy: createLazyQuery(query) });
 }
 
-function createTextNullableQuery(query: TextNullableMethod): TextNullableQuery {
+function assignTextLazy<Kind extends TextKind, Args extends unknown[]>(
+  query: TextMethod<Kind, Args>,
+): TextVariant<Kind, Args> {
   return Object.assign(query, {
-    lazy: <T extends HTMLElement = HTMLElement>(...args: TextQueryArgs) => {
-      return () => query<T>(...args);
-    },
-  });
-}
-
-function createTextArrayQuery(query: TextArrayMethod): TextArrayQuery {
-  return Object.assign(query, {
-    lazy: <T extends HTMLElement = HTMLElement>(...args: TextQueryArgs) => {
-      return () => query<T>(...args);
-    },
-  });
-}
-
-function createTextValueQuery(query: TextValueMethod): TextValueQuery {
-  return Object.assign(query, {
-    lazy: <T extends HTMLElement = HTMLElement>(...args: TextQueryArgs) => {
-      return () => query<T>(...args);
-    },
-  });
-}
-
-function createTextWaitValueQuery(
-  query: TextWaitValueMethod,
-): TextWaitValueQuery {
-  return Object.assign(query, {
-    lazy: <T extends HTMLElement = HTMLElement>(...args: TextWaitQueryArgs) => {
-      return () => query<T>(...args);
-    },
-  });
-}
-
-function createTextWaitArrayQuery(
-  query: TextWaitArrayMethod,
-): TextWaitArrayQuery {
-  return Object.assign(query, {
-    lazy: <T extends HTMLElement = HTMLElement>(...args: TextWaitQueryArgs) => {
+    lazy: <T extends HTMLElement = HTMLElement>(...args: Args) => {
       return () => query<T>(...args);
     },
   });
@@ -297,12 +236,12 @@ function createRoleQueries(queries = documentQueries) {
 }
 
 function createTextQuery(params: TextQueryParams) {
-  const query = createTextNullableQuery(params.query);
-  const allQuery = createTextArrayQuery(params.all);
-  const waitQuery = createTextWaitValueQuery(params.wait);
-  const waitAllQuery = createTextWaitArrayQuery(params.waitAll);
-  const ensureQuery = createTextValueQuery(params.ensure);
-  const ensureAllQuery = createTextArrayQuery(params.ensureAll);
+  const query = assignTextLazy(params.query);
+  const allQuery = assignTextLazy(params.all);
+  const waitQuery = assignTextLazy(params.wait);
+  const waitAllQuery = assignTextLazy(params.waitAll);
+  const ensureQuery = assignTextLazy(params.ensure);
+  const ensureAllQuery = assignTextLazy(params.ensureAll);
 
   const all = Object.assign(allQuery, {
     wait: waitAllQuery,
