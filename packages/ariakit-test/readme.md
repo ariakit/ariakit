@@ -235,6 +235,8 @@ Presses a key on an element, simulating a real user keyboard interaction. Fires 
 
 When no element is passed, the currently focused element is used. Shortcuts such as `press.Enter()` and `press.Tab()` are provided for common keys, and `press.ShiftTab()` moves focus backwards.
 
+Use `press.down` and `press.up` to fire only the keydown or keyup half of a press. Each defaults to the currently focused element, so a key released after focus moved away — for example, an element that disables itself on keydown — lands where a real browser would deliver it.
+
 Example:
 
 ```ts
@@ -242,6 +244,9 @@ await press.Tab();
 await press.Enter();
 // `press.Enter(element)` is shorthand for `press("Enter", element)`:
 await press.Enter(q.button("Submit"));
+// Split a press so the keyup lands on whatever is focused at release time:
+await press.down.Space();
+await press.up.Space();
 ```
 
 <div align="right">
