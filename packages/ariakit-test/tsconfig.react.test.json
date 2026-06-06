@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.test.react.json",
+  "extends": "../../tsconfig.react.test.json",
   "include": ["**/*react.test.tsx"],
   "exclude": []
 }
