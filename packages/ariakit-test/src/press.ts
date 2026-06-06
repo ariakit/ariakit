@@ -184,7 +184,11 @@ const keyUpMap: KeyActionMap = {
       (element instanceof HTMLInputElement &&
         spaceableTypes.includes(element.type));
 
-    if (isSpaceable) {
+    // Browsers don't activate disabled controls, so don't synthesize the click —
+    // e.g. a split `press.up` landing on a control that disabled itself on
+    // keydown but is still focused (the DOM test environments don't blur it the
+    // way a real browser does, and jsdom would otherwise fire the click).
+    if (isSpaceable && !(element as HTMLButtonElement).disabled) {
       await dispatch.click(element, options);
     }
   },
