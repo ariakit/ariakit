@@ -10,9 +10,9 @@ import { isBrowser, isHappyDOM } from "./__utils.ts";
 // reads would hit jsdom's empty layout and misbehave (focus landing on the
 // dialog container instead of the first tabbable).
 //
-// `index.ts` imports this module so the shims are applied automatically with
-// the main entrypoint. It's also a public entrypoint (`@ariakit/test/shims`)
-// for consumers that import individual helpers and want to opt in explicitly.
+// `index.ts` imports this module for its side effect, so the shims are applied
+// automatically when importing `@ariakit/test` (and `@ariakit/test/react`,
+// which re-exports `index.ts`).
 
 function applyBrowserShims() {
   if (isBrowser) return noop;

@@ -11,6 +11,11 @@ program
   .command("build")
   .description("Build packages")
   .option("--index-only", "Build and export only src/index.ts")
+  .option(
+    "--entries <names>",
+    "Comma-separated entry file names to build and export",
+    (value) => value.split(","),
+  )
   .action(build);
 
 program
@@ -19,6 +24,11 @@ program
   // lint-staged appends matched filenames to package scripts.
   .argument("[files...]", "Ignored file arguments passed by lint-staged")
   .option("--index-only", "Export only src/index.ts")
+  .option(
+    "--entries <names>",
+    "Comma-separated entry file names to export",
+    (value) => value.split(","),
+  )
   .action((_files, options) => clean(options));
 
 program
