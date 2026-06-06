@@ -104,7 +104,7 @@ Example/test naming conventions:
 <example name>/
   index.<react|solid>.tsx        - example, the loader is optional and defaults to "react"
   test.ts                        - test, runs for all loaders
-  test.<react|solid>.ts          - test, runs only for the specified loader
+  <react|solid>.test.ts          - test, runs only for the specified loader
 
 Note: test files can also be named `test-<browser target>.` instead of `test.` to run with Playwright. Available targets are:
 
@@ -121,7 +121,7 @@ Note: test files can also be named `test-<browser target>.` instead of `test.` t
 function parseTest(filename?: string) {
   if (!filename) return false;
   const match = filename.match(
-    /^(?<dir>(?:.*\/)?(?:examples|sandbox)\/.+?)\/test\.((?<loader>react|solid)\.)?ts$/,
+    /^(?<dir>(?:.*\/)?(?:examples|sandbox)\/.+?)\/((?<loader>react|solid)\.)?test\.ts$/,
   );
   if (!match?.groups) return false;
   const { dir, loader } = match.groups;
