@@ -304,12 +304,13 @@ function createQueryObject(queries = documentQueries): QueryObject {
  * elements.
  * @example
  * ```ts
- * await click(query.button("Open"));
- * const dialog = query.dialog.lazy();
+ * const dialog = query.dialog.lazy("Settings");
+ * expect(dialog()).not.toBeInTheDocument();
+ * await click(query.button("Open settings"));
  * expect(dialog()).toBeVisible();
  * // Wait for an element to appear, or scope a query to a subtree:
  * await query.alert.wait();
- * query.within(query.dialog()).button("Close");
+ * query.within(dialog()).button("Close");
  * ```
  */
 export const query = createQueryObject();
@@ -319,8 +320,9 @@ export const query = createQueryObject();
  * label.
  * @example
  * ```ts
- * await click(q.button("Open"));
- * const dialog = q.dialog.lazy();
+ * const dialog = q.dialog.lazy("Settings");
+ * expect(dialog()).not.toBeInTheDocument();
+ * await click(q.button("Open settings"));
  * expect(dialog()).toBeVisible();
  * ```
  */

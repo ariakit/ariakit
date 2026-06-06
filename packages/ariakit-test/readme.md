@@ -273,12 +273,13 @@ Every query also exposes `.lazy` (return a reusable function that runs the query
 Example:
 
 ```ts
-await click(query.button("Open"));
-const dialog = query.dialog.lazy();
+const dialog = query.dialog.lazy("Settings");
+expect(dialog()).not.toBeInTheDocument();
+await click(query.button("Open settings"));
 expect(dialog()).toBeVisible();
 // Wait for an element to appear, or scope a query to a subtree:
 await query.alert.wait();
-query.within(query.dialog()).button("Close");
+query.within(dialog()).button("Close");
 ```
 
 <div align="right">
@@ -308,8 +309,9 @@ Short alias for `query`. Queries the DOM by ARIA role, accessible name, text, or
 Example:
 
 ```ts
-await click(q.button("Open"));
-const dialog = q.dialog.lazy();
+const dialog = q.dialog.lazy("Settings");
+expect(dialog()).not.toBeInTheDocument();
+await click(q.button("Open settings"));
 expect(dialog()).toBeVisible();
 ```
 
