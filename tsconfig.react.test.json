@@ -4,5 +4,5 @@
     "jsx": "preserve",
     "jsxImportSource": "react"
   },
-  "include": ["**/*test.react.tsx"]
+  "include": ["**/*react.test.tsx"]
 }

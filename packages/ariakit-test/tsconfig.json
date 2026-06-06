@@ -5,7 +5,7 @@
     // { "path": "./tsconfig.test.json" },
     { "path": "./tsconfig.react.json" },
     // { "path": "./tsconfig.solid.json" },
-    { "path": "./tsconfig.test.react.json" }
-    // { "path": "./tsconfig.test.solid.json" }
+    { "path": "./tsconfig.react.test.json" }
+    // { "path": "./tsconfig.solid.test.json" }
   ]
 }

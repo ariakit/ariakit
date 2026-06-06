@@ -132,19 +132,19 @@ test("clear input with mouse", async () => {
 
 test("open the popover with arrow down after switching tabs", async () => {
   await click(q.combobox());
-  expect(q.dialog("Pages")).toBeVisible();
+  await expect.poll(q.dialog.lazy("Pages")).toBeVisible();
   await press.ArrowDown();
-  expect(q.tab("Components 16")).toHaveFocus();
+  await expect.poll(q.tab.lazy("Components 16")).toHaveFocus();
   await press.ArrowDown();
-  expect(q.option("Button")).toHaveFocus();
+  await expect.poll(q.option.lazy("Button")).toHaveFocus();
   await press.ArrowRight();
-  expect(q.tab("Examples 31")).toHaveFocus();
+  await expect.poll(q.tab.lazy("Examples 31")).toHaveFocus();
   await press.Escape();
-  expect(q.combobox()).toHaveAttribute("data-active-item");
+  await expect.poll(q.combobox).toHaveAttribute("data-active-item");
   expect(q.dialog("Pages")).not.toBeInTheDocument();
   await press.ArrowDown();
-  expect(q.dialog("Pages")).toBeVisible();
+  await expect.poll(q.dialog.lazy("Pages")).toBeVisible();
   expect(q.tabpanel("Components 16")).toBeVisible();
   await press.ArrowDown();
-  expect(q.tab("Components 16")).toHaveFocus();
+  await expect.poll(q.tab.lazy("Components 16")).toHaveFocus();
 });

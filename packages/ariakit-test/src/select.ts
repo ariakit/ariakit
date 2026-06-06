@@ -1,5 +1,5 @@
 import { isVisible, invariant } from "@ariakit/utils";
-import { wrapAsync } from "./__utils.ts";
+import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { hover } from "./hover.ts";
 import { mouseDown } from "./mouse-down.ts";
@@ -83,7 +83,8 @@ export function select(
       selection?.addRange(range);
     }
 
-    await sleep();
+    // Let the selection change flush before releasing — microtask/rAF settle.
+    await settle();
 
     await mouseUp(element, options);
 

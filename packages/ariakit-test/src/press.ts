@@ -5,7 +5,7 @@ import {
   getPreviousTabbable,
   isFocusable,
 } from "@ariakit/utils";
-import { wrapAsync } from "./__utils.ts";
+import { settle, wrapAsync } from "./__utils.ts";
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
@@ -246,7 +246,7 @@ export function press(
     }
 
     // This allows the DOM to be updated before we fire the event
-    await sleep();
+    await settle();
 
     // TODO: Implement repeat
     let defaultAllowed = await dispatch.keyDown(element, { key, ...options });
@@ -255,7 +255,7 @@ export function press(
       await keyDownMap[key]?.(element, options);
     }
 
-    await sleep();
+    await settle();
 
     // If keydown effect changed focus (e.g. Tab), keyup will be triggered on the
     // next element.

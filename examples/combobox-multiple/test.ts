@@ -1,8 +1,3 @@
-// @vitest-environment jsdom
-// The "check/uncheck item after filtering" test relies on React concurrent
-// rendering to settle the filtered list; under happy-dom's faster rAF cadence it
-// doesn't settle in time on slower CI, failing there even with a retry (it
-// passes locally). Pinned to jsdom.
 import { click, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
@@ -39,20 +34,25 @@ test("check/uncheck with enter", async () => {
 test("check/uncheck item after filtering", async () => {
   await press.Tab();
   await type("b");
-  expect(q.option("Apple")).not.toBeInTheDocument();
+  await expect.poll(q.option.lazy("Apple")).not.toBeInTheDocument();
   expect(q.option("Bacon")).toHaveAttribute("aria-selected", "true");
   await press.ArrowDown();
   await press.Enter();
-  expect(q.option("Apple")).toHaveAttribute("aria-selected", "false");
+  await expect
+    .poll(q.option.lazy("Apple"))
+    .toHaveAttribute("aria-selected", "false");
   expect(q.option("Bacon")).toHaveAttribute("aria-selected", "false");
   expect(q.combobox()).toHaveValue("");
   await type("ap");
   await press.ArrowUp();
   await press.Enter();
-  expect(q.option("Pineapple")).toHaveAttribute("aria-selected", "true");
+  await expect
+    .poll(q.option.lazy("Pineapple"))
+    .toHaveAttribute("aria-selected", "true");
   expect(q.combobox()).toHaveValue("");
+  await expect.poll(q.option.lazy("Pizza")).toBeInTheDocument();
   await press.ArrowDown();
-  expect(q.option("Pizza")).toHaveFocus();
+  await expect.poll(q.option.lazy("Pizza")).toHaveFocus();
 });
 
 test("open with keyboard, then try to open again", async () => {

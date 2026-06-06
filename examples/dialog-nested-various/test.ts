@@ -1,4 +1,4 @@
-import { click, press, q, waitFor } from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 function getBackdrop(name: string) {
@@ -230,15 +230,15 @@ test.each(["nested", "sibling"])(
   async (name) => {
     await click(q.button("Open dialog"));
     await click(q.button(`${name} dismiss`));
-    await waitFor(() => expect(q.button("Close")).toHaveFocus());
+    await expect.poll(q.button.lazy("Close")).toHaveFocus();
     expect(q.dialog(`${name} dismiss`)).toBeVisible();
     expect(q.dialog("Dialog")).not.toBeInTheDocument();
     expectModalStyle(true);
     await click(q.button(`${name} dismiss ${name}`));
-    await waitFor(() =>
-      expect(q.dialog.includesHidden(`${name} dismiss`)).not.toBeVisible(),
-    );
-    await waitFor(() => expect(q.button("Close")).toHaveFocus());
+    await expect
+      .poll(q.dialog.includesHidden.lazy(`${name} dismiss`))
+      .not.toBeVisible();
+    await expect.poll(q.button.lazy("Close")).toHaveFocus();
     expect(q.dialog(`${name} dismiss ${name}`)).toBeVisible();
     expectModalStyle(true);
     await press.Escape();

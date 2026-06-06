@@ -1,5 +1,5 @@
 import { isVisible, isFocusable, invariant } from "@ariakit/utils";
-import { wrapAsync } from "./__utils.ts";
+import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
 import { hover } from "./hover.ts";
@@ -159,7 +159,10 @@ export function click(
     }
 
     if (!tap) {
-      await sleep();
+      // Press-and-release dwell between mouseDown and mouseUp: let work scheduled
+      // on pointer/mouse down flush (microtask/rAF) before releasing, without a
+      // wall-clock delay. The final settle below keeps the real timer.
+      await settle();
     }
 
     await mouseUp(element, options);

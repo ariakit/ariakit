@@ -24,6 +24,11 @@ const defaultTestIncludes = ["**/*test.{ts,tsx}"];
 const defaultTestExcludes = [
   "packages/ariakit-react*/src/**/*test.{ts,tsx}",
   "packages/ariakit-solid*/src/**/*test.{ts,tsx}",
+  // Loader-specific tests (`*react.test.*`/`*solid.test.*`) run via test-react
+  // and test-solid. Their names also match the generic `*test.*` include above,
+  // so keep them out of the default (no-loader) suite explicitly.
+  "**/*react.test.{ts,tsx}",
+  "**/*solid.test.{ts,tsx}",
   "examples/**/test.{ts,tsx}",
   "app/src/{examples,sandbox}/**/test.{ts,tsx}",
 ];
@@ -35,12 +40,14 @@ function getFrameworkTestIncludes(loader: AllowedTestLoader) {
   );
   const exampleTests = entryFiles.flatMap((file) => {
     const dir = dirname(file);
-    return [`${dir}/test.{ts,tsx}`, `${dir}/test.${loader}.{ts,tsx}`];
+    return [`${dir}/test.{ts,tsx}`, `${dir}/${loader}.test.{ts,tsx}`];
   });
+  // The first glob covers the ariakit-${loader}* packages, whose tests are
+  // all loader-specific. The second picks up loader-marked
+  // `*${loader}.test.{ts,tsx}` files in any other package, like ariakit-test.
   return [
     `packages/ariakit-${loader}*/src/**/*test.{ts,tsx}`,
-    `packages/ariakit-${loader}*/src/**/*test.${loader}.{ts,tsx}`,
-    `packages/ariakit-test/src/**/*test.${loader}.{ts,tsx}`,
+    `packages/*/src/**/*${loader}.test.{ts,tsx}`,
     ...exampleTests,
   ];
 }

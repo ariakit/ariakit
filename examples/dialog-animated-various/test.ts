@@ -1,8 +1,12 @@
 // @vitest-environment jsdom
-// happy-dom's requestAnimationFrame fires almost immediately (~0ms) instead of
-// the ~16ms real browsers use, which collapses the CSS keyframe leave timing
-// these tests assert on. Pinned to jsdom.
-import { click, press, q, sleep, waitFor } from "@ariakit/test";
+// This suite opts out of the default happy-dom environment. The animation-based
+// leave cases (AnimationLeave/AnimationUnmountLeave) depend on
+// `data-[leave]:animate-out` playing while the dialog closes. Under happy-dom's
+// timer cadence, React commits a transient `mounted: false` render during close
+// that cancels the leave transition, so the animation never plays and the dialog
+// unmounts immediately. jsdom's requestAnimationFrame cadence keeps `mounted`
+// stable through the close, matching real browsers.
+import { click, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test.each([
@@ -36,5 +40,5 @@ test.each([
     expect(q.dialog(name)).not.toHaveStyle("display: none");
   }
 
-  await waitFor(() => expect(q.dialog(name)).not.toBeInTheDocument());
+  await expect.poll(q.dialog.lazy(name)).not.toBeInTheDocument();
 });

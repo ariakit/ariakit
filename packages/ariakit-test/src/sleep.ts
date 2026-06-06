@@ -1,10 +1,11 @@
 import { isBrowser, nextFrame, wrapAsync } from "./__utils.ts";
 
-// The two animation frames in sleep() provide most of the settle time between
-// simulated interactions, so this delay is kept small in non-browser
-// environments — but not zero, as a few milliseconds remain load-bearing for
-// some interactions, such as hiding a dialog by clicking outside.
-const defaultMs = isBrowser ? 150 : 8;
+// The intermediate sub-steps of each interaction now settle without a wall-clock
+// delay (see `settle()`), so this delay only applies to the final settle after
+// an interaction. It's kept small in non-browser environments — but not zero, as
+// a few milliseconds remain load-bearing for some interactions, such as hiding a
+// dialog by clicking outside.
+const defaultMs = isBrowser ? 150 : 4;
 
 /**
  * Waits for the DOM to settle between simulated interactions by yielding across
