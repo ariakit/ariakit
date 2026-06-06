@@ -43,8 +43,8 @@ describe.each(labels)("%s", (label) => {
     await click(q.button(label));
     expect(q.menu(label)).toBeVisible();
     expect(q.tooltip(label)).not.toBeInTheDocument();
-    await hover(q.button.includesHidden(label));
-    await hover(q.button.includesHidden(label));
+    await hover(q.button.hidden(label));
+    await hover(q.button.hidden(label));
     expect(q.tooltip(label)).not.toBeInTheDocument();
   });
 
@@ -55,8 +55,8 @@ describe.each(labels)("%s", (label) => {
     expect(q.menu(label)).toBeVisible();
     expect(q.tooltip(label)).not.toBeInTheDocument();
     await hoverOutside();
-    await hover(q.button.includesHidden(label));
-    await hover(q.button.includesHidden(label));
+    await hover(q.button.hidden(label));
+    await hover(q.button.hidden(label));
     if (label.includes("modal")) {
       expect(q.tooltip(label)).not.toBeInTheDocument();
     } else {

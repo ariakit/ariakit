@@ -23,7 +23,7 @@ test("show tooltip on focus", async () => {
   await press.Tab();
   expect(q.tooltip(tooltip)).toBeVisible();
   await click(document.body);
-  expect(q.tooltip.includesHidden(tooltip)).toBeVisible();
+  expect(q.tooltip.hidden(tooltip)).toBeVisible();
   await expect.poll(q.tooltip.lazy(tooltip)).not.toBeInTheDocument();
 });
 

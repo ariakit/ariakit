@@ -148,9 +148,9 @@ function matchName(name: string | RegExp, accessibleName: string | null) {
   return name.test(accessibleName);
 }
 
-function getNameOption(name?: string | RegExp, includesHidden?: boolean) {
+function getNameOption(name?: string | RegExp, hidden?: boolean) {
   return (accessibleName: string, element: Element | HTMLInputElement) => {
-    if (!includesHidden && element.closest("[inert]")) return false;
+    if (!hidden && element.closest("[inert]")) return false;
     if (!name) return true;
     if (matchName(name, accessibleName)) return true;
     if (element.getAttribute("aria-label")) return false;
@@ -180,7 +180,7 @@ function createRoleQuery(role: AriaRole, queries = documentQueries) {
     };
   };
 
-  const createIncludesHidden = <T extends ReturnType<typeof createQuery>>(
+  const createHiddenQuery = <T extends ReturnType<typeof createQuery>>(
     query: T,
   ) =>
     assignLazy(
@@ -196,31 +196,31 @@ function createRoleQuery(role: AriaRole, queries = documentQueries) {
   const ensureAllQuery = assignLazy(createQuery(queries.getAllByRole));
 
   const all = Object.assign(allQuery, {
-    includesHidden: createIncludesHidden(allQuery),
+    hidden: createHiddenQuery(allQuery),
     wait: Object.assign(waitAllQuery, {
-      includesHidden: createIncludesHidden(waitAllQuery),
+      hidden: createHiddenQuery(waitAllQuery),
     }),
     ensure: Object.assign(ensureAllQuery, {
-      includesHidden: createIncludesHidden(ensureAllQuery),
+      hidden: createHiddenQuery(ensureAllQuery),
     }),
   });
 
   const wait = Object.assign(waitQuery, {
-    includesHidden: createIncludesHidden(waitQuery),
+    hidden: createHiddenQuery(waitQuery),
     all: Object.assign(waitAllQuery, {
-      includesHidden: createIncludesHidden(waitAllQuery),
+      hidden: createHiddenQuery(waitAllQuery),
     }),
   });
 
   const ensure = Object.assign(ensureQuery, {
-    includesHidden: createIncludesHidden(ensureQuery),
+    hidden: createHiddenQuery(ensureQuery),
     all: Object.assign(ensureAllQuery, {
-      includesHidden: createIncludesHidden(ensureAllQuery),
+      hidden: createHiddenQuery(ensureAllQuery),
     }),
   });
 
   return Object.assign(query, {
-    includesHidden: createIncludesHidden(query),
+    hidden: createHiddenQuery(query),
     all,
     wait,
     ensure,
@@ -300,8 +300,7 @@ function createQueryObject(queries = documentQueries): QueryObject {
  * Every query also exposes `.lazy` (return a reusable function that runs the
  * query when called), `.all` (return all matches), `.wait` (resolve once the
  * element appears), and `.ensure` (throw when it's missing) variants, and role
- * queries additionally expose `.includesHidden` to include otherwise-hidden
- * elements.
+ * queries additionally expose `.hidden` to include otherwise-hidden elements.
  * @example
  * ```ts
  * const dialog = query.dialog.lazy("Settings");

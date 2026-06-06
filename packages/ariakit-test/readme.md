@@ -268,7 +268,7 @@ const query: QueryObject;
 
 Queries the DOM by ARIA role, accessible name, text, or label, built on top of Testing Library. Call a role method such as `query.button(name)` or `query.dialog()` to get the matching element (or `null`), passing a string or `RegExp` to match its accessible name. Use `query.text()` and `query.labeled()` to query by text content or associated label, and `query.within(element)` to scope queries to a subtree.
 
-Every query also exposes `.lazy` (return a reusable function that runs the query when called), `.all` (return all matches), `.wait` (resolve once the element appears), and `.ensure` (throw when it's missing) variants, and role queries additionally expose `.includesHidden` to include otherwise-hidden elements.
+Every query also exposes `.lazy` (return a reusable function that runs the query when called), `.all` (return all matches), `.wait` (resolve once the element appears), and `.ensure` (throw when it's missing) variants, and role queries additionally expose `.hidden` to include otherwise-hidden elements.
 
 Example:
 
