@@ -1,37 +1,21 @@
 import { click, q } from "@ariakit/test";
-import { expect, test, vi } from "vitest";
+import { expect, test } from "vitest";
 
-test("does not reinstall mousemove listener when nested hovercards change", async () => {
+// See https://github.com/ariakit/ariakit/pull/6143
+const installCount = () =>
+  q.status.ensure("Parent hovercard mousemove listener installs").textContent;
+
+test("toggling a nested hovercard does not reinstall the parent mousemove listener", async () => {
   expect(q.dialog("Parent hovercard")).toBeVisible();
+  const initialInstalls = installCount();
 
-  const addEventListener = vi.spyOn(document, "addEventListener");
-  const removeEventListener = vi.spyOn(document, "removeEventListener");
+  // Mounting a nested hovercard must not reinstall the parent's listener.
+  await click(q.button("Toggle nested"));
+  await expect.poll(q.dialog.lazy("Nested hovercard")).toBeVisible();
+  expect(installCount()).toBe(initialInstalls);
 
-  try {
-    await click(q.button("Toggle nested"));
-    await expect.poll(q.dialog.lazy("Nested hovercard")).toBeVisible();
-    await click(q.button("Toggle nested"));
-    await expect
-      .poll(q.dialog.lazy("Nested hovercard"))
-      .not.toBeInTheDocument();
-
-    const addedMouseMoveListeners = new Set(
-      addEventListener.mock.calls
-        .filter(([type, , options]) => type === "mousemove" && options === true)
-        .map(([, listener]) => listener),
-    );
-
-    const removedExistingMouseMoveListeners =
-      removeEventListener.mock.calls.filter(
-        ([type, listener, options]) =>
-          type === "mousemove" &&
-          options === true &&
-          !addedMouseMoveListeners.has(listener),
-      );
-
-    expect(removedExistingMouseMoveListeners).toHaveLength(0);
-  } finally {
-    addEventListener.mockRestore();
-    removeEventListener.mockRestore();
-  }
+  // Unmounting the nested hovercard must not reinstall it either.
+  await click(q.button("Toggle nested"));
+  await expect.poll(q.dialog.lazy("Nested hovercard")).not.toBeInTheDocument();
+  expect(installCount()).toBe(initialInstalls);
 });
