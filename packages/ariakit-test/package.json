@@ -19,9 +19,8 @@
     "directory": "packages/ariakit-test"
   },
   "type": "module",
-  "sideEffects": false,
   "scripts": {
-    "build": "ariakit build",
+    "build": "ariakit build --entries=index,react,playwright",
     "clean": "ariakit clean",
     "docs": "ariakit docs --write && pnpm run docs-react && pnpm run docs-playwright",
     "docs-react": "ariakit docs --write --entry src/react.tsx --marker react --heading 'React API reference' --exclude src/index.ts",
@@ -54,22 +53,8 @@
   },
   "exports": {
     ".": "./src/index.ts",
-    "./blur": "./src/blur.ts",
-    "./click": "./src/click.ts",
-    "./dispatch": "./src/dispatch.ts",
-    "./focus": "./src/focus.ts",
-    "./hover": "./src/hover.ts",
-    "./mouse-down": "./src/mouse-down.ts",
-    "./mouse-up": "./src/mouse-up.ts",
     "./playwright": "./src/playwright.ts",
-    "./press": "./src/press.ts",
-    "./query": "./src/query.ts",
     "./react": "./src/react.tsx",
-    "./select": "./src/select.ts",
-    "./sleep": "./src/sleep.ts",
-    "./tap": "./src/tap.ts",
-    "./type": "./src/type.ts",
-    "./wait-for": "./src/wait-for.ts",
     "./package.json": "./package.json"
   }
 }
