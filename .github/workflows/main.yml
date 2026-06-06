@@ -207,3 +207,35 @@ jobs:
           name: safari-test-results
           path: test-results
           retention-days: 30
+
+  debug-cpu:
+    name: Debug CPU
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up environment
+        uses: ./.github/workflows/setup
+
+      - name: OS CPU info
+        run: |
+          echo "nproc=$(nproc)"
+          node -e "const os=require('os'); console.log('os.cpus().length='+os.cpus().length); console.log('os.availableParallelism()='+os.availableParallelism());"
+
+      - name: Vitest concurrency probe
+        run: |
+          mkdir -p probe-tmp
+          for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
+            cat > "probe-tmp/p$i.test.ts" <<'EOF'
+          import { test } from "vitest";
+          test("probe", async () => {
+            console.log(`PROBE start pid=${process.pid} t=${Date.now()}`);
+            await new Promise((r) => setTimeout(r, 3000));
+            console.log(`PROBE end pid=${process.pid} t=${Date.now()}`);
+          });
+          EOF
+          done
+          pnpm test probe-tmp 2>&1 | grep PROBE
+          echo "--- analysis: parallel workers = number of 'start' lines before the first 'end' line ---"
