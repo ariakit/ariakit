@@ -12,10 +12,10 @@ const hoverOutside = async () => {
 test("show tooltip on hover", async () => {
   expect(q.tooltip(tooltip)).not.toBeInTheDocument();
   await hover(q.link());
-  await expect.poll(() => q.tooltip(tooltip)).toBeVisible();
+  await expect.poll(q.tooltip.lazy(tooltip)).toBeVisible();
   await hoverOutside();
   expect(q.tooltip(tooltip)).toBeVisible();
-  await expect.poll(() => q.tooltip(tooltip)).not.toBeInTheDocument();
+  await expect.poll(q.tooltip.lazy(tooltip)).not.toBeInTheDocument();
 });
 
 test("show tooltip on focus", async () => {
@@ -24,16 +24,16 @@ test("show tooltip on focus", async () => {
   expect(q.tooltip(tooltip)).toBeVisible();
   await click(document.body);
   expect(q.tooltip.includesHidden(tooltip)).toBeVisible();
-  await expect.poll(() => q.tooltip(tooltip)).not.toBeInTheDocument();
+  await expect.poll(q.tooltip.lazy(tooltip)).not.toBeInTheDocument();
 });
 
 test("click on tooltip and press esc", async () => {
   expect(q.tooltip(tooltip)).not.toBeInTheDocument();
   await hover(q.link());
-  await expect.poll(() => q.tooltip(tooltip)).toBeVisible();
+  await expect.poll(q.tooltip.lazy(tooltip)).toBeVisible();
   await click(q.tooltip(tooltip));
   expect(q.tooltip(tooltip)).toBeVisible();
   await press.Escape();
   expect(q.link()).toHaveFocus();
-  await expect.poll(() => q.tooltip(tooltip)).not.toBeInTheDocument();
+  await expect.poll(q.tooltip.lazy(tooltip)).not.toBeInTheDocument();
 });

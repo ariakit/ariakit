@@ -9,10 +9,10 @@ test("does not reinstall mousemove listener when nested hovercards change", asyn
 
   try {
     await click(q.button("Toggle nested"));
-    await expect.poll(() => q.dialog("Nested hovercard")).toBeVisible();
+    await expect.poll(q.dialog.lazy("Nested hovercard")).toBeVisible();
     await click(q.button("Toggle nested"));
     await expect
-      .poll(() => q.dialog("Nested hovercard"))
+      .poll(q.dialog.lazy("Nested hovercard"))
       .not.toBeInTheDocument();
 
     const addedMouseMoveListeners = new Set(

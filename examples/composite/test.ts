@@ -4,7 +4,7 @@ import { expect, test } from "vitest";
 test("navigate through items with keyboard", async () => {
   expect(q.button("🍎 Apple")).not.toHaveFocus();
   await expect
-    .poll(() => q.button("🍎 Apple"))
+    .poll(q.button.lazy("🍎 Apple"))
     .toHaveAttribute("data-active-item");
 
   await press.Tab();

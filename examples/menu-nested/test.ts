@@ -82,7 +82,7 @@ test("show/hide submenu on mouse hover", async () => {
   // The submenu shouldn't be immediately visible
   expect(q.menu("Find")).not.toBeInTheDocument();
   // Wait for show timeout
-  await expect.poll(() => q.menu("Find")).toBeVisible();
+  await expect.poll(q.menu.lazy("Find")).toBeVisible();
   expect(q.menuitem("Find")).toHaveFocus();
   // Hover on submenu item
   await hover(q.menuitem("Find Next"));
@@ -94,7 +94,7 @@ test("show/hide submenu on mouse hover", async () => {
   expect(q.menuitem("Speech")).toHaveFocus();
   expect(q.menu("Find")).not.toBeInTheDocument();
   expect(q.menu("Speech")).not.toBeInTheDocument();
-  await expect.poll(() => q.menu("Speech")).toBeVisible();
+  await expect.poll(q.menu.lazy("Speech")).toBeVisible();
 });
 
 test("hide submenu on escape", async () => {

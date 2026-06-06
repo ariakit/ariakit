@@ -7,7 +7,7 @@ test("resets outside-interaction focus tracking when reopened", async () => {
 
   await click(q.button.ensure("Focus inside"));
   await click(q.button.ensure("Close dialog"));
-  await expect.poll(() => q.dialog.includesHidden("Dialog")).not.toBeVisible();
+  await expect.poll(q.dialog.includesHidden.lazy("Dialog")).not.toBeVisible();
 
   await click(q.button.ensure("Open dialog"));
   expect(q.dialog("Dialog")).toBeVisible();
@@ -18,9 +18,7 @@ test("resets outside-interaction focus tracking when reopened", async () => {
 
   try {
     input.focus();
-    await expect
-      .poll(() => q.dialog.includesHidden("Dialog"))
-      .not.toBeVisible();
+    await expect.poll(q.dialog.includesHidden.lazy("Dialog")).not.toBeVisible();
   } finally {
     input.remove();
   }

@@ -9,12 +9,12 @@ test("https://github.com/ariakit/ariakit/issues/4115", async () => {
   await click(q.button("Toggle"));
   expect(q.text("Content")).toHaveAttribute("data-animating");
   await expect
-    .poll(() => q.text("Content"), { timeout: transitionTimeout })
+    .poll(q.text.lazy("Content"), { timeout: transitionTimeout })
     .not.toHaveAttribute("data-animating");
 
   await click(q.button("Toggle"));
   expect(q.text("Content")).toHaveAttribute("data-animating");
   await expect
-    .poll(() => q.text("Content"), { timeout: transitionTimeout })
+    .poll(q.text.lazy("Content"), { timeout: transitionTimeout })
     .not.toHaveAttribute("data-animating");
 });

@@ -32,7 +32,7 @@ test("show/hide on space", async () => {
   expect(q.menu()).toBeVisible();
   expect(q.menuitem("Edit")).toHaveFocus();
   await expect
-    .poll(() => q.menuitem("Edit"))
+    .poll(q.menuitem.lazy("Edit"))
     .toHaveAttribute("data-focus-visible");
   await press.ShiftTab();
   expect(q.menu()).toBeVisible();

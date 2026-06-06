@@ -5,7 +5,7 @@ test("show/hide when clicking on disclosure", async () => {
   expect(q.dialog()).not.toBeInTheDocument();
   await click(q.button("Accept invite"));
   await expect.poll(q.dialog).toBeVisible();
-  await expect.poll(() => q.button("Accept")).toHaveFocus();
+  await expect.poll(q.button.lazy("Accept")).toHaveFocus();
   await click(q.button("Accept invite"));
   expect(q.dialog()).not.toBeInTheDocument();
   expect(q.button("Accept invite")).toHaveFocus();
@@ -15,7 +15,7 @@ test("show/hide when pressing enter on disclosure", async () => {
   await press.Tab();
   await press.Enter();
   await expect.poll(q.dialog).toBeVisible();
-  await expect.poll(() => q.button("Accept")).toHaveFocus();
+  await expect.poll(q.button.lazy("Accept")).toHaveFocus();
   await press.ShiftTab();
   await press.Enter();
   expect(q.dialog()).not.toBeInTheDocument();
@@ -25,7 +25,7 @@ test("show/hide when pressing space on disclosure", async () => {
   await press.Tab();
   await press.Space();
   await expect.poll(q.dialog).toBeVisible();
-  await expect.poll(() => q.button("Accept")).toHaveFocus();
+  await expect.poll(q.button.lazy("Accept")).toHaveFocus();
   await press.ShiftTab();
   await press.Space();
   expect(q.dialog()).not.toBeInTheDocument();

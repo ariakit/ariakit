@@ -37,7 +37,7 @@ test("show/hide on space", async () => {
   await press.Tab();
   await press.Space();
   expect(q.menu("File")).toBeVisible();
-  await expect.poll(() => q.menuitem("New Tab")).toHaveFocus();
+  await expect.poll(q.menuitem.lazy("New Tab")).toHaveFocus();
   await press.Space();
   expect(q.menu("File")).not.toBeInTheDocument();
   expect(q.menuitem("File")).toHaveFocus();
@@ -128,7 +128,7 @@ test("hide on escape", async () => {
   expect(q.menuitem("Share")).toHaveFocus();
   await sleep(600);
   await press.Space();
-  await expect.poll(() => q.menuitem("Email Link")).toHaveFocus();
+  await expect.poll(q.menuitem.lazy("Email Link")).toHaveFocus();
   await press.Escape();
   expect(q.menuitem("File")).toHaveFocus();
   expect(q.menu("Share")).not.toBeInTheDocument();

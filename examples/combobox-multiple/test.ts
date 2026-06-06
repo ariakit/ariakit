@@ -34,12 +34,12 @@ test("check/uncheck with enter", async () => {
 test("check/uncheck item after filtering", async () => {
   await press.Tab();
   await type("b");
-  await expect.poll(() => q.option("Apple")).not.toBeInTheDocument();
+  await expect.poll(q.option.lazy("Apple")).not.toBeInTheDocument();
   expect(q.option("Bacon")).toHaveAttribute("aria-selected", "true");
   await press.ArrowDown();
   await press.Enter();
   await expect
-    .poll(() => q.option("Apple"))
+    .poll(q.option.lazy("Apple"))
     .toHaveAttribute("aria-selected", "false");
   expect(q.option("Bacon")).toHaveAttribute("aria-selected", "false");
   expect(q.combobox()).toHaveValue("");
@@ -47,12 +47,12 @@ test("check/uncheck item after filtering", async () => {
   await press.ArrowUp();
   await press.Enter();
   await expect
-    .poll(() => q.option("Pineapple"))
+    .poll(q.option.lazy("Pineapple"))
     .toHaveAttribute("aria-selected", "true");
   expect(q.combobox()).toHaveValue("");
-  await expect.poll(() => q.option("Pizza")).toBeInTheDocument();
+  await expect.poll(q.option.lazy("Pizza")).toBeInTheDocument();
   await press.ArrowDown();
-  await expect.poll(() => q.option("Pizza")).toHaveFocus();
+  await expect.poll(q.option.lazy("Pizza")).toHaveFocus();
 });
 
 test("open with keyboard, then try to open again", async () => {
