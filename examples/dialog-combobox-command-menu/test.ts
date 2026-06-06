@@ -15,8 +15,8 @@ test("open dialog with click and hide with esc", async () => {
   expect(q.group("Suggestions")).toBeVisible();
   await press.Escape();
   // The dialog is closing and therefore inert, so query the option inside it
-  // with `includesHidden` to assert it's no longer the active item.
-  expect(q.option.includesHidden("Search Contacts")).not.toHaveAttribute(
+  // with `hidden` to assert it's no longer the active item.
+  expect(q.option.hidden("Search Contacts")).not.toHaveAttribute(
     "data-active-item",
   );
   expect(q.button("Open Command Menu")).toHaveFocus();
@@ -29,8 +29,8 @@ test("open dialog with click and hide by clicking outside", async () => {
   expect(q.combobox("Search for apps and commands...")).toHaveFocus();
   await click(document.body);
   // The dialog is closing and therefore inert, so query the option inside it
-  // with `includesHidden` to assert it's no longer the active item.
-  expect(q.option.includesHidden("Search Contacts")).not.toHaveAttribute(
+  // with `hidden` to assert it's no longer the active item.
+  expect(q.option.hidden("Search Contacts")).not.toHaveAttribute(
     "data-active-item",
   );
   expect(q.button("Open Command Menu")).not.toHaveFocus();

@@ -23,7 +23,7 @@ test("lazy role queries run when called", () => {
 
 test("lazy role query variants run the matching variant", () => {
   const dialog = q.dialog.ensure.lazy("Visible");
-  const hiddenDialog = q.dialog.includesHidden.lazy("Hidden");
+  const hiddenDialog = q.dialog.hidden.lazy("Hidden");
   const dialogs = q.dialog.all.lazy("Visible");
 
   document.body.innerHTML = `

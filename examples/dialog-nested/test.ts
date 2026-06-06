@@ -38,7 +38,7 @@ test("show confirm dialog", async () => {
   await click(q.button("View Cart"));
   expect(q.dialog("Remove product")).not.toBeInTheDocument();
   await click(q.button("Remove Warm Jacket"));
-  expect(q.dialog.includesHidden("Your Shopping Cart")).toBeVisible();
+  expect(q.dialog.hidden("Your Shopping Cart")).toBeVisible();
   expect(q.dialog("Your Shopping Cart")).not.toBeInTheDocument();
   expect(q.dialog("Remove product")).toBeVisible();
   expect(q.button("Cancel")).toHaveFocus();
