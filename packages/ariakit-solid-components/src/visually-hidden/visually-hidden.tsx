@@ -23,8 +23,8 @@ export const useVisuallyHidden = createHook<TagName, VisuallyHiddenOptions>(
     props = mergeProps(
       {
         style: {
-          border: 0,
-          clip: "rect(0 0 0 0)",
+          "border-width": 0,
+          "clip-path": "inset(50%)",
           height: "1px",
           margin: "-1px",
           overflow: "hidden",

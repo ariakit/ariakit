@@ -189,11 +189,14 @@ async function getBodyClip(page: Page, margin = DEFAULT_CLIP_MARGIN) {
     const rects: Rect[] = [];
     const walk = (el: Element, padded = true) => {
       const rect = el.getBoundingClientRect();
-      // Ignore visually hidden elements.
+      // Ignore visually hidden elements. They collapse to a 1px absolutely
+      // positioned box clipped to nothing, either via the legacy `clip`
+      // property or the modern `clip-path`, so exclude both so they don't
+      // stretch the captured region toward the page corner.
       if (rect.width <= 1 && rect.height <= 1) {
         const style = window.getComputedStyle(el);
         if (
-          style.clip !== "auto" &&
+          (style.clip !== "auto" || style.clipPath !== "none") &&
           (style.position === "absolute" || style.position === "fixed")
         ) {
           return;
