@@ -18,6 +18,79 @@ export async function flushMicrotasks() {
   await Promise.resolve();
 }
 
+function macrotask() {
+  // Yield behind the host-scheduler primitive React drives its concurrent work
+  // loop with, so a turn runs after a React slice already queued on it: React 18
+  // prefers `setImmediate` in Node (the environment the suites run in) and falls
+  // back to `MessageChannel` in browser/worker builds, so route through the same
+  // order. Plain `setTimeout` is the last resort.
+  return new Promise<void>((resolve) => {
+    if (typeof setImmediate === "function") {
+      setImmediate(resolve);
+    } else if (typeof MessageChannel !== "undefined") {
+      const channel = new MessageChannel();
+      channel.port1.onmessage = () => {
+        channel.port1.close();
+        resolve();
+      };
+      channel.port2.postMessage(undefined);
+    } else {
+      setTimeout(resolve);
+    }
+  });
+}
+
+// Drains pending host-scheduler work so a settle doesn't return mid-commit.
+// React 18 runs concurrently while simulated interactions run (the act
+// environment is disabled in `wrapAsync`), so it can split a render or commit
+// across several scheduler tasks when it judges the frame budget spent — which
+// happens more readily under CPU contention on CI. A fixed wall-clock settle can
+// then return between two slices, leaving the DOM momentarily unsettled. Yield
+// through the scheduler's own macrotask repeatedly so each pending slice runs,
+// stopping once two consecutive turns pass without a DOM mutation (a committed
+// React update mutates the tree, and the MutationObserver callback is flushed
+// within the turn). This is a bounded best effort: `maxTurns` caps the drain so
+// a runaway scheduler can't hang the settle, and a render that takes several
+// non-committing slices could still exit early — but the suites' updates commit
+// well within the budget. Each turn is a no-op when the queue is empty, so the
+// common already-settled case costs about two round-trips.
+export async function flushScheduler(maxTurns = 10) {
+  if (
+    typeof document === "undefined" ||
+    typeof MutationObserver === "undefined"
+  ) {
+    await macrotask();
+    await flushMicrotasks();
+    return;
+  }
+  let mutated = false;
+  const observer = new MutationObserver(() => {
+    mutated = true;
+  });
+  observer.observe(document, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    characterData: true,
+  });
+  try {
+    let stableTurns = 0;
+    for (let turn = 0; turn < maxTurns; turn += 1) {
+      mutated = false;
+      await macrotask();
+      await flushMicrotasks();
+      // A mutation may be observed a microtask after it lands, so require two
+      // consecutive quiet turns before treating the tree as settled. This keeps
+      // a render slice that hasn't committed its DOM changes yet from ending the
+      // drain early.
+      stableTurns = mutated ? 0 : stableTurns + 1;
+      if (stableTurns >= 2) break;
+    }
+  } finally {
+    observer.disconnect();
+  }
+}
+
 export function nextFrame() {
   return new Promise(requestAnimationFrame);
 }

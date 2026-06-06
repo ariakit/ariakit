@@ -352,7 +352,7 @@ function sleep(ms = defaultMs): Promise<void>;
 
 Waits for the DOM to settle between simulated interactions by yielding across two animation frames and a short timeout.
 
-The other helpers in this package call it internally, but you can await it directly to let pending updates, transitions, or effects flush before asserting. The default delay is small and environment-dependent; pass `ms` to override it.
+The other helpers in this package call it internally, but you can await it directly to let pending updates, transitions, or effects flush before asserting. The default delay is small and environment-dependent; pass `ms` to override it. Outside a real browser it also drains the host scheduler so concurrent React work that the delay raced past settles before the call resolves.
 
 Example:
 
