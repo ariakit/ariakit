@@ -1,9 +1,4 @@
-// @vitest-environment jsdom
-// The selected-tab restoration is deferred via startTransition/useDeferredValue;
-// under happy-dom's faster rAF cadence that concurrent-render update never
-// settles (the default tab isn't restored after reopening), unlike jsdom and
-// real browsers. Pinned to jsdom.
-import { click, press, q, sleep, waitFor } from "@ariakit/test";
+import { click, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("selected tab is restored only after the animation ends", async () => {
@@ -17,10 +12,11 @@ test("selected tab is restored only after the animation ends", async () => {
   expect(q.tabpanel("Examples 31")).toBeVisible();
   await press.Escape();
   expect(q.combobox()).toHaveAttribute("data-active-item");
-  expect(q.tab("Examples 31")).not.toHaveFocus();
-  expect(q.tab("Examples 31")).not.toHaveAttribute("data-active-item");
-  expect(q.tab("Examples 31")).toHaveAttribute("aria-selected", "true");
-  await waitFor(() => expect(q.dialog("Pages")).not.toBeInTheDocument());
+  const examplesTab = q.tab.hidden("Examples 31");
+  expect(examplesTab).not.toHaveFocus();
+  expect(examplesTab).not.toHaveAttribute("data-active-item");
+  expect(examplesTab).toHaveAttribute("aria-selected", "true");
+  await expect.poll(q.dialog.hidden.lazy("Pages")).not.toBeInTheDocument();
   await press.ArrowDown();
   await press.ArrowDown();
   expect(q.tab("Components 16")).toHaveFocus();

@@ -3,8 +3,8 @@
   "references": [
     { "path": "./tsconfig.node.json" },
     { "path": "./tsconfig.test.json" },
-    { "path": "./tsconfig.test.react.json" },
-    { "path": "./tsconfig.test.solid.json" },
+    { "path": "./tsconfig.react.test.json" },
+    { "path": "./tsconfig.solid.test.json" },
     { "path": "./packages/ariakit-utils/tsconfig.json" },
     { "path": "./packages/ariakit-store/tsconfig.json" },
     { "path": "./packages/ariakit-components/tsconfig.json" },

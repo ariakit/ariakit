@@ -5,5 +5,5 @@
     "jsxImportSource": "react"
   },
   "include": ["**/*.react.tsx"],
-  "exclude": ["website", "app", "examples", "**/*test.react.tsx"]
+  "exclude": ["website", "app", "examples", "**/*react.test.tsx"]
 }

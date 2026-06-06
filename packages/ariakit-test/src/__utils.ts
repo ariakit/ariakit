@@ -1,5 +1,4 @@
-// oxlint-disable unbound-method
-import { isFocusable, noop } from "@ariakit/utils";
+import { noop } from "@ariakit/utils";
 
 export type DirtiableElement = Element & { dirty?: boolean };
 
@@ -13,18 +12,83 @@ export const isBrowser =
   typeof window !== "undefined" &&
   !isHappyDOM;
 
-// happy-dom doesn't implement window.alert (jsdom and real browsers do). Provide
-// a no-op so code that calls or spies on it works under happy-dom. This runs at
-// import — not in applyBrowserPolyfills — because tests may install a spy before
-// the first simulated interaction.
-if (isHappyDOM && typeof window.alert !== "function") {
-  window.alert = () => {};
-}
-
 export async function flushMicrotasks() {
   await Promise.resolve();
   await Promise.resolve();
   await Promise.resolve();
+}
+
+function macrotask() {
+  // Yield behind the host-scheduler primitive React drives its concurrent work
+  // loop with, so a turn runs after a React slice already queued on it: React 18
+  // prefers `setImmediate` in Node (the environment the suites run in) and falls
+  // back to `MessageChannel` in browser/worker builds, so route through the same
+  // order. Plain `setTimeout` is the last resort.
+  return new Promise<void>((resolve) => {
+    if (typeof setImmediate === "function") {
+      setImmediate(resolve);
+    } else if (typeof MessageChannel !== "undefined") {
+      const channel = new MessageChannel();
+      channel.port1.onmessage = () => {
+        channel.port1.close();
+        resolve();
+      };
+      channel.port2.postMessage(undefined);
+    } else {
+      setTimeout(resolve);
+    }
+  });
+}
+
+// Drains pending host-scheduler work so a settle doesn't return mid-commit.
+// React 18 runs concurrently while simulated interactions run (the act
+// environment is disabled in `wrapAsync`), so it can split a render or commit
+// across several scheduler tasks when it judges the frame budget spent — which
+// happens more readily under CPU contention on CI. A fixed wall-clock settle can
+// then return between two slices, leaving the DOM momentarily unsettled. Yield
+// through the scheduler's own macrotask repeatedly so each pending slice runs,
+// stopping once two consecutive turns pass without a DOM mutation (a committed
+// React update mutates the tree, and the MutationObserver callback is flushed
+// within the turn). This is a bounded best effort: `maxTurns` caps the drain so
+// a runaway scheduler can't hang the settle, and a render that takes several
+// non-committing slices could still exit early — but the suites' updates commit
+// well within the budget. Each turn is a no-op when the queue is empty, so the
+// common already-settled case costs about two round-trips.
+export async function flushScheduler(maxTurns = 10) {
+  if (
+    typeof document === "undefined" ||
+    typeof MutationObserver === "undefined"
+  ) {
+    await macrotask();
+    await flushMicrotasks();
+    return;
+  }
+  let mutated = false;
+  const observer = new MutationObserver(() => {
+    mutated = true;
+  });
+  observer.observe(document, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    characterData: true,
+  });
+  try {
+    let stableTurns = 0;
+    for (let turn = 0; turn < maxTurns; turn += 1) {
+      mutated = false;
+      await macrotask();
+      await flushMicrotasks();
+      // A mutation may be observed a microtask after it lands, so require two
+      // consecutive quiet turns before treating the tree as settled. This keeps
+      // a render slice that hasn't committed its DOM changes yet from ending the
+      // drain early.
+      stableTurns = mutated ? 0 : stableTurns + 1;
+      if (stableTurns >= 2) break;
+    }
+  } finally {
+    observer.disconnect();
+  }
 }
 
 export function nextFrame() {
@@ -41,214 +105,20 @@ export function setActEnvironment(value: boolean) {
   return restoreActEnvironment;
 }
 
-export function applyBrowserPolyfills() {
-  if (isBrowser) return noop;
-
-  const originalFocus = HTMLElement.prototype.focus;
-
-  HTMLElement.prototype.focus = function focus(options) {
-    if (!isFocusable(this)) return;
-    return originalFocus.call(this, options);
-  };
-
-  const originalGetClientRects = Element.prototype.getClientRects;
-
-  // @ts-expect-error
-  Element.prototype.getClientRects = function getClientRects() {
-    const isHidden = (element: Element) => {
-      if (!element.isConnected) return true;
-      if (element.parentElement && isHidden(element.parentElement)) return true;
-      if (!(element instanceof HTMLElement)) return false;
-      if (element.hidden) return true;
-      const style = getComputedStyle(element);
-      return style.display === "none" || style.visibility === "hidden";
-    };
-    if (isHidden(this)) return [];
-    return [{ width: 1, height: 1 }];
-  };
-
-  if (!Element.prototype.scrollIntoView) {
-    Element.prototype.scrollIntoView = noop;
-  }
-
-  if (!Element.prototype.hasPointerCapture) {
-    Element.prototype.hasPointerCapture = noop;
-  }
-
-  if (!Element.prototype.setPointerCapture) {
-    Element.prototype.setPointerCapture = noop;
-  }
-
-  if (!Element.prototype.releasePointerCapture) {
-    Element.prototype.releasePointerCapture = noop;
-  }
-
-  if (typeof window.ClipboardEvent === "undefined") {
-    // @ts-expect-error
-    window.ClipboardEvent = class ClipboardEvent extends Event {};
-  }
-
-  if (typeof window.PointerEvent === "undefined") {
-    // @ts-expect-error
-    window.PointerEvent = class PointerEvent extends MouseEvent {};
-  }
-
-  // happy-dom diverges from real browsers in a few spec-conformance areas; these
-  // shims patch them while interactions run (jsdom already behaves correctly).
-  // Each helper returns a function that restores the original behavior.
-  const restoreHappyDOMShims = isHappyDOM
-    ? [
-        patchHappyDOMValidationMessage(),
-        patchHappyDOMFormData(),
-        patchHappyDOMSelectionChange(),
-      ]
-    : [];
-
-  return () => {
-    HTMLElement.prototype.focus = originalFocus;
-    Element.prototype.getClientRects = originalGetClientRects;
-    for (const restore of restoreHappyDOMShims) restore();
-  };
-}
-
-// happy-dom returns an empty validationMessage for built-in constraint
-// violations (only setCustomValidity populates it); jsdom and real browsers
-// return a non-empty message. Ariakit's form validation reads
-// element.validationMessage to register errors, so mirror that here. The exact
-// string matches jsdom's generic message so the shared form example tests assert
-// the same text under both environments (real browsers use locale-specific text,
-// which these tests don't depend on).
-function patchHappyDOMValidationMessage() {
-  const restores: Array<() => void> = [];
-  for (const Constructor of [
-    window.HTMLInputElement,
-    window.HTMLTextAreaElement,
-    window.HTMLSelectElement,
-  ]) {
-    const descriptor = Object.getOwnPropertyDescriptor(
-      Constructor.prototype,
-      "validationMessage",
-    );
-    if (!descriptor?.get || !descriptor.configurable) continue;
-    const originalGet = descriptor.get;
-    Object.defineProperty(Constructor.prototype, "validationMessage", {
-      configurable: true,
-      get(this: { validity?: ValidityState }) {
-        const message = originalGet.call(this) as string;
-        if (message) return message;
-        if (this.validity && !this.validity.valid) {
-          return "Constraints not satisfied";
-        }
-        return message;
-      },
-    });
-    restores.push(() => {
-      Object.defineProperty(
-        Constructor.prototype,
-        "validationMessage",
-        descriptor,
-      );
-    });
-  }
-  return () => {
-    for (const restore of restores) restore();
-  };
-}
-
-// happy-dom's FormData constructor only checks `disabled` for <input> controls,
-// so disabled <select>/<textarea> are wrongly included; the HTML spec (like real
-// browsers) excludes all disabled controls. Temporarily blank their names so the
-// constructor skips them, then restore the names. Blanking — rather than deleting
-// entries afterwards — lets the constructor build the entry list correctly and
-// avoids removing same-named entries that belong to other, enabled controls.
-// (Controls disabled only via an ancestor <fieldset disabled> are not handled
-// here: happy-dom doesn't propagate that to descendants for any control type, so
-// it's a broader happy-dom gap, not specific to this <select>/<textarea> bug.)
-function patchHappyDOMFormData() {
-  const OriginalFormData = window.FormData;
-  class PatchedFormData extends OriginalFormData {
-    constructor(form?: HTMLFormElement, submitter?: HTMLElement | null) {
-      const renamed: Array<[Element, string]> = [];
-      if (form) {
-        for (const element of Array.from(form.elements)) {
-          const control = element as HTMLSelectElement | HTMLTextAreaElement;
-          if (!control.name || !control.disabled) continue;
-          if (control.tagName !== "SELECT" && control.tagName !== "TEXTAREA") {
-            continue;
-          }
-          renamed.push([control, control.name]);
-          control.removeAttribute("name");
-        }
-      }
-      try {
-        super(form, submitter);
-      } finally {
-        for (const [control, name] of renamed) {
-          control.setAttribute("name", name);
-        }
-      }
-    }
-  }
-  window.FormData = PatchedFormData;
-  return () => {
-    window.FormData = OriginalFormData;
-  };
-}
-
-// happy-dom dispatches the `selectionchange` event synchronously from inside
-// Selection.removeAllRanges(). The spec — and jsdom and real browsers — queue it
-// as a task instead, so it fires after the current synchronous work settles.
-// @ariakit/test calls selection.removeAllRanges() before moving focus on mouse
-// down, so a synchronous selectionchange runs listeners while
-// document.activeElement is still stale (e.g. <body>), which can misfire
-// selection-driven UI. Defer the dispatch triggered during removeAllRanges to a
-// macrotask to match the spec/jsdom ordering.
-function patchHappyDOMSelectionChange() {
-  const SelectionPrototype = window.Selection?.prototype;
-  const originalRemoveAllRanges = SelectionPrototype?.removeAllRanges;
-  if (!SelectionPrototype || !originalRemoveAllRanges) return noop;
-  SelectionPrototype.removeAllRanges = function removeAllRanges() {
-    const originalDispatchEvent = window.document.dispatchEvent;
-    window.document.dispatchEvent = function dispatchEvent(event: Event) {
-      if (event.type === "selectionchange") {
-        setTimeout(() => originalDispatchEvent.call(window.document, event));
-        return true;
-      }
-      return originalDispatchEvent.call(this, event);
-    };
-    try {
-      return originalRemoveAllRanges.call(this);
-    } finally {
-      window.document.dispatchEvent = originalDispatchEvent;
-    }
-  };
-  return () => {
-    SelectionPrototype.removeAllRanges = originalRemoveAllRanges;
-  };
-}
-
 let wrapAsyncDepth = 0;
 let restoreCurrentWrapAsyncEnvironment = noop;
 
+// The act environment is toggled per interaction — disabled while simulated
+// events run, restored afterwards. The depth guard ensures only the outermost
+// `wrapAsync` toggles it, so nested calls don't restore it early; the act
+// environment is set before the counter is bumped so a throw can't leave the
+// counter stuck above zero. The browser shims are applied once at import (see
+// `shims.ts`), not here.
 function setupWrapAsyncEnvironment() {
-  wrapAsyncDepth += 1;
-  if (wrapAsyncDepth > 1) return;
-
-  let restoreActEnvironment = noop;
-
-  try {
-    restoreActEnvironment = setActEnvironment(false);
-    const removeBrowserPolyfills = applyBrowserPolyfills();
-
-    restoreCurrentWrapAsyncEnvironment = () => {
-      restoreActEnvironment();
-      removeBrowserPolyfills();
-    };
-  } catch (error) {
-    wrapAsyncDepth -= 1;
-    restoreActEnvironment();
-    throw error;
+  if (wrapAsyncDepth === 0) {
+    restoreCurrentWrapAsyncEnvironment = setActEnvironment(false);
   }
+  wrapAsyncDepth += 1;
 }
 
 function restoreWrapAsyncEnvironment() {
@@ -266,4 +136,20 @@ export async function wrapAsync<T>(fn: () => Promise<T>) {
   } finally {
     restoreWrapAsyncEnvironment();
   }
+}
+
+// Settles between the sub-steps of a single simulated interaction by yielding
+// across two animation frames and flushing microtasks — but without a
+// wall-clock delay. The components under test schedule their per-step updates
+// through microtasks and animation frames (`queueMicrotask`,
+// `requestAnimationFrame`), so this is enough to let a sub-step's work flush
+// before the next one. The wall-clock `sleep()` is reserved for the final
+// settle of an interaction, where a real timer can still be load-bearing (e.g.
+// hiding a dialog by clicking outside).
+export function settle() {
+  return wrapAsync(async () => {
+    await nextFrame();
+    await flushMicrotasks();
+    await nextFrame();
+  });
 }

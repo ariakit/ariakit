@@ -17,10 +17,12 @@ interface PublicFile {
 
 interface BuildOptions {
   indexOnly?: boolean;
+  entries?: string[];
 }
 
 interface CleanOptions {
   indexOnly?: boolean;
+  entries?: string[];
 }
 
 type ExportMode = "source" | "build";
@@ -150,15 +152,16 @@ async function getPublicFiles(sourcePath: string, prefix = "") {
   return files;
 }
 
-async function getIndexFile(sourcePath: string) {
+async function getEntryFiles(sourcePath: string, entryNames: string[]) {
   const files = await getPublicFiles(sourcePath);
-  const indexFile = files.find((file) => file.name === "index");
 
-  if (!indexFile) {
-    throw new Error(`Missing ${sourceDir}/index.ts entrypoint`);
-  }
-
-  return [indexFile];
+  return entryNames.map((name) => {
+    const file = files.find((file) => file.name === name);
+    if (!file) {
+      throw new Error(`Missing ${sourceDir}/${name} entrypoint`);
+    }
+    return file;
+  });
 }
 
 function getExportName(name: string) {
@@ -222,16 +225,30 @@ async function updatePackageExports(
   writePackageJson(rootPath, packageJson);
 }
 
-function shouldUseIndexOnly(packageJson: PackageJson, options: BuildOptions) {
-  if (options.indexOnly) return true;
-  return packageJson.scripts?.build?.includes("--index-only") ?? false;
+// Resolve the explicit entry file names for a package, or null to export every
+// public file. Reads `options` (from the CLI) first, then falls back to the
+// `--entries`/`--index-only` markers in the package's own `build` script, so
+// that `clean` — which lint-staged runs without those flags — applies the same
+// entrypoints as `build`.
+function getConfiguredEntryNames(
+  packageJson: PackageJson,
+  options: BuildOptions,
+) {
+  if (options.entries) return options.entries;
+  if (options.indexOnly) return ["index"];
+  const buildScript = packageJson.scripts?.build ?? "";
+  const entriesMatch = buildScript.match(/--entries[=\s]+([\w,./-]+)/);
+  if (entriesMatch?.[1]) return entriesMatch[1].split(",");
+  if (buildScript.includes("--index-only")) return ["index"];
+  return null;
 }
 
 async function getPackagePublicFiles(rootPath: string, options: BuildOptions) {
   const sourcePath = join(rootPath, sourceDir);
   const packageJson = readPackageJson(rootPath);
-  return shouldUseIndexOnly(packageJson, options)
-    ? await getIndexFile(sourcePath)
+  const entryNames = getConfiguredEntryNames(packageJson, options);
+  return entryNames
+    ? await getEntryFiles(sourcePath, entryNames)
     : await getPublicFiles(sourcePath);
 }
 

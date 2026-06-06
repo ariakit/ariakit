@@ -5,5 +5,5 @@
     "jsxImportSource": "solid-js"
   },
   "files": [],
-  "include": ["**/*test.solid.tsx"]
+  "include": ["**/*solid.test.tsx"]
 }

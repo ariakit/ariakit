@@ -1,6 +1,6 @@
 import { getActiveElement, isTextField, isFocusable } from "@ariakit/utils";
 import type { DirtiableElement, TextField } from "./__utils.ts";
-import { wrapAsync } from "./__utils.ts";
+import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
 import { sleep } from "./sleep.ts";
@@ -138,13 +138,20 @@ export function type(
         }
       }
 
-      await sleep();
+      // Between keystrokes the component only needs its microtask/rAF-scheduled
+      // work to flush (e.g. a controlled input re-render, combobox re-target), so
+      // a cheap settle keeps typing fast without a per-character wall delay.
+      await settle();
 
       await dispatch.keyUp(element, { key, ...options });
 
-      await sleep();
+      await settle();
     }
 
     restoreEmailInput();
+
+    // One real settle after the whole sequence, in case a component reacts to
+    // the completed input on a wall-clock timer.
+    await sleep();
   });
 }

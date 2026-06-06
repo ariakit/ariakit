@@ -1,8 +1,4 @@
-// @vitest-environment jsdom
-// happy-dom's requestAnimationFrame fires almost immediately (~0ms) instead of
-// the ~16ms real browsers use, which collapses the CSS keyframe leave timing
-// these tests assert on. Pinned to jsdom.
-import { click, press, q, sleep, waitFor } from "@ariakit/test";
+import { click, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test.each([
@@ -31,10 +27,13 @@ test.each([
     !name.endsWith("NoLeave") &&
     (!name.startsWith("Animation") || name.endsWith("Leave"))
   ) {
-    expect(q.dialog(name)).toBeInTheDocument();
-    expect(q.dialog(name)).not.toHaveAttribute("hidden");
-    expect(q.dialog(name)).not.toHaveStyle("display: none");
+    // While it closes, the dialog disables its own tree with `inert`, so it's
+    // matched only by the `hidden` query variant. It's still visually leaving,
+    // which the following assertions verify.
+    expect(q.dialog.hidden(name)).toBeInTheDocument();
+    expect(q.dialog.hidden(name)).not.toHaveAttribute("hidden");
+    expect(q.dialog.hidden(name)).not.toHaveStyle("display: none");
   }
 
-  await waitFor(() => expect(q.dialog(name)).not.toBeInTheDocument());
+  await expect.poll(q.dialog.lazy(name)).not.toBeInTheDocument();
 });

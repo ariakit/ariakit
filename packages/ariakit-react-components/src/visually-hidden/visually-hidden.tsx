@@ -23,8 +23,8 @@ export const useVisuallyHidden = createHook<TagName, VisuallyHiddenOptions>(
     props = {
       ...props,
       style: {
-        border: 0,
-        clip: "rect(0 0 0 0)",
+        borderWidth: 0,
+        clipPath: "inset(50%)",
         height: "1px",
         margin: "-1px",
         overflow: "hidden",

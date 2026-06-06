@@ -1,4 +1,4 @@
-import { click, hover, press, q, waitFor } from "@ariakit/test";
+import { click, hover, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 const tooltip = "https://ariakit.com/examples/tooltip-framer-motion";
@@ -12,10 +12,10 @@ const hoverOutside = async () => {
 test("show tooltip on hover", async () => {
   expect(q.tooltip(tooltip)).not.toBeInTheDocument();
   await hover(q.link());
-  await waitFor(() => expect(q.tooltip(tooltip)).toBeVisible());
+  await expect.poll(q.tooltip.lazy(tooltip)).toBeVisible();
   await hoverOutside();
   expect(q.tooltip(tooltip)).toBeVisible();
-  await waitFor(() => expect(q.tooltip(tooltip)).not.toBeInTheDocument());
+  await expect.poll(q.tooltip.lazy(tooltip)).not.toBeInTheDocument();
 });
 
 test("show tooltip on focus", async () => {
@@ -23,17 +23,17 @@ test("show tooltip on focus", async () => {
   await press.Tab();
   expect(q.tooltip(tooltip)).toBeVisible();
   await click(document.body);
-  expect(q.tooltip.includesHidden(tooltip)).toBeVisible();
-  await waitFor(() => expect(q.tooltip(tooltip)).not.toBeInTheDocument());
+  expect(q.tooltip.hidden(tooltip)).toBeVisible();
+  await expect.poll(q.tooltip.lazy(tooltip)).not.toBeInTheDocument();
 });
 
 test("click on tooltip and press esc", async () => {
   expect(q.tooltip(tooltip)).not.toBeInTheDocument();
   await hover(q.link());
-  await waitFor(() => expect(q.tooltip(tooltip)).toBeVisible());
+  await expect.poll(q.tooltip.lazy(tooltip)).toBeVisible();
   await click(q.tooltip(tooltip));
   expect(q.tooltip(tooltip)).toBeVisible();
   await press.Escape();
   expect(q.link()).toHaveFocus();
-  await waitFor(() => expect(q.tooltip(tooltip)).not.toBeInTheDocument());
+  await expect.poll(q.tooltip.lazy(tooltip)).not.toBeInTheDocument();
 });

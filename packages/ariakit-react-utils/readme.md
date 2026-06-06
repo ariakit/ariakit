@@ -554,10 +554,10 @@ function createStoreContext<T extends Store>(
   useProviderContext: () => T | undefined;
   ContextProvider: (
     props: React.ComponentPropsWithoutRef<React.Provider<T | undefined>>,
-  ) => import("react/jsx-runtime").JSX.Element;
+  ) => React.JSX.Element;
   ScopedContextProvider: (
     props: React.ComponentPropsWithoutRef<React.Provider<T | undefined>>,
-  ) => import("react/jsx-runtime").JSX.Element;
+  ) => React.JSX.Element;
 };
 ```
 

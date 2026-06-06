@@ -10,7 +10,7 @@ test("navigate through tabs with keyboard", async () => {
   await press.ArrowRight();
   expect(q.tab("Meat")).toHaveFocus();
   expect(q.tab("Meat")).toHaveAttribute("aria-selected", "false");
-  expect(q.tabpanel.includesHidden("Meat")).not.toBeVisible();
+  expect(q.tabpanel.hidden("Meat")).not.toBeVisible();
   expect(q.tab("Vegetables")).toHaveAttribute("aria-selected", "true");
   expect(q.tabpanel("Vegetables")).toBeVisible();
 

@@ -64,16 +64,11 @@ jobs:
           - script: test
           - name: React
             script: test-react
-            shard: "1/2"
-          - name: React
-            script: test-react
-            shard: "2/2"
+          # Runs unsharded on happy-dom (fast). The Test step still honors a
+          # `shard:` key, so split it again by re-adding `shard: "1/2"` and
+          # `shard: "2/2"` entries here if it ever slows down.
           - name: React 18
             script: test-react18
-            shard: "1/2"
-          - name: React 18
-            script: test-react18
-            shard: "2/2"
           - name: Solid
             script: test-solid
 

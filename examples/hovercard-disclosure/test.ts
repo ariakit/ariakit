@@ -1,8 +1,8 @@
-import { click, focus, hover, press, q, waitFor } from "@ariakit/test";
+import { click, focus, hover, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 const waitForHovercardToShow = (timeout = 600) =>
-  waitFor(() => expect(q.dialog()).toBeVisible(), { timeout });
+  expect.poll(q.dialog, { timeout }).toBeVisible();
 
 const expectDisclosureToBeHidden = () =>
   expect(q.button(/^More details/)).toHaveStyle({ height: "1px" });
@@ -88,7 +88,7 @@ test("do not autofocus hovercard on anchor hover after showing and hiding it usi
   await press.Enter();
   await press.Escape();
   await hover(q.link("@ariakit.com"));
-  await waitFor(() => expect(q.dialog()).toBeVisible());
+  await expect.poll(q.dialog).toBeVisible();
   expect(q.link("@ariakit.com")).toHaveFocus();
 });
 

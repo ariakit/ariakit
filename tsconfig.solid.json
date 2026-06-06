@@ -4,5 +4,5 @@
     "jsxImportSource": "solid-js"
   },
   "include": ["**/*.solid.tsx"],
-  "exclude": ["website", "app", "examples", "**/*test.solid.tsx"]
+  "exclude": ["website", "app", "examples", "**/*solid.test.tsx"]
 }
