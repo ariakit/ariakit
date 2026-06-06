@@ -2,43 +2,27 @@ import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test("resets outside-interaction focus tracking when reopened", async ({
-    page,
     q,
   }) => {
     await q.button("Open dialog").click();
     await test.expect(q.dialog("Dialog")).toBeVisible();
 
-    // Move focus inside the dialog at least once. focus() rather than click()
-    // because the unstyled modal backdrop overlays the dialog content and would
-    // intercept pointer events; only the focus matters here.
-    await q.button("Focus inside").focus();
-    await test.expect(q.button("Focus inside")).toBeFocused();
-
-    // Close via Escape (hideOnEscape) for the same backdrop-overlay reason.
-    await page.keyboard.press("Escape");
+    // Mark the dialog as interacted-with by focusing a field inside it, then
+    // close and reopen it. Asserting the focus landed inside guards against the
+    // test silently passing without exercising the reopen reset.
+    await q.textbox("Inside field").click();
+    await test.expect(q.textbox("Inside field")).toBeFocused();
+    await q.button("Close dialog").click();
     await test.expect(q.dialog("Dialog")).not.toBeVisible();
 
     await q.button("Open dialog").click();
     await test.expect(q.dialog("Dialog")).toBeVisible();
 
-    // The regression only surfaces with a focusable element that did not exist
-    // when the dialog opened: pre-existing outside controls are marked as
-    // "outside" on open, so focusing one wouldn't exercise the reopen reset.
-    // Create a brand-new outside input via the DOM (as the happy-dom test does)
-    // and focus it — the page.evaluate is only setup; the user-facing assertion
-    // is the dialog hiding below. Reopening must reset the dialog's outside-focus
-    // tracking so this dynamic element counts as interacting outside; before the
-    // fix the stale tracking kept it open.
-    await page.evaluate(() => {
-      const input = document.createElement("input");
-      input.setAttribute("aria-label", "Dynamic outside input");
-      // appendChild (not append): the app's worker typecheck resolves the DOM
-      // `append` against Cloudflare's HTMLRewriter `Element.append` overload,
-      // which rejects a Node argument.
-      document.body.appendChild(input);
-      input.focus();
-    });
-
+    // Revealing the outside field moves focus to a brand-new node outside the
+    // dialog. Because reopening reset the "was focused inside" flag, this counts
+    // as interacting outside and closes the dialog.
+    await q.button("Reveal outside field").click();
+    await test.expect(q.textbox("Dynamic outside field")).toBeFocused();
     await test.expect(q.dialog("Dialog")).not.toBeVisible();
   });
 });
