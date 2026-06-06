@@ -1,11 +1,3 @@
-// @vitest-environment jsdom
-// This suite opts out of the default happy-dom environment. The animation-based
-// leave cases (AnimationLeave/AnimationUnmountLeave) depend on
-// `data-[leave]:animate-out` playing while the dialog closes. Under happy-dom's
-// timer cadence, React commits a transient `mounted: false` render during close
-// that cancels the leave transition, so the animation never plays and the dialog
-// unmounts immediately. jsdom's requestAnimationFrame cadence keeps `mounted`
-// stable through the close, matching real browsers.
 import { click, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
@@ -35,9 +27,12 @@ test.each([
     !name.endsWith("NoLeave") &&
     (!name.startsWith("Animation") || name.endsWith("Leave"))
   ) {
-    expect(q.dialog(name)).toBeInTheDocument();
-    expect(q.dialog(name)).not.toHaveAttribute("hidden");
-    expect(q.dialog(name)).not.toHaveStyle("display: none");
+    // While it closes, the dialog disables its own tree with `inert`, so it's
+    // matched only by the `hidden` query variant. It's still visually leaving,
+    // which the following assertions verify.
+    expect(q.dialog.hidden(name)).toBeInTheDocument();
+    expect(q.dialog.hidden(name)).not.toHaveAttribute("hidden");
+    expect(q.dialog.hidden(name)).not.toHaveStyle("display: none");
   }
 
   await expect.poll(q.dialog.lazy(name)).not.toBeInTheDocument();

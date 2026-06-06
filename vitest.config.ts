@@ -66,8 +66,12 @@ const testExcludes = [
 // @ariakit/test simulation layer and provides the DOM every suite needs.
 // Individual tests that hit a deterministic happy-dom divergence opt into jsdom
 // with a `// @vitest-environment jsdom` comment. test-react18 opts the whole
-// suite out via ARIAKIT_TEST_ENV=jsdom: React 18's scheduler is more sensitive
-// to happy-dom's faster timer cadence and flakes some dialog-dismissal tests.
+// suite out via ARIAKIT_TEST_ENV=jsdom: under React 18, hiding a dialog by
+// clicking outside (`store.hide()` runs from a native capture-phase listener)
+// commits with the controlled `open` prop momentarily stale on happy-dom, so the
+// store transiently re-opens and focus is wrongly restored to the trigger. It's
+// deterministic (not a timer-cadence flake) and confirmed correct in real
+// browsers on React 18 and 19, so it's a happy-dom artifact, not an Ariakit bug.
 const environment = process.env.ARIAKIT_TEST_ENV ?? "happy-dom";
 
 // sourcePlugin is typed against the app workspace's Vite copy, while Vitest
