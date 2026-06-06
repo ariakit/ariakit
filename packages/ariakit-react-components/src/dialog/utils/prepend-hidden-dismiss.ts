@@ -12,8 +12,8 @@ export function prependHiddenDismiss(
 
   // Visually hidden styles
   Object.assign(button.style, {
-    border: "0px",
-    clip: "rect(0 0 0 0)",
+    borderWidth: "0px",
+    clipPath: "inset(50%)",
     height: "1px",
     margin: "-1px",
     overflow: "hidden",
