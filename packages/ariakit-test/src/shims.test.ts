@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
 import { isBrowser, wrapAsync } from "./__utils.ts";
+import { dispatch } from "./dispatch.ts";
 import "./shims.ts";
 
 test("applies the browser shims at import, for the whole environment", () => {
@@ -61,6 +62,56 @@ test("runs animation frame callbacks as a spec-compliant batch", async () => {
   // share one timestamp; unbatched, each would get its own.
   expect(order).toEqual(["a", "b", "c"]);
   expect(timestamps[0]).toBe(timestamps[1]);
+});
+
+test("exposes the dispatched event on window.event while listeners run", async () => {
+  if (isBrowser) return;
+  const button = document.createElement("button");
+  document.body.append(button);
+  let eventTypeDuringDispatch: string | undefined;
+  button.addEventListener("click", () => {
+    eventTypeDuringDispatch = (window as { event?: Event }).event?.type;
+  });
+  try {
+    // React 18 reads `window.event` to give updates dispatched from a native
+    // listener discrete-event (sync) priority. happy-dom omits the global, so
+    // `@ariakit/test`'s dispatch sets it for the synchronous duration of the
+    // dispatch to match jsdom and real browsers.
+    await dispatch.click(button);
+    expect(eventTypeDuringDispatch).toBe("click");
+    // It's exposed only while listeners run, then removed (happy-dom has no
+    // such property to begin with, so the shim deletes it again).
+    expect("event" in window).toBe(false);
+  } finally {
+    button.remove();
+  }
+});
+
+test("restores window.event around a nested dispatch", async () => {
+  if (isBrowser) return;
+  const outer = document.createElement("button");
+  const inner = document.createElement("button");
+  document.body.append(outer, inner);
+  const seen: Array<string | undefined> = [];
+  outer.addEventListener("click", () => {
+    seen.push((window as { event?: Event }).event?.type);
+    // A nested dispatch fires its event synchronously, so `window.event` is the
+    // inner event while the inner listener runs, then restored to the outer one.
+    void dispatch.mouseDown(inner);
+    seen.push((window as { event?: Event }).event?.type);
+  });
+  inner.addEventListener("mousedown", () => {
+    seen.push((window as { event?: Event }).event?.type);
+  });
+  try {
+    await dispatch.click(outer);
+    expect(seen).toEqual(["click", "mousedown", "click"]);
+    // Removed again once the outermost dispatch finishes.
+    expect("event" in window).toBe(false);
+  } finally {
+    outer.remove();
+    inner.remove();
+  }
 });
 
 test("cancels a not-yet-run animation frame callback within the same frame", async () => {
