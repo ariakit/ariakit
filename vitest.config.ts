@@ -42,13 +42,12 @@ function getFrameworkTestIncludes(loader: AllowedTestLoader) {
     const dir = dirname(file);
     return [`${dir}/test.{ts,tsx}`, `${dir}/${loader}.test.{ts,tsx}`];
   });
-  // The first glob below already matches this loader's `*${loader}.test.tsx`
-  // files in the ariakit-${loader}* packages (they end in `test.{ts,tsx}`).
-  // ariakit-test isn't an ariakit-${loader}* package, so it needs its own
-  // loader-specific include.
+  // The first glob covers the ariakit-${loader}* packages, whose tests are
+  // all loader-specific. The second picks up loader-marked
+  // `*${loader}.test.{ts,tsx}` files in any other package, like ariakit-test.
   return [
     `packages/ariakit-${loader}*/src/**/*test.{ts,tsx}`,
-    `packages/ariakit-test/src/**/*${loader}.test.{ts,tsx}`,
+    `packages/*/src/**/*${loader}.test.{ts,tsx}`,
     ...exampleTests,
   ];
 }
