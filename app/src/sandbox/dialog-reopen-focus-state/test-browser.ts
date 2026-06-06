@@ -32,7 +32,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.evaluate(() => {
       const input = document.createElement("input");
       input.setAttribute("aria-label", "Dynamic outside input");
-      document.body.append(input);
+      // appendChild (not append): the app's worker typecheck resolves the DOM
+      // `append` against Cloudflare's HTMLRewriter `Element.append` overload,
+      // which rejects a Node argument.
+      document.body.appendChild(input);
       input.focus();
     });
 
