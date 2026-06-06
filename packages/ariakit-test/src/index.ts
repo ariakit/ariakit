@@ -1,3 +1,5 @@
+import "./shims.ts";
+
 export * from "./blur.ts";
 export * from "./click.ts";
 export * from "./dispatch.ts";

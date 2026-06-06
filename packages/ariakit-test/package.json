@@ -19,7 +19,6 @@
     "directory": "packages/ariakit-test"
   },
   "type": "module",
-  "sideEffects": false,
   "scripts": {
     "build": "ariakit build",
     "clean": "ariakit clean",
@@ -66,6 +65,7 @@
     "./query": "./src/query.ts",
     "./react": "./src/react.tsx",
     "./select": "./src/select.ts",
+    "./shims": "./src/shims.ts",
     "./sleep": "./src/sleep.ts",
     "./tap": "./src/tap.ts",
     "./type": "./src/type.ts",

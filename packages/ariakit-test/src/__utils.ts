@@ -43,6 +43,16 @@ export function setActEnvironment(value: boolean) {
 
 export function applyBrowserPolyfills() {
   if (isBrowser) return noop;
+  // Applied at import (see `shims.ts`), so guard against a missing DOM — e.g.
+  // when `@ariakit/test` is imported in a plain Node context. There's nothing
+  // to polyfill there, and patching the DOM constructors below would throw.
+  if (
+    typeof window === "undefined" ||
+    typeof HTMLElement === "undefined" ||
+    typeof Element === "undefined"
+  ) {
+    return noop;
+  }
 
   const originalFocus = HTMLElement.prototype.focus;
 
@@ -83,19 +93,26 @@ export function applyBrowserPolyfills() {
     Element.prototype.releasePointerCapture = noop;
   }
 
-  if (typeof window.ClipboardEvent === "undefined") {
+  if (
+    typeof window.ClipboardEvent === "undefined" &&
+    typeof Event !== "undefined"
+  ) {
     // @ts-expect-error
     window.ClipboardEvent = class ClipboardEvent extends Event {};
   }
 
-  if (typeof window.PointerEvent === "undefined") {
+  if (
+    typeof window.PointerEvent === "undefined" &&
+    typeof MouseEvent !== "undefined"
+  ) {
     // @ts-expect-error
     window.PointerEvent = class PointerEvent extends MouseEvent {};
   }
 
   // happy-dom diverges from real browsers in a few spec-conformance areas; these
-  // shims patch them while interactions run (jsdom already behaves correctly).
-  // Each helper returns a function that restores the original behavior.
+  // shims patch them for the whole test environment (jsdom already behaves
+  // correctly). Each helper returns a function that restores the original
+  // behavior.
   const restoreHappyDOMShims = isHappyDOM
     ? [
         patchHappyDOMValidationMessage(),
@@ -125,6 +142,7 @@ function patchHappyDOMValidationMessage() {
     window.HTMLTextAreaElement,
     window.HTMLSelectElement,
   ]) {
+    if (!Constructor) continue;
     const descriptor = Object.getOwnPropertyDescriptor(
       Constructor.prototype,
       "validationMessage",
@@ -166,6 +184,7 @@ function patchHappyDOMValidationMessage() {
 // it's a broader happy-dom gap, not specific to this <select>/<textarea> bug.)
 function patchHappyDOMFormData() {
   const OriginalFormData = window.FormData;
+  if (!OriginalFormData) return noop;
   class PatchedFormData extends OriginalFormData {
     constructor(form?: HTMLFormElement, submitter?: HTMLElement | null) {
       const renamed: Array<[Element, string]> = [];
@@ -230,25 +249,17 @@ function patchHappyDOMSelectionChange() {
 let wrapAsyncDepth = 0;
 let restoreCurrentWrapAsyncEnvironment = noop;
 
+// The act environment is toggled per interaction — disabled while simulated
+// events run, restored afterwards. The depth guard ensures only the outermost
+// `wrapAsync` toggles it, so nested calls don't restore it early; the act
+// environment is set before the counter is bumped so a throw can't leave the
+// counter stuck above zero. The browser shims are applied once at import (see
+// `shims.ts`), not here.
 function setupWrapAsyncEnvironment() {
-  wrapAsyncDepth += 1;
-  if (wrapAsyncDepth > 1) return;
-
-  let restoreActEnvironment = noop;
-
-  try {
-    restoreActEnvironment = setActEnvironment(false);
-    const removeBrowserPolyfills = applyBrowserPolyfills();
-
-    restoreCurrentWrapAsyncEnvironment = () => {
-      restoreActEnvironment();
-      removeBrowserPolyfills();
-    };
-  } catch (error) {
-    wrapAsyncDepth -= 1;
-    restoreActEnvironment();
-    throw error;
+  if (wrapAsyncDepth === 0) {
+    restoreCurrentWrapAsyncEnvironment = setActEnvironment(false);
   }
+  wrapAsyncDepth += 1;
 }
 
 function restoreWrapAsyncEnvironment() {
