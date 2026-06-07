@@ -265,7 +265,10 @@ const pointerEvents = [
 // control's activation. Scoped to events `@ariakit/test` dispatches, so
 // happy-dom's own internal click re-dispatches (e.g. a label forwarding to its
 // control) keep their behavior — `click` relies on that to avoid a double click.
-function fireEventAllowingDisabledClick(element: Target, event: Event) {
+function fireEventAllowingDisabledClick(
+  element: NonNullable<Target>,
+  event: Event,
+) {
   if (
     isHappyDOM &&
     event instanceof MouseEvent &&
