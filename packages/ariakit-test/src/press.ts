@@ -436,12 +436,6 @@ type PressShortcut = (
   options?: KeyboardEventInit,
 ) => Promise<void>;
 
-type PressFn = (
-  key: string,
-  element?: Element | null,
-  options?: KeyboardEventInit,
-) => Promise<void>;
-
 function createPress(key: string, defaultOptions: KeyboardEventInit = {}) {
   return (element?: Element | null, options: KeyboardEventInit = {}) =>
     press(key, element, { ...defaultOptions, ...options });
@@ -497,12 +491,6 @@ press.Home = createPress("Home");
 press.PageUp = createPress("PageUp");
 press.PageDown = createPress("PageDown");
 
-press.down = Object.assign<PressFn, ReturnType<typeof createKeyShortcuts>>(
-  pressDown,
-  createKeyShortcuts(createPressDown),
-);
+press.down = Object.assign(pressDown, createKeyShortcuts(createPressDown));
 
-press.up = Object.assign<PressFn, ReturnType<typeof createKeyShortcuts>>(
-  pressUp,
-  createKeyShortcuts(createPressUp),
-);
+press.up = Object.assign(pressUp, createKeyShortcuts(createPressUp));
