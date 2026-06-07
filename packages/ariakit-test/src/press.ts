@@ -53,8 +53,9 @@ function isNumberInput(element: Element): element is HTMLInputElement {
 // Browsers never activate a disabled control, so the synthetic Enter/Space
 // activations below skip one. An element that disables itself in its own keydown
 // handler is already disabled by the time the activation runs.
-function isDisabled(element: Element) {
-  return (element as Partial<HTMLButtonElement>).disabled ?? false;
+function isDisabled(element: Element | HTMLButtonElement) {
+  if (!("disabled" in element)) return false;
+  return element.disabled;
 }
 
 async function incrementNumberInput(element: HTMLInputElement, by = 1) {
