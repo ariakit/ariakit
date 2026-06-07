@@ -2,6 +2,7 @@ import {
   useEvent,
   useMergeRefs,
   useMetadataProps,
+  useSafeLayoutEffect,
   createElement,
   createHook,
   forwardRef,
@@ -74,6 +75,20 @@ export const useCommand = createHook<TagName, CommandOptions>(
     const activeRef = useRef(false);
     const disabled = disabledFromProps(props);
     const [isDuplicate, metadataProps] = useMetadataProps(props, symbol, true);
+
+    // When the element becomes disabled while it's in the active ("pressed")
+    // state — for example, it disables itself on the Space keydown — the keyup
+    // that clears the state in `onKeyUp` below may never reach it: a non-native
+    // element that turns disabled loses its focusability, so the browser moves
+    // focus to the body and delivers the keyup there instead. Clear the state
+    // here too so the element doesn't stay stuck looking pressed. This runs as a
+    // layout effect so the active state is gone before paint, avoiding a frame
+    // where the element renders as both pressed and disabled.
+    useSafeLayoutEffect(() => {
+      if (!disabled) return;
+      activeRef.current = false;
+      setActive(false);
+    }, [disabled]);
 
     const onKeyDownProp = props.onKeyDown;
 

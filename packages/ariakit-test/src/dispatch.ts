@@ -255,6 +255,33 @@ const pointerEvents = [
   "click",
 ];
 
+// happy-dom drops a `click` dispatched on a disabled `<button>`/`<input>`: their
+// per-class `dispatchEvent` returns `false` before invoking any listener. The
+// HTML spec only bars clicks queued from user interaction on a disabled control,
+// not a scripted `dispatchEvent` — so jsdom and real browsers still run the
+// listeners (skipping only the control's activation behavior). Route the click
+// through the base `EventTarget` dispatch, which runs the listeners across its
+// propagation phases without the disabled short-circuit, and without the
+// control's activation. Scoped to events `@ariakit/test` dispatches, so
+// happy-dom's own internal click re-dispatches (e.g. a label forwarding to its
+// control) keep their behavior — `click` relies on that to avoid a double click.
+function fireEventAllowingDisabledClick(
+  element: NonNullable<Target>,
+  event: Event,
+) {
+  if (
+    isHappyDOM &&
+    event instanceof MouseEvent &&
+    event.type === "click" &&
+    (element instanceof HTMLButtonElement ||
+      element instanceof HTMLInputElement) &&
+    element.disabled
+  ) {
+    return window.EventTarget.prototype.dispatchEvent.call(element, event);
+  }
+  return fireEvent(element, event);
+}
+
 function baseDispatch(element: Target, event: Event): Promise<boolean> {
   return wrapAsync(async () => {
     invariant(element, `Unable to dispatch ${event.type} on null element`);
@@ -273,7 +300,7 @@ function baseDispatch(element: Target, event: Event): Promise<boolean> {
       }
     }
     const defaultAllowed = withWindowEvent(event, () =>
-      fireEvent(element, event),
+      fireEventAllowingDisabledClick(element, event),
     );
     await flushMicrotasks();
     return defaultAllowed;

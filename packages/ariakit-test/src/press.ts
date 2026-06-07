@@ -50,6 +50,14 @@ function isNumberInput(element: Element): element is HTMLInputElement {
   return element instanceof HTMLInputElement && element.type === "number";
 }
 
+// Browsers never activate a disabled control, so the synthetic Enter/Space
+// activations below skip one. An element that disables itself in its own keydown
+// handler is already disabled by the time the activation runs.
+function isDisabled(element: Element | HTMLButtonElement) {
+  if (!("disabled" in element)) return false;
+  return element.disabled;
+}
+
 async function incrementNumberInput(element: HTMLInputElement, by = 1) {
   const value = +element.value + by;
   const max = element.max ? +element.max : Number.MAX_SAFE_INTEGER;
@@ -69,6 +77,8 @@ const keyDownMap: KeyActionMap = {
   },
 
   async Enter(element, options) {
+    if (isDisabled(element)) return;
+
     const nonSubmittableTypes = [...clickableInputTypes, "hidden"];
 
     const isClickable =
@@ -184,11 +194,70 @@ const keyUpMap: KeyActionMap = {
       (element instanceof HTMLInputElement &&
         spaceableTypes.includes(element.type));
 
-    if (isSpaceable) {
+    // Don't synthesize the click on a disabled control — e.g. a split `press.up`
+    // landing on a control that disabled itself on keydown but is still focused
+    // (the DOM test environments don't blur it the way a real browser does, and
+    // jsdom would otherwise fire the click).
+    if (isSpaceable && !isDisabled(element)) {
       await dispatch.click(element, options);
     }
   },
 };
+
+function getPressTarget(element?: Element | null) {
+  if (element == null) {
+    return document.activeElement || document.body;
+  }
+  return element;
+}
+
+// We can't press a key on elements that aren't focusable. The body is the
+// exception: once focus leaves every focusable element, key events land on it.
+function isPressable(element: Element) {
+  return isFocusable(element) || element.tagName === "BODY";
+}
+
+// Fires `keydown` and applies the browser's default keydown behavior for the key
+// (moving focus with `Tab`, the caret with the arrow keys, etc.). Returns whether
+// the default action was allowed so the caller can gate the keyup behavior on it.
+async function pressKeyDown(
+  element: Element,
+  key: string,
+  options: KeyboardEventInit,
+) {
+  const defaultAllowed = await dispatch.keyDown(element, { key, ...options });
+  if (defaultAllowed && key in keyDownMap && !options.metaKey) {
+    await keyDownMap[key]?.(element, options);
+  }
+  return defaultAllowed;
+}
+
+interface PressKeyUpParams {
+  element: Element;
+  key: string;
+  options: KeyboardEventInit;
+  // Whether the matching keydown's default action was allowed. The keyup's
+  // default behavior is applied only when both this and the keyup event itself
+  // weren't prevented. Defaults to `true` for a standalone keyup with no
+  // preceding keydown to account for.
+  defaultAllowed?: boolean;
+}
+
+// Fires `keyup` and applies the browser's default keyup behavior for the key
+// (clicking buttons, checkboxes, and radios with `Space`).
+async function pressKeyUp({
+  element,
+  key,
+  options,
+  defaultAllowed = true,
+}: PressKeyUpParams) {
+  if (!(await dispatch.keyUp(element, { key, ...options }))) {
+    defaultAllowed = false;
+  }
+  if (defaultAllowed && key in keyUpMap && !options.metaKey) {
+    await keyUpMap[key]?.(element, options);
+  }
+}
 
 /**
  * Presses a key on an element, simulating a real user keyboard interaction. Fires
@@ -200,12 +269,20 @@ const keyUpMap: KeyActionMap = {
  * When no element is passed, the currently focused element is used. Shortcuts such
  * as `press.Enter()` and `press.Tab()` are provided for common keys, and
  * `press.ShiftTab()` moves focus backwards.
+ *
+ * Use `press.down` and `press.up` to fire only the keydown or keyup
+ * half of a press. Each defaults to the currently focused element, so a key
+ * released after focus moved away — for example, an element that disables itself
+ * on keydown — lands where a real browser would deliver it.
  * @example
  * ```ts
  * await press.Tab();
  * await press.Enter();
  * // `press.Enter(element)` is shorthand for `press("Enter", element)`:
  * await press.Enter(q.button("Submit"));
+ * // Split a press so the keyup lands on whatever is focused at release time:
+ * await press.down.Space();
+ * await press.up.Space();
  * ```
  */
 export function press(
@@ -214,14 +291,12 @@ export function press(
   options: KeyboardEventInit = {},
 ) {
   return wrapAsync(async () => {
-    if (element == null) {
-      element = document.activeElement || document.body;
-    }
+    element = getPressTarget(element);
 
     if (!element) return;
 
     // We can't press on elements that aren't focusable
-    if (!isFocusable(element) && element.tagName !== "BODY") return;
+    if (!isPressable(element)) return;
 
     // If it's a printable character, we type it
     if (isTextField(element)) {
@@ -249,11 +324,7 @@ export function press(
     await settle();
 
     // TODO: Implement repeat
-    let defaultAllowed = await dispatch.keyDown(element, { key, ...options });
-
-    if (defaultAllowed && key in keyDownMap && !options.metaKey) {
-      await keyDownMap[key]?.(element, options);
-    }
+    const defaultAllowed = await pressKeyDown(element, key, options);
 
     await settle();
 
@@ -263,21 +334,145 @@ export function press(
       element = element.ownerDocument.activeElement!;
     }
 
-    if (!(await dispatch.keyUp(element, { key, ...options }))) {
-      defaultAllowed = false;
-    }
-
-    if (defaultAllowed && key in keyUpMap && !options.metaKey) {
-      await keyUpMap[key]?.(element, options);
-    }
+    await pressKeyUp({ element, key, options, defaultAllowed });
 
     await sleep();
   });
 }
 
+/**
+ * Fires only the `keydown` half of a key press on an element, simulating a real
+ * user pressing a key down without releasing it yet. Focuses the element first
+ * (since a key press always lands on the focused element) and applies the
+ * browser's default keydown behavior for the key, such as moving focus with `Tab`
+ * or the caret with the arrow keys. As a low-level half of a press, it fires a
+ * raw `keydown` and does not type printable characters into text fields the way
+ * the combined `press` does.
+ *
+ * When no element is passed, the currently focused element is used. Pair it with
+ * `press.up` to drive a press in two steps, which matters when the keydown
+ * moves focus — for example, an element that disables itself on keydown blurs to
+ * the body, so the later keyup must land there, not on the original element.
+ * Shortcuts such as `press.down.Space()` are provided for common keys.
+ * @example
+ * ```ts
+ * await press.down.Space(q.button("Mute"));
+ * await press.up.Space();
+ * ```
+ */
+function pressDown(
+  key: string,
+  element?: Element | null,
+  options: KeyboardEventInit = {},
+) {
+  return wrapAsync(async () => {
+    element = getPressTarget(element);
+
+    if (!element) return;
+    if (!isPressable(element)) return;
+
+    // A key press always lands on the focused element, so focus the target first.
+    if (element.ownerDocument?.activeElement !== element) {
+      if (element.tagName === "BODY") {
+        await blur();
+      } else {
+        await focus(element);
+      }
+    }
+
+    // This allows the DOM to be updated before we fire the event
+    await settle();
+
+    // TODO: Implement repeat
+    await pressKeyDown(element, key, options);
+
+    await sleep();
+  });
+}
+
+/**
+ * Fires only the `keyup` half of a key press, simulating a real user releasing a
+ * key. Unlike `press.down`, it doesn't move focus: the keyup lands on the
+ * passed element or, when none is given, on the currently focused element — which
+ * is where a real browser delivers it after the matching `press.down`.
+ * Applies the browser's default keyup behavior for the key, such as clicking
+ * buttons, checkboxes, and radios with `Space`. Because it runs independently of
+ * the matching `press.down`, it can't suppress that default based on the keydown's
+ * default having been prevented the way the combined `press` does — though it
+ * still respects the keyup event's own cancellation and the Meta key. Use the
+ * combined `press` when that distinction matters.
+ *
+ * Shortcuts such as `press.up.Space()` are provided for common keys.
+ * @example
+ * ```ts
+ * await press.down.Space();
+ * // The element disabled itself on keydown and blurred to the body, so the
+ * // keyup correctly lands on the body instead of the now-disabled element.
+ * await press.up.Space();
+ * ```
+ */
+function pressUp(
+  key: string,
+  element?: Element | null,
+  options: KeyboardEventInit = {},
+) {
+  return wrapAsync(async () => {
+    element = getPressTarget(element);
+
+    if (!element) return;
+
+    // No `isPressable` guard here, unlike `press` and `press.down`. A keyup lands
+    // on whatever currently holds focus, which can be an element that just became
+    // unfocusable — e.g. one that disabled itself on the matching keydown but is
+    // still `document.activeElement` until the browser blurs it.
+    await pressKeyUp({ element, key, options });
+
+    await sleep();
+  });
+}
+
+type PressShortcut = (
+  element?: Element | null,
+  options?: KeyboardEventInit,
+) => Promise<void>;
+
 function createPress(key: string, defaultOptions: KeyboardEventInit = {}) {
   return (element?: Element | null, options: KeyboardEventInit = {}) =>
     press(key, element, { ...defaultOptions, ...options });
+}
+
+function createPressDown(key: string, defaultOptions: KeyboardEventInit = {}) {
+  return (element?: Element | null, options: KeyboardEventInit = {}) =>
+    pressDown(key, element, { ...defaultOptions, ...options });
+}
+
+function createPressUp(key: string, defaultOptions: KeyboardEventInit = {}) {
+  return (element?: Element | null, options: KeyboardEventInit = {}) =>
+    pressUp(key, element, { ...defaultOptions, ...options });
+}
+
+// Builds the per-key shortcut map (`.Space`, `.Enter`, `.ShiftTab`, ...) attached
+// to `press.down` and `press.up` from the matching factory.
+function createKeyShortcuts(
+  create: (key: string, defaultOptions?: KeyboardEventInit) => PressShortcut,
+) {
+  return {
+    Escape: create("Escape"),
+    Backspace: create("Backspace"),
+    Delete: create("Delete"),
+    Tab: create("Tab"),
+    ShiftTab: create("Tab", { shiftKey: true }),
+    Enter: create("Enter"),
+    Space: create(" "),
+    ArrowUp: create("ArrowUp"),
+    ArrowRight: create("ArrowRight"),
+    ArrowDown: create("ArrowDown"),
+    ArrowLeft: create("ArrowLeft"),
+    End: create("End"),
+    Home: create("Home"),
+    PageUp: create("PageUp"),
+    PageDown: create("PageDown"),
+  };
 }
 
 press.Escape = createPress("Escape");
@@ -295,3 +490,7 @@ press.End = createPress("End");
 press.Home = createPress("Home");
 press.PageUp = createPress("PageUp");
 press.PageDown = createPress("PageDown");
+
+press.down = Object.assign(pressDown, createKeyShortcuts(createPressDown));
+
+press.up = Object.assign(pressUp, createKeyShortcuts(createPressUp));
