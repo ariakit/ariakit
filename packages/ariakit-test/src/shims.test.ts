@@ -182,8 +182,17 @@ test("toggles a disabled checkbox in either direction for a scripted click", asy
     let disabledDuringClick: boolean | undefined;
     let inputEvents = 0;
     let changeEvents = 0;
-    checkbox.addEventListener("input", () => inputEvents++);
-    checkbox.addEventListener("change", () => changeEvents++);
+    let eventTypeDuringInput: string | undefined;
+    let eventTypeDuringChange: string | undefined;
+    const currentEventType = () => (window as { event?: Event }).event?.type;
+    checkbox.addEventListener("input", () => {
+      inputEvents++;
+      eventTypeDuringInput = currentEventType();
+    });
+    checkbox.addEventListener("change", () => {
+      changeEvents++;
+      eventTypeDuringChange = currentEventType();
+    });
     checkbox.addEventListener("click", () => {
       checkedDuringClick = checkbox.checked;
       disabledDuringClick = checkbox.disabled;
@@ -198,6 +207,10 @@ test("toggles a disabled checkbox in either direction for a scripted click", asy
       expect(checkbox.checked).toBe(!initiallyChecked);
       expect(inputEvents).toBe(1);
       expect(changeEvents).toBe(1);
+      // Each activation event exposes itself on window.event while its listener
+      // runs, like jsdom/browsers — not the outer click event.
+      expect(eventTypeDuringInput).toBe("input");
+      expect(eventTypeDuringChange).toBe("change");
     } finally {
       checkbox.remove();
     }
@@ -322,6 +335,77 @@ test("restores a disabled radio group when a click listener prevents the selecti
     expect(clickedInput).toBe(0);
   } finally {
     form.remove();
+  }
+});
+
+test("restores a disabled radio group linked by the form attribute when prevented", async () => {
+  if (isBrowser) return;
+  // Radios linked to a form by the `form` attribute (instead of nesting) are
+  // still grouped by happy-dom's `checked` setter at the root node — a scope that
+  // differs from the radio's resolved `form`. The snapshot must cover that scope
+  // so preventDefault restores the previously-selected peer rather than leaving
+  // the whole group unchecked.
+  const form = document.createElement("form");
+  form.id = "radio-group-form";
+  const selected = document.createElement("input");
+  const clicked = document.createElement("input");
+  selected.type = clicked.type = "radio";
+  selected.name = clicked.name = "choice";
+  selected.setAttribute("form", form.id);
+  clicked.setAttribute("form", form.id);
+  selected.disabled = clicked.disabled = true;
+  selected.checked = true;
+  // Appended as siblings of the form, not descendants — associated only via the
+  // form attribute, so happy-dom groups them at the document root.
+  document.body.append(form, selected, clicked);
+  clicked.addEventListener("click", (event) => event.preventDefault());
+  try {
+    await dispatch.click(clicked);
+    expect(selected.checked).toBe(true);
+    expect(clicked.checked).toBe(false);
+  } finally {
+    form.remove();
+    selected.remove();
+    clicked.remove();
+  }
+});
+
+test("reverts only the activation's changes, preserving listener changes to other radios", async () => {
+  if (isBrowser) return;
+  // A prevented click reverts only what the activation changed (the clicked radio
+  // and the peer it unchecked), not state a listener changes during the click. A
+  // same-name radio in another scope (a separate group) is flipped by the
+  // listener here and must keep the listener's value after preventDefault.
+  const form = document.createElement("form");
+  const selected = document.createElement("input");
+  const clicked = document.createElement("input");
+  selected.type = clicked.type = "radio";
+  selected.name = clicked.name = "pick";
+  selected.disabled = clicked.disabled = true;
+  const outside = document.createElement("input");
+  outside.type = "radio";
+  outside.name = "pick";
+  form.append(selected, clicked);
+  document.body.append(form, outside);
+  // Select the out-of-form radio first (its root-wide scope would otherwise clear
+  // the in-form one), then the in-form radio, leaving both selected.
+  outside.checked = true;
+  selected.checked = true;
+  clicked.addEventListener("click", (event) => {
+    // A listener change to a radio outside the clicked radio's group.
+    outside.checked = false;
+    event.preventDefault();
+  });
+  try {
+    await dispatch.click(clicked);
+    // The clicked radio's own group is reverted...
+    expect(selected.checked).toBe(true);
+    expect(clicked.checked).toBe(false);
+    // ...but the listener's change to the out-of-scope radio is preserved.
+    expect(outside.checked).toBe(false);
+  } finally {
+    form.remove();
+    outside.remove();
   }
 });
 
