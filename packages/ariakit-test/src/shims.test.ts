@@ -136,34 +136,238 @@ test("cancels a not-yet-run animation frame callback within the same frame", asy
   expect(ran).toEqual(["a"]);
 });
 
-test("fires listeners for a click dispatched on a disabled control", async () => {
+test("runs the listener for a click dispatched on a disabled button", async () => {
   if (isBrowser) return;
-  // happy-dom drops a scripted click on a disabled <button>/<input> entirely;
-  // jsdom and real browsers still run the listeners (skipping only the control's
-  // activation behavior). `dispatch` normalizes that (see dispatch.ts).
+  // happy-dom drops a scripted click on a disabled <button>/<input> entirely.
+  // jsdom and real browsers (verified on Chromium, Firefox, and WebKit) still run
+  // the listeners — only clicks queued from a real user interaction are barred. A
+  // plain button has no activation behavior, so the click just reaches the
+  // listener (the case PR #6271 needed for a disabled `Command`). `dispatch`
+  // normalizes that (see dispatch.ts).
   const button = document.createElement("button");
   button.disabled = true;
   let buttonClicks = 0;
-  button.addEventListener("click", () => buttonClicks++);
-
-  const checkbox = document.createElement("input");
-  checkbox.type = "checkbox";
-  checkbox.disabled = true;
-  let checkboxClicks = 0;
-  checkbox.addEventListener("click", () => checkboxClicks++);
-
-  document.body.append(button, checkbox);
+  let disabledDuringClick: boolean | undefined;
+  button.addEventListener("click", () => {
+    buttonClicks++;
+    disabledDuringClick = button.disabled;
+  });
+  document.body.append(button);
   try {
-    await dispatch.click(button);
-    await dispatch.click(checkbox);
+    const defaultAllowed = await dispatch.click(button);
     expect(buttonClicks).toBe(1);
-    expect(checkboxClicks).toBe(1);
-    // The listener runs, but the disabled checkbox isn't toggled — a browser
-    // doesn't activate a disabled control.
-    expect(checkbox.checked).toBe(false);
+    // The button stays disabled throughout, and nothing cancels the click, so the
+    // default action is allowed — as in a browser.
+    expect(disabledDuringClick).toBe(true);
+    expect(defaultAllowed).toBe(true);
   } finally {
     button.remove();
-    checkbox.remove();
+  }
+});
+
+test("toggles a disabled checkbox in either direction for a scripted click", async () => {
+  if (isBrowser) return;
+  // jsdom and real browsers (verified on Chromium, Firefox, and WebKit) run the
+  // activation behavior for a scripted click on a disabled checkbox: it toggles
+  // before the click listener runs (which still sees it disabled) and fires
+  // input/change, only barring clicks queued from a real user interaction.
+  // happy-dom drops the click entirely; `dispatch` normalizes that (see
+  // dispatch.ts). Covers both toggle directions.
+  for (const initiallyChecked of [false, true]) {
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.disabled = true;
+    checkbox.checked = initiallyChecked;
+    let checkedDuringClick: boolean | undefined;
+    let disabledDuringClick: boolean | undefined;
+    let inputEvents = 0;
+    let changeEvents = 0;
+    checkbox.addEventListener("input", () => inputEvents++);
+    checkbox.addEventListener("change", () => changeEvents++);
+    checkbox.addEventListener("click", () => {
+      checkedDuringClick = checkbox.checked;
+      disabledDuringClick = checkbox.disabled;
+    });
+    document.body.append(checkbox);
+    try {
+      const defaultAllowed = await dispatch.click(checkbox);
+      expect(defaultAllowed).toBe(true);
+      // Toggled before the listener runs, while still disabled.
+      expect(checkedDuringClick).toBe(!initiallyChecked);
+      expect(disabledDuringClick).toBe(true);
+      expect(checkbox.checked).toBe(!initiallyChecked);
+      expect(inputEvents).toBe(1);
+      expect(changeEvents).toBe(1);
+    } finally {
+      checkbox.remove();
+    }
+  }
+});
+
+test("reverts a disabled checkbox toggle in either direction when a click listener prevents it", async () => {
+  if (isBrowser) return;
+  // The checkbox is toggled before the click listener runs, so the listener sees
+  // the flipped value; preventDefault() then cancels the activation, restoring
+  // the previous checked state and firing no input/change — matching jsdom and
+  // real browsers. Covers both toggle directions.
+  for (const initiallyChecked of [false, true]) {
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.disabled = true;
+    checkbox.checked = initiallyChecked;
+    let checkedDuringClick: boolean | undefined;
+    let inputEvents = 0;
+    let changeEvents = 0;
+    checkbox.addEventListener("input", () => inputEvents++);
+    checkbox.addEventListener("change", () => changeEvents++);
+    checkbox.addEventListener("click", (event) => {
+      checkedDuringClick = checkbox.checked;
+      event.preventDefault();
+    });
+    document.body.append(checkbox);
+    try {
+      const defaultAllowed = await dispatch.click(checkbox);
+      expect(defaultAllowed).toBe(false);
+      // Toggled to the flipped value while the listener runs...
+      expect(checkedDuringClick).toBe(!initiallyChecked);
+      // ...then restored to the original value once prevented.
+      expect(checkbox.checked).toBe(initiallyChecked);
+      expect(inputEvents).toBe(0);
+      expect(changeEvents).toBe(0);
+    } finally {
+      checkbox.remove();
+    }
+  }
+});
+
+test("selects a disabled radio on click and fires events only when it changes", async () => {
+  if (isBrowser) return;
+  const radio = document.createElement("input");
+  radio.type = "radio";
+  radio.disabled = true;
+  let radioClicks = 0;
+  let checkedDuringClick: boolean | undefined;
+  let inputEvents = 0;
+  let changeEvents = 0;
+  radio.addEventListener("input", () => inputEvents++);
+  radio.addEventListener("change", () => changeEvents++);
+  radio.addEventListener("click", () => {
+    radioClicks++;
+    checkedDuringClick = radio.checked;
+  });
+  document.body.append(radio);
+  try {
+    const defaultAllowed = await dispatch.click(radio);
+    expect(defaultAllowed).toBe(true);
+    expect(radioClicks).toBe(1);
+    expect(radio.checked).toBe(true);
+    // The radio is selected before the click listener runs, like a browser.
+    expect(checkedDuringClick).toBe(true);
+    expect(inputEvents).toBe(1);
+    expect(changeEvents).toBe(1);
+    // Clicking an already-selected radio still runs the listener (which sees it
+    // selected) but leaves its value unchanged, so it fires no further
+    // input/change events — matching jsdom and real browsers.
+    checkedDuringClick = undefined;
+    await dispatch.click(radio);
+    expect(radioClicks).toBe(2);
+    expect(checkedDuringClick).toBe(true);
+    expect(radio.checked).toBe(true);
+    expect(inputEvents).toBe(1);
+    expect(changeEvents).toBe(1);
+  } finally {
+    radio.remove();
+  }
+});
+
+test("restores a disabled radio group when a click listener prevents the selection", async () => {
+  if (isBrowser) return;
+  // Selecting a radio unchecks its previously-selected peer before the click
+  // listener runs; preventDefault() must restore the whole group, not just the
+  // clicked radio's own previous state. Verified on Chromium, Firefox, and
+  // WebKit.
+  const form = document.createElement("form");
+  const selected = document.createElement("input");
+  const clicked = document.createElement("input");
+  selected.type = clicked.type = "radio";
+  selected.name = clicked.name = "choice";
+  selected.disabled = clicked.disabled = true;
+  selected.checked = true;
+  form.append(selected, clicked);
+  document.body.append(form);
+  let selectedChange = 0;
+  let clickedChange = 0;
+  let clickedInput = 0;
+  let selectedDuringClick: boolean | undefined;
+  let clickedDuringClick: boolean | undefined;
+  selected.addEventListener("change", () => selectedChange++);
+  clicked.addEventListener("change", () => clickedChange++);
+  clicked.addEventListener("input", () => clickedInput++);
+  clicked.addEventListener("click", (event) => {
+    // The clicked radio is selected and its peer unchecked before the listener.
+    selectedDuringClick = selected.checked;
+    clickedDuringClick = clicked.checked;
+    event.preventDefault();
+  });
+  try {
+    const defaultAllowed = await dispatch.click(clicked);
+    expect(defaultAllowed).toBe(false);
+    expect(selectedDuringClick).toBe(false);
+    expect(clickedDuringClick).toBe(true);
+    // preventDefault restores the original group selection.
+    expect(selected.checked).toBe(true);
+    expect(clicked.checked).toBe(false);
+    expect(selectedChange).toBe(0);
+    expect(clickedChange).toBe(0);
+    expect(clickedInput).toBe(0);
+  } finally {
+    form.remove();
+  }
+});
+
+test("doesn't submit or reset a form from a click on a disabled submit/reset control", async () => {
+  if (isBrowser) return;
+  // Real browsers run the click listeners for a scripted click on a disabled
+  // submit/reset control but skip its form-activation behavior — the form is
+  // neither submitted nor reset. happy-dom drops the click for both <button> and
+  // <input> through separate per-class dispatchEvent overrides, so cover both.
+  // Verified on Chromium, Firefox, and WebKit.
+  const form = document.createElement("form");
+  const controls = (["submit", "reset"] as const).flatMap((type) =>
+    ["button", "input"].map((tag) => {
+      const control = document.createElement(tag) as
+        | HTMLButtonElement
+        | HTMLInputElement;
+      control.type = type;
+      control.disabled = true;
+      return control;
+    }),
+  );
+  form.append(...controls);
+  document.body.append(form);
+
+  let controlClicks = 0;
+  let submitEvents = 0;
+  let resetEvents = 0;
+  for (const control of controls) {
+    control.addEventListener("click", () => controlClicks++);
+  }
+  form.addEventListener("submit", (event) => {
+    submitEvents++;
+    event.preventDefault();
+  });
+  form.addEventListener("reset", () => resetEvents++);
+  try {
+    for (const control of controls) {
+      await dispatch.click(control);
+    }
+    // The clicks reach the disabled controls, so their listeners run...
+    expect(controlClicks).toBe(controls.length);
+    // ...but none of them activates the form.
+    expect(submitEvents).toBe(0);
+    expect(resetEvents).toBe(0);
+  } finally {
+    form.remove();
   }
 });
 
