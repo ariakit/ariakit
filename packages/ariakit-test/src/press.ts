@@ -50,6 +50,13 @@ function isNumberInput(element: Element): element is HTMLInputElement {
   return element instanceof HTMLInputElement && element.type === "number";
 }
 
+// Browsers never activate a disabled control, so the synthetic Enter/Space
+// activations below skip one. An element that disables itself in its own keydown
+// handler is already disabled by the time the activation runs.
+function isDisabled(element: Element) {
+  return Boolean((element as HTMLButtonElement).disabled);
+}
+
 async function incrementNumberInput(element: HTMLInputElement, by = 1) {
   const value = +element.value + by;
   const max = element.max ? +element.max : Number.MAX_SAFE_INTEGER;
@@ -69,6 +76,8 @@ const keyDownMap: KeyActionMap = {
   },
 
   async Enter(element, options) {
+    if (isDisabled(element)) return;
+
     const nonSubmittableTypes = [...clickableInputTypes, "hidden"];
 
     const isClickable =
@@ -184,11 +193,11 @@ const keyUpMap: KeyActionMap = {
       (element instanceof HTMLInputElement &&
         spaceableTypes.includes(element.type));
 
-    // Browsers don't activate disabled controls, so don't synthesize the click —
-    // e.g. a split `press.up` landing on a control that disabled itself on
-    // keydown but is still focused (the DOM test environments don't blur it the
-    // way a real browser does, and jsdom would otherwise fire the click).
-    if (isSpaceable && !(element as HTMLButtonElement).disabled) {
+    // Don't synthesize the click on a disabled control — e.g. a split `press.up`
+    // landing on a control that disabled itself on keydown but is still focused
+    // (the DOM test environments don't blur it the way a real browser does, and
+    // jsdom would otherwise fire the click).
+    if (isSpaceable && !isDisabled(element)) {
       await dispatch.click(element, options);
     }
   },
