@@ -54,7 +54,7 @@ function isNumberInput(element: Element): element is HTMLInputElement {
 // activations below skip one. An element that disables itself in its own keydown
 // handler is already disabled by the time the activation runs.
 function isDisabled(element: Element) {
-  return Boolean((element as HTMLButtonElement).disabled);
+  return (element as Partial<HTMLButtonElement>).disabled ?? false;
 }
 
 async function incrementNumberInput(element: HTMLInputElement, by = 1) {

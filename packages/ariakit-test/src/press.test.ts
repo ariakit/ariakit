@@ -1,12 +1,11 @@
-// @vitest-environment jsdom
 import { expect, test, vi } from "vitest";
 import { press } from "./index.ts";
 
-// These run in jsdom, not the default happy-dom: jsdom (like a real browser)
-// fires a manually dispatched click on a disabled control's listeners, while
-// happy-dom suppresses it. So jsdom is where a missing disabled gate on the
-// synthetic Space/Enter activation would actually click the control, making it
-// the right environment to guard the gate.
+// A scripted click dispatched on a disabled control fires its listeners in jsdom
+// and real browsers; happy-dom drops it, but `dispatch` normalizes that (see
+// dispatch.ts), so these run in the default happy-dom. They guard the disabled
+// gate on the synthetic Space/Enter activation: without the gate, the activation
+// dispatches a click that — once normalized — would reach the listener here.
 test("press.up does not activate a disabled control on Space release", async () => {
   const button = document.createElement("button");
   button.disabled = true;

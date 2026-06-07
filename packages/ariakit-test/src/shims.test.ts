@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
 import { isBrowser, wrapAsync } from "./__utils.ts";
+import { click } from "./click.ts";
 import { dispatch } from "./dispatch.ts";
 import "./shims.ts";
 
@@ -133,4 +134,57 @@ test("cancels a not-yet-run animation frame callback within the same frame", asy
   // "a" cancels "b" before "b" runs, so "b" must be skipped even though both
   // were requested for the same frame.
   expect(ran).toEqual(["a"]);
+});
+
+test("fires listeners for a click dispatched on a disabled control", async () => {
+  if (isBrowser) return;
+  // happy-dom drops a scripted click on a disabled <button>/<input> entirely;
+  // jsdom and real browsers still run the listeners (skipping only the control's
+  // activation behavior). `dispatch` normalizes that (see dispatch.ts).
+  const button = document.createElement("button");
+  button.disabled = true;
+  let buttonClicks = 0;
+  button.addEventListener("click", () => buttonClicks++);
+
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.disabled = true;
+  let checkboxClicks = 0;
+  checkbox.addEventListener("click", () => checkboxClicks++);
+
+  document.body.append(button, checkbox);
+  try {
+    await dispatch.click(button);
+    await dispatch.click(checkbox);
+    expect(buttonClicks).toBe(1);
+    expect(checkboxClicks).toBe(1);
+    // The listener runs, but the disabled checkbox isn't toggled — a browser
+    // doesn't activate a disabled control.
+    expect(checkbox.checked).toBe(false);
+  } finally {
+    button.remove();
+    checkbox.remove();
+  }
+});
+
+test("click(label) fires the associated control's click only once", async () => {
+  if (isBrowser) return;
+  // `click` suppresses happy-dom's automatic label-to-control click by
+  // temporarily disabling the control, relying on happy-dom dropping that
+  // forwarded click. The disabled-click normalization is scoped to events
+  // @ariakit/test dispatches, so it must not undo that drop and double-fire the
+  // control on `click(label)`.
+  const label = document.createElement("label");
+  const checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  label.append(checkbox, document.createTextNode("Accept"));
+  document.body.append(label);
+  let clicks = 0;
+  checkbox.addEventListener("click", () => clicks++);
+  try {
+    await click(label);
+    expect(clicks).toBe(1);
+  } finally {
+    label.remove();
+  }
 });
