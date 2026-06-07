@@ -253,6 +253,53 @@ test("reverts a disabled checkbox toggle in either direction when a click listen
   }
 });
 
+test("clears and restores a disabled checkbox's indeterminate state on a scripted click", async () => {
+  if (isBrowser) return;
+  // A scripted click on a disabled indeterminate checkbox clears `indeterminate`
+  // (and toggles `checked`) before the click listener runs; preventDefault()
+  // restores both. Verified on Chromium, Firefox, and WebKit.
+  for (const prevent of [false, true]) {
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.disabled = true;
+    checkbox.indeterminate = true;
+    let indeterminateDuringClick: boolean | undefined;
+    let checkedDuringClick: boolean | undefined;
+    let inputEvents = 0;
+    let changeEvents = 0;
+    checkbox.addEventListener("input", () => inputEvents++);
+    checkbox.addEventListener("change", () => changeEvents++);
+    checkbox.addEventListener("click", (event) => {
+      indeterminateDuringClick = checkbox.indeterminate;
+      checkedDuringClick = checkbox.checked;
+      if (prevent) event.preventDefault();
+    });
+    document.body.append(checkbox);
+    try {
+      const defaultAllowed = await dispatch.click(checkbox);
+      // Cleared and toggled before the listener runs, regardless of prevention.
+      expect(indeterminateDuringClick).toBe(false);
+      expect(checkedDuringClick).toBe(true);
+      if (prevent) {
+        // preventDefault restores both the checked and indeterminate state.
+        expect(defaultAllowed).toBe(false);
+        expect(checkbox.checked).toBe(false);
+        expect(checkbox.indeterminate).toBe(true);
+        expect(inputEvents).toBe(0);
+        expect(changeEvents).toBe(0);
+      } else {
+        expect(defaultAllowed).toBe(true);
+        expect(checkbox.checked).toBe(true);
+        expect(checkbox.indeterminate).toBe(false);
+        expect(inputEvents).toBe(1);
+        expect(changeEvents).toBe(1);
+      }
+    } finally {
+      checkbox.remove();
+    }
+  }
+});
+
 test("selects a disabled radio on click and fires events only when it changes", async () => {
   if (isBrowser) return;
   const radio = document.createElement("input");
