@@ -42,10 +42,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // state must still be cleared so the element doesn't stay stuck pressed.
     await page.keyboard.down("Space");
     await test.expect(command).toHaveAttribute("aria-disabled", "true");
-    // The disabled element has lost focusability and blurred, so the upcoming
-    // keyup lands on the body and never reaches the command — the whole reason
-    // clearing the active state can't rely on the keyup handler here.
-    await test.expect(command).not.toBeFocused();
+    // The active state must clear as soon as the element becomes disabled — it
+    // can't rely on the keyup, which in a real browser lands on the body once the
+    // disabled element loses focus. (We don't assert the blur itself: the focus
+    // fixup for a div whose tabindex is removed isn't portable across browsers.)
     await test.expect(command).not.toHaveAttribute("data-active");
 
     await page.keyboard.up("Space");
