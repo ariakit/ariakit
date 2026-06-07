@@ -132,8 +132,8 @@ importers:
         specifier: 13.0.6
         version: 13.0.6
       happy-dom:
-        specifier: 20.9.0
-        version: 20.9.0
+        specifier: 20.10.1
+        version: 20.10.1
       husky:
         specifier: 9.1.7
         version: 9.1.7
@@ -205,7 +205,7 @@ importers:
         version: 2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.13)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0))
       vitest:
         specifier: 4.1.8
-        version: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.10.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0))
       vitest-fail-on-console:
         specifier: 0.10.1
         version: 0.10.1(@vitest/utils@4.1.8)(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0))(vitest@4.1.8)
@@ -443,7 +443,7 @@ importers:
         version: 7.3.5(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.9.0)
       vitest:
         specifier: 4.1.8
-        version: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@7.3.5(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.10.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@7.3.5(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.9.0))
       wrangler:
         specifier: 4.97.0
         version: 4.97.0
@@ -528,7 +528,7 @@ importers:
         version: 3.0.4
       vitest:
         specifier: 4.1.8
-        version: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.10.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.9.0))
 
   guide: {}
 
@@ -696,7 +696,7 @@ importers:
         version: 1.60.0
       vitest:
         specifier: 4.1.8
-        version: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.10.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.9.0))
 
   packages/ariakit-solid:
     dependencies:
@@ -767,7 +767,7 @@ importers:
         version: link:../ariakit-scripts
       vitest:
         specifier: 4.1.8
-        version: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.9.0))
+        version: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.10.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.9.0))
 
   packages/ariakit-tailwind:
     devDependencies:
@@ -5610,6 +5610,10 @@ packages:
   buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
 
+  buffer-image-size@0.6.4:
+    resolution: {integrity: sha512-nEh+kZOPY1w+gcCMobZ6ETUp9WfibndnosbpwB1iJk/8Gt5ZF2bhS6+B6bPYz424KtwsR6Rflc3tCz1/ghX2dQ==}
+    engines: {node: '>=4.0'}
+
   bundle-name@4.1.0:
     resolution: {integrity: sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q==}
     engines: {node: '>=18'}
@@ -6617,8 +6621,8 @@ packages:
   h3@1.15.11:
     resolution: {integrity: sha512-L3THSe2MPeBwgIZVSH5zLdBBU90TOxarvhK9d04IDY2AmVS8j2Jz2LIWtwsGOU3lu2I5jCN7FNvVfY2+XyF+mg==}
 
-  happy-dom@20.9.0:
-    resolution: {integrity: sha512-GZZ9mKe8r646NUAf/zemnGbjYh4Bt8/MqASJY+pSm5ZDtc3YQox+4gsLI7yi1hba6o+eCsGxpHn5+iEVn31/FQ==}
+  happy-dom@20.10.1:
+    resolution: {integrity: sha512-awPoqPjx8CgjapJllyDlgzgVHjBExcitKK5ZJkxwhQJyQpHFkyS2bEcqCm7IeW20cQvuCI0cz2Ifq79CJKqtiw==}
     engines: {node: '>=20.0.0'}
 
   has-ansi@2.0.0:
@@ -14456,7 +14460,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.0.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0))
+      vitest: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.10.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0))
 
   '@vitest/expect@4.1.8':
     dependencies:
@@ -15225,6 +15229,10 @@ snapshots:
       update-browserslist-db: 1.2.3(browserslist@4.28.2)
 
   buffer-from@1.1.2: {}
+
+  buffer-image-size@0.6.4:
+    dependencies:
+      '@types/node': 24.12.4
 
   bundle-name@4.1.0:
     dependencies:
@@ -16321,11 +16329,12 @@ snapshots:
       ufo: 1.6.3
       uncrypto: 0.1.3
 
-  happy-dom@20.9.0:
+  happy-dom@20.10.1:
     dependencies:
       '@types/node': 24.12.4
       '@types/whatwg-mimetype': 3.0.2
       '@types/ws': 8.18.1
+      buffer-image-size: 0.6.4
       entities: 7.0.1
       whatwg-mimetype: 3.0.0
       ws: 8.20.1
@@ -20155,9 +20164,9 @@ snapshots:
       '@vitest/utils': 4.1.8
       chalk: 5.6.2
       vite: 8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0)
-      vitest: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0))
+      vitest: 4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.10.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0))
 
-  vitest@4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@7.3.5(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.9.0)):
+  vitest@4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.10.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@7.3.5(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.8
       '@vitest/mocker': 4.1.8(vite@7.3.5(@types/node@24.12.4)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.0)(yaml@2.9.0))
@@ -20182,12 +20191,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.4
       '@vitest/coverage-v8': 4.1.8(vitest@4.1.8)
-      happy-dom: 20.9.0
+      happy-dom: 20.10.1
       jsdom: 29.1.1(@noble/hashes@1.8.0)
     transitivePeerDependencies:
       - msw
 
-  vitest@4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0)):
+  vitest@4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.10.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.8
       '@vitest/mocker': 4.1.8(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@1.21.7)(terser@5.46.0)(yaml@2.9.0))
@@ -20212,12 +20221,12 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.4
       '@vitest/coverage-v8': 4.1.8(vitest@4.1.8)
-      happy-dom: 20.9.0
+      happy-dom: 20.10.1
       jsdom: 29.1.1(@noble/hashes@1.8.0)
     transitivePeerDependencies:
       - msw
 
-  vitest@4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.9.0)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.9.0)):
+  vitest@4.1.8(@types/node@24.12.4)(@vitest/coverage-v8@4.1.8)(happy-dom@20.10.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.8
       '@vitest/mocker': 4.1.8(vite@8.0.16(@types/node@24.12.4)(esbuild@0.27.4)(jiti@2.6.1)(terser@5.46.0)(yaml@2.9.0))
@@ -20242,7 +20251,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.4
       '@vitest/coverage-v8': 4.1.8(vitest@4.1.8)
-      happy-dom: 20.9.0
+      happy-dom: 20.10.1
       jsdom: 29.1.1(@noble/hashes@1.8.0)
     transitivePeerDependencies:
       - msw
