@@ -12,7 +12,7 @@ tags:
 
 <div data-description>
 
-Combining [Select](/components/select) and [Combobox](/components/combobox) to create a dropdown with a search field that can be used to filter items.
+Rendering a select-like [Combobox](/components/combobox) dropdown with a search field that can be used to filter items.
 
 </div>
 

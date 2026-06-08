@@ -10,6 +10,7 @@ import { usePopover } from "../popover/popover.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxListOptions } from "./combobox-list.tsx";
 import { useComboboxList } from "./combobox-list.tsx";
+import { useComboboxSelectElement } from "./combobox-select-state.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -50,6 +51,8 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     modal,
     tabIndex,
     alwaysVisible,
+    autoFocusOnShow,
+    initialFocus,
     autoFocusOnHide = true,
     hideOnInteractOutside = true,
     ...props
@@ -64,6 +67,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     );
 
     const baseElement = useStoreState(store, "baseElement");
+    const selectElement = useComboboxSelectElement(store);
     const hiddenByClickOutsideRef = useRef(false);
 
     // When new tags are rendered while the combobox popover is open, they will
@@ -82,8 +86,9 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       modal,
       alwaysVisible,
       backdrop: false,
-      autoFocusOnShow: false,
-      finalFocus: baseElement,
+      autoFocusOnShow: autoFocusOnShow ?? !!selectElement,
+      initialFocus: initialFocus ?? (selectElement ? baseElement : undefined),
+      finalFocus: selectElement || baseElement,
       preserveTabOrderAnchor: null,
       unstable_treeSnapshotKey: treeSnapshotKey,
       ...props,
@@ -95,9 +100,11 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         const elements = props.getPersistentElements?.() || [];
         if (!modal) return elements;
         if (!store) return elements;
-        const { contentElement, baseElement } = store.getState();
-        if (!baseElement) return elements;
-        const doc = getDocument(baseElement);
+        const { contentElement, baseElement, disclosureElement } =
+          store.getState();
+        const persistentElement = baseElement || disclosureElement;
+        if (!persistentElement) return elements;
+        const doc = getDocument(persistentElement);
         const selectors: string[] = [];
         if (contentElement?.id) {
           selectors.push(`[aria-controls~="${contentElement.id}"]`);
@@ -105,7 +112,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         if (baseElement?.id) {
           selectors.push(`[aria-controls~="${baseElement.id}"]`);
         }
-        if (!selectors.length) return [...elements, baseElement];
+        if (!selectors.length) return [...elements, persistentElement];
         const selector = selectors.join(",");
         const controlElements = doc.querySelectorAll<HTMLElement>(selector);
         return [...elements, ...controlElements];
@@ -129,7 +136,10 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         const state = store?.getState();
         const contentId = state?.contentElement?.id;
         const baseId = state?.baseElement?.id;
-        if (isController(event.target, contentId, baseId)) return false;
+        const disclosureId = state?.disclosureElement?.id;
+        if (isController(event.target, contentId, baseId, disclosureId)) {
+          return false;
+        }
         const result =
           typeof hideOnInteractOutside === "function"
             ? hideOnInteractOutside(event)

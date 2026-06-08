@@ -42,8 +42,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
-import { usePopoverAnchor } from "../popover/popover-anchor.tsx";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
+import {
+  useComboboxContext,
+  useComboboxProviderContext,
+} from "./combobox-context.tsx";
+import { useComboboxSelectElement } from "./combobox-select-state.ts";
 import type {
   ComboboxStore,
   ComboboxStoreSelectedValue,
@@ -134,7 +137,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     ...props
   }) {
     const context = useComboboxProviderContext();
-    store = store || context;
+    const fallbackContext = useComboboxContext();
+    store = store || context || fallbackContext;
 
     invariant(
       store,
@@ -202,6 +206,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const items = useStoreState(store, "renderedItems");
     const open = useStoreState(store, "open");
     const contentElement = useStoreState(store, "contentElement");
+    const selectElement = useComboboxSelectElement(store);
 
     // The current input value may differ from state.value when
     // autoComplete is either "both" or "inline", in which case it will be
@@ -688,7 +693,13 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       },
     });
 
-    props = usePopoverAnchor<TagName>({ store, ...props });
+    props = {
+      ...props,
+      ref: useMergeRefs(
+        selectElement ? null : store.setAnchorElement,
+        props.ref,
+      ),
+    };
 
     return { autoComplete: "off", ...props };
   },

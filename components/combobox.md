@@ -38,6 +38,7 @@ useComboboxContext()
 
 <ComboboxProvider>
   <ComboboxLabel />
+  <ComboboxSelect />
   <Combobox />
   <ComboboxCancel />
   <ComboboxDisclosure />

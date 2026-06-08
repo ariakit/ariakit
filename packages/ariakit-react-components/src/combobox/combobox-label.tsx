@@ -1,5 +1,9 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useEvent,
+  useId,
+  useMergeRefs,
+  useSafeLayoutEffect,
   createElement,
   createHook,
   forwardRef,
@@ -7,12 +11,19 @@ import {
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
 import { invariant, removeUndefinedValues } from "@ariakit/utils";
-import type { ElementType } from "react";
+import type { ElementType, MouseEvent } from "react";
+import { useRef } from "react";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
+import {
+  removeComboboxSelectLabelElement,
+  setComboboxSelectLabelElement,
+  useComboboxSelectElement,
+} from "./combobox-select-state.ts";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "label" satisfies ElementType;
 type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `ComboboxLabel` component.
@@ -36,11 +47,34 @@ export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
         "ComboboxLabel must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
+    const id = useId(props.id);
+    const ref = useRef<HTMLType>(null);
     const comboboxId = useStoreState(store, (state) => state.baseElement?.id);
+    const selectElement = useComboboxSelectElement(store);
+    const onClickProp = props.onClick;
+
+    useSafeLayoutEffect(() => {
+      if (!selectElement) return;
+      const element = ref.current;
+      if (!element) return;
+      setComboboxSelectLabelElement(store, element);
+      return () => removeComboboxSelectLabelElement(store, element);
+    }, [selectElement, store]);
+
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
+      onClickProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!selectElement) return;
+      event.preventDefault();
+      selectElement.focus();
+    });
 
     props = {
-      htmlFor: comboboxId,
+      htmlFor: selectElement ? undefined : comboboxId,
       ...props,
+      id,
+      ref: useMergeRefs(ref, props.ref),
+      onClick,
     };
 
     return removeUndefinedValues(props);

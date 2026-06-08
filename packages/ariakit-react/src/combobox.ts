@@ -62,6 +62,11 @@ export type {
 } from "@ariakit/react-components/combobox/combobox-row";
 export { ComboboxRow } from "@ariakit/react-components/combobox/combobox-row";
 export type {
+  ComboboxSelectOptions,
+  ComboboxSelectProps,
+} from "@ariakit/react-components/combobox/combobox-select";
+export { ComboboxSelect } from "@ariakit/react-components/combobox/combobox-select";
+export type {
   ComboboxSeparatorOptions,
   ComboboxSeparatorProps,
 } from "@ariakit/react-components/combobox/combobox-separator";

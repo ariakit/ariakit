@@ -1,0 +1,126 @@
+import { click, dispatch, focus, q, render } from "@ariakit/test/react";
+import { cleanup } from "@testing-library/react";
+import type { FormEvent } from "react";
+import { afterEach, expect, test, vi } from "vitest";
+import { ComboboxItem } from "./combobox-item.tsx";
+import { ComboboxLabel } from "./combobox-label.tsx";
+import { ComboboxPopover } from "./combobox-popover.tsx";
+import { ComboboxProvider } from "./combobox-provider.tsx";
+import { ComboboxSelect } from "./combobox-select.tsx";
+import { Combobox } from "./combobox.tsx";
+
+afterEach(cleanup);
+
+interface TestProps {
+  defaultSelectedValue?: string;
+  onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
+  required?: boolean;
+}
+
+function Test({ defaultSelectedValue, onSubmit, required }: TestProps = {}) {
+  return (
+    <form onSubmit={onSubmit}>
+      <ComboboxProvider
+        defaultSelectedValue={defaultSelectedValue}
+        resetValueOnHide
+      >
+        <ComboboxLabel>Favorite fruit</ComboboxLabel>
+        <ComboboxSelect name="fruit" required={required} />
+        <ComboboxPopover>
+          <Combobox autoSelect placeholder="Search..." />
+          <ComboboxItem value="Apple" />
+          <ComboboxItem value="Banana" />
+          <ComboboxItem value="Orange" />
+        </ComboboxPopover>
+      </ComboboxProvider>
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+
+function getNativeSelect() {
+  return document.querySelector<HTMLSelectElement>("select[name='fruit']")!;
+}
+
+test("clicking on the label focuses the select without showing the popover", async () => {
+  await render(<Test defaultSelectedValue="Apple" />);
+  await click(q.text("Favorite fruit"));
+  expect(document.activeElement).toBe(q.combobox("Favorite fruit"));
+  expect(q.dialog()).toBeNull();
+});
+
+test("submits the selected value with a hidden native select", async () => {
+  const values: FormDataEntryValue[] = [];
+
+  await render(
+    <Test
+      defaultSelectedValue="Apple"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        values.push(data.get("fruit")!);
+      }}
+    />,
+  );
+
+  await click(q.combobox("Favorite fruit"));
+  await click(q.option("Banana"));
+  await click(q.button("Submit"));
+
+  expect(values).toEqual(["Banana"]);
+});
+
+test("scrolls the selected item into view when the popover is shown", async () => {
+  const scrollIntoView = vi
+    .spyOn(HTMLElement.prototype, "scrollIntoView")
+    .mockImplementation(function (this: Element) {
+      return this;
+    });
+
+  try {
+    await render(<Test defaultSelectedValue="Apple" />);
+    await click(q.combobox("Favorite fruit"));
+    scrollIntoView.mockClear();
+    await click(q.option("Banana"));
+    await click(q.combobox("Favorite fruit"));
+
+    expect(scrollIntoView.mock.contexts).toContain(q.option("Banana"));
+  } finally {
+    scrollIntoView.mockRestore();
+  }
+});
+
+test("supports native select change and focus forwarding", async () => {
+  await render(<Test defaultSelectedValue="Apple" />);
+  const select = getNativeSelect();
+  const combobox = q.combobox("Favorite fruit")!;
+
+  expect(combobox.hasAttribute("data-autofill")).toBe(false);
+  await dispatch.change(select, { target: { value: "Orange" } });
+  expect(combobox.textContent).toContain("Orange");
+  expect(combobox.hasAttribute("data-autofill")).toBe(true);
+
+  expect(document.activeElement).not.toBe(combobox);
+  await focus(select);
+  await expect.poll(() => document.activeElement).toBe(combobox);
+});
+
+test("supports native select required validation", async () => {
+  const values: FormDataEntryValue[] = [];
+
+  await render(
+    <Test
+      required
+      onSubmit={(event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        values.push(data.get("fruit")!);
+      }}
+    />,
+  );
+
+  await click(q.button("Submit"));
+
+  expect(values).toEqual([]);
+  expect(getNativeSelect().checkValidity()).toBe(false);
+});

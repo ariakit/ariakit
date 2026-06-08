@@ -30,6 +30,7 @@ import {
   ComboboxListRoleContext,
   useComboboxScopedContext,
 } from "./combobox-context.tsx";
+import { useComboboxSelectElement } from "./combobox-select-state.ts";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -52,6 +53,14 @@ function isSelected(
     return storeValue.includes(itemValue);
   }
   return storeValue === itemValue;
+}
+
+function supportsAriaSelected(role?: string) {
+  if (role === "option") return true;
+  if (role === "treeitem") return true;
+  if (role === "gridcell") return true;
+  if (role === "row") return true;
+  return false;
 }
 
 /**
@@ -95,6 +104,8 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         "ComboboxItem must be wrapped in a ComboboxList or ComboboxPopover component.",
     );
 
+    const selectElement = useComboboxSelectElement(store);
+
     const { resetValueOnSelectState, multiSelectable, selected } =
       useStoreStateObject(store, {
         resetValueOnSelectState: "resetValueOnSelect",
@@ -117,14 +128,15 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       [value, getItemProp],
     );
 
-    setValueOnClick = setValueOnClick ?? !multiSelectable;
+    setValueOnClick = setValueOnClick ?? (!selectElement && !multiSelectable);
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
 
     const onClickProp = props.onClick;
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
     const selectValueOnClickProp = useBooleanEvent(selectValueOnClick);
     const resetValueOnSelectProp = useBooleanEvent(
-      resetValueOnSelect ?? resetValueOnSelectState ?? multiSelectable,
+      resetValueOnSelect ??
+        (selectElement ? true : (resetValueOnSelectState ?? multiSelectable)),
     );
     const hideOnClickProp = useBooleanEvent(hideOnClick);
 
@@ -181,7 +193,13 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       }
     });
 
-    if (multiSelectable && selected != null) {
+    const popupRole = useContext(ComboboxListRoleContext);
+    const role = props.role ?? getItemRole(popupRole);
+
+    if (
+      selected != null &&
+      (multiSelectable || (selectElement && supportsAriaSelected(role)))
+    ) {
       props = {
         "aria-selected": selected,
         ...props,
@@ -200,10 +218,8 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       [value, selected],
     );
 
-    const popupRole = useContext(ComboboxListRoleContext);
-
     props = {
-      role: getItemRole(popupRole),
+      role,
       children: value,
       ...props,
       onClick,
