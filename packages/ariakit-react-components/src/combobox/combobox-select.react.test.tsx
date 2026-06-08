@@ -2,8 +2,10 @@ import { click, dispatch, focus, q, render } from "@ariakit/test/react";
 import { cleanup } from "@testing-library/react";
 import type { FormEvent } from "react";
 import { afterEach, expect, test, vi } from "vitest";
+import { PopoverHeading } from "../popover/popover-heading.tsx";
 import { ComboboxItem } from "./combobox-item.tsx";
 import { ComboboxLabel } from "./combobox-label.tsx";
+import { ComboboxList } from "./combobox-list.tsx";
 import { ComboboxPopover } from "./combobox-popover.tsx";
 import { ComboboxProvider } from "./combobox-provider.tsx";
 import { ComboboxSelect } from "./combobox-select.tsx";
@@ -28,9 +30,11 @@ function Test({ defaultSelectedValue, onSubmit, required }: TestProps = {}) {
         <ComboboxSelect name="fruit" required={required} />
         <ComboboxPopover>
           <Combobox autoSelect placeholder="Search..." />
-          <ComboboxItem value="Apple" />
-          <ComboboxItem value="Banana" />
-          <ComboboxItem value="Orange" />
+          <ComboboxList>
+            <ComboboxItem value="Apple" />
+            <ComboboxItem value="Banana" />
+            <ComboboxItem value="Orange" />
+          </ComboboxList>
         </ComboboxPopover>
       </ComboboxProvider>
       <button type="submit">Submit</button>
@@ -47,6 +51,39 @@ test("clicking on the label focuses the select without showing the popover", asy
   await click(q.text("Favorite fruit"));
   expect(document.activeElement).toBe(q.combobox("Favorite fruit"));
   expect(q.dialog()).toBeNull();
+});
+
+test("labels the popover with the combobox label", async () => {
+  await render(<Test defaultSelectedValue="Apple" />);
+  await click(q.combobox("Favorite fruit"));
+  expect(q.dialog("Favorite fruit")).not.toBeNull();
+  const dialog = q.dialog();
+  const label = q.text("Favorite fruit");
+  if (!dialog) throw new Error("Dialog not found");
+  if (!label) throw new Error("Label not found");
+  expect(dialog.getAttribute("aria-labelledby")).toBe(label.id);
+});
+
+test("uses the popover heading as the popover label when present", async () => {
+  await render(
+    <ComboboxProvider defaultSelectedValue="Apple">
+      <ComboboxLabel>Favorite fruit</ComboboxLabel>
+      <ComboboxSelect />
+      <ComboboxPopover>
+        <PopoverHeading>Available fruits</PopoverHeading>
+        <Combobox autoSelect placeholder="Search..." />
+        <ComboboxList>
+          <ComboboxItem value="Apple" />
+          <ComboboxItem value="Banana" />
+          <ComboboxItem value="Orange" />
+        </ComboboxList>
+      </ComboboxPopover>
+    </ComboboxProvider>,
+  );
+
+  await click(q.combobox("Favorite fruit"));
+  expect(q.dialog("Available fruits")).not.toBeNull();
+  expect(q.dialog("Favorite fruit")).toBeNull();
 });
 
 test("submits the selected value with a hidden native select", async () => {

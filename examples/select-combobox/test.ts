@@ -4,7 +4,7 @@ import { expect, test } from "vitest";
 test("show/hide on click", async () => {
   expect(q.dialog()).not.toBeInTheDocument();
   await click(q.combobox("Favorite fruit"));
-  expect(q.dialog()).toBeVisible();
+  expect(q.dialog.ensure("Favorite fruit")).toBeVisible();
   expect(q.combobox("Search...")).toHaveFocus();
   expect(q.option("Apple")).toHaveFocus();
   await click(q.combobox("Favorite fruit"));
@@ -15,11 +15,11 @@ test("show/hide on click", async () => {
 test("show/hide on enter", async () => {
   await press.Tab();
   await press.Enter();
-  expect(q.dialog()).toBeVisible();
+  expect(q.dialog.ensure("Favorite fruit")).toBeVisible();
   expect(q.combobox("Search...")).toHaveFocus();
   expect(q.option("Apple")).toHaveFocus();
   await press.ShiftTab();
-  expect(q.dialog()).toBeVisible();
+  expect(q.dialog.ensure("Favorite fruit")).toBeVisible();
   expect(q.combobox("Favorite fruit")).toHaveFocus();
   await press.Enter();
   expect(q.dialog()).not.toBeInTheDocument();
@@ -29,11 +29,11 @@ test("show/hide on enter", async () => {
 test("show/hide on space", async () => {
   await press.Tab();
   await press.Space();
-  expect(q.dialog()).toBeVisible();
+  expect(q.dialog.ensure("Favorite fruit")).toBeVisible();
   expect(q.combobox("Search...")).toHaveFocus();
   expect(q.option("Apple")).toHaveFocus();
   await press.ShiftTab();
-  expect(q.dialog()).toBeVisible();
+  expect(q.dialog.ensure("Favorite fruit")).toBeVisible();
   expect(q.combobox("Favorite fruit")).toHaveFocus();
   await press.Space();
   expect(q.dialog()).not.toBeInTheDocument();
@@ -43,7 +43,7 @@ test("show/hide on space", async () => {
 test("show on arrow down", async () => {
   await press.Tab();
   await press.ArrowDown();
-  expect(q.dialog()).toBeVisible();
+  expect(q.dialog.ensure("Favorite fruit")).toBeVisible();
   expect(q.combobox("Search...")).toHaveFocus();
   expect(q.option("Apple")).toHaveFocus();
 });
@@ -51,7 +51,7 @@ test("show on arrow down", async () => {
 test("show on arrow up", async () => {
   await press.Tab();
   await press.ArrowUp();
-  expect(q.dialog()).toBeVisible();
+  expect(q.dialog.ensure("Favorite fruit")).toBeVisible();
   expect(q.combobox("Search...")).toHaveFocus();
   expect(q.option("Apple")).toHaveFocus();
 });

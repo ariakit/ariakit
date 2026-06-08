@@ -10,7 +10,10 @@ import { usePopover } from "../popover/popover.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxListOptions } from "./combobox-list.tsx";
 import { useComboboxList } from "./combobox-list.tsx";
-import { useComboboxSelectElement } from "./combobox-select-state.ts";
+import {
+  useComboboxSelectElement,
+  useComboboxSelectLabelElement,
+} from "./combobox-select-state.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -68,6 +71,8 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
 
     const baseElement = useStoreState(store, "baseElement");
     const selectElement = useComboboxSelectElement(store);
+    const selectLabelElement = useComboboxSelectLabelElement(store);
+    const selectLabelId = selectLabelElement?.id;
     const hiddenByClickOutsideRef = useRef(false);
 
     // When new tags are rendered while the combobox popover is open, they will
@@ -150,6 +155,17 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         return result;
       },
     });
+
+    if (
+      selectLabelId &&
+      props["aria-label"] == null &&
+      props["aria-labelledby"] == null
+    ) {
+      props = {
+        ...props,
+        "aria-labelledby": selectLabelId,
+      };
+    }
 
     return props;
   },
