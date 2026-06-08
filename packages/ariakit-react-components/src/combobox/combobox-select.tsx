@@ -52,9 +52,10 @@ function getSelectedValues(select: HTMLSelectElement) {
   return Array.from(select.selectedOptions).map((option) => option.value);
 }
 
-function hasSelectedValue(value: ComboboxStoreSelectedValue) {
-  if (Array.isArray(value)) return !!value.length;
-  return !!value.length;
+function hasSelectedValue(
+  value: ComboboxStoreSelectedValue | null | undefined,
+) {
+  return !!value?.length;
 }
 
 function getOptionLabel(value: string, label?: string) {

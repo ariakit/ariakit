@@ -86,6 +86,38 @@ test("uses the popover heading as the popover label when present", async () => {
   expect(q.dialog("Favorite fruit")).toBeNull();
 });
 
+test("keeps the select in the modal context", async () => {
+  await render(
+    <>
+      <button id="outside" type="button">
+        Outside
+      </button>
+      <ComboboxProvider defaultSelectedValue="Apple">
+        <ComboboxLabel>Favorite fruit</ComboboxLabel>
+        <ComboboxSelect />
+        <ComboboxPopover modal>
+          <Combobox autoSelect placeholder="Search..." />
+          <ComboboxList>
+            <ComboboxItem value="Apple" />
+            <ComboboxItem value="Banana" />
+            <ComboboxItem value="Orange" />
+          </ComboboxList>
+        </ComboboxPopover>
+      </ComboboxProvider>
+    </>,
+  );
+
+  await click(q.combobox("Favorite fruit"));
+  expect(q.dialog("Favorite fruit")).not.toBeNull();
+
+  const select = q.combobox("Favorite fruit")!;
+  const outside = document.getElementById("outside")!;
+
+  expect(outside.inert).toBe(true);
+  expect(select.inert).toBe(false);
+  expect(select.hasAttribute("aria-hidden")).toBe(false);
+});
+
 test("submits the selected value with a hidden native select", async () => {
   const values: FormDataEntryValue[] = [];
 

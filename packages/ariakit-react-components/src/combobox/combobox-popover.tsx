@@ -107,7 +107,8 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         if (!store) return elements;
         const { contentElement, baseElement, disclosureElement } =
           store.getState();
-        const persistentElement = baseElement || disclosureElement;
+        const persistentElement =
+          selectElement || baseElement || disclosureElement;
         if (!persistentElement) return elements;
         const doc = getDocument(persistentElement);
         const selectors: string[] = [];
@@ -117,10 +118,10 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         if (baseElement?.id) {
           selectors.push(`[aria-controls~="${baseElement.id}"]`);
         }
-        if (!selectors.length) return [...elements, persistentElement];
-        const selector = selectors.join(",");
-        const controlElements = doc.querySelectorAll<HTMLElement>(selector);
-        return [...elements, ...controlElements];
+        const controlElements = selectors.length
+          ? doc.querySelectorAll<HTMLElement>(selectors.join(","))
+          : [];
+        return [...elements, persistentElement, ...controlElements];
       },
       // The combobox popover should focus on the combobox input when it hides,
       // unless the event was triggered by a click outside the popover, in which
