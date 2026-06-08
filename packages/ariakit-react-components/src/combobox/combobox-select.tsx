@@ -13,6 +13,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
+  getWindow,
   getPopupRole,
   invariant,
   queueBeforeEvent,
@@ -59,6 +60,15 @@ function hasSelectedValue(value: ComboboxStoreSelectedValue) {
 function getOptionLabel(value: string, label?: string) {
   if (!label) return value;
   return label;
+}
+
+function scrollIntoView(element: Element) {
+  if (!("scrollIntoView" in element)) return;
+  const win = getWindow(element);
+  const { scrollX, scrollY } = win;
+  element.scrollIntoView({ block: "nearest", inline: "nearest" });
+  if (win.scrollX === scrollX && win.scrollY === scrollY) return;
+  win.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });
 }
 
 const hiddenSelectStyle = {
@@ -234,9 +244,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       });
       const element = item?.element;
       if (!element) return;
-      if ("scrollIntoView" in element) {
-        element.scrollIntoView({ block: "nearest", inline: "nearest" });
-      }
+      scrollIntoView(element);
       scrollSelectedItemOnShowRef.current = false;
     }, [items, open, selectedValue]);
 

@@ -127,6 +127,57 @@ test("scrolls the selected item into view when the popover is shown", async () =
   }
 });
 
+test("preserves viewport scroll when scrolling the selected item into view", async () => {
+  let scrollX = 0;
+  let scrollY = 100;
+  const getScrollX = vi
+    .spyOn(window, "scrollX", "get")
+    .mockImplementation(() => scrollX);
+  const getScrollY = vi
+    .spyOn(window, "scrollY", "get")
+    .mockImplementation(() => scrollY);
+  const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(((
+    options?: ScrollToOptions | number,
+    y?: number,
+  ) => {
+    if (typeof options === "number") {
+      scrollX = options;
+      scrollY = y ?? scrollY;
+    } else if (options) {
+      scrollX = options.left ?? scrollX;
+      scrollY = options.top ?? scrollY;
+    }
+  }) as typeof window.scrollTo);
+  const scrollIntoView = vi
+    .spyOn(HTMLElement.prototype, "scrollIntoView")
+    .mockImplementation(function (this: HTMLElement) {
+      if (this.textContent === "Banana") {
+        scrollY = 1;
+      }
+    });
+
+  try {
+    await render(<Test defaultSelectedValue="Apple" />);
+    await click(q.combobox("Favorite fruit"));
+    scrollIntoView.mockClear();
+    await click(q.option("Banana"));
+    await click(q.combobox("Favorite fruit"));
+
+    expect(scrollIntoView.mock.contexts).toContain(q.option("Banana"));
+    expect(scrollY).toBe(100);
+    expect(scrollTo).toHaveBeenLastCalledWith({
+      left: 0,
+      top: 100,
+      behavior: "instant",
+    });
+  } finally {
+    getScrollX.mockRestore();
+    getScrollY.mockRestore();
+    scrollTo.mockRestore();
+    scrollIntoView.mockRestore();
+  }
+});
+
 test("supports native select change and focus forwarding", async () => {
   await render(<Test defaultSelectedValue="Apple" />);
   const select = getNativeSelect();
