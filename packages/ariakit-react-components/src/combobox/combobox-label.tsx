@@ -42,10 +42,7 @@ export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
 
     const id = useId(props.id);
     const comboboxId = useStoreState(store, (state) => state.baseElement?.id);
-    const selectElement = useStoreState(store, (state) => {
-      if (state.disclosureElement !== state.selectElement) return null;
-      return state.selectElement;
-    });
+    const selectElement = useStoreState(store, "selectElement");
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {

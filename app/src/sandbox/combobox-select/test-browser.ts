@@ -51,6 +51,30 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.combobox("Favorite fruit")).toBeFocused();
   });
 
+  test("opens anchored to the select with the keyboard", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox("Favorite fruit").focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(q.dialog("Favorite fruit")).toBeVisible();
+
+    const selectBox = await q.combobox("Favorite fruit").boundingBox();
+    const dialogBox = await q.dialog("Favorite fruit").boundingBox();
+    expect(selectBox).toBeTruthy();
+    expect(dialogBox).toBeTruthy();
+    if (!selectBox) return;
+    if (!dialogBox) return;
+
+    // The popover must be positioned relative to the select button rather
+    // than the top-left corner of the viewport, which is where it would land
+    // if the anchor element was missing.
+    expect(dialogBox.y).toBeGreaterThan(selectBox.y);
+    expect(Math.abs(dialogBox.x - selectBox.x)).toBeLessThan(
+      selectBox.width + dialogBox.width,
+    );
+  });
+
   test("supports required validation", async ({ page, q }) => {
     await q.button("Submit required").click();
 

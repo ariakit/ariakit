@@ -89,7 +89,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     setValueOnClick,
     selectValueOnClick = true,
     resetValueOnSelect,
-    focusOnHover = false,
+    focusOnHover,
     moveOnKeyPress = true,
     getItem: getItemProp,
     ...props
@@ -110,10 +110,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       selected,
     } = useStoreStateObject(store, {
       resetValueOnSelectState: "resetValueOnSelect",
-      selectElement(state) {
-        if (state.disclosureElement !== state.selectElement) return null;
-        return state.selectElement;
-      },
+      selectElement: "selectElement",
       multiSelectable(state) {
         return Array.isArray(state.selectedValue);
       },
@@ -249,7 +246,22 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       },
     });
 
-    props = useCompositeHover({ store, focusOnHover, ...props });
+    // When the ComboboxSelect component is present, hovering over an item
+    // moves the highlight to it, matching the select behavior.
+    const focusOnHoverProp = useBooleanEvent(focusOnHover ?? !!selectElement);
+
+    props = useCompositeHover({
+      store,
+      ...props,
+      focusOnHover(event) {
+        if (!focusOnHoverProp(event)) return false;
+        if (!selectElement) return true;
+        // In select mode, hover focus is disabled while the popup is closed.
+        // Otherwise, the active item would be reset right after clicking an
+        // item hides the popover.
+        return store.getState().open;
+      },
+    });
 
     return props;
   },
@@ -379,6 +391,11 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    */
   resetValueOnSelect?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
+   * Whether the item should be focused when hovered. By default, this is
+   * `false` unless a
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select)
+   * component is present, in which case hovering over an item moves the
+   * highlight to it while the popup is open, matching the select behavior.
    * @default false
    */
   focusOnHover?: CompositeHoverOptions["focusOnHover"];

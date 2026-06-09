@@ -52,6 +52,8 @@ export function createSelectStore({
       "contentElement",
       "popoverElement",
       "disclosureElement",
+      "labelElement",
+      "selectElement",
     ]),
   );
 

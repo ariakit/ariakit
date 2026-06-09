@@ -229,7 +229,11 @@ export function createTabStore({
       syncActiveId = false;
       tab.setState("selectedId", selectedIdFromSelectedValue);
     };
-    if (parentComposite && "setSelectElement" in parentComposite) {
+    // The setListElement function exists only in select stores. Combobox
+    // stores also expose setSelectElement, so that function can't be used to
+    // detect select stores here. Select stores must keep syncing on the value
+    // state, whereas combobox stores sync on the selectedValue state below.
+    if (parentComposite && "setListElement" in parentComposite) {
       return chain(
         sync(parentComposite, ["value"], backupSelectedId),
         sync(parentComposite, ["mounted"], restoreSelectedId),

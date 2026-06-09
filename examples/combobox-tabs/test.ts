@@ -130,6 +130,23 @@ test("clear input with mouse", async () => {
   expect(q.combobox()).toHaveValue("");
 });
 
+test("reset the selected tab on reopen after typing", async () => {
+  await click(q.combobox());
+  expect(await q.dialog.wait("Pages")).toBeVisible();
+  expect(q.tab("Components 16")).toHaveAttribute("aria-selected", "true");
+  await click(q.tab("Examples 31"));
+  expect(q.tab("Examples 31")).toHaveAttribute("aria-selected", "true");
+  await type("se");
+  expect(q.combobox()).toHaveValue("se");
+  await click(q.button("Clear input"));
+  expect(q.combobox()).toHaveValue("");
+  await press.Escape();
+  expect(q.dialog("Pages")).not.toBeInTheDocument();
+  await click(q.combobox());
+  expect(await q.dialog.wait("Pages")).toBeVisible();
+  expect(q.tab("Components 16")).toHaveAttribute("aria-selected", "true");
+});
+
 test("open the popover with arrow down after switching tabs", async () => {
   await click(q.combobox());
   await expect.poll(q.dialog.lazy("Pages")).toBeVisible();

@@ -1,5 +1,7 @@
 import { init } from "@ariakit/store";
 import { expect, test } from "vitest";
+import { createComboboxStore } from "../combobox/combobox-store.ts";
+import { createSelectStore } from "../select/select-store.ts";
 import { createTabStore } from "./tab-store.ts";
 
 function flushBatch() {
@@ -120,4 +122,66 @@ test("tracks explicit panel item state updates", () => {
   store.panels.setState("items", []);
 
   expect(store.panel("tab-1")).toBeNull();
+});
+
+test("backs up the selected tab on selected value changes with a combobox parent", () => {
+  const combobox = createComboboxStore();
+  const store = createTabStore({
+    composite: combobox,
+    combobox,
+    defaultSelectedId: "tab-1",
+  });
+  const stopCombobox = init(combobox);
+  const stop = init(store);
+
+  try {
+    combobox.setState("open", true);
+
+    // Switching tabs and typing in the combobox input must not back up the
+    // selected tab, so closing the popover restores the tab that was selected
+    // when it opened.
+    store.setState("selectedId", "tab-2");
+    combobox.setState("value", "a");
+    combobox.setState("open", false);
+
+    expect(store.getState().selectedId).toBe("tab-1");
+
+    combobox.setState("open", true);
+    store.setState("selectedId", "tab-2");
+
+    // Selecting a combobox value backs up the selected tab, so it persists
+    // after the popover closes.
+    combobox.setState("selectedValue", "apple");
+    combobox.setState("open", false);
+
+    expect(store.getState().selectedId).toBe("tab-2");
+  } finally {
+    stop();
+    stopCombobox();
+  }
+});
+
+test("backs up the selected tab on value changes with a select parent", () => {
+  const select = createSelectStore();
+  const store = createTabStore({
+    composite: select,
+    defaultSelectedId: "tab-1",
+  });
+  const stopSelect = init(select);
+  const stop = init(store);
+
+  try {
+    select.setState("open", true);
+    store.setState("selectedId", "tab-2");
+
+    // Selecting a value backs up the selected tab, so it persists after the
+    // popover closes.
+    select.setState("value", "apple");
+    select.setState("open", false);
+
+    expect(store.getState().selectedId).toBe("tab-2");
+  } finally {
+    stop();
+    stopSelect();
+  }
 });

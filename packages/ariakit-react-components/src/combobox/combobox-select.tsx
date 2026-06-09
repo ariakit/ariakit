@@ -40,6 +40,7 @@ import type {
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function getSelectedValues(select: HTMLSelectElement) {
   return Array.from(select.selectedOptions).map((option) => option.value);
@@ -67,7 +68,7 @@ function scrollIntoView(element: Element) {
 
 const hiddenSelectStyle = {
   border: 0,
-  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
   height: "1px",
   margin: "-1px",
   overflow: "hidden",
@@ -137,23 +138,35 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     }, [store]);
 
     useEffect(() => {
+      // Tracks whether the activeId state must be resolved again right after
+      // the popover opens. When the popover unmounts its contents on hide, the
+      // item ids assigned while it was closed no longer exist on the next
+      // open, so the selected item must be found again once the items
+      // re-register.
+      let resolveOnOpen = false;
       return sync(
         store,
-        [
-          "open",
-          "items",
-          "selectedValue",
-          "disclosureElement",
-          "selectElement",
-        ],
+        ["open", "items", "selectedValue", "selectElement"],
         (state) => {
-          if (state.disclosureElement !== state.selectElement) return;
-          if (state.open) return;
-          if (Array.isArray(state.selectedValue)) return;
-          if (!state.selectedValue) return;
+          if (!state.selectElement) return;
+          if (!hasSelectedValue(state.selectedValue)) return;
+          const values = toArray(state.selectedValue);
+          const value = values[values.length - 1];
+          if (value == null) return;
+          if (state.open) {
+            if (!resolveOnOpen) return;
+            if (!state.items.length) return;
+            resolveOnOpen = false;
+            // Keep the current activeId if it still points to a registered
+            // item, which means the popover contents remained mounted while
+            // closed or the user has already moved to another item.
+            if (store.item(store.getState().activeId)) return;
+          } else {
+            resolveOnOpen = true;
+          }
           const item = state.items.find((item) => {
             if (item.disabled) return false;
-            return item.value === state.selectedValue;
+            return item.value === value;
           });
           if (!item) return;
           store.setActiveId(item.id);
@@ -231,17 +244,19 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
         return;
       }
       if (!scrollSelectedItemOnShowRef.current) return;
-      if (Array.isArray(selectedValue)) {
+      if (!hasSelectedValue(selectedValue)) {
         scrollSelectedItemOnShowRef.current = false;
         return;
       }
-      if (!selectedValue) {
+      const values = toArray(selectedValue);
+      const value = values[values.length - 1];
+      if (value == null) {
         scrollSelectedItemOnShowRef.current = false;
         return;
       }
       const item = items.find((item) => {
         if (item.disabled) return false;
-        return item.value === selectedValue;
+        return item.value === value;
       });
       const element = item?.element;
       if (!element) return;
@@ -324,17 +339,31 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
 
     const onKeyDownProp = props.onKeyDown;
     const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
+    const placement = useStoreState(store, "placement");
+    const dir = placement.split("-")[0] as BasePlacement;
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (event.ctrlKey) return;
-      if (event.altKey) return;
       if (event.shiftKey) return;
       if (event.metaKey) return;
-      if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+      // Alt is intentionally allowed: pressing Alt+ArrowDown to open the
+      // popover is part of the WAI-ARIA combobox keyboard interaction.
+      const isTopOrBottom = dir === "top" || dir === "bottom";
+      const canShowKeyMap = {
+        ArrowDown: isTopOrBottom,
+        ArrowUp: isTopOrBottom,
+        ArrowLeft: dir === "left",
+        ArrowRight: dir === "right",
+      };
+      const canShow = canShowKeyMap[event.key as keyof typeof canShowKeyMap];
+      if (!canShow) return;
       if (!showOnKeyDownProp(event)) return;
       event.preventDefault();
+      // Schedule the show event to run after the key event has finished
+      // bubbling. This is necessary to avoid the page to scroll when the
+      // popover is shown.
       queueBeforeEvent(event.currentTarget, "keyup", store.show);
     });
 
@@ -345,6 +374,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       "aria-autocomplete": "none",
       "aria-labelledby": label != null ? undefined : labelId,
       "aria-haspopup": getPopupRole(contentElement, "listbox"),
+      "aria-required": required || undefined,
       "data-autofill": autofill || undefined,
       "data-name": name,
       children,

@@ -14,7 +14,9 @@ interface FruitSelectProps {
   name?: string;
   required?: boolean;
   showOnKeyDown?: boolean;
+  store?: Ariakit.ComboboxStore;
   toggleOnClick?: boolean;
+  unmountOnHide?: boolean;
 }
 
 function FruitSelect({
@@ -27,10 +29,13 @@ function FruitSelect({
   name,
   required,
   showOnKeyDown,
+  store,
   toggleOnClick,
+  unmountOnHide,
 }: FruitSelectProps) {
   return (
     <Ariakit.ComboboxProvider
+      store={store}
       defaultSelectedValue={defaultSelectedValue}
       resetValueOnHide
     >
@@ -43,7 +48,7 @@ function FruitSelect({
         showOnKeyDown={showOnKeyDown}
         toggleOnClick={toggleOnClick}
       />
-      <Ariakit.ComboboxPopover modal={modal}>
+      <Ariakit.ComboboxPopover modal={modal} unmountOnHide={unmountOnHide}>
         {heading && <Ariakit.PopoverHeading>{heading}</Ariakit.PopoverHeading>}
         <Ariakit.Combobox autoSelect placeholder={`Search ${label}`} />
         <Ariakit.ComboboxList>
@@ -53,6 +58,18 @@ function FruitSelect({
         </Ariakit.ComboboxList>
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
+  );
+}
+
+function ProgrammaticFruitSelect() {
+  const store = Ariakit.useComboboxStore({ defaultSelectedValue: "Apple" });
+  return (
+    <>
+      <button type="button" onClick={store.show}>
+        Show programmatic fruit
+      </button>
+      <FruitSelect label="Programmatic fruit" store={store} />
+    </>
   );
 }
 
@@ -126,6 +143,12 @@ export default function Example() {
         defaultSelectedValue="Apple"
         heading="Available fruits"
       />
+      <FruitSelect
+        label="Unmount fruit"
+        defaultSelectedValue="Banana"
+        unmountOnHide
+      />
+      <ProgrammaticFruitSelect />
     </div>
   );
 }

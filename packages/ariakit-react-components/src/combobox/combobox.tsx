@@ -205,10 +205,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const items = useStoreState(store, "renderedItems");
     const open = useStoreState(store, "open");
     const contentElement = useStoreState(store, "contentElement");
-    const selectElement = useStoreState(store, (state) => {
-      if (state.disclosureElement !== state.selectElement) return null;
-      return state.selectElement;
-    });
 
     // The current input value may differ from state.value when
     // autoComplete is either "both" or "inline", in which case it will be
@@ -695,12 +691,21 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       },
     });
 
+    // When a ComboboxSelect is present, the select button is the popover
+    // anchor, so the combobox input must not register itself as the anchor
+    // element. The check happens inside a stable callback ref rather than by
+    // swapping refs conditionally: changing the merged ref identity would make
+    // React detach the previous ref and reset the anchorElement state to null,
+    // leaving the popover unanchored when it's opened with the keyboard or
+    // programmatically.
+    const setAnchorElement = useEvent((element: HTMLType | null) => {
+      if (store.getState().selectElement) return;
+      store.setAnchorElement(element);
+    });
+
     props = {
       ...props,
-      ref: useMergeRefs(
-        selectElement ? null : store.setAnchorElement,
-        props.ref,
-      ),
+      ref: useMergeRefs(setAnchorElement, props.ref),
     };
 
     return { autoComplete: "off", ...props };

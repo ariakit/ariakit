@@ -66,13 +66,9 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     );
 
     const baseElement = useStoreState(store, "baseElement");
-    const selectElement = useStoreState(store, (state) => {
-      if (state.disclosureElement !== state.selectElement) return null;
-      return state.selectElement;
-    });
+    const selectElement = useStoreState(store, "selectElement");
     const selectLabelId = useStoreState(store, (state) => {
       if (!state.selectElement) return;
-      if (state.disclosureElement !== state.selectElement) return;
       return state.labelElement?.id;
     });
     const hiddenByClickOutsideRef = useRef(false);

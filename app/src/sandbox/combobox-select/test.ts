@@ -98,3 +98,43 @@ test("forwards disabled to the hidden native select", async () => {
   await click(combobox);
   expect(q.dialog("Disabled fruit")).not.toBeInTheDocument();
 });
+
+test("sets aria-required when required", () => {
+  expect(q.combobox("Required fruit")).toHaveAttribute("aria-required", "true");
+  expect(q.combobox("Empty fruit")).not.toHaveAttribute("aria-required");
+});
+
+test("keeps select behavior when the popover is shown programmatically", async () => {
+  await click(q.button("Show programmatic fruit"));
+
+  expect(q.dialog("Programmatic fruit")).toBeInTheDocument();
+  await expect.poll(q.combobox.lazy("Search Programmatic fruit")).toHaveFocus();
+
+  await click(q.option("Banana"));
+
+  expect(q.dialog("Programmatic fruit")).not.toBeInTheDocument();
+  expect(q.combobox("Programmatic fruit")).toHaveTextContent("Banana");
+  await expect.poll(q.combobox.lazy("Programmatic fruit")).toHaveFocus();
+});
+
+test("highlights the selected item on reopen with unmountOnHide", async () => {
+  await click(q.combobox("Unmount fruit"));
+  await expect
+    .poll(q.option.lazy("Banana"))
+    .toHaveAttribute("data-active-item");
+
+  await click(q.option("Orange"));
+  expect(q.dialog("Unmount fruit")).not.toBeInTheDocument();
+
+  await click(q.combobox("Unmount fruit"));
+  await expect
+    .poll(q.option.lazy("Orange"))
+    .toHaveAttribute("data-active-item");
+});
+
+test("highlights the last selected value in multiple mode", async () => {
+  await click(q.combobox("Multiple fruit"));
+  await expect
+    .poll(q.option.lazy("Banana"))
+    .toHaveAttribute("data-active-item");
+});
