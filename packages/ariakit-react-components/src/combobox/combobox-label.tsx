@@ -13,12 +13,12 @@ import type { Options, Props } from "@ariakit/react-utils";
 import { invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useRef } from "react";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
 import {
   removeComboboxSelectLabelElement,
   setComboboxSelectLabelElement,
   useComboboxSelectElement,
-} from "./combobox-select-state.ts";
+} from "./__combobox-select-state.ts";
+import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "label" satisfies ElementType;

@@ -7,13 +7,13 @@ import { useRef } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
-import type { ComboboxListOptions } from "./combobox-list.tsx";
-import { useComboboxList } from "./combobox-list.tsx";
 import {
   useComboboxSelectElement,
   useComboboxSelectLabelElement,
-} from "./combobox-select-state.ts";
+} from "./__combobox-select-state.ts";
+import { useComboboxProviderContext } from "./combobox-context.tsx";
+import type { ComboboxListOptions } from "./combobox-list.tsx";
+import { useComboboxList } from "./combobox-list.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;

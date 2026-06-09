@@ -8,6 +8,9 @@ const getPopover = (page: Page) =>
 const getButton = (page: Page) =>
   page.getByRole("combobox", { name: "Favorite fruit" });
 
+const getLabel = (page: Page) =>
+  page.locator("label", { hasText: "Favorite fruit" });
+
 const getOption = (page: Page, name: string) =>
   page.getByRole("option", { name, exact: true });
 
@@ -16,8 +19,28 @@ async function expectSelected(page: Page, name: string) {
   await expect(getOption(page, name)).toHaveAttribute("data-active-item");
 }
 
+test("clicking on the label focuses the select without showing the popover", async ({
+  page,
+}) => {
+  await getLabel(page).click();
+  await expect(getButton(page)).toBeFocused();
+  await expect(getPopover(page)).toBeHidden();
+});
+
+test("labels the popover with the combobox label", async ({ page }) => {
+  await getButton(page).click();
+
+  const labelId = await getLabel(page).getAttribute("id");
+  await expect(getPopover(page)).toBeVisible();
+  await expect(getPopover(page)).toHaveAttribute(
+    "aria-labelledby",
+    labelId ?? "",
+  );
+});
+
 test("auto select first option", async ({ page }) => {
   await getButton(page).click();
+  await expectSelected(page, "Apple");
   await page.keyboard.type("c");
   await expectSelected(page, "Cake");
   await page.keyboard.type("h");
@@ -33,6 +56,18 @@ test("auto select first option", async ({ page }) => {
   await expectSelected(page, "Pasta");
   await page.keyboard.press("Backspace");
   await expectSelected(page, "Apple");
+});
+
+test("not scroll jump when reopening the combobox by click", async ({
+  page,
+}) => {
+  await getButton(page).click();
+  await getOption(page, "Banana").click();
+  await page.evaluate(() => window.scrollTo({ top: 100 }));
+  await getButton(page).click();
+  await expect(getPopover(page)).toBeVisible();
+  await expectSelected(page, "Banana");
+  expect(await page.evaluate(() => window.scrollY)).toBe(100);
 });
 
 for (const { key } of [{ key: "ArrowUp" }, { key: "ArrowDown" }]) {

@@ -23,7 +23,6 @@ import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
   ElementType,
   KeyboardEvent,
-  MouseEvent,
   ReactNode,
   SelectHTMLAttributes,
   CSSProperties,
@@ -32,13 +31,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { PopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.tsx";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
 import {
-  addComboboxSelectElement,
-  isComboboxSelectElement,
+  getComboboxSelectElement,
   removeComboboxSelectElement,
+  setComboboxSelectElement,
   useComboboxSelectLabelElement,
-} from "./combobox-select-state.ts";
+} from "./__combobox-select-state.ts";
+import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
   ComboboxStoreSelectedValue,
@@ -125,11 +124,11 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     useSafeLayoutEffect(() => {
       const element = ref.current;
       if (!element) return;
-      addComboboxSelectElement(element);
+      setComboboxSelectElement(store, element);
       store.setDisclosureElement(element);
       store.setAnchorElement(element);
       return () => {
-        removeComboboxSelectElement(element);
+        removeComboboxSelectElement(store, element);
         const { anchorElement, baseElement, disclosureElement } =
           store.getState();
         if (disclosureElement === element) {
@@ -146,7 +145,9 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
         store,
         ["open", "items", "selectedValue", "disclosureElement"],
         (state) => {
-          if (!isComboboxSelectElement(state.disclosureElement)) return;
+          if (state.disclosureElement !== getComboboxSelectElement(store)) {
+            return;
+          }
           if (state.open) return;
           if (Array.isArray(state.selectedValue)) return;
           if (!state.selectedValue) return;
@@ -322,16 +323,6 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
 
     const children = props.children ?? defaultChildren;
 
-    const onClickProp = props.onClick;
-
-    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
-      onClickProp?.(event);
-      if (event.defaultPrevented) return;
-      addComboboxSelectElement(event.currentTarget);
-      store.setDisclosureElement(event.currentTarget);
-      store.setAnchorElement(event.currentTarget);
-    });
-
     const onKeyDownProp = props.onKeyDown;
     const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
 
@@ -361,7 +352,6 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       ...props,
       id,
       ref: useMergeRefs(ref, props.ref),
-      onClick,
       onKeyDown,
     };
 

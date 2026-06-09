@@ -24,13 +24,13 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
+import { useComboboxSelectElement } from "./__combobox-select-state.ts";
 import {
   ComboboxItemCheckedContext,
   ComboboxItemValueContext,
   ComboboxListRoleContext,
   useComboboxScopedContext,
 } from "./combobox-context.tsx";
-import { useComboboxSelectElement } from "./combobox-select-state.ts";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;

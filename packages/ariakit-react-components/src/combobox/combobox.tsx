@@ -42,11 +42,11 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
+import { useComboboxSelectElement } from "./__combobox-select-state.ts";
 import {
   useComboboxContext,
   useComboboxProviderContext,
 } from "./combobox-context.tsx";
-import { useComboboxSelectElement } from "./combobox-select-state.ts";
 import type {
   ComboboxStore,
   ComboboxStoreSelectedValue,

@@ -1,6 +1,12 @@
 import { click, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+test("clicking on the label focuses the select without showing the popover", async () => {
+  await click(q.text.ensure("Favorite fruit"));
+  expect(q.combobox("Favorite fruit")).toHaveFocus();
+  expect(q.dialog()).not.toBeInTheDocument();
+});
+
 test("show/hide on click", async () => {
   expect(q.dialog()).not.toBeInTheDocument();
   await click(q.combobox("Favorite fruit"));
@@ -10,6 +16,15 @@ test("show/hide on click", async () => {
   await click(q.combobox("Favorite fruit"));
   expect(q.dialog()).not.toBeInTheDocument();
   expect(q.combobox("Favorite fruit")).toHaveFocus();
+});
+
+test("labels the popover with the combobox label", async () => {
+  await click(q.combobox("Favorite fruit"));
+
+  const dialog = q.dialog.ensure("Favorite fruit");
+  const label = q.text.ensure("Favorite fruit");
+
+  expect(dialog.getAttribute("aria-labelledby")).toBe(label.id);
 });
 
 test("show/hide on enter", async () => {
