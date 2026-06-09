@@ -75,6 +75,28 @@ withFramework(import.meta.dirname, async ({ test }) => {
     );
   });
 
+  test("keeps the popover anchored to the input after the select unmounts", async ({
+    q,
+  }) => {
+    await q.button("Toggle select").click();
+    await q.combobox("Search Toggle fruit").click();
+    await expect(q.dialog("Toggle fruit popover")).toBeVisible();
+
+    const inputBox = await q.combobox("Search Toggle fruit").boundingBox();
+    const dialogBox = await q.dialog("Toggle fruit popover").boundingBox();
+    expect(inputBox).toBeTruthy();
+    expect(dialogBox).toBeTruthy();
+    if (!inputBox) return;
+    if (!dialogBox) return;
+
+    // The anchor element must be restored to the combobox input when the
+    // select unmounts, so the popover opens adjacent to the input rather than
+    // at the top-left corner of the viewport.
+    expect(Math.abs(dialogBox.y - inputBox.y)).toBeLessThan(
+      dialogBox.height + inputBox.height + 16,
+    );
+  });
+
   test("supports required validation", async ({ page, q }) => {
     await q.button("Submit required").click();
 

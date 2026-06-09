@@ -23,14 +23,16 @@ import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
   ElementType,
   KeyboardEvent,
+  MouseEvent,
   ReactNode,
   SelectHTMLAttributes,
   CSSProperties,
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
+import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
+import { PopoverScopedContextProvider } from "../popover/popover-context.tsx";
 import { PopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.tsx";
-import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
-import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
@@ -337,6 +339,13 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
 
     const children = props.children ?? defaultChildren;
 
+    const onClickProp = props.onClick;
+
+    const onClick = useEvent((event: MouseEvent<HTMLType>) => {
+      store.setAnchorElement(event.currentTarget);
+      onClickProp?.(event);
+    });
+
     const onKeyDownProp = props.onKeyDown;
     const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
     const placement = useStoreState(store, "placement");
@@ -361,11 +370,22 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       if (!canShow) return;
       if (!showOnKeyDownProp(event)) return;
       event.preventDefault();
+      store.setAnchorElement(event.currentTarget);
       // Schedule the show event to run after the key event has finished
       // bubbling. This is necessary to avoid the page to scroll when the
       // popover is shown.
       queueBeforeEvent(event.currentTarget, "keyup", store.show);
     });
+
+    props = useWrapElement(
+      props,
+      (element) => (
+        <PopoverScopedContextProvider value={store}>
+          {element}
+        </PopoverScopedContextProvider>
+      ),
+      [store],
+    );
 
     const id = useId(props.id);
 
@@ -381,10 +401,17 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       ...props,
       id,
       ref: useMergeRefs(ref, props.ref),
+      onClick,
       onKeyDown,
     };
 
-    props = usePopoverDisclosure({ store, toggleOnClick, ...props });
+    // The dialog disclosure hook is used here instead of the popover
+    // disclosure one so this component's unmount cleanup is the only thing
+    // restoring the anchorElement state. The popover disclosure hook would
+    // also register this button as the popover anchor through its own ref,
+    // whose detachment on unmount would reset the anchor element to null
+    // right after the cleanup above restored it.
+    props = useDialogDisclosure({ store, toggleOnClick, ...props });
 
     return props;
   },
@@ -421,7 +448,7 @@ interface ComboboxSelectOption {
 
 export interface ComboboxSelectOptions<T extends ElementType = TagName>
   extends
-    Omit<PopoverDisclosureOptions<T>, "store">,
+    Omit<DialogDisclosureOptions<T>, "store">,
     Pick<
       SelectHTMLAttributes<HTMLSelectElement>,
       "name" | "form" | "required"

@@ -138,3 +138,11 @@ test("highlights the last selected value in multiple mode", async () => {
     .poll(q.option.lazy("Banana"))
     .toHaveAttribute("data-active-item");
 });
+
+test("reverts to plain combobox behavior when the select unmounts", async () => {
+  await click(q.button("Toggle select"));
+  await click(q.combobox("Search Toggle fruit"));
+  await click(q.option("Banana"));
+
+  expect(q.combobox("Search Toggle fruit")).toHaveValue("Banana");
+});

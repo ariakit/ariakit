@@ -73,6 +73,27 @@ function ProgrammaticFruitSelect() {
   );
 }
 
+function ToggleFruitSelect() {
+  const [selectVisible, setSelectVisible] = useState(true);
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Apple">
+      <Ariakit.ComboboxLabel>Toggle fruit</Ariakit.ComboboxLabel>
+      {selectVisible && <Ariakit.ComboboxSelect />}
+      <Ariakit.Combobox autoSelect placeholder="Search Toggle fruit" />
+      <button type="button" onClick={() => setSelectVisible(!selectVisible)}>
+        Toggle select
+      </button>
+      <Ariakit.ComboboxPopover aria-label="Toggle fruit popover">
+        <Ariakit.ComboboxList>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 export default function Example() {
   const [favorite, setFavorite] = useState("None");
   const [requiredSubmitted, setRequiredSubmitted] = useState(false);
@@ -149,6 +170,7 @@ export default function Example() {
         unmountOnHide
       />
       <ProgrammaticFruitSelect />
+      <ToggleFruitSelect />
     </div>
   );
 }
