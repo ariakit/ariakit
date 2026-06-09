@@ -3,7 +3,6 @@ import {
   useEvent,
   useId,
   useMergeRefs,
-  useSafeLayoutEffect,
   createElement,
   createHook,
   forwardRef,
@@ -12,12 +11,6 @@ import {
 import type { Options, Props } from "@ariakit/react-utils";
 import { invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
-import { useRef } from "react";
-import {
-  removeComboboxSelectLabelElement,
-  setComboboxSelectLabelElement,
-  useComboboxSelectElement,
-} from "./__combobox-select-state.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
@@ -48,18 +41,12 @@ export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
     );
 
     const id = useId(props.id);
-    const ref = useRef<HTMLType>(null);
     const comboboxId = useStoreState(store, (state) => state.baseElement?.id);
-    const selectElement = useComboboxSelectElement(store);
+    const selectElement = useStoreState(store, (state) => {
+      if (state.disclosureElement !== state.selectElement) return null;
+      return state.selectElement;
+    });
     const onClickProp = props.onClick;
-
-    useSafeLayoutEffect(() => {
-      if (!selectElement) return;
-      const element = ref.current;
-      if (!element) return;
-      setComboboxSelectLabelElement(store, element);
-      return () => removeComboboxSelectLabelElement(store, element);
-    }, [selectElement, store]);
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
@@ -73,7 +60,7 @@ export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
       htmlFor: selectElement ? undefined : comboboxId,
       ...props,
       id,
-      ref: useMergeRefs(ref, props.ref),
+      ref: useMergeRefs(store.setLabelElement, props.ref),
       onClick,
     };
 

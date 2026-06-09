@@ -18,6 +18,11 @@ test("label click", async () => {
   expect(q.listbox()).not.toBeInTheDocument();
 });
 
+test("does not label popover with the combobox label", async () => {
+  await click(q.combobox());
+  expect(q.listbox.ensure()).not.toHaveAttribute("aria-labelledby");
+});
+
 test("show on arrow down key", async () => {
   await press.Tab();
   expect(q.listbox()).not.toBeInTheDocument();

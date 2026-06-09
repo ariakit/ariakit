@@ -7,10 +7,6 @@ import { useRef } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
-import {
-  useComboboxSelectElement,
-  useComboboxSelectLabelElement,
-} from "./__combobox-select-state.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxListOptions } from "./combobox-list.tsx";
 import { useComboboxList } from "./combobox-list.tsx";
@@ -70,9 +66,15 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     );
 
     const baseElement = useStoreState(store, "baseElement");
-    const selectElement = useComboboxSelectElement(store);
-    const selectLabelElement = useComboboxSelectLabelElement(store);
-    const selectLabelId = selectLabelElement?.id;
+    const selectElement = useStoreState(store, (state) => {
+      if (state.disclosureElement !== state.selectElement) return null;
+      return state.selectElement;
+    });
+    const selectLabelId = useStoreState(store, (state) => {
+      if (!state.selectElement) return;
+      if (state.disclosureElement !== state.selectElement) return;
+      return state.labelElement?.id;
+    });
     const hiddenByClickOutsideRef = useRef(false);
 
     // When new tags are rendered while the combobox popover is open, they will

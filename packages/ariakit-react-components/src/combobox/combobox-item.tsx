@@ -24,7 +24,6 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
-import { useComboboxSelectElement } from "./__combobox-select-state.ts";
 import {
   ComboboxItemCheckedContext,
   ComboboxItemValueContext,
@@ -104,18 +103,24 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         "ComboboxItem must be wrapped in a ComboboxList or ComboboxPopover component.",
     );
 
-    const selectElement = useComboboxSelectElement(store);
-
-    const { resetValueOnSelectState, multiSelectable, selected } =
-      useStoreStateObject(store, {
-        resetValueOnSelectState: "resetValueOnSelect",
-        multiSelectable(state) {
-          return Array.isArray(state.selectedValue);
-        },
-        selected(state) {
-          return isSelected(state.selectedValue, value);
-        },
-      });
+    const {
+      resetValueOnSelectState,
+      selectElement,
+      multiSelectable,
+      selected,
+    } = useStoreStateObject(store, {
+      resetValueOnSelectState: "resetValueOnSelect",
+      selectElement(state) {
+        if (state.disclosureElement !== state.selectElement) return null;
+        return state.selectElement;
+      },
+      multiSelectable(state) {
+        return Array.isArray(state.selectedValue);
+      },
+      selected(state) {
+        return isSelected(state.selectedValue, value);
+      },
+    });
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
       (item) => {

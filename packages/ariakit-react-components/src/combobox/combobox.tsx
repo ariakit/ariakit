@@ -42,7 +42,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
-import { useComboboxSelectElement } from "./__combobox-select-state.ts";
 import {
   useComboboxContext,
   useComboboxProviderContext,
@@ -206,7 +205,10 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const items = useStoreState(store, "renderedItems");
     const open = useStoreState(store, "open");
     const contentElement = useStoreState(store, "contentElement");
-    const selectElement = useComboboxSelectElement(store);
+    const selectElement = useStoreState(store, (state) => {
+      if (state.disclosureElement !== state.selectElement) return null;
+      return state.selectElement;
+    });
 
     // The current input value may differ from state.value when
     // autoComplete is either "both" or "inline", in which case it will be

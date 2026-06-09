@@ -31,12 +31,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { PopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.tsx";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
-import {
-  getComboboxSelectElement,
-  removeComboboxSelectElement,
-  setComboboxSelectElement,
-  useComboboxSelectLabelElement,
-} from "./__combobox-select-state.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
@@ -124,13 +118,15 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     useSafeLayoutEffect(() => {
       const element = ref.current;
       if (!element) return;
-      setComboboxSelectElement(store, element);
+      store.setSelectElement(element);
       store.setDisclosureElement(element);
       store.setAnchorElement(element);
       return () => {
-        removeComboboxSelectElement(store, element);
-        const { anchorElement, baseElement, disclosureElement } =
+        const { anchorElement, baseElement, disclosureElement, selectElement } =
           store.getState();
+        if (selectElement === element) {
+          store.setSelectElement(null);
+        }
         if (disclosureElement === element) {
           store.setDisclosureElement(baseElement);
         }
@@ -143,11 +139,15 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     useEffect(() => {
       return sync(
         store,
-        ["open", "items", "selectedValue", "disclosureElement"],
+        [
+          "open",
+          "items",
+          "selectedValue",
+          "disclosureElement",
+          "selectElement",
+        ],
         (state) => {
-          if (state.disclosureElement !== getComboboxSelectElement(store)) {
-            return;
-          }
+          if (state.disclosureElement !== state.selectElement) return;
           if (state.open) return;
           if (Array.isArray(state.selectedValue)) return;
           if (!state.selectedValue) return;
@@ -165,8 +165,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     const items = useStoreState(store, "items");
     const open = useStoreState(store, "open");
     const contentElement = useStoreState(store, "contentElement");
-    const labelElement = useComboboxSelectLabelElement(store);
-    const labelId = labelElement?.id;
+    const labelId = useStoreState(store, (state) => state.labelElement?.id);
     const label = props["aria-label"];
     const labelledBy = props["aria-labelledby"] || labelId;
     const optionMapRef = useRef(new Map<string, ComboboxSelectOption>());
