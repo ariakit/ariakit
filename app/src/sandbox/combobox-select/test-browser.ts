@@ -54,11 +54,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("supports required validation", async ({ page, q }) => {
     await q.button("Submit required").click();
 
+    const requiredSelect = page.locator("select[name='requiredFruit']");
+
     await expect(q.text("Required submitted: yes")).toBeHidden();
-    await expect(page.locator("select[name='requiredFruit']")).toHaveJSProperty(
-      "validity.valid",
-      false,
-    );
+    const isValid = await requiredSelect.evaluate((element) => {
+      if (!(element instanceof HTMLSelectElement)) return true;
+      return element.validity.valid;
+    });
+    expect(isValid).toBe(false);
   });
 
   test("supports multiple values, fallback, keyboard, click, and disabled props", async ({
