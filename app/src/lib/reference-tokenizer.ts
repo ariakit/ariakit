@@ -259,10 +259,39 @@ function parseLocalImports(code: string): Map<string, string> {
 
 // #region Reference Helpers
 
+interface FrameworkReferences {
+  list: CollectionEntry<"references">[];
+  nameToRef: NameToReference;
+  kindByName: KindByName;
+}
+
+// Both caches key on the references array identity, so they only hit while
+// the same collection array is reused (the production build caches it; dev
+// gets a fresh array per call and skips memoization naturally). Code blocks
+// across reference partials repeat the same short snippets thousands of
+// times, so memoizing whole anchor results avoids re-scanning them.
+const frameworkReferencesCache = new WeakMap<
+  CollectionEntry<"references">[],
+  Map<string, FrameworkReferences>
+>();
+const anchorsCache = new WeakMap<
+  CollectionEntry<"references">[],
+  Map<string, CodeReferenceAnchorRange[][]>
+>();
+
 function getFrameworkReferences(
   references: CollectionEntry<"references">[],
   framework?: Framework,
-) {
+): FrameworkReferences {
+  let byFramework = frameworkReferencesCache.get(references);
+  if (!byFramework) {
+    byFramework = new Map();
+    frameworkReferencesCache.set(references, byFramework);
+  }
+  const cacheKey = framework ?? "";
+  const cached = byFramework.get(cacheKey);
+  if (cached) return cached;
+
   const list = framework
     ? references.filter((r) => r.data.framework === framework)
     : references;
@@ -280,7 +309,9 @@ function getFrameworkReferences(
     }
   }
 
-  return { list, nameToRef, kindByName } as const;
+  const result: FrameworkReferences = { list, nameToRef, kindByName };
+  byFramework.set(cacheKey, result);
+  return result;
 }
 
 /**
@@ -917,6 +948,28 @@ function findClassTokenRanges(code: string): TokenRange[] {
  * rendering without additional position mapping.
  */
 export function findCodeReferenceAnchors({
+  code,
+  references,
+  framework,
+}: FindCodeReferenceAnchorsParams): CodeReferenceAnchorRange[][] {
+  let byCode = anchorsCache.get(references);
+  if (!byCode) {
+    byCode = new Map();
+    anchorsCache.set(references, byCode);
+  }
+  const cacheKey = `${framework ?? ""}\u0000${code}`;
+  const cached = byCode.get(cacheKey);
+  if (cached) return cached;
+  const result = computeCodeReferenceAnchors({ code, references, framework });
+  byCode.set(cacheKey, result);
+  return result;
+}
+
+/**
+ * Uncached implementation of `findCodeReferenceAnchors`. Callers must treat
+ * the returned ranges as read-only since the result is memoized.
+ */
+function computeCodeReferenceAnchors({
   code,
   references,
   framework,

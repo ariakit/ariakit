@@ -9,6 +9,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { ReferenceHovercardAnchor } from "#app/components/reference-hovercard.react.tsx";
+import { getCachedCollection } from "#app/lib/collection-cache.ts";
 import {
   isLegacyReferenceURLLike,
   legacyToReferencePath,
@@ -16,7 +17,6 @@ import {
 } from "#app/lib/url.ts";
 import type { ComponentProps } from "astro/types";
 import type { CollectionEntry } from "astro:content";
-import { getCollection } from "astro:content";
 import { InlineLink } from "./inline-link.react.tsx";
 
 interface Props extends Omit<ComponentProps<typeof InlineLink>, "ref"> {
@@ -90,7 +90,7 @@ async function getReferenceKind(
 }
 
 const referenceText = await getReferenceText();
-const references = await getCollection("references");
+const references = await getCachedCollection("references");
 const href =
   props.href && isLegacyReferenceURLLike(props.href)
     ? legacyToReferencePath(props.href, references)

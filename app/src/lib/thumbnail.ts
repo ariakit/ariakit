@@ -25,8 +25,23 @@ export async function importThumbnail(name?: string) {
   }
 }
 
+// Thumbnails are pure static markup, but page cards render them repeatedly —
+// reference items alone request the same thumbnail thousands of times across
+// partial pages. Cache per name during production builds only, so dev keeps
+// re-rendering after thumbnail edits.
+const thumbnailCache = new Map<string, string | undefined>();
+
 export async function renderThumbnail(name?: string) {
+  if (!name) return;
+  if (import.meta.env.PROD && thumbnailCache.has(name)) {
+    return thumbnailCache.get(name);
+  }
   const Thumbnail = await importThumbnail(name);
-  if (!Thumbnail) return;
-  return renderToStaticMarkup(createElement(Thumbnail));
+  const html = Thumbnail
+    ? renderToStaticMarkup(createElement(Thumbnail))
+    : undefined;
+  if (import.meta.env.PROD) {
+    thumbnailCache.set(name, html);
+  }
+  return html;
 }

@@ -59,6 +59,14 @@ export default defineConfig({
     imageService: "compile",
   }),
 
+  build: {
+    // Prerendering thousands of reference partial pages is the bulk of the
+    // build. Rendering a few pages concurrently overlaps their async work
+    // (collection reads, markdown rendering, file writes) without exhausting
+    // memory on CI runners.
+    concurrency: 4,
+  },
+
   vite: {
     build: {
       // Perf CI enables this so CDP script profiles can resolve source maps.
