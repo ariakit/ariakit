@@ -1,5 +1,8 @@
 import { afterEach, expect, test } from "vitest";
-import { disableTreeOutside } from "./disable-tree.ts";
+import {
+  disableTreeOutside,
+  markAndDisableTreeOutside,
+} from "./disable-tree.ts";
 import { isElementMarked, markTreeOutside } from "./mark-tree-outside.ts";
 import { assignStyle, setAttribute } from "./orchestrate.ts";
 import { supportsInert } from "./supports-inert.ts";
@@ -241,6 +244,9 @@ test("disableTreeOutside skips focus traps and restores disabled elements", () =
 
   const restoreTree = disableTreeOutside("dialog", [dialog]);
 
+  // disableTreeOutside only disables elements; it doesn't mark them.
+  expect(isElementMarked(outside, "dialog")).toBe(false);
+
   if (supportsInert()) {
     expect(outside.inert).toBe(true);
     expect(focusTrap.inert).toBe(false);
@@ -252,6 +258,50 @@ test("disableTreeOutside skips focus traps and restores disabled elements", () =
   }
 
   restoreTree();
+
+  if (supportsInert()) {
+    expect(outside.inert).toBe(false);
+  } else {
+    expect(outside.hasAttribute("aria-hidden")).toBe(false);
+    expect(outside.style.pointerEvents).toBe("");
+  }
+});
+
+test("markAndDisableTreeOutside skips focus traps and restores disabled elements", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="dialog"></div>
+      <span id="focus-trap" data-focus-trap="dialog"></span>
+      <section id="outside">
+        <button id="button">Button</button>
+      </section>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const focusTrap = getElement("focus-trap");
+  const outside = getElement("outside");
+
+  const restoreTree = markAndDisableTreeOutside("dialog", [dialog]);
+
+  expect(isElementMarked(outside, "dialog")).toBe(true);
+  // Focus traps are marked as outside the dialog, but not disabled.
+  expect(isElementMarked(focusTrap, "dialog")).toBe(true);
+
+  if (supportsInert()) {
+    expect(outside.inert).toBe(true);
+    expect(focusTrap.inert).toBe(false);
+  } else {
+    expect(outside.getAttribute("aria-hidden")).toBe("true");
+    expect(outside.style.pointerEvents).toBe("none");
+    expect(focusTrap.hasAttribute("aria-hidden")).toBe(false);
+    expect(focusTrap.style.pointerEvents).toBe("");
+  }
+
+  restoreTree();
+
+  expect(isElementMarked(outside, "dialog")).toBe(false);
+  expect(isElementMarked(focusTrap, "dialog")).toBe(false);
 
   if (supportsInert()) {
     expect(outside.inert).toBe(false);
