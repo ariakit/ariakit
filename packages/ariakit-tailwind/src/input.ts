@@ -583,6 +583,14 @@ const layerColorVars = {
   layerIdle: _ak.prop.canvas("li"),
   layerL: _ak.prop.canvas("ll", { inherits: true }),
   layerTextL: _ak.prop.canvas("ltl", { inherits: true }),
+  // Parity copies of layerTextL routed through layerContext. They let ak-text
+  // read the parent layer's quantized text lightness from its own computed
+  // style (for if() style queries), even when the same element is also a layer
+  // that overwrites layerTextL for its descendants. Registered so style()
+  // comparisons match computed colors rather than token streams.
+  layerTextLContext: _ak.var("ltlc"),
+  layerTextLContextEven: _ak.prop.canvas("ltlc-even", { inherits: true }),
+  layerTextLContextOdd: _ak.prop.canvas("ltlc-odd", { inherits: true }),
   layerScheme: _ak.prop.black("ls", { inherits: true }),
   layerBand: _ak.prop.black("lbd", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
@@ -1001,19 +1009,33 @@ function mapLayerLightnessSteps(callback: LayerLightnessStepsCallback) {
   );
 }
 
-function mapLayerTextLightnessSteps(callback: LayerLightnessStepsCallback) {
-  return getQuantizedLchLightnessSteps().flatMap((parentLightness) => {
+interface TextLightnessStep {
+  parentLightness: number;
+  contrastDirection: number;
+  parentL: number;
+  accessibleL: number;
+  chromaCap: number;
+}
+
+/**
+ * Precomputed text values per quantized parent lightness. Both ak-text
+ * delivery paths (the if() chains and the container query fallback) read this
+ * table, so they always produce identical values.
+ */
+function getTextLightnessSteps(): TextLightnessStep[] {
+  return getQuantizedLchLightnessSteps().map((parentLightness) => {
     const isDark = parentLightness < LCH_DARK_THRESHOLD_L;
-    const children = callback(parentLightness, isDark).filter(
-      (child) => child != null,
+    const contrastParentL = getConservativeLchParentLightness(
+      parentLightness,
+      isDark,
     );
-    if (children.length === 0) {
-      return [];
-    }
-    return at.container(
-      fn.style(vars.layerTextL, fn.lch({ l: parentLightness })),
-      ...children,
-    );
+    return {
+      parentLightness,
+      contrastDirection: isDark ? 1 : -1,
+      parentL: contrastParentL,
+      accessibleL: getWcagLightnessTarget(contrastParentL, isDark),
+      chromaCap: getLchTextChromaCap(parentLightness, isDark),
+    };
   });
 }
 
@@ -1331,6 +1353,7 @@ utility(
   layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
     set(vars.layerParent, inherit(vars.layerParentContext)),
+    set(provide(vars.layerTextLContext), vars.layerTextL),
   ]),
 );
 
@@ -1804,23 +1827,86 @@ function getTextDirectional() {
   });
 }
 
+// Parses as a valid declaration only in browsers that support if().
+const IF_SUPPORTS_CONDITION = "(color: if(else: red))";
+
+const textLightnessSteps = getTextLightnessSteps();
+
+/**
+ * Resolves a per-step text value as a single if() chain over the parent
+ * layer's quantized text lightness. The else value must match the variable's
+ * registered initial so unmatched contexts keep today's behavior.
+ */
+function getTextStepIf(
+  parentTextL: VarProperty,
+  getStepValue: (step: TextLightnessStep) => number,
+  elseValue: number,
+) {
+  return fn.if(
+    textLightnessSteps.map((step): [string, Value] => [
+      fn.style(parentTextL, fn.lch({ l: step.parentLightness })),
+      getStepValue(step),
+    ]),
+    elseValue,
+  );
+}
+
 utility(
   "text",
   set.backgroundColor(fn.important("transparent")),
   set.color(vars.text),
   at.container(fn.style(vars.layerTextL), set.color(getTextDirectional())),
-  mapLayerTextLightnessSteps((parentL, isDark) => {
-    const contrastParentL = getConservativeLchParentLightness(parentL, isDark);
-    return [
-      set(vars.textContrastDirection, isDark ? 1 : -1),
-      set(vars.textParentL, contrastParentL),
-      set(
-        vars.textAccessibleL,
-        getWcagLightnessTarget(contrastParentL, isDark),
+  // Each emitted rule is selector-matched per element, which gets expensive
+  // under child variants like `*:ak-text` whose rules land in the universal
+  // bucket. Where if() is available, deliver the whole quantized table as one
+  // if() chain per variable inside the two parity rules instead of one rule
+  // per step. The parity vars carry the parent layer's quantized lightness, so
+  // values match the container query fallback even when the same element is
+  // also a layer.
+  at.supports(
+    IF_SUPPORTS_CONDITION,
+    ...layerContext.read(({ parityVar }) => {
+      const parentTextL = parityVar(vars.layerTextLContext);
+      return [
+        set(
+          vars.textContrastDirection,
+          getTextStepIf(parentTextL, (step) => step.contrastDirection, 1),
+        ),
+        set(
+          vars.textParentL,
+          getTextStepIf(parentTextL, (step) => step.parentL, 0),
+        ),
+        set(
+          vars.textAccessibleL,
+          getTextStepIf(
+            parentTextL,
+            (step) => step.accessibleL,
+            LCH_LIGHTNESS_MAX,
+          ),
+        ),
+        set(
+          vars.textChromaCap,
+          getTextStepIf(
+            parentTextL,
+            (step) => step.chromaCap,
+            LCH_TEXT_CHROMA_CAP,
+          ),
+        ),
+      ];
+    }),
+  ),
+  at.supports.not(
+    IF_SUPPORTS_CONDITION,
+    ...textLightnessSteps.map((step) =>
+      at.container(
+        fn.style(vars.layerTextL, fn.lch({ l: step.parentLightness })),
+        set(vars.textContrastDirection, step.contrastDirection),
+        set(vars.textParentL, step.parentL),
+        set(vars.textAccessibleL, step.accessibleL),
+        set(vars.textChromaCap, step.chromaCap),
       ),
-      set(vars.textChromaCap, getLchTextChromaCap(parentL, isDark)),
-    ];
-  }),
+    ),
+  ),
 );
 
 utility(
