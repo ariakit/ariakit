@@ -1,8 +1,12 @@
 // Based on https://github.com/floating-ui/floating-ui/blob/1201e72e67a80e479122293d46d96c9bbc8f156d/packages/react-dom-interactions/src/FloatingOverlay.tsx
+import { useSafeLayoutEffect } from "@ariakit/react-utils";
 import { getDocument, getWindow, chain, isApple, isMac } from "@ariakit/utils";
 import { useEffect } from "react";
 import { assignStyle, setCSSProperty } from "./orchestrate.ts";
 import { useRootDialog } from "./use-root-dialog.ts";
+
+// Only iOS doesn't respect `overflow: hidden` on document.body.
+const isIOS = isApple() && !isMac();
 
 function getPaddingProperty(documentElement: HTMLElement) {
   // RTL <body> scrollbar
@@ -23,7 +27,18 @@ export function usePreventBodyScroll(
     enabled,
   });
 
-  useEffect(() => {
+  // Lock the scroll in the layout phase so the layout reads below (viewport
+  // width, scrollbar position) run during the commit, where layout is being
+  // computed anyway. As a passive effect, those reads ran after other effects
+  // had already written styles, forcing an extra synchronous layout on every
+  // open. This also locks the scroll before the dialog is first painted. On
+  // iOS, the lock stays in the passive phase: its scroll position bookkeeping
+  // (capture on lock, scrollTo on unlock) depends on the passive timing
+  // relative to the dialog's focus effects. The hook choice is stable because
+  // isIOS never changes within a session.
+  const useLockEffect = isIOS ? useEffect : useSafeLayoutEffect;
+
+  useLockEffect(() => {
     if (!isRootDialog()) return;
     if (!contentElement) return;
     const doc = getDocument(contentElement);
@@ -76,11 +91,20 @@ export function usePreventBodyScroll(
       };
     };
 
-    const isIOS = isApple() && !isMac();
-
-    return chain(
+    const restore = chain(
       setScrollbarWidthProperty(),
       isIOS ? setIOSStyle() : setStyle(),
     );
+
+    if (isIOS) return restore;
+
+    return () => {
+      // Defer the restore to a microtask so it runs after this commit's
+      // layout effects, such as the dialog's focus-on-hide. This preserves
+      // the close ordering the passive phase provided before: focus first
+      // (while the scroll is still locked), then unlock. The orchestrate
+      // stacks keep this safe if the scroll gets locked again in between.
+      queueMicrotask(restore);
+    };
   }, [isRootDialog, contentElement]);
 }
