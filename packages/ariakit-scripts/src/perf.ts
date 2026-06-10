@@ -70,6 +70,13 @@ export interface PerfMeasureOptions {
   iterations?: number;
   /** Number of discarded warm-up runs before measurement begins. */
   warmup?: number;
+  /**
+   * Unmeasured setup callback run before every iteration, after the page
+   * reset. Useful for getting the page into the state the measured interaction
+   * expects, such as opening a dialog before measuring how long it takes to
+   * close it.
+   */
+  setup?: () => Promise<void> | void;
   /** Override the auto-generated label for this measurement. */
   label?: string;
   /** Collect expensive JS functions. Adds overhead to measured metrics. */
@@ -615,6 +622,19 @@ async function gotoAndSettle(page: Page, url: string) {
     });
 }
 
+/** Lets paint and layout settle after an interaction. */
+async function settlePaint(page: Page) {
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve());
+        });
+      }),
+  );
+  await page.waitForTimeout(50);
+}
+
 /**
  * Runs a single interaction measurement cycle: snapshot CDP metrics before and
  * after the interaction, collect INP entries, and return the deltas.
@@ -658,17 +678,7 @@ async function measureOnce(
     }
 
     await interaction();
-
-    // Let paint and layout settle.
-    await page.evaluate(
-      () =>
-        new Promise<void>((resolve) => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => resolve());
-          });
-        }),
-    );
-    await page.waitForTimeout(50);
+    await settlePaint(page);
   } catch (error) {
     measureError = error;
   }
@@ -766,6 +776,7 @@ export async function createPerfMeasure(
     iterations = getIntegerEnv("PERF_ITERATIONS", 10, { min: 1 }),
     warmup = getIntegerEnv("PERF_WARMUP", 1, { min: 0 }),
     resetPage = true,
+    setup,
     label,
     profileLimit = DEFAULT_PROFILE_LIMIT,
   } = options;
@@ -814,6 +825,13 @@ export async function createPerfMeasure(
       if (resetPage) {
         // Re-navigate for a clean state on every iteration.
         await gotoAndSettle(page, url);
+      }
+
+      if (setup) {
+        // Run the unmeasured setup and let its work settle so it doesn't leak
+        // into the metrics snapshot taken right before the interaction.
+        await setup();
+        await settlePaint(page);
       }
 
       const result = await measureOnce(page, cdp, interaction, {
