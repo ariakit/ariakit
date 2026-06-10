@@ -42,7 +42,7 @@
     "test-visual-safari": "cross-env VISUAL_TEST=true pnpm run test --project=safari",
     "test-visual-ios": "cross-env VISUAL_TEST=true pnpm run test --project=ios",
     "test-visual-android": "cross-env VISUAL_TEST=true pnpm run test --project=android",
-    "test-perf": "cross-env PERF_TEST=true pnpm run test",
+    "test-perf": "cross-env PERF_TEST=true PERF_SCRIPT_PROFILE=true PERF_SELECTOR_PROFILE=true pnpm run test",
     "perf-compare": "ariakit perf-compare",
     "og-image-clean": "rimraf public/og-image",
     "og-image-generate": "node src/pages/og-image/_generate-images.ts",
