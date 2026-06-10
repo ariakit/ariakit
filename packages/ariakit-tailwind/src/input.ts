@@ -579,6 +579,7 @@ const themeTokenVars = {
 // Color pipeline stages and exported visual tokens.
 const layerColorVars = {
   layerIdleBase: _ak.prop.canvas("lib"),
+  layerIdleOffset: _ak.prop.canvas("lio"),
   layerIdle: _ak.prop.canvas("li"),
   layerL: _ak.prop.canvas("ll", { inherits: true }),
   layerTextL: _ak.prop.canvas("ltl", { inherits: true }),
@@ -1087,21 +1088,23 @@ function getLayerIdleOffsetL() {
   );
 }
 
-// The mix and push/offset stages feed the idle stage as expressions rather
-// than as separate registered color properties, so each ak-layer element
-// resolves one relative color here instead of three.
-const layerIdleOffsetL = fn.var(
-  vars.layerIdlePushResolvedL,
-  getLayerIdleOffsetL(),
-);
+// The mix stage feeds this stage as a plain var fallback rather than as a
+// separate registered color property, so each ak-layer element resolves one
+// relative color fewer. The offset stage itself stays a registered color:
+// inlining its lightness into the contrast math duplicates the offset
+// expression at several slots, which measures slower than the extra relative
+// color resolution it saves.
+const layerIdleOffset = fn.oklch(layerIdleMixed, {
+  l: fn.var(vars.layerIdlePushResolvedL, getLayerIdleOffsetL()),
+});
 
 /**
  * Computes parent-relative contrast lightness. When `ak-layer-contrast` is
  * active (layerContrastDirection !== 0), derives the target lightness from the
  * parent layer's lightness rather than the current color's lightness. Falls
- * back to `baseLightness` when inactive.
+ * back to the self-relative `selfRelativeL` when inactive.
  */
-function getContrastL(baseLightness: Value, contrastValue: Value) {
+function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   const direction = vars.layerContrastDirection;
   // Use the contrast value as the shift magnitude, pushed in the parent-
   // relative direction (positive = lighter, negative = darker).
@@ -1109,23 +1112,19 @@ function getContrastL(baseLightness: Value, contrastValue: Value) {
   const parentTargetL = fn.clamp01(
     fn.add(vars.layerContrastParentL, parentShift),
   );
-  const parentDirectedL = getDirectionalLightness(
-    baseLightness,
-    parentTargetL,
-    direction,
-  );
+  const parentDirectedL = getDirectionalLightness(l, parentTargetL, direction);
   // When ak-layer-contrast is active, direction is ±1 so |direction|=1.
   // When inactive, direction=0. Use this as a blend mask.
   const isActive = fn.mul(direction, direction);
   return fn.add(
     fn.mul(parentDirectedL, isActive),
-    fn.mul(baseLightness, fn.sub(1, isActive)),
+    fn.mul(selfRelativeL, fn.sub(1, isActive)),
   );
 }
 
-const layerIdle = fn.oklch(layerIdleMixed, {
+const layerIdle = fn.oklch(vars.layerIdleOffset, {
   l: fn.add(
-    getContrastL(layerIdleOffsetL, getPushValue(inputs.layerIdleContrastL)),
+    getContrastL(l, getPushValue(inputs.layerIdleContrastL)),
     fn.mul(
       vars.layerContrastBias,
       fn.sub(
@@ -1228,6 +1227,7 @@ const layerMathDeclarations = [
 // Build the layered color stages from idle -> base -> offset -> final.
 const layerColorDeclarations = [
   set(vars.layerIdleBase, layerIdleBase),
+  set(vars.layerIdleOffset, layerIdleOffset),
   set(vars.layerIdle, layerIdle),
   set(vars.layerBase, layerState),
   set(vars.layerOffset, layerOffset),
