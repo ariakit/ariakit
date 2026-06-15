@@ -112,7 +112,20 @@ export default defineConfig({
       : clerk({
           signInUrl: getPlusAccountPath({ path: "login" }),
           signUpUrl: getPlusCheckoutPath({ step: "login" }),
+          // @clerk/astro 3.4.2 migrated its build to tsdown and inlined a
+          // newer `@clerk/ui` `Appearance<Ui<any>>` type into its bundled
+          // declarations. That type keeps only per-component overrides (plus
+          // the `Ui` brand and `cssLayerName`) and drops the top-level theme
+          // props (`variables`, `layout`), so this config no longer
+          // type-checks — even though the 3.4.2 changelog reports no runtime
+          // or public API change and the legacy appearance options still work
+          // at runtime. Because excess-property checks stop at the first
+          // unknown key, the `@ts-expect-error` below disables property/value
+          // checking for the whole `appearance` object, not just `variables`;
+          // edits here go unchecked until Clerk ships a fixed type and the
+          // directive can be removed.
           appearance: {
+            // @ts-expect-error -- see the note above (upstream type regression).
             variables: {
               fontSize: "1rem",
             },
