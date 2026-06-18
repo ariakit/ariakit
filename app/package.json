@@ -70,7 +70,7 @@
     "@stripe/stripe-js": "9.8.0",
     "@tailwindcss/vite": "4.3.1",
     "@tanstack/react-query": "5.101.0",
-    "astro": "6.4.6",
+    "astro": "6.4.7",
     "astro-remote": "0.3.4",
     "canvas-confetti": "1.9.4",
     "clsx": "2.1.1",
