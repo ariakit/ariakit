@@ -19,7 +19,7 @@
     "motion": "12.40.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
-    "react-router": "7.17.0",
+    "react-router": "7.18.0",
     "react-shadow": "20.6.0",
     "react-toastify": "11.1.0",
     "textarea-caret": "3.1.0",
