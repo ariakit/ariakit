@@ -34,6 +34,6 @@
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "@types/textarea-caret": "3.0.4",
-    "vitest": "4.1.8"
+    "vitest": "4.1.9"
   }
 }
