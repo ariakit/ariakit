@@ -18,9 +18,7 @@ export default function Example() {
   }
 
   const runSimulatedEnter = async () => {
-    // TODO: Remove this once https://github.com/ariakit/ariakit/issues/6357
-    // is fixed.
-    await press.Enter(textareaRef.current, { charCode: 13 });
+    await press.Enter(textareaRef.current);
   };
 
   return (

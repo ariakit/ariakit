@@ -13,6 +13,11 @@ function getKeyFromChar(key: string) {
   return key;
 }
 
+function getCharCodeFromChar(char: string) {
+  if (char === "\n") return 13;
+  return char.charCodeAt(0);
+}
+
 // Email inputs are not considered text fields. They don't work well with the
 // input events dispatched by the type method. So we temporarily make them text
 // inputs.
@@ -112,7 +117,7 @@ export function type(
           if (inputType === "insertText") {
             defaultAllowed = await dispatch.keyPress(input, {
               key,
-              charCode: key.charCodeAt(0),
+              charCode: getCharCodeFromChar(char),
               ...options,
             });
           }
