@@ -34,3 +34,17 @@ test("press.down does not activate a control that disables itself on Enter", asy
 
   expect(onClick).not.toHaveBeenCalled();
 });
+
+test("press.Enter on a textarea emits an Enter keypress charCode", async () => {
+  const textarea = document.createElement("textarea");
+  const onKeyPress = vi.fn();
+  textarea.addEventListener("keypress", onKeyPress);
+  document.body.append(textarea);
+
+  await press.Enter(textarea);
+
+  expect(onKeyPress).toHaveBeenCalledOnce();
+  expect(onKeyPress).toHaveBeenLastCalledWith(
+    expect.objectContaining({ charCode: 13 }),
+  );
+});

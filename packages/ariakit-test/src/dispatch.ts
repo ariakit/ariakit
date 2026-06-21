@@ -144,7 +144,7 @@ function initUIEventModififiers(
 
 function initKeyboardEvent(
   event: KeyboardEvent,
-  { key, code, location, repeat, isComposing }: KeyboardEventInit,
+  { key, code, location, repeat, isComposing, charCode }: KeyboardEventInit,
 ) {
   assignProps(event, {
     key: String(key),
@@ -153,6 +153,11 @@ function initKeyboardEvent(
     repeat: !!repeat,
     isComposing: !!isComposing,
   });
+  if (charCode != null) {
+    assignProps(event, {
+      charCode: sanitizeNumber(charCode),
+    });
+  }
 }
 
 function initMouseEvent(
