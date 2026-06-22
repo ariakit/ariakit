@@ -106,12 +106,22 @@ function dispatchClickEvent(element: Element, event: Event) {
   }
 }
 
+interface KeyboardClickDispatchOptions {
+  trackStoppedPropagation?: boolean;
+  shouldBlockAutomaticSubmit?: () => boolean;
+}
+
 function polyfillReturnValue(event: Event) {
   if (Reflect.has(event, "returnValue")) return;
   let returnValue = true;
+  const preventDefault = event.preventDefault.bind(event);
+  event.preventDefault = () => {
+    returnValue = false;
+    preventDefault();
+  };
   Object.defineProperty(event, "returnValue", {
     configurable: true,
-    get: () => returnValue,
+    get: () => returnValue && !event.defaultPrevented,
     set: (value: boolean) => {
       returnValue = value;
       if (!value) {
@@ -124,23 +134,69 @@ function polyfillReturnValue(event: Event) {
 function dispatchKeyboardClick(
   element: Element,
   options: KeyboardEventInit,
-  onStopPropagation?: (event: Event) => void,
+  dispatchOptions: KeyboardClickDispatchOptions = {},
 ) {
+  const { defaultView } = element.ownerDocument;
+  const { shouldBlockAutomaticSubmit, trackStoppedPropagation } =
+    dispatchOptions;
   const event = createKeyboardClickEvent(element, options);
   polyfillReturnValue(event);
-  if (onStopPropagation) {
+  let stopped = false;
+  let submitActivated = false;
+  if (trackStoppedPropagation) {
     const stopPropagation = event.stopPropagation.bind(event);
     const stopImmediatePropagation = event.stopImmediatePropagation.bind(event);
     event.stopPropagation = () => {
-      onStopPropagation(event);
+      stopped = true;
       stopPropagation();
     };
     event.stopImmediatePropagation = () => {
-      onStopPropagation(event);
+      stopped = true;
       stopImmediatePropagation();
     };
   }
-  return dispatchClickEvent(element, event);
+  const formPrototype =
+    shouldBlockAutomaticSubmit && defaultView && "happyDOM" in defaultView
+      ? defaultView.HTMLFormElement.prototype
+      : null;
+  const requestSubmitDescriptor = formPrototype
+    ? Object.getOwnPropertyDescriptor(formPrototype, "requestSubmit")
+    : null;
+  const requestSubmit = requestSubmitDescriptor?.value as
+    | HTMLFormElement["requestSubmit"]
+    | undefined;
+  if (formPrototype && requestSubmit && shouldBlockAutomaticSubmit) {
+    const shouldBlockSubmit = shouldBlockAutomaticSubmit;
+    formPrototype.requestSubmit = function (submitter?: HTMLElement | null) {
+      if (event.eventPhase === 0) {
+        submitActivated = true;
+        if (stopped && shouldBlockSubmit()) return;
+      }
+      return requestSubmit.call(this, submitter);
+    };
+  }
+  try {
+    return {
+      defaultAllowed: dispatchClickEvent(element, event),
+      stopped,
+      submitActivated,
+    };
+  } finally {
+    if (formPrototype && requestSubmitDescriptor) {
+      Object.defineProperty(
+        formPrototype,
+        "requestSubmit",
+        requestSubmitDescriptor,
+      );
+    }
+  }
+}
+
+function isHandlingClick(win: Window | null | undefined) {
+  if (!win || !("happyDOM" in win)) return false;
+  const eventWindow = win as Window & { event?: Event };
+  const { event } = eventWindow;
+  return event?.type === "click" && event.eventPhase !== 0;
 }
 
 async function clickSubmitButton(
@@ -155,11 +211,11 @@ async function clickSubmitButton(
   }
 
   const win = submitButton.ownerDocument.defaultView;
+  const isHappyDOM = !!win && "happyDOM" in win;
   const root = form.getRootNode();
   let blocked = false;
   let invalid = false;
   let submitted = false;
-  let stopped = false;
   const onClick = (event: Event) => {
     if (!canSubmitWithButton(submitButton)) {
       blocked = true;
@@ -174,12 +230,7 @@ async function clickSubmitButton(
   };
   const onSubmit = (event: Event) => {
     if (event.target !== submitButton.form) return;
-    if (stopped && !canSubmitWithButton(submitButton)) {
-      blocked = true;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      return;
-    }
+    if (isHandlingClick(win)) return;
     if (!("submitter" in event)) return;
     if (event.submitter !== submitButton) return;
     submitted = true;
@@ -194,13 +245,20 @@ async function clickSubmitButton(
   form.addEventListener("invalid", onInvalid, true);
   form.addEventListener("submit", onSubmit, true);
   try {
-    const defaultAllowed = dispatchKeyboardClick(submitButton, options, () => {
-      stopped = true;
-    });
+    const { defaultAllowed, stopped, submitActivated } = dispatchKeyboardClick(
+      submitButton,
+      options,
+      {
+        shouldBlockAutomaticSubmit: () => !canSubmitWithButton(submitButton),
+        trackStoppedPropagation: true,
+      },
+    );
     if (!defaultAllowed) return;
     if (blocked) return;
     if (invalid) return;
     if (submitted) return;
+    if (submitActivated) return;
+    if (!isHappyDOM) return;
     const currentForm = submitButton.form;
     if (!canSubmitWithButton(submitButton)) return;
     const needsSubmitFallback =

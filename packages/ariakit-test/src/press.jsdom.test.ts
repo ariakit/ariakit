@@ -51,3 +51,30 @@ test("press.Enter does not resubmit an image submitter after external validation
     externalInput.remove();
   }
 });
+
+test("press.Enter does not resubmit an image submitter after stopped validation", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const submitter = document.createElement("input");
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  const onInvalid = vi.fn((event: Event) => {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  });
+  input.required = true;
+  submitter.type = "image";
+  window.addEventListener("invalid", onInvalid, true);
+  form.addEventListener("submit", onSubmit);
+  form.append(input, submitter);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onInvalid).toHaveBeenCalledOnce();
+    expect(onSubmit).not.toHaveBeenCalled();
+  } finally {
+    window.removeEventListener("invalid", onInvalid, true);
+    form.remove();
+  }
+});

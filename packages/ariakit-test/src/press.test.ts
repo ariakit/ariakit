@@ -438,6 +438,31 @@ test("press.Enter does not prevent default when a button click only stops propag
   }
 });
 
+test("press.Enter keeps returnValue in sync with preventDefault", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  let returnValue = true;
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  button.type = "submit";
+  button.addEventListener("click", (event) => event.preventDefault());
+  button.addEventListener("click", (event) => {
+    returnValue = event.returnValue;
+  });
+  form.addEventListener("submit", onSubmit);
+  form.append(input, button);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(returnValue).toBe(false);
+    expect(onSubmit).not.toHaveBeenCalled();
+  } finally {
+    form.remove();
+  }
+});
+
 test("press.Enter follows a default button moved to another form", async () => {
   const form = document.createElement("form");
   const nextForm = document.createElement("form");
@@ -465,6 +490,33 @@ test("press.Enter follows a default button moved to another form", async () => {
   }
 });
 
+test("press.Enter submits an image submitter after an earlier same-submitter submit", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const submitter = document.createElement("input");
+  const submitters: (HTMLElement | null)[] = [];
+  const onSubmit = vi.fn((event: SubmitEvent) => {
+    submitters.push(event.submitter);
+    event.preventDefault();
+  });
+  submitter.type = "image";
+  submitter.addEventListener("click", () => {
+    form.requestSubmit(submitter);
+  });
+  form.addEventListener("submit", onSubmit);
+  form.append(input, submitter);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onSubmit).toHaveBeenCalledTimes(2);
+    expect(submitters).toEqual([submitter, submitter]);
+  } finally {
+    form.remove();
+  }
+});
+
 test("press.Enter submits an image submitter after an earlier same-form submit", async () => {
   const form = document.createElement("form");
   const input = document.createElement("input");
@@ -488,6 +540,62 @@ test("press.Enter submits an image submitter after an earlier same-form submit",
     expect(onSubmit).toHaveBeenCalledTimes(2);
     expect(submitters[0]).not.toBe(submitter);
     expect(submitters[1]).toBe(submitter);
+  } finally {
+    form.remove();
+  }
+});
+
+test("press.Enter does not cancel a stopped click's explicit submit", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const otherButton = document.createElement("button");
+  const submittedBy: (HTMLElement | null)[] = [];
+  const onSubmit = vi.fn((event: SubmitEvent) => {
+    submittedBy.push(event.submitter);
+    event.preventDefault();
+  });
+  button.type = "submit";
+  otherButton.type = "submit";
+  button.addEventListener("click", (event) => {
+    event.stopPropagation();
+    button.disabled = true;
+    form.requestSubmit(otherButton);
+  });
+  form.addEventListener("submit", onSubmit);
+  form.append(input, button, otherButton);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onSubmit).toHaveBeenCalledOnce();
+    expect(submittedBy).toEqual([otherButton]);
+  } finally {
+    form.remove();
+  }
+});
+
+test("press.Enter lets stopped-click submits finish dispatching", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const onSubmitCapture = vi.fn(() => {
+    button.disabled = true;
+  });
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  button.type = "submit";
+  button.addEventListener("click", (event) => event.stopPropagation());
+  form.addEventListener("submit", onSubmitCapture, true);
+  form.addEventListener("submit", onSubmit);
+  form.append(input, button);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onSubmitCapture).toHaveBeenCalledOnce();
+    expect(onSubmit).toHaveBeenCalledOnce();
   } finally {
     form.remove();
   }
