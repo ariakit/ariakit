@@ -6,8 +6,8 @@ import { dispatch } from "./dispatch.ts";
 /**
  * Removes focus from an element, simulating a real user moving focus away from
  * it. When no element is passed, the currently focused element
- * (`document.activeElement`) is used. If the element was typed into since it
- * gained focus, a `change` event is dispatched before it's blurred.
+ * (`document.activeElement`) is used. If typing changed the element's value
+ * since it gained focus, a `change` event is dispatched before it's blurred.
  * @example
  * ```ts
  * await type("hello", q.textbox());
