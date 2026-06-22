@@ -1,5 +1,5 @@
 import { isVisible, isFocusable, invariant } from "@ariakit/utils";
-import { settle, wrapAsync } from "./__utils.ts";
+import { isHappyDOM, settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
 import { hover } from "./hover.ts";
@@ -56,6 +56,24 @@ async function clickLabel(element: HTMLLabelElement, options?: MouseEventInit) {
 function setSelected(element: HTMLOptionElement, selected: boolean) {
   // User interaction changes selectedness, not default selectedness.
   element.selected = selected;
+}
+
+function clearHappyDOMSelectCache(element: HTMLSelectElement) {
+  if (!isHappyDOM) return;
+  let prototype: object | null = element;
+  while (prototype) {
+    const clearCacheSymbol = Object.getOwnPropertySymbols(prototype).find(
+      (symbol) => symbol.description === "clearCache",
+    );
+    if (clearCacheSymbol) {
+      const clearCache: unknown = Reflect.get(element, clearCacheSymbol);
+      if (typeof clearCache === "function") {
+        clearCache.call(element);
+      }
+      return;
+    }
+    prototype = Object.getPrototypeOf(prototype);
+  }
 }
 
 async function clickOption(
@@ -124,6 +142,7 @@ async function clickOption(
     setSelected(element, true);
   }
 
+  clearHappyDOMSelectCache(select);
   await dispatch.input(select);
   await dispatch.change(select);
   await dispatch.click(element, eventOptions);

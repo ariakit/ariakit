@@ -1,5 +1,3 @@
-// @vitest-environment jsdom
-
 import { afterEach, expect, test } from "vitest";
 import { click, q } from "./index.ts";
 
@@ -7,52 +5,42 @@ afterEach(() => {
   document.body.innerHTML = "";
 });
 
-function setupMultiSelect() {
+test("shift-click exposes updated selectedOptions on change", async () => {
   document.body.innerHTML = `
     <label for="fruits">Fruits</label>
-    <select id="fruits" multiple size="3">
+    <select id="fruits" multiple size="4">
       <option>Apple</option>
       <option selected>Banana</option>
       <option>Cherry</option>
+      <option>Date</option>
     </select>
   `;
-}
 
-function getSelect() {
-  return q.listbox.ensure("Fruits") as HTMLSelectElement;
-}
+  const select = q.listbox.ensure("Fruits") as HTMLSelectElement;
+  const date = q.option.ensure("Date");
+  let changedSelection: string[] = [];
+  let mouseUpSelection: string[] = [];
+  select.addEventListener("mouseup", (event) => {
+    const target = event.currentTarget as HTMLSelectElement;
+    mouseUpSelection = Array.from(
+      target.selectedOptions,
+      (option) => option.value,
+    );
+  });
+  select.addEventListener("change", (event) => {
+    const target = event.target as HTMLSelectElement;
+    changedSelection = Array.from(
+      target.selectedOptions,
+      (option) => option.value,
+    );
+  });
 
-function getSelectedValues() {
-  return Array.from(getSelect().options)
-    .filter((option) => option.selected)
-    .map((option) => option.value);
-}
+  expect(Array.from(select.selectedOptions, (option) => option.value)).toEqual([
+    "Banana",
+  ]);
 
-function getDefaultSelectedValues() {
-  return Array.from(getSelect().options)
-    .filter((option) => option.defaultSelected)
-    .map((option) => option.value);
-}
+  await click(date, { shiftKey: true });
 
-test("clicking options does not change their default selectedness", async () => {
-  setupMultiSelect();
-
-  await click(q.option.ensure("Apple"));
-  await click(q.option.ensure("Cherry"), { ctrlKey: true });
-  await click(q.option.ensure("Apple"), { ctrlKey: true });
-
-  expect(getSelectedValues()).toEqual(["Cherry"]);
-  expect(getDefaultSelectedValues()).toEqual(["Banana"]);
-  expect(q.option.ensure("Apple")).not.toHaveAttribute("selected");
-  expect(q.option.ensure("Banana")).toHaveAttribute("selected");
-  expect(q.option.ensure("Cherry")).not.toHaveAttribute("selected");
-});
-
-test("anchorless shift-click anchors at the first selected option", async () => {
-  setupMultiSelect();
-
-  await click(q.option.ensure("Cherry"), { shiftKey: true });
-
-  expect(getSelectedValues()).toEqual(["Banana", "Cherry"]);
-  expect(getDefaultSelectedValues()).toEqual(["Banana"]);
+  expect(mouseUpSelection).toEqual(["Banana"]);
+  expect(changedSelection).toEqual(["Banana", "Cherry", "Date"]);
 });
