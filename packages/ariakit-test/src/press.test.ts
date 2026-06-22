@@ -1,5 +1,9 @@
-import { expect, test, vi } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
 import { press } from "./index.ts";
+
+afterEach(() => {
+  document.body.innerHTML = "";
+});
 
 function getTextInput() {
   const input = document.createElement("input");
@@ -56,14 +60,10 @@ test("press.Enter does not submit a form with a disabled default button", async 
   form.append(input, button);
   document.body.append(form);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onClick).not.toHaveBeenCalled();
-    expect(onSubmit).not.toHaveBeenCalled();
-  } finally {
-    form.remove();
-  }
+  expect(onClick).not.toHaveBeenCalled();
+  expect(onSubmit).not.toHaveBeenCalled();
 });
 
 test("press.Enter does not submit a form with a fieldset-disabled default button", async () => {
@@ -81,14 +81,10 @@ test("press.Enter does not submit a form with a fieldset-disabled default button
   form.append(input, fieldset);
   document.body.append(form);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onClick).not.toHaveBeenCalled();
-    expect(onSubmit).not.toHaveBeenCalled();
-  } finally {
-    form.remove();
-  }
+  expect(onClick).not.toHaveBeenCalled();
+  expect(onSubmit).not.toHaveBeenCalled();
 });
 
 test("press.Enter does not submit a form with a disabled image submitter", async () => {
@@ -104,14 +100,10 @@ test("press.Enter does not submit a form with a disabled image submitter", async
   form.append(input, submitter);
   document.body.append(form);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onClick).not.toHaveBeenCalled();
-    expect(onSubmit).not.toHaveBeenCalled();
-  } finally {
-    form.remove();
-  }
+  expect(onClick).not.toHaveBeenCalled();
+  expect(onSubmit).not.toHaveBeenCalled();
 });
 
 test("press.Enter activates the default button for implicit submission", async () => {
@@ -126,14 +118,10 @@ test("press.Enter activates the default button for implicit submission", async (
   form.append(input, button);
   document.body.append(form);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onClick).toHaveBeenCalledOnce();
-    expect(onSubmit).toHaveBeenCalledOnce();
-  } finally {
-    form.remove();
-  }
+  expect(onClick).toHaveBeenCalledOnce();
+  expect(onSubmit).toHaveBeenCalledOnce();
 });
 
 test("press.Enter activates a default button with pointer-events none", async () => {
@@ -149,14 +137,10 @@ test("press.Enter activates a default button with pointer-events none", async ()
   form.append(input, button);
   document.body.append(form);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onClick).toHaveBeenCalledOnce();
-    expect(onSubmit).toHaveBeenCalledOnce();
-  } finally {
-    form.remove();
-  }
+  expect(onClick).toHaveBeenCalledOnce();
+  expect(onSubmit).toHaveBeenCalledOnce();
 });
 
 test("press.Enter respects default button click preventDefault", async () => {
@@ -171,14 +155,10 @@ test("press.Enter respects default button click preventDefault", async () => {
   form.append(input, button);
   document.body.append(form);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onClick).toHaveBeenCalledOnce();
-    expect(onSubmit).not.toHaveBeenCalled();
-  } finally {
-    form.remove();
-  }
+  expect(onClick).toHaveBeenCalledOnce();
+  expect(onSubmit).not.toHaveBeenCalled();
 });
 
 test("press.Enter dispatches a composed default button click", async () => {
@@ -196,14 +176,10 @@ test("press.Enter dispatches a composed default button click", async () => {
   shadowRoot.append(form);
   document.body.append(host);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onHostClick).toHaveBeenCalledOnce();
-    expect(onSubmit).not.toHaveBeenCalled();
-  } finally {
-    host.remove();
-  }
+  expect(onHostClick).toHaveBeenCalledOnce();
+  expect(onSubmit).not.toHaveBeenCalled();
 });
 
 test("press.Enter respects image submitter click preventDefault", async () => {
@@ -222,14 +198,10 @@ test("press.Enter respects image submitter click preventDefault", async () => {
   });
   document.body.append(form);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onClick).toHaveBeenCalledOnce();
-    expect(onSubmit).not.toHaveBeenCalled();
-  } finally {
-    form.remove();
-  }
+  expect(onClick).toHaveBeenCalledOnce();
+  expect(onSubmit).not.toHaveBeenCalled();
 });
 
 test("press.Enter activates an image submitter for implicit submission", async () => {
@@ -248,15 +220,11 @@ test("press.Enter activates an image submitter for implicit submission", async (
   form.append(input, submitter);
   document.body.append(form);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onClick).toHaveBeenCalledOnce();
-    expect(onSubmit).toHaveBeenCalledOnce();
-    expect(submittedBy).toBe(submitter);
-  } finally {
-    form.remove();
-  }
+  expect(onClick).toHaveBeenCalledOnce();
+  expect(onSubmit).toHaveBeenCalledOnce();
+  expect(submittedBy).toBe(submitter);
 });
 
 test("press.Enter does not resubmit an image submitter after validation", async () => {
@@ -275,14 +243,10 @@ test("press.Enter does not resubmit an image submitter after validation", async 
   form.append(input, submitter);
   document.body.append(form);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(invalidEvents).toBe(1);
-    expect(onSubmit).not.toHaveBeenCalled();
-  } finally {
-    form.remove();
-  }
+  expect(invalidEvents).toBe(1);
+  expect(onSubmit).not.toHaveBeenCalled();
 });
 
 test("press.Enter submits an image submitter before queued click microtasks", async () => {
@@ -300,14 +264,10 @@ test("press.Enter submits an image submitter before queued click microtasks", as
   form.append(input, submitter);
   document.body.append(form);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onSubmit).toHaveBeenCalledOnce();
-    expect(submitter.disabled).toBe(true);
-  } finally {
-    form.remove();
-  }
+  expect(onSubmit).toHaveBeenCalledOnce();
+  expect(submitter.disabled).toBe(true);
 });
 
 test("press.Enter submits a single-input form without a submit button", async () => {
@@ -318,13 +278,9 @@ test("press.Enter submits a single-input form without a submit button", async ()
   form.append(input);
   document.body.append(form);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onSubmit).toHaveBeenCalledOnce();
-  } finally {
-    form.remove();
-  }
+  expect(onSubmit).toHaveBeenCalledOnce();
 });
 
 test("press.Home with shiftKey keeps the anchor of a forward selection", async () => {

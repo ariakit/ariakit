@@ -2,7 +2,7 @@ import "./shims.ts";
 
 export * from "./blur.ts";
 export * from "./click.ts";
-export { dispatch } from "./dispatch.ts";
+export * from "./dispatch.ts";
 export * from "./focus.ts";
 export * from "./hover.ts";
 export * from "./mouse-down.ts";

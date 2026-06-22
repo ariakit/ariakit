@@ -1,7 +1,11 @@
 // @vitest-environment jsdom
 
-import { expect, test, vi } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
 import { press } from "./index.ts";
+
+afterEach(() => {
+  document.body.innerHTML = "";
+});
 
 test("press.Enter activates a default button in jsdom", async () => {
   const form = document.createElement("form");
@@ -15,14 +19,10 @@ test("press.Enter activates a default button in jsdom", async () => {
   form.append(input, button);
   document.body.append(form);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onClick).toHaveBeenCalledOnce();
-    expect(onSubmit).toHaveBeenCalledOnce();
-  } finally {
-    form.remove();
-  }
+  expect(onClick).toHaveBeenCalledOnce();
+  expect(onSubmit).toHaveBeenCalledOnce();
 });
 
 test("press.Enter does not resubmit an image submitter after external validation", async () => {
@@ -41,15 +41,10 @@ test("press.Enter does not resubmit an image submitter after external validation
   form.append(input, submitter);
   document.body.append(form, externalInput);
 
-  try {
-    await press.Enter(input);
+  await press.Enter(input);
 
-    expect(onInvalid).toHaveBeenCalledOnce();
-    expect(onSubmit).not.toHaveBeenCalled();
-  } finally {
-    form.remove();
-    externalInput.remove();
-  }
+  expect(onInvalid).toHaveBeenCalledOnce();
+  expect(onSubmit).not.toHaveBeenCalled();
 });
 
 test("press.Enter does not resubmit an image submitter after stopped validation", async () => {
@@ -75,6 +70,5 @@ test("press.Enter does not resubmit an image submitter after stopped validation"
     expect(onSubmit).not.toHaveBeenCalled();
   } finally {
     window.removeEventListener("invalid", onInvalid, true);
-    form.remove();
   }
 });

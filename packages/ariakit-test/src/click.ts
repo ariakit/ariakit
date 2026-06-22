@@ -65,7 +65,7 @@ function setSelected(element: HTMLOptionElement, selected: boolean) {
 // now selection changes only update IDL selectedness, so clear happy-dom's
 // query cache explicitly before dispatching events.
 function clearHappyDOMSelectCache(element: HTMLSelectElement) {
-  if (!isHappyDOM) return;
+  if (!isHappyDOM()) return;
   let prototype: object | null = element;
   while (prototype) {
     const clearCacheSymbol = Object.getOwnPropertySymbols(prototype).find(

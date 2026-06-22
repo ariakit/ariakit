@@ -5,9 +5,15 @@ import {
   getPreviousTabbable,
   isFocusable,
 } from "@ariakit/utils";
-import { flushMicrotasks, settle, wrapAsync } from "./__utils.ts";
+import {
+  flushMicrotasks,
+  isHappyDOM,
+  settle,
+  withWindowEvent,
+  wrapAsync,
+} from "./__utils.ts";
 import { blur } from "./blur.ts";
-import { dispatch, withWindowEvent } from "./dispatch.ts";
+import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
 import { sleep } from "./sleep.ts";
 import { type } from "./type.ts";
@@ -113,7 +119,6 @@ async function clickSubmitButton(
     return;
   }
 
-  const win = submitButton.ownerDocument.defaultView;
   const root = form.getRootNode();
   let invalid = false;
   const onInvalid = (event: Event) => {
@@ -122,14 +127,12 @@ async function clickSubmitButton(
     if (getFormOwner(target) !== submitButton.form) return;
     invalid = true;
   };
-  win?.addEventListener("invalid", onInvalid, true);
   root.addEventListener("invalid", onInvalid, true);
-  form.addEventListener("invalid", onInvalid, true);
   try {
     const defaultAllowed = dispatchKeyboardClick(submitButton, options);
     if (!defaultAllowed) return;
     if (invalid) return;
-    if (!win || !("happyDOM" in win)) return;
+    if (!isHappyDOM(submitButton.ownerDocument.defaultView)) return;
     if (!(submitButton instanceof HTMLInputElement)) return;
     if (submitButton.type !== "image") return;
     // happy-dom fires the image submitter click but skips its submit activation.
@@ -138,9 +141,7 @@ async function clickSubmitButton(
     if (!canSubmitWithButton(submitButton)) return;
     invokeRequestSubmit(currentForm, submitButton);
   } finally {
-    win?.removeEventListener("invalid", onInvalid, true);
     root.removeEventListener("invalid", onInvalid, true);
-    form.removeEventListener("invalid", onInvalid, true);
     await flushMicrotasks();
   }
 }
