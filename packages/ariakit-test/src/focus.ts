@@ -6,8 +6,8 @@ import { dispatch } from "./dispatch.ts";
 /**
  * Moves focus to an element, simulating a real user focusing it. Elements that
  * aren't focusable are ignored, and focusing the already focused element is a
- * no-op. If another element was typed into since it gained focus, its pending
- * `change` event is dispatched before focus moves.
+ * no-op. If typing changed another element's value since it gained focus, its
+ * pending `change` event is dispatched before focus moves.
  * @example
  * ```ts
  * await focus(q.textbox());

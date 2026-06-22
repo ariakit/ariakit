@@ -1,5 +1,5 @@
 import { isVisible, isFocusable, invariant } from "@ariakit/utils";
-import { settle, wrapAsync } from "./__utils.ts";
+import { isHappyDOM, settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
 import { hover } from "./hover.ts";
@@ -54,8 +54,32 @@ async function clickLabel(element: HTMLLabelElement, options?: MouseEventInit) {
 }
 
 function setSelected(element: HTMLOptionElement, selected: boolean) {
-  element.setAttribute("selected", selected ? "selected" : "");
+  // User interaction changes selectedness, not default selectedness.
   element.selected = selected;
+}
+
+// WHY: happy-dom caches `select.selectedOptions` from the internal
+// `querySelectorAll("option")` result and does not invalidate it when only
+// `option.selected` changes. Real browsers and jsdom expose a live collection.
+// The former `selected` attribute write cleared this cache as a side effect;
+// now selection changes only update IDL selectedness, so clear happy-dom's
+// query cache explicitly before dispatching events.
+function clearHappyDOMSelectCache(element: HTMLSelectElement) {
+  if (!isHappyDOM()) return;
+  let prototype: object | null = element;
+  while (prototype) {
+    const clearCacheSymbol = Object.getOwnPropertySymbols(prototype).find(
+      (symbol) => symbol.description === "clearCache",
+    );
+    if (clearCacheSymbol) {
+      const clearCache: unknown = Reflect.get(element, clearCacheSymbol);
+      if (typeof clearCache === "function") {
+        clearCache.call(element);
+      }
+      return;
+    }
+    prototype = Object.getPrototypeOf(prototype);
+  }
 }
 
 async function clickOption(
@@ -90,14 +114,20 @@ async function clickOption(
 
     if (eventOptions?.shiftKey) {
       const elementIndex = options.indexOf(element);
-      const referenceOption = select.lastOptionSelectedNotByShiftKey;
+      const referenceOption =
+        select.lastOptionSelectedNotByShiftKey ??
+        options.find((option) => option.selected);
       const referenceOptionIndex = referenceOption
         ? options.indexOf(referenceOption)
         : -1;
 
       resetOptions();
-      // Select options between the reference option and the clicked element
-      selectRange(elementIndex, referenceOptionIndex);
+      // Select options between the clicked element and the reference option,
+      // anchoring at the clicked element when there is no usable reference.
+      selectRange(
+        elementIndex,
+        referenceOptionIndex === -1 ? elementIndex : referenceOptionIndex,
+      );
 
       setSelected(element, true);
     } else {
@@ -118,6 +148,7 @@ async function clickOption(
     setSelected(element, true);
   }
 
+  clearHappyDOMSelectCache(select);
   await dispatch.input(select);
   await dispatch.change(select);
   await dispatch.click(element, eventOptions);

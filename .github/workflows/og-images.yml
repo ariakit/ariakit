@@ -19,7 +19,7 @@ jobs:
       WRITEBACK_ALLOWED: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # Check out the PR branch tip (not the merge ref) so `commit-or-pr`
           # can fetch and rebase onto `origin/$HEAD_REF` cleanly. Otherwise

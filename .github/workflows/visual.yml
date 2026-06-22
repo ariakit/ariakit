@@ -23,7 +23,7 @@ jobs:
       WRITEBACK_ALLOWED: ${{ inputs.event != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -156,7 +156,7 @@ jobs:
           steps.gate.outputs.is_latest == 'true' &&
           steps.check-artifacts.outputs.ready == 'true' &&
           env.WRITEBACK_ALLOWED == 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # Keep the workflow files from the trusted checkout above and apply
           # generated changes in a separate checkout directory we can commit from.
