@@ -40,11 +40,15 @@ function isSubmitButton(
 
 function canSubmitWithButton(
   submitButton: HTMLInputElement | HTMLButtonElement,
-  form: HTMLFormElement,
 ) {
-  if (submitButton.form !== form) return false;
+  if (!submitButton.form) return false;
   if (isDisabled(submitButton)) return false;
   return isSubmitButton(submitButton);
+}
+
+function getFormOwner(element: Element) {
+  if (!("form" in element)) return null;
+  return element.form as HTMLFormElement | null;
 }
 
 function getFormRoot(form: HTMLFormElement) {
@@ -124,12 +128,15 @@ async function clickSubmitButton(
   let invalid = false;
   let submitted = false;
   const onClick = (event: Event) => {
-    if (!canSubmitWithButton(submitButton, form)) {
+    if (!canSubmitWithButton(submitButton)) {
       blocked = true;
       event.preventDefault();
     }
   };
-  const onInvalid = () => {
+  const onInvalid = (event: Event) => {
+    const { target } = event;
+    if (!(target instanceof Element)) return;
+    if (getFormOwner(target) !== submitButton.form) return;
     invalid = true;
   };
   const onSubmit = () => {
@@ -137,7 +144,10 @@ async function clickSubmitButton(
   };
   submitButton.addEventListener("click", onClick);
   win?.addEventListener("click", onClick);
+  form.addEventListener("click", onClick);
+  win?.addEventListener("invalid", onInvalid, true);
   win?.addEventListener("submit", onSubmit, true);
+  root.addEventListener("invalid", onInvalid, true);
   root.addEventListener("submit", onSubmit, true);
   form.addEventListener("invalid", onInvalid, true);
   form.addEventListener("submit", onSubmit, true);
@@ -149,13 +159,17 @@ async function clickSubmitButton(
     if (submitted) return;
     if (!(submitButton instanceof HTMLInputElement)) return;
     if (submitButton.type !== "image") return;
-    if (!canSubmitWithButton(submitButton, form)) return;
+    const currentForm = submitButton.form;
+    if (!canSubmitWithButton(submitButton)) return;
     // happy-dom fires the image submitter click but skips its submit activation.
-    form.requestSubmit(submitButton);
+    currentForm?.requestSubmit(submitButton);
   } finally {
     submitButton.removeEventListener("click", onClick);
     win?.removeEventListener("click", onClick);
+    form.removeEventListener("click", onClick);
+    win?.removeEventListener("invalid", onInvalid, true);
     win?.removeEventListener("submit", onSubmit, true);
+    root.removeEventListener("invalid", onInvalid, true);
     root.removeEventListener("submit", onSubmit, true);
     form.removeEventListener("invalid", onInvalid, true);
     form.removeEventListener("submit", onSubmit, true);
