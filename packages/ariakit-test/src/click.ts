@@ -92,7 +92,7 @@ async function clickOption(
       const elementIndex = options.indexOf(element);
       const referenceOption =
         select.lastOptionSelectedNotByShiftKey ??
-        select.selectedOptions.item(0);
+        options.find((option) => option.selected);
       let referenceOptionIndex = elementIndex;
       if (referenceOption) {
         referenceOptionIndex = options.indexOf(referenceOption);
