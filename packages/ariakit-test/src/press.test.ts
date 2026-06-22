@@ -124,25 +124,6 @@ test("press.Enter activates the default button for implicit submission", async (
   expect(onSubmit).toHaveBeenCalledOnce();
 });
 
-test("press.Enter exposes the nested submit event as window.event", async () => {
-  const form = document.createElement("form");
-  const input = document.createElement("input");
-  const button = document.createElement("button");
-  let windowEventType: string | undefined;
-  button.type = "submit";
-  form.addEventListener("submit", (event) => {
-    windowEventType = window.event?.type;
-    event.preventDefault();
-  });
-  form.append(input, button);
-  document.body.append(form);
-
-  await press.Enter(input);
-
-  expect(windowEventType).toBe("submit");
-  expect("event" in window).toBe(false);
-});
-
 test("press.Enter activates a default button with pointer-events none", async () => {
   const form = document.createElement("form");
   const input = document.createElement("input");
@@ -177,24 +158,6 @@ test("press.Enter respects default button click preventDefault", async () => {
   await press.Enter(input);
 
   expect(onClick).toHaveBeenCalledOnce();
-  expect(onSubmit).not.toHaveBeenCalled();
-});
-
-test("press.Enter respects default button returnValue cancellation", async () => {
-  const form = document.createElement("form");
-  const input = document.createElement("input");
-  const button = document.createElement("button");
-  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
-  button.type = "submit";
-  button.addEventListener("click", (event) => {
-    event.returnValue = false;
-  });
-  form.addEventListener("submit", onSubmit);
-  form.append(input, button);
-  document.body.append(form);
-
-  await press.Enter(input);
-
   expect(onSubmit).not.toHaveBeenCalled();
 });
 
@@ -239,64 +202,6 @@ test("press.Enter respects image submitter click preventDefault", async () => {
 
   expect(onClick).toHaveBeenCalledOnce();
   expect(onSubmit).not.toHaveBeenCalled();
-});
-
-test("press.Enter respects image submitter returnValue cancellation", async () => {
-  const form = document.createElement("form");
-  const input = document.createElement("input");
-  const submitter = document.createElement("input");
-  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
-  submitter.type = "image";
-  submitter.addEventListener("click", (event) => {
-    event.returnValue = false;
-  });
-  submitter.addEventListener("click", (event) => {
-    event.returnValue = true;
-  });
-  form.addEventListener("submit", onSubmit);
-  form.append(input, submitter);
-  document.body.append(form);
-
-  await press.Enter(input);
-
-  expect(onSubmit).not.toHaveBeenCalled();
-});
-
-test("press.Enter respects image submitter onclick cancellation", async () => {
-  const form = document.createElement("form");
-  const input = document.createElement("input");
-  const submitter = document.createElement("input");
-  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
-  submitter.type = "image";
-  submitter.onclick = () => false;
-  form.addEventListener("submit", onSubmit);
-  form.append(input, submitter);
-  document.body.append(form);
-
-  await press.Enter(input);
-
-  expect(onSubmit).not.toHaveBeenCalled();
-});
-
-test("press.Enter preserves onclick mutations during image submitter click", async () => {
-  const form = document.createElement("form");
-  const input = document.createElement("input");
-  const submitter = document.createElement("input");
-  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
-  const nextOnClick = () => {};
-  submitter.type = "image";
-  submitter.onclick = () => {
-    submitter.onclick = nextOnClick;
-    return false;
-  };
-  form.addEventListener("submit", onSubmit);
-  form.append(input, submitter);
-  document.body.append(form);
-
-  await press.Enter(input);
-
-  expect(onSubmit).not.toHaveBeenCalled();
-  expect(submitter.onclick).toBe(nextOnClick);
 });
 
 test("press.Enter activates an image submitter for implicit submission", async () => {

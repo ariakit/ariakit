@@ -9,7 +9,6 @@ import {
   flushMicrotasks,
   isHappyDOM,
   settle,
-  setWindowEvent,
   withWindowEvent,
   wrapAsync,
 } from "./__utils.ts";
@@ -92,93 +91,12 @@ function createKeyboardClickEvent(
   });
 }
 
-interface ClickHandlerElement extends Element {
-  onclick: GlobalEventHandlers["onclick"];
-}
-
-function hasClickHandler(element: Element): element is ClickHandlerElement {
-  return "onclick" in element;
-}
-
-function polyfillReturnValue(event: MouseEvent) {
-  // happy-dom treats `returnValue` as a plain expando, so wire it to
-  // preventDefault while our synthetic click is being dispatched.
-  const descriptor = Object.getOwnPropertyDescriptor(event, "returnValue");
-  let returnValue = event.returnValue;
-  Object.defineProperty(event, "returnValue", {
-    configurable: true,
-    get() {
-      if (event.defaultPrevented) return false;
-      return returnValue;
-    },
-    set(value) {
-      returnValue = value;
-      if (value === false) {
-        event.preventDefault();
-      }
-    },
-  });
-  return () => {
-    if (descriptor) {
-      Object.defineProperty(event, "returnValue", descriptor);
-    } else {
-      Reflect.deleteProperty(event, "returnValue");
-    }
-  };
-}
-
-function polyfillOnClickReturnValue(element: Element) {
-  if (!hasClickHandler(element)) return () => {};
-  const onClick = element.onclick;
-  if (!onClick) return () => {};
-  const onClickWithReturnValue: GlobalEventHandlers["onclick"] =
-    function onClickWithReturnValue(event) {
-      const result = onClick.call(this, event);
-      if (result === false) {
-        event.preventDefault();
-      }
-      return result;
-    };
-  element.onclick = onClickWithReturnValue;
-  return () => {
-    if (element.onclick === onClickWithReturnValue) {
-      element.onclick = onClick;
-    }
-  };
-}
-
-function polyfillClickLegacyCancellation(
-  element: Element,
-  event: MouseEvent,
-  win: Window | null,
-) {
-  if (!isHappyDOM(win)) return () => {};
-  const restoreReturnValue = polyfillReturnValue(event);
-  const restoreOnClickReturnValue = polyfillOnClickReturnValue(element);
-  return () => {
-    restoreOnClickReturnValue();
-    restoreReturnValue();
-  };
-}
-
 function dispatchKeyboardClick(element: Element, options: KeyboardEventInit) {
   const event = createKeyboardClickEvent(element, options);
-  const win = element.ownerDocument.defaultView;
-  const restoreLegacyCancellation = polyfillClickLegacyCancellation(
-    element,
-    event,
-    win,
-  );
   return withWindowEvent(
     event,
-    () => {
-      try {
-        return element.dispatchEvent(event);
-      } finally {
-        restoreLegacyCancellation();
-      }
-    },
-    win,
+    () => element.dispatchEvent(event),
+    element.ownerDocument.defaultView,
   );
 }
 
@@ -203,24 +121,13 @@ async function clickSubmitButton(
 
   const root = form.getRootNode();
   let invalid = false;
-  const restoreSubmitWindowEvents: Array<() => void> = [];
   const onInvalid = (event: Event) => {
     const { target } = event;
     if (!(target instanceof Element)) return;
     if (getFormOwner(target) !== submitButton.form) return;
     invalid = true;
   };
-  const onSubmit = (event: Event) => {
-    const win = submitButton.ownerDocument.defaultView;
-    if (!isHappyDOM(win)) return;
-    restoreSubmitWindowEvents.push(setWindowEvent(win, event));
-  };
-  const onSubmitEnd = () => {
-    restoreSubmitWindowEvents.pop()?.();
-  };
   root.addEventListener("invalid", onInvalid, true);
-  root.addEventListener("submit", onSubmit, true);
-  root.addEventListener("submit", onSubmitEnd);
   try {
     const defaultAllowed = dispatchKeyboardClick(submitButton, options);
     if (!defaultAllowed) return;
@@ -229,19 +136,15 @@ async function clickSubmitButton(
     if (!(submitButton instanceof HTMLInputElement)) return;
     if (submitButton.type !== "image") return;
     // happy-dom fires the image submitter click but skips its submit activation.
+    // Keep this fallback intentionally small: legacy `returnValue`/DOM0 click
+    // cancellation and `window.event` for nested submit/invalid events still
+    // differ from browsers, but those edge cases are outside the #6353 target.
     const currentForm = submitButton.form;
     if (!currentForm) return;
     if (!canSubmitWithButton(submitButton)) return;
     invokeRequestSubmit(currentForm, submitButton);
   } finally {
     root.removeEventListener("invalid", onInvalid, true);
-    root.removeEventListener("submit", onSubmit, true);
-    root.removeEventListener("submit", onSubmitEnd);
-    let restoreSubmitWindowEvent = restoreSubmitWindowEvents.pop();
-    while (restoreSubmitWindowEvent) {
-      restoreSubmitWindowEvent();
-      restoreSubmitWindowEvent = restoreSubmitWindowEvents.pop();
-    }
     await flushMicrotasks();
   }
 }

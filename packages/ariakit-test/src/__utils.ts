@@ -14,8 +14,6 @@ export function isHappyDOM(
   return !!win && "happyDOM" in win;
 }
 
-type WindowWithEvent = Window & { event?: Event };
-
 export const isBrowser =
   typeof navigator !== "undefined" &&
   !navigator.userAgent.includes("jsdom") &&
@@ -46,26 +44,19 @@ export function withWindowEvent<T>(
     : undefined,
 ): T {
   if (!isHappyDOM(win)) return run();
-  const restoreWindowEvent = setWindowEvent(win, event);
-  try {
-    return run();
-  } finally {
-    restoreWindowEvent();
-  }
-}
-
-export function setWindowEvent(win: WindowWithEvent, event: Event) {
-  const eventWindow = win;
+  const eventWindow = win as Window & { event?: Event };
   const had = Object.prototype.hasOwnProperty.call(eventWindow, "event");
   const previous = eventWindow.event;
   eventWindow.event = event;
-  return () => {
+  try {
+    return run();
+  } finally {
     if (had) {
       eventWindow.event = previous;
     } else {
       delete eventWindow.event;
     }
-  };
+  }
 }
 
 export async function flushMicrotasks() {
