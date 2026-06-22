@@ -20,19 +20,25 @@ import { flushMicrotasks, isHappyDOM, wrapAsync } from "./__utils.ts";
 // none — so nested dispatches stay correct and the global isn't left behind. In
 // practice this only changes the React 18 suite: the controlled-dialog focus
 // divergence it fixes doesn't reproduce under React 19.
-function withWindowEvent<T>(event: Event, run: () => T): T {
-  if (!isHappyDOM) return run();
-  const win = window as unknown as { event?: Event };
-  const had = Object.prototype.hasOwnProperty.call(win, "event");
-  const previous = win.event;
-  win.event = event;
+export function withWindowEvent<T>(
+  event: Event,
+  run: () => T,
+  win: Window | null | undefined = typeof window !== "undefined"
+    ? window
+    : undefined,
+): T {
+  if (!win || !("happyDOM" in win)) return run();
+  const eventWindow = win as Window & { event?: Event };
+  const had = Object.prototype.hasOwnProperty.call(eventWindow, "event");
+  const previous = eventWindow.event;
+  eventWindow.event = event;
   try {
     return run();
   } finally {
     if (had) {
-      win.event = previous;
+      eventWindow.event = previous;
     } else {
-      delete win.event;
+      delete eventWindow.event;
     }
   }
 }
