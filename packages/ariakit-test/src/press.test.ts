@@ -355,6 +355,57 @@ test("press.Enter does not submit when a stopped delegated handler disables the 
   }
 });
 
+test("press.Enter does not submit when a stopped ancestor handler disables the button", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  const onClick = vi.fn((event: MouseEvent) => {
+    event.stopPropagation();
+    button.disabled = true;
+  });
+  button.type = "submit";
+  document.body.addEventListener("click", onClick);
+  form.addEventListener("submit", onSubmit);
+  form.append(input, button);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(onSubmit).not.toHaveBeenCalled();
+  } finally {
+    document.body.removeEventListener("click", onClick);
+    form.remove();
+  }
+});
+
+test("press.Enter does not submit when the default button stops immediate propagation after disabling itself", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  const onClick = vi.fn((event: MouseEvent) => {
+    event.stopImmediatePropagation();
+    button.disabled = true;
+  });
+  button.type = "submit";
+  button.addEventListener("click", onClick);
+  form.addEventListener("submit", onSubmit);
+  form.append(input, button);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(onSubmit).not.toHaveBeenCalled();
+  } finally {
+    form.remove();
+  }
+});
+
 test("press.Enter follows a default button moved to another form", async () => {
   const form = document.createElement("form");
   const nextForm = document.createElement("form");
@@ -379,6 +430,38 @@ test("press.Enter follows a default button moved to another form", async () => {
   } finally {
     form.remove();
     nextForm.remove();
+  }
+});
+
+test("press.Enter submits an image submitter after an unrelated form submit", async () => {
+  const form = document.createElement("form");
+  const otherForm = document.createElement("form");
+  const input = document.createElement("input");
+  const submitter = document.createElement("input");
+  let submittedBy: HTMLElement | null = null;
+  const onSubmit = vi.fn((event: SubmitEvent) => {
+    submittedBy = event.submitter;
+    event.preventDefault();
+  });
+  const onOtherSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  submitter.type = "image";
+  submitter.addEventListener("click", () => {
+    otherForm.requestSubmit();
+  });
+  form.addEventListener("submit", onSubmit);
+  otherForm.addEventListener("submit", onOtherSubmit);
+  form.append(input, submitter);
+  document.body.append(form, otherForm);
+
+  try {
+    await press.Enter(input);
+
+    expect(onOtherSubmit).toHaveBeenCalledOnce();
+    expect(onSubmit).toHaveBeenCalledOnce();
+    expect(submittedBy).toBe(submitter);
+  } finally {
+    form.remove();
+    otherForm.remove();
   }
 });
 

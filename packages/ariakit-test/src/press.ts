@@ -106,9 +106,34 @@ function dispatchClickEvent(element: Element, event: Event) {
   }
 }
 
-function dispatchKeyboardClick(element: Element, options: KeyboardEventInit) {
+function dispatchKeyboardClick(
+  element: Element,
+  options: KeyboardEventInit,
+  onStopPropagation?: (event: Event, preventDefault: () => void) => void,
+) {
   const event = createKeyboardClickEvent(element, options);
-  return dispatchClickEvent(element, event);
+  let defaultPrevented = false;
+  const preventDefault = event.preventDefault.bind(event);
+  event.preventDefault = () => {
+    defaultPrevented = true;
+    preventDefault();
+  };
+  if (onStopPropagation) {
+    const stopPropagation = event.stopPropagation.bind(event);
+    const stopImmediatePropagation = event.stopImmediatePropagation.bind(event);
+    event.stopPropagation = () => {
+      onStopPropagation(event, preventDefault);
+      stopPropagation();
+    };
+    event.stopImmediatePropagation = () => {
+      onStopPropagation(event, preventDefault);
+      stopImmediatePropagation();
+    };
+  }
+  return {
+    defaultAllowed: dispatchClickEvent(element, event),
+    defaultPrevented,
+  };
 }
 
 async function clickSubmitButton(
@@ -127,6 +152,7 @@ async function clickSubmitButton(
   let blocked = false;
   let invalid = false;
   let submitted = false;
+  let stopped = false;
   const onClick = (event: Event) => {
     if (!canSubmitWithButton(submitButton)) {
       blocked = true;
@@ -139,7 +165,8 @@ async function clickSubmitButton(
     if (getFormOwner(target) !== submitButton.form) return;
     invalid = true;
   };
-  const onSubmit = () => {
+  const onSubmit = (event: Event) => {
+    if (event.target !== submitButton.form) return;
     submitted = true;
   };
   submitButton.addEventListener("click", onClick);
@@ -152,15 +179,26 @@ async function clickSubmitButton(
   form.addEventListener("invalid", onInvalid, true);
   form.addEventListener("submit", onSubmit, true);
   try {
-    const defaultAllowed = dispatchKeyboardClick(submitButton, options);
-    if (!defaultAllowed) return;
+    const { defaultAllowed, defaultPrevented } = dispatchKeyboardClick(
+      submitButton,
+      options,
+      (_event, preventDefault) => {
+        stopped = true;
+        preventDefault();
+      },
+    );
+    if (!defaultAllowed && !stopped) return;
+    if (defaultPrevented) return;
     if (blocked) return;
     if (invalid) return;
     if (submitted) return;
-    if (!(submitButton instanceof HTMLInputElement)) return;
-    if (submitButton.type !== "image") return;
     const currentForm = submitButton.form;
     if (!canSubmitWithButton(submitButton)) return;
+    const needsSubmitFallback =
+      stopped ||
+      (submitButton instanceof HTMLInputElement &&
+        submitButton.type === "image");
+    if (!needsSubmitFallback) return;
     // happy-dom fires the image submitter click but skips its submit activation.
     currentForm?.requestSubmit(submitButton);
   } finally {
