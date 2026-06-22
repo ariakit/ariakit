@@ -72,6 +72,10 @@ function sanitizeNumber(n: number | undefined) {
   return n ?? 0;
 }
 
+function sanitizeString(value: string | undefined) {
+  return value ?? "";
+}
+
 function initClipboardEvent(
   event: ClipboardEvent,
   { clipboardData }: ClipboardEventInit,
@@ -88,7 +92,7 @@ function initInputEvent(
   assignProps(event, {
     data,
     isComposing: !!isComposing,
-    inputType: String(inputType),
+    inputType: sanitizeString(inputType),
   });
 }
 
@@ -144,15 +148,20 @@ function initUIEventModififiers(
 
 function initKeyboardEvent(
   event: KeyboardEvent,
-  { key, code, location, repeat, isComposing }: KeyboardEventInit,
+  { key, code, location, repeat, isComposing, charCode }: KeyboardEventInit,
 ) {
   assignProps(event, {
-    key: String(key),
-    code: String(code),
+    key: sanitizeString(key),
+    code: sanitizeString(code),
     location: sanitizeNumber(location),
     repeat: !!repeat,
     isComposing: !!isComposing,
   });
+  if (charCode != null) {
+    assignProps(event, {
+      charCode: sanitizeNumber(charCode),
+    });
+  }
 }
 
 function initMouseEvent(

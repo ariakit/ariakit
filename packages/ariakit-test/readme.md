@@ -56,7 +56,7 @@ The `@ariakit/test/react` entry point renders React components for testing, and 
 function blur(element?: DirtiableElement | null): Promise<void>;
 ```
 
-Removes focus from an element, simulating a real user moving focus away from it. When no element is passed, the currently focused element (`document.activeElement`) is used. If the element was typed into since it gained focus, a `change` event is dispatched before it's blurred.
+Removes focus from an element, simulating a real user moving focus away from it. When no element is passed, the currently focused element (`document.activeElement`) is used. If typing changed the element's value since it gained focus, a `change` event is dispatched before it's blurred.
 
 Example:
 
@@ -135,7 +135,7 @@ await dispatch(q.textbox(), new Event("selectstart", { bubbles: true }));
 function focus(element: Element | null): Promise<void>;
 ```
 
-Moves focus to an element, simulating a real user focusing it. Elements that aren't focusable are ignored, and focusing the already focused element is a no-op. If another element was typed into since it gained focus, its pending `change` event is dispatched before focus moves.
+Moves focus to an element, simulating a real user focusing it. Elements that aren't focusable are ignored, and focusing the already focused element is a no-op. If typing changed another element's value since it gained focus, its pending `change` event is dispatched before focus moves.
 
 Example:
 

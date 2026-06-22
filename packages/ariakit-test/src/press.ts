@@ -98,19 +98,34 @@ const keyDownMap: KeyActionMap = {
   },
 
   async Home(element, { shiftKey }) {
-    if (isTextField(element)) {
-      const { value, selectionEnd } = element;
-      const end = Math.min(value.length, shiftKey ? (selectionEnd ?? 0) : 0);
-      setSelectionRange(element, 0, end, "backward");
+    if (!isTextField(element)) return;
+
+    if (!shiftKey) {
+      return setSelectionRange(element, 0, 0);
     }
+
+    const { selectionStart, selectionEnd, selectionDirection } = element;
+    const anchor =
+      selectionDirection === "forward"
+        ? (selectionStart ?? 0)
+        : (selectionEnd ?? 0);
+    setSelectionRange(element, 0, anchor, "backward");
   },
 
   async End(element, { shiftKey }) {
-    if (isTextField(element)) {
-      const { value, selectionStart } = element;
-      const start = shiftKey ? (selectionStart ?? 0) : value.length;
-      setSelectionRange(element, start, value.length, "forward");
+    if (!isTextField(element)) return;
+
+    const length = element.value.length;
+    if (!shiftKey) {
+      return setSelectionRange(element, length, length);
     }
+
+    const { selectionStart, selectionEnd, selectionDirection } = element;
+    const anchor =
+      selectionDirection === "backward"
+        ? (selectionEnd ?? 0)
+        : (selectionStart ?? 0);
+    setSelectionRange(element, anchor, length, "forward");
   },
 
   async ArrowLeft(element, { shiftKey }) {

@@ -86,11 +86,11 @@
     "@testing-library/react": "16.3.2",
     "@types/cross-spawn": "6.0.6",
     "@types/fs-extra": "11.0.4",
-    "@types/node": "24.13.1",
+    "@types/node": "24.13.2",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.2",
-    "@vitest/coverage-v8": "4.1.8",
+    "@vitest/coverage-v8": "4.1.9",
     "autoprefixer": "10.5.0",
     "chalk": "5.6.2",
     "chokidar": "5.0.0",
@@ -100,17 +100,17 @@
     "esbuild-plugin-solid": "0.6.0",
     "fs-extra": "11.3.5",
     "glob": "13.0.6",
-    "happy-dom": "20.10.2",
+    "happy-dom": "20.10.6",
     "husky": "9.1.7",
     "lint-staged": "17.0.7",
-    "next": "16.2.7",
+    "next": "16.2.9",
     "open-cli": "9.0.0",
-    "oxfmt": "0.53.0",
-    "oxlint": "1.68.0",
+    "oxfmt": "0.55.0",
+    "oxlint": "1.70.0",
     "oxlint-tsgolint": "0.23.0",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
-    "prettier": "3.8.3",
+    "prettier": "3.8.4",
     "prettier-plugin-tailwindcss": "0.8.0",
     "react": "19.2.7",
     "react-dom": "19.2.7",
@@ -124,9 +124,9 @@
     "typescript": "6.0.3",
     "vite": "8.0.16",
     "vite-plugin-solid": "2.11.12",
-    "vitest": "4.1.8",
+    "vitest": "4.1.9",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.98.0"
+    "wrangler": "4.102.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
@@ -135,5 +135,5 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@11.5.2"
+  "packageManager": "pnpm@11.8.0"
 }
