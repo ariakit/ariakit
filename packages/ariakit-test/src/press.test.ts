@@ -406,6 +406,38 @@ test("press.Enter does not submit when the default button stops immediate propag
   }
 });
 
+test("press.Enter does not prevent default when a button click only stops propagation", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const defaultPrevented: boolean[] = [];
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  const onClick = vi.fn((event: MouseEvent) => {
+    event.stopPropagation();
+    defaultPrevented.push(event.defaultPrevented);
+  });
+  const onNextClick = vi.fn((event: MouseEvent) => {
+    defaultPrevented.push(event.defaultPrevented);
+  });
+  button.type = "submit";
+  button.addEventListener("click", onClick);
+  button.addEventListener("click", onNextClick);
+  form.addEventListener("submit", onSubmit);
+  form.append(input, button);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(onNextClick).toHaveBeenCalledOnce();
+    expect(defaultPrevented).toEqual([false, false]);
+    expect(onSubmit).toHaveBeenCalledOnce();
+  } finally {
+    form.remove();
+  }
+});
+
 test("press.Enter follows a default button moved to another form", async () => {
   const form = document.createElement("form");
   const nextForm = document.createElement("form");
@@ -430,6 +462,34 @@ test("press.Enter follows a default button moved to another form", async () => {
   } finally {
     form.remove();
     nextForm.remove();
+  }
+});
+
+test("press.Enter submits an image submitter after an earlier same-form submit", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const submitter = document.createElement("input");
+  const submitters: (HTMLElement | null)[] = [];
+  const onSubmit = vi.fn((event: SubmitEvent) => {
+    submitters.push(event.submitter);
+    event.preventDefault();
+  });
+  submitter.type = "image";
+  submitter.addEventListener("click", () => {
+    form.requestSubmit();
+  });
+  form.addEventListener("submit", onSubmit);
+  form.append(input, submitter);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onSubmit).toHaveBeenCalledTimes(2);
+    expect(submitters[0]).not.toBe(submitter);
+    expect(submitters[1]).toBe(submitter);
+  } finally {
+    form.remove();
   }
 });
 
@@ -462,6 +522,30 @@ test("press.Enter submits an image submitter after an unrelated form submit", as
   } finally {
     form.remove();
     otherForm.remove();
+  }
+});
+
+test("press.Enter respects image submitter returnValue cancellation", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const submitter = document.createElement("input");
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  const onClick = vi.fn((event: MouseEvent) => {
+    event.returnValue = false;
+  });
+  submitter.type = "image";
+  submitter.addEventListener("click", onClick);
+  form.addEventListener("submit", onSubmit);
+  form.append(input, submitter);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(onSubmit).not.toHaveBeenCalled();
+  } finally {
+    form.remove();
   }
 });
 

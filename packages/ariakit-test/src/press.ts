@@ -106,34 +106,41 @@ function dispatchClickEvent(element: Element, event: Event) {
   }
 }
 
+function polyfillReturnValue(event: Event) {
+  if (Reflect.has(event, "returnValue")) return;
+  let returnValue = true;
+  Object.defineProperty(event, "returnValue", {
+    configurable: true,
+    get: () => returnValue,
+    set: (value: boolean) => {
+      returnValue = value;
+      if (!value) {
+        event.preventDefault();
+      }
+    },
+  });
+}
+
 function dispatchKeyboardClick(
   element: Element,
   options: KeyboardEventInit,
-  onStopPropagation?: (event: Event, preventDefault: () => void) => void,
+  onStopPropagation?: (event: Event) => void,
 ) {
   const event = createKeyboardClickEvent(element, options);
-  let defaultPrevented = false;
-  const preventDefault = event.preventDefault.bind(event);
-  event.preventDefault = () => {
-    defaultPrevented = true;
-    preventDefault();
-  };
+  polyfillReturnValue(event);
   if (onStopPropagation) {
     const stopPropagation = event.stopPropagation.bind(event);
     const stopImmediatePropagation = event.stopImmediatePropagation.bind(event);
     event.stopPropagation = () => {
-      onStopPropagation(event, preventDefault);
+      onStopPropagation(event);
       stopPropagation();
     };
     event.stopImmediatePropagation = () => {
-      onStopPropagation(event, preventDefault);
+      onStopPropagation(event);
       stopImmediatePropagation();
     };
   }
-  return {
-    defaultAllowed: dispatchClickEvent(element, event),
-    defaultPrevented,
-  };
+  return dispatchClickEvent(element, event);
 }
 
 async function clickSubmitButton(
@@ -167,6 +174,14 @@ async function clickSubmitButton(
   };
   const onSubmit = (event: Event) => {
     if (event.target !== submitButton.form) return;
+    if (stopped && !canSubmitWithButton(submitButton)) {
+      blocked = true;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return;
+    }
+    if (!("submitter" in event)) return;
+    if (event.submitter !== submitButton) return;
     submitted = true;
   };
   submitButton.addEventListener("click", onClick);
@@ -179,16 +194,10 @@ async function clickSubmitButton(
   form.addEventListener("invalid", onInvalid, true);
   form.addEventListener("submit", onSubmit, true);
   try {
-    const { defaultAllowed, defaultPrevented } = dispatchKeyboardClick(
-      submitButton,
-      options,
-      (_event, preventDefault) => {
-        stopped = true;
-        preventDefault();
-      },
-    );
-    if (!defaultAllowed && !stopped) return;
-    if (defaultPrevented) return;
+    const defaultAllowed = dispatchKeyboardClick(submitButton, options, () => {
+      stopped = true;
+    });
+    if (!defaultAllowed) return;
     if (blocked) return;
     if (invalid) return;
     if (submitted) return;
