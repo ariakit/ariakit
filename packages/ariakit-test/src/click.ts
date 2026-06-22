@@ -58,6 +58,12 @@ function setSelected(element: HTMLOptionElement, selected: boolean) {
   element.selected = selected;
 }
 
+// WHY: happy-dom caches `select.selectedOptions` from the internal
+// `querySelectorAll("option")` result and does not invalidate it when only
+// `option.selected` changes. Real browsers and jsdom expose a live collection.
+// The former `selected` attribute write cleared this cache as a side effect;
+// now selection changes only update IDL selectedness, so clear happy-dom's
+// query cache explicitly before dispatching events.
 function clearHappyDOMSelectCache(element: HTMLSelectElement) {
   if (!isHappyDOM) return;
   let prototype: object | null = element;
@@ -111,17 +117,17 @@ async function clickOption(
       const referenceOption =
         select.lastOptionSelectedNotByShiftKey ??
         options.find((option) => option.selected);
-      let referenceOptionIndex = elementIndex;
-      if (referenceOption) {
-        referenceOptionIndex = options.indexOf(referenceOption);
-        if (referenceOptionIndex === -1) {
-          referenceOptionIndex = elementIndex;
-        }
-      }
+      const referenceOptionIndex = referenceOption
+        ? options.indexOf(referenceOption)
+        : -1;
 
       resetOptions();
-      // Select options between the reference option and the clicked element
-      selectRange(elementIndex, referenceOptionIndex);
+      // Select options between the clicked element and the reference option,
+      // anchoring at the clicked element when there is no usable reference.
+      selectRange(
+        elementIndex,
+        referenceOptionIndex === -1 ? elementIndex : referenceOptionIndex,
+      );
 
       setSelected(element, true);
     } else {
