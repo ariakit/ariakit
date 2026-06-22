@@ -181,6 +181,82 @@ test("press.Enter respects default button click preventDefault", async () => {
   }
 });
 
+test("press.Enter does not cancel submit when submit handlers mutate the button", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const onSubmitCapture = vi.fn(() => {
+    button.disabled = true;
+  });
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  button.type = "submit";
+  form.addEventListener("submit", onSubmitCapture, true);
+  form.addEventListener("submit", onSubmit);
+  form.append(input, button);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onSubmitCapture).toHaveBeenCalledOnce();
+    expect(onSubmit).toHaveBeenCalledOnce();
+  } finally {
+    form.remove();
+  }
+});
+
+test("press.Enter does not cancel submit when document handlers mutate the button", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const onSubmitCapture = vi.fn(() => {
+    button.disabled = true;
+  });
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  button.type = "submit";
+  document.addEventListener("submit", onSubmitCapture, true);
+  form.addEventListener("submit", onSubmit);
+  form.append(input, button);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onSubmitCapture).toHaveBeenCalledOnce();
+    expect(onSubmit).toHaveBeenCalledOnce();
+  } finally {
+    document.removeEventListener("submit", onSubmitCapture, true);
+    form.remove();
+  }
+});
+
+test("press.Enter does not cancel shadow submit when handlers mutate the button", async () => {
+  const host = document.createElement("div");
+  const shadowRoot = host.attachShadow({ mode: "open" });
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const onSubmitCapture = vi.fn(() => {
+    button.disabled = true;
+  });
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  button.type = "submit";
+  form.addEventListener("submit", onSubmitCapture, true);
+  form.addEventListener("submit", onSubmit);
+  form.append(input, button);
+  shadowRoot.append(form);
+  document.body.append(host);
+
+  try {
+    await press.Enter(input);
+
+    expect(onSubmitCapture).toHaveBeenCalledOnce();
+    expect(onSubmit).toHaveBeenCalledOnce();
+  } finally {
+    host.remove();
+  }
+});
+
 test("press.Enter dispatches a composed default button click", async () => {
   const host = document.createElement("div");
   const shadowRoot = host.attachShadow({ mode: "open" });
@@ -376,6 +452,31 @@ test("press.Enter does not resubmit an image submitter after validation", async 
 
     expect(invalidEvents).toBe(1);
     expect(onSubmit).not.toHaveBeenCalled();
+  } finally {
+    form.remove();
+  }
+});
+
+test("press.Enter submits an image submitter before queued click microtasks", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const submitter = document.createElement("input");
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  submitter.type = "image";
+  submitter.addEventListener("click", () => {
+    queueMicrotask(() => {
+      submitter.disabled = true;
+    });
+  });
+  form.addEventListener("submit", onSubmit);
+  form.append(input, submitter);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onSubmit).toHaveBeenCalledOnce();
+    expect(submitter.disabled).toBe(true);
   } finally {
     form.remove();
   }

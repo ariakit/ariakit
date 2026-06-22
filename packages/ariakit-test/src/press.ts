@@ -74,7 +74,6 @@ function createKeyboardClickEvent(
     bubbles: true,
     cancelable: true,
     composed: true,
-    view: defaultView,
     altKey: options.altKey,
     ctrlKey: options.ctrlKey,
     metaKey: options.metaKey,
@@ -103,14 +102,9 @@ function dispatchClickEvent(element: Element, event: Event) {
   }
 }
 
-async function dispatchKeyboardClick(
-  element: Element,
-  options: KeyboardEventInit,
-) {
+function dispatchKeyboardClick(element: Element, options: KeyboardEventInit) {
   const event = createKeyboardClickEvent(element, options);
-  const defaultAllowed = dispatchClickEvent(element, event);
-  await flushMicrotasks();
-  return defaultAllowed;
+  return dispatchClickEvent(element, event);
 }
 
 async function clickSubmitButton(
@@ -119,11 +113,13 @@ async function clickSubmitButton(
 ) {
   const { form } = submitButton;
   if (!form) {
-    await dispatchKeyboardClick(submitButton, options);
+    dispatchKeyboardClick(submitButton, options);
+    await flushMicrotasks();
     return;
   }
 
   const win = submitButton.ownerDocument.defaultView;
+  const root = form.getRootNode();
   let blocked = false;
   let invalid = false;
   let submitted = false;
@@ -136,21 +132,17 @@ async function clickSubmitButton(
   const onInvalid = () => {
     invalid = true;
   };
-  const onSubmit = (event: SubmitEvent) => {
-    if (!canSubmitWithButton(submitButton, form)) {
-      blocked = true;
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      return;
-    }
+  const onSubmit = () => {
     submitted = true;
   };
   submitButton.addEventListener("click", onClick);
   win?.addEventListener("click", onClick);
+  win?.addEventListener("submit", onSubmit, true);
+  root.addEventListener("submit", onSubmit, true);
   form.addEventListener("invalid", onInvalid, true);
   form.addEventListener("submit", onSubmit, true);
   try {
-    const defaultAllowed = await dispatchKeyboardClick(submitButton, options);
+    const defaultAllowed = dispatchKeyboardClick(submitButton, options);
     if (!defaultAllowed) return;
     if (blocked) return;
     if (invalid) return;
@@ -163,8 +155,11 @@ async function clickSubmitButton(
   } finally {
     submitButton.removeEventListener("click", onClick);
     win?.removeEventListener("click", onClick);
+    win?.removeEventListener("submit", onSubmit, true);
+    root.removeEventListener("submit", onSubmit, true);
     form.removeEventListener("invalid", onInvalid, true);
     form.removeEventListener("submit", onSubmit, true);
+    await flushMicrotasks();
   }
 }
 
