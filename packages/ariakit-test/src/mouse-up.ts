@@ -1,5 +1,9 @@
-import { isVisible, invariant } from "@ariakit/utils";
-import { wrapAsync } from "./__utils.ts";
+import { getDocument, isVisible, invariant } from "@ariakit/utils";
+import {
+  getPreventMouseEvents,
+  setPreventMouseEvents,
+  wrapAsync,
+} from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 
 /**
@@ -24,8 +28,14 @@ export function mouseUp(element: Element | null, options?: PointerEventInit) {
 
     await dispatch.pointerUp(element, options);
 
+    const document = getDocument(element);
+    const preventMouseEvents = getPreventMouseEvents(document);
+    setPreventMouseEvents(document, false);
+
     // mouseup is not called on disabled elements
     if (disabled) return;
+
+    if (preventMouseEvents) return;
 
     await dispatch.mouseUp(element, { detail: 1, ...options });
   });
