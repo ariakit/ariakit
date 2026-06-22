@@ -4,6 +4,8 @@ export type DirtiableElement = Element & { dirty?: boolean };
 
 export type TextField = HTMLInputElement | HTMLTextAreaElement;
 
+const preventMouseEvents = new WeakMap<Document, boolean>();
+
 export const isHappyDOM = typeof window !== "undefined" && "happyDOM" in window;
 
 export const isBrowser =
@@ -103,6 +105,14 @@ export function setActEnvironment(value: boolean) {
     scope.IS_REACT_ACT_ENVIRONMENT = previousValue;
   };
   return restoreActEnvironment;
+}
+
+export function getPreventMouseEvents(document: Document) {
+  return preventMouseEvents.get(document) ?? false;
+}
+
+export function setPreventMouseEvents(document: Document, value: boolean) {
+  preventMouseEvents.set(document, value);
 }
 
 let wrapAsyncDepth = 0;
