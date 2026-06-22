@@ -26,6 +26,99 @@ const clickableInputTypes = [
   "submit",
 ];
 
+function isSubmitButton(
+  element: Element,
+): element is HTMLInputElement | HTMLButtonElement {
+  if (element instanceof HTMLButtonElement) {
+    return element.type === "submit";
+  }
+  return (
+    element instanceof HTMLInputElement &&
+    (element.type === "submit" || element.type === "image")
+  );
+}
+
+function canSubmitWithButton(
+  submitButton: HTMLInputElement | HTMLButtonElement,
+  form: HTMLFormElement,
+) {
+  if (submitButton.form !== form) return false;
+  if (isDisabled(submitButton)) return false;
+  return isSubmitButton(submitButton);
+}
+
+function getFormRoot(form: HTMLFormElement) {
+  const root = form.getRootNode();
+  if ("querySelectorAll" in root) {
+    return root as ParentNode;
+  }
+  return form;
+}
+
+function getSubmitButton(form: HTMLFormElement) {
+  const root = getFormRoot(form);
+  const elements = Array.from(root.querySelectorAll("button,input"));
+  return elements.find(
+    (element): element is HTMLInputElement | HTMLButtonElement =>
+      isSubmitButton(element) && element.form === form,
+  );
+}
+
+async function clickSubmitButton(
+  submitButton: HTMLInputElement | HTMLButtonElement,
+  options: KeyboardEventInit,
+) {
+  const { form } = submitButton;
+  if (!form) {
+    await dispatch.click(submitButton, options);
+    return;
+  }
+
+  const win = submitButton.ownerDocument.defaultView;
+  let blocked = false;
+  let invalid = false;
+  let submitted = false;
+  const onClick = (event: Event) => {
+    if (!canSubmitWithButton(submitButton, form)) {
+      blocked = true;
+      event.preventDefault();
+    }
+  };
+  const onInvalid = () => {
+    invalid = true;
+  };
+  const onSubmit = (event: SubmitEvent) => {
+    if (!canSubmitWithButton(submitButton, form)) {
+      blocked = true;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return;
+    }
+    submitted = true;
+  };
+  submitButton.addEventListener("click", onClick);
+  win?.addEventListener("click", onClick);
+  form.addEventListener("invalid", onInvalid, true);
+  form.addEventListener("submit", onSubmit, true);
+  try {
+    const defaultAllowed = await dispatch.click(submitButton, options);
+    if (!defaultAllowed) return;
+    if (blocked) return;
+    if (invalid) return;
+    if (submitted) return;
+    if (!(submitButton instanceof HTMLInputElement)) return;
+    if (submitButton.type !== "image") return;
+    if (!canSubmitWithButton(submitButton, form)) return;
+    // happy-dom fires the image submitter click but skips its submit activation.
+    form.requestSubmit(submitButton);
+  } finally {
+    submitButton.removeEventListener("click", onClick);
+    win?.removeEventListener("click", onClick);
+    form.removeEventListener("invalid", onInvalid, true);
+    form.removeEventListener("submit", onSubmit, true);
+  }
+}
+
 async function submitFormByPressingEnterOn(
   element: HTMLInputElement,
   options: KeyboardEventInit,
@@ -36,12 +129,11 @@ async function submitFormByPressingEnterOn(
   const validInputs = elements.filter(
     (el) => el instanceof HTMLInputElement && isTextField(el),
   );
-  const submitButton = elements.find(
-    (el) =>
-      (el instanceof HTMLInputElement || el instanceof HTMLButtonElement) &&
-      el.type === "submit",
-  );
-  if (validInputs.length === 1 || submitButton) {
+  const submitButton = getSubmitButton(form);
+  if (submitButton) {
+    if (isDisabled(submitButton)) return;
+    await clickSubmitButton(submitButton, options);
+  } else if (validInputs.length === 1) {
     await dispatch.submit(form, options);
   }
 }
