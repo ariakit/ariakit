@@ -5,7 +5,7 @@ import {
   getPreviousTabbable,
   isFocusable,
 } from "@ariakit/utils";
-import { settle, wrapAsync } from "./__utils.ts";
+import { flushMicrotasks, settle, wrapAsync } from "./__utils.ts";
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
@@ -64,13 +64,61 @@ function getSubmitButton(form: HTMLFormElement) {
   );
 }
 
+function createKeyboardClickEvent(
+  element: Element,
+  options: KeyboardEventInit,
+) {
+  const { defaultView } = element.ownerDocument;
+  const MouseEventConstructor = defaultView?.MouseEvent ?? MouseEvent;
+  return new MouseEventConstructor("click", {
+    bubbles: true,
+    cancelable: true,
+    view: defaultView,
+    altKey: options.altKey,
+    ctrlKey: options.ctrlKey,
+    metaKey: options.metaKey,
+    shiftKey: options.shiftKey,
+  });
+}
+
+function dispatchClickEvent(element: Element, event: Event) {
+  const { defaultView } = element.ownerDocument;
+  if (!defaultView || !("happyDOM" in defaultView)) {
+    return element.dispatchEvent(event);
+  }
+
+  const eventWindow = defaultView as Window & { event?: Event };
+  const hadEvent = Object.prototype.hasOwnProperty.call(eventWindow, "event");
+  const previousEvent = eventWindow.event;
+  eventWindow.event = event;
+  try {
+    return element.dispatchEvent(event);
+  } finally {
+    if (hadEvent) {
+      eventWindow.event = previousEvent;
+    } else {
+      delete eventWindow.event;
+    }
+  }
+}
+
+async function dispatchKeyboardClick(
+  element: Element,
+  options: KeyboardEventInit,
+) {
+  const event = createKeyboardClickEvent(element, options);
+  const defaultAllowed = dispatchClickEvent(element, event);
+  await flushMicrotasks();
+  return defaultAllowed;
+}
+
 async function clickSubmitButton(
   submitButton: HTMLInputElement | HTMLButtonElement,
   options: KeyboardEventInit,
 ) {
   const { form } = submitButton;
   if (!form) {
-    await dispatch.click(submitButton, options);
+    await dispatchKeyboardClick(submitButton, options);
     return;
   }
 
@@ -101,7 +149,7 @@ async function clickSubmitButton(
   form.addEventListener("invalid", onInvalid, true);
   form.addEventListener("submit", onSubmit, true);
   try {
-    const defaultAllowed = await dispatch.click(submitButton, options);
+    const defaultAllowed = await dispatchKeyboardClick(submitButton, options);
     if (!defaultAllowed) return;
     if (blocked) return;
     if (invalid) return;
@@ -142,12 +190,37 @@ function isNumberInput(element: Element): element is HTMLInputElement {
   return element instanceof HTMLInputElement && element.type === "number";
 }
 
+function getFirstLegend(fieldset: HTMLFieldSetElement) {
+  for (const child of fieldset.children) {
+    if (child instanceof HTMLLegendElement) {
+      return child;
+    }
+  }
+  return null;
+}
+
+function isDisabledByFieldset(element: Element) {
+  let parent = element.parentElement;
+  while (parent) {
+    if (parent instanceof HTMLFieldSetElement) {
+      const legend = getFirstLegend(parent);
+      if (parent.disabled && !legend?.contains(element)) {
+        return true;
+      }
+    }
+    parent = parent.parentElement;
+  }
+  return false;
+}
+
 // Browsers never activate a disabled control, so the synthetic Enter/Space
 // activations below skip one. An element that disables itself in its own keydown
 // handler is already disabled by the time the activation runs.
 function isDisabled(element: Element | HTMLButtonElement) {
   if (!("disabled" in element)) return false;
-  return element.disabled;
+  if (element.disabled) return true;
+  if (element.matches(":disabled")) return true;
+  return isDisabledByFieldset(element);
 }
 
 async function incrementNumberInput(element: HTMLInputElement, by = 1) {

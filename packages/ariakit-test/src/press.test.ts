@@ -66,6 +66,31 @@ test("press.Enter does not submit a form with a disabled default button", async 
   }
 });
 
+test("press.Enter does not submit a form with a fieldset-disabled default button", async () => {
+  const form = document.createElement("form");
+  const fieldset = document.createElement("fieldset");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  const onClick = vi.fn();
+  button.type = "submit";
+  fieldset.disabled = true;
+  button.addEventListener("click", onClick);
+  form.addEventListener("submit", onSubmit);
+  fieldset.append(button);
+  form.append(input, fieldset);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onClick).not.toHaveBeenCalled();
+    expect(onSubmit).not.toHaveBeenCalled();
+  } finally {
+    form.remove();
+  }
+});
+
 test("press.Enter does not submit a form with a disabled image submitter", async () => {
   const form = document.createElement("form");
   const input = document.createElement("input");
@@ -96,6 +121,29 @@ test("press.Enter activates the default button for implicit submission", async (
   const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
   const onClick = vi.fn();
   button.type = "submit";
+  button.addEventListener("click", onClick);
+  form.addEventListener("submit", onSubmit);
+  form.append(input, button);
+  document.body.append(form);
+
+  try {
+    await press.Enter(input);
+
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(onSubmit).toHaveBeenCalledOnce();
+  } finally {
+    form.remove();
+  }
+});
+
+test("press.Enter activates a default button with pointer-events none", async () => {
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  const onClick = vi.fn();
+  button.type = "submit";
+  button.style.pointerEvents = "none";
   button.addEventListener("click", onClick);
   form.addEventListener("submit", onSubmit);
   form.append(input, button);
