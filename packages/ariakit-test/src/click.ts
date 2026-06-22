@@ -54,7 +54,7 @@ async function clickLabel(element: HTMLLabelElement, options?: MouseEventInit) {
 }
 
 function setSelected(element: HTMLOptionElement, selected: boolean) {
-  element.setAttribute("selected", selected ? "selected" : "");
+  // User interaction changes selectedness, not default selectedness.
   element.selected = selected;
 }
 
@@ -90,10 +90,16 @@ async function clickOption(
 
     if (eventOptions?.shiftKey) {
       const elementIndex = options.indexOf(element);
-      const referenceOption = select.lastOptionSelectedNotByShiftKey;
-      const referenceOptionIndex = referenceOption
-        ? options.indexOf(referenceOption)
-        : -1;
+      const referenceOption =
+        select.lastOptionSelectedNotByShiftKey ??
+        select.selectedOptions.item(0);
+      let referenceOptionIndex = elementIndex;
+      if (referenceOption) {
+        referenceOptionIndex = options.indexOf(referenceOption);
+        if (referenceOptionIndex === -1) {
+          referenceOptionIndex = elementIndex;
+        }
+      }
 
       resetOptions();
       // Select options between the reference option and the clicked element
