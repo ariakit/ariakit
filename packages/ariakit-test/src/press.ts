@@ -73,6 +73,7 @@ function createKeyboardClickEvent(
   return new MouseEventConstructor("click", {
     bubbles: true,
     cancelable: true,
+    composed: true,
     view: defaultView,
     altKey: options.altKey,
     ctrlKey: options.ctrlKey,

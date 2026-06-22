@@ -181,6 +181,31 @@ test("press.Enter respects default button click preventDefault", async () => {
   }
 });
 
+test("press.Enter dispatches a composed default button click", async () => {
+  const host = document.createElement("div");
+  const shadowRoot = host.attachShadow({ mode: "open" });
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  const button = document.createElement("button");
+  const onSubmit = vi.fn((event: SubmitEvent) => event.preventDefault());
+  const onHostClick = vi.fn((event: MouseEvent) => event.preventDefault());
+  button.type = "submit";
+  host.addEventListener("click", onHostClick);
+  form.addEventListener("submit", onSubmit);
+  form.append(input, button);
+  shadowRoot.append(form);
+  document.body.append(host);
+
+  try {
+    await press.Enter(input);
+
+    expect(onHostClick).toHaveBeenCalledOnce();
+    expect(onSubmit).not.toHaveBeenCalled();
+  } finally {
+    host.remove();
+  }
+});
+
 test("press.Enter does not submit when the default button disables itself", async () => {
   const form = document.createElement("form");
   const input = document.createElement("input");
