@@ -161,7 +161,7 @@ export function createStore<S extends State>(
     instances.add(instance);
 
     const maybeDestroy = () => {
-      instances.delete(instance);
+      if (!instances.delete(instance)) return;
       if (instances.size) return;
       destroy();
     };
