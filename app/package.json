@@ -55,6 +55,7 @@
     "@ariakit/solid": "workspace:*",
     "@ariakit/solid-components": "workspace:*",
     "@ariakit/solid-utils": "workspace:*",
+    "@ariakit/store": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
     "@ariakit/utils": "workspace:*",
     "@astrojs/check": "0.9.9",
