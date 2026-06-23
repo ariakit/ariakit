@@ -583,8 +583,8 @@ test("does not duplicate sync cleanup when re-registering during dispatch", () =
     "cleanup 1",
     "run 2",
     "run 3",
-    "cleanup 3",
     "cleanup 2",
+    "cleanup 3",
   ]);
 });
 
@@ -619,10 +619,112 @@ test("does not rerun a re-registered sync listener in the same dispatch", () => 
     "cleanup 1",
     "run 2",
     "run 3",
-    "cleanup 3",
-    "other",
     "cleanup 2",
+    "other",
+    "cleanup 3",
   ]);
+});
+
+test("keeps a sync listener suspended through nested re-registration", () => {
+  const store = createStore({ count: 0, enabled: false });
+  const events: string[] = [];
+  let runCount = 0;
+  let reRegister = false;
+
+  const listener = () => {
+    runCount += 1;
+    const id = runCount;
+    events.push(`run ${id}`);
+    if (reRegister) {
+      reRegister = false;
+      sync(store, ["count", "enabled"], listener);
+      store.setState("count", 1);
+    }
+    return () => events.push(`cleanup ${id}`);
+  };
+
+  const first = sync(store, ["count"], listener);
+  events.length = 0;
+
+  reRegister = true;
+  const second = sync(store, ["count", "enabled"], listener);
+  second();
+  first();
+
+  expect(events).toEqual([
+    "cleanup 1",
+    "run 2",
+    "run 3",
+    "cleanup 2",
+    "cleanup 3",
+  ]);
+});
+
+test("preserves newer sync cleanup after a reentrant state update", () => {
+  const store = createStore({ count: 0, other: 0 });
+  const events: string[] = [];
+  let runCount = 0;
+  let updateOther = false;
+
+  sync(store, null, (state) => {
+    runCount += 1;
+    const id = runCount;
+    events.push(`run ${id}:${state.count}/${state.other}`);
+    if (updateOther) {
+      updateOther = false;
+      store.setState("other", 1);
+    }
+    return () => events.push(`cleanup ${id}:${state.count}/${state.other}`);
+  });
+  events.length = 0;
+
+  updateOther = true;
+  store.setState("count", 1);
+  store.setState("count", 2);
+
+  expect(events).toEqual([
+    "cleanup 1:0/0",
+    "run 2:1/0",
+    "run 3:1/1",
+    "cleanup 2:1/0",
+    "cleanup 3:1/1",
+    "run 4:2/1",
+  ]);
+});
+
+test("preserves cleared sync cleanup after a reentrant state update", () => {
+  const store = createStore({ count: 0, other: 0 });
+  const events: string[] = [];
+  let runCount = 0;
+  let updateOther = false;
+
+  sync(store, null, (state) => {
+    runCount += 1;
+    const id = runCount;
+    events.push(`run ${id}:${state.count}/${state.other}`);
+    if (updateOther) {
+      updateOther = false;
+      store.setState("other", 1);
+    }
+    if (state.other) return;
+    return () => events.push(`cleanup ${id}:${state.count}/${state.other}`);
+  });
+  events.length = 0;
+
+  updateOther = true;
+  store.setState("count", 1);
+
+  expect(events).toEqual([
+    "cleanup 1:0/0",
+    "run 2:1/0",
+    "run 3:1/1",
+    "cleanup 2:1/0",
+  ]);
+
+  events.length = 0;
+  store.setState("count", 2);
+
+  expect(events).toEqual(["run 4:2/1"]);
 });
 
 test("runs a pending batch cleanup when re-registering a listener", () => {
@@ -676,8 +778,8 @@ test("does not duplicate batch cleanup when re-registering during dispatch", asy
     "cleanup 1",
     "run 2",
     "run 3",
-    "cleanup 3",
     "cleanup 2",
+    "cleanup 3",
   ]);
 });
 
@@ -713,9 +815,9 @@ test("does not rerun a re-registered batch listener in the same dispatch", async
     "cleanup 1",
     "run 2",
     "run 3",
-    "cleanup 3",
-    "other",
     "cleanup 2",
+    "other",
+    "cleanup 3",
   ]);
 });
 

@@ -42,9 +42,12 @@ interface ListenerGroup<S> {
   listeners: Set<Listener<S>>;
   listenersByKey?: ListenerMap<S>;
   allKeysListeners?: Set<Listener<S>>;
-  suspendedListeners?: Set<Listener<S>>;
+  suspendCounts?: Map<Listener<S>, number>;
   disposables: Map<Listener<S>, () => void>;
   listenerKeys: WeakMap<Listener<S>, Array<keyof S> | null>;
+  listenerVersion: number;
+  listenerRunVersion: number;
+  listenerRunVersions: WeakMap<Listener<S>, number>;
 }
 
 interface StoreInternals<S = State> {
@@ -140,11 +143,17 @@ export function createStore<S extends State>(
     listeners: new Set(),
     disposables: new Map(),
     listenerKeys: new WeakMap(),
+    listenerVersion: 0,
+    listenerRunVersion: 0,
+    listenerRunVersions: new WeakMap(),
   };
   const batchListenerGroup: ListenerGroup<S> = {
     listeners: new Set(),
     disposables: new Map(),
     listenerKeys: new WeakMap(),
+    listenerVersion: 0,
+    listenerRunVersion: 0,
+    listenerRunVersions: new WeakMap(),
   };
 
   const storeSetup: StoreSetup = (callback) => {
@@ -267,6 +276,7 @@ export function createStore<S extends State>(
       group.allKeysListeners.add(listener);
     }
     group.listenerKeys.set(listener, listenerKeysValue);
+    group.listenerVersion += 1;
     return () => {
       group.disposables.get(listener)?.();
       group.disposables.delete(listener);
@@ -277,6 +287,7 @@ export function createStore<S extends State>(
       }
       group.listenerKeys.delete(listener);
       group.listeners.delete(listener);
+      group.listenerVersion += 1;
     };
   };
 
@@ -302,8 +313,16 @@ export function createStore<S extends State>(
     prevState: S,
   ) => {
     runPendingCleanups(group, listener);
+    group.listenerRunVersion += 1;
+    const listenerRunVersion = group.listenerRunVersion;
+    group.listenerRunVersions.set(listener, listenerRunVersion);
     const cleanup = listener(state, prevState);
-    runPendingCleanups(group, listener);
+    // A reentrant same-listener run owns the current cleanup slot, even when it
+    // cleared the slot by returning nothing.
+    if (group.listenerRunVersions.get(listener) !== listenerRunVersion) {
+      cleanup?.();
+      return;
+    }
     if (cleanup) {
       group.disposables.set(listener, cleanup);
     } else {
@@ -321,17 +340,23 @@ export function createStore<S extends State>(
   ) => {
     const shouldSuspend = group.listeners.has(listener);
     if (shouldSuspend) {
-      group.suspendedListeners ??= new Set();
-      group.suspendedListeners.add(listener);
+      group.suspendCounts ??= new Map();
+      const count = group.suspendCounts.get(listener) ?? 0;
+      group.suspendCounts.set(listener, count + 1);
     }
     try {
       runListener(group, listener, prevState);
     } finally {
       if (shouldSuspend) {
-        const suspendedListeners = group.suspendedListeners;
-        suspendedListeners?.delete(listener);
-        if (!suspendedListeners?.size) {
-          delete group.suspendedListeners;
+        const suspendCounts = group.suspendCounts;
+        const count = suspendCounts?.get(listener);
+        if (count && count > 1) {
+          suspendCounts?.set(listener, count - 1);
+        } else {
+          suspendCounts?.delete(listener);
+        }
+        if (!suspendCounts?.size) {
+          delete group.suspendCounts;
         }
       }
     }
@@ -376,25 +401,37 @@ export function createStore<S extends State>(
     if (!(updatedKey instanceof Set) && !group.allKeysListeners?.size) {
       const keyedListeners = group.listenersByKey?.get(updatedKey);
       if (!keyedListeners) return;
-      const processedListeners = new Set<Listener<S>>();
+      const startVersion = group.listenerVersion;
+      const processedListeners: Array<Listener<S>> = [];
+      let processedListenerSet: Set<Listener<S>> | undefined;
       for (const listener of keyedListeners) {
-        if (processedListeners.has(listener)) continue;
-        processedListeners.add(listener);
-        if (group.suspendedListeners?.has(listener)) continue;
+        if (group.listenerVersion !== startVersion) {
+          processedListenerSet ??= new Set(processedListeners);
+          if (processedListenerSet.has(listener)) continue;
+        }
+        processedListeners.push(listener);
+        processedListenerSet?.add(listener);
+        if (group.suspendCounts?.has(listener)) continue;
         runListener(group, listener, prevState);
       }
       return;
     }
     const allKeysListeners = group.allKeysListeners;
-    const processedListeners = new Set<Listener<S>>();
+    const startVersion = group.listenerVersion;
+    const processedListeners: Array<Listener<S>> = [];
+    let processedListenerSet: Set<Listener<S>> | undefined;
     for (const listener of group.listeners) {
       if (!allKeysListeners?.has(listener)) {
         const keys = group.listenerKeys.get(listener);
         if (!hasUpdatedKey(keys, updatedKey)) continue;
       }
-      if (processedListeners.has(listener)) continue;
-      processedListeners.add(listener);
-      if (group.suspendedListeners?.has(listener)) continue;
+      if (group.listenerVersion !== startVersion) {
+        processedListenerSet ??= new Set(processedListeners);
+        if (processedListenerSet.has(listener)) continue;
+      }
+      processedListeners.push(listener);
+      processedListenerSet?.add(listener);
+      if (group.suspendCounts?.has(listener)) continue;
       runListener(group, listener, prevState);
     }
   };
