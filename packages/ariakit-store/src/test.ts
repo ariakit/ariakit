@@ -1109,6 +1109,48 @@ test("skips superseded same-key child notifications after parent fan-out", () =>
   cleanup();
 });
 
+test("keeps parent stores in sync after parent-driven supersede", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const unsubscribeFirst = sync(first, ["count"], (state) => {
+    if (state.count <= 5) return;
+    first.setState("count", 5);
+  });
+
+  child.setState("count", 10);
+
+  expect(child.getState().count).toBe(5);
+  expect(first.getState().count).toBe(5);
+  expect(second.getState().count).toBe(5);
+
+  unsubscribeFirst();
+  cleanup();
+});
+
+test("keeps earlier parent stores in sync after later parent supersede", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const unsubscribeSecond = sync(second, ["count"], (state) => {
+    if (state.count <= 5) return;
+    second.setState("count", 5);
+  });
+
+  child.setState("count", 10);
+
+  expect(child.getState().count).toBe(5);
+  expect(first.getState().count).toBe(5);
+  expect(second.getState().count).toBe(5);
+
+  unsubscribeSecond();
+  cleanup();
+});
+
 test("refreshes child batch baseline after superseded same-key fan-out", async () => {
   const parent = createStore({ count: 0 });
   const child = createStore({ count: 0 }, parent);
