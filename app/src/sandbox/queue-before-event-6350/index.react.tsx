@@ -14,16 +14,22 @@ export default function Example() {
 
     setHintVisible(true);
     setStatus("visible");
-    cancelAutoHideRef.current = queueBeforeEvent(
+    let canceled = false;
+    const cancelAutoHide = queueBeforeEvent(
       container,
       "mousedown",
       () => {
+        if (canceled) return;
         cancelAutoHideRef.current = null;
         setHintVisible(false);
         setStatus("auto-hidden");
       },
       30_000,
     );
+    cancelAutoHideRef.current = () => {
+      canceled = true;
+      cancelAutoHide();
+    };
   };
 
   const pinHint = () => {
