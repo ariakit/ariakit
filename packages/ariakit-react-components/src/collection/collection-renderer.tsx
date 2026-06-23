@@ -394,7 +394,9 @@ function getData<T extends Item>(props: {
     const prevRendered = itemData?.rendered ?? false;
 
     const setSize = (size: number, rendered = prevRendered) => {
-      start = start ? start + props.gap : start;
+      if (index > 0) {
+        start += props.gap;
+      }
       const end = start + size;
       const nextItemData = { index, rendered, start, end };
       if (!shallowEqual(itemData, nextItemData)) {
