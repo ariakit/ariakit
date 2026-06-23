@@ -27,7 +27,7 @@ jobs:
         env:
           CLOUDFLARE_ENV: preview
           PERF_SOURCE_MAP: true
-        run: pnpm -F app run build-lite
+        run: pnpm -F app run build
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v7
@@ -193,7 +193,7 @@ jobs:
         env:
           CLOUDFLARE_ENV: preview
           PERF_SOURCE_MAP: true
-        run: pnpm -F app run build-lite
+        run: pnpm -F app run build
 
       - name: Build base Next.js app
         if: steps.baseline-rebuild.outputs.nextjs == 'true'

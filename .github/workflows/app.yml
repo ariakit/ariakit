@@ -22,7 +22,7 @@ jobs:
       - name: Build app
         env:
           CLOUDFLARE_ENV: preview
-        run: pnpm -F app run build-lite
+        run: pnpm -F app run build
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v7

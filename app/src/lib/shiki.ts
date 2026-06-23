@@ -8,6 +8,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 // @ts-nocheck Revisit this after we merge the app folder into root
+import type { ThemedToken } from "shiki";
 import { createHighlighterCore } from "shiki/core";
 import { createOnigurumaEngine } from "shiki/engine/oniguruma";
 
@@ -84,6 +85,41 @@ export const highlighter = await createHighlighterCore({
   ],
   engine: createOnigurumaEngine(import("shiki/onig.wasm")),
 });
+
+const tokensCache = new Map<string, ThemedToken[][]>();
+
+export interface CodeToTokensParams {
+  code: string;
+  lang: CodeBlockLanguage;
+  grammarContextCode?: string;
+}
+
+/**
+ * Tokenizes code with the shared highlighter, memoizing results.
+ * Reference pages repeat the same short type signatures thousands of times
+ * across partial pages, so caching collapses most tokenization work into a
+ * handful of unique runs. Callers must treat the returned tokens as
+ * read-only.
+ */
+export function codeToTokens({
+  code,
+  lang,
+  grammarContextCode,
+}: CodeToTokensParams): ThemedToken[][] {
+  const key = `${lang}\u0000${grammarContextCode ?? ""}\u0000${code}`;
+  const cached = tokensCache.get(key);
+  if (cached) return cached;
+  const { tokens } = highlighter.codeToTokens(code, {
+    lang,
+    grammarContextCode,
+    themes: {
+      light: "github-light",
+      dark: "dark-plus",
+    },
+  });
+  tokensCache.set(key, tokens);
+  return tokens;
+}
 
 export function getLangFromFilename(filename: string): CodeBlockLanguage {
   const normalizedFilename = filename.toLowerCase();

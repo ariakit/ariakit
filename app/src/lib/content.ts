@@ -146,10 +146,24 @@ async function getMarkdownRenderer() {
   return markdownRenderer;
 }
 
-export async function markdownToHtml(markdownString: string) {
-  const renderer = await getMarkdownRenderer();
-  const result = await renderer.render(markdownString);
-  return result.code;
+// Rendering markdown is a pure text transform, and reference descriptions
+// repeat heavily (inherited props share docs across components and
+// frameworks), so memoizing by source string collapses thousands of renders
+// into a few hundred unique ones.
+const markdownHtmlCache = new Map<string, Promise<string>>();
+
+export function markdownToHtml(markdownString: string) {
+  const cached = markdownHtmlCache.get(markdownString);
+  if (cached) return cached;
+  const promise = (async () => {
+    const renderer = await getMarkdownRenderer();
+    const result = await renderer.render(markdownString);
+    return result.code;
+  })();
+  markdownHtmlCache.set(markdownString, promise);
+  // Drop rejected renders so a transient failure is not cached forever.
+  promise.catch(() => markdownHtmlCache.delete(markdownString));
+  return promise;
 }
 
 function unwrapContentLinks(markdown: string) {

@@ -9,10 +9,10 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { ReferenceHovercardAnchor } from "#app/components/reference-hovercard.react.tsx";
+import { getCachedCollection } from "#app/lib/collection-cache.ts";
 import { findCodeReferenceAnchors } from "#app/lib/reference-tokenizer.ts";
-import { getLangFromFilename, highlighter } from "#app/lib/shiki.ts";
+import { codeToTokens, getLangFromFilename } from "#app/lib/shiki.ts";
 import { invariant } from "@ariakit/utils";
-import { getCollection } from "astro:content";
 import { diffLines, diffWordsWithSpace } from "diff";
 import type { ThemedToken } from "shiki";
 import type { CodeBlockProps } from "./code-block.types.ts";
@@ -109,15 +109,7 @@ const {
 
 function getTokens() {
   if (disableSyntaxHighlighting) return null;
-  const { tokens } = highlighter.codeToTokens(code.trim(), {
-    lang,
-    grammarContextCode,
-    themes: {
-      light: "github-light",
-      dark: "dark-plus",
-    },
-  });
-  return tokens;
+  return codeToTokens({ code: code.trim(), lang, grammarContextCode });
 }
 
 const tokens = getTokens();
@@ -643,7 +635,7 @@ const showGridColumns = lineNumbers || Boolean(diffInfo);
 // Reference hovercards: compute anchor ranges per line (disabled in lite mode)
 let anchorsByLine: ReturnType<typeof findCodeReferenceAnchors> = [];
 if (!disableReferenceLinks) {
-  const references = await getCollection("references");
+  const references = await getCachedCollection("references");
   anchorsByLine = findCodeReferenceAnchors({
     code: code.trim(),
     references,
