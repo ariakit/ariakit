@@ -11,6 +11,11 @@ export default function Example() {
     let unsubscribeLogger: (() => void) | undefined;
     let loggerAttached = false;
 
+    // TODO: Remove once https://github.com/ariakit/ariakit/issues/6317 is
+    // fixed. This forces the slow notification path, which delivers the
+    // in-flight dispatch to all-keys listeners registered during it.
+    const unsubscribeFastPathWorkaround = subscribe(likes, null, () => {});
+
     // Keep the rendered count in sync and lazily attach the whole-store logger
     // on the first user change. The logger should still observe the dispatch
     // that attached it.
@@ -30,6 +35,7 @@ export default function Example() {
     return () => {
       unsubscribeCount();
       unsubscribeLogger?.();
+      unsubscribeFastPathWorkaround();
     };
   }, [likes]);
 
