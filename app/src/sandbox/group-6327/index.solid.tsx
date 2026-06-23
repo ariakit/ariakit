@@ -3,8 +3,7 @@ import * as Ariakit from "@ariakit/solid";
 export default function Example() {
   return (
     <Ariakit.Group aria-label="Audio playback settings">
-      {/* TODO: Use GroupLabel after https://github.com/ariakit/ariakit/issues/6327 is fixed. */}
-      <div aria-hidden>Audio</div>
+      <Ariakit.GroupLabel>Audio</Ariakit.GroupLabel>
       <button type="button">Mute</button>
       <button type="button">Boost</button>
     </Ariakit.Group>
