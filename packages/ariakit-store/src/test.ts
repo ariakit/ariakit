@@ -604,6 +604,62 @@ test("syncs reentrant parent setStates to an earlier key during a child's initia
   cleanup();
 });
 
+test("syncs reentrant multi-parent setStates during a child's initial push", () => {
+  const first = createStore({ a: "first-a", b: "first-b" });
+  const second = createStore({ c: "second-c" });
+  const child = createStore(
+    { a: "child-a", b: "child-b", c: "child-c" },
+    first,
+    second,
+  );
+
+  sync(child, ["a"], (state) => {
+    if (state.a === "first-a") {
+      first.setState("b", "updated-b");
+    }
+  });
+
+  const cleanup = init(child);
+
+  expect(child.getState()).toEqual({
+    a: "first-a",
+    b: "updated-b",
+    c: "second-c",
+  });
+  expect(first.getState()).toEqual({ a: "first-a", b: "updated-b" });
+  expect(second.getState()).toEqual({ c: "second-c" });
+
+  cleanup();
+});
+
+test("syncs reentrant multi-parent setStates to an earlier key during a child's initial push", () => {
+  const first = createStore({ a: "first-a", b: "first-b" });
+  const second = createStore({ c: "second-c" });
+  const child = createStore(
+    { a: "child-a", b: "child-b", c: "child-c" },
+    first,
+    second,
+  );
+
+  sync(child, ["b"], (state) => {
+    if (state.b === "first-b") {
+      first.setState("a", "updated-a");
+    }
+  });
+
+  const cleanup = init(child);
+
+  expect(child.getState()).toEqual({
+    a: "updated-a",
+    b: "first-b",
+    c: "second-c",
+  });
+  expect(first.getState()).toEqual({ a: "updated-a", b: "first-b" });
+  expect(second.getState()).toEqual({ c: "second-c" });
+
+  cleanup();
+});
+
 test("fires a sync listener registered on the parent after init with the child already updated", () => {
   const parent = createStore({ count: 0 });
   const child = createStore({ count: 0 }, parent);
@@ -777,6 +833,28 @@ test("runs setup callbacks during init and tears down after the last cleanup", (
   cleanupD();
 
   expect(events).toEqual(["setup", "teardown", "setup", "teardown"]);
+});
+
+test("does not rerun setup teardowns from stale init cleanups", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+
+  setup(store, () => {
+    events.push("setup");
+    return () => events.push("teardown");
+  });
+
+  const cleanupA = init(store);
+  const cleanupB = init(store);
+
+  expect(events).toEqual(["setup"]);
+
+  cleanupA();
+  cleanupB();
+  cleanupA();
+  cleanupB();
+
+  expect(events).toEqual(["setup", "teardown"]);
 });
 
 test("keeps extended stores in sync while initialized", () => {

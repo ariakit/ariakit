@@ -208,7 +208,10 @@ export function queueBeforeEvent(
   // By listening to the event in the capture phase, we make sure the callback
   // is fired before the respective React events.
   element.addEventListener(type, callSync, { once: true, capture: true });
-  return cancelTimer;
+  return () => {
+    cancelTimer();
+    element.removeEventListener(type, callSync, true);
+  };
 }
 
 export function addGlobalEventListener<K extends keyof DocumentEventMap>(

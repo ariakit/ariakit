@@ -161,7 +161,7 @@ export function createStore<S extends State>(
     instances.add(instance);
 
     const maybeDestroy = () => {
-      instances.delete(instance);
+      if (!instances.delete(instance)) return;
       if (instances.size) return;
       destroy();
     };
@@ -193,11 +193,10 @@ export function createStore<S extends State>(
         }
         continue;
       }
-      let didSyncInitialState = false;
       desyncs.push(
-        sync(store, keys, (state, prevState) => {
+        subscribe(store, keys, (state, prevState) => {
           for (const key of keys) {
-            if (didSyncInitialState && state[key] === prevState[key]) continue;
+            if (state[key] === prevState[key]) continue;
             setState(
               key,
               state[key],
@@ -206,9 +205,23 @@ export function createStore<S extends State>(
               true,
             );
           }
-          didSyncInitialState = true;
         }),
       );
+      // Register before the initial push, then read each key from live parent
+      // state. Child sync listeners can write back to the parent while an
+      // earlier key is being pushed; a stale snapshot would overwrite those
+      // reentrant updates.
+      for (const key of keys) {
+        const liveState = store?.getState?.();
+        if (!liveState) continue;
+        setState(
+          key,
+          liveState[key],
+          // @ts-expect-error - Not public API. This is just to prevent
+          // infinite loops.
+          true,
+        );
+      }
     }
 
     const teardowns: Array<void | (() => void)> = [];

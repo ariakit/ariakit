@@ -1,7 +1,7 @@
 import { useStoreStateObject } from "@ariakit/react-store";
 import { useId, useMergeRefs, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getPopupItemRole } from "@ariakit/utils";
+import { disabledFromProps, getPopupItemRole } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item-offscreen.tsx";
 import { useCollectionItemOffscreen } from "../collection/collection-item-offscreen.tsx";
@@ -19,7 +19,13 @@ export function useCompositeItemOffscreen<
   T extends ElementType,
   // oxlint-disable-next-line no-unnecessary-type-parameters
   P extends CompositeItemProps<T>,
->({ store, offscreenMode = "active", disabled, value, ...props }: P) {
+>({
+  store,
+  offscreenMode = "active",
+  disabled: disabledProp,
+  value,
+  ...props
+}: P) {
   const context = useCompositeScopedContext();
   store = store || context;
 
@@ -61,11 +67,14 @@ export function useCompositeItemOffscreen<
   });
 
   if (!offscreenProps.active) {
+    const disabled = disabledFromProps({ disabled: disabledProp, ...props });
+    const trulyDisabled = disabled && !props.accessibleWhenDisabled;
     return {
       ...offscreenProps,
       children: value,
       role: getPopupItemRole(listElement),
       "aria-disabled": disabled || undefined,
+      "data-disabled": trulyDisabled || undefined,
       "data-offscreen-id": storeId,
     };
   }
