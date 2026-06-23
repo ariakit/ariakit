@@ -567,28 +567,51 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.describe(`${scheme} scheme`, () => {
       test.use({ colorScheme: scheme });
 
-      test("pushes parentless dark layers toward the light boundary", async ({
-        page,
-        q,
-      }) => {
-        await waitForPreviewReady(page);
-        const cases = [
-          ["parentless dark layer push", "nested dark layer push"],
-          ["parentless dark state push", "nested dark state push"],
-        ] as const;
+      for (const contrast of [false, true]) {
+        const label = contrast ? " in high contrast" : "";
+        test(`pushes parentless dark layers toward the light boundary${label}`, async ({
+          page,
+          q,
+        }) => {
+          if (contrast) {
+            const cdp = await page.context().newCDPSession(page);
+            await cdp.send("Emulation.setEmulatedMedia", {
+              features: [{ name: "prefers-contrast", value: "more" }],
+            });
+            await page.reload({ waitUntil: "networkidle" });
+          }
+          await waitForPreviewReady(page);
+          const cases = [
+            ["parentless dark layer push", "nested dark layer push"],
+            ["parentless dark state push", "nested dark state push"],
+          ] as const;
 
-        for (const [parentlessLabel, nestedLabel] of cases) {
-          const parentlessPush = q.region(parentlessLabel);
-          const nestedPush = q.region(nestedLabel);
-          const nestedBackgroundColor = await nestedPush.evaluate((element) => {
-            return getComputedStyle(element).backgroundColor;
-          });
-          await expect(parentlessPush).toHaveCSS(
-            "background-color",
-            nestedBackgroundColor,
-          );
-        }
-      });
+          for (const [parentlessLabel, nestedLabel] of cases) {
+            const parentlessPush = q.region(parentlessLabel);
+            const nestedPush = q.region(nestedLabel);
+            const nestedStyles = await nestedPush.evaluate((element) => {
+              const style = getComputedStyle(element);
+              return {
+                backgroundColor: style.backgroundColor,
+                borderTopColor: style.borderTopColor,
+                boxShadow: style.boxShadow,
+              };
+            });
+            await expect(parentlessPush).toHaveCSS(
+              "background-color",
+              nestedStyles.backgroundColor,
+            );
+            await expect(parentlessPush).toHaveCSS(
+              "border-top-color",
+              nestedStyles.borderTopColor,
+            );
+            await expect(parentlessPush).toHaveCSS(
+              "box-shadow",
+              nestedStyles.boxShadow,
+            );
+          }
+        });
+      }
 
       test("no color contrast violations (WCAG AA)", async ({ page }) => {
         test.setTimeout(60_000);

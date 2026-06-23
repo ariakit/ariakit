@@ -539,6 +539,7 @@ const layerMathVars = {
   contrastT: _ak.prop.zero("ct", { inherits: true }),
   contrastPushScale: _ak.prop.number("cps", { inherits: true, initial: 1 }),
   layerContrastBias: _ak.var("lcb"),
+  layerSourceDirectionToLight: _ak.prop.zero("lsdtl"),
   forbiddenLa: _ak.var("fla"),
   forbiddenLb: _ak.var("flb"),
   offsetDirectionToLight: _ak.var("odtl"),
@@ -580,6 +581,7 @@ const themeTokenVars = {
 // Color pipeline stages and exported visual tokens.
 const layerColorVars = {
   layerIdleBase: _ak.prop.canvas("lib"),
+  layerSourceDirection: _ak.prop.black("lsd"),
   layerIdleOffset: _ak.prop.canvas("lio"),
   layerIdle: _ak.prop.canvas("li"),
   layerL: _ak.prop.canvas("ll", { inherits: true }),
@@ -791,6 +793,9 @@ const light = createVariant(
   "ak-light",
   at.container(fn.style(vars.layerScheme, "oklch(0 0 0)"), set("@slot")),
 );
+
+// Parses as a valid declaration only in browsers that support if().
+const IF_SUPPORTS_CONDITION = "(color: if(else: red))";
 
 const darkHigh = createVariant(
   "ak-dark-high",
@@ -1105,6 +1110,11 @@ const forbiddenLb = fn.min(
 const layerBaseColor = fn.var(inputs.layerColor, vars.layerParent);
 const layerIdleBase = fn.oklch(layerBaseColor, idleLayerChannels);
 const layerIdleMixed = fn.var(inputs.layerMix, vars.layerIdleBase);
+const layerSourceDirection = fn.oklch(vars.layerIdleBase, {
+  l: fn.clamp01(vars.lightnessOffsetDirection),
+  c: 0,
+  h: 0,
+});
 
 function getLayerIdleOffsetL() {
   return fn.var(
@@ -1208,7 +1218,7 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
 function getLayerIdleContrastBiasDirection() {
   const directionToLight = fn.var(
     vars.layerPushDirectionToLight,
-    vars.offsetDirectionToLight,
+    vars.layerSourceDirectionToLight,
   );
   const pushDirection = fn.sub(fn.double(directionToLight), 1);
   return fn.add(
@@ -1218,6 +1228,20 @@ function getLayerIdleContrastBiasDirection() {
       fn.sub(pushDirection, vars.lightnessOffsetDirection),
     ),
   );
+}
+
+function getLayerSourceDirectionToLight() {
+  return fn.if(
+    [
+      [fn.style(vars.layerSourceDirection, fn.oklch({ l: 1 })), 1],
+      [fn.style(vars.layerSourceDirection, fn.oklch({ l: 0 })), 0],
+    ],
+    0,
+  );
+}
+
+function getLayerSourcePushDirection() {
+  return fn.sub(fn.double(vars.layerSourceDirectionToLight), 1);
 }
 
 // Assign derived math first so later color stages can reference short vars.
@@ -1255,6 +1279,7 @@ const layerMathDeclarations = [
 // Build the layered color stages from idle -> base -> offset -> final.
 const layerColorDeclarations = [
   set(vars.layerIdleBase, layerIdleBase),
+  set(vars.layerSourceDirection, layerSourceDirection),
   set(vars.layerIdleOffset, layerIdleOffset),
   set(vars.layerIdle, layerIdle),
   set(vars.layerBase, layerState),
@@ -1267,7 +1292,7 @@ const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
 const edgeDirectionalDelta = fn.add(inputs.edgePushL, vars.edgeContrastValue);
 const edgeDirectionalShift = fn.mul(
   edgeDirectionalDelta,
-  vars.edgePushDirection,
+  fn.var(vars.edgePushDirection, getLayerSourcePushDirection()),
 );
 // The directional push and the relative adjustments share one relative color:
 // the pushed lightness feeds getLayerL as the base expression, skipping one
@@ -1346,6 +1371,13 @@ utility(
   getBaseDeclarations(vars.layer),
   layerMathDeclarations,
   layerColorDeclarations,
+  at.supports(
+    IF_SUPPORTS_CONDITION,
+    // Parentless layers need to query their own computed source color. Container
+    // style queries only see ancestors, so browsers without if() keep the
+    // existing parent/variant fallback for this direction.
+    set(vars.layerSourceDirectionToLight, getLayerSourceDirectionToLight()),
+  ),
   at.variant(
     light,
     set(vars.layerPushDirectionToLight, 0),
@@ -1838,9 +1870,6 @@ function getTextDirectional() {
     c: fn.min(c, vars.textChromaCap),
   });
 }
-
-// Parses as a valid declaration only in browsers that support if().
-const IF_SUPPORTS_CONDITION = "(color: if(else: red))";
 
 const textLightnessSteps = getTextLightnessSteps();
 
