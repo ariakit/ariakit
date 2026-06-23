@@ -4,17 +4,15 @@ import { useRole } from "@ariakit/solid-components/role/role";
 import { useVisuallyHidden } from "@ariakit/solid-components/visually-hidden/visually-hidden";
 
 export default function Example() {
-  // TODO: Remove explicit props once the fix for
-  // https://github.com/ariakit/ariakit/issues/6304 lands.
-  const hiddenProps = useVisuallyHidden({});
-  const focusTrapRegionProps = useFocusTrapRegion({});
-  const roleProps = useRole({});
+  const hiddenProps = useVisuallyHidden();
+  const focusTrapRegionProps = useFocusTrapRegion();
+  const roleProps = useRole();
 
   return (
     <div>
       <a href="#learn">
         Learn more
-        <Role {...hiddenProps}> about the Solar System</Role>.
+        <Role.span {...hiddenProps}> about the Solar System</Role.span>.
       </a>
       <Role
         {...focusTrapRegionProps}
