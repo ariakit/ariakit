@@ -38,6 +38,11 @@ const itemStyle = {
 } as const;
 
 export default function Example() {
+  // TODO: Remove this workaround once issue #6337 is fixed.
+  // https://github.com/ariakit/ariakit/issues/6337
+  // The measured path currently adds GAP before the first item when
+  // paddingStart is set, so subtract GAP to preserve the expected visual
+  // padding.
   return (
     <div style={wrapperStyle}>
       <section style={sectionStyle}>
@@ -48,7 +53,8 @@ export default function Example() {
             items={measuredItems}
             initialItems={measuredItems.length}
             gap={GAP}
-            padding={PADDING}
+            paddingStart={PADDING - GAP}
+            paddingEnd={PADDING}
           >
             {(item) => (
               <button
