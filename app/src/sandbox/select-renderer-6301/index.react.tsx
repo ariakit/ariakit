@@ -45,6 +45,7 @@ export default function Example() {
           store={select}
           items={items}
           initialItems={items.length}
+          persistentIndices={[1]}
         >
           {(item) => {
             if (item.items) {
