@@ -367,6 +367,10 @@ export default function Example() {
             label="raw l/c"
             className="ak-layer-l-[0.62] ak-layer-c-[0.18] *:ak-text"
           />
+          <Layer
+            label="ak-layer ak-text"
+            className="ak-layer ak-layer-80 ak-text ak-text-blue-600 ak-frame ak-frame-p-1 ak-frame-border"
+          />
           <Cell
             label="raw ink/edge"
             className="ak-ink-[0.45] ak-edge-alpha-[0.35] *:ak-text"

@@ -541,7 +541,6 @@ const layerMathVars = {
   layerContrastBias: _ak.var("lcb"),
   forbiddenLa: _ak.var("fla"),
   forbiddenLb: _ak.var("flb"),
-  safeL: _ak.var("sl"),
   offsetDirectionToLight: _ak.var("odtl"),
   forbiddenBandWidth: _ak.var("bw"),
   forbiddenEntryBoundary: _ak.var("eb"),
@@ -551,7 +550,6 @@ const layerMathVars = {
   layerOffsetDelta: _ak.prop("lodl", { initial: 0 }),
   layerIdlePushValue: _ak.prop.zero("lipv"),
   layerIdlePushEnabled: _ak.prop.zero("lipe"),
-  layerIdlePushDirectionToLight: _ak.prop.zero("lipdtl"),
   // These scratch vars only resolve the pushed lightness in ak-layer-push-*.
   // Keep them unregistered so each push utility avoids extra @property work.
   layerIdlePushBaseL: _ak.var("lipbl"),
@@ -559,13 +557,12 @@ const layerMathVars = {
 
   layerIdlePushResolvedL: _ak.prop("liprl"),
   layerPushValue: _ak.prop.zero("lpv"),
+  // Shared by the idle and state push pipelines: both always receive the same
+  // value (offsetDirectionToLight by default, 0/1 under the light/dark
+  // variants), so one property serves both getPushL call sites.
   layerPushDirectionToLight: _ak.prop.zero("lpdtl"),
   layerPushBaseL: _ak.prop("lpbl", { initial: l }),
   layerPushL: _ak.prop("lpl", { initial: l }),
-  // Set and read only within ak-layer (resolving --_ak-li); no descendant
-  // utility reads it, so inheritance would just push a dead value into every
-  // descendant's computed style. Keep it non-inherited (the default).
-  layerIdleContrastValue: _ak.prop.zero("licv"),
   edgeContrastValue: _ak.prop.zero("ecv", { inherits: true }),
   edgePushDirection: _ak.var("epd", -1),
 };
@@ -582,16 +579,22 @@ const themeTokenVars = {
 // Color pipeline stages and exported visual tokens.
 const layerColorVars = {
   layerIdleBase: _ak.prop.canvas("lib"),
-  layerIdleMixed: _ak.prop.canvas("lim"),
   layerIdleOffset: _ak.prop.canvas("lio"),
   layerIdle: _ak.prop.canvas("li"),
   layerL: _ak.prop.canvas("ll", { inherits: true }),
   layerTextL: _ak.prop.canvas("ltl", { inherits: true }),
+  // Parity copies of layerTextL routed through layerContext. They let ak-text
+  // read the parent layer's quantized text lightness from its own computed
+  // style (for if() style queries), even when the same element is also a layer
+  // that overwrites layerTextL for its descendants. Registered so style()
+  // comparisons match computed colors rather than token streams.
+  layerTextLContext: _ak.var("ltlc"),
+  layerTextLContextEven: _ak.prop.canvas("ltlc-even", { inherits: true }),
+  layerTextLContextOdd: _ak.prop.canvas("ltlc-odd", { inherits: true }),
   layerScheme: _ak.prop.black("ls", { inherits: true }),
   layerBand: _ak.prop.black("lbd", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
   layerOffset: _ak.prop.canvas("lo"),
-  layerPush: _ak.prop.canvas("lp"),
   layer: ak.prop.canvas("layer", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
   layerEdgeContext: _ak.var("lec"),
@@ -636,7 +639,6 @@ const frameVars = {
   frameParentRadiusContext: _ak.var("fprc"),
   frameParentPaddingContext: _ak.var("fppc"),
   frameParentBorderContext: _ak.var("fpbc"),
-  frameParentRingContext: _ak.var("fpgc"),
   frameParentBorderingBorderContext: _ak.var("fpbbc"),
   frameParentBorderingRingContext: _ak.var("fpbgc"),
   frameParentRowContext: _ak.var("fpwc"),
@@ -877,16 +879,29 @@ function getPushL(baseLightness: Value, directionToLight: Value) {
 
 /**
  * Resolves layer lightness from relative offset and optional absolute input.
+ * `baseLightness` defaults to the context's `l` channel; passing another
+ * expression inlines the floor boost math because the registered
+ * `layerLFloorBoost` initial value only evaluates against the raw channel.
  */
-function getLayerL(relativeLightness: Value, absoluteLightness?: VarProperty) {
+function getLayerL(
+  relativeLightness: Value,
+  absoluteLightness?: VarProperty,
+  baseLightness: Value = l,
+) {
   // Boost lightness up to LAYER_L_FLOOR only when the relative shift is
   // strictly positive: ak-layer-0 (no shift) and ak-layer-l-*/ak-layer-darken-*
   // downstream stages with rel=0 must preserve the current lightness.
   const floorBoost = fn.mul(
     fn.binary(relativeLightness),
-    vars.layerLFloorBoost,
+    baseLightness === l
+      ? vars.layerLFloorBoost
+      : fn.relu(fn.sub(LAYER_L_FLOOR, baseLightness)),
   );
-  const fallbackLightness = fn.add(l, relativeLightness, floorBoost);
+  const fallbackLightness = fn.add(
+    baseLightness,
+    relativeLightness,
+    floorBoost,
+  );
   return absoluteLightness
     ? fn.var(absoluteLightness, fallbackLightness)
     : fallbackLightness;
@@ -994,19 +1009,33 @@ function mapLayerLightnessSteps(callback: LayerLightnessStepsCallback) {
   );
 }
 
-function mapLayerTextLightnessSteps(callback: LayerLightnessStepsCallback) {
-  return getQuantizedLchLightnessSteps().flatMap((parentLightness) => {
+interface TextLightnessStep {
+  parentLightness: number;
+  contrastDirection: number;
+  parentL: number;
+  accessibleL: number;
+  chromaCap: number;
+}
+
+/**
+ * Precomputed text values per quantized parent lightness. Both ak-text
+ * delivery paths (the if() chains and the container query fallback) read this
+ * table, so they always produce identical values.
+ */
+function getTextLightnessSteps(): TextLightnessStep[] {
+  return getQuantizedLchLightnessSteps().map((parentLightness) => {
     const isDark = parentLightness < LCH_DARK_THRESHOLD_L;
-    const children = callback(parentLightness, isDark).filter(
-      (child) => child != null,
+    const contrastParentL = getConservativeLchParentLightness(
+      parentLightness,
+      isDark,
     );
-    if (children.length === 0) {
-      return [];
-    }
-    return at.container(
-      fn.style(vars.layerTextL, fn.lch({ l: parentLightness })),
-      ...children,
-    );
+    return {
+      parentLightness,
+      contrastDirection: isDark ? 1 : -1,
+      parentL: contrastParentL,
+      accessibleL: getWcagLightnessTarget(contrastParentL, isDark),
+      chromaCap: getLchTextChromaCap(parentLightness, isDark),
+    };
   });
 }
 
@@ -1081,7 +1110,13 @@ function getLayerIdleOffsetL() {
   );
 }
 
-const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
+// The mix stage feeds this stage as a plain var fallback rather than as a
+// separate registered color property, so each ak-layer element resolves one
+// relative color fewer. The offset stage itself stays a registered color:
+// inlining its lightness into the contrast math duplicates the offset
+// expression at several slots, which measures slower than the extra relative
+// color resolution it saves.
+const layerIdleOffset = fn.oklch(layerIdleMixed, {
   l: fn.var(vars.layerIdlePushResolvedL, getLayerIdleOffsetL()),
 });
 
@@ -1089,7 +1124,7 @@ const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
  * Computes parent-relative contrast lightness. When `ak-layer-contrast` is
  * active (layerContrastDirection !== 0), derives the target lightness from the
  * parent layer's lightness rather than the current color's lightness. Falls
- * back to the self-relative `getContrastL` when inactive.
+ * back to the self-relative `selfRelativeL` when inactive.
  */
 function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   const direction = vars.layerContrastDirection;
@@ -1111,7 +1146,7 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
 
 const layerIdle = fn.oklch(vars.layerIdleOffset, {
   l: fn.add(
-    getContrastL(l, vars.layerIdleContrastValue),
+    getContrastL(l, getPushValue(inputs.layerIdleContrastL)),
     fn.mul(
       vars.layerContrastBias,
       fn.sub(
@@ -1123,19 +1158,18 @@ const layerIdle = fn.oklch(vars.layerIdleOffset, {
 });
 
 const layerState = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
-  l: vars.safeL,
+  l: getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb),
 });
 
 const layerOffset = fn.oklch(vars.layerBase, {
   l: fn.var(inputs.layerLOffsetL, getLayerL(inputs.layerLOffset)),
 });
 
-const layerPush = fn.oklch(vars.layerOffset, {
-  l: vars.layerPushL,
-});
-
-const layer = fn.oklch(vars.layerPush, {
-  l: vars.safeL,
+// The push stage folds into the final stage: layerPushL defaults to `l`, so
+// applying the safe-lightness math to it directly skips one relative color
+// resolution per ak-layer element.
+const layer = fn.oklch(vars.layerOffset, {
+  l: getSafeLightness(vars.layerPushL, vars.forbiddenLa, vars.forbiddenLb),
   c: fn.clamp(inputs.layerCMin, c, inputs.layerCMax),
 });
 
@@ -1169,10 +1203,7 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
 }
 
 function getLayerIdleContrastBiasDirection() {
-  const pushDirection = fn.sub(
-    fn.double(vars.layerIdlePushDirectionToLight),
-    1,
-  );
+  const pushDirection = fn.sub(fn.double(vars.layerPushDirectionToLight), 1);
   return fn.add(
     vars.lightnessOffsetDirection,
     fn.mul(
@@ -1189,8 +1220,6 @@ const layerMathDeclarations = [
   // contrast-scale math at each call site.
   set(vars.contrastT, fn.mul(globalContrastT, disabledVars.contrastScale)),
   set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
-  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
-  set(vars.layerIdlePushDirectionToLight, vars.offsetDirectionToLight),
   set(vars.layerPushDirectionToLight, vars.offsetDirectionToLight),
   set(
     vars.layerContrastBias,
@@ -1214,20 +1243,16 @@ const layerMathDeclarations = [
       ),
     ),
   ),
-  set(vars.safeL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
-  set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
   set(vars.edgeContrastValue, fn.mul(vars.contrastT, CONTRAST_SCALE)),
 ];
 
 // Build the layered color stages from idle -> base -> offset -> final.
 const layerColorDeclarations = [
   set(vars.layerIdleBase, layerIdleBase),
-  set(vars.layerIdleMixed, layerIdleMixed),
   set(vars.layerIdleOffset, layerIdleOffset),
   set(vars.layerIdle, layerIdle),
   set(vars.layerBase, layerState),
   set(vars.layerOffset, layerOffset),
-  set(vars.layerPush, layerPush),
 ];
 
 const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
@@ -1238,14 +1263,15 @@ const edgeDirectionalShift = fn.mul(
   edgeDirectionalDelta,
   vars.edgePushDirection,
 );
-const edgeDirectional = fn.oklch(edgeBaseColor, {
-  l: fn.clamp01(fn.add(l, edgeDirectionalShift)),
-});
+// The directional push and the relative adjustments share one relative color:
+// the pushed lightness feeds getLayerL as the base expression, skipping one
+// relative color resolution per ak-layer element.
+const edgeDirectionalL = fn.clamp01(fn.add(l, edgeDirectionalShift));
 const edgeAlpha = fn.clamp01(fn.add(inputs.edgeA, vars.edgeContrastValue));
-const edgeRelative = fn.oklch(edgeDirectional, {
+const edge = fn.oklch(edgeBaseColor, {
   l: fn.clamp(
     inputs.edgeLMin,
-    getLayerL(inputs.edgeRelativeL, inputs.edgeL),
+    getLayerL(inputs.edgeRelativeL, inputs.edgeL, edgeDirectionalL),
     inputs.edgeLMax,
   ),
   c: fn.clamp(
@@ -1256,7 +1282,6 @@ const edgeRelative = fn.oklch(edgeDirectional, {
   h: getLayerH(inputs.edgeRelativeH, inputs.edgeH),
   a: edgeAlpha,
 });
-const edge = edgeRelative;
 
 // Collapse the continuous layer scale into five semantic buckets so variants
 // can target broad tonal ranges instead of exact lightness values.
@@ -1317,19 +1342,18 @@ utility(
   layerColorDeclarations,
   at.variant(
     light,
-    set(vars.layerIdlePushDirectionToLight, 0),
     set(vars.layerPushDirectionToLight, 0),
     set(vars.edgePushDirection, -1),
   ),
   at.variant(
     dark,
-    set(vars.layerIdlePushDirectionToLight, 1),
     set(vars.layerPushDirectionToLight, 1),
     set(vars.edgePushDirection, 1),
   ),
   layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
     set(vars.layerParent, inherit(vars.layerParentContext)),
+    set(provide(vars.layerTextLContext), vars.layerTextL),
   ]),
 );
 
@@ -1458,6 +1482,7 @@ utility(
   "layer-push-*",
   getRawPercentDeclarations(inputs.layerIdlePushL),
   set(vars.layerIdlePushEnabled, 1),
+  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(
     vars.layerIdlePushBaseL,
     getLimitedLayerL(
@@ -1469,7 +1494,7 @@ utility(
   ),
   set(
     vars.layerIdlePushL,
-    getPushL(vars.layerIdlePushBaseL, vars.layerIdlePushDirectionToLight),
+    getPushL(vars.layerIdlePushBaseL, vars.layerPushDirectionToLight),
   ),
   set(vars.layerIdlePushResolvedL, vars.layerIdlePushL),
 );
@@ -1802,23 +1827,86 @@ function getTextDirectional() {
   });
 }
 
+// Parses as a valid declaration only in browsers that support if().
+const IF_SUPPORTS_CONDITION = "(color: if(else: red))";
+
+const textLightnessSteps = getTextLightnessSteps();
+
+/**
+ * Resolves a per-step text value as a single if() chain over the parent
+ * layer's quantized text lightness. The else value must match the variable's
+ * registered initial so unmatched contexts keep today's behavior.
+ */
+function getTextStepIf(
+  parentTextL: VarProperty,
+  getStepValue: (step: TextLightnessStep) => number,
+  elseValue: number,
+) {
+  return fn.if(
+    textLightnessSteps.map((step): [string, Value] => [
+      fn.style(parentTextL, fn.lch({ l: step.parentLightness })),
+      getStepValue(step),
+    ]),
+    elseValue,
+  );
+}
+
 utility(
   "text",
   set.backgroundColor(fn.important("transparent")),
   set.color(vars.text),
   at.container(fn.style(vars.layerTextL), set.color(getTextDirectional())),
-  mapLayerTextLightnessSteps((parentL, isDark) => {
-    const contrastParentL = getConservativeLchParentLightness(parentL, isDark);
-    return [
-      set(vars.textContrastDirection, isDark ? 1 : -1),
-      set(vars.textParentL, contrastParentL),
-      set(
-        vars.textAccessibleL,
-        getWcagLightnessTarget(contrastParentL, isDark),
+  // Each emitted rule is selector-matched per element, which gets expensive
+  // under child variants like `*:ak-text` whose rules land in the universal
+  // bucket. Where if() is available, deliver the whole quantized table as one
+  // if() chain per variable inside the two parity rules instead of one rule
+  // per step. The parity vars carry the parent layer's quantized lightness, so
+  // values match the container query fallback even when the same element is
+  // also a layer.
+  at.supports(
+    IF_SUPPORTS_CONDITION,
+    ...layerContext.read(({ parityVar }) => {
+      const parentTextL = parityVar(vars.layerTextLContext);
+      return [
+        set(
+          vars.textContrastDirection,
+          getTextStepIf(parentTextL, (step) => step.contrastDirection, 1),
+        ),
+        set(
+          vars.textParentL,
+          getTextStepIf(parentTextL, (step) => step.parentL, 0),
+        ),
+        set(
+          vars.textAccessibleL,
+          getTextStepIf(
+            parentTextL,
+            (step) => step.accessibleL,
+            LCH_LIGHTNESS_MAX,
+          ),
+        ),
+        set(
+          vars.textChromaCap,
+          getTextStepIf(
+            parentTextL,
+            (step) => step.chromaCap,
+            LCH_TEXT_CHROMA_CAP,
+          ),
+        ),
+      ];
+    }),
+  ),
+  at.supports.not(
+    IF_SUPPORTS_CONDITION,
+    ...textLightnessSteps.map((step) =>
+      at.container(
+        fn.style(vars.layerTextL, fn.lch({ l: step.parentLightness })),
+        set(vars.textContrastDirection, step.contrastDirection),
+        set(vars.textParentL, step.parentL),
+        set(vars.textAccessibleL, step.accessibleL),
+        set(vars.textChromaCap, step.chromaCap),
       ),
-      set(vars.textChromaCap, getLchTextChromaCap(parentL, isDark)),
-    ];
-  }),
+    ),
+  ),
 );
 
 utility(
@@ -2272,7 +2360,6 @@ utility(
       set(provide(vars.frameParentRadiusContext), vars.frameRadius),
       set(provide(vars.frameParentPaddingContext), vars.framePadding),
       set(provide(vars.frameParentBorderContext), vars.frameBorder),
-      set(provide(vars.frameParentRingContext), vars.frameRing),
       set(
         provide(vars.frameParentBorderingBorderContext),
         fn.add(
