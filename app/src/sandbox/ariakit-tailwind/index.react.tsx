@@ -322,6 +322,43 @@ export default function Example() {
         label="edge inherit root no source"
         className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
       />
+      {/* Test-only isolation from inherited layer scheme context. */}
+      <div className="[--_ak-ls:transparent] flex flex-wrap items-start gap-4">
+        <Layer
+          label="parentless dark layer push"
+          className="ak-layer ak-layer-gray-950 ak-layer-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+        />
+        <Layer
+          label="parentless dark state push"
+          className="ak-layer ak-layer-gray-950 ak-state-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+        />
+        <Layer
+          label="dark push control"
+          className="ak-layer ak-layer-gray-950 ak-frame ak-frame-p-1 ak-frame-border flex-col"
+        >
+          <Layer
+            label="nested dark layer push"
+            className="ak-layer ak-layer-gray-950 ak-layer-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+          />
+          <Layer
+            label="nested dark state push"
+            className="ak-layer ak-layer-gray-950 ak-state-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+          />
+        </Layer>
+        <Layer
+          label="light push control"
+          className="ak-layer ak-layer-l-100 ak-frame ak-frame-p-1 ak-frame-border flex-col"
+        >
+          <Layer
+            label="light parent dark layer push"
+            className="ak-layer ak-layer-gray-950 ak-layer-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+          />
+          <Layer
+            label="light parent dark state push"
+            className="ak-layer ak-layer-gray-950 ak-state-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+          />
+        </Layer>
+      </div>
       <Layer
         label="edge inherit no source"
         className="ak-layer ak-layer-blue-600 flex-col"
