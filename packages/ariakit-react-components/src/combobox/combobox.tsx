@@ -22,6 +22,7 @@ import {
   isFocusEventOutside,
   queueBeforeEvent,
   hasFocus,
+  isInputEvent,
   invariant,
   isFalsyBooleanCallback,
   noop,
@@ -72,10 +73,6 @@ function hasCompletionString(value?: string, activeValue?: string) {
     activeValue.length > value.length &&
     activeValue.toLowerCase().indexOf(value.toLowerCase()) === 0
   );
-}
-
-function isInputEvent(event: Event): event is InputEvent {
-  return event.type === "input";
 }
 
 function isAriaAutoCompleteValue(

@@ -12,6 +12,7 @@ import {
   getTextboxSelection,
   setSelectionRange,
   getInputType,
+  isInputEvent,
   invariant,
   UndoManager,
 } from "@ariakit/utils";
@@ -36,10 +37,6 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 type EventWithValues<T extends SyntheticEvent> = T & {
   values: string[];
 };
-
-function isInputEvent(event: Event): event is InputEvent {
-  return event.type === "input";
-}
 
 /**
  * Returns props to create a `TagInput` component.

@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { isFocusEventOutside, isPortalEvent } from "./events.ts";
+import { isFocusEventOutside, isInputEvent, isPortalEvent } from "./events.ts";
 
 // Regression tests for https://github.com/ariakit/ariakit/issues/5156: a
 // programmatically dispatched event can carry a non-node target/relatedTarget
@@ -36,4 +36,9 @@ test("isPortalEvent keeps a contained text-node target as non-portal", () => {
   const text = container.appendChild(document.createTextNode("hi"));
   const event = { currentTarget: container, target: text };
   expect(isPortalEvent(event)).toBe(false);
+});
+
+test("isInputEvent checks input events", () => {
+  expect(isInputEvent(new InputEvent("input"))).toBe(true);
+  expect(isInputEvent(new Event("change"))).toBe(false);
 });

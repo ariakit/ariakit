@@ -173,6 +173,13 @@ export function getInputType(event: Event | { nativeEvent: Event }) {
 }
 
 /**
+ * Checks whether the event is an input event.
+ */
+export function isInputEvent(event: Event): event is InputEvent {
+  return event.type === "input";
+}
+
+/**
  * Runs a callback on the next animation frame, but before a certain event.
  */
 export function queueBeforeEvent(
