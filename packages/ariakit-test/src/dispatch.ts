@@ -2,40 +2,12 @@
 import { getKeys, invariant } from "@ariakit/utils";
 import type { EventType } from "@testing-library/dom";
 import { createEvent, fireEvent } from "@testing-library/dom";
-import { flushMicrotasks, isHappyDOM, wrapAsync } from "./__utils.ts";
-
-// happy-dom doesn't implement the legacy `window.event` global, while jsdom and
-// real browsers expose the event currently being dispatched there for the
-// synchronous duration of the dispatch. React 18 reads `window.event` in
-// `getCurrentEventPriority` to classify an update triggered synchronously inside
-// a native event listener: a `click`/`keydown` yields DiscreteEventPriority
-// (sync lane, flushed in a microtask), whereas a missing `window.event` falls
-// back to DefaultEventPriority (default lane, flushed a macrotask later through
-// the scheduler). That later flush lets a microtask-coalesced store batch run
-// before React commits — e.g. a controlled `<Dialog open>` re-applies its stale
-// `open` prop right after `store.hide()`, transiently re-opening the dialog and
-// corrupting focus restoration on outside-click. Mirror jsdom by exposing the
-// dispatched event on `window.event` only while listeners run, then restoring
-// the previous value — or removing the property again when the environment had
-// none — so nested dispatches stay correct and the global isn't left behind. In
-// practice this only changes the React 18 suite: the controlled-dialog focus
-// divergence it fixes doesn't reproduce under React 19.
-function withWindowEvent<T>(event: Event, run: () => T): T {
-  if (!isHappyDOM) return run();
-  const win = window as unknown as { event?: Event };
-  const had = Object.prototype.hasOwnProperty.call(win, "event");
-  const previous = win.event;
-  win.event = event;
-  try {
-    return run();
-  } finally {
-    if (had) {
-      win.event = previous;
-    } else {
-      delete win.event;
-    }
-  }
-}
+import {
+  flushMicrotasks,
+  isHappyDOM,
+  withWindowEvent,
+  wrapAsync,
+} from "./__utils.ts";
 
 type SpecificEventInit<E extends Event> = E extends InputEvent
   ? InputEventInit
@@ -72,6 +44,10 @@ function sanitizeNumber(n: number | undefined) {
   return n ?? 0;
 }
 
+function sanitizeString(value: string | undefined) {
+  return value ?? "";
+}
+
 function initClipboardEvent(
   event: ClipboardEvent,
   { clipboardData }: ClipboardEventInit,
@@ -88,7 +64,7 @@ function initInputEvent(
   assignProps(event, {
     data,
     isComposing: !!isComposing,
-    inputType: String(inputType),
+    inputType: sanitizeString(inputType),
   });
 }
 
@@ -144,15 +120,20 @@ function initUIEventModififiers(
 
 function initKeyboardEvent(
   event: KeyboardEvent,
-  { key, code, location, repeat, isComposing }: KeyboardEventInit,
+  { key, code, location, repeat, isComposing, charCode }: KeyboardEventInit,
 ) {
   assignProps(event, {
-    key: String(key),
-    code: String(code),
+    key: sanitizeString(key),
+    code: sanitizeString(code),
     location: sanitizeNumber(location),
     repeat: !!repeat,
     isComposing: !!isComposing,
   });
+  if (charCode != null) {
+    assignProps(event, {
+      charCode: sanitizeNumber(charCode),
+    });
+  }
 }
 
 function initMouseEvent(
@@ -270,7 +251,7 @@ function fireEventAllowingDisabledClick(
   event: Event,
 ) {
   if (
-    isHappyDOM &&
+    isHappyDOM() &&
     event instanceof MouseEvent &&
     event.type === "click" &&
     (element instanceof HTMLButtonElement ||

@@ -84,7 +84,7 @@ function applyBrowserShims() {
 
   // happy-dom doesn't implement window.alert (jsdom and real browsers do).
   // Provide a no-op so code that calls or spies on it works under happy-dom.
-  if (isHappyDOM && typeof window.alert !== "function") {
+  if (isHappyDOM() && typeof window.alert !== "function") {
     window.alert = () => {};
   }
 
@@ -92,7 +92,7 @@ function applyBrowserShims() {
   // shims patch them for the whole test environment (jsdom already behaves
   // correctly). Each helper returns a function that restores the original
   // behavior.
-  const restoreHappyDOMShims = isHappyDOM
+  const restoreHappyDOMShims = isHappyDOM()
     ? [
         patchHappyDOMValidationMessage(),
         patchHappyDOMFormData(),

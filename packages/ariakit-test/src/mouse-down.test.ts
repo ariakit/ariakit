@@ -1,5 +1,7 @@
 import { beforeEach, expect, test } from "vitest";
+import { click } from "./click.ts";
 import { mouseDown } from "./mouse-down.ts";
+import { mouseUp } from "./mouse-up.ts";
 import { q } from "./query.ts";
 import { select } from "./select.ts";
 
@@ -96,4 +98,81 @@ test("mouseDown on a plain text target clears the document selection", async () 
   await selectParagraphText();
   await mouseDown(q.text("Plain text target"));
   expect(document.getSelection()?.toString()).toBe("");
+});
+
+test("click suppresses mouse events when pointerdown is prevented", async () => {
+  document.body.innerHTML = `
+    <input aria-label="Before" />
+    <button type="button">Press me</button>
+  `;
+
+  const input = q.textbox.ensure("Before");
+  const button = q.button.ensure("Press me");
+  const events: string[] = [];
+  let preventPointerDown = true;
+
+  input.focus();
+
+  button.addEventListener("pointerdown", (event) => {
+    events.push(event.type);
+    if (preventPointerDown) {
+      event.preventDefault();
+    }
+  });
+  button.addEventListener("mousedown", (event) => events.push(event.type));
+  button.addEventListener("focus", (event) => events.push(event.type));
+  button.addEventListener("pointerup", (event) => events.push(event.type));
+  button.addEventListener("mouseup", (event) => events.push(event.type));
+  button.addEventListener("click", (event) => events.push(event.type));
+
+  await click(button);
+
+  expect(events).toEqual(["pointerdown", "pointerup", "click"]);
+  expect(input).toHaveFocus();
+
+  events.length = 0;
+  preventPointerDown = false;
+
+  await click(button);
+
+  expect(events).toEqual([
+    "pointerdown",
+    "mousedown",
+    "focus",
+    "pointerup",
+    "mouseup",
+    "click",
+  ]);
+  expect(button).toHaveFocus();
+});
+
+test("mouseUp suppresses mouseup after a prevented pointerdown", async () => {
+  document.body.innerHTML = `<button type="button">Press me</button>`;
+
+  const button = q.button.ensure("Press me");
+  const events: string[] = [];
+  let preventPointerDown = true;
+
+  button.addEventListener("pointerdown", (event) => {
+    events.push(event.type);
+    if (preventPointerDown) {
+      event.preventDefault();
+    }
+  });
+  button.addEventListener("mousedown", (event) => events.push(event.type));
+  button.addEventListener("pointerup", (event) => events.push(event.type));
+  button.addEventListener("mouseup", (event) => events.push(event.type));
+
+  await mouseDown(button);
+  await mouseUp(button);
+
+  expect(events).toEqual(["pointerdown", "pointerup"]);
+
+  events.length = 0;
+  preventPointerDown = false;
+
+  await mouseDown(button);
+  await mouseUp(button);
+
+  expect(events).toEqual(["pointerdown", "mousedown", "pointerup", "mouseup"]);
 });

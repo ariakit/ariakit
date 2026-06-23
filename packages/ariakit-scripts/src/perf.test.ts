@@ -3,6 +3,7 @@ import {
   getIntegerEnv,
   getUniquePerfLabel,
   parseScriptProfile,
+  resolveScriptProfileSourceMaps,
 } from "./perf.ts";
 
 const envName = "PERF_ITERATIONS";
@@ -75,22 +76,181 @@ test("does not double-count recursive script profile frames", () => {
     timeDeltas: [5000],
   });
 
-  expect(profile).toContainEqual({
-    functionName: "recursive",
-    url: "/app.js",
+  expect(profile).toContainEqual(
+    expect.objectContaining({
+      functionName: "recursive",
+      url: "/app.js",
+      line: 1,
+      column: 1,
+      selfTime: 5,
+      totalTime: 5,
+      hitCount: 1,
+    }),
+  );
+  expect(profile).toContainEqual(
+    expect.objectContaining({
+      functionName: "wrapper",
+      url: "/app.js",
+      line: 5,
+      column: 1,
+      selfTime: 0,
+      totalTime: 5,
+      hitCount: 0,
+    }),
+  );
+});
+
+test("resolves script profile frames through source maps", async () => {
+  const profile = parseScriptProfile({
+    nodes: [
+      {
+        id: 1,
+        callFrame: {
+          functionName: "p",
+          scriptId: "1",
+          url: "https://example.com/_astro/dialog.abc.js",
+          lineNumber: 0,
+          columnNumber: 0,
+        },
+      },
+    ],
+    samples: [1],
+    timeDeltas: [3000],
+  });
+
+  const resolved = await resolveScriptProfileSourceMaps(profile, {
+    sourceMapUrls: new Map([["1", "dialog.abc.js.map"]]),
+    loadSourceMap: async (url) => {
+      expect(url).toBe("https://example.com/_astro/dialog.abc.js.map");
+      return {
+        version: 3,
+        names: ["Dialog"],
+        sources: ["../packages/ariakit-react-components/src/dialog/dialog.tsx"],
+        mappings: "AAAAA",
+      };
+    },
+  });
+
+  expect(resolved).toHaveLength(1);
+  expect(resolved[0]).toMatchObject({
+    functionName: "Dialog",
+    url: "packages/ariakit-react-components/src/dialog/dialog.tsx",
     line: 1,
     column: 1,
-    selfTime: 5,
-    totalTime: 5,
+    generatedFunctionName: "p",
+    generatedUrl: "https://example.com/_astro/dialog.abc.js",
+    generatedLine: 1,
+    generatedColumn: 1,
+    sourceMapUrl: "https://example.com/_astro/dialog.abc.js.map",
+    selfTime: 3,
+    totalTime: 3,
     hitCount: 1,
   });
-  expect(profile).toContainEqual({
-    functionName: "wrapper",
-    url: "/app.js",
-    line: 5,
-    column: 1,
-    selfTime: 0,
-    totalTime: 5,
-    hitCount: 0,
+});
+
+test("normalizes app source map URLs to repo paths", async () => {
+  const profile = parseScriptProfile({
+    nodes: [
+      {
+        id: 1,
+        callFrame: {
+          functionName: "p",
+          scriptId: "1",
+          url: "http://localhost:4321/_astro/dialog.js",
+          lineNumber: 0,
+          columnNumber: 0,
+        },
+      },
+    ],
+    samples: [1],
+    timeDeltas: [1000],
   });
+
+  const resolved = await resolveScriptProfileSourceMaps(profile, {
+    sourceMapUrls: new Map([["1", "dialog.js.map"]]),
+    loadSourceMap: async () => ({
+      version: 3,
+      names: ["DialogPerf"],
+      sources: ["../../../src/sandbox/dialog-perf/index.react.tsx"],
+      mappings: "AAAAA",
+    }),
+  });
+
+  expect(resolved[0]).toMatchObject({
+    functionName: "DialogPerf",
+    url: "app/src/sandbox/dialog-perf/index.react.tsx",
+    line: 1,
+    column: 1,
+  });
+});
+
+test("normalizes served app source map URLs to repo paths", async () => {
+  const profile = parseScriptProfile({
+    nodes: [
+      {
+        id: 1,
+        callFrame: {
+          functionName: "p",
+          scriptId: "1",
+          url: "http://localhost:4321/_astro/dialog.js",
+          lineNumber: 0,
+          columnNumber: 0,
+        },
+      },
+    ],
+    samples: [1],
+    timeDeltas: [1000],
+  });
+
+  const resolved = await resolveScriptProfileSourceMaps(profile, {
+    sourceMapUrls: new Map([["1", "dialog.js.map"]]),
+    loadSourceMap: async () => ({
+      version: 3,
+      names: ["DialogPerf"],
+      sources: [
+        "http://localhost:4321/src/sandbox/dialog-perf/index.react.tsx",
+      ],
+      mappings: "AAAAA",
+    }),
+  });
+
+  expect(resolved[0]?.url).toBe("app/src/sandbox/dialog-perf/index.react.tsx");
+});
+
+test("reuses source map cache across script profile resolutions", async () => {
+  const profile = parseScriptProfile({
+    nodes: [
+      {
+        id: 1,
+        callFrame: {
+          functionName: "p",
+          scriptId: "1",
+          url: "https://example.com/_astro/dialog.js",
+          lineNumber: 0,
+          columnNumber: 0,
+        },
+      },
+    ],
+    samples: [1],
+    timeDeltas: [1000],
+  });
+  let loadCount = 0;
+  const options = {
+    sourceMapUrls: new Map([["1", "dialog.js.map"]]),
+    traceMapCache: new Map(),
+    loadSourceMap: async () => {
+      loadCount += 1;
+      return {
+        version: 3 as const,
+        names: ["Dialog"],
+        sources: ["../packages/ariakit-react-components/src/dialog/dialog.tsx"],
+        mappings: "AAAAA",
+      };
+    },
+  };
+
+  await resolveScriptProfileSourceMaps(profile, options);
+  await resolveScriptProfileSourceMaps(profile, options);
+
+  expect(loadCount).toBe(1);
 });

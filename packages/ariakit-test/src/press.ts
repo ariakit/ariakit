@@ -5,7 +5,13 @@ import {
   getPreviousTabbable,
   isFocusable,
 } from "@ariakit/utils";
-import { settle, wrapAsync } from "./__utils.ts";
+import {
+  flushMicrotasks,
+  isHappyDOM,
+  settle,
+  withWindowEvent,
+  wrapAsync,
+} from "./__utils.ts";
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
@@ -26,6 +32,123 @@ const clickableInputTypes = [
   "submit",
 ];
 
+function isSubmitButton(
+  element: Element,
+): element is HTMLInputElement | HTMLButtonElement {
+  if (element instanceof HTMLButtonElement) {
+    return element.type === "submit";
+  }
+  return (
+    element instanceof HTMLInputElement &&
+    (element.type === "submit" || element.type === "image")
+  );
+}
+
+function canSubmitWithButton(
+  submitButton: HTMLInputElement | HTMLButtonElement,
+) {
+  if (!submitButton.form) return false;
+  if (isDisabled(submitButton)) return false;
+  return isSubmitButton(submitButton);
+}
+
+function getFormOwner(element: Element) {
+  if (!("form" in element)) return null;
+  return element.form as HTMLFormElement | null;
+}
+
+function getFormRoot(form: HTMLFormElement) {
+  const root = form.getRootNode();
+  if ("querySelectorAll" in root) {
+    return root as ParentNode;
+  }
+  return form;
+}
+
+function getSubmitButton(form: HTMLFormElement) {
+  const root = getFormRoot(form);
+  const elements = Array.from(root.querySelectorAll("button,input"));
+  return elements.find(
+    (element): element is HTMLInputElement | HTMLButtonElement =>
+      isSubmitButton(element) && element.form === form,
+  );
+}
+
+function createKeyboardClickEvent(
+  element: Element,
+  options: KeyboardEventInit,
+) {
+  const { defaultView } = element.ownerDocument;
+  const MouseEventConstructor = defaultView?.MouseEvent ?? MouseEvent;
+  return new MouseEventConstructor("click", {
+    bubbles: true,
+    cancelable: true,
+    composed: true,
+    altKey: options.altKey,
+    ctrlKey: options.ctrlKey,
+    metaKey: options.metaKey,
+    shiftKey: options.shiftKey,
+  });
+}
+
+function dispatchKeyboardClick(element: Element, options: KeyboardEventInit) {
+  const event = createKeyboardClickEvent(element, options);
+  return withWindowEvent(
+    event,
+    () => element.dispatchEvent(event),
+    element.ownerDocument.defaultView,
+  );
+}
+
+function invokeRequestSubmit(
+  form: HTMLFormElement,
+  submitButton: HTMLInputElement | HTMLButtonElement,
+) {
+  const { defaultView } = form.ownerDocument;
+  defaultView?.HTMLFormElement.prototype.requestSubmit.call(form, submitButton);
+}
+
+async function clickSubmitButton(
+  submitButton: HTMLInputElement | HTMLButtonElement,
+  options: KeyboardEventInit,
+) {
+  const { form } = submitButton;
+  if (!form) {
+    dispatchKeyboardClick(submitButton, options);
+    await flushMicrotasks();
+    return;
+  }
+
+  const root = form.getRootNode();
+  let invalid = false;
+  const onInvalid = (event: Event) => {
+    const { target } = event;
+    if (!(target instanceof Element)) return;
+    if (getFormOwner(target) !== submitButton.form) return;
+    invalid = true;
+  };
+  root.addEventListener("invalid", onInvalid, true);
+  try {
+    const defaultAllowed = dispatchKeyboardClick(submitButton, options);
+    if (!defaultAllowed) return;
+    if (invalid) return;
+    if (!isHappyDOM(submitButton.ownerDocument.defaultView)) return;
+    if (!(submitButton instanceof HTMLInputElement)) return;
+    if (submitButton.type !== "image") return;
+    // happy-dom fires the image submitter click but skips its submit activation.
+    // Keep this fallback intentionally small: legacy `returnValue`/DOM0 click
+    // cancellation and `window.event` for nested submit/invalid events still
+    // differ from browsers, but those edge cases are outside the #6353 target.
+    const currentForm = submitButton.form;
+    if (!currentForm) return;
+    if (!canSubmitWithButton(submitButton)) return;
+    invokeRequestSubmit(currentForm, submitButton);
+  } finally {
+    root.removeEventListener("invalid", onInvalid, true);
+    await flushMicrotasks();
+  }
+}
+
 async function submitFormByPressingEnterOn(
   element: HTMLInputElement,
   options: KeyboardEventInit,
@@ -36,12 +159,11 @@ async function submitFormByPressingEnterOn(
   const validInputs = elements.filter(
     (el) => el instanceof HTMLInputElement && isTextField(el),
   );
-  const submitButton = elements.find(
-    (el) =>
-      (el instanceof HTMLInputElement || el instanceof HTMLButtonElement) &&
-      el.type === "submit",
-  );
-  if (validInputs.length === 1 || submitButton) {
+  const submitButton = getSubmitButton(form);
+  if (submitButton) {
+    if (isDisabled(submitButton)) return;
+    await clickSubmitButton(submitButton, options);
+  } else if (validInputs.length === 1) {
     await dispatch.submit(form, options);
   }
 }
@@ -50,12 +172,37 @@ function isNumberInput(element: Element): element is HTMLInputElement {
   return element instanceof HTMLInputElement && element.type === "number";
 }
 
+function getFirstLegend(fieldset: HTMLFieldSetElement) {
+  for (const child of fieldset.children) {
+    if (child instanceof HTMLLegendElement) {
+      return child;
+    }
+  }
+  return null;
+}
+
+function isDisabledByFieldset(element: Element) {
+  let parent = element.parentElement;
+  while (parent) {
+    if (parent instanceof HTMLFieldSetElement) {
+      const legend = getFirstLegend(parent);
+      if (parent.disabled && !legend?.contains(element)) {
+        return true;
+      }
+    }
+    parent = parent.parentElement;
+  }
+  return false;
+}
+
 // Browsers never activate a disabled control, so the synthetic Enter/Space
 // activations below skip one. An element that disables itself in its own keydown
 // handler is already disabled by the time the activation runs.
 function isDisabled(element: Element | HTMLButtonElement) {
   if (!("disabled" in element)) return false;
-  return element.disabled;
+  if (element.disabled) return true;
+  if (element.matches(":disabled")) return true;
+  return isDisabledByFieldset(element);
 }
 
 async function incrementNumberInput(element: HTMLInputElement, by = 1) {
@@ -98,19 +245,34 @@ const keyDownMap: KeyActionMap = {
   },
 
   async Home(element, { shiftKey }) {
-    if (isTextField(element)) {
-      const { value, selectionEnd } = element;
-      const end = Math.min(value.length, shiftKey ? (selectionEnd ?? 0) : 0);
-      setSelectionRange(element, 0, end, "backward");
+    if (!isTextField(element)) return;
+
+    if (!shiftKey) {
+      return setSelectionRange(element, 0, 0);
     }
+
+    const { selectionStart, selectionEnd, selectionDirection } = element;
+    const anchor =
+      selectionDirection === "forward"
+        ? (selectionStart ?? 0)
+        : (selectionEnd ?? 0);
+    setSelectionRange(element, 0, anchor, "backward");
   },
 
   async End(element, { shiftKey }) {
-    if (isTextField(element)) {
-      const { value, selectionStart } = element;
-      const start = shiftKey ? (selectionStart ?? 0) : value.length;
-      setSelectionRange(element, start, value.length, "forward");
+    if (!isTextField(element)) return;
+
+    const length = element.value.length;
+    if (!shiftKey) {
+      return setSelectionRange(element, length, length);
     }
+
+    const { selectionStart, selectionEnd, selectionDirection } = element;
+    const anchor =
+      selectionDirection === "backward"
+        ? (selectionEnd ?? 0)
+        : (selectionStart ?? 0);
+    setSelectionRange(element, anchor, length, "forward");
   },
 
   async ArrowLeft(element, { shiftKey }) {
