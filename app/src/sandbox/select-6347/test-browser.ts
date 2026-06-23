@@ -17,4 +17,37 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .not.toHaveAttribute("data-active-item");
     await test.expect(q.option("Peach")).toHaveAttribute("data-active-item");
   });
+
+  test("typeahead includes accessible disabled offscreen select items", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox("Accessible fruit").click();
+    await test.expect(q.option("Pawpaw")).toHaveAttribute("data-offscreen");
+    await test
+      .expect(q.option("Pawpaw"))
+      .toHaveAttribute("aria-disabled", "true");
+
+    await page.keyboard.press("p");
+
+    await test.expect(q.option("Pawpaw")).toHaveAttribute("data-active-item");
+  });
+
+  test("typeahead skips aria-disabled offscreen select items", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox("ARIA disabled fruit").click();
+    await test.expect(q.option("Papaw")).toHaveAttribute("data-offscreen");
+    await test
+      .expect(q.option("Papaw"))
+      .toHaveAttribute("aria-disabled", "true");
+
+    await page.keyboard.press("p");
+
+    await test
+      .expect(q.option("Papaw"))
+      .not.toHaveAttribute("data-active-item");
+    await test.expect(q.option("Peach")).toHaveAttribute("data-active-item");
+  });
 });

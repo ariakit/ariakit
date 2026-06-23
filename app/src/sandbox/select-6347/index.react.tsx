@@ -1,6 +1,5 @@
 import * as Ariakit from "@ariakit/react";
 import { SelectItem } from "@ariakit/react-components/select/select-item-offscreen";
-import type { KeyboardEvent } from "react";
 
 const fruits = [
   "Apple",
@@ -41,59 +40,38 @@ const fruits = [
   "Watermelon",
 ];
 
-const outOfStock = ["Papaya"];
+const outOfStock = "Papaya";
 
-function isTypeaheadKey(event: KeyboardEvent<HTMLElement>) {
-  if (event.ctrlKey) return false;
-  if (event.altKey) return false;
-  if (event.metaKey) return false;
-  if (event.key === " ") return true;
-  if (event.key.length !== 1) return false;
-  return /^[\p{Letter}\p{Number}]$/u.test(event.key);
+const accessibleFruits = fruits.map((fruit) =>
+  fruit === "Papaya" ? "Pawpaw" : fruit,
+);
+
+const ariaDisabledFruits = fruits.map((fruit) =>
+  fruit === "Papaya" ? "Papaw" : fruit,
+);
+
+interface FixtureProps {
+  accessibleWhenDisabled?: boolean;
+  ariaDisabledFruit?: string;
+  disabledFruit: string;
+  fruits: string[];
+  label: string;
 }
 
-function isDisabledItem(item: HTMLElement) {
-  if (item.getAttribute("aria-disabled") === "true") return true;
-  if ("disabled" in item && item.disabled) return true;
-  return false;
-}
-
-export default function Example() {
-  const select = Ariakit.useSelectStore({ defaultValue: "Apple" });
-
-  const onKeyDownCapture = (event: KeyboardEvent<HTMLElement>) => {
-    if (!isTypeaheadKey(event)) return;
-    const contentElement = select.getState().contentElement;
-    if (!contentElement) return;
-    const offscreenItems = contentElement.querySelectorAll<HTMLElement>(
-      "[data-offscreen-id]",
-    );
-    for (const item of offscreenItems) {
-      if (!isDisabledItem(item)) continue;
-      const offscreenId = item.getAttribute("data-offscreen-id");
-      if (!offscreenId) continue;
-      // TODO: Remove this repro-preserving workaround once
-      // https://github.com/ariakit/ariakit/issues/6347 is fixed.
-      item.removeAttribute("data-offscreen-id");
-      queueMicrotask(() => {
-        item.setAttribute("data-offscreen-id", offscreenId);
-      });
-    }
-  };
-
+function Fixture({
+  accessibleWhenDisabled,
+  ariaDisabledFruit,
+  disabledFruit,
+  fruits,
+  label,
+}: FixtureProps) {
   return (
-    <>
-      <Ariakit.SelectLabel store={select}>Fruit</Ariakit.SelectLabel>
-      <Ariakit.Select
-        store={select}
-        onKeyDownCapture={onKeyDownCapture}
-        style={{ display: "block" }}
-      />
+    <Ariakit.SelectProvider defaultValue="Apple">
+      <Ariakit.SelectLabel>{label}</Ariakit.SelectLabel>
+      <Ariakit.Select style={{ display: "block" }} />
       <Ariakit.SelectPopover
-        store={select}
         gutter={4}
         sameWidth
-        onKeyDownCapture={onKeyDownCapture}
         style={{
           background: "white",
           border: "1px solid gray",
@@ -103,15 +81,40 @@ export default function Example() {
       >
         {fruits.map((fruit) => (
           <SelectItem
-            store={select}
             key={fruit}
             value={fruit}
-            disabled={outOfStock.includes(fruit)}
+            disabled={fruit === disabledFruit}
+            {...(fruit === ariaDisabledFruit
+              ? { "aria-disabled": true }
+              : undefined)}
+            accessibleWhenDisabled={
+              fruit === disabledFruit ? accessibleWhenDisabled : undefined
+            }
             offscreenMode="passive"
             style={{ display: "block", padding: "4px 8px" }}
           />
         ))}
       </Ariakit.SelectPopover>
+    </Ariakit.SelectProvider>
+  );
+}
+
+export default function Example() {
+  return (
+    <>
+      <Fixture disabledFruit={outOfStock} fruits={fruits} label="Fruit" />
+      <Fixture
+        accessibleWhenDisabled
+        disabledFruit="Pawpaw"
+        fruits={accessibleFruits}
+        label="Accessible fruit"
+      />
+      <Fixture
+        ariaDisabledFruit="Papaw"
+        disabledFruit=""
+        fruits={ariaDisabledFruits}
+        label="ARIA disabled fruit"
+      />
     </>
   );
 }
