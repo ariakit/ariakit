@@ -1,0 +1,98 @@
+diff --git a/components/interactive/UserButton/MenuItemRenderer.astro b/components/interactive/UserButton/MenuItemRenderer.astro
+index f86f5d1d679251f69f7bdc05d3527bf96e381075..50337a8e9dcbd9a2d8bb98c1eb2d8c18bbe67ec7 100644
+--- a/components/interactive/UserButton/MenuItemRenderer.astro
++++ b/components/interactive/UserButton/MenuItemRenderer.astro
+@@ -29,54 +29,53 @@ const isDevMode = import.meta.env.DEV;
+         `Clerk: <UserButton.MenuItems /> component can only accept <UserButton.Action /> and <UserButton.Link /> as its children. Any other provided component will be ignored.`,
+       );
+     }
+-    return;
+-  }
+-
+-  // Get the user button map from window that we set in the `<InternalUIComponentRenderer />`.
+-  const userButtonComponentMap = window.__astro_clerk_component_props.get('user-button');
+-
+-  let userButton;
+-  if (parent) {
+-    userButton = document.querySelector(`[data-clerk-id="clerk-user-button-${parent}"]`);
+   } else {
+-    userButton = document.querySelector('[data-clerk-id^="clerk-user-button"]');
+-  }
++    // Get the user button map from window that we set in the `<InternalUIComponentRenderer />`.
++    const userButtonComponentMap = window.__astro_clerk_component_props.get('user-button');
+ 
+-  const safeId = userButton.getAttribute('data-clerk-id');
+-  const currentOptions = userButtonComponentMap.get(safeId);
++    let userButton;
++    if (parent) {
++      userButton = document.querySelector(`[data-clerk-id="clerk-user-button-${parent}"]`);
++    } else {
++      userButton = document.querySelector('[data-clerk-id^="clerk-user-button"]');
++    }
+ 
+-  const reorderItemsLabels = ['manageAccount', 'signOut'];
+-  const isReorderItem = reorderItemsLabels.includes(label);
++    const safeId = userButton.getAttribute('data-clerk-id');
++    const currentOptions = userButtonComponentMap.get(safeId);
+ 
+-  let newMenuItem = {
+-    label,
+-  };
++    const reorderItemsLabels = ['manageAccount', 'signOut'];
++    const isReorderItem = reorderItemsLabels.includes(label);
+ 
+-  if (!isReorderItem) {
+-    newMenuItem = {
+-      ...newMenuItem,
+-      mountIcon: el => {
+-        el.innerHTML = labelIcon;
+-      },
+-      unmountIcon: () => {
+-        /* What to clean up? */
+-      },
++    let newMenuItem = {
++      label,
+     };
+ 
+-    if (href) {
+-      newMenuItem.href = href;
+-    } else if (open) {
+-      newMenuItem.open = open.startsWith('/') ? open : `/${open}`;
+-    } else if (clickIdentifier) {
+-      const clickEvent = new CustomEvent('clerk:menu-item-click', { detail: clickIdentifier });
+-      newMenuItem.onClick = () => {
+-        document.dispatchEvent(clickEvent);
++    if (!isReorderItem) {
++      newMenuItem = {
++        ...newMenuItem,
++        mountIcon: el => {
++          el.innerHTML = labelIcon;
++        },
++        unmountIcon: () => {
++          /* What to clean up? */
++        },
+       };
++
++      if (href) {
++        newMenuItem.href = href;
++      } else if (open) {
++        newMenuItem.open = open.startsWith('/') ? open : `/${open}`;
++      } else if (clickIdentifier) {
++        const clickEvent = new CustomEvent('clerk:menu-item-click', { detail: clickIdentifier });
++        newMenuItem.onClick = () => {
++          document.dispatchEvent(clickEvent);
++        };
++      }
+     }
+-  }
+ 
+-  userButtonComponentMap.set(safeId, {
+-    ...currentOptions,
+-    customMenuItems: [...(currentOptions?.customMenuItems ?? []), newMenuItem],
+-  });
++    userButtonComponentMap.set(safeId, {
++      ...currentOptions,
++      customMenuItems: [...(currentOptions?.customMenuItems ?? []), newMenuItem],
++    });
++  }
+ </script>

@@ -15,6 +15,9 @@ allowBuilds:
   sharp: true
   workerd: true
 
+minimumReleaseAgeExclude:
+  - astro@7.0.1
+
 overrides:
   "@ariakit/components": "workspace:*"
   "@ariakit/react": "workspace:*"
@@ -32,9 +35,11 @@ overrides:
 
 patchedDependencies:
   "@changesets/apply-release-plan@7.1.1": "patches/@changesets__apply-release-plan@7.1.1.patch"
+  "@clerk/astro@3.4.6": patches/@clerk__astro@3.4.6.patch
 
 peerDependencyRules:
   allowedVersions:
+    "@clerk/astro>astro": "7"
     react: "19"
     react-dom: "19"
 
