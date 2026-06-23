@@ -278,13 +278,13 @@ export default function Example() {
         label="edge inherit root no source"
         className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
       />
-      <div className="flex flex-wrap items-start gap-4">
+      <div className="ak-layer ak-layer-gray-950 flex flex-wrap items-start gap-4">
         <Layer
-          label="parentless dark layer push"
+          label="wrapped dark layer push"
           className="ak-layer ak-layer-gray-950 ak-layer-push-50 ak-frame ak-frame-p-1 ak-frame-border"
         />
         <Layer
-          label="parentless dark state push"
+          label="wrapped dark state push"
           className="ak-layer ak-layer-gray-950 ak-state-push-50 ak-frame ak-frame-p-1 ak-frame-border"
         />
         <Layer
