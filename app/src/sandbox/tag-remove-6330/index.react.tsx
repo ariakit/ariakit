@@ -23,10 +23,12 @@ export default function Example() {
         <TagInput aria-label="Add filter" />
       </TagList>
       <p>
-        <TagRemove value="React">Remove React filter</TagRemove>
+        <TagRemove value="React" aria-hidden={false}>
+          Remove React filter
+        </TagRemove>
       </p>
       <p>
-        <TagRemove value="Vue" />
+        <TagRemove value="Vue" aria-hidden={false} aria-label="Remove Vue" />
       </p>
     </TagProvider>
   );
