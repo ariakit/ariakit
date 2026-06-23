@@ -6,7 +6,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     await test
-      .expect(q.link(/Learn more\s+about the Solar System\./))
+      .expect(q.link(/Learn more\s+about the Solar System/))
       .toBeVisible();
     await test.expect(q.region("Focus trap region")).toBeVisible();
     await test.expect(q.text("Role rendered")).toBeVisible();
