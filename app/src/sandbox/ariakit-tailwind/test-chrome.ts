@@ -567,23 +567,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.describe(`${scheme} scheme`, () => {
       test.use({ colorScheme: scheme });
 
-      test("pushes wrapped dark layers toward the light boundary", async ({
+      test("pushes parentless dark layers toward the light boundary", async ({
         page,
         q,
       }) => {
         await waitForPreviewReady(page);
         const cases = [
-          ["wrapped dark layer push", "nested dark layer push"],
-          ["wrapped dark state push", "nested dark state push"],
+          ["parentless dark layer push", "nested dark layer push"],
+          ["parentless dark state push", "nested dark state push"],
         ] as const;
 
-        for (const [wrappedLabel, nestedLabel] of cases) {
-          const wrappedPush = q.region(wrappedLabel);
+        for (const [parentlessLabel, nestedLabel] of cases) {
+          const parentlessPush = q.region(parentlessLabel);
           const nestedPush = q.region(nestedLabel);
           const nestedBackgroundColor = await nestedPush.evaluate((element) => {
             return getComputedStyle(element).backgroundColor;
           });
-          await expect(wrappedPush).toHaveCSS(
+          await expect(parentlessPush).toHaveCSS(
             "background-color",
             nestedBackgroundColor,
           );

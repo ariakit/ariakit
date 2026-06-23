@@ -557,10 +557,11 @@ const layerMathVars = {
 
   layerIdlePushResolvedL: _ak.prop("liprl"),
   layerPushValue: _ak.prop.zero("lpv"),
-  // Shared by the idle and state push pipelines: both always receive the same
-  // value (offsetDirectionToLight by default, 0/1 under the light/dark
-  // variants), so one property serves both getPushL call sites.
-  layerPushDirectionToLight: _ak.prop.zero("lpdtl"),
+  // Shared by the idle and state push pipelines. Keep this unregistered and
+  // fallback to offsetDirectionToLight at each call site because that fallback
+  // contains the relative color `l` keyword and only resolves inside the
+  // pushed lightness calc.
+  layerPushDirectionToLight: _ak.var("lpdtl"),
   layerPushBaseL: _ak.prop("lpbl", { initial: l }),
   layerPushL: _ak.prop("lpl", { initial: l }),
   edgeContrastValue: _ak.prop.zero("ecv", { inherits: true }),
@@ -591,7 +592,9 @@ const layerColorVars = {
   layerTextLContext: _ak.var("ltlc"),
   layerTextLContextEven: _ak.prop.canvas("ltlc-even", { inherits: true }),
   layerTextLContextOdd: _ak.prop.canvas("ltlc-odd", { inherits: true }),
-  layerScheme: _ak.prop.black("ls", { inherits: true }),
+  // This must not match the light/dark style queries until an ancestor layer
+  // provides an actual scheme color.
+  layerScheme: _ak.prop.color("ls", { inherits: true, initial: "transparent" }),
   layerBand: _ak.prop.black("lbd", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
   layerOffset: _ak.prop.canvas("lo"),
@@ -1203,7 +1206,11 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
 }
 
 function getLayerIdleContrastBiasDirection() {
-  const pushDirection = fn.sub(fn.double(vars.layerPushDirectionToLight), 1);
+  const directionToLight = fn.var(
+    vars.layerPushDirectionToLight,
+    vars.offsetDirectionToLight,
+  );
+  const pushDirection = fn.sub(fn.double(directionToLight), 1);
   return fn.add(
     vars.lightnessOffsetDirection,
     fn.mul(
@@ -1220,7 +1227,6 @@ const layerMathDeclarations = [
   // contrast-scale math at each call site.
   set(vars.contrastT, fn.mul(globalContrastT, disabledVars.contrastScale)),
   set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
-  set(vars.layerPushDirectionToLight, vars.offsetDirectionToLight),
   set(
     vars.layerContrastBias,
     fn.mul(
@@ -1494,7 +1500,10 @@ utility(
   ),
   set(
     vars.layerIdlePushL,
-    getPushL(vars.layerIdlePushBaseL, vars.layerPushDirectionToLight),
+    getPushL(
+      vars.layerIdlePushBaseL,
+      fn.var(vars.layerPushDirectionToLight, vars.offsetDirectionToLight),
+    ),
   ),
   set(vars.layerIdlePushResolvedL, vars.layerIdlePushL),
 );
@@ -1634,7 +1643,10 @@ utility(
   ),
   set(
     vars.layerPushL,
-    getPushL(vars.layerPushBaseL, vars.layerPushDirectionToLight),
+    getPushL(
+      vars.layerPushBaseL,
+      fn.var(vars.layerPushDirectionToLight, vars.offsetDirectionToLight),
+    ),
   ),
 );
 
