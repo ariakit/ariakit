@@ -262,13 +262,18 @@ function getWcagLightnessTarget(parentLightness: number, isDark: boolean) {
 }
 
 /**
- * Returns whether `value` is within `[min, max]`
+ * Returns whether `value` is greater than or equal to `min`. The epsilon keeps
+ * adjacent bands from leaving a gap at shared boundaries.
+ */
+function getMinMask(value: Value, min: number) {
+  return fn.binary(fn.sub(value, roundToDecimals(min - 1e-6, 6)));
+}
+
+/**
+ * Returns whether `value` is within `[min, max)`.
  */
 function getRangeMask(value: Value, min: number, max: number) {
-  return fn.mul(
-    fn.binary(fn.sub(value, roundToDecimals(min - 1e-6, 6))),
-    fn.binary(fn.sub(max, value)),
-  );
+  return fn.mul(getMinMask(value, min), fn.binary(fn.sub(max, value)));
 }
 
 /**
@@ -440,9 +445,7 @@ const globalContrastT = fn.div(fn.relu(contrast), CONTRAST_HIGH);
 const bandDarkHigh = getRangeMask(l, 0, DARK_HIGH_MAX_L);
 const bandDarkLow = getRangeMask(l, DARK_HIGH_MAX_L, LA_BASE);
 const bandLightLow = getRangeMask(l, LB_BASE, LIGHT_LOW_MAX_L);
-const bandLightHigh = fn.binary(
-  fn.sub(l, roundToDecimals(LIGHT_LOW_MAX_L - 1e-6, 6)),
-);
+const bandLightHigh = getMinMask(l, LIGHT_LOW_MAX_L);
 
 function getLayerTextLightness() {
   const lightChromaDamping = fn.mul(
