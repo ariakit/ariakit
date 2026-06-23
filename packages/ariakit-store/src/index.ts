@@ -84,6 +84,8 @@ function isSameValue(value: unknown, other: unknown) {
   return value === other || (value !== value && other !== other);
 }
 
+const MAX_REPAIR_PASSES = 100;
+
 function addKeyedListener<S>(
   map: ListenerMap<S>,
   keys: Array<keyof S> | null,
@@ -423,11 +425,38 @@ export function createStore<S extends State>(
         for (const store of stores) {
           store?.setState?.(key, nextValue);
           // Parent fan-out can reenter this child with a newer value for the
-          // same key. That nested update owns the final notification and
-          // propagation, so stop replaying the stale outer value.
+          // same key. That nested update owns the final notification, so stop
+          // replaying the stale outer value.
           if (isSameValue(state[key], nextValue)) continue;
           superseded = true;
           break;
+        }
+        // A fromStores-driven supersede can't fan out on its own. Push the
+        // latest committed value to every parent until a repair pass completes
+        // without another rewrite. Keep this bounded because parent listeners
+        // can fight over a key indefinitely.
+        if (superseded) {
+          let pass = 0;
+          for (; pass < MAX_REPAIR_PASSES; pass += 1) {
+            let changed = false;
+            for (const store of stores) {
+              const previousValue = state[key];
+              store?.setState?.(key, previousValue);
+              if (!isSameValue(state[key], previousValue)) {
+                changed = true;
+              }
+            }
+            if (!changed) break;
+          }
+          if (
+            process.env.NODE_ENV !== "production" &&
+            pass === MAX_REPAIR_PASSES
+          ) {
+            console.warn(
+              "Parent stores did not converge after a superseded fan-out; " +
+                "a parent listener may be rewriting this key in a cycle.",
+            );
+          }
         }
       }
 

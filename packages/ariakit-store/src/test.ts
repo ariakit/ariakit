@@ -1109,6 +1109,232 @@ test("skips superseded same-key child notifications after parent fan-out", () =>
   cleanup();
 });
 
+test("keeps parent stores in sync after parent-driven supersede", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const unsubscribeFirst = sync(first, ["count"], (state) => {
+    if (state.count <= 5) return;
+    first.setState("count", 5);
+  });
+
+  child.setState("count", 10);
+
+  expect(child.getState().count).toBe(5);
+  expect(first.getState().count).toBe(5);
+  expect(second.getState().count).toBe(5);
+
+  unsubscribeFirst();
+  cleanup();
+});
+
+test("keeps earlier parent stores in sync after later parent supersede", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const unsubscribeSecond = sync(second, ["count"], (state) => {
+    if (state.count <= 5) return;
+    second.setState("count", 5);
+  });
+
+  child.setState("count", 10);
+
+  expect(child.getState().count).toBe(5);
+  expect(first.getState().count).toBe(5);
+  expect(second.getState().count).toBe(5);
+
+  unsubscribeSecond();
+  cleanup();
+});
+
+test("keeps parent stores in sync after cascading parent supersede", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const unsubscribeFirst = sync(first, ["count"], (state) => {
+    if (state.count !== 5) return;
+    first.setState("count", 4);
+  });
+  const unsubscribeSecond = sync(second, ["count"], (state) => {
+    if (state.count <= 5) return;
+    second.setState("count", 5);
+  });
+
+  child.setState("count", 10);
+
+  expect(child.getState().count).toBe(4);
+  expect(first.getState().count).toBe(4);
+  expect(second.getState().count).toBe(4);
+
+  unsubscribeFirst();
+  unsubscribeSecond();
+  cleanup();
+});
+
+test("restarts parent repair after later parent supersede", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const unsubscribeFirst = sync(first, ["count"], (state) => {
+    if (state.count <= 5) return;
+    first.setState("count", 5);
+  });
+  const unsubscribeSecond = sync(second, ["count"], (state) => {
+    if (state.count !== 5) return;
+    second.setState("count", 4);
+  });
+
+  child.setState("count", 10);
+
+  expect(child.getState().count).toBe(4);
+  expect(first.getState().count).toBe(4);
+  expect(second.getState().count).toBe(4);
+
+  unsubscribeFirst();
+  unsubscribeSecond();
+  cleanup();
+});
+
+test("continues parent repair after finite cascades", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const unsubscribeFirst = sync(first, ["count"], (state) => {
+    if (state.count === 5) {
+      first.setState("count", 2);
+    } else if (state.count === 3) {
+      first.setState("count", 1);
+    }
+  });
+  const unsubscribeSecond = sync(second, ["count"], (state) => {
+    if (state.count === 10) {
+      second.setState("count", 5);
+    } else if (state.count === 2) {
+      second.setState("count", 3);
+    } else if (state.count === 1) {
+      second.setState("count", 0);
+    }
+  });
+
+  child.setState("count", 10);
+
+  expect(child.getState().count).toBe(0);
+  expect(first.getState().count).toBe(0);
+  expect(second.getState().count).toBe(0);
+
+  unsubscribeFirst();
+  unsubscribeSecond();
+  cleanup();
+});
+
+test("continues parent repair after one-shot cycles", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  let didRewriteFirst = false;
+  let didRewriteSecond = false;
+  const unsubscribeFirst = sync(first, ["count"], (state) => {
+    if (state.count !== 5) return;
+    if (didRewriteFirst) return;
+    didRewriteFirst = true;
+    first.setState("count", 4);
+  });
+  const unsubscribeSecond = sync(second, ["count"], (state) => {
+    if (state.count === 10) {
+      second.setState("count", 5);
+    } else if (state.count === 4 && !didRewriteSecond) {
+      didRewriteSecond = true;
+      second.setState("count", 5);
+    }
+  });
+
+  child.setState("count", 10);
+
+  expect(child.getState().count).toBe(5);
+  expect(first.getState().count).toBe(5);
+  expect(second.getState().count).toBe(5);
+
+  unsubscribeFirst();
+  unsubscribeSecond();
+  cleanup();
+});
+
+test("warns when parent repair does not converge", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+  const cleanup = init(child);
+  const unsubscribeFirst = sync(first, ["count"], (state) => {
+    if (state.count === 1) return;
+    first.setState("count", 1);
+  });
+  const unsubscribeSecond = sync(second, ["count"], (state) => {
+    if (state.count === 2) return;
+    second.setState("count", 2);
+  });
+
+  child.setState("count", 10);
+
+  expect(warn).toHaveBeenCalledOnce();
+  expect(warn).toHaveBeenLastCalledWith(
+    "Parent stores did not converge after a superseded fan-out; " +
+      "a parent listener may be rewriting this key in a cycle.",
+  );
+  expect(child.getState().count).toBe(2);
+  expect(first.getState().count).toBe(1);
+  expect(second.getState().count).toBe(2);
+
+  warn.mockRestore();
+  unsubscribeFirst();
+  unsubscribeSecond();
+  cleanup();
+});
+
+test("does not warn when parent repair does not converge in production", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+  const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+  vi.stubEnv("NODE_ENV", "production");
+
+  const cleanup = init(child);
+  const unsubscribeFirst = sync(first, ["count"], (state) => {
+    if (state.count === 1) return;
+    first.setState("count", 1);
+  });
+  const unsubscribeSecond = sync(second, ["count"], (state) => {
+    if (state.count === 2) return;
+    second.setState("count", 2);
+  });
+
+  child.setState("count", 10);
+
+  expect(warn).not.toHaveBeenCalled();
+  expect(child.getState().count).toBe(2);
+  expect(first.getState().count).toBe(1);
+  expect(second.getState().count).toBe(2);
+
+  warn.mockRestore();
+  unsubscribeFirst();
+  unsubscribeSecond();
+  cleanup();
+});
+
 test("refreshes child batch baseline after superseded same-key fan-out", async () => {
   const parent = createStore({ count: 0 });
   const child = createStore({ count: 0 }, parent);
