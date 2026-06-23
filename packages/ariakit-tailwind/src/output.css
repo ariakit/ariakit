@@ -1387,7 +1387,7 @@
 @property --_ak-blh {
   syntax: "*";
   inherits: false;
-  initial-value: clamp(0, ((l - 0.8575) * 1000000), 1);
+  initial-value: clamp(0, ((l - 0.857499) * 1000000), 1);
 }
 
 @property --_ak-contrast-scale {
