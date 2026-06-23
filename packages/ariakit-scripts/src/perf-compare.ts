@@ -543,6 +543,46 @@ function escapeTableCell(value: string): string {
     .trim();
 }
 
+function getGitHubSourceBaseUrl(): string | undefined {
+  const sourceBaseUrl = process.env.PERF_SOURCE_BASE_URL;
+  if (sourceBaseUrl) return sourceBaseUrl.replace(/\/+$/, "");
+
+  const { GITHUB_REPOSITORY, GITHUB_SHA } = process.env;
+  if (!GITHUB_REPOSITORY || !GITHUB_SHA) return;
+
+  const serverUrl = process.env.GITHUB_SERVER_URL ?? "https://github.com";
+  return `${serverUrl.replace(/\/+$/, "")}/${GITHUB_REPOSITORY}/blob/${GITHUB_SHA}`;
+}
+
+function isRepoSourcePath(url: string): boolean {
+  if (!url) return false;
+  if (url.startsWith("/")) return false;
+  if (/^[a-z]+:/i.test(url)) return false;
+  if (url.includes("node_modules")) return false;
+  return /^(?:app|benchmark|examples|nextjs|packages|scripts|templates|website)\//.test(
+    url,
+  );
+}
+
+function encodeSourcePath(url: string): string {
+  return url.split("/").map(encodeURIComponent).join("/");
+}
+
+function escapeLinkText(value: string): string {
+  return escapeTableCell(value).replace(/\]/g, "\\]");
+}
+
+function formatSourceCell(item: PerfScriptProfileEntry): string {
+  const source = `${item.url}:${item.line}:${item.column}`;
+  const sourceBaseUrl = getGitHubSourceBaseUrl();
+  if (!sourceBaseUrl || !isRepoSourcePath(item.url)) {
+    return escapeTableCell(source);
+  }
+  return `[${escapeLinkText(source)}](${sourceBaseUrl}/${encodeSourcePath(
+    item.url,
+  )}#L${item.line})`;
+}
+
 function resultKey(result: PerfResult): string {
   return `${result.testFile}::${result.label}`;
 }
@@ -844,9 +884,8 @@ function formatScriptProfile(result: PerfResult): string[] {
   lines.push("|----------|------|-------|------|--------|");
 
   for (const item of profile) {
-    const source = `${item.url}:${item.line}:${item.column}`;
     lines.push(
-      `| ${escapeTableCell(item.functionName)} | ${formatMs(item.selfTime)} | ${formatMs(item.totalTime)} | ${item.hitCount} | ${escapeTableCell(source)} |`,
+      `| ${escapeTableCell(item.functionName)} | ${formatMs(item.selfTime)} | ${formatMs(item.totalTime)} | ${item.hitCount} | ${formatSourceCell(item)} |`,
     );
   }
 

@@ -672,6 +672,9 @@ importers:
 
   packages/ariakit-scripts:
     dependencies:
+      '@jridgewell/trace-mapping':
+        specifier: 0.3.31
+        version: 0.3.31
       chokidar:
         specifier: 5.0.0
         version: 5.0.0

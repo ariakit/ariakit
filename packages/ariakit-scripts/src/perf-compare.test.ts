@@ -170,10 +170,15 @@ function writeRound(
   writeJson(dir, `${prefix}-${round}-worker0.json`, [createResult(total)]);
 }
 
-function runCompare(dir: string, args: string[] = []) {
+function runCompare(
+  dir: string,
+  args: string[] = [],
+  env: NodeJS.ProcessEnv = {},
+) {
   execFileSync(process.execPath, [scriptPath, "perf-compare", ...args], {
     cwd: dir,
     encoding: "utf-8",
+    env: { ...process.env, ...env },
   });
   return readFileSync(path.join(dir, resultsDir, "comparison.md"), "utf-8");
 }
@@ -671,6 +676,50 @@ test("merges profiles across rounds", () => {
 
   expect(markdown).toContain("firstRoundFn");
   expect(markdown).toContain("secondRoundFn");
+});
+
+test("links repo script profile sources to GitHub lines", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    script: [
+      {
+        functionName: "Dialog",
+        url: "packages/ariakit-react-components/src/dialog/dialog.tsx",
+        line: 12,
+        column: 3,
+        selfTime: 8,
+        totalTime: 9,
+        hitCount: 2,
+      },
+      {
+        functionName: "DialogPerf",
+        url: "app/src/sandbox/dialog-perf/index.react.tsx",
+        line: 34,
+        column: 5,
+        selfTime: 4,
+        totalTime: 5,
+        hitCount: 1,
+      },
+    ],
+  };
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithMetrics("profiled", createMetrics(100), profiles),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    createResultWithMetrics("profiled", createMetrics(100), profiles),
+  ]);
+
+  const markdown = runCompare(dir, [], {
+    GITHUB_REPOSITORY: "ariakit/ariakit",
+    GITHUB_SHA: "abc123",
+  });
+
+  expect(markdown).toContain(
+    "[packages/ariakit-react-components/src/dialog/dialog.tsx:12:3](https://github.com/ariakit/ariakit/blob/abc123/packages/ariakit-react-components/src/dialog/dialog.tsx#L12)",
+  );
+  expect(markdown).toContain(
+    "[app/src/sandbox/dialog-perf/index.react.tsx:34:5](https://github.com/ariakit/ariakit/blob/abc123/app/src/sandbox/dialog-perf/index.react.tsx#L34)",
+  );
 });
 
 test("warns when only one side has profile data for a test", () => {
