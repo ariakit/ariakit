@@ -542,10 +542,7 @@ test("fires a keyed listener added during the keyed fast path", () => {
   expect(events).toEqual(["first", "second"]);
 });
 
-// TODO: Re-enable when fixing https://github.com/ariakit/ariakit/issues/6317.
-// The workaround commit keeps library code unchanged while the sandbox
-// demonstrates the userland workaround.
-test.skip("fires an all-keys listener added during the keyed fast path", () => {
+test("fires an all-keys listener added during the keyed fast path", () => {
   const store = createStore({ count: 0 });
   const events: string[] = [];
 
@@ -561,6 +558,64 @@ test.skip("fires an all-keys listener added during the keyed fast path", () => {
   store.setState("count", 1);
 
   expect(events).toEqual(["first", "second"]);
+});
+
+test("does not refire a keyed listener re-keyed to all keys", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+
+  const listener = () => {
+    events.push("listener");
+    subscribe(store, null, listener);
+  };
+
+  subscribe(store, ["count"], listener);
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["listener"]);
+});
+
+test("does not refire an earlier listener re-keyed to all keys", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+
+  const first = () => {
+    events.push("first");
+  };
+
+  subscribe(store, ["count"], first);
+  subscribe(store, ["count"], () => {
+    events.push("second");
+    subscribe(store, null, first);
+  });
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["first", "second"]);
+});
+
+test("fires a keyed listener added by an all-keys listener", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+
+  const third = () => {
+    events.push("third");
+  };
+
+  const second = () => {
+    events.push("second");
+    subscribe(store, ["count"], third);
+  };
+
+  subscribe(store, ["count"], () => {
+    events.push("first");
+    subscribe(store, null, second);
+  });
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["first", "second", "third"]);
 });
 
 test("unsubscribes a keyed listener from inside another keyed listener", () => {

@@ -355,7 +355,9 @@ export function createStore<S extends State>(
     if (!(updatedKey instanceof Set) && !group.allKeysListeners?.size) {
       const keyedListeners = group.listenersByKey?.get(updatedKey);
       if (!keyedListeners) return;
+      const notifiedListeners = new Set<Listener<S>>();
       for (const listener of keyedListeners) {
+        notifiedListeners.add(listener);
         // Skip the cleanup lookup when no listener has registered a cleanup.
         // The `.size` gate keeps an empty disposables map off this hot path.
         const cleanup = disposables.size
@@ -367,6 +369,29 @@ export function createStore<S extends State>(
           disposables.set(listener, result);
         } else if (cleanup) {
           disposables.delete(listener);
+        }
+      }
+      const allKeysListeners = group.allKeysListeners;
+      if (allKeysListeners?.size) {
+        for (const listener of group.listeners) {
+          if (notifiedListeners.has(listener)) continue;
+          if (!allKeysListeners.has(listener)) {
+            const keys = group.listenerKeys.get(listener);
+            if (!hasUpdatedKey(keys, updatedKey)) continue;
+          }
+          notifiedListeners.add(listener);
+          // Skip the cleanup lookup when no listener has registered a cleanup.
+          // The `.size` gate keeps an empty disposables map off this hot path.
+          const cleanup = disposables.size
+            ? disposables.get(listener)
+            : undefined;
+          if (cleanup) cleanup();
+          const result = listener(state, prevState);
+          if (result) {
+            disposables.set(listener, result);
+          } else if (cleanup) {
+            disposables.delete(listener);
+          }
         }
       }
       return;
