@@ -90,7 +90,9 @@ export function getReferenceItemFromProp(
 // item link on reference pages and partials, which is quadratic in the number
 // of items. Memoizing per data object keeps those lookups cheap. Entries are
 // stable within a page render (and across pages when the collection itself is
-// cached), so the WeakMap hits without ever holding stale data.
+// cached), so the WeakMap hits without ever holding stale data. Callers must
+// treat the returned sections and their items as read-only, since the array is
+// shared across pages.
 const sectionsCache = new WeakMap<Reference, ReferenceSection[]>();
 
 export function getReferenceSections(reference: Reference) {
