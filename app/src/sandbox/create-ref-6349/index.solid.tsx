@@ -53,7 +53,10 @@ export default function Example() {
         <button
           type="button"
           class="rounded border border-gray-300 px-3 py-1"
-          onClick={() => focusHandler.reset()}
+          onClick={() => {
+            // TODO: Remove after https://github.com/ariakit/ariakit/issues/6349
+            focusHandler.set(() => focusNameField);
+          }}
         >
           Restore default
         </button>
