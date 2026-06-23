@@ -440,7 +440,9 @@ const globalContrastT = fn.div(fn.relu(contrast), CONTRAST_HIGH);
 const bandDarkHigh = getRangeMask(l, 0, DARK_HIGH_MAX_L);
 const bandDarkLow = getRangeMask(l, DARK_HIGH_MAX_L, LA_BASE);
 const bandLightLow = getRangeMask(l, LB_BASE, LIGHT_LOW_MAX_L);
-const bandLightHigh = fn.binary(fn.sub(l, LIGHT_LOW_MAX_L));
+const bandLightHigh = fn.binary(
+  fn.sub(l, roundToDecimals(LIGHT_LOW_MAX_L - 1e-6, 6)),
+);
 
 function getLayerTextLightness() {
   const lightChromaDamping = fn.mul(

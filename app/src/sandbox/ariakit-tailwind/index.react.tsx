@@ -368,6 +368,29 @@ export default function Example() {
             className="ak-layer-l-[0.62] ak-layer-c-[0.18] *:ak-text"
           />
           <Layer
+            label="band boundary variants"
+            className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
+          >
+            <Layer className="grid gap-2">
+              <Layer className="ak-layer ak-layer-l-27.5 p-2">
+                <div className="ak-dark-high:bg-red-950 p-2 text-white">
+                  Dark high candidate (layer lightness 0.275)
+                </div>
+                <div className="ak-dark-low:bg-black p-2 text-white">
+                  Dark low candidate (layer lightness 0.275)
+                </div>
+              </Layer>
+              <Layer className="ak-layer ak-layer-l-85.75 p-2">
+                <div className="ak-light-low:bg-red-950 p-2 text-black">
+                  Light low candidate (layer lightness 0.8575)
+                </div>
+                <div className="ak-light-high:bg-black p-2 text-white">
+                  Light high candidate (layer lightness 0.8575)
+                </div>
+              </Layer>
+            </Layer>
+          </Layer>
+          <Layer
             label="ak-layer ak-text"
             className="ak-layer ak-layer-80 ak-text ak-text-blue-600 ak-frame ak-frame-p-1 ak-frame-border"
           />

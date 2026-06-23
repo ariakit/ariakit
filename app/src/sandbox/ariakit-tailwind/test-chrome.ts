@@ -563,6 +563,27 @@ async function waitForPreviewReady(page: Page) {
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  test("matches exactly one layer band at lightness boundaries", async ({
+    page,
+    q,
+  }) => {
+    await waitForPreviewReady(page);
+    const transparent = "rgba(0, 0, 0, 0)";
+
+    await expect(
+      q.text("Dark high candidate (layer lightness 0.275)"),
+    ).toHaveCSS("background-color", transparent);
+    await expect(
+      q.text("Dark low candidate (layer lightness 0.275)"),
+    ).toHaveCSS("background-color", "rgb(0, 0, 0)");
+    await expect(
+      q.text("Light low candidate (layer lightness 0.8575)"),
+    ).toHaveCSS("background-color", transparent);
+    await expect(
+      q.text("Light high candidate (layer lightness 0.8575)"),
+    ).toHaveCSS("background-color", "rgb(0, 0, 0)");
+  });
+
   for (const scheme of ["light", "dark"] as const) {
     test.describe(`${scheme} scheme`, () => {
       test.use({ colorScheme: scheme });
