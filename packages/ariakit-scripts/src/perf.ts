@@ -64,6 +64,7 @@ export interface PerfScriptProfileEntry {
 
 export interface SourceMapResolverOptions {
   sourceMapUrls?: ReadonlyMap<string, string>;
+  traceMapCache?: Map<string, Promise<TraceMap | undefined>>;
   workspaceRoot?: string;
   loadScript?: (url: string) => Promise<string | undefined>;
   loadSourceMap?: (url: string) => Promise<SourceMapInput | undefined>;
@@ -192,6 +193,7 @@ interface MeasureOnceOptions {
   scriptProfile: boolean;
   selectorProfile: boolean;
   styleSheetUrls: Map<string, string>;
+  scriptSourceMapResolver: SourceMapResolverOptions;
   scriptSourceMapUrls: ReadonlyMap<string, string>;
 }
 
@@ -410,6 +412,18 @@ async function defaultLoadSourceMap(
   return JSON.parse(text) as SourceMapInput;
 }
 
+function createCachedLoader<T>(load: (url: string) => Promise<T | undefined>) {
+  const cache = new Map<string, Promise<T | undefined>>();
+  return (url: string) => {
+    let promise = cache.get(url);
+    if (!promise) {
+      promise = load(url).catch(() => undefined);
+      cache.set(url, promise);
+    }
+    return promise;
+  };
+}
+
 function shouldIncludeScriptFrame(callFrame: CdpCallFrame): boolean {
   if (!callFrame.url) return false;
   if (INTERNAL_SCRIPT_FUNCTIONS.has(callFrame.functionName)) return false;
@@ -520,7 +534,8 @@ export async function resolveScriptProfileSourceMaps(
   const workspaceRoot = options.workspaceRoot ?? getWorkspaceRoot();
   const loadScript = options.loadScript ?? defaultLoadText;
   const loadSourceMap = options.loadSourceMap ?? defaultLoadSourceMap;
-  const traceMapCache = new Map<string, Promise<TraceMap | undefined>>();
+  const traceMapCache =
+    options.traceMapCache ?? new Map<string, Promise<TraceMap | undefined>>();
 
   const loadTraceMap = async (sourceMapUrl: string) => {
     let promise = traceMapCache.get(sourceMapUrl);
@@ -915,6 +930,7 @@ async function measureOnce(
       profiles.script = await resolveScriptProfileSourceMaps(
         parseScriptProfile(response.profile),
         {
+          ...options.scriptSourceMapResolver,
           sourceMapUrls: options.scriptSourceMapUrls,
         },
       );
@@ -1040,6 +1056,11 @@ export async function createPerfMeasure(
     styleSheetUrls.set(styleSheetId, sourceURL);
   };
   const scriptSourceMapUrls = new Map<string, string>();
+  const scriptSourceMapResolver: SourceMapResolverOptions = {
+    loadScript: createCachedLoader(defaultLoadText),
+    loadSourceMap: createCachedLoader(defaultLoadSourceMap),
+    traceMapCache: new Map(),
+  };
   const onScriptParsed = (event: DebuggerScriptParsedEvent) => {
     const { scriptId, sourceMapURL = "" } = event;
     if (sourceMapURL) {
@@ -1077,6 +1098,7 @@ export async function createPerfMeasure(
       const result = await measureOnce(page, cdp, interaction, {
         scriptProfile,
         selectorProfile,
+        scriptSourceMapResolver,
         styleSheetUrls,
         scriptSourceMapUrls,
       });

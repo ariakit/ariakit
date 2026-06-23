@@ -135,48 +135,68 @@ jobs:
           if [ ${#maps[@]} -gt 0 ]; then
             echo "missing=false" >> "$GITHUB_OUTPUT"
           elif grep -q "PERF_SOURCE_MAP" app/astro.config.ts; then
-            echo "::notice::Base app artifact has no client source maps. Building base artifacts in this job."
+            # app.yml artifacts intentionally omit source maps so ordinary app
+            # artifacts stay smaller. Perf rebuilds only the base app artifact
+            # when source maps are needed for readable script profiles.
+            echo "::notice::Base app artifact has no client source maps. Building the base app artifact in this job."
             echo "missing=true" >> "$GITHUB_OUTPUT"
           else
             echo "::notice::Base app artifact has no client source maps, and this base commit cannot enable them yet."
             echo "missing=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Clean partial base artifacts
-        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success' || steps.base-source-maps.outputs.missing == 'true'
+      - name: Set baseline rebuild flags
+        id: baseline-rebuild
+        run: |
+          rebuild_app=false
+          rebuild_nextjs=false
+          if [ "${{ steps.base-artifact.outcome }}" != "success" ] || [ "${{ steps.base-source-maps.outputs.missing }}" = "true" ]; then
+            rebuild_app=true
+          fi
+          if [ "${{ steps.base-nextjs-artifact.outcome }}" != "success" ]; then
+            rebuild_nextjs=true
+          fi
+          echo "app=$rebuild_app" >> "$GITHUB_OUTPUT"
+          echo "nextjs=$rebuild_nextjs" >> "$GITHUB_OUTPUT"
+
+      - name: Clean base app artifact
+        if: steps.baseline-rebuild.outputs.app == 'true'
         run: |
           rm -rf \
             app/dist \
-            app/.wrangler \
-            nextjs/.open-next
+            app/.wrangler
+
+      - name: Clean base Next.js artifact
+        if: steps.baseline-rebuild.outputs.nextjs == 'true'
+        run: rm -rf nextjs/.open-next
 
       - name: Install pnpm
-        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success' || steps.base-source-maps.outputs.missing == 'true'
+        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
         uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
         with:
           cache: true
 
       - name: Set up Node
-        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success' || steps.base-source-maps.outputs.missing == 'true'
+        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
         uses: actions/setup-node@v6
         with:
           node-version-file: .nvmrc
 
       - name: Install dependencies
-        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success' || steps.base-source-maps.outputs.missing == 'true'
+        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
         env:
           HUSKY: 0
         run: pnpm install --frozen-lockfile
 
       - name: Build base app
-        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success' || steps.base-source-maps.outputs.missing == 'true'
+        if: steps.baseline-rebuild.outputs.app == 'true'
         env:
           CLOUDFLARE_ENV: preview
           PERF_SOURCE_MAP: true
         run: pnpm -F app run build-lite
 
       - name: Build base Next.js app
-        if: steps.base-artifact.outcome != 'success' || steps.base-nextjs-artifact.outcome != 'success' || steps.base-source-maps.outputs.missing == 'true'
+        if: steps.baseline-rebuild.outputs.nextjs == 'true'
         run: pnpm -F nextjs run build-worker
 
       - name: Check baseline artifacts

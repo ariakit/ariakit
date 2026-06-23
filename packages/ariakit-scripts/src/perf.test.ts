@@ -216,3 +216,41 @@ test("normalizes served app source map URLs to repo paths", async () => {
 
   expect(resolved[0]?.url).toBe("app/src/sandbox/dialog-perf/index.react.tsx");
 });
+
+test("reuses source map cache across script profile resolutions", async () => {
+  const profile = parseScriptProfile({
+    nodes: [
+      {
+        id: 1,
+        callFrame: {
+          functionName: "p",
+          scriptId: "1",
+          url: "https://example.com/_astro/dialog.js",
+          lineNumber: 0,
+          columnNumber: 0,
+        },
+      },
+    ],
+    samples: [1],
+    timeDeltas: [1000],
+  });
+  let loadCount = 0;
+  const options = {
+    sourceMapUrls: new Map([["1", "dialog.js.map"]]),
+    traceMapCache: new Map(),
+    loadSourceMap: async () => {
+      loadCount += 1;
+      return {
+        version: 3 as const,
+        names: ["Dialog"],
+        sources: ["../packages/ariakit-react-components/src/dialog/dialog.tsx"],
+        mappings: "AAAAA",
+      };
+    },
+  };
+
+  await resolveScriptProfileSourceMaps(profile, options);
+  await resolveScriptProfileSourceMaps(profile, options);
+
+  expect(loadCount).toBe(1);
+});
