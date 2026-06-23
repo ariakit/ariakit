@@ -233,6 +233,9 @@ importers:
       '@ariakit/solid-utils':
         specifier: workspace:*
         version: link:../packages/ariakit-solid-utils
+      '@ariakit/store':
+        specifier: workspace:*
+        version: link:../packages/ariakit-store
       '@ariakit/tailwind':
         specifier: workspace:*
         version: link:../packages/ariakit-tailwind
