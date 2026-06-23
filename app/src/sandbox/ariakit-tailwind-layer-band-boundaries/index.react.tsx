@@ -5,7 +5,7 @@ export default function Example() {
     <div className="flex flex-col gap-4 p-4">
       <section
         aria-label="band boundary variants"
-        className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
+        className="ak-layer ak-frame ak-frame-p-1 ak-frame-border"
       >
         <div className="grid gap-2">
           <section className="ak-layer ak-layer-l-27.5 p-2">
