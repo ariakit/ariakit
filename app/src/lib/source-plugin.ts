@@ -16,6 +16,7 @@ import { resolve as resolveImportMeta } from "import-meta-resolve";
 import * as prettier from "prettier";
 import { readPackageUpSync } from "read-package-up";
 import ts from "typescript";
+import type { HookHandler, Plugin } from "vite";
 import {
   getFramework,
   getFrameworkByFilename,
@@ -60,10 +61,9 @@ interface FlattenedCacheData {
 
 const flattenedFileCache = new Map<string, FlattenedCacheData>();
 
-interface SourcePluginContext {
-  addWatchFile(id: string): void;
-  resolve(id: string, importer?: string): Promise<{ id: string } | null>;
-}
+type SourcePluginContext = ThisParameterType<
+  HookHandler<NonNullable<Plugin["load"]>>
+>;
 
 /**
  * Compute a stable hash for a given string content.
@@ -507,13 +507,13 @@ async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
  * Custom plugin to extract source code and dependencies using Vite's module
  * graph
  */
-export function sourcePlugin(root?: string) {
+export function sourcePlugin(root?: string): Plugin {
   const queryString = "?source";
 
   return {
     name: "vite-plugin-source",
 
-    async load(this: SourcePluginContext, id: string) {
+    async load(id) {
       if (!id.endsWith(queryString)) return;
       const realId = id.replace(queryString, "");
 
