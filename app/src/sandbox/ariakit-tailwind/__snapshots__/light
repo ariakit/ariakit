@@ -49,13 +49,6 @@
       "#165DFC": "bg-[oklch(0.9933_0.0011_197.14)] text-[oklch(0_0_0)] *:text-[lch(43.4424_80_288.704)] rounded-[15px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.1)_0px_0px_0px_0px]",
       "raw calc": "bg-[oklch(0_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[lch(55.2119_0_0)] rounded-[15px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.1)_0px_0px_0px_0px]",
       "raw l/c": "bg-[oklch(0.5096_0.18_197.14)] text-[oklch(1_0_0)] *:text-[lch(100_0_0)] rounded-[15px] border-[1px] border-[oklch(0_0.18_197.14_/_0.1)] p-[4px] shadow-[oklch(0_0.18_197.14_/_0.1)_0px_0px_0px_0px]",
-      "band boundary variants": {
-        "class": "bg-[oklch(0.9933_0.0011_197.14)] text-[oklch(0_0_0)] rounded-[15px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.1)_0px_0px_0px_0px]",
-        "children": {
-          "ak-layer-l-27.5": "bg-[oklch(0.275_0.0011_197.14)] text-[oklch(1_0_0)] *:text-[rgb(255,_255,_255)] p-[8px]",
-          "ak-layer-l-85.75": "bg-[oklch(0.8575_0.0011_197.14)] text-[oklch(0_0_0)] p-[8px]"
-        }
-      },
       "ak-layer ak-text": "text-[lch(43.4424_80_288.648)] rounded-[15px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.1)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.1)_0px_0px_0px_0px]",
       "raw ink/edge": "bg-[oklch(0.9933_0.0011_197.14)] text-[oklch(0_0_0_/_0.5418)] *:text-[lch(43.4424_0.38_0)] rounded-[15px] border-[1px] border-[oklch(0_0.0011_197.14_/_0.35)] p-[4px] shadow-[oklch(0_0.0011_197.14_/_0.35)_0px_0px_0px_0px]",
       "layer limits": {
