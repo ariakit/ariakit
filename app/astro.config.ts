@@ -69,6 +69,11 @@ export default defineConfig({
   },
 
   vite: {
+    // TODO: Remove this workaround once Astro isolates optimizer cache writes
+    // across dev and check commands. Running `astro check` while `astro dev`
+    // is active shares Vite's optimized deps cache, so the checker uses a
+    // separate cache directory to avoid invalidating the dev server's optimized
+    // SSR modules.
     cacheDir: viteCacheDir,
     build: {
       // Perf CI enables this so CDP script profiles can resolve source maps.
@@ -79,7 +84,7 @@ export default defineConfig({
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
     // TODO: Remove this workaround once
-    // https://github.com/withastro/astro/issues/16853 is fixed. These bare
+    // https://github.com/withastro/astro/issues/17166 is fixed. These bare
     // specifiers are missed by the SSR dependency optimizer's initial scan.
     // Some are re-exported from Astro virtual modules (astro:transitions,
     // astro:actions); others are imported directly (astro/zod in
