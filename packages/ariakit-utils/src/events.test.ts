@@ -1,5 +1,9 @@
-import { expect, test } from "vitest";
-import { isFocusEventOutside, isPortalEvent } from "./events.ts";
+import { expect, test, vi } from "vitest";
+import {
+  isFocusEventOutside,
+  isPortalEvent,
+  queueBeforeEvent,
+} from "./events.ts";
 
 // Regression tests for https://github.com/ariakit/ariakit/issues/5156: a
 // programmatically dispatched event can carry a non-node target/relatedTarget
@@ -36,4 +40,32 @@ test("isPortalEvent keeps a contained text-node target as non-portal", () => {
   const text = container.appendChild(document.createTextNode("hi"));
   const event = { currentTarget: container, target: text };
   expect(isPortalEvent(event)).toBe(false);
+});
+
+// See https://github.com/ariakit/ariakit/issues/6350
+
+function expectCancelToRemoveQueuedEventListener(timeout?: number) {
+  vi.useFakeTimers();
+
+  try {
+    const container = document.createElement("div");
+    const callback = vi.fn();
+    const cancel = queueBeforeEvent(container, "mousedown", callback, timeout);
+
+    cancel();
+    container.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    vi.runAllTimers();
+
+    expect(callback).not.toHaveBeenCalled();
+  } finally {
+    vi.useRealTimers();
+  }
+}
+
+test("queueBeforeEvent cancel removes the queued animation frame listener", () => {
+  expectCancelToRemoveQueuedEventListener();
+});
+
+test("queueBeforeEvent cancel removes the queued timeout listener", () => {
+  expectCancelToRemoveQueuedEventListener(1_000);
 });
