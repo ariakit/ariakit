@@ -567,6 +567,29 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.describe(`${scheme} scheme`, () => {
       test.use({ colorScheme: scheme });
 
+      test("pushes parentless dark layers toward the light boundary", async ({
+        page,
+        q,
+      }) => {
+        await waitForPreviewReady(page);
+        const cases = [
+          ["parentless dark layer push", "nested dark layer push"],
+          ["parentless dark state push", "nested dark state push"],
+        ] as const;
+
+        for (const [parentlessLabel, nestedLabel] of cases) {
+          const parentlessPush = q.region(parentlessLabel);
+          const nestedPush = q.region(nestedLabel);
+          const nestedBackgroundColor = await nestedPush.evaluate((element) => {
+            return getComputedStyle(element).backgroundColor;
+          });
+          await expect(parentlessPush).toHaveCSS(
+            "background-color",
+            nestedBackgroundColor,
+          );
+        }
+      });
+
       test("no color contrast violations (WCAG AA)", async ({ page }) => {
         test.setTimeout(60_000);
         const results = await new AxeBuilder({ page })
