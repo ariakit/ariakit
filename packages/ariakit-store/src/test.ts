@@ -542,6 +542,24 @@ test("fires a keyed listener added during the keyed fast path", () => {
   expect(events).toEqual(["first", "second"]);
 });
 
+test("fires an all-keys listener added during the keyed fast path", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+
+  const second = () => {
+    events.push("second");
+  };
+
+  subscribe(store, ["count"], () => {
+    events.push("first");
+    subscribe(store, null, second);
+  });
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["first", "second"]);
+});
+
 test("unsubscribes a keyed listener from inside another keyed listener", () => {
   const store = createStore({ count: 0 });
   const events: string[] = [];
