@@ -10,6 +10,7 @@
     "./perf": "./src/perf.ts"
   },
   "dependencies": {
+    "@jridgewell/trace-mapping": "0.3.31",
     "chokidar": "5.0.0",
     "commander": "15.0.0",
     "rolldown": "1.1.2",

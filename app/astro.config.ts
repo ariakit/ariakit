@@ -60,6 +60,10 @@ export default defineConfig({
   }),
 
   vite: {
+    build: {
+      // Perf CI enables this so CDP script profiles can resolve source maps.
+      sourcemap: process.env.PERF_SOURCE_MAP === "true",
+    },
     plugins: [
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
