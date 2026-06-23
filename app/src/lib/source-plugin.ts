@@ -65,11 +65,6 @@ interface SourcePluginContext {
   resolve(id: string, importer?: string): Promise<{ id: string } | null>;
 }
 
-interface SourcePlugin {
-  name: string;
-  load(this: SourcePluginContext, id: string): Promise<string | undefined>;
-}
-
 /**
  * Compute a stable hash for a given string content.
  */
@@ -512,13 +507,13 @@ async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
  * Custom plugin to extract source code and dependencies using Vite's module
  * graph
  */
-export function sourcePlugin(root?: string): SourcePlugin {
+export function sourcePlugin(root?: string) {
   const queryString = "?source";
 
   return {
     name: "vite-plugin-source",
 
-    async load(id) {
+    async load(this: SourcePluginContext, id: string) {
       if (!id.endsWith(queryString)) return;
       const realId = id.replace(queryString, "");
 
