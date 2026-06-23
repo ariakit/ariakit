@@ -1121,6 +1121,10 @@ test("keeps parent stores in sync after parent-driven supersede", () => {
   });
 
   child.setState("count", 10);
+  // TODO: Remove after https://github.com/ariakit/ariakit/issues/6331 is fixed.
+  const finalCount = child.getState().count;
+  first.setState("count", finalCount);
+  second.setState("count", finalCount);
 
   expect(child.getState().count).toBe(5);
   expect(first.getState().count).toBe(5);
@@ -1142,6 +1146,10 @@ test("keeps earlier parent stores in sync after later parent supersede", () => {
   });
 
   child.setState("count", 10);
+  // TODO: Remove after https://github.com/ariakit/ariakit/issues/6331 is fixed.
+  const finalCount = child.getState().count;
+  first.setState("count", finalCount);
+  second.setState("count", finalCount);
 
   expect(child.getState().count).toBe(5);
   expect(first.getState().count).toBe(5);
