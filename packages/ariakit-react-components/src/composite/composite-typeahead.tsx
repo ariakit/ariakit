@@ -175,10 +175,9 @@ export const useCompositeTypeahead = createHook<
     const offscreenItems = document.querySelectorAll<HTMLElement>(selector);
     // Push the offscreen items to the enabled items list.
     for (const element of offscreenItems) {
-      const disabled =
-        element.ariaDisabled === "true" ||
-        ("disabled" in element && !!element.disabled);
-      enabledItems.push({ id: element.id, element, disabled });
+      if (element.hasAttribute("data-disabled")) continue;
+      if ("disabled" in element && !!element.disabled) continue;
+      enabledItems.push({ id: element.id, element });
     }
     // If there are offscreen items, we need to sort the enabled items based on
     // their DOM position so offscreen elements above the viewport are correctly
