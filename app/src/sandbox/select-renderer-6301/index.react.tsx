@@ -41,7 +41,11 @@ export default function Example() {
         sameWidth
         style={{ background: "white", border: "1px solid gray" }}
       >
-        <SelectRenderer store={select} items={items}>
+        <SelectRenderer
+          store={select}
+          items={items}
+          initialItems={items.length}
+        >
           {(item) => {
             if (item.items) {
               const { label, ...groupProps } = item;
@@ -49,6 +53,7 @@ export default function Example() {
                 <SelectRenderer
                   key={groupProps.id}
                   {...groupProps}
+                  initialItems={item.items.length}
                   render={(props) => (
                     <Ariakit.SelectGroup {...props}>
                       <Ariakit.SelectGroupLabel>
