@@ -69,6 +69,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`fireClickEvent`](#fireclickevent)
   - [`isFocusEventOutside`](#isfocuseventoutside)
   - [`getInputType`](#getinputtype)
+  - [`isInputEvent`](#isinputevent)
   - [`queueBeforeEvent`](#queuebeforeevent)
   - [`addGlobalEventListener`](#addglobaleventlistener)
 - [Focus utilities](#focus-utilities)
@@ -764,6 +765,18 @@ function getInputType(
 ```
 
 Returns the `inputType` property of the event, if available.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `isInputEvent`
+
+```ts
+function isInputEvent(event: Event): event is InputEvent;
+```
+
+Checks whether the event is an input event.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>

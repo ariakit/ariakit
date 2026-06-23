@@ -1,6 +1,7 @@
 import { expect, test, vi } from "vitest";
 import {
   isFocusEventOutside,
+  isInputEvent,
   isPortalEvent,
   queueBeforeEvent,
 } from "./events.ts";
@@ -40,6 +41,11 @@ test("isPortalEvent keeps a contained text-node target as non-portal", () => {
   const text = container.appendChild(document.createTextNode("hi"));
   const event = { currentTarget: container, target: text };
   expect(isPortalEvent(event)).toBe(false);
+});
+
+test("isInputEvent checks input events", () => {
+  expect(isInputEvent(new InputEvent("input"))).toBe(true);
+  expect(isInputEvent(new Event("change"))).toBe(false);
 });
 
 // See https://github.com/ariakit/ariakit/issues/6350

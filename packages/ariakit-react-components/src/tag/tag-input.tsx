@@ -12,6 +12,7 @@ import {
   getTextboxSelection,
   setSelectionRange,
   getInputType,
+  isInputEvent,
   invariant,
   UndoManager,
 } from "@ariakit/utils";
@@ -116,6 +117,8 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
           return () => store.setValue(prevValue);
         }, inputType);
       }
+      const nativeEvent = event.nativeEvent;
+      if (isInputEvent(nativeEvent) && nativeEvent.isComposing) return;
       // Add values to the store if the input value ends with a delimiter
       const isTrailingCaret = start === end && start === value.length;
       if (isTrailingCaret) {
