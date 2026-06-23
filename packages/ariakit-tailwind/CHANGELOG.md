@@ -1,5 +1,11 @@
 # @ariakit/tailwind
 
+## 0.2.4
+
+### Improved `ak-layer`, `ak-edge`, and `ak-text` style recalculation performance
+
+Layer and edge colors now resolve fewer intermediate colors per element. In browsers that support the CSS `if()` function, `ak-text` delivers its quantized lightness table as four conditional declarations instead of one rule per quantized step, which removes most of its selector matching work — especially under child variants such as `*:ak-text`.
+
 ## 0.2.3
 
 - Made the `--ak-edge` CSS custom property inheriting so descendants of an `.ak-layer` element can read it directly.
