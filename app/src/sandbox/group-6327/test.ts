@@ -7,3 +7,9 @@ test("uses aria-label instead of GroupLabel for the group name", () => {
   expect(group).toHaveAttribute("aria-label", "Audio playback settings");
   expect(group).not.toHaveAttribute("aria-labelledby");
 });
+
+test("preserves explicit aria-labelledby when aria-label is passed", () => {
+  const group = q.group.ensure("Explicit playback settings");
+  expect(group).toHaveAttribute("aria-label", "Audio playback settings");
+  expect(group).toHaveAttribute("aria-labelledby", "explicit-group-label");
+});
