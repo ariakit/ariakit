@@ -6,6 +6,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     await test.expect(q.combobox("Favorite fruit")).toHaveText("Banana");
-    await test.expect(q.text("Committed value: Banana")).toBeVisible();
+    await test.expect(q.status()).toHaveText("Banana");
   });
 });
