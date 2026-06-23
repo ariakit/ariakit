@@ -1279,7 +1279,6 @@ const layerMathDeclarations = [
 // Build the layered color stages from idle -> base -> offset -> final.
 const layerColorDeclarations = [
   set(vars.layerIdleBase, layerIdleBase),
-  set(vars.layerSourceDirection, layerSourceDirection),
   set(vars.layerIdleOffset, layerIdleOffset),
   set(vars.layerIdle, layerIdle),
   set(vars.layerBase, layerState),
@@ -1376,6 +1375,7 @@ utility(
     // Parentless layers need to query their own computed source color. Container
     // style queries only see ancestors, so browsers without if() keep the
     // existing parent/variant fallback for this direction.
+    set(vars.layerSourceDirection, layerSourceDirection),
     set(vars.layerSourceDirectionToLight, getLayerSourceDirectionToLight()),
   ),
   at.variant(
