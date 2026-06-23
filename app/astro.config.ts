@@ -45,10 +45,6 @@ export default defineConfig({
 
   srcDir: "src",
 
-  // Astro 7 defaults to JSX-style whitespace. Keep the app on Astro 6's
-  // HTML-aware compression so inline content split across lines keeps spaces.
-  compressHTML: true,
-
   server: {
     port,
     host: true,
@@ -81,7 +77,7 @@ export default defineConfig({
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
     // TODO: Remove this workaround once
-    // https://github.com/withastro/astro/issues/16853 is fixed. These bare
+    // https://github.com/withastro/astro/issues/17166 is fixed. These bare
     // specifiers are missed by the SSR dependency optimizer's initial scan.
     // Some are re-exported from Astro virtual modules (astro:transitions,
     // astro:actions); others are imported directly (astro/zod in

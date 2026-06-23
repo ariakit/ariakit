@@ -136,7 +136,7 @@ const hasGuides = guides.length > 0;
       >
         {
           type === "examples" && (
-            <span class="ak-text ak-text-primary">{frameworkLength}</span>
+            <span class="ak-text ak-text-primary">{frameworkLength} </span>
           )
         }
         {
@@ -144,7 +144,7 @@ const hasGuides = guides.length > 0;
             <Icon name={frameworkData.icon} className="flex-none" />
           )
         }
-        {frameworkData.label}
+        {frameworkData.label}{" "}
         {pluralize(typeTitle, frameworkLength)}
         <BoxPatternsMiddle />
       </h1>
@@ -158,7 +158,7 @@ const hasGuides = guides.length > 0;
         >
           <Icon name="search" className="flex-none" />
           <div class="ak-input-placeholder truncate">
-            Search {frameworkData.label}
+            Search {frameworkData.label}{" "}
             {pluralize(typeTitle, frameworkLength)}
           </div>
         </div>
@@ -229,7 +229,7 @@ const hasGuides = guides.length > 0;
                     {t?.label ?? "All"}
                     <span slot="badge">
                       {length}
-                      <span class="sr-only">{pluralize(type, length)}</span>
+                      <span class="sr-only"> {pluralize(type, length)}</span>
                     </span>
                   </ChipLink>
                 </li>
