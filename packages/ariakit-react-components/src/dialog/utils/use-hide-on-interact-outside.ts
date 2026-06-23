@@ -19,7 +19,13 @@ interface EventOutsideOptions {
   type: string;
   listener: (event: Event) => void;
   capture?: boolean;
-  domReady?: boolean | HTMLElement | null;
+  // The open and contentElement states and the focusedRef are tracked once by
+  // useHideOnInteractOutside and shared with each useEventOutside call so the
+  // dialog doesn't pay for one store subscription (and focusin listener) per
+  // event type.
+  open?: boolean;
+  contentElement?: HTMLElement | null;
+  focusedRef: MutableRefObject<boolean>;
 }
 
 function isInDocument(target: Element) {
@@ -57,24 +63,11 @@ function useEventOutside({
   type,
   listener,
   capture,
-  domReady,
+  open,
+  contentElement,
+  focusedRef,
 }: EventOutsideOptions) {
   const callListener = useEvent(listener);
-  const open = useStoreState(store, "open");
-  const contentElement = useStoreState(store, "contentElement");
-  const focusedRef = useRef(false);
-
-  useSafeLayoutEffect(() => {
-    if (!open) return;
-    if (!domReady) return;
-    if (!contentElement) return;
-    focusedRef.current = false;
-    const onFocus = () => {
-      focusedRef.current = true;
-    };
-    contentElement.addEventListener("focusin", onFocus, true);
-    return () => contentElement.removeEventListener("focusin", onFocus, true);
-  }, [open, domReady, contentElement]);
 
   useEffect(() => {
     if (!open) return;
@@ -106,7 +99,7 @@ function useEventOutside({
     };
     const win = contentElement ? getWindow(contentElement) : undefined;
     return addGlobalEventListener(type, onEvent, capture, win);
-  }, [open, capture, store, type, callListener, contentElement]);
+  }, [open, capture, store, type, callListener, contentElement, focusedRef]);
 }
 
 function shouldHideOnInteractOutside(
@@ -129,7 +122,24 @@ export function useHideOnInteractOutside(
   const contentElement = useStoreState(store, "contentElement");
   const contentWindow = contentElement ? getWindow(contentElement) : undefined;
   const previousMouseDownRef = usePreviousMouseDownRef(open, contentWindow);
-  const props = { store, domReady, capture: true };
+  const focusedRef = useRef(false);
+
+  // Tracks whether the content element has been focused at least once since
+  // the dialog opened. The event listeners below use this to decide whether
+  // the marked-tree check applies. Shared by all event types.
+  useSafeLayoutEffect(() => {
+    if (!open) return;
+    if (!domReady) return;
+    if (!contentElement) return;
+    focusedRef.current = false;
+    const onFocus = () => {
+      focusedRef.current = true;
+    };
+    contentElement.addEventListener("focusin", onFocus, true);
+    return () => contentElement.removeEventListener("focusin", onFocus, true);
+  }, [open, domReady, contentElement]);
+
+  const props = { store, capture: true, open, contentElement, focusedRef };
 
   useEventOutside({
     ...props,

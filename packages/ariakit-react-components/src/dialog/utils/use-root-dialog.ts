@@ -1,6 +1,6 @@
-import { useForceUpdate } from "@ariakit/react-utils";
+import { useForceUpdate, useSafeLayoutEffect } from "@ariakit/react-utils";
 import { getDocument } from "@ariakit/utils";
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import { flushSync } from "react-dom";
 
 interface Props {
@@ -27,7 +27,11 @@ export function useRootDialog({
     // oxlint-disable-next-line exhaustive-deps
   }, [updated, enabled, contentElement, attribute, contentId]);
 
-  useEffect(() => {
+  // Run in the layout phase so consumers that also moved to the layout phase
+  // (such as usePreventBodyScroll, registered after this hook) see the root
+  // attribute in the same order they did when everything ran in the passive
+  // phase.
+  useSafeLayoutEffect(() => {
     if (!enabled) return;
     if (!contentId) return;
     if (!contentElement) return;

@@ -1,10 +1,17 @@
 import { afterEach, expect, test } from "vitest";
-import { isTabbable } from "./focus.ts";
+import { getFirstTabbableIn, isTabbable } from "./focus.ts";
 
 function setVisible(element: Element) {
   Object.defineProperty(element, "checkVisibility", {
     configurable: true,
     value: () => true,
+  });
+}
+
+function setNotVisible(element: Element) {
+  Object.defineProperty(element, "checkVisibility", {
+    configurable: true,
+    value: () => false,
   });
 }
 
@@ -60,4 +67,77 @@ test("keeps radios outside a form tabbable", () => {
   document.body.append(radio);
 
   expect(isTabbable(radio)).toBe(true);
+});
+
+test("getFirstTabbableIn returns the first tabbable element in order", () => {
+  const container = document.createElement("div");
+  container.innerHTML = `
+    <button id="negative" tabindex="-1">Negative</button>
+    <button id="hidden">Hidden</button>
+    <input id="first" />
+    <button id="second">Second</button>
+  `;
+  document.body.append(container);
+
+  const negative = container.querySelector("#negative");
+  const hidden = container.querySelector("#hidden");
+  const first = container.querySelector("#first");
+  const second = container.querySelector("#second");
+  if (!negative || !hidden || !first || !second) {
+    throw new Error("Expected elements");
+  }
+
+  setVisible(negative);
+  setNotVisible(hidden);
+  setVisible(first);
+  setVisible(second);
+
+  expect(getFirstTabbableIn(container)).toBe(first);
+});
+
+test("getFirstTabbableIn returns the container itself when included and tabbable", () => {
+  const container = document.createElement("div");
+  container.tabIndex = 0;
+  container.innerHTML = `<button id="child">Child</button>`;
+  document.body.append(container);
+
+  const child = container.querySelector("#child");
+  if (!child) {
+    throw new Error("Expected child");
+  }
+
+  setVisible(container);
+  setVisible(child);
+
+  expect(getFirstTabbableIn(container, true)).toBe(container);
+  expect(getFirstTabbableIn(container)).toBe(child);
+});
+
+test("getFirstTabbableIn falls back to the first focusable candidate", () => {
+  const container = document.createElement("div");
+  container.innerHTML = `
+    <button id="negative" tabindex="-1">Negative</button>
+    <button id="other" tabindex="-1">Other</button>
+  `;
+  document.body.append(container);
+
+  const negative = container.querySelector("#negative");
+  if (!negative) {
+    throw new Error("Expected element");
+  }
+
+  setVisible(negative);
+
+  // No tabbable elements: without the fallback we get null; with the
+  // fallback we get the first element matching the focusable selector.
+  expect(getFirstTabbableIn(container)).toBe(null);
+  expect(getFirstTabbableIn(container, false, true)).toBe(negative);
+});
+
+test("getFirstTabbableIn returns null for empty containers", () => {
+  const container = document.createElement("div");
+  document.body.append(container);
+
+  expect(getFirstTabbableIn(container)).toBe(null);
+  expect(getFirstTabbableIn(container, true, true)).toBe(null);
 });

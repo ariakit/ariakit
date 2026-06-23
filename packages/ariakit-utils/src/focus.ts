@@ -171,13 +171,45 @@ export function getFirstTabbableIn(
   container: HTMLElement,
   includeContainer?: boolean,
   fallbackToFocusable?: boolean,
-) {
-  const [first] = getAllTabbableIn(
-    container,
-    includeContainer,
-    fallbackToFocusable,
-  );
-  return first || null;
+): HTMLElement | null {
+  // Unlike getAllTabbableIn, this returns as soon as a tabbable element is
+  // found. Each isTabbable check queries style and layout, so collecting every
+  // tabbable element just to take the first one is wasteful in containers with
+  // many tabbable elements, such as dialogs with forms.
+  if (includeContainer && isTabbable(container)) {
+    if (!isFrame(container)) return container;
+    const containerFrameBody = container.contentDocument?.body;
+    if (!containerFrameBody) return container;
+    const frameTabbable = getFirstTabbableIn(
+      containerFrameBody,
+      false,
+      fallbackToFocusable,
+    );
+    if (frameTabbable) return frameTabbable;
+    // The container frame has no tabbable content. Fall through to the
+    // container's own descendants, like getAllTabbableIn, which removed the
+    // empty frame from the list and continued.
+  }
+  const elements = container.querySelectorAll<HTMLElement>(selector);
+  for (const element of elements) {
+    if (!isTabbable(element)) continue;
+    if (isFrame(element)) {
+      const frameBody = element.contentDocument?.body;
+      if (!frameBody) return element;
+      const frameTabbable = getFirstTabbableIn(
+        frameBody,
+        false,
+        fallbackToFocusable,
+      );
+      if (frameTabbable) return frameTabbable;
+      continue;
+    }
+    return element;
+  }
+  if (fallbackToFocusable) {
+    return elements[0] || null;
+  }
+  return null;
 }
 
 /**

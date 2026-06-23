@@ -9,9 +9,13 @@ import {
   setProperty,
 } from "./orchestrate.ts";
 import { supportsInert } from "./supports-inert.ts";
+import {
+  addAncestorMarkCleanup,
+  addElementMarkCleanup,
+  restoreCleanups,
+} from "./tree-cleanup.ts";
+import type { Cleanups, Elements, Ids } from "./tree-cleanup.ts";
 import { walkTreeOutside } from "./walk-tree-outside.ts";
-
-type Elements = Array<Element | null>;
 
 export function disableTree(
   element: Element | HTMLElement,
@@ -47,6 +51,39 @@ export function disableTree(
   );
 }
 
+interface AddDisabledElementCleanupParams {
+  cleanups: Cleanups;
+  element: Element;
+  elements: Elements;
+  ids: Ids;
+}
+
+function addDisabledElementCleanup({
+  cleanups,
+  element,
+  elements,
+  ids,
+}: AddDisabledElementCleanupParams) {
+  if (isBackdrop(element, ...ids)) return;
+  // Ignore focus trap elements connected to any of the dialog elements. See
+  // dialog-menu "move back to menu button with Shift+Tab" test.
+  if (isFocusTrap(element, ...ids)) return;
+  cleanups.push(disableTree(element, elements));
+}
+
+function addRoleNoneCleanup(
+  cleanups: Cleanups,
+  ancestor: Element,
+  elements: Elements,
+) {
+  // Parent accessible elements that are not part of the modal context should
+  // have their role set to "none" so that they are not exposed to screen
+  // readers.
+  if (!ancestor.hasAttribute("role")) return;
+  if (elements.some((el) => el && contains(el, ancestor))) return;
+  cleanups.push(setAttribute(ancestor, "role", "none"));
+}
+
 export function disableTreeOutside(id: string, elements: Elements) {
   const cleanups: Array<() => void> = [];
   const ids = elements.map((el) => el?.id);
@@ -55,26 +92,42 @@ export function disableTreeOutside(id: string, elements: Elements) {
     id,
     elements,
     (element) => {
-      if (isBackdrop(element, ...ids)) return;
-      // Ignore focus trap elements connected to any of the dialog elements. See
-      // dialog-menu "move back to menu button with Shift+Tab" test.
-      if (isFocusTrap(element, ...ids)) return;
-      cleanups.unshift(disableTree(element, elements));
+      addDisabledElementCleanup({ cleanups, element, elements, ids });
     },
-    (element) => {
-      // Parent accessible elements that are not part of the modal context
-      // should have their role set to "none" so that they are not exposed to
-      // screen readers.
-      if (!element.hasAttribute("role")) return;
-      if (elements.some((el) => el && contains(el, element))) return;
-      cleanups.unshift(setAttribute(element, "role", "none"));
+    (ancestor) => {
+      addRoleNoneCleanup(cleanups, ancestor, elements);
     },
   );
 
   const restoreTreeOutside = () => {
-    for (const cleanup of cleanups) {
-      cleanup();
-    }
+    restoreCleanups(cleanups);
+  };
+
+  return restoreTreeOutside;
+}
+
+// Marks and disables the element tree outside the dialog in a single walk.
+// Modal dialogs always need both markTreeOutside and disableTreeOutside, so
+// this combines their callbacks to avoid walking the tree twice on open.
+export function markAndDisableTreeOutside(id: string, elements: Elements) {
+  const cleanups: Array<() => void> = [];
+  const ids = elements.map((el) => el?.id);
+
+  walkTreeOutside(
+    id,
+    elements,
+    (element) => {
+      addElementMarkCleanup({ cleanups, element, id, ids });
+      addDisabledElementCleanup({ cleanups, element, elements, ids });
+    },
+    (ancestor, element) => {
+      addAncestorMarkCleanup({ cleanups, ancestor, element, id });
+      addRoleNoneCleanup(cleanups, ancestor, elements);
+    },
+  );
+
+  const restoreTreeOutside = () => {
+    restoreCleanups(cleanups);
   };
 
   return restoreTreeOutside;
