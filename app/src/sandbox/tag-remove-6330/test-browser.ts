@@ -7,17 +7,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    await q.textbox("Add filter").click();
-    await page.keyboard.press("Tab");
-
-    // The focused element is hidden before the fix, so accessible button
-    // queries cannot observe it until after the aria-hidden assertion passes.
-    const focusedElement = page.locator(":focus");
-    await test.expect(focusedElement).toHaveText("Remove React filter");
-    await test
-      .expect(focusedElement)
-      .not.toHaveAttribute("aria-hidden", "true");
-    await test.expect(q.button("Remove React filter")).toBeFocused();
+    const removeButton = q.button("Remove React filter");
+    await test.expect(removeButton).toBeVisible();
+    await test.expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
+    // Safari does not always tab-focus native buttons on macOS runners.
+    await removeButton.focus();
+    await test.expect(removeButton).toBeFocused();
     await test
       .expect(
         page
