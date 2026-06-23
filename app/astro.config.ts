@@ -35,6 +35,7 @@ try {
 
 const port = Number(process.env.APP_PORT) || 4321;
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+const viteCacheDir = process.env.APP_VITE_CACHE_DIR;
 
 // https://astro.build/config
 export default defineConfig({
@@ -68,6 +69,7 @@ export default defineConfig({
   },
 
   vite: {
+    cacheDir: viteCacheDir,
     build: {
       // Perf CI enables this so CDP script profiles can resolve source maps.
       sourcemap: process.env.PERF_SOURCE_MAP === "true",
