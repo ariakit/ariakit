@@ -149,7 +149,8 @@ export function createRef<T>(initialValue?: any): RefStore<T> {
     },
     get,
     set,
-    reset: () => set(initialValue),
+    // Store function values verbatim instead of treating them as updaters.
+    reset: () => set(() => initialValue),
   };
 }
 

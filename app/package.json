@@ -53,6 +53,7 @@
     "@ariakit/react-components": "workspace:*",
     "@ariakit/react-utils": "workspace:*",
     "@ariakit/solid": "workspace:*",
+    "@ariakit/solid-utils": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
     "@ariakit/utils": "workspace:*",
     "@astrojs/check": "0.9.9",
