@@ -62,15 +62,9 @@ const testExcludes = [
   ...(testLoader ? [] : defaultTestExcludes),
 ];
 
-// sourcePlugin is typed against the app workspace's Vite copy, while Vitest
-// consumes the root Vite types. The runtime plugin shape is compatible.
-// TODO: Remove this cast when the app and root test stack resolve the same Vite
-// peer-context type instance.
-const sourcePluginInstance = sourcePlugin(
-  join(rootDir, "app/src/examples/"),
-) as unknown as PluginOption;
+const sourcePluginInstance = sourcePlugin(join(rootDir, "app/src/examples/"));
 
-const plugins = [sourcePluginInstance];
+const plugins: PluginOption[] = [sourcePluginInstance];
 if (testLoader === "react") {
   plugins.unshift(reactPlugin());
 } else if (testLoader === "solid") {
