@@ -1,16 +1,7 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("does not split IME composition text into tags", async ({
-    browserName,
-    page,
-    q,
-  }) => {
-    test.skip(
-      browserName !== "chromium",
-      "CDP IME composition is Chromium-only.",
-    );
-
+  test("does not split IME composition text into tags", async ({ page, q }) => {
     const input = q.textbox("New tag");
     await input.focus();
 
