@@ -700,6 +700,15 @@ test("links repo script profile sources to GitHub lines", () => {
         totalTime: 5,
         hitCount: 1,
       },
+      {
+        functionName: "Escaped",
+        url: String.raw`app/src/sandbox/dialog\[perf]|case.tsx`,
+        line: 56,
+        column: 7,
+        selfTime: 2,
+        totalTime: 3,
+        hitCount: 1,
+      },
     ],
   };
   writeJson(dir, "baseline-worker0.json", [
@@ -719,6 +728,9 @@ test("links repo script profile sources to GitHub lines", () => {
   );
   expect(markdown).toContain(
     "[app/src/sandbox/dialog-perf/index.react.tsx:34:5](https://github.com/ariakit/ariakit/blob/abc123/app/src/sandbox/dialog-perf/index.react.tsx#L34)",
+  );
+  expect(markdown).toContain(
+    String.raw`[app/src/sandbox/dialog\\\[perf\]\|case.tsx:56:7](https://github.com/ariakit/ariakit/blob/abc123/app/src/sandbox/dialog%5C%5Bperf%5D%7Ccase.tsx#L56)`,
   );
 });
 

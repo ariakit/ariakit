@@ -569,7 +569,12 @@ function encodeSourcePath(url: string): string {
 }
 
 function escapeLinkText(value: string): string {
-  return escapeTableCell(value).replace(/\]/g, "\\]");
+  return value
+    .replace(/\\/g, "\\\\")
+    .replace(/([[\]])/g, "\\$1")
+    .replace(/\|/g, "\\|")
+    .replace(/[\r\n\t]/g, " ")
+    .trim();
 }
 
 function formatSourceCell(item: PerfScriptProfileEntry): string {
