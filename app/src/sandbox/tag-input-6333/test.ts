@@ -11,3 +11,8 @@ test("does not throw on string delimiters that are invalid regex patterns", asyn
   await type("one+two+", q.textbox.ensure("Plus tags"));
   expect(q.text("Plus tags values: one, two")).toBeVisible();
 });
+
+test("does not freeze on string delimiters that match empty regexes", async () => {
+  await type("one|two|", q.textbox.ensure("Pipe tags"));
+  expect(q.text("Pipe tags values: one, two")).toBeVisible();
+});

@@ -37,6 +37,7 @@ export default function Example() {
     <div style={{ display: "grid", gap: 16, padding: 16 }}>
       <TagField label="Dot tags" delimiter="." />
       <TagField label="Plus tags" delimiter="+" />
+      <TagField label="Pipe tags" delimiter="|" />
     </div>
   );
 }

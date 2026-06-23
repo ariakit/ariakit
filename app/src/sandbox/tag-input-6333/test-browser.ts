@@ -19,4 +19,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.type("one+two+");
     await test.expect(q.text("Plus tags values: one, two")).toBeVisible();
   });
+
+  test("does not freeze on string delimiters that match empty regexes", async ({
+    page,
+    q,
+  }) => {
+    await q.textbox("Pipe tags").click();
+    await page.keyboard.type("one|two|");
+    await test.expect(q.text("Pipe tags values: one, two")).toBeVisible();
+  });
 });
