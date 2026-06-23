@@ -278,7 +278,7 @@ export default function Example() {
         label="edge inherit root no source"
         className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
       />
-      {/* Test-only isolation from the preview body's ak-layer context. */}
+      {/* Test-only isolation from inherited layer scheme context. */}
       <div className="[--_ak-ls:transparent] flex flex-wrap items-start gap-4">
         <Layer
           label="parentless dark layer push"

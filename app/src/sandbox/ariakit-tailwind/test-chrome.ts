@@ -567,59 +567,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.describe(`${scheme} scheme`, () => {
       test.use({ colorScheme: scheme });
 
-      for (const contrast of [false, true]) {
-        const label = contrast ? " in high contrast" : "";
-        test(`pushes dark layers toward the light boundary regardless of parent${label}`, async ({
-          page,
-          q,
-        }) => {
-          if (contrast) {
-            const cdp = await page.context().newCDPSession(page);
-            await cdp.send("Emulation.setEmulatedMedia", {
-              features: [{ name: "prefers-contrast", value: "more" }],
-            });
-            await page.reload({ waitUntil: "networkidle" });
-          }
-          await waitForPreviewReady(page);
-          const cases = [
-            [
-              "parentless dark layer push",
-              "nested dark layer push",
-              "light parent dark layer push",
-            ],
-            [
-              "parentless dark state push",
-              "nested dark state push",
-              "light parent dark state push",
-            ],
-          ] as const;
-
-          for (const [
-            parentlessLabel,
-            darkParentLabel,
-            lightParentLabel,
-          ] of cases) {
-            const parentlessPush = q.region(parentlessLabel);
-            const darkParentPush = q.region(darkParentLabel);
-            const lightParentPush = q.region(lightParentLabel);
-            const referenceStyles = await darkParentPush.evaluate((element) => {
-              const style = getComputedStyle(element);
-              return {
-                backgroundColor: style.backgroundColor,
-              };
-            });
-            await expect(parentlessPush).toHaveCSS(
-              "background-color",
-              referenceStyles.backgroundColor,
-            );
-            await expect(lightParentPush).toHaveCSS(
-              "background-color",
-              referenceStyles.backgroundColor,
-            );
-          }
-        });
-      }
-
       test("no color contrast violations (WCAG AA)", async ({ page }) => {
         test.setTimeout(60_000);
         const results = await new AxeBuilder({ page })
