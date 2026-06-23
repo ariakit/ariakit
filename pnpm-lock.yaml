@@ -227,6 +227,9 @@ importers:
       '@ariakit/solid':
         specifier: workspace:*
         version: link:../packages/ariakit-solid
+      '@ariakit/solid-components':
+        specifier: workspace:*
+        version: link:../packages/ariakit-solid-components
       '@ariakit/solid-utils':
         specifier: workspace:*
         version: link:../packages/ariakit-solid-utils
