@@ -301,6 +301,19 @@ export default function Example() {
             className="ak-layer ak-layer-gray-950 ak-state-push-50 ak-frame ak-frame-p-1 ak-frame-border"
           />
         </Layer>
+        <Layer
+          label="light push control"
+          className="ak-layer ak-layer-l-100 ak-frame ak-frame-p-1 ak-frame-border flex-col"
+        >
+          <Layer
+            label="light parent dark layer push"
+            className="ak-layer ak-layer-gray-950 ak-layer-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+          />
+          <Layer
+            label="light parent dark state push"
+            className="ak-layer ak-layer-gray-950 ak-state-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+          />
+        </Layer>
       </div>
       <Layer
         label="edge inherit no source"

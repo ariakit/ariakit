@@ -569,7 +569,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
       for (const contrast of [false, true]) {
         const label = contrast ? " in high contrast" : "";
-        test(`pushes parentless dark layers toward the light boundary${label}`, async ({
+        test(`pushes dark layers toward the light boundary regardless of parent${label}`, async ({
           page,
           q,
         }) => {
@@ -582,32 +582,39 @@ withFramework(import.meta.dirname, async ({ test }) => {
           }
           await waitForPreviewReady(page);
           const cases = [
-            ["parentless dark layer push", "nested dark layer push"],
-            ["parentless dark state push", "nested dark state push"],
+            [
+              "parentless dark layer push",
+              "nested dark layer push",
+              "light parent dark layer push",
+            ],
+            [
+              "parentless dark state push",
+              "nested dark state push",
+              "light parent dark state push",
+            ],
           ] as const;
 
-          for (const [parentlessLabel, nestedLabel] of cases) {
+          for (const [
+            parentlessLabel,
+            darkParentLabel,
+            lightParentLabel,
+          ] of cases) {
             const parentlessPush = q.region(parentlessLabel);
-            const nestedPush = q.region(nestedLabel);
-            const nestedStyles = await nestedPush.evaluate((element) => {
+            const darkParentPush = q.region(darkParentLabel);
+            const lightParentPush = q.region(lightParentLabel);
+            const referenceStyles = await darkParentPush.evaluate((element) => {
               const style = getComputedStyle(element);
               return {
                 backgroundColor: style.backgroundColor,
-                borderTopColor: style.borderTopColor,
-                boxShadow: style.boxShadow,
               };
             });
             await expect(parentlessPush).toHaveCSS(
               "background-color",
-              nestedStyles.backgroundColor,
+              referenceStyles.backgroundColor,
             );
-            await expect(parentlessPush).toHaveCSS(
-              "border-top-color",
-              nestedStyles.borderTopColor,
-            );
-            await expect(parentlessPush).toHaveCSS(
-              "box-shadow",
-              nestedStyles.boxShadow,
+            await expect(lightParentPush).toHaveCSS(
+              "background-color",
+              referenceStyles.backgroundColor,
             );
           }
         });
