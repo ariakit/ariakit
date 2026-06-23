@@ -13,7 +13,10 @@ function ValueFollowsHighlight() {
     if (!select) return;
     return sync(select, ["activeId"], (state) => {
       if (!state.activeId) return;
-      select.setValue(state.activeId);
+      const { activeId } = state;
+      // TODO: Remove this workaround when
+      // https://github.com/ariakit/ariakit/issues/6313 is fixed.
+      queueMicrotask(() => select.setValue(activeId));
     });
   }, [select]);
 
