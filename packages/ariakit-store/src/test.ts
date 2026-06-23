@@ -467,9 +467,256 @@ test("re-registers a listener without dragging a stale cleanup forward", () => {
   sync(store, null, listener);
   store.setState("count", 2);
 
-  // "cleanup 2" must not appear: re-registering without a cleanup must clear
-  // the stale cleanup from the previous registration.
-  expect(events).toEqual(["run 1", "cleanup 1", "run 2", "run 3", "run 4"]);
+  // "cleanup 2" must fire before "run 3" so the previous registration
+  // doesn't leak its pending cleanup.
+  expect(events).toEqual([
+    "run 1",
+    "cleanup 1",
+    "run 2",
+    "cleanup 2",
+    "run 3",
+    "run 4",
+  ]);
+});
+
+test("runs a pending sync cleanup when re-registering a listener", () => {
+  const store = createStore({ count: 0, enabled: false });
+  let active = 0;
+
+  const listener = () => {
+    active += 1;
+    return () => {
+      active -= 1;
+    };
+  };
+
+  const first = sync(store, ["count"], listener);
+  const second = sync(store, ["count", "enabled"], listener);
+
+  expect(active).toBe(1);
+
+  second();
+  first();
+
+  expect(active).toBe(0);
+});
+
+test("does not leak sync cleanup when re-registration cleanup updates state", () => {
+  const store = createStore({ count: 0, enabled: false });
+  let active = 0;
+  let updateOnCleanup = true;
+
+  const listener = () => {
+    active += 1;
+    return () => {
+      active -= 1;
+      if (!updateOnCleanup) return;
+      updateOnCleanup = false;
+      store.setState("count", (count) => count + 1);
+    };
+  };
+
+  const first = sync(store, ["count"], listener);
+  const second = sync(store, ["count", "enabled"], listener);
+
+  expect(active).toBe(1);
+
+  second();
+  first();
+
+  expect(active).toBe(0);
+});
+
+test("does not leak sync cleanup when re-registration listener updates state", () => {
+  const store = createStore({ count: 0, enabled: false });
+  let active = 0;
+  let updateOnRun = false;
+
+  const listener = () => {
+    active += 1;
+    if (updateOnRun) {
+      updateOnRun = false;
+      store.setState("count", (count) => count + 1);
+    }
+    return () => {
+      active -= 1;
+    };
+  };
+
+  const first = sync(store, ["count"], listener);
+  updateOnRun = true;
+  const second = sync(store, ["count", "enabled"], listener);
+
+  expect(active).toBe(1);
+
+  second();
+  first();
+
+  expect(active).toBe(0);
+});
+
+test("does not duplicate sync cleanup when re-registering during dispatch", () => {
+  const store = createStore({ count: 0, enabled: false });
+  const events: string[] = [];
+  let runCount = 0;
+  let reRegister = false;
+
+  const listener = () => {
+    runCount += 1;
+    const id = runCount;
+    events.push(`run ${id}`);
+    if (reRegister) {
+      reRegister = false;
+      sync(store, ["count", "enabled"], listener);
+    }
+    return () => events.push(`cleanup ${id}`);
+  };
+
+  const unsubscribe = sync(store, ["count"], listener);
+
+  reRegister = true;
+  store.setState("count", 1);
+  unsubscribe();
+
+  expect(events).toEqual([
+    "run 1",
+    "cleanup 1",
+    "run 2",
+    "run 3",
+    "cleanup 3",
+    "cleanup 2",
+  ]);
+});
+
+test("does not rerun a re-registered sync listener in the same dispatch", () => {
+  const store = createStore({ count: 0, enabled: false });
+  const events: string[] = [];
+  let runCount = 0;
+  let reRegister = false;
+
+  const listener = () => {
+    runCount += 1;
+    const id = runCount;
+    events.push(`run ${id}`);
+    if (reRegister) {
+      reRegister = false;
+      sync(store, ["count", "enabled"], listener);
+    }
+    return () => events.push(`cleanup ${id}`);
+  };
+
+  const unsubscribe = sync(store, ["count"], listener);
+  sync(store, ["count"], () => {
+    events.push("other");
+  });
+  events.length = 0;
+
+  reRegister = true;
+  store.setState("count", 1);
+  unsubscribe();
+
+  expect(events).toEqual([
+    "cleanup 1",
+    "run 2",
+    "run 3",
+    "cleanup 3",
+    "other",
+    "cleanup 2",
+  ]);
+});
+
+test("runs a pending batch cleanup when re-registering a listener", () => {
+  const store = createStore({ count: 0, enabled: false });
+  let active = 0;
+
+  const listener = () => {
+    active += 1;
+    return () => {
+      active -= 1;
+    };
+  };
+
+  const first = batch(store, ["count"], listener);
+  const second = batch(store, ["count", "enabled"], listener);
+
+  expect(active).toBe(1);
+
+  second();
+  first();
+
+  expect(active).toBe(0);
+});
+
+test("does not duplicate batch cleanup when re-registering during dispatch", async () => {
+  const store = createStore({ count: 0, enabled: false });
+  const events: string[] = [];
+  let runCount = 0;
+  let reRegister = false;
+
+  const listener = () => {
+    runCount += 1;
+    const id = runCount;
+    events.push(`run ${id}`);
+    if (reRegister) {
+      reRegister = false;
+      batch(store, ["count", "enabled"], listener);
+    }
+    return () => events.push(`cleanup ${id}`);
+  };
+
+  const unsubscribe = batch(store, ["count"], listener);
+
+  reRegister = true;
+  store.setState("count", 1);
+  await flushBatch();
+  unsubscribe();
+
+  expect(events).toEqual([
+    "run 1",
+    "cleanup 1",
+    "run 2",
+    "run 3",
+    "cleanup 3",
+    "cleanup 2",
+  ]);
+});
+
+test("does not rerun a re-registered batch listener in the same dispatch", async () => {
+  const store = createStore({ count: 0, enabled: false });
+  const events: string[] = [];
+  let runCount = 0;
+  let reRegister = false;
+
+  const listener = () => {
+    runCount += 1;
+    const id = runCount;
+    events.push(`run ${id}`);
+    if (reRegister) {
+      reRegister = false;
+      batch(store, ["count", "enabled"], listener);
+    }
+    return () => events.push(`cleanup ${id}`);
+  };
+
+  const unsubscribe = batch(store, ["count"], listener);
+  batch(store, ["count"], () => {
+    events.push("other");
+  });
+  events.length = 0;
+
+  reRegister = true;
+  store.setState("count", 1);
+  await flushBatch();
+  unsubscribe();
+
+  expect(events).toEqual([
+    "cleanup 1",
+    "run 2",
+    "run 3",
+    "cleanup 3",
+    "other",
+    "cleanup 2",
+  ]);
 });
 
 test("registers a batch listener during dispatch and still sees the in-flight diff", async () => {

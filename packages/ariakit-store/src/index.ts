@@ -42,6 +42,7 @@ interface ListenerGroup<S> {
   listeners: Set<Listener<S>>;
   listenersByKey?: ListenerMap<S>;
   allKeysListeners?: Set<Listener<S>>;
+  suspendedListeners?: Set<Listener<S>>;
   disposables: Map<Listener<S>, () => void>;
   listenerKeys: WeakMap<Listener<S>, Array<keyof S> | null>;
 }
@@ -282,15 +283,27 @@ export function createStore<S extends State>(
   const storeSubscribe: StoreSubscribe<S> = (keys, listener) =>
     registerListener(keys, listener);
 
-  // Records the cleanup returned by a listener's initial synchronous run, or
-  // clears any cleanup left from a previous registration of the same listener
-  // so it can't fire after the listener has been re-registered. Shared by
-  // storeSync and storeBatch, which differ only in their listener group.
-  const reconcileInitialCleanup = (
+  const runPendingCleanups = (
     group: ListenerGroup<S>,
     listener: Listener<S>,
-    cleanup: void | (() => void),
   ) => {
+    if (!group.disposables.size) return;
+    while (true) {
+      const cleanup = group.disposables.get(listener);
+      if (!cleanup) break;
+      group.disposables.delete(listener);
+      cleanup();
+    }
+  };
+
+  const runListener = (
+    group: ListenerGroup<S>,
+    listener: Listener<S>,
+    prevState: S,
+  ) => {
+    runPendingCleanups(group, listener);
+    const cleanup = listener(state, prevState);
+    runPendingCleanups(group, listener);
     if (cleanup) {
       group.disposables.set(listener, cleanup);
     } else {
@@ -298,9 +311,34 @@ export function createStore<S extends State>(
     }
   };
 
+  // Runs a listener's initial synchronous invocation while preventing reentrant
+  // dispatch from running the same listener before the new registration is
+  // complete.
+  const runInitialListener = (
+    group: ListenerGroup<S>,
+    listener: Listener<S>,
+    prevState: S,
+  ) => {
+    const shouldSuspend = group.listeners.has(listener);
+    if (shouldSuspend) {
+      group.suspendedListeners ??= new Set();
+      group.suspendedListeners.add(listener);
+    }
+    try {
+      runListener(group, listener, prevState);
+    } finally {
+      if (shouldSuspend) {
+        const suspendedListeners = group.suspendedListeners;
+        suspendedListeners?.delete(listener);
+        if (!suspendedListeners?.size) {
+          delete group.suspendedListeners;
+        }
+      }
+    }
+  };
+
   const storeSync: StoreSync<S> = (keys, listener) => {
-    const cleanup = listener(state, state);
-    reconcileInitialCleanup(syncListenerGroup, listener, cleanup);
+    runInitialListener(syncListenerGroup, listener, state);
     return registerListener(keys, listener);
   };
 
@@ -314,8 +352,7 @@ export function createStore<S extends State>(
     if (!batchListenerGroup.listeners.size && !inDispatch) {
       prevStateBatch = state;
     }
-    const cleanup = listener(state, prevStateBatch);
-    reconcileInitialCleanup(batchListenerGroup, listener, cleanup);
+    runInitialListener(batchListenerGroup, listener, prevStateBatch);
     return registerListener(keys, listener, batchListenerGroup);
   };
 
@@ -336,42 +373,29 @@ export function createStore<S extends State>(
     prevState: S,
     updatedKey: UpdatedKey<S>,
   ) => {
-    const { disposables } = group;
     if (!(updatedKey instanceof Set) && !group.allKeysListeners?.size) {
       const keyedListeners = group.listenersByKey?.get(updatedKey);
       if (!keyedListeners) return;
+      const processedListeners = new Set<Listener<S>>();
       for (const listener of keyedListeners) {
-        // Skip the cleanup lookup when no listener has registered a cleanup.
-        // The `.size` gate keeps an empty disposables map off this hot path.
-        const cleanup = disposables.size
-          ? disposables.get(listener)
-          : undefined;
-        if (cleanup) cleanup();
-        const result = listener(state, prevState);
-        if (result) {
-          disposables.set(listener, result);
-        } else if (cleanup) {
-          disposables.delete(listener);
-        }
+        if (processedListeners.has(listener)) continue;
+        processedListeners.add(listener);
+        if (group.suspendedListeners?.has(listener)) continue;
+        runListener(group, listener, prevState);
       }
       return;
     }
     const allKeysListeners = group.allKeysListeners;
+    const processedListeners = new Set<Listener<S>>();
     for (const listener of group.listeners) {
       if (!allKeysListeners?.has(listener)) {
         const keys = group.listenerKeys.get(listener);
         if (!hasUpdatedKey(keys, updatedKey)) continue;
       }
-      // Skip the cleanup lookup when no listener has registered a cleanup.
-      // The `.size` gate keeps an empty disposables map off this hot path.
-      const cleanup = disposables.size ? disposables.get(listener) : undefined;
-      if (cleanup) cleanup();
-      const result = listener(state, prevState);
-      if (result) {
-        disposables.set(listener, result);
-      } else if (cleanup) {
-        disposables.delete(listener);
-      }
+      if (processedListeners.has(listener)) continue;
+      processedListeners.add(listener);
+      if (group.suspendedListeners?.has(listener)) continue;
+      runListener(group, listener, prevState);
     }
   };
 
