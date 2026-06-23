@@ -102,7 +102,7 @@
     "glob": "13.0.6",
     "happy-dom": "20.10.6",
     "husky": "9.1.7",
-    "lint-staged": "17.0.7",
+    "lint-staged": "17.0.8",
     "next": "16.2.9",
     "open-cli": "9.0.0",
     "oxfmt": "0.55.0",
