@@ -509,6 +509,8 @@ All three utilities accept no argument (defaults to `1px`), named widths (`0`, `
 | `ak-frame-row`   | Flags the frame as a horizontal flow (affects how `cover` / `start` / `end` compute edges). |
 | `ak-frame-col`   | Flags the frame as a vertical flow.                                                         |
 
+`ak-frame-cover` uses logical margin and radius properties so row covers follow the frame direction. When overriding its stretch margin on the same element, prefer axis or side utilities such as `mx-*`, `my-*`, `ms-*`, `me-*`, `mt-*`, `mr-*`, `mb-*`, or `ml-*`; Tailwind sorts the bare `m-*` shorthand before the cover declarations, so it will not reset the logical stretch. Covers should also share the frame's `dir` and `writing-mode`; apply direction changes inside the cover when the content needs a different flow.
+
 ## Variants
 
 Variants apply utilities conditionally based on the parent layer or user preference. Use them like any Tailwind variant: `ak-dark:ak-layer-darken-6`.
