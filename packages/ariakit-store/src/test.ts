@@ -1121,10 +1121,6 @@ test("keeps parent stores in sync after parent-driven supersede", () => {
   });
 
   child.setState("count", 10);
-  // TODO: Remove after https://github.com/ariakit/ariakit/issues/6331 is fixed.
-  const finalCount = child.getState().count;
-  first.setState("count", finalCount);
-  second.setState("count", finalCount);
 
   expect(child.getState().count).toBe(5);
   expect(first.getState().count).toBe(5);
@@ -1146,15 +1142,131 @@ test("keeps earlier parent stores in sync after later parent supersede", () => {
   });
 
   child.setState("count", 10);
-  // TODO: Remove after https://github.com/ariakit/ariakit/issues/6331 is fixed.
-  const finalCount = child.getState().count;
-  first.setState("count", finalCount);
-  second.setState("count", finalCount);
 
   expect(child.getState().count).toBe(5);
   expect(first.getState().count).toBe(5);
   expect(second.getState().count).toBe(5);
 
+  unsubscribeSecond();
+  cleanup();
+});
+
+test("keeps parent stores in sync after cascading parent supersede", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const unsubscribeFirst = sync(first, ["count"], (state) => {
+    if (state.count !== 5) return;
+    first.setState("count", 4);
+  });
+  const unsubscribeSecond = sync(second, ["count"], (state) => {
+    if (state.count <= 5) return;
+    second.setState("count", 5);
+  });
+
+  child.setState("count", 10);
+
+  expect(child.getState().count).toBe(4);
+  expect(first.getState().count).toBe(4);
+  expect(second.getState().count).toBe(4);
+
+  unsubscribeFirst();
+  unsubscribeSecond();
+  cleanup();
+});
+
+test("restarts parent repair after later parent supersede", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const unsubscribeFirst = sync(first, ["count"], (state) => {
+    if (state.count <= 5) return;
+    first.setState("count", 5);
+  });
+  const unsubscribeSecond = sync(second, ["count"], (state) => {
+    if (state.count !== 5) return;
+    second.setState("count", 4);
+  });
+
+  child.setState("count", 10);
+
+  expect(child.getState().count).toBe(4);
+  expect(first.getState().count).toBe(4);
+  expect(second.getState().count).toBe(4);
+
+  unsubscribeFirst();
+  unsubscribeSecond();
+  cleanup();
+});
+
+test("continues parent repair after finite cascades", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  const unsubscribeFirst = sync(first, ["count"], (state) => {
+    if (state.count === 5) {
+      first.setState("count", 2);
+    } else if (state.count === 3) {
+      first.setState("count", 1);
+    }
+  });
+  const unsubscribeSecond = sync(second, ["count"], (state) => {
+    if (state.count === 10) {
+      second.setState("count", 5);
+    } else if (state.count === 2) {
+      second.setState("count", 3);
+    } else if (state.count === 1) {
+      second.setState("count", 0);
+    }
+  });
+
+  child.setState("count", 10);
+
+  expect(child.getState().count).toBe(0);
+  expect(first.getState().count).toBe(0);
+  expect(second.getState().count).toBe(0);
+
+  unsubscribeFirst();
+  unsubscribeSecond();
+  cleanup();
+});
+
+test("continues parent repair after one-shot cycles", () => {
+  const first = createStore({ count: 0 });
+  const second = createStore({ count: 0 });
+  const child = createStore({ count: 0 }, first, second);
+
+  const cleanup = init(child);
+  let didRewriteFirst = false;
+  let didRewriteSecond = false;
+  const unsubscribeFirst = sync(first, ["count"], (state) => {
+    if (state.count !== 5) return;
+    if (didRewriteFirst) return;
+    didRewriteFirst = true;
+    first.setState("count", 4);
+  });
+  const unsubscribeSecond = sync(second, ["count"], (state) => {
+    if (state.count === 10) {
+      second.setState("count", 5);
+    } else if (state.count === 4 && !didRewriteSecond) {
+      didRewriteSecond = true;
+      second.setState("count", 5);
+    }
+  });
+
+  child.setState("count", 10);
+
+  expect(child.getState().count).toBe(5);
+  expect(first.getState().count).toBe(5);
+  expect(second.getState().count).toBe(5);
+
+  unsubscribeFirst();
   unsubscribeSecond();
   cleanup();
 });

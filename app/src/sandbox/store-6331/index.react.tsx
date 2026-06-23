@@ -44,11 +44,6 @@ export default function Example() {
         className="rounded bg-blue-600 px-3 py-1 text-white"
         onClick={() => {
           quantityStore.setState("quantity", (quantity) => quantity + 3);
-          // TODO: Remove after https://github.com/ariakit/ariakit/issues/6331
-          // is fixed.
-          const finalQuantity = quantityStore.getState().quantity;
-          cartStore.setState("quantity", finalQuantity);
-          summaryStore.setState("quantity", finalQuantity);
         }}
       >
         Add 3
