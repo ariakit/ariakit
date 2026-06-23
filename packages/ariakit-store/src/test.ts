@@ -779,6 +779,28 @@ test("runs setup callbacks during init and tears down after the last cleanup", (
   expect(events).toEqual(["setup", "teardown", "setup", "teardown"]);
 });
 
+test("does not rerun setup teardowns from stale init cleanups", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+
+  setup(store, () => {
+    events.push("setup");
+    return () => events.push("teardown");
+  });
+
+  const cleanupA = init(store);
+  const cleanupB = init(store);
+
+  expect(events).toEqual(["setup"]);
+
+  cleanupA();
+  cleanupB();
+  cleanupA();
+  cleanupB();
+
+  expect(events).toEqual(["setup", "teardown"]);
+});
+
 test("keeps extended stores in sync while initialized", () => {
   const parent = createStore({
     count: 0,

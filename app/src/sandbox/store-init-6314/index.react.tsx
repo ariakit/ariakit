@@ -40,15 +40,9 @@ function PanelA() {
   const [active, setActive] = useState(true);
   const count = useStoreState(storeA, "count");
 
-  const cleanup = () => {
-    cleanupRef.current?.();
-    // TODO: Remove after https://github.com/ariakit/ariakit/issues/6314 lands.
-    cleanupRef.current = null;
-  };
-
   useEffect(() => {
     cleanupRef.current = init(storeA);
-    return cleanup;
+    return () => cleanupRef.current?.();
   }, []);
 
   return (
@@ -58,7 +52,8 @@ function PanelA() {
       <button
         type="button"
         onClick={() => {
-          cleanup();
+          // Keep the stale disposer reference so unmount calls it again.
+          cleanupRef.current?.();
           setActive(false);
         }}
       >
