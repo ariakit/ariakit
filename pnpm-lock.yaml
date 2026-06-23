@@ -21,7 +21,7 @@ overrides:
 
 patchedDependencies:
   '@changesets/apply-release-plan@7.1.1': 19cb6131207f59da50995e2f93d09dbcaccb346cdc696d59f1aa89e3114f6ac5
-  '@clerk/astro@3.4.6': 162328eb1c58b24cba88e8e1d99c90176c77076b1bf4a45d3feab62a6f25c71a
+  '@clerk/astro@3.4.6': 3aeb647eb75ce8a07a4b163f3a75b73f4b58b81977b21e19ca7287f810e8fe37
 
 importers:
 
@@ -254,7 +254,7 @@ importers:
         version: 7.0.0(@testing-library/jest-dom@6.9.1)(@types/node@24.13.2)(esbuild@0.28.1)(jiti@2.7.0)(solid-js@1.9.13)(terser@5.46.0)(yaml@2.9.0)
       '@clerk/astro':
         specifier: 3.4.6
-        version: 3.4.6(patch_hash=162328eb1c58b24cba88e8e1d99c90176c77076b1bf4a45d3feab62a6f25c71a)(astro@7.0.1(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@24.13.2)(aws4fetch@1.0.20)(jiti@2.7.0)(rollup@4.59.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 3.4.6(patch_hash=3aeb647eb75ce8a07a4b163f3a75b73f4b58b81977b21e19ca7287f810e8fe37)(astro@7.0.1(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@24.13.2)(aws4fetch@1.0.20)(jiti@2.7.0)(rollup@4.59.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@fontsource-variable/inter':
         specifier: 5.2.8
         version: 5.2.8
@@ -12241,7 +12241,7 @@ snapshots:
       fast-wrap-ansi: 0.2.0
       sisteransi: 1.0.5
 
-  '@clerk/astro@3.4.6(patch_hash=162328eb1c58b24cba88e8e1d99c90176c77076b1bf4a45d3feab62a6f25c71a)(astro@7.0.1(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@24.13.2)(aws4fetch@1.0.20)(jiti@2.7.0)(rollup@4.59.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
+  '@clerk/astro@3.4.6(patch_hash=3aeb647eb75ce8a07a4b163f3a75b73f4b58b81977b21e19ca7287f810e8fe37)(astro@7.0.1(@astrojs/markdown-remark@7.2.0)(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@24.13.2)(aws4fetch@1.0.20)(jiti@2.7.0)(rollup@4.59.0)(terser@5.46.0)(yaml@2.9.0))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)':
     dependencies:
       '@clerk/backend': 3.8.2(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@clerk/shared': 4.20.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)

@@ -45,6 +45,10 @@ export default defineConfig({
 
   srcDir: "src",
 
+  // Astro 7 defaults to JSX-style whitespace. Keep the app on Astro 6's
+  // HTML-aware compression so inline content split across lines keeps spaces.
+  compressHTML: true,
+
   server: {
     port,
     host: true,

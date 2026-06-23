@@ -20,7 +20,8 @@ index f86f5d1d679251f69f7bdc05d3527bf96e381075..50337a8e9dcbd9a2d8bb98c1eb2d8c18
 -  }
 +    // Get the user button map from window that we set in the `<InternalUIComponentRenderer />`.
 +    const userButtonComponentMap = window.__astro_clerk_component_props.get('user-button');
- 
+-
++
 -  const safeId = userButton.getAttribute('data-clerk-id');
 -  const currentOptions = userButtonComponentMap.get(safeId);
 +    let userButton;
@@ -29,18 +30,21 @@ index f86f5d1d679251f69f7bdc05d3527bf96e381075..50337a8e9dcbd9a2d8bb98c1eb2d8c18
 +    } else {
 +      userButton = document.querySelector('[data-clerk-id^="clerk-user-button"]');
 +    }
- 
+-
++
 -  const reorderItemsLabels = ['manageAccount', 'signOut'];
 -  const isReorderItem = reorderItemsLabels.includes(label);
 +    const safeId = userButton.getAttribute('data-clerk-id');
 +    const currentOptions = userButtonComponentMap.get(safeId);
- 
+-
++
 -  let newMenuItem = {
 -    label,
 -  };
 +    const reorderItemsLabels = ['manageAccount', 'signOut'];
 +    const isReorderItem = reorderItemsLabels.includes(label);
- 
+-
++
 -  if (!isReorderItem) {
 -    newMenuItem = {
 -      ...newMenuItem,
@@ -53,7 +57,8 @@ index f86f5d1d679251f69f7bdc05d3527bf96e381075..50337a8e9dcbd9a2d8bb98c1eb2d8c18
 +    let newMenuItem = {
 +      label,
      };
- 
+-
++
 -    if (href) {
 -      newMenuItem.href = href;
 -    } else if (open) {
@@ -85,7 +90,8 @@ index f86f5d1d679251f69f7bdc05d3527bf96e381075..50337a8e9dcbd9a2d8bb98c1eb2d8c18
 +      }
      }
 -  }
- 
+-
++
 -  userButtonComponentMap.set(safeId, {
 -    ...currentOptions,
 -    customMenuItems: [...(currentOptions?.customMenuItems ?? []), newMenuItem],
