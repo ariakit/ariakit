@@ -28,19 +28,6 @@ const items: readonly FruitItem[] = [
 
 const defaultItems = [...citrusItems, ...otherItems];
 
-const totalCount = items.reduce(
-  (count, item) => count + (item.items?.length ?? 1),
-  0,
-);
-
-function getPosInSet(index: number) {
-  let position = 1;
-  for (const item of items.slice(0, index)) {
-    position += item.items?.length ?? 1;
-  }
-  return position;
-}
-
 export default function Example() {
   const select = Ariakit.useSelectStore({ defaultItems, defaultValue: "" });
 
@@ -68,8 +55,6 @@ export default function Example() {
                   key={groupProps.id}
                   {...groupProps}
                   initialItems={item.items.length}
-                  aria-setsize={totalCount}
-                  aria-posinset={getPosInSet(item.index)}
                   render={(props) => (
                     <Ariakit.SelectGroup {...props}>
                       <Ariakit.SelectGroupLabel>
@@ -95,8 +80,6 @@ export default function Example() {
                 key={optionProps.id}
                 value={value}
                 {...optionProps}
-                aria-setsize={totalCount}
-                aria-posinset={getPosInSet(item.index)}
               />
             );
           }}
