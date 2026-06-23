@@ -37,6 +37,10 @@ type EventWithValues<T extends SyntheticEvent> = T & {
   values: string[];
 };
 
+function isInputEvent(event: Event): event is InputEvent {
+  return event.type === "input";
+}
+
 /**
  * Returns props to create a `TagInput` component.
  * @see https://ariakit.com/components/tag
@@ -116,6 +120,8 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
           return () => store.setValue(prevValue);
         }, inputType);
       }
+      const nativeEvent = event.nativeEvent;
+      if (isInputEvent(nativeEvent) && nativeEvent.isComposing) return;
       // Add values to the store if the input value ends with a delimiter
       const isTrailingCaret = start === end && start === value.length;
       if (isTrailingCaret) {

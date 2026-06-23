@@ -19,14 +19,7 @@ export default function Example() {
             <TagRemove />
           </Tag>
         ))}
-        <TagInput
-          aria-label="New tag"
-          onChange={(event) => {
-            if ((event.nativeEvent as InputEvent).isComposing) {
-              event.preventDefault();
-            }
-          }}
-        />
+        <TagInput aria-label="New tag" />
       </TagList>
     </TagProvider>
   );
