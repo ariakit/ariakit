@@ -91,17 +91,21 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
       </svg>
     );
 
-    const touchDevice = useTouchDevice() && withinTag;
+    const touchDevice = useTouchDevice();
+    const hidden = withinTag && !touchDevice;
+    const ariaLabel = hidden
+      ? "Press Delete or Backspace to remove"
+      : withinTag && touchDevice
+        ? `Remove ${value}`
+        : props.children == null && value
+          ? `Remove ${value}`
+          : undefined;
 
     props = {
       children,
-      role: touchDevice ? "button" : undefined,
-      "aria-hidden": !touchDevice,
-      "aria-label": touchDevice
-        ? `Remove ${value}`
-        : withinTag
-          ? "Press Delete or Backspace to remove"
-          : undefined,
+      role: withinTag && touchDevice ? "button" : undefined,
+      "aria-hidden": hidden || undefined,
+      "aria-label": ariaLabel,
       ...props,
       id,
       onClick,
