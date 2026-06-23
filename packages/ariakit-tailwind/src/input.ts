@@ -647,10 +647,10 @@ const frameVars = {
   frameParentBorderingBorderContext: _ak.var("fpbbc"),
   frameParentBorderingRingContext: _ak.var("fpbgc"),
   frameParentRowContext: _ak.var("fpwc"),
-  frameParentCornerTLContext: _ak.var("fpctl"),
-  frameParentCornerTRContext: _ak.var("fpctr"),
-  frameParentCornerBLContext: _ak.var("fpcbl"),
-  frameParentCornerBRContext: _ak.var("fpcbr"),
+  frameParentCornerStartStartContext: _ak.var("fpcss"),
+  frameParentCornerStartEndContext: _ak.var("fpcse"),
+  frameParentCornerEndStartContext: _ak.var("fpces"),
+  frameParentCornerEndEndContext: _ak.var("fpcee"),
   frameAutoRadius: _ak.var("far"),
   frameInflatedExcess: _ak.var("fie"),
   frameBorderingDarkening: _ak.var("fbd"),
@@ -2206,33 +2206,61 @@ function getFrameStretchDeclarations({
 
   // Inherit per-corner flags from the parent stretch element (default: 1 = all
   // corners rounded, provided by the frame utility for non-stretch parents).
-  const parentCornerTL = inherit(vars.frameParentCornerTLContext, 1);
-  const parentCornerTR = inherit(vars.frameParentCornerTRContext, 1);
-  const parentCornerBL = inherit(vars.frameParentCornerBLContext, 1);
-  const parentCornerBR = inherit(vars.frameParentCornerBRContext, 1);
+  const parentCornerStartStart = inherit(
+    vars.frameParentCornerStartStartContext,
+    1,
+  );
+  const parentCornerStartEnd = inherit(
+    vars.frameParentCornerStartEndContext,
+    1,
+  );
+  const parentCornerEndStart = inherit(
+    vars.frameParentCornerEndStartContext,
+    1,
+  );
+  const parentCornerEndEnd = inherit(vars.frameParentCornerEndEndContext, 1);
 
-  // Own corner factors based on edge position and parent layout direction.
-  const ownCornerTL = inputs.frameStart;
-  const ownCornerTR = fn.max(
+  // Own corner factors based on logical edge position and parent layout axis.
+  const ownCornerStartStart = inputs.frameStart;
+  const ownCornerStartEnd = fn.max(
     fn.mul(isCol, inputs.frameStart),
     fn.mul(isRow, inputs.frameEnd),
   );
-  const ownCornerBL = fn.max(
+  const ownCornerEndStart = fn.max(
     fn.mul(isCol, inputs.frameEnd),
     fn.mul(isRow, inputs.frameStart),
   );
-  const ownCornerBR = inputs.frameEnd;
+  const ownCornerEndEnd = inputs.frameEnd;
 
   // Effective corner factors: only round a corner when both this element AND
   // the parent have a rounded corner at the same position.
-  const cornerTL = fn.mul(ownCornerTL, parentCornerTL);
-  const cornerTR = fn.mul(ownCornerTR, parentCornerTR);
-  const cornerBL = fn.mul(ownCornerBL, parentCornerBL);
-  const cornerBR = fn.mul(ownCornerBR, parentCornerBR);
-  const childCornerTL = provide(vars.frameParentCornerTLContext);
-  const childCornerTR = provide(vars.frameParentCornerTRContext);
-  const childCornerBL = provide(vars.frameParentCornerBLContext);
-  const childCornerBR = provide(vars.frameParentCornerBRContext);
+  const cornerStartStart = fn.mul(ownCornerStartStart, parentCornerStartStart);
+  const cornerStartEnd = fn.mul(ownCornerStartEnd, parentCornerStartEnd);
+  const cornerEndStart = fn.mul(ownCornerEndStart, parentCornerEndStart);
+  const cornerEndEnd = fn.mul(ownCornerEndEnd, parentCornerEndEnd);
+  const childCornerStartStart = provide(
+    vars.frameParentCornerStartStartContext,
+  );
+  const childCornerStartEnd = provide(vars.frameParentCornerStartEndContext);
+  const childCornerEndStart = provide(vars.frameParentCornerEndStartContext);
+  const childCornerEndEnd = provide(vars.frameParentCornerEndEndContext);
+
+  const blockStartMargin = fn.mul(
+    fn.max(isRow, fn.mul(isCol, inputs.frameStart)),
+    vars.frameMargin,
+  );
+  const blockEndMargin = fn.mul(
+    fn.max(isRow, fn.mul(isCol, inputs.frameEnd)),
+    vars.frameMargin,
+  );
+  const inlineStartMargin = fn.mul(
+    fn.max(isCol, fn.mul(isRow, inputs.frameStart)),
+    vars.frameMargin,
+  );
+  const inlineEndMargin = fn.mul(
+    fn.max(isCol, fn.mul(isRow, inputs.frameEnd)),
+    vars.frameMargin,
+  );
 
   return [
     rule("&:first-child", set(inputs.frameStart, 1)),
@@ -2250,48 +2278,20 @@ function getFrameStretchDeclarations({
     // the stretch-derived value rather than the frame-* hint radius.
     set(vars.frameRadius, childRadius),
     // Propagate per-corner flags to children.
-    set(childCornerTL, cornerTL),
-    set(childCornerTR, cornerTR),
-    set(childCornerBL, cornerBL),
-    set(childCornerBR, cornerBR),
+    set(childCornerStartStart, cornerStartStart),
+    set(childCornerStartEnd, cornerStartEnd),
+    set(childCornerEndStart, cornerEndStart),
+    set(childCornerEndEnd, cornerEndEnd),
     // Cross-axis margins always applied; main-axis margins only at edges
     // Col: inline = cross, block = main
     // Row: block = cross, inline = main
-    set.margin(
-      fn.join(
-        [
-          fn.mul(
-            fn.max(isRow, fn.mul(isCol, inputs.frameStart)),
-            vars.frameMargin,
-          ),
-          fn.mul(
-            fn.max(isCol, fn.mul(isRow, inputs.frameEnd)),
-            vars.frameMargin,
-          ),
-          fn.mul(
-            fn.max(isRow, fn.mul(isCol, inputs.frameEnd)),
-            vars.frameMargin,
-          ),
-          fn.mul(
-            fn.max(isCol, fn.mul(isRow, inputs.frameStart)),
-            vars.frameMargin,
-          ),
-        ],
-        " ",
-      ),
-    ),
-    // Corner radii: each corner inherits its parent's corner state.
-    set.borderRadius(
-      fn.join(
-        [
-          fn.mul(childCornerTL, vars.frameRadius),
-          fn.mul(childCornerTR, vars.frameRadius),
-          fn.mul(childCornerBR, vars.frameRadius),
-          fn.mul(childCornerBL, vars.frameRadius),
-        ],
-        " ",
-      ),
-    ),
+    set.marginBlock(fn.join([blockStartMargin, blockEndMargin], " ")),
+    set.marginInline(fn.join([inlineStartMargin, inlineEndMargin], " ")),
+    // Corner radii: each logical corner inherits its parent's corner state.
+    set.borderStartStartRadius(fn.mul(childCornerStartStart, vars.frameRadius)),
+    set.borderStartEndRadius(fn.mul(childCornerStartEnd, vars.frameRadius)),
+    set.borderEndStartRadius(fn.mul(childCornerEndStart, vars.frameRadius)),
+    set.borderEndEndRadius(fn.mul(childCornerEndEnd, vars.frameRadius)),
   ];
 }
 
@@ -2381,10 +2381,10 @@ utility(
       ),
       set(provide(vars.frameParentRowContext), inputs.frameRow),
       // Default: all corners rounded (non-stretch parents).
-      set(provide(vars.frameParentCornerTLContext), 1),
-      set(provide(vars.frameParentCornerTRContext), 1),
-      set(provide(vars.frameParentCornerBLContext), 1),
-      set(provide(vars.frameParentCornerBRContext), 1),
+      set(provide(vars.frameParentCornerStartStartContext), 1),
+      set(provide(vars.frameParentCornerStartEndContext), 1),
+      set(provide(vars.frameParentCornerEndStartContext), 1),
+      set(provide(vars.frameParentCornerEndEndContext), 1),
     ];
   }),
 );
