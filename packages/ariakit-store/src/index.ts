@@ -436,16 +436,26 @@ export function createStore<S extends State>(
         // without another rewrite. Keep this bounded because parent listeners
         // can fight over a key indefinitely.
         if (superseded) {
-          for (let pass = 0; pass < MAX_REPAIR_PASSES; pass += 1) {
+          let pass = 0;
+          for (; pass < MAX_REPAIR_PASSES; pass += 1) {
             let changed = false;
             for (const store of stores) {
               const previousValue = state[key];
-              store?.setState?.(key, state[key]);
+              store?.setState?.(key, previousValue);
               if (!isSameValue(state[key], previousValue)) {
                 changed = true;
               }
             }
             if (!changed) break;
+          }
+          if (
+            process.env.NODE_ENV !== "production" &&
+            pass === MAX_REPAIR_PASSES
+          ) {
+            console.warn(
+              "Parent stores did not converge after a superseded fan-out; " +
+                "a parent listener may be rewriting this key in a cycle.",
+            );
           }
         }
       }
