@@ -40,6 +40,36 @@ test("registers, updates, and unregisters collection items", async () => {
   }
 });
 
+test("gets items from explicit item state updates", async () => {
+  const store = createCollectionStore<{ id: string; value?: string }>();
+
+  store.setState("items", [{ id: "item", value: "one" }]);
+
+  expect(store.item("item")).toEqual({ id: "item", value: "one" });
+
+  store.setState("items", [{ id: "item", value: "two" }]);
+
+  expect(store.item("item")).toEqual({ id: "item", value: "two" });
+
+  const unregister = store.registerItem({ id: "item" });
+
+  await expect
+    .poll(() => store.getState().items)
+    .toEqual([{ id: "item", value: "two" }]);
+  expect(store.item("item")).toEqual({ id: "item", value: "two" });
+
+  unregister();
+
+  await expect
+    .poll(() => store.getState().items)
+    .toEqual([{ id: "item", value: "two" }]);
+  expect(store.item("item")).toEqual({ id: "item", value: "two" });
+
+  store.setState("items", []);
+
+  expect(store.item("item")).toBeNull();
+});
+
 test("orders rendered items by DOM position", async () => {
   const store = createCollectionStore();
   const stop = init(store);

@@ -27,10 +27,7 @@ export default function Example() {
   };
 
   const showDetails = (id: string) => {
-    // TODO: Remove once https://github.com/ariakit/ariakit/issues/6295 is fixed.
-    const item = collection
-      .getState()
-      .items.find((stateItem) => stateItem.id === id);
+    const item = collection.item(id);
     setDetails(item?.label ?? "Item not found");
   };
 

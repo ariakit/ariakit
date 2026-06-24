@@ -3,6 +3,7 @@ import {
   createStore,
   init,
   setup,
+  sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
@@ -75,6 +76,14 @@ export function createCollectionStore<
   );
 
   const collection = createStore(initialState, props.store);
+
+  sync(collection, ["items"], (state) => {
+    privateStore.setState("items", state.items);
+    itemsMap.clear();
+    for (const item of state.items) {
+      itemsMap.set(item.id, item);
+    }
+  });
 
   const sortItems = (renderedItems: T[]) => {
     const sortedItems = sortBasedOnDOMPosition(renderedItems, (i) => i.element);
