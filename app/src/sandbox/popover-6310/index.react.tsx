@@ -18,24 +18,12 @@ import { useRef } from "react";
 // fallback resolves to the hidden file input, so focusing it is a no-op.
 export default function Example() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  // Workaround for https://github.com/ariakit/ariakit/issues/6310: point
-  // initialFocus at the visible control so autofocus bypasses the broken
-  // focusable fallback. Focusing the button also restores its tab order.
-  const chooseFileRef = useRef<HTMLButtonElement>(null);
   return (
     <Ariakit.PopoverProvider>
       <Ariakit.PopoverDisclosure>Attachments</Ariakit.PopoverDisclosure>
-      <Ariakit.Popover
-        portal
-        aria-label="Attachments"
-        initialFocus={chooseFileRef}
-      >
+      <Ariakit.Popover portal aria-label="Attachments">
         <input ref={fileInputRef} type="file" style={{ display: "none" }} />
-        <button
-          ref={chooseFileRef}
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-        >
+        <button type="button" onClick={() => fileInputRef.current?.click()}>
           Choose file
         </button>
       </Ariakit.Popover>
