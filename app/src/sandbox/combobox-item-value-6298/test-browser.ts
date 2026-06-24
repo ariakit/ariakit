@@ -16,6 +16,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test
       .expect(option.locator("[data-user-value]"))
       .toHaveText(["anana"]);
-    await test.expect(q.status("Normalized empty value")).toHaveText("Cafe");
+
+    const normalizedEmptyValue = q.status("Normalized empty value");
+    await test.expect(normalizedEmptyValue).toHaveText("Cafe");
+    await test
+      .expect(normalizedEmptyValue.locator("[data-user-value]"))
+      .toHaveCount(0);
   });
 });

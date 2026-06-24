@@ -24,6 +24,8 @@ function normalizeValue(value: string) {
 function getOffsets(string: string, values: Iterable<string>) {
   const offsets = [] as Array<[number, number]>;
   for (const value of values) {
+    // An empty value makes indexOf keep returning the end of the string.
+    if (!value) continue;
     let pos = 0;
     const length = value.length;
     let index = string.indexOf(value, pos);
@@ -58,7 +60,7 @@ function mergeOverlappingOffsets(offsets: Array<[number, number]>) {
 function splitValue(itemValue?: string | null, userValue?: string | string[]) {
   if (!itemValue) return itemValue;
   if (!userValue) return itemValue;
-  const userValues = toArray(userValue).map(normalizeValue).filter(Boolean);
+  const userValues = toArray(userValue).map(normalizeValue);
   const parts: ReactElement[] = [];
 
   const span = (value: string, autocomplete = false) => (
