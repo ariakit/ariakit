@@ -8,10 +8,8 @@ export default function Example() {
         <div>
           <Ariakit.Combobox />
           <Ariakit.ComboboxDisclosure
-            onMouseDownCapture={(event) => {
-              // TODO: Remove after https://github.com/ariakit/ariakit/issues/6296.
+            onMouseDown={(event) => {
               event.preventDefault();
-              event.stopPropagation();
             }}
           />
         </div>
