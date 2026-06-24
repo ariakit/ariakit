@@ -15,6 +15,7 @@ import {
   isTextField,
   isDownloading,
   isOpeningInNewTab,
+  isApple,
   invariant,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
@@ -167,8 +168,15 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       // receive DOM focus. Therefore, pressing printable keys will not fill
       // the text field. So we need to programmatically focus on the text
       // field when the user presses printable keys.
-      const printable = event.key.length === 1;
-      if (printable || event.key === "Backspace" || event.key === "Delete") {
+      const printable =
+        event.key.length === 1 && !event.ctrlKey && !event.metaKey;
+      const pc = !isApple();
+      const modifier = pc ? event.ctrlKey : event.metaKey;
+      // If it's cmd/ctrl+v, focus on the text field so the value is pasted
+      // there.
+      const paste = modifier && event.key.toLowerCase() === "v";
+      const deleteKey = event.key === "Backspace" || event.key === "Delete";
+      if (printable || paste || deleteKey) {
         queueMicrotask(() => baseElement.focus());
         if (isTextField(baseElement)) {
           // If the combobox element is a text field, we should update the

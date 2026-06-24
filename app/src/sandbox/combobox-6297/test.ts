@@ -6,6 +6,10 @@ const shortcuts = [
   { name: "Meta+C", options: { metaKey: true } },
 ] as const;
 
+function isApplePlatform(platform: string) {
+  return /mac|iphone|ipad|ipod/i.test(platform);
+}
+
 // See https://github.com/ariakit/ariakit/issues/6297
 for (const shortcut of shortcuts) {
   test(`${shortcut.name} on a focused item does not commit inline autocomplete`, async () => {
@@ -25,3 +29,18 @@ for (const shortcut of shortcuts) {
     expect(q.status.ensure()).toHaveTextContent("b");
   });
 }
+
+test("paste shortcut on a focused item moves focus to the input", async () => {
+  const combobox = q.combobox.ensure("Fruit");
+  const applePlatform = isApplePlatform(navigator.platform);
+  const options = applePlatform ? { metaKey: true } : { ctrlKey: true };
+
+  await click(combobox);
+  await type("b");
+  await press.ArrowDown();
+  const apple = q.option.ensure("Apple");
+  expect(apple).toHaveFocus();
+
+  await press("v", null, options);
+  expect(combobox).toHaveFocus();
+});
