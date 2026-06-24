@@ -343,8 +343,13 @@ export function getPreviousTabbable(
  * Returns the closest focusable element.
  */
 export function getClosestFocusable(element?: HTMLElement | null) {
+  // Start each search from the parent so the loop always advances strictly
+  // upward. The current element was already rejected by `isFocusable`, and the
+  // self-inclusive `closest` would otherwise re-return a selector-matching but
+  // non-focusable element (e.g. a box-less `display: contents` ancestor),
+  // looping forever.
   while (element && !isFocusable(element)) {
-    element = element.closest<HTMLElement>(selector);
+    element = element.parentElement?.closest<HTMLElement>(selector) ?? null;
   }
   return element || null;
 }
