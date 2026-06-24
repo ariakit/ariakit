@@ -46,9 +46,20 @@ interface ListenerGroup<S> {
   disposables: Map<Listener<S>, () => void>;
   listenerKeys: WeakMap<Listener<S>, Array<keyof S> | null>;
   listenerVersion: number;
+  listenerGenerations: WeakMap<Listener<S>, number>;
   listenerRunVersion: number;
   listenerRunVersions: WeakMap<Listener<S>, number>;
   runDepth: number;
+}
+
+interface FastPathFrame<S> {
+  group: ListenerGroup<S>;
+  keyedListeners: Set<Listener<S>>;
+  updatedKey: keyof S;
+  currentListener: Listener<S> | null;
+  notifiedListeners?: Set<Listener<S>>;
+  recoverToLive?: boolean;
+  recovering?: boolean;
 }
 
 interface StoreInternals<S = State> {
@@ -124,6 +135,239 @@ function deleteKeyedListener<S>(
   }
 }
 
+function getFastPathNotifiedListeners<S>(frame: FastPathFrame<S>) {
+  const notifiedListeners = new Set<Listener<S>>();
+  const currentListener = frame.currentListener;
+  if (!currentListener) return notifiedListeners;
+  for (const listener of frame.keyedListeners) {
+    notifiedListeners.add(listener);
+    if (listener === currentListener) {
+      return notifiedListeners;
+    }
+  }
+  notifiedListeners.clear();
+  notifiedListeners.add(currentListener);
+  return notifiedListeners;
+}
+
+function preserveFastPathNotifiedListeners<S>(frame: FastPathFrame<S>) {
+  frame.notifiedListeners ??= getFastPathNotifiedListeners(frame);
+}
+
+// An existing listener re-keyed to all keys after its insertion-order slot has
+// passed should stay skipped, matching the live slow path.
+function hasFastPathPassedListener<S>(
+  frame: FastPathFrame<S>,
+  listener: Listener<S>,
+) {
+  if (!frame.currentListener) return false;
+  let foundCurrentKeyedListener = false;
+  for (const currentListener of frame.keyedListeners) {
+    if (currentListener === frame.currentListener) {
+      foundCurrentKeyedListener = true;
+      continue;
+    }
+    if (!foundCurrentKeyedListener) continue;
+    if (currentListener === listener) return false;
+  }
+  let foundListener = false;
+  for (const currentListener of frame.group.listeners) {
+    if (currentListener === frame.currentListener) return foundListener;
+    if (currentListener === listener) {
+      foundListener = true;
+    }
+  }
+  return false;
+}
+
+function preserveFastPathFrames<S>(
+  fastPathFrames: Array<FastPathFrame<S>>,
+  group: ListenerGroup<S>,
+  listener?: Listener<S>,
+) {
+  for (const frame of fastPathFrames) {
+    if (frame.group !== group) continue;
+    if (frame.recovering) continue;
+    if (listener && !frame.keyedListeners.has(listener)) continue;
+    preserveFastPathNotifiedListeners(frame);
+    for (const currentListener of frame.group.listeners) {
+      if (currentListener === frame.currentListener) break;
+      if (!hasFastPathPassedListener(frame, currentListener)) continue;
+      frame.notifiedListeners?.add(currentListener);
+    }
+  }
+}
+
+function preserveFastPathPassedListeners<S>(
+  fastPathFrames: Array<FastPathFrame<S>>,
+  group: ListenerGroup<S>,
+  listener: Listener<S>,
+) {
+  for (const frame of fastPathFrames) {
+    if (frame.group !== group) continue;
+    if (frame.recovering) continue;
+    if (!hasFastPathPassedListener(frame, listener)) continue;
+    preserveFastPathNotifiedListeners(frame);
+    frame.notifiedListeners?.add(listener);
+  }
+}
+
+interface PreserveFastPathPassedKeyedListenersParams<S> {
+  fastPathFrames: Array<FastPathFrame<S>>;
+  group: ListenerGroup<S>;
+  keys: Array<keyof S>;
+  listener: Listener<S>;
+}
+
+function preserveFastPathPassedKeyedListeners<S>({
+  fastPathFrames,
+  group,
+  keys,
+  listener,
+}: PreserveFastPathPassedKeyedListenersParams<S>) {
+  const wasRegistered = group.listeners.has(listener);
+  for (const frame of fastPathFrames) {
+    if (frame.group !== group) continue;
+    if (frame.recovering) continue;
+    if (!keys.includes(frame.updatedKey)) continue;
+    if (hasFastPathPassedListener(frame, listener)) {
+      preserveFastPathNotifiedListeners(frame);
+      frame.notifiedListeners?.add(listener);
+    } else if (wasRegistered) {
+      preserveFastPathNotifiedListeners(frame);
+      frame.recoverToLive = true;
+    }
+  }
+}
+
+function clearFastPathNotifiedListener<S>(
+  fastPathFrames: Array<FastPathFrame<S>>,
+  group: ListenerGroup<S>,
+  listener: Listener<S>,
+) {
+  for (const frame of fastPathFrames) {
+    if (frame.group !== group) continue;
+    frame.notifiedListeners?.delete(listener);
+  }
+}
+
+interface AddFastPathKeyedListenerParams<S> {
+  fastPathFrames: Array<FastPathFrame<S>>;
+  group: ListenerGroup<S>;
+  keys: Array<keyof S>;
+  listener: Listener<S>;
+}
+
+function addFastPathKeyedListener<S>({
+  fastPathFrames,
+  group,
+  keys,
+  listener,
+}: AddFastPathKeyedListenerParams<S>) {
+  for (const frame of fastPathFrames) {
+    if (frame.group !== group) continue;
+    if (frame.recovering) continue;
+    if (!keys.includes(frame.updatedKey)) continue;
+    frame.keyedListeners.add(listener);
+  }
+}
+
+function runPendingCleanups<S>(group: ListenerGroup<S>, listener: Listener<S>) {
+  if (!group.disposables.size) return;
+  while (true) {
+    const cleanup = group.disposables.get(listener);
+    if (!cleanup) break;
+    group.disposables.delete(listener);
+    cleanup();
+  }
+}
+
+function getListenerGeneration<S>(
+  group: ListenerGroup<S>,
+  listener: Listener<S>,
+) {
+  return group.listenerGenerations.get(listener) ?? 0;
+}
+
+function notifyStoreListener<S>(
+  group: ListenerGroup<S>,
+  listener: Listener<S>,
+  getState: () => S,
+  prevState: S,
+) {
+  if (group.suspendCounts?.has(listener)) return;
+  // Pending cleanups run before this invocation owns the cleanup slot.
+  // Cleanup-triggered dispatches should settle before the run-depth check.
+  runPendingCleanups(group, listener);
+  let listenerRunVersion = group.listenerRunVersion;
+  if (group.runDepth) {
+    group.listenerRunVersion += 1;
+    listenerRunVersion = group.listenerRunVersion;
+    group.listenerRunVersions.set(listener, listenerRunVersion);
+  }
+  group.runDepth += 1;
+  let cleanup: void | (() => void);
+  try {
+    cleanup = listener(getState(), prevState);
+  } finally {
+    group.runDepth -= 1;
+  }
+  // A reentrant same-listener run owns the current cleanup slot, even when it
+  // cleared the slot by returning nothing.
+  if (group.listenerRunVersion !== listenerRunVersion) {
+    const currentRunVersion = group.listenerRunVersions.get(listener);
+    if (currentRunVersion && currentRunVersion > listenerRunVersion) {
+      cleanup?.();
+      return;
+    }
+  }
+  if (cleanup) {
+    group.disposables.set(listener, cleanup);
+  } else if (group.disposables.size) {
+    group.disposables.delete(listener);
+  }
+}
+
+interface RunLiveListenersParams<S> {
+  group: ListenerGroup<S>;
+  getState: () => S;
+  prevState: S;
+  updatedKey: UpdatedKey<S>;
+  notifiedListeners?: Set<Listener<S>>;
+}
+
+function runLiveListeners<S>({
+  group,
+  getState,
+  prevState,
+  updatedKey,
+  notifiedListeners,
+}: RunLiveListenersParams<S>) {
+  const allKeysListeners = group.allKeysListeners;
+  const startVersion = group.listenerVersion;
+  const processedListeners: Array<[Listener<S>, number]> = [];
+  let processedListenerMap: Map<Listener<S>, number> | undefined;
+  for (const listener of group.listeners) {
+    if (notifiedListeners?.has(listener)) continue;
+    if (!allKeysListeners?.has(listener)) {
+      const keys = group.listenerKeys.get(listener);
+      if (!hasUpdatedKey(keys, updatedKey)) continue;
+    }
+    if (group.listenerVersion !== startVersion) {
+      processedListenerMap ??= new Map(processedListeners);
+      const processedGeneration = processedListenerMap.get(listener);
+      if (processedGeneration === getListenerGeneration(group, listener)) {
+        continue;
+      }
+    }
+    const generation = getListenerGeneration(group, listener);
+    processedListeners.push([listener, generation]);
+    processedListenerMap?.set(listener, generation);
+    notifiedListeners?.add(listener);
+    notifyStoreListener(group, listener, getState, prevState);
+  }
+}
+
 /**
  * Creates a store.
  * @param initialState Initial state.
@@ -147,6 +391,7 @@ export function createStore<S extends State>(
     disposables: new Map(),
     listenerKeys: new WeakMap(),
     listenerVersion: 0,
+    listenerGenerations: new WeakMap(),
     listenerRunVersion: 0,
     listenerRunVersions: new WeakMap(),
     runDepth: 0,
@@ -156,6 +401,7 @@ export function createStore<S extends State>(
     disposables: new Map(),
     listenerKeys: new WeakMap(),
     listenerVersion: 0,
+    listenerGenerations: new WeakMap(),
     listenerRunVersion: 0,
     listenerRunVersions: new WeakMap(),
     runDepth: 0,
@@ -270,6 +516,11 @@ export function createStore<S extends State>(
     }
   };
 
+  // The keyed fast path only tracks notified listeners if it has to recover
+  // into live listener iteration. Registration/disposal hooks preserve every
+  // active frame for the listener group before re-keying mutates its bucket.
+  const fastPathFrames: Array<FastPathFrame<S>> = [];
+
   // Registers `listener` in `group` and returns its unsubscribe. Three jobs:
   // (1) snapshot `keys` as a defensive copy (or null for an all-keys listener);
   // (2) index the listener — re-registering the same listener first clears its
@@ -282,22 +533,51 @@ export function createStore<S extends State>(
     group = syncListenerGroup,
   ) => {
     const listenerKeysValue = keys ? [...keys] : null;
-    if (group.listeners.has(listener)) {
+    const wasRegistered = group.listeners.has(listener);
+    if (!wasRegistered) {
+      clearFastPathNotifiedListener(fastPathFrames, group, listener);
+    }
+    if (!listenerKeysValue) {
+      if (wasRegistered) {
+        preserveFastPathFrames(fastPathFrames, group);
+      }
+      preserveFastPathPassedListeners(fastPathFrames, group, listener);
+    } else {
+      preserveFastPathPassedKeyedListeners({
+        fastPathFrames,
+        group,
+        keys: listenerKeysValue,
+        listener,
+      });
+    }
+    if (wasRegistered) {
+      preserveFastPathFrames(fastPathFrames, group, listener);
       deleteListenerIndexes(group, listener, group.listenerKeys.get(listener));
     }
     group.listeners.add(listener);
     if (listenerKeysValue) {
       group.listenersByKey ??= new Map();
       addKeyedListener(group.listenersByKey, listenerKeysValue, listener);
+      addFastPathKeyedListener({
+        fastPathFrames,
+        group,
+        keys: listenerKeysValue,
+        listener,
+      });
     } else {
       group.allKeysListeners ??= new Set();
       group.allKeysListeners.add(listener);
     }
     group.listenerKeys.set(listener, listenerKeysValue);
+    if (!wasRegistered) {
+      const generation = getListenerGeneration(group, listener) + 1;
+      group.listenerGenerations.set(listener, generation);
+    }
     group.listenerVersion += 1;
     return () => {
       group.disposables.get(listener)?.();
       group.disposables.delete(listener);
+      preserveFastPathFrames(fastPathFrames, group, listener);
       const currentKeys = group.listenerKeys.get(listener);
       deleteListenerIndexes(group, listener, listenerKeysValue);
       if (currentKeys !== listenerKeysValue) {
@@ -311,56 +591,6 @@ export function createStore<S extends State>(
 
   const storeSubscribe: StoreSubscribe<S> = (keys, listener) =>
     registerListener(keys, listener);
-
-  const runPendingCleanups = (
-    group: ListenerGroup<S>,
-    listener: Listener<S>,
-  ) => {
-    if (!group.disposables.size) return;
-    while (true) {
-      const cleanup = group.disposables.get(listener);
-      if (!cleanup) break;
-      group.disposables.delete(listener);
-      cleanup();
-    }
-  };
-
-  const runListener = (
-    group: ListenerGroup<S>,
-    listener: Listener<S>,
-    prevState: S,
-  ) => {
-    // Pending cleanups run before this invocation owns the cleanup slot.
-    // Cleanup-triggered dispatches should settle before the run-depth check.
-    runPendingCleanups(group, listener);
-    let listenerRunVersion = group.listenerRunVersion;
-    if (group.runDepth) {
-      group.listenerRunVersion += 1;
-      listenerRunVersion = group.listenerRunVersion;
-      group.listenerRunVersions.set(listener, listenerRunVersion);
-    }
-    group.runDepth += 1;
-    let cleanup: void | (() => void);
-    try {
-      cleanup = listener(state, prevState);
-    } finally {
-      group.runDepth -= 1;
-    }
-    // A reentrant same-listener run owns the current cleanup slot, even when it
-    // cleared the slot by returning nothing.
-    if (group.listenerRunVersion !== listenerRunVersion) {
-      const currentRunVersion = group.listenerRunVersions.get(listener);
-      if (currentRunVersion && currentRunVersion > listenerRunVersion) {
-        cleanup?.();
-        return;
-      }
-    }
-    if (cleanup) {
-      group.disposables.set(listener, cleanup);
-    } else if (group.disposables.size) {
-      group.disposables.delete(listener);
-    }
-  };
 
   const getCleanupPrevState = (prevState: S, stateBeforeCleanups: S) => {
     let cleanupPrevState: S | undefined;
@@ -392,8 +622,9 @@ export function createStore<S extends State>(
       runPendingCleanups(group, listener);
       cleanupPrevState = getCleanupPrevState(prevState, stateBeforeCleanups);
       const initialPrevState = cleanupPrevState ?? prevState;
-      // Keep this inline so dispatches can stay on the single-call runListener
-      // hot path while initial runs can refresh their post-cleanup baseline.
+      // Keep this inline so dispatches can stay on the single-call
+      // notifyStoreListener hot path while initial runs can refresh their
+      // post-cleanup baseline.
       let listenerRunVersion = group.listenerRunVersion;
       if (group.runDepth) {
         group.listenerRunVersion += 1;
@@ -482,39 +713,41 @@ export function createStore<S extends State>(
     if (!(updatedKey instanceof Set) && !group.allKeysListeners?.size) {
       const keyedListeners = group.listenersByKey?.get(updatedKey);
       if (!keyedListeners) return;
-      const startVersion = group.listenerVersion;
-      const processedListeners: Array<Listener<S>> = [];
-      let processedListenerSet: Set<Listener<S>> | undefined;
-      for (const listener of keyedListeners) {
-        if (group.listenerVersion !== startVersion) {
-          processedListenerSet ??= new Set(processedListeners);
-          if (processedListenerSet.has(listener)) continue;
+      const frame: FastPathFrame<S> = {
+        group,
+        keyedListeners,
+        updatedKey,
+        currentListener: null,
+      };
+      fastPathFrames.push(frame);
+
+      try {
+        for (const listener of keyedListeners) {
+          if (frame.notifiedListeners?.has(listener)) continue;
+          frame.currentListener = listener;
+          frame.notifiedListeners?.add(listener);
+          notifyStoreListener(group, listener, getState, prevState);
+          if (!group.allKeysListeners?.size && !frame.recoverToLive) continue;
+          const notifiedListeners =
+            frame.notifiedListeners ?? getFastPathNotifiedListeners(frame);
+          frame.notifiedListeners = notifiedListeners;
+          frame.recovering = true;
+          runLiveListeners({
+            group,
+            getState,
+            prevState,
+            updatedKey,
+            notifiedListeners,
+          });
+          return;
         }
-        processedListeners.push(listener);
-        processedListenerSet?.add(listener);
-        if (group.suspendCounts?.has(listener)) continue;
-        runListener(group, listener, prevState);
+      } finally {
+        fastPathFrames.pop();
       }
       return;
     }
-    const allKeysListeners = group.allKeysListeners;
-    const startVersion = group.listenerVersion;
-    const processedListeners: Array<Listener<S>> = [];
-    let processedListenerSet: Set<Listener<S>> | undefined;
-    for (const listener of group.listeners) {
-      if (!allKeysListeners?.has(listener)) {
-        const keys = group.listenerKeys.get(listener);
-        if (!hasUpdatedKey(keys, updatedKey)) continue;
-      }
-      if (group.listenerVersion !== startVersion) {
-        processedListenerSet ??= new Set(processedListeners);
-        if (processedListenerSet.has(listener)) continue;
-      }
-      processedListeners.push(listener);
-      processedListenerSet?.add(listener);
-      if (group.suspendCounts?.has(listener)) continue;
-      runListener(group, listener, prevState);
-    }
+
+    runLiveListeners({ group, getState, prevState, updatedKey });
   };
 
   // `fromStores` marks an update that originated from an extended parent store
