@@ -26,7 +26,12 @@ export default function Example() {
         <TagRemove value="React">Remove React filter</TagRemove>
       </p>
       <p>
-        <TagRemove value="Vue" aria-label="Remove Vue filter" />
+        <TagRemove value="Vue" aria-label="Remove Vue filter">
+          <span aria-hidden>x</span>
+        </TagRemove>
+      </p>
+      <p>
+        <TagRemove value="Angular" aria-label="Remove Angular filter" />
       </p>
       <p>
         <TagRemove
@@ -36,7 +41,9 @@ export default function Example() {
       </p>
       <p>
         <span id="solid-label">Remove Solid filter</span>
-        <TagRemove value="Solid" aria-labelledby="solid-label" />
+        <TagRemove value="Solid" aria-labelledby="solid-label">
+          <span aria-hidden>x</span>
+        </TagRemove>
       </p>
     </TagProvider>
   );
