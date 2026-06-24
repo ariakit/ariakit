@@ -12,6 +12,7 @@ import {
   sortBasedOnDOMPosition,
   chain,
   defaultValue,
+  shallowEqual,
 } from "@ariakit/utils";
 import type { BivariantCallback } from "@ariakit/utils";
 
@@ -42,6 +43,103 @@ function getPrivateStore<T extends CollectionStoreItem>(
   },
 ) {
   return store?.__unstablePrivateStore;
+}
+
+function getItemsById<T extends CollectionStoreItem>(items: T[]) {
+  const itemsById = new Map<string, T>();
+  for (const item of items) {
+    itemsById.set(item.id, item);
+  }
+  return itemsById;
+}
+
+function mergeItems<T extends CollectionStoreItem>(
+  items: T[],
+  stateItems: T[],
+) {
+  const itemsById = getItemsById(items);
+  const stateItemsById = getItemsById(stateItems);
+
+  let nextItems: T[] | undefined;
+  let index = 0;
+
+  for (const item of items) {
+    const stateItem = stateItemsById.get(item.id);
+    const nextItem = stateItem ? mergeItemMetadata(item, stateItem) : item;
+    if (nextItem !== item) {
+      nextItems ??= items.slice(0, index);
+    }
+    nextItems?.push(nextItem);
+    index += 1;
+  }
+
+  for (const stateItem of stateItems) {
+    if (itemsById.has(stateItem.id)) continue;
+    nextItems ??= items.slice();
+    nextItems.push(stateItem);
+  }
+
+  return nextItems || items;
+}
+
+function mergeItemsByState<T extends CollectionStoreItem>(
+  items: T[],
+  stateItems: T[],
+) {
+  const itemsById = getItemsById(items);
+  const nextItems: T[] = [];
+  let hasChanges = items.length !== stateItems.length;
+  let index = 0;
+
+  for (const stateItem of stateItems) {
+    const item = mergeItemMetadata(itemsById.get(stateItem.id), stateItem);
+    nextItems.push(item);
+    if (item !== items[index]) {
+      hasChanges = true;
+    }
+    index += 1;
+  }
+
+  return hasChanges ? nextItems : items;
+}
+
+function mergeItemMetadata<T extends CollectionStoreItem>(
+  item: T | undefined,
+  nextItem: T,
+): T;
+function mergeItemMetadata<T extends CollectionStoreItem>(
+  item: T | undefined,
+  nextItem?: T,
+): T | undefined;
+function mergeItemMetadata<T extends CollectionStoreItem>(
+  item: T | undefined,
+  nextItem?: T,
+) {
+  if (!nextItem) return;
+  if (!item) {
+    return nextItem;
+  }
+  if (nextItem.element !== undefined) {
+    return nextItem;
+  }
+  const { element } = item;
+  if (element == null) {
+    return nextItem;
+  }
+  const mergedItem = { ...nextItem, element };
+  if (shallowEqual(mergedItem, item)) {
+    return item;
+  }
+  return mergedItem;
+}
+
+interface MergeItemWithStoreParams<T extends CollectionStoreItem> {
+  item: T;
+  setItems: (getItems: (items: T[]) => T[]) => void;
+  canDeleteFromMap?: boolean;
+  getItemsBeforeMount?: (items: T[]) => T[];
+  getItemsBeforeUnmount?: (items: T[]) => T[];
+  getRestoredItem?: (item?: T) => T | undefined;
 }
 
 /**
@@ -76,12 +174,18 @@ export function createCollectionStore<
   );
 
   const collection = createStore(initialState, props.store);
+  let publishedItems = collection.getState().items;
+  let publishedItemsFromState = false;
+  let pendingItemsBase = publishedItems;
+  let pendingItemsFromState = false;
 
   sync(collection, ["items"], (state) => {
-    privateStore.setState("items", state.items);
+    const privateItems = new Map(
+      privateStore.getState().items.map((item) => [item.id, item]),
+    );
     itemsMap.clear();
     for (const item of state.items) {
-      itemsMap.set(item.id, item);
+      itemsMap.set(item.id, mergeItemMetadata(privateItems.get(item.id), item));
     }
   });
 
@@ -91,14 +195,39 @@ export function createCollectionStore<
     collection.setState("renderedItems", sortedItems);
   };
 
-  setup(collection, () => init(privateStore));
+  setup(collection, () => {
+    privateStore.setState("items", (items) => {
+      const stateItems = collection.getState().items;
+      pendingItemsBase = stateItems;
+      pendingItemsFromState = stateItems !== publishedItems;
+      if (stateItems === publishedItems) {
+        return mergeItems(items, stateItems);
+      }
+      return mergeItemsByState(items, stateItems);
+    });
+    return init(privateStore);
+  });
 
   // Use the private store to register items and then batch the changes to the
   // public store so we don't trigger multiple updates on the store when adding
   // multiple items.
   setup(privateStore, () => {
     return batch(privateStore, ["items"], (state) => {
-      collection.setState("items", state.items);
+      const stateItems = collection.getState().items;
+      const shouldPublishPrivateItems = stateItems === pendingItemsBase;
+      const nextItems = shouldPublishPrivateItems
+        ? state.items
+        : mergeItemsByState(state.items, stateItems);
+      const nextItemsFromState =
+        pendingItemsFromState || !shouldPublishPrivateItems;
+      if (nextItems !== state.items) {
+        pendingItemsBase = nextItems;
+        pendingItemsFromState = true;
+        privateStore.setState("items", nextItems);
+      }
+      publishedItems = nextItems;
+      publishedItemsFromState = nextItemsFromState;
+      collection.setState("items", nextItems);
     });
   });
 
@@ -145,13 +274,17 @@ export function createCollectionStore<
     });
   });
 
-  const mergeItem = (
-    item: T,
-    setItems: (getItems: (items: T[]) => T[]) => void,
+  const mergeItemWithStore = ({
+    item,
+    setItems,
     canDeleteFromMap = false,
-  ) => {
+    getItemsBeforeMount,
+    getItemsBeforeUnmount,
+    getRestoredItem,
+  }: MergeItemWithStoreParams<T>) => {
     let prevItem: T | undefined;
     setItems((items) => {
+      items = getItemsBeforeMount?.(items) || items;
       const index = items.findIndex(({ id }) => id === item.id);
       const nextItems = items.slice();
       if (index !== -1) {
@@ -167,29 +300,91 @@ export function createCollectionStore<
     });
     const unmergeItem = () => {
       setItems((items) => {
+        items = getItemsBeforeUnmount?.(items) || items;
         if (!prevItem) {
+          const restoredItem = getRestoredItem?.();
+          if (restoredItem) {
+            const index = items.findIndex(({ id }) => id === item.id);
+            if (index !== -1) {
+              const nextItems = items.slice();
+              nextItems[index] = restoredItem;
+              itemsMap.set(item.id, restoredItem);
+              return nextItems;
+            }
+          }
           if (canDeleteFromMap) {
             itemsMap.delete(item.id);
           }
           return items.filter(({ id }) => id !== item.id);
         }
         const index = items.findIndex(({ id }) => id === item.id);
-        if (index === -1) return items;
+        if (index === -1) {
+          if (canDeleteFromMap) {
+            itemsMap.delete(item.id);
+          }
+          return items;
+        }
+        const restoredItem = getRestoredItem
+          ? getRestoredItem(prevItem)
+          : prevItem;
+        if (!restoredItem) {
+          if (canDeleteFromMap) {
+            itemsMap.delete(item.id);
+          }
+          return items.filter(({ id }) => id !== item.id);
+        }
         const nextItems = items.slice();
-        nextItems[index] = prevItem;
-        itemsMap.set(item.id, prevItem);
+        nextItems[index] = restoredItem;
+        itemsMap.set(item.id, restoredItem);
         return nextItems;
       });
     };
     return unmergeItem;
   };
 
-  const registerItem: CollectionStore<T>["registerItem"] = (item) =>
-    mergeItem(
+  const registerItem: CollectionStore<T>["registerItem"] = (item) => {
+    let registeredItems: T[] | undefined;
+    return mergeItemWithStore({
       item,
-      (getItems) => privateStore.setState("items", getItems),
-      true,
-    );
+      setItems: (getItems) =>
+        privateStore.setState("items", (items) => {
+          pendingItemsBase = collection.getState().items;
+          pendingItemsFromState = false;
+          const nextItems = getItems(items);
+          registeredItems = nextItems;
+          return nextItems;
+        }),
+      canDeleteFromMap: true,
+      getItemsBeforeMount: (items) => {
+        const stateItems = collection.getState().items;
+        if (stateItems === publishedItems) {
+          return mergeItems(items, stateItems);
+        }
+        return mergeItemsByState(items, stateItems);
+      },
+      getItemsBeforeUnmount: (items) => {
+        const stateItems = collection.getState().items;
+        if (stateItems === registeredItems) {
+          return items;
+        }
+        if (stateItems === publishedItems && !publishedItemsFromState) {
+          return items;
+        }
+        return mergeItemsByState(items, stateItems);
+      },
+      getRestoredItem: (prevItem) => {
+        const { items } = collection.getState();
+        if (items === registeredItems) {
+          return prevItem;
+        }
+        if (items === publishedItems && !publishedItemsFromState) {
+          return prevItem;
+        }
+        const stateItem = items.find(({ id }) => id === item.id);
+        return stateItem;
+      },
+    });
+  };
 
   return {
     ...collection,
@@ -198,22 +393,32 @@ export function createCollectionStore<
     renderItem: (item) =>
       chain(
         registerItem(item),
-        mergeItem(item, (getItems) =>
-          privateStore.setState("renderedItems", getItems),
-        ),
+        mergeItemWithStore({
+          item,
+          setItems: (getItems) =>
+            privateStore.setState("renderedItems", getItems),
+        }),
       ),
 
     item: (id) => {
       if (!id) return null;
       let item = itemsMap.get(id);
-      if (!item) {
-        const { items } = privateStore.getState();
-        item = items.find((item) => item.id === id);
+      const stateItems = collection.getState().items;
+      const stateItem = stateItems.find((item) => item.id === id);
+      if (stateItem) {
+        item = mergeItemMetadata(item, stateItem);
         if (item) {
           itemsMap.set(id, item);
         }
+        return item || null;
       }
-      return item || null;
+      if (
+        stateItems === pendingItemsBase ||
+        (stateItems === publishedItems && !publishedItemsFromState)
+      ) {
+        return item || null;
+      }
+      return null;
     },
 
     // @ts-expect-error Internal
