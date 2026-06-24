@@ -290,6 +290,32 @@ test("sync runs immediately and cleans up before rerun and unsubscribe", () => {
   expect(events).toEqual(["0->0", "cleanup 0", "0->1", "cleanup 1"]);
 });
 
+test("detaches sync listeners before unsubscribe cleanups update state", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+  let runCount = 0;
+  let nudged = false;
+
+  const unsubscribe = sync(store, ["count"], () => {
+    runCount += 1;
+    const id = runCount;
+    events.push(`run ${id}`);
+    return () => {
+      events.push(`cleanup ${id}`);
+      if (nudged) return;
+      nudged = true;
+      store.setState("count", (count) => count + 1);
+    };
+  });
+
+  expect(events).toEqual(["run 1"]);
+
+  unsubscribe();
+
+  expect(store.getState()).toEqual({ count: 1 });
+  expect(events).toEqual(["run 1", "cleanup 1"]);
+});
+
 test("subscribe cleans up before rerun and unsubscribe", () => {
   const store = createStore({ count: 0 });
   const events: string[] = [];
