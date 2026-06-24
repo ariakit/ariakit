@@ -362,6 +362,16 @@ export function createStore<S extends State>(
     }
   };
 
+  const getCleanupPrevState = (prevState: S, stateBeforeCleanups: S) => {
+    let cleanupPrevState: S | undefined;
+    for (const key of getKeys(state)) {
+      if (isSameValue(state[key], stateBeforeCleanups[key])) continue;
+      cleanupPrevState ??= { ...prevState };
+      cleanupPrevState[key] = state[key];
+    }
+    return cleanupPrevState;
+  };
+
   // Runs a listener's initial synchronous invocation while preventing reentrant
   // dispatch from running the same listener before the new registration is
   // complete.
@@ -376,8 +386,39 @@ export function createStore<S extends State>(
       const count = group.suspendCounts.get(listener) ?? 0;
       group.suspendCounts.set(listener, count + 1);
     }
+    let cleanupPrevState: S | undefined;
     try {
-      runListener(group, listener, prevState);
+      const stateBeforeCleanups = state;
+      runPendingCleanups(group, listener);
+      cleanupPrevState = getCleanupPrevState(prevState, stateBeforeCleanups);
+      const initialPrevState = cleanupPrevState ?? prevState;
+      // Keep this inline so dispatches can stay on the single-call runListener
+      // hot path while initial runs can refresh their post-cleanup baseline.
+      let listenerRunVersion = group.listenerRunVersion;
+      if (group.runDepth) {
+        group.listenerRunVersion += 1;
+        listenerRunVersion = group.listenerRunVersion;
+        group.listenerRunVersions.set(listener, listenerRunVersion);
+      }
+      group.runDepth += 1;
+      let cleanup: void | (() => void);
+      try {
+        cleanup = listener(state, initialPrevState);
+      } finally {
+        group.runDepth -= 1;
+      }
+      if (group.listenerRunVersion !== listenerRunVersion) {
+        const currentRunVersion = group.listenerRunVersions.get(listener);
+        if (currentRunVersion && currentRunVersion > listenerRunVersion) {
+          cleanup?.();
+          return cleanupPrevState;
+        }
+      }
+      if (cleanup) {
+        group.disposables.set(listener, cleanup);
+      } else if (group.disposables.size) {
+        group.disposables.delete(listener);
+      }
     } finally {
       if (shouldSuspend) {
         const suspendCounts = group.suspendCounts;
@@ -392,6 +433,7 @@ export function createStore<S extends State>(
         }
       }
     }
+    return cleanupPrevState;
   };
 
   const storeSync: StoreSync<S> = (keys, listener) => {
@@ -409,7 +451,14 @@ export function createStore<S extends State>(
     if (!batchListenerGroup.listeners.size && !inDispatch) {
       prevStateBatch = state;
     }
-    runInitialListener(batchListenerGroup, listener, prevStateBatch);
+    const cleanupPrevState = runInitialListener(
+      batchListenerGroup,
+      listener,
+      prevStateBatch,
+    );
+    if (cleanupPrevState) {
+      prevStateBatch = cleanupPrevState;
+    }
     return registerListener(keys, listener, batchListenerGroup);
   };
 
