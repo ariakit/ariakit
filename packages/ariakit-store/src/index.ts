@@ -45,11 +45,6 @@ interface ListenerGroup<S> {
   suspendCounts?: Map<Listener<S>, number>;
   disposables: Map<Listener<S>, () => void>;
   listenerKeys: WeakMap<Listener<S>, Array<keyof S> | null>;
-  listenerVersion: number;
-  listenerGenerations: WeakMap<Listener<S>, number>;
-  listenerRunVersion: number;
-  listenerRunVersions: WeakMap<Listener<S>, number>;
-  runDepth: number;
 }
 
 interface FastPathFrame<S> {
@@ -98,6 +93,20 @@ function hasUpdatedKey<S>(
 
 function isSameValue(value: unknown, other: unknown) {
   return value === other || (value !== value && other !== other);
+}
+
+function getCleanupPrevState<S extends State>(
+  prevState: S,
+  state: S,
+  stateBeforeCleanup: S,
+) {
+  let cleanupPrevState: S | undefined;
+  for (const key of getKeys(state)) {
+    if (isSameValue(state[key], stateBeforeCleanup[key])) continue;
+    cleanupPrevState ??= { ...prevState };
+    cleanupPrevState[key] = state[key];
+  }
+  return cleanupPrevState;
 }
 
 const MAX_REPAIR_PASSES = 100;
@@ -272,63 +281,59 @@ function addFastPathKeyedListener<S>({
   }
 }
 
-function runPendingCleanups<S>(group: ListenerGroup<S>, listener: Listener<S>) {
+function runPendingCleanup<S>(group: ListenerGroup<S>, listener: Listener<S>) {
   if (!group.disposables.size) return;
-  while (true) {
-    const cleanup = group.disposables.get(listener);
-    if (!cleanup) break;
-    group.disposables.delete(listener);
-    cleanup();
-  }
+  const cleanup = group.disposables.get(listener);
+  if (!cleanup) return;
+  group.disposables.delete(listener);
+  cleanup();
 }
 
-function getListenerGeneration<S>(
+function setListenerCleanup<S>(
   group: ListenerGroup<S>,
   listener: Listener<S>,
+  cleanup: () => void,
 ) {
-  return group.listenerGenerations.get(listener) ?? 0;
+  const currentCleanup = group.disposables.get(listener);
+  if (!currentCleanup) {
+    group.disposables.set(listener, cleanup);
+    return;
+  }
+  group.disposables.set(listener, () => {
+    currentCleanup();
+    cleanup();
+  });
 }
 
-function notifyStoreListener<S>(
+function notifyStoreListener<S extends State>(
   group: ListenerGroup<S>,
   listener: Listener<S>,
-  getState: () => S,
+  state: S,
   prevState: S,
+  getState?: () => S,
 ) {
   if (group.suspendCounts?.has(listener)) return;
-  // Pending cleanups run before this invocation owns the cleanup slot.
-  // Cleanup-triggered dispatches should settle before the run-depth check.
-  runPendingCleanups(group, listener);
-  let listenerRunVersion = group.listenerRunVersion;
-  if (group.runDepth) {
-    group.listenerRunVersion += 1;
-    listenerRunVersion = group.listenerRunVersion;
-    group.listenerRunVersions.set(listener, listenerRunVersion);
-  }
-  group.runDepth += 1;
-  let cleanup: void | (() => void);
-  try {
-    cleanup = listener(getState(), prevState);
-  } finally {
-    group.runDepth -= 1;
-  }
-  // A reentrant same-listener run owns the current cleanup slot, even when it
-  // cleared the slot by returning nothing.
-  if (group.listenerRunVersion !== listenerRunVersion) {
-    const currentRunVersion = group.listenerRunVersions.get(listener);
-    if (currentRunVersion && currentRunVersion > listenerRunVersion) {
-      cleanup?.();
-      return;
+  const { disposables } = group;
+  // Skip the cleanup lookup when no listener has registered a cleanup.
+  // The `.size` gate keeps an empty disposables map off this hot path.
+  const cleanup = disposables.size ? disposables.get(listener) : undefined;
+  if (cleanup) {
+    disposables.delete(listener);
+    const stateBeforeCleanup = state;
+    cleanup();
+    state = getState?.() ?? state;
+    if (state !== stateBeforeCleanup) {
+      prevState =
+        getCleanupPrevState(prevState, state, stateBeforeCleanup) ?? prevState;
     }
   }
-  if (cleanup) {
-    group.disposables.set(listener, cleanup);
-  } else if (group.disposables.size) {
-    group.disposables.delete(listener);
+  const result = listener(state, prevState);
+  if (result) {
+    setListenerCleanup(group, listener, result);
   }
 }
 
-interface RunLiveListenersParams<S> {
+interface RunLiveListenersParams<S extends State> {
   group: ListenerGroup<S>;
   getState: () => S;
   prevState: S;
@@ -336,7 +341,7 @@ interface RunLiveListenersParams<S> {
   notifiedListeners?: Set<Listener<S>>;
 }
 
-function runLiveListeners<S>({
+function runLiveListeners<S extends State>({
   group,
   getState,
   prevState,
@@ -344,27 +349,14 @@ function runLiveListeners<S>({
   notifiedListeners,
 }: RunLiveListenersParams<S>) {
   const allKeysListeners = group.allKeysListeners;
-  const startVersion = group.listenerVersion;
-  const processedListeners: Array<[Listener<S>, number]> = [];
-  let processedListenerMap: Map<Listener<S>, number> | undefined;
   for (const listener of group.listeners) {
     if (notifiedListeners?.has(listener)) continue;
     if (!allKeysListeners?.has(listener)) {
       const keys = group.listenerKeys.get(listener);
       if (!hasUpdatedKey(keys, updatedKey)) continue;
     }
-    if (group.listenerVersion !== startVersion) {
-      processedListenerMap ??= new Map(processedListeners);
-      const processedGeneration = processedListenerMap.get(listener);
-      if (processedGeneration === getListenerGeneration(group, listener)) {
-        continue;
-      }
-    }
-    const generation = getListenerGeneration(group, listener);
-    processedListeners.push([listener, generation]);
-    processedListenerMap?.set(listener, generation);
     notifiedListeners?.add(listener);
-    notifyStoreListener(group, listener, getState, prevState);
+    notifyStoreListener(group, listener, getState(), prevState, getState);
   }
 }
 
@@ -390,21 +382,11 @@ export function createStore<S extends State>(
     listeners: new Set(),
     disposables: new Map(),
     listenerKeys: new WeakMap(),
-    listenerVersion: 0,
-    listenerGenerations: new WeakMap(),
-    listenerRunVersion: 0,
-    listenerRunVersions: new WeakMap(),
-    runDepth: 0,
   };
   const batchListenerGroup: ListenerGroup<S> = {
     listeners: new Set(),
     disposables: new Map(),
     listenerKeys: new WeakMap(),
-    listenerVersion: 0,
-    listenerGenerations: new WeakMap(),
-    listenerRunVersion: 0,
-    listenerRunVersions: new WeakMap(),
-    runDepth: 0,
   };
 
   const storeSetup: StoreSetup = (callback) => {
@@ -569,11 +551,6 @@ export function createStore<S extends State>(
       group.allKeysListeners.add(listener);
     }
     group.listenerKeys.set(listener, listenerKeysValue);
-    if (!wasRegistered) {
-      const generation = getListenerGeneration(group, listener) + 1;
-      group.listenerGenerations.set(listener, generation);
-    }
-    group.listenerVersion += 1;
     return () => {
       group.disposables.get(listener)?.();
       group.disposables.delete(listener);
@@ -585,22 +562,11 @@ export function createStore<S extends State>(
       }
       group.listenerKeys.delete(listener);
       group.listeners.delete(listener);
-      group.listenerVersion += 1;
     };
   };
 
   const storeSubscribe: StoreSubscribe<S> = (keys, listener) =>
     registerListener(keys, listener);
-
-  const getCleanupPrevState = (prevState: S, stateBeforeCleanups: S) => {
-    let cleanupPrevState: S | undefined;
-    for (const key of getKeys(state)) {
-      if (isSameValue(state[key], stateBeforeCleanups[key])) continue;
-      cleanupPrevState ??= { ...prevState };
-      cleanupPrevState[key] = state[key];
-    }
-    return cleanupPrevState;
-  };
 
   // Runs a listener's initial synchronous invocation while preventing reentrant
   // dispatch from running the same listener before the new registration is
@@ -619,36 +585,18 @@ export function createStore<S extends State>(
     let cleanupPrevState: S | undefined;
     try {
       const stateBeforeCleanups = state;
-      runPendingCleanups(group, listener);
-      cleanupPrevState = getCleanupPrevState(prevState, stateBeforeCleanups);
+      runPendingCleanup(group, listener);
+      if (state !== stateBeforeCleanups) {
+        cleanupPrevState = getCleanupPrevState(
+          prevState,
+          state,
+          stateBeforeCleanups,
+        );
+      }
       const initialPrevState = cleanupPrevState ?? prevState;
-      // Keep this inline so dispatches can stay on the single-call
-      // notifyStoreListener hot path while initial runs can refresh their
-      // post-cleanup baseline.
-      let listenerRunVersion = group.listenerRunVersion;
-      if (group.runDepth) {
-        group.listenerRunVersion += 1;
-        listenerRunVersion = group.listenerRunVersion;
-        group.listenerRunVersions.set(listener, listenerRunVersion);
-      }
-      group.runDepth += 1;
-      let cleanup: void | (() => void);
-      try {
-        cleanup = listener(state, initialPrevState);
-      } finally {
-        group.runDepth -= 1;
-      }
-      if (group.listenerRunVersion !== listenerRunVersion) {
-        const currentRunVersion = group.listenerRunVersions.get(listener);
-        if (currentRunVersion && currentRunVersion > listenerRunVersion) {
-          cleanup?.();
-          return cleanupPrevState;
-        }
-      }
+      const cleanup = listener(state, initialPrevState);
       if (cleanup) {
-        group.disposables.set(listener, cleanup);
-      } else if (group.disposables.size) {
-        group.disposables.delete(listener);
+        setListenerCleanup(group, listener, cleanup);
       }
     } finally {
       if (shouldSuspend) {
@@ -664,7 +612,6 @@ export function createStore<S extends State>(
         }
       }
     }
-    return cleanupPrevState;
   };
 
   const storeSync: StoreSync<S> = (keys, listener) => {
@@ -682,14 +629,7 @@ export function createStore<S extends State>(
     if (!batchListenerGroup.listeners.size && !inDispatch) {
       prevStateBatch = state;
     }
-    const cleanupPrevState = runInitialListener(
-      batchListenerGroup,
-      listener,
-      prevStateBatch,
-    );
-    if (cleanupPrevState) {
-      prevStateBatch = cleanupPrevState;
-    }
+    runInitialListener(batchListenerGroup, listener, prevStateBatch);
     return registerListener(keys, listener, batchListenerGroup);
   };
 
@@ -726,7 +666,7 @@ export function createStore<S extends State>(
           if (frame.notifiedListeners?.has(listener)) continue;
           frame.currentListener = listener;
           frame.notifiedListeners?.add(listener);
-          notifyStoreListener(group, listener, getState, prevState);
+          notifyStoreListener(group, listener, state, prevState, getState);
           if (!group.allKeysListeners?.size && !frame.recoverToLive) continue;
           const notifiedListeners =
             frame.notifiedListeners ?? getFastPathNotifiedListeners(frame);

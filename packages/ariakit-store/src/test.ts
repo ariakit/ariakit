@@ -576,29 +576,66 @@ test("does not leak sync cleanup when re-registration listener updates state", (
   expect(active).toBe(0);
 });
 
-test("does not duplicate sync cleanup when re-registering during dispatch", () => {
+test("keeps dispatch cleanup updates out of the outer rerun diff", () => {
   const store = createStore({ count: 0, enabled: false });
+  const changes: Array<[number, number, boolean, boolean]> = [];
+  let updateOnCleanup = true;
+
+  sync(store, ["count", "enabled"], (state, prevState) => {
+    changes.push([
+      state.count,
+      prevState.count,
+      state.enabled,
+      prevState.enabled,
+    ]);
+    return () => {
+      if (!updateOnCleanup) return;
+      updateOnCleanup = false;
+      store.setState("enabled", true);
+    };
+  });
+  changes.length = 0;
+
+  store.setState("count", 1);
+
+  expect(changes).toEqual([
+    [1, 1, true, false],
+    [1, 0, true, true],
+  ]);
+});
+
+test("does not drain cleanups installed by re-registration cleanups", () => {
+  const store = createStore({ count: 0 });
   const events: string[] = [];
+  let active = 0;
   let runCount = 0;
-  let reRegister = false;
+  let registerFromCleanup = true;
 
   const listener = () => {
+    active += 1;
     runCount += 1;
     const id = runCount;
     events.push(`run ${id}`);
-    if (reRegister) {
-      reRegister = false;
-      sync(store, ["count", "enabled"], listener);
-    }
-    return () => events.push(`cleanup ${id}`);
+    return () => {
+      active -= 1;
+      events.push(`cleanup ${id}`);
+      if (!registerFromCleanup) return;
+      registerFromCleanup = false;
+      sync(store, ["count"], listener);
+    };
   };
 
-  const unsubscribe = sync(store, ["count"], listener);
+  const first = sync(store, ["count"], listener);
+  const second = sync(store, ["count"], listener);
 
-  reRegister = true;
-  store.setState("count", 1);
-  unsubscribe();
+  expect(events).toEqual(["run 1", "cleanup 1", "run 2", "run 3"]);
+  expect(active).toBe(2);
 
+  second();
+  expect(active).toBe(0);
+
+  first();
+  expect(active).toBe(0);
   expect(events).toEqual([
     "run 1",
     "cleanup 1",
@@ -607,145 +644,6 @@ test("does not duplicate sync cleanup when re-registering during dispatch", () =
     "cleanup 2",
     "cleanup 3",
   ]);
-});
-
-test("does not rerun a re-registered sync listener in the same dispatch", () => {
-  const store = createStore({ count: 0, enabled: false });
-  const events: string[] = [];
-  let runCount = 0;
-  let reRegister = false;
-
-  const listener = () => {
-    runCount += 1;
-    const id = runCount;
-    events.push(`run ${id}`);
-    if (reRegister) {
-      reRegister = false;
-      sync(store, ["count", "enabled"], listener);
-    }
-    return () => events.push(`cleanup ${id}`);
-  };
-
-  const unsubscribe = sync(store, ["count"], listener);
-  sync(store, ["count"], () => {
-    events.push("other");
-  });
-  events.length = 0;
-
-  reRegister = true;
-  store.setState("count", 1);
-  unsubscribe();
-
-  expect(events).toEqual([
-    "cleanup 1",
-    "run 2",
-    "run 3",
-    "cleanup 2",
-    "other",
-    "cleanup 3",
-  ]);
-});
-
-test("keeps a sync listener suspended through nested re-registration", () => {
-  const store = createStore({ count: 0, enabled: false });
-  const events: string[] = [];
-  let runCount = 0;
-  let reRegister = false;
-
-  const listener = () => {
-    runCount += 1;
-    const id = runCount;
-    events.push(`run ${id}`);
-    if (reRegister) {
-      reRegister = false;
-      sync(store, ["count", "enabled"], listener);
-      store.setState("count", 1);
-    }
-    return () => events.push(`cleanup ${id}`);
-  };
-
-  const first = sync(store, ["count"], listener);
-  events.length = 0;
-
-  reRegister = true;
-  const second = sync(store, ["count", "enabled"], listener);
-  second();
-  first();
-
-  expect(events).toEqual([
-    "cleanup 1",
-    "run 2",
-    "run 3",
-    "cleanup 2",
-    "cleanup 3",
-  ]);
-});
-
-test("preserves newer sync cleanup after a reentrant state update", () => {
-  const store = createStore({ count: 0, other: 0 });
-  const events: string[] = [];
-  let runCount = 0;
-  let updateOther = false;
-
-  sync(store, null, (state) => {
-    runCount += 1;
-    const id = runCount;
-    events.push(`run ${id}:${state.count}/${state.other}`);
-    if (updateOther) {
-      updateOther = false;
-      store.setState("other", 1);
-    }
-    return () => events.push(`cleanup ${id}:${state.count}/${state.other}`);
-  });
-  events.length = 0;
-
-  updateOther = true;
-  store.setState("count", 1);
-  store.setState("count", 2);
-
-  expect(events).toEqual([
-    "cleanup 1:0/0",
-    "run 2:1/0",
-    "run 3:1/1",
-    "cleanup 2:1/0",
-    "cleanup 3:1/1",
-    "run 4:2/1",
-  ]);
-});
-
-test("preserves cleared sync cleanup after a reentrant state update", () => {
-  const store = createStore({ count: 0, other: 0 });
-  const events: string[] = [];
-  let runCount = 0;
-  let updateOther = false;
-
-  sync(store, null, (state) => {
-    runCount += 1;
-    const id = runCount;
-    events.push(`run ${id}:${state.count}/${state.other}`);
-    if (updateOther) {
-      updateOther = false;
-      store.setState("other", 1);
-    }
-    if (state.other) return;
-    return () => events.push(`cleanup ${id}:${state.count}/${state.other}`);
-  });
-  events.length = 0;
-
-  updateOther = true;
-  store.setState("count", 1);
-
-  expect(events).toEqual([
-    "cleanup 1:0/0",
-    "run 2:1/0",
-    "run 3:1/1",
-    "cleanup 2:1/0",
-  ]);
-
-  events.length = 0;
-  store.setState("count", 2);
-
-  expect(events).toEqual(["run 4:2/1"]);
 });
 
 test("runs a pending batch cleanup when re-registering a listener", () => {
@@ -770,6 +668,48 @@ test("runs a pending batch cleanup when re-registering a listener", () => {
   expect(active).toBe(0);
 });
 
+test("does not drain batch cleanups installed by re-registration cleanups", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+  let active = 0;
+  let runCount = 0;
+  let registerFromCleanup = true;
+
+  const listener = () => {
+    active += 1;
+    runCount += 1;
+    const id = runCount;
+    events.push(`run ${id}`);
+    return () => {
+      active -= 1;
+      events.push(`cleanup ${id}`);
+      if (!registerFromCleanup) return;
+      registerFromCleanup = false;
+      batch(store, ["count"], listener);
+    };
+  };
+
+  const first = batch(store, ["count"], listener);
+  const second = batch(store, ["count"], listener);
+
+  expect(events).toEqual(["run 1", "cleanup 1", "run 2", "run 3"]);
+  expect(active).toBe(2);
+
+  second();
+  expect(active).toBe(0);
+
+  first();
+  expect(active).toBe(0);
+  expect(events).toEqual([
+    "run 1",
+    "cleanup 1",
+    "run 2",
+    "run 3",
+    "cleanup 2",
+    "cleanup 3",
+  ]);
+});
+
 test("keeps batch re-registration cleanup updates out of the initial diff", async () => {
   const store = createStore({ count: 0, enabled: false });
   const changes: Array<[number, number]> = [];
@@ -787,11 +727,13 @@ test("keeps batch re-registration cleanup updates out of the initial diff", asyn
   changes.length = 0;
 
   const second = batch(store, ["count", "enabled"], listener);
+  expect(changes).toEqual([]);
+
   await flushBatch();
   second();
   first();
 
-  expect(changes).toEqual([]);
+  expect(changes).toEqual([[1, 0]]);
 });
 
 test("preserves pending batch diffs after re-registration cleanup updates another key", async () => {
@@ -827,80 +769,63 @@ test("preserves pending batch diffs after re-registration cleanup updates anothe
 
   expect(changes).toEqual([
     [1, 0, true, true],
-    [1, 0, true, true],
+    [1, 0, true, false],
   ]);
 });
 
-test("does not duplicate batch cleanup when re-registering during dispatch", async () => {
+test("preserves re-registration cleanup updates for other batch listeners", async () => {
   const store = createStore({ count: 0, enabled: false });
-  const events: string[] = [];
-  let runCount = 0;
-  let reRegister = false;
+  const changes: Array<[number, number]> = [];
 
-  const listener = () => {
-    runCount += 1;
-    const id = runCount;
-    events.push(`run ${id}`);
-    if (reRegister) {
-      reRegister = false;
-      batch(store, ["count", "enabled"], listener);
-    }
-    return () => events.push(`cleanup ${id}`);
-  };
-
-  const unsubscribe = batch(store, ["count"], listener);
-
-  reRegister = true;
-  store.setState("count", 1);
-  await flushBatch();
-  unsubscribe();
-
-  expect(events).toEqual([
-    "run 1",
-    "cleanup 1",
-    "run 2",
-    "run 3",
-    "cleanup 2",
-    "cleanup 3",
-  ]);
-});
-
-test("does not rerun a re-registered batch listener in the same dispatch", async () => {
-  const store = createStore({ count: 0, enabled: false });
-  const events: string[] = [];
-  let runCount = 0;
-  let reRegister = false;
-
-  const listener = () => {
-    runCount += 1;
-    const id = runCount;
-    events.push(`run ${id}`);
-    if (reRegister) {
-      reRegister = false;
-      batch(store, ["count", "enabled"], listener);
-    }
-    return () => events.push(`cleanup ${id}`);
-  };
-
-  const unsubscribe = batch(store, ["count"], listener);
-  batch(store, ["count"], () => {
-    events.push("other");
+  batch(store, ["count"], (state, prevState) => {
+    changes.push([state.count, prevState.count]);
   });
-  events.length = 0;
+  changes.length = 0;
 
-  reRegister = true;
-  store.setState("count", 1);
+  const listener = () => {
+    return () => {
+      store.setState("count", 1);
+    };
+  };
+
+  const first = batch(store, ["enabled"], listener);
+  const second = batch(store, ["count", "enabled"], listener);
+
+  expect(changes).toEqual([]);
+
   await flushBatch();
-  unsubscribe();
+  second();
+  first();
 
-  expect(events).toEqual([
-    "cleanup 1",
-    "run 2",
-    "run 3",
-    "cleanup 2",
-    "other",
-    "cleanup 3",
-  ]);
+  expect(changes).toEqual([[1, 0]]);
+});
+
+test("preserves pending same-key batch diffs after re-registration cleanup", async () => {
+  const store = createStore({ count: 0 });
+  const changes: Array<[number, number]> = [];
+
+  const listener = (state: { count: number }, prevState: { count: number }) => {
+    if (state.count !== prevState.count) {
+      changes.push([state.count, prevState.count]);
+    }
+    return () => {
+      store.setState("count", 2);
+    };
+  };
+
+  const first = batch(store, ["count"], listener);
+  changes.length = 0;
+
+  store.setState("count", 1);
+  const second = batch(store, ["count"], listener);
+
+  expect(changes).toEqual([]);
+
+  await flushBatch();
+  second();
+  first();
+
+  expect(changes).toEqual([[2, 0]]);
 });
 
 test("registers a batch listener during dispatch and still sees the in-flight diff", async () => {
