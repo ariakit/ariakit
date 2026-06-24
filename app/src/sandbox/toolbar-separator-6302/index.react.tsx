@@ -12,6 +12,7 @@ export default function Example() {
         <Ariakit.ToolbarItem>Underline</Ariakit.ToolbarItem>
         <Ariakit.ToolbarSeparator
           aria-label="Row divider"
+          aria-orientation="horizontal"
           orientation="horizontal"
           style={{ margin: 0, width: "100%" }}
         />
