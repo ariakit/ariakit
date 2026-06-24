@@ -26,7 +26,24 @@ type ErrorMessage = string | undefined | null;
 const maxArrayIndex = 2 ** 32 - 2;
 
 function nextFrame() {
-  return new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+  return new Promise<void>((resolve) => {
+    // `requestAnimationFrame` isn't a global outside the browser (e.g. Node),
+    // mirroring the `typeof IntersectionObserver` check in the collection store.
+    if (typeof requestAnimationFrame !== "function") {
+      setTimeout(resolve, 0);
+      return;
+    }
+    // Browsers pause `requestAnimationFrame` in hidden documents, which would
+    // stall `validate()`/`submit()` until the tab becomes visible again. Race it
+    // against a timeout so a hidden document still makes progress; in a visible
+    // document the frame wins first, preserving the "after the next render"
+    // timing.
+    const timeoutId = setTimeout(resolve, 100);
+    requestAnimationFrame(() => {
+      clearTimeout(timeoutId);
+      resolve();
+    });
+  });
 }
 
 export function hasMessages(object: FormStoreValues): boolean {

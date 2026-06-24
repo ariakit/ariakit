@@ -1,23 +1,6 @@
 import * as ak from "@ariakit/react";
 import { useCallback, useEffect, useState } from "react";
 
-// TODO: Workaround for https://github.com/ariakit/ariakit/issues/6309 — remove
-// once the fix is released. The form store awaits `requestAnimationFrame`, which
-// browsers pause in hidden documents, stalling submit()/validate() until the tab
-// is foregrounded. Patch `requestAnimationFrame` to fall back to a timeout while
-// the document is hidden (when the real one wouldn't fire anyway). The store
-// never cancels these frames, so returning a timeout id is safe.
-if (typeof window !== "undefined") {
-  const originalRequestAnimationFrame =
-    window.requestAnimationFrame.bind(window);
-  window.requestAnimationFrame = (callback) => {
-    if (!document.hidden) {
-      return originalRequestAnimationFrame(callback);
-    }
-    return window.setTimeout(() => callback(performance.now()), 16);
-  };
-}
-
 // Auto-saving a draft when the user switches away from the tab is a common
 // pattern. The save runs through the form store's `submit()`, which internally
 // awaits a `requestAnimationFrame`. Browsers pause animation frames in hidden
