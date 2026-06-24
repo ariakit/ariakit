@@ -542,6 +542,604 @@ test("fires a keyed listener added during the keyed fast path", () => {
   expect(events).toEqual(["first", "second"]);
 });
 
+test("fires an all-keys listener added during the keyed fast path", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+
+  const second = () => {
+    events.push("second");
+  };
+
+  subscribe(store, ["count"], () => {
+    events.push("first");
+    subscribe(store, null, second);
+  });
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["first", "second"]);
+});
+
+test("does not refire a keyed listener re-keyed to all keys", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+
+  const listener = () => {
+    events.push("listener");
+    subscribe(store, null, listener);
+  };
+
+  subscribe(store, ["count"], listener);
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["listener"]);
+});
+
+test("does not refire an earlier listener re-keyed to all keys", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+
+  const first = () => {
+    events.push("first");
+  };
+
+  subscribe(store, ["count"], first);
+  subscribe(store, ["count"], () => {
+    events.push("second");
+    subscribe(store, null, first);
+  });
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["first", "second"]);
+});
+
+test("does not fire an earlier other-key listener re-keyed to all keys", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0, label: "" });
+    const events: string[] = [];
+
+    const first = () => {
+      events.push("first");
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    subscribe(store, ["label"], first);
+    subscribe(store, ["count"], () => {
+      events.push("second");
+      subscribe(store, null, first);
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["second"]);
+  expect(getEvents(true)).toEqual(["second"]);
+});
+
+test("preserves listener order when all-keys listeners are added", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0 });
+    const events: string[] = [];
+
+    const third = () => {
+      events.push("third");
+    };
+
+    const fourth = () => {
+      events.push("fourth");
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    subscribe(store, ["count"], () => {
+      events.push("first");
+      subscribe(store, null, third);
+    });
+    subscribe(store, ["count"], () => {
+      events.push("second");
+      subscribe(store, ["count"], fourth);
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["first", "second", "third", "fourth"]);
+  expect(getEvents(true)).toEqual(["first", "second", "third", "fourth"]);
+});
+
+test("continues after a keyed listener unsubscribes before recovery", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+  let dispose = () => {};
+
+  dispose = subscribe(store, ["count"], () => {
+    events.push("first");
+    dispose();
+    subscribe(store, null, () => {
+      events.push("third");
+    });
+  });
+  subscribe(store, ["count"], () => {
+    events.push("second");
+  });
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["first", "second", "third"]);
+});
+
+test("fires a keyed listener added after the active bucket empties", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0 });
+    const events: string[] = [];
+    let dispose = () => {};
+
+    const second = () => {
+      events.push("second");
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    dispose = subscribe(store, ["count"], () => {
+      events.push("first");
+      dispose();
+      subscribe(store, ["count"], second);
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["first", "second"]);
+  expect(getEvents(true)).toEqual(["first", "second"]);
+});
+
+test("fires a current-key listener re-keyed before recovery", () => {
+  const store = createStore({ count: 0, label: "" });
+  const events: string[] = [];
+
+  const first = () => {
+    events.push("first");
+  };
+
+  subscribe(store, ["label"], first);
+  subscribe(store, ["count"], () => {
+    events.push("second");
+    subscribe(store, null, () => {
+      events.push("third");
+    });
+  });
+  subscribe(store, ["count"], first);
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["second", "first", "third"]);
+});
+
+test("does not refire an earlier listener re-keyed to the current key", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0 });
+    const events: string[] = [];
+
+    const first = () => {
+      events.push("first");
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    subscribe(store, ["count"], first);
+    subscribe(store, ["count"], () => {
+      events.push("second");
+      subscribe(store, ["count"], first);
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["first", "second"]);
+  expect(getEvents(true)).toEqual(["first", "second"]);
+});
+
+test("preserves order when a pending listener re-keys to current key", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0 });
+    const events: string[] = [];
+
+    const second = () => {
+      events.push("second");
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    subscribe(store, ["count"], () => {
+      events.push("first");
+      subscribe(store, ["count"], second);
+    });
+    subscribe(store, ["count"], second);
+    subscribe(store, ["count"], () => {
+      events.push("third");
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["first", "second", "third"]);
+  expect(getEvents(true)).toEqual(["first", "second", "third"]);
+});
+
+test("fires a keyed listener freshly re-subscribed after unsubscribe", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0 });
+    const events: string[] = [];
+    let dispose = () => {};
+
+    const listener = () => {
+      events.push("listener");
+      dispose();
+      if (events.length === 1) {
+        subscribe(store, ["count"], listener);
+      }
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    dispose = subscribe(store, ["count"], listener);
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["listener", "listener"]);
+  expect(getEvents(true)).toEqual(["listener", "listener"]);
+});
+
+test("fires an all-keys listener freshly re-subscribed after unsubscribe", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0 });
+    const events: string[] = [];
+    let dispose = () => {};
+
+    const listener = () => {
+      events.push("listener");
+      dispose();
+      if (events.length === 1) {
+        subscribe(store, null, listener);
+      }
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    dispose = subscribe(store, ["count"], listener);
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["listener", "listener"]);
+  expect(getEvents(true)).toEqual(["listener", "listener"]);
+});
+
+test("does not fire an earlier other-key listener re-keyed to current key", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0, label: "" });
+    const events: string[] = [];
+
+    const first = () => {
+      events.push("first");
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    subscribe(store, ["label"], first);
+    subscribe(store, ["count"], () => {
+      events.push("second");
+      subscribe(store, ["count"], first);
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["second"]);
+  expect(getEvents(true)).toEqual(["second"]);
+});
+
+test("fires a pending keyed listener re-keyed to all keys", () => {
+  const store = createStore({ count: 0, label: "" });
+  const events: string[] = [];
+
+  const first = () => {
+    events.push("first");
+  };
+
+  subscribe(store, ["label"], first);
+  subscribe(store, ["count"], () => {
+    events.push("second");
+    subscribe(store, null, first);
+  });
+  subscribe(store, ["count"], first);
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["second", "first"]);
+});
+
+test("does not refire keyed listeners before self-unsubscribe recovery", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0 });
+    const events: string[] = [];
+    let dispose = () => {};
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    subscribe(store, ["count"], () => {
+      events.push("first");
+    });
+    dispose = subscribe(store, ["count"], () => {
+      events.push("second");
+      dispose();
+      subscribe(store, null, () => {
+        events.push("third");
+      });
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["first", "second", "third"]);
+  expect(getEvents(true)).toEqual(["first", "second", "third"]);
+});
+
+test("continues after the current listener re-keys before recovery", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0, label: "" });
+    const events: string[] = [];
+
+    const first = () => {
+      events.push("first");
+      subscribe(store, ["label"], first);
+      subscribe(store, null, () => {
+        events.push("fourth");
+      });
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    subscribe(store, ["count"], first);
+    subscribe(store, ["count"], () => {
+      events.push("second");
+    });
+    subscribe(store, ["count"], () => {
+      events.push("third");
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["first", "second", "third", "fourth"]);
+  expect(getEvents(true)).toEqual(["first", "second", "third", "fourth"]);
+});
+
+test("continues after the current listener unsubscribes before re-keying", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0, label: "" });
+    const events: string[] = [];
+    let dispose = () => {};
+
+    const second = () => {
+      events.push("second");
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    dispose = subscribe(store, ["count"], () => {
+      events.push("first");
+      dispose();
+      subscribe(store, null, second);
+    });
+    subscribe(store, ["label"], second);
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["first", "second"]);
+  expect(getEvents(true)).toEqual(["first", "second"]);
+});
+
+test("does not fire earlier listener re-keyed after current unsubscribe", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0, label: "" });
+    const events: string[] = [];
+    let dispose = () => {};
+
+    const first = () => {
+      events.push("first");
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    subscribe(store, ["label"], first);
+    dispose = subscribe(store, ["count"], () => {
+      events.push("second");
+      dispose();
+      subscribe(store, null, first);
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["second"]);
+  expect(getEvents(true)).toEqual(["second"]);
+});
+
+test("fires a recovered listener freshly re-subscribed after unsubscribe", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0 });
+    const events: string[] = [];
+    let dispose = () => {};
+
+    const second = () => {
+      events.push("second");
+      dispose();
+      if (events.length === 2) {
+        dispose = subscribe(store, null, second);
+      }
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    subscribe(store, ["count"], () => {
+      events.push("first");
+      dispose = subscribe(store, null, second);
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["first", "second", "second"]);
+  expect(getEvents(true)).toEqual(["first", "second", "second"]);
+});
+
+test("keeps outer recovery state during reentrant dispatch", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0, label: "", nested: 0 });
+    const events: string[] = [];
+
+    const first = () => {
+      events.push("first");
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    subscribe(store, ["label"], first);
+    subscribe(store, ["count"], () => {
+      events.push("second");
+      store.setState("nested", 1);
+    });
+    subscribe(store, ["nested"], () => {
+      events.push("nested");
+      subscribe(store, null, first);
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual(["second", "nested"]);
+  expect(getEvents(true)).toEqual(["second", "nested"]);
+});
+
+test("uses live state after reentrant recovered listeners", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0, label: "a" });
+    const events: string[] = [];
+    let updated = false;
+
+    const first = (state: { label: string }) => {
+      events.push(`first:${state.label}`);
+      if (!updated) {
+        updated = true;
+        store.setState("label", "b");
+      }
+    };
+
+    const second = (state: { label: string }) => {
+      events.push(`second:${state.label}`);
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    subscribe(store, ["count"], () => {
+      events.push("keyed");
+      subscribe(store, null, first);
+      subscribe(store, null, second);
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual([
+    "keyed",
+    "first:a",
+    "first:b",
+    "second:b",
+    "second:b",
+  ]);
+  expect(getEvents(true)).toEqual([
+    "keyed",
+    "first:a",
+    "first:b",
+    "second:b",
+    "second:b",
+  ]);
+});
+
+test("fires a keyed listener added by an all-keys listener", () => {
+  const store = createStore({ count: 0 });
+  const events: string[] = [];
+
+  const third = () => {
+    events.push("third");
+  };
+
+  const second = () => {
+    events.push("second");
+    subscribe(store, ["count"], third);
+  };
+
+  subscribe(store, ["count"], () => {
+    events.push("first");
+    subscribe(store, null, second);
+  });
+
+  store.setState("count", 1);
+
+  expect(events).toEqual(["first", "second", "third"]);
+});
+
 test("unsubscribes a keyed listener from inside another keyed listener", () => {
   const store = createStore({ count: 0 });
   const events: string[] = [];
