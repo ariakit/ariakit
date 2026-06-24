@@ -322,10 +322,17 @@ export function getScrollingElement(
     const { overflowX } = getComputedStyle(element);
     if (isScrollableOverflow(overflowX)) return element;
   }
+  // When no scrollable ancestor is found, fall back to the scrolling element of
+  // the element's own document rather than the global one. For an element
+  // inside an iframe, `parentElement` never crosses the frame boundary, so the
+  // recursion bottoms out at the iframe's `<html>` and would otherwise resolve
+  // against the top-level page's scroller. `getDocument` returns the same global
+  // `document` for top-level elements, so this leaves the common case unchanged.
+  const doc = getDocument(element);
   return (
     getScrollingElement(element.parentElement) ||
-    document.scrollingElement ||
-    document.body
+    doc.scrollingElement ||
+    doc.body
   );
 }
 
