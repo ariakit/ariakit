@@ -28,6 +28,44 @@ export default function Example() {
       <p>
         <TagRemove value="Vue" />
       </p>
+      <p>
+        <TagRemove
+          value="Svelte"
+          render={<button>Remove Svelte filter</button>}
+        />
+      </p>
+      <p>
+        <TagRemove
+          value="Ember"
+          render={
+            <button>
+              <span hidden>Remove Ember filter</span>
+              <span aria-hidden>x</span>
+            </button>
+          }
+        />
+      </p>
+      <p>
+        <TagRemove
+          value="Preact"
+          render={
+            <button>
+              <img alt="Remove Preact filter" />
+            </button>
+          }
+        />
+      </p>
+      <p>
+        <span id="alpine-label">Remove Alpine filter</span>
+        <TagRemove
+          value="Alpine"
+          render={<button aria-labelledby="alpine-label" />}
+        />
+      </p>
+      <p>
+        <span id="solid-label">Remove Solid filter</span>
+        <TagRemove value="Solid" aria-labelledby="solid-label" />
+      </p>
     </TagProvider>
   );
 }

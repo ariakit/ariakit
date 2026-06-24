@@ -9,8 +9,8 @@ import {
 import type { Options, Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
-import type { ElementType, MouseEvent } from "react";
-import { useContext, useEffect } from "react";
+import type { ElementType, MouseEvent, ReactNode } from "react";
+import { Children, isValidElement, useContext, useEffect } from "react";
 import { Role } from "../role/role.tsx";
 import {
   TagRemoveIdContext,
@@ -23,6 +23,46 @@ import { useTouchDevice } from "./utils.ts";
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+interface AccessibleChildProps {
+  children?: ReactNode;
+  alt?: string;
+  hidden?: boolean | string;
+  "aria-hidden"?: boolean | string;
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
+}
+
+function hasText(value: string | undefined): boolean {
+  return !!value?.trim();
+}
+
+function isHidden(props: AccessibleChildProps): boolean {
+  if (props.hidden === true) return true;
+  if (typeof props.hidden === "string") return true;
+  if (props["aria-hidden"] === true) return true;
+  if (props["aria-hidden"] === "true") return true;
+  return false;
+}
+
+function hasAccessibleName(props: AccessibleChildProps): boolean {
+  if (isHidden(props)) return false;
+  if (hasText(props["aria-label"])) return true;
+  if (hasText(props["aria-labelledby"])) return true;
+  if (hasText(props.alt)) return true;
+  return hasAccessibleChildren(props.children);
+}
+
+function hasAccessibleChildren(children: ReactNode): boolean {
+  return Children.toArray(children).some((child) => {
+    if (typeof child === "string") return child.trim().length > 0;
+    if (typeof child === "number") return true;
+    if (typeof child === "bigint") return true;
+    if (!isValidElement<AccessibleChildProps>(child)) return false;
+
+    return hasAccessibleName(child.props);
+  });
+}
 
 /**
  * Returns props to create a `TagRemove` component.
@@ -93,12 +133,17 @@ export const useTagRemove = createHook<TagName, TagRemoveOptions>(
 
     const touchDevice = useTouchDevice();
     const hidden = withinTag && !touchDevice;
+    const hasRenderName = isValidElement<AccessibleChildProps>(props.render)
+      ? hasAccessibleName(props.render.props)
+      : false;
+    const hasName = hasAccessibleName(props) || hasRenderName;
+    const removeLabel = `Remove ${value}`;
     const ariaLabel = hidden
       ? "Press Delete or Backspace to remove"
       : withinTag && touchDevice
-        ? `Remove ${value}`
-        : props.children == null && value
-          ? `Remove ${value}`
+        ? removeLabel
+        : !hasName && value
+          ? removeLabel
           : undefined;
 
     props = {

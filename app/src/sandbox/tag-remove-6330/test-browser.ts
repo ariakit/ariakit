@@ -37,4 +37,44 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     test.expect(results.violations).toHaveLength(0);
   });
+
+  test("preserves a standalone render element name", async ({ q }) => {
+    const removeButton = q.button("Remove Svelte filter");
+    await test.expect(removeButton).toBeVisible();
+    await test.expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
+    await test.expect(q.button("Remove Svelte")).toHaveCount(0);
+  });
+
+  test("labels an icon-only standalone render element from its value", async ({
+    q,
+  }) => {
+    const removeButton = q.button("Remove Ember");
+    await test.expect(removeButton).toBeVisible();
+    await test.expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
+  });
+
+  test("preserves a standalone render element image name", async ({ q }) => {
+    const removeButton = q.button("Remove Preact filter");
+    await test.expect(removeButton).toBeVisible();
+    await test.expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
+    await test.expect(q.button("Remove Preact")).toHaveCount(0);
+  });
+
+  test("preserves a standalone render element labelledby name", async ({
+    q,
+  }) => {
+    const removeButton = q.button("Remove Alpine filter");
+    await test.expect(removeButton).toBeVisible();
+    await test.expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
+    await test.expect(removeButton).not.toHaveAttribute("aria-label");
+    await test.expect(q.button("Remove Alpine")).toHaveCount(0);
+  });
+
+  test("preserves a standalone root labelledby name", async ({ q }) => {
+    const removeButton = q.button("Remove Solid filter");
+    await test.expect(removeButton).toBeVisible();
+    await test.expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
+    await test.expect(removeButton).not.toHaveAttribute("aria-label");
+    await test.expect(q.button("Remove Solid")).toHaveCount(0);
+  });
 });
