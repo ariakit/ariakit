@@ -604,6 +604,52 @@ test("keeps dispatch cleanup updates out of the outer rerun diff", () => {
   ]);
 });
 
+test("preserves the dispatched key diff after cleanup updates it", () => {
+  const store = createStore({ count: 0 });
+  const changes: Array<[number, number]> = [];
+  let updateOnCleanup = true;
+
+  sync(store, ["count"], (state, prevState) => {
+    changes.push([state.count, prevState.count]);
+    return () => {
+      if (!updateOnCleanup) return;
+      updateOnCleanup = false;
+      store.setState("count", 2);
+    };
+  });
+  changes.length = 0;
+
+  store.setState("count", 1);
+
+  expect(changes).toEqual([
+    [2, 1],
+    [2, 0],
+  ]);
+});
+
+test("preserves an empty-string key diff after cleanup updates it", () => {
+  const store = createStore({ "": 0 });
+  const changes: Array<[number, number]> = [];
+  let updateOnCleanup = true;
+
+  sync(store, [""], (state, prevState) => {
+    changes.push([state[""], prevState[""]]);
+    return () => {
+      if (!updateOnCleanup) return;
+      updateOnCleanup = false;
+      store.setState("", 2);
+    };
+  });
+  changes.length = 0;
+
+  store.setState("", 1);
+
+  expect(changes).toEqual([
+    [2, 1],
+    [2, 0],
+  ]);
+});
+
 test("does not drain cleanups installed by re-registration cleanups", () => {
   const store = createStore({ count: 0 });
   const events: string[] = [];

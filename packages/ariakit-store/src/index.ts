@@ -99,10 +99,12 @@ function getCleanupPrevState<S extends State>(
   prevState: S,
   state: S,
   stateBeforeCleanup: S,
+  updatedKey?: UpdatedKey<S>,
 ) {
   let cleanupPrevState: S | undefined;
   for (const key of getKeys(state)) {
     if (isSameValue(state[key], stateBeforeCleanup[key])) continue;
+    if (updatedKey !== undefined && hasUpdatedKey([key], updatedKey)) continue;
     cleanupPrevState ??= { ...prevState };
     cleanupPrevState[key] = state[key];
   }
@@ -311,6 +313,7 @@ function notifyStoreListener<S extends State>(
   state: S,
   prevState: S,
   getState?: () => S,
+  updatedKey?: UpdatedKey<S>,
 ) {
   if (group.suspendCounts?.has(listener)) return;
   const { disposables } = group;
@@ -324,7 +327,8 @@ function notifyStoreListener<S extends State>(
     state = getState?.() ?? state;
     if (state !== stateBeforeCleanup) {
       prevState =
-        getCleanupPrevState(prevState, state, stateBeforeCleanup) ?? prevState;
+        getCleanupPrevState(prevState, state, stateBeforeCleanup, updatedKey) ??
+        prevState;
     }
   }
   const result = listener(state, prevState);
@@ -356,7 +360,14 @@ function runLiveListeners<S extends State>({
       if (!hasUpdatedKey(keys, updatedKey)) continue;
     }
     notifiedListeners?.add(listener);
-    notifyStoreListener(group, listener, getState(), prevState, getState);
+    notifyStoreListener(
+      group,
+      listener,
+      getState(),
+      prevState,
+      getState,
+      updatedKey,
+    );
   }
 }
 
@@ -666,7 +677,14 @@ export function createStore<S extends State>(
           if (frame.notifiedListeners?.has(listener)) continue;
           frame.currentListener = listener;
           frame.notifiedListeners?.add(listener);
-          notifyStoreListener(group, listener, state, prevState, getState);
+          notifyStoreListener(
+            group,
+            listener,
+            state,
+            prevState,
+            getState,
+            updatedKey,
+          );
           if (!group.allKeysListeners?.size && !frame.recoverToLive) continue;
           const notifiedListeners =
             frame.notifiedListeners ?? getFastPathNotifiedListeners(frame);
