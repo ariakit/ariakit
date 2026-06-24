@@ -151,7 +151,10 @@ export function getAllTabbableIn(
   });
 
   if (!tabbableElements.length && fallbackToFocusable) {
-    return elements;
+    // Filter the fallback to focusable elements (and expand iframes like the
+    // tabbable path) so callers don't get non-focusable matches such as a
+    // `display: none` input, which a `focus()` call silently ignores.
+    return getAllFocusableIn(container);
   }
   return tabbableElements;
 }
@@ -207,7 +210,10 @@ export function getFirstTabbableIn(
     return element;
   }
   if (fallbackToFocusable) {
-    return elements[0] || null;
+    // Filter the fallback to focusable elements so callers don't get a
+    // non-focusable match such as a `display: none` input, which a `focus()`
+    // call silently ignores.
+    return getFirstFocusableIn(container);
   }
   return null;
 }
