@@ -1069,6 +1069,54 @@ test("keeps outer recovery state during reentrant dispatch", () => {
   expect(getEvents(true)).toEqual(["second", "nested"]);
 });
 
+test("uses live state after reentrant recovered listeners", () => {
+  const getEvents = (forceSlowPath = false) => {
+    const store = createStore({ count: 0, label: "a" });
+    const events: string[] = [];
+    let updated = false;
+
+    const first = (state: { label: string }) => {
+      events.push(`first:${state.label}`);
+      if (!updated) {
+        updated = true;
+        store.setState("label", "b");
+      }
+    };
+
+    const second = (state: { label: string }) => {
+      events.push(`second:${state.label}`);
+    };
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+    subscribe(store, ["count"], () => {
+      events.push("keyed");
+      subscribe(store, null, first);
+      subscribe(store, null, second);
+    });
+
+    store.setState("count", 1);
+
+    return events;
+  };
+
+  expect(getEvents()).toEqual([
+    "keyed",
+    "first:a",
+    "first:b",
+    "second:b",
+    "second:b",
+  ]);
+  expect(getEvents(true)).toEqual([
+    "keyed",
+    "first:a",
+    "first:b",
+    "second:b",
+    "second:b",
+  ]);
+});
+
 test("fires a keyed listener added by an all-keys listener", () => {
   const store = createStore({ count: 0 });
   const events: string[] = [];
