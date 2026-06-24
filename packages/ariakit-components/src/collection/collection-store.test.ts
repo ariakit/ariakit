@@ -145,6 +145,7 @@ test("keeps registered item metadata in explicit item lookups", async () => {
   const store = createCollectionStore<{
     id: string;
     value?: string;
+    label?: string;
     element?: HTMLElement | null;
   }>();
   const stop = init(store);
@@ -207,6 +208,7 @@ test("does not restore registration metadata after explicit item updates", async
   const store = createCollectionStore<{
     id: string;
     value?: string;
+    label?: string;
     element?: HTMLElement | null;
   }>();
   const stop = init(store);
@@ -240,16 +242,83 @@ test("does not restore registration metadata after explicit item updates", async
   }
 });
 
+test("keeps rendered item metadata in explicit item updates", async () => {
+  const store = createCollectionStore<{
+    id: string;
+    value?: string;
+    label?: string;
+    disabled?: boolean;
+    rowId?: string;
+    element?: HTMLElement | null;
+  }>();
+  const stop = init(store);
+  const element = document.createElement("button");
+
+  try {
+    store.setState("items", [{ id: "item", value: "one", label: "Initial" }]);
+
+    const unrender = store.renderItem({
+      id: "item",
+      value: undefined,
+      disabled: true,
+      rowId: "row",
+      element,
+    });
+
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([
+        {
+          id: "item",
+          value: undefined,
+          label: "Initial",
+          disabled: true,
+          rowId: "row",
+          element,
+        },
+      ]);
+
+    store.setState("items", [{ id: "item", value: "two", label: "Updated" }]);
+
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([{ id: "item", value: "two", label: "Updated" }]);
+    expect(store.item("item")).toEqual({
+      id: "item",
+      value: "two",
+      label: "Updated",
+      disabled: true,
+      rowId: "row",
+      element,
+    });
+
+    unrender();
+
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([{ id: "item", value: "two", label: "Updated" }]);
+    expect(store.item("item")).toEqual({
+      id: "item",
+      value: "two",
+      label: "Updated",
+    });
+  } finally {
+    stop();
+  }
+});
+
 test("keeps registered item metadata when explicit item state is pruned", async () => {
   const store = createCollectionStore<{
     id: string;
     value?: string;
+    label?: string;
     element?: HTMLElement | null;
   }>();
   const stop = init(store);
   const first = document.createElement("button");
   const second = document.createElement("button");
   const third = document.createElement("button");
+  document.body.append(first, second, third);
 
   try {
     store.setState("items", [{ id: "first" }, { id: "second" }]);
@@ -402,6 +471,133 @@ test("registers multiple rendered items synchronously", async () => {
 
     unrenderFirst();
     unrenderSecond();
+
+    await expect.poll(() => store.getState().items).toEqual([]);
+  } finally {
+    stop();
+  }
+});
+
+test("keeps private item metadata updates before batches flush", async () => {
+  const store = createCollectionStore<{
+    id: string;
+    value?: string;
+    label?: string;
+    element?: HTMLElement | null;
+  }>();
+  const stop = init(store);
+  const first = document.createElement("button");
+  const second = document.createElement("button");
+  const third = document.createElement("button");
+
+  try {
+    const unrenderFirst = store.renderItem({ id: "first", element: first });
+    const unrenderSecond = store.renderItem({
+      id: "second",
+      element: second,
+    });
+    const unrenderThird = store.renderItem({ id: "third", element: third });
+
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([
+        { id: "first", element: first },
+        { id: "second", element: second },
+        { id: "third", element: third },
+      ]);
+
+    const restoreFirst = store.renderItem({
+      id: "first",
+      value: "one",
+      element: first,
+    });
+    const updateFirst = store.renderItem({
+      id: "first",
+      label: "First",
+      element: first,
+    });
+    const restoreThird = store.renderItem({
+      id: "third",
+      value: "three",
+      element: third,
+    });
+
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([
+        { id: "first", value: "one", label: "First", element: first },
+        { id: "second", element: second },
+        { id: "third", value: "three", element: third },
+      ]);
+    expect(store.item("first")).toEqual({
+      id: "first",
+      value: "one",
+      label: "First",
+      element: first,
+    });
+    expect(store.item("third")).toEqual({
+      id: "third",
+      value: "three",
+      element: third,
+    });
+
+    updateFirst();
+    restoreFirst();
+    restoreThird();
+    unrenderFirst();
+    unrenderSecond();
+    unrenderThird();
+
+    await expect.poll(() => store.getState().items).toEqual([]);
+  } finally {
+    stop();
+  }
+});
+
+test("keeps current item metadata after explicit state mismatch", async () => {
+  const store = createCollectionStore<{
+    id: string;
+    value?: string;
+    label?: string;
+  }>();
+  const stop = init(store);
+
+  try {
+    const unregisterStale = store.registerItem({
+      id: "stale",
+      value: "stale",
+    });
+
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([{ id: "stale", value: "stale" }]);
+
+    store.setState("items", []);
+
+    expect(store.item("stale")).toBeNull();
+
+    const unregisterItem = store.registerItem({
+      id: "item",
+      value: "one",
+    });
+    const restoreItem = store.registerItem({
+      id: "item",
+      label: "Item",
+    });
+
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([{ id: "item", value: "one", label: "Item" }]);
+    expect(store.item("stale")).toBeNull();
+    expect(store.item("item")).toEqual({
+      id: "item",
+      value: "one",
+      label: "Item",
+    });
+
+    unregisterStale();
+    restoreItem();
+    unregisterItem();
 
     await expect.poll(() => store.getState().items).toEqual([]);
   } finally {

@@ -70,7 +70,11 @@ function isSelfTargetOrItem(event: KeyboardEvent, items: CompositeStoreItem[]) {
 }
 
 function getEnabledItems(items: CompositeStoreItem[]) {
-  return items.filter((item) => !item.disabled);
+  return items.filter((item) => {
+    if (item.disabled) return false;
+    if (!item.element) return true;
+    return item.element.isConnected;
+  });
 }
 
 function itemTextStartsWith(item: CompositeStoreItem, text: string) {

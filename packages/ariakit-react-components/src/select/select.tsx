@@ -52,7 +52,7 @@ function nextWithValue(store: SelectStore, next: SelectStore["next"]) {
     let i = 0;
     let nextItem = store.item(nextId);
     const firstItem = nextItem;
-    while (nextItem && nextItem.value == null) {
+    while (nextItem && (nextItem.disabled || nextItem.value == null)) {
       const nextId = next(++i);
       if (!nextId) return;
       nextItem = store.item(nextId);
