@@ -518,8 +518,9 @@ export function createStore<S extends State>(
   // (1) snapshot `keys` as a defensive copy (or null for an all-keys listener);
   // (2) index the listener — re-registering the same listener first clears its
   // previous index entries so a re-keyed listener is never left in a stale key
-  // bucket; (3) return a disposer that runs any pending cleanup and removes the
-  // listener from the set, the key index, and the disposables/keys maps.
+  // bucket; (3) return a disposer that removes the listener from the set, the
+  // key index, and the disposables/keys maps before running any pending
+  // cleanup.
   const registerListener = (
     keys: Array<keyof S> | null,
     listener: Listener<S>,
@@ -563,7 +564,7 @@ export function createStore<S extends State>(
     }
     group.listenerKeys.set(listener, listenerKeysValue);
     return () => {
-      group.disposables.get(listener)?.();
+      const cleanup = group.disposables.get(listener);
       group.disposables.delete(listener);
       preserveFastPathFrames(fastPathFrames, group, listener);
       const currentKeys = group.listenerKeys.get(listener);
@@ -573,6 +574,7 @@ export function createStore<S extends State>(
       }
       group.listenerKeys.delete(listener);
       group.listeners.delete(listener);
+      cleanup?.();
     };
   };
 
