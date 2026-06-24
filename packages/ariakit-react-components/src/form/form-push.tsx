@@ -14,9 +14,9 @@ import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
-import { getArrayFieldIndex } from "./form-array-field.ts";
 import { useFormContext } from "./form-context.tsx";
 import type { FormStore, FormStoreState } from "./form-store.ts";
+import { getArrayFieldIndex } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;

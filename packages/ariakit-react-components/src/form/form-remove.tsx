@@ -10,9 +10,9 @@ import { isTextField, invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
-import { getArrayFieldIndex } from "./form-array-field.ts";
 import { useFormContext } from "./form-context.tsx";
 import type { FormStore, FormStoreState } from "./form-store.ts";
+import { getArrayFieldIndex } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
