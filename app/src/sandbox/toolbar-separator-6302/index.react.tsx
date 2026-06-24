@@ -8,11 +8,14 @@ export default function Example() {
         style={{ display: "flex", flexWrap: "wrap", gap: 8, width: 240 }}
       >
         <Ariakit.ToolbarItem>Bold</Ariakit.ToolbarItem>
+        <Ariakit.ToolbarSeparator
+          aria-label="Column divider"
+          style={{ height: 32, margin: 0 }}
+        />
         <Ariakit.ToolbarItem>Italic</Ariakit.ToolbarItem>
         <Ariakit.ToolbarItem>Underline</Ariakit.ToolbarItem>
         <Ariakit.ToolbarSeparator
           aria-label="Row divider"
-          aria-orientation="horizontal"
           orientation="horizontal"
           style={{ margin: 0, width: "100%" }}
         />
