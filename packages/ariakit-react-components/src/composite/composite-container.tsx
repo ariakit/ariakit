@@ -182,8 +182,17 @@ export const useCompositeContainer = createHook<
           open();
           // We need to move focus back to the container as soon as the
           // delete/backspace key is captured by the text field.
-          const onInput = () => queueMicrotask(() => container.focus());
+          const cleanup = () => {
+            container.removeEventListener("input", onInput);
+            container.removeEventListener("keyup", cleanup);
+          };
+          const onInput = () => {
+            cleanup();
+            queueMicrotask(() => container.focus());
+          };
           container.addEventListener("input", onInput, { once: true });
+          container.addEventListener("keyup", cleanup, { once: true });
+          setTimeout(cleanup, 0);
         }
       }
     }
