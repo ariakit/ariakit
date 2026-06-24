@@ -6,6 +6,15 @@ afterEach(() => {
   document.body.replaceChildren();
 });
 
+function throwOnFind(items: unknown[]) {
+  Object.defineProperty(items, "find", {
+    configurable: true,
+    value() {
+      throw new Error("item() should use the lookup map");
+    },
+  });
+}
+
 test("registers, updates, and unregisters collection items", async () => {
   const store = createCollectionStore<{ id: string; value?: string }>();
   const stop = init(store);
@@ -71,6 +80,61 @@ test("gets items from explicit item state updates", async () => {
     store.setState("items", []);
 
     expect(store.item("item")).toBeNull();
+  } finally {
+    stop();
+  }
+});
+
+test("gets items from the lookup map", async () => {
+  const items = Array.from({ length: 1_000 }, (_, index) => ({
+    id: `item-${index}`,
+  }));
+  const item = items[items.length - 1];
+
+  if (!item) {
+    throw new Error("Missing test item");
+  }
+
+  const store = createCollectionStore({ defaultItems: items });
+
+  throwOnFind(items);
+  expect(store.item(item.id)).toBe(item);
+
+  const nextItems = [{ id: "item", value: "updated" }];
+  const nextItem = nextItems[0];
+
+  if (!nextItem) {
+    throw new Error("Missing test item");
+  }
+
+  store.setState("items", nextItems);
+
+  throwOnFind(nextItems);
+  expect(store.item(nextItem.id)).toBe(nextItem);
+
+  const mountedStore = createCollectionStore<{
+    id: string;
+    value?: string;
+  }>();
+  const stop = init(mountedStore);
+
+  try {
+    const unregister = mountedStore.registerItem({
+      id: "registered",
+      value: "mounted",
+    });
+
+    await expect
+      .poll(() => mountedStore.getState().items)
+      .toEqual([{ id: "registered", value: "mounted" }]);
+
+    throwOnFind(mountedStore.getState().items);
+    expect(mountedStore.item("registered")).toEqual({
+      id: "registered",
+      value: "mounted",
+    });
+
+    unregister();
   } finally {
     stop();
   }
