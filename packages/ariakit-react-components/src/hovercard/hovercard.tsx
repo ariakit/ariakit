@@ -15,7 +15,6 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
-  contains,
   addGlobalEventListener,
   hasFocusWithin,
   chain,
@@ -52,20 +51,19 @@ type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isMovingOnHovercard(
-  target: Node | null | undefined,
+  path: EventTarget[],
   card: HTMLElement,
   anchor: HTMLElement | null,
   nested?: HTMLElement[],
 ) {
   // The hovercard element has focus so we should keep it visible.
   if (hasFocusWithin(card)) return true;
-  if (!target) return false;
   // The mouse is moving on an element inside the hovercard.
-  if (contains(card, target)) return true;
+  if (path.includes(card)) return true;
   // The mouse is moving on an element inside the anchor element.
-  if (anchor && contains(anchor, target)) return true;
+  if (anchor && path.includes(anchor)) return true;
   // The mouse is moving on an element inside a nested hovercard.
-  if (nested?.some((card) => hasFocusWithin(card) || contains(card, target))) {
+  if (nested?.some((card) => hasFocusWithin(card) || path.includes(card))) {
     return true;
   }
   return false;
@@ -184,13 +182,13 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         if (!isMouseMoving()) return;
         const { anchorElement, hideTimeout, timeout } = store.getState();
         const enterPoint = enterPointRef.current;
-        const [target] = event.composedPath() as Node[];
+        const path = event.composedPath();
         const anchor = anchorElement;
         // Checks whether the hovercard element has focus or the mouse is moving
         // through valid hovercard elements.
         if (
           isMovingOnHovercard(
-            target,
+            path,
             element,
             anchor,
             nestedHovercardsRef.current,
@@ -200,9 +198,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
           // card is open, keep track of the mouse position so we can use the
           // last point before the mouse leaves the anchor element.
           enterPointRef.current =
-            target && anchor && contains(anchor, target)
-              ? getEventPoint(event)
-              : null;
+            anchor && path.includes(anchor) ? getEventPoint(event) : null;
           clearHideTimeout();
           return;
         }
@@ -307,8 +303,8 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
 
     // Register the hovercard as a nested hovercard on the parent hovercard if
     // it's not a modal, is portal and is mounted. We don't need to register
-    // non-portal hovercards because they will be captured by the contains
-    // function in the isMovingOnHovercard function above. This must be a layout
+    // non-portal hovercards because they will be captured by the composed path
+    // check in the isMovingOnHovercard function above. This must be a layout
     // effect so we don't lose mouse move events right after the nested
     // hovercard has been mounted (for example, a submenu that's overlapping its
     // menu button and we keep moving the mouse while the submenu is due to
