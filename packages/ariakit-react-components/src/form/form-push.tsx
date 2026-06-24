@@ -1,4 +1,5 @@
 import type { StringLike } from "@ariakit/components/form/types";
+import { useStoreState } from "@ariakit/react-store";
 import {
   useEvent,
   createElement,
@@ -13,6 +14,7 @@ import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
+import { getArrayFieldIndex } from "./form-array-field.ts";
 import { useFormContext } from "./form-context.tsx";
 import type { FormStore, FormStoreState } from "./form-store.ts";
 
@@ -20,29 +22,15 @@ const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-function getFirstFieldsByName(
+function findFirstFieldByNameAndIndex(
   items: FormStoreState["items"] | undefined,
   name: string,
+  index: number,
 ) {
-  if (!items) return [];
-  const prefix = `${name}.`;
-  const fields: FormStoreState["items"] = [];
-  const seenIndexes = new Set<string>();
-  for (const item of items) {
-    if (item.type !== "field") continue;
-    // Match the exact array boundary so sibling arrays whose names share this
-    // prefix (e.g. `tags` and `tags2`) aren't matched.
-    if (item.name !== name && !item.name.startsWith(prefix)) continue;
-    // Keep only the first field of each array index. The index is read off the
-    // known prefix instead of interpolating the user-controlled name into a
-    // RegExp, which could throw on regex metacharacters (e.g. `a(b`).
-    const index =
-      item.name.slice(prefix.length).match(/^\d+/)?.[0] ?? item.name;
-    if (seenIndexes.has(index)) continue;
-    seenIndexes.add(index);
-    fields.push(item);
-  }
-  return fields;
+  return items?.find(
+    (item) =>
+      item.type === "field" && getArrayFieldIndex(item.name, name) === index,
+  );
 }
 
 /**
@@ -89,16 +77,19 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
     );
 
     const name = String(nameProp);
-    const [shouldFocus, setShouldFocus] = useState(false);
+    const items = useStoreState(store, "items");
+    const [focusIndex, setFocusIndex] = useState<number | null>(null);
 
     useEffect(() => {
-      if (!shouldFocus) return;
-      const items = getFirstFieldsByName(store?.getState().items, name);
-      const element = items?.[items.length - 1]?.element;
+      if (focusIndex == null) return;
+      const item = findFirstFieldByNameAndIndex(items, name, focusIndex);
+      const element = item?.element;
+      // Field registration is published to `items` asynchronously. Keep the
+      // requested index pending until the new field appears.
       if (!element) return;
       element.focus();
-      setShouldFocus(false);
-    }, [store, shouldFocus, name]);
+      setFocusIndex(null);
+    }, [items, focusIndex, name]);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
@@ -116,9 +107,10 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
+      const length = store?.getValue<unknown[]>(name)?.length ?? 0;
       store?.pushValue(name, value);
       if (!autoFocusOnClick) return;
-      setShouldFocus(true);
+      setFocusIndex(length);
     });
 
     props = {

@@ -14,14 +14,6 @@ export default function Example() {
   const emails = Ariakit.useStoreState(form, (state) => state.values.emails);
   const [focused, setFocused] = useState("none");
 
-  const focusNewField = (name: "tags" | "emails") => {
-    const length = form.getValue<string[]>(name)?.length ?? 0;
-    requestAnimationFrame(() => {
-      const selector = `input[name="${CSS.escape(`${name}.${length}`)}"]`;
-      document.querySelector<HTMLElement>(selector)?.focus();
-    });
-  };
-
   return (
     <Ariakit.Form store={form}>
       <output>Focused field: {focused}</output>
@@ -39,12 +31,7 @@ export default function Example() {
             />
           );
         })}
-        <Ariakit.FormPush
-          name="tags"
-          value=""
-          autoFocusOnClick={false}
-          onClick={() => focusNewField("tags")}
-        >
+        <Ariakit.FormPush name="tags" value="">
           Add tag
         </Ariakit.FormPush>
       </fieldset>
@@ -62,12 +49,7 @@ export default function Example() {
             />
           );
         })}
-        <Ariakit.FormPush
-          name="emails"
-          value=""
-          autoFocusOnClick={false}
-          onClick={() => focusNewField("emails")}
-        >
+        <Ariakit.FormPush name="emails" value="">
           Add email
         </Ariakit.FormPush>
       </fieldset>
