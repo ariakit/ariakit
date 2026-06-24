@@ -9,4 +9,5 @@ test("renders overlapping matches without duplicated text", async () => {
   expect(option).toHaveTextContent("Banana");
   expect(option.querySelectorAll("[data-user-value]")).toHaveLength(1);
   expect(option.querySelector("[data-user-value]")).toHaveTextContent("anana");
+  expect(q.status.ensure("Normalized empty value")).toHaveTextContent("Cafe");
 });

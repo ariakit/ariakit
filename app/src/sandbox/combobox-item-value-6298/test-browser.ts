@@ -16,5 +16,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test
       .expect(option.locator("[data-user-value]"))
       .toHaveText(["anana"]);
+    await test.expect(q.status("Normalized empty value")).toHaveText("Cafe");
   });
 });

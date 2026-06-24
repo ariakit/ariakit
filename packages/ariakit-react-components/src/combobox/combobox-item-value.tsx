@@ -36,22 +36,29 @@ function getOffsets(string: string, values: Iterable<string>) {
   return offsets;
 }
 
-function filterOverlappingOffsets(offsets: Array<[number, number]>) {
-  return offsets.filter(([offset, length], i, arr) => {
-    return !arr.some(
-      ([o, l], j) => j !== i && o <= offset && o + l >= offset + length,
-    );
-  });
-}
+function mergeOverlappingOffsets(offsets: Array<[number, number]>) {
+  offsets.sort(([a], [b]) => a - b);
 
-function sortOffsets(offsets: Array<[number, number]>) {
-  return offsets.sort(([a], [b]) => a - b);
+  const merged: Array<[number, number]> = [];
+
+  for (const [offset, length] of offsets) {
+    const last = merged[merged.length - 1];
+    // Adjacent matches should remain separate so repeated matches keep
+    // rendering as individual spans.
+    if (last && offset < last[0] + last[1]) {
+      last[1] = Math.max(last[1], offset + length - last[0]);
+    } else {
+      merged.push([offset, length]);
+    }
+  }
+
+  return merged;
 }
 
 function splitValue(itemValue?: string | null, userValue?: string | string[]) {
   if (!itemValue) return itemValue;
   if (!userValue) return itemValue;
-  const userValues = toArray(userValue).filter(Boolean).map(normalizeValue);
+  const userValues = toArray(userValue).map(normalizeValue).filter(Boolean);
   const parts: ReactElement[] = [];
 
   const span = (value: string, autocomplete = false) => (
@@ -64,11 +71,9 @@ function splitValue(itemValue?: string | null, userValue?: string | string[]) {
     </span>
   );
 
-  const offsets = sortOffsets(
-    filterOverlappingOffsets(
-      // Convert userValues into a set to avoid duplicates
-      getOffsets(normalizeValue(itemValue), new Set(userValues)),
-    ),
+  const offsets = mergeOverlappingOffsets(
+    // Convert userValues into a set to avoid duplicates
+    getOffsets(normalizeValue(itemValue), new Set(userValues)),
   );
 
   const firstEntry = offsets[0];
