@@ -48,6 +48,7 @@ interface ListenerGroup<S> {
   listenerVersion: number;
   listenerRunVersion: number;
   listenerRunVersions: WeakMap<Listener<S>, number>;
+  runDepth: number;
 }
 
 interface StoreInternals<S = State> {
@@ -148,6 +149,7 @@ export function createStore<S extends State>(
     listenerVersion: 0,
     listenerRunVersion: 0,
     listenerRunVersions: new WeakMap(),
+    runDepth: 0,
   };
   const batchListenerGroup: ListenerGroup<S> = {
     listeners: new Set(),
@@ -156,6 +158,7 @@ export function createStore<S extends State>(
     listenerVersion: 0,
     listenerRunVersion: 0,
     listenerRunVersions: new WeakMap(),
+    runDepth: 0,
   };
 
   const storeSetup: StoreSetup = (callback) => {
@@ -327,20 +330,34 @@ export function createStore<S extends State>(
     listener: Listener<S>,
     prevState: S,
   ) => {
+    // Pending cleanups run before this invocation owns the cleanup slot.
+    // Cleanup-triggered dispatches should settle before the run-depth check.
     runPendingCleanups(group, listener);
-    group.listenerRunVersion += 1;
-    const listenerRunVersion = group.listenerRunVersion;
-    group.listenerRunVersions.set(listener, listenerRunVersion);
-    const cleanup = listener(state, prevState);
+    let listenerRunVersion = group.listenerRunVersion;
+    if (group.runDepth) {
+      group.listenerRunVersion += 1;
+      listenerRunVersion = group.listenerRunVersion;
+      group.listenerRunVersions.set(listener, listenerRunVersion);
+    }
+    group.runDepth += 1;
+    let cleanup: void | (() => void);
+    try {
+      cleanup = listener(state, prevState);
+    } finally {
+      group.runDepth -= 1;
+    }
     // A reentrant same-listener run owns the current cleanup slot, even when it
     // cleared the slot by returning nothing.
-    if (group.listenerRunVersions.get(listener) !== listenerRunVersion) {
-      cleanup?.();
-      return;
+    if (group.listenerRunVersion !== listenerRunVersion) {
+      const currentRunVersion = group.listenerRunVersions.get(listener);
+      if (currentRunVersion && currentRunVersion > listenerRunVersion) {
+        cleanup?.();
+        return;
+      }
     }
     if (cleanup) {
       group.disposables.set(listener, cleanup);
-    } else {
+    } else if (group.disposables.size) {
       group.disposables.delete(listener);
     }
   };
