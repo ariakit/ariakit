@@ -2,18 +2,25 @@ import * as ak from "@ariakit/react";
 import { Component, useState } from "react";
 import type { ReactNode } from "react";
 
-// Workaround for https://github.com/ariakit/ariakit/issues/6308
+// Reproduces https://github.com/ariakit/ariakit/issues/6308
 //
-// `form.names.*` values are documented string-like field paths, but the proxy
-// throws "Cannot convert a Symbol value to a string" when an absent *symbol*
-// key is read — which happens when react-dom probes a rendered child for
-// `Symbol.iterator`, or when `Object.prototype.toString.call(...)` probes
-// `Symbol.toStringTag`. Coercing the name to a string with `String(...)` before
-// it reaches either operation avoids the crash until the library fix lands.
+// `form.names.*` values are documented string-like field paths. Accessing an
+// absent *symbol* key on one must return `undefined` like a plain object would,
+// instead of throwing "Cannot convert a Symbol value to a string" from the
+// names proxy. Two ordinary things an app does hit that absent-symbol access:
 //
-// The error boundary wraps only the rendered name; with the workaround applied
-// it stays inert, but it is what keeps the rest of the paragraph mounted (and
-// the crash localized) without the coercion.
+// - Rendering a raw name as a React child ("Show field name"): react-dom probes
+//   the child for `Symbol.iterator` to decide whether it is iterable. The proxy
+//   used to throw there, tearing down the surrounding tree, instead of letting
+//   React raise its own "Objects are not valid as a React child" error.
+// - Inspecting a name with `Object.prototype.toString.call(...)` ("Inspect field
+//   name"): it probes `Symbol.toStringTag` and should resolve to "[object
+//   Object]" rather than throwing.
+//
+// The error boundary wraps only the rendered name so the rest of the paragraph
+// stays mounted: the bug puts the Symbol coercion crash in its place, while both
+// the userland workaround (coercing the name) and the library fix keep that
+// crash away.
 class NameBoundary extends Component<
   { children: ReactNode },
   { error: Error | null }
@@ -37,6 +44,15 @@ export default function Example() {
   const [fieldNameVisible, setFieldNameVisible] = useState(false);
   const [objectTag, setObjectTag] = useState<string>();
 
+  // Rendering a raw name as a React child is intentionally invalid here:
+  // `form.names.email` is typed as a string-like object, not a string, so
+  // TypeScript already flags it — the documented cue to coerce with
+  // `${form.names.email}`. Leaving it un-coerced exercises react-dom's
+  // `Symbol.iterator` probe on the names proxy, the path the fix for
+  // https://github.com/ariakit/ariakit/issues/6308 keeps from crashing.
+  // @ts-expect-error -- StringLike is not assignable to ReactNode.
+  const rawFieldName: ReactNode = form.names.email;
+
   return (
     <ak.Form store={form}>
       <ak.FormLabel name={form.names.email}>Email</ak.FormLabel>
@@ -49,8 +65,7 @@ export default function Example() {
         <p>
           This value is submitted as{" "}
           <NameBoundary>
-            {/* TODO(#6308): remove String() once the names proxy fix lands. */}
-            <code>{String(form.names.email)}</code>
+            <code>{rawFieldName}</code>
           </NameBoundary>
         </p>
       )}
@@ -58,8 +73,7 @@ export default function Example() {
       <button
         type="button"
         onClick={() =>
-          // TODO(#6308): remove String() once the names proxy fix lands.
-          setObjectTag(Object.prototype.toString.call(String(form.names.email)))
+          setObjectTag(Object.prototype.toString.call(form.names.email))
         }
       >
         Inspect field name
