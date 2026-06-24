@@ -1,5 +1,9 @@
 import { afterEach, expect, test } from "vitest";
-import { getFirstTabbableIn, isTabbable } from "./focus.ts";
+import {
+  getClosestFocusable,
+  getFirstTabbableIn,
+  isTabbable,
+} from "./focus.ts";
 
 function setVisible(element: Element) {
   Object.defineProperty(element, "checkVisibility", {
@@ -140,4 +144,34 @@ test("getFirstTabbableIn returns null for empty containers", () => {
 
   expect(getFirstTabbableIn(container)).toBe(null);
   expect(getFirstTabbableIn(container, true, true)).toBe(null);
+});
+
+test("getClosestFocusable walks past a selector-matching but non-focusable ancestor", () => {
+  const button = document.createElement("button");
+  // Box-less wrapper (e.g. display: contents) that matches the focusable
+  // selector via [tabindex] but is reported as not visible, so isFocusable
+  // rejects it. Self-inclusive closest() used to re-return it forever.
+  const wrapper = document.createElement("div");
+  wrapper.tabIndex = -1;
+  const inner = document.createElement("span");
+  wrapper.append(inner);
+  button.append(wrapper);
+  document.body.append(button);
+
+  setVisible(button);
+  setNotVisible(wrapper);
+
+  expect(getClosestFocusable(inner)).toBe(button);
+});
+
+test("getClosestFocusable returns null when no focusable ancestor exists", () => {
+  const wrapper = document.createElement("div");
+  wrapper.tabIndex = -1;
+  const inner = document.createElement("span");
+  wrapper.append(inner);
+  document.body.append(wrapper);
+
+  setNotVisible(wrapper);
+
+  expect(getClosestFocusable(inner)).toBe(null);
 });
