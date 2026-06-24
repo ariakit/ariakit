@@ -17,7 +17,11 @@ import {
   getReferenceSlug,
 } from "./reference.ts";
 import type { PlusAccountPath, PlusCheckoutStep, PlusType } from "./schemas.ts";
-import { PlusCheckoutStepSchema, PlusTypeSchema } from "./schemas.ts";
+import {
+  normalizeURLPath,
+  PlusCheckoutStepSchema,
+  PlusTypeSchema,
+} from "./schemas.ts";
 import { trimRight } from "./string.ts";
 
 const DEFAULT_URL = new URL("http://localhost:4321");
@@ -33,7 +37,8 @@ function leadingSlash(path?: string | null) {
 
 function setRedirectURL(url: URL, redirectUrl?: string | URL) {
   if (!redirectUrl) return;
-  const path = new URL(redirectUrl, url).toString().replace(url.origin, "");
+  const path = normalizeURLPath(redirectUrl, { base: url });
+  if (!path) return;
   url.searchParams.set("redirect_url", encodeURIComponent(path));
 }
 
