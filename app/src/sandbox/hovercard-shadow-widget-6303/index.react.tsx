@@ -1,14 +1,15 @@
 import * as Ariakit from "@ariakit/react";
 import type { DetailedHTMLProps, HTMLAttributes } from "react";
-import { useRef } from "react";
+
+type FollowButtonProps = DetailedHTMLProps<
+  HTMLAttributes<HTMLElement>,
+  HTMLElement
+>;
 
 declare module "react" {
   namespace JSX {
     interface IntrinsicElements {
-      "follow-button": DetailedHTMLProps<
-        HTMLAttributes<HTMLElement>,
-        HTMLElement
-      >;
+      "follow-button": FollowButtonProps;
     }
   }
 }
@@ -36,8 +37,6 @@ if (
 }
 
 export default function Example() {
-  const cardRef = useRef<HTMLDivElement>(null);
-
   return (
     <Ariakit.HovercardProvider>
       <Ariakit.HovercardAnchor
@@ -47,14 +46,8 @@ export default function Example() {
         @ariakit.com
       </Ariakit.HovercardAnchor>
       <Ariakit.Hovercard
-        ref={cardRef}
         aria-label="Profile card"
         gutter={8}
-        hideOnHoverOutside={(event) => {
-          const card = cardRef.current;
-          if (!card) return true;
-          return !event.composedPath().includes(card);
-        }}
         className="rounded border border-black bg-white p-4"
       >
         <Ariakit.HovercardHeading className="font-semibold">
