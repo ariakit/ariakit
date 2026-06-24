@@ -1,6 +1,5 @@
 import * as ak from "@ariakit/react";
 import { useState } from "react";
-import type { FormEvent } from "react";
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6307
 //
@@ -30,36 +29,8 @@ export default function Example() {
 
   const [showNickname, setShowNickname] = useState(false);
 
-  // TODO(https://github.com/ariakit/ariakit/issues/6307): Workaround. Opt out of
-  // the built-in `autoFocusOnSubmit` and focus the first invalid field from
-  // `onSubmit`, tied to the actual submission outcome, so a later items change
-  // can't steal focus. Remove once the library fix is released.
-  const onSubmit = (event: FormEvent) => {
-    event.preventDefault();
-    void form.submit().then((submitted) => {
-      if (submitted) return;
-      const { items } = form.getState();
-      const field = items.find(
-        (item) =>
-          item.type === "field" &&
-          item.element?.getAttribute("aria-invalid") === "true",
-      );
-      const element = field?.element;
-      if (!element) return;
-      element.focus();
-      if (element instanceof HTMLInputElement) {
-        element.select();
-      }
-    });
-  };
-
   return (
-    <ak.Form
-      store={form}
-      resetOnSubmit={false}
-      autoFocusOnSubmit={false}
-      onSubmit={onSubmit}
-    >
+    <ak.Form store={form} resetOnSubmit={false}>
       <output>Successful submissions: {successCount}</output>
 
       <div>
