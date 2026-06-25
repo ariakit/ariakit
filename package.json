@@ -98,7 +98,6 @@
     "concurrently": "10.0.3",
     "cross-env": "10.1.0",
     "cross-spawn": "7.0.6",
-    "esbuild-plugin-solid": "0.6.0",
     "fs-extra": "11.3.5",
     "glob": "13.0.6",
     "happy-dom": "20.10.6",
