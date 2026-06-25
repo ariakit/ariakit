@@ -1,4 +1,8 @@
 import { afterEach, expect, test, vi } from "vitest";
+import type {
+  AppStackblitzFramework,
+  AppStackblitzProps,
+} from "./stackblitz.ts";
 
 const { openProjectMock, embedProjectMock } = vi.hoisted(() => ({
   openProjectMock: vi.fn(),
@@ -12,10 +16,6 @@ vi.mock("@stackblitz/sdk", () => ({
   },
 }));
 
-import type {
-  AppStackblitzFramework,
-  AppStackblitzProps,
-} from "./stackblitz.ts";
 import {
   embedStackblitz,
   getProject,
