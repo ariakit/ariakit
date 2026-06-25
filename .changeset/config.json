@@ -10,6 +10,7 @@
   "ignore": [
     "website",
     "app",
+    "guide",
     "examples",
     "nextjs",
     "@ariakit/scripts",
