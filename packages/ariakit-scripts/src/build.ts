@@ -2,7 +2,6 @@ import { lstatSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { build as rolldownBuild } from "rolldown";
-import type { Plugin } from "rolldown";
 import { dts } from "rolldown-plugin-dts";
 import solidPlugin from "vite-plugin-solid";
 import { escapeRegExp } from "./regexp.ts";
@@ -275,18 +274,6 @@ function getInput(publicFiles: PublicFile[]) {
   return Object.fromEntries(publicFiles.map((file) => [file.name, file.path]));
 }
 
-function getUseClientPlugin(enabled: boolean): Plugin[] {
-  if (!enabled) return [];
-  return [
-    {
-      name: "ariakit-use-client",
-      renderChunk(code) {
-        return `"use client";\n${code}`;
-      },
-    },
-  ];
-}
-
 function cleanOutput(rootPath: string, isSolid: boolean) {
   const folders = [distDir, ...(isSolid ? [solidDir] : [])];
   for (const folder of folders) {
@@ -363,9 +350,9 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
       entryFileNames: "[name].js",
       chunkFileNames: "__chunks/[hash].js",
       sourcemap: true,
+      ...(isReactPackage && { banner: '"use client";' }),
     },
     plugins: [
-      ...getUseClientPlugin(isReactPackage),
       ...(isSolid ? [solidPlugin({ solid: { generate: "dom" } })] : []),
     ],
   });
