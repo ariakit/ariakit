@@ -347,7 +347,7 @@ export interface SelectOptions<T extends ElementType = TagName>
    * the [`SelectList`](https://ariakit.com/reference/select-list) or
    * [`SelectPopover`](https://ariakit.com/reference/select-popover) components
    * are hidden.
-   * @default false
+   * @default true
    */
   moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**
