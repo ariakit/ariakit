@@ -1,3 +1,9 @@
+import type {
+  GetDependencyReleaseLine,
+  GetReleaseLine,
+  ModCompWithPackage,
+} from "@changesets/types";
+
 /**
  * Besides the standard Changesets `getReleaseLine` and
  * `getDependencyReleaseLine` functions, this module exports a non-standard
@@ -13,36 +19,41 @@
  * and verify with
  * `pnpm test .changeset/get-changelog-entry.test.ts`.
  */
-/** @type {import("@changesets/types").ChangelogFunctions["getDependencyReleaseLine"]} */
-async function getDependencyReleaseLine(_, dependenciesUpdated) {
-  if (dependenciesUpdated.length === 0) return "";
-  const updatedDepenenciesList = dependenciesUpdated.map(
-    (dependency) => `\`${dependency.name}@${dependency.newVersion}\``,
-  );
-  return `- Updated dependencies: ${updatedDepenenciesList.join(", ")}`;
+
+interface ChangelogLines {
+  major: Array<Promise<string>>;
+  minor: Array<Promise<string>>;
+  patch: Array<Promise<string>>;
 }
 
-/** @type {import("@changesets/types").ChangelogFunctions["getReleaseLine"]} */
-async function getReleaseLine(changeset) {
+export async function getDependencyReleaseLine(
+  _: Parameters<GetDependencyReleaseLine>[0],
+  dependenciesUpdated: Parameters<GetDependencyReleaseLine>[1],
+) {
+  if (dependenciesUpdated.length === 0) return "";
+  const updatedDependenciesList = dependenciesUpdated.map(
+    (dependency) => `\`${dependency.name}@${dependency.newVersion}\``,
+  );
+  return `- Updated dependencies: ${updatedDependenciesList.join(", ")}`;
+}
+
+export async function getReleaseLine(changeset: Parameters<GetReleaseLine>[0]) {
   const [firstLine, ...nextLines] = changeset.summary
     .split("\n")
-    .map((l) => l.trimEnd());
+    .map((line) => line.trimEnd());
 
   if (!nextLines.length) return `- ${firstLine}`;
 
   return `### ${firstLine}\n${nextLines.join("\n")}`;
 }
 
-/**
- * @param {Array<Promise<string>} changelogLines
- */
-async function getChangelogText(changelogLines) {
+async function getChangelogText(changelogLines: Array<Promise<string>>) {
   const lines = await Promise.all(changelogLines);
   if (!lines.length) return "";
 
-  const isOverviewLine = (l) => l.startsWith("### Overview\n");
-  const isHeadingLine = (l) => l.startsWith("###");
-  const isOtherLine = (l) => !l.startsWith("###");
+  const isOverviewLine = (line: string) => line.startsWith("### Overview\n");
+  const isHeadingLine = (line: string) => line.startsWith("###");
+  const isOtherLine = (line: string) => !line.startsWith("###");
 
   const headingLines = lines
     .filter(isHeadingLine)
@@ -51,7 +62,7 @@ async function getChangelogText(changelogLines) {
       if (isOverviewLine(b)) return 1;
       return 0;
     })
-    .map((l) => l.replace("### Overview\n\n", ""));
+    .map((line) => line.replace("### Overview\n\n", ""));
 
   const otherLines = lines.filter(isOtherLine);
   if (!headingLines.length && !otherLines.length) return "";
@@ -65,11 +76,10 @@ async function getChangelogText(changelogLines) {
   return `${heading}\n\n### Other updates\n\n${other}`;
 }
 
-/**
- * @param {import("@changesets/types").ModCompWithPackage} release
- * @param {Record<"major" | "minor" | "patch", Array<Promise<string>>} changelogLines
- */
-async function getChangelogEntry(release, changelogLines) {
+export async function getChangelogEntry(
+  release: ModCompWithPackage,
+  changelogLines: ChangelogLines,
+) {
   // const date = new Date().toLocaleDateString("en-US", {
   //   month: "long",
   //   day: "numeric",
@@ -78,9 +88,3 @@ async function getChangelogEntry(release, changelogLines) {
   const text = await getChangelogText(Object.values(changelogLines).flat());
   return `## ${release.newVersion}\n\n${text}`;
 }
-
-module.exports = {
-  getDependencyReleaseLine,
-  getReleaseLine,
-  getChangelogEntry,
-};
