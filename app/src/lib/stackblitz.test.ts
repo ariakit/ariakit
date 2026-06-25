@@ -56,6 +56,79 @@ test.each(stackblitzFrameworks)(
   },
 );
 
+test("solid-vite project keeps Solid JSX compiler options", () => {
+  const props: AppStackblitzProps = {
+    id: "solid-tsconfig",
+    framework: "solid-vite",
+    files: {
+      "index.tsx":
+        "export default function Example() { return <div>Example</div>; }\n",
+    },
+  };
+
+  const { project } = getProject(props);
+
+  expect(project.files["tsconfig.json"]).toContain(`"jsx": "preserve"`);
+  expect(project.files["tsconfig.json"]).toContain(
+    `"jsxImportSource": "solid-js"`,
+  );
+});
+
+test.each(["react-vite", "solid-vite"] satisfies AppStackblitzFramework[])(
+  "%s project emits formatted index.html",
+  (framework) => {
+    const props: AppStackblitzProps = {
+      id: "disclosure-basic",
+      framework,
+      theme: "dark",
+      files: {
+        "index.tsx":
+          "export default function Example() { return <div>Example</div>; }\n",
+      },
+    };
+
+    const { project } = getProject(props);
+
+    expect(project.files["index.html"]).toMatchInlineSnapshot(`
+      "<!DOCTYPE html>
+      <html lang="en" class="dark">
+        <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>disclosure-basic - Ariakit</title>
+        </head>
+        <body class="flex items-center-safe justify-center-safe min-h-screen">
+          <main class="p-3 size-full @container flex items-center-safe justify-center-safe">
+            <div id="root"></div>
+          </main>
+          <script type="module" src="/index.tsx"></script>
+        </body>
+      </html>
+      "
+    `);
+  },
+);
+
+test.each(["react-vite", "solid-vite"] satisfies AppStackblitzFramework[])(
+  "%s project defaults index.html to light theme",
+  (framework) => {
+    const props: AppStackblitzProps = {
+      id: "disclosure-basic",
+      framework,
+      files: {
+        "index.tsx":
+          "export default function Example() { return <div>Example</div>; }\n",
+      },
+    };
+
+    const { project } = getProject(props);
+
+    expect(project.files["index.html"]).toContain(
+      `<html lang="en" class="light">`,
+    );
+  },
+);
+
 test("react-vite project includes tailwind v4 setup", () => {
   const props: AppStackblitzProps = {
     id: "accordion-basic",
