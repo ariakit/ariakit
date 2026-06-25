@@ -10,6 +10,7 @@
 import type { Element, Root, RootContent, Text } from "hast";
 import { toText } from "hast-util-to-text";
 import { visit } from "unist-util-visit";
+import { encodeBase64 } from "./base64.ts";
 
 interface RehypeAsTagNameOptions {
   tags: string[];
@@ -115,7 +116,7 @@ export function rehypePreviousCode() {
         );
         nodesToRemove.push({ parent, node });
       } else if (previousCode) {
-        codeNode.properties.previousCode = btoa(previousCode);
+        codeNode.properties.previousCode = encodeBase64(previousCode);
         queuePrecedingParagraphForRemoval(
           parent,
           index,
