@@ -7,14 +7,32 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 import disclosure from "#app/examples/disclosure/index.react.tsx?source";
+import { sourcePlugin } from "./source-plugin.ts";
+import type { Source } from "./source.ts";
 
 const EXAMPLES_DIR = join(import.meta.dirname, "../examples/");
 
 function normalizeSourcePath(path: string) {
   return path.replace(EXAMPLES_DIR, "");
+}
+
+async function loadSourceFile(file: string) {
+  const plugin = sourcePlugin();
+  if (typeof plugin.load !== "function") {
+    throw new TypeError("Expected source plugin load hook");
+  }
+  const code = await Reflect.apply(plugin.load, { addWatchFile() {} }, [
+    `${file}?source`,
+  ]);
+  if (typeof code !== "string") {
+    throw new TypeError("Expected source plugin output");
+  }
+  return JSON.parse(code.replace(/^export default /, "")) as Source;
 }
 
 test("disclosure name", () => {
@@ -52,15 +70,24 @@ test("disclosure file names", () => {
 });
 
 test("cached flattened files use the current source base directory", async () => {
-  const parent = await import("./source-plugin-fixtures/page.tsx?source");
-  const nested =
-    await import("./source-plugin-fixtures/nested/page.tsx?source");
+  const root = await mkdtemp(join(tmpdir(), "ariakit-source-plugin-"));
+  const parentFile = join(root, "page.tsx");
+  const nestedDir = join(root, "nested");
+  const nestedFile = join(nestedDir, "page.tsx");
 
-  expect(Object.keys(parent.default.files)).toEqual([
-    "page.tsx",
-    "nested/page.tsx",
-  ]);
-  expect(Object.keys(nested.default.files)).toEqual(["page.tsx"]);
+  try {
+    await mkdir(nestedDir);
+    await writeFile(parentFile, "export default function Page() {}");
+    await writeFile(nestedFile, "export default function Page() {}");
+
+    const parent = await loadSourceFile(parentFile);
+    const nested = await loadSourceFile(nestedFile);
+
+    expect(Object.keys(parent.files)).toEqual(["page.tsx", "nested/page.tsx"]);
+    expect(Object.keys(nested.files)).toEqual(["page.tsx"]);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });
 
 test("disclosure source names", () => {
