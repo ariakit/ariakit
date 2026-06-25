@@ -669,3 +669,47 @@ test("mergeImports handles specifiers containing 'from' substring", () => {
     export const x = transformFrom(fromDate);"
   `);
 });
+
+test("mergeImports preserves aliases in transformed imports", () => {
+  const code = [
+    'import { interests as data } from "./utils/data.ts";',
+    "",
+    "export const x = data;",
+  ].join("\n");
+  expect(
+    mergeImports(code, (p) =>
+      p.startsWith("./utils/") ? "./utils.ts" : false,
+    ),
+  ).toMatchInlineSnapshot(`
+    "import { interests as data } from "./utils.ts";
+
+    export const x = data;"
+  `);
+});
+
+test("mergeImports preserves aliases in untouched imports", () => {
+  const code = [
+    'import { foo as bar, type Baz as Qux } from "keep";',
+    "",
+    "export const y: Qux = bar;",
+  ].join("\n");
+  expect(mergeImports(code, () => false)).toMatchInlineSnapshot(`
+    "import { foo as bar } from "keep";
+    import type { Baz as Qux } from "keep";
+
+    export const y: Qux = bar;"
+  `);
+});
+
+test("mergeImports preserves aliases in type-only imports", () => {
+  const code = [
+    'import type { T as U } from "./x";',
+    "",
+    "export const z: U = 1;",
+  ].join("\n");
+  expect(mergeImports(code, (p) => p)).toMatchInlineSnapshot(`
+    "import type { T as U } from "./x";
+
+    export const z: U = 1;"
+  `);
+});

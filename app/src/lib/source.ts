@@ -234,14 +234,14 @@ interface ParsedSpecifiers {
 }
 
 /**
- * Extracts the base name from an import specifier, handling `as` aliases.
+ * Normalizes an import specifier, collapsing whitespace while preserving `as`
+ * aliases.
  * @example
- * extractSpecifierName("Foo as Bar") // Returns "Foo"
- * extractSpecifierName("Foo") // Returns "Foo"
+ * normalizeSpecifier("Foo  as  Bar") // Returns "Foo as Bar"
+ * normalizeSpecifier("Foo") // Returns "Foo"
  */
-function extractSpecifierName(specifier: string): string {
-  const beforeAs = specifier.split(/\s+as\s+/i)[0] ?? "";
-  return beforeAs.trim();
+function normalizeSpecifier(specifier: string): string {
+  return specifier.trim().replace(/\s+/g, " ");
 }
 
 /**
@@ -249,7 +249,7 @@ function extractSpecifierName(specifier: string): string {
  * names. Handles inline `type` modifiers.
  * @example
  * parseNamedSpecifiers("A, type B, C as D")
- * // Returns { runtime: ["A", "C"], typeOnly: ["B"] }
+ * // Returns { runtime: ["A", "C as D"], typeOnly: ["B"] }
  */
 function parseNamedSpecifiers(inside: string): ParsedSpecifiers {
   const runtime: string[] = [];
@@ -263,7 +263,7 @@ function parseNamedSpecifiers(inside: string): ParsedSpecifiers {
   for (const item of items) {
     const isType = /^type\s+/i.test(item);
     const raw = isType ? item.replace(/^type\s+/i, "") : item;
-    const name = extractSpecifierName(raw);
+    const name = normalizeSpecifier(raw);
     if (!name) continue;
 
     if (isType) {
@@ -284,7 +284,7 @@ function parseTypeOnlySpecifiers(inside: string): string[] {
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean)
-    .map(extractSpecifierName)
+    .map(normalizeSpecifier)
     .filter(Boolean);
 }
 
@@ -480,8 +480,9 @@ function insertHoistedImports(hoisted: string, body: string): string {
  *   specifiers, only the transformed specifiers are hoisted; the remaining
  *   specifiers stay in place and the original import line may be rewritten to
  *   preserve them without duplication.
- * - Deduplicates specifiers by name and sorts both specifier names and module
- *   specifiers lexicographically within each group.
+ * - Deduplicates specifiers by their full text (preserving `as` aliases) and
+ *   sorts both specifiers and module specifiers lexicographically within each
+ *   group.
  * - Preserves overall content by removing the original named import statements
  *   and returning the full transformed content with hoisted imports. Any
  *   orphaned semicolon-only lines left by the removal are also cleaned up to
