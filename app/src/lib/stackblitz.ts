@@ -225,6 +225,63 @@ function buildSourceFiles(exampleName: string, files: Record<string, string>) {
   );
 }
 
+interface GetPackageJsonParams {
+  props: NormalizedProps;
+  scripts: Record<string, string>;
+  templateDependencies: Record<string, string>;
+  templateDevDependencies: Record<string, string>;
+}
+
+function getPackageJson({
+  props,
+  scripts,
+  templateDependencies,
+  templateDevDependencies,
+}: GetPackageJsonParams) {
+  const dependencies = {
+    ...normalizeDeps(templateDependencies),
+    ...props.dependencies,
+  };
+  const devDependencies = {
+    ...normalizeDeps(templateDevDependencies),
+    ...props.devDependencies,
+  };
+  return JSON.stringify(
+    {
+      name: `@ariakit/${props.id}`,
+      description: props.id,
+      private: true,
+      version: "0.0.0",
+      type: "module",
+      license: "MIT",
+      repository: "https://github.com/ariakit/ariakit.git",
+      scripts,
+      dependencies,
+      devDependencies,
+    },
+    null,
+    2,
+  );
+}
+
+function getIndexHtml(props: NormalizedProps, exampleName: string) {
+  return `<!DOCTYPE html>
+<html lang="en" class="${props.theme === "dark" ? "dark" : "light"}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${exampleName} - Ariakit</title>
+  </head>
+  <body class="flex items-center-safe justify-center-safe min-h-screen">
+    <main class="p-3 size-full @container flex items-center-safe justify-center-safe">
+      <div id="root"></div>
+    </main>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
+`;
+}
+
 function getViteProject(props: NormalizedProps): ProjectResult {
   const exampleName = getExampleName(props.id);
   const firstFile = getFirstFilename(props.files);
@@ -232,28 +289,26 @@ function getViteProject(props: NormalizedProps): ProjectResult {
 
   const hasQuery = hasOwnProperty(props.dependencies, "@tanstack/react-query");
 
-  const templateDependencies = normalizeDeps({
-    react: "latest",
-    "react-dom": "latest",
-    "@ariakit/tailwind": "latest",
+  const packageJson = getPackageJson({
+    props,
+    scripts: {
+      dev: "vite",
+      build: "tsc && vite build",
+      preview: "vite preview",
+    },
+    templateDependencies: {
+      react: "latest",
+      "react-dom": "latest",
+      "@ariakit/tailwind": "latest",
+    },
+    templateDevDependencies: {
+      vite: "latest",
+      "@vitejs/plugin-react": "latest",
+      "@tailwindcss/vite": "^4.0.0",
+      tailwindcss: "^4.0.0",
+      typescript: "5.4.4",
+    },
   });
-  const templateDevDependencies = normalizeDeps({
-    vite: "latest",
-    "@vitejs/plugin-react": "latest",
-    "@tailwindcss/vite": "^4.0.0",
-    tailwindcss: "^4.0.0",
-    typescript: "5.4.4",
-  });
-
-  const dependencies = {
-    ...templateDependencies,
-    ...props.dependencies,
-  };
-
-  const devDependencies = {
-    ...templateDevDependencies,
-    ...props.devDependencies,
-  };
 
   const tsConfig = getTSConfig(props.tsconfig);
 
@@ -294,22 +349,6 @@ export default defineConfig({
 });
 `;
 
-  const indexHtml = `<!DOCTYPE html>
- <html lang="en" class="${props.theme === "dark" ? "dark" : "light"}">
-   <head>
-     <meta charset="UTF-8" />
-     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-     <title>${exampleName} - Ariakit</title>
-   </head>
-  <body class="flex items-center-safe justify-center-safe min-h-screen">
-    <main class="p-3 size-full @container flex items-center-safe justify-center-safe">
-      <div id="root"></div>
-    </main>
-    <script type="module" src="/index.tsx"></script>
-  </body>
- </html>
- `;
-
   const sourceFiles = buildSourceFiles(exampleName, props.files);
 
   if (hasQuery) {
@@ -317,29 +356,10 @@ export default defineConfig({
   }
 
   const files: ProjectFiles = {
-    "package.json": JSON.stringify(
-      {
-        name: `@ariakit/${props.id}`,
-        description: props.id,
-        private: true,
-        version: "0.0.0",
-        type: "module",
-        license: "MIT",
-        repository: "https://github.com/ariakit/ariakit.git",
-        scripts: {
-          dev: "vite",
-          build: "tsc && vite build",
-          preview: "vite preview",
-        },
-        dependencies,
-        devDependencies,
-      },
-      null,
-      2,
-    ),
+    "package.json": packageJson,
     "tsconfig.json": JSON.stringify(tsConfig, null, 2),
     "vite.config.ts": viteConfig,
-    "index.html": indexHtml,
+    "index.html": getIndexHtml(props, exampleName),
     "index.tsx": indexTsx,
     "styles.css": stylesContent,
     ...sourceFiles,
@@ -353,28 +373,25 @@ function getSolidProject(props: NormalizedProps): ProjectResult {
   const firstFile = getFirstFilename(props.files);
   const stylesCss = getStylesCss(props.styles);
 
-  const templateDependencies = normalizeDeps({
-    "solid-js": "latest",
-    "@ariakit/tailwind": "latest",
+  const packageJson = getPackageJson({
+    props,
+    scripts: {
+      dev: "vite",
+      build: "tsc && vite build",
+      preview: "vite preview",
+    },
+    templateDependencies: {
+      "solid-js": "latest",
+      "@ariakit/tailwind": "latest",
+    },
+    templateDevDependencies: {
+      vite: "latest",
+      "vite-plugin-solid": "latest",
+      "@tailwindcss/vite": "^4.0.0",
+      tailwindcss: "^4.0.0",
+      typescript: "5.4.4",
+    },
   });
-
-  const templateDevDependencies = normalizeDeps({
-    vite: "latest",
-    "vite-plugin-solid": "latest",
-    "@tailwindcss/vite": "^4.0.0",
-    tailwindcss: "^4.0.0",
-    typescript: "5.4.4",
-  });
-
-  const dependencies = {
-    ...templateDependencies,
-    ...props.dependencies,
-  };
-
-  const devDependencies = {
-    ...templateDevDependencies,
-    ...props.devDependencies,
-  };
 
   const tsConfig = mergeTsConfig(
     getTSConfig({
@@ -408,48 +425,13 @@ export default defineConfig({
 });
 `;
 
-  const indexHtml = `<!DOCTYPE html>
-<html lang="en" class="${props.theme === "dark" ? "dark" : "light"}">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${exampleName} - Ariakit</title>
-  </head>
-  <body class="flex items-center-safe justify-center-safe min-h-screen">
-    <main class="p-3 size-full @container flex items-center-safe justify-center-safe">
-      <div id="root"></div>
-    </main>
-    <script type="module" src="/index.tsx"></script>
-  </body>
-</html>
-`;
-
   const sourceFiles = buildSourceFiles(exampleName, props.files);
 
   const files: ProjectFiles = {
-    "package.json": JSON.stringify(
-      {
-        name: `@ariakit/${props.id}`,
-        description: props.id,
-        private: true,
-        version: "0.0.0",
-        type: "module",
-        license: "MIT",
-        repository: "https://github.com/ariakit/ariakit.git",
-        scripts: {
-          dev: "vite",
-          build: "tsc && vite build",
-          preview: "vite preview",
-        },
-        dependencies,
-        devDependencies,
-      },
-      null,
-      2,
-    ),
+    "package.json": packageJson,
     "tsconfig.json": JSON.stringify(tsConfig, null, 2),
     "vite.config.ts": viteConfig,
-    "index.html": indexHtml,
+    "index.html": getIndexHtml(props, exampleName),
     "index.tsx": indexTsx,
     "styles.css": stylesContent,
     ...sourceFiles,
@@ -463,29 +445,26 @@ function getNextProject(props: NormalizedProps): ProjectResult {
   const firstFile = getFirstFilename(props.files);
   const stylesCss = getStylesCss(props.styles);
 
-  const templateDependencies = normalizeDeps({
-    next: "latest",
-    react: "latest",
-    "react-dom": "latest",
-    "@ariakit/tailwind": "latest",
+  const packageJson = getPackageJson({
+    props,
+    scripts: {
+      dev: "next dev",
+      build: "next build",
+      start: "next start",
+    },
+    templateDependencies: {
+      next: "latest",
+      react: "latest",
+      "react-dom": "latest",
+      "@ariakit/tailwind": "latest",
+    },
+    templateDevDependencies: {
+      "@types/node": "latest",
+      "@tailwindcss/postcss": "^4.0.0",
+      tailwindcss: "^4.0.0",
+      typescript: "5.4.4",
+    },
   });
-
-  const templateDevDependencies = normalizeDeps({
-    "@types/node": "latest",
-    "@tailwindcss/postcss": "^4.0.0",
-    tailwindcss: "^4.0.0",
-    typescript: "5.4.4",
-  });
-
-  const dependencies = {
-    ...templateDependencies,
-    ...props.dependencies,
-  };
-
-  const devDependencies = {
-    ...templateDevDependencies,
-    ...props.devDependencies,
-  };
 
   const tsConfig = mergeTsConfig(
     getTSConfig({
@@ -587,26 +566,7 @@ export default nextConfig;
   }
 
   const files: ProjectFiles = {
-    "package.json": JSON.stringify(
-      {
-        name: `@ariakit/${props.id}`,
-        description: props.id,
-        private: true,
-        version: "0.0.0",
-        type: "module",
-        license: "MIT",
-        repository: "https://github.com/ariakit/ariakit.git",
-        scripts: {
-          dev: "next dev",
-          build: "next build",
-          start: "next start",
-        },
-        dependencies,
-        devDependencies,
-      },
-      null,
-      2,
-    ),
+    "package.json": packageJson,
     "tsconfig.json": JSON.stringify(tsConfig, null, 2),
     "postcss.config.mjs": `const config = {
   plugins: {
@@ -638,7 +598,6 @@ function getProjectFromFramework(props: NormalizedProps): ProjectResult {
     return getNextProject(props);
   }
   invariant(false, "Unsupported template");
-  return { files: {}, sourceFiles: {} };
 }
 
 export function getProject(props: AppStackblitzProps) {
