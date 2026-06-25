@@ -99,7 +99,7 @@ function getTSConfig(tsConfig?: Record<string, unknown>) {
       lib: ["dom", "dom.iterable", "esnext"],
       module: "esnext",
       skipLibCheck: true,
-      moduleResolution: "node16",
+      moduleResolution: "bundler",
       allowImportingTsExtensions: true,
       resolveJsonModule: true,
       isolatedModules: true,
