@@ -15,6 +15,13 @@ test("FormPush keeps focus within the target array, not a sibling sharing the na
   expect(activeFieldName()).toMatch(/^tags\.\d+$/);
 });
 
+test("FormRemove keeps focus within the target array, not a sibling sharing the name prefix", async () => {
+  // Removing from `tags` must move focus to another `tags` field and never
+  // leak into the `tags2` sibling, whose name shares the `tags` prefix.
+  await click(q.button("Remove tags.0"));
+  expect(activeFieldName()).toBe("tags.1");
+});
+
 test("FormPush keeps focus within an array whose name has regex metacharacters", async () => {
   // The `c++` array name contains regex metacharacters. Building the auto-focus
   // matcher must not throw, and focus must stay within the array.

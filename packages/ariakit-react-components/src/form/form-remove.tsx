@@ -12,7 +12,7 @@ import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { useFormContext } from "./form-context.tsx";
 import type { FormStore, FormStoreState } from "./form-store.ts";
-import { getArrayFieldIndex } from "./utils.ts";
+import { getArrayFieldIndex, isArrayFieldName } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -23,13 +23,8 @@ function findNextOrPreviousField(
   name: string,
   index: number,
 ) {
-  const prefix = `${name}.`;
-  // Match the exact array boundary so sibling arrays whose names share this
-  // prefix (e.g. `tags` and `tags2`) aren't matched.
   const fields = items?.filter(
-    (item) =>
-      item.type === "field" &&
-      (item.name === name || item.name.startsWith(prefix)),
+    (item) => item.type === "field" && isArrayFieldName(item.name, name),
   );
   const nextField = fields?.find(
     (field) => getArrayFieldIndex(field.name, name) > index,
