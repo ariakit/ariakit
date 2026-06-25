@@ -1,4 +1,8 @@
 import { afterEach, expect, test, vi } from "vitest";
+import type {
+  AppStackblitzFramework,
+  AppStackblitzProps,
+} from "./stackblitz.ts";
 
 const { openProjectMock, embedProjectMock } = vi.hoisted(() => ({
   openProjectMock: vi.fn(),
@@ -12,7 +16,6 @@ vi.mock("@stackblitz/sdk", () => ({
   },
 }));
 
-import type { AppStackblitzProps } from "./stackblitz.ts";
 import {
   embedStackblitz,
   getProject,
@@ -25,6 +28,33 @@ afterEach(() => {
   openProjectMock.mockReset();
   embedProjectMock.mockReset();
 });
+
+const stackblitzFrameworks: AppStackblitzFramework[] = [
+  "react-vite",
+  "react-nextjs",
+  "solid-vite",
+];
+
+test.each(stackblitzFrameworks)(
+  "%s project uses bundler module resolution",
+  (framework) => {
+    const props: AppStackblitzProps = {
+      id: `${framework}-tsconfig`,
+      framework,
+      files: {
+        "index.tsx":
+          "export default function Example() { return <div>Example</div>; }\n",
+      },
+    };
+
+    const { project } = getProject(props);
+
+    expect(project.files["tsconfig.json"]).toContain(`"module": "esnext"`);
+    expect(project.files["tsconfig.json"]).toContain(
+      `"moduleResolution": "bundler"`,
+    );
+  },
+);
 
 test("react-vite project includes tailwind v4 setup", () => {
   const props: AppStackblitzProps = {

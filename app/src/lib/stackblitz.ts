@@ -103,7 +103,7 @@ function getTSConfig(overrides?: Record<string, unknown>) {
       lib: ["dom", "dom.iterable", "esnext"],
       module: "esnext",
       skipLibCheck: true,
-      moduleResolution: "node16",
+      moduleResolution: "bundler",
       allowImportingTsExtensions: true,
       resolveJsonModule: true,
       isolatedModules: true,
@@ -377,29 +377,12 @@ function getSolidProject(props: NormalizedProps): ProjectResult {
   };
 
   const tsConfig = mergeTsConfig(
-    {
+    getTSConfig({
       compilerOptions: {
-        target: "esnext",
-        lib: ["dom", "dom.iterable", "esnext"],
-        module: "esnext",
-        skipLibCheck: true,
-        moduleResolution: "node16",
-        allowImportingTsExtensions: true,
-        resolveJsonModule: true,
-        isolatedModules: true,
-        noEmit: true,
         jsx: "preserve",
         jsxImportSource: "solid-js",
-        strict: true,
-        allowJs: true,
-        forceConsistentCasingInFileNames: true,
-        incremental: true,
-        esModuleInterop: true,
-        noUnusedLocals: true,
-        noUnusedParameters: true,
-        noFallthroughCasesInSwitch: true,
       },
-    },
+    }),
     props.tsconfig,
   );
 
