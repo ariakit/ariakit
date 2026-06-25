@@ -51,6 +51,18 @@ test("disclosure file names", () => {
   `);
 });
 
+test("cached flattened files use the current source base directory", async () => {
+  const parent = await import("./source-plugin-fixtures/page.tsx?source");
+  const nested =
+    await import("./source-plugin-fixtures/nested/page.tsx?source");
+
+  expect(Object.keys(parent.default.files)).toEqual([
+    "page.tsx",
+    "nested/page.tsx",
+  ]);
+  expect(Object.keys(nested.default.files)).toEqual(["page.tsx"]);
+});
+
 test("disclosure source names", () => {
   const sourceKeys = Object.keys(disclosure.sources).map(normalizeSourcePath);
   expect(sourceKeys).toMatchInlineSnapshot(`

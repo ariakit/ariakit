@@ -51,15 +51,9 @@ interface CachedFileData {
 
 const fileProcessCache = new Map<string, CachedFileData>();
 
-// Cache generated flattened files (final files record entries), keyed by abs id
-interface FlattenedCacheData {
-  // files record key (basename)
-  key: string;
-  // flattened content and metadata
-  file: SourceFile;
-}
-
-const flattenedFileCache = new Map<string, FlattenedCacheData>();
+// Cache generated flattened file contents keyed by abs id + content hash. The
+// files record key depends on baseDir, so recompute it on each call.
+const flattenedFileCache = new Map<string, SourceFile>();
 
 type SourcePluginContext = ThisParameterType<
   HookHandler<NonNullable<Plugin["load"]>>
@@ -480,27 +474,24 @@ function computeSourceStylesFromSources(sources: Record<string, SourceFile>) {
  */
 async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
   const cacheKey = cacheKeyForFile(file.id, file.content);
-  const cached = flattenedFileCache.get(cacheKey);
-  if (cached) return cached;
   const filename = normalizeFilename(file.id, baseDir);
+  const cached = flattenedFileCache.get(cacheKey);
+  if (cached) return { key: filename, file: cached };
   let content = replaceImportPaths(file.content, (path) =>
     normalizeImportPath(path),
   );
   if (content !== file.content) {
     content = await formatWithPrettier(content, file.id, basename(filename));
   }
-  const out: FlattenedCacheData = {
-    key: filename,
-    file: {
-      id: file.id,
-      content,
-      styles: file.styles,
-      dependencies: file.dependencies,
-      devDependencies: file.devDependencies,
-    },
+  const generated: SourceFile = {
+    id: file.id,
+    content,
+    styles: file.styles,
+    dependencies: file.dependencies,
+    devDependencies: file.devDependencies,
   };
-  flattenedFileCache.set(cacheKey, out);
-  return out;
+  flattenedFileCache.set(cacheKey, generated);
+  return { key: filename, file: generated };
 }
 
 /**
