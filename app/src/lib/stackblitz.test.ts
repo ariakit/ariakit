@@ -1,4 +1,6 @@
 import { afterEach, expect, test, vi } from "vitest";
+import nextPkg from "../../../nextjs/package.json" with { type: "json" };
+import templatePkg from "../../../templates/react/package.json" with { type: "json" };
 import type {
   AppStackblitzFramework,
   AppStackblitzProps,
@@ -34,6 +36,21 @@ const stackblitzFrameworks: AppStackblitzFramework[] = [
   "react-nextjs",
   "solid-vite",
 ];
+
+interface GeneratedPackageJson {
+  dependencies: Record<string, string>;
+  devDependencies: Record<string, string>;
+}
+
+function getGeneratedPackageJson(
+  project: ReturnType<typeof getProject>["project"],
+) {
+  const pkgJson = project.files["package.json"];
+  if (typeof pkgJson !== "string") {
+    throw new Error("Expected package.json to be generated");
+  }
+  return JSON.parse(pkgJson) as GeneratedPackageJson;
+}
 
 test.each(stackblitzFrameworks)(
   "%s project uses bundler module resolution",
@@ -133,6 +150,19 @@ test("react-vite project includes tailwind v4 setup", () => {
   const props: AppStackblitzProps = {
     id: "accordion-basic",
     framework: "react-vite",
+    dependencies: {
+      react: "0.0.0",
+      "react-dom": "0.0.0",
+    },
+    devDependencies: {
+      vite: "0.0.0",
+      "@vitejs/plugin-react": "0.0.0",
+      "@tailwindcss/vite": "0.0.0",
+      "@types/react": "0.0.0",
+      "@types/react-dom": "0.0.0",
+      tailwindcss: "0.0.0",
+      typescript: "0.0.0",
+    },
     files: {
       "index.tsx":
         "export default function Example() { return <div>Example</div>; }\n",
@@ -147,7 +177,7 @@ test("react-vite project includes tailwind v4 setup", () => {
 
     @theme {
       --color-canvas: oklch(99.33% 0.0011 197.14);
-      --color-primary: oklch(56.7% 0.154556 248.5156);
+      --color-primary: oklch(56.7% 0.1546 248.5156);
       --color-secondary: oklch(65.59% 0.2118 354.31);
 
       --radius-container: var(--radius-xl);
@@ -204,35 +234,99 @@ test("react-vite project includes tailwind v4 setup", () => {
     }
     "
   `);
-  expect(project.files["package.json"]).toMatchInlineSnapshot(`
-    "{
-      "name": "@ariakit/accordion-basic",
-      "description": "accordion-basic",
-      "private": true,
-      "version": "0.0.0",
-      "type": "module",
-      "license": "MIT",
-      "repository": "https://github.com/ariakit/ariakit.git",
-      "scripts": {
-        "dev": "vite",
-        "build": "tsc && vite build",
-        "preview": "vite preview"
-      },
-      "dependencies": {
-        "react": "latest",
-        "react-dom": "latest",
-        "@ariakit/tailwind": "latest"
-      },
-      "devDependencies": {
-        "vite": "latest",
-        "@vitejs/plugin-react": "latest",
-        "@tailwindcss/vite": "^4.0.0",
-        "tailwindcss": "^4.0.0",
-        "typescript": "5.4.4"
-      }
-    }"
-  `);
+  const pkg = getGeneratedPackageJson(project);
+  expect(pkg.dependencies["@ariakit/tailwind"]).toBe("latest");
+  expect(pkg.dependencies.react).toBe(templatePkg.dependencies.react);
+  expect(pkg.dependencies["react-dom"]).toBe(
+    templatePkg.dependencies["react-dom"],
+  );
+  expect(pkg.devDependencies.vite).toBe(templatePkg.devDependencies.vite);
+  expect(pkg.devDependencies["@vitejs/plugin-react"]).toBe(
+    templatePkg.devDependencies["@vitejs/plugin-react"],
+  );
+  expect(pkg.devDependencies["@tailwindcss/vite"]).toBe(
+    templatePkg.devDependencies["@tailwindcss/vite"],
+  );
+  expect(pkg.devDependencies["@types/react"]).toBe(
+    templatePkg.devDependencies["@types/react"],
+  );
+  expect(pkg.devDependencies["@types/react-dom"]).toBe(
+    templatePkg.devDependencies["@types/react-dom"],
+  );
+  expect(pkg.devDependencies.tailwindcss).toBe(
+    templatePkg.devDependencies.tailwindcss,
+  );
+  expect(pkg.devDependencies.typescript).toBe(
+    templatePkg.devDependencies.typescript,
+  );
   expect(sourceFiles["accordion-basic/index.tsx"]).toBeDefined();
+});
+
+test("solid-vite project syncs shared template dev versions", () => {
+  const props: AppStackblitzProps = {
+    id: "separator-solid",
+    framework: "solid-vite",
+    devDependencies: {
+      "@tailwindcss/vite": "0.0.0",
+      tailwindcss: "0.0.0",
+      typescript: "0.0.0",
+    },
+    files: {
+      "index.tsx":
+        'export default function Example() { return <div class="ak-badge-primary">Solid</div>; }\n',
+    },
+  };
+
+  const { project } = getProject(props);
+  const pkg = getGeneratedPackageJson(project);
+
+  expect(pkg.dependencies["@ariakit/tailwind"]).toBe("latest");
+  expect(pkg.dependencies["solid-js"]).toBe("latest");
+  expect(pkg.devDependencies.vite).toBe("latest");
+  expect(pkg.devDependencies["vite-plugin-solid"]).toBe("latest");
+  expect(pkg.devDependencies["@tailwindcss/vite"]).toBe(
+    templatePkg.devDependencies["@tailwindcss/vite"],
+  );
+  expect(pkg.devDependencies.tailwindcss).toBe(
+    templatePkg.devDependencies.tailwindcss,
+  );
+  expect(pkg.devDependencies.typescript).toBe(
+    templatePkg.devDependencies.typescript,
+  );
+});
+
+test("react-nextjs project syncs shared template and Next dev versions", () => {
+  const props: AppStackblitzProps = {
+    id: "dialog-nextjs",
+    framework: "react-nextjs",
+    devDependencies: {
+      "@tailwindcss/postcss": "0.0.0",
+      tailwindcss: "0.0.0",
+      typescript: "0.0.0",
+    },
+    files: {
+      "index.tsx":
+        "export default function Example() { return <div>Example</div>; }\n",
+    },
+  };
+
+  const { project } = getProject(props);
+  const pkg = getGeneratedPackageJson(project);
+
+  expect(pkg.dependencies.next).toBe("latest");
+  expect(pkg.dependencies.react).toBe("latest");
+  expect(pkg.dependencies["react-dom"]).toBe("latest");
+  expect(pkg.dependencies["@ariakit/tailwind"]).toBe("latest");
+  expect(pkg.devDependencies["@types/node"]).toBe("latest");
+  expect(pkg.devDependencies["@tailwindcss/postcss"]).toBe(
+    nextPkg.devDependencies["@tailwindcss/postcss"],
+  );
+  expect(pkg.devDependencies.tailwindcss).toBe(
+    nextPkg.devDependencies.tailwindcss,
+  );
+  expect(pkg.devDependencies.typescript).toBe(
+    nextPkg.devDependencies.typescript,
+  );
 });
 
 test("react-nextjs project generates styles and query provider", () => {
@@ -312,7 +406,7 @@ test("solid-vite project emits generated utilities", () => {
 
     @theme {
       --color-canvas: oklch(99.33% 0.0011 197.14);
-      --color-primary: oklch(56.7% 0.154556 248.5156);
+      --color-primary: oklch(56.7% 0.1546 248.5156);
       --color-secondary: oklch(65.59% 0.2118 354.31);
 
       --radius-container: var(--radius-xl);

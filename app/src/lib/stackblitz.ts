@@ -1,6 +1,8 @@
 import { hasOwnProperty, invariant } from "@ariakit/utils";
 import type { Project, ProjectFiles } from "@stackblitz/sdk";
 import _sdk from "@stackblitz/sdk";
+import nextPkg from "../../../nextjs/package.json" with { type: "json" };
+import templatePkg from "../../../templates/react/package.json" with { type: "json" };
 import type { StyleDependency } from "./styles.ts";
 import {
   getStyleDefinition,
@@ -55,6 +57,33 @@ function normalizeDeps(deps: Record<string, string> = {}) {
     },
     {},
   );
+}
+
+const templateVersions: Record<string, string | undefined> = {
+  ...templatePkg.dependencies,
+  ...templatePkg.devDependencies,
+};
+
+const nextVersions: Record<string, string | undefined> = {
+  ...nextPkg.dependencies,
+  ...nextPkg.devDependencies,
+};
+
+function getVersion(
+  versions: Record<string, string | undefined>,
+  name: string,
+) {
+  const version = versions[name];
+  invariant(version, `Missing package version for ${name}`);
+  return version;
+}
+
+function getTemplateVersion(name: string) {
+  return getVersion(templateVersions, name);
+}
+
+function getNextVersion(name: string) {
+  return getVersion(nextVersions, name);
 }
 
 function normalizeProps(props: AppStackblitzProps): NormalizedProps {
@@ -128,7 +157,7 @@ function getBaseCss() {
 
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);
-  --color-primary: oklch(56.7% 0.154556 248.5156);
+  --color-primary: oklch(56.7% 0.1546 248.5156);
   --color-secondary: oklch(65.59% 0.2118 354.31);
 
   --radius-container: var(--radius-xl);
@@ -239,12 +268,12 @@ function getPackageJson({
   templateDevDependencies,
 }: GetPackageJsonParams) {
   const dependencies = {
-    ...normalizeDeps(templateDependencies),
     ...props.dependencies,
+    ...normalizeDeps(templateDependencies),
   };
   const devDependencies = {
-    ...normalizeDeps(templateDevDependencies),
     ...props.devDependencies,
+    ...normalizeDeps(templateDevDependencies),
   };
   return JSON.stringify(
     {
@@ -297,16 +326,18 @@ function getViteProject(props: NormalizedProps): ProjectResult {
       preview: "vite preview",
     },
     templateDependencies: {
-      react: "latest",
-      "react-dom": "latest",
+      react: getTemplateVersion("react"),
+      "react-dom": getTemplateVersion("react-dom"),
       "@ariakit/tailwind": "latest",
     },
     templateDevDependencies: {
-      vite: "latest",
-      "@vitejs/plugin-react": "latest",
-      "@tailwindcss/vite": "^4.0.0",
-      tailwindcss: "^4.0.0",
-      typescript: "5.4.4",
+      vite: getTemplateVersion("vite"),
+      "@vitejs/plugin-react": getTemplateVersion("@vitejs/plugin-react"),
+      "@tailwindcss/vite": getTemplateVersion("@tailwindcss/vite"),
+      "@types/react": getTemplateVersion("@types/react"),
+      "@types/react-dom": getTemplateVersion("@types/react-dom"),
+      tailwindcss: getTemplateVersion("tailwindcss"),
+      typescript: getTemplateVersion("typescript"),
     },
   });
 
@@ -387,9 +418,9 @@ function getSolidProject(props: NormalizedProps): ProjectResult {
     templateDevDependencies: {
       vite: "latest",
       "vite-plugin-solid": "latest",
-      "@tailwindcss/vite": "^4.0.0",
-      tailwindcss: "^4.0.0",
-      typescript: "5.4.4",
+      "@tailwindcss/vite": getTemplateVersion("@tailwindcss/vite"),
+      tailwindcss: getTemplateVersion("tailwindcss"),
+      typescript: getTemplateVersion("typescript"),
     },
   });
 
@@ -460,9 +491,9 @@ function getNextProject(props: NormalizedProps): ProjectResult {
     },
     templateDevDependencies: {
       "@types/node": "latest",
-      "@tailwindcss/postcss": "^4.0.0",
-      tailwindcss: "^4.0.0",
-      typescript: "5.4.4",
+      "@tailwindcss/postcss": getNextVersion("@tailwindcss/postcss"),
+      tailwindcss: getNextVersion("tailwindcss"),
+      typescript: getNextVersion("typescript"),
     },
   });
 
