@@ -96,14 +96,24 @@ export const CompositeItem = forwardRef(function CompositeItem({
   if (active) {
     return <Base.CompositeItem {...allProps} />;
   }
-  // Remove CompositeItem props
+  // Remove CompositeItem props. Custom renders own their native disabled state.
   const {
     store,
+    disabled,
+    shouldRegisterItem,
     rowId,
     preventScrollOnKeyDown,
     moveOnKeyPress,
     tabbable,
+    clickOnEnter,
+    clickOnSpace,
+    focusable,
+    accessibleWhenDisabled,
+    autoFocus,
+    onFocusVisible,
     getItem,
+    // @ts-expect-error This prop may come from a collection renderer.
+    element,
     ...htmlProps
   } = allProps;
   const Component = Role[TagName];
