@@ -2,6 +2,8 @@ import { withFramework } from "#app/test-utils/preview.ts";
 
 const decomposedCafe = "cafe\u0301";
 const decomposedCafet = `${decomposedCafe}t`;
+const decomposedCafeteria = `${decomposedCafe}teria`;
+const composedCafeteria = "caféteria";
 
 // https://github.com/ariakit/ariakit/issues/6315
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -25,13 +27,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await combobox.pressSequentially(decomposedCafe);
     await expectSafeValue(
       () => combobox.inputValue(),
-      [decomposedCafe, "caféteria"],
+      [decomposedCafe, decomposedCafeteria, composedCafeteria],
     );
 
     await q.button("Save").click();
     await expectSafeValue(
       () => q.status().textContent(),
-      [decomposedCafe, "caféteria"],
+      [decomposedCafe, decomposedCafeteria, composedCafeteria],
     );
   });
 
@@ -44,13 +46,24 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await combobox.pressSequentially(decomposedCafet);
     await expectSafeValue(
       () => combobox.inputValue(),
-      [decomposedCafet, "caféteria"],
+      [decomposedCafet, decomposedCafeteria, composedCafeteria],
     );
 
     await q.button("Save").click();
     await expectSafeValue(
       () => q.status().textContent(),
-      [decomposedCafet, "caféteria"],
+      [decomposedCafet, decomposedCafeteria, composedCafeteria],
     );
+  });
+
+  test("completes unaccented input against accented items", async ({ q }) => {
+    const combobox = q.combobox("Your favorite drink");
+
+    await combobox.click();
+    await combobox.pressSequentially("cafe ");
+    await test.expect(combobox).toHaveValue("cafe au lait");
+
+    await q.button("Save").click();
+    await test.expect(q.status()).toHaveText("cafe au lait");
   });
 });
