@@ -528,7 +528,7 @@ function findUseStoreStateStateRanges(
 
   // String literal variant: useStoreState(store, "value")
   const stringRegex = new RegExp(
-    `useStoreState\\s*\\(\\s*[^,]*,\\s*(["'\`])(${IDENTIFIER_PATTERN})\\1`,
+    `^(?:${IDENTIFIER_PATTERN}\\s*\\.\\s*)?useStoreState\\s*\\(\\s*[^,()]*,\\s*(["'\`])(${IDENTIFIER_PATTERN})\\1`,
   );
   const stringMatch = stringRegex.exec(callText);
   if (stringMatch) {
@@ -546,7 +546,7 @@ function findUseStoreStateStateRanges(
 
   // Arrow selector variant: useStoreState(store, (s) => s.value)
   const arrowRegex = new RegExp(
-    `useStoreState\\s*\\(\\s*[^,]*,\\s*\\(?(${IDENTIFIER_PATTERN})\\)?\\s*=>\\s*\\1\\s*\\.\\s*(${IDENTIFIER_PATTERN})`,
+    `^(?:${IDENTIFIER_PATTERN}\\s*\\.\\s*)?useStoreState\\s*\\(\\s*[^,()]*,\\s*\\(?(${IDENTIFIER_PATTERN})\\)?\\s*=>\\s*\\1\\s*\\.\\s*(${IDENTIFIER_PATTERN})`,
   );
   const arrowMatch = arrowRegex.exec(callText);
   if (arrowMatch) {

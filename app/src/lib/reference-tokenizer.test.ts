@@ -184,6 +184,24 @@ function refs(): CollectionEntry<"references">[] {
   ];
 }
 
+function sharedStateRefs(): CollectionEntry<"references">[] {
+  const storeCombobox = makeRef(
+    "react/combobox/store",
+    createRefData("store", "useComboboxStore", "combobox", {
+      state: [createProp("open"), createProp("mounted")],
+    }),
+  );
+
+  const storeDisclosure = makeRef(
+    "react/disclosure/store",
+    createRefData("store", "useDisclosureStore", "disclosure", {
+      state: [createProp("open"), createProp("mounted")],
+    }),
+  );
+
+  return [storeCombobox, storeDisclosure];
+}
+
 function tokensAt(
   code: string,
   perLine: ReturnType<typeof findCodeReferenceAnchors>,
@@ -197,6 +215,20 @@ function tokensAt(
     }
   });
   return out;
+}
+
+function anchorsWithHrefs(
+  code: string,
+  perLine: ReturnType<typeof findCodeReferenceAnchors>,
+) {
+  const lines = code.trim().split("\n");
+  return perLine.flatMap((ranges, i) => {
+    const line = lines[i] || "";
+    return ranges.map((range) => ({
+      text: line.slice(range.start, range.end),
+      href: range.href,
+    }));
+  });
 }
 
 test("tokenizes useStoreState state key (string) with ak namespace", () => {
@@ -253,6 +285,49 @@ const value = ak.useStoreState(combobox, (state) => state.value);
       },
     ]
   `);
+});
+
+test("does not attribute later useStoreState state keys to previous stores", () => {
+  const code = `
+import * as ak from "@ariakit/react";
+const combobox = ak.useComboboxStore();
+const disclosure = ak.useDisclosureStore();
+const open = ak.useStoreState(combobox, (state) => state.open);
+const mounted = ak.useStoreState(disclosure, "mounted");
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: sharedStateRefs(),
+    framework: "react",
+  });
+  const anchors = anchorsWithHrefs(code, perLine);
+  const openAnchors = anchors.filter((anchor) => anchor.text === "open");
+  const mountedAnchors = anchors.filter((anchor) => anchor.text === "mounted");
+
+  expect(openAnchors).toHaveLength(1);
+  expect(openAnchors[0]?.href).toContain("/combobox/");
+  expect(mountedAnchors).toHaveLength(1);
+  expect(mountedAnchors[0]?.href).toContain("/disclosure/");
+});
+
+test("ignores single-argument useStoreState calls when finding state keys", () => {
+  const code = `
+import * as ak from "@ariakit/react";
+const combobox = ak.useComboboxStore();
+const disclosure = ak.useDisclosureStore();
+const state = ak.useStoreState(combobox);
+const mounted = ak.useStoreState(disclosure, "mounted");
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: sharedStateRefs(),
+    framework: "react",
+  });
+  const anchors = anchorsWithHrefs(code, perLine);
+  const mountedAnchors = anchors.filter((anchor) => anchor.text === "mounted");
+
+  expect(mountedAnchors).toHaveLength(1);
+  expect(mountedAnchors[0]?.href).toContain("/disclosure/");
 });
 
 test("does not tokenize props on non-Ariakit namespaced components (rac.Disclosure)", () => {
