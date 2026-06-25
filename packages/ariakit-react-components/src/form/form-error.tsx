@@ -19,7 +19,7 @@ type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
- * Returns props to create a `FormDescription` component.
+ * Returns props to create a `FormError` component.
  * @see https://ariakit.com/components/form
  * @example
  * ```jsx
