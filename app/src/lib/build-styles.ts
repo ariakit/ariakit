@@ -654,9 +654,9 @@ function extractAkTokensFromApplyLine(line: string) {
   return uniqPreserveOrder(akTokens);
 }
 
-function findVarNamesInString(value: string) {
+export function findVarNamesInString(value: string) {
   const out: string[] = [];
-  const re = /var\(\s*(--[A-Za-z0-9_-]+)\b[^)]*\)/g;
+  const re = /var\(\s*(--[A-Za-z0-9_-]+)/g;
   let match: RegExpExecArray | null;
   while (true) {
     match = re.exec(value);
