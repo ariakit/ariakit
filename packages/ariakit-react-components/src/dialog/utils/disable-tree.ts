@@ -84,30 +84,8 @@ function addRoleNoneCleanup(
   cleanups.push(setAttribute(ancestor, "role", "none"));
 }
 
-export function disableTreeOutside(id: string, elements: Elements) {
-  const cleanups: Array<() => void> = [];
-  const ids = elements.map((el) => el?.id);
-
-  walkTreeOutside(
-    id,
-    elements,
-    (element) => {
-      addDisabledElementCleanup({ cleanups, element, elements, ids });
-    },
-    (ancestor) => {
-      addRoleNoneCleanup(cleanups, ancestor, elements);
-    },
-  );
-
-  const restoreTreeOutside = () => {
-    restoreCleanups(cleanups);
-  };
-
-  return restoreTreeOutside;
-}
-
 // Marks and disables the element tree outside the dialog in a single walk.
-// Modal dialogs always need both markTreeOutside and disableTreeOutside, so
+// Modal dialogs always need both marking and disabling outside elements, so
 // this combines their callbacks to avoid walking the tree twice on open.
 export function markAndDisableTreeOutside(id: string, elements: Elements) {
   const cleanups: Array<() => void> = [];
