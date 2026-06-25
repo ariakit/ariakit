@@ -28,6 +28,15 @@ export default function Example() {
           placeholder="e.g., Caramel latte"
           autoSelect
           autoComplete="both"
+          onChange={(event) => {
+            // TODO: Remove this workaround when
+            // https://github.com/ariakit/ariakit/issues/6315 is fixed.
+            const input = event.currentTarget;
+            const nfcValue = input.value.normalize("NFC");
+            if (nfcValue !== input.value) {
+              input.value = nfcValue;
+            }
+          }}
         />
         <Ariakit.ComboboxPopover gutter={8} sameWidth>
           {matches.map((drink) => (
