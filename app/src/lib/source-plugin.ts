@@ -27,6 +27,7 @@ import {
   findSiblingConventionFiles,
   isNextjsConventionFile,
 } from "./nextjs.ts";
+import { toPosixPath } from "./paths.ts";
 import type { Source, SourceFile } from "./source.ts";
 import { getImportPaths, mergeFiles, replaceImportPaths } from "./source.ts";
 import { resolveStyles } from "./styles.ts";
@@ -112,13 +113,6 @@ function isLibPath(path: string) {
     path.startsWith(APP_LIB_PATH) ||
     path.startsWith(NEXTJS_LIB_PATH)
   );
-}
-
-/**
- * Normalize path separators to posix style.
- */
-function toPosixPath(filePath: string) {
-  return filePath.replace(/\\/g, "/");
 }
 
 /**

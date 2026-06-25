@@ -20,6 +20,11 @@ import type {
   UtilityDef,
   VariantDef,
 } from "./styles-json-types.ts";
+import {
+  isWildcard,
+  splitVariantSegments,
+  toRegexFromWildcard,
+} from "./styles-shared.ts";
 
 const styles = stylesRaw as unknown as StylesJson;
 
@@ -68,52 +73,6 @@ function dedupeDependencies(deps: StyleDependency[]): StyleDependency[] {
     unique.push(dep);
   }
   return unique;
-}
-
-function isWildcard(name: string): boolean {
-  return name.includes("*");
-}
-
-function escapeRegexSpecialChars(input: string): string {
-  return input.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
-
-function toRegexFromWildcard(pattern: string): RegExp {
-  // Build regex by escaping each char except '*' which becomes '.*'
-  let regexBody = "";
-  for (let i = 0; i < pattern.length; i++) {
-    const ch = pattern.charAt(i);
-    if (ch === "*") {
-      regexBody += ".*";
-    } else {
-      regexBody += escapeRegexSpecialChars(ch);
-    }
-  }
-  return new RegExp(`^${regexBody}$`);
-}
-
-function splitVariantSegments(token: string) {
-  const segments: string[] = [];
-  let start = 0;
-  let bracketDepth = 0;
-  let parenDepth = 0;
-  for (let i = 0; i < token.length; i++) {
-    const char = token.charAt(i);
-    if (char === "[") {
-      bracketDepth++;
-    } else if (char === "]") {
-      bracketDepth = Math.max(0, bracketDepth - 1);
-    } else if (char === "(") {
-      parenDepth++;
-    } else if (char === ")") {
-      parenDepth = Math.max(0, parenDepth - 1);
-    } else if (char === ":" && bracketDepth === 0 && parenDepth === 0) {
-      segments.push(token.slice(start, i));
-      start = i + 1;
-    }
-  }
-  segments.push(token.slice(start));
-  return segments;
 }
 
 type IndexMap = Record<string, { module: string }>;

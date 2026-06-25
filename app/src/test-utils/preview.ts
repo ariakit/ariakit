@@ -1,7 +1,8 @@
-import { isAbsolute, relative, resolve } from "node:path";
+import { relative, resolve } from "node:path";
 import { query } from "@ariakit/test/playwright";
 import { errors } from "@playwright/test";
 import type { Page } from "@playwright/test";
+import { isInDirectory, toPosixPath } from "#app/lib/paths.ts";
 import { previewConfig } from "#app/lib/preview-config.ts";
 import {
   getPreviewFrameworksSync,
@@ -33,20 +34,6 @@ export async function gotoAndSettle(page: Page, url: string) {
 
 const SRC_DIR = resolve(import.meta.dirname, "..");
 const previewRoots = resolvePreviewRoots({ ...previewConfig, srcDir: SRC_DIR });
-
-function toPosixPath(path: string) {
-  return path.replace(/\\/g, "/");
-}
-
-function isInDirectory(file: string, dir: string) {
-  const relativePath = relative(dir, file);
-  return (
-    relativePath === "" ||
-    (!!relativePath &&
-      !relativePath.startsWith("..") &&
-      !isAbsolute(relativePath))
-  );
-}
 
 function getPreviewId(dirname: string) {
   const dir = resolve(dirname);

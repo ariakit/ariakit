@@ -10,13 +10,15 @@
 import { readdirSync } from "node:fs";
 import type { Dirent } from "node:fs";
 import fs from "node:fs/promises";
-import { basename, isAbsolute, join, relative, resolve } from "node:path";
+import { basename, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 import { invariant } from "@ariakit/utils";
 import type { Loader } from "astro/loaders";
 import type { LoaderContext } from "astro/loaders";
 import { z } from "astro/zod";
 import { getFrameworkByFilename, isFramework } from "./frameworks.ts";
+import { isInDirectory, toFilePath, toPosixPath } from "./paths.ts";
+import type { PathInput } from "./paths.ts";
 import {
   getPreviewCodegenDir,
   getPreviewContentFile,
@@ -24,8 +26,6 @@ import {
 } from "./preview-codegen.ts";
 import { FRAMEWORKS, FrameworkSchema } from "./schemas.ts";
 import type { Framework } from "./schemas.ts";
-
-type PathInput = string | URL;
 
 export interface PreviewRootOptions {
   kind: string;
@@ -77,26 +77,6 @@ export const PreviewDataSchema = z.object({
 interface DiscoverRootContext {
   root: ResolvedPreviewRoot;
   previews: Map<string, DiscoveredPreview>;
-}
-
-function toPosixPath(path: string) {
-  return path.replace(/\\/g, "/");
-}
-
-function toFilePath(path: PathInput, base?: PathInput): string {
-  if (path instanceof URL) {
-    return fileURLToPath(path);
-  }
-  if (path.startsWith("file:")) {
-    return fileURLToPath(path);
-  }
-  if (isAbsolute(path)) {
-    return path;
-  }
-  if (base) {
-    return resolve(toFilePath(base), path);
-  }
-  return resolve(path);
 }
 
 function getDefaultSrcDir(options: PreviewDiscoveryOptions) {
@@ -184,16 +164,6 @@ async function readPreviewMetadata(file: string, id: string) {
 function isDirectoryIgnored(name: string) {
   if (name.startsWith(".")) return true;
   return name === "node_modules";
-}
-
-export function isInDirectory(file: string, dir: string) {
-  const relativePath = relative(dir, file);
-  return (
-    relativePath === "" ||
-    (!!relativePath &&
-      !relativePath.startsWith("..") &&
-      !isAbsolute(relativePath))
-  );
 }
 
 export function isPreviewEntryFile(filename: string) {

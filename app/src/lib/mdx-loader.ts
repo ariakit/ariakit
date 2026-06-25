@@ -7,15 +7,14 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { basename, dirname, isAbsolute, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { basename, dirname } from "node:path";
 import { invariant } from "@ariakit/utils";
 import { glob } from "astro/loaders";
 import type { Loader, LoaderContext } from "astro/loaders";
 import type { z } from "astro/zod";
+import { isInDirectory, toFilePath } from "./paths.ts";
 import {
   getPreviewFrameworks,
-  isInDirectory,
   isPreviewEntryFile,
 } from "./preview-discovery.ts";
 import { FrameworkSchema } from "./schemas.ts";
@@ -40,22 +39,6 @@ interface WatchFrameworkEntryFilesParams {
   context: LoaderContext;
   loader: Loader;
   parseData: LoaderContext["parseData"];
-}
-
-function toFilePath(path: string | URL, base?: string | URL): string {
-  if (path instanceof URL) {
-    return fileURLToPath(path);
-  }
-  if (path.startsWith("file:")) {
-    return fileURLToPath(path);
-  }
-  if (isAbsolute(path)) {
-    return path;
-  }
-  if (base) {
-    return resolve(toFilePath(base), path);
-  }
-  return resolve(path);
 }
 
 function getErrorMessage(error: unknown) {
