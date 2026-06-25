@@ -12,6 +12,7 @@ import { afterEach, expect, test } from "vitest";
 import {
   generateDocsMarkdown,
   getDocsMarkers,
+  getPrecedingHeadings,
   injectDocsMarkdown,
 } from "./docs.ts";
 
@@ -236,6 +237,215 @@ test("probes past taken suffixes when building contents links", () => {
   expect(markdown).toContain("- [Value](#value)");
   expect(markdown).toContain("  - [`value`](#value-1)");
   expect(markdown).toContain("- [Value 1](#value-1-1)");
+});
+
+test("uses preceding readme headings when building contents links", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+      "/** Bar helper. */",
+      "export function bar() {",
+      "  return false;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(root, "readme.md"),
+    [
+      "# Test",
+      "",
+      "## foo",
+      "",
+      "<!-- ariakit-docs:start -->",
+      "<!-- ariakit-docs:end -->",
+      "",
+    ].join("\n"),
+  );
+
+  injectDocsMarkdown({ rootPath: root });
+
+  const readme = readFileSync(join(root, "readme.md"), "utf-8");
+  expect(readme).toContain("- [`foo`](#foo-1)");
+  expect(readme).toContain("- [`bar`](#bar)");
+});
+
+test("uses rendered link text from preceding readme headings", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+      "/** Bar helper. */",
+      "export function bar() {",
+      "  return false;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(root, "readme.md"),
+    [
+      "# Test",
+      "",
+      "## [foo](#details)",
+      "",
+      "<!-- ariakit-docs:start -->",
+      "<!-- ariakit-docs:end -->",
+      "",
+    ].join("\n"),
+  );
+
+  injectDocsMarkdown({ rootPath: root });
+
+  const readme = readFileSync(join(root, "readme.md"), "utf-8");
+  expect(readme).toContain("- [`foo`](#foo-1)");
+});
+
+test("ignores later readme headings when building contents links", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+      "/** Bar helper. */",
+      "export function bar() {",
+      "  return false;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(root, "readme.md"),
+    [
+      "# Test",
+      "",
+      "<!-- ariakit-docs:start -->",
+      "<!-- ariakit-docs:end -->",
+      "",
+      "## foo",
+      "",
+    ].join("\n"),
+  );
+
+  injectDocsMarkdown({ rootPath: root });
+
+  const readme = readFileSync(join(root, "readme.md"), "utf-8");
+  expect(readme).toContain("- [`foo`](#foo)");
+  expect(readme).not.toContain("- [`foo`](#foo-1)");
+});
+
+test("disambiguates entries and back-to-top links from section headings", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+      "/** Bar helper. */",
+      "export function bar() {",
+      "  return false;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({
+    rootPath: root,
+    heading: "foo",
+    precedingHeadings: ["foo"],
+  });
+
+  expect(markdown).toContain("- [`foo`](#foo-2)");
+  expect(markdown).toContain('<a href="#foo-1">&uarr; back to top</a>');
+});
+
+test("ignores fenced code when collecting preceding headings", () => {
+  const { start } = getDocsMarkers();
+  const readme = [
+    "# Test",
+    "",
+    "````md",
+    "```sh",
+    "# Not a heading",
+    "```",
+    "````",
+    "",
+    "```",
+    "```ts",
+    "# Also not a heading",
+    "```",
+    "",
+    "## Real heading",
+    "",
+    start,
+    "",
+    "## Later heading",
+    "",
+  ].join("\n");
+
+  expect(getPrecedingHeadings(readme, start)).toEqual(["Test", "Real heading"]);
+});
+
+test("ignores HTML comments when collecting preceding headings", () => {
+  const { start } = getDocsMarkers();
+  const readme = [
+    "# Test",
+    "",
+    "<!--",
+    "## Hidden heading",
+    "-->",
+    "",
+    "## Real heading <!-- comment -->",
+    "",
+    start,
+    "",
+  ].join("\n");
+
+  expect(getPrecedingHeadings(readme, start)).toEqual(["Test", "Real heading"]);
+});
+
+test("ignores setext-style blocks before the docs marker", () => {
+  const { start } = getDocsMarkers();
+  const readme = [
+    "# Test",
+    "",
+    "Setext heading",
+    "==============",
+    "",
+    "- item",
+    "---",
+    "",
+    start,
+    "",
+  ].join("\n");
+
+  expect(getPrecedingHeadings(readme, start)).toEqual(["Test"]);
 });
 
 test("uses later JSDoc descriptions after tag-only blocks", () => {
@@ -744,6 +954,7 @@ test.skipIf(reactMajor < 19).each(docsPackages)(
       const markdown = generateDocsMarkdown({
         rootPath: root,
         ...target,
+        precedingHeadings: getPrecedingHeadings(readme, start),
       }).trimEnd();
       const readmeMarkdown = readme
         .slice(startIndex + start.length, endIndex)
