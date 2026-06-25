@@ -44,20 +44,19 @@ function getSelectedValues(select: HTMLSelectElement) {
 }
 
 // When moving through the items when the select list is closed, we don't want
-// to move to items without value, so we filter them out here.
+// to move to disabled items or items without value, so we filter them out here.
 function nextWithValue(store: SelectStore, next: SelectStore["next"]) {
   return () => {
     const nextId = next();
     if (!nextId) return;
-    let i = 0;
     let nextItem = store.item(nextId);
     const firstItem = nextItem;
     while (nextItem && (nextItem.disabled || nextItem.value == null)) {
-      const nextId = next(++i);
+      const nextId = next({ activeId: nextItem.id });
       if (!nextId) return;
       nextItem = store.item(nextId);
-      // Prevents infinite loop when focusLoop is true
-      if (nextItem === firstItem) break;
+      // Wrapped all the way around without finding a valid item.
+      if (nextItem === firstItem) return;
     }
     return nextItem?.id;
   };

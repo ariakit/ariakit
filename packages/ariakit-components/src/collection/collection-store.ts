@@ -87,12 +87,19 @@ function mergeMissingItemMetadata<T extends CollectionStoreItem>(
   return mergedItem || nextItem;
 }
 
-function mergeItemMetadata<T extends CollectionStoreItem>(
-  item: T | undefined,
-  nextItem: T,
-  renderedItem?: T,
-  currentItem?: T,
-) {
+interface MergeItemMetadataParams<T extends CollectionStoreItem> {
+  item: T | undefined;
+  nextItem: T;
+  renderedItem?: T;
+  currentItem?: T;
+}
+
+function mergeItemMetadata<T extends CollectionStoreItem>({
+  item,
+  nextItem,
+  renderedItem,
+  currentItem,
+}: MergeItemMetadataParams<T>) {
   let mergedItem = nextItem;
   if (nextItem.element === undefined) {
     const element = item?.element;
@@ -173,14 +180,15 @@ function mergeItemsFromState<T extends CollectionStoreItem>({
   let index = 0;
 
   for (const stateItem of stateItems) {
-    const item = mergeItemMetadata(
-      itemsById.get(stateItem.id),
-      stateItem,
-      renderedItemsById.get(stateItem.id),
-      items[index],
-    );
+    const currentItem = items[index];
+    const item = mergeItemMetadata({
+      item: itemsById.get(stateItem.id),
+      nextItem: stateItem,
+      renderedItem: renderedItemsById.get(stateItem.id),
+      currentItem,
+    });
     nextItems.push(item);
-    if (item !== items[index]) {
+    if (item !== currentItem) {
       hasChanges = true;
     }
     index += 1;

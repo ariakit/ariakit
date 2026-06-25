@@ -91,12 +91,7 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
         autoFocus(state) {
           if (value == null) return false;
           if (state.value == null) return false;
-          const activeItem = store?.item(state.activeId);
-          if (
-            state.activeId !== id &&
-            activeItem?.value != null &&
-            activeItem.element?.isConnected
-          ) {
+          if (state.activeId !== id && store?.item(state.activeId)) {
             return false;
           }
           if (Array.isArray(state.value)) {
