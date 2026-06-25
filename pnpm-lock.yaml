@@ -20,7 +20,7 @@ overrides:
   '@ariakit/utils': workspace:*
 
 patchedDependencies:
-  '@changesets/apply-release-plan@7.1.1': 19cb6131207f59da50995e2f93d09dbcaccb346cdc696d59f1aa89e3114f6ac5
+  '@changesets/apply-release-plan@7.1.1': 49623020ff4e712ea6cab5c75197912ea7bb3b8c56dbdccc8d8392671ed4aa38
 
 importers:
 
@@ -70,7 +70,7 @@ importers:
         version: link:packages/ariakit-utils
       '@changesets/apply-release-plan':
         specifier: 7.1.1
-        version: 7.1.1(patch_hash=19cb6131207f59da50995e2f93d09dbcaccb346cdc696d59f1aa89e3114f6ac5)
+        version: 7.1.1(patch_hash=49623020ff4e712ea6cab5c75197912ea7bb3b8c56dbdccc8d8392671ed4aa38)
       '@changesets/cli':
         specifier: 2.31.0
         version: 2.31.0(@types/node@24.13.2)
@@ -11936,7 +11936,7 @@ snapshots:
     dependencies:
       fontkitten: 1.0.3
 
-  '@changesets/apply-release-plan@7.1.1(patch_hash=19cb6131207f59da50995e2f93d09dbcaccb346cdc696d59f1aa89e3114f6ac5)':
+  '@changesets/apply-release-plan@7.1.1(patch_hash=49623020ff4e712ea6cab5c75197912ea7bb3b8c56dbdccc8d8392671ed4aa38)':
     dependencies:
       '@changesets/config': 3.1.4
       '@changesets/get-version-range-type': 0.4.0
@@ -11967,7 +11967,7 @@ snapshots:
 
   '@changesets/cli@2.31.0(@types/node@24.13.2)':
     dependencies:
-      '@changesets/apply-release-plan': 7.1.1(patch_hash=19cb6131207f59da50995e2f93d09dbcaccb346cdc696d59f1aa89e3114f6ac5)
+      '@changesets/apply-release-plan': 7.1.1(patch_hash=49623020ff4e712ea6cab5c75197912ea7bb3b8c56dbdccc8d8392671ed4aa38)
       '@changesets/assemble-release-plan': 6.0.10
       '@changesets/changelog-git': 0.2.1
       '@changesets/config': 3.1.4
