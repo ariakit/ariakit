@@ -9,6 +9,7 @@
  */
 import { join } from "node:path";
 import { expect, test } from "vitest";
+import checkboxCardForm from "#app/examples/checkbox-card/form/index.react.tsx?source";
 import disclosure from "#app/examples/disclosure/index.react.tsx?source";
 
 const EXAMPLES_DIR = join(import.meta.dirname, "../examples/");
@@ -62,6 +63,12 @@ test("disclosure source names", () => {
       "_lib/react-utils/merge-props.ts",
     ]
   `);
+});
+
+test("formats rewritten imports with the app Tailwind config", () => {
+  expect(checkboxCardForm.files["index.tsx"]?.content).toContain(
+    'className="ak-frame flex w-120 max-w-[100cqi] flex-col gap-6 ak-layer ak-frame-card/8 ak-layer-lighten-6 ak-dark:ak-frame-border ak-light:ring"',
+  );
 });
 
 test("disclosure sources", () => {
