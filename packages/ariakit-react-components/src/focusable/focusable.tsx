@@ -10,6 +10,7 @@ import {
 import type { Options, Props } from "@ariakit/react-utils";
 import {
   addGlobalEventListener,
+  isButton,
   isElement,
   isFocusEventOutside,
   isSelfTarget,
@@ -100,24 +101,6 @@ interface GetTabIndexParams {
   supportsDisabled: boolean;
   safariTabIndex: boolean;
   tabIndexProp?: number;
-}
-
-const buttonInputTypes = [
-  "button",
-  "color",
-  "file",
-  "image",
-  "reset",
-  "submit",
-];
-
-function needsSafariTabIndex(tagName?: string, inputType?: string) {
-  if (tagName === "button") return true;
-  if (tagName === "input" && inputType) {
-    if (inputType === "checkbox" || inputType === "radio") return true;
-    return buttonInputTypes.includes(inputType);
-  }
-  return false;
 }
 
 function isNativeSubmitControl(element: HTMLElement) {
@@ -421,9 +404,11 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         if (!focusable) return;
         const element = ref.current;
         if (!element) return;
-        const tag = element.tagName.toLowerCase();
-        const type = (element as HTMLInputElement).type;
-        setSafariTabIndex(needsSafariTabIndex(tag, type));
+        const { type } = element as HTMLInputElement;
+        const isNativeCheckboxOrRadio =
+          element.tagName === "INPUT" &&
+          (type === "checkbox" || type === "radio");
+        setSafariTabIndex(isButton(element) || isNativeCheckboxOrRadio);
       }, [focusable]);
     }
 
