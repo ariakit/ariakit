@@ -46,12 +46,31 @@ function getPrivateStore<T extends CollectionStoreItem>(
   return store?.__unstablePrivateStore;
 }
 
+// The store only ever replaces the `items`/`renderedItems` arrays by reference
+// (`@ariakit/store` `setState` allocates a fresh object on change and nothing
+// mutates a committed array in place), so an id->item index is a pure function
+// of the array's identity and can be memoized by it. This eliminates the
+// per-call Map allocations in the reconciliation helpers.
+const itemsByIdCache = new WeakMap<object, Map<string, CollectionStoreItem>>();
+
 function getItemsById<T extends CollectionStoreItem>(items: T[]) {
+  const cached = itemsByIdCache.get(items);
+  if (cached) return cached as Map<string, T>;
   const itemsById = new Map<string, T>();
   for (const item of items) {
     itemsById.set(item.id, item);
   }
+  itemsByIdCache.set(items, itemsById as Map<string, CollectionStoreItem>);
   return itemsById;
+}
+
+// Plain-loop lookup that never calls `Array.prototype.find`, so it stays safe
+// even when a caller instruments `find` to assert the O(1) lookup map is used.
+function findItemById<T extends CollectionStoreItem>(items: T[], id: string) {
+  for (const item of items) {
+    if (item.id === id) return item;
+  }
+  return undefined;
 }
 
 function areItemsEqual<T extends CollectionStoreItem>(
@@ -72,6 +91,11 @@ function mergeMissingItemMetadata<T extends CollectionStoreItem>(
   nextItem: T,
 ) {
   if (!item) {
+    return nextItem;
+  }
+  // When both refer to the same object every own key of `item` is also an own
+  // key of `nextItem`, so the loop below would set nothing; skip it.
+  if (item === nextItem) {
     return nextItem;
   }
   let mergedItem: T | undefined;
@@ -256,11 +280,128 @@ export function createCollectionStore<
   let privateItemsPending = false;
   let publishingPrivateItems = false;
   let publicItemsFromPrivate = true;
+  // Monotonic latch: becomes true the first time the public `items` array is
+  // observed to change to something the private store did not publish (an
+  // external/controlled `setItems`/`setState`). While false, public items are
+  // always exactly the private-authored array, so the heavy public-authority
+  // reconciliation is provably redundant and the lookup map can be maintained
+  // with cheap incremental writes. Once true it never reverts, so we can never
+  // under-reconcile after a real divergence.
+  let everDiverged = false;
 
   const setItemsMap = (items: T[]) => {
     itemsMap.clear();
     for (const item of items) {
       itemsMap.set(item.id, item);
+    }
+  };
+
+  // Resolve the authoritative lookup-map entry for a single id in the
+  // never-diverged regime, matching the heavy `updateItemsMap` result. A public
+  // item is authoritative for its id but still absorbs the private `element` and
+  // any rendered-only metadata exactly like the heavy path's `mergeItemMetadata`
+  // (which also collapses the result back to the current map reference when
+  // shallow-equal, avoiding identity churn). Otherwise the raw private item,
+  // else a connected rendered item, else no entry (the caller deletes the id).
+  const resolveMapEntry = (
+    id: string,
+    publicItem: T | undefined,
+    privItem: T | undefined,
+    renderedItem: T | undefined,
+  ) => {
+    if (publicItem) {
+      return mergeItemMetadata({
+        item: privItem,
+        nextItem: publicItem,
+        renderedItem,
+        currentItem: itemsMap.get(id),
+      });
+    }
+    if (privItem) return privItem;
+    if (
+      renderedItem &&
+      !(renderedItem.element && !renderedItem.element.isConnected)
+    ) {
+      return renderedItem;
+    }
+    return undefined;
+  };
+
+  // Cheap FULL lookup-map maintenance for the never-diverged regime. Public
+  // items equal the private-authored items here, so the map is the union of
+  // public items (with private/rendered metadata merged in) and private/rendered
+  // items not yet reflected in public (during the registration burst, before the
+  // batch publishes). This mirrors `updateItemsMap` for the undiverged case
+  // without the `setItemsMap` clear+rebuild or its per-call Map allocations.
+  // Used when many ids can change at once (the batch publish).
+  const syncItemsMapFast = (includePrivateItems: boolean) => {
+    const stateItems = collection.getState().items;
+    const { items: privItems, renderedItems } = privateStore.getState();
+    const stateItemsById = getItemsById(stateItems);
+    const privById = getItemsById(privItems);
+    const renderedById = getItemsById(renderedItems);
+    // Drop ids no longer present in public, nor (when backfilling) in private.
+    // This matches the heavy path, which rebuilds the map from public ids only
+    // and re-adds private/connected-rendered ids only when includePrivateItems.
+    // The size guard limits the scan to real removals.
+    if (itemsMap.size > stateItems.length) {
+      for (const id of itemsMap.keys()) {
+        if (stateItemsById.has(id)) continue;
+        if (includePrivateItems && privById.has(id)) continue;
+        itemsMap.delete(id);
+      }
+    }
+    // Public items are authoritative for their own ids, but still absorb the
+    // private element and rendered-only metadata like the heavy path.
+    for (const stateItem of stateItems) {
+      const merged = resolveMapEntry(
+        stateItem.id,
+        stateItem,
+        privById.get(stateItem.id),
+        renderedById.get(stateItem.id),
+      );
+      if (merged && merged !== itemsMap.get(stateItem.id)) {
+        itemsMap.set(stateItem.id, merged);
+      }
+    }
+    if (!includePrivateItems) return;
+    for (const item of privItems) {
+      if (stateItemsById.has(item.id)) continue;
+      itemsMap.set(item.id, item);
+    }
+    for (const item of renderedItems) {
+      if (stateItemsById.has(item.id)) continue;
+      if (itemsMap.has(item.id)) continue;
+      if (item.element && !item.element.isConnected) continue;
+      itemsMap.set(item.id, item);
+    }
+  };
+
+  // Incremental single-id update for a registration/render/unmount in the
+  // never-diverged regime. Only the touched id's membership/metadata changed, so
+  // only its map entry is recomputed, from the same authority order
+  // `resolveMapEntry` encodes. `nextPrivateItems`/`nextRenderedItems` are the
+  // not-yet-committed arrays the caller is returning from its `setState` updater
+  // (the committed store state still holds the previous arrays at this point).
+  // Existing entries for other ids were written by their own registrations and
+  // remain correct because public lags but never diverges here. The lookups are
+  // plain scans, not `Array.prototype.find`, so they stay safe even if a caller
+  // instruments `find`.
+  const resolveMapItemFast = (
+    id: string,
+    nextPrivateItems: T[],
+    nextRenderedItems: T[],
+  ) => {
+    const merged = resolveMapEntry(
+      id,
+      findItemById(collection.getState().items, id),
+      findItemById(nextPrivateItems, id),
+      findItemById(nextRenderedItems, id),
+    );
+    if (merged) {
+      itemsMap.set(id, merged);
+    } else {
+      itemsMap.delete(id);
     }
   };
 
@@ -305,8 +446,16 @@ export function createCollectionStore<
         if (itemsFromPrivate) {
           publishedItems = state.items;
           publishedItemsVersion = itemsVersion;
+        } else {
+          // A real external/controlled divergence: arm the heavy reconciliation
+          // permanently.
+          everDiverged = true;
         }
       }
+    }
+    if (!everDiverged) {
+      syncItemsMapFast(publishingPrivateItems);
+      return;
     }
     updateItemsMap({ includePrivateItems: publishingPrivateItems });
   });
@@ -489,10 +638,20 @@ export function createCollectionStore<
           privateItemsPending = nextItems !== items;
           return nextItems;
         }),
-      syncItemsMap: (items) =>
-        updateItemsMap({ items, includePrivateItems: true }),
+      syncItemsMap: (items) => {
+        if (!everDiverged) {
+          resolveMapItemFast(
+            item.id,
+            items,
+            privateStore.getState().renderedItems,
+          );
+          return;
+        }
+        updateItemsMap({ items, includePrivateItems: true });
+      },
       canDeleteFromMap: true,
       getItemsBeforeMount: (items) => {
+        if (!everDiverged) return items;
         const stateItems = collection.getState().items;
         if (isPublicStateCurrent() && !privateItemsPending) {
           return mergeItemsFromPrivate(items, stateItems);
@@ -509,6 +668,7 @@ export function createCollectionStore<
         });
       },
       getItemsBeforeUnmount: (items) => {
+        if (!everDiverged) return items;
         const stateItems = collection.getState().items;
         if (isPublicStateCurrent() && !privateItemsPending) {
           return mergeItemsFromPrivate(items, stateItems);
@@ -541,8 +701,17 @@ export function createCollectionStore<
           item,
           setItems: (getItems) =>
             privateStore.setState("renderedItems", getItems),
-          syncItemsMap: (renderedItems) =>
-            updateItemsMap({ renderedItems, includePrivateItems: true }),
+          syncItemsMap: (renderedItems) => {
+            if (!everDiverged) {
+              resolveMapItemFast(
+                item.id,
+                privateStore.getState().items,
+                renderedItems,
+              );
+              return;
+            }
+            updateItemsMap({ renderedItems, includePrivateItems: true });
+          },
         }),
       ),
 

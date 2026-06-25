@@ -140,6 +140,40 @@ test("gets items from the lookup map", async () => {
   }
 });
 
+test("merges rendered metadata for items seeded before any divergence", async () => {
+  const store = createCollectionStore<{
+    id: string;
+    label?: string;
+    element?: HTMLElement | null;
+  }>({ defaultItems: [{ id: "item", label: "Item" }] });
+  const stop = init(store);
+  const element = document.createElement("button");
+
+  try {
+    // The item is already in the public `items` state (seeded by defaultItems)
+    // and has never diverged, so it takes the incremental lookup-map path.
+    // Rendering it attaches an element that must be visible through item()
+    // synchronously, before the private batch republishes — matching the
+    // behavior when the public state is the authority for the item's own id.
+    const unrender = store.renderItem({ id: "item", element });
+    expect(store.item("item")).toEqual({ id: "item", label: "Item", element });
+
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([{ id: "item", label: "Item", element }]);
+    expect(store.item("item")).toEqual({ id: "item", label: "Item", element });
+
+    unrender();
+
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([{ id: "item", label: "Item" }]);
+    expect(store.item("item")).toEqual({ id: "item", label: "Item" });
+  } finally {
+    stop();
+  }
+});
+
 test("keeps explicit item state updates before init", async () => {
   const store = createCollectionStore({
     defaultItems: [{ id: "item" }],
