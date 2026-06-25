@@ -8,13 +8,20 @@ function expectSafeValue(value: string, expectedValues: string[]) {
   expect(expectedValues).toContain(value);
 }
 
+function getInputValue(element: HTMLElement) {
+  if (element instanceof HTMLInputElement) {
+    return element.value;
+  }
+  return "";
+}
+
 // https://github.com/ariakit/ariakit/issues/6315
 test("does not corrupt decomposed inline completion", async () => {
   const combobox = q.combobox.ensure("Your favorite drink");
 
   await click(combobox);
   await type(decomposedCafe);
-  expectSafeValue(combobox.value, [decomposedCafe, "caféteria"]);
+  expectSafeValue(getInputValue(combobox), [decomposedCafe, "caféteria"]);
 
   await click(q.button("Save"));
   expectSafeValue(q.status.ensure().textContent ?? "", [
@@ -28,7 +35,7 @@ test("does not drop completion characters after decomposed input", async () => {
 
   await click(combobox);
   await type(decomposedCafet);
-  expectSafeValue(combobox.value, [decomposedCafet, "caféteria"]);
+  expectSafeValue(getInputValue(combobox), [decomposedCafet, "caféteria"]);
 
   await click(q.button("Save"));
   expectSafeValue(q.status.ensure().textContent ?? "", [

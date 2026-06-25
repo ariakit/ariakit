@@ -12,6 +12,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect
       .poll(async () => {
         const currentValue = await value();
+        if (currentValue == null) return "";
         return expectedValues.includes(currentValue) ? "safe" : currentValue;
       })
       .toBe("safe");
