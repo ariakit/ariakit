@@ -24,17 +24,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
     );
   });
 
-  // Same interaction as "open dialog", but with the script profiler enabled so
-  // the PR comment shows where the scripting time goes. Profiling adds
+  // Same interaction as "open dialog", but with the script profiler enabled
+  // so the PR comment shows where the scripting time goes. Profiling adds
   // overhead, so the unprofiled test above is the one to read for timings.
-  test("open dialog with script profile", async ({ q, perf }) => {
+  test("open dialog (script profile)", async ({ q, perf }) => {
     await perf.measure(
       async () => {
         await q.button("Open dialog").click();
         await expect(q.dialog("Settings")).toBeVisible();
       },
       {
-        label: "open dialog (script profile)",
         scriptProfile: true,
         profileLimit: 20,
       },
