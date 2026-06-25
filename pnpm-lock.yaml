@@ -447,6 +447,9 @@ importers:
       pngjs:
         specifier: 7.0.0
         version: 7.0.0
+      prettier-plugin-tailwindcss:
+        specifier: 0.8.0
+        version: 0.8.0(prettier@3.8.4)
       rimraf:
         specifier: 6.1.3
         version: 6.1.3

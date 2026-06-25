@@ -186,7 +186,11 @@ async function formatWithPrettier(
   if (!parser) return code;
   try {
     const resolvedConfig = (await prettier.resolveConfig(filePath)) ?? {};
-    return await prettier.format(code, { ...resolvedConfig, parser });
+    return await prettier.format(code, {
+      ...resolvedConfig,
+      filepath: filePath,
+      parser,
+    });
   } catch {
     // Fail silently: if Prettier isn't available or config fails, return unformatted code
     return code;
