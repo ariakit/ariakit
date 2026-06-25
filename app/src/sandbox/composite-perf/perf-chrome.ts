@@ -7,28 +7,41 @@ const itemCount = 400;
 const updateCount = 20;
 type Query = ReturnType<typeof query>;
 
+async function mountComposite(q: Query) {
+  const mountButton = q.button("Mount composite");
+  const lastItem = q.button(`Item ${itemCount}`);
+
+  await mountButton.click();
+  await expect(lastItem).toBeVisible();
+}
+
+async function setupComposite(q: Query) {
+  await q.button("Mount composite").click();
+  await expect(q.button("Item 1")).toBeVisible();
+}
+
+async function moveAcrossItems(q: Query, page: Page) {
+  const lastItem = q.button(`Item ${itemCount}`);
+  for (let i = 1; i < itemCount; i++) {
+    await page.keyboard.press("ArrowRight");
+  }
+  await expect(lastItem).toBeFocused();
+}
+
+async function setupControlledComposite(q: Query) {
+  await q.button("Mount controlled composite").click();
+  await expect(q.button(`Item ${itemCount}`)).toBeVisible();
+}
+
+async function updateControlledItems(q: Query) {
+  const updateButton = q.button("Update items");
+  for (let i = 0; i < updateCount; i++) {
+    await updateButton.click();
+  }
+  await expect(q.status("Updates")).toHaveText(String(updateCount));
+}
+
 withFramework(import.meta.dirname, async ({ test }) => {
-  const mountComposite = async (q: Query) => {
-    const mountButton = q.button("Mount composite");
-    const lastItem = q.button(`Item ${itemCount}`);
-
-    await mountButton.click();
-    await expect(lastItem).toBeVisible();
-  };
-
-  const setupComposite = async (q: Query) => {
-    await q.button("Mount composite").click();
-    await expect(q.button("Item 1")).toBeVisible();
-  };
-
-  const moveAcrossItems = async (q: Query, page: Page) => {
-    const lastItem = q.button(`Item ${itemCount}`);
-    for (let i = 1; i < itemCount; i++) {
-      await page.keyboard.press("ArrowRight");
-    }
-    await expect(lastItem).toBeFocused();
-  };
-
   test("mount composite", async ({ q, perf }) => {
     await perf.measure(async () => {
       await mountComposite(q);
@@ -92,19 +105,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expect(lastItem).toBeVisible();
     });
   });
-
-  const setupControlledComposite = async (q: Query) => {
-    await q.button("Mount controlled composite").click();
-    await expect(q.button(`Item ${itemCount}`)).toBeVisible();
-  };
-
-  const updateControlledItems = async (q: Query) => {
-    const updateButton = q.button("Update items");
-    for (let i = 0; i < updateCount; i++) {
-      await updateButton.click();
-    }
-    await expect(q.status("Updates")).toHaveText(String(updateCount));
-  };
 
   test("update controlled items", async ({ q, perf }) => {
     await perf.measure(() => updateControlledItems(q), {
