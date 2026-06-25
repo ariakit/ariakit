@@ -34,10 +34,6 @@ interface NameToReference {
   [exportedName: string]: CollectionEntry<"references"> | undefined;
 }
 
-interface KindByName {
-  [exportedName: string]: ReferenceLabelKind | undefined;
-}
-
 interface ImportInfo {
   hasAriakitImport: boolean;
   namespaceAliases: Set<string>;
@@ -259,59 +255,44 @@ function parseLocalImports(code: string): Map<string, string> {
 
 // #region Reference Helpers
 
-interface FrameworkReferences {
-  list: CollectionEntry<"references">[];
-  nameToRef: NameToReference;
-  kindByName: KindByName;
-}
-
 // Both caches key on the references array identity, so they only hit while
 // the same collection array is reused (the production build caches it; dev
 // gets a fresh array per call and skips memoization naturally). Code blocks
 // across reference partials repeat the same short snippets thousands of
 // times, so memoizing whole anchor results avoids re-scanning them.
-const frameworkReferencesCache = new WeakMap<
+const nameToReferenceCache = new WeakMap<
   CollectionEntry<"references">[],
-  Map<string, FrameworkReferences>
+  Map<string, NameToReference>
 >();
 const anchorsCache = new WeakMap<
   CollectionEntry<"references">[],
   Map<string, CodeReferenceAnchorRange[][]>
 >();
 
-function getFrameworkReferences(
+/**
+ * Builds a lookup from exported name to reference entry.
+ */
+function getNameToReference(
   references: CollectionEntry<"references">[],
   framework?: Framework,
-): FrameworkReferences {
-  let byFramework = frameworkReferencesCache.get(references);
+): NameToReference {
+  let byFramework = nameToReferenceCache.get(references);
   if (!byFramework) {
     byFramework = new Map();
-    frameworkReferencesCache.set(references, byFramework);
+    nameToReferenceCache.set(references, byFramework);
   }
   const cacheKey = framework ?? "";
   const cached = byFramework.get(cacheKey);
   if (cached) return cached;
 
-  const list = framework
-    ? references.filter((r) => r.data.framework === framework)
-    : references;
   const nameToRef: NameToReference = Object.create(null);
-  const kindByName: KindByName = Object.create(null);
-
-  for (const ref of list) {
+  for (const ref of references) {
+    if (framework && ref.data.framework !== framework) continue;
     nameToRef[ref.data.name] = ref;
-    if (ref.data.kind === "component") {
-      kindByName[ref.data.name] = "component";
-    } else if (ref.data.kind === "store") {
-      kindByName[ref.data.name] = "store";
-    } else {
-      kindByName[ref.data.name] = "function";
-    }
   }
 
-  const result: FrameworkReferences = { list, nameToRef, kindByName };
-  byFramework.set(cacheKey, result);
-  return result;
+  byFramework.set(cacheKey, nameToRef);
+  return nameToRef;
 }
 
 /**
@@ -1001,7 +982,7 @@ function computeCodeReferenceAnchors({
     return lines.map(() => []);
   }
 
-  const { nameToRef } = getFrameworkReferences(references, framework);
+  const nameToRef = getNameToReference(references, framework);
 
   // Parse imports lazily
   let namedImports: Map<string, string> = new Map();
