@@ -277,14 +277,17 @@ function splitBody(content: string): SplitBodyResult {
       i++;
       continue;
     }
-    // capture comments at depth 0 as individual declarations
+    // capture standalone comments at depth 0 as individual declarations
     if (ch === "/" && next === "*" && depth === 0) {
-      const pending = content.slice(tokenStart, i).trim();
-      if (pending) {
-        declarations.push(pending);
-      }
       const end = content.indexOf("*/", i + 2);
       const commentEnd = end === -1 ? n - 2 : end;
+      const pending = content.slice(tokenStart, i).trim();
+      if (pending) {
+        // Mid-declaration comments are part of the CSS value; keep scanning
+        // until the real statement boundary.
+        i = commentEnd + 2;
+        continue;
+      }
       const comment = content.slice(i, commentEnd + 2);
       declarations.push(comment);
       items.push({ kind: "decl", content: comment });
@@ -345,7 +348,7 @@ function splitBody(content: string): SplitBodyResult {
 /**
  * Parse a block body into ordered PropertyDecl[] preserving declaration and block order.
  */
-function parsePropertyDecls(body: string): PropertyDecl[] {
+export function parsePropertyDecls(body: string): PropertyDecl[] {
   const { items } = splitBody(body);
   const decls: PropertyDecl[] = [];
   let pendingApplyComments: string[] = [];
@@ -410,7 +413,7 @@ function parsePropertyDecls(body: string): PropertyDecl[] {
 /**
  * Parse @property block body
  */
-function parseAtPropertyBody(body: string) {
+export function parseAtPropertyBody(body: string) {
   const { declarations } = splitBody(body);
   const def: Omit<AtPropertyDef, "name"> = {
     syntax: null,
@@ -698,14 +701,60 @@ function extractVariantNamesFromDeclName(name: string): string[] {
   if (!name.startsWith("@variant")) {
     return [];
   }
-  const raw = name.slice("@variant".length).trim();
+  const raw = getDependencyScanValue(name.slice("@variant".length)).trim();
   if (!raw) {
     return [];
   }
   return extractAkTokensFromApplyLine(raw);
 }
 
-function resolveDependencies(modules: ModuleJson[]): void {
+function getDependencyScanValue(value: string) {
+  // Comments remain in rendered CSS but should not create dependencies.
+  let output = "";
+  let i = 0;
+  let inStr: false | string = false;
+  while (i < value.length) {
+    const ch = value.charAt(i);
+    const next = value[i + 1];
+    if (inStr) {
+      output += ch;
+      if (ch === "\\") {
+        if (next != null) {
+          output += next;
+        }
+        i += 2;
+        continue;
+      }
+      if (ch === inStr) {
+        inStr = false;
+      }
+      i++;
+      continue;
+    }
+    if (ch === '"' || ch === "'" || ch === "`") {
+      inStr = ch;
+      output += ch;
+      i++;
+      continue;
+    }
+    if (ch === "/" && next === "*") {
+      const end = value.indexOf("*/", i + 2);
+      if (end === -1) {
+        output += value.slice(i);
+        break;
+      }
+      const comment = value.slice(i, end + 2);
+      output += comment.replace(/[^\n]/g, " ");
+      i = end + 2;
+      continue;
+    }
+    output += ch;
+    i++;
+  }
+  return output;
+}
+
+export function resolveDependencies(modules: ModuleJson[]): void {
   const index = buildGlobalIndex(modules);
   const externalImport = "@ariakit/tailwind";
 
@@ -761,12 +810,13 @@ function resolveDependencies(modules: ModuleJson[]): void {
       for (const v of nestedValues) {
         // Any nested apply lines are stored as entire lines in val.apply;
         // others are declarations We still scan all strings for ak-* tokens
-        const akTokens = extractAkTokensFromApplyLine(v);
+        const scanValue = getDependencyScanValue(v);
+        const akTokens = extractAkTokensFromApplyLine(scanValue);
         for (const t of akTokens) {
           addAkTokenDep(deps, t);
         }
         // Also scan for var(--prop)
-        for (const varName of findVarNamesInString(v)) {
+        for (const varName of findVarNamesInString(scanValue)) {
           const propModule = index.atPropToModule.get(varName);
           if (propModule) {
             addDep(deps, {
@@ -806,11 +856,12 @@ function resolveDependencies(modules: ModuleJson[]): void {
       const deps: Dependency[] = [];
       const values = collectAllValuesFromPropertyDecls(variant.properties);
       for (const v of values) {
-        const akTokens = extractAkTokensFromApplyLine(v);
+        const scanValue = getDependencyScanValue(v);
+        const akTokens = extractAkTokensFromApplyLine(scanValue);
         for (const t of akTokens) {
           addAkTokenDep(deps, t);
         }
-        for (const varName of findVarNamesInString(v)) {
+        for (const varName of findVarNamesInString(scanValue)) {
           const propModule = index.atPropToModule.get(varName);
           if (propModule) {
             addDep(deps, {
