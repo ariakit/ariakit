@@ -36,7 +36,6 @@ import {
   parsePlusPriceKey,
 } from "#app/lib/stripe.ts";
 import { wrapActionContext } from "#app/lib/wrap-action-context.ts";
-import { getCachedPriceDeletionReason } from "./admin-price-cache.ts";
 
 const logger = createLogger("admin");
 
@@ -202,23 +201,28 @@ async function syncPrices() {
   const cachedPrices = await getPrices();
 
   // Delete prices that are not active
-  for (const price of cachedPrices) {
-    const deletionReason = getCachedPriceDeletionReason({
-      price,
-      activePrices: prices,
-      syncedPrices: pricesToCache,
-    });
-    if (!deletionReason) continue;
-    if (deletionReason === "invalid-key") {
+  for (const cachedPrice of cachedPrices) {
+    // KV list metadata can lag behind writes, so keys synced during this run
+    // must survive even when the listed id is stale or absent from Stripe.
+    if (pricesToCache.has(cachedPrice.key)) continue;
+    const { type } = parsePlusPriceKey(cachedPrice.key);
+    if (!type) {
       logger.warn(
         "Price %s has invalid key. Deleting from cache...",
-        price.key,
+        cachedPrice.key,
       );
-      await deletePrice(price.key);
+      await deletePrice(cachedPrice.key);
       continue;
     }
-    logger.warn("Price %s is not active. Deleting from cache...", price.key);
-    await deletePrice(price.key);
+    const stripePrice = prices.find((price) => {
+      return price.id === cachedPrice.id;
+    });
+    if (stripePrice?.active) continue;
+    logger.warn(
+      "Price %s is not active. Deleting from cache...",
+      cachedPrice.key,
+    );
+    await deletePrice(cachedPrice.key);
   }
 }
 
