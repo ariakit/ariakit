@@ -121,7 +121,7 @@ test("styleDefToCss renders ak-list-item-ol-border utility fully", () => {
         content: "";
         width: var(--ak-list-border-width);
         top: var(--ak-list-border-top);
-        left: calc(
+        inset-inline-start: calc(
           var(--ak-list-item-marker-center) - var(--ak-list-border-width) / 2 +
             var(--ak-frame-padding)
         );
