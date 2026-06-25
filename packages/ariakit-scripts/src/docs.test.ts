@@ -311,7 +311,12 @@ test("injects generated markdown into a readme", () => {
   writeFileSync(
     join(sourcePath, "foo.ts"),
     [
-      "/** Foo helper. */",
+      "/**",
+      " * Foo helper.",
+      " * @example",
+      ' * const price = "$$50";',
+      ' * const replacement = "$&";',
+      " */",
       "export function foo() {",
       "  return true;",
       "}",
@@ -337,6 +342,8 @@ test("injects generated markdown into a readme", () => {
   expect(readme).toContain("<!-- ariakit-docs:end -->");
   expect(readme).toContain("### `foo`");
   expect(readme).toContain("Foo helper.");
+  expect(readme).toContain('const price = "$$50";');
+  expect(readme).toContain('const replacement = "$&";');
   expect(readme).not.toContain("Old docs");
 });
 
