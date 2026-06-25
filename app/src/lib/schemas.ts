@@ -69,18 +69,15 @@ const URL_SCHEMA_BASE = new URL("http://localhost");
 
 export interface NormalizeURLPathOptions {
   base?: string | URL;
-  decode?: boolean;
 }
 
 export function normalizeURLPath(
   value?: string | URL | null,
-  { base = URL_SCHEMA_BASE, decode }: NormalizeURLPathOptions = {},
+  { base = URL_SCHEMA_BASE }: NormalizeURLPathOptions = {},
 ) {
   if (!value) return undefined;
   try {
-    const target =
-      decode && typeof value === "string" ? decodeURIComponent(value) : value;
-    const url = new URL(target, base);
+    const url = new URL(value, base);
     if (url.protocol !== "http:" && url.protocol !== "https:") {
       return undefined;
     }
@@ -95,7 +92,7 @@ export const URLSchema = z
   .string()
   .optional()
   .transform((value) => {
-    return normalizeURLPath(value, { decode: true });
+    return normalizeURLPath(value);
   });
 
 const ReferenceExampleSchema = z.object({

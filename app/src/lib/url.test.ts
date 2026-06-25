@@ -18,13 +18,15 @@ test.each([
   ["https://evil.com/account?tab=billing#team", "/account?tab=billing#team"],
   ["//evil.com/account?tab=billing#team", "/account?tab=billing#team"],
   ["https://evil.com//account?tab=billing#team", "/account?tab=billing#team"],
-  ["https://evil.com/%5C%5Caccount", "/account"],
+  ["https://evil.com/%5C%5Caccount", "/%5C%5Caccount"],
   ["https://evil.com/foo/..//account", "/account"],
   ["/\\evil.com", "/"],
-  ["/%09/evil.com", "/"],
+  ["/\t/evil.com", "/"],
+  ["/%09/evil.com", "/%09/evil.com"],
+  ["/search?q=%23tag", "/search?q=%23tag"],
   ["/docs?section=plus#pricing", "/docs?section=plus#pricing"],
   ["docs?section=plus#pricing", "/docs?section=plus#pricing"],
-  ["%", undefined],
+  ["%", "/%"],
 ])("URLSchema normalizes %s", (value, expected) => {
   expect(URLSchema.parse(value)).toBe(expected);
 });
@@ -71,4 +73,28 @@ test("getPlusCheckoutPath strips redirect URL network paths", () => {
   );
 
   expect(URLSchema.parse(redirectUrl)).toBe("/evil.com/docs");
+});
+
+test("getPlusCheckoutPath preserves reserved query characters", () => {
+  const path = getPlusCheckoutPath({
+    redirectUrl: "https://next.ariakit.com/search?q=%23tag&x=a%26b",
+  });
+  const redirectUrl = new URL(path, "http://localhost").searchParams.get(
+    "redirect_url",
+  );
+
+  expect(redirectUrl).toBe("/search?q=%23tag&x=a%26b");
+  expect(URLSchema.parse(redirectUrl)).toBe("/search?q=%23tag&x=a%26b");
+});
+
+test("getPlusAccountPath preserves reserved query characters", () => {
+  const path = getPlusAccountPath({
+    redirectUrl: "https://next.ariakit.com/search?q=%23tag&x=a%26b",
+  });
+  const redirectUrl = new URL(path, "http://localhost").searchParams.get(
+    "redirect_url",
+  );
+
+  expect(redirectUrl).toBe("/search?q=%23tag&x=a%26b");
+  expect(URLSchema.parse(redirectUrl)).toBe("/search?q=%23tag&x=a%26b");
 });

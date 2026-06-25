@@ -39,7 +39,7 @@ function setRedirectURL(url: URL, redirectUrl?: string | URL) {
   if (!redirectUrl) return;
   const path = normalizeURLPath(redirectUrl, { base: url });
   if (!path) return;
-  url.searchParams.set("redirect_url", encodeURIComponent(path));
+  url.searchParams.set("redirect_url", path);
 }
 
 export interface GetPlusAccountURLParams {
