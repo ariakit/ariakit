@@ -60,7 +60,7 @@ function createHttpClient(enabled: boolean) {
         info(url.pathname);
       } else {
         error(url.pathname, response.status);
-        error(response.status, await response.text());
+        error(response.status, await response.clone().text());
       }
       return response;
     },
