@@ -16,7 +16,7 @@
 @utility ak-progress-value-* {
   --ak-progress-value: calc(--value(number) / 100);
   --ak-progress-value: calc(--value(ratio));
-  --ak-progress-value: --value(percentage, [*]);
+  --ak-progress-value: --value([*]);
 }
 
 @utility ak-progress-thickness-* {

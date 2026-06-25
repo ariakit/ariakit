@@ -325,7 +325,7 @@
   @apply before:ak-progress-circular-fill ak-progress-value-(--value);
   --value: calc(--value(number) / 100);
   --value: calc(--value(ratio));
-  --value: --value(percentage, [*]);
+  --value: --value([*]);
   @variant ak-list-ol {
     @apply ak-progress-thickness-[0.15em];
   }
