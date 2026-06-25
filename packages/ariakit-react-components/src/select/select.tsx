@@ -108,8 +108,15 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
     // moveOnKeyDown
     const isVertical = orientation !== "horizontal";
     const isHorizontal = orientation !== "vertical";
-    const isGrid = !!items.find((item) => !item.disabled && item.value != null)
-      ?.rowId;
+    // `rowId` is registration-only metadata from the rendered `SelectRow`, so a
+    // controlled `items` array won't carry it. Read it from the lookup item,
+    // which merges in the rendered metadata, to detect a grid in that case.
+    const valuedItem = items.find(
+      (item) => !item.disabled && item.value != null,
+    );
+    const isGrid = !!(
+      valuedItem && (store.item(valuedItem.id) ?? valuedItem).rowId
+    );
     const moveKeyMap = {
       ArrowUp: (isGrid || isVertical) && nextWithValue(store, store.up),
       ArrowRight: (isGrid || isHorizontal) && nextWithValue(store, store.next),
