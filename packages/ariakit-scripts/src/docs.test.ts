@@ -278,6 +278,44 @@ test("uses preceding readme headings when building contents links", () => {
   expect(readme).toContain("- [`bar`](#bar)");
 });
 
+test("uses rendered link text from preceding readme headings", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+      "/** Bar helper. */",
+      "export function bar() {",
+      "  return false;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(root, "readme.md"),
+    [
+      "# Test",
+      "",
+      "## [foo](#details)",
+      "",
+      "<!-- ariakit-docs:start -->",
+      "<!-- ariakit-docs:end -->",
+      "",
+    ].join("\n"),
+  );
+
+  injectDocsMarkdown({ rootPath: root });
+
+  const readme = readFileSync(join(root, "readme.md"), "utf-8");
+  expect(readme).toContain("- [`foo`](#foo-1)");
+});
+
 test("ignores later readme headings when building contents links", () => {
   const root = createPackage();
   const sourcePath = join(root, "src");
@@ -374,23 +412,40 @@ test("ignores fenced code when collecting preceding headings", () => {
   expect(getPrecedingHeadings(readme, start)).toEqual(["Test", "Real heading"]);
 });
 
-test("collects setext headings before the docs marker", () => {
+test("ignores HTML comments when collecting preceding headings", () => {
   const { start } = getDocsMarkers();
   const readme = [
-    "Setext heading",
-    "==============",
+    "# Test",
     "",
-    "Another heading",
-    "---------------",
+    "<!--",
+    "## Hidden heading",
+    "-->",
+    "",
+    "## Real heading <!-- comment -->",
     "",
     start,
     "",
   ].join("\n");
 
-  expect(getPrecedingHeadings(readme, start)).toEqual([
+  expect(getPrecedingHeadings(readme, start)).toEqual(["Test", "Real heading"]);
+});
+
+test("ignores setext-style blocks before the docs marker", () => {
+  const { start } = getDocsMarkers();
+  const readme = [
+    "# Test",
+    "",
     "Setext heading",
-    "Another heading",
-  ]);
+    "==============",
+    "",
+    "- item",
+    "---",
+    "",
+    start,
+    "",
+  ].join("\n");
+
+  expect(getPrecedingHeadings(readme, start)).toEqual(["Test"]);
 });
 
 test("uses later JSDoc descriptions after tag-only blocks", () => {

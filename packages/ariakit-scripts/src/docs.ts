@@ -636,6 +636,7 @@ function renderEntry(entry: ApiEntry, heading: string, topAnchor: string) {
 
 function slugifyHeading(heading: string) {
   return heading
+    .replace(/!?\[([^\]]*)\]\([^)]+\)/g, "$1")
     .toLowerCase()
     .replace(/`/g, "")
     .replace(/[^a-z0-9 -]/g, "")
@@ -666,7 +667,7 @@ function createSlugger() {
 }
 
 /**
- * Gets the Markdown headings that render before a generated docs marker.
+ * Gets the ATX Markdown headings that render before a generated docs marker.
  *
  * GitHub assigns anchors top-down across the rendered document, so generated
  * docs blocks must be seeded with only the headings that precede them.
@@ -676,10 +677,36 @@ export function getPrecedingHeadings(readme: string, startMarker: string) {
   const preceding = markerIndex === -1 ? readme : readme.slice(0, markerIndex);
   const headings: string[] = [];
   let fence: { character: string; length: number } | undefined;
-  let setextHeadingLines: string[] = [];
+  let htmlComment = false;
+
+  const stripHtmlComments = (line: string) => {
+    let nextLine = line;
+    while (true) {
+      if (htmlComment) {
+        const endIndex = nextLine.indexOf("-->");
+        if (endIndex === -1) return "";
+        nextLine = nextLine.slice(endIndex + 3);
+        htmlComment = false;
+      }
+
+      const startIndex = nextLine.indexOf("<!--");
+      if (startIndex === -1) {
+        return nextLine;
+      }
+
+      const endIndex = nextLine.indexOf("-->", startIndex + 4);
+      if (endIndex === -1) {
+        htmlComment = true;
+        return nextLine.slice(0, startIndex);
+      }
+
+      nextLine = nextLine.slice(0, startIndex) + nextLine.slice(endIndex + 3);
+    }
+  };
 
   for (const line of preceding.split("\n")) {
-    const fenceMatch = line.match(/^ {0,3}(```+|~~~+)(.*)$/);
+    const lineWithoutComments = fence ? line : stripHtmlComments(line);
+    const fenceMatch = lineWithoutComments.match(/^ {0,3}(```+|~~~+)(.*)$/);
     if (fenceMatch) {
       const marker = fenceMatch[1];
       if (!marker) continue;
@@ -696,33 +723,18 @@ export function getPrecedingHeadings(readme: string, startMarker: string) {
         }
       } else {
         fence = { character, length };
-        setextHeadingLines = [];
       }
       continue;
     }
 
     if (fence) continue;
 
-    const setextMatch = line.match(/^ {0,3}(=+|-+)\s*$/);
-    if (setextMatch && setextHeadingLines.length) {
-      headings.push(setextHeadingLines.join(" "));
-      setextHeadingLines = [];
-      continue;
-    }
-
-    const headingMatch = line.match(/^ {0,3}#{1,6}\s+(.+?)\s*#*\s*$/);
+    const headingMatch = lineWithoutComments.match(
+      /^ {0,3}#{1,6}\s+(.+?)\s*#*\s*$/,
+    );
     const heading = headingMatch?.[1];
     if (heading) {
       headings.push(heading);
-      setextHeadingLines = [];
-      continue;
-    }
-
-    const setextHeadingLine = line.match(/^ {0,3}(\S.*)$/)?.[1]?.trim();
-    if (setextHeadingLine) {
-      setextHeadingLines.push(setextHeadingLine);
-    } else {
-      setextHeadingLines = [];
     }
   }
 
