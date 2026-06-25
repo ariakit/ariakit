@@ -614,7 +614,7 @@ function createPressUp(key: string, defaultOptions: KeyboardEventInit = {}) {
 }
 
 // Builds the per-key shortcut map (`.Space`, `.Enter`, `.ShiftTab`, ...) attached
-// to `press.down` and `press.up` from the matching factory.
+// to `press`, `press.down`, and `press.up` from the matching factory.
 function createKeyShortcuts(
   create: (key: string, defaultOptions?: KeyboardEventInit) => PressShortcut,
 ) {
@@ -637,22 +637,31 @@ function createKeyShortcuts(
   };
 }
 
-press.Escape = createPress("Escape");
-press.Backspace = createPress("Backspace");
-press.Delete = createPress("Delete");
-press.Tab = createPress("Tab");
-press.ShiftTab = createPress("Tab", { shiftKey: true });
-press.Enter = createPress("Enter");
-press.Space = createPress(" ");
-press.ArrowUp = createPress("ArrowUp");
-press.ArrowRight = createPress("ArrowRight");
-press.ArrowDown = createPress("ArrowDown");
-press.ArrowLeft = createPress("ArrowLeft");
-press.End = createPress("End");
-press.Home = createPress("Home");
-press.PageUp = createPress("PageUp");
-press.PageDown = createPress("PageDown");
+type PressShortcuts = ReturnType<typeof createKeyShortcuts>;
+type PressDown = typeof pressDown & PressShortcuts;
+type PressUp = typeof pressUp & PressShortcuts;
 
-press.down = Object.assign(pressDown, createKeyShortcuts(createPressDown));
+export declare namespace press {
+  export const Escape: PressShortcuts["Escape"];
+  export const Backspace: PressShortcuts["Backspace"];
+  export const Delete: PressShortcuts["Delete"];
+  export const Tab: PressShortcuts["Tab"];
+  export const ShiftTab: PressShortcuts["ShiftTab"];
+  export const Enter: PressShortcuts["Enter"];
+  export const Space: PressShortcuts["Space"];
+  export const ArrowUp: PressShortcuts["ArrowUp"];
+  export const ArrowRight: PressShortcuts["ArrowRight"];
+  export const ArrowDown: PressShortcuts["ArrowDown"];
+  export const ArrowLeft: PressShortcuts["ArrowLeft"];
+  export const End: PressShortcuts["End"];
+  export const Home: PressShortcuts["Home"];
+  export const PageUp: PressShortcuts["PageUp"];
+  export const PageDown: PressShortcuts["PageDown"];
+  export const down: PressDown;
+  export const up: PressUp;
+}
 
-press.up = Object.assign(pressUp, createKeyShortcuts(createPressUp));
+Object.assign(press, createKeyShortcuts(createPress), {
+  down: Object.assign(pressDown, createKeyShortcuts(createPressDown)),
+  up: Object.assign(pressUp, createKeyShortcuts(createPressUp)),
+});
