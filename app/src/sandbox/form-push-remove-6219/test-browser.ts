@@ -12,6 +12,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.status()).toHaveText(/^Focused field: tags\.\d+$/);
   });
 
+  test("FormRemove keeps focus within the target array, not a sibling sharing the name prefix", async ({
+    q,
+  }) => {
+    // Removing from `tags` must move focus to another `tags` field and never
+    // leak into the `tags2` sibling, whose name shares the `tags` prefix.
+    await q.button("Remove tags.0").click();
+    await test.expect(q.textbox("tags.1")).toBeFocused();
+  });
+
   test("FormPush keeps focus within an array whose name has regex metacharacters", async ({
     q,
   }) => {

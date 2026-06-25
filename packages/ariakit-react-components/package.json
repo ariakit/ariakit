@@ -149,6 +149,7 @@
     "./form/form-reset": "./src/form/form-reset.tsx",
     "./form/form-store": "./src/form/form-store.ts",
     "./form/form-submit": "./src/form/form-submit.tsx",
+    "./form/utils": "./src/form/utils.ts",
     "./group/group": "./src/group/group.tsx",
     "./group/group-label": "./src/group/group-label.tsx",
     "./group/group-label-context": "./src/group/group-label-context.tsx",
