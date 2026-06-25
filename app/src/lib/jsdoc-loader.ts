@@ -714,18 +714,20 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
         // Rebuild cache
         const componentModules = getComponentModules(packagePath);
         const newCache: FrameworkCache = { components: {} };
-        const entryIdsByComponent: Record<string, string[]> = {};
+        const referencesByComponent = new Map<string, Reference[]>();
 
         for (const data of references) {
-          const nameSlug = slugify(data.name);
-          const id = `${data.framework}/${data.component}/${nameSlug}`;
-          context.store.set({ id, data });
-          const compIds = entryIdsByComponent[data.component] ?? [];
-          compIds.push(id);
-          entryIdsByComponent[data.component] = compIds;
+          const componentReferences =
+            referencesByComponent.get(data.component) ?? [];
+          componentReferences.push(data);
+          referencesByComponent.set(data.component, componentReferences);
         }
 
         for (const comp of componentModules) {
+          const entryIds = storeComponentReferences(
+            context.store,
+            referencesByComponent.get(comp) ?? [],
+          );
           const files = getComponentSourceFilePaths(
             comp,
             packagePath,
@@ -734,7 +736,7 @@ export function jsdoc(...frameworkOptions: JsDocFrameworkOptions[]) {
           );
           newCache.components[comp] = {
             files: getFileMtimes(files),
-            entryIds: entryIdsByComponent[comp] ?? [],
+            entryIds,
           };
         }
 
