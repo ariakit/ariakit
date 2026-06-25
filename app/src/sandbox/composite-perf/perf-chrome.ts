@@ -1,7 +1,10 @@
+import type { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 const itemCount = 400;
+const updateCount = 20;
+type Query = ReturnType<typeof query>;
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test("mount composite", async ({ q, perf }) => {
@@ -34,5 +37,43 @@ withFramework(import.meta.dirname, async ({ test }) => {
         },
       },
     );
+  });
+
+  test("mount controlled composite", async ({ q, perf }) => {
+    const mountButton = q.button("Mount controlled composite");
+    const lastItem = q.button(`Item ${itemCount}`);
+
+    await perf.measure(async () => {
+      await mountButton.click();
+      await expect(lastItem).toBeVisible();
+    });
+  });
+
+  const setupControlledComposite = async (q: Query) => {
+    await q.button("Mount controlled composite").click();
+    await expect(q.button(`Item ${itemCount}`)).toBeVisible();
+  };
+
+  const updateControlledItems = async (q: Query) => {
+    const updateButton = q.button("Update items");
+    for (let i = 0; i < updateCount; i++) {
+      await updateButton.click();
+    }
+    await expect(q.status("Updates")).toHaveText(String(updateCount));
+  };
+
+  test("update controlled items", async ({ q, perf }) => {
+    await perf.measure(() => updateControlledItems(q), {
+      setup: () => setupControlledComposite(q),
+    });
+  });
+
+  test("update controlled items with script profile", async ({ q, perf }) => {
+    await perf.measure(() => updateControlledItems(q), {
+      label: "update controlled items (script profile)",
+      scriptProfile: true,
+      profileLimit: 20,
+      setup: () => setupControlledComposite(q),
+    });
   });
 });
