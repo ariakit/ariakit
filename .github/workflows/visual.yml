@@ -204,6 +204,7 @@ jobs:
           event: ${{ inputs.event }}
           message: Update screenshots
           head-branch: ${{ github.head_ref || github.ref_name }}
+          expected-head-sha: ${{ steps.tip.outputs.tip_sha }}
           new-branch: visual/update-screenshots
           app-client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
           app-private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}

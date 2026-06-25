@@ -9,13 +9,13 @@ inputs:
     description: Commit message and PR title
     required: true
   head-branch:
-    description: Branch name when committing to existing PR
+    description: Branch name when committing to an existing PR, or base branch when creating a new PR
     required: true
   expected-head-sha:
     description: >
-      Expected current SHA for the head branch when committing to an existing
-      PR. When set, the action refuses to rebase generated changes onto a
-      different branch tip.
+      Expected current SHA for the branch named by head-branch. When set, the
+      action refuses to publish generated changes against a different branch
+      tip.
     required: false
     default: ""
   new-branch:
@@ -65,6 +65,22 @@ runs:
         cd "${{ inputs.working-directory }}"
         git config user.name "ariakito[bot]"
         git config user.email "283989922+ariakito[bot]@users.noreply.github.com"
+
+    - name: Verify base branch
+      shell: bash
+      if: inputs.event == 'push' && inputs.expected-head-sha != ''
+      env:
+        HEAD_REF: ${{ inputs.head-branch }}
+        EXPECTED_HEAD_SHA: ${{ inputs.expected-head-sha }}
+      run: |
+        cd "${{ inputs.working-directory }}"
+        set -e
+        git fetch --no-tags origin "$HEAD_REF"
+        remote_sha="$(git rev-parse FETCH_HEAD)"
+        if [ "$remote_sha" != "$EXPECTED_HEAD_SHA" ]; then
+          echo "Branch advanced from $EXPECTED_HEAD_SHA to $remote_sha; refusing write-back." >&2
+          exit 1
+        fi
 
     - name: Create PR
       if: inputs.event == 'push'
