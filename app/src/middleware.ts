@@ -31,13 +31,15 @@ export async function onRequest(context: APIContext, next: MiddlewareNext) {
     return next();
   }
 
-  const response = await getClerkMiddleware()(context, next);
-
   if (isAdminAction) {
-    if (!(await isAdmin(context))) {
-      return unauthorized();
-    }
+    const guardedNext: MiddlewareNext = async () => {
+      if (!(await isAdmin(context))) {
+        return unauthorized();
+      }
+      return next();
+    };
+    return getClerkMiddleware()(context, guardedNext);
   }
 
-  return response;
+  return getClerkMiddleware()(context, next);
 }

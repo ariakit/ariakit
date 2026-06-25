@@ -80,6 +80,11 @@ if (testLoader === "react") {
 export default defineConfig({
   root: rootDir,
   plugins,
+  resolve: {
+    alias: {
+      "astro:actions": join(rootDir, "app/src/test-utils/astro-actions.ts"),
+    },
+  },
   test: {
     watch: false,
     testTimeout: 10_000,
