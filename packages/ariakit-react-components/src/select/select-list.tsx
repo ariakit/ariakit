@@ -1,6 +1,5 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
-  useAttribute,
   useBooleanEvent,
   useEvent,
   useId,
@@ -137,18 +136,9 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     const hasCombobox = !!store.combobox;
     composite = composite ?? (!hasCombobox && childStore !== store);
 
-    const [element, setElement] = useTransactionState(
+    const [, setElement] = useTransactionState(
       composite ? store.setListElement : null,
     );
-
-    const role = useAttribute(element, "role", props.role);
-    const isCompositeRole =
-      role === "listbox" ||
-      role === "menu" ||
-      role === "tree" ||
-      role === "grid";
-    const ariaMultiSelectable =
-      composite || isCompositeRole ? multiSelectable || undefined : undefined;
 
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
@@ -156,7 +146,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     if (composite) {
       props = {
         role: "listbox",
-        "aria-multiselectable": ariaMultiSelectable,
+        "aria-multiselectable": multiSelectable || undefined,
         ...props,
       };
     }
