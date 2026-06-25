@@ -789,7 +789,7 @@ export function injectDocsMarkdown(options: InjectDocsOptions = {}) {
         `${startMarker} must appear before ${endMarker} in ${readmePath}`,
       );
     }
-    nextReadme = readme.replace(pattern, block);
+    nextReadme = readme.replace(pattern, () => block);
   } else {
     nextReadme = `${readme.trimEnd()}\n\n${block}\n`;
   }
