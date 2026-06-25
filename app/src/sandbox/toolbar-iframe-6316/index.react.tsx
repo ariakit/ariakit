@@ -1,6 +1,22 @@
 import * as Ariakit from "@ariakit/react";
+import type { KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+
+// TODO: Remove this workaround once
+// https://github.com/ariakit/ariakit/issues/6316 is fixed.
+// Iframe inputs skip Ariakit's built-in text boundary check, so re-check the
+// caret before allowing toolbar focus to move.
+function shouldMoveOnKeyPress(event: KeyboardEvent<HTMLElement>) {
+  const input = event.currentTarget as HTMLInputElement;
+  if (event.key === "ArrowLeft") {
+    return (input.selectionStart ?? 0) === 0;
+  }
+  if (event.key === "ArrowRight") {
+    return (input.selectionEnd ?? 0) === input.value.length;
+  }
+  return true;
+}
 
 function FormattingToolbar() {
   return (
@@ -9,7 +25,10 @@ function FormattingToolbar() {
       style={{ display: "flex", gap: 8 }}
     >
       <Ariakit.ToolbarItem>Bold</Ariakit.ToolbarItem>
-      <Ariakit.ToolbarItem render={<input type="text" aria-label="Find" />} />
+      <Ariakit.ToolbarItem
+        render={<input type="text" aria-label="Find" />}
+        moveOnKeyPress={shouldMoveOnKeyPress}
+      />
       <Ariakit.ToolbarItem>Italic</Ariakit.ToolbarItem>
     </Ariakit.Toolbar>
   );

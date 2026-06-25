@@ -12,6 +12,20 @@ interface ExpectToolbarInputNavigationParams {
   expect: Expect;
   input: Locator;
   previousItem: Locator;
+  nextItem: Locator;
+}
+
+async function setSelection(input: Locator, start: number, end = start) {
+  await input.evaluate(
+    (element, range) => {
+      if (!(element instanceof HTMLInputElement)) {
+        throw new Error("Expected an input element");
+      }
+      const input = element;
+      input.setSelectionRange(range.start, range.end);
+    },
+    { start, end },
+  );
 }
 
 function getSelectionStart(input: Locator) {
@@ -28,10 +42,28 @@ async function expectToolbarInputNavigation({
   expect,
   input,
   previousItem,
+  nextItem,
 }: ExpectToolbarInputNavigationParams) {
   await input.click();
   await page.keyboard.type("hi");
+  await setSelection(input, 0);
 
+  await page.keyboard.press("ArrowRight");
+
+  await expect(input).toBeFocused();
+  await expect.poll(() => getSelectionStart(input)).toBe(1);
+
+  await page.keyboard.press("ArrowRight");
+
+  await expect(input).toBeFocused();
+  await expect.poll(() => getSelectionStart(input)).toBe(2);
+
+  await page.keyboard.press("ArrowRight");
+
+  await expect(nextItem).toBeFocused();
+
+  await input.focus();
+  await setSelection(input, 2);
   await page.keyboard.press("ArrowLeft");
 
   await expect(input).toBeFocused();
@@ -58,6 +90,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       expect: test.expect,
       input: q.textbox("Find"),
       previousItem: q.button("Bold"),
+      nextItem: q.button("Italic"),
     });
   });
 
@@ -73,6 +106,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       expect: test.expect,
       input: frame.textbox("Find"),
       previousItem: frame.button("Bold"),
+      nextItem: frame.button("Italic"),
     });
   });
 });
