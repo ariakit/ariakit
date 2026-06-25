@@ -68,9 +68,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
   });
 
-  test("update controlled items with script profile", async ({ q, perf }) => {
+  test("update controlled items (script profile)", async ({ q, perf }) => {
     await perf.measure(() => updateControlledItems(q), {
-      label: "update controlled items (script profile)",
       scriptProfile: true,
       profileLimit: 20,
       setup: () => setupControlledComposite(q),
