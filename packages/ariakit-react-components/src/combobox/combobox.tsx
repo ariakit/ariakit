@@ -68,10 +68,15 @@ function isFirstItemAutoSelected(
 function hasCompletionString(value?: string, activeValue?: string) {
   if (!activeValue) return false;
   if (value == null) return false;
-  value = normalizeString(value);
+  const normalizedValue = normalizeString(value);
+  const normalizedActiveValue = normalizeString(activeValue);
+  if (normalizedValue.length !== value.length) return false;
+  if (normalizedActiveValue.length !== activeValue.length) return false;
   return (
-    activeValue.length > value.length &&
-    activeValue.toLowerCase().indexOf(value.toLowerCase()) === 0
+    normalizedActiveValue.length > normalizedValue.length &&
+    normalizedActiveValue
+      .toLowerCase()
+      .startsWith(normalizedValue.toLowerCase())
   );
 }
 
