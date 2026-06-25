@@ -90,7 +90,7 @@ export const useMenuItemCheckbox = createHook<TagName, MenuItemCheckboxOptions>(
 
     // Sets defaultChecked in store
     useEffect(() => {
-      store?.setValue(name, (prevValue = []) => {
+      store?.setValue(name, (prevValue = value !== undefined ? [] : false) => {
         if (!defaultChecked) return prevValue;
         return getValue(prevValue, value, true);
       });

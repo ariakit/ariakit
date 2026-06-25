@@ -3,14 +3,7 @@ import { useState } from "react";
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6318
 export default function Example() {
-  const menu = Ariakit.useMenuStore({
-    defaultValues: {
-      // TODO: Remove once https://github.com/ariakit/ariakit/issues/6318
-      // is fixed.
-      showSidebar: true,
-      minimap: true,
-    },
-  });
+  const menu = Ariakit.useMenuStore();
   const values = Ariakit.useStoreState(menu, "values");
   const [minimap, setMinimap] = useState(true);
 
