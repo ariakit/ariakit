@@ -80,6 +80,29 @@ test("pushes values and preserves array holes when removing values", () => {
   expect(store.getValue("tags")).toEqual([null, "two"]);
 });
 
+test("names coerce to their dot-joined path and ignore other symbols", () => {
+  const store = createFormStore({ defaultValues: { user: { name: "" } } });
+  const { names } = store;
+
+  // Documented string coercion paths all resolve to the field path. The
+  // template literal intentionally coerces the string-like name object.
+  // oxlint-disable-next-line restrict-template-expressions
+  expect(`${names.user.name}`).toBe("user.name");
+  expect(String(names.user.name)).toBe("user.name");
+  expect(names.user.name.toString()).toBe("user.name");
+  expect(names.user.name.valueOf()).toBe("user.name");
+
+  // Absent symbol keys resolve to `undefined` like a plain object would, so
+  // probing one never throws "Cannot convert a Symbol value to a string".
+  expect(Reflect.get(names.user.name, Symbol.iterator)).toBe(undefined);
+  expect(Object.prototype.toString.call(names.user.name)).toBe(
+    "[object Object]",
+  );
+
+  // Repeated access returns the same cached proxy.
+  expect(names.user).toBe(names.user);
+});
+
 test("marks nested values as touched on submit", async () => {
   const store = createFormStore({
     defaultValues: {

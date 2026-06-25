@@ -26,7 +26,18 @@ type ErrorMessage = string | undefined | null;
 const maxArrayIndex = 2 ** 32 - 2;
 
 function nextFrame() {
-  return new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+  return new Promise<void>((resolve) => {
+    // Browsers pause `requestAnimationFrame` in hidden documents, which would
+    // stall `validate()`/`submit()` until the tab becomes visible again. Race it
+    // against a timeout so a hidden document still makes progress; in a visible
+    // document the frame wins first, preserving the "after the next render"
+    // timing.
+    const timeoutId = setTimeout(resolve, 100);
+    requestAnimationFrame(() => {
+      clearTimeout(timeoutId);
+      resolve();
+    });
+  });
 }
 
 export function hasMessages(object: FormStoreValues): boolean {
@@ -125,13 +136,24 @@ function setAll<T extends FormStoreValues, V>(values: T, value: V) {
   return result as DeepMap<T, V>;
 }
 
-function getNameHandler(
-  cache: FormStoreValues,
-  prevKeys: Array<string | symbol> = [],
-) {
+function getNameHandler(cache: FormStoreValues, prevKeys: string[] = []) {
   const handler: ProxyHandler<FormStoreValues> = {
     get(target, key) {
-      if (["toString", "valueOf", Symbol.toPrimitive].includes(key)) {
+      if (typeof key === "symbol") {
+        // Support string coercion through `Symbol.toPrimitive`, but resolve
+        // every other symbol to `undefined` like a plain object would. Joining
+        // the key path below would otherwise throw "Cannot convert a Symbol
+        // value to a string" for probes such as `Symbol.iterator` (used when
+        // rendering a name as a React child) or `Symbol.toStringTag`.
+        if (key === Symbol.toPrimitive) {
+          return () => prevKeys.join(".");
+        }
+        return undefined;
+      }
+      if (key === "toString") {
+        return () => prevKeys.join(".");
+      }
+      if (key === "valueOf") {
         return () => prevKeys.join(".");
       }
       const nextKeys = [...prevKeys, key];

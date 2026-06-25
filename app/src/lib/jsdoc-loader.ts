@@ -1093,6 +1093,7 @@ function getProps(node: Node) {
       if (!res.description) continue;
       description = res.description;
       liveExamples = res.liveExamples;
+      break;
     }
     if (!description) continue;
 

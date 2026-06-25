@@ -89,6 +89,15 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
 
   const [shouldFocusOnSubmit, setShouldFocusOnSubmit] = useState(false);
 
+  // Clear the flag once a submission succeeds so auto-focus stays tied to the
+  // submission outcome. The flag is armed on every submit but only cleared when
+  // the focus effect finds an invalid field; on success it finds none, so it
+  // would otherwise leak and steal focus on a later `items` change.
+  useEffect(() => {
+    if (!submitSucceed) return;
+    setShouldFocusOnSubmit(false);
+  }, [submitSucceed]);
+
   useEffect(() => {
     if (!shouldFocusOnSubmit) return;
     if (!submitFailed) return;
