@@ -456,12 +456,6 @@ function referencesIdentifier(text: string, name: string) {
   ).test(text);
 }
 
-function formatLocalTypeDeclaration(declaration: LocalTypeDeclaration) {
-  return truncateDeclarationText(
-    removeExportKeyword(removeJsDoc(declaration.getText()).trim()),
-  );
-}
-
 function getSignatureTypeParameterNames(declarations: Node[]) {
   const names = new Set<string>();
   for (const declaration of declarations) {
@@ -522,7 +516,7 @@ function addReferencedLocalTypes(items: SignatureItem[]) {
   const referencedTypes = getReferencedLocalTypes(items);
   const signatures = items.map((item) => item.text);
   const localTypeSignatures = referencedTypes
-    .map(formatLocalTypeDeclaration)
+    .map(formatDeclarationText)
     .join("\n\n");
 
   if (!localTypeSignatures) return signatures;
