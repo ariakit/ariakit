@@ -7351,7 +7351,7 @@
               "value": {}
             },
             {
-              "name": "@apply absolute left-0 border-b",
+              "name": "@apply absolute border-b",
               "value": {}
             },
             {
@@ -7367,8 +7367,8 @@
               "value": "calc(var(--ak-list-leading) * 0.5 + var(--ak-frame-padding))"
             },
             {
-              "name": "left",
-              "value": "calc(var(--ak-list-leading) * 0.25 + var(--ak-frame-padding))"
+              "name": "inset-inline-start",
+              "value": "calc(\n    var(--ak-list-leading) * 0.25 + var(--ak-frame-padding)\n  )"
             }
           ],
           "dependencies": [
@@ -7426,7 +7426,7 @@
               "value": "var(--ak-frame-padding)"
             },
             {
-              "name": "left",
+              "name": "inset-inline-start",
               "value": "var(--ak-frame-padding)"
             }
           ],
@@ -7482,7 +7482,7 @@
                   "value": "var(--ak-list-border-top)"
                 },
                 {
-                  "name": "left",
+                  "name": "inset-inline-start",
                   "value": "calc(\n      var(--ak-list-item-marker-center) - var(--ak-list-border-width) / 2 +\n        var(--ak-frame-padding)\n    )"
                 },
                 {
