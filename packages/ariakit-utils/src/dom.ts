@@ -186,10 +186,11 @@ export function isTextField(
   element: Element,
 ): element is HTMLInputElement | HTMLTextAreaElement {
   try {
-    const isTextInput =
-      element instanceof HTMLInputElement && element.selectionStart !== null;
-    const isTextArea = element.tagName === "TEXTAREA";
-    return isTextInput || isTextArea || false;
+    // Use tag names instead of realm-bound constructors so text fields from
+    // same-origin child frames are recognized.
+    if (element.tagName === "TEXTAREA") return true;
+    if (element.tagName !== "INPUT") return false;
+    return (element as HTMLInputElement).selectionStart !== null;
   } catch (_error) {
     // Safari throws an exception when trying to get `selectionStart` on
     // non-text <input> elements (which, understandably, don't have the text
