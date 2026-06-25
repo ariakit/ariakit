@@ -147,6 +147,10 @@ interface ProfilerStopResponse {
   profile: CdpProfile;
 }
 
+interface PerformanceEventObserverInit extends PerformanceObserverInit {
+  durationThreshold?: number;
+}
+
 interface CssStyleSheetHeader {
   styleSheetId: string;
   sourceURL?: string;
@@ -897,7 +901,14 @@ async function measureOnce(
         }
       }
     });
-    observer.observe({ type: "event", buffered: false });
+    // Event Timing observers default to 104ms. These measurements track fast
+    // deliberate interactions, so use the spec-minimum threshold.
+    const observerOptions: PerformanceEventObserverInit = {
+      type: "event",
+      durationThreshold: 16,
+      buffered: false,
+    };
+    observer.observe(observerOptions);
     w.__perfObserver = observer;
   });
 
