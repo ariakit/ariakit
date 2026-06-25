@@ -119,6 +119,8 @@ export interface PerfResult {
   label: string;
   metrics: PerfMetrics;
   raw: PerfMetrics[];
+  scriptProfile?: boolean;
+  selectorProfile?: boolean;
   profiles?: PerfProfiles;
 }
 
@@ -1154,6 +1156,8 @@ export async function createPerfMeasure(
     label: resolvedLabel,
     metrics: medianMetrics,
     raw: allMetrics,
+    scriptProfile: scriptProfile || undefined,
+    selectorProfile: selectorProfile || undefined,
     profiles: createProfiles(scriptProfiles, selectorProfiles, profileLimit),
   });
 

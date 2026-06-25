@@ -40,7 +40,7 @@ interface ComparisonRow {
   perRoundDeltas: number[];
   agreement: number;
   significant: boolean;
-  scriptProfile: boolean;
+  profileMode: boolean;
 }
 
 interface ComparisonSummary {
@@ -385,6 +385,9 @@ function combineResults(results: PerfResult[]): PerfResult | undefined {
     ...first,
     metrics: computeMedianMetrics(results.map((result) => result.metrics)),
     raw: results.flatMap((result) => result.raw),
+    scriptProfile: results.some((result) => result.scriptProfile) || undefined,
+    selectorProfile:
+      results.some((result) => result.selectorProfile) || undefined,
     profiles: mergeProfiles(results),
   };
 }
@@ -609,11 +612,27 @@ function resultKey(result: PerfResult): string {
   return `${result.testFile}::${result.label}`;
 }
 
-function hasProfile(
+function hasProfileData(
   result: PerfResult | undefined,
   profile: "script" | "selectors",
 ): boolean {
   return (result?.profiles?.[profile]?.length ?? 0) > 0;
+}
+
+function hasProfileMode(
+  result: PerfResult | undefined,
+  profile: "script" | "selectors",
+): boolean {
+  if (profile === "script") {
+    return !!result?.scriptProfile || hasProfileData(result, profile);
+  }
+  return !!result?.selectorProfile || hasProfileData(result, profile);
+}
+
+function isProfileMode(result: PerfResult | undefined): boolean {
+  return (
+    hasProfileMode(result, "script") || hasProfileMode(result, "selectors")
+  );
 }
 
 function isRegression(row: ComparisonRow, options: PerfCompareOptions) {
@@ -645,8 +664,8 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
       continue;
     }
     for (const profile of ["script", "selectors"] as const) {
-      const baselineHasProfile = hasProfile(base.result, profile);
-      const currentHasProfile = hasProfile(cur.result, profile);
+      const baselineHasProfile = hasProfileMode(base.result, profile);
+      const currentHasProfile = hasProfileMode(cur.result, profile);
       if (baselineHasProfile === currentHasProfile) continue;
       profileModeMismatches.push({
         testFile: cur.result.testFile,
@@ -668,9 +687,8 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
       continue;
     }
 
-    const scriptProfile =
-      hasProfile(base.result, "script") || hasProfile(cur.result, "script");
-    const primary = !scriptProfile;
+    const profileMode = isProfileMode(base.result) || isProfileMode(cur.result);
+    const primary = !profileMode;
     for (const metric of allMetrics) {
       const baselineValues: number[] = [];
       const currentValues: number[] = [];
@@ -710,7 +728,7 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
         perRoundDeltas,
         agreement,
         significant,
-        scriptProfile,
+        profileMode,
       });
     }
   }
@@ -954,7 +972,7 @@ function formatProfileModeWarning(mismatches: ProfileModeMismatch[]): string[] {
 
   const lines: string[] = [];
   lines.push(
-    ":warning: Profile data differs between baseline and current. Run both sides with the same profiling flags before comparing aggregate metrics.",
+    ":warning: Profile mode differs between baseline and current. Run both sides with the same profiling flags before comparing aggregate metrics.",
   );
   lines.push("");
   lines.push("| Test | Profile | Baseline | Current |");
@@ -990,12 +1008,12 @@ function formatDetailedBreakdown({
     const testRows = rowsByKey.get(key) ?? [];
     const label = testRows[0]?.label ?? key;
     const currentResult = currentByKey.get(key)?.result;
-    const scriptProfile = testRows.some((row) => row.scriptProfile);
+    const profileMode = testRows.some((row) => row.profileMode);
     const profileLines = formatProfiles(currentResult);
-    if (scriptProfile && profileLines.length === 0) continue;
+    if (profileMode && profileLines.length === 0) continue;
     lines.push(`### ${label}`);
     lines.push("");
-    if (!scriptProfile) {
+    if (!profileMode) {
       lines.push("| Metric | Baseline | Current | Delta |");
       lines.push("|--------|----------|---------|-------|");
       for (const metric of allMetrics) {
@@ -1109,7 +1127,7 @@ function formatMarkdown(
   if (newTests.length > 0) {
     const primaryMetrics = getPrimaryMetrics(options);
     const newTestsWithMetrics = newTests.filter(
-      ({ result }) => !hasProfile(result, "script"),
+      ({ result }) => !isProfileMode(result),
     );
     lines.push(`### New ${resultsName} (no baseline)`);
     lines.push("");

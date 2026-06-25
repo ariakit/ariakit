@@ -32,8 +32,20 @@ interface PerfScriptProfileEntry {
   hitCount: number;
 }
 
+interface PerfSelectorProfileEntry {
+  selector: string;
+  styleSheetId: string;
+  styleSheetUrl: string;
+  elapsed: number;
+  matchAttempts: number;
+  matchCount: number;
+  slowPathNonMatchPercent: number;
+  invalidationCount: number;
+}
+
 interface PerfProfiles {
   script?: PerfScriptProfileEntry[];
+  selectors?: PerfSelectorProfileEntry[];
 }
 
 interface PerfResult {
@@ -42,6 +54,8 @@ interface PerfResult {
   label: string;
   metrics: PerfMetrics;
   raw: PerfMetrics[];
+  scriptProfile?: boolean;
+  selectorProfile?: boolean;
   profiles?: PerfProfiles;
 }
 
@@ -111,6 +125,21 @@ function createScriptProfileEntry(
     selfTime,
     totalTime: selfTime,
     hitCount: 1,
+  };
+}
+
+function createSelectorProfileEntry(
+  selector = ".item",
+): PerfSelectorProfileEntry {
+  return {
+    selector,
+    styleSheetId: "1",
+    styleSheetUrl: "app/src/sandbox/example/style.css",
+    elapsed: 8,
+    matchAttempts: 10,
+    matchCount: 2,
+    slowPathNonMatchPercent: 20,
+    invalidationCount: 0,
   };
 }
 
@@ -815,6 +844,36 @@ test("omits new test metric rows for script profile results", () => {
   expect(markdown).not.toContain("| profiled | 130.0ms | 0.0ms | 130.0ms |");
 });
 
+test("omits new test metric rows for selector profile results", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    selectors: [createSelectorProfileEntry(".item")],
+  };
+  writeJson(dir, "current-worker0.json", [
+    createResultWithLabel("regular", 100),
+    {
+      ...createResultWithMetrics(
+        "selector-profiled",
+        createMetrics(130),
+        profiles,
+      ),
+      selectorProfile: true,
+    },
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("### New tests (no baseline)");
+  expect(markdown).toContain("| Test | Scripting | Rendering | Total |");
+  expect(markdown).toContain("| regular | 100.0ms | 0.0ms | 100.0ms |");
+  expect(markdown).toContain("#### selector-profiled");
+  expect(markdown).toContain("#### Selector profile");
+  expect(markdown).toContain("| .item | 8.0ms | 10 | 2 | 20% |");
+  expect(markdown).not.toContain(
+    "| selector-profiled | 130.0ms | 0.0ms | 130.0ms |",
+  );
+});
+
 test("warns when only one side has profile data for a test", () => {
   const dir = createTempDir();
   writeJson(dir, "baseline-worker0.json", [
@@ -828,7 +887,7 @@ test("warns when only one side has profile data for a test", () => {
 
   const markdown = runCompare(dir);
 
-  expect(markdown).toContain("Profile data differs between baseline");
+  expect(markdown).toContain("Profile mode differs between baseline");
   expect(markdown).toContain("| profile-mismatch | script | yes | no |");
   expect(markdown).toContain("No significant performance changes detected.");
   expect(markdown).not.toContain("### profile-mismatch");
@@ -850,10 +909,90 @@ test("omits metric tables when only current has script profile data", () => {
 
   const markdown = runCompare(dir);
 
-  expect(markdown).toContain("Profile data differs between baseline");
+  expect(markdown).toContain("Profile mode differs between baseline");
   expect(markdown).toContain("| profile-mismatch | script | no | yes |");
   expect(markdown).toContain("No significant performance changes detected.");
   expect(markdown).toContain("| `currentProfile` | 8.0ms | 8.0ms | 1 |");
+  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
+  expect(markdown).not.toContain("+30.0ms (+30%)");
+});
+
+test("omits metric tables when script profile has no retained entries", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithMetrics("profile-mismatch", createMetrics(100)),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    {
+      ...createResultWithMetrics("profile-mismatch", createMetrics(130)),
+      scriptProfile: true,
+    },
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("Profile mode differs between baseline");
+  expect(markdown).toContain("| profile-mismatch | script | no | yes |");
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).not.toContain("### profile-mismatch");
+  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
+  expect(markdown).not.toContain("+30.0ms (+30%)");
+});
+
+test("omits metric tables when selector profile has no retained entries", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithMetrics("profile-mismatch", createMetrics(100)),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    {
+      ...createResultWithMetrics("profile-mismatch", createMetrics(130)),
+      selectorProfile: true,
+    },
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("Profile mode differs between baseline");
+  expect(markdown).toContain("| profile-mismatch | selectors | no | yes |");
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).not.toContain("### profile-mismatch");
+  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
+  expect(markdown).not.toContain("+30.0ms (+30%)");
+});
+
+test("omits metric tables for selector profile comparisons", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    selectors: [createSelectorProfileEntry(".item")],
+  };
+  writeJson(dir, "baseline-worker0.json", [
+    {
+      ...createResultWithMetrics(
+        "selector-profiled",
+        createMetrics(100),
+        profiles,
+      ),
+      selectorProfile: true,
+    },
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    {
+      ...createResultWithMetrics(
+        "selector-profiled",
+        createMetrics(130),
+        profiles,
+      ),
+      selectorProfile: true,
+    },
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain("### selector-profiled");
+  expect(markdown).toContain("#### Selector profile");
+  expect(markdown).toContain("| .item | 8.0ms | 10 | 2 | 20% |");
   expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
   expect(markdown).not.toContain("+30.0ms (+30%)");
 });
