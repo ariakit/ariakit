@@ -1437,13 +1437,12 @@ const layerLighten = utility(
 
 utility("layer-darken-*", getNegatedDeclarations(layerLighten));
 
-utility("state-lighten-*", getRawPercentDeclarations(inputs.layerRelativeL));
-
-utility(
-  "state-darken-*",
-  set(inputs.layerRelativeL, fn.neg(getBarePercentTokenValue())),
-  set(inputs.layerRelativeL, fn.neg(fn.value("[*]"))),
+const stateLighten = utility(
+  "state-lighten-*",
+  getRawPercentDeclarations(inputs.layerRelativeL),
 );
+
+utility("state-darken-*", getNegatedDeclarations(stateLighten));
 
 /**
  * Moves a hue toward a target by percentage on the shortest circular path.
@@ -1630,19 +1629,12 @@ utility(
   ),
 );
 
-utility(
+const stateSaturate = utility(
   "state-saturate-*",
   getRawPercentDeclarations(inputs.layerRelativeC, CHROMA_TOKEN_OPTIONS),
 );
 
-utility(
-  "state-desaturate-*",
-  set(
-    inputs.layerRelativeC,
-    fn.neg(getBarePercentTokenValue(CHROMA_TOKEN_OPTIONS)),
-  ),
-  set(inputs.layerRelativeC, fn.neg(fn.value("[*]"))),
-);
+utility("state-desaturate-*", getNegatedDeclarations(stateSaturate));
 
 utility(
   "edge-*",
