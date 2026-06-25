@@ -141,6 +141,36 @@ test("styleDefToCss renders ak-list-item-ol-border utility fully", () => {
   `);
 });
 
+test("progress value utilities do not advertise percentage values", () => {
+  const progress = getStyleDefinition("ak-progress-value-*", "utility");
+  expect(styleDefToCss(progress!)).toMatchInlineSnapshot(`
+    "@utility ak-progress-value-* {
+      --ak-progress-value: calc(--value(number) / 100);
+      --ak-progress-value: calc(--value(ratio));
+      --ak-progress-value: --value([*]);
+    }"
+  `);
+
+  const checkProgress = getStyleDefinition(
+    "ak-list-item-check-progress-*",
+    "utility",
+  );
+  expect(styleDefToCss(checkProgress!)).toMatchInlineSnapshot(`
+    "@utility ak-list-item-check-progress-* {
+      @apply before:ak-progress-circular-fill ak-progress-value-(--value);
+      --value: calc(--value(number) / 100);
+      --value: calc(--value(ratio));
+      --value: --value([*]);
+      @variant ak-list-ol {
+        @apply ak-progress-thickness-[0.15em];
+      }
+      @variant ak-list-ul {
+        @apply ak-progress-thickness-[calc(30%+0.25%*var(--contrast,0))];
+      }
+    }"
+  `);
+});
+
 test("findStyleDependency returns exact index matches only (no external)", () => {
   const util = findStyleDependency("ak-badge", "utility");
   expect(util).toEqual({ type: "utility", name: "ak-badge", module: "badge" });

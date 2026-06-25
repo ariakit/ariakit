@@ -6602,7 +6602,7 @@
             },
             {
               "name": "--ak-progress-value",
-              "value": "--value(percentage, [*])"
+              "value": "--value([*])"
             }
           ],
           "dependencies": []
@@ -8117,7 +8117,7 @@
             },
             {
               "name": "--value",
-              "value": "--value(percentage, [*])"
+              "value": "--value([*])"
             },
             {
               "name": "@variant ak-list-ol",
