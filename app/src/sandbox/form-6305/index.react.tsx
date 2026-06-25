@@ -1,32 +1,15 @@
 import * as ak from "@ariakit/react";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6305
 export default function Example() {
   const form = ak.useFormStore({
     defaultValues: { company: "", email: "" },
   });
-  const formRef = useRef<HTMLFormElement>(null);
-  const submitFailed = ak.useStoreState(form, "submitFailed");
   const [showCompany, setShowCompany] = useState(false);
 
-  // TODO: Remove when https://github.com/ariakit/ariakit/issues/6305 is fixed.
-  useEffect(() => {
-    if (!submitFailed) return;
-    const field = formRef.current?.querySelector<HTMLElement>(
-      "[aria-invalid='true']",
-    );
-    if (!field) return;
-    field.focus();
-    if (field instanceof HTMLInputElement) {
-      field.select();
-    } else if (field instanceof HTMLTextAreaElement) {
-      field.select();
-    }
-  }, [submitFailed]);
-
   return (
-    <ak.Form ref={formRef} store={form} autoFocusOnSubmit={false}>
+    <ak.Form store={form}>
       {showCompany && (
         <div>
           <ak.FormLabel name={form.names.company}>Company</ak.FormLabel>

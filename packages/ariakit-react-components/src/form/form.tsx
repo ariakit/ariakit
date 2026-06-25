@@ -11,7 +11,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { isTextField, invariant } from "@ariakit/utils";
+import { isTextField, invariant, sortBasedOnDOMPosition } from "@ariakit/utils";
 import type { ElementType, FocusEvent, FormEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { FormScopedContextProvider, useFormContext } from "./form-context.tsx";
@@ -28,7 +28,8 @@ function isField(element: HTMLElement, items: FormStoreState["items"]) {
 }
 
 function getFirstInvalidField(items: FormStoreState["items"]) {
-  return items.find(
+  const sortedItems = sortBasedOnDOMPosition(items, (item) => item.element);
+  return sortedItems.find(
     (item) =>
       item.type === "field" &&
       item.element?.getAttribute("aria-invalid") === "true",
