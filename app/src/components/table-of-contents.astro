@@ -246,6 +246,25 @@ const allHeadings = title
       }
 
       let timeout: number;
+      let headingThresholds: number[] = [];
+
+      // Scroll margins can change with responsive header size and font loading,
+      // but they do not need to be recomputed on every scroll frame.
+      const updateHeadingThresholds = () => {
+        headingThresholds = headings.map((heading) => {
+          const style = window.getComputedStyle(heading);
+          const scrollMargin = Number.parseFloat(style.scrollMarginBlockStart);
+          return (Number.isNaN(scrollMargin) ? 0 : scrollMargin) + topOffset;
+        });
+      };
+
+      updateHeadingThresholds();
+
+      let resizeObserver: ResizeObserver | null = null;
+      if ("ResizeObserver" in window) {
+        resizeObserver = new ResizeObserver(updateHeadingThresholds);
+        resizeObserver.observe(document.body);
+      }
 
       /**
        * This function is called on scroll. It determines which heading is
@@ -273,11 +292,10 @@ const allHeadings = title
         // last one whose top edge is above the viewport's "fold" (adjusted for
         // the sticky header).
         let currentActiveHeading: HTMLElement | null = null;
-        for (const heading of headings) {
-          const style = window.getComputedStyle(heading);
-          const scrollMargin = parseFloat(style.scrollMarginBlockStart);
-          const threshold =
-            (isNaN(scrollMargin) ? 0 : scrollMargin) + topOffset;
+        for (let index = 0; index < headings.length; index += 1) {
+          const heading = headings[index];
+          if (!heading) continue;
+          const threshold = headingThresholds[index] ?? topOffset;
           if (heading.getBoundingClientRect().top < threshold + 2) {
             currentActiveHeading = heading;
           }
@@ -303,6 +321,7 @@ const allHeadings = title
 
       const cleanup = () => {
         observer?.disconnect();
+        resizeObserver?.disconnect();
         window.removeEventListener("scroll", throttledScroll);
         if (timeout) window.cancelAnimationFrame(timeout);
         tocElement.removeAttribute("data-table-of-contents-initialized");
