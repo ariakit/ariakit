@@ -2,7 +2,11 @@ import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
 import "./style.css";
 
-const items = Array.from({ length: 400 }, (_, index) => `Item ${index + 1}`);
+const itemCount = 400;
+const items = Array.from(
+  { length: itemCount },
+  (_, index) => `Item ${index + 1}`,
+);
 
 function CompositeFixture() {
   return (
