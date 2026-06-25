@@ -49,7 +49,7 @@ async function expectToolbarInputNavigation({
 
 // https://github.com/ariakit/ariakit/issues/6316
 withFramework(import.meta.dirname, async ({ test, query }) => {
-  test("ToolbarItem input navigates at text boundaries inside iframes", async ({
+  test("ToolbarItem input navigates at text boundaries in the parent document", async ({
     page,
     q,
   }) => {
@@ -59,7 +59,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       input: q.textbox("Find"),
       previousItem: q.button("Bold"),
     });
+  });
 
+  test("ToolbarItem input navigates at text boundaries inside iframes", async ({
+    page,
+  }) => {
+    // Keep this isolated from the parent-document control so the test enters
+    // the iframe the same way a user would in the reported reproduction.
     const frame = query(page.frameLocator("iframe[title='Embedded editor']"));
 
     await expectToolbarInputNavigation({
