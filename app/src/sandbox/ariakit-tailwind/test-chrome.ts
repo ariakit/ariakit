@@ -569,6 +569,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
       test("no color contrast violations (WCAG AA)", async ({ page }) => {
         test.setTimeout(60_000);
+        await waitForPreviewReady(page);
         const results = await new AxeBuilder({ page })
           .withRules(["color-contrast"])
           .analyze();
@@ -585,11 +586,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         const label = contrast ? " (high contrast)" : "";
         test(`computed styles${label}`, async ({ page }) => {
           if (contrast) {
-            const cdp = await page.context().newCDPSession(page);
-            await cdp.send("Emulation.setEmulatedMedia", {
-              features: [{ name: "prefers-contrast", value: "more" }],
-            });
-            await page.reload({ waitUntil: "networkidle" });
+            await page.emulateMedia({ contrast: "more" });
           }
           await waitForPreviewReady(page);
           const tree = await page.evaluate(extractComputedCSS);
