@@ -44,7 +44,7 @@ jobs:
         run: gh auth setup-git
 
       - name: Create PR or publish to npm
-        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1
+        uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
         with:
           title: Publish
           commit: Publish
