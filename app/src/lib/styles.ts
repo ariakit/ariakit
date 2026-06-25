@@ -254,38 +254,13 @@ export function getStyleDefinition(
 export function getTransitiveStyleDefinitions(
   input: StyleDependency,
 ): StyleDef[] {
-  const out: StyleDef[] = [];
-  const queue: StyleDependency[] = [];
-  const visited = new Set<string>();
-
-  const rootDef = getStyleDefinition(input.name, input.type);
-  if (!rootDef) return out;
-  const enqueueDeps = (def: StyleDef) => {
-    if (!("type" in def)) return;
-    for (const dep of def.dependencies) {
-      const modId = dep.module ?? "";
-      const k = `${dep.type}:${modId}:${dep.name}`;
-      if (visited.has(k)) continue;
-      const depDef = getStyleDefinition(dep.name, dep.type);
-      if (!depDef) {
-        visited.add(k);
-        continue;
-      }
-      visited.add(k);
-      out.push(depDef);
-      queue.push(dep);
-    }
-  };
-
-  enqueueDeps(rootDef);
-  while (queue.length > 0) {
-    const current = queue.shift();
-    if (!current) break;
-    const def = getStyleDefinition(current.name, current.type);
-    if (!def) continue;
-    enqueueDeps(def);
+  const definitions: StyleDef[] = [];
+  for (const dependency of getTransitiveDependencies(input)) {
+    const definition = getStyleDefinition(dependency.name, dependency.type);
+    if (!definition) continue;
+    definitions.push(definition);
   }
-  return out;
+  return definitions;
 }
 
 /**
