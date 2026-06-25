@@ -11,15 +11,14 @@ import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { AstroConfig, AstroIntegration } from "astro";
 import type { Plugin } from "vite";
+import { isInDirectory, toPosixPath } from "./paths.ts";
 import {
   getPreviewFile,
   setPreviewCodegenDir,
-  toPosixPath,
   writePreviewCodegen,
 } from "./preview-codegen.ts";
 import {
   discoverPreviews,
-  isInDirectory,
   resolvePreviewRoots,
   shouldRegeneratePreview,
 } from "./preview-discovery.ts";
