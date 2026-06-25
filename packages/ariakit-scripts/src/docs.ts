@@ -16,6 +16,7 @@ interface GenerateDocsOptions {
   tsconfig?: string;
   heading?: string;
   exclude?: string[];
+  precedingHeadings?: string[];
 }
 
 interface InjectDocsOptions extends GenerateDocsOptions {
@@ -664,7 +665,71 @@ function createSlugger() {
   };
 }
 
-function renderContents(groups: ApiGroup[]) {
+/**
+ * Gets the Markdown headings that render before a generated docs marker.
+ *
+ * GitHub assigns anchors top-down across the rendered document, so generated
+ * docs blocks must be seeded with only the headings that precede them.
+ */
+export function getPrecedingHeadings(readme: string, startMarker: string) {
+  const markerIndex = readme.indexOf(startMarker);
+  const preceding = markerIndex === -1 ? readme : readme.slice(0, markerIndex);
+  const headings: string[] = [];
+  let fence: { character: string; length: number } | undefined;
+  let setextHeadingLines: string[] = [];
+
+  for (const line of preceding.split("\n")) {
+    const fenceMatch = line.match(/^ {0,3}(```+|~~~+)(.*)$/);
+    if (fenceMatch) {
+      const marker = fenceMatch[1];
+      if (!marker) continue;
+      const character = marker.charAt(0);
+      const length = marker.length;
+      if (fence) {
+        const rest = fenceMatch[2] ?? "";
+        if (
+          character === fence.character &&
+          length >= fence.length &&
+          !rest.trim()
+        ) {
+          fence = undefined;
+        }
+      } else {
+        fence = { character, length };
+        setextHeadingLines = [];
+      }
+      continue;
+    }
+
+    if (fence) continue;
+
+    const setextMatch = line.match(/^ {0,3}(=+|-+)\s*$/);
+    if (setextMatch && setextHeadingLines.length) {
+      headings.push(setextHeadingLines.join(" "));
+      setextHeadingLines = [];
+      continue;
+    }
+
+    const headingMatch = line.match(/^ {0,3}#{1,6}\s+(.+?)\s*#*\s*$/);
+    const heading = headingMatch?.[1];
+    if (heading) {
+      headings.push(heading);
+      setextHeadingLines = [];
+      continue;
+    }
+
+    const setextHeadingLine = line.match(/^ {0,3}(\S.*)$/)?.[1]?.trim();
+    if (setextHeadingLine) {
+      setextHeadingLines.push(setextHeadingLine);
+    } else {
+      setextHeadingLines = [];
+    }
+  }
+
+  return headings;
+}
+
+function renderContents(groups: ApiGroup[], slug: (heading: string) => string) {
   const entryCount = groups.reduce(
     (count, group) => count + group.entries.length,
     0,
@@ -672,7 +737,6 @@ function renderContents(groups: ApiGroup[]) {
   // A single entry has nothing to navigate, so the table of contents is noise.
   if (entryCount <= 1) return "";
 
-  const slug = createSlugger();
   const renderEntryContents = (entry: ApiEntry, indent: string) =>
     `${indent}- [\`${entry.name}\`](#${slug(entry.name)})`;
 
@@ -734,8 +798,19 @@ export function generateDocsMarkdown(options: GenerateDocsOptions = {}) {
   const groups = getApiGroups(entrySourceFile, excludedNames);
   const heading = options.heading || defaultHeading;
   const lines = [`## ${heading}`, ""];
+  const slug = createSlugger();
 
-  const contents = renderContents(groups);
+  // GitHub assigns heading anchors top-down across the whole document, so only
+  // headings that precede this generated block can influence its slugs.
+  for (const precedingHeading of options.precedingHeadings ?? []) {
+    slug(precedingHeading);
+  }
+
+  // The section heading renders before the table of contents and members.
+  // Members link back to it, e.g. `#api-reference`.
+  const topAnchor = slug(heading);
+
+  const contents = renderContents(groups, slug);
   if (contents) {
     lines.push(contents, "");
   }
@@ -745,9 +820,6 @@ export function generateDocsMarkdown(options: GenerateDocsOptions = {}) {
   // section heading, so they use `###` to keep the heading levels incremental.
   const hasModules = groups.some((group) => group.title);
   const memberHeading = hasModules ? "####" : "###";
-  // Each member links back to the section heading (which sits above the table
-  // of contents), e.g. `#api-reference` or `#playwright-api-reference`.
-  const topAnchor = slugifyHeading(heading);
 
   for (const group of groups) {
     lines.push(renderGroup(group, memberHeading, topAnchor), "");
@@ -760,8 +832,12 @@ export function injectDocsMarkdown(options: InjectDocsOptions = {}) {
   const rootPath = options.rootPath || process.cwd();
   const readmePath = resolvePath(rootPath, options.readme || "readme.md");
   const { start: startMarker, end: endMarker } = getDocsMarkers(options.marker);
-  const markdown = generateDocsMarkdown(options).trimEnd();
   const readme = readFileSync(readmePath, "utf-8");
+  const precedingHeadings = getPrecedingHeadings(readme, startMarker);
+  const markdown = generateDocsMarkdown({
+    ...options,
+    precedingHeadings,
+  }).trimEnd();
   const block = `${startMarker}\n\n${markdown}\n\n${endMarker}`;
   const hasStartMarker = readme.includes(startMarker);
   const hasEndMarker = readme.includes(endMarker);
