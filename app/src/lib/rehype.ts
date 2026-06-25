@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { Element, Root, RootContent, Text } from "hast";
+import type { Element, ElementContent, Root, RootContent, Text } from "hast";
 import { toText } from "hast-util-to-text";
 import { visit } from "unist-util-visit";
 import { encodeBase64 } from "./base64.ts";
@@ -148,6 +148,60 @@ export function rehypePreviousCode() {
   };
 }
 
+function removeLeadingTextWhitespace(children: ElementContent[]) {
+  while (children.length) {
+    const child = children[0];
+    if (!child) break;
+    if (child.type !== "text") break;
+
+    const value = child.value.replace(/^\s+/, "");
+    if (value) {
+      children[0] = { ...child, value };
+      break;
+    }
+    children.shift();
+  }
+}
+
+function splitParagraphAtFirstLineBreak(paragraph: Element) {
+  const firstLine: ElementContent[] = [];
+  const rest = [...paragraph.children];
+
+  while (rest.length) {
+    const child = rest[0];
+    if (!child) break;
+
+    if (child.type === "element" && child.tagName === "br") {
+      rest.shift();
+      removeLeadingTextWhitespace(rest);
+      break;
+    }
+
+    if (child.type === "text") {
+      const newlineIndex = child.value.indexOf("\n");
+      if (newlineIndex !== -1) {
+        const value = child.value.slice(newlineIndex + 1);
+        firstLine.push({
+          type: "text",
+          value: child.value.slice(0, newlineIndex),
+        });
+        if (value) {
+          rest[0] = { ...child, value };
+        } else {
+          rest.shift();
+        }
+        removeLeadingTextWhitespace(rest);
+        break;
+      }
+    }
+
+    firstLine.push(child);
+    rest.shift();
+  }
+
+  return { firstLine, rest };
+}
+
 /**
  * This plugin transforms GitHub-style admonition blockquotes. It adds
  * `data-admonition`, `data-type`, and an optional `data-title` attribute to the
@@ -168,12 +222,21 @@ export function rehypeAdmonitions() {
 
       if (!firstParagraph) return;
 
-      const text = toText(firstParagraph).trim();
-      const match = text.match(/^\[!(\w+)\]\s*(.*)?$/);
+      const { firstLine, rest } =
+        splitParagraphAtFirstLineBreak(firstParagraph);
+      const firstLineParagraph: Element = {
+        type: "element",
+        tagName: "p",
+        properties: {},
+        children: firstLine,
+      };
+      const text = toText(firstLineParagraph).trim();
+      const match = text.match(/^\[!(\w+)\]\s*(.*)$/);
 
       if (!match) return;
 
       const type = match[1]?.toLowerCase();
+      if (!type) return;
       const title = match[2]?.trim();
 
       node.properties.type = type;
@@ -181,10 +244,13 @@ export function rehypeAdmonitions() {
         node.properties.title = title;
       }
 
-      // Remove the paragraph with the admonition type and title
-      const pIndex = children.indexOf(firstParagraph);
-      if (pIndex > -1) {
-        children.splice(pIndex, 1);
+      if (rest.length) {
+        firstParagraph.children = rest;
+      } else {
+        const pIndex = children.indexOf(firstParagraph);
+        if (pIndex > -1) {
+          children.splice(pIndex, 1);
+        }
       }
       node.tagName = "admonition";
     });
