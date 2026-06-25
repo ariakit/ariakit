@@ -9,6 +9,7 @@
  */
 
 import type { CollectionEntry } from "astro:content";
+import { encode } from "html-entities";
 import type { Reference, ReferenceProp } from "./schemas.ts";
 import { slugify } from "./string.ts";
 
@@ -49,6 +50,20 @@ export interface ReferenceSection {
 
 export interface ReferenceContent extends Reference {
   sections: ReferenceSection[];
+}
+
+interface GetReferenceCodeBlockHtmlParams {
+  code: string;
+  language: string;
+  meta?: string;
+}
+
+export function getReferenceCodeBlockHtml({
+  code,
+  language,
+  meta,
+}: GetReferenceCodeBlockHtmlParams) {
+  return `<code class="language-${language}"${meta ? ` metastring="${encode(meta)}"` : ""}>${encode(code)}</code>`;
 }
 
 export function getPropsParam(data: Reference) {
