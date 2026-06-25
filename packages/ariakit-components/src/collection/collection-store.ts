@@ -238,7 +238,7 @@ interface MergeItemWithStoreParams<T extends CollectionStoreItem> {
   canDeleteFromMap?: boolean;
   getItemsBeforeMount?: (items: T[], item: T) => T[];
   getItemsBeforeUnmount?: (items: T[]) => T[];
-  getRestoredItem?: (item?: T) => T | undefined;
+  getRestoredItem?: (item?: T, currentItem?: T) => T | undefined;
 }
 
 /**
@@ -609,7 +609,7 @@ export function createCollectionStore<
           return items;
         }
         const restoredItem = getRestoredItem
-          ? getRestoredItem(prevItem)
+          ? getRestoredItem(prevItem, items[index])
           : prevItem;
         if (!restoredItem) {
           if (canDeleteFromMap && !syncItemsMap) {
@@ -679,13 +679,26 @@ export function createCollectionStore<
         const { renderedItems } = privateStore.getState();
         return mergeItemsFromState({ items, stateItems, renderedItems });
       },
-      getRestoredItem: (prevItem) => {
+      getRestoredItem: (prevItem, currentItem) => {
+        // Once the public `items` state has diverged from registration, it is
+        // authoritative. If a controlled/explicit update has overwritten this
+        // registration's merge (the current item no longer equals the value this
+        // registration produced at mount), don't rewind to the stale snapshot;
+        // restore from the current public item instead. Otherwise (undiverged,
+        // or the snapshot is still intact) keep the existing rewind behavior. The
+        // removal case (no `prevItem`) is unaffected.
+        if (
+          everDiverged &&
+          prevItem &&
+          currentItem &&
+          !shallowEqual(currentItem, { ...prevItem, ...item })
+        ) {
+          return findItemById(collection.getState().items, item.id);
+        }
         if (isPublicStateCurrent()) {
           return prevItem;
         }
-        const { items } = collection.getState();
-        const stateItem = items.find(({ id }) => id === item.id);
-        return stateItem;
+        return findItemById(collection.getState().items, item.id);
       },
     });
   };

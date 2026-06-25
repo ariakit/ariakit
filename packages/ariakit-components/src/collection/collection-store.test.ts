@@ -703,6 +703,92 @@ test("keeps current item metadata after explicit state mismatch", async () => {
   }
 });
 
+test("does not revert controlled item metadata when overlapping registrations clean up", async () => {
+  const store = createCollectionStore<{
+    id: string;
+    value?: string;
+    label?: string;
+  }>();
+  const stop = init(store);
+
+  try {
+    const unregister = store.registerItem({ id: "item", value: "old" });
+    const restore = store.registerItem({ id: "item", label: "extra" });
+
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([{ id: "item", value: "old", label: "extra" }]);
+
+    // Controlled state diverges to brand-new metadata.
+    store.setState("items", [{ id: "item", value: "new", label: "new" }]);
+    expect(store.item("item")).toEqual({
+      id: "item",
+      value: "new",
+      label: "new",
+    });
+
+    // Cleaning up the first registration republishes private state, then the
+    // second registration's cleanup must not restore its pre-divergence
+    // snapshot over the authoritative controlled metadata.
+    unregister();
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([{ id: "item", value: "new", label: "new" }]);
+
+    restore();
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([{ id: "item", value: "new", label: "new" }]);
+    expect(store.item("item")).toEqual({
+      id: "item",
+      value: "new",
+      label: "new",
+    });
+  } finally {
+    stop();
+  }
+});
+
+test("strips overlapping registration metadata added after a divergence", async () => {
+  const store = createCollectionStore<{
+    id: string;
+    value?: string;
+    label?: string;
+  }>();
+  const stop = init(store);
+
+  try {
+    // Diverge then settle, so the store has diverged but public state no longer
+    // disagrees with the upcoming registrations.
+    store.setState("items", [{ id: "other", value: "other" }]);
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([{ id: "other", value: "other" }]);
+    store.setState("items", []);
+    await expect.poll(() => store.getState().items).toEqual([]);
+
+    // Overlapping registrations for the same id, entirely after the divergence.
+    const unregister = store.registerItem({ id: "item", value: "one" });
+    const restore = store.registerItem({ id: "item", label: "two" });
+
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([{ id: "item", value: "one", label: "two" }]);
+
+    // Cleaning up the later registration strips only its own contribution.
+    restore();
+    await expect
+      .poll(() => store.getState().items)
+      .toEqual([{ id: "item", value: "one" }]);
+    expect(store.item("item")).toEqual({ id: "item", value: "one" });
+
+    unregister();
+    await expect.poll(() => store.getState().items).toEqual([]);
+  } finally {
+    stop();
+  }
+});
+
 test("orders rendered items by DOM position", async () => {
   const store = createCollectionStore();
   const stop = init(store);
