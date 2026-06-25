@@ -9,13 +9,15 @@ inputs:
     description: Commit message and PR title
     required: true
   head-branch:
-    description: Branch name when committing to existing PR
+    description: Branch name when committing to an existing PR, or base branch when creating a new PR
     required: true
   expected-head-sha:
     description: >
-      Expected current SHA for the head branch when committing to an existing
-      PR. When set, the action refuses to rebase generated changes onto a
-      different branch tip.
+      Expected current SHA for the branch named by head-branch. Defaults to the
+      current checkout's HEAD. The action skips cleanly when the branch has
+      already advanced, and refuses to push if it advances after committing.
+      Pass this explicitly when the checkout HEAD may differ from the commit
+      that generated the outputs.
     required: false
     default: ""
   new-branch:
@@ -49,9 +51,36 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Verify branch tip
+      id: branch
+      shell: bash
+      env:
+        HEAD_REF: ${{ inputs.head-branch }}
+        EXPECTED_HEAD_SHA: ${{ inputs.expected-head-sha }}
+      run: |
+        cd "${{ inputs.working-directory }}"
+        set -e
+        expected_sha="$EXPECTED_HEAD_SHA"
+        if [ -z "$expected_sha" ]; then
+          expected_sha="$(git rev-parse HEAD)"
+        fi
+        git fetch --no-tags origin "$HEAD_REF"
+        remote_sha="$(git rev-parse FETCH_HEAD)"
+        if [ "$remote_sha" != "$expected_sha" ]; then
+          echo "Branch advanced from $expected_sha to $remote_sha; skipping write-back."
+          echo "is_current=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        echo "is_current=true" >> "$GITHUB_OUTPUT"
+        echo "expected_head_sha=$expected_sha" >> "$GITHUB_OUTPUT"
+
     - name: Create GitHub App token
       id: app-token
-      if: inputs.token == '' && inputs.app-client-id != '' && inputs.app-private-key != ''
+      if: >
+        steps.branch.outputs.is_current == 'true' &&
+        inputs.token == '' &&
+        inputs.app-client-id != '' &&
+        inputs.app-private-key != ''
       uses: actions/create-github-app-token@v3
       with:
         client-id: ${{ inputs.app-client-id }}
@@ -60,6 +89,7 @@ runs:
         permission-pull-requests: write
 
     - name: Configure git
+      if: steps.branch.outputs.is_current == 'true'
       shell: bash
       run: |
         cd "${{ inputs.working-directory }}"
@@ -67,7 +97,7 @@ runs:
         git config user.email "283989922+ariakito[bot]@users.noreply.github.com"
 
     - name: Create PR
-      if: inputs.event == 'push'
+      if: inputs.event == 'push' && steps.branch.outputs.is_current == 'true'
       uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8
       with:
         # Push workflows should not write directly to `main`; they publish
@@ -86,7 +116,7 @@ runs:
     - name: Commit changes
       id: commit
       shell: bash
-      if: inputs.event == 'pull_request'
+      if: inputs.event == 'pull_request' && steps.branch.outputs.is_current == 'true'
       env:
         MESSAGE: ${{ inputs.message }}
         PATHS: ${{ inputs.paths }}
@@ -117,7 +147,7 @@ runs:
       env:
         GITHUB_REPOSITORY: ${{ github.repository }}
         HEAD_REF: ${{ inputs.head-branch }}
-        EXPECTED_HEAD_SHA: ${{ inputs.expected-head-sha }}
+        EXPECTED_HEAD_SHA: ${{ steps.branch.outputs.expected_head_sha }}
         GH_TOKEN: ${{ inputs.token != '' && inputs.token || steps.app-token.outputs.token != '' && steps.app-token.outputs.token || github.token }}
       # Rebase onto the latest branch tip so generated-file commits do not
       # fail just because another commit landed while the workflow was running.
