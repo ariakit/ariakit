@@ -23,6 +23,7 @@ import {
 } from "#app/components/reference-label.react.tsx";
 import TableOfContents from "#app/components/table-of-contents.astro";
 import {
+  getReferenceCodeBlockHtml,
   getReferenceItemId,
   getReferenceItemKind,
   getReferenceSections,
@@ -31,7 +32,6 @@ import type { ReferenceSection } from "#app/lib/reference.ts";
 import type { Reference } from "#app/lib/schemas.ts";
 import { getReferencePath } from "#app/lib/url.ts";
 import type { CollectionEntry } from "astro:content";
-import { encode } from "html-entities";
 
 interface Props {
   reference: CollectionEntry<"references">;
@@ -49,7 +49,11 @@ interface ReferenceSectionContent extends ReferenceSection {
 function formatExamplesToHtml(examples: typeof data.examples = []) {
   return examples.map((example) => ({
     ...example,
-    codeHtml: `<code class="language-${example.language}"${example.meta ? ` metastring="${encode(example.meta)}"` : ""}>${encode(example.code)}</code>`,
+    codeHtml: getReferenceCodeBlockHtml({
+      code: example.code,
+      language: example.language,
+      meta: example.meta,
+    }),
   }));
 }
 
@@ -57,7 +61,10 @@ function getSectionsFromData(data: Reference) {
   const sections = getReferenceSections(data).map((section) => ({
     ...section,
     typeHtml: section.type
-      ? `<code class=\"language-typescript\">${section.type}</code>`
+      ? getReferenceCodeBlockHtml({
+          code: section.type,
+          language: "typescript",
+        })
       : undefined,
   }));
   return sections;
