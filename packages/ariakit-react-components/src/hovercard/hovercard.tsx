@@ -22,7 +22,7 @@ import {
   isFalsyBooleanCallback,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
-import type { ElementType, FocusEvent } from "react";
+import type { ElementType, FocusEvent, RefObject } from "react";
 import {
   createContext,
   useCallback,
@@ -67,6 +67,42 @@ function isMovingOnHovercard(
     return true;
   }
   return false;
+}
+
+interface DisableEventOnTransitParams {
+  event: MouseEvent;
+  element: Element;
+  enterPointRef: RefObject<Point | null>;
+  disablePointerEvents: (event: MouseEvent) => boolean;
+  refreshEnterPoint?: boolean;
+}
+
+// These events can trigger focus on other elements and close the hovercard
+// while the mouse is still moving toward it.
+function disableEventOnTransit({
+  event,
+  element,
+  enterPointRef,
+  disablePointerEvents,
+  refreshEnterPoint = false,
+}: DisableEventOnTransitParams) {
+  const enterPoint = enterPointRef.current;
+  if (!enterPoint) return false;
+
+  const currentPoint = getEventPoint(event);
+  const polygon = getElementPolygon(element, enterPoint);
+  if (!isPointInPolygon(currentPoint, polygon)) return false;
+
+  if (refreshEnterPoint) {
+    enterPointRef.current = currentPoint;
+  }
+
+  if (disablePointerEvents(event)) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  return true;
 }
 
 // When the hovercard element has focus, we should move focus back to the anchor
@@ -181,7 +217,6 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         if (!store) return;
         if (!isMouseMoving()) return;
         const { anchorElement, hideTimeout, timeout } = store.getState();
-        const enterPoint = enterPointRef.current;
         const path = event.composedPath();
         const anchor = anchorElement;
         // Checks whether the hovercard element has focus or the mouse is moving
@@ -206,23 +241,16 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         // nothing.
         if (hideTimeoutRef.current) return;
         // Enter point will be null when the user hovers over the hovercard
-        // element.
-        if (enterPoint) {
-          const currentPoint = getEventPoint(event);
-          const polygon = getElementPolygon(element, enterPoint);
-          // If the current event's mouse position is inside the transit
-          // polygon, this means that the mouse is moving toward the hover card,
-          // so we disable this event. This is necessary because the mousemove
-          // event may trigger focus on other elements and close the hovercard.
-          if (isPointInPolygon(currentPoint, polygon)) {
-            // Refreshes the enter point.
-            enterPointRef.current = currentPoint;
-            if (!disablePointerEventsProp(event)) return;
-            event.preventDefault();
-            event.stopPropagation();
-            return;
-          }
-        }
+        // element. Skip the hide timeout while the mouse is moving toward the
+        // hovercard, even when disabling pointer events isn't allowed.
+        const movingTowardElement = disableEventOnTransit({
+          event,
+          element,
+          enterPointRef,
+          disablePointerEvents: disablePointerEventsProp,
+          refreshEnterPoint: true,
+        });
+        if (movingTowardElement) return;
         if (!hideOnHoverOutsideProp(event)) return;
         // Otherwise, hide the hovercard after a short delay (hideTimeout).
         hideTimeoutRef.current = window.setTimeout(() => {
@@ -257,14 +285,12 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       const disableEvent = (event: MouseEvent) => {
         const element = ref.current;
         if (!element) return;
-        const enterPoint = enterPointRef.current;
-        if (!enterPoint) return;
-        const polygon = getElementPolygon(element, enterPoint);
-        if (isPointInPolygon(getEventPoint(event), polygon)) {
-          if (!disablePointerEventsProp(event)) return;
-          event.preventDefault();
-          event.stopPropagation();
-        }
+        disableEventOnTransit({
+          event,
+          element,
+          enterPointRef,
+          disablePointerEvents: disablePointerEventsProp,
+        });
       };
       return chain(
         // Note: we may need to add pointer events here in the future.
