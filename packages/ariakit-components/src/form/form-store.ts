@@ -42,13 +42,6 @@ function isPrototypePathSegment(key: PathSegment) {
   return false;
 }
 
-function hasPrototypePathSegment(path: readonly PathSegment[]) {
-  for (const key of path) {
-    if (isPrototypePathSegment(key)) return true;
-  }
-  return false;
-}
-
 function nextFrame() {
   return new Promise<void>((resolve) => {
     // Browsers pause `requestAnimationFrame` in hidden documents, which would
@@ -92,10 +85,9 @@ function getPathValue<T>(
   defaultValue?: T,
 ): T {
   const [key, ...rest] = path;
-  if (key == null || !values) {
+  if (key == null || !values || isPrototypePathSegment(key)) {
     return defaultValue as T;
   }
-  if (isPrototypePathSegment(key)) return defaultValue as T;
   if (!rest.length) {
     return values[key] ?? defaultValue;
   }
@@ -146,7 +138,7 @@ function set<T extends FormStoreValues | unknown[]>(
   value: unknown,
 ): T {
   const pathKeys = getPath(path);
-  if (hasPrototypePathSegment(pathKeys)) return values;
+  if (pathKeys.some(isPrototypePathSegment)) return values;
   return setPath(values, pathKeys, value);
 }
 
