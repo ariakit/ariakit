@@ -54,10 +54,11 @@ export interface PopoverHeadingOptions<
   /**
    * Object returned by the
    * [`usePopoverStore`](https://ariakit.com/reference/use-popover-store) hook.
-   * If not provided, the closest
-   * [`Popover`](https://ariakit.com/reference/popover) or
-   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
-   * components' context will be used.
+   *
+   * **Note**: This prop has no effect on this component. The heading is
+   * linked to the closest [`Popover`](https://ariakit.com/reference/popover)
+   * component through React context, so it must be rendered inside the popover
+   * for the `aria-labelledby` prop to be set on the popover element.
    */
   store?: PopoverStore;
 }

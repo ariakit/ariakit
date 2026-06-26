@@ -20,8 +20,8 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 /**
  * Returns props to create a `SelectLabel` component. Since it's not a native
  * select element, we can't use the native label element. The `SelectLabel`
- * component will move focus and click on the `Select` component when the user
- * clicks on the label.
+ * component will move focus to the `Select` component when the user clicks on
+ * the label.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -49,9 +49,9 @@ export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      // queueMicrotask will guarantee that the focus and click events will be
-      // triggered only after the current event queue is flushed (which includes
-      // this click event).
+      // queueMicrotask will guarantee that the focus event will be triggered
+      // only after the current event queue is flushed (which includes this
+      // click event).
       queueMicrotask(() => {
         const select = store?.getState().selectElement;
         select?.focus();
@@ -76,7 +76,7 @@ export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
 /**
  * Renders a label for the [`Select`](https://ariakit.com/reference/select)
  * component. Since it's not a native select element, we can't use the native
- * label element. This component will move focus and click on the
+ * label element. This component will move focus to the
  * [`Select`](https://ariakit.com/reference/select) component when clicked.
  * @see https://ariakit.com/components/select
  * @example

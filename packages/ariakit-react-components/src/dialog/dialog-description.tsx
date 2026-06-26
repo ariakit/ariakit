@@ -73,9 +73,12 @@ export interface DialogDescriptionOptions<
 > extends Options {
   /**
    * Object returned by the
-   * [`useDialogStore`](https://ariakit.com/reference/use-dialog-store) hook. If
-   * not provided, the closest [`Dialog`](https://ariakit.com/reference/dialog)
-   * component's context will be used.
+   * [`useDialogStore`](https://ariakit.com/reference/use-dialog-store) hook.
+   *
+   * **Note**: This prop has no effect on this component. The description is
+   * linked to the closest [`Dialog`](https://ariakit.com/reference/dialog)
+   * component through React context, so it must be rendered inside the dialog
+   * for the `aria-describedby` prop to be set on the dialog element.
    */
   store?: DialogStore;
 }

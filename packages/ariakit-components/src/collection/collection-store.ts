@@ -283,7 +283,7 @@ export interface CollectionStoreOptions<
   T extends CollectionStoreItem = CollectionStoreItem,
 > extends StoreOptions<CollectionStoreState<T>, "items"> {
   /**
-   * The defaut value for the
+   * The default value for the
    * [`items`](https://ariakit.com/reference/collection-provider#items) state.
    * @default []
    */
