@@ -7,14 +7,13 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
-import { useFormContext } from "./form-context.tsx";
+import { useFormItemContext } from "./form-context.tsx";
 import type { FormStore, FormStoreState } from "./form-store.ts";
 import { getArrayFieldIndex } from "./utils.ts";
 
@@ -67,17 +66,12 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
     autoFocusOnClick = true,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
-
-    invariant(
+    const { store: form, name } = useFormItemContext({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "FormPush must be wrapped in a Form component.",
-    );
-
-    const name = String(nameProp);
-    const items = useStoreState(store, "items");
+      name: nameProp,
+      component: "FormPush",
+    });
+    const items = useStoreState(form, "items");
     const [focusIndex, setFocusIndex] = useState<number | null>(null);
 
     useEffect(() => {
@@ -107,8 +101,8 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      const length = store?.getValue<unknown[]>(name)?.length ?? 0;
-      store?.pushValue(name, value);
+      const length = form.getValue<unknown[]>(name)?.length ?? 0;
+      form.pushValue(name, value);
       if (!autoFocusOnClick) return;
       setFocusIndex(length);
     });
@@ -119,7 +113,7 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
     };
 
     props = useButton(props);
-    props = useCollectionItem<TagName>({ store, ...props, getItem });
+    props = useCollectionItem<TagName>({ store: form, ...props, getItem });
 
     return props;
   },
