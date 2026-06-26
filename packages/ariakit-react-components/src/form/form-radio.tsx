@@ -7,11 +7,10 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { invariant } from "@ariakit/utils";
 import type { ChangeEvent, ElementType } from "react";
 import type { RadioOptions } from "../radio/radio.tsx";
 import { useRadio } from "../radio/radio.tsx";
-import { useFormContext } from "./form-context.tsx";
+import { useFormItemContext } from "./form-context.tsx";
 import type { FormControlOptions } from "./form-control.tsx";
 import { useFormControl } from "./form-control.tsx";
 
@@ -39,28 +38,23 @@ type TagName = typeof TagName;
  */
 export const useFormRadio = createHook<TagName, FormRadioOptions>(
   function useFormRadio({ store, name: nameProp, value, ...props }) {
-    const context = useFormContext();
-    store = store || context;
-
-    invariant(
+    const { store: form, name } = useFormItemContext({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "FormRadio must be wrapped in a Form component.",
-    );
-
-    const name = String(nameProp);
+      name: nameProp,
+      component: "FormRadio",
+    });
     const onChangeProp = props.onChange;
 
     const onChange = useEvent((event: ChangeEvent<HTMLInputElement>) => {
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
-      store?.setValue(name, value);
+      form.setValue(name, value);
     });
 
     const checkedProp = props.checked;
     const checked = useStoreState(
-      store,
-      () => checkedProp ?? store?.getValue(name) === value,
+      form,
+      () => checkedProp ?? form.getValue(name) === value,
     );
 
     props = {
@@ -72,7 +66,7 @@ export const useFormRadio = createHook<TagName, FormRadioOptions>(
     props = useRadio({ name, value, ...props });
 
     props = useFormControl({
-      store,
+      store: form,
       name,
       "aria-labelledby": undefined,
       ...props,

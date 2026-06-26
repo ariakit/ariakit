@@ -6,11 +6,11 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { isTextField, invariant } from "@ariakit/utils";
+import { isTextField } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
-import { useFormContext } from "./form-context.tsx";
+import { useFormItemContext } from "./form-context.tsx";
 import type { FormStore, FormStoreState } from "./form-store.ts";
 import { getArrayFieldIndex, isArrayFieldName } from "./utils.ts";
 
@@ -76,25 +76,19 @@ export const useFormRemove = createHook<TagName, FormRemoveOptions>(
     autoFocusOnClick = true,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
-
-    invariant(
+    const { store: form, name } = useFormItemContext({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "FormRemove must be wrapped in a Form component.",
-    );
-
-    const name = String(nameProp);
+      name: nameProp,
+      component: "FormRemove",
+    });
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      if (!store) return;
-      store.removeValue(name, index);
+      form.removeValue(name, index);
       if (!autoFocusOnClick) return;
-      const { items } = store.getState();
+      const { items } = form.getState();
       const item = findNextOrPreviousField(items, name, index);
       const element = item?.element;
       if (element) {
