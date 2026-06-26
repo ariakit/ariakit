@@ -111,7 +111,7 @@
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
     "@ariakit/test": "workspace:*",
-    "@axe-core/playwright": "4.11.3",
+    "@axe-core/playwright": "4.12.1",
     "@playwright/test": "1.60.0",
     "@types/canvas-confetti": "1.9.0",
     "@types/hast": "3.0.4",
