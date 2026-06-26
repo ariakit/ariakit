@@ -11,6 +11,7 @@ import type {
 import { createCollectionStore } from "../collection/collection-store.ts";
 
 type Orientation = "horizontal" | "vertical" | "both";
+type CompositeStoreDirection = "next" | "previous" | "up" | "down";
 
 interface NextOptions extends Pick<
   Partial<CompositeStoreState>,
@@ -219,7 +220,7 @@ export function createCompositeStore<
   );
 
   const getNextId = (
-    direction: "next" | "previous" | "up" | "down" = "next",
+    direction: CompositeStoreDirection = "next",
     options: NextOptions = {},
   ): string | null | undefined => {
     const defaultState = composite.getState();
@@ -334,6 +335,17 @@ export function createCompositeStore<
     return nextItem?.id;
   };
 
+  const getNextIdFromOptions = (
+    direction: CompositeStoreDirection,
+    options?: NextOptions | number,
+  ) => {
+    // Support the deprecated number overloads such as next(skip).
+    if (typeof options === "number") {
+      return getNextId(direction, { skip: options });
+    }
+    return getNextId(direction, options);
+  };
+
   return {
     ...collection,
     ...composite,
@@ -353,33 +365,10 @@ export function createCompositeStore<
       findFirstEnabledItem(reverseArray(composite.getState().renderedItems))
         ?.id,
 
-    next: (options) => {
-      if (options !== undefined && typeof options === "number") {
-        options = { skip: options };
-      }
-      return getNextId("next", options);
-    },
-
-    previous: (options) => {
-      if (options !== undefined && typeof options === "number") {
-        options = { skip: options };
-      }
-      return getNextId("previous", options);
-    },
-
-    down: (options) => {
-      if (options !== undefined && typeof options === "number") {
-        options = { skip: options };
-      }
-      return getNextId("down", options);
-    },
-
-    up: (options) => {
-      if (options !== undefined && typeof options === "number") {
-        options = { skip: options };
-      }
-      return getNextId("up", options);
-    },
+    next: (options) => getNextIdFromOptions("next", options),
+    previous: (options) => getNextIdFromOptions("previous", options),
+    down: (options) => getNextIdFromOptions("down", options),
+    up: (options) => getNextIdFromOptions("up", options),
   };
 }
 
