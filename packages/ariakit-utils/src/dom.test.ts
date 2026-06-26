@@ -1,5 +1,6 @@
 import { afterEach, expect, test } from "vitest";
 import {
+  getItemRoleByPopupRole,
   getScrollingElement,
   getTextboxSelection,
   getTextboxValue,
@@ -22,6 +23,14 @@ test("detects text fields without throwing for unsupported inputs", () => {
   expect(isTextField(text)).toBe(true);
   expect(isTextField(checkbox)).toBe(false);
   expect(isTextField(textarea)).toBe(true);
+});
+
+test("gets item roles by popup role", () => {
+  expect(getItemRoleByPopupRole("menu")).toBe("menuitem");
+  expect(getItemRoleByPopupRole("listbox")).toBe("option");
+  expect(getItemRoleByPopupRole("tree")).toBe("treeitem");
+  expect(getItemRoleByPopupRole("dialog")).toBeUndefined();
+  expect(getItemRoleByPopupRole("toString")).toBeUndefined();
 });
 
 test("reads selection offsets from text fields", () => {

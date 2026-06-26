@@ -51,6 +51,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`getTextboxValue`](#gettextboxvalue)
   - [`getTextboxSelection`](#gettextboxselection)
   - [`getPopupRole`](#getpopuprole)
+  - [`getItemRoleByPopupRole`](#getitemrolebypopuprole)
   - [`getPopupItemRole`](#getpopupitemrole)
   - [`scrollIntoViewIfNeeded`](#scrollintoviewifneeded)
   - [`getScrollingElement`](#getscrollingelement)
@@ -474,6 +475,18 @@ function getPopupRole(
 ```
 
 Returns the popup role from the element's role attribute, if it has one.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `getItemRoleByPopupRole`
+
+```ts
+function getItemRoleByPopupRole(popupRole?: string | null): string | undefined;
+```
+
+Returns the item role based on the popup role.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
