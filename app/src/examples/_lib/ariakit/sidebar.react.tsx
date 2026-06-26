@@ -12,6 +12,7 @@ const defaultSidebarContext: SidebarContextType = {
 };
 
 const SidebarContext = React.createContext(defaultSidebarContext);
+const SidebarProviderContext = React.createContext(false);
 
 export interface SidebarProps
   extends ak.RoleProps, Partial<SidebarContextType> {
@@ -30,10 +31,10 @@ export function Sidebar({
 }: SidebarProps) {
   const isMobile = useIsMobile();
   const context = React.useContext(SidebarContext);
-  const dialog = ak.useDialogContext();
+  const hasSidebarProvider = React.useContext(SidebarProviderContext);
 
   side = side ?? context.side;
-  collapsible = collapsible ?? !!dialog;
+  collapsible = collapsible ?? hasSidebarProvider;
 
   const contextValue = React.useMemo(() => ({ side }), [side]);
 
@@ -57,7 +58,8 @@ export function Sidebar({
         modal={isMobile}
         hideOnEscape={isMobile}
         hideOnInteractOutside={isMobile}
-        open
+        open={hasSidebarProvider ? undefined : true}
+        autoFocusOnShow={isMobile}
         {...props}
         className={clsx(
           isMobile && "fixed start-0 top-0 h-full z-10",
@@ -78,9 +80,11 @@ export function SidebarProvider({
 }: SidebarProviderProps) {
   const contextValue = React.useMemo(() => ({ side }), [side]);
   return (
-    <SidebarContext.Provider value={contextValue}>
-      <ak.DialogProvider {...props} />
-    </SidebarContext.Provider>
+    <SidebarProviderContext.Provider value={true}>
+      <SidebarContext.Provider value={contextValue}>
+        <ak.DialogProvider {...props} />
+      </SidebarContext.Provider>
+    </SidebarProviderContext.Provider>
   );
 }
 
