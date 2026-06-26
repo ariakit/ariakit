@@ -10,6 +10,7 @@ import type { Props } from "@ariakit/react-utils";
 import { invariant, shallowEqual } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useEffect } from "react";
+import { getPrimitiveValue } from "../checkbox/__utils.ts";
 import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
 import { useCheckbox } from "../checkbox/checkbox.tsx";
@@ -21,13 +22,6 @@ import type { MenuStore, MenuStoreValues } from "./menu-store.ts";
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type ValueState = MenuStoreValues[string];
-
-function getPrimitiveValue<T>(value: T) {
-  if (Array.isArray(value)) {
-    return value.toString();
-  }
-  return value as Exclude<T, readonly any[]>;
-}
 
 function getValue(
   storeValue: ValueState,
