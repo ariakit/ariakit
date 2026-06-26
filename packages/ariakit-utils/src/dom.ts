@@ -3,6 +3,7 @@
  * @module DOM utilities
  */
 
+import { hasOwnProperty } from "./misc.ts";
 import type { AriaHasPopup, AriaRole } from "./types.ts";
 
 /**
@@ -279,6 +280,15 @@ export function getPopupRole(
 }
 
 /**
+ * Returns the item role based on the popup role.
+ */
+export function getItemRoleByPopupRole(popupRole?: string | null) {
+  if (popupRole == null) return;
+  if (!hasOwnProperty(itemRoleByPopupRole, popupRole)) return;
+  return itemRoleByPopupRole[popupRole];
+}
+
+/**
  * Returns the item role attribute based on the popup's role.
  */
 export function getPopupItemRole(
@@ -286,9 +296,8 @@ export function getPopupItemRole(
   fallback?: AriaRole,
 ) {
   const popupRole = getPopupRole(element);
-  if (!popupRole) return fallback;
-  const key = popupRole as keyof typeof itemRoleByPopupRole;
-  return itemRoleByPopupRole[key] ?? fallback;
+  if (typeof popupRole !== "string") return fallback;
+  return getItemRoleByPopupRole(popupRole) ?? fallback;
 }
 
 /**
