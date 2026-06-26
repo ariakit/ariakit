@@ -56,7 +56,7 @@ The `@ariakit/test/react` entry point renders React components for testing, and 
 function blur(element?: DirtiableElement | null): Promise<void>;
 ```
 
-Removes focus from an element, simulating a real user moving focus away from it. When no element is passed, the currently focused element (`document.activeElement`) is used. If the element was typed into since it gained focus, a `change` event is dispatched before it's blurred.
+Removes focus from an element, simulating a real user moving focus away from it. When no element is passed, the currently focused element (`document.activeElement`) is used. If typing changed the element's value since it gained focus, a `change` event is dispatched before it's blurred.
 
 Example:
 
@@ -135,7 +135,7 @@ await dispatch(q.textbox(), new Event("selectstart", { bubbles: true }));
 function focus(element: Element | null): Promise<void>;
 ```
 
-Moves focus to an element, simulating a real user focusing it. Elements that aren't focusable are ignored, and focusing the already focused element is a no-op. If another element was typed into since it gained focus, its pending `change` event is dispatched before focus moves.
+Moves focus to an element, simulating a real user focusing it. Elements that aren't focusable are ignored, and focusing the already focused element is a no-op. If typing changed another element's value since it gained focus, its pending `change` event is dispatched before focus moves.
 
 Example:
 
@@ -235,6 +235,8 @@ Presses a key on an element, simulating a real user keyboard interaction. Fires 
 
 When no element is passed, the currently focused element is used. Shortcuts such as `press.Enter()` and `press.Tab()` are provided for common keys, and `press.ShiftTab()` moves focus backwards.
 
+Use `press.down` and `press.up` to fire only the keydown or keyup half of a press. Each defaults to the currently focused element, so a key released after focus moved away — for example, an element that disables itself on keydown — lands where a real browser would deliver it.
+
 Example:
 
 ```ts
@@ -242,6 +244,9 @@ await press.Tab();
 await press.Enter();
 // `press.Enter(element)` is shorthand for `press("Enter", element)`:
 await press.Enter(q.button("Submit"));
+// Split a press so the keyup lands on whatever is focused at release time:
+await press.down.Space();
+await press.up.Space();
 ```
 
 <div align="right">

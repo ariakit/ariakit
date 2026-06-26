@@ -51,7 +51,7 @@ useComboboxContext()
           <ComboboxItemCheck />
           <ComboboxItemValue />
         </ComboboxItem>
-        <ComboboxSeparator>
+        <ComboboxSeparator />
       </ComboboxRow>
     </ComboboxGroup>
   </ComboboxPopover>

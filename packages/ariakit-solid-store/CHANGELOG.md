@@ -1,5 +1,10 @@
 # @ariakit/solid-store
 
+## 0.1.3
+
+- Fixed initialized child stores to avoid notifying listeners twice when they update shared parent state.
+- Updated dependencies: `@ariakit/store@0.1.3`
+
 ## 0.1.2
 
 - Fixed runtime `process.env.NODE_ENV` checks in published package output, including test-only behavior and development warnings.

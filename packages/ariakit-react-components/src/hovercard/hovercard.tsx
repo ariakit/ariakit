@@ -15,7 +15,6 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
-  contains,
   addGlobalEventListener,
   hasFocusWithin,
   chain,
@@ -23,7 +22,7 @@ import {
   isFalsyBooleanCallback,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
-import type { ElementType, FocusEvent } from "react";
+import type { ElementType, FocusEvent, RefObject } from "react";
 import {
   createContext,
   useCallback,
@@ -52,23 +51,58 @@ type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isMovingOnHovercard(
-  target: Node | null | undefined,
+  path: EventTarget[],
   card: HTMLElement,
   anchor: HTMLElement | null,
   nested?: HTMLElement[],
 ) {
   // The hovercard element has focus so we should keep it visible.
   if (hasFocusWithin(card)) return true;
-  if (!target) return false;
   // The mouse is moving on an element inside the hovercard.
-  if (contains(card, target)) return true;
+  if (path.includes(card)) return true;
   // The mouse is moving on an element inside the anchor element.
-  if (anchor && contains(anchor, target)) return true;
+  if (anchor && path.includes(anchor)) return true;
   // The mouse is moving on an element inside a nested hovercard.
-  if (nested?.some((card) => hasFocusWithin(card) || contains(card, target))) {
+  if (nested?.some((card) => hasFocusWithin(card) || path.includes(card))) {
     return true;
   }
   return false;
+}
+
+interface DisableEventOnTransitParams {
+  event: MouseEvent;
+  element: Element;
+  enterPointRef: RefObject<Point | null>;
+  disablePointerEvents: (event: MouseEvent) => boolean;
+  refreshEnterPoint?: boolean;
+}
+
+// These events can trigger focus on other elements and close the hovercard
+// while the mouse is still moving toward it.
+function disableEventOnTransit({
+  event,
+  element,
+  enterPointRef,
+  disablePointerEvents,
+  refreshEnterPoint = false,
+}: DisableEventOnTransitParams) {
+  const enterPoint = enterPointRef.current;
+  if (!enterPoint) return false;
+
+  const currentPoint = getEventPoint(event);
+  const polygon = getElementPolygon(element, enterPoint);
+  if (!isPointInPolygon(currentPoint, polygon)) return false;
+
+  if (refreshEnterPoint) {
+    enterPointRef.current = currentPoint;
+  }
+
+  if (disablePointerEvents(event)) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  return true;
 }
 
 // When the hovercard element has focus, we should move focus back to the anchor
@@ -183,14 +217,13 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         if (!store) return;
         if (!isMouseMoving()) return;
         const { anchorElement, hideTimeout, timeout } = store.getState();
-        const enterPoint = enterPointRef.current;
-        const [target] = event.composedPath() as Node[];
+        const path = event.composedPath();
         const anchor = anchorElement;
         // Checks whether the hovercard element has focus or the mouse is moving
         // through valid hovercard elements.
         if (
           isMovingOnHovercard(
-            target,
+            path,
             element,
             anchor,
             nestedHovercardsRef.current,
@@ -200,9 +233,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
           // card is open, keep track of the mouse position so we can use the
           // last point before the mouse leaves the anchor element.
           enterPointRef.current =
-            target && anchor && contains(anchor, target)
-              ? getEventPoint(event)
-              : null;
+            anchor && path.includes(anchor) ? getEventPoint(event) : null;
           clearHideTimeout();
           return;
         }
@@ -210,23 +241,16 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         // nothing.
         if (hideTimeoutRef.current) return;
         // Enter point will be null when the user hovers over the hovercard
-        // element.
-        if (enterPoint) {
-          const currentPoint = getEventPoint(event);
-          const polygon = getElementPolygon(element, enterPoint);
-          // If the current event's mouse position is inside the transit
-          // polygon, this means that the mouse is moving toward the hover card,
-          // so we disable this event. This is necessary because the mousemove
-          // event may trigger focus on other elements and close the hovercard.
-          if (isPointInPolygon(currentPoint, polygon)) {
-            // Refreshes the enter point.
-            enterPointRef.current = currentPoint;
-            if (!disablePointerEventsProp(event)) return;
-            event.preventDefault();
-            event.stopPropagation();
-            return;
-          }
-        }
+        // element. Skip the hide timeout while the mouse is moving toward the
+        // hovercard, even when disabling pointer events isn't allowed.
+        const movingTowardElement = disableEventOnTransit({
+          event,
+          element,
+          enterPointRef,
+          disablePointerEvents: disablePointerEventsProp,
+          refreshEnterPoint: true,
+        });
+        if (movingTowardElement) return;
         if (!hideOnHoverOutsideProp(event)) return;
         // Otherwise, hide the hovercard after a short delay (hideTimeout).
         hideTimeoutRef.current = window.setTimeout(() => {
@@ -261,14 +285,12 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       const disableEvent = (event: MouseEvent) => {
         const element = ref.current;
         if (!element) return;
-        const enterPoint = enterPointRef.current;
-        if (!enterPoint) return;
-        const polygon = getElementPolygon(element, enterPoint);
-        if (isPointInPolygon(getEventPoint(event), polygon)) {
-          if (!disablePointerEventsProp(event)) return;
-          event.preventDefault();
-          event.stopPropagation();
-        }
+        disableEventOnTransit({
+          event,
+          element,
+          enterPointRef,
+          disablePointerEvents: disablePointerEventsProp,
+        });
       };
       return chain(
         // Note: we may need to add pointer events here in the future.
@@ -307,8 +329,8 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
 
     // Register the hovercard as a nested hovercard on the parent hovercard if
     // it's not a modal, is portal and is mounted. We don't need to register
-    // non-portal hovercards because they will be captured by the contains
-    // function in the isMovingOnHovercard function above. This must be a layout
+    // non-portal hovercards because they will be captured by the composed path
+    // check in the isMovingOnHovercard function above. This must be a layout
     // effect so we don't lose mouse move events right after the nested
     // hovercard has been mounted (for example, a submenu that's overlapping its
     // menu button and we keep moving the mouse while the submenu is due to

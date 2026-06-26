@@ -65,12 +65,34 @@ export const PromoDataSchema = z.object({
 });
 export type PromoData = z.infer<typeof PromoDataSchema>;
 
+const URL_SCHEMA_BASE = new URL("http://localhost");
+
+export interface NormalizeURLPathOptions {
+  base?: string | URL;
+}
+
+export function normalizeURLPath(
+  value?: string | URL | null,
+  { base = URL_SCHEMA_BASE }: NormalizeURLPathOptions = {},
+) {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value, base);
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return undefined;
+    }
+    const pathname = `/${url.pathname.replace(/^\/+/, "")}`;
+    return pathname + url.search + url.hash;
+  } catch {
+    return undefined;
+  }
+}
+
 export const URLSchema = z
   .string()
   .optional()
   .transform((value) => {
-    if (!value) return undefined;
-    return decodeURIComponent(value);
+    return normalizeURLPath(value);
   });
 
 const ReferenceExampleSchema = z.object({

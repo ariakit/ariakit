@@ -35,6 +35,7 @@ try {
 
 const port = Number(process.env.APP_PORT) || 4321;
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
+const viteCacheDir = process.env.APP_VITE_CACHE_DIR;
 
 // https://astro.build/config
 export default defineConfig({
@@ -59,13 +60,31 @@ export default defineConfig({
     imageService: "compile",
   }),
 
+  build: {
+    // Prerendering thousands of reference partial pages is the bulk of the
+    // build. Rendering a few pages concurrently overlaps their async work
+    // (collection reads, markdown rendering, file writes) without exhausting
+    // memory on CI runners.
+    concurrency: 4,
+  },
+
   vite: {
+    // TODO: Remove this workaround once Astro isolates optimizer cache writes
+    // across dev and check commands. Running `astro check` while `astro dev`
+    // is active shares Vite's optimized deps cache, so the checker uses a
+    // separate cache directory to avoid invalidating the dev server's optimized
+    // SSR modules.
+    cacheDir: viteCacheDir,
+    build: {
+      // Perf CI enables this so CDP script profiles can resolve source maps.
+      sourcemap: process.env.PERF_SOURCE_MAP === "true",
+    },
     plugins: [
       tailwindcss(),
       sourcePlugin(join(import.meta.dirname, "src/examples/")),
     ],
     // TODO: Remove this workaround once
-    // https://github.com/withastro/astro/issues/16853 is fixed. These bare
+    // https://github.com/withastro/astro/issues/17166 is fixed. These bare
     // specifiers are missed by the SSR dependency optimizer's initial scan.
     // Some are re-exported from Astro virtual modules (astro:transitions,
     // astro:actions); others are imported directly (astro/zod in
@@ -112,7 +131,20 @@ export default defineConfig({
       : clerk({
           signInUrl: getPlusAccountPath({ path: "login" }),
           signUpUrl: getPlusCheckoutPath({ step: "login" }),
+          // @clerk/astro 3.4.2 migrated its build to tsdown and inlined a
+          // newer `@clerk/ui` `Appearance<Ui<any>>` type into its bundled
+          // declarations. That type keeps only per-component overrides (plus
+          // the `Ui` brand and `cssLayerName`) and drops the top-level theme
+          // props (`variables`, `layout`), so this config no longer
+          // type-checks — even though the 3.4.2 changelog reports no runtime
+          // or public API change and the legacy appearance options still work
+          // at runtime. Because excess-property checks stop at the first
+          // unknown key, the `@ts-expect-error` below disables property/value
+          // checking for the whole `appearance` object, not just `variables`;
+          // edits here go unchecked until Clerk ships a fixed type and the
+          // directive can be removed.
           appearance: {
+            // @ts-expect-error -- see the note above (upstream type regression).
             variables: {
               fontSize: "1rem",
             },

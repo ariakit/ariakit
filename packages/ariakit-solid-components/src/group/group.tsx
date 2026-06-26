@@ -35,7 +35,7 @@ export const useGroup = createHook<TagName, GroupOptions>(
       {
         role: "group" as const,
         get "aria-labelledby"() {
-          return labelId();
+          return props["aria-label"] != null ? undefined : labelId();
         },
       },
       props,

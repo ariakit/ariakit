@@ -23,7 +23,6 @@ import {
   isElement,
   isNode,
   isFocusable,
-  chain,
   isSafari,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
@@ -57,7 +56,10 @@ import {
 } from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 import { useDialogStore } from "./dialog-store.ts";
-import { disableTree, disableTreeOutside } from "./utils/disable-tree.ts";
+import {
+  disableTree,
+  markAndDisableTreeOutside,
+} from "./utils/disable-tree.ts";
 import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.ts";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.ts";
 import { supportsInert } from "./utils/supports-inert.ts";
@@ -310,10 +312,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
     ];
     if (modal) {
-      return chain(
-        markTreeOutside(id, allElements),
-        disableTreeOutside(id, allElements),
-      );
+      return markAndDisableTreeOutside(id, allElements);
     }
     return markTreeOutside(id, [disclosureElement, ...allElements]);
   }, [

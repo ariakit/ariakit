@@ -1,5 +1,5 @@
 import { afterEach, expect, test } from "vitest";
-import { disableTreeOutside } from "./disable-tree.ts";
+import { markAndDisableTreeOutside } from "./disable-tree.ts";
 import { isElementMarked, markTreeOutside } from "./mark-tree-outside.ts";
 import { assignStyle, setAttribute } from "./orchestrate.ts";
 import { supportsInert } from "./supports-inert.ts";
@@ -224,7 +224,7 @@ test("markTreeOutside restores previous marks after nested cleanup", () => {
   expect(isElementMarked(outside, "two")).toBe(false);
 });
 
-test("disableTreeOutside skips focus traps and restores disabled elements", () => {
+test("markAndDisableTreeOutside skips focus traps and restores disabled elements", () => {
   document.body.innerHTML = `
     <div id="root">
       <div id="dialog"></div>
@@ -239,7 +239,11 @@ test("disableTreeOutside skips focus traps and restores disabled elements", () =
   const focusTrap = getElement("focus-trap");
   const outside = getElement("outside");
 
-  const restoreTree = disableTreeOutside("dialog", [dialog]);
+  const restoreTree = markAndDisableTreeOutside("dialog", [dialog]);
+
+  expect(isElementMarked(outside, "dialog")).toBe(true);
+  // Focus traps are marked as outside the dialog, but not disabled.
+  expect(isElementMarked(focusTrap, "dialog")).toBe(true);
 
   if (supportsInert()) {
     expect(outside.inert).toBe(true);
@@ -252,6 +256,9 @@ test("disableTreeOutside skips focus traps and restores disabled elements", () =
   }
 
   restoreTree();
+
+  expect(isElementMarked(outside, "dialog")).toBe(false);
+  expect(isElementMarked(focusTrap, "dialog")).toBe(false);
 
   if (supportsInert()) {
     expect(outside.inert).toBe(false);

@@ -201,20 +201,28 @@ async function syncPrices() {
   const cachedPrices = await getPrices();
 
   // Delete prices that are not active
-  for (const price of cachedPrices) {
-    const { type } = parsePlusPriceKey(price.key);
+  for (const cachedPrice of cachedPrices) {
+    // KV list metadata can lag behind writes, so keys synced during this run
+    // must survive even when the listed id is stale or absent from Stripe.
+    if (pricesToCache.has(cachedPrice.key)) continue;
+    const { type } = parsePlusPriceKey(cachedPrice.key);
     if (!type) {
       logger.warn(
         "Price %s has invalid key. Deleting from cache...",
-        price.key,
+        cachedPrice.key,
       );
-      await deletePrice(price.key);
+      await deletePrice(cachedPrice.key);
       continue;
     }
-    const stripePrice = prices.find((p) => p.id === price.id);
+    const stripePrice = prices.find((price) => {
+      return price.id === cachedPrice.id;
+    });
     if (stripePrice?.active) continue;
-    logger.warn("Price %s is not active. Deleting from cache...", price.key);
-    await deletePrice(price.key);
+    logger.warn(
+      "Price %s is not active. Deleting from cache...",
+      cachedPrice.key,
+    );
+    await deletePrice(cachedPrice.key);
   }
 }
 

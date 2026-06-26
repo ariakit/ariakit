@@ -8,12 +8,14 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { ReferenceItem as ReferenceSectionItem } from "#app/lib/reference.ts";
+import {
+  getReferenceCodeBlockHtml,
+  type ReferenceItem as ReferenceSectionItem,
+} from "#app/lib/reference.ts";
 import { getReferencePath } from "#app/lib/url.ts";
 import type { ComponentProps } from "astro/types";
 import { getEntry } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import { encode } from "html-entities";
 import pluralize from "pluralize";
 import ContentAdmonition from "./content-admonition.astro";
 import ContentCodeBlock from "./content-code-block.astro";
@@ -48,7 +50,11 @@ const {
 const path = getReferencePath({ reference, item: id });
 
 function getCodeBlockCode(example: ReferenceSectionItem["examples"][number]) {
-  return `<code class="language-${example.language}"${example.meta ? ` metastring="${encode(example.meta)}"` : ""}>${example.code}</code>`;
+  return getReferenceCodeBlockHtml({
+    code: example.code,
+    language: example.language,
+    meta: example.meta,
+  });
 }
 
 const ex = await getEntry("examples", "checkbox-card");

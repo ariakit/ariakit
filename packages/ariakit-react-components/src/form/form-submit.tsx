@@ -12,7 +12,7 @@ const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 
 /**
- * Returns props to create a `FormReset` component.
+ * Returns props to create a `FormSubmit` component.
  * @see https://ariakit.com/components/form
  * @example
  * ```jsx

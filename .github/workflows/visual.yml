@@ -23,7 +23,7 @@ jobs:
       WRITEBACK_ALLOWED: ${{ inputs.event != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -156,7 +156,7 @@ jobs:
           steps.gate.outputs.is_latest == 'true' &&
           steps.check-artifacts.outputs.ready == 'true' &&
           env.WRITEBACK_ALLOWED == 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           # Keep the workflow files from the trusted checkout above and apply
           # generated changes in a separate checkout directory we can commit from.
@@ -204,6 +204,9 @@ jobs:
           event: ${{ inputs.event }}
           message: Update screenshots
           head-branch: ${{ github.head_ref || github.ref_name }}
+          # Use the tip captured before the artifact pipeline. The `pr`
+          # checkout can resolve to a newer branch tip if the branch advances.
+          expected-head-sha: ${{ steps.tip.outputs.tip_sha }}
           new-branch: visual/update-screenshots
           app-client-id: ${{ vars.ARIAKIT_CI_APP_CLIENT_ID }}
           app-private-key: ${{ secrets.ARIAKIT_CI_APP_PRIVATE_KEY }}

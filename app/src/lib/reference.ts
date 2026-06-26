@@ -9,6 +9,7 @@
  */
 
 import type { CollectionEntry } from "astro:content";
+import { encode } from "html-entities";
 import type { Reference, ReferenceProp } from "./schemas.ts";
 import { slugify } from "./string.ts";
 
@@ -51,6 +52,20 @@ export interface ReferenceContent extends Reference {
   sections: ReferenceSection[];
 }
 
+interface GetReferenceCodeBlockHtmlParams {
+  code: string;
+  language: string;
+  meta?: string;
+}
+
+export function getReferenceCodeBlockHtml({
+  code,
+  language,
+  meta,
+}: GetReferenceCodeBlockHtmlParams) {
+  return `<code class="language-${language}"${meta ? ` metastring="${encode(meta)}"` : ""}>${encode(code)}</code>`;
+}
+
 export function getPropsParam(data: Reference) {
   if (data.params.length !== 1) return null;
   const param = data.params[0];
@@ -85,7 +100,19 @@ export function getReferenceItemFromProp(
   };
 }
 
+// Sections derive purely from the reference data, but helpers such as
+// getReferenceItem and getReferencePath rebuild them on every call — once per
+// item link on reference pages and partials, which is quadratic in the number
+// of items. Memoizing per data object keeps those lookups cheap. Entries are
+// stable within a page render (and across pages when the collection itself is
+// cached), so the WeakMap hits without ever holding stale data. Callers must
+// treat the returned sections and their items as read-only, since the array is
+// shared across pages.
+const sectionsCache = new WeakMap<Reference, ReferenceSection[]>();
+
 export function getReferenceSections(reference: Reference) {
+  const cachedSections = sectionsCache.get(reference);
+  if (cachedSections) return cachedSections;
   const sections: ReferenceSection[] = [];
   const pushSection = (
     id: ReferenceSectionId,
@@ -125,6 +152,7 @@ export function getReferenceSections(reference: Reference) {
       type: rv.type,
     });
   }
+  sectionsCache.set(reference, sections);
   return sections;
 }
 

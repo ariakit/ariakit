@@ -1,5 +1,11 @@
 # @ariakit/components
 
+## 0.1.3
+
+- Added an associated panel lookup to [`useTabStore`](https://ariakit.com/reference/use-tab-store), improving [`Tab`](https://ariakit.com/reference/tab) performance when resolving controlled panels.
+- Fixed [`useFormStore`](https://ariakit.com/reference/use-form-store) nested value updates so path segments like `-1`, `Infinity`, and `NaN` are treated as object keys instead of array indexes.
+- Updated dependencies: `@ariakit/utils@0.1.3`, `@ariakit/store@0.1.3`
+
 ## 0.1.2
 
 - Documented that [`removeValue`](https://ariakit.com/reference/use-form-store#removevalue) preserves array length by replacing removed items with `null`.

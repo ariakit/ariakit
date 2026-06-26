@@ -25,6 +25,7 @@ import type {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import { SelectArrow } from "./select-arrow.tsx";
@@ -37,7 +38,6 @@ import type { SelectStore } from "./select-store.ts";
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function getSelectedValues(select: HTMLSelectElement) {
   return Array.from(select.selectedOptions).map((option) => option.value);
@@ -97,7 +97,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
   const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
   const placement = useStoreState(store, "placement");
-  const dir = placement.split("-")[0] as BasePlacement;
+  const dir = getBasePlacement(placement);
   const value = useStoreState(store, "value");
   const multiSelectable = Array.isArray(value);
 
@@ -176,7 +176,8 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   });
   const values = useMemo(() => {
     // Filter out items without value and duplicate values.
-    return [...new Set(items?.map((i) => i.value!).filter((v) => v != null))];
+    const itemValues = items?.flatMap((item) => item.value ?? []);
+    return [...new Set(itemValues)];
   }, [items]);
 
   // Renders a native select element with the same value as the select so we
@@ -347,7 +348,7 @@ export interface SelectOptions<T extends ElementType = TagName>
    * the [`SelectList`](https://ariakit.com/reference/select-list) or
    * [`SelectPopover`](https://ariakit.com/reference/select-popover) components
    * are hidden.
-   * @default false
+   * @default true
    */
   moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**

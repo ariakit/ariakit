@@ -18,6 +18,7 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
+import { getBasePlacement } from "../popover/__utils.ts";
 import {
   MenuListHiddenContext,
   MenuScopedContextProvider,
@@ -28,7 +29,6 @@ import type { MenuStore } from "./menu-store.ts";
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function useAriaLabelledBy({ store, ...props }: MenuListProps) {
   const [id, setId] = useState<string | undefined>(undefined);
@@ -84,9 +84,8 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
     const id = useId(props.id);
 
     const onKeyDownProp = props.onKeyDown;
-    const dir = useStoreState(
-      store,
-      (state) => state.placement.split("-")[0] as BasePlacement,
+    const dir = useStoreState(store, (state) =>
+      getBasePlacement(state.placement),
     );
     const orientation = useStoreState(store, (state) =>
       state.orientation === "both" ? undefined : state.orientation,

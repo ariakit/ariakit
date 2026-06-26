@@ -1,5 +1,7 @@
 import { afterEach, expect, test } from "vitest";
 import {
+  getItemRoleByPopupRole,
+  getScrollingElement,
   getTextboxSelection,
   getTextboxValue,
   isTextField,
@@ -21,6 +23,14 @@ test("detects text fields without throwing for unsupported inputs", () => {
   expect(isTextField(text)).toBe(true);
   expect(isTextField(checkbox)).toBe(false);
   expect(isTextField(textarea)).toBe(true);
+});
+
+test("gets item roles by popup role", () => {
+  expect(getItemRoleByPopupRole("menu")).toBe("menuitem");
+  expect(getItemRoleByPopupRole("listbox")).toBe("option");
+  expect(getItemRoleByPopupRole("tree")).toBe("treeitem");
+  expect(getItemRoleByPopupRole("dialog")).toBeUndefined();
+  expect(getItemRoleByPopupRole("toString")).toBeUndefined();
 });
 
 test("reads selection offsets from text fields", () => {
@@ -56,6 +66,25 @@ test("reads selection offsets from contenteditable elements", () => {
 
   expect(getTextboxValue(editor)).toBe("hello world");
   expect(getTextboxSelection(editor)).toEqual({ start: 3, end: 8 });
+});
+
+test("getScrollingElement falls back to the element's own document, not the global one", () => {
+  const iframe = document.createElement("iframe");
+  document.body.append(iframe);
+  const frameDoc = iframe.contentDocument;
+  expect(frameDoc).toBeTruthy();
+  if (!frameDoc?.body) {
+    throw new Error("Expected iframe document body");
+  }
+
+  // The element lives inside the iframe with no in-frame overflow container, so
+  // the ancestor walk bottoms out at the document fallback. That fallback must
+  // resolve against the iframe's own document, not the top-level page's.
+  const item = frameDoc.createElement("div");
+  frameDoc.body.append(item);
+
+  const scroller = getScrollingElement(item);
+  expect(scroller?.ownerDocument).toBe(frameDoc);
 });
 
 test("setSelectionRange skips input types that do not support text selection", () => {

@@ -151,7 +151,10 @@ export function getAllTabbableIn(
   });
 
   if (!tabbableElements.length && fallbackToFocusable) {
-    return elements;
+    // Filter the fallback to focusable elements (and expand iframes like the
+    // tabbable path) so callers don't get non-focusable matches such as a
+    // `display: none` input, which a `focus()` call silently ignores.
+    return getAllFocusableIn(container);
   }
   return tabbableElements;
 }
@@ -171,13 +174,48 @@ export function getFirstTabbableIn(
   container: HTMLElement,
   includeContainer?: boolean,
   fallbackToFocusable?: boolean,
-) {
-  const [first] = getAllTabbableIn(
-    container,
-    includeContainer,
-    fallbackToFocusable,
-  );
-  return first || null;
+): HTMLElement | null {
+  // Unlike getAllTabbableIn, this returns as soon as a tabbable element is
+  // found. Each isTabbable check queries style and layout, so collecting every
+  // tabbable element just to take the first one is wasteful in containers with
+  // many tabbable elements, such as dialogs with forms.
+  if (includeContainer && isTabbable(container)) {
+    if (!isFrame(container)) return container;
+    const containerFrameBody = container.contentDocument?.body;
+    if (!containerFrameBody) return container;
+    const frameTabbable = getFirstTabbableIn(
+      containerFrameBody,
+      false,
+      fallbackToFocusable,
+    );
+    if (frameTabbable) return frameTabbable;
+    // The container frame has no tabbable content. Fall through to the
+    // container's own descendants, like getAllTabbableIn, which removed the
+    // empty frame from the list and continued.
+  }
+  const elements = container.querySelectorAll<HTMLElement>(selector);
+  for (const element of elements) {
+    if (!isTabbable(element)) continue;
+    if (isFrame(element)) {
+      const frameBody = element.contentDocument?.body;
+      if (!frameBody) return element;
+      const frameTabbable = getFirstTabbableIn(
+        frameBody,
+        false,
+        fallbackToFocusable,
+      );
+      if (frameTabbable) return frameTabbable;
+      continue;
+    }
+    return element;
+  }
+  if (fallbackToFocusable) {
+    // Filter the fallback to focusable elements so callers don't get a
+    // non-focusable match such as a `display: none` input, which a `focus()`
+    // call silently ignores.
+    return getFirstFocusableIn(container);
+  }
+  return null;
 }
 
 /**
@@ -311,8 +349,13 @@ export function getPreviousTabbable(
  * Returns the closest focusable element.
  */
 export function getClosestFocusable(element?: HTMLElement | null) {
+  // Start each search from the parent so the loop always advances strictly
+  // upward. The current element was already rejected by `isFocusable`, and the
+  // self-inclusive `closest` would otherwise re-return a selector-matching but
+  // non-focusable element (e.g. a box-less `display: contents` ancestor),
+  // looping forever.
   while (element && !isFocusable(element)) {
-    element = element.closest<HTMLElement>(selector);
+    element = element.parentElement?.closest<HTMLElement>(selector) ?? null;
   }
   return element || null;
 }

@@ -7,7 +7,7 @@ export const findFirstEnabledItem = Core.findFirstEnabledItem;
 export const groupItemsByRows = Core.groupItemsByRows;
 
 /**
- * Finds the first enabled item by its id.
+ * Returns the store item with the given id (enabled or not), or `null`.
  */
 export function getEnabledItem(store: CompositeStore, id?: string | null) {
   if (!id) return null;

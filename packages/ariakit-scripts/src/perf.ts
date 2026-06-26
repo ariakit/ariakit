@@ -1,6 +1,13 @@
+import { Buffer } from "node:buffer";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  GREATEST_LOWER_BOUND,
+  TraceMap,
+  originalPositionFor,
+} from "@jridgewell/trace-mapping";
+import type { SourceMapInput } from "@jridgewell/trace-mapping";
 import { errors } from "@playwright/test";
 import type { CDPSession, Page, TestInfo } from "@playwright/test";
 
@@ -44,9 +51,23 @@ export interface PerfScriptProfileEntry {
   url: string;
   line: number;
   column: number;
+  generatedFunctionName?: string;
+  generatedUrl?: string;
+  generatedLine?: number;
+  generatedColumn?: number;
+  generatedScriptId?: string;
+  sourceMapUrl?: string;
   selfTime: number;
   totalTime: number;
   hitCount: number;
+}
+
+export interface SourceMapResolverOptions {
+  sourceMapUrls?: ReadonlyMap<string, string>;
+  traceMapCache?: Map<string, Promise<TraceMap | undefined>>;
+  workspaceRoot?: string;
+  loadScript?: (url: string) => Promise<string | undefined>;
+  loadSourceMap?: (url: string) => Promise<SourceMapInput | undefined>;
 }
 
 export interface PerfSelectorProfileEntry {
@@ -70,6 +91,13 @@ export interface PerfMeasureOptions {
   iterations?: number;
   /** Number of discarded warm-up runs before measurement begins. */
   warmup?: number;
+  /**
+   * Unmeasured setup callback run before every iteration, after the page
+   * reset. Useful for getting the page into the state the measured interaction
+   * expects, such as opening a dialog before measuring how long it takes to
+   * close it.
+   */
+  setup?: () => Promise<void> | void;
   /** Override the auto-generated label for this measurement. */
   label?: string;
   /** Collect expensive JS functions. Adds overhead to measured metrics. */
@@ -91,6 +119,8 @@ export interface PerfResult {
   label: string;
   metrics: PerfMetrics;
   raw: PerfMetrics[];
+  scriptProfile?: boolean;
+  selectorProfile?: boolean;
   profiles?: PerfProfiles;
 }
 
@@ -119,6 +149,10 @@ interface ProfilerStopResponse {
   profile: CdpProfile;
 }
 
+interface PerformanceEventObserverInit extends PerformanceObserverInit {
+  durationThreshold?: number;
+}
+
 interface CssStyleSheetHeader {
   styleSheetId: string;
   sourceURL?: string;
@@ -126,6 +160,12 @@ interface CssStyleSheetHeader {
 
 interface CssStyleSheetAddedEvent {
   header: CssStyleSheetHeader;
+}
+
+interface DebuggerScriptParsedEvent {
+  scriptId: string;
+  url?: string;
+  sourceMapURL?: string;
 }
 
 interface CdpTraceEvent {
@@ -159,6 +199,8 @@ interface MeasureOnceOptions {
   scriptProfile: boolean;
   selectorProfile: boolean;
   styleSheetUrls: Map<string, string>;
+  scriptSourceMapResolver: SourceMapResolverOptions;
+  scriptSourceMapUrls: ReadonlyMap<string, string>;
 }
 
 interface MeasureOnceResult {
@@ -260,6 +302,134 @@ function normalizeProfileUrl(url: string): string {
   }
 }
 
+function normalizeFilePath(filePath: string): string {
+  return filePath.replace(/\\/g, "/");
+}
+
+function getWorkspaceRoot(): string {
+  let dir = process.cwd();
+  while (true) {
+    if (
+      existsSync(path.join(dir, "pnpm-workspace.yaml")) ||
+      existsSync(path.join(dir, ".git"))
+    ) {
+      return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) return process.cwd();
+    dir = parent;
+  }
+}
+
+function normalizeSourceMapSource(source: string, workspaceRoot: string) {
+  let file = source.split("\u0000").join("");
+
+  try {
+    const parsedUrl = new URL(file);
+    if (parsedUrl.protocol === "file:") {
+      file = fileURLToPath(parsedUrl);
+    } else {
+      file = decodeURIComponent(parsedUrl.pathname);
+    }
+  } catch {}
+
+  file = normalizeFilePath(file.split(/[?#]/, 1)[0] ?? file);
+
+  if (file.startsWith("/@fs/")) {
+    file = file.slice("/@fs".length);
+  }
+
+  if (
+    file.startsWith("/src/") &&
+    existsSync(path.join(workspaceRoot, "app", file))
+  ) {
+    return `app${file}`;
+  }
+
+  if (path.isAbsolute(file)) {
+    const relative = normalizeFilePath(path.relative(workspaceRoot, file));
+    if (!relative.startsWith("../") && !path.isAbsolute(relative)) {
+      return relative;
+    }
+  }
+
+  const rootedMatch = file.match(
+    /(?:^|\/)((?:app|benchmark|examples|nextjs|packages|scripts|templates|website)\/.+)$/,
+  );
+  if (rootedMatch?.[1]) {
+    return rootedMatch[1];
+  }
+
+  file = file.replace(/^(?:\.\.?\/)+/, "");
+  if (
+    file.startsWith("src/") &&
+    existsSync(path.join(workspaceRoot, "app", file))
+  ) {
+    return `app/${file}`;
+  }
+  return file;
+}
+
+function extractSourceMappingUrl(script: string): string | undefined {
+  let sourceMapUrl: string | undefined;
+  const sourceMapPattern =
+    /(?:\/\/|\/\*)[#@]\s*sourceMappingURL=([^\s*]+)(?:\s*\*\/)?/g;
+  for (const match of script.matchAll(sourceMapPattern)) {
+    sourceMapUrl = match[1];
+  }
+  return sourceMapUrl;
+}
+
+function resolveSourceMapUrl(sourceMapUrl: string, generatedUrl: string) {
+  if (sourceMapUrl.startsWith("data:")) return sourceMapUrl;
+  try {
+    return new URL(sourceMapUrl, generatedUrl).href;
+  } catch {
+    return sourceMapUrl;
+  }
+}
+
+function decodeDataSourceMap(url: string): SourceMapInput | undefined {
+  const commaIndex = url.indexOf(",");
+  if (commaIndex === -1) return;
+
+  const metadata = url.slice(0, commaIndex).toLowerCase();
+  const payload = url.slice(commaIndex + 1);
+  const text = metadata.endsWith(";base64")
+    ? Buffer.from(payload, "base64").toString("utf-8")
+    : decodeURIComponent(payload);
+  return JSON.parse(text) as SourceMapInput;
+}
+
+async function defaultLoadText(url: string): Promise<string | undefined> {
+  const response = await fetch(url);
+  if (!response.ok) return;
+  return response.text();
+}
+
+async function defaultLoadSourceMap(
+  url: string,
+): Promise<SourceMapInput | undefined> {
+  if (url.startsWith("data:")) {
+    return decodeDataSourceMap(url);
+  }
+  const text = await defaultLoadText(url);
+  if (!text) return;
+  return JSON.parse(text) as SourceMapInput;
+}
+
+function createCachedLoader<T>(load: (url: string) => Promise<T | undefined>) {
+  const cache = new Map<string, Promise<T | undefined>>();
+  return (url: string) => {
+    let promise = cache.get(url);
+    if (!promise) {
+      promise = load(url).catch(() => undefined);
+      cache.set(url, promise);
+    }
+    return promise;
+  };
+}
+
 function shouldIncludeScriptFrame(callFrame: CdpCallFrame): boolean {
   if (!callFrame.url) return false;
   if (INTERNAL_SCRIPT_FUNCTIONS.has(callFrame.functionName)) return false;
@@ -296,6 +466,11 @@ function getScriptProfileEntry(
     url: normalizeProfileUrl(callFrame.url),
     line: callFrame.lineNumber + 1,
     column: callFrame.columnNumber + 1,
+    generatedFunctionName: callFrame.functionName || "(anonymous)",
+    generatedUrl: callFrame.url,
+    generatedLine: callFrame.lineNumber + 1,
+    generatedColumn: callFrame.columnNumber + 1,
+    generatedScriptId: callFrame.scriptId,
     selfTime: 0,
     totalTime: 0,
     hitCount: 0,
@@ -355,6 +530,85 @@ export function parseScriptProfile(
 
   return [...entries.values()].sort(
     (a, b) => b.selfTime - a.selfTime || b.totalTime - a.totalTime,
+  );
+}
+
+export async function resolveScriptProfileSourceMaps(
+  entries: PerfScriptProfileEntry[],
+  options: SourceMapResolverOptions = {},
+): Promise<PerfScriptProfileEntry[]> {
+  const workspaceRoot = options.workspaceRoot ?? getWorkspaceRoot();
+  const loadScript = options.loadScript ?? defaultLoadText;
+  const loadSourceMap = options.loadSourceMap ?? defaultLoadSourceMap;
+  const traceMapCache =
+    options.traceMapCache ?? new Map<string, Promise<TraceMap | undefined>>();
+
+  const loadTraceMap = async (sourceMapUrl: string) => {
+    let promise = traceMapCache.get(sourceMapUrl);
+    if (!promise) {
+      promise = (async () => {
+        const sourceMap = await loadSourceMap(sourceMapUrl);
+        if (!sourceMap) return;
+        return new TraceMap(sourceMap, sourceMapUrl);
+      })().catch(() => undefined);
+      traceMapCache.set(sourceMapUrl, promise);
+    }
+    return promise;
+  };
+
+  const getEntrySourceMapUrl = async (entry: PerfScriptProfileEntry) => {
+    const generatedUrl = entry.generatedUrl ?? entry.url;
+    const sourceMapUrl =
+      entry.sourceMapUrl ??
+      (entry.generatedScriptId
+        ? options.sourceMapUrls?.get(entry.generatedScriptId)
+        : undefined);
+    if (sourceMapUrl) {
+      return resolveSourceMapUrl(sourceMapUrl, generatedUrl);
+    }
+
+    const script = await loadScript(generatedUrl).catch(() => undefined);
+    const extractedUrl = script ? extractSourceMappingUrl(script) : undefined;
+    if (!extractedUrl) return;
+    return resolveSourceMapUrl(extractedUrl, generatedUrl);
+  };
+
+  return Promise.all(
+    entries.map(async (entry) => {
+      try {
+        const sourceMapUrl = await getEntrySourceMapUrl(entry);
+        if (!sourceMapUrl) return entry;
+
+        const traceMap = await loadTraceMap(sourceMapUrl);
+        if (!traceMap) return entry;
+
+        const generatedLine = entry.generatedLine ?? entry.line;
+        const generatedColumn = (entry.generatedColumn ?? entry.column) - 1;
+        const original = originalPositionFor(traceMap, {
+          line: generatedLine,
+          column: Math.max(0, generatedColumn),
+          bias: GREATEST_LOWER_BOUND,
+        });
+        if (
+          !original.source ||
+          original.line == null ||
+          original.column == null
+        ) {
+          return { ...entry, sourceMapUrl };
+        }
+
+        return {
+          ...entry,
+          functionName: original.name || entry.functionName,
+          url: normalizeSourceMapSource(original.source, workspaceRoot),
+          line: original.line,
+          column: original.column + 1,
+          sourceMapUrl,
+        };
+      } catch {
+        return entry;
+      }
+    }),
   );
 }
 
@@ -615,6 +869,19 @@ async function gotoAndSettle(page: Page, url: string) {
     });
 }
 
+/** Lets paint and layout settle after an interaction. */
+async function settlePaint(page: Page) {
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) => {
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => resolve());
+        });
+      }),
+  );
+  await page.waitForTimeout(50);
+}
+
 /**
  * Runs a single interaction measurement cycle: snapshot CDP metrics before and
  * after the interaction, collect INP entries, and return the deltas.
@@ -636,7 +903,14 @@ async function measureOnce(
         }
       }
     });
-    observer.observe({ type: "event", buffered: false });
+    // Event Timing observers default to 104ms. These measurements track fast
+    // deliberate interactions, so use the spec-minimum threshold.
+    const observerOptions: PerformanceEventObserverInit = {
+      type: "event",
+      durationThreshold: 16,
+      buffered: false,
+    };
+    observer.observe(observerOptions);
     w.__perfObserver = observer;
   });
 
@@ -658,17 +932,7 @@ async function measureOnce(
     }
 
     await interaction();
-
-    // Let paint and layout settle.
-    await page.evaluate(
-      () =>
-        new Promise<void>((resolve) => {
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => resolve());
-          });
-        }),
-    );
-    await page.waitForTimeout(50);
+    await settlePaint(page);
   } catch (error) {
     measureError = error;
   }
@@ -676,7 +940,13 @@ async function measureOnce(
   if (scriptProfilerStarted) {
     try {
       const response: ProfilerStopResponse = await cdp.send("Profiler.stop");
-      profiles.script = parseScriptProfile(response.profile);
+      profiles.script = await resolveScriptProfileSourceMaps(
+        parseScriptProfile(response.profile),
+        {
+          ...options.scriptSourceMapResolver,
+          sourceMapUrls: options.scriptSourceMapUrls,
+        },
+      );
     } catch (error) {
       profilingError = error;
     }
@@ -766,6 +1036,7 @@ export async function createPerfMeasure(
     iterations = getIntegerEnv("PERF_ITERATIONS", 10, { min: 1 }),
     warmup = getIntegerEnv("PERF_WARMUP", 1, { min: 0 }),
     resetPage = true,
+    setup,
     label,
     profileLimit = DEFAULT_PROFILE_LIMIT,
   } = options;
@@ -797,9 +1068,23 @@ export async function createPerfMeasure(
     const { styleSheetId, sourceURL = "" } = event.header;
     styleSheetUrls.set(styleSheetId, sourceURL);
   };
+  const scriptSourceMapUrls = new Map<string, string>();
+  const scriptSourceMapResolver: SourceMapResolverOptions = {
+    loadScript: createCachedLoader(defaultLoadText),
+    loadSourceMap: createCachedLoader(defaultLoadSourceMap),
+    traceMapCache: new Map(),
+  };
+  const onScriptParsed = (event: DebuggerScriptParsedEvent) => {
+    const { scriptId, sourceMapURL = "" } = event;
+    if (sourceMapURL) {
+      scriptSourceMapUrls.set(scriptId, sourceMapURL);
+    }
+  };
 
   try {
     if (scriptProfile) {
+      cdp.on("Debugger.scriptParsed", onScriptParsed);
+      await cdp.send("Debugger.enable");
       await cdp.send("Profiler.enable");
     }
     if (selectorProfile) {
@@ -816,10 +1101,19 @@ export async function createPerfMeasure(
         await gotoAndSettle(page, url);
       }
 
+      if (setup) {
+        // Run the unmeasured setup and let its work settle so it doesn't leak
+        // into the metrics snapshot taken right before the interaction.
+        await setup();
+        await settlePaint(page);
+      }
+
       const result = await measureOnce(page, cdp, interaction, {
         scriptProfile,
         selectorProfile,
+        scriptSourceMapResolver,
         styleSheetUrls,
+        scriptSourceMapUrls,
       });
 
       // Only keep measured (non-warmup) iterations.
@@ -837,8 +1131,10 @@ export async function createPerfMeasure(
       }
     }
   } finally {
+    cdp.off("Debugger.scriptParsed", onScriptParsed);
     cdp.off("CSS.styleSheetAdded", onStyleSheetAdded);
     await cdp.send("Profiler.disable").catch(() => {});
+    await cdp.send("Debugger.disable").catch(() => {});
     await cdp.send("CSS.disable").catch(() => {});
     await cdp.send("DOM.disable").catch(() => {});
     await cdp.send("Performance.disable").catch(() => {});
@@ -860,6 +1156,8 @@ export async function createPerfMeasure(
     label: resolvedLabel,
     metrics: medianMetrics,
     raw: allMetrics,
+    scriptProfile: scriptProfile || undefined,
+    selectorProfile: selectorProfile || undefined,
     profiles: createProfiles(scriptProfiles, selectorProfiles, profileLimit),
   });
 

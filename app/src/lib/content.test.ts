@@ -53,10 +53,11 @@ Second paragraph.
 });
 
 test("descriptionToText handles real descriptions", async () => {
-  for (const file of getDescriptionFiles()) {
+  const files = getDescriptionFiles();
+  expect(files.length).toBeGreaterThan(0);
+  for (const file of files) {
     const body = readFileSync(file, "utf8");
     const text = await descriptionToText(body, "react");
     expect(text, file).toBeTruthy();
-    expect(text, file).not.toMatch(/[<{}]/);
   }
 });

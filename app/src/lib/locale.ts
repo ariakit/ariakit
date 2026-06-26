@@ -7,12 +7,17 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+const euCountryCodes =
+  "AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE".split(
+    " ",
+  );
+
 export function getCountryCode(headers: Headers) {
   const countryCode =
-    headers.get("x-country") ??
-    headers.get("cf-ipcountry") ??
-    headers.get("x-vercel-ip-country") ??
-    headers.get("cloudfront-viewer-country") ??
+    headers.get("x-country")?.trim() ||
+    headers.get("cf-ipcountry")?.trim() ||
+    headers.get("x-vercel-ip-country")?.trim() ||
+    headers.get("cloudfront-viewer-country")?.trim() ||
     "US";
   return countryCode;
 }
@@ -21,9 +26,7 @@ export function getCurrency(countryCode: string) {
   countryCode = countryCode.toUpperCase();
   if (countryCode === "GB") return "GBP";
   if (countryCode === "IN") return "INR";
-  const euCodes =
-    "AT BE BG HR CY CZ DK EE FI FR DE GR HU IE IT LV LT LU MT NL PL PT RO SK SI ES SE";
-  if (euCodes.includes(countryCode)) return "EUR";
+  if (euCountryCodes.includes(countryCode)) return "EUR";
   return "USD";
 }
 

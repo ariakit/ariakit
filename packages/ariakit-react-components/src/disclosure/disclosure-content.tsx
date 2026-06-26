@@ -9,7 +9,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import { afterPaint, invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
@@ -25,13 +25,6 @@ type TransitionState = "enter" | "leave" | null;
 function afterTimeout(timeoutMs: number, cb: () => void) {
   const timeoutId = setTimeout(cb, timeoutMs);
   return () => clearTimeout(timeoutId);
-}
-
-function afterPaint(cb: () => void) {
-  let raf = requestAnimationFrame(() => {
-    raf = requestAnimationFrame(cb);
-  });
-  return () => cancelAnimationFrame(raf);
 }
 
 function parseCSSTime(time: string | undefined) {

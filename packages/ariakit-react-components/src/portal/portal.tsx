@@ -236,7 +236,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
 
       element = (
         <>
-          {preserveTabOrder && portalNode && (
+          {preserveTabOrder && (
             <FocusTrap
               ref={innerBeforeRef}
               data-focus-trap={props.id}
@@ -251,7 +251,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
             />
           )}
           {element}
-          {preserveTabOrder && portalNode && (
+          {preserveTabOrder && (
             <FocusTrap
               ref={innerAfterRef}
               data-focus-trap={props.id}
@@ -268,13 +268,11 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
         </>
       );
 
-      if (portalNode) {
-        element = createPortal(element, portalNode);
-      }
+      element = createPortal(element, portalNode);
 
       let preserveTabOrderElement = (
         <>
-          {preserveTabOrder && portalNode && (
+          {preserveTabOrder && (
             <FocusTrap
               ref={outerBeforeRef}
               data-focus-trap={props.id}
@@ -296,9 +294,9 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
           {preserveTabOrder && (
             // We're using position: fixed here so that the browser doesn't
             // add margin to the element when setting gap on a parent element.
-            <span aria-owns={portalNode?.id} style={{ position: "fixed" }} />
+            <span aria-owns={portalNode.id} style={{ position: "fixed" }} />
           )}
-          {preserveTabOrder && portalNode && (
+          {preserveTabOrder && (
             <FocusTrap
               ref={outerAfterRef}
               data-focus-trap={props.id}

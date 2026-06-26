@@ -173,6 +173,13 @@ export function getInputType(event: Event | { nativeEvent: Event }) {
 }
 
 /**
+ * Checks whether the event is an input event.
+ */
+export function isInputEvent(event: Event): event is InputEvent {
+  return event.type === "input";
+}
+
+/**
  * Runs a callback on the next animation frame, but before a certain event.
  */
 export function queueBeforeEvent(
@@ -201,7 +208,10 @@ export function queueBeforeEvent(
   // By listening to the event in the capture phase, we make sure the callback
   // is fired before the respective React events.
   element.addEventListener(type, callSync, { once: true, capture: true });
-  return cancelTimer;
+  return () => {
+    cancelTimer();
+    element.removeEventListener(type, callSync, true);
+  };
 }
 
 export function addGlobalEventListener<K extends keyof DocumentEventMap>(

@@ -13,6 +13,11 @@ function getKeyFromChar(key: string) {
   return key;
 }
 
+function getCharCodeFromChar(char: string) {
+  if (char === "\n") return 13;
+  return char.charCodeAt(0);
+}
+
 // Email inputs are not considered text fields. They don't work well with the
 // input events dispatched by the type method. So we temporarily make them text
 // inputs.
@@ -57,9 +62,6 @@ export function type(
 
     await focus(element);
 
-    // Set element dirty so blur() can dispatch a change event
-    element.dirty = true;
-
     const restoreEmailInput = workAroundEmailInput(element);
 
     for (const char of text) {
@@ -75,7 +77,7 @@ export function type(
       element = getActiveElement(element) || element;
 
       if (isTextField(element)) {
-        const input = element as TextField;
+        const input = element as DirtiableElement & TextField;
         const [start, end] = [
           input.selectionStart ?? 0,
           input.selectionEnd ?? 0,
@@ -108,11 +110,15 @@ export function type(
           value = `${firstPart}${char}${lastPart}`;
         }
 
+        // Capture this before dispatch.compositionUpdate(), which applies
+        // target.value when creating the event.
+        const valueChanged = value !== input.value;
+
         if (defaultAllowed && !input.readOnly) {
           if (inputType === "insertText") {
             defaultAllowed = await dispatch.keyPress(input, {
               key,
-              charCode: key.charCodeAt(0),
+              charCode: getCharCodeFromChar(char),
               ...options,
             });
           }
@@ -124,6 +130,9 @@ export function type(
             });
           }
           if (defaultAllowed) {
+            if (valueChanged) {
+              input.dirty = true;
+            }
             await dispatch.input(input, {
               data: char,
               target: {

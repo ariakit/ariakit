@@ -12,13 +12,14 @@ import type { Options, Props } from "@ariakit/react-utils";
 import { getWindow, invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo, useState } from "react";
+import type { BasePlacement } from "./__utils.ts";
+import { getBasePlacement } from "./__utils.ts";
 import { POPOVER_ARROW_PATH } from "./popover-arrow-path.ts";
 import { usePopoverContext } from "./popover-context.tsx";
 import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
-type BasePlacement = "top" | "bottom" | "left" | "right";
 
 const defaultSize = 30;
 const halfDefaultSize = defaultSize / 2;
@@ -90,9 +91,8 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
         "PopoverArrow must be wrapped in a Popover component.",
     );
 
-    const dir = useStoreState(
-      store,
-      (state) => state.currentPlacement.split("-")[0] as BasePlacement,
+    const dir = useStoreState(store, (state) =>
+      getBasePlacement(state.currentPlacement),
     );
 
     const maskId = useId();

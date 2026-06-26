@@ -1,5 +1,10 @@
 # @ariakit/store
 
+## 0.1.3
+
+- Fixed initialized child stores to avoid notifying listeners twice when they update shared parent state.
+- Updated dependencies: `@ariakit/utils@0.1.3`
+
 ## 0.1.2
 
 - Improved store update performance with a focus on listener dispatch, microtask batching, and merged store initialization.

@@ -8,15 +8,14 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import fs from "node:fs/promises";
-import { dirname, isAbsolute, join, relative, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { dirname, join, relative } from "node:path";
 import { invariant } from "@ariakit/utils";
+import { isInDirectory, toFilePath, toPosixPath } from "./paths.ts";
+import type { PathInput } from "./paths.ts";
 import type { DiscoveredPreview } from "./preview-discovery.ts";
 import type { Framework } from "./schemas.ts";
 
 const INTEGRATION_NAME = "ariakit-previews";
-
-type PathInput = string | URL;
 
 interface PreviewCodegenParams {
   codegenDir: string;
@@ -28,20 +27,6 @@ interface PreviewCodegenResult {
 }
 
 const previewCodegenDirs = new Map<string, string>();
-
-export function toPosixPath(path: string) {
-  return path.replace(/\\/g, "/");
-}
-
-function toFilePath(path: PathInput): string {
-  if (path instanceof URL) {
-    return fileURLToPath(path);
-  }
-  if (path.startsWith("file:")) {
-    return fileURLToPath(path);
-  }
-  return resolve(path);
-}
 
 export function setPreviewCodegenDir(root: PathInput, codegenDir: string) {
   previewCodegenDirs.set(toFilePath(root), codegenDir);
@@ -162,16 +147,6 @@ async function getGeneratedPreviewFiles(dir: string) {
     }
   }
   return files;
-}
-
-function isInDirectory(file: string, dir: string) {
-  const relativePath = relative(dir, file);
-  return (
-    relativePath === "" ||
-    (!!relativePath &&
-      !relativePath.startsWith("..") &&
-      !isAbsolute(relativePath))
-  );
 }
 
 async function removeFileAndEmptyParents(file: string, root: string) {

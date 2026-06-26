@@ -70,6 +70,12 @@ export interface SelectItemCheckOptions<
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook.
+   * This prop doesn't affect the checkmark. It's accepted for consistency with
+   * other Ariakit components and is not passed to the underlying element. The
+   * checked state is derived solely from the
+   * [`checked`](https://ariakit.com/reference/select-item-check#checked) prop
+   * or, when it's not provided, from the closest
+   * [`SelectItem`](https://ariakit.com/reference/select-item) component.
    */
   store?: SelectStore;
 }

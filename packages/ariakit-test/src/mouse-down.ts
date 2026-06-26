@@ -6,7 +6,7 @@ import {
   isTextbox,
   invariant,
 } from "@ariakit/utils";
-import { wrapAsync } from "./__utils.ts";
+import { setPreventMouseEvents, wrapAsync } from "./__utils.ts";
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
@@ -67,9 +67,12 @@ export function mouseDown(element: Element | null, options?: PointerEventInit) {
 
     const { disabled } = element as HTMLButtonElement;
 
-    let defaultAllowed = await dispatch.pointerDown(element, options);
+    const pointerDefaultAllowed = await dispatch.pointerDown(element, options);
+    setPreventMouseEvents(getDocument(element), !pointerDefaultAllowed);
 
-    if (!disabled) {
+    let defaultAllowed = pointerDefaultAllowed;
+
+    if (!disabled && pointerDefaultAllowed) {
       // Mouse events are not called on disabled elements
       if (!(await dispatch.mouseDown(element, { detail: 1, ...options }))) {
         defaultAllowed = false;

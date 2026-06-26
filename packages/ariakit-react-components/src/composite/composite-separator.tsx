@@ -28,7 +28,11 @@ type TagName = typeof TagName;
 export const useCompositeSeparator = createHook<
   TagName,
   CompositeSeparatorOptions
->(function useCompositeSeparator({ store, ...props }) {
+>(function useCompositeSeparator({
+  store,
+  orientation: orientationProp,
+  ...props
+}) {
   const context = useCompositeScopedContext();
   store = store || context;
 
@@ -38,8 +42,11 @@ export const useCompositeSeparator = createHook<
       "CompositeSeparator must be wrapped in a Composite component.",
   );
 
-  const orientation = useStoreState(store, (state) =>
-    state.orientation === "horizontal" ? "vertical" : "horizontal",
+  const orientation = useStoreState(
+    store,
+    (state) =>
+      orientationProp ??
+      (state.orientation === "horizontal" ? "vertical" : "horizontal"),
   );
 
   props = useSeparator({ ...props, orientation });

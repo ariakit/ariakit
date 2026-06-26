@@ -28,11 +28,12 @@ export function orchestrate(
   key: string,
   setup: () => () => void,
 ) {
-  if (!cleanups.has(element)) {
-    cleanups.set(element, new Map());
+  let elementCleanups = cleanups.get(element);
+  if (!elementCleanups) {
+    elementCleanups = new Map();
+    cleanups.set(element, elementCleanups);
   }
 
-  const elementCleanups = cleanups.get(element)!;
   const stack = elementCleanups.get(key) ?? [];
   const entry: CleanupEntry = { cleanup: setup(), disposed: false };
 

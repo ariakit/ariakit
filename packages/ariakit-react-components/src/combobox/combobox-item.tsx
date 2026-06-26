@@ -10,11 +10,12 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
+  getItemRoleByPopupRole,
   hasFocus,
-  hasOwnProperty,
   isTextField,
   isDownloading,
   isOpeningInNewTab,
+  isApple,
   invariant,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
@@ -36,12 +37,6 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-const itemRoleByPopupRole = {
-  menu: "menuitem",
-  listbox: "option",
-  tree: "treeitem",
-};
-
 function isSelected(
   storeValue?: string | readonly string[],
   itemValue?: string,
@@ -58,9 +53,7 @@ function isSelected(
  * Returns the role for a combobox item based on the popup role.
  */
 export function getItemRole(popupRole?: string) {
-  if (popupRole == null) return "option";
-  if (!hasOwnProperty(itemRoleByPopupRole, popupRole)) return "option";
-  return itemRoleByPopupRole[popupRole];
+  return getItemRoleByPopupRole(popupRole) ?? "option";
 }
 
 /**
@@ -167,8 +160,15 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       // receive DOM focus. Therefore, pressing printable keys will not fill
       // the text field. So we need to programmatically focus on the text
       // field when the user presses printable keys.
-      const printable = event.key.length === 1;
-      if (printable || event.key === "Backspace" || event.key === "Delete") {
+      const printable =
+        event.key.length === 1 && !event.ctrlKey && !event.metaKey;
+      const pc = !isApple();
+      const modifier = pc ? event.ctrlKey : event.metaKey;
+      // If it's cmd/ctrl+v, focus on the text field so the value is pasted
+      // there.
+      const paste = modifier && event.key.toLowerCase() === "v";
+      const deleteKey = event.key === "Backspace" || event.key === "Delete";
+      if (printable || paste || deleteKey) {
         queueMicrotask(() => baseElement.focus());
         if (isTextField(baseElement)) {
           // If the combobox element is a text field, we should update the

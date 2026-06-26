@@ -1,5 +1,12 @@
 # @ariakit/utils
 
+## 0.1.3
+
+- Improved `getFirstTabbableIn` performance: it now returns as soon as it finds a tabbable element instead of collecting and checking every tabbable element in the container first.
+- Improved the repeated-call performance of popup role helpers in `@ariakit/utils`.
+- Renamed the `getPreviousTabbable` fallback parameter to `fallbackToLast` to match its behavior.
+- Fixed `createUndoManager` to keep the undo stack within the configured limit after executing new actions.
+
 ## 0.1.2
 
 - Added the `isElement` and `isNode` utilities that check whether an `EventTarget` is an element or a node.

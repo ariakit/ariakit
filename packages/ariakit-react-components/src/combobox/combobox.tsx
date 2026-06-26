@@ -22,6 +22,7 @@ import {
   isFocusEventOutside,
   queueBeforeEvent,
   hasFocus,
+  isInputEvent,
   invariant,
   isFalsyBooleanCallback,
   noop,
@@ -67,15 +68,16 @@ function isFirstItemAutoSelected(
 function hasCompletionString(value?: string, activeValue?: string) {
   if (!activeValue) return false;
   if (value == null) return false;
-  value = normalizeString(value);
+  const normalizedValue = normalizeString(value);
+  const normalizedActiveValue = normalizeString(activeValue);
+  if (normalizedValue.length !== value.length) return false;
+  if (normalizedActiveValue.length !== activeValue.length) return false;
   return (
-    activeValue.length > value.length &&
-    activeValue.toLowerCase().indexOf(value.toLowerCase()) === 0
+    normalizedActiveValue.length > normalizedValue.length &&
+    normalizedActiveValue
+      .toLowerCase()
+      .startsWith(normalizedValue.toLowerCase())
   );
-}
-
-function isInputEvent(event: Event): event is InputEvent {
-  return event.type === "input";
 }
 
 function isAriaAutoCompleteValue(
@@ -290,7 +292,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       storeValue,
     ]);
 
-    const scrollingElementRef = useRef<Element | null>(null);
     const getAutoSelectIdProp = useEvent(getAutoSelectId);
     const autoSelectIdRef = useRef<string | null | undefined>(null);
     // Tracks the item (id and value) the autoSelect behavior last moved focus
@@ -314,7 +315,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (!contentElement) return;
       const scrollingElement = getScrollingElement(contentElement);
       if (!scrollingElement) return;
-      scrollingElementRef.current = scrollingElement;
       const onUserScroll = () => {
         // A wheel event is always initiated by the user, so we can disable the
         // autoSelect behavior without any additional checks.
@@ -640,7 +640,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       // cleared. See combobox-cancel tests.
       canAutoSelectRef.current = false;
       onBlurProp?.(event);
-      if (event.defaultPrevented) return;
     });
 
     // This is necessary so other components like ComboboxCancel can reference

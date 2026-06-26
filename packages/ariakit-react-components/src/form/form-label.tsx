@@ -139,7 +139,7 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
  * });
  *
  * <Form store={form}>
- *   <FormLabel name={form.names.email}>Email</Role>
+ *   <FormLabel name={form.names.email}>Email</FormLabel>
  *   <FormInput name={form.names.email} />
  * </Form>
  * ```

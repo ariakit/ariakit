@@ -1,6 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import { useSafeLayoutEffect } from "@ariakit/react-utils";
-import { isValidElement, useEffect, useRef } from "react";
+import { isValidElement, useRef } from "react";
 import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
 import { Role } from "../role/role.tsx";
@@ -25,7 +25,11 @@ export function DialogBackdrop({
   const disclosure = useDisclosureStore({ disclosure: store });
   const contentElement = useStoreState(store, "contentElement");
 
-  useEffect(() => {
+  // Synchronize the backdrop's z-index with the dialog's in the layout phase,
+  // where the commit's style recalc absorbs the getComputedStyle read. As a
+  // passive effect, this read ran after other effects had already written
+  // styles, forcing an extra full style recalc on every open.
+  useSafeLayoutEffect(() => {
     const backdrop = ref.current;
     const dialog = contentElement;
     if (!backdrop) return;
