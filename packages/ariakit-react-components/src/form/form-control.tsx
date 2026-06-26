@@ -1,5 +1,5 @@
 import type { StringLike } from "@ariakit/components/form/types";
-import { useStoreState } from "@ariakit/react-store";
+import { useStoreStateObject } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
@@ -13,15 +13,21 @@ import type { Props } from "@ariakit/react-utils";
 import { getDocument, cx } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, FocusEvent, RefObject } from "react";
+import { useMemo } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useFormItem } from "./form-context.tsx";
-import type { FormStore } from "./form-store.ts";
+import type { FormStore, FormStoreState } from "./form-store.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-type ItemType = "label" | "error" | "description";
+
+interface ControlItemIds {
+  labelId?: string;
+  errorId?: string;
+  descriptionId?: string;
+}
 
 function getNamedElement(
   ref: RefObject<HTMLInputElement | null>,
@@ -37,10 +43,52 @@ function getNamedElement(
   return document.getElementsByName(name)[0] as HTMLInputElement | null;
 }
 
-function useItem(store: FormStore, name: string, type: ItemType) {
-  return useStoreState(store, (state) =>
-    state.items.find((item) => item.type === type && item.name === name),
-  );
+function getControlItemIds(items: FormStoreState["items"], name: string) {
+  const ids: ControlItemIds = {};
+
+  for (const item of items) {
+    if (item.name !== name) continue;
+
+    if (item.type === "label" && ids.labelId === undefined) {
+      ids.labelId = item.id;
+    } else if (item.type === "error" && ids.errorId === undefined) {
+      ids.errorId = item.id;
+    } else if (item.type === "description" && ids.descriptionId === undefined) {
+      ids.descriptionId = item.id;
+    }
+
+    if (
+      ids.labelId !== undefined &&
+      ids.errorId !== undefined &&
+      ids.descriptionId !== undefined
+    ) {
+      break;
+    }
+  }
+
+  return ids;
+}
+
+function useControlState(form: FormStore, name: string) {
+  const getItemIds = useMemo(() => {
+    let prevItems: FormStoreState["items"] | undefined;
+    let prevIds: ControlItemIds = {};
+
+    return (state: FormStoreState) => {
+      if (state.items !== prevItems) {
+        prevItems = state.items;
+        prevIds = getControlItemIds(state.items, name);
+      }
+      return prevIds;
+    };
+  }, [name]);
+
+  return useStoreStateObject(form, {
+    labelId: (state) => getItemIds(state).labelId,
+    errorId: (state) => getItemIds(state).errorId,
+    descriptionId: (state) => getItemIds(state).descriptionId,
+    invalid: () => !!form.getError(name) && form.getFieldTouched(name),
+  });
 }
 
 /**
@@ -110,22 +158,14 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
       form.setFieldTouched(name, true);
     });
 
-    const label = useItem(form, name, "label");
-    const error = useItem(form, name, "error");
-    const description = useItem(form, name, "description");
-    const describedBy = cx(
-      error?.id,
-      description?.id,
-      props["aria-describedby"],
-    );
-
-    const invalid = useStoreState(
+    const { labelId, errorId, descriptionId, invalid } = useControlState(
       form,
-      () => !!form.getError(name) && form.getFieldTouched(name),
+      name,
     );
+    const describedBy = cx(errorId, descriptionId, props["aria-describedby"]);
 
     props = {
-      "aria-labelledby": props["aria-label"] != null ? undefined : label?.id,
+      "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       "aria-invalid": invalid,
       ...props,
       id,
