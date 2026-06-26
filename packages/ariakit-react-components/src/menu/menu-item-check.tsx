@@ -68,7 +68,15 @@ export interface MenuItemCheckOptions<
 > extends Omit<CheckboxCheckOptions<T>, "store"> {
   /**
    * Object returned by the
-   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook.
+   * [`useMenuStore`](https://ariakit.com/reference/use-menu-store) hook. This
+   * prop doesn't affect the checkmark. It's accepted for consistency with
+   * other Ariakit components and is not passed to the underlying element. The
+   * checked state is derived solely from the
+   * [`checked`](https://ariakit.com/reference/menu-item-check#checked) prop or,
+   * when it's not provided, from the closest
+   * [`MenuItemCheckbox`](https://ariakit.com/reference/menu-item-checkbox) or
+   * [`MenuItemRadio`](https://ariakit.com/reference/menu-item-radio)
+   * component.
    */
   store?: MenuStore;
 }
