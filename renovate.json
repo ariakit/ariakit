@@ -26,7 +26,7 @@
     {
       "matchFileNames": ["app/package.json"],
       "matchPackageNames": ["vite"],
-      "allowedVersions": "/^7\\./"
+      "allowedVersions": "/^8\\./"
     },
     {
       "matchPackageNames": ["tailwindcss"],

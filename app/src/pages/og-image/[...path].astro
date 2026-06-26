@@ -85,7 +85,7 @@ const Thumbnail2 = await importThumbnail("popover");
             >
               <div class="relative w-max ak-text ak-text-15 ak-text-primary flex items-center gap-1">
                 <Icon name={framework.icon} />
-                {framework.label}
+                {framework.label}{" "}
                 {capitalize(type)}
                 {!Thumbnail && (
                   <div class="absolute min-w-55 -ms-8 -mt-4 -translate-y-1 inset-0">
@@ -120,7 +120,7 @@ const Thumbnail2 = await importThumbnail("popover");
             </div>
             <h1 class="flex items-center gap-2 text-4xl font-semibold text-balance relative">
               <Icon name={framework.icon} />
-              {framework.label}
+              {framework.label}{" "}
               {capitalize(type)}
               <BoxPatternsMiddle />
             </h1>

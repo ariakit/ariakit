@@ -35,6 +35,7 @@ patchedDependencies:
 
 peerDependencyRules:
   allowedVersions:
+    "@clerk/astro>astro": "7"
     react: "19"
     react-dom: "19"
 

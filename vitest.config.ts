@@ -62,15 +62,9 @@ const testExcludes = [
   ...(testLoader ? [] : defaultTestExcludes),
 ];
 
-// sourcePlugin is typed against the app workspace's Vite copy, while Vitest
-// consumes the root Vite types. The runtime plugin shape is compatible.
-// TODO: Remove this cast when Astro and the root test stack use the same Vite
-// major again; this may happen with Astro 7 and Vite 8.
-const sourcePluginInstance = sourcePlugin(
-  join(rootDir, "app/src/examples/"),
-) as unknown as PluginOption;
+const sourcePluginInstance = sourcePlugin(join(rootDir, "app/src/examples/"));
 
-const plugins = [sourcePluginInstance];
+const plugins: PluginOption[] = [sourcePluginInstance];
 if (testLoader === "react") {
   plugins.unshift(reactPlugin());
 } else if (testLoader === "solid") {
