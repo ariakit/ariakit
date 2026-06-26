@@ -340,12 +340,14 @@
       "atProperties": {
         "--ak-command-depth-x": {
           "name": "--ak-command-depth-x",
+          "type": "at-property",
           "syntax": "\"<number>\"",
           "inherits": "false",
           "initialValue": "0"
         },
         "--ak-command-depth-y": {
           "name": "--ak-command-depth-y",
+          "type": "at-property",
           "syntax": "\"<number>\"",
           "inherits": "false",
           "initialValue": "0"
@@ -2383,6 +2385,7 @@
       "atProperties": {
         "--ak-tab-border-width": {
           "name": "--ak-tab-border-width",
+          "type": "at-property",
           "syntax": "\"<length>\"",
           "inherits": "true",
           "initialValue": "0px"
@@ -6582,6 +6585,7 @@
       "atProperties": {
         "--ak-progress-value": {
           "name": "--ak-progress-value",
+          "type": "at-property",
           "syntax": "\"<number>\"",
           "inherits": "true",
           "initialValue": "0"

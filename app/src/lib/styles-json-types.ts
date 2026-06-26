@@ -26,6 +26,7 @@ export interface PropertyDecl {
 
 export interface AtPropertyDef {
   name: string;
+  type: "at-property";
   syntax: string | null;
   inherits: string | null;
   initialValue: string | null;

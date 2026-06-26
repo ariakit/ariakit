@@ -68,7 +68,7 @@ test("scanAkTokensInFiles preserves colons inside arbitrary values", () => {
 
 test("styleDefToCss renders @property block", () => {
   const def = getStyleDefinition("--ak-tab-border-width", "at-property");
-  expect(def).toBeTruthy();
+  expect(def?.type).toBe("at-property");
   const css = styleDefToCss(def!);
   expect(css).toMatchInlineSnapshot(`
     "@property --ak-tab-border-width {
@@ -195,6 +195,7 @@ test("getStyleDefinition returns exact definitions and wildcard fallback within 
     "--ak-tab-border-width",
     "at-property",
   );
+  expect(atPropExact?.type).toBe("at-property");
   expect(atPropExact?.name).toBe("--ak-tab-border-width");
   const atPropWildcard = getStyleDefinition(
     "--ak-tab-border-width-extra",
@@ -248,6 +249,27 @@ test("getTransitiveDependencies returns BFS dependencies, excluding root and ded
   expect(deps.some((d) => d.name === root.name && d.type === root.type)).toBe(
     false,
   );
+});
+
+test("getTransitiveDependencies includes at-properties without expanding them", () => {
+  const root = {
+    type: "utility" as const,
+    name: "ak-command_active",
+    module: "command",
+  };
+
+  expect(getTransitiveDependencies(root)).toEqual([
+    {
+      type: "at-property",
+      name: "--ak-command-depth-x",
+      module: "command",
+    },
+    {
+      type: "at-property",
+      name: "--ak-command-depth-y",
+      module: "command",
+    },
+  ]);
 });
 
 test("resolveStyles aggregates base + transitive, deduped by identity", () => {
