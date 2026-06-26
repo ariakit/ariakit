@@ -101,10 +101,9 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
       case "last":
         for (let i = state.renderedItems.length - 1; i >= 0; i -= 1) {
           const item = state.renderedItems[i];
-          if (!item) continue;
-          if (item.disabled) continue;
-          if (!item.element) continue;
-          return item.element;
+          if (item && isEnabled(item)) {
+            return item.element;
+          }
         }
         return null;
       default:
