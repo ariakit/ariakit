@@ -415,7 +415,7 @@ export function parsePropertyDecls(body: string): PropertyDecl[] {
  */
 export function parseAtPropertyBody(body: string) {
   const { declarations } = splitBody(body);
-  const def: Omit<AtPropertyDef, "name"> = {
+  const def: Omit<AtPropertyDef, "name" | "type"> = {
     syntax: null,
     inherits: null,
     initialValue: null,
@@ -450,7 +450,11 @@ async function parseStyleModule(modulePath: string): Promise<ModuleJson> {
   for (const block of blocks) {
     if (block.kind === "property") {
       const parsed = parseAtPropertyBody(block.body);
-      atProperties[block.name] = { name: block.name, ...parsed };
+      atProperties[block.name] = {
+        name: block.name,
+        type: "at-property",
+        ...parsed,
+      };
       continue;
     }
     if (block.kind === "utility") {

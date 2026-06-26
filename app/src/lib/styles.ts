@@ -245,7 +245,7 @@ export function getTransitiveDependencies(
   };
 
   const enqueueDeps = (def: StyleDef) => {
-    if (!("type" in def)) return;
+    if (def.type === "at-property") return;
     for (const dep of def.dependencies) {
       const didAdd = markDep(dep);
       if (!didAdd) continue;
@@ -381,37 +381,39 @@ function renderPropertyDecls(decls: PropertyDecl[], indentLevel = 0): string {
  * - @custom-variant for variants
  */
 export function styleDefToCss(def: StyleDef): string {
-  if ("type" in def) {
-    if (def.type === "utility") {
+  switch (def.type) {
+    case "at-property": {
+      const lines: string[] = [];
+      if (def.syntax != null) {
+        lines.push(`  syntax: ${def.syntax};`);
+      }
+      if (def.inherits != null) {
+        lines.push(`  inherits: ${def.inherits};`);
+      }
+      if (def.initialValue != null) {
+        lines.push(`  initial-value: ${def.initialValue};`);
+      }
+      const inner = lines.join("\n");
+      if (!inner) {
+        return `@property ${def.name} {}`;
+      }
+      return `@property ${def.name} {\n${inner}\n}`;
+    }
+    case "utility": {
       const body = renderPropertyDecls(def.properties, 1);
       if (!body) {
         return `@utility ${def.name} {}`;
       }
       return `@utility ${def.name} {\n${body}\n}`;
     }
-    // variant
-    const body = renderPropertyDecls(def.properties, 1);
-    if (!body) {
-      return `@custom-variant ${def.name} {}`;
+    case "variant": {
+      const body = renderPropertyDecls(def.properties, 1);
+      if (!body) {
+        return `@custom-variant ${def.name} {}`;
+      }
+      return `@custom-variant ${def.name} {\n${body}\n}`;
     }
-    return `@custom-variant ${def.name} {\n${body}\n}`;
   }
-  // @property
-  const lines: string[] = [];
-  if (def.syntax != null) {
-    lines.push(`  syntax: ${def.syntax};`);
-  }
-  if (def.inherits != null) {
-    lines.push(`  inherits: ${def.inherits};`);
-  }
-  if (def.initialValue != null) {
-    lines.push(`  initial-value: ${def.initialValue};`);
-  }
-  const inner = lines.join("\n");
-  if (!inner) {
-    return `@property ${def.name} {}`;
-  }
-  return `@property ${def.name} {\n${inner}\n}`;
 }
 
 export function styleDefsToCss(defs: StyleDef[]): string {

@@ -223,8 +223,7 @@ function getStylesCss(styles?: StyleDependency[]) {
 
   const pushDef = (def: ReturnType<typeof getStyleDefinition>) => {
     if (!def) return;
-    const key =
-      "type" in def ? `${def.type}:${def.name}` : `at-property:${def.name}`;
+    const key = `${def.type}:${def.name}`;
     if (seen.has(key)) return;
     seen.add(key);
     chunks.push(styleDefToCss(def));

@@ -68,24 +68,28 @@ test("resolveDependencies ignores tokens in inline comments", () => {
     atProperties: {
       "--ak-real-prop": {
         name: "--ak-real-prop",
+        type: "at-property",
         syntax: null,
         inherits: null,
         initialValue: null,
       },
       "--ak-comment-prop": {
         name: "--ak-comment-prop",
+        type: "at-property",
         syntax: null,
         inherits: null,
         initialValue: null,
       },
       "--ak-string-prop": {
         name: "--ak-string-prop",
+        type: "at-property",
         syntax: null,
         inherits: null,
         initialValue: null,
       },
       "--ak-joined-prop": {
         name: "--ak-joined-prop",
+        type: "at-property",
         syntax: null,
         inherits: null,
         initialValue: null,
