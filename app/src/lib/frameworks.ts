@@ -114,17 +114,3 @@ export function removeFrameworkSuffix(path: string) {
     .replace(/\.react\.([tj]sx?)$/, ".$1")
     .replace(/\.solid\.([tj]sx?)$/, ".$1");
 }
-
-export function getIndexFile(framework: keyof typeof frameworks) {
-  const frameworkDetail = getFramework(framework);
-  if (!("indexFile" in frameworkDetail)) return null;
-  return frameworkDetail.indexFile;
-}
-
-export function isFrameworkDependency(
-  pkg: string,
-): pkg is keyof typeof frameworks {
-  return Object.values(frameworks).some((framework) =>
-    framework.dependencies.includes(pkg as never),
-  );
-}
