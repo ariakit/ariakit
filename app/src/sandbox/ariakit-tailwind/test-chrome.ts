@@ -25,6 +25,44 @@ interface AxeCheckResult {
   };
 }
 
+declare global {
+  interface Window {
+    /** Installed by `installSectionLabelHelpers` via `page.evaluate`. */
+    getSectionLabel: (section: Element) => string | null;
+  }
+}
+
+function installSectionLabelHelpers() {
+  const getSectionTextNodeLabel = (section: Element) => {
+    // React renders `0 && <div />` as a text node, so fall back to the
+    // section's own direct text content when no labelled element has visible
+    // text.
+    for (const node of Array.from(section.childNodes)) {
+      if (node.nodeType !== Node.TEXT_NODE) {
+        continue;
+      }
+      const textContent = node.textContent?.trim();
+      if (textContent) {
+        return textContent;
+      }
+    }
+    return "";
+  };
+
+  window.getSectionLabel = (section) => {
+    const labelledBy = section.getAttribute("aria-labelledby");
+    if (!labelledBy) {
+      return null;
+    }
+    const labelElement = document.getElementById(labelledBy);
+    const label = labelElement?.textContent?.trim();
+    if (label) {
+      return label;
+    }
+    return getSectionTextNodeLabel(section) || null;
+  };
+}
+
 function extractComputedCSS() {
   interface CSSBranch {
     class: string;
@@ -349,28 +387,6 @@ function extractComputedCSS() {
     return classes.join(" ");
   };
 
-  const getSectionTextNodeLabel = (section: Element) => {
-    // React renders `0 && <div />` as a text node, so fall back to the
-    // section's own direct text content when no labelled element has visible
-    // text.
-    for (const node of Array.from(section.childNodes)) {
-      if (node.nodeType !== Node.TEXT_NODE) {
-        continue;
-      }
-      const textContent = node.textContent?.trim();
-      if (textContent) {
-        return textContent;
-      }
-    }
-    return "";
-  };
-
-  const getSectionLabel = (section: Element, labelledBy: string) => {
-    const labelElement = document.getElementById(labelledBy);
-    const label = labelElement?.textContent?.trim() ?? "";
-    return label || getSectionTextNodeLabel(section);
-  };
-
   const walk = (el: Element): Record<string, CSSNode> => {
     const result: Record<string, CSSNode> = {};
     const labelCounts = new Map<string, number>();
@@ -380,7 +396,7 @@ function extractComputedCSS() {
           ? child.getAttribute("aria-labelledby")
           : null;
       if (labelledBy) {
-        const label = getSectionLabel(child, labelledBy);
+        const label = window.getSectionLabel(child) ?? "";
         const className = extractClass(child);
         const children = walk(child);
         const count = labelCounts.get(label) ?? 0;
@@ -403,28 +419,6 @@ function extractComputedCSS() {
 function formatColorContrastViolations(
   violations: AxeViolation[],
 ): ColorContrastViolationMap {
-  const getSectionTextNodeLabel = (section: Element) => {
-    // React renders `0 && <div />` as a text node, so fall back to the
-    // section's own direct text content when no labelled element has visible
-    // text.
-    for (const node of Array.from(section.childNodes)) {
-      if (node.nodeType !== Node.TEXT_NODE) {
-        continue;
-      }
-      const textContent = node.textContent?.trim();
-      if (textContent) {
-        return textContent;
-      }
-    }
-    return "";
-  };
-
-  const getSectionLabel = (section: Element, labelledBy: string) => {
-    const labelElement = document.getElementById(labelledBy);
-    const label = labelElement?.textContent?.trim() ?? "";
-    return label || getSectionTextNodeLabel(section);
-  };
-
   const getTargetSelector = (target: AxeViolationNode["target"]) => {
     const selector = target.at(-1);
     if (!selector) {
@@ -437,12 +431,9 @@ function formatColorContrastViolations(
     const labels: string[] = [];
     let currentSection = element.closest("section[aria-labelledby]");
     while (currentSection) {
-      const labelledBy = currentSection.getAttribute("aria-labelledby");
-      if (labelledBy) {
-        const label = getSectionLabel(currentSection, labelledBy);
-        if (label) {
-          labels.unshift(label);
-        }
+      const label = window.getSectionLabel(currentSection);
+      if (label) {
+        labels.unshift(label);
       }
       currentSection =
         currentSection.parentElement?.closest("section[aria-labelledby]") ??
@@ -507,42 +498,16 @@ function formatColorContrastViolations(
 }
 
 async function waitForPreviewReady(page: Page) {
+  await page.evaluate(installSectionLabelHelpers);
   await page.waitForFunction(async () => {
     if (document.querySelector("astro-island[ssr]")) {
       return false;
     }
-    const getSectionTextNodeLabel = (section: Element) => {
-      // React renders `0 && <div />` as a text node, so fall back to the
-      // section's own direct text content when no labelled element has visible
-      // text.
-      for (const node of Array.from(section.childNodes)) {
-        if (node.nodeType !== Node.TEXT_NODE) {
-          continue;
-        }
-        const textContent = node.textContent?.trim();
-        if (textContent) {
-          return textContent;
-        }
-      }
-      return "";
-    };
-    const getSectionLabel = (section: Element) => {
-      const labelledBy = section.getAttribute("aria-labelledby");
-      if (!labelledBy) {
-        return null;
-      }
-      const labelElement = document.getElementById(labelledBy);
-      const label = labelElement?.textContent?.trim();
-      if (label) {
-        return label;
-      }
-      return getSectionTextNodeLabel(section) || null;
-    };
     const getSectionLabels = () => {
       const sections = Array.from(
         document.querySelectorAll("section[aria-labelledby]"),
       );
-      const labels = sections.map(getSectionLabel);
+      const labels = sections.map((section) => window.getSectionLabel(section));
       if (labels.some((label) => label == null)) {
         return null;
       }
