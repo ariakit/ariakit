@@ -1,4 +1,4 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 declare global {
   interface Window {
@@ -42,22 +42,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(renderedBefore).toBeGreaterThan(2);
     test.expect(renderedBefore).toBeLessThan(50);
 
-    const flushFrames = (frames: number) =>
-      page.evaluate(
-        (n) =>
-          new Promise<void>((resolve) => {
-            const tick = () =>
-              n-- > 0 ? requestAnimationFrame(tick) : resolve();
-            tick();
-          }),
-        frames,
-      );
-
     // The virtualizer's ResizeObserver ignores its very first callback, so flush
     // a couple of frames to make sure that first callback has already fired.
     // Otherwise a fast run could have our resize below swallowed as the ignored
     // one, and the bug would not reproduce.
-    await flushFrames(2);
+    await flushFrames(page, 2);
 
     // From now on, count any focus event that lands on an option element.
     await page.evaluate(() => {
@@ -89,7 +78,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect
       .poll(() => popover.evaluate((el) => el.clientHeight))
       .toBeLessThan(heightBefore);
-    await flushFrames(5);
+    await flushFrames(page, 5);
 
     // The auto-selected item is still active, but focus must have stayed on the
     // input the whole time — the resize must not move focus to the option.
