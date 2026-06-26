@@ -14,6 +14,17 @@ export type TableRows<K extends keyof any> = TableRow<K>[];
 
 const TableRowGroupContext = React.createContext<TableRowGroup>("body");
 
+function getColumnKeys<K extends keyof any>(rows?: TableRows<K>) {
+  const keys = new Set<string>();
+  for (const row of rows ?? []) {
+    for (const key of Object.keys(row)) {
+      if (key === "group") continue;
+      keys.add(key);
+    }
+  }
+  return [...keys];
+}
+
 function isTableCellProps(value: unknown): value is TableCellProps {
   if (!value) return false;
   if (typeof value !== "object") return false;
@@ -97,6 +108,11 @@ export function Table<K extends keyof any>({
   const headRows = rows?.filter((row) => row.group === "head");
   const bodyRows = rows?.filter((row) => row.group === "body" || !row.group);
   const footRows = rows?.filter((row) => row.group === "foot");
+  const columnKeys = getColumnKeys([
+    ...(headRows ?? []),
+    ...(bodyRows ?? []),
+    ...(footRows ?? []),
+  ]);
 
   const getRowElement = (row: TableRow<K>) => {
     if (row.group === "head") return headRowEl;
@@ -119,14 +135,13 @@ export function Table<K extends keyof any>({
     const rowElement = getRowElement(row);
     return (
       <ak.Role key={index} render={rowElement}>
-        {Object.entries(row).map(([key, value]) => {
-          if (key === "group") return null;
-          if (value == null) return null;
+        {columnKeys.map((key) => {
+          const value = row[key as K] ?? { children: null };
           const tableCellElement = createRender(TableCell, value, {
             numeric: !!headRows?.some((row) => isNumericColumn(row, key as K)),
             header: row.group === "head" ? "column" : false,
             children: key,
-          } as const);
+          });
           return <ak.Role key={key} render={tableCellElement} />;
         })}
       </ak.Role>
