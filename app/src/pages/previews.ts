@@ -1,14 +1,9 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
+import { getPreviewIndexPaths } from "../lib/preview-index.ts";
 
 export const GET: APIRoute = async () => {
   const entries = await getCollection("previews");
-  const paths = entries
-    .filter((entry) => entry.data.source !== "sandbox")
-    .flatMap((entry) =>
-      entry.data.frameworks.map(
-        (framework) => `/${framework}/previews/${entry.id}`,
-      ),
-    );
+  const paths = getPreviewIndexPaths(entries);
   return Response.json(paths);
 };
