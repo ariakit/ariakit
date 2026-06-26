@@ -557,8 +557,8 @@ importers:
         version: 19.2.7(react@19.2.7)
     devDependencies:
       '@opennextjs/cloudflare':
-        specifier: 1.19.11
-        version: 1.19.11(encoding@0.1.13)(next@16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@8.1.1)(wrangler@4.105.0)
+        specifier: 1.20.0
+        version: 1.20.0(encoding@0.1.13)(next@16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@8.1.1)(wrangler@4.105.0)
       '@tailwindcss/postcss':
         specifier: 4.3.1
         version: 4.3.1
@@ -3386,12 +3386,16 @@ packages:
     peerDependencies:
       next: '>=15.5.18 <16 || >=16.2.6'
 
-  '@opennextjs/cloudflare@1.19.11':
-    resolution: {integrity: sha512-spZ7YsZZW9q/OJStaZlJhuklYKei5e2tNQ7PMi3DDSJ7x7167m7EYYHQZfVN5gwJBDkMR2jUDW88oHjnGz4YYw==}
+  '@opennextjs/cloudflare@1.20.0':
+    resolution: {integrity: sha512-gbCIRNv4DYU5HgPQEsmyP/v+5zGZkMSGN2bYb04XfSibxiGjwNoTmtRxj/j0yOB70DLe3Xkh5f0eouXshXZtkw==}
     hasBin: true
     peerDependencies:
       next: '>=15.5.18 <16 || >=16.2.6'
+      rclone.js: ^0.6.6
       wrangler: ^4.86.0
+    peerDependenciesMeta:
+      rclone.js:
+        optional: true
 
   '@oslojs/encoding@1.1.0':
     resolution: {integrity: sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==}
@@ -12887,7 +12891,7 @@ snapshots:
       - aws-crt
       - supports-color
 
-  '@opennextjs/cloudflare@1.19.11(encoding@0.1.13)(next@16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@8.1.1)(wrangler@4.105.0)':
+  '@opennextjs/cloudflare@1.20.0(encoding@0.1.13)(next@16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@8.1.1)(wrangler@4.105.0)':
     dependencies:
       '@ast-grep/napi': 0.40.5
       '@dotenvx/dotenvx': 1.31.0
