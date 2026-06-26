@@ -82,9 +82,9 @@ test("changesets getChangelogEntry hook", async () => {
     const applyReleasePlan = (await import("@changesets/apply-release-plan"))
       .default as unknown as (...args: any[]) => Promise<string[]>;
 
-    // Minimal config that points to our repo's .changeset/changelog.cjs
+    // Minimal config that points to our repo's .changeset/changelog.ts
     const config = {
-      changelog: ["./changelog.cjs", {}],
+      changelog: ["./changelog.ts", {}],
       updateInternalDependencies: "patch",
       ___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH: {
         onlyUpdatePeerDependentsWhenOutOfRange: true,

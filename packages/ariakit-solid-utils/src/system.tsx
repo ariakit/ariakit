@@ -73,7 +73,10 @@ export function createHook<
   T extends ValidComponent,
   P extends AnyObject = EmptyObject,
 >(useProps: (props: Props<T, P>) => HTMLProps<T, P>) {
-  return useProps as Hook<T, P>;
+  const useHook = (props: Props<T, P> = {} as Props<T, P>) => {
+    return useProps(props);
+  };
+  return useHook as Hook<T, P>;
 }
 
 /**

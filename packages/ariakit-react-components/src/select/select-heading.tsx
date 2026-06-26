@@ -84,10 +84,12 @@ export interface SelectHeadingOptions<
   /**
    * Object returned by the
    * [`useSelectStore`](https://ariakit.com/reference/use-select-store) hook.
-   * If not provided, the closest
-   * [`Select`](https://ariakit.com/reference/select) or
-   * [`SelectProvider`](https://ariakit.com/reference/select-provider)
-   * components' context will be used.
+   *
+   * **Note**: This prop has no effect on this component. The heading is linked
+   * to the closest [`SelectList`](https://ariakit.com/reference/select-list)
+   * or [`SelectPopover`](https://ariakit.com/reference/select-popover)
+   * component through React context, so it must be rendered inside the list or
+   * popover for the `aria-labelledby` prop to be set on that element.
    */
   store?: SelectStore;
 }

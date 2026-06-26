@@ -53,6 +53,30 @@ test.each([
     delimiters: [/,/g],
     expected: ["", "one", "two"],
   },
+  {
+    name: "string dot metacharacter delimiter",
+    value: ".one.two.",
+    delimiters: ["."],
+    expected: ["one", "two", ""],
+  },
+  {
+    name: "string plus metacharacter delimiter",
+    value: "+one+two+",
+    delimiters: ["+"],
+    expected: ["one", "two", ""],
+  },
+  {
+    name: "string pipe metacharacter delimiter",
+    value: "|one|two|",
+    delimiters: ["|"],
+    expected: ["one", "two", ""],
+  },
+  {
+    name: "zero-length regex delimiter",
+    value: "abc",
+    delimiters: [/x*/],
+    expected: ["a", "b", "c"],
+  },
 ] as const)(
   "splitValueByDelimiter $name",
   ({ value, delimiters, expected }) => {

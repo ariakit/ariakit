@@ -21,6 +21,30 @@ test("moves through enabled items in one-dimensional composites", () => {
   expect(store.previous({ activeId: "one" })).toBeUndefined();
 });
 
+test("supports the deprecated skip number overload", () => {
+  const store = createComposite([
+    { id: "a1", rowId: "a" },
+    { id: "a2", rowId: "a" },
+    { id: "a3", rowId: "a" },
+    { id: "b1", rowId: "b" },
+    { id: "b2", rowId: "b" },
+    { id: "b3", rowId: "b" },
+    { id: "c1", rowId: "c" },
+    { id: "c2", rowId: "c" },
+    { id: "c3", rowId: "c" },
+  ]);
+
+  store.setActiveId("a1");
+  expect(store.next(1)).toBe("a3");
+  expect(store.down(1)).toBe("c1");
+
+  store.setActiveId("a3");
+  expect(store.previous(1)).toBe("a1");
+
+  store.setActiveId("c1");
+  expect(store.up(1)).toBe("a1");
+});
+
 test("loops through items and the base element", () => {
   const store = createComposite([{ id: "one" }, { id: "two" }]);
 

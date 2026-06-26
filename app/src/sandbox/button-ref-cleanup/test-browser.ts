@@ -1,4 +1,4 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test("preserves React ref cleanup", async ({ page, q }) => {
@@ -8,14 +8,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test
       .expect(q.text("Plain button object ref attached: yes"))
       .toBeVisible();
-    const waitForPaint = async () => {
-      await page.evaluate(
-        () =>
-          new Promise<void>((resolve) => {
-            requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
-          }),
-      );
-    };
 
     await page.keyboard.press("b");
     await test.expect(q.text("Button shortcut count: 1")).toBeVisible();
@@ -28,7 +20,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.text("Button object ref detached: yes")).toBeVisible();
     await page.keyboard.press("b");
     await page.keyboard.press("b");
-    await waitForPaint();
+    await flushFrames(page);
     await test.expect(q.text("Button shortcut count: 2")).toBeVisible();
     await test.expect(q.text("Button shortcut count: 3")).toBeHidden();
 
@@ -48,7 +40,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.text("Portal cleanup connected: yes")).toBeVisible();
     await page.keyboard.press("p");
     await page.keyboard.press("p");
-    await waitForPaint();
+    await flushFrames(page);
     await test.expect(q.text("Portal shortcut count: 2")).toBeVisible();
     await test.expect(q.text("Portal shortcut count: 3")).toBeHidden();
 
@@ -65,7 +57,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.text("Connected portal root")).toBeVisible();
     await page.keyboard.press("c");
     await page.keyboard.press("c");
-    await waitForPaint();
+    await flushFrames(page);
     await test
       .expect(q.text("Connected portal shortcut count: 2"))
       .toBeVisible();

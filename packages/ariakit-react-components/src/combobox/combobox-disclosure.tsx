@@ -70,6 +70,7 @@ export const useComboboxDisclosure = createHook<
 
   const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
     onMouseDownProp?.(event);
+    if (event.defaultPrevented) return;
     // We have to prevent the element from getting focused on mousedown.
     event.preventDefault();
     // This will immediately move focus to the combobox input.

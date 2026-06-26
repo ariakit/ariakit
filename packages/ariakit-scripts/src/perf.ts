@@ -119,6 +119,8 @@ export interface PerfResult {
   label: string;
   metrics: PerfMetrics;
   raw: PerfMetrics[];
+  scriptProfile?: boolean;
+  selectorProfile?: boolean;
   profiles?: PerfProfiles;
 }
 
@@ -145,6 +147,10 @@ interface CdpProfile {
 
 interface ProfilerStopResponse {
   profile: CdpProfile;
+}
+
+interface PerformanceEventObserverInit extends PerformanceObserverInit {
+  durationThreshold?: number;
 }
 
 interface CssStyleSheetHeader {
@@ -897,7 +903,14 @@ async function measureOnce(
         }
       }
     });
-    observer.observe({ type: "event", buffered: false });
+    // Event Timing observers default to 104ms. These measurements track fast
+    // deliberate interactions, so use the spec-minimum threshold.
+    const observerOptions: PerformanceEventObserverInit = {
+      type: "event",
+      durationThreshold: 16,
+      buffered: false,
+    };
+    observer.observe(observerOptions);
     w.__perfObserver = observer;
   });
 
@@ -1143,6 +1156,8 @@ export async function createPerfMeasure(
     label: resolvedLabel,
     metrics: medianMetrics,
     raw: allMetrics,
+    scriptProfile: scriptProfile || undefined,
+    selectorProfile: selectorProfile || undefined,
     profiles: createProfiles(scriptProfiles, selectorProfiles, profileLimit),
   });
 

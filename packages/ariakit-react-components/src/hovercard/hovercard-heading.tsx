@@ -54,10 +54,13 @@ export interface HovercardHeadingOptions<
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.com/reference/use-hovercard-store)
-   * hook. If not provided, the closest
-   * [`Hovercard`](https://ariakit.com/reference/hovercard) or
-   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
-   * components' context will be used.
+   * hook.
+   *
+   * **Note**: This prop has no effect on this component. The heading is
+   * linked to the closest
+   * [`Hovercard`](https://ariakit.com/reference/hovercard) component through
+   * React context, so it must be rendered inside the hovercard for the
+   * `aria-labelledby` prop to be set on the hovercard element.
    */
   store?: HovercardStore;
 }

@@ -51,12 +51,12 @@ function countItems(items?: number | readonly Item[]): number[] {
     return Array.from({ length: items }, (_, index) => index + 1);
   }
   return items.reduce<number[]>((count, item, index) => {
+    const prevCount = count[index - 1] ?? 0;
     const object = getItemObject(item);
     if (!object.items) {
-      count[index] = index + 1;
+      count[index] = prevCount + 1;
       return count;
     }
-    const prevCount = count[index - 1] ?? 0;
     const itemsCount = countItems(object.items)[object.items.length - 1] ?? 0;
     count[index] = prevCount + itemsCount;
     return count;

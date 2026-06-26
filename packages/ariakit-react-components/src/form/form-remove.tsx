@@ -6,39 +6,25 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { isTextField, invariant } from "@ariakit/utils";
+import { isTextField } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
-import { useFormContext } from "./form-context.tsx";
+import { useFormItemContext } from "./form-context.tsx";
 import type { FormStore, FormStoreState } from "./form-store.ts";
+import { getArrayFieldIndex, isArrayFieldName } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-
-// Reads the array index off the known `name.` prefix without interpolating the
-// user-controlled name into a RegExp, which could throw on regex metacharacters
-// (e.g. `a(b`). Returns `NaN` when the field doesn't belong to the array.
-function getArrayFieldIndex(fieldName: string, name: string) {
-  const prefix = `${name}.`;
-  if (!fieldName.startsWith(prefix)) return Number.NaN;
-  const index = fieldName.slice(prefix.length).match(/^\d+/)?.[0];
-  return index ? Number.parseInt(index, 10) : Number.NaN;
-}
 
 function findNextOrPreviousField(
   items: FormStoreState["items"] | undefined,
   name: string,
   index: number,
 ) {
-  const prefix = `${name}.`;
-  // Match the exact array boundary so sibling arrays whose names share this
-  // prefix (e.g. `tags` and `tags2`) aren't matched.
   const fields = items?.filter(
-    (item) =>
-      item.type === "field" &&
-      (item.name === name || item.name.startsWith(prefix)),
+    (item) => item.type === "field" && isArrayFieldName(item.name, name),
   );
   const nextField = fields?.find(
     (field) => getArrayFieldIndex(field.name, name) > index,
@@ -90,25 +76,19 @@ export const useFormRemove = createHook<TagName, FormRemoveOptions>(
     autoFocusOnClick = true,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
-
-    invariant(
+    const { store: form, name } = useFormItemContext({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "FormRemove must be wrapped in a Form component.",
-    );
-
-    const name = String(nameProp);
+      name: nameProp,
+      component: "FormRemove",
+    });
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      if (!store) return;
-      store.removeValue(name, index);
+      form.removeValue(name, index);
       if (!autoFocusOnClick) return;
-      const { items } = store.getState();
+      const { items } = form.getState();
       const item = findNextOrPreviousField(items, name, index);
       const element = item?.element;
       if (element) {

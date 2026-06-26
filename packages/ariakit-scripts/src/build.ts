@@ -2,9 +2,9 @@ import { lstatSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { build as rolldownBuild } from "rolldown";
-import type { Plugin } from "rolldown";
 import { dts } from "rolldown-plugin-dts";
 import solidPlugin from "vite-plugin-solid";
+import { cleanLegacyBuild } from "./legacy-clean.ts";
 import { escapeRegExp } from "./regexp.ts";
 import { normalizePath, readPackageJson } from "./utils.ts";
 import type { PackageJson } from "./utils.ts";
@@ -258,6 +258,7 @@ export async function updateSourcePackageJson(
 ) {
   const publicFiles = await getPackagePublicFiles(rootPath, options);
   await updatePackageExports(rootPath, publicFiles, "source");
+  return publicFiles;
 }
 
 function getExternal(packageJson: PackageJson) {
@@ -273,18 +274,6 @@ function getExternal(packageJson: PackageJson) {
 
 function getInput(publicFiles: PublicFile[]) {
   return Object.fromEntries(publicFiles.map((file) => [file.name, file.path]));
-}
-
-function getUseClientPlugin(enabled: boolean): Plugin[] {
-  if (!enabled) return [];
-  return [
-    {
-      name: "ariakit-use-client",
-      renderChunk(code) {
-        return `"use client";\n${code}`;
-      },
-    },
-  ];
 }
 
 function cleanOutput(rootPath: string, isSolid: boolean) {
@@ -363,9 +352,9 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
       entryFileNames: "[name].js",
       chunkFileNames: "__chunks/[hash].js",
       sourcemap: true,
+      ...(isReactPackage && { banner: '"use client";' }),
     },
     plugins: [
-      ...getUseClientPlugin(isReactPackage),
       ...(isSolid ? [solidPlugin({ solid: { generate: "dom" } })] : []),
     ],
   });
@@ -399,6 +388,10 @@ export async function cleanPackage(
 ) {
   const packageJson = readPackageJson(rootPath);
   const isSolid = isSolidPackage(packageJson);
-  await updateSourcePackageJson(rootPath, options);
+  const publicFiles = await updateSourcePackageJson(rootPath, options);
   cleanOutput(rootPath, isSolid);
+  cleanLegacyBuild(
+    rootPath,
+    publicFiles.map((file) => file.name),
+  );
 }

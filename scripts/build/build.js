@@ -32,7 +32,7 @@ const entry = getPublicFiles(sourcePath);
 const esmDir = getESMDir();
 const cjsDir = getCJSDir();
 
-spawn.sync(
+const result = spawn.sync(
   "tsc",
   [
     "--emitDeclarationOnly",
@@ -45,6 +45,11 @@ spawn.sync(
   ],
   { stdio: "inherit" },
 );
+
+if (result.error) throw result.error;
+if (result.status !== 0) {
+  process.exit(result.status ?? 1);
+}
 
 cpSync(esmDir, cjsDir, { recursive: true });
 
@@ -73,38 +78,13 @@ const cjsInternalPackages = [
 ];
 
 /** @param {{ format: import("tsup").Format, outDir: string }} options */
-function buildStandard({ format, outDir }) {
-  if (isFramework) return;
+async function buildPackage({ format, outDir }) {
+  if (isFramework && !isReact) return;
   return build({
     entry,
     format,
     outDir,
     noExternal: format === "cjs" ? cjsInternalPackages : undefined,
-    // dts: true,
-    // tsconfig: "tsconfig.build.json",
-    splitting: true,
-    esbuildOptions(options) {
-      options.chunkNames = "__chunks/[hash]";
-      // TODO: this might not be necessary for anything other than react and react-components
-      if (format === "esm") {
-        options.banner = {
-          js: '"use client";',
-        };
-      }
-    },
-  });
-}
-
-/** @param {{ format: import("tsup").Format, outDir: string }} options */
-function buildReact({ format, outDir }) {
-  if (!isReact) return;
-  return build({
-    entry,
-    format,
-    outDir,
-    noExternal: format === "cjs" ? cjsInternalPackages : undefined,
-    // dts: true,
-    // tsconfig: "tsconfig.build.json",
     splitting: true,
     esbuildOptions(options) {
       options.chunkNames = "__chunks/[hash]";
@@ -117,4 +97,4 @@ function buildReact({ format, outDir }) {
   });
 }
 
-await Promise.all([...builds.map(buildStandard), ...builds.map(buildReact)]);
+await Promise.all(builds.map(buildPackage));

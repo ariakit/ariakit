@@ -145,11 +145,13 @@
 /* ak-list-item elements and variants */
 @utility ak-list-item-ul-marker {
   @apply ak-layer ak-edge-40;
-  @apply absolute left-0 border-b;
+  @apply absolute border-b;
   content: "";
   width: calc(var(--ak-list-leading) * 0.5);
   top: calc(var(--ak-list-leading) * 0.5 + var(--ak-frame-padding));
-  left: calc(var(--ak-list-leading) * 0.25 + var(--ak-frame-padding));
+  inset-inline-start: calc(
+    var(--ak-list-leading) * 0.25 + var(--ak-frame-padding)
+  );
 }
 
 @utility ak-list-item-ul {
@@ -162,7 +164,7 @@
   --ak-list-counter-leading: var(--ak-list-leading);
   font-size-adjust: 0.45;
   top: var(--ak-frame-padding);
-  left: var(--ak-frame-padding);
+  inset-inline-start: var(--ak-frame-padding);
 }
 
 @utility ak-list-item-ol-border {
@@ -178,7 +180,7 @@
     content: "";
     width: var(--ak-list-border-width);
     top: var(--ak-list-border-top);
-    left: calc(
+    inset-inline-start: calc(
       var(--ak-list-item-marker-center) - var(--ak-list-border-width) / 2 +
         var(--ak-frame-padding)
     );
@@ -323,7 +325,7 @@
   @apply before:ak-progress-circular-fill ak-progress-value-(--value);
   --value: calc(--value(number) / 100);
   --value: calc(--value(ratio));
-  --value: --value(percentage, [*]);
+  --value: --value([*]);
   @variant ak-list-ol {
     @apply ak-progress-thickness-[0.15em];
   }

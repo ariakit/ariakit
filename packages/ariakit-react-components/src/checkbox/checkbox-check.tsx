@@ -92,7 +92,12 @@ export interface CheckboxCheckOptions<
   /**
    * Object returned by the
    * [`useCheckboxStore`](https://ariakit.com/reference/use-checkbox-store)
-   * hook.
+   * hook. This prop doesn't affect the checkmark. It's accepted for
+   * consistency with other Ariakit components and is not passed to the
+   * underlying element. The checked state is derived solely from the
+   * [`checked`](https://ariakit.com/reference/checkbox-check#checked) prop or,
+   * when it's not provided, from the closest
+   * [`Checkbox`](https://ariakit.com/reference/checkbox) component.
    */
   store?: CheckboxStore;
   /**

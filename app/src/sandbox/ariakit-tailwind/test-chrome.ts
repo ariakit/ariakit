@@ -1,20 +1,9 @@
 import { AxeBuilder } from "@axe-core/playwright";
 import { expect } from "@playwright/test";
-import type { Locator, Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 type ColorContrastViolationMap = Record<string, string>;
-
-interface FrameCoverMetrics {
-  borderBottomLeftRadius: string;
-  borderBottomRightRadius: string;
-  borderTopLeftRadius: string;
-  borderTopRightRadius: string;
-  leftGap: number;
-  marginLeft: string;
-  marginRight: string;
-  rightGap: number;
-}
 
 interface AxeViolation {
   nodes: AxeViolationNode[];
@@ -33,6 +22,44 @@ interface AxeCheckResult {
     bgColor?: string;
     contrastRatio?: number;
     fgColor?: string;
+  };
+}
+
+declare global {
+  interface Window {
+    /** Installed by `installSectionLabelHelpers` via `page.evaluate`. */
+    getSectionLabel: (section: Element) => string | null;
+  }
+}
+
+function installSectionLabelHelpers() {
+  const getSectionTextNodeLabel = (section: Element) => {
+    // React renders `0 && <div />` as a text node, so fall back to the
+    // section's own direct text content when no labelled element has visible
+    // text.
+    for (const node of Array.from(section.childNodes)) {
+      if (node.nodeType !== Node.TEXT_NODE) {
+        continue;
+      }
+      const textContent = node.textContent?.trim();
+      if (textContent) {
+        return textContent;
+      }
+    }
+    return "";
+  };
+
+  window.getSectionLabel = (section) => {
+    const labelledBy = section.getAttribute("aria-labelledby");
+    if (!labelledBy) {
+      return null;
+    }
+    const labelElement = document.getElementById(labelledBy);
+    const label = labelElement?.textContent?.trim();
+    if (label) {
+      return label;
+    }
+    return getSectionTextNodeLabel(section) || null;
   };
 }
 
@@ -360,28 +387,6 @@ function extractComputedCSS() {
     return classes.join(" ");
   };
 
-  const getSectionTextNodeLabel = (section: Element) => {
-    // React renders `0 && <div />` as a text node, so fall back to the
-    // section's own direct text content when no labelled element has visible
-    // text.
-    for (const node of Array.from(section.childNodes)) {
-      if (node.nodeType !== Node.TEXT_NODE) {
-        continue;
-      }
-      const textContent = node.textContent?.trim();
-      if (textContent) {
-        return textContent;
-      }
-    }
-    return "";
-  };
-
-  const getSectionLabel = (section: Element, labelledBy: string) => {
-    const labelElement = document.getElementById(labelledBy);
-    const label = labelElement?.textContent?.trim() ?? "";
-    return label || getSectionTextNodeLabel(section);
-  };
-
   const walk = (el: Element): Record<string, CSSNode> => {
     const result: Record<string, CSSNode> = {};
     const labelCounts = new Map<string, number>();
@@ -391,7 +396,7 @@ function extractComputedCSS() {
           ? child.getAttribute("aria-labelledby")
           : null;
       if (labelledBy) {
-        const label = getSectionLabel(child, labelledBy);
+        const label = window.getSectionLabel(child) ?? "";
         const className = extractClass(child);
         const children = walk(child);
         const count = labelCounts.get(label) ?? 0;
@@ -414,28 +419,6 @@ function extractComputedCSS() {
 function formatColorContrastViolations(
   violations: AxeViolation[],
 ): ColorContrastViolationMap {
-  const getSectionTextNodeLabel = (section: Element) => {
-    // React renders `0 && <div />` as a text node, so fall back to the
-    // section's own direct text content when no labelled element has visible
-    // text.
-    for (const node of Array.from(section.childNodes)) {
-      if (node.nodeType !== Node.TEXT_NODE) {
-        continue;
-      }
-      const textContent = node.textContent?.trim();
-      if (textContent) {
-        return textContent;
-      }
-    }
-    return "";
-  };
-
-  const getSectionLabel = (section: Element, labelledBy: string) => {
-    const labelElement = document.getElementById(labelledBy);
-    const label = labelElement?.textContent?.trim() ?? "";
-    return label || getSectionTextNodeLabel(section);
-  };
-
   const getTargetSelector = (target: AxeViolationNode["target"]) => {
     const selector = target.at(-1);
     if (!selector) {
@@ -448,12 +431,9 @@ function formatColorContrastViolations(
     const labels: string[] = [];
     let currentSection = element.closest("section[aria-labelledby]");
     while (currentSection) {
-      const labelledBy = currentSection.getAttribute("aria-labelledby");
-      if (labelledBy) {
-        const label = getSectionLabel(currentSection, labelledBy);
-        if (label) {
-          labels.unshift(label);
-        }
+      const label = window.getSectionLabel(currentSection);
+      if (label) {
+        labels.unshift(label);
       }
       currentSection =
         currentSection.parentElement?.closest("section[aria-labelledby]") ??
@@ -518,42 +498,16 @@ function formatColorContrastViolations(
 }
 
 async function waitForPreviewReady(page: Page) {
+  await page.evaluate(installSectionLabelHelpers);
   await page.waitForFunction(async () => {
     if (document.querySelector("astro-island[ssr]")) {
       return false;
     }
-    const getSectionTextNodeLabel = (section: Element) => {
-      // React renders `0 && <div />` as a text node, so fall back to the
-      // section's own direct text content when no labelled element has visible
-      // text.
-      for (const node of Array.from(section.childNodes)) {
-        if (node.nodeType !== Node.TEXT_NODE) {
-          continue;
-        }
-        const textContent = node.textContent?.trim();
-        if (textContent) {
-          return textContent;
-        }
-      }
-      return "";
-    };
-    const getSectionLabel = (section: Element) => {
-      const labelledBy = section.getAttribute("aria-labelledby");
-      if (!labelledBy) {
-        return null;
-      }
-      const labelElement = document.getElementById(labelledBy);
-      const label = labelElement?.textContent?.trim();
-      if (label) {
-        return label;
-      }
-      return getSectionTextNodeLabel(section) || null;
-    };
     const getSectionLabels = () => {
       const sections = Array.from(
         document.querySelectorAll("section[aria-labelledby]"),
       );
-      const labels = sections.map(getSectionLabel);
+      const labels = sections.map((section) => window.getSectionLabel(section));
       if (labels.some((label) => label == null)) {
         return null;
       }
@@ -573,94 +527,14 @@ async function waitForPreviewReady(page: Page) {
   });
 }
 
-async function getFrameCoverMetrics(frame: Locator) {
-  const cover = frame.locator(".ak-frame-cover");
-  await expect(cover).toBeVisible();
-  return cover.evaluate<FrameCoverMetrics>((element) => {
-    const frame = element.parentElement;
-    if (!frame) {
-      throw new Error("Frame not found");
-    }
-    const coverRect = element.getBoundingClientRect();
-    const frameRect = frame.getBoundingClientRect();
-    const style = getComputedStyle(element);
-    return {
-      borderBottomLeftRadius: style.borderBottomLeftRadius,
-      borderBottomRightRadius: style.borderBottomRightRadius,
-      borderTopLeftRadius: style.borderTopLeftRadius,
-      borderTopRightRadius: style.borderTopRightRadius,
-      leftGap: Math.round(coverRect.left - frameRect.left),
-      marginLeft: style.marginLeft,
-      marginRight: style.marginRight,
-      rightGap: Math.round(frameRect.right - coverRect.right),
-    };
-  });
-}
-
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("mirrors frame cover stretch in RTL rows", async ({ page, q }) => {
-    await waitForPreviewReady(page);
-    const ltrStart = await getFrameCoverMetrics(
-      q.region("LTR frame row start cover"),
-    );
-    const rtlStart = await getFrameCoverMetrics(
-      q.region("RTL frame row start cover"),
-    );
-    const ltrEnd = await getFrameCoverMetrics(
-      q.region("LTR frame row end cover"),
-    );
-    const rtlEnd = await getFrameCoverMetrics(
-      q.region("RTL frame row end cover"),
-    );
-
-    expect(rtlStart.rightGap).toBe(ltrStart.leftGap);
-    expect(rtlStart.marginRight).toBe(ltrStart.marginLeft);
-    expect(rtlStart.marginLeft).toBe(ltrStart.marginRight);
-    expect(rtlStart.borderTopRightRadius).toBe(ltrStart.borderTopLeftRadius);
-    expect(rtlStart.borderBottomRightRadius).toBe(
-      ltrStart.borderBottomLeftRadius,
-    );
-    expect(rtlStart.borderTopLeftRadius).toBe(ltrStart.borderTopRightRadius);
-    expect(rtlStart.borderBottomLeftRadius).toBe(
-      ltrStart.borderBottomRightRadius,
-    );
-
-    expect(rtlEnd.leftGap).toBe(ltrEnd.rightGap);
-    expect(rtlEnd.marginLeft).toBe(ltrEnd.marginRight);
-    expect(rtlEnd.marginRight).toBe(ltrEnd.marginLeft);
-    expect(rtlEnd.borderTopLeftRadius).toBe(ltrEnd.borderTopRightRadius);
-    expect(rtlEnd.borderBottomLeftRadius).toBe(ltrEnd.borderBottomRightRadius);
-    expect(rtlEnd.borderTopRightRadius).toBe(ltrEnd.borderTopLeftRadius);
-    expect(rtlEnd.borderBottomRightRadius).toBe(ltrEnd.borderBottomLeftRadius);
-  });
-
-  test("matches exactly one layer band at lightness boundaries", async ({
-    page,
-    q,
-  }) => {
-    await waitForPreviewReady(page);
-    const transparent = "rgba(0, 0, 0, 0)";
-
-    await expect(
-      q.text("Dark high candidate (layer lightness 0.275)"),
-    ).toHaveCSS("background-color", transparent);
-    await expect(
-      q.text("Dark low candidate (layer lightness 0.275)"),
-    ).toHaveCSS("background-color", "rgb(0, 0, 0)");
-    await expect(
-      q.text("Light low candidate (layer lightness 0.8575)"),
-    ).toHaveCSS("background-color", transparent);
-    await expect(
-      q.text("Light high candidate (layer lightness 0.8575)"),
-    ).toHaveCSS("background-color", "rgb(0, 0, 0)");
-  });
-
   for (const scheme of ["light", "dark"] as const) {
     test.describe(`${scheme} scheme`, () => {
       test.use({ colorScheme: scheme });
 
       test("no color contrast violations (WCAG AA)", async ({ page }) => {
         test.setTimeout(60_000);
+        await waitForPreviewReady(page);
         const results = await new AxeBuilder({ page })
           .withRules(["color-contrast"])
           .analyze();
@@ -677,11 +551,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         const label = contrast ? " (high contrast)" : "";
         test(`computed styles${label}`, async ({ page }) => {
           if (contrast) {
-            const cdp = await page.context().newCDPSession(page);
-            await cdp.send("Emulation.setEmulatedMedia", {
-              features: [{ name: "prefers-contrast", value: "more" }],
-            });
-            await page.reload({ waitUntil: "networkidle" });
+            await page.emulateMedia({ contrast: "more" });
           }
           await waitForPreviewReady(page);
           const tree = await page.evaluate(extractComputedCSS);

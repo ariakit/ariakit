@@ -33,9 +33,7 @@ This package is ESM-only and exposes a single public entrypoint.
 - [Hooks](#hooks)
   - [`useSafeLayoutEffect`](#usesafelayouteffect)
   - [`useInitialValue`](#useinitialvalue)
-  - [`useLazyValue`](#uselazyvalue)
   - [`useLiveRef`](#useliveref)
-  - [`usePreviousValue`](#usepreviousvalue)
   - [`useEvent`](#useevent)
   - [`useTransactionState`](#usetransactionstate)
   - [`useMergeRefs`](#usemergerefs)
@@ -106,26 +104,6 @@ function Component({ prop }) {
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
-#### `useLazyValue`
-
-```ts
-function useLazyValue<T>(init: () => T): T;
-```
-
-Returns a value that is lazily initiated and never changes.
-
-Example:
-
-```ts
-function Component() {
-  const set = useLazyValue(() => new Set());
-}
-```
-
-<div align="right">
-  <a href="#api-reference">&uarr; back to top</a>
-</div>
-
 #### `useLiveRef`
 
 ```ts
@@ -141,18 +119,6 @@ function Component({ prop }) {
   const propRef = useLiveRef(prop);
 }
 ```
-
-<div align="right">
-  <a href="#api-reference">&uarr; back to top</a>
-</div>
-
-#### `usePreviousValue`
-
-```ts
-function usePreviousValue<T>(value: T): T;
-```
-
-Keeps the reference of the previous value to be used in the render phase.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>

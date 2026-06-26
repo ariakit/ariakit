@@ -3,6 +3,7 @@
  * @module DOM utilities
  */
 
+import { hasOwnProperty } from "./misc.ts";
 import type { AriaHasPopup, AriaRole } from "./types.ts";
 
 /**
@@ -186,10 +187,11 @@ export function isTextField(
   element: Element,
 ): element is HTMLInputElement | HTMLTextAreaElement {
   try {
-    const isTextInput =
-      element instanceof HTMLInputElement && element.selectionStart !== null;
-    const isTextArea = element.tagName === "TEXTAREA";
-    return isTextInput || isTextArea || false;
+    // Use tag names instead of realm-bound constructors so text fields from
+    // same-origin child frames are recognized.
+    if (element.tagName === "TEXTAREA") return true;
+    if (element.tagName !== "INPUT") return false;
+    return (element as HTMLInputElement).selectionStart !== null;
   } catch (_error) {
     // Safari throws an exception when trying to get `selectionStart` on
     // non-text <input> elements (which, understandably, don't have the text
@@ -278,6 +280,15 @@ export function getPopupRole(
 }
 
 /**
+ * Returns the item role based on the popup role.
+ */
+export function getItemRoleByPopupRole(popupRole?: string | null) {
+  if (popupRole == null) return;
+  if (!hasOwnProperty(itemRoleByPopupRole, popupRole)) return;
+  return itemRoleByPopupRole[popupRole];
+}
+
+/**
  * Returns the item role attribute based on the popup's role.
  */
 export function getPopupItemRole(
@@ -285,9 +296,8 @@ export function getPopupItemRole(
   fallback?: AriaRole,
 ) {
   const popupRole = getPopupRole(element);
-  if (!popupRole) return fallback;
-  const key = popupRole as keyof typeof itemRoleByPopupRole;
-  return itemRoleByPopupRole[key] ?? fallback;
+  if (typeof popupRole !== "string") return fallback;
+  return getItemRoleByPopupRole(popupRole) ?? fallback;
 }
 
 /**
@@ -322,10 +332,17 @@ export function getScrollingElement(
     const { overflowX } = getComputedStyle(element);
     if (isScrollableOverflow(overflowX)) return element;
   }
+  // When no scrollable ancestor is found, fall back to the scrolling element of
+  // the element's own document rather than the global one. For an element
+  // inside an iframe, `parentElement` never crosses the frame boundary, so the
+  // recursion bottoms out at the iframe's `<html>` and would otherwise resolve
+  // against the top-level page's scroller. `getDocument` returns the same global
+  // `document` for top-level elements, so this leaves the common case unchanged.
+  const doc = getDocument(element);
   return (
     getScrollingElement(element.parentElement) ||
-    document.scrollingElement ||
-    document.body
+    doc.scrollingElement ||
+    doc.body
   );
 }
 

@@ -399,7 +399,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (event.defaultPrevented) return;
       if (!store) return;
       if (!isSelfTarget(event)) return;
-      const { orientation, renderedItems, activeId } = store.getState();
+      const { orientation, renderedItems, activeId, rtl } = store.getState();
       const activeItem = getEnabledItem(store, activeId);
       if (activeItem?.element?.isConnected) return;
       const isVertical = orientation !== "horizontal";
@@ -423,9 +423,9 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       };
       const keyMap = {
         ArrowUp: (grid || isVertical) && up,
-        ArrowRight: (grid || isHorizontal) && store.first,
+        ArrowRight: (grid || isHorizontal) && (rtl ? store.last : store.first),
         ArrowDown: (grid || isVertical) && store.first,
-        ArrowLeft: (grid || isHorizontal) && store.last,
+        ArrowLeft: (grid || isHorizontal) && (rtl ? store.first : store.last),
         Home: store.first,
         End: store.last,
         PageUp: store.first,

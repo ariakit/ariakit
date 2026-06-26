@@ -7,4 +7,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+// Intentionally empty: prevents Vite's upward PostCSS config search from
+// picking up the legacy root postcss.config.cjs for website/.
+// The app uses Tailwind v4 through @tailwindcss/vite instead.
 export default {};

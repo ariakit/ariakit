@@ -12,10 +12,38 @@ interface DevOptions {
 
 interface CleanPackage {
   path: string;
-  type: "ariakit" | "script";
 }
 
-const packageChangeGlobs = ["packages/*/package.json", "packages/*/src/**"];
+interface PackageWatcher {
+  on(event: string, listener: (filename: string) => void): PackageWatcher;
+}
+
+interface WatchPackageChangesOptions {
+  cleanPackages?: typeof cleanPackages;
+  watch?: (
+    path: string,
+    options: {
+      ignoreInitial: boolean;
+      ignored: (path: string) => boolean;
+    },
+  ) => PackageWatcher;
+}
+
+const watchedPackageEntries = new Set(["package.json", "src"]);
+
+export function shouldIgnorePackageWatchPath(filename: string) {
+  const relativePath = isAbsolute(filename)
+    ? relative(process.cwd(), filename)
+    : filename;
+  const normalizedPath = normalizePath(relativePath);
+  const [root, packageName, entry] = normalizedPath.split("/");
+
+  if (root !== "packages") return false;
+  if (!packageName) return false;
+  if (!entry) return false;
+
+  return !watchedPackageEntries.has(entry);
+}
 
 function getCleanPackage(rootPath: string): CleanPackage | undefined {
   try {
@@ -26,7 +54,6 @@ function getCleanPackage(rootPath: string): CleanPackage | undefined {
 
     return {
       path: rootPath,
-      type: cleanScript.startsWith("ariakit clean") ? "ariakit" : "script",
     };
   } catch {
     return;
@@ -56,42 +83,25 @@ async function getCleanPackages() {
 function getPackagePath(filename: string) {
   const path = isAbsolute(filename) ? filename : join(process.cwd(), filename);
   const relativePath = normalizePath(relative(process.cwd(), path));
-  const [root, packageName] = relativePath.split("/");
+  const [root, packageName, entry] = relativePath.split("/");
 
   if (root !== "packages") return;
   if (!packageName) return;
+  if (!entry) return;
+  if (!watchedPackageEntries.has(entry)) return;
 
   return join(process.cwd(), "packages", packageName);
 }
 
-function runCleanScript(rootPath: string) {
-  return new Promise<void>((resolve, reject) => {
-    const child = spawn("pnpm", ["run", "clean"], {
-      cwd: rootPath,
-      stdio: "inherit",
-    });
-    child.on("error", reject);
-    child.on("exit", (code) => {
-      if (code) {
-        reject(new Error(`pnpm run clean failed with ${code}`));
-        return;
-      }
-      resolve();
-    });
-  });
-}
-
 async function cleanPackages(packages: CleanPackage[]) {
   for (const pkg of packages) {
-    if (pkg.type === "ariakit") {
-      await cleanPackage(pkg.path);
-      continue;
-    }
-    await runCleanScript(pkg.path);
+    await cleanPackage(pkg.path);
   }
 }
 
-function watchPackageChanges() {
+export function watchPackageChanges(options: WatchPackageChangesOptions = {}) {
+  const watchPackages = options.watch ?? watch;
+  const cleanPackageList = options.cleanPackages ?? cleanPackages;
   let timeout: NodeJS.Timeout | undefined;
   let queue = Promise.resolve();
   const pendingPackagePaths = new Set<string>();
@@ -104,7 +114,7 @@ function watchPackageChanges() {
     pendingPackagePaths.clear();
     if (!packages.length) return;
     queue = queue
-      .then(() => cleanPackages(packages))
+      .then(() => cleanPackageList(packages))
       .catch((error) => console.error(error));
   };
 
@@ -118,7 +128,10 @@ function watchPackageChanges() {
     timeout = setTimeout(runClean, 100);
   };
 
-  watch(packageChangeGlobs, { ignoreInitial: true })
+  watchPackages("packages", {
+    ignoreInitial: true,
+    ignored: shouldIgnorePackageWatchPath,
+  })
     .on("add", scheduleClean)
     .on("change", scheduleClean)
     .on("unlink", scheduleClean)

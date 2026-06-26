@@ -15,7 +15,7 @@ type Values = FormStoreValues;
  * ```jsx
  * <FormProvider defaultValues={{ email: "" }}>
  *   <Form>
- *     <FormInput />
+ *     <FormInput name="email" />
  *   </Form>
  * </FormProvider>
  * ```

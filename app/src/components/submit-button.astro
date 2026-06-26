@@ -30,7 +30,7 @@ interface Props extends HTMLAttributes<"button"> {}
     );
   }
 
-  document.addEventListener("astro:page-load", () => {
+  function init() {
     const buttons = document.querySelectorAll<HTMLButtonElement>(
       "[data-submit-button]"
     );
@@ -39,6 +39,8 @@ interface Props extends HTMLAttributes<"button"> {}
       const form = button.form;
       if (!form) continue;
 
+      // init() can run more than once; browsers ignore duplicate listener
+      // registrations with the same callback.
       form.addEventListener("submit", onSubmit);
 
       const hasBeenProcessed = button.hasAttribute("data-previous-disabled");
@@ -49,5 +51,14 @@ interface Props extends HTMLAttributes<"button"> {}
       button.removeAttribute("data-previous-disabled");
       button.removeAttribute("data-loading");
     }
+  }
+
+  // Layouts without <ClientRouter /> never fire astro:page-load, and bfcache
+  // restores do not rerun module scripts.
+  init();
+  document.addEventListener("astro:page-load", init);
+  window.addEventListener("pageshow", (event) => {
+    if (!event.persisted) return;
+    init();
   });
 </script>

@@ -32,8 +32,20 @@ interface PerfScriptProfileEntry {
   hitCount: number;
 }
 
+interface PerfSelectorProfileEntry {
+  selector: string;
+  styleSheetId: string;
+  styleSheetUrl: string;
+  elapsed: number;
+  matchAttempts: number;
+  matchCount: number;
+  slowPathNonMatchPercent: number;
+  invalidationCount: number;
+}
+
 interface PerfProfiles {
   script?: PerfScriptProfileEntry[];
+  selectors?: PerfSelectorProfileEntry[];
 }
 
 interface PerfResult {
@@ -42,6 +54,8 @@ interface PerfResult {
   label: string;
   metrics: PerfMetrics;
   raw: PerfMetrics[];
+  scriptProfile?: boolean;
+  selectorProfile?: boolean;
   profiles?: PerfProfiles;
 }
 
@@ -111,6 +125,21 @@ function createScriptProfileEntry(
     selfTime,
     totalTime: selfTime,
     hitCount: 1,
+  };
+}
+
+function createSelectorProfileEntry(
+  selector = ".item",
+): PerfSelectorProfileEntry {
+  return {
+    selector,
+    styleSheetId: "1",
+    styleSheetUrl: "app/src/sandbox/example/style.css",
+    elapsed: 8,
+    matchAttempts: 10,
+    matchCount: 2,
+    slowPathNonMatchPercent: 20,
+    invalidationCount: 0,
   };
 }
 
@@ -678,7 +707,7 @@ test("merges profiles across rounds", () => {
   expect(markdown).toContain("secondRoundFn");
 });
 
-test("links repo script profile sources to GitHub lines", () => {
+test("renders script profile function names as linked code", () => {
   const dir = createTempDir();
   const profiles: PerfProfiles = {
     script: [
@@ -724,13 +753,124 @@ test("links repo script profile sources to GitHub lines", () => {
   });
 
   expect(markdown).toContain(
-    "[packages/ariakit-react-components/src/dialog/dialog.tsx:12:3](https://github.com/ariakit/ariakit/blob/abc123/packages/ariakit-react-components/src/dialog/dialog.tsx#L12)",
+    "[`Dialog`](https://github.com/ariakit/ariakit/blob/abc123/packages/ariakit-react-components/src/dialog/dialog.tsx#L12)",
   );
   expect(markdown).toContain(
-    "[app/src/sandbox/dialog-perf/index.react.tsx:34:5](https://github.com/ariakit/ariakit/blob/abc123/app/src/sandbox/dialog-perf/index.react.tsx#L34)",
+    "[`DialogPerf`](https://github.com/ariakit/ariakit/blob/abc123/app/src/sandbox/dialog-perf/index.react.tsx#L34)",
   );
   expect(markdown).toContain(
-    String.raw`[app/src/sandbox/dialog\\\[perf\]\|case.tsx:56:7](https://github.com/ariakit/ariakit/blob/abc123/app/src/sandbox/dialog%5C%5Bperf%5D%7Ccase.tsx#L56)`,
+    "[`Escaped`](https://github.com/ariakit/ariakit/blob/abc123/app/src/sandbox/dialog%5C%5Bperf%5D%7Ccase.tsx#L56)",
+  );
+  expect(markdown).toContain(
+    "| [`Dialog`](https://github.com/ariakit/ariakit/blob/abc123/packages/ariakit-react-components/src/dialog/dialog.tsx#L12) | 8.0ms | 9.0ms | 2 |",
+  );
+  expect(markdown).not.toContain("| Function | Self | Total | Hits | Source |");
+  expect(markdown).not.toContain("dialog.tsx:12:3");
+});
+
+test("keeps node_modules script profile functions as unlinked code", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    script: [
+      {
+        functionName: "updateWorkInProgressHook",
+        url: "/node_modules/react-dom/react-dom-client.production.js",
+        line: 4455,
+        column: 10,
+        selfTime: 8,
+        totalTime: 9,
+        hitCount: 2,
+      },
+    ],
+  };
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithMetrics("profiled", createMetrics(100), profiles),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    createResultWithMetrics("profiled", createMetrics(100), profiles),
+  ]);
+
+  const markdown = runCompare(dir, [], {
+    GITHUB_REPOSITORY: "ariakit/ariakit",
+    GITHUB_SHA: "abc123",
+  });
+
+  expect(markdown).toContain(
+    "| `updateWorkInProgressHook` | 8.0ms | 9.0ms | 2 |",
+  );
+  expect(markdown).not.toContain("react-dom-client.production.js");
+});
+
+test("omits metric tables for script profile comparisons", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    script: [createScriptProfileEntry("profiledFn", 8)],
+  };
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithMetrics("profiled", createMetrics(100), profiles),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    createResultWithMetrics("profiled", createMetrics(130), profiles),
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain("### profiled");
+  expect(markdown).toContain("#### Script profile");
+  expect(markdown).toContain("| `profiledFn` | 8.0ms | 8.0ms | 1 |");
+  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
+  expect(markdown).not.toContain("+30.0ms (+30%)");
+});
+
+test("omits new test metric rows for script profile results", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    script: [createScriptProfileEntry("profiledFn", 8)],
+  };
+  writeJson(dir, "current-worker0.json", [
+    createResultWithLabel("regular", 100),
+    createResultWithMetrics("profiled", createMetrics(130), profiles),
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("### New tests (no baseline)");
+  expect(markdown).toContain("| Test | Scripting | Rendering | Total |");
+  expect(markdown).toContain("| regular | 100.0ms | 0.0ms | 100.0ms |");
+  expect(markdown).toContain("#### profiled");
+  expect(markdown).toContain("#### Script profile");
+  expect(markdown).toContain("| `profiledFn` | 8.0ms | 8.0ms | 1 |");
+  expect(markdown).not.toContain("| profiled | 130.0ms | 0.0ms | 130.0ms |");
+});
+
+test("omits new test metric rows for selector profile results", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    selectors: [createSelectorProfileEntry(".item")],
+  };
+  writeJson(dir, "current-worker0.json", [
+    createResultWithLabel("regular", 100),
+    {
+      ...createResultWithMetrics(
+        "selector-profiled",
+        createMetrics(130),
+        profiles,
+      ),
+      selectorProfile: true,
+    },
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("### New tests (no baseline)");
+  expect(markdown).toContain("| Test | Scripting | Rendering | Total |");
+  expect(markdown).toContain("| regular | 100.0ms | 0.0ms | 100.0ms |");
+  expect(markdown).toContain("#### selector-profiled");
+  expect(markdown).toContain("#### Selector profile");
+  expect(markdown).toContain("| .item | 8.0ms | 10 | 2 | 20% |");
+  expect(markdown).not.toContain(
+    "| selector-profiled | 130.0ms | 0.0ms | 130.0ms |",
   );
 });
 
@@ -742,11 +882,117 @@ test("warns when only one side has profile data for a test", () => {
     }),
   ]);
   writeJson(dir, "current-worker0.json", [
-    createResultWithMetrics("profile-mismatch", createMetrics(100)),
+    createResultWithMetrics("profile-mismatch", createMetrics(130)),
   ]);
 
   const markdown = runCompare(dir);
 
-  expect(markdown).toContain("Profile data differs between baseline");
+  expect(markdown).toContain("Profile mode differs between baseline");
   expect(markdown).toContain("| profile-mismatch | script | yes | no |");
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).not.toContain("### profile-mismatch");
+  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
+  expect(markdown).not.toContain("+30.0ms (+30%)");
+});
+
+test("omits metric tables when only current has script profile data", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    script: [createScriptProfileEntry("currentProfile", 8)],
+  };
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithMetrics("profile-mismatch", createMetrics(100)),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    createResultWithMetrics("profile-mismatch", createMetrics(130), profiles),
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("Profile mode differs between baseline");
+  expect(markdown).toContain("| profile-mismatch | script | no | yes |");
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain("| `currentProfile` | 8.0ms | 8.0ms | 1 |");
+  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
+  expect(markdown).not.toContain("+30.0ms (+30%)");
+});
+
+test("omits metric tables when script profile has no retained entries", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithMetrics("profile-mismatch", createMetrics(100)),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    {
+      ...createResultWithMetrics("profile-mismatch", createMetrics(130)),
+      scriptProfile: true,
+    },
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("Profile mode differs between baseline");
+  expect(markdown).toContain("| profile-mismatch | script | no | yes |");
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).not.toContain("### profile-mismatch");
+  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
+  expect(markdown).not.toContain("+30.0ms (+30%)");
+});
+
+test("omits metric tables when selector profile has no retained entries", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithMetrics("profile-mismatch", createMetrics(100)),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    {
+      ...createResultWithMetrics("profile-mismatch", createMetrics(130)),
+      selectorProfile: true,
+    },
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("Profile mode differs between baseline");
+  expect(markdown).toContain("| profile-mismatch | selectors | no | yes |");
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).not.toContain("### profile-mismatch");
+  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
+  expect(markdown).not.toContain("+30.0ms (+30%)");
+});
+
+test("omits metric tables for selector profile comparisons", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    selectors: [createSelectorProfileEntry(".item")],
+  };
+  writeJson(dir, "baseline-worker0.json", [
+    {
+      ...createResultWithMetrics(
+        "selector-profiled",
+        createMetrics(100),
+        profiles,
+      ),
+      selectorProfile: true,
+    },
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    {
+      ...createResultWithMetrics(
+        "selector-profiled",
+        createMetrics(130),
+        profiles,
+      ),
+      selectorProfile: true,
+    },
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain("### selector-profiled");
+  expect(markdown).toContain("#### Selector profile");
+  expect(markdown).toContain("| .item | 8.0ms | 10 | 2 | 20% |");
+  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
+  expect(markdown).not.toContain("+30.0ms (+30%)");
 });

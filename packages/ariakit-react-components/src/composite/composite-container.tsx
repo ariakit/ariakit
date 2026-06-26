@@ -180,10 +180,26 @@ export const useCompositeContainer = createHook<
         if (!tabbable) return;
         if (isTextField(tabbable) || tabbable.isContentEditable) {
           open();
-          // We need to move focus back to the container as soon as the
-          // delete/backspace key is captured by the text field.
-          const onInput = () => queueMicrotask(() => container.focus());
+          // Move focus back only when this delete/backspace changes the
+          // editable element. If it's already empty, no input event fires;
+          // leaving the listener armed would let the next input event steal
+          // focus back to the container (#6300).
+          //
+          // Remove the listener on keyup, before the next key can produce
+          // input. The timer is only a fallback for cases where keyup never
+          // reaches the container, such as when focus leaves while the key is
+          // held; relying on the timer alone can race the next input event.
+          const cleanup = () => {
+            container.removeEventListener("input", onInput);
+            container.removeEventListener("keyup", cleanup);
+          };
+          const onInput = () => {
+            cleanup();
+            queueMicrotask(() => container.focus());
+          };
           container.addEventListener("input", onInput, { once: true });
+          container.addEventListener("keyup", cleanup, { once: true });
+          setTimeout(cleanup, 0);
         }
       }
     }

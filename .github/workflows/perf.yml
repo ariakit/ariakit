@@ -91,13 +91,17 @@ jobs:
               workflow_id: 'app.yml',
               branch: branchRef,
               head_sha: baseSha,
+              // Only push runs build exactly at head_sha. Pull request runs
+              // check out the merge ref, so their artifacts are not a build
+              // of base.sha and would corrupt stacked PR baselines.
+              event: 'push',
               status: 'success',
               per_page: 1,
             });
             const run = runs.data.workflow_runs[0];
             if (!run) {
               core.notice(
-                `No successful app.yml run found for base SHA ${baseSha}. ` +
+                `No successful push app.yml run found for base SHA ${baseSha}. ` +
                   'Building base artifacts in this job.',
               );
               return;

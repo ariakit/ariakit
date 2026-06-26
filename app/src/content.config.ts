@@ -14,7 +14,7 @@ import { z } from "astro/zod";
 import { defineCollection, reference } from "astro:content";
 import { jsdoc } from "./lib/jsdoc-loader.ts";
 import { componentLoader, exampleLoader } from "./lib/mdx-loader.ts";
-import { previewConfig } from "./lib/preview-config.ts";
+import { PreviewKindSchema, previewConfig } from "./lib/preview-config.ts";
 import { previewLoader } from "./lib/preview-discovery.ts";
 import { TagSchema } from "./lib/schemas.ts";
 
@@ -85,7 +85,7 @@ const galleries = defineCollection({
 
 const previews = defineCollection({
   loader: previewLoader(previewConfig),
-  schema: previewLoader.schema,
+  schema: previewLoader.schema.extend({ source: PreviewKindSchema }),
 });
 
 const references = defineCollection({

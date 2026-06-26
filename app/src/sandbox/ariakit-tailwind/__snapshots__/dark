@@ -1,5 +1,21 @@
 {
   "edge inherit root no source": "bg-[oklch(0.3634_0.0091_264.28)] text-[oklch(1_0_0)] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+  "parentless dark layer push": "bg-[oklch(0.7281_0.028_261.692)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.028_261.692_/_0.1)] p-[4px] shadow-[oklch(0_0.028_261.692_/_0.1)_0px_0px_0px_0px]",
+  "parentless dark state push": "bg-[oklch(0.7281_0.028_261.692)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.028_261.692_/_0.1)] p-[4px] shadow-[oklch(0_0.028_261.692_/_0.1)_0px_0px_0px_0px]",
+  "dark push control": {
+    "class": "bg-[oklch(0.13_0.028_261.692)] text-[oklch(1_0_0)] border-[1px] border-[oklch(0_0.028_261.692_/_0.1)] p-[4px] shadow-[oklch(0_0.028_261.692_/_0.1)_0px_0px_0px_0px]",
+    "children": {
+      "nested dark layer push": "bg-[oklch(0.7281_0.028_261.692)] text-[oklch(0_0_0)] border-[1px] border-[oklch(1_0.028_261.692_/_0.1)] p-[4px] shadow-[oklch(1_0.028_261.692_/_0.1)_0px_0px_0px_0px]",
+      "nested dark state push": "bg-[oklch(0.7281_0.028_261.692)] text-[oklch(0_0_0)] border-[1px] border-[oklch(1_0.028_261.692_/_0.1)] p-[4px] shadow-[oklch(1_0.028_261.692_/_0.1)_0px_0px_0px_0px]"
+    }
+  },
+  "light push control": {
+    "class": "bg-[oklch(1_0.0091_264.28)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(0_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
+    "children": {
+      "light parent dark layer push": "bg-[oklch(0.7281_0.028_261.692)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.028_261.692_/_0.1)] p-[4px] shadow-[oklch(0_0.028_261.692_/_0.1)_0px_0px_0px_0px]",
+      "light parent dark state push": "bg-[oklch(0.7281_0.028_261.692)] text-[oklch(0_0_0)] border-[1px] border-[oklch(0_0.028_261.692_/_0.1)] p-[4px] shadow-[oklch(0_0.028_261.692_/_0.1)_0px_0px_0px_0px]"
+    }
+  },
   "edge inherit no source": {
     "class": "bg-[oklch(0.4951_0.245_262.881)] text-[oklch(1_0_0)]",
     "children": {
@@ -33,13 +49,6 @@
       "#165DFC": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[lch(57.033_80_288.704)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
       "raw calc": "bg-[oklch(0.4268_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[lch(84.1828_3.43_266.444)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
       "raw l/c": "bg-[oklch(0.5096_0.18_264.28)] text-[oklch(1_0_0)] *:text-[lch(97.3245_20_284.288)] rounded-[15px] border-[1px] border-[oklch(1_0.18_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.18_264.28_/_0.1)_0px_0px_0px_0px]",
-      "band boundary variants": {
-        "class": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
-        "children": {
-          "ak-layer-l-27.5": "bg-[oklch(0.275_0.0091_264.28)] text-[oklch(1_0_0)] *:text-[rgb(255,_255,_255)] p-[8px]",
-          "ak-layer-l-85.75": "bg-[oklch(0.8575_0.0091_264.28)] text-[oklch(0_0_0)] p-[8px]"
-        }
-      },
       "ak-layer ak-text": "text-[lch(57.033_80_288.648)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.1)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.1)_0px_0px_0px_0px]",
       "raw ink/edge": "bg-[oklch(0.1634_0.0091_264.28)] text-[oklch(1_0_0_/_0.4969)] *:text-[lch(57.033_2.32_268.203)] rounded-[15px] border-[1px] border-[oklch(1_0.0091_264.28_/_0.35)] p-[4px] shadow-[oklch(1_0.0091_264.28_/_0.35)_0px_0px_0px_0px]",
       "layer limits": {

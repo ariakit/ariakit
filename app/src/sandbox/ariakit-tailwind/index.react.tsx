@@ -45,30 +45,6 @@ function Cell(props: CellProps) {
   );
 }
 
-interface FrameCoverCardProps {
-  coverPosition: "start" | "end";
-  dir: "ltr" | "rtl";
-  label: string;
-}
-
-function FrameCover() {
-  return <div className="ak-frame-cover ak-layer-blue-600 w-24 shrink-0" />;
-}
-
-function FrameCoverCard({ coverPosition, dir, label }: FrameCoverCardProps) {
-  return (
-    <section
-      aria-label={label}
-      dir={dir}
-      className="ak-layer ak-frame ak-frame-xl/2 ak-frame-border ak-frame-row flex h-16 w-80"
-    >
-      {coverPosition === "start" && <FrameCover />}
-      <div className="grow" />
-      {coverPosition === "end" && <FrameCover />}
-    </section>
-  );
-}
-
 function Layers() {
   return (
     <>
@@ -298,30 +274,47 @@ function Layers() {
 export default function Example() {
   return (
     <div className="flex flex-col gap-4 p-4">
-      <FrameCoverCard
-        coverPosition="start"
-        dir="ltr"
-        label="LTR frame row start cover"
-      />
-      <FrameCoverCard
-        coverPosition="start"
-        dir="rtl"
-        label="RTL frame row start cover"
-      />
-      <FrameCoverCard
-        coverPosition="end"
-        dir="ltr"
-        label="LTR frame row end cover"
-      />
-      <FrameCoverCard
-        coverPosition="end"
-        dir="rtl"
-        label="RTL frame row end cover"
-      />
       <Layer
         label="edge inherit root no source"
         className="ak-layer ak-layer-20 ak-edge-inherit ak-frame ak-frame-p-1 ak-frame-border"
       />
+      {/* Test-only isolation from inherited layer scheme context. */}
+      <div className="[--_ak-ls:transparent] flex flex-wrap items-start gap-4">
+        <Layer
+          label="parentless dark layer push"
+          className="ak-layer ak-layer-gray-950 ak-layer-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+        />
+        <Layer
+          label="parentless dark state push"
+          className="ak-layer ak-layer-gray-950 ak-state-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+        />
+        <Layer
+          label="dark push control"
+          className="ak-layer ak-layer-gray-950 ak-frame ak-frame-p-1 ak-frame-border flex-col"
+        >
+          <Layer
+            label="nested dark layer push"
+            className="ak-layer ak-layer-gray-950 ak-layer-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+          />
+          <Layer
+            label="nested dark state push"
+            className="ak-layer ak-layer-gray-950 ak-state-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+          />
+        </Layer>
+        <Layer
+          label="light push control"
+          className="ak-layer ak-layer-l-100 ak-frame ak-frame-p-1 ak-frame-border flex-col"
+        >
+          <Layer
+            label="light parent dark layer push"
+            className="ak-layer ak-layer-gray-950 ak-layer-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+          />
+          <Layer
+            label="light parent dark state push"
+            className="ak-layer ak-layer-gray-950 ak-state-push-50 ak-frame ak-frame-p-1 ak-frame-border"
+          />
+        </Layer>
+      </div>
       <Layer
         label="edge inherit no source"
         className="ak-layer ak-layer-blue-600 flex-col"
@@ -411,29 +404,6 @@ export default function Example() {
             label="raw l/c"
             className="ak-layer-l-[0.62] ak-layer-c-[0.18] *:ak-text"
           />
-          <Layer
-            label="band boundary variants"
-            className="ak-layer ak-frame ak-frame-p-1 ak-frame-border flex-col"
-          >
-            <Layer className="grid gap-2">
-              <Layer className="ak-layer ak-layer-l-27.5 p-2">
-                <div className="ak-dark-high:bg-red-950 p-2 text-white">
-                  Dark high candidate (layer lightness 0.275)
-                </div>
-                <div className="ak-dark-low:bg-black p-2 text-white">
-                  Dark low candidate (layer lightness 0.275)
-                </div>
-              </Layer>
-              <Layer className="ak-layer ak-layer-l-85.75 p-2">
-                <div className="ak-light-low:bg-red-950 p-2 text-black">
-                  Light low candidate (layer lightness 0.8575)
-                </div>
-                <div className="ak-light-high:bg-black p-2 text-white">
-                  Light high candidate (layer lightness 0.8575)
-                </div>
-              </Layer>
-            </Layer>
-          </Layer>
           <Layer
             label="ak-layer ak-text"
             className="ak-layer ak-layer-80 ak-text ak-text-blue-600 ak-frame ak-frame-p-1 ak-frame-border"

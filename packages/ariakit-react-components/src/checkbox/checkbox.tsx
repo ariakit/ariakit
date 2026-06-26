@@ -20,6 +20,7 @@ import type {
 import { useEffect, useRef, useState } from "react";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
+import { getPrimitiveValue } from "./__utils.ts";
 import { CheckboxCheckedContext } from "./checkbox-checked-context.tsx";
 import { useCheckboxContext } from "./checkbox-context.tsx";
 import type { CheckboxStore } from "./checkbox-store.ts";
@@ -38,13 +39,6 @@ function setMixed(element: HTMLType, mixed?: boolean) {
 
 function isNativeCheckbox(tagName?: string, type?: string) {
   return tagName === "input" && (!type || type === "checkbox");
-}
-
-function getPrimitiveValue<T>(value: T) {
-  if (Array.isArray(value)) {
-    return value.toString();
-  }
-  return value as Exclude<T, readonly any[]>;
 }
 
 /**

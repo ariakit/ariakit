@@ -1,8 +1,26 @@
-import { join } from "node:path";
+import { isAbsolute, join, relative } from "node:path";
 import { watch } from "chokidar";
 import { globSync } from "glob";
 import { updateSourcePackageJson } from "../../packages/ariakit-scripts/src/build.ts";
 import { readPackageJson, writePackageJson } from "./utils.js";
+
+/** @param {string} path */
+function normalizePath(path) {
+  return path.replace(/\\/g, "/");
+}
+
+/** @param {string} path */
+function shouldIgnoreWatchPath(path) {
+  const relativePath = isAbsolute(path) ? relative(process.cwd(), path) : path;
+  const normalizedPath = normalizePath(relativePath);
+  const [root, packageName, entry] = normalizedPath.split("/");
+
+  if (root !== "packages") return false;
+  if (!packageName) return false;
+  if (!entry) return false;
+
+  return entry !== "src";
+}
 
 /** @param {string} path */
 async function processDevPackage(path) {
@@ -32,7 +50,10 @@ function handleChange(path) {
   void processDevPackage(path);
 }
 
-watch(["packages/*/src/**"], { ignoreInitial: true })
+watch("packages", {
+  ignoreInitial: true,
+  ignored: shouldIgnoreWatchPath,
+})
   .on("add", handleChange)
   .on("unlink", handleChange)
   .on("unlinkDir", handleChange);

@@ -562,10 +562,6 @@ const layerMathVars = {
 
   layerIdlePushResolvedL: _ak.prop("liprl"),
   layerPushValue: _ak.prop.zero("lpv"),
-  // Shared by the idle and state push pipelines: both always receive the same
-  // value (offsetDirectionToLight by default, 0/1 under the light/dark
-  // variants), so one property serves both getPushL call sites.
-  layerPushDirectionToLight: _ak.prop.zero("lpdtl"),
   layerPushBaseL: _ak.prop("lpbl", { initial: l }),
   layerPushL: _ak.prop("lpl", { initial: l }),
   edgeContrastValue: _ak.prop.zero("ecv", { inherits: true }),
@@ -596,7 +592,9 @@ const layerColorVars = {
   layerTextLContext: _ak.var("ltlc"),
   layerTextLContextEven: _ak.prop.canvas("ltlc-even", { inherits: true }),
   layerTextLContextOdd: _ak.prop.canvas("ltlc-odd", { inherits: true }),
-  layerScheme: _ak.prop.black("ls", { inherits: true }),
+  // This must not match the light/dark style queries until an ancestor layer
+  // provides an actual scheme color.
+  layerScheme: _ak.prop.color("ls", { inherits: true, initial: "transparent" }),
   layerBand: _ak.prop.black("lbd", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
   layerOffset: _ak.prop.canvas("lo"),
@@ -793,6 +791,9 @@ const light = createVariant(
   "ak-light",
   at.container(fn.style(vars.layerScheme, "oklch(0 0 0)"), set("@slot")),
 );
+
+// Parses as a valid declaration only in browsers that support if().
+const IF_SUPPORTS_CONDITION = "(color: if(else: red))";
 
 const darkHigh = createVariant(
   "ak-dark-high",
@@ -1149,16 +1150,19 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   );
 }
 
+const layerContrastInactive = fn.sub(
+  1,
+  fn.mul(vars.layerContrastDirection, vars.layerContrastDirection),
+);
+const layerIdleContrastBias = fn.mul(
+  vars.layerContrastBias,
+  layerContrastInactive,
+);
+
 const layerIdle = fn.oklch(vars.layerIdleOffset, {
   l: fn.add(
     getContrastL(l, getPushValue(inputs.layerIdleContrastL)),
-    fn.mul(
-      vars.layerContrastBias,
-      fn.sub(
-        1,
-        fn.mul(vars.layerContrastDirection, vars.layerContrastDirection),
-      ),
-    ),
+    fn.mul(layerIdleContrastBias, fn.sub(1, vars.layerIdlePushEnabled)),
   ),
 });
 
@@ -1207,17 +1211,6 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
   ];
 }
 
-function getLayerIdleContrastBiasDirection() {
-  const pushDirection = fn.sub(fn.double(vars.layerPushDirectionToLight), 1);
-  return fn.add(
-    vars.lightnessOffsetDirection,
-    fn.mul(
-      vars.layerIdlePushEnabled,
-      fn.sub(pushDirection, vars.lightnessOffsetDirection),
-    ),
-  );
-}
-
 // Assign derived math first so later color stages can reference short vars.
 const layerMathDeclarations = [
   // Set contrastT explicitly so the 5+ references inside this body resolve
@@ -1225,13 +1218,12 @@ const layerMathDeclarations = [
   // contrast-scale math at each call site.
   set(vars.contrastT, fn.mul(globalContrastT, disabledVars.contrastScale)),
   set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
-  set(vars.layerPushDirectionToLight, vars.offsetDirectionToLight),
   set(
     vars.layerContrastBias,
     fn.mul(
       fn.neg(vars.contrastT),
       CONTRAST_SCALE,
-      getLayerIdleContrastBiasDirection(),
+      vars.lightnessOffsetDirection,
     ),
   ),
   set(vars.forbiddenLa, forbiddenLa),
@@ -1345,16 +1337,8 @@ utility(
   getBaseDeclarations(vars.layer),
   layerMathDeclarations,
   layerColorDeclarations,
-  at.variant(
-    light,
-    set(vars.layerPushDirectionToLight, 0),
-    set(vars.edgePushDirection, -1),
-  ),
-  at.variant(
-    dark,
-    set(vars.layerPushDirectionToLight, 1),
-    set(vars.edgePushDirection, 1),
-  ),
+  at.variant(light, set(vars.edgePushDirection, -1)),
+  at.variant(dark, set(vars.edgePushDirection, 1)),
   layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
     set(vars.layerParent, inherit(vars.layerParentContext)),
@@ -1453,13 +1437,12 @@ const layerLighten = utility(
 
 utility("layer-darken-*", getNegatedDeclarations(layerLighten));
 
-utility("state-lighten-*", getRawPercentDeclarations(inputs.layerRelativeL));
-
-utility(
-  "state-darken-*",
-  set(inputs.layerRelativeL, fn.neg(getBarePercentTokenValue())),
-  set(inputs.layerRelativeL, fn.neg(fn.value("[*]"))),
+const stateLighten = utility(
+  "state-lighten-*",
+  getRawPercentDeclarations(inputs.layerRelativeL),
 );
+
+utility("state-darken-*", getNegatedDeclarations(stateLighten));
 
 /**
  * Moves a hue toward a target by percentage on the shortest circular path.
@@ -1499,9 +1482,12 @@ utility(
   ),
   set(
     vars.layerIdlePushL,
-    getPushL(vars.layerIdlePushBaseL, vars.layerPushDirectionToLight),
+    getPushL(vars.layerIdlePushBaseL, vars.offsetDirectionToLight),
   ),
-  set(vars.layerIdlePushResolvedL, vars.layerIdlePushL),
+  set(
+    vars.layerIdlePushResolvedL,
+    fn.add(vars.layerIdlePushL, layerIdleContrastBias),
+  ),
 );
 
 utility(
@@ -1639,23 +1625,16 @@ utility(
   ),
   set(
     vars.layerPushL,
-    getPushL(vars.layerPushBaseL, vars.layerPushDirectionToLight),
+    getPushL(vars.layerPushBaseL, vars.offsetDirectionToLight),
   ),
 );
 
-utility(
+const stateSaturate = utility(
   "state-saturate-*",
   getRawPercentDeclarations(inputs.layerRelativeC, CHROMA_TOKEN_OPTIONS),
 );
 
-utility(
-  "state-desaturate-*",
-  set(
-    inputs.layerRelativeC,
-    fn.neg(getBarePercentTokenValue(CHROMA_TOKEN_OPTIONS)),
-  ),
-  set(inputs.layerRelativeC, fn.neg(fn.value("[*]"))),
-);
+utility("state-desaturate-*", getNegatedDeclarations(stateSaturate));
 
 utility(
   "edge-*",
@@ -1831,9 +1810,6 @@ function getTextDirectional() {
     c: fn.min(c, vars.textChromaCap),
   });
 }
-
-// Parses as a valid declaration only in browsers that support if().
-const IF_SUPPORTS_CONDITION = "(color: if(else: red))";
 
 const textLightnessSteps = getTextLightnessSteps();
 

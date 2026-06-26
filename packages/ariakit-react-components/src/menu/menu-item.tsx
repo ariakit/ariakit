@@ -79,6 +79,9 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
     blurOnHoverEnd,
     ...props
   }) {
+    // Only use the scoped menu context here. The unscoped MenuProvider context
+    // is intentionally skipped so MenuItem can bind to the menubar store when
+    // it renders a MenuButton inside a Menubar.
     const menuContext = useMenuScopedContext(true);
     const menubarContext = useMenubarScopedContext();
     store = store || menuContext || (menubarContext as any);
@@ -214,7 +217,7 @@ export interface MenuItemOptions<T extends ElementType = TagName>
    * [`useMenubarStore`](https://ariakit.com/reference/use-menubar-store)
    * hooks. If not provided, the closest
    * [`Menu`](https://ariakit.com/reference/menu),
-   * [`MenuProvider`](https://ariakit.com/reference/menu-provider),
+   * [`MenuList`](https://ariakit.com/reference/menu-list),
    * [`Menubar`](https://ariakit.com/reference/menubar), or
    * [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)
    * components' context will be used.

@@ -51,6 +51,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`getTextboxValue`](#gettextboxvalue)
   - [`getTextboxSelection`](#gettextboxselection)
   - [`getPopupRole`](#getpopuprole)
+  - [`getItemRoleByPopupRole`](#getitemrolebypopuprole)
   - [`getPopupItemRole`](#getpopupitemrole)
   - [`scrollIntoViewIfNeeded`](#scrollintoviewifneeded)
   - [`getScrollingElement`](#getscrollingelement)
@@ -69,6 +70,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`fireClickEvent`](#fireclickevent)
   - [`isFocusEventOutside`](#isfocuseventoutside)
   - [`getInputType`](#getinputtype)
+  - [`isInputEvent`](#isinputevent)
   - [`queueBeforeEvent`](#queuebeforeevent)
   - [`addGlobalEventListener`](#addglobaleventlistener)
 - [Focus utilities](#focus-utilities)
@@ -478,6 +480,18 @@ Returns the popup role from the element's role attribute, if it has one.
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
+#### `getItemRoleByPopupRole`
+
+```ts
+function getItemRoleByPopupRole(popupRole?: string | null): string | undefined;
+```
+
+Returns the item role based on the popup role.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `getPopupItemRole`
 
 ```ts
@@ -764,6 +778,18 @@ function getInputType(
 ```
 
 Returns the `inputType` property of the event, if available.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `isInputEvent`
+
+```ts
+function isInputEvent(event: Event): event is InputEvent;
+```
+
+Checks whether the event is an input event.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>

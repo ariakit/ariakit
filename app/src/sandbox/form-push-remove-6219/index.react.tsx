@@ -9,7 +9,7 @@ import { useState } from "react";
 export default function Example() {
   const form = ak.useFormStore({
     defaultValues: {
-      tags: ["React"],
+      tags: ["React", "Vue"],
       tags2: ["Solid"],
       "c++": ["11", "14"],
     },
@@ -29,15 +29,20 @@ export default function Example() {
 
       <fieldset>
         <legend>Tags</legend>
-        {tags.map((_, index) => {
+        {tags.map((tag, index) => {
+          if (tag == null) return null;
           const name = `tags.${index}`;
           return (
-            <ak.FormInput
-              key={index}
-              name={name}
-              aria-label={name}
-              onFocus={() => setFocused(name)}
-            />
+            <div key={index}>
+              <ak.FormInput
+                name={name}
+                aria-label={name}
+                onFocus={() => setFocused(name)}
+              />
+              <ak.FormRemove name="tags" index={index}>
+                Remove {name}
+              </ak.FormRemove>
+            </div>
           );
         })}
         <ak.FormPush name="tags" value="">
