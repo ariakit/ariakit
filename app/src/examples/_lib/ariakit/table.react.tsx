@@ -108,7 +108,11 @@ export function Table<K extends keyof any>({
   const headRows = rows?.filter((row) => row.group === "head");
   const bodyRows = rows?.filter((row) => row.group === "body" || !row.group);
   const footRows = rows?.filter((row) => row.group === "foot");
-  const columnKeys = getColumnKeys(rows);
+  const columnKeys = getColumnKeys([
+    ...(headRows ?? []),
+    ...(bodyRows ?? []),
+    ...(footRows ?? []),
+  ]);
 
   const getRowElement = (row: TableRow<K>) => {
     if (row.group === "head") return headRowEl;
