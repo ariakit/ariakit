@@ -1,4 +1,4 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/6215
@@ -18,15 +18,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const scroller = page.locator(".scroller");
     const detachedCount = q.status();
 
-    // Let the virtualizer's scroll handler and effects settle across two frames.
-    const settle = () =>
-      page.evaluate(
-        () =>
-          new Promise<void>((resolve) =>
-            requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
-          ),
-      );
-
     // The list renders and measures items to begin with. Anchor the pattern so
     // it doesn't also match the "Refresh items" control.
     await test.expect(q.button(/^item /).first()).toBeVisible();
@@ -39,28 +30,28 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await scroller.evaluate((element, y) => {
         element.scrollTop = y;
       }, top);
-      await settle();
+      await flushFrames(page);
     }
     await scroller.evaluate((element) => {
       element.scrollTop = element.scrollHeight;
     });
-    await settle();
+    await flushFrames(page);
     await scroller.evaluate((element) => {
       element.scrollTop = 0;
     });
-    await settle();
+    await flushFrames(page);
 
     // Scrolled-out items must have been unobserved — no detached node retained.
     await test.expect(detachedCount).toHaveText("0");
 
     // Re-rendering items to new nodes (same id) must unobserve the old nodes.
     await q.button("Refresh items").click();
-    await settle();
+    await flushFrames(page);
     await test.expect(detachedCount).toHaveText("0");
 
     // Unmounting the list must disconnect the observer — still nothing retained.
     await q.button("Unmount the list").click();
-    await settle();
+    await flushFrames(page);
     await test.expect(detachedCount).toHaveText("0");
   });
 });

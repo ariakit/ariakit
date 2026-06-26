@@ -32,6 +32,24 @@ export async function gotoAndSettle(page: Page, url: string) {
     });
 }
 
+/** Waits for animation frames in the page so effects can settle. */
+export function flushFrames(page: Page, frames = 2) {
+  return page.evaluate(
+    (frameCount) =>
+      new Promise<void>((resolve) => {
+        const tick = () => {
+          if (frameCount-- <= 0) {
+            resolve();
+            return;
+          }
+          requestAnimationFrame(tick);
+        };
+        tick();
+      }),
+    frames,
+  );
+}
+
 const SRC_DIR = resolve(import.meta.dirname, "..");
 const previewRoots = resolvePreviewRoots({ ...previewConfig, srcDir: SRC_DIR });
 
