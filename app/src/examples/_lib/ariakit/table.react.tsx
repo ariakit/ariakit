@@ -136,18 +136,12 @@ export function Table<K extends keyof any>({
     return (
       <ak.Role key={index} render={rowElement}>
         {columnKeys.map((key) => {
-          const value = row[key as K];
-          const tableCellElement = createRender<TableCellProps>(
-            TableCell,
-            value ?? { children: null },
-            {
-              numeric: !!headRows?.some((row) =>
-                isNumericColumn(row, key as K),
-              ),
-              header: row.group === "head" ? "column" : false,
-              children: key,
-            },
-          );
+          const value = row[key as K] ?? { children: null };
+          const tableCellElement = createRender(TableCell, value, {
+            numeric: !!headRows?.some((row) => isNumericColumn(row, key as K)),
+            header: row.group === "head" ? "column" : false,
+            children: key,
+          });
           return <ak.Role key={key} render={tableCellElement} />;
         })}
       </ak.Role>
