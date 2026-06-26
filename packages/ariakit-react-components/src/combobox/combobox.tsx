@@ -292,7 +292,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       storeValue,
     ]);
 
-    const scrollingElementRef = useRef<Element | null>(null);
     const getAutoSelectIdProp = useEvent(getAutoSelectId);
     const autoSelectIdRef = useRef<string | null | undefined>(null);
     // Tracks the item (id and value) the autoSelect behavior last moved focus
@@ -316,7 +315,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (!contentElement) return;
       const scrollingElement = getScrollingElement(contentElement);
       if (!scrollingElement) return;
-      scrollingElementRef.current = scrollingElement;
       const onUserScroll = () => {
         // A wheel event is always initiated by the user, so we can disable the
         // autoSelect behavior without any additional checks.
@@ -642,7 +640,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       // cleared. See combobox-cancel tests.
       canAutoSelectRef.current = false;
       onBlurProp?.(event);
-      if (event.defaultPrevented) return;
     });
 
     // This is necessary so other components like ComboboxCancel can reference
