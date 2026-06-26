@@ -22,6 +22,8 @@ import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
 import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
+import type { BasePlacement } from "../popover/__utils.ts";
+import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import { Role } from "../role/role.tsx";
@@ -34,7 +36,6 @@ import type { MenuStore, MenuStoreState } from "./menu-store.ts";
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName | "div";
 type HTMLType = HTMLElementTagNameMap[TagName];
-type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function getInitialFocus(event: KeyboardEvent, dir: BasePlacement) {
   const keyMap = {
@@ -129,9 +130,8 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       }
     });
 
-    const dir = useStoreState(
-      store,
-      (state) => state.placement.split("-")[0] as BasePlacement,
+    const dir = useStoreState(store, (state) =>
+      getBasePlacement(state.placement),
     );
 
     const onKeyDownProp = props.onKeyDown;

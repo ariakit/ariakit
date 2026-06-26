@@ -24,6 +24,8 @@ import type { ElementType, HTMLAttributes } from "react";
 import { useRef, useState } from "react";
 import type { DialogOptions } from "../dialog/dialog.tsx";
 import { createDialogComponent, useDialog } from "../dialog/dialog.tsx";
+import type { Placement } from "./__utils.ts";
+import { getBasePlacement } from "./__utils.ts";
 import {
   PopoverScopedContextProvider,
   usePopoverProviderContext,
@@ -32,12 +34,6 @@ import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
-type BasePlacement = "top" | "bottom" | "left" | "right";
-
-type Placement =
-  | BasePlacement
-  | `${BasePlacement}-start`
-  | `${BasePlacement}-end`;
 
 interface AnchorRect {
   x?: number;
@@ -350,7 +346,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         if (arrow && pos.middlewareData.arrow) {
           const { x: arrowX, y: arrowY } = pos.middlewareData.arrow;
 
-          const side = pos.placement.split("-")[0] as BasePlacement;
+          const side = getBasePlacement(pos.placement);
 
           const centerX = arrow.clientWidth / 2;
           const centerY = arrow.clientHeight / 2;
