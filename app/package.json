@@ -64,7 +64,7 @@
     "@astrojs/mdx": "6.0.3",
     "@astrojs/react": "5.0.7",
     "@astrojs/solid-js": "6.0.1",
-    "@clerk/astro": "3.4.6",
+    "@clerk/astro": "3.4.8",
     "@fontsource-variable/inter": "5.2.8",
     "@react-aria/utils": "3.34.1",
     "@shikijs/langs": "4.2.0",
