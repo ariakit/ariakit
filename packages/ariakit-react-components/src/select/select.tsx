@@ -176,7 +176,8 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   });
   const values = useMemo(() => {
     // Filter out items without value and duplicate values.
-    return [...new Set(items?.map((i) => i.value!).filter((v) => v != null))];
+    const itemValues = items?.flatMap((item) => item.value ?? []);
+    return [...new Set(itemValues)];
   }, [items]);
 
   // Renders a native select element with the same value as the select so we
