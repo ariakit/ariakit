@@ -20,7 +20,7 @@ export default function Example() {
   const deferredValue = React.useDeferredValue(value);
 
   const matches = React.useMemo(() => {
-    const keys = ["name", "filename", "email", "folder"];
+    const keys = ["name", "email", "folder"];
     const items = matchSorter(data, deferredValue, {
       keys,
       baseSort: (a, b) => (a.index < b.index ? -1 : 1),
