@@ -23,7 +23,24 @@ import { createCollectionStore } from "../collection/collection-store.ts";
 import type { DeepMap, DeepPartial, Names, StringLike } from "./types.ts";
 
 type ErrorMessage = string | undefined | null;
+type PathSegment = string | number;
 const maxArrayIndex = 2 ** 32 - 2;
+
+function getPath(path: StringLike | unknown[]) {
+  if (!Array.isArray(path)) {
+    return String(path).split(".");
+  }
+  return path.map((key) => {
+    if (typeof key === "number") return key;
+    return String(key);
+  });
+}
+
+function isPrototypePathSegment(key: PathSegment) {
+  if (key === "__proto__") return true;
+  if (key === "constructor") return true;
+  return false;
+}
 
 function nextFrame() {
   return new Promise<void>((resolve) => {
@@ -41,30 +58,43 @@ function nextFrame() {
 }
 
 export function hasMessages(object: FormStoreValues): boolean {
-  return Object.keys(object).some((key) => {
+  const keys = Object.keys(object);
+  for (const key of keys) {
+    if (isPrototypePathSegment(key)) continue;
     if (isObject(object[key])) {
-      return hasMessages(object[key]);
+      if (hasMessages(object[key])) return true;
+      continue;
     }
-    return !!object[key];
-  });
+    if (object[key]) return true;
+  }
+  return false;
 }
 
 export function get<T>(
   values: FormStoreValues,
-  path: StringLike | string[],
+  path: StringLike | Array<string | number>,
   defaultValue?: T,
 ): T {
-  const [key, ...rest] = Array.isArray(path) ? path : String(path).split(".");
-  if (key == null || !values) {
+  const pathKeys = getPath(path);
+  return getPathValue(values, pathKeys, defaultValue);
+}
+
+function getPathValue<T>(
+  values: FormStoreValues,
+  path: PathSegment[],
+  defaultValue?: T,
+): T {
+  const [key, ...rest] = path;
+  if (key == null || !values || isPrototypePathSegment(key)) {
     return defaultValue as T;
   }
   if (!rest.length) {
     return values[key] ?? defaultValue;
   }
-  return get(values[key], rest, defaultValue);
+  return getPathValue(values[key], rest, defaultValue);
 }
 
-function isArrayIndex(key: string | number) {
+function isArrayIndex(key: PathSegment) {
   if (typeof key !== "string" && typeof key !== "number") return false;
   const stringKey = String(key);
   const index = Number(stringKey);
@@ -78,11 +108,28 @@ function isArrayIndex(key: string | number) {
 
 // Returns the existing nested value if it is an array or object, otherwise
 // creates a new container based on whether the next key is an array index.
-function getOrCreateNested(nestedValues: unknown, nextKey: string | number) {
+function getOrCreateNested(nestedValues: unknown, nextKey: PathSegment) {
   if (Array.isArray(nestedValues) || isObject(nestedValues)) {
     return nestedValues;
   }
   return isArrayIndex(nextKey) ? [] : {};
+}
+
+function setObjectValue<T extends FormStoreValues | unknown[]>(
+  values: T,
+  key: keyof T,
+  value: unknown,
+) {
+  const result = {} as T;
+  if (values) {
+    const keys = Object.keys(values);
+    for (const propertyKey of keys) {
+      if (isPrototypePathSegment(propertyKey)) continue;
+      result[propertyKey as keyof T] = values[propertyKey as keyof T];
+    }
+  }
+  result[key] = value as T[keyof T];
+  return result;
 }
 
 function set<T extends FormStoreValues | unknown[]>(
@@ -90,7 +137,17 @@ function set<T extends FormStoreValues | unknown[]>(
   path: StringLike | Array<string | number>,
   value: unknown,
 ): T {
-  const [k, ...rest] = Array.isArray(path) ? path : String(path).split(".");
+  const pathKeys = getPath(path);
+  if (pathKeys.some(isPrototypePathSegment)) return values;
+  return setPath(values, pathKeys, value);
+}
+
+function setPath<T extends FormStoreValues | unknown[]>(
+  values: T,
+  path: PathSegment[],
+  value: unknown,
+): T {
+  const [k, ...rest] = path;
   if (k == null) return values;
   const key = k as keyof T;
   const isArrayIndexKey = isArrayIndex(k);
@@ -99,7 +156,7 @@ function set<T extends FormStoreValues | unknown[]>(
   const nextKey = rest[0];
   const result =
     rest.length && nextKey != null
-      ? set(getOrCreateNested(nestedValues, nextKey), rest, value)
+      ? setPath(getOrCreateNested(nestedValues, nextKey), rest, value)
       : value;
   if (isArrayIndexKey) {
     const index = Number(key);
@@ -112,13 +169,14 @@ function set<T extends FormStoreValues | unknown[]>(
     nextValues[index as keyof T] = result as T[keyof T];
     return nextValues;
   }
-  return Object.assign({}, values, { [key]: result });
+  return setObjectValue(values, key, result);
 }
 
 function setAll<T extends FormStoreValues, V>(values: T, value: V) {
   const result = {} as FormStoreValues;
   const keys = Object.keys(values);
   for (const key of keys) {
+    if (isPrototypePathSegment(key)) continue;
     const currentValue = values[key];
     if (Array.isArray(currentValue)) {
       result[key] = currentValue.map((v) => {
