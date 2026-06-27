@@ -1,5 +1,6 @@
 import { spawnSync } from "node:child_process";
 import {
+  access,
   mkdir,
   mkdtemp,
   readFile,
@@ -11,7 +12,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { TraceMap, originalPositionFor } from "@jridgewell/trace-mapping";
 import { expect, test } from "vitest";
-import { updateSourcePackageJson } from "./build.ts";
+import { cleanPackage, updateSourcePackageJson } from "./build.ts";
 
 const cliPath = join(import.meta.dirname, "index.ts");
 
@@ -80,6 +81,10 @@ async function createBuildFixture({
   }
 
   return rootPath;
+}
+
+async function expectPathMissing(path: string) {
+  await expect(access(path)).rejects.toMatchObject({ code: "ENOENT" });
 }
 
 interface SourceMappingExpectation {
@@ -154,6 +159,67 @@ test("omits npm ignored source files from package exports", async () => {
       ".": "./src/index.ts",
       "./button/button": "./src/button/button.ts",
       "./package.json": "./package.json",
+    });
+  } finally {
+    await rm(rootPath, { recursive: true, force: true });
+  }
+});
+
+test("clean removes current and legacy build output", async () => {
+  const rootPath = await createBuildFixture({
+    sources: {
+      "index.ts": "export {};\n",
+      "button.ts": "export {};\n",
+    },
+  });
+
+  try {
+    await writeFile(
+      join(rootPath, "package.json"),
+      `${JSON.stringify(
+        {
+          name: "test-package",
+          main: "cjs/index.cjs",
+          module: "esm/index.js",
+          types: "cjs/index.d.ts",
+          exports: {
+            ".": {
+              import: "./esm/index.js",
+              require: "./cjs/index.cjs",
+            },
+          },
+        },
+        null,
+        2,
+      )}\n`,
+    );
+
+    const outputFolders = ["dist", "cjs", "esm", "button"];
+
+    for (const folder of outputFolders) {
+      await mkdir(join(rootPath, folder), { recursive: true });
+      await writeFile(join(rootPath, folder, "index.js"), "export {};\n");
+    }
+
+    await cleanPackage(rootPath);
+
+    for (const folder of outputFolders) {
+      await expectPathMissing(join(rootPath, folder));
+    }
+
+    const packageJson = JSON.parse(
+      await readFile(join(rootPath, "package.json"), "utf-8"),
+    );
+
+    expect(packageJson).toMatchObject({
+      main: "src/index.ts",
+      module: "src/index.ts",
+      types: "src/index.ts",
+      exports: {
+        ".": "./src/index.ts",
+        "./button": "./src/button.ts",
+        "./package.json": "./package.json",
+      },
     });
   } finally {
     await rm(rootPath, { recursive: true, force: true });

@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { build as rolldownBuild } from "rolldown";
 import { dts } from "rolldown-plugin-dts";
 import solidPlugin from "vite-plugin-solid";
+import { cleanLegacyBuild } from "./legacy-clean.ts";
 import { escapeRegExp } from "./regexp.ts";
 import { normalizePath, readPackageJson } from "./utils.ts";
 import type { PackageJson } from "./utils.ts";
@@ -257,6 +258,7 @@ export async function updateSourcePackageJson(
 ) {
   const publicFiles = await getPackagePublicFiles(rootPath, options);
   await updatePackageExports(rootPath, publicFiles, "source");
+  return publicFiles;
 }
 
 function getExternal(packageJson: PackageJson) {
@@ -386,6 +388,10 @@ export async function cleanPackage(
 ) {
   const packageJson = readPackageJson(rootPath);
   const isSolid = isSolidPackage(packageJson);
-  await updateSourcePackageJson(rootPath, options);
+  const publicFiles = await updateSourcePackageJson(rootPath, options);
   cleanOutput(rootPath, isSolid);
+  cleanLegacyBuild(
+    rootPath,
+    publicFiles.map((file) => file.name),
+  );
 }

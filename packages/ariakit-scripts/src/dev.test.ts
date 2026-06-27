@@ -69,9 +69,14 @@ test("watches packages and cleans changed package entries", async () => {
 
   try {
     await mkdir(join(rootPath, "packages/foo/src"), { recursive: true });
+    await mkdir(join(rootPath, "packages/bar/src"), { recursive: true });
     await writeFile(
       join(rootPath, "packages/foo/package.json"),
       `${JSON.stringify({ scripts: { clean: "ariakit clean" } }, null, 2)}\n`,
+    );
+    await writeFile(
+      join(rootPath, "packages/bar/package.json"),
+      `${JSON.stringify({ scripts: { clean: "custom clean" } }, null, 2)}\n`,
     );
 
     vi.useFakeTimers();
@@ -101,10 +106,20 @@ test("watches packages and cleans changed package entries", async () => {
     expect(firstCall?.[0]).toEqual([
       {
         path: join(rootPath, "packages/foo"),
-        type: "ariakit",
       },
     ]);
     expect(cleanPackages).toHaveBeenCalledTimes(1);
+
+    watcher.emit("change", "packages/bar/src/index.ts");
+    await vi.advanceTimersByTimeAsync(100);
+
+    const secondCall = cleanPackages.mock.calls[1];
+    expect(secondCall?.[0]).toEqual([
+      {
+        path: join(rootPath, "packages/bar"),
+      },
+    ]);
+    expect(cleanPackages).toHaveBeenCalledTimes(2);
   } finally {
     await rm(rootPath, { recursive: true, force: true });
   }

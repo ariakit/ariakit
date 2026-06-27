@@ -12,7 +12,6 @@ interface DevOptions {
 
 interface CleanPackage {
   path: string;
-  type: "ariakit" | "script";
 }
 
 interface PackageWatcher {
@@ -55,7 +54,6 @@ function getCleanPackage(rootPath: string): CleanPackage | undefined {
 
     return {
       path: rootPath,
-      type: cleanScript.startsWith("ariakit clean") ? "ariakit" : "script",
     };
   } catch {
     return;
@@ -95,30 +93,9 @@ function getPackagePath(filename: string) {
   return join(process.cwd(), "packages", packageName);
 }
 
-function runCleanScript(rootPath: string) {
-  return new Promise<void>((resolve, reject) => {
-    const child = spawn("pnpm", ["run", "clean"], {
-      cwd: rootPath,
-      stdio: "inherit",
-    });
-    child.on("error", reject);
-    child.on("exit", (code) => {
-      if (code) {
-        reject(new Error(`pnpm run clean failed with ${code}`));
-        return;
-      }
-      resolve();
-    });
-  });
-}
-
 async function cleanPackages(packages: CleanPackage[]) {
   for (const pkg of packages) {
-    if (pkg.type === "ariakit") {
-      await cleanPackage(pkg.path);
-      continue;
-    }
-    await runCleanScript(pkg.path);
+    await cleanPackage(pkg.path);
   }
 }
 
