@@ -44,6 +44,7 @@ The `@ariakit/test/react` entry point renders React components for testing, and 
 - [`press`](#press)
 - [`query`](#query)
 - [`q`](#q)
+- [`rightClick`](#rightclick)
 - [`select`](#select)
 - [`sleep`](#sleep)
 - [`tap`](#tap)
@@ -318,6 +319,29 @@ const dialog = q.dialog.lazy("Settings");
 expect(dialog()).not.toBeInTheDocument();
 await click(q.button("Open settings"));
 expect(dialog()).toBeVisible();
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### `rightClick`
+
+```ts
+function rightClick(
+  element: Element | null,
+  options?: PointerEventInit,
+): Promise<void>;
+```
+
+Right-clicks on an element, simulating the sequence of events a real secondary mouse click produces — hovering the target, then right-button `pointerdown`, `mousedown`, `focus`, `contextmenu`, `pointerup`, `mouseup`, and `auxclick`.
+
+Hidden elements are handled the same way a browser would, and no synthetic `click` event is fired. Pass `options` to set event properties such as modifier keys.
+
+Example:
+
+```ts
+await rightClick(q.text("Open menu"));
 ```
 
 <div align="right">
