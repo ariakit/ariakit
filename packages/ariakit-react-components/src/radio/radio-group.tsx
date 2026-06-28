@@ -22,8 +22,9 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isCheckedRadio(element?: HTMLElement | null) {
   if (!element) return false;
-  if (element instanceof HTMLInputElement && element.type === "radio") {
-    return element.checked;
+  if (element.tagName === "INPUT") {
+    const { type, checked } = element as HTMLInputElement;
+    if (type === "radio") return checked;
   }
   if (element.getAttribute("role") !== "radio") return false;
   return element.getAttribute("aria-checked") === "true";
