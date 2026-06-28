@@ -408,7 +408,7 @@ jobs:
           done
           echo "Shard $PERF_SHARD_INDEX/$PERF_SHARD_TOTAL perf files: ${SHARD_FILES[*]:-<none>}"
 
-          run_perf_round() {
+          run_baseline_perf_round() {
             local i="$1"
 
             echo "::group::Round $i - baseline"
@@ -433,6 +433,10 @@ jobs:
               cp "${baseline_files[@]}" app/.perf-results/
             fi
             echo "::endgroup::"
+          }
+
+          run_current_perf_round() {
+            local i="$1"
 
             echo "::group::Round $i - current"
             PERF_RESULTS_FILE=current-$i-s$PERF_SHARD_INDEX.json \
@@ -445,6 +449,22 @@ jobs:
               exit 1
             fi
             echo "::endgroup::"
+          }
+
+          run_perf_round() {
+            local i="$1"
+
+            # Alternate sides first so same-runner drift cannot consistently
+            # favor the baseline or current run across every paired round.
+            if [ "$(( i % 2 ))" -eq 1 ]; then
+              echo "Round $i order: baseline -> current"
+              run_baseline_perf_round "$i"
+              run_current_perf_round "$i"
+            else
+              echo "Round $i order: current -> baseline"
+              run_current_perf_round "$i"
+              run_baseline_perf_round "$i"
+            fi
           }
 
           if [ ${#SHARD_FILES[@]} -eq 0 ]; then
@@ -557,7 +577,7 @@ jobs:
         run: |
           mkdir -p .perf-results
 
-          run_bench_round() {
+          run_baseline_bench_round() {
             local i="$1"
 
             echo "::group::Round $i - baseline"
@@ -578,6 +598,10 @@ jobs:
               printf '{"files":[]}\n' > ".perf-results/baseline-$i.json"
             fi
             echo "::endgroup::"
+          }
+
+          run_current_bench_round() {
+            local i="$1"
 
             echo "::group::Round $i - current"
             pnpm exec vitest bench \
@@ -588,6 +612,22 @@ jobs:
               exit 1
             fi
             echo "::endgroup::"
+          }
+
+          run_bench_round() {
+            local i="$1"
+
+            # Alternate sides first so same-runner drift cannot consistently
+            # favor the baseline or current run across every paired round.
+            if [ "$(( i % 2 ))" -eq 1 ]; then
+              echo "Round $i order: baseline -> current"
+              run_baseline_bench_round "$i"
+              run_current_bench_round "$i"
+            else
+              echo "Round $i order: current -> baseline"
+              run_current_bench_round "$i"
+              run_baseline_bench_round "$i"
+            fi
           }
 
           for i in $(seq 1 "$PERF_INITIAL_ROUNDS"); do
