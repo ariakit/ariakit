@@ -2,6 +2,7 @@ import { afterEach, expect, test, vi } from "vitest";
 import { blur } from "./blur.ts";
 import { press } from "./press.ts";
 import { type } from "./type.ts";
+import "./shims.ts";
 
 afterEach(() => {
   document.body.innerHTML = "";
