@@ -504,13 +504,17 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // keeps non-element nodes working with `contains`, as before.
       if (!isNode(target)) return;
       const { disclosureElement } = store.getState();
-      // This considers valid targets only the disclosure element or descendants
-      // of the dialog element.
+      // This considers valid targets the elements that belong to this dialog
+      // tree, including elements marked as outside by this dialog so Escape can
+      // close the topmost dialog even when focus is outside.
       const isValidTarget = () => {
         if (isElement(target) && target.tagName === "BODY") return true;
         if (contains(dialog, target)) return true;
         if (!disclosureElement) return true;
         if (contains(disclosureElement, target)) return true;
+        if (isElement(target) && isElementMarked(target, dialog.id)) {
+          return true;
+        }
         return false;
       };
       if (!isValidTarget()) return;
