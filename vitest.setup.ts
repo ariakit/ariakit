@@ -1,12 +1,6 @@
 import "@testing-library/jest-dom/vitest";
-import { render as renderReact } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
 import { createElement, Suspense as ReactSuspense } from "react";
-import {
-  createComponent,
-  render as renderSolid,
-  Suspense as SolidSuspense,
-} from "solid-js/web";
 import { expect, beforeEach } from "vitest";
 import failOnConsole from "vitest-fail-on-console";
 import { getTestLoader, isAllowedTestLoader } from "./test-loader.ts";
@@ -53,6 +47,7 @@ async function tryImport(path: string) {
 }
 
 async function loadReact(dir: string) {
+  const { render } = await import("@ariakit/test/react");
   const { component, failedImport } = await tryImport(
     `./${dir}/index.react.tsx`,
   );
@@ -62,20 +57,21 @@ async function loadReact(dir: string) {
     // oxlint-disable-next-line react/no-children-prop -- createElement requires children prop
     children: createElement(component),
   });
-  const { unmount } = await renderReact(element, { strictMode: true });
+  const { unmount } = await render(element, { strictMode: true });
   return unmount;
 }
 
 async function loadSolid(dir: string) {
+  const { createComponent, render, Suspense } = await import("solid-js/web");
   const { component, failedImport } = await tryImport(
     `./${dir}/index.solid.tsx`,
   );
   if (failedImport) return false;
   const div = document.createElement("div");
   document.body.appendChild(div);
-  const dispose = renderSolid(
+  const dispose = render(
     () =>
-      createComponent(SolidSuspense, {
+      createComponent(Suspense, {
         fallback: null,
         get children() {
           return createComponent(component, {});
