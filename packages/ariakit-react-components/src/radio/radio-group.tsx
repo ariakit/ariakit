@@ -1,12 +1,13 @@
 import {
+  useEvent,
   useWrapElement,
   createElement,
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { invariant } from "@ariakit/utils";
-import type { ElementType } from "react";
+import { invariant, isFocusEventOutside } from "@ariakit/utils";
+import type { ElementType, FocusEvent } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import {
@@ -17,6 +18,24 @@ import type { RadioStore } from "./radio-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
+
+function isCheckedRadio(element?: HTMLElement | null) {
+  if (!element) return false;
+  if (element instanceof HTMLInputElement && element.type === "radio") {
+    return element.checked;
+  }
+  if (element.getAttribute("role") !== "radio") return false;
+  return element.getAttribute("aria-checked") === "true";
+}
+
+function getCheckedRadioId(store: RadioStore) {
+  const { renderedItems } = store.getState();
+  const checkedItem = renderedItems.find((item) =>
+    isCheckedRadio(item.element),
+  );
+  return checkedItem?.id;
+}
 
 /**
  * Returns props to create a `RadioGroup` component.
@@ -52,9 +71,20 @@ export const useRadioGroup = createHook<TagName, RadioGroupOptions>(
       [store],
     );
 
+    const onBlurCaptureProp = props.onBlurCapture;
+    const onBlurCapture = useEvent((event: FocusEvent<HTMLType>) => {
+      onBlurCaptureProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!isFocusEventOutside(event)) return;
+      const checkedId = getCheckedRadioId(store);
+      if (!checkedId) return;
+      store.setActiveId(checkedId);
+    });
+
     props = {
       role: "radiogroup",
       ...props,
+      onBlurCapture,
     };
 
     props = useComposite({ store, ...props });
