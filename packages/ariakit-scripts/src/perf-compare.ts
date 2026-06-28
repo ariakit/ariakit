@@ -25,8 +25,8 @@ const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const PROFILE_LIMIT = 10;
 const THRESHOLD_PERCENT = 10;
 const MIN_SIGNIFICANT_DELTA_MS = 5;
-// Require at least 75% of pairwise raw-sample deltas to support the median
-// direction before a round contributes to significance.
+// Require at least 75% of pooled pairwise raw-sample deltas to support the
+// median direction before a browser comparison becomes significant.
 const RAW_SAMPLE_SUPPORT_QUANTILE = 0.25;
 
 type MetricKey = keyof PerfMetrics;
@@ -547,11 +547,17 @@ function computeSignificance({
 
   const delta = current - baseline;
   const direction = Math.sign(delta);
+  if (direction === 0) {
+    return { agreement: 0, significant: false };
+  }
+
   let agreement = 0;
+  const sampleDeltas: number[] = [];
   for (const comparison of roundComparisons) {
-    if (Math.sign(comparison.delta) !== direction) continue;
-    if (!samplesSupportDirection(comparison.sampleDeltas, direction)) continue;
-    agreement += 1;
+    sampleDeltas.push(...comparison.sampleDeltas);
+    if (Math.sign(comparison.delta) === direction) {
+      agreement += 1;
+    }
   }
 
   const percentOk = Math.abs(percent) > THRESHOLD_PERCENT;
@@ -560,10 +566,11 @@ function computeSignificance({
     baseline === 0 && current !== baseline && Math.abs(current) >= minDelta;
   const magnitudeOk = baseline === 0 ? zeroBaselineOk : percentOk && deltaOk;
   const agreementOk = agreement >= requiredAgreement(roundComparisons.length);
+  const sampleSupportOk = samplesSupportDirection(sampleDeltas, direction);
 
   return {
     agreement,
-    significant: primary && magnitudeOk && agreementOk,
+    significant: primary && magnitudeOk && agreementOk && sampleSupportOk,
   };
 }
 
@@ -1142,6 +1149,9 @@ function formatMarkdown(
     unpairedTests.length;
   const resultsName = getResultsName(options);
   const resultName = getResultName(options);
+  const supportClause = options.node
+    ? "rounds agree on direction"
+    : "rounds agree on direction and raw samples support it";
 
   const lines: string[] = [];
   lines.push("## Performance");
@@ -1279,12 +1289,12 @@ function formatMarkdown(
   if (pairedRoundsCount == null) {
     lines.push("");
     lines.push(
-      `Compared ${resultsName} used mixed interleaved round counts; a change is flagged only when the median exceeds the threshold and raw samples support the same direction.`,
+      `Compared ${resultsName} used mixed interleaved round counts; a change is flagged only when the median exceeds the threshold, ${supportClause}.`,
     );
   } else if (pairedRoundsCount > 1) {
     lines.push("");
     lines.push(
-      `Aggregated across ${pairedRoundsCount} interleaved rounds; a change is flagged only when the median exceeds the threshold and raw samples support the same direction.`,
+      `Aggregated across ${pairedRoundsCount} interleaved rounds; a change is flagged only when the median exceeds the threshold, ${supportClause}.`,
     );
   }
 

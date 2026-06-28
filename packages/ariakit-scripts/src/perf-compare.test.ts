@@ -397,6 +397,21 @@ test("does not flag empty Vitest benchmark metrics in node mode", () => {
   expect(markdown).not.toContain("+0 ops/sec :rocket:");
 });
 
+test("describes Node multi-round comparisons by round agreement", () => {
+  const dir = createTempDir();
+  for (const round of [1, 2]) {
+    writeJson(dir, `baseline-${round}.json`, createStoreBenchmarkReport(1000));
+    writeJson(dir, `current-${round}.json`, createStoreBenchmarkReport(500));
+  }
+
+  const markdown = runCompare(dir, ["--node"]);
+
+  expect(markdown).toContain(
+    "Aggregated across 2 interleaved rounds; a change is flagged only when the median exceeds the threshold, rounds agree on direction.",
+  );
+  expect(markdown).not.toContain("raw samples support it");
+});
+
 test("does not flag noisy rounds that disagree on direction", () => {
   const dir = createTempDir();
   for (let round = 1; round <= 5; round++) {
@@ -440,6 +455,19 @@ test("flags same-direction rounds with separated raw samples", () => {
   expect(markdown).toContain("100.0ms → 160.0ms (+60%) :warning:");
 });
 
+test("pools raw sample support across rounds", () => {
+  const dir = createTempDir();
+  writeRawRound(dir, "baseline", 1, [80, 100, 120, 140, 160]);
+  writeRawRound(dir, "current", 1, [100, 120, 140, 160, 180]);
+  writeRawRound(dir, "baseline", 2, [80, 90, 100, 110, 120]);
+  writeRawRound(dir, "current", 2, [140, 150, 160, 170, 180]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain(":warning:");
+  expect(markdown).toContain("110.0ms → 150.0ms (+36%) :warning:");
+});
+
 test("flags a consistent regression across rounds", () => {
   const dir = createTempDir();
   for (let round = 1; round <= 3; round++) {
@@ -469,6 +497,9 @@ test("aggregates displayed values from shared rounds", () => {
   expect(markdown).toContain("200.0ms → 160.0ms (-20%) :rocket:");
   expect(markdown).not.toContain("125.0ms");
   expect(markdown).toContain("Aggregated across 2 interleaved rounds");
+  expect(markdown).toContain(
+    "rounds agree on direction and raw samples support it",
+  );
 });
 
 test("merges sharded round files with shard-suffixed names", () => {
