@@ -39,6 +39,21 @@ function useMouseMoveListenerInstalls() {
 
 function NestedHovercard() {
   const [open, setOpen] = useState(false);
+  // Userland workaround: Dialog's Escape handler ignores events targeting
+  // elements outside the nested hovercard and its anchor.
+  // TODO: Remove once https://github.com/ariakit/ariakit/pull/6572 lands.
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (event.defaultPrevented) return;
+      setOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown, true);
+    };
+  }, [open]);
   return (
     <>
       <button type="button" onClick={() => setOpen((value) => !value)}>
