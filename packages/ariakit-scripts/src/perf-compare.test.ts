@@ -81,6 +81,18 @@ function createMetrics(total: number): PerfMetrics {
   };
 }
 
+function medianValue(values: number[]): number {
+  if (values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  const midValue = sorted[mid];
+  if (midValue == null) return 0;
+  if (sorted.length % 2 !== 0) return midValue;
+  const prevValue = sorted[mid - 1];
+  if (prevValue == null) return midValue;
+  return (prevValue + midValue) / 2;
+}
+
 function createResult(total: number): PerfResult {
   const metrics = createMetrics(total);
   return {
@@ -89,6 +101,14 @@ function createResult(total: number): PerfResult {
     label: "sandbox/example/perf-chrome.ts > react > example",
     metrics,
     raw: [metrics],
+  };
+}
+
+function createResultWithRaw(label: string, totals: number[]): PerfResult {
+  const metrics = createMetrics(medianValue(totals));
+  return {
+    ...createResultWithMetrics(label, metrics),
+    raw: totals.map(createMetrics),
   };
 }
 
@@ -197,6 +217,17 @@ function writeRound(
   total: number,
 ) {
   writeJson(dir, `${prefix}-${round}-worker0.json`, [createResult(total)]);
+}
+
+function writeRawRound(
+  dir: string,
+  prefix: "baseline" | "current",
+  round: number,
+  totals: number[],
+) {
+  writeJson(dir, `${prefix}-${round}-worker0.json`, [
+    createResultWithRaw("raw samples", totals),
+  ]);
 }
 
 function runCompare(
@@ -366,6 +397,21 @@ test("does not flag empty Vitest benchmark metrics in node mode", () => {
   expect(markdown).not.toContain("+0 ops/sec :rocket:");
 });
 
+test("describes Node multi-round comparisons by round agreement", () => {
+  const dir = createTempDir();
+  for (const round of [1, 2]) {
+    writeJson(dir, `baseline-${round}.json`, createStoreBenchmarkReport(1000));
+    writeJson(dir, `current-${round}.json`, createStoreBenchmarkReport(500));
+  }
+
+  const markdown = runCompare(dir, ["--node"]);
+
+  expect(markdown).toContain(
+    "Aggregated across 2 interleaved rounds; a change is flagged only when the median exceeds the threshold, rounds agree on direction.",
+  );
+  expect(markdown).not.toContain("raw samples support it");
+});
+
 test("does not flag noisy rounds that disagree on direction", () => {
   const dir = createTempDir();
   for (let round = 1; round <= 5; round++) {
@@ -380,6 +426,46 @@ test("does not flag noisy rounds that disagree on direction", () => {
   expect(markdown).toContain("No significant performance changes detected.");
   expect(markdown).not.toMatch(/% :warning:/);
   expect(markdown).toContain("Aggregated across 5 interleaved rounds");
+});
+
+test("does not flag same-direction rounds with overlapping raw samples", () => {
+  const dir = createTempDir();
+  for (const round of [1, 2]) {
+    writeRawRound(dir, "baseline", round, [80, 100, 120, 140, 160]);
+    writeRawRound(dir, "current", round, [100, 120, 140, 160, 180]);
+  }
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain("120.0ms | 140.0ms | +20.0ms (+17%)");
+  expect(markdown).not.toMatch(/% :warning:/);
+});
+
+test("flags same-direction rounds with separated raw samples", () => {
+  const dir = createTempDir();
+  for (const round of [1, 2]) {
+    writeRawRound(dir, "baseline", round, [80, 90, 100, 110, 120]);
+    writeRawRound(dir, "current", round, [140, 150, 160, 170, 180]);
+  }
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain(":warning:");
+  expect(markdown).toContain("100.0ms → 160.0ms (+60%) :warning:");
+});
+
+test("pools raw sample support across rounds", () => {
+  const dir = createTempDir();
+  writeRawRound(dir, "baseline", 1, [80, 100, 120, 140, 160]);
+  writeRawRound(dir, "current", 1, [100, 120, 140, 160, 180]);
+  writeRawRound(dir, "baseline", 2, [80, 90, 100, 110, 120]);
+  writeRawRound(dir, "current", 2, [140, 150, 160, 170, 180]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain(":warning:");
+  expect(markdown).toContain("110.0ms → 150.0ms (+36%) :warning:");
 });
 
 test("flags a consistent regression across rounds", () => {
@@ -411,6 +497,9 @@ test("aggregates displayed values from shared rounds", () => {
   expect(markdown).toContain("200.0ms → 160.0ms (-20%) :rocket:");
   expect(markdown).not.toContain("125.0ms");
   expect(markdown).toContain("Aggregated across 2 interleaved rounds");
+  expect(markdown).toContain(
+    "rounds agree on direction and raw samples support it",
+  );
 });
 
 test("merges sharded round files with shard-suffixed names", () => {
@@ -674,8 +763,9 @@ test("aggregates worker shards within the same round", () => {
 
   const markdown = runCompare(dir);
 
-  expect(markdown).toContain("100.0ms → 150.0ms (+50%) :warning:");
-  expect(markdown).toContain("100.0ms | 150.0ms | +50.0ms (+50%) :warning:");
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain("100.0ms | 150.0ms | +50.0ms (+50%)");
+  expect(markdown).not.toMatch(/% :warning:/);
 });
 
 test("merges profiles across rounds", () => {
