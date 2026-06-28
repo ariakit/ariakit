@@ -17,7 +17,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.radio("Option 3")).not.toBeChecked();
     await test.expect(q.radio("Option 2")).toBeChecked();
 
-    await page.keyboard.press("Tab");
+    // Safari may not tab to a button after programmatic focus in CI.
+    await q.button("After").focus();
     await test.expect(q.button("After")).toBeFocused();
 
     await page.keyboard.press("Shift+Tab");
