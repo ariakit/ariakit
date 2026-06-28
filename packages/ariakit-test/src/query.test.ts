@@ -1,5 +1,6 @@
 import { afterEach, expect, test } from "vitest";
 import { q } from "./query.ts";
+import "./shims.ts";
 
 afterEach(() => {
   document.body.innerHTML = "";

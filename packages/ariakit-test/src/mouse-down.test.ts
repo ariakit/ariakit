@@ -4,6 +4,7 @@ import { mouseDown } from "./mouse-down.ts";
 import { mouseUp } from "./mouse-up.ts";
 import { q } from "./query.ts";
 import { select } from "./select.ts";
+import "./shims.ts";
 
 const selectionText = "sample paragraph text";
 
