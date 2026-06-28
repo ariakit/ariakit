@@ -45,7 +45,7 @@ function NestedHovercard() {
         Toggle nested
       </button>
       {open && (
-        <Ariakit.HovercardProvider open>
+        <Ariakit.HovercardProvider open={open} setOpen={setOpen}>
           <Ariakit.HovercardAnchor>Nested anchor</Ariakit.HovercardAnchor>
           <Ariakit.Hovercard
             portal
@@ -53,6 +53,9 @@ function NestedHovercard() {
             // listeners are unnecessary. Disabling them keeps the install
             // counter measuring only the parent hovercard's listener.
             hideOnHoverOutside={false}
+            // Keep outside focus from closing the nested hovercard before the
+            // Escape behavior can be exercised.
+            hideOnInteractOutside={false}
             aria-label="Nested hovercard"
           >
             Nested content
@@ -79,6 +82,10 @@ export default function Example() {
           <NestedHovercard />
         </Ariakit.Hovercard>
       </Ariakit.HovercardProvider>
+      <label>
+        Outside input
+        <input />
+      </label>
     </>
   );
 }

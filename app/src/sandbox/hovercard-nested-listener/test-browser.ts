@@ -19,4 +19,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Nested hovercard")).not.toBeAttached();
     await test.expect(installs).toHaveText(initialInstalls);
   });
+
+  test("closes nested hovercard on Escape when focus is outside", async ({
+    page,
+    q,
+  }) => {
+    await test.expect(q.dialog("Parent hovercard")).toBeVisible();
+
+    await q.button("Toggle nested").click();
+    await test.expect(q.dialog("Nested hovercard")).toBeVisible();
+
+    await q.textbox("Outside input").click();
+    await test.expect(q.textbox("Outside input")).toBeFocused();
+    await test.expect(q.dialog("Nested hovercard")).toBeVisible();
+
+    await page.keyboard.press("Escape");
+    await test.expect(q.dialog("Nested hovercard")).not.toBeAttached();
+    await test.expect(q.dialog("Parent hovercard")).toBeVisible();
+  });
 });
