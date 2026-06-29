@@ -28,6 +28,7 @@ import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
+import { getVisuallyHiddenStyle } from "../visually-hidden/visually-hidden.tsx";
 import { SelectArrow } from "./select-arrow.tsx";
 import {
   SelectScopedContextProvider,
@@ -190,17 +191,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
       return (
         <>
           <select
-            style={{
-              borderWidth: 0,
-              clipPath: "inset(50%)",
-              height: "1px",
-              margin: "-1px",
-              overflow: "hidden",
-              padding: 0,
-              position: "absolute",
-              whiteSpace: "nowrap",
-              width: "1px",
-            }}
+            style={getVisuallyHiddenStyle()}
             tabIndex={-1}
             aria-hidden
             aria-label={label}
