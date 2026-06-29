@@ -1,5 +1,85 @@
 # @ariakit/react-components
 
+## 0.3.0
+
+This version removes an internal dialog tree helper that was exposed through a deep import path, and improves form handling and composite separator behavior in React components.
+
+Please review the brief notes following the **BREAKING** labels on each update to determine if any changes are needed in your code.
+
+### Removed `disableTreeOutside` from `dialog/utils/disable-tree`
+
+**BREAKING** if you import `disableTreeOutside` from `@ariakit/react-components/dialog/utils/disable-tree`.
+
+The helper was intended for internal dialog tree management and is no longer used now that modal [`Dialog`](https://ariakit.com/reference/dialog) components mark and disable outside elements in a single tree walk.
+
+Before:
+
+```ts
+import { disableTreeOutside } from "@ariakit/react-components/dialog/utils/disable-tree";
+```
+
+After:
+
+```ts
+// No public replacement import is available.
+```
+
+### Composite separators honor explicit orientation
+
+Fixed [`CompositeSeparator`](https://ariakit.com/reference/composite-separator) to honor an explicit `orientation` prop instead of always using the composite store-derived default. This also fixes components built on it, including [`ToolbarSeparator`](https://ariakit.com/reference/toolbar-separator), [`MenuSeparator`](https://ariakit.com/reference/menu-separator), [`SelectSeparator`](https://ariakit.com/reference/select-separator), and [`ComboboxSeparator`](https://ariakit.com/reference/combobox-separator).
+
+### `form.names.*` paths no longer crash on symbol access
+
+Fixed [`useFormStore`](https://ariakit.com/reference/use-form-store) [`names`](https://ariakit.com/reference/use-form-store#names) values throwing `Cannot convert a Symbol value to a string` when an absent symbol key was read from them. This happened whenever something probed a symbol on a raw name — most notably when React reads `Symbol.iterator` to reconcile a name rendered as a React child, but also `Object.prototype.toString.call(name)` and `Array.from(name)`.
+
+Absent symbol keys now resolve to `undefined`, matching plain-object semantics, so those probes degrade gracefully. The documented string coercion keeps working, so coerce a name before rendering or inspecting it outside Ariakit props:
+
+```tsx
+<p>This field submits as {`${form.names.email}`}.</p>
+```
+
+### Form submission no longer stalls while the tab is hidden
+
+[`useFormStore`](https://ariakit.com/reference/use-form-store)'s [`submit`](https://ariakit.com/reference/use-form-store#submit) and [`validate`](https://ariakit.com/reference/use-form-store#validate) no longer stall while the document is hidden — for example, when auto-saving a draft on `visibilitychange`.
+
+They previously awaited a `requestAnimationFrame`, which browsers pause in background tabs, so the submission only completed once the tab was brought back to the foreground.
+
+### Other updates
+
+- Added `getVisuallyHiddenStyle` to `@ariakit/react-components/visually-hidden/visually-hidden` for reusing the same styles as [`VisuallyHidden`](https://ariakit.com/reference/visually-hidden).
+- Fixed `CollectionRenderer`, `CompositeRenderer`, and `SelectRenderer` to position measured virtualized items correctly when `gap` is combined with `paddingStart` or `padding`.
+- Fixed [`ComboboxDisclosure`](https://ariakit.com/reference/combobox-disclosure) to honor `event.preventDefault()` in `onMouseDown` before moving focus to the [`Combobox`](https://ariakit.com/reference/combobox) input.
+- Fixed [`ComboboxItem`](https://ariakit.com/reference/combobox-item) so non-paste Ctrl/Cmd character shortcuts preserve focus and the combobox value when virtual focus is disabled, while paste shortcuts still route to the input.
+- Fixed [`ComboboxItemValue`](https://ariakit.com/reference/combobox-item-value) so overlapping user input matches are rendered without duplicated text.
+- Fixed [`Combobox`](https://ariakit.com/reference/combobox) inline autocomplete so decomposed Unicode input no longer produces misspelled completion values.
+- Fixed [`Composite`](https://ariakit.com/reference/composite) keyboard paging and [`Combobox`](https://ariakit.com/reference/combobox) scroll behavior for elements rendered inside a same-origin iframe.
+- Fixed offscreen [`CompositeItem`](https://ariakit.com/reference/composite-item) placeholders to omit internal option props from the DOM while relying on `aria-disabled` instead of the native `disabled` attribute.
+- Fixed [`Composite`](https://ariakit.com/reference/composite) base-element arrow key navigation in RTL composites, including components built on it such as [`Toolbar`](https://ariakit.com/reference/toolbar) and [`TabList`](https://ariakit.com/reference/tab-list).
+- Improved [`FormControl`](https://ariakit.com/reference/form-control) and components built on it, such as [`FormInput`](https://ariakit.com/reference/form-input), [`FormCheckbox`](https://ariakit.com/reference/form-checkbox), and [`FormRadio`](https://ariakit.com/reference/form-radio), to avoid redundant form store subscriptions and item lookups while fields update.
+- Fixed [`Form`](https://ariakit.com/reference/form) stealing focus into an invalid field when its items changed after a successful submission with [`resetOnSubmit`](https://ariakit.com/reference/form#resetonsubmit) set to `false`, so [`autoFocusOnSubmit`](https://ariakit.com/reference/form#autofocusonsubmit) again focuses the first invalid field only as a result of a failed submission.
+- Fixed [`FormPush`](https://ariakit.com/reference/form-push) to focus the newly added field when pushing into arrays with existing values or arrays that start empty.
+- Fixed [`useFormStore`](https://ariakit.com/reference/use-form-store) to ignore `__proto__` and `constructor` path segments in field names, preventing form state objects from being corrupted through prototype replacement.
+- Fixed [`Form`](https://ariakit.com/reference/form) to focus the first invalid field in document order when invalid fields mount out of registration order.
+- Added `@ariakit/react-components/form/utils` with form array field name helpers.
+- Fixed nested [`Hovercard`](https://ariakit.com/reference/hovercard) components so pressing Escape closes the topmost card even when focus is on another element. This also applies to components built on [`Dialog`](https://ariakit.com/reference/dialog).
+- Fixed [`Hovercard`](https://ariakit.com/reference/hovercard) so it stays open when hovering content rendered inside an open shadow root. This also applies to components built on it, such as [`Tooltip`](https://ariakit.com/reference/tooltip) and [`Menu`](https://ariakit.com/reference/menu).
+- Fixed text field detection for elements rendered inside same-origin iframes. This fixes [`Composite`](https://ariakit.com/reference/composite) keyboard navigation for iframe text fields, including components built on it such as [`Toolbar`](https://ariakit.com/reference/toolbar), and prevents [`Command`](https://ariakit.com/reference/command) and [`Combobox`](https://ariakit.com/reference/combobox) from treating iframe text fields as non-text fields.
+- Improved public JSDoc comments for component and store options.
+- Reduced extra [`Menu`](https://ariakit.com/reference/menu) renders when menu items re-register without changing the initial focus target.
+- Fixed [`MenuItemCheckbox`](https://ariakit.com/reference/menu-item-checkbox) to initialize boolean fields from [`defaultChecked`](https://ariakit.com/reference/menu-item-checkbox#defaultchecked) and controlled [`checked`](https://ariakit.com/reference/menu-item-checkbox#checked) props when the menu store has no default value.
+- Fixed menubar and menu bar stores to reflect navigation updates immediately before initialization.
+- Fixed a portaled [`Popover`](https://ariakit.com/reference/popover) or [`Dialog`](https://ariakit.com/reference/dialog) not receiving focus when reopened while a non-focusable element (such as a `display: none` file input) comes before the first focusable element in its content. This also fixes [`FormLabel`](https://ariakit.com/reference/form-label) focusing such a hidden element instead of the visible control.
+- Fixed [`RadioGroup`](https://ariakit.com/reference/radio-group) so tabbing back into a group focuses the checked [`Radio`](https://ariakit.com/reference/radio) after another unchecked [`Radio`](https://ariakit.com/reference/radio) has received focus.
+- Fixed React package sourcemaps so generated mappings account for the `"use client"` directive.
+- Fixed [`SelectPopover`](https://ariakit.com/reference/select-popover) typeahead to skip disabled offscreen [`SelectItem`](https://ariakit.com/reference/select-item) placeholders.
+- Fixed virtualized `CompositeRenderer` and `SelectRenderer` to report correct `aria-setsize` and `aria-posinset` values when grouped items are followed by standalone items.
+- Fixed `TagInput` so IME composition text is not split into tags before the user commits the composed value.
+- Fixed `TagInput` string delimiters with regex metacharacters so they're matched literally and don't freeze, throw, or fail to split tags.
+- Fixed `TagListLabel` types so unsupported composite and focusable options are no longer accepted.
+- Fixed standalone `TagRemove` buttons so they are no longer hidden from assistive technologies. The built-in remove icon is now limited to tag chips, so standalone usage should provide its own visible content or rendered icon.
+- Fixed [`ToolbarContainer`](https://ariakit.com/reference/toolbar-container) so pressing <kbd>Backspace</kbd> or <kbd>Delete</kbd> on a focused container with an empty text field no longer steals focus from the field on the next typed character.
+- Updated dependencies: `@ariakit/react-utils@0.2.0`, `@ariakit/utils@0.1.4`, `@ariakit/components@0.1.4`, `@ariakit/store@0.1.4`, `@ariakit/react-store@0.1.4`
+
 ## 0.2.0
 
 ### Removed `isValidElement` from `dialog/utils/walk-tree-outside`

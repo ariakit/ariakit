@@ -1,5 +1,32 @@
 # @ariakit/components
 
+## 0.1.4
+
+This version improves form store behavior by making generated field name paths more resilient to symbol probes and keeping form submission and validation from stalling in background tabs.
+
+### `form.names.*` paths no longer crash on symbol access
+
+Fixed [`useFormStore`](https://ariakit.com/reference/use-form-store) [`names`](https://ariakit.com/reference/use-form-store#names) values throwing `Cannot convert a Symbol value to a string` when an absent symbol key was read from them. This happened whenever something probed a symbol on a raw name — most notably when React reads `Symbol.iterator` to reconcile a name rendered as a React child, but also `Object.prototype.toString.call(name)` and `Array.from(name)`.
+
+Absent symbol keys now resolve to `undefined`, matching plain-object semantics, so those probes degrade gracefully. The documented string coercion keeps working, so coerce a name before rendering or inspecting it outside Ariakit props:
+
+```tsx
+<p>This field submits as {`${form.names.email}`}.</p>
+```
+
+### Form submission no longer stalls while the tab is hidden
+
+[`useFormStore`](https://ariakit.com/reference/use-form-store)'s [`submit`](https://ariakit.com/reference/use-form-store#submit) and [`validate`](https://ariakit.com/reference/use-form-store#validate) no longer stall while the document is hidden — for example, when auto-saving a draft on `visibilitychange`.
+
+They previously awaited a `requestAnimationFrame`, which browsers pause in background tabs, so the submission only completed once the tab was brought back to the foreground.
+
+### Other updates
+
+- Fixed [`useFormStore`](https://ariakit.com/reference/use-form-store) to ignore `__proto__` and `constructor` path segments in field names, preventing form state objects from being corrupted through prototype replacement.
+- Improved public JSDoc comments for component and store options.
+- Fixed menubar and menu bar stores to reflect navigation updates immediately before initialization.
+- Updated dependencies: `@ariakit/utils@0.1.4`, `@ariakit/store@0.1.4`
+
 ## 0.1.3
 
 - Added an associated panel lookup to [`useTabStore`](https://ariakit.com/reference/use-tab-store), improving [`Tab`](https://ariakit.com/reference/tab) performance when resolving controlled panels.
