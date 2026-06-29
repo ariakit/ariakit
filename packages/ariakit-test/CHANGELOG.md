@@ -1,5 +1,10 @@
 # @ariakit/test
 
+## 0.7.1
+
+- Added `rightClick` to simulate secondary mouse clicks in tests.
+- Updated dependencies: `@ariakit/utils@0.1.4`
+
 ## 0.7.0
 
 ### Renamed the `includesHidden` query variant to `hidden`

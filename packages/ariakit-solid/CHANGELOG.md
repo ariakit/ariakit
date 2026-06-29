@@ -1,5 +1,10 @@
 # @ariakit/solid
 
+## 0.2.4
+
+- Fixed [`Group`](https://ariakit.com/reference/group) to ignore its internal [`GroupLabel`](https://ariakit.com/reference/group-label) reference when `aria-label` is passed.
+- Updated dependencies: `@ariakit/solid-components@0.1.4`
+
 ## 0.2.3
 
 - Updated [`VisuallyHidden`](https://ariakit.com/reference/visually-hidden) to hide content with the modern `clip-path: inset(50%)` technique instead of the deprecated `clip` property. The same technique now applies to the other elements Ariakit hides visually, such as the [`Select`](https://ariakit.com/reference/select) value mirror and the [`Dialog`](https://ariakit.com/reference/dialog) dismiss button.

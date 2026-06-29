@@ -1,5 +1,21 @@
 # @ariakit/solid-store
 
+## 0.1.4
+
+### Fixed merged stores to keep values in sync when `sync` listeners update parent
+
+stores during initialization, including composed stores used by
+[`Select`](https://ariakit.com/reference/select) and
+[`Combobox`](https://ariakit.com/reference/combobox).
+
+### Other updates
+
+- Fixed `sync` and `batch` to run a listener's pending cleanup before re-registering the same listener.
+- Fixed `init` cleanups so repeated or stale calls do not rerun store setup teardowns.
+- Fixed `createStore` to keep parent stores in sync when a parent listener rewrites a value during a multi-parent fan-out.
+- Fixed store listener cleanup disposal so synchronous store updates during unsubscribe do not rerun detached listeners.
+- Updated dependencies: `@ariakit/store@0.1.4`
+
 ## 0.1.3
 
 - Fixed initialized child stores to avoid notifying listeners twice when they update shared parent state.

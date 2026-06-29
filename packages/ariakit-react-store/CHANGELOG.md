@@ -1,5 +1,10 @@
 # @ariakit/react-store
 
+## 0.1.4
+
+- Fixed React package sourcemaps so generated mappings account for the `"use client"` directive.
+- Updated dependencies: `@ariakit/react-utils@0.2.0`, `@ariakit/utils@0.1.4`, `@ariakit/store@0.1.4`
+
 ## 0.1.3
 
 - Updated dependencies: `@ariakit/utils@0.1.3`, `@ariakit/react-utils@0.1.3`, `@ariakit/store@0.1.3`
