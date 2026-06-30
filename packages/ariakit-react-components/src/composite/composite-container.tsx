@@ -155,6 +155,8 @@ export const useCompositeContainer = createHook<
     onKeyDownProp?.(event);
     // https://github.com/ariakit/ariakit/issues/6579
     if (event.nativeEvent.isComposing) return;
+    // Safari may send the confirming Enter after compositionend.
+    if (event.keyCode === 229) return;
     if (event.defaultPrevented) return;
     if (event.altKey) return;
     if (event.ctrlKey) return;
