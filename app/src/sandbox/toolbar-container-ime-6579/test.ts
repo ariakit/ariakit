@@ -1,4 +1,4 @@
-import { dispatch, q } from "@ariakit/test";
+import { press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6579
@@ -8,13 +8,21 @@ test("keeps focus in the field when Enter commits IME composition", async () => 
   input.focus();
   expect(input).toHaveFocus();
 
-  const defaultAllowed = await dispatch.keyDown(input, {
-    bubbles: true,
-    cancelable: true,
-    key: "Enter",
+  let defaultPrevented = false;
+  input.addEventListener(
+    "keydown",
+    (event) => {
+      queueMicrotask(() => {
+        defaultPrevented = event.defaultPrevented;
+      });
+    },
+    { once: true },
+  );
+
+  await press.down.Enter(input, {
     isComposing: true,
   });
 
   expect(input).toHaveFocus();
-  expect(defaultAllowed).toBe(true);
+  expect(defaultPrevented).toBe(false);
 });
