@@ -1,9 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-import type { KeyboardEvent } from "react";
-
-function isComposing(event: KeyboardEvent) {
-  return event.nativeEvent.isComposing || event.keyCode === 229;
-}
 
 export default function Example() {
   return (
@@ -13,15 +8,7 @@ export default function Example() {
     >
       <Ariakit.ToolbarContainer aria-label="IME field" role="group">
         <label>
-          Message{" "}
-          <input
-            defaultValue="Draft"
-            onKeyDown={(event) => {
-              if (isComposing(event)) {
-                event.stopPropagation();
-              }
-            }}
-          />
+          Message <input defaultValue="Draft" />
         </label>
       </Ariakit.ToolbarContainer>
       <Ariakit.ToolbarItem>Apply</Ariakit.ToolbarItem>
