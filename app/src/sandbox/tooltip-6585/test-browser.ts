@@ -1,3 +1,4 @@
+import type { Page } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 // See https://github.com/ariakit/ariakit/issues/6585
@@ -5,9 +6,7 @@ import { withFramework } from "#app/test-utils/preview.ts";
 // `pnpm react18 dev-app`. CI's React 18 signal comes from test.ts.
 const portalId = "portal/tooltip-repro";
 
-async function getPortalState(page: {
-  evaluate: <T>(fn: (id: string) => T, arg: string) => Promise<T>;
-}) {
+async function getPortalState(page: Page) {
   return page.evaluate((id) => {
     const nodes = Array.from(document.querySelectorAll(`#${CSS.escape(id)}`));
     const node = nodes[0];
