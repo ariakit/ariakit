@@ -51,47 +51,50 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    await q.button("Enter fullscreen").click();
-    await page.waitForFunction(() => document.fullscreenElement != null);
-
-    await q.button("Hover target").hover();
-    await test.expect(q.tooltip("Tooltip content")).toBeVisible();
+    await q.button("Unmount tooltip").click();
     await test
       .expect(q.status("Portal containers"))
-      .toHaveText("Portal containers: 1");
+      .toHaveText("Portal containers: 0");
 
-    let state = await getPortalState(page);
-    test.expect(state).toMatchObject({
-      count: 1,
-      parentIsFullscreen: true,
-    });
+    await q.button("Pin tooltip").click();
+    await q.button("Enter fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+    await q.button("Mount tooltip").click();
+    await test.expect(q.tooltip("Tooltip content")).toBeVisible();
+
+    await test.expect
+      .poll(() => getPortalState(page))
+      .toMatchObject({
+        count: 1,
+        parentIsFullscreen: true,
+      });
 
     await q.button("Exit fullscreen").click();
     await page.waitForFunction(() => document.fullscreenElement == null);
-    await q.button("Hover target").hover();
-    await test.expect(q.tooltip("Tooltip content")).toBeVisible();
 
-    state = await getPortalState(page);
-    test.expect(state).toMatchObject({
-      count: 1,
-      parentIsBody: true,
-    });
+    await test.expect
+      .poll(() => getPortalState(page))
+      .toMatchObject({
+        count: 1,
+        parentIsBody: true,
+      });
 
     await q.button("Enter fullscreen").click();
     await page.waitForFunction(() => document.fullscreenElement != null);
 
-    state = await getPortalState(page);
-    test.expect(state).toMatchObject({
-      count: 1,
-      parentIsFullscreen: true,
-    });
+    await test.expect
+      .poll(() => getPortalState(page))
+      .toMatchObject({
+        count: 1,
+        parentIsFullscreen: true,
+      });
 
     await q.button("Unmount tooltip").click();
     await test
       .expect(q.status("Portal containers"))
       .toHaveText("Portal containers: 0");
 
-    state = await getPortalState(page);
+    const state = await getPortalState(page);
     test.expect(state.count).toBe(0);
   });
 });

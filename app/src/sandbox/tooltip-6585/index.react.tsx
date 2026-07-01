@@ -25,7 +25,10 @@ function usePortalCount() {
 function Repro() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [pinnedOpen, setPinnedOpen] = useState(false);
   const portalCount = usePortalCount();
+  const tooltipOpen = open || pinnedOpen;
 
   const enterFullscreen = () => {
     void containerRef.current?.requestFullscreen();
@@ -58,6 +61,9 @@ function Repro() {
         <button type="button" onClick={exitFullscreen}>
           Exit fullscreen
         </button>
+        <button type="button" onClick={() => setPinnedOpen(true)}>
+          Pin tooltip
+        </button>
         <button type="button" onClick={() => setMounted(false)}>
           Unmount tooltip
         </button>
@@ -69,7 +75,11 @@ function Repro() {
         Portal containers: {portalCount}
       </div>
       {mounted && (
-        <Ariakit.TooltipProvider timeout={0}>
+        <Ariakit.TooltipProvider
+          open={tooltipOpen}
+          setOpen={setOpen}
+          timeout={0}
+        >
           <Ariakit.TooltipAnchor render={<button type="button" />}>
             Hover target
           </Ariakit.TooltipAnchor>
