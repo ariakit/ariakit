@@ -32,7 +32,8 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 function getRootElement(element?: Element | null) {
   const doc = getDocument(element);
   const { fullscreenElement } = doc;
-  if (fullscreenElement instanceof HTMLElement) {
+  const HTMLElementClass = doc.defaultView?.HTMLElement;
+  if (HTMLElementClass && fullscreenElement instanceof HTMLElementClass) {
     return fullscreenElement;
   }
   return doc.body;
@@ -148,8 +149,12 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
     };
     // Sync immediately in case fullscreen was entered before this effect
     // ran, which can happen if the portal mounts while already in
-    // fullscreen mode.
-    onFullscreenChange();
+    // fullscreen mode. Skip when the captured node is already disconnected,
+    // which happens for a StrictMode cleanup node whose layout cleanup
+    // already removed it.
+    if (portalNode.isConnected) {
+      onFullscreenChange();
+    }
     doc.addEventListener("fullscreenchange", onFullscreenChange);
     return () => {
       doc.removeEventListener("fullscreenchange", onFullscreenChange);
