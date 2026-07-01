@@ -99,4 +99,36 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const state = await getPortalState(page);
     test.expect(state.count).toBe(0);
   });
+
+  test("moves the portal to body when the fullscreen host is removed", async ({
+    page,
+    q,
+  }) => {
+    await test
+      .expect(q.status("Portal containers"))
+      .toHaveText("Portal containers: 0");
+
+    await q.button("Pin tooltip").click();
+    await q.button("Enter fullscreen").click();
+    await page.waitForFunction(() => document.fullscreenElement != null);
+
+    await test.expect(q.tooltip("Tooltip content")).toBeVisible();
+    await test.expect
+      .poll(() => getPortalState(page))
+      .toMatchObject({
+        count: 1,
+        parentIsFullscreen: true,
+      });
+
+    await q.button("Unmount fullscreen host").click();
+    await page.waitForFunction(() => document.fullscreenElement == null);
+
+    await test.expect(q.tooltip("Tooltip content")).toBeVisible();
+    await test.expect
+      .poll(() => getPortalState(page))
+      .toMatchObject({
+        count: 1,
+        parentIsBody: true,
+      });
+  });
 });

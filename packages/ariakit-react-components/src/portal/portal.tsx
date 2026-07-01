@@ -142,7 +142,6 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
     if (portalElement) return;
     const doc = getDocument(portalNode);
     const onFullscreenChange = () => {
-      if (!portalNode.isConnected) return;
       const rootElement = getRootElement(portalNode);
       if (portalNode.parentElement !== rootElement) {
         rootElement.appendChild(portalNode);
@@ -150,8 +149,12 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
     };
     // Sync immediately in case fullscreen was entered before this effect
     // ran, which can happen if the portal mounts while already in
-    // fullscreen mode.
-    onFullscreenChange();
+    // fullscreen mode. Skip when the captured node is already disconnected,
+    // which happens for a StrictMode cleanup node whose layout cleanup
+    // already removed it.
+    if (portalNode.isConnected) {
+      onFullscreenChange();
+    }
     doc.addEventListener("fullscreenchange", onFullscreenChange);
     return () => {
       doc.removeEventListener("fullscreenchange", onFullscreenChange);

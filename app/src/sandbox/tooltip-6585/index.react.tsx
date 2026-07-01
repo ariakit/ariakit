@@ -23,7 +23,8 @@ function usePortalCount() {
 }
 
 function Repro() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const fullscreenHostRef = useRef<HTMLDivElement>(null);
+  const [fullscreenHostMounted, setFullscreenHostMounted] = useState(true);
   const [mounted, setMounted] = useState(true);
   const [open, setOpen] = useState(false);
   const [pinnedOpen, setPinnedOpen] = useState(false);
@@ -31,7 +32,7 @@ function Repro() {
   const tooltipOpen = open || pinnedOpen;
 
   const enterFullscreen = () => {
-    void containerRef.current?.requestFullscreen();
+    void fullscreenHostRef.current?.requestFullscreen();
   };
 
   const exitFullscreen = () => {
@@ -42,7 +43,6 @@ function Repro() {
   return (
     <section
       aria-label="Portal leak repro"
-      ref={containerRef}
       style={{
         alignItems: "flex-start",
         background: "white",
@@ -54,26 +54,47 @@ function Repro() {
         padding: 24,
       }}
     >
-      <div style={{ display: "flex", gap: 8 }}>
-        <button type="button" onClick={enterFullscreen}>
-          Enter fullscreen
-        </button>
-        <button type="button" onClick={exitFullscreen}>
-          Exit fullscreen
-        </button>
-        <button type="button" onClick={() => setPinnedOpen(true)}>
-          Pin tooltip
-        </button>
-        <button type="button" onClick={() => setMounted(false)}>
-          Unmount tooltip
-        </button>
-        <button type="button" onClick={() => setMounted(true)}>
-          Mount tooltip
-        </button>
-      </div>
-      <div role="status" aria-label="Portal containers">
-        Portal containers: {portalCount}
-      </div>
+      {fullscreenHostMounted && (
+        <div
+          ref={fullscreenHostRef}
+          style={{
+            alignItems: "flex-start",
+            background: "white",
+            color: "black",
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+            padding: 24,
+          }}
+        >
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+            <button type="button" onClick={enterFullscreen}>
+              Enter fullscreen
+            </button>
+            <button type="button" onClick={exitFullscreen}>
+              Exit fullscreen
+            </button>
+            <button type="button" onClick={() => setPinnedOpen(true)}>
+              Pin tooltip
+            </button>
+            <button type="button" onClick={() => setMounted(false)}>
+              Unmount tooltip
+            </button>
+            <button type="button" onClick={() => setMounted(true)}>
+              Mount tooltip
+            </button>
+            <button
+              type="button"
+              onClick={() => setFullscreenHostMounted(false)}
+            >
+              Unmount fullscreen host
+            </button>
+          </div>
+          <div role="status" aria-label="Portal containers">
+            Portal containers: {portalCount}
+          </div>
+        </div>
+      )}
       {mounted && (
         <Ariakit.TooltipProvider
           open={tooltipOpen}
