@@ -32,7 +32,8 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 function getRootElement(element?: Element | null) {
   const doc = getDocument(element);
   const { fullscreenElement } = doc;
-  if (fullscreenElement instanceof HTMLElement) {
+  const HTMLElementClass = doc.defaultView?.HTMLElement;
+  if (HTMLElementClass && fullscreenElement instanceof HTMLElementClass) {
     return fullscreenElement;
   }
   return doc.body;
@@ -141,6 +142,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
     if (portalElement) return;
     const doc = getDocument(portalNode);
     const onFullscreenChange = () => {
+      if (!portalNode.isConnected) return;
       const rootElement = getRootElement(portalNode);
       if (portalNode.parentElement !== rootElement) {
         rootElement.appendChild(portalNode);
