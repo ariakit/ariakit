@@ -1,5 +1,11 @@
 import * as Ariakit from "@ariakit/react";
-import { StrictMode, useEffect, useRef, useState } from "react";
+import {
+  StrictMode,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 
 const tooltipId = "tooltip-repro";
 const portalSelector = `[id="portal/${tooltipId}"]`;
@@ -22,12 +28,58 @@ function usePortalCount() {
   return count;
 }
 
+function getFullscreenRoot(element: HTMLElement) {
+  const doc = element.ownerDocument;
+  const { fullscreenElement } = doc;
+  const HTMLElement = doc.defaultView?.HTMLElement;
+  if (HTMLElement && fullscreenElement instanceof HTMLElement) {
+    return fullscreenElement;
+  }
+  return doc.body;
+}
+
+function useFullscreenPortalElement() {
+  const elementRef = useRef<HTMLElement | null>(null);
+  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+
+  useLayoutEffect(() => {
+    const element = elementRef.current || document.createElement("div");
+    elementRef.current = element;
+    setPortalElement(element);
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!portalElement) return;
+    const sync = () => {
+      if (!portalElement.isConnected) return;
+      const rootElement = getFullscreenRoot(portalElement);
+      if (portalElement.parentElement !== rootElement) {
+        rootElement.appendChild(portalElement);
+      }
+    };
+    const doc = portalElement.ownerDocument;
+    let frame = 0;
+    const onFullscreenChange = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(sync);
+    };
+    doc.addEventListener("fullscreenchange", onFullscreenChange);
+    return () => {
+      cancelAnimationFrame(frame);
+      doc.removeEventListener("fullscreenchange", onFullscreenChange);
+    };
+  }, [portalElement]);
+
+  return portalElement;
+}
+
 function Repro() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(true);
   const [open, setOpen] = useState(false);
   const [pinnedOpen, setPinnedOpen] = useState(false);
   const portalCount = usePortalCount();
+  const portalElement = useFullscreenPortalElement();
   const tooltipOpen = open || pinnedOpen;
 
   const enterFullscreen = () => {
@@ -83,9 +135,15 @@ function Repro() {
           <Ariakit.TooltipAnchor render={<button type="button" />}>
             Hover target
           </Ariakit.TooltipAnchor>
-          <Ariakit.Tooltip id={tooltipId} unmountOnHide>
-            Tooltip content
-          </Ariakit.Tooltip>
+          {portalElement && (
+            <Ariakit.Tooltip
+              id={tooltipId}
+              portalElement={portalElement}
+              unmountOnHide
+            >
+              Tooltip content
+            </Ariakit.Tooltip>
+          )}
         </Ariakit.TooltipProvider>
       )}
     </section>

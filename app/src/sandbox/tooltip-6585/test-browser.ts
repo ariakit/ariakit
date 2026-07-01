@@ -51,6 +51,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
+    await test
+      .expect(q.status("Portal containers"))
+      .toHaveText("Portal containers: 0");
     await q.button("Unmount tooltip").click();
     await test
       .expect(q.status("Portal containers"))
