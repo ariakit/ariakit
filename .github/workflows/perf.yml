@@ -387,6 +387,7 @@ jobs:
           mkdir -p app/.perf-results
           shopt -s nullglob
           SHARD_FILES=()
+          ROUND_FILES=()
           manifest_status=failed
           manifest_message="Chrome shard exited before completing."
           manifest_failed=0
@@ -395,10 +396,14 @@ jobs:
             PERF_SHARD_STATUS="$manifest_status" \
             PERF_SHARD_MESSAGE="$manifest_message" \
             PERF_SHARD_FILES="$(printf '%s\n' "${SHARD_FILES[@]}")" \
+            PERF_SHARD_ROUND_FILES="$(printf '%s\n' "${ROUND_FILES[@]}")" \
             node --input-type=module <<'NODE'
           import { writeFileSync } from "node:fs";
 
           const files = (process.env.PERF_SHARD_FILES ?? "")
+            .split("\n")
+            .filter(Boolean);
+          const roundFiles = (process.env.PERF_SHARD_ROUND_FILES ?? "")
             .split("\n")
             .filter(Boolean);
           const manifest = {
@@ -407,12 +412,18 @@ jobs:
             status: process.env.PERF_SHARD_STATUS,
             message: process.env.PERF_SHARD_MESSAGE,
             files,
+            roundFiles,
           };
           writeFileSync(
             `app/.perf-results/shard-${process.env.PERF_SHARD_INDEX}-manifest.json`,
             `${JSON.stringify(manifest)}\n`,
           );
           NODE
+          }
+
+          add_round_file() {
+            local file="$1"
+            ROUND_FILES+=("$(basename "$file")")
           }
 
           trap write_chrome_manifest EXIT
@@ -460,13 +471,15 @@ jobs:
             if [ "$baseline_failed" -eq 1 ] || [ ${#baseline_files[@]} -eq 0 ]; then
               if [ "$baseline_failed" -eq 0 ]; then
                 echo "::warning::No baseline perf results for round $i; writing an empty baseline."
-                manifest_failed=1
-                manifest_status=failed
-                manifest_message="No baseline perf results for round $i."
               fi
-              printf '[]\n' > app/.perf-results/baseline-"$i"-s"$PERF_SHARD_INDEX"-worker0.json
+              local empty_baseline_file=app/.perf-results/baseline-"$i"-s"$PERF_SHARD_INDEX"-worker0.json
+              printf '[]\n' > "$empty_baseline_file"
+              add_round_file "$empty_baseline_file"
             else
-              cp "${baseline_files[@]}" app/.perf-results/
+              for file in "${baseline_files[@]}"; do
+                cp "$file" app/.perf-results/
+                add_round_file "$file"
+              done
             fi
             echo "::endgroup::"
           }
@@ -494,6 +507,9 @@ jobs:
               manifest_message="No current perf results for round $i."
               exit 1
             fi
+            for file in "${current_files[@]}"; do
+              add_round_file "$file"
+            done
             echo "::endgroup::"
           }
 
@@ -826,10 +842,14 @@ jobs:
           manifests=("$RUNNER_TEMP"/perf-chrome-rounds/shard-*-manifest.json)
           if ! validation_message="$(
             node --input-type=module - "${manifests[@]}" <<'NODE'
-          import { readFileSync } from "node:fs";
+          import { existsSync, readFileSync } from "node:fs";
+          import path from "node:path";
 
           const manifests = process.argv.slice(2).map((file) => {
-            return JSON.parse(readFileSync(file, "utf-8"));
+            return {
+              file,
+              data: JSON.parse(readFileSync(file, "utf-8")),
+            };
           });
           if (manifests.length === 0) {
             console.log("no shard manifests found.");
@@ -837,7 +857,7 @@ jobs:
           }
           const issues = [];
           const byShard = new Map();
-          for (const manifest of manifests) {
+          for (const { data: manifest, file } of manifests) {
             if (byShard.has(manifest.shard)) {
               issues.push(`duplicate shard manifest: ${manifest.shard}`);
             }
@@ -846,8 +866,41 @@ jobs:
               const message = manifest.message ? ` (${manifest.message})` : "";
               issues.push(`failed shard: ${manifest.shard}${message}`);
             }
+            if (manifest.status === "success") {
+              const roundFiles = Array.isArray(manifest.roundFiles)
+                ? manifest.roundFiles
+                : [];
+              if (roundFiles.length === 0) {
+                issues.push(
+                  `missing round file list for shard: ${manifest.shard}`,
+                );
+              }
+              const seenRoundFiles = new Set();
+              for (const roundFile of roundFiles) {
+                if (typeof roundFile !== "string" || roundFile.includes("/")) {
+                  issues.push(
+                    `invalid round file for shard ${manifest.shard}: ${roundFile}`,
+                  );
+                  continue;
+                }
+                if (seenRoundFiles.has(roundFile)) {
+                  issues.push(
+                    `duplicate round file for shard ${manifest.shard}: ${roundFile}`,
+                  );
+                }
+                seenRoundFiles.add(roundFile);
+                const roundPath = path.join(path.dirname(file), roundFile);
+                if (!existsSync(roundPath)) {
+                  issues.push(
+                    `missing round file for shard ${manifest.shard}: ${roundFile}`,
+                  );
+                }
+              }
+            }
           }
-          const totals = new Set(manifests.map((manifest) => manifest.total));
+          const totals = new Set(
+            manifests.map(({ data: manifest }) => manifest.total),
+          );
           if (totals.size > 1) {
             const sortedTotals = [...totals].sort((a, b) => a - b);
             issues.push(
