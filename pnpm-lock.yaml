@@ -145,7 +145,7 @@ importers:
         version: 16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       open-cli:
         specifier: 9.0.0
-        version: 9.0.0
+        version: 9.0.0(supports-color@8.1.1)
       oxfmt:
         specifier: 0.56.0
         version: 0.56.0
@@ -181,10 +181,10 @@ importers:
         version: 1.9.13
       stylelint:
         specifier: 17.14.0
-        version: 17.14.0(typescript@6.0.3)
+        version: 17.14.0(supports-color@8.1.1)(typescript@6.0.3)
       stylelint-config-standard:
         specifier: 40.0.0
-        version: 40.0.0(stylelint@17.14.0(typescript@6.0.3))
+        version: 40.0.0(stylelint@17.14.0(supports-color@8.1.1)(typescript@6.0.3))
       tailwindcss:
         specifier: 3.4.18
         version: 3.4.18(yaml@2.9.0)
@@ -193,7 +193,7 @@ importers:
         version: 1.0.7(tailwindcss@3.4.18(yaml@2.9.0))
       tsup:
         specifier: 8.5.1
-        version: 8.5.1(jiti@1.21.7)(postcss@8.5.8)(typescript@6.0.3)(yaml@2.9.0)
+        version: 8.5.1(jiti@1.21.7)(postcss@8.5.8)(supports-color@8.1.1)(typescript@6.0.3)(yaml@2.9.0)
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -479,7 +479,7 @@ importers:
         version: 2.3.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@wordpress/components':
         specifier: 36.0.0
-        version: 36.0.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.17)(esbuild@0.27.4)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(stylelint@17.14.0(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+        version: 36.0.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.17)(esbuild@0.27.4)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(stylelint@17.14.0(supports-color@8.1.1)(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
       clsx:
         specifier: 2.1.1
         version: 2.1.1
@@ -561,7 +561,7 @@ importers:
     devDependencies:
       '@opennextjs/cloudflare':
         specifier: 1.20.1
-        version: 1.20.1(encoding@0.1.13)(next@16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(wrangler@4.105.0)
+        version: 1.20.1(encoding@0.1.13)(next@16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@8.1.1)(wrangler@4.105.0)
       '@tailwindcss/postcss':
         specifier: 4.3.1
         version: 4.3.1
@@ -940,7 +940,7 @@ importers:
         version: 7.29.2
       '@babel/preset-env':
         specifier: 7.29.2
-        version: 7.29.2(@babel/core@7.29.0)
+        version: 7.29.2(@babel/core@7.29.0)(supports-color@8.1.1)
       '@babel/preset-react':
         specifier: 7.28.5
         version: 7.28.5(@babel/core@7.29.0)
@@ -1075,7 +1075,7 @@ importers:
         version: 18.3.1(react@18.3.1)
       react-markdown:
         specifier: 8.0.7
-        version: 8.0.7(@types/react@18.3.28)(react@18.3.1)
+        version: 8.0.7(@types/react@18.3.28)(react@18.3.1)(supports-color@8.1.1)
       read-package-up:
         specifier: 12.0.0
         version: 12.0.0
@@ -7370,6 +7370,11 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
+  lucide-react@1.21.0:
+    resolution: {integrity: sha512-reEZMXq8Qdd5jg5XYkQ5TR1fB/GiQ7ih4vcrthYDtgjSDwh0i6/YLiGjsWsIwgN49gpAnd4J2elSNzncMEEUUQ==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
   lucide-react@1.22.0:
     resolution: {integrity: sha512-c9o3l0PiNcgOQDW4F31BEYHudE7kgxVt3o30qMl36ZPwTxXlGB4QnLilhERvVM4uh/pl5MDyY1/gzZSYcHDtBg==}
     peerDependencies:
@@ -11303,7 +11308,7 @@ snapshots:
       regexpu-core: 6.4.0
       semver: 6.3.1
 
-  '@babel/helper-define-polyfill-provider@0.6.8(@babel/core@7.29.0)':
+  '@babel/helper-define-polyfill-provider@0.6.8(@babel/core@7.29.0)(supports-color@8.1.1)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/helper-compilation-targets': 7.28.6
@@ -11853,7 +11858,7 @@ snapshots:
       '@babel/helper-create-regexp-features-plugin': 7.28.5(@babel/core@7.29.0)
       '@babel/helper-plugin-utils': 7.28.6
 
-  '@babel/preset-env@7.29.2(@babel/core@7.29.0)':
+  '@babel/preset-env@7.29.2(@babel/core@7.29.0)(supports-color@8.1.1)':
     dependencies:
       '@babel/compat-data': 7.29.0
       '@babel/core': 7.29.0
@@ -11921,7 +11926,7 @@ snapshots:
       '@babel/plugin-transform-unicode-regex': 7.27.1(@babel/core@7.29.0)
       '@babel/plugin-transform-unicode-sets-regex': 7.28.6(@babel/core@7.29.0)
       '@babel/preset-modules': 0.1.6-no-external-plugins(@babel/core@7.29.0)
-      babel-plugin-polyfill-corejs2: 0.4.17(@babel/core@7.29.0)
+      babel-plugin-polyfill-corejs2: 0.4.17(@babel/core@7.29.0)(supports-color@8.1.1)
       babel-plugin-polyfill-corejs3: 0.14.2(@babel/core@7.29.0)
       babel-plugin-polyfill-regenerator: 0.6.8(@babel/core@7.29.0)
       core-js-compat: 3.49.0
@@ -13125,7 +13130,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.1
 
-  '@opennextjs/aws@4.0.2(next@16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))':
+  '@opennextjs/aws@4.0.2(next@16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@8.1.1)':
     dependencies:
       '@ast-grep/napi': 0.40.5
       '@aws-sdk/client-cloudfront': 3.984.0
@@ -13140,7 +13145,7 @@ snapshots:
       chalk: 5.6.2
       cookie: 1.1.1
       esbuild: 0.25.4
-      express: 5.2.1
+      express: 5.2.1(supports-color@8.1.1)
       next: 16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       path-to-regexp: 6.3.0
       urlpattern-polyfill: 10.1.0
@@ -13149,11 +13154,11 @@ snapshots:
       - aws-crt
       - supports-color
 
-  '@opennextjs/cloudflare@1.20.1(encoding@0.1.13)(next@16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(wrangler@4.105.0)':
+  '@opennextjs/cloudflare@1.20.1(encoding@0.1.13)(next@16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@8.1.1)(wrangler@4.105.0)':
     dependencies:
       '@ast-grep/napi': 0.40.5
       '@dotenvx/dotenvx': 1.31.0
-      '@opennextjs/aws': 4.0.2(next@16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))
+      '@opennextjs/aws': 4.0.2(next@16.2.9(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(supports-color@8.1.1)
       ci-info: 4.4.0
       cloudflare: 4.5.0(encoding@0.1.13)
       comment-json: 4.6.2
@@ -14335,7 +14340,7 @@ snapshots:
       '@types/react': 19.2.17
       '@types/react-dom': 19.2.3(@types/react@19.2.17)
 
-  '@tokenizer/inflate@0.4.1':
+  '@tokenizer/inflate@0.4.1(supports-color@8.1.1)':
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       token-types: 6.1.2
@@ -14843,7 +14848,7 @@ snapshots:
 
   '@wordpress/base-styles@10.1.0': {}
 
-  '@wordpress/components@36.0.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.17)(esbuild@0.27.4)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(stylelint@17.14.0(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))':
+  '@wordpress/components@36.0.0(@date-fns/tz@1.4.1)(@emotion/is-prop-valid@1.4.0)(@types/react@19.2.17)(esbuild@0.27.4)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(stylelint@17.14.0(supports-color@8.1.1)(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))':
     dependencies:
       '@ariakit/react': link:packages/ariakit-react
       '@date-fns/utc': 2.1.1
@@ -14875,7 +14880,7 @@ snapshots:
       '@wordpress/private-apis': 1.49.0
       '@wordpress/rich-text': 7.49.0(@types/react@19.2.17)(react@19.2.7)
       '@wordpress/style-runtime': 0.5.0
-      '@wordpress/ui': 0.16.0(@date-fns/tz@1.4.1)(@types/react@19.2.17)(date-fns@4.4.0)(esbuild@0.27.4)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(stylelint@17.14.0(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+      '@wordpress/ui': 0.16.0(@date-fns/tz@1.4.1)(@types/react@19.2.17)(date-fns@4.4.0)(esbuild@0.27.4)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(stylelint@17.14.0(supports-color@8.1.1)(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
       '@wordpress/warning': 3.49.0
       change-case: 4.1.2
       clsx: 2.1.1
@@ -15045,7 +15050,7 @@ snapshots:
 
   '@wordpress/style-runtime@0.5.0': {}
 
-  '@wordpress/theme@0.16.0(@types/react@19.2.17)(esbuild@0.27.4)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(stylelint@17.14.0(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))':
+  '@wordpress/theme@0.16.0(@types/react@19.2.17)(esbuild@0.27.4)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(stylelint@17.14.0(supports-color@8.1.1)(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))':
     dependencies:
       '@wordpress/compose': 8.2.0(@types/react@19.2.17)(react@19.2.7)
       '@wordpress/element': 8.1.0
@@ -15058,10 +15063,10 @@ snapshots:
       '@types/react': 19.2.17
       esbuild: 0.27.4
       postcss: 8.5.15
-      stylelint: 17.14.0(typescript@6.0.3)
+      stylelint: 17.14.0(supports-color@8.1.1)(typescript@6.0.3)
       vite: 8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)
 
-  '@wordpress/ui@0.16.0(@date-fns/tz@1.4.1)(@types/react@19.2.17)(date-fns@4.4.0)(esbuild@0.27.4)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(stylelint@17.14.0(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))':
+  '@wordpress/ui@0.16.0(@date-fns/tz@1.4.1)(@types/react@19.2.17)(date-fns@4.4.0)(esbuild@0.27.4)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(stylelint@17.14.0(supports-color@8.1.1)(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))':
     dependencies:
       '@base-ui/react': 1.5.0(@date-fns/tz@1.4.1)(@types/react@19.2.17)(date-fns@4.4.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       '@wordpress/a11y': 4.49.0
@@ -15072,7 +15077,7 @@ snapshots:
       '@wordpress/keycodes': 4.49.0(@types/react@19.2.17)
       '@wordpress/primitives': 4.49.0(@types/react@19.2.17)(react@19.2.7)
       '@wordpress/style-runtime': 0.5.0
-      '@wordpress/theme': 0.16.0(@types/react@19.2.17)(esbuild@0.27.4)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(stylelint@17.14.0(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
+      '@wordpress/theme': 0.16.0(@types/react@19.2.17)(esbuild@0.27.4)(postcss@8.5.15)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(stylelint@17.14.0(supports-color@8.1.1)(typescript@6.0.3))(vite@8.1.0(@types/node@24.13.2)(esbuild@0.27.4)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
       clsx: 2.1.1
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
@@ -15379,11 +15384,11 @@ snapshots:
       cosmiconfig: 7.1.0
       resolve: 1.22.11
 
-  babel-plugin-polyfill-corejs2@0.4.17(@babel/core@7.29.0):
+  babel-plugin-polyfill-corejs2@0.4.17(@babel/core@7.29.0)(supports-color@8.1.1):
     dependencies:
       '@babel/compat-data': 7.29.0
       '@babel/core': 7.29.0
-      '@babel/helper-define-polyfill-provider': 0.6.8(@babel/core@7.29.0)
+      '@babel/helper-define-polyfill-provider': 0.6.8(@babel/core@7.29.0)(supports-color@8.1.1)
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
@@ -15391,7 +15396,7 @@ snapshots:
   babel-plugin-polyfill-corejs3@0.14.2(@babel/core@7.29.0):
     dependencies:
       '@babel/core': 7.29.0
-      '@babel/helper-define-polyfill-provider': 0.6.8(@babel/core@7.29.0)
+      '@babel/helper-define-polyfill-provider': 0.6.8(@babel/core@7.29.0)(supports-color@8.1.1)
       core-js-compat: 3.49.0
     transitivePeerDependencies:
       - supports-color
@@ -15399,7 +15404,7 @@ snapshots:
   babel-plugin-polyfill-regenerator@0.6.8(@babel/core@7.29.0):
     dependencies:
       '@babel/core': 7.29.0
-      '@babel/helper-define-polyfill-provider': 0.6.8(@babel/core@7.29.0)
+      '@babel/helper-define-polyfill-provider': 0.6.8(@babel/core@7.29.0)(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -15454,7 +15459,7 @@ snapshots:
 
   blake3-wasm@2.1.5: {}
 
-  body-parser@2.2.2:
+  body-parser@2.2.2(supports-color@8.1.1):
     dependencies:
       bytes: 3.1.2
       content-type: 1.0.5
@@ -16202,10 +16207,10 @@ snapshots:
 
   expect-type@1.3.0: {}
 
-  express@5.2.1:
+  express@5.2.1(supports-color@8.1.1):
     dependencies:
       accepts: 2.0.0
-      body-parser: 2.2.2
+      body-parser: 2.2.2(supports-color@8.1.1)
       content-disposition: 1.0.1
       content-type: 1.0.5
       cookie: 0.7.2
@@ -16215,7 +16220,7 @@ snapshots:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
-      finalhandler: 2.1.1
+      finalhandler: 2.1.1(supports-color@8.1.1)
       fresh: 2.0.0
       http-errors: 2.0.1
       merge-descriptors: 2.0.0
@@ -16226,8 +16231,8 @@ snapshots:
       proxy-addr: 2.0.7
       qs: 6.15.0
       range-parser: 1.2.1
-      router: 2.2.0
-      send: 1.2.1
+      router: 2.2.0(supports-color@8.1.1)
+      send: 1.2.1(supports-color@8.1.1)
       serve-static: 2.2.1
       statuses: 2.0.2
       type-is: 2.0.1
@@ -16297,9 +16302,9 @@ snapshots:
     dependencies:
       flat-cache: 6.1.22
 
-  file-type@21.3.4:
+  file-type@21.3.4(supports-color@8.1.1):
     dependencies:
-      '@tokenizer/inflate': 0.4.1
+      '@tokenizer/inflate': 0.4.1(supports-color@8.1.1)
       strtok3: 10.3.5
       token-types: 6.1.2
       uint8array-extras: 1.5.0
@@ -16310,7 +16315,7 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
-  finalhandler@2.1.1:
+  finalhandler@2.1.1(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       encodeurl: 2.0.0
@@ -17228,6 +17233,10 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
+  lucide-react@1.21.0(react@19.2.7):
+    dependencies:
+      react: 19.2.7
+
   lucide-react@1.22.0(react@19.2.7):
     dependencies:
       react: 19.2.7
@@ -17307,13 +17316,13 @@ snapshots:
       unist-util-is: 6.0.1
       unist-util-visit-parents: 6.0.2
 
-  mdast-util-from-markdown@1.3.1:
+  mdast-util-from-markdown@1.3.1(supports-color@8.1.1):
     dependencies:
       '@types/mdast': 3.0.15
       '@types/unist': 2.0.11
       decode-named-character-reference: 1.3.0
       mdast-util-to-string: 3.2.0
-      micromark: 3.2.0
+      micromark: 3.2.0(supports-color@8.1.1)
       micromark-util-decode-numeric-character-reference: 1.1.0
       micromark-util-decode-string: 1.1.0
       micromark-util-normalize-identifier: 1.1.0
@@ -17389,7 +17398,7 @@ snapshots:
     dependencies:
       '@types/mdast': 3.0.15
       markdown-table: 3.0.4
-      mdast-util-from-markdown: 1.3.1
+      mdast-util-from-markdown: 1.3.1(supports-color@8.1.1)
       mdast-util-to-markdown: 1.5.0
     transitivePeerDependencies:
       - supports-color
@@ -17420,7 +17429,7 @@ snapshots:
 
   mdast-util-gfm@2.0.2:
     dependencies:
-      mdast-util-from-markdown: 1.3.1
+      mdast-util-from-markdown: 1.3.1(supports-color@8.1.1)
       mdast-util-gfm-autolink-literal: 1.0.3
       mdast-util-gfm-footnote: 1.0.2
       mdast-util-gfm-strikethrough: 1.0.3
@@ -17986,7 +17995,7 @@ snapshots:
 
   micromark-util-types@2.0.2: {}
 
-  micromark@3.2.0:
+  micromark@3.2.0(supports-color@8.1.1):
     dependencies:
       '@types/debug': 4.1.12
       debug: 4.4.3(supports-color@8.1.1)
@@ -18306,9 +18315,9 @@ snapshots:
       regex: 6.1.0
       regex-recursion: 6.0.2
 
-  open-cli@9.0.0:
+  open-cli@9.0.0(supports-color@8.1.1):
     dependencies:
-      file-type: 21.3.4
+      file-type: 21.3.4(supports-color@8.1.1)
       meow: 14.1.0
       open: 11.0.0
       tempy: 3.2.0
@@ -18792,7 +18801,7 @@ snapshots:
 
   react-is@18.3.1: {}
 
-  react-markdown@8.0.7(@types/react@18.3.28)(react@18.3.1):
+  react-markdown@8.0.7(@types/react@18.3.28)(react@18.3.1)(supports-color@8.1.1):
     dependencies:
       '@types/hast': 2.3.10
       '@types/prop-types': 15.7.15
@@ -18804,7 +18813,7 @@ snapshots:
       property-information: 6.5.0
       react: 18.3.1
       react-is: 18.3.1
-      remark-parse: 10.0.2
+      remark-parse: 10.0.2(supports-color@8.1.1)
       remark-rehype: 10.1.0
       space-separated-tokens: 2.0.2
       style-to-object: 0.4.4
@@ -19095,10 +19104,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  remark-parse@10.0.2:
+  remark-parse@10.0.2(supports-color@8.1.1):
     dependencies:
       '@types/mdast': 3.0.15
-      mdast-util-from-markdown: 1.3.1
+      mdast-util-from-markdown: 1.3.1(supports-color@8.1.1)
       unified: 10.1.2
     transitivePeerDependencies:
       - supports-color
@@ -19275,7 +19284,7 @@ snapshots:
       '@rollup/rollup-win32-x64-msvc': 4.59.0
       fsevents: 2.3.3
 
-  router@2.2.0:
+  router@2.2.0(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       depd: 2.0.0
@@ -19353,7 +19362,7 @@ snapshots:
 
   semver@7.7.4: {}
 
-  send@1.2.1:
+  send@1.2.1(supports-color@8.1.1):
     dependencies:
       debug: 4.4.3(supports-color@8.1.1)
       encodeurl: 2.0.0
@@ -19386,7 +19395,7 @@ snapshots:
       encodeurl: 2.0.0
       escape-html: 1.0.3
       parseurl: 1.3.3
-      send: 1.2.1
+      send: 1.2.1(supports-color@8.1.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -19686,16 +19695,16 @@ snapshots:
     optionalDependencies:
       '@babel/core': 7.29.0
 
-  stylelint-config-recommended@18.0.0(stylelint@17.14.0(typescript@6.0.3)):
+  stylelint-config-recommended@18.0.0(stylelint@17.14.0(supports-color@8.1.1)(typescript@6.0.3)):
     dependencies:
-      stylelint: 17.14.0(typescript@6.0.3)
+      stylelint: 17.14.0(supports-color@8.1.1)(typescript@6.0.3)
 
-  stylelint-config-standard@40.0.0(stylelint@17.14.0(typescript@6.0.3)):
+  stylelint-config-standard@40.0.0(stylelint@17.14.0(supports-color@8.1.1)(typescript@6.0.3)):
     dependencies:
-      stylelint: 17.14.0(typescript@6.0.3)
-      stylelint-config-recommended: 18.0.0(stylelint@17.14.0(typescript@6.0.3))
+      stylelint: 17.14.0(supports-color@8.1.1)(typescript@6.0.3)
+      stylelint-config-recommended: 18.0.0(stylelint@17.14.0(supports-color@8.1.1)(typescript@6.0.3))
 
-  stylelint@17.14.0(typescript@6.0.3):
+  stylelint@17.14.0(supports-color@8.1.1)(typescript@6.0.3):
     dependencies:
       '@csstools/css-calc': 3.2.1(@csstools/css-parser-algorithms@4.0.0(@csstools/css-tokenizer@4.0.0))(@csstools/css-tokenizer@4.0.0)
       '@csstools/css-parser-algorithms': 4.0.0(@csstools/css-tokenizer@4.0.0)
@@ -19977,7 +19986,7 @@ snapshots:
 
   tslib@2.8.1: {}
 
-  tsup@8.5.1(jiti@1.21.7)(postcss@8.5.8)(typescript@6.0.3)(yaml@2.9.0):
+  tsup@8.5.1(jiti@1.21.7)(postcss@8.5.8)(supports-color@8.1.1)(typescript@6.0.3)(yaml@2.9.0):
     dependencies:
       bundle-require: 5.1.0(esbuild@0.27.4)
       cac: 6.7.14
