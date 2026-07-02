@@ -130,6 +130,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 }) {
   const context = useDialogProviderContext();
   const ref = useRef<HTMLType>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
 
   const store = useDialogStore({
     store: storeProp || context,
@@ -569,6 +570,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
           <DialogBackdrop
             store={store}
             backdrop={backdrop}
+            backdropRef={backdropRef}
             hidden={hiddenProp}
             alwaysVisible={alwaysVisible}
           />
@@ -611,7 +613,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     ...props,
     autoFocusOnShow: autoFocusEnabled,
   });
-  props = useDisclosureContent({ store, ...props });
+  props = useDisclosureContent({
+    store,
+    ...props,
+    unstable_otherElementRef: backdropRef,
+  });
   props = useFocusable({ ...props, focusable });
   props = usePortal({ portal, ...props, portalRef, preserveTabOrder });
 
