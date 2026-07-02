@@ -12,7 +12,6 @@ import type { Options, Props } from "@ariakit/react-utils";
 import { getWindow, invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo, useState } from "react";
-import type { BasePlacement } from "./__utils.ts";
 import { getBasePlacement } from "./__utils.ts";
 import { POPOVER_ARROW_PATH } from "./popover-arrow-path.ts";
 import { usePopoverContext } from "./popover-context.tsx";
@@ -43,23 +42,88 @@ function useComputedStyle(store: PopoverStore) {
   return style;
 }
 
-function getRingWidth(style?: CSSStyleDeclaration) {
-  if (!style) return;
-  const boxShadow = style.getPropertyValue("box-shadow");
-  const ringWidth = boxShadow.match(/0px 0px 0px ([^0]+px)/)?.[1];
-  return ringWidth;
+interface RingStyle {
+  width: number;
+  color?: string;
 }
 
-function getBorderColor(dir: BasePlacement, style?: CSSStyleDeclaration) {
-  if (!style) return;
-  const borderColor = style.getPropertyValue(`border-${dir}-color`);
-  if (borderColor) return borderColor;
-  const boxShadow = style.getPropertyValue("box-shadow");
-  const match = boxShadow.match(/0px 0px 0px [^,]+/);
+/**
+ * Replaces every character inside parentheses with a space so length matching
+ * and comma splitting can't pick up numbers or commas that belong to color
+ * functions such as `rgb()` or `oklch()`, while preserving character indices
+ * into the original text.
+ */
+function maskParentheses(text: string) {
+  let masked = "";
+  let depth = 0;
+  for (const char of text) {
+    if (char === "(") {
+      depth += 1;
+      masked += char;
+      continue;
+    }
+    if (char === ")") {
+      depth = Math.max(0, depth - 1);
+      masked += char;
+      continue;
+    }
+    masked += depth > 0 ? " " : char;
+  }
+  return masked;
+}
+
+// Matches a ring-style length run: zero x/y offsets and blur followed by a
+// positive spread. Computed styles serialize all lengths with px units, but
+// declared values (which some test environments return from getComputedStyle)
+// may keep unitless zeros, so both forms are accepted.
+const ringLengthsRegex =
+  /(?:^|\s)0(?:px)?\s+0(?:px)?\s+0(?:px)?\s+((?:\d*\.)?\d+)px(?=\s|$)/;
+
+function getRingFromSegment(segment: string, maskedSegment: string) {
+  const match = maskedSegment.match(ringLengthsRegex);
   if (!match) return;
-  const segment = match[0];
-  const ringColor = segment.replace(/^0px 0px 0px\s+[^\s,]+/, "").trim();
-  return ringColor || undefined;
+  const spread = match[1];
+  if (!spread) return;
+  const width = Number.parseFloat(spread);
+  // Zero-spread segments are placeholders (for example, Tailwind v3 rings
+  // always output disabled ring offset shadows), not rings.
+  if (!width) return;
+  const lengthsStart = match.index ?? 0;
+  const lengthsEnd = lengthsStart + match[0].length;
+  // Whatever remains of the segment once the length run and the optional
+  // inset keyword are removed is the ring color. This works regardless of the
+  // color syntax and of whether the browser serializes the color before or
+  // after the lengths.
+  const rest = `${segment.slice(0, lengthsStart)} ${segment.slice(lengthsEnd)}`;
+  const color = rest.replace(/\binset\b/g, " ").trim();
+  const ring: RingStyle = { width, color: color || undefined };
+  return ring;
+}
+
+/**
+ * Finds the first box-shadow segment that draws a ring (zero offsets and blur
+ * with a positive spread, as produced by Tailwind ring utilities) and returns
+ * its width and color.
+ */
+function getRing(style?: CSSStyleDeclaration) {
+  if (!style) return;
+  const boxShadow = style.getPropertyValue("box-shadow");
+  if (!boxShadow) return;
+  if (boxShadow === "none") return;
+  const masked = maskParentheses(boxShadow);
+  let segmentStart = 0;
+  // Split on top-level commas only: colors such as rgb(59, 130, 246) contain
+  // commas of their own, but those are masked out above.
+  for (let index = 0; index <= masked.length; index += 1) {
+    if (index !== masked.length && masked[index] !== ",") continue;
+    const ring = getRingFromSegment(
+      boxShadow.slice(segmentStart, index),
+      masked.slice(segmentStart, index),
+    );
+    if (ring) return ring;
+    segmentStart = index + 1;
+  }
+  return;
 }
 
 /**
@@ -97,23 +161,39 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
 
     const maskId = useId();
     const style = useComputedStyle(store);
-    const stroke = getBorderColor(dir, style) || "none";
     const fill = style?.getPropertyValue("background-color") || "none";
 
-    const [borderWidth, isRing] = useMemo(() => {
-      if (borderWidthProp != null) return [borderWidthProp, false];
-      if (!style) return [0, false];
-      const ringWidth = getRingWidth(style);
-      if (ringWidth) return [Number.parseInt(ringWidth, 10), true];
+    const [borderWidth, isRing, ringColor] = useMemo(() => {
+      if (borderWidthProp != null) {
+        return [borderWidthProp, false, undefined] as const;
+      }
+      if (!style) return [0, false, undefined] as const;
+      const ring = getRing(style);
+      // Math.ceil matches the border width fallback below so fractional ring
+      // widths still render a visible stroke on high-DPI screens.
+      if (ring) return [Math.ceil(ring.width), true, ring.color] as const;
       const borderWidth = style.getPropertyValue(`border-${dir}-width`);
       if (borderWidth) {
         const parsed = Number.parseFloat(borderWidth);
         if (!Number.isNaN(parsed)) {
-          return [Math.ceil(parsed), false];
+          return [Math.ceil(parsed), false, undefined] as const;
         }
       }
-      return [0, false];
+      return [0, false, undefined] as const;
     }, [borderWidthProp, style, dir]);
+
+    // When the popover is outlined by a ring, the arrow stroke must match the
+    // ring color so the arrow blends into the outline. A ring segment with an
+    // omitted color defaults to currentColor per CSS, so use the computed
+    // text color then. Computed styles always serialize a concrete shadow
+    // color, but declared values returned by some test environments may omit
+    // it. Without a ring, fall back to the border color, which always
+    // resolves to a concrete value on connected elements (currentColor at the
+    // very least).
+    const fallbackColor = isRing
+      ? style?.getPropertyValue("color")
+      : style?.getPropertyValue(`border-${dir}-color`);
+    const stroke = ringColor || fallbackColor || "none";
 
     const strokeWidth = borderWidth * 2 * (defaultSize / size);
     const transform = rotateMap[dir];
