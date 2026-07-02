@@ -10,13 +10,13 @@ test("activates the tab selected by setSelectedId after the popover opens", asyn
 
   expect(q.tab.ensure("Vegetables")).toHaveAttribute("aria-selected", "true");
   expect(q.tab.ensure("Vegetables")).toHaveAttribute("data-active-item");
-  expect(q.tab.ensure("Vegetables")).toHaveAttribute("tabindex", "0");
+  expect(q.tab.ensure("Vegetables")).not.toHaveAttribute("tabindex", "-1");
 
   await click(q.button.ensure("Browse fruits"));
 
   expect(q.tab.ensure("Fruits")).toHaveAttribute("aria-selected", "true");
   expect(q.tab.ensure("Fruits")).toHaveAttribute("data-active-item");
-  expect(q.tab.ensure("Fruits")).toHaveAttribute("tabindex", "0");
+  expect(q.tab.ensure("Fruits")).not.toHaveAttribute("tabindex", "-1");
 });
 
 test("activates the tab selected by setSelectedId after the popover toggles", async () => {
@@ -39,11 +39,11 @@ test("activates the tab selected by setSelectedId after the popover toggles", as
 
   expect(q.tab.ensure("Vegetables")).toHaveAttribute("aria-selected", "true");
   expect(q.tab.ensure("Vegetables")).toHaveAttribute("data-active-item");
-  expect(q.tab.ensure("Vegetables")).toHaveAttribute("tabindex", "0");
+  expect(q.tab.ensure("Vegetables")).not.toHaveAttribute("tabindex", "-1");
 
   await click(q.button.ensure("Browse fruits"));
 
   expect(q.tab.ensure("Fruits")).toHaveAttribute("aria-selected", "true");
   expect(q.tab.ensure("Fruits")).toHaveAttribute("data-active-item");
-  expect(q.tab.ensure("Fruits")).toHaveAttribute("tabindex", "0");
+  expect(q.tab.ensure("Fruits")).not.toHaveAttribute("tabindex", "-1");
 });

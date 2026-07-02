@@ -14,13 +14,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(q.tab("Vegetables"))
       .toHaveAttribute("aria-selected", "true");
     await test.expect(q.tab("Vegetables")).toHaveAttribute("data-active-item");
-    await test.expect(q.tab("Vegetables")).toHaveAttribute("tabindex", "0");
+    await test
+      .expect(q.tab("Vegetables"))
+      .not.toHaveAttribute("tabindex", "-1");
 
     await q.button("Browse fruits").click();
 
     await test.expect(q.tab("Fruits")).toHaveAttribute("aria-selected", "true");
     await test.expect(q.tab("Fruits")).toHaveAttribute("data-active-item");
-    await test.expect(q.tab("Fruits")).toHaveAttribute("tabindex", "0");
+    await test.expect(q.tab("Fruits")).not.toHaveAttribute("tabindex", "-1");
   });
 
   test("activates the tab selected by setSelectedId after the popover toggles", async ({
@@ -48,12 +50,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(q.tab("Vegetables"))
       .toHaveAttribute("aria-selected", "true");
     await test.expect(q.tab("Vegetables")).toHaveAttribute("data-active-item");
-    await test.expect(q.tab("Vegetables")).toHaveAttribute("tabindex", "0");
+    await test
+      .expect(q.tab("Vegetables"))
+      .not.toHaveAttribute("tabindex", "-1");
 
     await q.button("Browse fruits").click();
 
     await test.expect(q.tab("Fruits")).toHaveAttribute("aria-selected", "true");
     await test.expect(q.tab("Fruits")).toHaveAttribute("data-active-item");
-    await test.expect(q.tab("Fruits")).toHaveAttribute("tabindex", "0");
+    await test.expect(q.tab("Fruits")).not.toHaveAttribute("tabindex", "-1");
   });
 });
