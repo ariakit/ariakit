@@ -50,11 +50,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.down("Space");
     await test.expect(card).toHaveAttribute("data-active");
 
-    // Tab moves focus into the nested button while Space is still held, so the
+    // Move focus into the nested button while Space is still held, so the
     // keyup fires on the button and bubbles through the card. The press never
     // finished on the card, so it must not dispatch a synthetic click on
-    // itself, and losing focus must clear the pressed state.
-    await page.keyboard.press("Tab");
+    // itself, and losing focus must clear the pressed state. The move is
+    // scripted rather than pressing Tab because WebKit skips native buttons
+    // when tabbing under the default macOS keyboard settings; mid-press focus
+    // moves from a script are one of the reported triggers anyway.
+    await q.button("Pin").focus();
     await test.expect(q.button("Pin")).toBeFocused();
     await test.expect(card).not.toHaveAttribute("data-active");
 
