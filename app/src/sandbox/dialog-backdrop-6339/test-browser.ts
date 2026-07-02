@@ -21,4 +21,27 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // After the transition ends, the backdrop hides.
     await test.expect(backdrop).toBeHidden();
   });
+
+  test("backdrop finishes its longer fade out when the panel has a shorter transition", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Show fast dialog").click();
+    const backdrop = q.presentation();
+    await test.expect(backdrop).toHaveAttribute("data-enter", "true");
+    await test.expect(q.button("Close")).toBeFocused();
+    await q.button("Close").click();
+    // Focus returns to the disclosure as soon as the dialog closes.
+    await test.expect(q.button("Show fast dialog")).toBeFocused();
+    await test.expect(backdrop).toHaveAttribute("data-leave", "true");
+    // Wait past the panel's 150ms transition. The backdrop must keep leaving
+    // until its own 500ms transition ends. Before the fix, the panel's shorter
+    // timeout stopped the shared animation state, hiding the backdrop at
+    // 150ms.
+    await page.waitForTimeout(250);
+    await test.expect(backdrop).toHaveAttribute("data-leave", "true");
+    await test.expect(backdrop).toBeVisible();
+    // After the backdrop's transition ends, it hides.
+    await test.expect(backdrop).toBeHidden();
+  });
 });
