@@ -289,7 +289,7 @@ jobs:
     needs: [build, build-nextjs, chrome-baseline]
     runs-on: ubuntu-latest
     strategy:
-      # Let both shards finish even if one fails, so each shard's logs and
+      # Let all shards finish even if one fails, so each shard's logs and
       # uploaded rounds stay available for debugging. The post job compares
       # whatever rounds the succeeding shards produced (partial results are
       # fine; a failed shard stays visibly red in CI).
@@ -298,7 +298,7 @@ jobs:
         # `shard` is the only matrix dimension, so the job count equals the
         # shard count; PERF_SHARD_TOTAL below derives from strategy.job-total.
         # Raise this list as the number of perf-chrome test files grows.
-        shard: [1, 2]
+        shard: [1, 2, 3]
     permissions:
       actions: read
       contents: read
