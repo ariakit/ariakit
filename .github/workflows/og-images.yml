@@ -30,14 +30,11 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
-        with:
-          install-filter: app...
 
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
         with:
           engine: chromium
-          filter: app
 
       - name: Run app dev server
         shell: bash

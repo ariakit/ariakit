@@ -5,10 +5,6 @@ inputs:
   engine:
     description: Engine
     required: true
-  filter:
-    description: Optional pnpm filter selector for locating Playwright
-    required: false
-    default: ""
 
 runs:
   using: "composite"
@@ -27,11 +23,4 @@ runs:
     - name: Install Playwright
       if: steps.cache-playwright.outputs.cache-hit != 'true'
       shell: bash
-      env:
-        PLAYWRIGHT_FILTER: ${{ inputs.filter }}
-      run: |
-        if [ -n "$PLAYWRIGHT_FILTER" ]; then
-          pnpm --filter "$PLAYWRIGHT_FILTER" exec playwright install --with-deps ${{ inputs.engine }}
-        else
-          pnpm exec playwright install --with-deps ${{ inputs.engine }}
-        fi
+      run: pnpm exec playwright install --with-deps ${{ inputs.engine }}
