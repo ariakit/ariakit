@@ -9,13 +9,8 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import {
-  afterPaint,
-  getDocument,
-  invariant,
-  removeUndefinedValues,
-} from "@ariakit/utils";
-import type { ElementType } from "react";
+import { afterPaint, invariant, removeUndefinedValues } from "@ariakit/utils";
+import type { ElementType, RefObject } from "react";
 import { useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { DialogScopedContextProvider } from "../dialog/dialog-context.tsx";
@@ -109,7 +104,12 @@ export function isHidden(
 export const useDisclosureContent = createHook<
   TagName,
   DisclosureContentOptions
->(function useDisclosureContent({ store, alwaysVisible, ...props }) {
+>(function useDisclosureContent({
+  store,
+  alwaysVisible,
+  unstable_otherElementRef: otherElementRef,
+  ...props
+}) {
   const context = useDisclosureProviderContext();
   store = store || context;
 
@@ -219,21 +219,10 @@ export const useDisclosureContent = createHook<
     }
     // Conversely, if we're rendering a dialog, its backdrop may be animated
     // while the dialog itself is not. The backdrop element isn't tracked in
-    // the store, but it's rendered with a data-backdrop attribute set to the
-    // dialog id, so we can find it in the DOM. The data-dialog guard skips
-    // the document-wide query for content that can't have a backdrop, such
-    // as plain disclosures and the backdrop's own instance, and the id guard
-    // avoids matching an unrelated backdrop while it briefly renders with
-    // data-backdrop="".
-    const isDialog = contentElement.hasAttribute("data-dialog");
-    const backdropElement =
-      isDialog && contentElement.id
-        ? getDocument(contentElement).querySelector<HTMLElement>(
-            `[data-backdrop="${CSS.escape(contentElement.id)}"]`,
-          )
-        : null;
-    if (backdropElement) {
-      elements.push(backdropElement);
+    // the store, so the dialog passes it in through otherElementRef.
+    const relatedElement = otherElementRef?.current;
+    if (relatedElement) {
+      elements.push(relatedElement);
     }
     // The timeout is the longest end time among the content element and the
     // related elements, so none of them gets hidden before its own transition
@@ -258,7 +247,15 @@ export const useDisclosureContent = createHook<
     const frameRate = 1000 / 60;
     const maxTimeout = Math.max(timeout - frameRate, 0);
     return afterTimeout(maxTimeout, stopAnimationSync);
-  }, [store, animated, contentElement, otherElement, open, transition]);
+  }, [
+    store,
+    animated,
+    contentElement,
+    otherElement,
+    otherElementRef,
+    open,
+    transition,
+  ]);
 
   props = useWrapElement(
     props,
@@ -337,6 +334,14 @@ export interface DisclosureContentOptions<
    * component's context will be used.
    */
   store?: DisclosureStore;
+  /**
+   * A ref to another element whose CSS transitions and animations should be
+   * taken into account when computing the animation timeout, such as the
+   * dialog's backdrop element, which may be animated while the dialog itself
+   * is not.
+   * @private
+   */
+  unstable_otherElementRef?: RefObject<HTMLElement | null>;
   /**
    * Determines whether the content element should remain visible even when the
    * [`open`](https://ariakit.com/reference/disclosure-provider#open) state is
