@@ -3,7 +3,7 @@ import * as Ariakit from "@ariakit/react";
 // See https://github.com/ariakit/ariakit/issues/6339
 //
 // Only the backdrop is animated: it should fade in when the dialog opens and
-// fade out when it closes. The dialog panel has no visible transition, so it
+// fade out when it closes. The dialog panel has no transition at all, so it
 // snaps in place while the backdrop fades. Before the fix, the enter fade
 // works, but on close the dialog hides instantly: the backdrop never receives
 // `data-leave` and the exit fade is skipped.
@@ -24,13 +24,6 @@ const css = `
     opacity: 1;
   }
   .dialog {
-    /* TODO: Workaround for https://github.com/ariakit/ariakit/issues/6339
-       Remove once the fix lands. A visually imperceptible transition matching
-       the backdrop's duration (the panel's opacity never changes) makes
-       Ariakit compute a non-zero animation timeout for the panel, keeping the
-       shared animation state alive so the backdrop can fade out on close. */
-    transition-property: opacity;
-    transition-duration: 500ms;
     position: fixed;
     inset: 0.75rem;
     z-index: 50;
@@ -62,7 +55,7 @@ export default function Example() {
         <Ariakit.DialogHeading>Success</Ariakit.DialogHeading>
         <p>
           Only the backdrop is animated: it should fade in when the dialog opens
-          and fade out when it closes. The panel has no visible transitions.
+          and fade out when it closes. The panel has no transitions.
         </p>
         <Ariakit.DialogDismiss>Close</Ariakit.DialogDismiss>
       </Ariakit.Dialog>
