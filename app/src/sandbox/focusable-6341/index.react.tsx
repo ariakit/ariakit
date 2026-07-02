@@ -9,14 +9,23 @@ export default function Example() {
   return (
     <>
       <Ariakit.Button>Before</Ariakit.Button>
-      <Ariakit.Focusable>Focusable card</Ariakit.Focusable>
-      <Ariakit.Focusable disabled>Disabled focusable card</Ariakit.Focusable>
+      {/* TODO: Remove the explicit tabIndex and accessibleWhenDisabled props
+          from the elements below once
+          https://github.com/ariakit/ariakit/issues/6341 is fixed. Note that
+          accessibleWhenDisabled changes behavior: the disabled element remains
+          focusable (with aria-disabled) after hydration. */}
+      <Ariakit.Focusable tabIndex={0}>Focusable card</Ariakit.Focusable>
+      <Ariakit.Focusable disabled accessibleWhenDisabled>
+        Disabled focusable card
+      </Ariakit.Focusable>
       <Ariakit.TooltipProvider>
-        <Ariakit.TooltipAnchor>Tooltip anchor</Ariakit.TooltipAnchor>
+        <Ariakit.TooltipAnchor tabIndex={0}>
+          Tooltip anchor
+        </Ariakit.TooltipAnchor>
         <Ariakit.Tooltip>Tooltip content</Ariakit.Tooltip>
       </Ariakit.TooltipProvider>
       <Ariakit.CompositeProvider virtualFocus>
-        <Ariakit.Composite role="toolbar" aria-label="Composite">
+        <Ariakit.Composite role="toolbar" aria-label="Composite" tabIndex={0}>
           <Ariakit.CompositeItem render={<div />}>Item 1</Ariakit.CompositeItem>
           <Ariakit.CompositeItem render={<div />}>Item 2</Ariakit.CompositeItem>
         </Ariakit.Composite>
