@@ -108,23 +108,36 @@ export function usePreventBodyScroll(
       return restore;
     }
 
-    // Writing --scrollbar-width on documentElement invalidates the style of
-    // the whole document (custom properties are inherited, so every element
-    // is affected even when nothing references the variable). Paying that
-    // before the open frame delays the dialog's first paint, so defer the
-    // lock to right after that frame paints, in the same slot where the
-    // dialog disables the outside tree. The measurement runs in the first
-    // frame callback, keeping the after-paint callback write-only so it
-    // can't force a style flush no matter how it's ordered with the inert
-    // writes. The compositor only sees the lock a frame later, and the
-    // backdrop already covers the page in the meantime.
     let restore: (() => void) | undefined;
-    let raf = win.requestAnimationFrame(() => {
-      const measurements = measure();
+    let raf = 0;
+
+    // If the body scroll is already locked, this dialog is taking over from
+    // another dialog that's closing and has deferred its unlock to a
+    // microtask (see the cleanup below). Lock synchronously so there's no
+    // unlocked frame between the two locks — the scrollbar would flash back
+    // in otherwise. The orchestrate stacks keep the overlapping locks safe.
+    // Reading the inline style property doesn't force a style flush.
+    if (documentElement.style.getPropertyValue("--scrollbar-width")) {
+      restore = lock(measure());
+    } else {
+      // Writing --scrollbar-width on documentElement invalidates the style
+      // of the whole document (custom properties are inherited, so every
+      // element is affected even when nothing references the variable).
+      // Paying that before the open frame delays the dialog's first paint,
+      // so defer the lock to right after that frame paints, in the same slot
+      // where the dialog disables the outside tree. The measurement runs in
+      // the first frame callback, keeping the after-paint callback
+      // write-only so it can't force a style flush no matter how it's
+      // ordered with the inert writes. The compositor only sees the lock a
+      // frame later, and the backdrop already covers the page in the
+      // meantime.
       raf = win.requestAnimationFrame(() => {
-        restore = lock(measurements);
+        const measurements = measure();
+        raf = win.requestAnimationFrame(() => {
+          restore = lock(measurements);
+        });
       });
-    });
+    }
 
     return () => {
       win.cancelAnimationFrame(raf);

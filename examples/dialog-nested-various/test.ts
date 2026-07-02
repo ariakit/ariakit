@@ -240,6 +240,28 @@ test.each(["nested", "sibling"])(
   },
 );
 
+test("body scroll stays locked when a sibling dialog takes over", async () => {
+  await click(q.button("Open dialog"));
+  expectModalStyle(true);
+  // The closing dialog defers its scroll unlock to a microtask and the
+  // opening dialog defers its lock to after paint, so we watch every style
+  // change on body during the handoff to catch a transient unlock between
+  // the two.
+  const overflowValues: string[] = [];
+  const observer = new MutationObserver(() => {
+    overflowValues.push(document.body.style.overflow);
+  });
+  observer.observe(document.body, {
+    attributes: true,
+    attributeFilter: ["style"],
+  });
+  await click(q.button("sibling dismiss unmount"));
+  observer.disconnect();
+  expect(q.dialog("sibling dismiss unmount")).toBeVisible();
+  expectModalStyle(true);
+  expect(overflowValues.every((overflow) => overflow === "hidden")).toBe(true);
+});
+
 test.each(["sibling"])(
   "show %s dismiss unmount dialog and hide with escape",
   async (name) => {
