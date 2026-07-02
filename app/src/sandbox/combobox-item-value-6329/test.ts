@@ -14,7 +14,7 @@ function getPartTexts(element: HTMLElement, selector: string) {
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6329
 test("highlights only the typed syllable in Hangul item values", async () => {
-  await type("사", q.combobox("Search files"));
+  await type("사", q.combobox.ensure("Search files"));
 
   const option = q.option.ensure("사과.txt");
   expect(option.textContent).toBe("사과.txt");
@@ -23,7 +23,7 @@ test("highlights only the typed syllable in Hangul item values", async () => {
 });
 
 test("highlights only the typed kana in item values with dakuten", async () => {
-  await type("ガ", q.combobox("Search files"));
+  await type("ガ", q.combobox.ensure("Search files"));
 
   const option = q.option.ensure("ガラス.txt");
   expect(option.textContent).toBe("ガラス.txt");
@@ -34,7 +34,7 @@ test("highlights only the typed kana in item values with dakuten", async () => {
 });
 
 test("keeps combining marks attached in decomposed item values", async () => {
-  await type("sum", q.combobox("Search files"));
+  await type("sum", q.combobox.ensure("Search files"));
 
   const option = q.option.ensure(decomposedResume);
   expect(option.textContent).toBe(decomposedResume);
@@ -48,7 +48,7 @@ test("keeps combining marks attached in decomposed item values", async () => {
 test("renders a single autocomplete span for normalized-empty input", async () => {
   // A lone combining mark normalizes to an empty string, which must not
   // produce highlights but must keep the autocomplete span structure.
-  await type("\u0301", q.combobox("Search files"));
+  await type("\u0301", q.combobox.ensure("Search files"));
 
   const option = q.option.ensure("notes.txt");
   expect(option.textContent).toBe("notes.txt");
@@ -61,7 +61,7 @@ test("renders a single autocomplete span for normalized-empty input", async () =
 test("does not highlight characters the input only partially matches", async () => {
   // A lone medial jamo matches only a fragment of the decomposed 사 syllable,
   // which must not highlight the whole character.
-  await type("\u1161", q.combobox("Search files"));
+  await type("\u1161", q.combobox.ensure("Search files"));
 
   const option = q.option.ensure("사과.txt");
   expect(option.textContent).toBe("사과.txt");
@@ -89,7 +89,7 @@ test("highlights a character fully covered by overlapping partial matches", asyn
 });
 
 test("highlights diacritic-insensitive matches in decomposed item values", async () => {
-  await type("resume", q.combobox("Search files"));
+  await type("resume", q.combobox.ensure("Search files"));
 
   const option = q.option.ensure(decomposedResume);
   expect(option.textContent).toBe(decomposedResume);
