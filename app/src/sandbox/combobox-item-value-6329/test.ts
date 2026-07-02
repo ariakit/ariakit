@@ -45,6 +45,19 @@ test("keeps combining marks attached in decomposed item values", async () => {
   ]);
 });
 
+test("renders a single autocomplete span for normalized-empty input", async () => {
+  // A lone combining mark normalizes to an empty string, which must not
+  // produce highlights but must keep the autocomplete span structure.
+  await type("\u0301", q.combobox.ensure("Search files"));
+
+  const option = q.option.ensure("notes.txt");
+  expect(option.textContent).toBe("notes.txt");
+  expect(getPartTexts(option, "[data-user-value]")).toEqual([]);
+  expect(getPartTexts(option, "[data-autocomplete-value]")).toEqual([
+    "notes.txt",
+  ]);
+});
+
 test("highlights diacritic-insensitive matches in decomposed item values", async () => {
   await type("resume", q.combobox.ensure("Search files"));
 
