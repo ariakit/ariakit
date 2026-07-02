@@ -305,6 +305,12 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   const getPersistentElementsProp = useEvent(getPersistentElements);
 
+  // Set by the effect below when the outside tree is currently disabled, and
+  // consumed by its next run so a re-run that replaces an active disabling
+  // (e.g., when a nested dialog opens) re-applies it synchronously instead of
+  // deferring it to the next frame.
+  const redisableTreeSyncRef = useRef(false);
+
   // Disables/enables the element tree around the modal dialog element.
   useSafeLayoutEffect(() => {
     if (!id) return;
@@ -327,23 +333,50 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (modal) {
       const { disableTreeOutside, restoreTreeOutside } =
         markAndDisableTreeOutside(id, allElements);
-      // Disabling the outside tree sets inert on the top-level elements around
-      // the dialog, which invalidates the style of everything inside them. The
-      // resulting style recalc scales with the page size and matches what the
-      // browser charges for a native showModal() call, but paying it before
-      // the open frame delays the dialog's first paint (see issue 4075). Defer
-      // it to right after that frame paints: the marks above (JavaScript
-      // properties with no style impact) already let the outside listeners and
-      // Escape logic treat the tree as outside in the meantime, and no user
-      // interaction can land within that frame.
+      let disabled = false;
+      const applyDisableTreeOutside = () => {
+        disableTreeOutside();
+        disabled = true;
+      };
       const win = getWindow(dialog);
-      let raf = win.requestAnimationFrame(() => {
-        raf = win.requestAnimationFrame(disableTreeOutside);
-      });
+      let raf = 0;
+      if (redisableTreeSyncRef.current) {
+        // This run replaces a disabling that was active until the cleanup of
+        // the previous run just restored it (e.g., a nested dialog opened and
+        // re-triggered this effect). That restore already invalidated the
+        // outside tree, so re-applying synchronously merges into the same
+        // style recalc and avoids a frame where the tree between two modal
+        // states is interactive again.
+        applyDisableTreeOutside();
+      } else {
+        // Disabling the outside tree sets inert on the top-level elements
+        // around the dialog, which invalidates the style of everything inside
+        // them. The resulting style recalc scales with the page size and
+        // matches what the browser charges for a native showModal() call, but
+        // paying it before the open frame delays the dialog's first paint
+        // (see issue 4075). Defer it to right after that frame paints: the
+        // marks above (JavaScript properties with no style impact) already
+        // let the outside listeners and Escape logic treat the tree as
+        // outside in the meantime, and no user interaction can land within
+        // that frame.
+        raf = win.requestAnimationFrame(() => {
+          raf = win.requestAnimationFrame(applyDisableTreeOutside);
+        });
+      }
       return chain(
         restoreInsideMarks,
         () => win.cancelAnimationFrame(raf),
         restoreTreeOutside,
+        () => {
+          if (!disabled) return;
+          // Let the next run, if it happens in this same task, know it's
+          // replacing an active disabling. The microtask clears the flag
+          // right after, so a later reopen still defers.
+          redisableTreeSyncRef.current = true;
+          queueMicrotask(() => {
+            redisableTreeSyncRef.current = false;
+          });
+        },
       );
     }
     return chain(
