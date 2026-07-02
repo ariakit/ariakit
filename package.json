@@ -98,7 +98,7 @@
     "concurrently": "10.0.3",
     "cross-env": "10.1.0",
     "cross-spawn": "7.0.6",
-    "fs-extra": "11.3.5",
+    "fs-extra": "11.3.6",
     "glob": "13.0.6",
     "happy-dom": "20.10.6",
     "husky": "9.1.7",
