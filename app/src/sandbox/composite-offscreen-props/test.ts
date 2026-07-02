@@ -10,7 +10,7 @@ const leakedAttributes = [
 ] as const;
 
 test("omits composite option props from the offscreen placeholder", () => {
-  const item = q.button.ensure("Archive");
+  const item = q.button("Archive");
 
   expect(item).toHaveAttribute("data-offscreen");
   expect(item).toHaveAttribute("aria-disabled", "true");

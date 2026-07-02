@@ -2,7 +2,7 @@ import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("syncs boolean item checked state with menu values", async () => {
-  await click(q.button.ensure("View"));
+  await click(q.button("View"));
 
   expect(q.menuitemcheckbox("Show sidebar")).toHaveAttribute(
     "aria-checked",

@@ -3,8 +3,8 @@ import { expect, test } from "vitest";
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6345
 test("onChange commits the value on arrow-key selection", async () => {
-  const apple = q.radio.ensure("apple");
-  const orange = q.radio.ensure("orange");
+  const apple = q.radio("apple");
+  const orange = q.radio("orange");
 
   await click(apple);
   expect(apple).toBeChecked();

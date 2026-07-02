@@ -6,9 +6,9 @@ import { expect, test } from "vitest";
 // by the browser test: on the buggy code, the keydown handler loops forever
 // synchronously, which would hang the happy-dom worker instead of failing.
 test("arrow keys on the closed select skip the trailing item without value", async () => {
-  const combobox = q.combobox.ensure("Favorite color");
+  const combobox = q.combobox("Favorite color");
   await click(combobox);
-  expect(q.option.ensure("Green")).toBeVisible();
+  expect(q.option("Green")).toBeVisible();
   await press.Escape();
   expect(combobox).toHaveFocus();
   expect(combobox).toHaveTextContent("Green");
@@ -22,9 +22,9 @@ test("arrow keys on the closed select skip the trailing item without value", asy
 });
 
 test("arrow keys on the closed select with focusLoop wrap past the item without value", async () => {
-  const combobox = q.combobox.ensure("Favorite shape");
+  const combobox = q.combobox("Favorite shape");
   await click(combobox);
-  expect(q.option.ensure("Triangle")).toBeVisible();
+  expect(q.option("Triangle")).toBeVisible();
   await press.Escape();
   expect(combobox).toHaveFocus();
   expect(combobox).toHaveTextContent("Triangle");

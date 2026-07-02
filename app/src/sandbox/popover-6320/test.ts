@@ -3,7 +3,7 @@ import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("clears the arrow's stale static-side inset after a placement change", async () => {
-  await click(q.button.ensure("Accept invite"));
+  await click(q.button("Accept invite"));
   const dialog = q.dialog.ensure("Team meeting");
   const arrow = dialog.querySelector<HTMLElement>(".arrow");
   expect(arrow).toBeInTheDocument();
@@ -16,7 +16,7 @@ test("clears the arrow's stale static-side inset after a placement change", asyn
   await expect.poll(() => arrow.style.right).toBe("100%");
 
   // Changing the placement to `top` repositions the arrow with `top: 100%`.
-  await click(q.button.ensure("Show above"));
+  await click(q.button("Show above"));
   await expect.poll(() => arrow.style.top).toBe("100%");
 
   // The previous placement's `right: 100%` must be cleared. When it lingers,

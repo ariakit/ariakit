@@ -4,7 +4,7 @@ import { expect, test } from "vitest";
 // See https://github.com/ariakit/ariakit/issues/6217
 
 test("releasing Space with Meta held clears data-active", async () => {
-  const command = q.text.ensure("Meta release");
+  const command = q.text("Meta release");
   await focus(command);
   expect(command).toHaveFocus();
 
@@ -21,7 +21,7 @@ test("releasing Space with Meta held clears data-active", async () => {
 });
 
 test("releasing Space clears data-active when the element becomes disabled mid-press", async () => {
-  const command = q.text.ensure("Disable on press");
+  const command = q.text("Disable on press");
   await focus(command);
   expect(command).toHaveFocus();
 
