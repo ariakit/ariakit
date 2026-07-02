@@ -48,7 +48,13 @@ export default function Example() {
             key={item}
             role="option"
             aria-setsize={TOTAL_ITEMS}
-            aria-posinset={(page - 1) * PAGE_SIZE + index + 1}
+            // TODO: Remove the NaN guard once
+            // https://github.com/ariakit/ariakit/issues/6335 is fixed
+            aria-posinset={
+              Number.isNaN(page)
+                ? undefined
+                : (page - 1) * PAGE_SIZE + index + 1
+            }
           >
             {item}
           </Ariakit.CompositeItem>
