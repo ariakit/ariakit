@@ -410,6 +410,8 @@ jobs:
 
           run_baseline_perf_round() {
             local i="$1"
+            shift
+            local perf_files=("$@")
 
             echo "::group::Round $i - baseline"
             local baseline_failed=0
@@ -418,7 +420,7 @@ jobs:
               PERF_RESULTS_FILE=baseline-$i-s$PERF_SHARD_INDEX.json \
               PERF_ITERATIONS="$PERF_ITERATIONS" \
               PERF_WARMUP="$PERF_WARMUP" \
-              xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${SHARD_FILES[@]}"
+              xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_files[@]}"
             ); then
               echo "::warning::Baseline perf run failed for round $i; writing an empty baseline."
               baseline_failed=1
@@ -437,12 +439,14 @@ jobs:
 
           run_current_perf_round() {
             local i="$1"
+            shift
+            local perf_files=("$@")
 
             echo "::group::Round $i - current"
             PERF_RESULTS_FILE=current-$i-s$PERF_SHARD_INDEX.json \
             PERF_ITERATIONS="$PERF_ITERATIONS" \
             PERF_WARMUP="$PERF_WARMUP" \
-            xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${SHARD_FILES[@]}"
+            xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_files[@]}"
             local current_files=(app/.perf-results/current-"$i"*.json)
             if [ ${#current_files[@]} -eq 0 ]; then
               echo "Missing current perf results for round $i" >&2
@@ -453,17 +457,19 @@ jobs:
 
           run_perf_round() {
             local i="$1"
+            shift
+            local perf_files=("$@")
 
             # Alternate sides first so same-runner drift cannot consistently
             # favor the baseline or current run across every paired round.
             if [ "$(( i % 2 ))" -eq 1 ]; then
               echo "Round $i order: baseline -> current"
-              run_baseline_perf_round "$i"
-              run_current_perf_round "$i"
+              run_baseline_perf_round "$i" "${perf_files[@]}"
+              run_current_perf_round "$i" "${perf_files[@]}"
             else
               echo "Round $i order: current -> baseline"
-              run_current_perf_round "$i"
-              run_baseline_perf_round "$i"
+              run_current_perf_round "$i" "${perf_files[@]}"
+              run_baseline_perf_round "$i" "${perf_files[@]}"
             fi
           }
 
@@ -473,18 +479,17 @@ jobs:
           fi
 
           for i in $(seq 1 "$PERF_INITIAL_ROUNDS"); do
-            run_perf_round "$i"
+            run_perf_round "$i" "${SHARD_FILES[@]}"
           done
 
           # This per-shard comparison only decides whether THIS shard needs
-          # confirmation rounds for its own files; each shard confirms its own
-          # significant deltas. Confirmation is per-shard rather than job-wide,
-          # which still confirms every flagged regression in the shard where it
-          # lives. The published comparison is produced once by the post job
-          # over every shard's raw round files.
+          # confirmation rounds for its own files. When only a subset of this
+          # shard has significant deltas, rerun just those files for
+          # confirmation. The published comparison is produced once by the post
+          # job over every shard's raw round files.
           echo "::group::Preliminary comparison (shard $PERF_SHARD_INDEX)"
           pnpm -F app run perf-compare
-          has_significant_changes=$(
+          mapfile -t CONFIRMATION_FILES < <(
             node --input-type=module <<'NODE'
           import { readFileSync } from "node:fs";
 
@@ -492,17 +497,25 @@ jobs:
             readFileSync("app/.perf-results/comparison.json", "utf-8"),
           );
 
-          console.log(summary.hasSignificantChanges ? "true" : "false");
+          const files = new Set();
+          for (const row of summary.rows ?? []) {
+            if (row?.significant && row.testFile) {
+              files.add(row.testFile);
+            }
+          }
+          for (const file of [...files].sort()) {
+            console.log(file);
+          }
           NODE
           )
           echo "::endgroup::"
 
-          if [ "$has_significant_changes" = "true" ]; then
-            echo "Significant changes detected; running confirmation rounds."
+          if [ ${#CONFIRMATION_FILES[@]} -gt 0 ]; then
+            echo "Significant changes detected; running confirmation rounds for: ${CONFIRMATION_FILES[*]}"
             start_round=$((PERF_INITIAL_ROUNDS + 1))
             end_round=$((PERF_INITIAL_ROUNDS + PERF_CONFIRMATION_ROUNDS))
             for i in $(seq "$start_round" "$end_round"); do
-              run_perf_round "$i"
+              run_perf_round "$i" "${CONFIRMATION_FILES[@]}"
             done
           else
             echo "No significant changes detected; skipping confirmation rounds."
