@@ -59,9 +59,32 @@ jobs:
         env:
           AFFECTED_PACKAGES: ${{ steps.compute-affected-packages.outputs.affected-packages }}
         run: |
-          packages=$(echo $AFFECTED_PACKAGES | jq -r '.[]' | tr '\n' ' ')
+          set -euo pipefail
+
+          packages=$(echo "$AFFECTED_PACKAGES" | jq -r '.[]' | tr '\n' ' ')
           if [ -n "$packages" ]; then
-            pnpm dlx pkg-pr-new publish --compact --template './templates/*' $packages
+            tmp=$(mktemp -d)
+            trap 'rm -rf "$tmp"' EXIT
+            for package in $packages; do
+              tarball=$(pnpm --dir "$package" pack --json --pack-destination "$tmp" | jq -r '.filename')
+              manifest=$(tar -xOf "$tarball" package/package.json)
+              if jq -e '
+                [
+                  .dependencies,
+                  .optionalDependencies,
+                  .peerDependencies
+                ]
+                | map(. // {})
+                | add
+                | to_entries
+                | map(select(.value | startswith("workspace:")))
+                | length > 0
+              ' <<< "$manifest" > /dev/null; then
+                echo "$package still has workspace: runtime dependencies after pnpm pack"
+                exit 1
+              fi
+            done
+            pnpm exec pkg-pr-new publish --pnpm --compact --template './templates/*' $packages
           else
             echo "No affected packages to publish"
           fi
