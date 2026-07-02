@@ -5,7 +5,7 @@ import { expect, test } from "vitest";
 test("notifies an all-keys listener subscribed during a keyed dispatch", async () => {
   expect(q.text("No activity yet")).toBeVisible();
 
-  await click(q.button.ensure("Like (0)"));
+  await click(q.button("Like (0)"));
 
   expect(q.button("Like (1)")).toBeVisible();
   expect(q.text("0 -> 1")).toBeVisible();

@@ -9,7 +9,7 @@ test("cells compute their position from row-level aria-posinset", async () => {
     await expect
       .poll(q.gridcell.lazy(`Cell ${position}`))
       .toHaveAttribute("aria-posinset", `${position}`);
-    expect(q.gridcell.ensure(`Cell ${position}`)).toHaveAttribute(
+    expect(q.gridcell(`Cell ${position}`)).toHaveAttribute(
       "aria-setsize",
       "100",
     );

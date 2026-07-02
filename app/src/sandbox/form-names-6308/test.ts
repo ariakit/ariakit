@@ -13,5 +13,5 @@ test("inspecting a form.names.* value resolves to an object tag instead of throw
   // throwing "Cannot convert a Symbol value to a string" (the fix yields
   // "[object Object]", a coercing workaround "[object String]").
   await click(q.button("Inspect field name"));
-  expect(q.status.ensure()).toHaveTextContent(/^\[object \w+\]$/);
+  expect(q.status()).toHaveTextContent(/^\[object \w+\]$/);
 });

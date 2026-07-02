@@ -33,7 +33,7 @@ const cases = [
 
 for (const { label, strokeWidth, stroke } of cases) {
   test(`arrow stroke matches the ${label.toLowerCase()} box-shadow`, async () => {
-    await click(q.button.ensure(label));
+    await click(q.button(label));
     const dialog = q.dialog.ensure(label);
     // The arrow SVG paths inherit the stroke and stroke-width set on the
     // arrow element, so the values on the arrow are what the user sees drawn

@@ -3,10 +3,10 @@ import { click, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("typing into a dialog with an inline portalRef keeps focus and value", async () => {
-  await click(q.button.ensure("Open dialog"));
+  await click(q.button("Open dialog"));
   expect(q.dialog("Profile")).toBeVisible();
 
-  await click(q.textbox.ensure("Name"));
+  await click(q.textbox("Name"));
   await type("hello");
 
   // Before the fix, the first keystroke re-renders the parent, the new inline
@@ -17,7 +17,7 @@ test("typing into a dialog with an inline portalRef keeps focus and value", asyn
 });
 
 test("typing into a portal with an inline portalRef keeps focus and value", async () => {
-  await click(q.textbox.ensure("Notes"));
+  await click(q.textbox("Notes"));
   await type("hello");
 
   // Before the fix, the portal node is recreated on every keystroke and focus
