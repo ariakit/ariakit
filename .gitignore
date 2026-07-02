@@ -6,6 +6,7 @@ dist
 test-results
 .perf-results
 playwright-report
+.types
 .playwright
 .playwright-cli
 

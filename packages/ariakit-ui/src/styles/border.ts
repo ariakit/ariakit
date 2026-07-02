@@ -1,0 +1,126 @@
+import { cv } from "clava";
+
+const borderColors = {
+  unset: "",
+  default: "[--border-color:var(--ak-layer)]",
+  primary: "[--border-color:var(--color-primary)]",
+  secondary: "[--border-color:var(--color-secondary)]",
+  success: "[--border-color:var(--color-success)]",
+  warning: "[--border-color:var(--color-warning)]",
+  danger: "[--border-color:var(--color-danger)]",
+};
+
+export function isBorderColor(
+  color?: string,
+): color is keyof typeof borderColors {
+  return !!color && color in borderColors;
+}
+
+export const border = cv({
+  variants: {
+    /**
+     * Sets the border color of the element.
+     */
+    $borderColor: borderColors,
+    /**
+     * Whether to add a border to the element. Set to `adaptive` to show the
+     * border only in high-contrast mode. Set to `content` to disable the border
+     * and ring on the current element and apply them only to children with
+     * `$border` set to `inherit`.
+     */
+    $border: {
+      true: "ak-edge-color-(--border-color) ak-edge-alpha-(--border-weight)",
+      inherit: [
+        "[@container_not_style(--border-contrast:1)]:ak-edge-color-(--border-color)",
+        "[@container_not_style(--border-contrast:1)]:ak-edge-alpha-(--border-weight)",
+        "[@container_style(--border-contrast:1)]:ak-edge-color-(--border-color)",
+        "[@container_style(--border-contrast:1)]:ak-edge-raw",
+      ],
+      content: "ak-frame-border-0! ak-frame-ring-0!",
+    },
+    /**
+     * Sets the weight of the border.
+     */
+    $borderWeight: {
+      unset: "",
+      adaptive: "[--border-weight:0]",
+      light: "[--border-weight:0.05]",
+      normal: "[--border-weight:0.1]",
+      medium: "[--border-weight:0.2]",
+      bold: "[--border-weight:0.4]",
+      contrast:
+        "[--border-contrast:1] ak-edge-color-(--border-color) ak-edge-raw",
+    },
+    /**
+     * Sets the element’s border style. `bordering` uses `border` in dark mode
+     * and `ring` in light mode, which is usually preferred for elements with a
+     * box shadow.
+     */
+    $borderType: {
+      unset: "",
+      inherit:
+        "ak-frame-border-(--border-border,0px) ak-frame-ring-(--border-ring,0px)",
+      border: [
+        "[--border-border:var(--border-width)]",
+        "ak-frame-border-(--border-width)",
+      ],
+      bordering: [
+        "ak-light:[--border-backdrop:var(--ak-layer)]",
+        "ak-dark:[--border-border:var(--border-width)]",
+        "ak-light:[--border-ring:var(--border-width)]",
+        "ak-frame-bordering-(--border-width)",
+      ],
+      ring: [
+        "[--border-backdrop:var(--ak-layer)]",
+        "[--border-ring:var(--border-width)]",
+        "ak-frame-ring-(--border-width)",
+      ],
+      inset: "ring-(length:--border-width) ring-inset",
+      dashed: "ak-frame-border-(--border-width) border-dashed",
+      dotted: "ak-frame-border-(--border-width) border-dotted",
+    },
+    /**
+     * Sets the size of the border.
+     * @default 1
+     */
+    $borderWidth(value?: "unset" | number) {
+      if (value == null) return;
+      if (value === "unset") return;
+      return { style: { "--border-width": `${value}px` } };
+    },
+  },
+  defaultVariants: {
+    $borderType(defaultValue, variants) {
+      if (variants.$border === "inherit") return "inherit";
+      return defaultValue ?? "border";
+    },
+    $borderColor(defaultValue, variants) {
+      if (variants.$border === "inherit") return "unset";
+      return defaultValue ?? "default";
+    },
+    $borderWeight(defaultValue, variants) {
+      if (variants.$border === "inherit") return "unset";
+      return defaultValue ?? "normal";
+    },
+    $borderWidth(defaultValue, variants) {
+      if (variants.$border === "inherit") return "unset";
+      return defaultValue ?? 1;
+    },
+  },
+  refine({ variants, setVariants }) {
+    if (variants.$border) {
+      if (variants.$borderWeight === "contrast") {
+        setVariants({
+          $border: variants.$border === "content" ? "content" : false,
+        });
+      }
+    } else {
+      setVariants({
+        $borderType: "unset",
+        $borderColor: "unset",
+        $borderWeight: "unset",
+        $borderWidth: "unset",
+      });
+    }
+  },
+});

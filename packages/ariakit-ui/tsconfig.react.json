@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.react.json",
+  "compilerOptions": {
+    "outDir": ".types",
+    "rootDir": ".",
+    "composite": true,
+    "noEmit": false,
+    "emitDeclarationOnly": true
+  },
+  "include": ["src/**/*.react.tsx", "src/**/*.ts", "src/**/*.json"],
+  "exclude": []
+}

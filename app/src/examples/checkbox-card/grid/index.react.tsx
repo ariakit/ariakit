@@ -1,4 +1,46 @@
 import { Group, GroupLabel } from "@ariakit/react";
+import {
+  Tab,
+  TabGlider,
+  TabList,
+  TabPanel,
+  TabPanels,
+  TabSeparator,
+  Tabs,
+} from "@ariakit/ui/ariakit/tabs.react.tsx";
+import { BadgeLabel } from "@ariakit/ui/html/badge.react.tsx";
+import {
+  Button,
+  ButtonContent,
+  ButtonDescription,
+  ButtonGlider,
+  ButtonGroup,
+  ButtonLabel,
+  ButtonSeparator,
+  ButtonSlot,
+} from "@ariakit/ui/html/button.react.tsx";
+import {
+  checkboxCard,
+  checkboxCardCheck,
+  checkboxCardGrid,
+  checkboxCardLabel,
+} from "@ariakit/ui/styles/checkbox-card.ts";
+import { controlGroup, controlSeparator } from "@ariakit/ui/styles/control.ts";
+import {
+  ActivityIcon,
+  ArrowRightIcon,
+  CheckIcon,
+  ComputerIcon,
+  EllipsisIcon,
+  FilesIcon,
+  LayoutDashboardIcon,
+  ListIcon,
+  MessageSquareIcon,
+  PlusIcon,
+  SettingsIcon,
+  UserIcon,
+  VerifiedIcon,
+} from "lucide-react";
 import { useState } from "react";
 import {
   CheckboxCard,
@@ -21,7 +63,7 @@ export default function Example() {
   const [values, setValues] = useState<(keyof typeof interests)[]>(["finance"]);
   return (
     <Group className="flex flex-col gap-4">
-      <GroupLabel className="text-xl font-medium text-center">
+      <GroupLabel className="text-xl font-medium  text-center">
         Select your interests
       </GroupLabel>
       <CheckboxCardGrid
@@ -36,6 +78,410 @@ export default function Example() {
           </CheckboxCard>
         ))}
       </CheckboxCardGrid>
+      <div {...checkboxCardGrid({})}>
+        {Object.entries(interests).map(([key, interest]) => (
+          <label
+            key={key}
+            {...checkboxCard({})}
+            aria-disabled={key === "culture" || key === "history"}
+          >
+            <span {...checkboxCardCheck()}>
+              <CheckIcon />
+            </span>
+            <input
+              type="checkbox"
+              className="sr-only"
+              defaultChecked={key === "culture"}
+              disabled={key === "culture" || key === "history"}
+            />
+            <span {...checkboxCardLabel()}>{interest.label}</span>
+          </label>
+        ))}
+      </div>
+      <div {...checkboxCardGrid({})}>
+        {Object.entries(interests).map(([key, interest]) => (
+          <label
+            key={key}
+            {...checkboxCard()}
+            aria-disabled={key === "culture"}
+          >
+            <input
+              type="checkbox"
+              className="sr-only"
+              defaultChecked={key === "culture"}
+              disabled={key === "culture"}
+            />
+            <span {...checkboxCardLabel()}>{interest.label}</span>
+            <span {...checkboxCardCheck()}>
+              <CheckIcon />
+            </span>
+          </label>
+        ))}
+      </div>
+      <div className="p-20 flex gap-8">
+        <label
+          aria-disabled
+          {...checkboxCard({
+            className: "w-max",
+            // $padding: "field",
+          })}
+        >
+          <input type="checkbox" defaultChecked disabled />
+          <span
+            {...checkboxCardCheck({
+              // $size: "xs",
+              // $frame: "auto",
+            })}
+          >
+            <CheckIcon />
+          </span>
+          <span
+            {...checkboxCardLabel({
+              // $noStartGap: true,
+              // className: "-ms-0.5",
+            })}
+          >
+            Programming
+          </span>
+          {/* <span
+            {...checkboxCardIcon({
+              // $size: "xs",
+            })}
+          >
+            <ComputerIcon />
+          </span> */}
+        </label>
+        <label
+          {...checkboxCard({
+            className: "w-max",
+            // $padding: "field",
+          })}
+        >
+          <input type="checkbox" defaultChecked />
+          <span
+            {...checkboxCardLabel({
+              // $noStartGap: true,
+              // className: "-ms-0.5",
+            })}
+          >
+            Technology
+          </span>
+          <span
+            {...checkboxCardCheck({
+              // $size: "xs",
+              // $frame: "auto",
+            })}
+          >
+            <CheckIcon />
+          </span>
+        </label>
+        <label
+          {...checkboxCard({
+            className: "w-max",
+            // $padding: "field",
+          })}
+        >
+          <input type="checkbox" defaultChecked />
+          <span
+            {...checkboxCardCheck({
+              // $size: "xs",
+              // $frame: "auto",
+            })}
+          >
+            <CheckIcon />
+          </span>
+          <span
+            {...checkboxCardLabel({
+              // $noStartGap: true,
+              // className: "-ms-0.5",
+            })}
+          >
+            Programming
+          </span>
+        </label>
+      </div>
+
+      <div className="flex flex-wrap gap-8 justify-center w-160 items-center">
+        <ButtonGroup
+          $lightnessOffset
+          $rounded="full"
+          $size="sm"
+          $layout="stretch"
+          className="overflow-hidden relative ak-dark:ring w-100!"
+        >
+          <Button $layer="ghost" $px="lg">
+            <ButtonSlot>
+              <UserIcon />
+            </ButtonSlot>
+            <ButtonLabel>Profile</ButtonLabel>
+          </Button>
+          <ButtonSeparator />
+          <Button $layer="ghost" $px="lg">
+            <ButtonSlot>
+              <SettingsIcon />
+            </ButtonSlot>
+            <ButtonLabel>Settings</ButtonLabel>
+          </Button>
+          <ButtonSeparator />
+          <Button $layer="ghost" $px="lg">
+            <ButtonSlot>
+              <SettingsIcon />
+            </ButtonSlot>
+            <ButtonLabel>Settings</ButtonLabel>
+          </Button>
+          <ButtonGlider $state="hover" />
+          <ButtonGlider $state="focus" />
+          <ButtonGlider
+            $state="selected"
+            // $border="adaptive"
+            // $borderType="inset"
+            $kind="bevel"
+            className="shadow-[0_0_12px_--alpha(black/0.05),0_8px_16px_--alpha(black/0.05)]"
+          />
+        </ButtonGroup>
+        <Tabs $rounded="2xl" $border={4} $p="none">
+          <TabList>
+            <Tab>Profile</Tab>
+            <TabSeparator />
+            <Tab>Settings</Tab>
+            <TabSeparator />
+            <Tab>Activity</Tab>
+            <Tab>Files</Tab>
+            <Tab>Comments</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>Panel 1</TabPanel>
+            <TabPanel>Panel 2</TabPanel>
+            <TabPanel>Panel 3</TabPanel>
+            <TabPanel>Panel 3</TabPanel>
+            <TabPanel>Panel 3</TabPanel>
+          </TabPanels>
+        </Tabs>
+        <Tabs $rounded="3xl" $border={4} $p={3}>
+          <TabList>
+            <Tab>Profile</Tab>
+            <TabSeparator />
+            <Tab>Settings</Tab>
+            <TabSeparator />
+            <Tab>Activity</Tab>
+            <Tab>Files</Tab>
+            <Tab>Comments</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>Panel 1</TabPanel>
+            <TabPanel>Panel 2</TabPanel>
+            <TabPanel>Panel 3</TabPanel>
+            <TabPanel>Panel 3</TabPanel>
+            <TabPanel>Panel 3</TabPanel>
+          </TabPanels>
+        </Tabs>
+        <div className="ak-frame ak-frame-xl/10 ak-frame-bordering shadow-lg ak-layer ak-layer-3 overflow-clip">
+          <Tabs
+            $p={1}
+            $rounded="2xl"
+            $border={1}
+            $borderRaw
+            className="ak-edge-brand"
+          >
+            <TabList>
+              <Tab>Profile</Tab>
+              <TabSeparator />
+              <Tab>Settings</Tab>
+              <TabSeparator />
+              <Tab>Activity</Tab>
+              <TabSeparator />
+              <Tab>Files</Tab>
+              <TabSeparator />
+              <Tab>Comments</Tab>
+              <TabGlider $state="hover" />
+              <TabGlider $state="selected" $kind="folder" />
+              <TabGlider $state="focus" $layer="brand" />
+            </TabList>
+            <TabPanels>
+              <TabPanel single className="grid">
+                <ButtonGroup
+                  $layout="vertical"
+                  className="overflow-clip invisible"
+                >
+                  <Button $layer="ghost" $border={false}>
+                    Panel 1
+                  </Button>
+                  <Button $layer="ghost" $border={false}>
+                    Panel 1
+                  </Button>
+                  <Button $layer="ghost" $border={false}>
+                    Panel 1
+                  </Button>
+                  <ButtonGlider $state="hover" />
+                </ButtonGroup>
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
+        </div>
+        <div className="ak-frame ak-frame-xl/px ak-frame-bordering shadow-lg ak-layer ak-layer-3 overflow-clip">
+          <Tabs
+            // $p="none"
+            // $rounded="xl"
+            // $border={true}
+            className="overflow-clip"
+          >
+            <TabList $p={1}>
+              <Tab $border={false}>Tab 1</Tab>
+              <TabSeparator />
+              <Tab $border={false}>Tab 2</Tab>
+              <TabSeparator />
+              <Tab $border={false}>Tab 3</Tab>
+              <TabGlider $state="hover" />
+              <TabGlider $state="selected" $kind="folder" $border />
+              <TabGlider
+                $state="focus"
+                className="rounded-b-none -z-2 [clip-path:inset(-0.25em_-0.25em_0.25em_-0.25em)]"
+              />
+            </TabList>
+            <TabPanel single className="grid ak-layer ak-layer-5">
+              <ButtonGroup $layout="vertical" className="overflow-clip">
+                <Button $layer="ghost" $border={false}>
+                  Panel 1
+                </Button>
+                <Button $layer="ghost" $border={false}>
+                  Panel 1
+                </Button>
+                <Button $layer="ghost" $border={false}>
+                  Panel 1
+                </Button>
+                <ButtonGlider $state="hover" />
+              </ButtonGroup>
+            </TabPanel>
+          </Tabs>
+        </div>
+        <div {...controlGroup({})}>
+          <Button>
+            <ButtonSlot>
+              <LayoutDashboardIcon />
+            </ButtonSlot>
+            <ButtonLabel>Overview</ButtonLabel>
+          </Button>
+          <div {...controlSeparator({})}></div>
+          <Button $layer="ghost">
+            <ButtonSlot>
+              <ListIcon />
+            </ButtonSlot>
+            <ButtonLabel>Details</ButtonLabel>
+          </Button>
+          <div {...controlSeparator({})}></div>
+          <Button $layer="ghost">
+            <ButtonSlot>
+              <ActivityIcon />
+            </ButtonSlot>
+            <ButtonLabel>Activity</ButtonLabel>
+          </Button>
+          <div {...controlSeparator({})}></div>
+          <Button $layer="ghost">
+            <ButtonSlot>
+              <FilesIcon />
+            </ButtonSlot>
+            <ButtonLabel>Files</ButtonLabel>
+          </Button>
+          <div {...controlSeparator({})}></div>
+          <Button $layer="ghost">
+            <ButtonSlot>
+              <MessageSquareIcon />
+            </ButtonSlot>
+            <ButtonLabel>Comments</ButtonLabel>
+          </Button>
+        </div>
+
+        <Button $px="xl" $invert $contrast $rounded="full">
+          <ButtonSlot $kind="avatar" $rowSpan={2} $size="xl" $rounded="auto">
+            <img
+              src="https://pbs.twimg.com/profile_images/1964797260597772288/uQG557we_400x400.jpg"
+              alt=""
+            />
+          </ButtonSlot>
+          <ButtonContent $orientation="vertical">
+            <ButtonLabel>Diego Haz</ButtonLabel>
+            <ButtonDescription>@diegohaz</ButtonDescription>
+          </ButtonContent>
+          <ButtonSlot $kind="badge" $floating>
+            4
+          </ButtonSlot>
+        </Button>
+        <Button>
+          <ButtonSlot>
+            <PlusIcon />
+          </ButtonSlot>
+          <ButtonLabel className="sr-only">Add</ButtonLabel>
+        </Button>
+        <Button $rounded="full" $px="xl">
+          <ButtonSlot>
+            <CheckIcon />
+          </ButtonSlot>
+          <ButtonLabel>Following</ButtonLabel>
+        </Button>
+        <Button
+          $layer="warning"
+          $hue="orange"
+          $darken={2}
+          $desaturate
+          $kind="bevel"
+          $rounded="md"
+          $px="xl"
+        >
+          <ButtonSlot>
+            <PlusIcon />
+          </ButtonSlot>
+          <ButtonLabel>Follow back</ButtonLabel>
+        </Button>
+        <Button $rounded="full" $size="sm" $px="lg">
+          <ButtonSlot>
+            <ComputerIcon />
+          </ButtonSlot>
+          <ButtonLabel>Technology</ButtonLabel>
+          <ButtonSlot $kind="badge" $floating>
+            <BadgeLabel>New</BadgeLabel>
+          </ButtonSlot>
+        </Button>
+        <Button $rounded="full" $invert $contrast>
+          <ButtonLabel>Continue</ButtonLabel>
+          <ButtonSlot $size="2xl" $p="2xl" $invert $contrast>
+            <ArrowRightIcon />
+          </ButtonSlot>
+        </Button>
+        <Button $rounded="xl" $p={1} $layer="ghost" $border $size="sm">
+          <ButtonSlot
+            $kind="badge"
+            $layer="brand"
+            $mix={15}
+            // $border="medium"
+            $size="xl"
+            $mx="2xl"
+          >
+            <BadgeLabel>New</BadgeLabel>
+          </ButtonSlot>
+          <ButtonLabel>We're lauching soon</ButtonLabel>
+          <ButtonSlot>
+            <ArrowRightIcon />
+          </ButtonSlot>
+        </Button>
+        <Button $rounded="full" $gap="lg" className="min-w-50">
+          <ButtonSlot $rowSpan={2} $kind="avatar">
+            <img
+              src="https://pbs.twimg.com/profile_images/1964797260597772288/uQG557we_400x400.jpg"
+              alt=""
+            />
+          </ButtonSlot>
+          <ButtonContent $orientation="vertical">
+            <ButtonLabel className="flex items-center gap-1">
+              Haz{" "}
+              <VerifiedIcon className="size-4 ak-layer ak-layer-brand ak-layer-contrast bg-transparent fill-(--ak-layer) [&_path:first-child]:stroke-0" />
+            </ButtonLabel>
+            <ButtonDescription>@hazdiego</ButtonDescription>
+          </ButtonContent>
+          <ButtonSlot $rowSpan={2}>
+            <EllipsisIcon />
+          </ButtonSlot>
+        </Button>
+      </div>
     </Group>
   );
 }

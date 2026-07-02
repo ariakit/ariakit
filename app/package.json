@@ -57,6 +57,7 @@
     "@ariakit/solid-utils": "workspace:*",
     "@ariakit/store": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
+    "@ariakit/ui": "workspace:*",
     "@ariakit/utils": "workspace:*",
     "@astrojs/check": "0.9.9",
     "@astrojs/cloudflare": "14.0.1",
