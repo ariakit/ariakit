@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // See https://github.com/ariakit/ariakit/issues/6320
 //
@@ -18,6 +18,28 @@ import { useState } from "react";
 //    by the happy-dom test, where layout-driven flips can't happen).
 export default function Example() {
   const [placement, setPlacement] = useState<"right" | "top">("right");
+  const store = Ariakit.usePopoverStore({ placement });
+  const currentPlacement = Ariakit.useStoreState(store, "currentPlacement");
+
+  // TODO: Remove this workaround once
+  // https://github.com/ariakit/ariakit/issues/6320 is fixed. Position updates
+  // only rewrite the arrow's `left`/`top` and the current side, so the static
+  // side written for a previous placement (`right: 100%` here) lingers on the
+  // element. Clear the leftover insets whenever the resolved placement
+  // changes; the stale property is only ever rewritten while its own side is
+  // active, so once per placement change is enough.
+  useEffect(() => {
+    const { arrowElement } = store.getState();
+    if (!arrowElement) return;
+    const side = currentPlacement.split("-")[0];
+    if (side !== "right") {
+      arrowElement.style.removeProperty("right");
+    }
+    if (side !== "bottom") {
+      arrowElement.style.removeProperty("bottom");
+    }
+  }, [store, currentPlacement]);
+
   return (
     <div dir="rtl">
       <div
@@ -30,30 +52,30 @@ export default function Example() {
         }}
       >
         <div style={{ position: "relative", width: 1600, height: 380 }}>
-          <Ariakit.PopoverProvider placement={placement}>
-            <Ariakit.PopoverDisclosure
-              style={{ position: "absolute", top: 280, right: 450 }}
-            >
-              Accept invite
-            </Ariakit.PopoverDisclosure>
-            <Ariakit.Popover
-              flip="top bottom"
-              style={{
-                width: 200,
-                padding: 8,
-                background: "white",
-                color: "black",
-                border: "1px solid gray",
-              }}
-            >
-              <Ariakit.PopoverArrow className="arrow" />
-              <Ariakit.PopoverHeading>Team meeting</Ariakit.PopoverHeading>
-              <p>We are going to discuss the project.</p>
-              <button type="button" onClick={() => setPlacement("top")}>
-                Show above
-              </button>
-            </Ariakit.Popover>
-          </Ariakit.PopoverProvider>
+          <Ariakit.PopoverDisclosure
+            store={store}
+            style={{ position: "absolute", top: 280, right: 450 }}
+          >
+            Accept invite
+          </Ariakit.PopoverDisclosure>
+          <Ariakit.Popover
+            store={store}
+            flip="top bottom"
+            style={{
+              width: 200,
+              padding: 8,
+              background: "white",
+              color: "black",
+              border: "1px solid gray",
+            }}
+          >
+            <Ariakit.PopoverArrow className="arrow" />
+            <Ariakit.PopoverHeading>Team meeting</Ariakit.PopoverHeading>
+            <p>We are going to discuss the project.</p>
+            <button type="button" onClick={() => setPlacement("top")}>
+              Show above
+            </button>
+          </Ariakit.Popover>
         </div>
       </div>
     </div>
