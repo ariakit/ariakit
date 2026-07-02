@@ -179,6 +179,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          install-filter: ". website..."
 
       - name: Install playwright
         uses: ./.github/workflows/install-playwright
