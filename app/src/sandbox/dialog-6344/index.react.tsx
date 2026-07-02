@@ -34,15 +34,6 @@ export default function Example() {
           const notifications = notificationsRef.current;
           return notifications ? [notifications] : [];
         }}
-        // TODO: Workaround for https://github.com/ariakit/ariakit/issues/6344
-        // Remove once the fix lands: getPersistentElements alone should keep
-        // interactions with persistent elements from closing the dialog.
-        hideOnInteractOutside={(event) => {
-          const notifications = notificationsRef.current;
-          if (!notifications) return true;
-          if (!(event.target instanceof Node)) return true;
-          return !notifications.contains(event.target);
-        }}
         className="flex w-72 flex-col items-start gap-3 rounded-lg border border-gray-300 bg-white p-4 shadow-lg"
       >
         <Ariakit.DialogHeading className="text-lg font-medium">

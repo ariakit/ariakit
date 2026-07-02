@@ -1,6 +1,11 @@
 import { afterEach, expect, test } from "vitest";
 import { markAndDisableTreeOutside } from "./disable-tree.ts";
-import { isElementMarked, markTreeOutside } from "./mark-tree-outside.ts";
+import {
+  isElementInside,
+  isElementMarked,
+  markTreeInside,
+  markTreeOutside,
+} from "./mark-tree-outside.ts";
 import { assignStyle, setAttribute } from "./orchestrate.ts";
 import { supportsInert } from "./supports-inert.ts";
 import {
@@ -192,6 +197,42 @@ test("markTreeOutside skips backdrops and restores marks", () => {
   expect(isElementMarked(outside, "dialog")).toBe(false);
   expect(isElementMarked(outsideChild, "dialog")).toBe(false);
   expect(isElementMarked(backdrop, "dialog")).toBe(false);
+});
+
+test("markTreeInside marks the given elements and restores them", () => {
+  document.body.innerHTML = `
+    <div id="root">
+      <div id="dialog" data-dialog></div>
+      <section id="persistent">
+        <span id="persistent-child"></span>
+      </section>
+      <section id="outside"></section>
+    </div>
+  `;
+
+  const dialog = getElement("dialog");
+  const persistent = getElement("persistent");
+  const persistentChild = getElement("persistent-child");
+  const outside = getElement("outside");
+
+  const restoreInsideMarks = markTreeInside("dialog", [dialog, persistent]);
+  const restoreMarks = markTreeOutside("dialog", [dialog, persistent]);
+
+  expect(isElementInside(dialog, "dialog")).toBe(true);
+  expect(isElementInside(persistent, "dialog")).toBe(true);
+  // Descendants of inside elements are inside too, even when added after the
+  // dialog opens.
+  expect(isElementInside(persistentChild, "dialog")).toBe(true);
+  expect(isElementInside(outside, "dialog")).toBe(false);
+  expect(isElementMarked(persistent, "dialog")).toBe(false);
+  expect(isElementMarked(outside, "dialog")).toBe(true);
+
+  restoreMarks();
+  restoreInsideMarks();
+
+  expect(isElementInside(dialog, "dialog")).toBe(false);
+  expect(isElementInside(persistent, "dialog")).toBe(false);
+  expect(isElementInside(persistentChild, "dialog")).toBe(false);
 });
 
 test("markTreeOutside restores previous marks after nested cleanup", () => {
