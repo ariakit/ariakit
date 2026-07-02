@@ -1,0 +1,24 @@
+// See https://github.com/ariakit/ariakit/issues/6339
+import { click, q } from "@ariakit/test";
+import { expect, test } from "vitest";
+
+test("backdrop fades out on close when only the backdrop is animated", async () => {
+  await click(q.button.ensure("Show dialog"));
+  expect(q.dialog()).toBeVisible();
+  const backdrop = q.presentation.ensure();
+  // The enter state is applied after a couple of frames.
+  await expect.poll(() => backdrop.getAttribute("data-enter")).toBe("true");
+  // The Close button is auto-focused when the dialog opens.
+  expect(q.button("Close")).toHaveFocus();
+  await click(q.button("Close"));
+  // Focus returns to the disclosure as soon as the dialog closes, so a failure
+  // below unambiguously points at the backdrop leave transition.
+  expect(q.button("Show dialog")).toHaveFocus();
+  // On close, the backdrop must receive data-leave and remain visible while
+  // its 500ms exit transition runs. Before the fix, the dialog hides instantly
+  // and data-leave is never applied.
+  await expect.poll(() => backdrop.getAttribute("data-leave")).toBe("true");
+  expect(backdrop).not.toHaveStyle("display: none");
+  // After the transition ends, the backdrop hides.
+  await expect.poll(() => backdrop.style.display).toBe("none");
+});
