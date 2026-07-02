@@ -11,7 +11,10 @@ function SinglePanel({ linkId }: SinglePanelProps) {
   const tab = ak.useTabContext();
   const selectedId = ak.useStoreState(tab, "selectedId");
   return (
-    <ak.TabPanel tabId={selectedId}>
+    // TODO: Remove the `key` prop once
+    // https://github.com/ariakit/ariakit/issues/6332 is fixed. Remounting the
+    // panel on selection change forces the tabbable-children check to re-run.
+    <ak.TabPanel key={selectedId} tabId={selectedId}>
       {selectedId === linkId ? (
         <a href="#docs">Read the documentation</a>
       ) : (
