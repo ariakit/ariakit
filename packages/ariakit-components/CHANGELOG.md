@@ -1,5 +1,9 @@
 # @ariakit/components
 
+## 0.1.5
+
+- Fixed [`Tab`](https://ariakit.com/reference/tab) not becoming the active item on the first [`setSelectedId`](https://ariakit.com/reference/use-tab-store#setselectedid-1) call after a [`SelectPopover`](https://ariakit.com/reference/select-popover) or [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) containing the tabs opens or toggles.
+
 ## 0.1.4
 
 This version improves form store behavior by making generated field name paths more resilient to symbol probes and keeping form submission and validation from stalling in background tabs.
