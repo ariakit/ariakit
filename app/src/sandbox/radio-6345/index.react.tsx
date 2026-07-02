@@ -5,14 +5,14 @@ import { useState } from "react";
 export default function Example() {
   const [fruit, setFruit] = useState("none");
 
-  // Commit the value unconditionally instead of gating on
-  // event.target.checked: arrow-key selection forwards a focus event where
-  // checked is still false, and Ariakit only calls onChange for the radio
-  // that is becoming checked anyway.
-  // TODO: Remove once https://github.com/ariakit/ariakit/issues/6345 is
-  // fixed and go back to the checked-gated handler.
+  // Standard React radio idiom: commit the value only when the radio that
+  // fired the event is checked. Arrow-key selection used to silently defeat
+  // this gate because the forwarded focus event still had checked === false.
+  // See https://github.com/ariakit/ariakit/issues/6345
   function onChange(event: ChangeEvent<HTMLInputElement>) {
-    setFruit(event.target.value);
+    if (event.target.checked) {
+      setFruit(event.target.value);
+    }
   }
 
   return (
