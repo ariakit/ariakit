@@ -156,7 +156,11 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
     [store],
   );
 
-  const tagName = useTagName(ref, TagName);
+  // Pass the render prop so host element swaps (render={<div />} to
+  // render={<form />}) resolve the tag name in the same render, keeping the
+  // role fallback correct from the element's first commit. See
+  // https://github.com/ariakit/ariakit/issues/6336
+  const tagName = useTagName(ref, TagName, props.render);
 
   props = {
     role: tagName !== "form" ? "form" : undefined,

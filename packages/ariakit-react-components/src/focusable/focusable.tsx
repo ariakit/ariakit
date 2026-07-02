@@ -400,6 +400,13 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     const [safariTabIndex, setSafariTabIndex] = useState(false);
 
     if (isSafariBrowser) {
+      // No dependency array so the check re-runs on every render: the render
+      // prop can swap the underlying DOM node without remounting the
+      // component. The equality guard skips the state update entirely in the
+      // steady state — scheduling even a bailed-out update on every commit
+      // trips React 18's synchronous work loop. See
+      // https://github.com/ariakit/ariakit/issues/6336
+      // oxlint-disable-next-line exhaustive-deps
       useEffect(() => {
         if (!focusable) return;
         const element = ref.current;
@@ -408,8 +415,10 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         const isNativeCheckboxOrRadio =
           element.tagName === "INPUT" &&
           (type === "checkbox" || type === "radio");
-        setSafariTabIndex(isButton(element) || isNativeCheckboxOrRadio);
-      }, [focusable]);
+        const nextSafariTabIndex = isButton(element) || isNativeCheckboxOrRadio;
+        if (nextSafariTabIndex === safariTabIndex) return;
+        setSafariTabIndex(nextSafariTabIndex);
+      });
     }
 
     const styleProp = props.style;

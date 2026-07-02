@@ -29,15 +29,30 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 export const useButton = createHook<TagName, ButtonOptions>(
   function useButton(props) {
     const ref = useRef<HTMLType>(null);
-    const tagName = useTagName(ref, TagName);
+    // Pass the render hint so host element swaps resolve the tag name in the
+    // same render. For Button, this makes the anchor check below immediate on
+    // swaps to render={<a />}, and seeds the isNativeButton initial state
+    // correctly on the first render (including SSR) when the render prop is a
+    // non-button host element. See
+    // https://github.com/ariakit/ariakit/issues/6336
+    const tagName = useTagName(ref, TagName, props.render);
     const [isNativeButton, setIsNativeButton] = useState(
       () => !!tagName && isButton({ tagName, type: props.type }),
     );
 
+    // No dependency array so the check re-runs on every render: the render
+    // prop can swap the underlying DOM node without remounting the component.
+    // The equality guard skips the state update entirely in the steady state —
+    // scheduling even a bailed-out update on every commit trips React 18's
+    // synchronous work loop. See
+    // https://github.com/ariakit/ariakit/issues/6336
+    // oxlint-disable-next-line exhaustive-deps
     useEffect(() => {
       if (!ref.current) return;
-      setIsNativeButton(isButton(ref.current));
-    }, []);
+      const nextIsNativeButton = isButton(ref.current);
+      if (nextIsNativeButton === isNativeButton) return;
+      setIsNativeButton(nextIsNativeButton);
+    });
 
     props = {
       role: !isNativeButton && tagName !== "a" ? "button" : undefined,

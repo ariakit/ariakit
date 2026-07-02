@@ -9,12 +9,7 @@ function CheckboxExample() {
       <button onClick={() => setCustom(!custom)}>
         {custom ? "Use native checkbox" : "Use custom checkbox"}
       </button>
-      {/* TODO: Remove the key workaround when
-      https://github.com/ariakit/ariakit/issues/6336 is fixed. It forces a
-      remount when the render element type changes, re-running the one-shot
-      tag detection. */}
       <Ariakit.Checkbox
-        key={custom ? "custom" : "native"}
         aria-label="Accept terms"
         checked={checked}
         onChange={() => setChecked(!checked)}
@@ -38,6 +33,45 @@ function CheckboxExample() {
   );
 }
 
+function RadioExample() {
+  const [custom, setCustom] = useState(false);
+  const [fruit, setFruit] = useState("apple");
+  return (
+    <div>
+      <button onClick={() => setCustom(!custom)}>
+        {custom ? "Use native radio" : "Use custom radio"}
+      </button>
+      <Ariakit.RadioProvider
+        value={fruit}
+        setValue={(value) => setFruit(String(value))}
+      >
+        <Ariakit.RadioGroup aria-label="Fruit">
+          <Ariakit.Radio aria-label="apple" value="apple" />
+          <Ariakit.Radio
+            aria-label="orange"
+            value="orange"
+            render={
+              custom ? (
+                <div
+                  style={{
+                    width: 20,
+                    height: 20,
+                    border: "1px solid black",
+                    background: fruit === "orange" ? "black" : "white",
+                  }}
+                />
+              ) : (
+                <input />
+              )
+            }
+          />
+        </Ariakit.RadioGroup>
+      </Ariakit.RadioProvider>
+      <output>fruit: {fruit}</output>
+    </div>
+  );
+}
+
 interface ButtonExampleProps {
   label: string;
   defaultCustom?: boolean;
@@ -52,10 +86,7 @@ function ButtonExample({ label, defaultCustom = false }: ButtonExampleProps) {
       <button onClick={() => setCustom(!custom)}>
         {custom ? `Use native ${name}` : `Use custom ${name}`}
       </button>
-      {/* TODO: Remove the key workaround when
-      https://github.com/ariakit/ariakit/issues/6336 is fixed. */}
       <Ariakit.Button
-        key={custom ? "custom" : "native"}
         onClick={() => setClicks((count) => count + 1)}
         render={custom ? <div /> : <button />}
       >
@@ -77,10 +108,7 @@ function ComboboxExample() {
       </button>
       <Ariakit.ComboboxProvider defaultSelectedValue={["Apple"]}>
         <Ariakit.Combobox aria-label="Fruit" />
-        {/* TODO: Remove the key workaround when
-        https://github.com/ariakit/ariakit/issues/6336 is fixed. */}
         <Ariakit.ComboboxList
-          key={custom ? "custom" : "native"}
           aria-label="Fruits"
           alwaysVisible
           render={custom ? <section role="dialog" /> : undefined}
@@ -96,6 +124,7 @@ export default function Example() {
   return (
     <>
       <CheckboxExample />
+      <RadioExample />
       <ButtonExample label="Submit" />
       <ButtonExample label="Save" defaultCustom />
       <ComboboxExample />

@@ -28,6 +28,35 @@ test("checkbox keeps role and toggling after swapping the render element", async
 });
 
 // https://github.com/ariakit/ariakit/issues/6336
+test("radio keeps role and toggling after swapping the render element", async () => {
+  await click(q.radio.ensure("orange"));
+  expect(q.text("fruit: orange")).toBeInTheDocument();
+
+  await click(q.radio.ensure("apple"));
+  expect(q.text("fruit: apple")).toBeInTheDocument();
+
+  await click(q.button.ensure("Use custom radio"));
+
+  const radio = q.radio.ensure("orange");
+  expect(radio).not.toHaveAttribute("type");
+
+  await click(radio);
+  expect(q.text("fruit: orange")).toBeInTheDocument();
+  expect(radio).toHaveAttribute("aria-checked", "true");
+
+  // Swap back to the native input while the radio is checked so the swapped
+  // element mounts as a controlled checked radio right away.
+  await click(q.button.ensure("Use native radio"));
+
+  const nativeRadio = q.radio.ensure("orange");
+  expect(nativeRadio).toHaveAttribute("type", "radio");
+  expect(nativeRadio).toHaveAttribute("aria-checked", "true");
+
+  await click(q.radio.ensure("apple"));
+  expect(q.text("fruit: apple")).toBeInTheDocument();
+});
+
+// https://github.com/ariakit/ariakit/issues/6336
 test("button keeps role and keyboard activation after swapping the render element", async () => {
   await click(q.button.ensure("Submit"));
   expect(q.text("submit clicks: 1")).toBeInTheDocument();

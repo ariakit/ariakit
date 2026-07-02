@@ -212,6 +212,7 @@ Uses React's useDeferredValue if available.
 function useTagName(
   refOrElement?: RefObject<HTMLElement | null> | HTMLElement | null,
   type?: string | ComponentType,
+  render?: unknown,
 ): string | undefined;
 ```
 

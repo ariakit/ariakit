@@ -82,7 +82,11 @@ export const useCheckbox = createHook<TagName, CheckboxOptions>(
     });
 
     const ref = useRef<HTMLType>(null);
-    const tagName = useTagName(ref, TagName);
+    // Pass the render prop so host element swaps (render={<div />} to
+    // render={<input />}) resolve the tag name in the same render, keeping
+    // the type/checked props consistent from the swapped element's first
+    // commit. See https://github.com/ariakit/ariakit/issues/6336
+    const tagName = useTagName(ref, TagName, props.render);
     const nativeCheckbox = isNativeCheckbox(tagName, props.type);
     const mixed = checked ? checked === "mixed" : undefined;
     const isChecked = checked === "mixed" ? false : checked;

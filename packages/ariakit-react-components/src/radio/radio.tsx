@@ -88,7 +88,11 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   }, [store, isChecked, id]);
 
   const onChangeProp = props.onChange;
-  const tagName = useTagName(ref, TagName);
+  // Pass the render prop so host element swaps (render={<div />} to
+  // render={<input />}) resolve the tag name in the same render, keeping
+  // the type/checked props consistent from the swapped element's first
+  // commit. See https://github.com/ariakit/ariakit/issues/6336
+  const tagName = useTagName(ref, TagName, props.render);
   const nativeRadio = isNativeRadio(tagName, props.type);
   const disabled = disabledFromProps(props);
   // When the checked property is programmatically set on the change event, we

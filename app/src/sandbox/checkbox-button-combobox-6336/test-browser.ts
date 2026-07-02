@@ -31,6 +31,38 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/6336
+  test("radio keeps role and toggling after swapping the render element", async ({
+    q,
+  }) => {
+    const radio = q.radio("orange");
+
+    await radio.click();
+    await test.expect(q.text("fruit: orange")).toBeVisible();
+
+    await q.radio("apple").click();
+    await test.expect(q.text("fruit: apple")).toBeVisible();
+
+    await q.button("Use custom radio").click();
+
+    await test.expect(radio).toBeVisible();
+    await test.expect(radio).not.toHaveAttribute("type");
+
+    await radio.click();
+    await test.expect(q.text("fruit: orange")).toBeVisible();
+    await test.expect(radio).toHaveAttribute("aria-checked", "true");
+
+    // Swap back to the native input while the radio is checked so the swapped
+    // element mounts as a controlled checked radio right away.
+    await q.button("Use native radio").click();
+
+    await test.expect(radio).toHaveAttribute("type", "radio");
+    await test.expect(radio).toHaveAttribute("aria-checked", "true");
+
+    await q.radio("apple").click();
+    await test.expect(q.text("fruit: apple")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6336
   test("button keeps role and keyboard activation after swapping the render element", async ({
     q,
   }) => {

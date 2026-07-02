@@ -66,10 +66,19 @@ export const useCommand = createHook<TagName, CommandOptions>(
     const ref = useRef<HTMLType>(null);
     const [isNativeButton, setIsNativeButton] = useState(false);
 
+    // No dependency array so the check re-runs on every render: the render
+    // prop can swap the underlying DOM node without remounting the component.
+    // The equality guard skips the state update entirely in the steady state —
+    // scheduling even a bailed-out update on every commit trips React 18's
+    // synchronous work loop. See
+    // https://github.com/ariakit/ariakit/issues/6336
+    // oxlint-disable-next-line exhaustive-deps
     useEffect(() => {
       if (!ref.current) return;
-      setIsNativeButton(isButton(ref.current));
-    }, []);
+      const nextIsNativeButton = isButton(ref.current);
+      if (nextIsNativeButton === isNativeButton) return;
+      setIsNativeButton(nextIsNativeButton);
+    });
 
     const [active, setActive] = useState(false);
     const activeRef = useRef(false);

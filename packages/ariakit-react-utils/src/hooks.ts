@@ -18,6 +18,7 @@ import type {
 } from "react";
 import * as React from "react";
 import {
+  isValidElement,
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -200,6 +201,16 @@ export function useDeferredValue<T>(value: T): T {
 
 /**
  * Returns the tag name by parsing an element ref.
+ * @param refOrElement The element or a ref pointing to it.
+ * @param type The fallback tag name used until the element is available.
+ * @param render An optional `render` prop. When it's a host element (for
+ * example, `<div />`), its tag name is returned right away, so consumers get
+ * the correct tag name during render, even before the element is committed to
+ * the DOM or when the render prop swaps the underlying element. A nullish
+ * render prop provides no hint: hooks like `useCheckbox` can be composed by
+ * components that render a different default element (for example,
+ * `MenuItemCheckbox` renders a `div`), so only an explicit host element is
+ * authoritative at this layer.
  * @example
  * function Component(props) {
  *   const ref = React.useRef();
@@ -210,6 +221,7 @@ export function useDeferredValue<T>(value: T): T {
 export function useTagName(
   refOrElement?: RefObject<HTMLElement | null> | HTMLElement | null,
   type?: string | ComponentType,
+  render?: unknown,
 ) {
   const stringOrUndefined = (type?: string | ComponentType) => {
     if (typeof type !== "string") return;
@@ -218,13 +230,33 @@ export function useTagName(
 
   const [tagName, setTagName] = useState(() => stringOrUndefined(type));
 
+  // The effect has no dependency array so it re-reads the committed element
+  // on every render: the composition API can swap the underlying DOM node
+  // without remounting the component (and without changing the ref object's
+  // identity), so a mount-only read would go stale. The equality guard skips
+  // the state update entirely in the steady state — scheduling even a
+  // bailed-out update on every commit trips React 18's synchronous work loop.
+  // See https://github.com/ariakit/ariakit/issues/6336
   useSafeLayoutEffect(() => {
     const element =
       refOrElement && "current" in refOrElement
         ? refOrElement.current
         : refOrElement;
-    setTagName(element?.tagName.toLowerCase() || stringOrUndefined(type));
-  }, [refOrElement, type]);
+    const nextTagName =
+      element?.tagName.toLowerCase() || stringOrUndefined(type);
+    if (nextTagName === tagName) return;
+    setTagName(nextTagName);
+  });
+
+  // Prefer the render prop's host element type when available: it reflects
+  // the element that will be committed by the current render, whereas the
+  // state above lags one commit behind on swaps. This lets consumers compute
+  // element-dependent props (such as a checkbox's type and checked props) in
+  // the same render that swaps the element, avoiding React's
+  // uncontrolled-to-controlled input warning.
+  if (isValidElement(render) && typeof render.type === "string") {
+    return render.type.toLowerCase();
+  }
 
   return tagName;
 }
@@ -245,12 +277,26 @@ export function useAttribute(
 ) {
   const initialValue = useInitialValue(defaultValue);
   const [attribute, setAttribute] = useState(initialValue);
+  const [element, setElement] = useState<HTMLElement | null>(null);
 
-  useEffect(() => {
-    const element =
+  // Snapshot the committed element into state on every render so the observer
+  // effect below is keyed on the actual DOM node rather than the stable ref
+  // object: the composition API can swap the underlying element without
+  // remounting the component, and the observer must detach from the old node
+  // and re-attach to the new one. The equality guard skips the state update
+  // entirely in the steady state — scheduling even a bailed-out update on
+  // every commit trips React 18's synchronous work loop. See
+  // https://github.com/ariakit/ariakit/issues/6336
+  useSafeLayoutEffect(() => {
+    const nextElement =
       refOrElement && "current" in refOrElement
         ? refOrElement.current
         : refOrElement;
+    if (nextElement === element) return;
+    setElement(nextElement);
+  });
+
+  useEffect(() => {
     if (!element) return;
 
     const callback = () => {
@@ -264,7 +310,7 @@ export function useAttribute(
     callback();
 
     return () => observer.disconnect();
-  }, [refOrElement, attributeName, initialValue]);
+  }, [element, attributeName, initialValue]);
 
   return attribute;
 }

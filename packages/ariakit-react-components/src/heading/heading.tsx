@@ -32,7 +32,11 @@ export const useHeading = createHook<TagName, HeadingOptions>(
     const ref = useRef<HTMLType>(null);
     const level: HeadingLevels = useContext(HeadingContext) || 1;
     const Element = `h${level}` as const;
-    const tagName = useTagName(ref, Element);
+    // Pass the render prop so host element swaps (render={<div />} to a
+    // native heading) resolve the tag name in the same render, keeping the
+    // role and aria-level fallbacks correct from the element's first commit.
+    // See https://github.com/ariakit/ariakit/issues/6336
+    const tagName = useTagName(ref, Element, props.render);
     const isNativeHeading = !!tagName && /^h\d$/.test(tagName);
 
     props = {
