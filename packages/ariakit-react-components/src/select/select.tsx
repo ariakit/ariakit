@@ -65,6 +65,7 @@ function nextWithValue(store: SelectStore, next: SelectStore["next"]) {
       visitedIds.add(nextId);
       nextId = next({ activeId: nextId });
     }
+    return;
   };
 }
 
