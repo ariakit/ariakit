@@ -325,9 +325,25 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // every event instead. See https://github.com/ariakit/ariakit/issues/6344
     const restoreInsideMarks = markTreeInside(id, allElements);
     if (modal) {
+      const { disableTreeOutside, restoreTreeOutside } =
+        markAndDisableTreeOutside(id, allElements);
+      // Disabling the outside tree sets inert on the top-level elements around
+      // the dialog, which invalidates the style of everything inside them. The
+      // resulting style recalc scales with the page size and matches what the
+      // browser charges for a native showModal() call, but paying it before
+      // the open frame delays the dialog's first paint (see issue 4075). Defer
+      // it to right after that frame paints: the marks above (JavaScript
+      // properties with no style impact) already let the outside listeners and
+      // Escape logic treat the tree as outside in the meantime, and no user
+      // interaction can land within that frame.
+      const win = getWindow(dialog);
+      let raf = win.requestAnimationFrame(() => {
+        raf = win.requestAnimationFrame(disableTreeOutside);
+      });
       return chain(
         restoreInsideMarks,
-        markAndDisableTreeOutside(id, allElements),
+        () => win.cancelAnimationFrame(raf),
+        restoreTreeOutside,
       );
     }
     return chain(
