@@ -32,6 +32,22 @@ export interface Options {
    * original component props and gives back a React element with the props
    * merged.
    *
+   * Some Ariakit components detect the type of the underlying element when
+   * they mount. If the render element's type may change while the component
+   * is mounted, pass a
+   * [`key`](https://react.dev/learn/preserving-and-resetting-state) prop that
+   * changes with the element type so React remounts the component with the
+   * new element. Remounting resets uncontrolled state, so keep the relevant
+   * state controlled:
+   * ```jsx
+   * <Checkbox
+   *   key={custom ? "custom" : "native"}
+   *   checked={checked}
+   *   onChange={() => setChecked(!checked)}
+   *   render={custom ? <div /> : <input />}
+   * />
+   * ```
+   *
    * Check out the [Composition](https://ariakit.com/guide/composition) guide
    * for more details.
    */
