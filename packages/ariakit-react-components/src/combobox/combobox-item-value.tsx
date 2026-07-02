@@ -57,6 +57,65 @@ function mergeOverlappingOffsets(offsets: Array<[number, number]>) {
   return merged;
 }
 
+function getNormalizedIndexes(itemValue: string) {
+  // Maps each index of the normalized item value to original character
+  // boundaries, plus a final entry for the end boundary. Positions inside a
+  // character (such as part of a decomposed Hangul syllable) round up to the
+  // next boundary in `starts` and down to the previous one in `ends`, so a
+  // partially matched character is never highlighted. Iterating code points
+  // keeps surrogate pairs intact, and characters removed by normalization
+  // contribute no entries, so combining marks stay attached to the preceding
+  // character when slicing.
+  const starts: number[] = [];
+  const ends: number[] = [];
+  let index = 0;
+  for (const char of itemValue) {
+    const normalizedLength = normalizeValue(char).length;
+    for (let i = 0; i < normalizedLength; i += 1) {
+      // Positions inside a character are filled in the backward pass below.
+      starts.push(i === 0 ? index : -1);
+      ends.push(index);
+    }
+    index += char.length;
+  }
+  starts.push(itemValue.length);
+  ends.push(itemValue.length);
+  // Round positions inside a character up to the start of the next character
+  // that produced normalized entries, skipping characters removed by
+  // normalization so a highlight never begins at a detached combining mark.
+  let nextBoundary = itemValue.length;
+  for (let i = starts.length - 1; i >= 0; i -= 1) {
+    const start = starts[i];
+    if (start == null) continue;
+    if (start === -1) {
+      starts[i] = nextBoundary;
+    } else {
+      nextBoundary = start;
+    }
+  }
+  return { starts, ends };
+}
+
+function toOriginalOffsets(
+  itemValue: string,
+  normalizedOffsets: Array<[number, number]>,
+) {
+  if (!normalizedOffsets.length) return normalizedOffsets;
+  const { starts, ends } = getNormalizedIndexes(itemValue);
+  const offsets: Array<[number, number]> = [];
+  for (const [normalizedOffset, normalizedLength] of normalizedOffsets) {
+    const start = starts[normalizedOffset];
+    const end = ends[normalizedOffset + normalizedLength];
+    if (start == null || end == null) continue;
+    // Matches confined to a fragment of a single character (for example, part
+    // of a decomposed Hangul syllable while composing with an IME) collapse to
+    // an empty range and produce no highlight.
+    if (end <= start) continue;
+    offsets.push([start, end - start]);
+  }
+  return offsets;
+}
+
 function splitValue(itemValue?: string | null, userValue?: string | string[]) {
   if (!itemValue) return itemValue;
   if (!userValue) return itemValue;
@@ -73,9 +132,17 @@ function splitValue(itemValue?: string | null, userValue?: string | string[]) {
     </span>
   );
 
-  const offsets = mergeOverlappingOffsets(
-    // Convert userValues into a set to avoid duplicates
-    getOffsets(normalizeValue(itemValue), new Set(userValues)),
+  // Offsets are computed in normalized space so matching stays
+  // diacritic-insensitive, but the parts are sliced from the original string.
+  // Translate the offsets to original character boundaries before slicing, as
+  // normalization may change the string length for values such as Hangul,
+  // kana, and decomposed (NFD) strings.
+  const offsets = toOriginalOffsets(
+    itemValue,
+    mergeOverlappingOffsets(
+      // Convert userValues into a set to avoid duplicates
+      getOffsets(normalizeValue(itemValue), new Set(userValues)),
+    ),
   );
 
   const firstEntry = offsets[0];

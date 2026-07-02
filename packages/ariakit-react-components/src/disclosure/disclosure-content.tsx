@@ -10,7 +10,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
 import { afterPaint, invariant, removeUndefinedValues } from "@ariakit/utils";
-import type { ElementType } from "react";
+import type { ElementType, RefObject } from "react";
 import { useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { DialogScopedContextProvider } from "../dialog/dialog-context.tsx";
@@ -61,6 +61,27 @@ function getEndTime(names: string, delays: string, durations: string) {
   return endTime;
 }
 
+// Returns the time an element's transitions and animations end based on its
+// computed style. We compute each transition's and animation's end time
+// separately (pairing each item's own delay with its own duration) and take
+// the longest one. Combining them into a single max delay + max duration would
+// overestimate when, for example, the longest delay belongs to a transition
+// while the longest duration belongs to an animation.
+function getElementEndTime(element: Element) {
+  const {
+    transitionProperty,
+    transitionDuration,
+    transitionDelay,
+    animationName,
+    animationDuration,
+    animationDelay,
+  } = getComputedStyle(element);
+  return Math.max(
+    getEndTime(transitionProperty, transitionDelay, transitionDuration),
+    getEndTime(animationName, animationDelay, animationDuration),
+  );
+}
+
 export function isHidden(
   mounted: boolean,
   hidden?: boolean | null,
@@ -83,7 +104,12 @@ export function isHidden(
 export const useDisclosureContent = createHook<
   TagName,
   DisclosureContentOptions
->(function useDisclosureContent({ store, alwaysVisible, ...props }) {
+>(function useDisclosureContent({
+  store,
+  alwaysVisible,
+  unstable_otherElementRef: otherElementRef,
+  ...props
+}) {
   const context = useDisclosureProviderContext();
   store = store || context;
 
@@ -183,38 +209,25 @@ export const useDisclosureContent = createHook<
     // first place, the events won't fire. Besides, there may be multiple
     // transitions or animations with different durations and delays, and we
     // need to consider the longest one.
-    const {
-      transitionProperty,
-      transitionDuration,
-      transitionDelay,
-      animationName,
-      animationDuration,
-      animationDelay,
-    } = getComputedStyle(contentElement);
+    const elements = [contentElement];
     // If we're rendering a dialog backdrop, otherElement will be the dialog
     // element itself. We need to consider both the backdrop and the dialog
     // animation/transition durations and delays because the dialog may be
     // animated while the backdrop is not.
-    const {
-      transitionProperty: transitionProperty2 = "",
-      transitionDuration: transitionDuration2 = "0",
-      transitionDelay: transitionDelay2 = "0",
-      animationName: animationName2 = "",
-      animationDuration: animationDuration2 = "0",
-      animationDelay: animationDelay2 = "0",
-    } = otherElement ? getComputedStyle(otherElement) : {};
-    // We compute each transition's and animation's end time separately (pairing
-    // each item's own delay with its own duration) and take the longest one,
-    // including the other element's. Combining them into a single max delay +
-    // max duration would overestimate when, for example, the longest delay
-    // belongs to a transition while the longest duration belongs to an
-    // animation.
-    const timeout = Math.max(
-      getEndTime(transitionProperty, transitionDelay, transitionDuration),
-      getEndTime(animationName, animationDelay, animationDuration),
-      getEndTime(transitionProperty2, transitionDelay2, transitionDuration2),
-      getEndTime(animationName2, animationDelay2, animationDuration2),
-    );
+    if (otherElement) {
+      elements.push(otherElement);
+    }
+    // Conversely, if we're rendering a dialog, its backdrop may be animated
+    // while the dialog itself is not. The backdrop element isn't tracked in
+    // the store, so the dialog passes it in through otherElementRef.
+    const relatedElement = otherElementRef?.current;
+    if (relatedElement) {
+      elements.push(relatedElement);
+    }
+    // The timeout is the longest end time among the content element and the
+    // related elements, so none of them gets hidden before its own transition
+    // or animation ends.
+    const timeout = Math.max(...elements.map(getElementEndTime));
     // If the timeout is zero, there's no animation or transition, either
     // because they weren't defined in the CSS or the duration was explicitly
     // set to zero. In this scenario, we can halt the animation right away
@@ -234,7 +247,15 @@ export const useDisclosureContent = createHook<
     const frameRate = 1000 / 60;
     const maxTimeout = Math.max(timeout - frameRate, 0);
     return afterTimeout(maxTimeout, stopAnimationSync);
-  }, [store, animated, contentElement, otherElement, open, transition]);
+  }, [
+    store,
+    animated,
+    contentElement,
+    otherElement,
+    otherElementRef,
+    open,
+    transition,
+  ]);
 
   props = useWrapElement(
     props,
@@ -313,6 +334,14 @@ export interface DisclosureContentOptions<
    * component's context will be used.
    */
   store?: DisclosureStore;
+  /**
+   * A ref to another element whose CSS transitions and animations should be
+   * taken into account when computing the animation timeout, such as the
+   * dialog's backdrop element, which may be animated while the dialog itself
+   * is not.
+   * @private
+   */
+  unstable_otherElementRef?: RefObject<HTMLElement | null>;
   /**
    * Determines whether the content element should remain visible even when the
    * [`open`](https://ariakit.com/reference/disclosure-provider#open) state is

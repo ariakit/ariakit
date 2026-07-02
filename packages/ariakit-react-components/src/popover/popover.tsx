@@ -367,6 +367,14 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           Object.assign(arrow.style, {
             left: arrowX != null ? `${arrowX}px` : "",
             top: arrowY != null ? `${arrowY}px` : "",
+            // Reset the static side written for a previous placement before
+            // writing the current one. Otherwise a stale `right`/`bottom`
+            // lingers after a placement change and, in RTL contexts,
+            // over-constrained absolute positioning lets the stale `right`
+            // win over the freshly written `left`, detaching the arrow from
+            // the anchor.
+            right: "",
+            bottom: "",
             [side]: "100%",
           });
         }

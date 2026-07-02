@@ -145,17 +145,24 @@ export function createTabStore({
     }),
   );
 
-  let syncActiveId = true;
+  let pendingRestore = false;
+  let restoredSelectedId: TabStoreState["selectedId"];
 
   // Keep activeId in sync with selectedId.
-  setup(tab, () =>
-    batch(tab, ["selectedId"], (state, prev) => {
+  setup(tab, () => {
+    // A restore armed right before the store was destroyed (for example, when
+    // the popover unmounted) must not leak into this init. Reset before
+    // registering the listener below since it also runs on registration.
+    pendingRestore = false;
+    return batch(tab, ["selectedId"], (state, prev) => {
       // There are cases where we don't want to sync activeId with selectedId.
       // For example, restoring the selectedId from a select or combobox
-      // selected value. In those cases, we set syncActiveId to false.
-      if (!syncActiveId) {
-        syncActiveId = true;
-        return;
+      // selected value. Batch listeners are microtask-coalesced, so a restore
+      // may share a flush with a later legitimate change. In that case, the
+      // flushed value differs from the restored one and we must still sync.
+      if (pendingRestore) {
+        pendingRestore = false;
+        if (state.selectedId === restoredSelectedId) return;
       }
       // If there's a parent composite widget, we don't need to sync the
       // activeId state with the initial selectedId state. The parent composite
@@ -173,8 +180,8 @@ export function createTabStore({
         return;
       }
       tab.setState("activeId", state.selectedId);
-    }),
-  );
+    });
+  });
 
   // Automatically set selectedId if it's undefined.
   setup(tab, () =>
@@ -223,10 +230,16 @@ export function createTabStore({
       selectedIdFromSelectedValue = tab.getState().selectedId;
     };
     const restoreSelectedId = () => {
-      // We set syncActiveId to false to prevent the activeId state from being
-      // set to the selectedId state since this is just a restoration of the
-      // selectedId state from a select or combobox selected value.
-      syncActiveId = false;
+      // We suppress the activeId sync to prevent the activeId state from
+      // being set to the selectedId state since this is just a restoration of
+      // the selectedId state from a select or combobox selected value.
+      // setState early-returns on unchanged values and emits no batch event
+      // to consume the suppression, so only arm it when the restore will
+      // actually change the state.
+      const { selectedId } = tab.getState();
+      if (selectedId === selectedIdFromSelectedValue) return;
+      pendingRestore = true;
+      restoredSelectedId = selectedIdFromSelectedValue;
       tab.setState("selectedId", selectedIdFromSelectedValue);
     };
     if (parentComposite && "setSelectElement" in parentComposite) {

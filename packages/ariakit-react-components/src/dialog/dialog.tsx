@@ -14,6 +14,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
+  chain,
   contains,
   getActiveElement,
   getDocument,
@@ -60,7 +61,11 @@ import {
   disableTree,
   markAndDisableTreeOutside,
 } from "./utils/disable-tree.ts";
-import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.ts";
+import {
+  isElementMarked,
+  markTreeInside,
+  markTreeOutside,
+} from "./utils/mark-tree-outside.ts";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.ts";
 import { supportsInert } from "./utils/supports-inert.ts";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.ts";
@@ -125,6 +130,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 }) {
   const context = useDialogProviderContext();
   const ref = useRef<HTMLType>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
 
   const store = useDialogStore({
     store: storeProp || context,
@@ -311,10 +317,23 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       ...persistentElements,
       ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
     ];
+    // Positively mark the elements the dialog knows about as "inside" so the
+    // outside event listeners can recognize them even before the dialog has
+    // been focused. The disclosure is excluded because it can change while
+    // the dialog is open (hovercards and tooltips set it to the focus
+    // source), so the listeners re-check it against the current state on
+    // every event instead. See https://github.com/ariakit/ariakit/issues/6344
+    const restoreInsideMarks = markTreeInside(id, allElements);
     if (modal) {
-      return markAndDisableTreeOutside(id, allElements);
+      return chain(
+        restoreInsideMarks,
+        markAndDisableTreeOutside(id, allElements),
+      );
     }
-    return markTreeOutside(id, [disclosureElement, ...allElements]);
+    return chain(
+      restoreInsideMarks,
+      markTreeOutside(id, [disclosureElement, ...allElements]),
+    );
   }, [
     id,
     store,
@@ -504,13 +523,17 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // keeps non-element nodes working with `contains`, as before.
       if (!isNode(target)) return;
       const { disclosureElement } = store.getState();
-      // This considers valid targets only the disclosure element or descendants
-      // of the dialog element.
+      // This considers valid targets the elements that belong to this dialog
+      // tree, including elements marked as outside by this dialog so Escape can
+      // close the topmost dialog even when focus is outside.
       const isValidTarget = () => {
         if (isElement(target) && target.tagName === "BODY") return true;
         if (contains(dialog, target)) return true;
         if (!disclosureElement) return true;
         if (contains(disclosureElement, target)) return true;
+        if (isElement(target) && isElementMarked(target, dialog.id)) {
+          return true;
+        }
         return false;
       };
       if (!isValidTarget()) return;
@@ -547,6 +570,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
           <DialogBackdrop
             store={store}
             backdrop={backdrop}
+            backdropRef={backdropRef}
             hidden={hiddenProp}
             alwaysVisible={alwaysVisible}
           />
@@ -589,7 +613,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     ...props,
     autoFocusOnShow: autoFocusEnabled,
   });
-  props = useDisclosureContent({ store, ...props });
+  props = useDisclosureContent({
+    store,
+    ...props,
+    unstable_otherElementRef: backdropRef,
+  });
   props = useFocusable({ ...props, focusable });
   props = usePortal({ portal, ...props, portalRef, preserveTabOrder });
 

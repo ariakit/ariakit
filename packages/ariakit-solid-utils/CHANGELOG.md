@@ -1,5 +1,11 @@
 # @ariakit/solid-utils
 
+## 0.1.4
+
+- Fixed `createRef().reset()` so function initial values are restored without being invoked.
+- Fixed Solid component hooks such as [`VisuallyHidden`](https://ariakit.com/reference/visually-hidden) and [`FocusTrapRegion`](https://ariakit.com/reference/focus-trap-region) to return usable props when called without arguments, matching their optional props type.
+- Updated dependencies: `@ariakit/utils@0.1.4`
+
 ## 0.1.3
 
 - Updated dependencies: `@ariakit/utils@0.1.3`

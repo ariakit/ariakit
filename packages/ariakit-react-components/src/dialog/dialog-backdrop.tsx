@@ -1,6 +1,7 @@
 import { useStoreState } from "@ariakit/react-store";
-import { useSafeLayoutEffect } from "@ariakit/react-utils";
+import { useMergeRefs, useSafeLayoutEffect } from "@ariakit/react-utils";
 import { isValidElement, useRef } from "react";
+import type { RefObject } from "react";
 import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
 import { Role } from "../role/role.tsx";
@@ -13,11 +14,13 @@ interface DialogBackdropProps extends Pick<
   "backdrop" | "alwaysVisible" | "hidden"
 > {
   store: DialogStore;
+  backdropRef?: RefObject<HTMLDivElement | null>;
 }
 
 export function DialogBackdrop({
   store,
   backdrop,
+  backdropRef,
   alwaysVisible,
   hidden,
 }: DialogBackdropProps) {
@@ -49,7 +52,7 @@ export function DialogBackdrop({
   }, [contentElement]);
 
   const props = useDisclosureContent({
-    ref,
+    ref: useMergeRefs(ref, backdropRef),
     store: disclosure,
     role: "presentation",
     "data-backdrop": contentElement?.id || "",

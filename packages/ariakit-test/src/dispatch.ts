@@ -224,6 +224,8 @@ const pointerEvents = [
   "mouseenter",
   "mouseout",
   "mouseleave",
+  "auxclick",
+  "contextmenu",
   "mousedown",
   "mouseup",
   "pointermove",
