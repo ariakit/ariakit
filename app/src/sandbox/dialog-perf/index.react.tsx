@@ -2,7 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
 import "./style.css";
 
-const items = Array.from({ length: 200 }, (_, index) => ({
+const items = Array.from({ length: 1000 }, (_, index) => ({
   id: `item-${index + 1}`,
   title: `Item ${index + 1}`,
 }));
