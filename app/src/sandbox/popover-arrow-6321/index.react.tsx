@@ -1,4 +1,5 @@
 import * as Ariakit from "@ariakit/react";
+import type { CSSProperties } from "react";
 
 // See https://github.com/ariakit/ariakit/issues/6321
 //
@@ -15,25 +16,17 @@ const ringColor = "rgb(59, 130, 246)";
 interface RingPopoverProps {
   label: string;
   boxShadow: string;
-  ringWidth: number;
+  style?: CSSProperties;
 }
 
-function RingPopover({ label, boxShadow, ringWidth }: RingPopoverProps) {
+function RingPopover({ label, boxShadow, style }: RingPopoverProps) {
   return (
     <Ariakit.PopoverProvider>
       <Ariakit.PopoverDisclosure>{label}</Ariakit.PopoverDisclosure>
-      <Ariakit.Popover style={{ background: "white", padding: 16, boxShadow }}>
-        {/* TODO: Remove the borderWidth and style props below once
-            https://github.com/ariakit/ariakit/issues/6321 is fixed. The
-            explicit borderWidth bypasses the broken ring width detection
-            (pass the ring width rounded up for fractional rings), and the
-            explicit stroke overrides the inferred stroke color, since the
-            arrow spreads props.style last. */}
-        <Ariakit.PopoverArrow
-          className="arrow"
-          borderWidth={ringWidth}
-          style={{ stroke: ringColor }}
-        />
+      <Ariakit.Popover
+        style={{ background: "white", padding: 16, boxShadow, ...style }}
+      >
+        <Ariakit.PopoverArrow className="arrow" />
         <Ariakit.PopoverHeading>{label}</Ariakit.PopoverHeading>
         <p>Popover outlined by a box-shadow ring.</p>
       </Ariakit.Popover>
@@ -44,20 +37,11 @@ function RingPopover({ label, boxShadow, ringWidth }: RingPopoverProps) {
 export default function Example() {
   return (
     <div style={{ display: "flex", gap: 16, padding: 64 }}>
-      <RingPopover
-        label="Thin ring"
-        boxShadow={`0 0 0 1px ${ringColor}`}
-        ringWidth={1}
-      />
-      <RingPopover
-        label="Thick ring"
-        boxShadow={`0 0 0 10px ${ringColor}`}
-        ringWidth={10}
-      />
+      <RingPopover label="Thin ring" boxShadow={`0 0 0 1px ${ringColor}`} />
+      <RingPopover label="Thick ring" boxShadow={`0 0 0 10px ${ringColor}`} />
       <RingPopover
         label="Fractional ring"
         boxShadow={`0 0 0 0.5px ${ringColor}`}
-        ringWidth={1}
       />
       {/* Tailwind v3 ring utilities emit zero-spread placeholder shadows
           around the actual ring, plus a regular drop shadow after it. The
@@ -66,7 +50,21 @@ export default function Example() {
       <RingPopover
         label="Tailwind ring"
         boxShadow={`0 0 0 0px rgba(255, 255, 255, 0), 0 0 0 3px ${ringColor}, 0 1px 2px 0 rgba(0, 0, 0, 0.3)`}
-        ringWidth={3}
+      />
+      {/* Inset rings hug the popover edge like a border, so the arrow must
+          draw them too, and the inset keyword must not leak into the inferred
+          ring color. */}
+      <RingPopover
+        label="Inset ring"
+        boxShadow={`inset 0 0 0 2px ${ringColor}`}
+      />
+      {/* A ring with an omitted color defaults to currentColor, so the arrow
+          stroke must follow the popover's text color — not its border color,
+          which is set to a different color here to tell the two apart. */}
+      <RingPopover
+        label="Current color ring"
+        boxShadow="0 0 0 2px"
+        style={{ color: "rgb(220, 38, 38)", borderColor: "rgb(22, 163, 74)" }}
       />
     </div>
   );

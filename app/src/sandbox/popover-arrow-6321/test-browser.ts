@@ -17,9 +17,19 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // Tailwind v3 multi-shadow rings: zero-spread placeholders are skipped and
     // the ring segment provides both the width and the color.
     { label: "Tailwind ring", strokeWidth: "6px" },
+    // Inset rings hug the popover edge like a border, and the inset keyword
+    // must not leak into the inferred ring color.
+    { label: "Inset ring", strokeWidth: "4px" },
+    // A ring with an omitted color defaults to currentColor, so the stroke
+    // must resolve to the popover's text color, not its border color.
+    {
+      label: "Current color ring",
+      strokeWidth: "4px",
+      stroke: "rgb(220, 38, 38)",
+    },
   ];
 
-  for (const { label, strokeWidth } of cases) {
+  for (const { label, strokeWidth, stroke } of cases) {
     test(`arrow stroke matches the ${label.toLowerCase()} box-shadow`, async ({
       q,
     }) => {
@@ -30,7 +40,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       // arrow element, so the computed values on the arrow are what the user
       // sees drawn around the arrow notch.
       const arrow = dialog.locator(".arrow");
-      await test.expect(arrow).toHaveCSS("stroke", ringColor);
+      await test.expect(arrow).toHaveCSS("stroke", stroke ?? ringColor);
       await test.expect(arrow).toHaveCSS("stroke-width", strokeWidth);
     });
   }

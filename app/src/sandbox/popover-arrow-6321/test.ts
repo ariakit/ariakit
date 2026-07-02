@@ -18,9 +18,20 @@ const cases = [
   { label: "Thick ring", strokeWidth: "20" },
   { label: "Fractional ring", strokeWidth: "2" },
   { label: "Tailwind ring", strokeWidth: "6" },
+  { label: "Inset ring", strokeWidth: "4" },
+  // A ring with an omitted color defaults to currentColor, so the stroke must
+  // resolve to the popover's text color, not its border color. Declared
+  // values keep the color omitted, so this exercises the currentColor
+  // fallback directly, unlike browsers, which serialize the resolved color
+  // into the computed box-shadow.
+  {
+    label: "Current color ring",
+    strokeWidth: "4",
+    stroke: "rgb(220, 38, 38)",
+  },
 ];
 
-for (const { label, strokeWidth } of cases) {
+for (const { label, strokeWidth, stroke } of cases) {
   test(`arrow stroke matches the ${label.toLowerCase()} box-shadow`, async () => {
     await click(q.button.ensure(label));
     const dialog = q.dialog.ensure(label);
@@ -29,6 +40,6 @@ for (const { label, strokeWidth } of cases) {
     // around the arrow notch.
     const arrow = dialog.querySelector(".arrow");
     expect(arrow).toBeInTheDocument();
-    expect(arrow).toHaveStyle({ stroke: ringColor, strokeWidth });
+    expect(arrow).toHaveStyle({ stroke: stroke ?? ringColor, strokeWidth });
   });
 }
