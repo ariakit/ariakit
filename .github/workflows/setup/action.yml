@@ -1,6 +1,12 @@
 name: setup
 description: Set up environment
 
+inputs:
+  install-filter:
+    description: Optional pnpm filter selector for installing a workspace subset
+    required: false
+    default: ""
+
 runs:
   using: "composite"
   steps:
@@ -16,4 +22,11 @@ runs:
 
     - name: Install dependencies
       shell: bash
-      run: pnpm install --frozen-lockfile
+      env:
+        INSTALL_FILTER: ${{ inputs.install-filter }}
+      run: |
+        if [ -n "$INSTALL_FILTER" ]; then
+          pnpm install --frozen-lockfile --filter "$INSTALL_FILTER"
+        else
+          pnpm install --frozen-lockfile
+        fi

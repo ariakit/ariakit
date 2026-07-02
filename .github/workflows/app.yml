@@ -101,11 +101,14 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          install-filter: ${{ runner.os == 'macOS' && 'app...' || '' }}
 
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
         with:
           engine: ${{ matrix.engine }}
+          filter: ${{ runner.os == 'macOS' && 'app' || '' }}
 
       - name: Download app artifact
         uses: actions/download-artifact@v8
