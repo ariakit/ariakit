@@ -489,7 +489,7 @@ jobs:
           # job over every shard's raw round files.
           echo "::group::Preliminary comparison (shard $PERF_SHARD_INDEX)"
           pnpm -F app run perf-compare
-          mapfile -t CONFIRMATION_FILES < <(
+          significant_files="$(
             node --input-type=module <<'NODE'
           import { readFileSync } from "node:fs";
 
@@ -497,17 +497,27 @@ jobs:
             readFileSync("app/.perf-results/comparison.json", "utf-8"),
           );
 
+          if (!Array.isArray(summary.rows)) {
+            throw new Error("Missing comparison rows.");
+          }
+
           const files = new Set();
-          for (const row of summary.rows ?? []) {
-            if (row?.significant && row.testFile) {
-              files.add(row.testFile);
+          for (const row of summary.rows) {
+            if (!row?.significant) continue;
+            if (!row.testFile) {
+              throw new Error("Missing test file for significant comparison row.");
             }
+            files.add(row.testFile);
           }
           for (const file of [...files].sort()) {
             console.log(file);
           }
           NODE
-          )
+          )"
+          CONFIRMATION_FILES=()
+          if [ -n "$significant_files" ]; then
+            mapfile -t CONFIRMATION_FILES <<< "$significant_files"
+          fi
           echo "::endgroup::"
 
           if [ ${#CONFIRMATION_FILES[@]} -gt 0 ]; then
