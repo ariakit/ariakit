@@ -1,5 +1,42 @@
 # @ariakit/react-components
 
+## 0.3.1
+
+### Fixed `Command` stuck pressed state when losing focus mid-press
+
+When rendering a non-native element (such as `render={<div />}`), the [`Command`](https://ariakit.com/reference/command) component — and components built on it, such as [`Button`](https://ariakit.com/reference/button), [`Checkbox`](https://ariakit.com/reference/checkbox), [`CompositeItem`](https://ariakit.com/reference/composite-item), and their derivatives — now clears its pressed state (`data-active`) when the element loses focus while <kbd>Space</kbd> is held, mirroring how native buttons cancel the Space activation when they lose focus before the keyup.
+
+Additionally, a Space keyup bubbling up from a focused child no longer dispatches a synthetic click on the element, and calling `event.preventDefault()` in a custom `onKeyUp` handler no longer leaves the element stuck looking pressed.
+
+### `PopoverArrow` box-shadow ring detection
+
+Fixed [`PopoverArrow`](https://ariakit.com/reference/popover-arrow), including components built on it such as [`TooltipArrow`](https://ariakit.com/reference/tooltip-arrow), [`MenuArrow`](https://ariakit.com/reference/menu-arrow), and [`HovercardArrow`](https://ariakit.com/reference/hovercard-arrow), to draw the popover's box-shadow ring for any positive ring width. Previously, widths whose text contained the digit 0, such as `10px` or `0.5px` from the Tailwind `ring-[10px]` and `ring-[0.5px]` utilities, were not detected, and the arrow rendered with no stroke at all.
+
+The arrow stroke now also matches the ring color instead of the popover's inherited text color, so the arrow blends into the outline. This includes `inset` rings and rings without an explicit color, which default to `currentColor` following CSS.
+
+### Radio `onChange` event on arrow-key selection
+
+Selecting a native [`Radio`](https://ariakit.com/reference/radio) or [`FormRadio`](https://ariakit.com/reference/form-radio) with arrow keys now delivers a real `change` event with `event.target.checked` already set to `true`, matching pointer and Space selection. Previously, the handler received the focus event while `checked` was still `false`, which silently broke handlers gated on `event.target.checked`.
+
+Since arrow-key selection now replays the browser's native activation, `onClick` handlers also fire when a native radio is selected with arrow keys, matching native radio group behavior.
+
+### Other updates
+
+- Fixed [`ComboboxItemValue`](https://ariakit.com/reference/combobox-item-value) highlighting the wrong characters for item values whose Unicode normalization changes the string length, such as Hangul, kana with dakuten, and decomposed (NFD) strings. Matching remains diacritic-insensitive, and the `data-user-value` spans now cover exactly the matched characters without detaching combining marks from their base letters.
+- Fixed [`CompositeItem`](https://ariakit.com/reference/composite-item) and components built on it, such as [`Tab`](https://ariakit.com/reference/tab) and [`SelectItem`](https://ariakit.com/reference/select-item), crashing the app with a "Maximum update depth exceeded" error when a `NaN` value was passed to the `aria-posinset` or `aria-setsize` props. The `useStoreStateObject` hook now compares snapshot values with `Object.is`, so the fix also covers any direct consumer of that hook.
+- Fixed [`CompositeItem`](https://ariakit.com/reference/composite-item) crashing with `Cannot access 'rowId' before initialization` when rendered inside a [`CompositeRow`](https://ariakit.com/reference/composite-row) — or a derived row component such as [`SelectRow`](https://ariakit.com/reference/select-row) or [`ComboboxRow`](https://ariakit.com/reference/combobox-row) — that receives the `aria-posinset` prop.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog) and components built on it such as [`Popover`](https://ariakit.com/reference/popover) and [`Menu`](https://ariakit.com/reference/menu) hiding on close before the [`backdrop`](https://ariakit.com/reference/dialog#backdrop) element's exit transition ends: the backdrop's fade-out was skipped entirely when only the backdrop was animated, and cut short when its transition was longer than the panel's.
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog), including components built on it such as [`Popover`](https://ariakit.com/reference/popover) and [`Menu`](https://ariakit.com/reference/menu), so focusing, clicking, or right-clicking elements returned by [`getPersistentElements`](https://ariakit.com/reference/dialog#getpersistentelements) no longer closes the dialog before it has received focus, such as when it's rendered with [`autoFocusOnShow`](https://ariakit.com/reference/dialog#autofocusonshow) set to `false`.
+- Fixed [`PopoverArrow`](https://ariakit.com/reference/popover-arrow) — including arrows built on it such as [`MenuArrow`](https://ariakit.com/reference/menu-arrow) and [`TooltipArrow`](https://ariakit.com/reference/tooltip-arrow) — detaching from the anchor in RTL contexts when the popover flips or otherwise changes placement while open.
+- Fixed [`Portal`](https://ariakit.com/reference/portal), including components built on it such as [`Tooltip`](https://ariakit.com/reference/tooltip) and [`Popover`](https://ariakit.com/reference/popover), to avoid leaking duplicate portal containers in React development StrictMode.
+- Fixed [`Portal`](https://ariakit.com/reference/portal), including components built on it such as [`Dialog`](https://ariakit.com/reference/dialog) and [`Popover`](https://ariakit.com/reference/popover), destroying and recreating the portal node when the [`portalRef`](https://ariakit.com/reference/portal#portalref) prop changes identity, such as when passing an inline callback. The ref now re-fires against the same portal node, so the portal content is no longer remounted on parent re-renders.
+- Fixed the [`focusOnMove`](https://ariakit.com/reference/composite#focusonmove) prop being ignored on [`SelectList`](https://ariakit.com/reference/select-list) and components built on it such as [`SelectPopover`](https://ariakit.com/reference/select-popover).
+- Fixed arrow keys on a closed [`Select`](https://ariakit.com/reference/select) freezing the page when multiple [`SelectItem`](https://ariakit.com/reference/select-item) components without a [`value`](https://ariakit.com/reference/select-item#value) prop follow the active item, and moving to an item without a [`value`](https://ariakit.com/reference/select-item#value) when exactly one follows it. Items without a [`value`](https://ariakit.com/reference/select-item#value) are now skipped correctly, including when [`focusLoop`](https://ariakit.com/reference/select-provider#focusloop) wraps around the list.
+- Fixed [`TabPanel`](https://ariakit.com/reference/tab-panel) not updating its own `tabindex` when a single panel is reused with a dynamic [`tabId`](https://ariakit.com/reference/tab-panel#tabid) pointing to the selected tab. The tabbable-children check now re-runs when the [`tabId`](https://ariakit.com/reference/tab-panel#tabid) changes, so the panel joins the tab sequence when the newly selected tab's content has no tabbable elements and leaves it when the content has one.
+- Fixed [`Tab`](https://ariakit.com/reference/tab) not becoming the active item on the first [`setSelectedId`](https://ariakit.com/reference/use-tab-store#setselectedid-1) call after a [`SelectPopover`](https://ariakit.com/reference/select-popover) or [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) containing the tabs opens or toggles.
+- Fixed [`ToolbarContainer`](https://ariakit.com/reference/toolbar-container) so composing Enter keydowns in nested text fields don't cancel IME commits or move focus back to the container.
+- Updated dependencies: `@ariakit/react-store@0.1.5`, `@ariakit/components@0.1.5`
+
 ## 0.3.0
 
 This version removes an internal dialog tree helper that was exposed through a deep import path, and improves form handling and composite separator behavior in React components.
