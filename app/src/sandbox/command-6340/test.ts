@@ -48,3 +48,19 @@ test("Space keyup bubbling from a child does not click the command", async () =>
   expect(q.status.ensure()).toHaveTextContent("card clicks: 0");
   expect(card).not.toHaveAttribute("data-active");
 });
+
+test("data-active is cleared when a consumer onKeyUp prevents the default", async () => {
+  const command = q.text.ensure("Bookmark");
+  await focus(command);
+  expect(command).toHaveFocus();
+
+  // Pressing Space sets the active state on the focused command.
+  await press.down.Space();
+  expect(command).toHaveAttribute("data-active");
+
+  // The example's own onKeyUp calls preventDefault to suppress the click on
+  // release. That must only suppress the click, not skip the state clearing,
+  // otherwise the element stays stuck looking pressed.
+  await press.up.Space();
+  expect(command).not.toHaveAttribute("data-active");
+});

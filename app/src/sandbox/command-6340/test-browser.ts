@@ -62,4 +62,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.status()).toHaveText("card clicks: 0, pins: 0");
     await test.expect(card).not.toHaveAttribute("data-active");
   });
+
+  test("data-active is cleared when a consumer onKeyUp prevents the default", async ({
+    page,
+    q,
+  }) => {
+    const command = q.text("Bookmark");
+    await command.focus();
+
+    // Pressing Space sets the active state on the focused command.
+    await page.keyboard.down("Space");
+    await test.expect(command).toHaveAttribute("data-active");
+
+    // The example's own onKeyUp calls preventDefault to suppress the click on
+    // release. That must only suppress the click, not skip the state clearing,
+    // otherwise the element stays stuck looking pressed.
+    await page.keyboard.up("Space");
+    await test.expect(command).not.toHaveAttribute("data-active");
+  });
 });
