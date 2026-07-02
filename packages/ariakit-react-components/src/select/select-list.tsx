@@ -54,7 +54,6 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     store,
     resetOnEscape = true,
     hideOnEnter = true,
-    focusOnMove = true,
     composite,
     alwaysVisible,
     ...props
