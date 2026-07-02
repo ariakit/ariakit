@@ -22,6 +22,8 @@ test("clears the arrow's stale static-side inset after a placement change", asyn
   // The previous placement's `right: 100%` must be cleared. When it lingers,
   // RTL over-constrained absolute positioning ignores `left`, so the stale
   // `right` pins the arrow to the popover's left edge, detached from the
-  // anchor.
-  expect(arrow.style.right).toBe("");
+  // anchor. Poll instead of asserting synchronously so the check also covers
+  // clearing that happens right after the reposition, such as the userland
+  // workaround for this bug, without racing it.
+  await expect.poll(() => arrow.style.right).toBe("");
 });
