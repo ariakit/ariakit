@@ -58,6 +58,36 @@ test("renders a single autocomplete span for normalized-empty input", async () =
   ]);
 });
 
+test("does not highlight characters the input only partially matches", async () => {
+  // A lone medial jamo matches only a fragment of the decomposed 사 syllable,
+  // which must not highlight the whole character.
+  await type("\u1161", q.combobox.ensure("Search files"));
+
+  const option = q.option.ensure("사과.txt");
+  expect(option.textContent).toBe("사과.txt");
+  expect(getPartTexts(option, "[data-user-value]")).toEqual([]);
+  expect(getPartTexts(option, "[data-autocomplete-value]")).toEqual([
+    "사과.txt",
+  ]);
+});
+
+test("collapses partial matches next to removed combining marks", async () => {
+  const markedApple = "사\u0301과.txt";
+  const output = q.status.ensure("Partial match with combining mark");
+  expect(output.textContent).toBe(markedApple);
+  expect(getPartTexts(output, "[data-user-value]")).toEqual([]);
+  expect(getPartTexts(output, "[data-autocomplete-value]")).toEqual([
+    markedApple,
+  ]);
+});
+
+test("highlights a character fully covered by overlapping partial matches", async () => {
+  const output = q.status.ensure("Union of partial matches");
+  expect(output.textContent).toBe("각");
+  expect(getPartTexts(output, "[data-user-value]")).toEqual(["각"]);
+  expect(getPartTexts(output, "[data-autocomplete-value]")).toEqual([]);
+});
+
 test("highlights diacritic-insensitive matches in decomposed item values", async () => {
   await type("resume", q.combobox.ensure("Search files"));
 
