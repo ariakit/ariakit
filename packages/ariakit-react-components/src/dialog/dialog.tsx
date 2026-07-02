@@ -79,6 +79,13 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 const isSafariBrowser = isSafari();
 
+// Set when a dialog's active outside-tree disabling is restored, and consumed
+// by the next disabling in the same task so it re-applies synchronously
+// instead of deferring past the next paint. Module-level rather than
+// per-instance so it also covers handoffs between different dialogs, such as
+// a dialog closing while a sibling opens in the same commit.
+let redisableTreeOutsideSync = false;
+
 function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   const activeElement = getActiveElement(dialog);
   if (!activeElement) return false;
@@ -303,12 +310,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   const getPersistentElementsProp = useEvent(getPersistentElements);
 
-  // Set by the effect below when the outside tree is currently disabled, and
-  // consumed by its next run so a re-run that replaces an active disabling
-  // (e.g., when a nested dialog opens) re-applies it synchronously instead of
-  // deferring it to the next frame.
-  const redisableTreeSyncRef = useRef(false);
-
   // Disables/enables the element tree around the modal dialog element.
   useSafeLayoutEffect(() => {
     if (!id) return;
@@ -353,13 +354,14 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         (win.innerWidth - documentElement.clientWidth > 0 ||
           win.innerHeight - documentElement.clientHeight > 0);
       let raf = 0;
-      if (redisableTreeSyncRef.current || willRemoveScrollbar) {
-        // A redisableTreeSyncRef run replaces a disabling that was active
-        // until the cleanup of the previous run just restored it (e.g., a
-        // nested dialog opened and re-triggered this effect). That restore
-        // already invalidated the outside tree, so re-applying synchronously
-        // merges into the same style recalc and avoids a frame where the
-        // tree between two modal states is interactive again.
+      if (redisableTreeOutsideSync || willRemoveScrollbar) {
+        // A redisableTreeOutsideSync run replaces a disabling that was active
+        // until a cleanup in this same task restored it: the same dialog
+        // re-running (e.g., a nested dialog opened), or another dialog
+        // closing while this one opens. That restore already invalidated the
+        // outside tree, so re-applying synchronously merges into the same
+        // style recalc and avoids a frame where the tree between two modal
+        // states is interactive again.
         applyDisableTreeOutside();
       } else {
         // Disabling the outside tree sets inert on the top-level elements
@@ -382,12 +384,12 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         restoreTreeOutside,
         () => {
           if (!disabled) return;
-          // Let the next run, if it happens in this same task, know it's
-          // replacing an active disabling. The microtask clears the flag
-          // right after, so a later reopen still defers.
-          redisableTreeSyncRef.current = true;
+          // Let the next disabling, if it happens in this same task, know
+          // it's replacing an active one. The microtask clears the flag right
+          // after, so a later open still defers.
+          redisableTreeOutsideSync = true;
           queueMicrotask(() => {
-            redisableTreeSyncRef.current = false;
+            redisableTreeOutsideSync = false;
           });
         },
       );
