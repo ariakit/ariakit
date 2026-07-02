@@ -10,7 +10,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getAllTabbableIn, invariant } from "@ariakit/utils";
+import { getFirstTabbableIn, invariant } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent, RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
@@ -128,13 +128,15 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 
     // Re-check tabbable children each time the panel becomes visible so
-    // content rendered conditionally on tab selection is accounted for.
+    // content rendered conditionally on tab selection is accounted for. The
+    // tabId dependency covers the single-panel pattern, where the panel stays
+    // mounted and only its tabId and children change on tab selection.
     useSafeLayoutEffect(() => {
       if (!mounted) return;
       const element = ref.current;
       if (!element) return;
-      setHasTabbableChildren(!!getAllTabbableIn(element).length);
-    }, [mounted]);
+      setHasTabbableChildren(!!getFirstTabbableIn(element));
+    }, [mounted, tabId]);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
