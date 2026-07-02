@@ -41,7 +41,7 @@ import {
   CompositeRowContext,
   useCompositeScopedContext,
 } from "./composite-context.tsx";
-import type { CompositeStore } from "./composite-store.ts";
+import type { CompositeStore, CompositeStoreState } from "./composite-store.ts";
 import {
   focusSilently,
   getEnabledItem,
@@ -164,6 +164,18 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     const disabled = disabledFromProps(props);
     const trulyDisabled = disabled && !props.accessibleWhenDisabled;
 
+    // Sibling selectors below (ariaPosInSet) also need the row id during
+    // render. They can't read the destructured rowId const since it's declared
+    // by the same statement they're arguments to, which would hit the temporal
+    // dead zone. See https://github.com/ariakit/ariakit/issues/6334
+    const getRowId = (state?: CompositeStoreState) => {
+      if (rowIdProp) return rowIdProp;
+      if (!state) return;
+      if (!row?.baseElement) return;
+      if (row.baseElement !== state.baseElement) return;
+      return row.id;
+    };
+
     const {
       rowId,
       baseElement,
@@ -172,13 +184,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       ariaPosInSet,
       isTabbable,
     } = useStoreStateObject(store, {
-      rowId(state) {
-        if (rowIdProp) return rowIdProp;
-        if (!state) return;
-        if (!row?.baseElement) return;
-        if (row.baseElement !== state.baseElement) return;
-        return row.id;
-      },
+      rowId: getRowId,
       baseElement(state) {
         return state?.baseElement || undefined;
       },
@@ -197,6 +203,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         if (!state) return;
         if (!row?.ariaPosInSet) return;
         if (row.baseElement !== state.baseElement) return;
+        const rowId = getRowId(state);
         const itemsInRow = state.renderedItems.filter(
           (item) => item.rowId === rowId,
         );
