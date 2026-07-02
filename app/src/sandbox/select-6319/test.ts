@@ -20,3 +20,16 @@ test("arrow keys on the closed select skip the trailing item without value", asy
   await press.ArrowUp();
   expect(combobox).toHaveTextContent("Green");
 });
+
+test("arrow keys on the closed select with focusLoop wrap past the item without value", async () => {
+  const combobox = q.combobox.ensure("Favorite shape");
+  await click(combobox);
+  expect(q.option.ensure("Triangle")).toBeVisible();
+  await press.Escape();
+  expect(combobox).toHaveFocus();
+  expect(combobox).toHaveTextContent("Triangle");
+  // The item after Triangle has no value, so the wrap should skip it and
+  // land on the first valued item
+  await press.ArrowDown();
+  expect(combobox).toHaveTextContent("Square");
+});

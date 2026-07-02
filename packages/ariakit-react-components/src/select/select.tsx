@@ -48,19 +48,23 @@ function getSelectedValues(select: HTMLSelectElement) {
 // to move to items without value, so we filter them out here.
 function nextWithValue(store: SelectStore, next: SelectStore["next"]) {
   return () => {
-    const nextId = next();
-    if (!nextId) return;
-    let i = 0;
-    let nextItem = store.item(nextId);
-    const firstItem = nextItem;
-    while (nextItem && nextItem.value == null) {
-      const nextId = next(++i);
-      if (!nextId) return;
-      nextItem = store.item(nextId);
-      // Prevents infinite loop when focusLoop is true
-      if (nextItem === firstItem) break;
+    const visitedIds = new Set<string>();
+    let nextId = next();
+    while (nextId) {
+      const nextItem = store.item(nextId);
+      if (!nextItem) return;
+      if (nextItem.value != null) {
+        return nextItem.id;
+      }
+      // Walking from the last returned id, as if the key was pressed again
+      // from there, skips items without value even across focusLoop
+      // boundaries. A repeated id means the walk cycled through every
+      // reachable item without finding one with value, so we return undefined
+      // to keep move() from changing the active item.
+      if (visitedIds.has(nextId)) return;
+      visitedIds.add(nextId);
+      nextId = next({ activeId: nextId });
     }
-    return nextItem?.id;
   };
 }
 

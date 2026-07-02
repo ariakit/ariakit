@@ -35,4 +35,21 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("ArrowUp");
     await test.expect(combobox).toContainText("Green");
   });
+
+  test("arrow keys on the closed select with focusLoop wrap past the item without value", async ({
+    page,
+    q,
+  }) => {
+    const combobox = q.combobox("Favorite shape");
+    await combobox.click();
+    await test.expect(q.option("Triangle")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await test.expect(q.option("Triangle")).toBeHidden();
+    await test.expect(combobox).toBeFocused();
+    await test.expect(combobox).toContainText("Triangle");
+    // The item after Triangle has no value, so the wrap should skip it and
+    // land on the first valued item
+    await page.keyboard.press("ArrowDown");
+    await test.expect(combobox).toContainText("Square");
+  });
 });
