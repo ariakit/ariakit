@@ -3,22 +3,30 @@ import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test("open dialog", async ({ q, perf }) => {
-    await perf.measure(async () => {
-      await q.button("Open dialog").click();
-      await expect(q.dialog("Settings")).toBeVisible();
-    });
+    await perf.measure(
+      async () => {
+        await q.button("Open dialog").click();
+      },
+      {
+        verify: async () => {
+          await expect(q.dialog("Settings")).toBeVisible();
+        },
+      },
+    );
   });
 
   test("close dialog", async ({ q, perf }) => {
     await perf.measure(
       async () => {
         await q.button("Cancel").click();
-        await expect(q.dialog("Settings")).not.toBeVisible();
       },
       {
         setup: async () => {
           await q.button("Open dialog").click();
           await expect(q.dialog("Settings")).toBeVisible();
+        },
+        verify: async () => {
+          await expect(q.dialog("Settings")).not.toBeVisible();
         },
       },
     );
@@ -31,11 +39,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await perf.measure(
       async () => {
         await q.button("Open dialog").click();
-        await expect(q.dialog("Settings")).toBeVisible();
       },
       {
         scriptProfile: true,
         profileLimit: 20,
+        verify: async () => {
+          await expect(q.dialog("Settings")).toBeVisible();
+        },
       },
     );
   });

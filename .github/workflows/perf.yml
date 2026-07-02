@@ -290,9 +290,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       # Let all shards finish even if one fails, so each shard's logs and
-      # uploaded rounds stay available for debugging. The post job compares
-      # whatever rounds the succeeding shards produced (partial results are
-      # fine; a failed shard stays visibly red in CI).
+      # uploaded rounds stay available for debugging. The post job marks
+      # Chrome inconclusive when any shard fails.
       fail-fast: false
       matrix:
         # `shard` is the only matrix dimension, so the job count equals the
@@ -387,6 +386,36 @@ jobs:
           rm -rf app/.perf-results "$BASELINE_DIR/app/.perf-results"
           mkdir -p app/.perf-results
           shopt -s nullglob
+          SHARD_FILES=()
+          manifest_status=failed
+          manifest_message="Chrome shard exited before completing."
+          manifest_failed=0
+
+          write_chrome_manifest() {
+            PERF_SHARD_STATUS="$manifest_status" \
+            PERF_SHARD_MESSAGE="$manifest_message" \
+            PERF_SHARD_FILES="$(printf '%s\n' "${SHARD_FILES[@]}")" \
+            node --input-type=module <<'NODE'
+          import { writeFileSync } from "node:fs";
+
+          const files = (process.env.PERF_SHARD_FILES ?? "")
+            .split("\n")
+            .filter(Boolean);
+          const manifest = {
+            shard: Number(process.env.PERF_SHARD_INDEX),
+            total: Number(process.env.PERF_SHARD_TOTAL),
+            status: process.env.PERF_SHARD_STATUS,
+            message: process.env.PERF_SHARD_MESSAGE,
+            files,
+          };
+          writeFileSync(
+            `app/.perf-results/shard-${process.env.PERF_SHARD_INDEX}-manifest.json`,
+            `${JSON.stringify(manifest)}\n`,
+          );
+          NODE
+          }
+
+          trap write_chrome_manifest EXIT
 
           # Partition the perf test files across shards. The list is computed
           # from the current checkout and the SAME slice is passed to both the
@@ -400,7 +429,6 @@ jobs:
               \( -path '*perf*-chrome.ts' -o -path '*perf*-chrome.tsx' \) \
               | sort
           )
-          SHARD_FILES=()
           for idx in "${!ALL_PERF_FILES[@]}"; do
             if [ "$(( idx % PERF_SHARD_TOTAL ))" -eq "$(( PERF_SHARD_INDEX - 1 ))" ]; then
               SHARD_FILES+=("${ALL_PERF_FILES[$idx]}")
@@ -424,11 +452,17 @@ jobs:
             ); then
               echo "::warning::Baseline perf run failed for round $i; writing an empty baseline."
               baseline_failed=1
+              manifest_failed=1
+              manifest_status=failed
+              manifest_message="Baseline perf run failed for round $i."
             fi
             local baseline_files=("$BASELINE_DIR"/app/.perf-results/baseline-"$i"*.json)
             if [ "$baseline_failed" -eq 1 ] || [ ${#baseline_files[@]} -eq 0 ]; then
               if [ "$baseline_failed" -eq 0 ]; then
                 echo "::warning::No baseline perf results for round $i; writing an empty baseline."
+                manifest_failed=1
+                manifest_status=failed
+                manifest_message="No baseline perf results for round $i."
               fi
               printf '[]\n' > app/.perf-results/baseline-"$i"-s"$PERF_SHARD_INDEX"-worker0.json
             else
@@ -443,13 +477,21 @@ jobs:
             local perf_files=("$@")
 
             echo "::group::Round $i - current"
-            PERF_RESULTS_FILE=current-$i-s$PERF_SHARD_INDEX.json \
-            PERF_ITERATIONS="$PERF_ITERATIONS" \
-            PERF_WARMUP="$PERF_WARMUP" \
-            xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_files[@]}"
+            if ! (
+              PERF_RESULTS_FILE=current-$i-s$PERF_SHARD_INDEX.json \
+              PERF_ITERATIONS="$PERF_ITERATIONS" \
+              PERF_WARMUP="$PERF_WARMUP" \
+              xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_files[@]}"
+            ); then
+              manifest_status=failed
+              manifest_message="Current perf run failed for round $i."
+              exit 1
+            fi
             local current_files=(app/.perf-results/current-"$i"*.json)
             if [ ${#current_files[@]} -eq 0 ]; then
               echo "Missing current perf results for round $i" >&2
+              manifest_status=failed
+              manifest_message="No current perf results for round $i."
               exit 1
             fi
             echo "::endgroup::"
@@ -475,6 +517,8 @@ jobs:
 
           if [ ${#SHARD_FILES[@]} -eq 0 ]; then
             echo "No perf files assigned to this shard; nothing to benchmark."
+            manifest_status=skipped
+            manifest_message="No perf files assigned to this shard."
             exit 0
           fi
 
@@ -531,12 +575,18 @@ jobs:
             echo "No significant changes detected; skipping confirmation rounds."
           fi
 
+          if [ "$manifest_failed" -eq 0 ]; then
+            manifest_status=success
+            manifest_message=""
+          fi
+
       - name: Upload shard round results
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: perf-chrome-rounds-${{ matrix.shard }}
           path: |
+            app/.perf-results/shard-*-manifest.json
             app/.perf-results/baseline-*.json
             app/.perf-results/current-*.json
           if-no-files-found: ignore
@@ -748,27 +798,107 @@ jobs:
 
       - name: Compare Chrome perf results
         # Never let a Chrome comparison failure abort the job before the Node
-        # section is posted; on failure the Chrome section is simply absent.
+        # section is posted; on failure the Chrome section is marked
+        # inconclusive instead.
         continue-on-error: true
         env:
+          PERF_CHROME_RESULT: ${{ needs.chrome.result }}
           PERF_RESULTS_DIR: ${{ runner.temp }}/perf-results
           PERF_SOURCE_BASE_URL: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha }}
         run: |
           shopt -s nullglob
-          rounds=("$RUNNER_TEMP"/perf-chrome-rounds/*.json)
-          if [ ${#rounds[@]} -eq 0 ]; then
-            echo "::warning::No Chrome shard rounds found; skipping Chrome comparison."
+          output_dir="$PERF_RESULTS_DIR/perf-results-chrome"
+          write_chrome_inconclusive() {
+            mkdir -p "$output_dir"
+            {
+              echo "## Performance"
+              echo ""
+              echo ":warning: Chrome perf inconclusive: $1"
+            } > "$output_dir/comparison.md"
+            printf 'Chrome\n' > "$output_dir/title.txt"
+          }
+
+          if [ "$PERF_CHROME_RESULT" != "success" ]; then
+            write_chrome_inconclusive "Chrome shard job result was $PERF_CHROME_RESULT."
             exit 0
           fi
-          # Partial results are fine: compare whatever rounds the succeeding
-          # shards produced. Any failed shard stays visibly red in CI.
+
+          manifests=("$RUNNER_TEMP"/perf-chrome-rounds/shard-*-manifest.json)
+          if ! validation_message="$(
+            node --input-type=module - "${manifests[@]}" <<'NODE'
+          import { readFileSync } from "node:fs";
+
+          const manifests = process.argv.slice(2).map((file) => {
+            return JSON.parse(readFileSync(file, "utf-8"));
+          });
+          if (manifests.length === 0) {
+            console.log("no shard manifests found.");
+            process.exit(0);
+          }
+          const issues = [];
+          const byShard = new Map();
+          for (const manifest of manifests) {
+            if (byShard.has(manifest.shard)) {
+              issues.push(`duplicate shard manifest: ${manifest.shard}`);
+            }
+            byShard.set(manifest.shard, manifest);
+            if (manifest.status !== "success" && manifest.status !== "skipped") {
+              const message = manifest.message ? ` (${manifest.message})` : "";
+              issues.push(`failed shard: ${manifest.shard}${message}`);
+            }
+          }
+          const totals = new Set(manifests.map((manifest) => manifest.total));
+          if (totals.size > 1) {
+            const sortedTotals = [...totals].sort((a, b) => a - b);
+            issues.push(
+              `inconsistent shard totals: ${sortedTotals.join(", ")}`,
+            );
+          }
+          const total = [...totals][0];
+          if (!Number.isInteger(total) || total < 1) {
+            issues.push(`invalid shard total: ${total}`);
+          } else {
+            const missing = [];
+            for (let shard = 1; shard <= total; shard += 1) {
+              if (!byShard.has(shard)) {
+                missing.push(shard);
+              }
+            }
+            if (missing.length > 0) {
+              issues.push(`missing shard manifest(s): ${missing.join(", ")}`);
+            }
+          }
+          if (issues.length > 0) {
+            console.log(issues.join("; "));
+          }
+          NODE
+          )"; then
+            write_chrome_inconclusive "shard manifest validation failed."
+            exit 0
+          fi
+          if [ -n "$validation_message" ]; then
+            write_chrome_inconclusive "$validation_message"
+            exit 0
+          fi
+
+          rounds=(
+            "$RUNNER_TEMP"/perf-chrome-rounds/baseline-*.json
+            "$RUNNER_TEMP"/perf-chrome-rounds/current-*.json
+          )
+          if [ ${#rounds[@]} -eq 0 ]; then
+            write_chrome_inconclusive "no Chrome shard rounds found."
+            exit 0
+          fi
           rm -rf app/.perf-results
           mkdir -p app/.perf-results
           cp "${rounds[@]}" app/.perf-results/
-          pnpm -F app run perf-compare
-          mkdir -p "$PERF_RESULTS_DIR/perf-results-chrome"
-          cp app/.perf-results/comparison.md "$PERF_RESULTS_DIR/perf-results-chrome/"
-          printf 'Chrome\n' > "$PERF_RESULTS_DIR/perf-results-chrome/title.txt"
+          if ! pnpm -F app run perf-compare; then
+            write_chrome_inconclusive "comparison failed."
+            exit 0
+          fi
+          mkdir -p "$output_dir"
+          cp app/.perf-results/comparison.md "$output_dir/"
+          printf 'Chrome\n' > "$output_dir/title.txt"
 
       - name: Create GitHub App token
         id: app-token
