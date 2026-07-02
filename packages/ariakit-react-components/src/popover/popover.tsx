@@ -9,7 +9,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { invariant } from "@ariakit/utils";
+import { getWindow, invariant } from "@ariakit/utils";
 import {
   arrow,
   autoUpdate,
@@ -431,22 +431,32 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
     // Makes sure the wrapper element that's passed to floating UI has the same
     // z-index as the popover element so users only need to set the z-index
-    // once.
+    // once. The getComputedStyle read forces a style flush, and at effect time
+    // the document is still dirty from the open commit, so reading here would
+    // duplicate the recalc the browser is about to perform for the frame.
+    // Defer the first read to a pre-paint animation frame, where the flush is
+    // the one the frame does anyway. The z-index is still applied before the
+    // popover is first painted.
     useSafeLayoutEffect(() => {
       if (!mounted) return;
       if (!domReady) return;
       if (!popoverElement?.isConnected) return;
       if (!contentElement?.isConnected) return;
+      // Use the content element's own window so the frame callbacks and the
+      // computed style come from the right realm when the popover is portaled
+      // into another document, such as a popup window.
+      const win = getWindow(contentElement);
       const applyZIndex = () => {
-        popoverElement.style.zIndex = getComputedStyle(contentElement).zIndex;
+        popoverElement.style.zIndex =
+          win.getComputedStyle(contentElement).zIndex;
       };
-      applyZIndex();
-      // It's possible that the zIndex value changes after the popover is
-      // mounted, so we need to keep checking.
-      let raf = requestAnimationFrame(() => {
-        raf = requestAnimationFrame(applyZIndex);
+      let raf = win.requestAnimationFrame(() => {
+        applyZIndex();
+        // It's possible that the zIndex value changes after the popover is
+        // mounted, so we check once more on the next frame.
+        raf = win.requestAnimationFrame(applyZIndex);
       });
-      return () => cancelAnimationFrame(raf);
+      return () => win.cancelAnimationFrame(raf);
     }, [mounted, domReady, popoverElement, contentElement]);
 
     const position = fixed ? "fixed" : "absolute";

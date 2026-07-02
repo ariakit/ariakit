@@ -250,9 +250,19 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       const height = win.visualViewport?.height ?? win.innerHeight;
       dialog.style.setProperty("--dialog-viewport-height", `${height}px`);
     };
-    setViewportHeight();
+    // Reading visualViewport.height forces a synchronous style and layout
+    // flush. Running the initial measurement right here would flush the
+    // document while it's still dirty from the open commit (portal mount,
+    // inert marks on the outside tree), duplicating the recalc the browser is
+    // about to perform for the frame. Defer it to an animation frame, where
+    // the flush coincides with the recalc the frame performs anyway. This is
+    // a passive effect, so the variable was never guaranteed to be set before
+    // the dialog's first paint, and it's meant to be consumed with a CSS
+    // fallback value.
+    const rafId = win.requestAnimationFrame(setViewportHeight);
     viewport.addEventListener("resize", setViewportHeight);
     return () => {
+      win.cancelAnimationFrame(rafId);
       viewport.removeEventListener("resize", setViewportHeight);
     };
   }, [mounted, domReady]);
