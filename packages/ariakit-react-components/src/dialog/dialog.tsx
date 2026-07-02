@@ -14,6 +14,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
+  chain,
   contains,
   getActiveElement,
   getDocument,
@@ -60,7 +61,11 @@ import {
   disableTree,
   markAndDisableTreeOutside,
 } from "./utils/disable-tree.ts";
-import { isElementMarked, markTreeOutside } from "./utils/mark-tree-outside.ts";
+import {
+  isElementMarked,
+  markTreeInside,
+  markTreeOutside,
+} from "./utils/mark-tree-outside.ts";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.ts";
 import { supportsInert } from "./utils/supports-inert.ts";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.ts";
@@ -311,10 +316,23 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       ...persistentElements,
       ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
     ];
+    // Positively mark the elements the dialog knows about as "inside" so the
+    // outside event listeners can recognize them even before the dialog has
+    // been focused. The disclosure is excluded because it can change while
+    // the dialog is open (hovercards and tooltips set it to the focus
+    // source), so the listeners re-check it against the current state on
+    // every event instead. See https://github.com/ariakit/ariakit/issues/6344
+    const restoreInsideMarks = markTreeInside(id, allElements);
     if (modal) {
-      return markAndDisableTreeOutside(id, allElements);
+      return chain(
+        restoreInsideMarks,
+        markAndDisableTreeOutside(id, allElements),
+      );
     }
-    return markTreeOutside(id, [disclosureElement, ...allElements]);
+    return chain(
+      restoreInsideMarks,
+      markTreeOutside(id, [disclosureElement, ...allElements]),
+    );
   }, [
     id,
     store,

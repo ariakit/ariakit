@@ -11,7 +11,7 @@ import type { MutableRefObject } from "react";
 import { useEffect, useRef } from "react";
 import type { DialogStore } from "../dialog-store.ts";
 import type { DialogOptions } from "../dialog.tsx";
-import { isElementMarked } from "./mark-tree-outside.ts";
+import { isElementInside, isElementMarked } from "./mark-tree-outside.ts";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.ts";
 
 interface EventOutsideOptions {
@@ -88,6 +88,12 @@ function useEventOutside({
       if (target.hasAttribute("data-focus-trap")) return;
       // Clicked on dialog's bounding box
       if (isMouseEventOnDialog(event, contentElement)) return;
+      // The dialog itself, persistent elements, and nested dialogs are marked
+      // as "inside" when the dialog opens. Events on them must never trigger
+      // the outside listeners, even before the dialog has been focused (for
+      // example, with autoFocusOnShow={false}). See
+      // https://github.com/ariakit/ariakit/issues/6344
+      if (isElementInside(target, contentElement.id)) return;
       // We need to check if the content element has been focused at least once
       // before checking if it's marked. This is so hovercards and tooltips
       // don't stay open when new nodes are added to the DOM and focused.

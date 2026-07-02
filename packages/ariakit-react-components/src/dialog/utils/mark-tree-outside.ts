@@ -5,7 +5,13 @@ import {
 } from "./tree-cleanup.ts";
 import type { Elements } from "./tree-cleanup.ts";
 import { walkTreeOutside } from "./walk-tree-outside.ts";
-export { isElementMarked, markAncestor, markElement } from "./tree-cleanup.ts";
+export {
+  isElementInside,
+  isElementMarked,
+  markAncestor,
+  markElement,
+  markTreeInside,
+} from "./tree-cleanup.ts";
 
 export function markTreeOutside(id: string, elements: Elements) {
   const cleanups: Array<() => void> = [];

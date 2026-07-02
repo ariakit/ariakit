@@ -6,10 +6,10 @@ export type Elements = Array<Element | null>;
 export type Cleanups = Array<() => void>;
 export type Ids = Array<string | undefined>;
 
-function getPropertyName(id = "", ancestor = false) {
-  return `__ariakit-dialog-${ancestor ? "ancestor" : "outside"}${
-    id ? `-${id}` : ""
-  }` as keyof Element;
+type MarkKind = "outside" | "ancestor" | "inside";
+
+function getPropertyName(id = "", kind: MarkKind = "outside") {
+  return `__ariakit-dialog-${kind}${id ? `-${id}` : ""}` as keyof Element;
 }
 
 export function markElement(element: Element, id = "") {
@@ -21,13 +21,36 @@ export function markElement(element: Element, id = "") {
 
 export function markAncestor(element: Element, id = "") {
   return chain(
-    setProperty(element, getPropertyName("", true), true),
-    setProperty(element, getPropertyName(id, true), true),
+    setProperty(element, getPropertyName("", "ancestor"), true),
+    setProperty(element, getPropertyName(id, "ancestor"), true),
   );
 }
 
+// Marks elements the dialog knows about at open time (the dialog itself,
+// persistent elements, and nested dialogs), so the outside event listeners
+// can positively recognize them as "inside" regardless of whether the dialog
+// has been focused yet. See https://github.com/ariakit/ariakit/issues/6344
+export function markTreeInside(id: string, elements: Elements) {
+  return chain(
+    ...elements.map((element) => {
+      if (!element) return undefined;
+      return setProperty(element, getPropertyName(id, "inside"), true);
+    }),
+  );
+}
+
+export function isElementInside(element: Element, id: string) {
+  const propertyName = getPropertyName(id, "inside");
+  do {
+    if (element[propertyName]) return true;
+    if (!element.parentElement) return false;
+    element = element.parentElement;
+    // oxlint-disable-next-line no-constant-condition
+  } while (true);
+}
+
 export function isElementMarked(element: Element, id?: string) {
-  const ancestorProperty = getPropertyName(id, true);
+  const ancestorProperty = getPropertyName(id, "ancestor");
   if (element[ancestorProperty]) return true;
   const elementProperty = getPropertyName(id);
   do {
