@@ -3,14 +3,7 @@ import * as Ariakit from "@ariakit/react";
 function BrowseTabButton(props: { tabId: string; children: string }) {
   const tab = Ariakit.useTabContext();
   return (
-    <button
-      onClick={() => {
-        tab?.setSelectedId(props.tabId);
-        // TODO: Workaround for the swallowed setSelectedId -> activeId sync.
-        // Remove once https://github.com/ariakit/ariakit/issues/6346 is fixed.
-        tab?.setActiveId(props.tabId);
-      }}
-    >
+    <button onClick={() => tab?.setSelectedId(props.tabId)}>
       {props.children}
     </button>
   );
