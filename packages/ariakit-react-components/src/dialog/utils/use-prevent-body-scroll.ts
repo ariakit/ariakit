@@ -39,116 +39,89 @@ export function usePreventBodyScroll(
     const doc = getDocument(contentElement);
     const win = getWindow(contentElement);
     const { documentElement, body } = doc;
+    const cssScrollbarWidth =
+      documentElement.style.getPropertyValue("--scrollbar-width");
+    const scrollbarWidth = cssScrollbarWidth
+      ? Number.parseInt(cssScrollbarWidth, 10)
+      : win.innerWidth - documentElement.clientWidth;
 
-    // Reads the scrollbar width and position. These force a style and layout
-    // flush, so the deferred path below runs this before the open frame
-    // paints, where that flush has already been performed for the commit, and
-    // keeps the after-paint callback write-only.
-    const measure = () => {
-      const cssScrollbarWidth =
-        documentElement.style.getPropertyValue("--scrollbar-width");
-      const scrollbarWidth = cssScrollbarWidth
-        ? Number.parseInt(cssScrollbarWidth, 10)
-        : win.innerWidth - documentElement.clientWidth;
+    const setScrollbarWidthProperty = () =>
+      setCSSProperty(
+        documentElement,
+        "--scrollbar-width",
+        `${scrollbarWidth}px`,
+      );
+
+    const setStyle = () => {
+      // When there's no scrollbar width to compensate, only the overflow
+      // needs to change. Skipping the --scrollbar-width and padding writes
+      // isn't just avoiding no-ops: writing a custom property on
+      // documentElement invalidates the style of the whole document (custom
+      // properties are inherited, so every element is affected even when
+      // nothing references the variable). Consumers read the property with a
+      // zero fallback, so its absence is equivalent to the previous "0px".
+      if (!scrollbarWidth) {
+        return assignStyle(body, { overflow: "hidden" });
+      }
       const paddingProperty = getPaddingProperty(documentElement);
-      return { scrollbarWidth, paddingProperty };
-    };
-
-    const lock = ({
-      scrollbarWidth,
-      paddingProperty,
-    }: ReturnType<typeof measure>) => {
-      const setScrollbarWidthProperty = () =>
-        setCSSProperty(
-          documentElement,
-          "--scrollbar-width",
-          `${scrollbarWidth}px`,
-        );
-
-      const setStyle = () =>
+      return chain(
+        setScrollbarWidthProperty(),
         assignStyle(body, {
           overflow: "hidden",
           [paddingProperty]: `${scrollbarWidth}px`,
-        });
-
-      // Only iOS doesn't respect `overflow: hidden` on document.body
-      const setIOSStyle = () => {
-        const { scrollX, scrollY, visualViewport } = win;
-
-        // iOS 12 does not support `visuaViewport`.
-        const offsetLeft = visualViewport?.offsetLeft ?? 0;
-        const offsetTop = visualViewport?.offsetTop ?? 0;
-
-        const restoreStyle = assignStyle(body, {
-          position: "fixed",
-          overflow: "hidden",
-          top: `${-(scrollY - Math.floor(offsetTop))}px`,
-          left: `${-(scrollX - Math.floor(offsetLeft))}px`,
-          right: "0",
-          [paddingProperty]: `${scrollbarWidth}px`,
-        });
-
-        return () => {
-          restoreStyle();
-          // istanbul ignore next: JSDOM doesn't implement window.scrollTo
-          if (process.env.NODE_ENV !== "test") {
-            win.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });
-          }
-        };
-      };
-
-      return chain(
-        setScrollbarWidthProperty(),
-        isIOS ? setIOSStyle() : setStyle(),
+        }),
       );
     };
 
-    if (isIOS) {
-      const restore = lock(measure());
-      return restore;
-    }
+    // Only iOS doesn't respect `overflow: hidden` on document.body
+    const setIOSStyle = () => {
+      const { scrollX, scrollY, visualViewport } = win;
 
-    let restore: (() => void) | undefined;
-    let raf = 0;
+      // iOS 12 does not support `visuaViewport`.
+      const offsetLeft = visualViewport?.offsetLeft ?? 0;
+      const offsetTop = visualViewport?.offsetTop ?? 0;
 
-    // If the body scroll is already locked, this dialog is taking over from
-    // another dialog that's closing and has deferred its unlock to a
-    // microtask (see the cleanup below). Lock synchronously so there's no
-    // unlocked frame between the two locks — the scrollbar would flash back
-    // in otherwise. The orchestrate stacks keep the overlapping locks safe.
-    // Reading the inline style property doesn't force a style flush.
-    if (documentElement.style.getPropertyValue("--scrollbar-width")) {
-      restore = lock(measure());
-    } else {
-      // Writing --scrollbar-width on documentElement invalidates the style
-      // of the whole document (custom properties are inherited, so every
-      // element is affected even when nothing references the variable).
-      // Paying that before the open frame delays the dialog's first paint,
-      // so defer the lock to right after that frame paints, in the same slot
-      // where the dialog disables the outside tree. The measurement runs in
-      // the first frame callback, keeping the after-paint callback
-      // write-only so it can't force a style flush no matter how it's
-      // ordered with the inert writes. The compositor only sees the lock a
-      // frame later, and the backdrop already covers the page in the
-      // meantime.
-      raf = win.requestAnimationFrame(() => {
-        const measurements = measure();
-        raf = win.requestAnimationFrame(() => {
-          restore = lock(measurements);
-        });
+      const paddingProperty = getPaddingProperty(documentElement);
+
+      const restoreStyle = assignStyle(body, {
+        position: "fixed",
+        overflow: "hidden",
+        top: `${-(scrollY - Math.floor(offsetTop))}px`,
+        left: `${-(scrollX - Math.floor(offsetLeft))}px`,
+        right: "0",
+        [paddingProperty]: `${scrollbarWidth}px`,
       });
-    }
+
+      return () => {
+        restoreStyle();
+        // istanbul ignore next: JSDOM doesn't implement window.scrollTo
+        if (process.env.NODE_ENV !== "test") {
+          win.scrollTo({ left: scrollX, top: scrollY, behavior: "instant" });
+        }
+      };
+    };
+
+    // The lock is always applied synchronously, before the dialog's first
+    // paint. When a scrollbar is visible, hiding the overflow changes the
+    // viewport size, which moves position: fixed elements — including the
+    // dialog itself — so it must happen in the same frame the dialog first
+    // paints in, or the dialog visibly jumps one frame after appearing.
+    const restore = isIOS
+      ? chain(
+          scrollbarWidth ? setScrollbarWidthProperty() : undefined,
+          setIOSStyle(),
+        )
+      : setStyle();
+
+    if (isIOS) return restore;
 
     return () => {
-      win.cancelAnimationFrame(raf);
-      if (!restore) return;
-      const restoreLock = restore;
       // Defer the restore to a microtask so it runs after this commit's
       // layout effects, such as the dialog's focus-on-hide. This preserves
       // the close ordering the passive phase provided before: focus first
       // (while the scroll is still locked), then unlock. The orchestrate
       // stacks keep this safe if the scroll gets locked again in between.
-      queueMicrotask(restoreLock);
+      queueMicrotask(restore);
     };
   }, [isRootDialog, contentElement]);
 }

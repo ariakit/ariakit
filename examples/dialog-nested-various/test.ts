@@ -243,10 +243,9 @@ test.each(["nested", "sibling"])(
 test("body scroll stays locked when a sibling dialog takes over", async () => {
   await click(q.button("Open dialog"));
   expectModalStyle(true);
-  // The closing dialog defers its scroll unlock to a microtask and the
-  // opening dialog defers its lock to after paint, so we watch every style
-  // change on body during the handoff to catch a transient unlock between
-  // the two.
+  // The closing dialog defers its scroll unlock to a microtask while the
+  // opening dialog locks synchronously, so we watch every style change on
+  // body during the handoff to catch a transient unlock between the two.
   const overflowValues: string[] = [];
   const observer = new MutationObserver(() => {
     overflowValues.push(document.body.style.overflow);

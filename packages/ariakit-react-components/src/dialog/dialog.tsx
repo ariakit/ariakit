@@ -166,8 +166,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const contentElement = useStoreState(store, "contentElement");
   const hidden = isHidden(mounted, props.hidden, props.alwaysVisible);
 
-  usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
-
   // Tracks whether the dialog was hidden by an outside click or context menu.
   // When true, focusOnHide skips focus restoration to match native HTML
   // behavior where trigger buttons don't receive focus when you click outside.
@@ -339,14 +337,29 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         disabled = true;
       };
       const win = getWindow(dialog);
+      const { documentElement } = getDocument(dialog);
+      // Whether the scroll lock (which always applies synchronously so
+      // position: fixed elements don't visibly jump when the scrollbar
+      // disappears) is about to remove a visible scrollbar. Removing it
+      // resizes the viewport, forcing a full pre-paint reflow — and, for
+      // vertical scrollbars, the lock's --scrollbar-width write also
+      // invalidates the style of the whole document. Deferring the inert
+      // writes below then wouldn't save any paint latency — it would only
+      // add another full-document recalc one frame later — so disable
+      // synchronously to share the same pre-paint pass.
+      const willRemoveScrollbar =
+        preventBodyScroll &&
+        !hidden &&
+        (win.innerWidth - documentElement.clientWidth > 0 ||
+          win.innerHeight - documentElement.clientHeight > 0);
       let raf = 0;
-      if (redisableTreeSyncRef.current) {
-        // This run replaces a disabling that was active until the cleanup of
-        // the previous run just restored it (e.g., a nested dialog opened and
-        // re-triggered this effect). That restore already invalidated the
-        // outside tree, so re-applying synchronously merges into the same
-        // style recalc and avoids a frame where the tree between two modal
-        // states is interactive again.
+      if (redisableTreeSyncRef.current || willRemoveScrollbar) {
+        // A redisableTreeSyncRef run replaces a disabling that was active
+        // until the cleanup of the previous run just restored it (e.g., a
+        // nested dialog opened and re-triggered this effect). That restore
+        // already invalidated the outside tree, so re-applying synchronously
+        // merges into the same style recalc and avoids a frame where the
+        // tree between two modal states is interactive again.
         applyDisableTreeOutside();
       } else {
         // Disabling the outside tree sets inert on the top-level elements
@@ -390,8 +403,18 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     getPersistentElementsProp,
     nestedDialogs,
     modal,
+    preventBodyScroll,
+    hidden,
     unstable_treeSnapshotKey,
   ]);
+
+  // This hook is called after the tree-disabling effect above on purpose:
+  // that effect probes the scrollbar dimensions to decide whether to defer
+  // the inert writes, and the scroll lock in this hook removes the scrollbar.
+  // With always-rendered dialogs, both effects re-run in the same commit when
+  // the dialog opens, so the lock must be registered later or the probe would
+  // measure an already-removed scrollbar and always defer.
+  usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
 
   const mayAutoFocusOnShow = !!autoFocusOnShow;
   const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
