@@ -29,7 +29,14 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   SyntheticEvent,
 } from "react";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  isValidElement,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { FocusableContext } from "./focusable-context.tsx";
 
 const TagName = "div" satisfies ElementType;
@@ -70,6 +77,12 @@ function isAlwaysFocusVisible(element: HTMLElement) {
     return true;
   }
   return false;
+}
+
+function getRenderTagName(render?: FocusableProps["render"]) {
+  if (!isValidElement(render)) return;
+  if (typeof render.type !== "string") return;
+  return render.type;
 }
 
 function isNativeTabbable(tagName?: string) {
@@ -196,6 +209,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     accessibleWhenDisabled,
     autoFocus,
     onFocusVisible,
+    unstable_defaultTagName: defaultTagName = TagName,
     ...props
   }) {
     const ref = useRef<HTMLType>(null);
@@ -390,7 +404,16 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       });
     });
 
-    const tagName = useTagName(ref);
+    // The ref is only populated after mounting, so during server rendering and
+    // the first client render the tag name falls back to a deterministic
+    // guess: the intrinsic tag from a string render prop, or the default tag
+    // of the underlying component. Both the server and the client first render
+    // compute the same value, so this can't cause hydration mismatches, and
+    // the actual DOM tag still takes over once the layout effect runs.
+    const tagName = useTagName(
+      ref,
+      getRenderTagName(props.render) ?? defaultTagName,
+    );
     const nativeTabbable = focusable && isNativeTabbable(tagName);
     const supportsDisabled = focusable && supportsDisabledAttribute(tagName);
 
@@ -579,6 +602,10 @@ export interface FocusableOptions<
   onFocusVisible?: BivariantCallback<
     (event: SyntheticEvent<HTMLElement>) => void
   >;
+  /**
+   * @private
+   */
+  unstable_defaultTagName?: keyof HTMLElementTagNameMap;
 }
 
 export type FocusableProps<T extends ElementType = TagName> = Props<

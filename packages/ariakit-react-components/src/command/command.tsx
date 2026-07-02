@@ -184,7 +184,10 @@ export const useCommand = createHook<TagName, CommandOptions>(
       onKeyUp,
     };
 
-    props = useFocusable<TagName>(props);
+    props = useFocusable<TagName>({
+      unstable_defaultTagName: TagName,
+      ...props,
+    });
 
     return props;
   },

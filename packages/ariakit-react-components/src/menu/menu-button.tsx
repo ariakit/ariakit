@@ -199,6 +199,10 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       };
     }
 
+    // Submenu buttons render as a div through the Role.div element above, so
+    // the tag name guess for server rendering must be a div as well.
+    const defaultTagName = hasParentMenu ? "div" : TagName;
+
     // We'll use this id to render the aria-labelledby attribute on the menu.
     const id = useId(props.id);
 
@@ -241,6 +245,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       store,
       focusable,
       accessibleWhenDisabled,
+      unstable_defaultTagName: defaultTagName,
       ...props,
       showOnHover: (event) => {
         const getShowOnHover = () => {
@@ -270,6 +275,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       toggleOnClick: !hasParentMenu,
       focusable,
       accessibleWhenDisabled,
+      unstable_defaultTagName: defaultTagName,
       ...props,
     });
 

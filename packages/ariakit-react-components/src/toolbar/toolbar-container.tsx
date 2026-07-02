@@ -34,7 +34,11 @@ export const useToolbarContainer = createHook<TagName, ToolbarContainerOptions>(
     const context = useToolbarContext();
     store = store || context;
     props = useCompositeContainer({ store, ...props });
-    props = useToolbarItem<TagName>({ store, ...props });
+    props = useToolbarItem<TagName>({
+      store,
+      unstable_defaultTagName: TagName,
+      ...props,
+    });
     return props;
   },
 );

@@ -126,6 +126,7 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
 
   props = useCompositeItem<TagName>({
     store,
+    unstable_defaultTagName: TagName,
     ...props,
     getItem,
   });

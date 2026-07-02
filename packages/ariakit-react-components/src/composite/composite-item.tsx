@@ -21,6 +21,7 @@ import {
   isPortalEvent,
   isSelfTarget,
   disabledFromProps,
+  hasFocus,
   removeUndefinedValues,
   isSafari,
 } from "@ariakit/utils";
@@ -272,7 +273,25 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       // We need to verify if the base element is connected to the DOM to avoid
       // a scroll jump on Safari. This is necessary when the base element is
       // removed from the DOM just before triggering this focus event.
-      if (!baseElement?.isConnected) return;
+      if (!baseElement?.isConnected) {
+        // The composite element may not have been registered in the store yet:
+        // that registration happens in a layout effect on a render triggered
+        // by its ref, while a pending move can focus the item from an effect
+        // that runs before that render (for example, a select popover that
+        // mounts on show and moves to the selected item). Redirect focus to
+        // the composite element once the registration has been committed, as
+        // long as the item still has focus.
+        const itemElement = event.currentTarget;
+        const itemStore = store;
+        queueMicrotask(() => {
+          const { baseElement } = itemStore.getState();
+          if (!baseElement?.isConnected) return;
+          if (!hasFocus(itemElement)) return;
+          hasFocusedComposite.current = true;
+          baseElement.focus();
+        });
+        return;
+      }
       // Safari doesn't scroll the element into view when another element is
       // immediately focused. So we have to do it manually here.
       if (isSafari() && event.currentTarget.hasAttribute("data-autofocus")) {

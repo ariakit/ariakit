@@ -140,7 +140,10 @@ export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
       onClick,
     };
 
-    props = useFocusable<TagName>(props);
+    props = useFocusable<TagName>({
+      unstable_defaultTagName: TagName,
+      ...props,
+    });
 
     return props;
   },

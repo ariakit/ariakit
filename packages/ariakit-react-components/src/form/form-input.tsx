@@ -55,7 +55,10 @@ export const useFormInput = createHook<TagName, FormInputOptions>(
       onChange,
     };
 
-    props = useFocusable<TagName>(props);
+    props = useFocusable<TagName>({
+      unstable_defaultTagName: TagName,
+      ...props,
+    });
     props = useFormControl({ store: form, name, ...props });
 
     return props;

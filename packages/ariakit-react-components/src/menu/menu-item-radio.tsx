@@ -106,6 +106,7 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
       name,
       value,
       checked: isChecked,
+      unstable_defaultTagName: TagName,
       onChange(event) {
         onChangeProp?.(event);
         if (event.defaultPrevented) return;

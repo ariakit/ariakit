@@ -677,6 +677,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     props = useComposite<TagName>({
       store,
       focusable,
+      unstable_defaultTagName: TagName,
       ...props,
       // Enable inline autocomplete when the user moves from the combobox input
       // to an item.

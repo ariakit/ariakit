@@ -130,6 +130,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
     props = useCompositeItem<TagName>({
       store,
       preventScrollOnKeyDown,
+      unstable_defaultTagName: TagName,
       ...props,
       // Skip registering items while the menu list is hidden. Unlike a Select,
       // a Menu doesn't interact with its items while hidden, so registering

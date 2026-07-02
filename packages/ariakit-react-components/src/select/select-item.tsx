@@ -175,6 +175,7 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
       store,
       getItem,
       preventScrollOnKeyDown,
+      unstable_defaultTagName: TagName,
       ...props,
     });
 

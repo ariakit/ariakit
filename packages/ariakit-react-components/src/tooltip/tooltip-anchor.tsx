@@ -164,6 +164,7 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
 
     props = useHovercardAnchor<TagName>({
       store,
+      unstable_defaultTagName: TagName,
       showOnHover(event) {
         if (!canShowOnHoverRef.current) return false;
         if (isFalsyBooleanCallback(showOnHover, event)) return false;

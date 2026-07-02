@@ -31,6 +31,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await test.expect(disabledCard).not.toHaveAttribute("tabindex");
     });
 
+    // The submenu button covers the MenuButton case, which renders as a div
+    // when nested in another menu.
+    test("div-based menu items server-render in the tab order", async ({
+      q,
+    }) => {
+      await test.expect(q.text("Menu item")).toHaveAttribute("tabindex", "0");
+      await test
+        .expect(q.text("Submenu button"))
+        .toHaveAttribute("tabindex", "0");
+    });
+
+    test("disabled menu item doesn't server-render a disabled attribute", async ({
+      q,
+    }) => {
+      const disabledItem = q.text("Disabled menu item");
+      await test.expect(disabledItem).toHaveAttribute("aria-disabled", "true");
+      await test.expect(disabledItem).not.toHaveAttribute("disabled");
+      await test.expect(disabledItem).not.toHaveAttribute("tabindex");
+    });
+
     test("native buttons keep their server-rendered semantics", async ({
       q,
     }) => {
@@ -64,11 +84,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toHaveAttribute("tabindex", "0");
     const disabledCard = q.text("Disabled focusable card");
     await test.expect(disabledCard).toHaveAttribute("aria-disabled", "true");
-    // No tabindex absence check here: the userland workaround
-    // (accessibleWhenDisabled) legitimately keeps the disabled card focusable
-    // after hydration, so this guard only asserts the contract shared by the
-    // workaround and the library fix.
     await test.expect(disabledCard).not.toHaveAttribute("disabled");
+    await test.expect(disabledCard).not.toHaveAttribute("tabindex");
     await test
       .expect(q.text("Tooltip anchor"))
       .toHaveAttribute("tabindex", "0");

@@ -214,6 +214,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
 
     props = useCompositeItem<TagName>({
       store,
+      unstable_defaultTagName: TagName,
       ...props,
       getItem,
       // Dispatch a custom event on the combobox input when moving to an item

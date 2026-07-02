@@ -122,6 +122,7 @@ export const useMenuItemCheckbox = createHook<TagName, MenuItemCheckboxOptions>(
       name,
       value,
       checked,
+      unstable_defaultTagName: TagName,
       ...props,
     });
     props = useMenuItem({ store, hideOnClick, ...props });
