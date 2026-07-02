@@ -1,4 +1,5 @@
 import {
+  useLiveRef,
   useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
@@ -64,6 +65,29 @@ function queueFocus(element?: HTMLElement | null) {
   });
 }
 
+interface AttachedPortalRef {
+  ref: PortalOptions["portalRef"];
+  node: HTMLElement;
+  cleanup: void | (() => void);
+}
+
+function attachPortalRef(
+  ref: PortalOptions["portalRef"],
+  node: HTMLElement,
+): AttachedPortalRef {
+  return { ref, node, cleanup: setRef(ref, node) };
+}
+
+function detachPortalRef(attached: AttachedPortalRef) {
+  // Preserve React 19 callback ref cleanup semantics. Otherwise, detach the
+  // ref with null like any other React ref.
+  if (typeof attached.cleanup === "function") {
+    attached.cleanup();
+  } else {
+    setRef(attached.ref, null);
+  }
+}
+
 /**
  * Returns props to create a `Portal` component.
  * @see https://ariakit.com/components/portal
@@ -94,6 +118,11 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
   const innerAfterRef = useRef<HTMLSpanElement>(null);
   const outerAfterRef = useRef<HTMLSpanElement>(null);
 
+  const portalRefProp = useLiveRef(portalRef);
+  // Tracks the currently attached portalRef so the two effects below can
+  // detach and re-attach it without sharing dependencies.
+  const attachedPortalRefRef = useRef<AttachedPortalRef | null>(null);
+
   // Create the portal node and attach it to the DOM.
   useSafeLayoutEffect(() => {
     const element = ref.current;
@@ -118,22 +147,40 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
       // produce predictable results.
       portalEl.id = element.id ? `portal/${element.id}` : getRandomId();
     }
-    // Set the internal portal node state and the portalRef prop.
+    // Set the internal portal node state and attach the portalRef prop. The
+    // ref is read through a live ref so its identity is not a dependency of
+    // this effect: a portalRef identity change must not recreate the portal
+    // node. The effect below re-fires the ref in that case.
     setPortalNode(portalEl);
-    const cleanup = setRef(portalRef, portalEl);
+    attachedPortalRefRef.current = attachPortalRef(
+      portalRefProp.current,
+      portalEl,
+    );
     return () => {
-      // Connected portals keep their DOM node, but portalRef still needs the
-      // same cleanup/null-detach behavior as any other React ref.
-      if (typeof cleanup === "function") {
-        cleanup();
-      } else {
-        setRef(portalRef, null);
+      const attached = attachedPortalRefRef.current;
+      // Detach the portalRef first so ref cleanups still observe a connected
+      // portal node.
+      if (attached) {
+        attachedPortalRefRef.current = null;
+        detachPortalRef(attached);
       }
+      // Connected portals keep their DOM node.
       if (!isPortalInDocument) {
         portalEl.remove();
       }
     };
-  }, [portal, portalElement, context, portalRef]);
+  }, [portal, portalElement, context]);
+
+  // Re-fire the portalRef against the same portal node when only its identity
+  // changes (e.g. an inline callback on a parent re-render), mirroring how
+  // React re-fires element refs without recreating the DOM node.
+  useSafeLayoutEffect(() => {
+    const attached = attachedPortalRefRef.current;
+    if (!attached) return;
+    if (attached.ref === portalRef) return;
+    detachPortalRef(attached);
+    attachedPortalRefRef.current = attachPortalRef(portalRef, attached.node);
+  }, [portalRef]);
 
   // Move the portal node when fullscreen state changes so it stays visible.
   useEffect(() => {

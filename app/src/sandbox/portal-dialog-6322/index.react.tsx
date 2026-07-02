@@ -1,23 +1,12 @@
 import * as Ariakit from "@ariakit/react";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 export default function Example() {
   const [open, setOpen] = useState(false);
-  // Form state lifted to the parent, so every keystroke re-renders Example.
+  // Form state lifted to the parent, so every keystroke re-renders Example and
+  // creates new inline portalRef callbacks below.
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
-
-  // TODO: Remove this workaround once
-  // https://github.com/ariakit/ariakit/issues/6322 is fixed. Memoizing the
-  // portalRef keeps its identity stable across re-renders so the portal node
-  // is not destroyed and recreated on every keystroke.
-  const dialogPortalRef = useCallback((portalNode: HTMLElement | null) => {
-    portalNode?.classList.add("dialog-portal");
-  }, []);
-
-  const notesPortalRef = useCallback((portalNode: HTMLElement | null) => {
-    portalNode?.classList.add("notes-portal");
-  }, []);
 
   return (
     <>
@@ -28,7 +17,10 @@ export default function Example() {
       <Ariakit.Dialog
         open={open}
         onClose={() => setOpen(false)}
-        portalRef={dialogPortalRef}
+        // Inline portalRef: new function identity on every render.
+        portalRef={(portalNode) => {
+          portalNode?.classList.add("dialog-portal");
+        }}
         className="fixed inset-12 z-50 flex flex-col items-start gap-4 rounded-lg bg-white p-4 text-black"
       >
         <Ariakit.DialogHeading className="text-xl font-semibold">
@@ -45,7 +37,11 @@ export default function Example() {
         />
       </Ariakit.Dialog>
 
-      <Ariakit.Portal portalRef={notesPortalRef}>
+      <Ariakit.Portal
+        portalRef={(portalNode) => {
+          portalNode?.classList.add("notes-portal");
+        }}
+      >
         <input
           aria-label="Notes"
           className="rounded border border-gray-300 p-1"
