@@ -203,14 +203,15 @@ export function useDeferredValue<T>(value: T): T {
  * Returns the tag name by parsing an element ref.
  * @param refOrElement The element or a ref pointing to it.
  * @param type The fallback tag name used until the element is available.
- * @param render An optional `render` prop. When it's a host element (for
- * example, `<div />`), its tag name is returned right away, so consumers get
- * the correct tag name during render, even before the element is committed to
- * the DOM or when the render prop swaps the underlying element. A nullish
- * render prop provides no hint: hooks like `useCheckbox` can be composed by
- * components that render a different default element (for example,
- * `MenuItemCheckbox` renders a `div`), so only an explicit host element is
- * authoritative at this layer.
+ * @param render The component's `render` prop, which keeps the tag name in
+ * sync when the render prop swaps the underlying element. When it's a host
+ * element (for example, `<div />`), its tag name is also returned right away,
+ * so consumers get the correct tag name during render, even before the
+ * element is committed to the DOM. A nullish render prop provides no
+ * render-time hint: hooks like `useCheckbox` can be composed by components
+ * that render a different default element (for example, `MenuItemCheckbox`
+ * renders a `div`), so only an explicit host element is authoritative at this
+ * layer.
  * @example
  * function Component(props) {
  *   const ref = React.useRef();
@@ -230,13 +231,19 @@ export function useTagName(
 
   const [tagName, setTagName] = useState(() => stringOrUndefined(type));
 
-  // The effect has no dependency array so it re-reads the committed element
-  // on every render: the composition API can swap the underlying DOM node
-  // without remounting the component (and without changing the ref object's
-  // identity), so a mount-only read would go stale. The equality guard skips
-  // the state update entirely in the steady state — scheduling even a
-  // bailed-out update on every commit trips React 18's synchronous work loop.
-  // See https://github.com/ariakit/ariakit/issues/6336
+  // Re-read the committed element whenever the render prop changes: the
+  // composition API can swap the underlying DOM node without remounting the
+  // component (and without changing the ref object's identity), so a
+  // mount-only read would go stale, and any such swap comes from a render
+  // that received a different render prop value (inline render elements and
+  // functions change identity every render; the one exception is a hoisted
+  // stable-identity render function whose output tag depends on outer state).
+  // Depending on the render prop (rather than omitting the dependency array)
+  // keeps this effect mount-only for components without a render prop, so
+  // large collections don't pay a per-commit cost. The equality guard skips
+  // the state update entirely while the tag name is unchanged — scheduling
+  // even a bailed-out update on every commit trips React 18's synchronous
+  // work loop. See https://github.com/ariakit/ariakit/issues/6336
   useSafeLayoutEffect(() => {
     const element =
       refOrElement && "current" in refOrElement
@@ -246,7 +253,7 @@ export function useTagName(
       element?.tagName.toLowerCase() || stringOrUndefined(type);
     if (nextTagName === tagName) return;
     setTagName(nextTagName);
-  });
+  }, [refOrElement, type, render, tagName]);
 
   // Prefer the render prop's host element type when available: it reflects
   // the element that will be committed by the current render, whereas the

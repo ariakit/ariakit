@@ -18,7 +18,7 @@ import {
   isFirefox,
 } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 
@@ -66,19 +66,20 @@ export const useCommand = createHook<TagName, CommandOptions>(
     const ref = useRef<HTMLType>(null);
     const [isNativeButton, setIsNativeButton] = useState(false);
 
-    // No dependency array so the check re-runs on every render: the render
-    // prop can swap the underlying DOM node without remounting the component.
-    // The equality guard skips the state update entirely in the steady state —
-    // scheduling even a bailed-out update on every commit trips React 18's
-    // synchronous work loop. See
+    // Re-check the element whenever the render prop changes: it can swap the
+    // underlying DOM node without remounting the component, and depending on
+    // the render prop keeps the effect mount-only for components without one.
+    // Layout timing keeps the type prop correct before paint, and the
+    // equality guard skips the state update entirely while the result is
+    // unchanged — scheduling even a bailed-out update on every commit trips
+    // React 18's synchronous work loop. See
     // https://github.com/ariakit/ariakit/issues/6336
-    // oxlint-disable-next-line exhaustive-deps
-    useEffect(() => {
+    useSafeLayoutEffect(() => {
       if (!ref.current) return;
       const nextIsNativeButton = isButton(ref.current);
       if (nextIsNativeButton === isNativeButton) return;
       setIsNativeButton(nextIsNativeButton);
-    });
+    }, [props.render, props.type, isNativeButton]);
 
     const [active, setActive] = useState(false);
     const activeRef = useRef(false);

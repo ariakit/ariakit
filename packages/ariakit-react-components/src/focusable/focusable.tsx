@@ -2,6 +2,7 @@ import {
   useEvent,
   useMergeRefs,
   useMetadataProps,
+  useSafeLayoutEffect,
   useTagName,
   createElement,
   createHook,
@@ -390,7 +391,11 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       });
     });
 
-    const tagName = useTagName(ref);
+    // Pass the render prop so the tag name stays in sync when the render prop
+    // swaps the underlying element, keeping the native tabbable and disabled
+    // support checks below correct. See
+    // https://github.com/ariakit/ariakit/issues/6336
+    const tagName = useTagName(ref, undefined, props.render);
     const nativeTabbable = focusable && isNativeTabbable(tagName);
     const supportsDisabled = focusable && supportsDisabledAttribute(tagName);
 
@@ -400,14 +405,14 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     const [safariTabIndex, setSafariTabIndex] = useState(false);
 
     if (isSafariBrowser) {
-      // No dependency array so the check re-runs on every render: the render
-      // prop can swap the underlying DOM node without remounting the
-      // component. The equality guard skips the state update entirely in the
-      // steady state — scheduling even a bailed-out update on every commit
-      // trips React 18's synchronous work loop. See
+      // Re-check the element whenever the render prop changes: it can swap
+      // the underlying DOM node without remounting the component, and
+      // depending on the render prop keeps the effect mount-only for
+      // components without one. The equality guard skips the state update
+      // entirely while the result is unchanged — scheduling even a bailed-out
+      // update on every commit trips React 18's synchronous work loop. See
       // https://github.com/ariakit/ariakit/issues/6336
-      // oxlint-disable-next-line exhaustive-deps
-      useEffect(() => {
+      useSafeLayoutEffect(() => {
         if (!focusable) return;
         const element = ref.current;
         if (!element) return;
@@ -418,7 +423,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         const nextSafariTabIndex = isButton(element) || isNativeCheckboxOrRadio;
         if (nextSafariTabIndex === safariTabIndex) return;
         setSafariTabIndex(nextSafariTabIndex);
-      });
+      }, [focusable, props.render, safariTabIndex]);
     }
 
     const styleProp = props.style;

@@ -1,5 +1,6 @@
 import {
   useMergeRefs,
+  useSafeLayoutEffect,
   useTagName,
   createElement,
   createHook,
@@ -8,7 +9,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { isButton } from "@ariakit/utils";
 import type { ElementType } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
 
@@ -40,19 +41,20 @@ export const useButton = createHook<TagName, ButtonOptions>(
       () => !!tagName && isButton({ tagName, type: props.type }),
     );
 
-    // No dependency array so the check re-runs on every render: the render
-    // prop can swap the underlying DOM node without remounting the component.
-    // The equality guard skips the state update entirely in the steady state —
-    // scheduling even a bailed-out update on every commit trips React 18's
-    // synchronous work loop. See
+    // Re-check the element whenever the render prop changes: it can swap the
+    // underlying DOM node without remounting the component, and depending on
+    // the render prop keeps the effect mount-only for components without one.
+    // Layout timing keeps the role prop correct before paint, and the
+    // equality guard skips the state update entirely while the result is
+    // unchanged — scheduling even a bailed-out update on every commit trips
+    // React 18's synchronous work loop. See
     // https://github.com/ariakit/ariakit/issues/6336
-    // oxlint-disable-next-line exhaustive-deps
-    useEffect(() => {
+    useSafeLayoutEffect(() => {
       if (!ref.current) return;
       const nextIsNativeButton = isButton(ref.current);
       if (nextIsNativeButton === isNativeButton) return;
       setIsNativeButton(nextIsNativeButton);
-    });
+    }, [props.render, props.type, isNativeButton]);
 
     props = {
       role: !isNativeButton && tagName !== "a" ? "button" : undefined,
