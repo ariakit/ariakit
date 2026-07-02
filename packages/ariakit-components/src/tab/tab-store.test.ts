@@ -1,5 +1,7 @@
 import { init } from "@ariakit/store";
 import { expect, test } from "vitest";
+import { createComboboxStore } from "../combobox/combobox-store.ts";
+import { createSelectStore } from "../select/select-store.ts";
 import { createTabStore } from "./tab-store.ts";
 
 function flushBatch() {
@@ -120,4 +122,125 @@ test("tracks explicit panel item state updates", () => {
   store.panels.setState("items", []);
 
   expect(store.panel("tab-1")).toBeNull();
+});
+
+test("syncs activeId on the first setSelectedId with a select parent", async () => {
+  const select = createSelectStore();
+  const store = createTabStore({
+    composite: select,
+    defaultSelectedId: "tab-1",
+  });
+  const stop = init(store);
+
+  try {
+    store.setSelectedId("tab-2");
+    await flushBatch();
+
+    expect(store.getState().selectedId).toBe("tab-2");
+    expect(store.getState().activeId).toBe("tab-2");
+  } finally {
+    stop();
+  }
+});
+
+test("syncs activeId on the first setSelectedId after a popover toggle", async () => {
+  const select = createSelectStore();
+  const store = createTabStore({
+    composite: select,
+    defaultSelectedId: "tab-1",
+  });
+  const stop = init(store);
+
+  try {
+    select.setOpen(true);
+    select.setOpen(false);
+    await flushBatch();
+
+    store.setSelectedId("tab-2");
+    await flushBatch();
+
+    expect(store.getState().activeId).toBe("tab-2");
+  } finally {
+    stop();
+  }
+});
+
+test("skips the activeId sync when restoring selectedId on popover toggle", async () => {
+  const select = createSelectStore();
+  const store = createTabStore({
+    composite: select,
+    defaultSelectedId: "tab-1",
+  });
+  const stop = init(store);
+
+  try {
+    store.setSelectedId("tab-2");
+    await flushBatch();
+
+    select.setOpen(true);
+    await flushBatch();
+
+    expect(store.getState().selectedId).toBe("tab-1");
+    expect(store.getState().activeId).toBe("tab-2");
+  } finally {
+    stop();
+  }
+});
+
+test("syncs activeId when a restore shares a flush with a later setSelectedId", async () => {
+  const select = createSelectStore();
+  const store = createTabStore({
+    composite: select,
+    defaultSelectedId: "tab-1",
+  });
+  const stop = init(store);
+
+  try {
+    store.setSelectedId("tab-2");
+    await flushBatch();
+
+    select.setOpen(true);
+    store.setSelectedId("tab-3");
+    await flushBatch();
+
+    expect(store.getState().selectedId).toBe("tab-3");
+    expect(store.getState().activeId).toBe("tab-3");
+  } finally {
+    stop();
+  }
+});
+
+test("does not leak a restore armed right before the store is destroyed", async () => {
+  const combobox = createComboboxStore({ defaultOpen: true });
+  const store = createTabStore({ combobox, defaultSelectedId: "tab-1" });
+  const stop = init(store);
+
+  try {
+    combobox.setState("selectedValue", "value");
+    store.setSelectedId("tab-2");
+    await flushBatch();
+
+    expect(store.getState().activeId).toBe("tab-2");
+
+    combobox.setOpen(false);
+    stop();
+    await flushBatch();
+  } finally {
+    stop();
+  }
+
+  const restart = init(store);
+
+  try {
+    await flushBatch();
+    expect(store.getState().selectedId).toBe("tab-1");
+
+    store.setSelectedId("tab-3");
+    await flushBatch();
+
+    expect(store.getState().selectedId).toBe("tab-3");
+    expect(store.getState().activeId).toBe("tab-3");
+  } finally {
+    restart();
+  }
 });
