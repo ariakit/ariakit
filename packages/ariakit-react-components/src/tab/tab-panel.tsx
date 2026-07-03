@@ -53,7 +53,11 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     scrollElement,
     ...props
   }) {
-    props = { unstable_defaultTagName: TagName, ...props };
+    // TabPanel intentionally doesn't pass unstable_defaultTagName. Whether
+    // the panel is focusable depends on hasTabbableChildren, which is only
+    // known after mounting, so seeding div traits would emit a transient
+    // tabindex="0" on the initial and server-rendered output of panels that
+    // contain tabbable children.
     const context = useTabProviderContext();
     store = store || context;
 
