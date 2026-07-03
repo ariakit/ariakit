@@ -25,8 +25,9 @@ const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const PROFILE_LIMIT = 10;
 const THRESHOLD_PERCENT = 10;
 const MIN_SIGNIFICANT_DELTA_MS = 5;
-// Require at least 75% of pooled pairwise raw-sample deltas to support the
-// median direction before a browser comparison becomes significant.
+// Require at least 75% of each required round's pairwise raw-sample deltas to
+// support the paired median direction before a browser comparison becomes
+// significant.
 const RAW_SAMPLE_SUPPORT_QUANTILE = 0.25;
 
 type MetricKey = keyof PerfMetrics;
@@ -42,6 +43,8 @@ interface ComparisonRow {
   pairedRoundsCount: number;
   perRoundDeltas: number[];
   agreement: number;
+  sampleSupport: number;
+  threshold: boolean;
   significant: boolean;
   profileMode: boolean;
 }
@@ -518,10 +521,11 @@ function getRoundMetricComparison(
   const currentSamples = getMetricSamples(current, metric);
   const baselineValue = median(baselineSamples);
   const currentValue = median(currentSamples);
+  const delta = currentValue - baselineValue;
   return {
     baseline: baselineValue,
     current: currentValue,
-    delta: currentValue - baselineValue,
+    delta,
     sampleDeltas: getPairwiseDeltas(baselineSamples, currentSamples),
   };
 }
@@ -532,6 +536,7 @@ function computeSignificance({
   minDelta,
   primary,
   percent,
+  requireSampleSupport,
   roundComparisons,
 }: {
   baseline: number;
@@ -539,24 +544,37 @@ function computeSignificance({
   minDelta: number;
   primary: boolean;
   percent: number;
+  requireSampleSupport: boolean;
   roundComparisons: RoundMetricComparison[];
 }) {
   if (roundComparisons.length === 0) {
-    return { agreement: 0, significant: false };
+    return {
+      agreement: 0,
+      sampleSupport: 0,
+      threshold: false,
+      significant: false,
+    };
   }
 
   const delta = current - baseline;
   const direction = Math.sign(delta);
   if (direction === 0) {
-    return { agreement: 0, significant: false };
+    return {
+      agreement: 0,
+      sampleSupport: 0,
+      threshold: false,
+      significant: false,
+    };
   }
 
   let agreement = 0;
-  const sampleDeltas: number[] = [];
+  let sampleSupport = 0;
   for (const comparison of roundComparisons) {
-    sampleDeltas.push(...comparison.sampleDeltas);
     if (Math.sign(comparison.delta) === direction) {
       agreement += 1;
+    }
+    if (samplesSupportDirection(comparison.sampleDeltas, direction)) {
+      sampleSupport += 1;
     }
   }
 
@@ -565,11 +583,14 @@ function computeSignificance({
   const zeroBaselineOk =
     baseline === 0 && current !== baseline && Math.abs(current) >= minDelta;
   const magnitudeOk = baseline === 0 ? zeroBaselineOk : percentOk && deltaOk;
-  const agreementOk = agreement >= requiredAgreement(roundComparisons.length);
-  const sampleSupportOk = samplesSupportDirection(sampleDeltas, direction);
+  const required = requiredAgreement(roundComparisons.length);
+  const agreementOk = agreement >= required;
+  const sampleSupportOk = !requireSampleSupport || sampleSupport >= required;
 
   return {
     agreement,
+    sampleSupport,
+    threshold: magnitudeOk,
     significant: primary && magnitudeOk && agreementOk && sampleSupportOk,
   };
 }
@@ -765,7 +786,6 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
     const primary = !profileMode;
     for (const metric of allMetrics) {
       const baselineValues: number[] = [];
-      const currentValues: number[] = [];
       const roundComparisons: RoundMetricComparison[] = [];
       for (const roundIndex of sharedRoundIndices) {
         const baselineRound = base.byRound.get(roundIndex);
@@ -777,22 +797,25 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
           metric,
         );
         baselineValues.push(comparison.baseline);
-        currentValues.push(comparison.current);
         roundComparisons.push(comparison);
       }
 
       const baseVal = median(baselineValues);
-      const curVal = median(currentValues);
-      const delta = curVal - baseVal;
+      const delta = median(
+        roundComparisons.map((comparison) => comparison.delta),
+      );
+      const curVal = baseVal + delta;
       const percent = baseVal > 0 ? (delta / baseVal) * 100 : 0;
-      const { agreement, significant } = computeSignificance({
-        baseline: baseVal,
-        current: curVal,
-        minDelta,
-        primary: primary && primaryMetrics.includes(metric),
-        percent,
-        roundComparisons,
-      });
+      const { agreement, sampleSupport, threshold, significant } =
+        computeSignificance({
+          baseline: baseVal,
+          current: curVal,
+          minDelta,
+          primary: primary && primaryMetrics.includes(metric),
+          percent,
+          requireSampleSupport: !options.node,
+          roundComparisons,
+        });
       rows.push({
         testFile: cur.result.testFile,
         label: cur.result.label,
@@ -804,6 +827,8 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
         pairedRoundsCount: sharedRoundIndices.length,
         perRoundDeltas: roundComparisons.map((comparison) => comparison.delta),
         agreement,
+        sampleSupport,
+        threshold,
         significant,
         profileMode,
       });
@@ -993,6 +1018,34 @@ function formatSummaryTable(
   return lines;
 }
 
+function formatSupport(row: ComparisonRow, options: PerfCompareOptions) {
+  const rounds = `${row.agreement}/${row.pairedRoundsCount} rounds`;
+  if (options.node) return rounds;
+  return `${rounds}, raw ${row.sampleSupport}/${row.pairedRoundsCount}`;
+}
+
+function formatUnflaggedDiagnostics(
+  rows: ComparisonRow[],
+  options: PerfCompareOptions,
+): string[] {
+  const primaryMetrics = getPrimaryMetrics(options);
+  const diagnostics = rows.filter((row) => {
+    if (row.significant) return false;
+    if (!row.threshold) return false;
+    return primaryMetrics.includes(row.metric);
+  });
+  if (diagnostics.length === 0) return [];
+
+  const details = diagnostics.map((row) => {
+    const metric = getMetricLabel(row.metric, options);
+    return `${metric} (${formatSupport(row, options)})`;
+  });
+  return [
+    `<sub>Unflagged threshold-sized changes: ${details.join("; ")}.</sub>`,
+    "",
+  ];
+}
+
 function formatScriptProfile(result: PerfResult): string[] {
   const profile = result.profiles?.script;
   if (!profile) return [];
@@ -1110,6 +1163,7 @@ function formatDetailedBreakdown({
         );
       }
       lines.push("");
+      lines.push(...formatUnflaggedDiagnostics(testRows, options));
     }
     lines.push(...profileLines);
   }
@@ -1289,12 +1343,12 @@ function formatMarkdown(
   if (pairedRoundsCount == null) {
     lines.push("");
     lines.push(
-      `Compared ${resultsName} used mixed interleaved round counts; a change is flagged only when the median exceeds the threshold, ${supportClause}.`,
+      `Compared ${resultsName} used mixed interleaved round counts; a change is flagged only when the paired median delta exceeds the threshold, ${supportClause}.`,
     );
   } else if (pairedRoundsCount > 1) {
     lines.push("");
     lines.push(
-      `Aggregated across ${pairedRoundsCount} interleaved rounds; a change is flagged only when the median exceeds the threshold, ${supportClause}.`,
+      `Aggregated across ${pairedRoundsCount} interleaved rounds; a change is flagged only when the paired median delta exceeds the threshold, ${supportClause}.`,
     );
   }
 
