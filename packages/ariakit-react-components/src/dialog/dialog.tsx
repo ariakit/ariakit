@@ -14,7 +14,6 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
-  afterPaint,
   chain,
   contains,
   getActiveElement,
@@ -80,13 +79,6 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 const isSafariBrowser = isSafari();
 
-// Set when a dialog's active outside-tree disabling is restored, and consumed
-// by the next disabling in the same task so it re-applies synchronously
-// instead of deferring past the next paint. Module-level rather than
-// per-instance so it also covers handoffs between different dialogs, such as
-// a dialog closing while a sibling opens in the same commit.
-let redisableTreeOutsideSync = false;
-
 function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   const activeElement = getActiveElement(dialog);
   if (!activeElement) return false;
@@ -104,6 +96,18 @@ function getElementFromProp(
   if (!element) return null;
   if (focusable) return isFocusable(element) ? element : null;
   return element;
+}
+
+/**
+ * Like `afterPaint` from `@ariakit/utils`, but scheduled on the given window
+ * so dialogs rendered in other documents defer against their own paint cycle.
+ * Returns a function that cancels the pending callback.
+ */
+function afterPaintIn(win: Window, callback: () => void) {
+  let raf = win.requestAnimationFrame(() => {
+    raf = win.requestAnimationFrame(callback);
+  });
+  return () => win.cancelAnimationFrame(raf);
 }
 
 /**
@@ -179,6 +183,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const mounted = useStoreState(store, "mounted");
   const contentElement = useStoreState(store, "contentElement");
   const hidden = isHidden(mounted, props.hidden, props.alwaysVisible);
+
+  usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
 
   // Tracks whether the dialog was hidden by an outside click or context menu.
   // When true, focusOnHide skips focus restoration to match native HTML
@@ -269,7 +275,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // is deferred until right after the first paint instead, when the tree is
     // clean. The stylesheets provide viewport-unit fallbacks that cover the
     // first frames.
-    const cancelViewportWrite = afterPaint(setViewportHeight);
+    const cancelViewportWrite = afterPaintIn(win, setViewportHeight);
     viewport.addEventListener("resize", setViewportHeight);
     return () => {
       cancelViewportWrite();
@@ -347,66 +353,23 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (modal) {
       const { disableTreeOutside, restoreTreeOutside } =
         markAndDisableTreeOutside(id, allElements);
-      let disabled = false;
-      const applyDisableTreeOutside = () => {
-        disableTreeOutside();
-        disabled = true;
-      };
       const win = getWindow(dialog);
-      const { documentElement } = getDocument(dialog);
-      // Whether the scroll lock (which always applies synchronously so
-      // position: fixed elements don't visibly jump when the scrollbar
-      // disappears) is about to remove a visible scrollbar. Removing it
-      // resizes the viewport, forcing a full pre-paint reflow — and, for
-      // vertical scrollbars, the lock's --scrollbar-width write also
-      // invalidates the style of the whole document. Deferring the inert
-      // writes below then wouldn't save any paint latency — it would only
-      // add another full-document recalc one frame later — so disable
-      // synchronously to share the same pre-paint pass.
-      const willRemoveScrollbar =
-        preventBodyScroll &&
-        !hidden &&
-        (win.innerWidth - documentElement.clientWidth > 0 ||
-          win.innerHeight - documentElement.clientHeight > 0);
-      let raf = 0;
-      if (redisableTreeOutsideSync || willRemoveScrollbar) {
-        // A redisableTreeOutsideSync run replaces a disabling that was active
-        // until a cleanup in this same task restored it: the same dialog
-        // re-running (e.g., a nested dialog opened), or another dialog
-        // closing while this one opens. That restore already invalidated the
-        // outside tree, so re-applying synchronously merges into the same
-        // style recalc and avoids a frame where the tree between two modal
-        // states is interactive again.
-        applyDisableTreeOutside();
-      } else {
-        // Disabling the outside tree sets inert on the top-level elements
-        // around the dialog, which invalidates the style of everything inside
-        // them. The resulting style recalc scales with the page size and
-        // matches what the browser charges for a native showModal() call, but
-        // paying it before the open frame delays the dialog's first paint
-        // (see issue 4075). Defer it to right after that frame paints: the
-        // marks above (JavaScript properties with no style impact) already
-        // let the outside listeners and Escape logic treat the tree as
-        // outside in the meantime, and no user interaction can land within
-        // that frame.
-        raf = win.requestAnimationFrame(() => {
-          raf = win.requestAnimationFrame(applyDisableTreeOutside);
-        });
-      }
+      // Disabling the outside tree sets inert on the top-level elements
+      // around the dialog, which invalidates the style of everything inside
+      // them. The resulting style recalc scales with the page size and
+      // matches what the browser charges for a native showModal() call, but
+      // paying it before the open frame delays the dialog's first paint
+      // (see issue 4075). Defer it to right after that frame paints. The
+      // marks above (JavaScript properties with no style impact) apply
+      // synchronously, so the outside listeners and Escape logic already
+      // treat the tree as outside during the brief window before the inert
+      // attributes land, including when an effect re-run or a sibling
+      // dialog handoff restores the previous disabling first.
+      const cancelDisableTreeOutside = afterPaintIn(win, disableTreeOutside);
       return chain(
         restoreInsideMarks,
-        () => win.cancelAnimationFrame(raf),
+        cancelDisableTreeOutside,
         restoreTreeOutside,
-        () => {
-          if (!disabled) return;
-          // Let the next disabling, if it happens in this same task, know
-          // it's replacing an active one. The microtask clears the flag right
-          // after, so a later open still defers.
-          redisableTreeOutsideSync = true;
-          queueMicrotask(() => {
-            redisableTreeOutsideSync = false;
-          });
-        },
       );
     }
     return chain(
@@ -420,18 +383,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     getPersistentElementsProp,
     nestedDialogs,
     modal,
-    preventBodyScroll,
-    hidden,
     unstable_treeSnapshotKey,
   ]);
-
-  // This hook is called after the tree-disabling effect above on purpose:
-  // that effect probes the scrollbar dimensions to decide whether to defer
-  // the inert writes, and the scroll lock in this hook removes the scrollbar.
-  // With always-rendered dialogs, both effects re-run in the same commit when
-  // the dialog opens, so the lock must be registered later or the probe would
-  // measure an already-removed scrollbar and always defer.
-  usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
 
   const mayAutoFocusOnShow = !!autoFocusOnShow;
   const autoFocusOnShowProp = useBooleanEvent(autoFocusOnShow);
