@@ -98,6 +98,12 @@ export interface PerfMeasureOptions {
    * close it.
    */
   setup?: () => Promise<void> | void;
+  /**
+   * Unmeasured verification callback run after the metrics snapshot for each
+   * iteration. Use this for assertions so Playwright polling is not counted as
+   * application work.
+   */
+  verify?: () => Promise<void> | void;
   /** Override the auto-generated label for this measurement. */
   label?: string;
   /** Collect expensive JS functions. Adds overhead to measured metrics. */
@@ -842,6 +848,11 @@ async function collectInpValues(page: Page): Promise<number[]> {
   return page.evaluate(() => {
     const w = window as any;
     if (w.__perfObserver) {
+      for (const entry of w.__perfObserver.takeRecords()) {
+        if (entry.interactionId) {
+          w.__perfInpEntries.push(entry.duration);
+        }
+      }
       w.__perfObserver.disconnect();
     }
     return w.__perfInpEntries ?? [];
@@ -1037,6 +1048,7 @@ export async function createPerfMeasure(
     warmup = getIntegerEnv("PERF_WARMUP", 1, { min: 0 }),
     resetPage = true,
     setup,
+    verify,
     label,
     profileLimit = DEFAULT_PROFILE_LIMIT,
   } = options;
@@ -1116,6 +1128,10 @@ export async function createPerfMeasure(
         scriptSourceMapUrls,
       });
 
+      if (verify) {
+        await verify();
+      }
+
       // Only keep measured (non-warmup) iterations.
       if (i >= warmup) {
         allMetrics.push(result.metrics);
@@ -1173,9 +1189,7 @@ export async function createPerfPageLoadMeasure(
   const url = page.url();
   return createPerfMeasure(
     page,
-    async () => {
-      await gotoAndSettle(page, url);
-    },
+    () => gotoAndSettle(page, url),
     results,
     testInfo,
     {
