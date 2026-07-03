@@ -390,7 +390,6 @@ jobs:
           ROUND_FILES=()
           manifest_status=failed
           manifest_message="Chrome shard exited before completing."
-          manifest_failed=0
 
           write_chrome_manifest() {
             PERF_SHARD_STATUS="$manifest_status" \
@@ -453,7 +452,6 @@ jobs:
             local perf_files=("$@")
 
             echo "::group::Round $i - baseline"
-            local baseline_failed=0
             if ! (
               cd "$BASELINE_DIR" || exit 1
               PERF_RESULTS_FILE=baseline-$i-s$PERF_SHARD_INDEX.json \
@@ -461,17 +459,19 @@ jobs:
               PERF_WARMUP="$PERF_WARMUP" \
               xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_files[@]}"
             ); then
-              echo "::warning::Baseline perf run failed for round $i; writing an empty baseline."
-              baseline_failed=1
-              manifest_failed=1
+              # The post job discards every shard's rounds when any shard
+              # fails, so fail fast instead of benchmarking output that is
+              # guaranteed to be thrown away.
               manifest_status=failed
               manifest_message="Baseline perf run failed for round $i."
+              exit 1
             fi
             local baseline_files=("$BASELINE_DIR"/app/.perf-results/baseline-"$i"*.json)
-            if [ "$baseline_failed" -eq 1 ] || [ ${#baseline_files[@]} -eq 0 ]; then
-              if [ "$baseline_failed" -eq 0 ]; then
-                echo "::warning::No baseline perf results for round $i; writing an empty baseline."
-              fi
+            if [ ${#baseline_files[@]} -eq 0 ]; then
+              # A clean run with no matching tests (new or renamed perf files
+              # absent from the base worktree) stays comparable so
+              # perf-compare can report them as new tests with no baseline.
+              echo "::warning::No baseline perf results for round $i; writing an empty baseline."
               local empty_baseline_file=app/.perf-results/baseline-"$i"-s"$PERF_SHARD_INDEX"-worker0.json
               printf '[]\n' > "$empty_baseline_file"
               add_round_file "$empty_baseline_file"
@@ -591,10 +591,8 @@ jobs:
             echo "No significant changes detected; skipping confirmation rounds."
           fi
 
-          if [ "$manifest_failed" -eq 0 ]; then
-            manifest_status=success
-            manifest_message=""
-          fi
+          manifest_status=success
+          manifest_message=""
 
       - name: Upload shard round results
         if: always()
