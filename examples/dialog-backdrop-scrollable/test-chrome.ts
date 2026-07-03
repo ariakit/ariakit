@@ -24,17 +24,20 @@ const waitForBackdropScrollTop = async (page: Page, value: number) => {
 test.use({ headless: false });
 
 test("show/hide", async ({ page }) => {
-  const { width } = page.viewportSize()!;
   await expect(getDialog(page)).not.toBeVisible();
   await getButton(page, "View recipe").click();
   await expect(getDialog(page)).toBeVisible();
   // Show scrollbar
   await page.mouse.wheel(0, 10);
   await waitForBackdropScrollTop(page, 10);
-  // Drag scrollbar
-  await page.mouse.move(width - 5, 40);
+  // Drag the backdrop's own scrollbar. With classic scrollbars, the backdrop
+  // stops at the scrollbar gutter the scroll lock reserves on the viewport,
+  // so its scrollbar sits at the backdrop's right edge, not the viewport's.
+  const backdropBox = (await getBackdrop(page).boundingBox())!;
+  const scrollbarX = backdropBox.x + backdropBox.width - 5;
+  await page.mouse.move(scrollbarX, 40);
   await page.mouse.down();
-  await page.mouse.move(width - 5, 200);
+  await page.mouse.move(scrollbarX, 200);
   await page.mouse.up();
   const scrollTop = await getBackdropScrollTop(page);
   expect(scrollTop).toBeGreaterThan(200);

@@ -64,13 +64,13 @@ To style the backdrop of a specific dialog, use the [`backdrop`](/reference/dial
 
 ### Scrollbar width
 
-When the [`preventBodyScroll`](/reference/dialog#preventbodyscroll) prop is set to `true` (default for [`modal`](/reference/dialog#modal) dialogs), the scrollbar will be automatically hidden when the dialog is open. If your page contains `position:fixed` elements, you might need to modify their padding to compensate for the missing scrollbar width.
+When the [`preventBodyScroll`](/reference/dialog#preventbodyscroll) prop is set to `true` (default for [`modal`](/reference/dialog#modal) dialogs), the scrollbar will be automatically hidden when the dialog is open. Ariakit keeps the scrollbar's space reserved with the [`scrollbar-gutter`](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter) CSS property, so the page layout, including `position: fixed` elements, doesn't shift. On browsers with classic scrollbars, the reserved space shows the page background while the dialog is open, and fixed elements such as backdrops don't extend over it, just like they don't extend under a visible scrollbar.
 
-Ariakit automatically defines a `--scrollbar-width` CSS variable. You can apply this variable to adjust the `padding-right` of your fixed elements:
+When the scrollbar takes up space but `scrollbar-gutter` isn't supported (such as Safari before 18.2), Ariakit falls back to padding the body element and defines a `--scrollbar-width` CSS variable instead. If you need to support these browsers and your page contains `position: fixed` elements, you can apply this variable with a `0px` fallback to adjust their `padding-right`:
 
 ```css
 .header {
-  padding-right: calc(16px + var(--scrollbar-width, 0));
+  padding-right: calc(16px + var(--scrollbar-width, 0px));
 }
 ```
 

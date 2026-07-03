@@ -8,6 +8,17 @@ import { useRootDialog } from "./use-root-dialog.ts";
 // Only iOS doesn't respect `overflow: hidden` on document.body.
 const isIOS = isApple() && !isMac();
 
+// The CSS global isn't part of the Window type, even though browsers expose
+// it on every window object.
+interface WindowWithCSS extends Window {
+  CSS?: Pick<typeof CSS, "supports">;
+}
+
+function supportsScrollbarGutter(win: Window) {
+  const { CSS } = win as WindowWithCSS;
+  return !!CSS?.supports("scrollbar-gutter", "stable");
+}
+
 function getPaddingProperty(documentElement: HTMLElement) {
   // RTL <body> scrollbar
   const documentLeft = documentElement.getBoundingClientRect().left;
@@ -44,26 +55,69 @@ export function usePreventBodyScroll(
     const doc = getDocument(contentElement);
     const win = getWindow(contentElement);
     const { documentElement, body } = doc;
+
+    // Under the padding lock below, the scrollbar is already gone, so
+    // re-measuring while locked would yield 0. Read the width the first lock
+    // stored instead. The gutter lock has the same problem, covered by the
+    // computed scrollbar-gutter check in setStyle.
     const cssScrollbarWidth =
       documentElement.style.getPropertyValue("--scrollbar-width");
     const scrollbarWidth = cssScrollbarWidth
       ? Number.parseInt(cssScrollbarWidth, 10)
       : win.innerWidth - documentElement.clientWidth;
 
-    const setScrollbarWidthProperty = () =>
-      setCSSProperty(
-        documentElement,
-        "--scrollbar-width",
-        `${scrollbarWidth}px`,
+    const setStyle = () => {
+      // The gutter may already be reserved, either because the page sets
+      // scrollbar-gutter itself or because a previous gutter lock is still in
+      // place when a remount re-locks before the deferred restore below runs
+      // (StrictMode). The scrollbar measures 0 in both states (clientWidth
+      // includes the reserved gutter), so check the computed style, like the
+      // --scrollbar-width read above, to keep such locks on the gutter
+      // branch. The computed value also carries author keywords such as
+      // both-edges that the lock must preserve.
+      const scrollbarGutter = win
+        .getComputedStyle(documentElement)
+        .getPropertyValue("scrollbar-gutter");
+      const hasGutter = scrollbarGutter.includes("stable");
+      // Without a space-consuming scrollbar (overlay scrollbars, page that
+      // doesn't overflow), hiding the overflow can't shift the layout, so no
+      // compensation is needed.
+      if (!hasGutter && !scrollbarWidth) {
+        return assignStyle(body, { overflow: "hidden" });
+      }
+      // Keep the scrollbar's space reserved while `overflow: hidden` removes
+      // the scrollbar itself, so neither in-flow content nor `position:
+      // fixed` elements shift. `scrollbar-gutter` must be set on the html
+      // element: it applies to the viewport from there and doesn't propagate
+      // from body. Set the properties individually so the restore doesn't
+      // clobber unrelated inline styles (such as theme variables) written to
+      // html while the dialog is open.
+      if (hasGutter || supportsScrollbarGutter(win)) {
+        return chain(
+          setCSSProperty(
+            documentElement,
+            "scrollbar-gutter",
+            hasGutter ? scrollbarGutter : "stable",
+          ),
+          setCSSProperty(documentElement, "overflow", "hidden"),
+        );
+      }
+      // Fallback for browsers without scrollbar-gutter support (Safari <
+      // 18.2): compensate the removed scrollbar with body padding and expose
+      // --scrollbar-width so userland position: fixed elements can compensate
+      // too.
+      return chain(
+        setCSSProperty(
+          documentElement,
+          "--scrollbar-width",
+          `${scrollbarWidth}px`,
+        ),
+        assignStyle(body, {
+          overflow: "hidden",
+          [getPaddingProperty(documentElement)]: `${scrollbarWidth}px`,
+        }),
       );
-
-    const paddingProperty = getPaddingProperty(documentElement);
-
-    const setStyle = () =>
-      assignStyle(body, {
-        overflow: "hidden",
-        [paddingProperty]: `${scrollbarWidth}px`,
-      });
+    };
 
     // Only iOS doesn't respect `overflow: hidden` on document.body
     const setIOSStyle = () => {
@@ -79,7 +133,7 @@ export function usePreventBodyScroll(
         top: `${-(scrollY - Math.floor(offsetTop))}px`,
         left: `${-(scrollX - Math.floor(offsetLeft))}px`,
         right: "0",
-        [paddingProperty]: `${scrollbarWidth}px`,
+        [getPaddingProperty(documentElement)]: `${scrollbarWidth}px`,
       });
 
       return () => {
@@ -91,12 +145,9 @@ export function usePreventBodyScroll(
       };
     };
 
-    const restore = chain(
-      setScrollbarWidthProperty(),
-      isIOS ? setIOSStyle() : setStyle(),
-    );
+    if (isIOS) return setIOSStyle();
 
-    if (isIOS) return restore;
+    const restore = setStyle();
 
     return () => {
       // Defer the restore to a microtask so it runs after this commit's
