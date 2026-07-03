@@ -11,7 +11,9 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
+import { subscribe } from "@ariakit/store";
 import {
+  getActiveElement,
   getScrollingElement,
   getTextboxSelection,
   getTextboxValue,
@@ -247,6 +249,14 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 
     const onFocusProp = props.onFocus;
     const hasFocusedComposite = useRef(false);
+    // Holds the unsubscribe function of a pending focus redirect scheduled in
+    // the onFocus handler below when the base element isn't available yet. We
+    // don't cancel it on unmount: the subscription is created by a focus
+    // event, not an effect, so an unmount cleanup would permanently cancel it
+    // during strict mode's simulated unmount. The listener is self-cleaning
+    // instead: it unsubscribes on the next base element change once this item
+    // no longer has DOM focus, which also covers unmounted items.
+    const cancelScheduledFocusRedirectRef = useRef<(() => void) | null>(null);
 
     const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusProp?.(event);
@@ -276,37 +286,84 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       if (!isSelfTarget(event)) return;
       // and the composite item is not a text field or contenteditable element.
       if (isEditableElement(event.currentTarget)) return;
-      // We need to verify if the base element is connected to the DOM to avoid
-      // a scroll jump on Safari. This is necessary when the base element is
-      // removed from the DOM just before triggering this focus event.
-      if (!baseElement?.isConnected) return;
-      // Safari doesn't scroll the element into view when another element is
-      // immediately focused. So we have to do it manually here.
-      if (isSafari() && event.currentTarget.hasAttribute("data-autofocus")) {
-        event.currentTarget.scrollIntoView({
-          block: "nearest",
-          inline: "nearest",
-        });
-      }
-      hasFocusedComposite.current = true;
-      // If the previously focused element is a composite or composite item
-      // component, we'll transfer focus silently to the composite element.
-      // That's because this is just a transition event, the composite element
-      // was likely already focused, so we're just immediately returning focus
-      // to it when navigating through the items.
-      const fromComposite =
-        event.relatedTarget === baseElement ||
-        isItem(store, event.relatedTarget);
-      if (fromComposite) {
-        focusSilently(baseElement);
+
+      const redirectFocusToBaseElement = (
+        currentTarget: HTMLType,
+        relatedTarget: Element | null,
+        baseElement: HTMLElement,
+      ) => {
+        // Safari doesn't scroll the element into view when another element is
+        // immediately focused. So we have to do it manually here.
+        if (isSafari() && currentTarget.hasAttribute("data-autofocus")) {
+          currentTarget.scrollIntoView({ block: "nearest", inline: "nearest" });
+        }
+        hasFocusedComposite.current = true;
+        // If the previously focused element is a composite or composite item
+        // component, we'll transfer focus silently to the composite element.
+        // That's because this is just a transition event, the composite
+        // element was likely already focused, so we're just immediately
+        // returning focus to it when navigating through the items.
+        const fromComposite =
+          relatedTarget === baseElement || isItem(store, relatedTarget);
+        if (fromComposite) {
+          focusSilently(baseElement);
+        }
+
+        // Otherwise, the composite element is likely not focused, so we need
+        // this focus event to propagate so consumers can use the onFocus prop
+        // on <Composite>.
+        else {
+          baseElement.focus();
+        }
+      };
+
+      // The base element may not be available at this point: it's stored in a
+      // later commit than the one that mounts it, so focusing an item during
+      // the mount commit lands here before the store has it. It may also be
+      // disconnected from the DOM, such as when it's removed just before this
+      // focus event (focusing it then would cause a scroll jump on Safari).
+      // Instead of dropping the focus redirect, we wait until a connected
+      // base element is available in the store, then redirect focus to it if
+      // this item still has DOM focus.
+      // See https://github.com/ariakit/ariakit/issues/6623
+      if (!baseElement?.isConnected) {
+        const { currentTarget, relatedTarget } = event;
+        const cancelScheduledFocusRedirect = () => {
+          cancelScheduledFocusRedirectRef.current?.();
+          cancelScheduledFocusRedirectRef.current = null;
+        };
+        cancelScheduledFocusRedirect();
+        cancelScheduledFocusRedirectRef.current = subscribe(
+          store,
+          ["baseElement"],
+          () => {
+            // The redirect is no longer relevant if the item lost DOM focus
+            // in the meantime, including when it was unmounted.
+            if (getActiveElement(currentTarget) !== currentTarget) {
+              cancelScheduledFocusRedirect();
+              return;
+            }
+            const state = store.getState();
+            const nextBaseElement = state.baseElement;
+            // Keep waiting until a connected base element is stored.
+            if (!nextBaseElement?.isConnected) return;
+            cancelScheduledFocusRedirect();
+            if (!state.virtualFocus) return;
+            redirectFocusToBaseElement(
+              currentTarget,
+              relatedTarget,
+              nextBaseElement,
+            );
+          },
+        );
+        return;
       }
 
-      // Otherwise, the composite element is likely not focused, so we need this
-      // focus event to propagate so consumers can use the onFocus prop on
-      // <Composite>.
-      else {
-        baseElement.focus();
-      }
+      redirectFocusToBaseElement(
+        event.currentTarget,
+        event.relatedTarget,
+        baseElement,
+      );
     });
 
     const onBlurCaptureProp = props.onBlurCapture;
