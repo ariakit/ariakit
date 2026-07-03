@@ -310,6 +310,12 @@ jobs:
       # enough signal for noisy results.
       PERF_ITERATIONS: 5
       PERF_WARMUP: 1
+      # Script profiles are diagnostic and significantly slower. These values
+      # are also passed through the legacy PERF_ITERATIONS/PERF_WARMUP names
+      # for the baseline checkout, which may not support script-specific env
+      # vars yet.
+      PERF_SCRIPT_PROFILE_ITERATIONS: 3
+      PERF_SCRIPT_PROFILE_WARMUP: 0
       PERF_SOURCE_BASE_URL: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha }}
       # Each shard benchmarks a disjoint subset of the perf test files and runs
       # its own interleaved baseline-vs-current rounds on this one runner, so the
@@ -425,6 +431,31 @@ jobs:
             ROUND_FILES+=("$(basename "$file")")
           }
 
+          has_matching_tests() {
+            local workspace="$1"
+            local grep_flag="$2"
+            shift
+            shift
+            local output
+            if ! output="$(
+              cd "$workspace" || exit 1
+              pnpm -F app run test-perf \
+                --pass-with-no-tests \
+                --list \
+                "$grep_flag" "script profile" \
+              "$@"
+            )"; then
+              printf '%s\n' "$output"
+              manifest_status=failed
+              manifest_message="Failed to list matching perf tests."
+              exit 1
+            fi
+            if grep -Eq "Total: [1-9][0-9]* tests? in" <<< "$output"; then
+              return 0
+            fi
+            return 1
+          }
+
           trap write_chrome_manifest EXIT
 
           # Partition the perf test files across shards. The list is computed
@@ -448,16 +479,20 @@ jobs:
 
           run_baseline_perf_round() {
             local i="$1"
-            shift
-            local perf_files=("$@")
+            local group="$2"
+            local iterations="$3"
+            local warmup="$4"
+            shift 4
+            local perf_args=("$@")
+            local result_prefix=baseline-"$i"-s"$PERF_SHARD_INDEX"-"$group"
 
-            echo "::group::Round $i - baseline"
+            echo "::group::Round $i - baseline ($group)"
             if ! (
               cd "$BASELINE_DIR" || exit 1
-              PERF_RESULTS_FILE=baseline-$i-s$PERF_SHARD_INDEX.json \
-              PERF_ITERATIONS="$PERF_ITERATIONS" \
-              PERF_WARMUP="$PERF_WARMUP" \
-              xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_files[@]}"
+              PERF_RESULTS_FILE="$result_prefix.json" \
+              PERF_ITERATIONS="$iterations" \
+              PERF_WARMUP="$warmup" \
+              xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_args[@]}"
             ); then
               # The post job discards every shard's rounds when any shard
               # fails, so fail fast instead of benchmarking output that is
@@ -466,13 +501,13 @@ jobs:
               manifest_message="Baseline perf run failed for round $i."
               exit 1
             fi
-            local baseline_files=("$BASELINE_DIR"/app/.perf-results/baseline-"$i"*.json)
+            local baseline_files=("$BASELINE_DIR"/app/.perf-results/"$result_prefix"*.json)
             if [ ${#baseline_files[@]} -eq 0 ]; then
               # A clean run with no matching tests (new or renamed perf files
               # absent from the base worktree) stays comparable so
               # perf-compare can report them as new tests with no baseline.
-              echo "::warning::No baseline perf results for round $i; writing an empty baseline."
-              local empty_baseline_file=app/.perf-results/baseline-"$i"-s"$PERF_SHARD_INDEX"-worker0.json
+              echo "::warning::No baseline perf results for round $i ($group); writing an empty baseline."
+              local empty_baseline_file=app/.perf-results/"$result_prefix"-worker0.json
               printf '[]\n' > "$empty_baseline_file"
               add_round_file "$empty_baseline_file"
             else
@@ -486,26 +521,39 @@ jobs:
 
           run_current_perf_round() {
             local i="$1"
-            shift
-            local perf_files=("$@")
+            local group="$2"
+            local iterations="$3"
+            local warmup="$4"
+            local allow_empty="$5"
+            shift 5
+            local perf_args=("$@")
+            local result_prefix=current-"$i"-s"$PERF_SHARD_INDEX"-"$group"
 
-            echo "::group::Round $i - current"
+            echo "::group::Round $i - current ($group)"
             if ! (
-              PERF_RESULTS_FILE=current-$i-s$PERF_SHARD_INDEX.json \
-              PERF_ITERATIONS="$PERF_ITERATIONS" \
-              PERF_WARMUP="$PERF_WARMUP" \
-              xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_files[@]}"
+              PERF_RESULTS_FILE="$result_prefix.json" \
+              PERF_ITERATIONS="$iterations" \
+              PERF_WARMUP="$warmup" \
+              xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_args[@]}"
             ); then
               manifest_status=failed
               manifest_message="Current perf run failed for round $i."
               exit 1
             fi
-            local current_files=(app/.perf-results/current-"$i"*.json)
+            local current_files=(app/.perf-results/"$result_prefix"*.json)
             if [ ${#current_files[@]} -eq 0 ]; then
-              echo "Missing current perf results for round $i" >&2
-              manifest_status=failed
-              manifest_message="No current perf results for round $i."
-              exit 1
+              if [ "$allow_empty" -ne 1 ]; then
+                echo "Missing current perf results for round $i ($group)" >&2
+                manifest_status=failed
+                manifest_message="No current perf results for round $i ($group)."
+                exit 1
+              fi
+              echo "::warning::No current perf results for round $i ($group); writing an empty current result."
+              local empty_current_file=app/.perf-results/"$result_prefix"-worker0.json
+              printf '[]\n' > "$empty_current_file"
+              add_round_file "$empty_current_file"
+              echo "::endgroup::"
+              return
             fi
             for file in "${current_files[@]}"; do
               add_round_file "$file"
@@ -515,19 +563,61 @@ jobs:
 
           run_perf_round() {
             local i="$1"
-            shift
-            local perf_files=("$@")
+            local group="$2"
+            local iterations="$3"
+            local warmup="$4"
+            local allow_empty="$5"
+            shift 5
+            local perf_args=("$@")
 
             # Alternate sides first so same-runner drift cannot consistently
             # favor the baseline or current run across every paired round.
             if [ "$(( i % 2 ))" -eq 1 ]; then
-              echo "Round $i order: baseline -> current"
-              run_baseline_perf_round "$i" "${perf_files[@]}"
-              run_current_perf_round "$i" "${perf_files[@]}"
+              echo "Round $i ($group) order: baseline -> current"
+              run_baseline_perf_round "$i" "$group" "$iterations" "$warmup" "${perf_args[@]}"
+              run_current_perf_round "$i" "$group" "$iterations" "$warmup" "$allow_empty" "${perf_args[@]}"
             else
-              echo "Round $i order: current -> baseline"
-              run_current_perf_round "$i" "${perf_files[@]}"
-              run_baseline_perf_round "$i" "${perf_files[@]}"
+              echo "Round $i ($group) order: current -> baseline"
+              run_current_perf_round "$i" "$group" "$iterations" "$warmup" "$allow_empty" "${perf_args[@]}"
+              run_baseline_perf_round "$i" "$group" "$iterations" "$warmup" "${perf_args[@]}"
+            fi
+          }
+
+          run_perf_rounds() {
+            local i="$1"
+            shift
+            local perf_files=("$@")
+            local current_has_timing=0
+            local current_has_script_profile=0
+            local baseline_has_script_profile=0
+            if has_matching_tests "." --grep-invert "${perf_files[@]}"; then
+              current_has_timing=1
+            fi
+            if has_matching_tests "." --grep "${perf_files[@]}"; then
+              current_has_script_profile=1
+            fi
+            if has_matching_tests "$BASELINE_DIR" --grep "${perf_files[@]}"; then
+              baseline_has_script_profile=1
+            fi
+
+            run_perf_round \
+              "$i" \
+              timing \
+              "$PERF_ITERATIONS" \
+              "$PERF_WARMUP" \
+              "$(( 1 - current_has_timing ))" \
+              --grep-invert "script profile" \
+              "${perf_files[@]}"
+
+            if [ "$current_has_script_profile" -eq 1 ] || [ "$baseline_has_script_profile" -eq 1 ]; then
+              run_perf_round \
+                "$i" \
+                script-profile \
+                "$PERF_SCRIPT_PROFILE_ITERATIONS" \
+                "$PERF_SCRIPT_PROFILE_WARMUP" \
+                "$(( 1 - current_has_script_profile ))" \
+                --grep "script profile" \
+                "${perf_files[@]}"
             fi
           }
 
@@ -539,7 +629,7 @@ jobs:
           fi
 
           for i in $(seq 1 "$PERF_INITIAL_ROUNDS"); do
-            run_perf_round "$i" "${SHARD_FILES[@]}"
+            run_perf_rounds "$i" "${SHARD_FILES[@]}"
           done
 
           # This per-shard comparison only decides whether THIS shard needs
@@ -585,7 +675,7 @@ jobs:
             start_round=$((PERF_INITIAL_ROUNDS + 1))
             end_round=$((PERF_INITIAL_ROUNDS + PERF_CONFIRMATION_ROUNDS))
             for i in $(seq "$start_round" "$end_round"); do
-              run_perf_round "$i" "${CONFIRMATION_FILES[@]}"
+              run_perf_rounds "$i" "${CONFIRMATION_FILES[@]}"
             done
           else
             echo "No significant changes detected; skipping confirmation rounds."
