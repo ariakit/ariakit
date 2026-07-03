@@ -59,6 +59,33 @@ function getItemsInRow(items: CompositeStoreItem[], rowId?: string) {
   return items.filter((item) => item.rowId === rowId);
 }
 
+interface FindEnabledItemIdParams {
+  items: CompositeStoreItem[];
+  fromIndex: number;
+  /** 1 to scan forward, -1 to scan backward. */
+  step: 1 | -1;
+  rowId?: string;
+  excludeId?: string;
+}
+
+function findEnabledItemId({
+  items,
+  fromIndex,
+  step,
+  rowId,
+  excludeId,
+}: FindEnabledItemIdParams) {
+  for (let i = fromIndex; i >= 0 && i < items.length; i += step) {
+    const item = items[i];
+    if (!item) continue;
+    if (item.rowId !== rowId) continue;
+    if (item.disabled) continue;
+    if (excludeId != null && item.id === excludeId) continue;
+    return item.id;
+  }
+  return undefined;
+}
+
 /**
  * Moves all the items before the passed `id` to the end of the array. This is
  * useful when we want to loop through the items in the same row or column as
@@ -243,6 +270,50 @@ export function createCompositeStore<
       : !rtl || isVerticalDirection;
 
     const canShift = focusShift && !skip;
+
+    // Fast path for the most common cases: moving from an active item on
+    // one-dimensional composites or within the same row on two-dimensional
+    // composites, without wrapping, shifting, or skipping. The generic logic
+    // below copies the rendered items array multiple times, which is wasteful
+    // when this function runs on every keyboard navigation event.
+    if (!skip && !focusWrap && !includesBaseElement && activeId != null) {
+      const canFastScan = !isVerticalDirection
+        ? true
+        : !canShift && !renderedItems.some((item) => item.rowId != null);
+      if (canFastScan) {
+        const activeIndex = renderedItems.findIndex(
+          (item) => item.id === activeId,
+        );
+        const activeItem = renderedItems[activeIndex];
+        if (activeItem) {
+          const step: 1 | -1 = canReverse ? -1 : 1;
+          const nextId = findEnabledItemId({
+            items: renderedItems,
+            fromIndex: activeIndex + step,
+            step,
+            rowId: activeItem.rowId,
+            excludeId: activeId,
+          });
+          if (nextId !== undefined) return nextId;
+          const canLoop =
+            focusLoop &&
+            (isVerticalDirection
+              ? focusLoop !== "horizontal"
+              : focusLoop !== "vertical");
+          if (!canLoop) return undefined;
+          // Wrap around to the beginning (or end, when scanning backward) of
+          // the same row, matching the flipItems behavior in the generic
+          // logic below.
+          return findEnabledItemId({
+            items: renderedItems,
+            fromIndex: step === 1 ? 0 : renderedItems.length - 1,
+            step,
+            rowId: activeItem.rowId,
+            excludeId: activeId,
+          });
+        }
+      }
+    }
 
     let items = !isVerticalDirection
       ? renderedItems
