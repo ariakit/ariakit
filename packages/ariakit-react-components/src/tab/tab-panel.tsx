@@ -53,6 +53,7 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     scrollElement,
     ...props
   }) {
+    props = { unstable_defaultTagName: TagName, ...props };
     const context = useTabProviderContext();
     store = store || context;
 

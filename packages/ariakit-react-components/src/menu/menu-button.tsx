@@ -80,6 +80,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     showOnHover,
     ...props
   }) {
+    props = { unstable_defaultTagName: TagName, ...props };
     const context = useMenuProviderContext();
     store = store || context;
 

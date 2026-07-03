@@ -2,7 +2,7 @@ import {
   useEvent,
   useMergeRefs,
   useMetadataProps,
-  useTagName,
+  useSafeLayoutEffect,
   createElement,
   createHook,
   forwardRef,
@@ -196,6 +196,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     accessibleWhenDisabled,
     autoFocus,
     onFocusVisible,
+    unstable_defaultTagName: defaultTagName,
     ...props
   }) {
     const ref = useRef<HTMLType>(null);
@@ -390,9 +391,29 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       });
     });
 
-    const tagName = useTagName(ref);
-    const nativeTabbable = focusable && isNativeTabbable(tagName);
-    const supportsDisabled = focusable && supportsDisabledAttribute(tagName);
+    // Track only the tag name traits that affect the rendered props instead
+    // of the tag name itself. The initial values are derived from the
+    // component's default tag name, falling back to matching every natively
+    // tabbable tag, so the state updates below bail out whenever the rendered
+    // element matches the expected tag (button, input, etc. by default, or
+    // div for components that declare a non-native default tag). The extra
+    // detection render only happens when the rendered element's traits differ
+    // from the expected ones, such as a custom tag passed via the render prop.
+    const [nativeTabbableTag, setNativeTabbableTag] = useState(() =>
+      isNativeTabbable(defaultTagName),
+    );
+    const [supportsDisabledTag, setSupportsDisabledTag] = useState(() =>
+      supportsDisabledAttribute(defaultTagName),
+    );
+
+    useSafeLayoutEffect(() => {
+      const tagName = ref.current?.tagName.toLowerCase() ?? defaultTagName;
+      setNativeTabbableTag(isNativeTabbable(tagName));
+      setSupportsDisabledTag(supportsDisabledAttribute(tagName));
+    }, []);
+
+    const nativeTabbable = focusable && nativeTabbableTag;
+    const supportsDisabled = focusable && supportsDisabledTag;
 
     // On Safari, buttons and button-like inputs don't receive focus on
     // mousedown. We detect this from the DOM element (not props) so it works
@@ -579,6 +600,10 @@ export interface FocusableOptions<
   onFocusVisible?: BivariantCallback<
     (event: SyntheticEvent<HTMLElement>) => void
   >;
+  /**
+   * @private
+   */
+  unstable_defaultTagName?: keyof HTMLElementTagNameMap;
 }
 
 export type FocusableProps<T extends ElementType = TagName> = Props<

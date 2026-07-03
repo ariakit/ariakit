@@ -43,6 +43,7 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
   removeOnKeyPress = true,
   ...props
 }) {
+  props = { unstable_defaultTagName: TagName, ...props };
   const context = useTagContext();
   store = store || context;
 

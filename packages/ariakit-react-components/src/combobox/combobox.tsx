@@ -135,6 +135,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     autoComplete = "list",
     ...props
   }) {
+    props = { unstable_defaultTagName: TagName, ...props };
     const context = useComboboxProviderContext();
     store = store || context;
 

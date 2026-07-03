@@ -79,6 +79,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
     blurOnHoverEnd,
     ...props
   }) {
+    props = { unstable_defaultTagName: TagName, ...props };
     // Only use the scoped menu context here. The unscoped MenuProvider context
     // is intentionally skipped so MenuItem can bind to the menubar store when
     // it renders a MenuButton inside a Menubar.

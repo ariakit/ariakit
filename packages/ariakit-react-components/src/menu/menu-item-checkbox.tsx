@@ -71,6 +71,7 @@ export const useMenuItemCheckbox = createHook<TagName, MenuItemCheckboxOptions>(
     hideOnClick = false,
     ...props
   }) {
+    props = { unstable_defaultTagName: TagName, ...props };
     const context = useMenuScopedContext();
     store = store || context;
 

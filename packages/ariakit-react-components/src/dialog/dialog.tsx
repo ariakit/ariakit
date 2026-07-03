@@ -128,6 +128,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   unstable_treeSnapshotKey,
   ...props
 }) {
+  props = { unstable_defaultTagName: TagName, ...props };
   const context = useDialogProviderContext();
   const ref = useRef<HTMLType>(null);
   const backdropRef = useRef<HTMLDivElement>(null);

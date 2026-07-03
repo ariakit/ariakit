@@ -57,6 +57,7 @@ function hideStore(store: TooltipStore | null) {
  */
 export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
   function useTooltipAnchor({ store, showOnHover = true, ...props }) {
+    props = { unstable_defaultTagName: TagName, ...props };
     const context = useTooltipProviderContext();
     store = store || context;
 

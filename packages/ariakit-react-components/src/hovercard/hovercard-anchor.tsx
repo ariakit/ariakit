@@ -38,6 +38,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  */
 export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
   function useHovercardAnchor({ store, showOnHover = true, ...props }) {
+    props = { unstable_defaultTagName: TagName, ...props };
     const context = useHovercardProviderContext();
     store = store || context;
 

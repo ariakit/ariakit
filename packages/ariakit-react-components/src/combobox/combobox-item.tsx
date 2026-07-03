@@ -79,6 +79,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     getItem: getItemProp,
     ...props
   }) {
+    props = { unstable_defaultTagName: TagName, ...props };
     const context = useComboboxScopedContext();
     store = store || context;
 

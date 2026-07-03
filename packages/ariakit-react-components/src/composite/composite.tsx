@@ -168,6 +168,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     moveOnKeyPress = true,
     ...props
   }) {
+    props = { unstable_defaultTagName: TagName, ...props };
     const context = useCompositeProviderContext();
     store = store || context;
 
