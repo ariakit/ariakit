@@ -65,39 +65,29 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("move across items", async ({ q, page, perf }) => {
     const firstItem = q.button("Item 1");
 
-    await perf.measure(
-      async () => {
-        await moveAcrossItems(page);
+    await perf.measure(() => moveAcrossItems(page), {
+      setup: async () => {
+        await setupComposite(q);
+        await firstItem.focus();
+        await expect(firstItem).toBeFocused();
       },
-      {
-        setup: async () => {
-          await setupComposite(q);
-          await firstItem.focus();
-          await expect(firstItem).toBeFocused();
-        },
-        verify: () => verifyMovedAcrossItems(q),
-      },
-    );
+      verify: () => verifyMovedAcrossItems(q),
+    });
   });
 
   test("move across items (script profile)", async ({ q, page, perf }) => {
     const firstItem = q.button("Item 1");
 
-    await perf.measure(
-      async () => {
-        await moveAcrossItems(page);
+    await perf.measure(() => moveAcrossItems(page), {
+      scriptProfile: true,
+      profileLimit: 20,
+      setup: async () => {
+        await setupComposite(q);
+        await firstItem.focus();
+        await expect(firstItem).toBeFocused();
       },
-      {
-        scriptProfile: true,
-        profileLimit: 20,
-        setup: async () => {
-          await setupComposite(q);
-          await firstItem.focus();
-          await expect(firstItem).toBeFocused();
-        },
-        verify: () => verifyMovedAcrossItems(q),
-      },
-    );
+      verify: () => verifyMovedAcrossItems(q),
+    });
   });
 
   test("mount controlled composite", async ({ q, perf }) => {

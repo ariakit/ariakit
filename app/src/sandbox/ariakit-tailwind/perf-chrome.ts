@@ -6,8 +6,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   test("toggle layer and text classes", async ({ page, perf }) => {
-    await perf.measure(async () => {
-      await page.evaluate(() => {
+    await perf.measure(() =>
+      page.evaluate(() => {
         const sections = document.querySelectorAll<HTMLElement>(
           "section[aria-labelledby]",
         );
@@ -24,7 +24,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
           section.classList.toggle("*:ak-text-red-600");
           section.classList.toggle("ak-frame-p-4");
         }
-      });
-    });
+      }),
+    );
   });
 });

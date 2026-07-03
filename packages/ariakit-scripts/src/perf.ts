@@ -1189,9 +1189,7 @@ export async function createPerfPageLoadMeasure(
   const url = page.url();
   return createPerfMeasure(
     page,
-    async () => {
-      await gotoAndSettle(page, url);
-    },
+    () => gotoAndSettle(page, url),
     results,
     testInfo,
     {
