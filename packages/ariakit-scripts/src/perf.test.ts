@@ -1,9 +1,11 @@
+import type { CDPSession, Page } from "@playwright/test";
 import { afterEach, expect, test } from "vitest";
 import {
   getIntegerEnv,
   getUniquePerfLabel,
   parseScriptProfile,
   resolveScriptProfileSourceMaps,
+  settleQuiescent,
 } from "./perf.ts";
 
 const envName = "PERF_ITERATIONS";
@@ -253,4 +255,83 @@ test("reuses source map cache across script profile resolutions", async () => {
   await resolveScriptProfileSourceMaps(profile, options);
 
   expect(loadCount).toBe(1);
+});
+
+/**
+ * Drives `settleQuiescent` with a scripted sequence of tracked-work values in
+ * ms. The value at index `i` is returned by the i-th metrics read; the last
+ * value repeats when polling outlasts the sequence.
+ */
+function createSettleHarness(
+  trackedWorkMs: number[],
+  metricName = "ScriptDuration",
+) {
+  let reads = 0;
+  let waits = 0;
+  const page = {
+    evaluate: async () => {},
+    waitForTimeout: async () => {
+      waits += 1;
+    },
+  } as unknown as Page;
+  const cdp = {
+    send: async () => {
+      const index = Math.min(reads, trackedWorkMs.length - 1);
+      reads += 1;
+      // Tracked metrics are reported by CDP in seconds.
+      return {
+        metrics: [
+          { name: metricName, value: (trackedWorkMs[index] ?? 0) / 1000 },
+        ],
+      };
+    },
+  } as unknown as CDPSession;
+  return {
+    page,
+    cdp,
+    getWaits: () => waits,
+  };
+}
+
+test("settle returns after consecutive quiet polls", async () => {
+  const harness = createSettleHarness([100, 100, 100, 100]);
+  await settleQuiescent(harness.page, harness.cdp);
+  expect(harness.getWaits()).toBe(3);
+});
+
+test("settle keeps polling while work grows and stops once it settles", async () => {
+  const harness = createSettleHarness([100, 300, 700, 700, 700, 700]);
+  await settleQuiescent(harness.page, harness.cdp);
+  expect(harness.getWaits()).toBe(5);
+});
+
+test("settle resets quiet detection when late work appears", async () => {
+  const harness = createSettleHarness([100, 100, 500, 500, 500, 500]);
+  await settleQuiescent(harness.page, harness.cdp);
+  expect(harness.getWaits()).toBe(5);
+});
+
+test("settle treats sub-epsilon increases as quiet", async () => {
+  const harness = createSettleHarness([100, 101, 101.5, 102]);
+  await settleQuiescent(harness.page, harness.cdp);
+  expect(harness.getWaits()).toBe(3);
+});
+
+test("settle counts non-script rendering work as activity", async () => {
+  const harness = createSettleHarness(
+    [100, 300, 700, 700, 700, 700],
+    "RecalcStyleDuration",
+  );
+  await settleQuiescent(harness.page, harness.cdp);
+  expect(harness.getWaits()).toBe(5);
+});
+
+test("settle stops at the max wait bound when work never settles", async () => {
+  const values = Array.from({ length: 20 }, (_, i) => i * 10);
+  const harness = createSettleHarness(values);
+  await settleQuiescent(harness.page, harness.cdp, {
+    pollInterval: 10,
+    maxWait: 50,
+  });
+  expect(harness.getWaits()).toBe(5);
 });

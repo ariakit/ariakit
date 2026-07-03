@@ -8,7 +8,7 @@ test("sets sequential option positions across groups and leaves", async () => {
   await click(q.combobox("Fruit"));
 
   for (const [index, name] of options.entries()) {
-    const option = q.option.ensure(name);
+    const option = q.option(name);
     expect(option).toHaveAttribute("aria-setsize", "5");
     expect(option).toHaveAttribute("aria-posinset", `${index + 1}`);
   }

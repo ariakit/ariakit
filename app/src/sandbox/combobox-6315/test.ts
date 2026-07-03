@@ -64,5 +64,5 @@ test("completes unaccented input against accented items", async () => {
   expect(getInputValue(combobox)).toBe("cafe au lait");
 
   await click(q.button("Save"));
-  expect(q.status.ensure()).toHaveTextContent("cafe au lait");
+  expect(q.status()).toHaveTextContent("cafe au lait");
 });

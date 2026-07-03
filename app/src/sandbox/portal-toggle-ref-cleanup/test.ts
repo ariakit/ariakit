@@ -4,7 +4,7 @@ import { expect, test } from "vitest";
 test("detaches portalRef before removing the node when the portal prop is toggled off", async () => {
   expect(q.text("Portal content")).toBeVisible();
 
-  await click(q.button.ensure("Disable portal"));
+  await click(q.button("Disable portal"));
   // The content is rendered in place once the portal is disabled, and the
   // portalRef cleanup must have run while the node was still in the DOM.
   expect(q.text("Portal content")).toBeVisible();
@@ -15,7 +15,7 @@ test("does not attach an inline portalRef to the removed node when the portal pr
   expect(q.text("Inline portal content")).toBeVisible();
   expect(q.text("Inline portal attach connected: yes")).toBeVisible();
 
-  await click(q.button.ensure("Disable inline portal"));
+  await click(q.button("Disable inline portal"));
   // The content is rendered in place once the portal is disabled, and the
   // new inline portalRef must not have fired against the removed node.
   expect(q.text("Inline portal content")).toBeVisible();

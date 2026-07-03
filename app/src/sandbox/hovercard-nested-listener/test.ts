@@ -26,7 +26,7 @@ test("closes nested hovercard on Escape when focus is outside", async () => {
   await click(q.button("Toggle nested"));
   await expect.poll(q.dialog.lazy("Nested hovercard")).toBeVisible();
 
-  await click(q.textbox.ensure("Outside input"));
+  await click(q.textbox("Outside input"));
   expect(q.textbox("Outside input")).toHaveFocus();
   expect(q.dialog("Nested hovercard")).toBeVisible();
 

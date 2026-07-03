@@ -8,7 +8,7 @@ test("does not leak duplicate tooltip portal containers in StrictMode", async ()
     "Portal containers: 0",
   );
 
-  await hover(q.button.ensure("Hover target"));
+  await hover(q.button("Hover target"));
   expect(q.tooltip("Tooltip content")).toBeVisible();
   expect(q.status("Portal containers")).toHaveTextContent(
     "Portal containers: 1",

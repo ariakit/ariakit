@@ -9,5 +9,5 @@ test("SelectRenderer forwards horizontal orientation to the item layout", async 
   // keeps the check robust because it stays rendered as a persistent index even
   // when virtualization trims middle items. Before the fix, the dropped
   // `orientation` prop fell back to vertical, offsetting by `top` instead.
-  expect(q.option.ensure("Cherry")).toHaveStyle({ left: "192px", top: "0px" });
+  expect(q.option("Cherry")).toHaveStyle({ left: "192px", top: "0px" });
 });

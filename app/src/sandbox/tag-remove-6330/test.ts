@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6330
 test("exposes standalone TagRemove with visible text as a named button", () => {
-  const removeButton = q.button.ensure("Remove React filter");
+  const removeButton = q.button("Remove React filter");
   expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
   expect(removeButton).not.toHaveAttribute("aria-label");
   const tagRemove = document.querySelector(
@@ -15,7 +15,7 @@ test("exposes standalone TagRemove with visible text as a named button", () => {
 });
 
 test("exposes standalone TagRemove with an aria-label", () => {
-  const removeButton = q.button.ensure("Remove Vue filter");
+  const removeButton = q.button("Remove Vue filter");
   expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
   expect(removeButton).toHaveAttribute("aria-label", "Remove Vue filter");
   expect(removeButton).toHaveTextContent("x");
@@ -30,14 +30,14 @@ test("does not render a default icon outside a Tag", () => {
 });
 
 test("preserves a standalone render element name", () => {
-  const removeButton = q.button.ensure("Remove Svelte filter");
+  const removeButton = q.button("Remove Svelte filter");
   expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
   expect(removeButton).not.toHaveAttribute("aria-label");
   expect(q.button("Remove Svelte")).not.toBeInTheDocument();
 });
 
 test("preserves a standalone root labelledby name", () => {
-  const removeButton = q.button.ensure("Remove Solid filter");
+  const removeButton = q.button("Remove Solid filter");
   expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
   expect(removeButton).not.toHaveAttribute("aria-label");
   expect(removeButton).toHaveAttribute("aria-labelledby", "solid-label");

@@ -3,10 +3,10 @@ import { expect, test } from "vitest";
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6296
 test("honors prevented mousedown on disclosure", async () => {
-  await click(q.textbox.ensure("Notes"));
+  await click(q.textbox("Notes"));
   expect(q.textbox("Notes")).toHaveFocus();
 
-  await click(q.button.ensure("Show popup"));
+  await click(q.button("Show popup"));
 
   expect(q.listbox()).toBeVisible();
   expect(q.textbox("Notes")).toHaveFocus();

@@ -25,7 +25,7 @@ const cases = [
 ] as const;
 
 function getRenderedIndices(label: string) {
-  const region = q.region.ensure(label);
+  const region = q.region(label);
   const items = q.within(region).button.all();
   return items.map((element) => element.getAttribute("data-index"));
 }

@@ -3,7 +3,7 @@ import { click, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("backdrop fades out on close when only the backdrop is animated", async () => {
-  await click(q.button.ensure("Show dialog"));
+  await click(q.button("Show dialog"));
   expect(q.dialog()).toBeVisible();
   const backdrop = q.presentation.ensure();
   // The enter state is applied after a couple of frames.
@@ -24,7 +24,7 @@ test("backdrop fades out on close when only the backdrop is animated", async () 
 });
 
 test("backdrop finishes its longer fade out when the panel has a shorter transition", async () => {
-  await click(q.button.ensure("Show fast dialog"));
+  await click(q.button("Show fast dialog"));
   expect(q.dialog()).toBeVisible();
   const backdrop = q.presentation.ensure();
   // The enter state is applied after a couple of frames.

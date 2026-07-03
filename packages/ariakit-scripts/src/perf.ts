@@ -98,6 +98,12 @@ export interface PerfMeasureOptions {
    * close it.
    */
   setup?: () => Promise<void> | void;
+  /**
+   * Unmeasured verification callback run after the metrics snapshot for each
+   * iteration. Use this for assertions so Playwright polling is not counted as
+   * application work.
+   */
+  verify?: () => Promise<void> | void;
   /** Override the auto-generated label for this measurement. */
   label?: string;
   /** Collect expensive JS functions. Adds overhead to measured metrics. */
@@ -842,6 +848,11 @@ async function collectInpValues(page: Page): Promise<number[]> {
   return page.evaluate(() => {
     const w = window as any;
     if (w.__perfObserver) {
+      for (const entry of w.__perfObserver.takeRecords()) {
+        if (entry.interactionId) {
+          w.__perfInpEntries.push(entry.duration);
+        }
+      }
       w.__perfObserver.disconnect();
     }
     return w.__perfInpEntries ?? [];
@@ -869,8 +880,55 @@ async function gotoAndSettle(page: Page, url: string) {
     });
 }
 
-/** Lets paint and layout settle after an interaction. */
-async function settlePaint(page: Page) {
+export interface SettleQuiescentOptions {
+  /** Milliseconds between metric polls. */
+  pollInterval?: number;
+  /** Minimum tracked-work increase in ms between polls that counts as activity. */
+  epsilon?: number;
+  /** Consecutive quiet polls required before the page counts as settled. */
+  quietPolls?: number;
+  /**
+   * Cap in ms on the polling phase, so busy pages cannot stall runs. Polling
+   * runs in whole `pollInterval` steps, so a non-divisible cap is rounded up
+   * to the next whole poll.
+   */
+  maxWait?: number;
+}
+
+/**
+ * Main-thread work in ms tracked for settle quiescence. Painting is excluded
+ * on purpose: periodic repaints such as caret blinks would count as activity
+ * and defeat quiescence detection, while any deferred work that produces paint
+ * also shows up here first as script, style recalc, or layout time.
+ */
+function getTrackedWork(
+  metrics: Array<{ name: string; value: number }>,
+): number {
+  const scripting = getMetricValue(metrics, SCRIPT_DURATION);
+  const layout = getMetricValue(metrics, LAYOUT_DURATION);
+  const styleRecalc = getMetricValue(metrics, RECALC_STYLE_DURATION);
+  return (scripting + layout + styleRecalc) * 1000;
+}
+
+/**
+ * Lets the work triggered by an interaction settle before the closing metrics
+ * snapshot. A fixed post-paint wait undercounts deferred work that lands late
+ * on contended CI runners (such as a dialog inert-marking the page after it
+ * opens), which made per-iteration metrics bimodal. Instead, flush the pending
+ * frame, then poll CDP metrics until the tracked main-thread work stops
+ * increasing for `quietPolls` consecutive polls, within the `maxWait` cap.
+ */
+export async function settleQuiescent(
+  page: Page,
+  cdp: CDPSession,
+  options: SettleQuiescentOptions = {},
+) {
+  const {
+    pollInterval = 50,
+    epsilon = 2,
+    quietPolls = 3,
+    maxWait = 2000,
+  } = options;
   await page.evaluate(
     () =>
       new Promise<void>((resolve) => {
@@ -879,7 +937,24 @@ async function settlePaint(page: Page) {
         });
       }),
   );
-  await page.waitForTimeout(50);
+  const readTrackedWork = async () => {
+    const response: MetricsResponse = await cdp.send("Performance.getMetrics");
+    return getTrackedWork(response.metrics);
+  };
+  const maxPolls = Math.ceil(maxWait / pollInterval);
+  let previous = await readTrackedWork();
+  let quiet = 0;
+  for (let i = 0; i < maxPolls; i++) {
+    await page.waitForTimeout(pollInterval);
+    const current = await readTrackedWork();
+    if (current - previous < epsilon) {
+      quiet += 1;
+      if (quiet >= quietPolls) return;
+    } else {
+      quiet = 0;
+    }
+    previous = current;
+  }
 }
 
 /**
@@ -932,7 +1007,7 @@ async function measureOnce(
     }
 
     await interaction();
-    await settlePaint(page);
+    await settleQuiescent(page, cdp);
   } catch (error) {
     measureError = error;
   }
@@ -1037,6 +1112,7 @@ export async function createPerfMeasure(
     warmup = getIntegerEnv("PERF_WARMUP", 1, { min: 0 }),
     resetPage = true,
     setup,
+    verify,
     label,
     profileLimit = DEFAULT_PROFILE_LIMIT,
   } = options;
@@ -1105,7 +1181,7 @@ export async function createPerfMeasure(
         // Run the unmeasured setup and let its work settle so it doesn't leak
         // into the metrics snapshot taken right before the interaction.
         await setup();
-        await settlePaint(page);
+        await settleQuiescent(page, cdp);
       }
 
       const result = await measureOnce(page, cdp, interaction, {
@@ -1115,6 +1191,10 @@ export async function createPerfMeasure(
         styleSheetUrls,
         scriptSourceMapUrls,
       });
+
+      if (verify) {
+        await verify();
+      }
 
       // Only keep measured (non-warmup) iterations.
       if (i >= warmup) {
@@ -1173,9 +1253,7 @@ export async function createPerfPageLoadMeasure(
   const url = page.url();
   return createPerfMeasure(
     page,
-    async () => {
-      await gotoAndSettle(page, url);
-    },
+    () => gotoAndSettle(page, url),
     results,
     testInfo,
     {
