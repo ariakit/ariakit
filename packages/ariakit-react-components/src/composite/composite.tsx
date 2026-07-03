@@ -9,6 +9,7 @@ import {
   createElement,
   createHook,
   forwardRef,
+  memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
@@ -132,8 +133,11 @@ function withBaseScrollPreserved(store: CompositeStore, callback: () => void) {
 function useScheduleFocus(store: CompositeStore) {
   const [scheduled, setScheduled] = useState(false);
   const schedule = useCallback(() => setScheduled(true), []);
+  // Only track the active item while a focus is scheduled. Otherwise, this
+  // subscription would re-render the composite component on every active item
+  // change, such as when moving through items with arrow keys.
   const activeItem = useStoreState(store, (state) =>
-    getEnabledItem(store, state.activeId),
+    scheduled ? getEnabledItem(store, state.activeId) : null,
   );
   useEffect(() => {
     const activeElement = activeItem?.element;
@@ -146,6 +150,73 @@ function useScheduleFocus(store: CompositeStore) {
   }, [store, activeItem, scheduled]);
   return schedule;
 }
+
+interface CompositeFocusOnMoveProps {
+  store: CompositeStore;
+  focusOnMove?: boolean;
+  previousElementRef: RefObject<HTMLElement | null>;
+}
+
+/**
+ * Renders nothing and reacts to the `moves` state by focusing on the active
+ * item. This lives in a separate memoized component so moving through items
+ * doesn't re-render the whole composite component, and composite re-renders
+ * don't re-render this component. It's only rendered when the `composite` prop
+ * is enabled, so the `moves` subscription doesn't run for non-composite
+ * widgets.
+ */
+const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
+  store,
+  focusOnMove,
+  previousElementRef,
+}: CompositeFocusOnMoveProps) {
+  const moves = useStoreState(store, "moves");
+  // The base element is also tracked so the move-to-container effect below can
+  // run once it becomes available. It's published to the store through a ref
+  // callback and a transaction effect on the parent composite component, which
+  // run after this child component's effects. Without this dependency, the
+  // effect could read a not-yet-published base element and never retry, for
+  // example when the `composite` prop switches from `false` to `true` after a
+  // `move(null)` call. The base element rarely changes, so this doesn't add
+  // renders while navigating.
+  const baseElement = useStoreState(store, "baseElement");
+
+  // Focus on the active item element.
+  useEffect(() => {
+    if (!moves) return;
+    if (!focusOnMove) return;
+    const { activeId } = store.getState();
+    const itemElement = getEnabledItem(store, activeId)?.element;
+    if (!itemElement) return;
+    withBaseScrollPreserved(store, () => focusIntoView(itemElement));
+  }, [store, moves, focusOnMove]);
+
+  // If composite.move(null) has been called, the composite container should
+  // receive focus.
+  useSafeLayoutEffect(() => {
+    if (!moves) return;
+    if (!baseElement) return;
+    const { activeId } = store.getState();
+    const isSelfActive = activeId === null;
+    if (!isSelfActive) return;
+    const previousElement = previousElementRef.current;
+    // We have to clean up the previous element ref so an additional blur
+    // event is not fired on it, for example, when looping through items while
+    // includesBaseElement is true.
+    previousElementRef.current = null;
+    if (previousElement) {
+      // We fire a blur event on the previous active item before moving focus
+      // to the composite element so the events are dispatched in the right
+      // order (blur, then focus).
+      fireBlurEvent(previousElement, { relatedTarget: baseElement });
+    }
+    if (!hasFocus(baseElement)) {
+      baseElement.focus();
+    }
+  }, [store, moves, baseElement]);
+
+  return null;
+});
 
 /**
  * Returns props to create a `Composite` component.
@@ -181,52 +252,19 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     const ref = useRef<HTMLType>(null);
     const previousElementRef = useRef<HTMLElement | null>(null);
     const scheduleFocus = useScheduleFocus(store);
-    const moves = useStoreState(store, "moves");
 
     const [, setBaseElement] = useTransactionState(
       composite ? store.setBaseElement : null,
     );
 
-    // Focus on the active item element.
-    useEffect(() => {
-      if (!store) return;
-      if (!moves) return;
-      if (!composite) return;
-      if (!focusOnMove) return;
-      const { activeId } = store.getState();
-      const itemElement = getEnabledItem(store, activeId)?.element;
-      if (!itemElement) return;
-      withBaseScrollPreserved(store, () => focusIntoView(itemElement));
-    }, [store, moves, composite, focusOnMove]);
-
-    // If composite.move(null) has been called, the composite container (this
-    // element) should receive focus.
-    useSafeLayoutEffect(() => {
-      if (!store) return;
-      if (!moves) return;
-      if (!composite) return;
-      const { baseElement, activeId } = store.getState();
-      const isSelfAcive = activeId === null;
-      if (!isSelfAcive) return;
-      if (!baseElement) return;
-      const previousElement = previousElementRef.current;
-      // We have to clean up the previous element ref so an additional blur
-      // event is not fired on it, for example, when looping through items while
-      // includesBaseElement is true.
-      previousElementRef.current = null;
-      if (previousElement) {
-        // We fire a blur event on the previous active item before moving focus
-        // to the composite element so the events are dispatched in the right
-        // order (blur, then focus).
-        fireBlurEvent(previousElement, { relatedTarget: baseElement });
-      }
-      if (!hasFocus(baseElement)) {
-        baseElement.focus();
-      }
-    }, [store, moves, composite]);
-
-    const activeId = useStoreState(store, "activeId");
     const virtualFocus = useStoreState(store, "virtualFocus");
+    // Only track the activeId state when virtual focus is enabled. It's used
+    // solely by the effect below, which is a no-op otherwise, so this avoids
+    // re-rendering the composite component on every active item change when
+    // moving through items with roving tabindex.
+    const activeId = useStoreState(store, (state) =>
+      state.virtualFocus ? state.activeId : null,
+    );
 
     // At this point, if the activeId has changed and we still have a
     // previousElement, this means that the previousElement hasn't been blurred,
@@ -448,9 +486,16 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       (element) => (
         <CompositeScopedContextProvider value={store}>
           {element}
+          {composite && (
+            <CompositeFocusOnMove
+              store={store}
+              focusOnMove={focusOnMove}
+              previousElementRef={previousElementRef}
+            />
+          )}
         </CompositeScopedContextProvider>
       ),
-      [store],
+      [store, composite, focusOnMove],
     );
 
     const activeDescendant = useStoreState(store, (state) => {

@@ -278,13 +278,15 @@ You can adjust the transform origin value of the popover element using the `--po
 
 ### `--scrollbar-width`
 
-The [Dialog](/components/dialog) component will define a `--scrollbar-width` CSS variable on the `html` element when a modal dialog is open. Since the scrollbar is hidden when a modal dialog is open, this variable can be used to adjust the right padding of your `position: fixed` elements.
+The [Dialog](/components/dialog) component hides the scrollbar when a modal dialog is open, keeping its space reserved with the [`scrollbar-gutter`](https://developer.mozilla.org/en-US/docs/Web/CSS/scrollbar-gutter) CSS property so the page layout, including `position: fixed` elements, doesn't shift.
+
+When the scrollbar takes up space but `scrollbar-gutter` isn't supported (such as Safari before 18.2), it falls back to padding the body element and defines a `--scrollbar-width` CSS variable on the `html` element instead. If you need to support these browsers, this variable can be used with a `0px` fallback to adjust the right padding of your `position: fixed` elements.
 
 ```css
 .header {
   position: fixed;
   padding-inline: 16px;
-  padding-inline-end: calc(16px + var(--scrollbar-width, 0));
+  padding-inline-end: calc(16px + var(--scrollbar-width, 0px));
 }
 ```
 

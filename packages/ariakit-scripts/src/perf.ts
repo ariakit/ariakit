@@ -13,6 +13,10 @@ import type { CDPSession, Page, TestInfo } from "@playwright/test";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const DEFAULT_PROFILE_LIMIT = 10;
+const DEFAULT_PERF_ITERATIONS = 10;
+const DEFAULT_PERF_WARMUP = 1;
+const DEFAULT_SCRIPT_PROFILE_ITERATIONS = 3;
+const DEFAULT_SCRIPT_PROFILE_WARMUP = 0;
 const initializedResultFiles = new Set<string>();
 
 // CDP metric names (values are in seconds).
@@ -117,6 +121,17 @@ export interface PerfMeasureOptions {
 interface CreatePerfMeasureOptions extends PerfMeasureOptions {
   /** Re-navigate to the current page URL before each measured interaction. */
   resetPage?: boolean;
+}
+
+interface PerfSamplingOptions {
+  iterations?: number;
+  warmup?: number;
+  scriptProfile?: boolean;
+}
+
+interface PerfSamplingResult {
+  iterations: number;
+  warmup: number;
 }
 
 export interface PerfResult {
@@ -294,6 +309,34 @@ export function getIntegerEnv(
   if (!Number.isInteger(parsed)) return fallback;
   if (options.min != null && parsed < options.min) return fallback;
   return parsed;
+}
+
+export function getPerfSamplingOptions({
+  iterations,
+  warmup,
+  scriptProfile,
+}: PerfSamplingOptions = {}): PerfSamplingResult {
+  // Script profiles are diagnostic and much more expensive than the unprofiled
+  // timing run, so keep their default sample count lower.
+  const defaultIterations = scriptProfile
+    ? getIntegerEnv(
+        "PERF_SCRIPT_PROFILE_ITERATIONS",
+        DEFAULT_SCRIPT_PROFILE_ITERATIONS,
+        { min: 1 },
+      )
+    : getIntegerEnv("PERF_ITERATIONS", DEFAULT_PERF_ITERATIONS, { min: 1 });
+  const defaultWarmup = scriptProfile
+    ? getIntegerEnv(
+        "PERF_SCRIPT_PROFILE_WARMUP",
+        DEFAULT_SCRIPT_PROFILE_WARMUP,
+        { min: 0 },
+      )
+    : getIntegerEnv("PERF_WARMUP", DEFAULT_PERF_WARMUP, { min: 0 });
+
+  return {
+    iterations: iterations === undefined ? defaultIterations : iterations,
+    warmup: warmup === undefined ? defaultWarmup : warmup,
+  };
 }
 
 function normalizeProfileUrl(url: string): string {
@@ -1108,8 +1151,6 @@ export async function createPerfMeasure(
   options: CreatePerfMeasureOptions = {},
 ): Promise<PerfMetrics> {
   const {
-    iterations = getIntegerEnv("PERF_ITERATIONS", 10, { min: 1 }),
-    warmup = getIntegerEnv("PERF_WARMUP", 1, { min: 0 }),
     resetPage = true,
     setup,
     verify,
@@ -1122,6 +1163,11 @@ export async function createPerfMeasure(
     options.selectorProfile ??
     (isTruthyEnv("PERF_SELECTOR_PROFILE") ||
       isTruthyEnv("PERF_CSS_SELECTOR_PROFILE"));
+  const { iterations, warmup } = getPerfSamplingOptions({
+    iterations: options.iterations,
+    warmup: options.warmup,
+    scriptProfile,
+  });
 
   if (!Number.isInteger(iterations) || iterations <= 0) {
     throw new Error(`Invalid perf iterations: ${iterations}`);

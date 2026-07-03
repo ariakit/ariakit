@@ -120,10 +120,11 @@ export function setCSSProperty(
 
   const setup = () => {
     const previousValue = element.style.getPropertyValue(property);
+    const previousPriority = element.style.getPropertyPriority(property);
     element.style.setProperty(property, value);
     return () => {
       if (previousValue) {
-        element.style.setProperty(property, previousValue);
+        element.style.setProperty(property, previousValue, previousPriority);
       } else {
         element.style.removeProperty(property);
       }

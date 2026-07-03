@@ -1,7 +1,8 @@
 import type { CDPSession, Page } from "@playwright/test";
-import { afterEach, expect, test } from "vitest";
+import { afterEach, beforeEach, expect, test } from "vitest";
 import {
   getIntegerEnv,
+  getPerfSamplingOptions,
   getUniquePerfLabel,
   parseScriptProfile,
   resolveScriptProfileSourceMaps,
@@ -9,14 +10,35 @@ import {
 } from "./perf.ts";
 
 const envName = "PERF_ITERATIONS";
-const originalValue = process.env[envName];
+const envNames = [
+  envName,
+  "PERF_WARMUP",
+  "PERF_SCRIPT_PROFILE_ITERATIONS",
+  "PERF_SCRIPT_PROFILE_WARMUP",
+];
+const originalValues = new Map(
+  envNames.map((name) => [name, process.env[name]]),
+);
+
+function clearPerfEnv() {
+  for (const name of envNames) {
+    delete process.env[name];
+  }
+}
+
+beforeEach(() => {
+  clearPerfEnv();
+});
 
 afterEach(() => {
-  if (originalValue == null) {
-    delete process.env[envName];
-    return;
+  for (const name of envNames) {
+    const originalValue = originalValues.get(name);
+    if (originalValue == null) {
+      delete process.env[name];
+    } else {
+      process.env[name] = originalValue;
+    }
   }
-  process.env[envName] = originalValue;
 });
 
 test("gets integer env values with range validation", () => {
@@ -30,6 +52,71 @@ test("gets integer env values with range validation", () => {
 
   process.env[envName] = "0";
   expect(getIntegerEnv(envName, 1, { min: 0 })).toBe(0);
+});
+
+test("gets built-in perf sampling defaults", () => {
+  expect(getPerfSamplingOptions()).toEqual({
+    iterations: 10,
+    warmup: 1,
+  });
+  expect(getPerfSamplingOptions({ scriptProfile: true })).toEqual({
+    iterations: 3,
+    warmup: 0,
+  });
+});
+
+test("gets env perf sampling options", () => {
+  process.env.PERF_ITERATIONS = "5";
+  process.env.PERF_WARMUP = "2";
+
+  expect(getPerfSamplingOptions()).toEqual({
+    iterations: 5,
+    warmup: 2,
+  });
+  expect(getPerfSamplingOptions({ scriptProfile: true })).toEqual({
+    iterations: 3,
+    warmup: 0,
+  });
+});
+
+test("overrides script profile perf sampling options", () => {
+  process.env.PERF_ITERATIONS = "5";
+  process.env.PERF_WARMUP = "1";
+  process.env.PERF_SCRIPT_PROFILE_ITERATIONS = "4";
+  process.env.PERF_SCRIPT_PROFILE_WARMUP = "1";
+
+  expect(getPerfSamplingOptions({ scriptProfile: true })).toEqual({
+    iterations: 4,
+    warmup: 1,
+  });
+  expect(getPerfSamplingOptions({ iterations: 2, warmup: 2 })).toEqual({
+    iterations: 2,
+    warmup: 2,
+  });
+  expect(
+    getPerfSamplingOptions({
+      iterations: 2,
+      warmup: 2,
+      scriptProfile: true,
+    }),
+  ).toEqual({
+    iterations: 2,
+    warmup: 2,
+  });
+});
+
+test("preserves explicit invalid perf sampling options", () => {
+  expect(
+    getPerfSamplingOptions({
+      // @ts-expect-error Preserve runtime validation for invalid callers.
+      iterations: null,
+      // @ts-expect-error Preserve runtime validation for invalid callers.
+      warmup: null,
+    }),
+  ).toEqual({
+    iterations: null,
+    warmup: null,
+  });
 });
 
 test("resolves duplicate perf labels with exact label counts", () => {
