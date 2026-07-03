@@ -601,6 +601,10 @@ export interface FocusableOptions<
     (event: SyntheticEvent<HTMLElement>) => void
   >;
   /**
+   * For internal use only. The tag name that the component using this hook
+   * renders by default. It seeds the tag trait detection state so the
+   * post-mount update bails out without an extra render when the rendered
+   * element matches the component's default tag.
    * @private
    */
   unstable_defaultTagName?: keyof HTMLElementTagNameMap;
