@@ -40,27 +40,23 @@ test("fall back to body padding without scrollbar-gutter support", async () => {
   const unsupportedCSS: Pick<typeof CSS, "supports"> = {
     supports: () => false,
   };
-  const supports = vi
+  using _supports = vi
     .spyOn(window, "CSS", "get")
     .mockReturnValue(unsupportedCSS as typeof CSS);
-  try {
-    await click(q.button("Open dialog"));
-    expect(q.dialog("Dialog")).toBeVisible();
-    expect(documentElement).toHaveStyle("--scrollbar-width: 1024px");
-    expect(documentElement).not.toHaveStyle("scrollbar-gutter: stable");
-    // The html overflow is visible here, so the fallback must leave the html
-    // element's overflow alone and lock the body only.
-    expect(documentElement).not.toHaveStyle("overflow-y: hidden");
-    expect(body).toHaveStyle("overflow: hidden");
-    expect(body).toHaveStyle("padding-right: 1024px");
-    await press.Escape();
-    expect(q.dialog("Dialog")).not.toBeInTheDocument();
-    expect(documentElement).not.toHaveStyle("--scrollbar-width: 1024px");
-    expect(body).not.toHaveStyle("overflow: hidden");
-    expect(body).not.toHaveStyle("padding-right: 1024px");
-  } finally {
-    supports.mockRestore();
-  }
+  await click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toBeVisible();
+  expect(documentElement).toHaveStyle("--scrollbar-width: 1024px");
+  expect(documentElement).not.toHaveStyle("scrollbar-gutter: stable");
+  // The html overflow is visible here, so the fallback must leave the html
+  // element's overflow alone and lock the body only.
+  expect(documentElement).not.toHaveStyle("overflow-y: hidden");
+  expect(body).toHaveStyle("overflow: hidden");
+  expect(body).toHaveStyle("padding-right: 1024px");
+  await press.Escape();
+  expect(q.dialog("Dialog")).not.toBeInTheDocument();
+  expect(documentElement).not.toHaveStyle("--scrollbar-width: 1024px");
+  expect(body).not.toHaveStyle("overflow: hidden");
+  expect(body).not.toHaveStyle("padding-right: 1024px");
 });
 
 test.each(["nested", "sibling"])(
