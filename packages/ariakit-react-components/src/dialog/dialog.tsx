@@ -14,6 +14,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
+  afterPaint,
   chain,
   contains,
   getActiveElement,
@@ -131,10 +132,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // Dialog intentionally doesn't pass unstable_defaultTagName, so dialog-based
   // popups keep Focusable's tag detection render on mount. With production
   // React, the state update in that render's layout effect has been observed
-  // to defer the dialog's open passive effects until after the browser paints.
-  // Without it, expensive effects such as the --dialog-viewport-height write
-  // run before the first paint and block the opening interaction (dialog-perf
-  // "open dialog" INP/scripting regression).
+  // to defer the dialog's open passive effects until after the browser
+  // paints, keeping their cost off the opening interaction's critical path
+  // (dialog-perf "open dialog" INP/scripting regression).
   const context = useDialogProviderContext();
   const ref = useRef<HTMLType>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -257,9 +257,17 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       const height = win.visualViewport?.height ?? win.innerHeight;
       dialog.style.setProperty("--dialog-viewport-height", `${height}px`);
     };
-    setViewportHeight();
+    // Reading the visual viewport height forces a synchronous reflow. React
+    // may flush this effect before the browser paints the newly mounted
+    // dialog, in which case the read lands on a dirty tree and can block the
+    // opening interaction for a long time on large pages. The initial write
+    // is deferred until right after the first paint instead, when the tree is
+    // clean. The stylesheets provide viewport-unit fallbacks that cover the
+    // first frames.
+    const cancelViewportWrite = afterPaint(setViewportHeight);
     viewport.addEventListener("resize", setViewportHeight);
     return () => {
+      cancelViewportWrite();
       viewport.removeEventListener("resize", setViewportHeight);
     };
   }, [mounted, domReady]);
