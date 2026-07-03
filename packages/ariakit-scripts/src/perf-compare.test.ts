@@ -407,7 +407,7 @@ test("describes Node multi-round comparisons by round agreement", () => {
   const markdown = runCompare(dir, ["--node"]);
 
   expect(markdown).toContain(
-    "Aggregated across 2 interleaved rounds; a change is flagged only when the median exceeds the threshold, rounds agree on direction.",
+    "Aggregated across 2 interleaved rounds; a change is flagged only when the paired median delta exceeds the threshold, rounds agree on direction.",
   );
   expect(markdown).not.toContain("raw samples support it");
 });
@@ -455,7 +455,7 @@ test("flags same-direction rounds with separated raw samples", () => {
   expect(markdown).toContain("100.0ms → 160.0ms (+60%) :warning:");
 });
 
-test("pools raw sample support across rounds", () => {
+test("requires raw sample support in each required round", () => {
   const dir = createTempDir();
   writeRawRound(dir, "baseline", 1, [80, 100, 120, 140, 160]);
   writeRawRound(dir, "current", 1, [100, 120, 140, 160, 180]);
@@ -464,8 +464,10 @@ test("pools raw sample support across rounds", () => {
 
   const markdown = runCompare(dir);
 
-  expect(markdown).toContain(":warning:");
-  expect(markdown).toContain("110.0ms → 150.0ms (+36%) :warning:");
+  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain("110.0ms | 150.0ms | +40.0ms (+36%)");
+  expect(markdown).toContain("raw 1/2");
+  expect(markdown).not.toMatch(/% :warning:/);
 });
 
 test("flags a consistent regression across rounds", () => {
@@ -498,7 +500,7 @@ test("aggregates displayed values from shared rounds", () => {
   expect(markdown).not.toContain("125.0ms");
   expect(markdown).toContain("Aggregated across 2 interleaved rounds");
   expect(markdown).toContain(
-    "rounds agree on direction and raw samples support it",
+    "paired median delta exceeds the threshold, rounds agree on direction and raw samples support it",
   );
 });
 
