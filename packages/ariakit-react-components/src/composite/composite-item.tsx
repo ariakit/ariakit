@@ -165,6 +165,9 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     const row = useContext(CompositeRowContext);
     const disabled = disabledFromProps(props);
     const trulyDisabled = disabled && !props.accessibleWhenDisabled;
+    // Snapshot before the props object is replaced below (useCollectionItem
+    // consumes this prop), so the onFocus handler can read it at event time.
+    const shouldRegisterItem = props.shouldRegisterItem;
 
     // Sibling selectors below (ariaPosInSet) also need the row id during
     // render. They can't read the destructured rowId const since it's declared
@@ -254,8 +257,11 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     // don't cancel it on unmount: the subscription is created by a focus
     // event, not an effect, so an unmount cleanup would permanently cancel it
     // during strict mode's simulated unmount. The listener is self-cleaning
-    // instead: it unsubscribes on the next base element change once this item
-    // no longer has DOM focus, which also covers unmounted items.
+    // instead: it unsubscribes on the next store update once this item no
+    // longer has DOM focus. That also covers unmounted items, since
+    // unmounting an item that registers itself in the store produces an
+    // update by unregistering it, even when the base element never arrives.
+    // Redirects are only scheduled for such items.
     const cancelScheduledFocusRedirectRef = useRef<(() => void) | null>(null);
 
     const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
@@ -327,35 +333,39 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       // this item still has DOM focus.
       // See https://github.com/ariakit/ariakit/issues/6623
       if (!baseElement?.isConnected) {
+        // Items that opt out of registering themselves in the store never
+        // produce the unregister store update that the scheduled redirect
+        // below relies on to self-clean, so they keep the previous behavior
+        // of dropping the redirect.
+        if (shouldRegisterItem === false) return;
         const { currentTarget, relatedTarget } = event;
         const cancelScheduledFocusRedirect = () => {
           cancelScheduledFocusRedirectRef.current?.();
           cancelScheduledFocusRedirectRef.current = null;
         };
         cancelScheduledFocusRedirect();
-        cancelScheduledFocusRedirectRef.current = subscribe(
-          store,
-          ["baseElement"],
-          () => {
-            // The redirect is no longer relevant if the item lost DOM focus
-            // in the meantime, including when it was unmounted.
-            if (getActiveElement(currentTarget) !== currentTarget) {
-              cancelScheduledFocusRedirect();
-              return;
-            }
-            const state = store.getState();
-            const nextBaseElement = state.baseElement;
-            // Keep waiting until a connected base element is stored.
-            if (!nextBaseElement?.isConnected) return;
+        // Subscribe to every store update, not just baseElement changes, so
+        // the pending redirect is also discarded when the item unmounts
+        // without a base element ever arriving.
+        cancelScheduledFocusRedirectRef.current = subscribe(store, null, () => {
+          // The redirect is no longer relevant if the item lost DOM focus in
+          // the meantime, including when it was unmounted.
+          if (getActiveElement(currentTarget) !== currentTarget) {
             cancelScheduledFocusRedirect();
-            if (!state.virtualFocus) return;
-            redirectFocusToBaseElement(
-              currentTarget,
-              relatedTarget,
-              nextBaseElement,
-            );
-          },
-        );
+            return;
+          }
+          const state = store.getState();
+          const nextBaseElement = state.baseElement;
+          // Keep waiting until a connected base element is stored.
+          if (!nextBaseElement?.isConnected) return;
+          cancelScheduledFocusRedirect();
+          if (!state.virtualFocus) return;
+          redirectFocusToBaseElement(
+            currentTarget,
+            relatedTarget,
+            nextBaseElement,
+          );
+        });
         return;
       }
 
@@ -490,7 +500,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       store,
       ...props,
       getItem,
-      shouldRegisterItem: id ? props.shouldRegisterItem : false,
+      shouldRegisterItem: id ? shouldRegisterItem : false,
     });
 
     return removeUndefinedValues({
