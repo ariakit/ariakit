@@ -11,7 +11,8 @@ function expectModalStyle(toHaveStyle: boolean) {
   const { documentElement, body } = document;
   const prop = toHaveStyle ? "itself" : "not";
   expect(documentElement)[prop].toHaveStyle("scrollbar-gutter: stable");
-  expect(documentElement)[prop].toHaveStyle("overflow: hidden");
+  expect(documentElement)[prop].toHaveStyle("overflow-x: hidden");
+  expect(documentElement)[prop].toHaveStyle("overflow-y: hidden");
   // The scrollbar-gutter lock neither defines --scrollbar-width nor touches
   // the body styles.
   expect(documentElement).not.toHaveStyle("--scrollbar-width: 1024px");
@@ -47,6 +48,9 @@ test("fall back to body padding without scrollbar-gutter support", async () => {
     expect(q.dialog("Dialog")).toBeVisible();
     expect(documentElement).toHaveStyle("--scrollbar-width: 1024px");
     expect(documentElement).not.toHaveStyle("scrollbar-gutter: stable");
+    // The html overflow is visible here, so the fallback must leave the html
+    // element's overflow alone and lock the body only.
+    expect(documentElement).not.toHaveStyle("overflow-y: hidden");
     expect(body).toHaveStyle("overflow: hidden");
     expect(body).toHaveStyle("padding-right: 1024px");
     await press.Escape();

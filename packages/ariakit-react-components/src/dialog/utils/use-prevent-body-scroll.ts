@@ -67,6 +67,7 @@ export function usePreventBodyScroll(
       : win.innerWidth - documentElement.clientWidth;
 
     const setStyle = () => {
+      const computedStyle = win.getComputedStyle(documentElement);
       // The gutter may already be reserved, either because the page sets
       // scrollbar-gutter itself or because a previous gutter lock is still in
       // place when a remount re-locks before the deferred restore below runs
@@ -75,17 +76,41 @@ export function usePreventBodyScroll(
       // --scrollbar-width read above, to keep such locks on the gutter
       // branch. The computed value also carries author keywords such as
       // both-edges that the lock must preserve.
-      const scrollbarGutter = win
-        .getComputedStyle(documentElement)
-        .getPropertyValue("scrollbar-gutter");
+      const scrollbarGutter =
+        computedStyle.getPropertyValue("scrollbar-gutter");
       const hasGutter = scrollbarGutter.includes("stable");
+      // When the html overflow isn't visible, the page scrolls through the
+      // html element itself and the body overflow doesn't propagate to the
+      // viewport, so hiding the body overflow alone wouldn't lock the page
+      // scroll. See https://github.com/ariakit/ariakit/issues/4345
+      const isOverflowVisible = (value: string) =>
+        // happy-dom and jsdom return an empty string for unset computed
+        // values, whereas browsers return the visible keyword.
+        !value || value === "visible";
+      const htmlScrolls =
+        !isOverflowVisible(computedStyle.getPropertyValue("overflow-x")) ||
+        !isOverflowVisible(computedStyle.getPropertyValue("overflow-y"));
+      // Hide the html overflow through the longhands so the restore keeps
+      // inline longhands the page set itself, such as overflow-y: scroll.
+      // Setting the overflow shorthand would overwrite and then drop them.
+      const hideHtmlOverflow = () =>
+        chain(
+          setCSSProperty(documentElement, "overflow-x", "hidden"),
+          setCSSProperty(documentElement, "overflow-y", "hidden"),
+        );
+      const withHiddenHtmlOverflow = (restoreStyle: () => void) => {
+        if (!htmlScrolls) return restoreStyle;
+        return chain(restoreStyle, hideHtmlOverflow());
+      };
       // Without a space-consuming scrollbar (overlay scrollbars, page that
       // doesn't overflow), hiding the overflow can't shift the layout, so no
       // compensation is needed.
       if (!hasGutter && !scrollbarWidth) {
-        return assignStyle(body, { overflow: "hidden" });
+        return withHiddenHtmlOverflow(
+          assignStyle(body, { overflow: "hidden" }),
+        );
       }
-      // Keep the scrollbar's space reserved while `overflow: hidden` removes
+      // Keep the scrollbar's space reserved while the hidden overflow removes
       // the scrollbar itself, so neither in-flow content nor `position:
       // fixed` elements shift. `scrollbar-gutter` must be set on the html
       // element: it applies to the viewport from there and doesn't propagate
@@ -99,23 +124,25 @@ export function usePreventBodyScroll(
             "scrollbar-gutter",
             hasGutter ? scrollbarGutter : "stable",
           ),
-          setCSSProperty(documentElement, "overflow", "hidden"),
+          hideHtmlOverflow(),
         );
       }
       // Fallback for browsers without scrollbar-gutter support (Safari <
       // 18.2): compensate the removed scrollbar with body padding and expose
       // --scrollbar-width so userland position: fixed elements can compensate
       // too.
-      return chain(
-        setCSSProperty(
-          documentElement,
-          "--scrollbar-width",
-          `${scrollbarWidth}px`,
+      return withHiddenHtmlOverflow(
+        chain(
+          setCSSProperty(
+            documentElement,
+            "--scrollbar-width",
+            `${scrollbarWidth}px`,
+          ),
+          assignStyle(body, {
+            overflow: "hidden",
+            [getPaddingProperty(documentElement)]: `${scrollbarWidth}px`,
+          }),
         ),
-        assignStyle(body, {
-          overflow: "hidden",
-          [getPaddingProperty(documentElement)]: `${scrollbarWidth}px`,
-        }),
       );
     };
 
