@@ -128,7 +128,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   unstable_treeSnapshotKey,
   ...props
 }) {
-  props = { unstable_defaultTagName: TagName, ...props };
+  // Dialog intentionally doesn't pass unstable_defaultTagName, so dialog-based
+  // popups keep Focusable's tag detection render on mount. With production
+  // React, the state update in that render's layout effect has been observed
+  // to defer the dialog's open passive effects until after the browser paints.
+  // Without it, expensive effects such as the --dialog-viewport-height write
+  // run before the first paint and block the opening interaction (dialog-perf
+  // "open dialog" INP/scripting regression).
   const context = useDialogProviderContext();
   const ref = useRef<HTMLType>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
