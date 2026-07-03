@@ -323,7 +323,16 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         }
       };
 
-      // The base element may not be available at this point: it's stored in a
+      if (baseElement?.isConnected) {
+        redirectFocusToBaseElement(
+          event.currentTarget,
+          event.relatedTarget,
+          baseElement,
+        );
+        return;
+      }
+
+      // The base element isn't available at this point: it's stored in a
       // later commit than the one that mounts it, so focusing an item during
       // the mount commit lands here before the store has it. It may also be
       // disconnected from the DOM, such as when it's removed just before this
@@ -332,48 +341,40 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       // base element is available in the store, then redirect focus to it if
       // this item still has DOM focus.
       // See https://github.com/ariakit/ariakit/issues/6623
-      if (!baseElement?.isConnected) {
-        // Items that opt out of registering themselves in the store never
-        // produce the unregister store update that the scheduled redirect
-        // below relies on to self-clean, so they keep the previous behavior
-        // of dropping the redirect.
-        if (shouldRegisterItem === false) return;
-        const { currentTarget, relatedTarget } = event;
-        const cancelScheduledFocusRedirect = () => {
-          cancelScheduledFocusRedirectRef.current?.();
-          cancelScheduledFocusRedirectRef.current = null;
-        };
-        cancelScheduledFocusRedirect();
-        // Subscribe to every store update, not just baseElement changes, so
-        // the pending redirect is also discarded when the item unmounts
-        // without a base element ever arriving.
-        cancelScheduledFocusRedirectRef.current = subscribe(store, null, () => {
-          // The redirect is no longer relevant if the item lost DOM focus in
-          // the meantime, including when it was unmounted.
-          if (getActiveElement(currentTarget) !== currentTarget) {
-            cancelScheduledFocusRedirect();
-            return;
-          }
-          const state = store.getState();
-          const nextBaseElement = state.baseElement;
-          // Keep waiting until a connected base element is stored.
-          if (!nextBaseElement?.isConnected) return;
-          cancelScheduledFocusRedirect();
-          if (!state.virtualFocus) return;
-          redirectFocusToBaseElement(
-            currentTarget,
-            relatedTarget,
-            nextBaseElement,
-          );
-        });
-        return;
-      }
 
-      redirectFocusToBaseElement(
-        event.currentTarget,
-        event.relatedTarget,
-        baseElement,
-      );
+      // Items that opt out of registering themselves in the store never
+      // produce the unregister store update that the scheduled redirect below
+      // relies on to self-clean, so they keep the previous behavior of
+      // dropping the redirect.
+      if (shouldRegisterItem === false) return;
+      const { currentTarget, relatedTarget } = event;
+      const cancelScheduledFocusRedirect = () => {
+        cancelScheduledFocusRedirectRef.current?.();
+        cancelScheduledFocusRedirectRef.current = null;
+      };
+      cancelScheduledFocusRedirect();
+      // Subscribe to every store update, not just baseElement changes, so the
+      // pending redirect is also discarded when the item unmounts without a
+      // base element ever arriving.
+      cancelScheduledFocusRedirectRef.current = subscribe(store, null, () => {
+        // The redirect is no longer relevant if the item lost DOM focus in
+        // the meantime, including when it was unmounted.
+        if (getActiveElement(currentTarget) !== currentTarget) {
+          cancelScheduledFocusRedirect();
+          return;
+        }
+        const state = store.getState();
+        const nextBaseElement = state.baseElement;
+        // Keep waiting until a connected base element is stored.
+        if (!nextBaseElement?.isConnected) return;
+        cancelScheduledFocusRedirect();
+        if (!state.virtualFocus) return;
+        redirectFocusToBaseElement(
+          currentTarget,
+          relatedTarget,
+          nextBaseElement,
+        );
+      });
     });
 
     const onBlurCaptureProp = props.onBlurCapture;
