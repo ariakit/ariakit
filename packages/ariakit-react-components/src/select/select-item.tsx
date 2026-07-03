@@ -67,12 +67,7 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
     focusOnHover = true,
     ...props
   }) {
-    // SelectItem intentionally doesn't pass unstable_defaultTagName. The
-    // selected item auto-focuses when the popover opens with virtual focus,
-    // and skipping the tag detection render exposes a focus-ordering race
-    // where focus can stay on the item instead of moving to the listbox ("show
-    // on arrow keys" in examples/select/test.ts fails under full-suite load).
-    // Keep the item un-hinted until that race is addressed.
+    props = { unstable_defaultTagName: TagName, ...props };
     const context = useSelectScopedContext();
     store = store || context;
 
