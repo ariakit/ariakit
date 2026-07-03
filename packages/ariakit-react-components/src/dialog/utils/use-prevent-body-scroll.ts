@@ -27,15 +27,10 @@ export function usePreventBodyScroll(
     enabled,
   });
 
-  // Lock the scroll in the layout phase so the layout reads below (viewport
-  // width, scrollbar position) run during the commit, where layout is being
-  // computed anyway. As a passive effect, those reads ran after other effects
-  // had already written styles, forcing an extra synchronous layout on every
-  // open. This also locks the scroll before the dialog is first painted. On
-  // iOS, the lock stays in the passive phase: its scroll position bookkeeping
-  // (capture on lock, scrollTo on unlock) depends on the passive timing
-  // relative to the dialog's focus effects. The hook choice is stable because
-  // isIOS never changes within a session.
+  // On iOS, the lock runs synchronously in the passive phase: its scroll
+  // position bookkeeping (capture on lock, scrollTo on unlock) depends on the
+  // passive timing relative to the dialog's focus effects. The hook choice is
+  // stable because isIOS never changes within a session.
   const useLockEffect = isIOS ? useEffect : useSafeLayoutEffect;
 
   useLockEffect(() => {
@@ -57,13 +52,26 @@ export function usePreventBodyScroll(
         `${scrollbarWidth}px`,
       );
 
-    const paddingProperty = getPaddingProperty(documentElement);
-
-    const setStyle = () =>
-      assignStyle(body, {
-        overflow: "hidden",
-        [paddingProperty]: `${scrollbarWidth}px`,
-      });
+    const setStyle = () => {
+      // When there's no scrollbar width to compensate, only the overflow
+      // needs to change. Skipping the --scrollbar-width and padding writes
+      // isn't just avoiding no-ops: writing a custom property on
+      // documentElement invalidates the style of the whole document (custom
+      // properties are inherited, so every element is affected even when
+      // nothing references the variable). Consumers read the property with a
+      // zero fallback, so its absence is equivalent to the previous "0px".
+      if (!scrollbarWidth) {
+        return assignStyle(body, { overflow: "hidden" });
+      }
+      const paddingProperty = getPaddingProperty(documentElement);
+      return chain(
+        setScrollbarWidthProperty(),
+        assignStyle(body, {
+          overflow: "hidden",
+          [paddingProperty]: `${scrollbarWidth}px`,
+        }),
+      );
+    };
 
     // Only iOS doesn't respect `overflow: hidden` on document.body
     const setIOSStyle = () => {
@@ -72,6 +80,8 @@ export function usePreventBodyScroll(
       // iOS 12 does not support `visuaViewport`.
       const offsetLeft = visualViewport?.offsetLeft ?? 0;
       const offsetTop = visualViewport?.offsetTop ?? 0;
+
+      const paddingProperty = getPaddingProperty(documentElement);
 
       const restoreStyle = assignStyle(body, {
         position: "fixed",
@@ -91,10 +101,17 @@ export function usePreventBodyScroll(
       };
     };
 
-    const restore = chain(
-      setScrollbarWidthProperty(),
-      isIOS ? setIOSStyle() : setStyle(),
-    );
+    // The lock is always applied synchronously, before the dialog's first
+    // paint. When a scrollbar is visible, hiding the overflow changes the
+    // viewport size, which moves position: fixed elements — including the
+    // dialog itself — so it must happen in the same frame the dialog first
+    // paints in, or the dialog visibly jumps one frame after appearing.
+    const restore = isIOS
+      ? chain(
+          scrollbarWidth ? setScrollbarWidthProperty() : undefined,
+          setIOSStyle(),
+        )
+      : setStyle();
 
     if (isIOS) return restore;
 
