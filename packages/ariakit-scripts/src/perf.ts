@@ -122,9 +122,19 @@ export interface PerfMeasureOptions {
   verify?: PerfMeasureCallback;
   /** Override the auto-generated label for this measurement. */
   label?: string;
-  /** Collect expensive JS functions. Adds overhead to measured metrics. */
+  /**
+   * Collect expensive JS functions. Explicit options on regular labels keep
+   * measured metrics unprofiled by collecting profiles in extra diagnostic
+   * iterations. Profile-only labels and env-driven profiling collect during
+   * measured iterations and add overhead to those metrics.
+   */
   scriptProfile?: boolean;
-  /** Collect expensive CSS selectors. Adds overhead to measured metrics. */
+  /**
+   * Collect expensive CSS selectors. Explicit options on regular labels keep
+   * measured metrics unprofiled by collecting profiles in extra diagnostic
+   * iterations. Profile-only labels and env-driven profiling collect during
+   * measured iterations and add overhead to those metrics.
+   */
   selectorProfile?: boolean;
   /** Maximum number of profile entries stored per profile type. */
   profileLimit?: number;
@@ -150,12 +160,29 @@ interface PerfSamplingResult {
   warmup: number;
 }
 
+interface PerfProfileModeOptions {
+  label: string;
+  scriptProfile?: boolean;
+  selectorProfile?: boolean;
+}
+
+interface PerfProfileModeResult {
+  profileOnly: boolean;
+  scriptProfile: boolean;
+  selectorProfile: boolean;
+  timingScriptProfile: boolean;
+  timingSelectorProfile: boolean;
+  diagnosticScriptProfile: boolean;
+  diagnosticSelectorProfile: boolean;
+}
+
 export interface PerfResult {
   testFile: string;
   testTitle: string;
   label: string;
   metrics: PerfMetrics;
   raw: PerfMetrics[];
+  profileOnly?: boolean;
   scriptProfile?: boolean;
   selectorProfile?: boolean;
   profiles?: PerfProfiles;
@@ -349,6 +376,83 @@ export function getPerfSamplingOptions({
   return {
     iterations: iterations === undefined ? defaultIterations : iterations,
     warmup: warmup === undefined ? defaultWarmup : warmup,
+  };
+}
+
+export function formatPerfTitlePath(titlePath: string[]): string {
+  const titleParts: string[] = [];
+  for (const title of titlePath) {
+    if (!title) continue;
+    const pathParts = /\.tsx?$/.test(title) ? title.split(/[\\/]/) : [title];
+    const sandboxIndex = pathParts.lastIndexOf("sandbox");
+    const visibleParts =
+      sandboxIndex >= 0 ? pathParts.slice(sandboxIndex + 1) : pathParts;
+    for (const part of visibleParts) {
+      if (!part) continue;
+      if (part === "perf-chrome.ts") continue;
+      titleParts.push(part);
+    }
+  }
+  return titleParts.join(" > ");
+}
+
+const PROFILE_LABEL_SUFFIXES = [" (script profile)", " (selector profile)"];
+
+/**
+ * Removes suffixes that mark dedicated profile-only measurements. These legacy
+ * labels run with profiler overhead, use profile sampling defaults, and are
+ * merged into their base label without contributing metrics to comparisons.
+ */
+export function getPerfProfileBaseLabel(label: string): string {
+  for (const suffix of PROFILE_LABEL_SUFFIXES) {
+    if (label.endsWith(suffix)) {
+      return label.slice(0, -suffix.length);
+    }
+  }
+  return label;
+}
+
+/**
+ * Detects labels that opt into profile-only behavior through their suffix. A
+ * profile-only measurement runs with profiler overhead and is excluded from
+ * timing comparisons.
+ */
+export function isPerfProfileLabel(label: string): boolean {
+  return getPerfProfileBaseLabel(label) !== label;
+}
+
+/**
+ * Resolves whether profiling runs in the measured iteration or in separate
+ * diagnostic iterations. Env-driven profiling keeps the old quick measured
+ * path with profiler overhead; explicit profiling options on regular labels
+ * keep timing metrics unprofiled.
+ */
+export function getPerfProfileMode({
+  label,
+  scriptProfile: scriptProfileOption,
+  selectorProfile: selectorProfileOption,
+}: PerfProfileModeOptions): PerfProfileModeResult {
+  const envScriptProfile =
+    scriptProfileOption == null && isTruthyEnv("PERF_SCRIPT_PROFILE");
+  const envSelectorProfile =
+    selectorProfileOption == null &&
+    (isTruthyEnv("PERF_SELECTOR_PROFILE") ||
+      isTruthyEnv("PERF_CSS_SELECTOR_PROFILE"));
+  const scriptProfile = scriptProfileOption ?? envScriptProfile;
+  const selectorProfile = selectorProfileOption ?? envSelectorProfile;
+  const profileOnly = isPerfProfileLabel(label);
+  const timingScriptProfile =
+    scriptProfile && (profileOnly || envScriptProfile);
+  const timingSelectorProfile =
+    selectorProfile && (profileOnly || envSelectorProfile);
+  return {
+    profileOnly,
+    scriptProfile,
+    selectorProfile,
+    timingScriptProfile,
+    timingSelectorProfile,
+    diagnosticScriptProfile: scriptProfile && !timingScriptProfile,
+    diagnosticSelectorProfile: selectorProfile && !timingSelectorProfile,
   };
 }
 
@@ -1304,16 +1408,23 @@ export async function createPerfMeasure(
     label,
     profileLimit = DEFAULT_PROFILE_LIMIT,
   } = options;
-  const scriptProfile =
-    options.scriptProfile ?? isTruthyEnv("PERF_SCRIPT_PROFILE");
-  const selectorProfile =
-    options.selectorProfile ??
-    (isTruthyEnv("PERF_SELECTOR_PROFILE") ||
-      isTruthyEnv("PERF_CSS_SELECTOR_PROFILE"));
+  const testTitle = formatPerfTitlePath(testInfo.titlePath);
+  const baseLabel = label ?? testTitle;
+  const {
+    profileOnly,
+    timingScriptProfile,
+    timingSelectorProfile,
+    diagnosticScriptProfile,
+    diagnosticSelectorProfile,
+  } = getPerfProfileMode({
+    label: baseLabel,
+    scriptProfile: options.scriptProfile,
+    selectorProfile: options.selectorProfile,
+  });
   const { iterations, warmup } = getPerfSamplingOptions({
     iterations: options.iterations,
     warmup: options.warmup,
-    scriptProfile,
+    scriptProfile: timingScriptProfile,
   });
 
   if (!Number.isInteger(iterations) || iterations <= 0) {
@@ -1347,36 +1458,69 @@ export async function createPerfMeasure(
     traceMapCache: new Map(),
   };
 
-  for (let i = 0; i < warmup + iterations; i++) {
-    const result = await measureIteration({
-      browser,
-      contextOptions,
-      testInfo,
-      url,
-      loadPage,
-      interaction,
-      setup,
-      verify,
-      scriptProfile,
-      selectorProfile,
-      scriptSourceMapResolver,
-    });
+  const runIterations = async ({
+    iterationCount,
+    warmupCount,
+    scriptProfile,
+    selectorProfile,
+    collectMetrics,
+  }: {
+    iterationCount: number;
+    warmupCount: number;
+    scriptProfile: boolean;
+    selectorProfile: boolean;
+    collectMetrics: boolean;
+  }) => {
+    for (let i = 0; i < warmupCount + iterationCount; i++) {
+      const result = await measureIteration({
+        browser,
+        contextOptions,
+        testInfo,
+        url,
+        loadPage,
+        interaction,
+        setup,
+        verify,
+        scriptProfile,
+        selectorProfile,
+        scriptSourceMapResolver,
+      });
 
-    // Only keep measured (non-warmup) iterations.
-    if (i < warmup) continue;
-    allMetrics.push(result.metrics);
-    if (result.profiles?.script && result.profiles.script.length > 0) {
-      scriptProfiles.push(result.profiles.script);
+      // Only keep measured (non-warmup) iterations.
+      if (i < warmupCount) continue;
+      if (collectMetrics) {
+        allMetrics.push(result.metrics);
+      }
+      if (result.profiles?.script && result.profiles.script.length > 0) {
+        scriptProfiles.push(result.profiles.script);
+      }
+      if (result.profiles?.selectors && result.profiles.selectors.length > 0) {
+        selectorProfiles.push(result.profiles.selectors);
+      }
     }
-    if (result.profiles?.selectors && result.profiles.selectors.length > 0) {
-      selectorProfiles.push(result.profiles.selectors);
-    }
+  };
+
+  await runIterations({
+    iterationCount: iterations,
+    warmupCount: warmup,
+    scriptProfile: timingScriptProfile,
+    selectorProfile: timingSelectorProfile,
+    collectMetrics: true,
+  });
+
+  if (diagnosticScriptProfile || diagnosticSelectorProfile) {
+    const profileSampling = getPerfSamplingOptions({ scriptProfile: true });
+    await runIterations({
+      iterationCount: profileSampling.iterations,
+      warmupCount: profileSampling.warmup,
+      scriptProfile: diagnosticScriptProfile,
+      selectorProfile: diagnosticSelectorProfile,
+      collectMetrics: false,
+    });
   }
 
   const medianMetrics = computeMedianMetrics(allMetrics);
 
-  const testTitle = testInfo.titlePath.filter(Boolean).join(" > ");
-  const baseLabel = label ?? testTitle;
   const resolvedLabel = getUniquePerfLabel(
     results.map((result) => result.label),
     baseLabel,
@@ -1388,8 +1532,9 @@ export async function createPerfMeasure(
     label: resolvedLabel,
     metrics: medianMetrics,
     raw: allMetrics,
-    scriptProfile: scriptProfile || undefined,
-    selectorProfile: selectorProfile || undefined,
+    profileOnly: profileOnly || undefined,
+    scriptProfile: timingScriptProfile || undefined,
+    selectorProfile: timingSelectorProfile || undefined,
     profiles: createProfiles(scriptProfiles, selectorProfiles, profileLimit),
   });
 

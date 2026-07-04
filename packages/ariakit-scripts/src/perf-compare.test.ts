@@ -51,6 +51,7 @@ interface PerfResult {
   label: string;
   metrics: PerfMetrics;
   raw: PerfMetrics[];
+  profileOnly?: boolean;
   scriptProfile?: boolean;
   selectorProfile?: boolean;
   profiles?: PerfProfiles;
@@ -91,8 +92,8 @@ function createResult(total: number): PerfResult {
   const metrics = createMetrics(total);
   return {
     testFile: "sandbox/example/perf-chrome.ts",
-    testTitle: "sandbox/example/perf-chrome.ts > react > example",
-    label: "sandbox/example/perf-chrome.ts > react > example",
+    testTitle: "example > react > example",
+    label: "example > react > example",
     metrics,
     raw: [metrics],
   };
@@ -296,6 +297,27 @@ test("keeps single-run comparison behavior", () => {
 
   expect(markdown).toContain("100.0ms → 120.0ms (+20%) :warning:");
   expect(markdown).not.toContain("Aggregated across");
+});
+
+test("pairs legacy generated labels with normalized labels", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithLabel(
+      "sandbox/example/perf-chrome.ts > react > example",
+      100,
+    ),
+  ]);
+  writeJson(dir, "current-worker0.json", [createResult(120)]);
+
+  const markdown = runCompare(dir);
+  const summary = readComparisonSummary(dir);
+
+  expect(markdown).toContain("100.0ms \u2192 120.0ms (+20%) :warning:");
+  expect(markdown).not.toContain("### New tests");
+  expect(markdown).not.toContain("### Removed tests");
+  expect(summary.rows[0]?.label).toBe("example > react > example");
+  expect(summary.newTests).toEqual([]);
+  expect(summary.removedTests).toEqual([]);
 });
 
 test("compares Vitest benchmark reports in node mode", () => {
@@ -905,9 +927,7 @@ test("reports tests with no paired rounds separately", () => {
     "No paired performance results available for comparison.",
   );
   expect(markdown).toContain("### Unpaired tests");
-  expect(markdown).toContain(
-    "| sandbox/example/perf-chrome.ts > react > example | 1 | 2 |",
-  );
+  expect(markdown).toContain("| example > react > example | 1 | 2 |");
   expect(markdown).not.toContain("0.0ms | 0.0ms");
 });
 
@@ -928,7 +948,7 @@ test("surfaces unpaired tests outside the details block", () => {
 
   expect(markdown).toContain("No significant performance changes detected.");
   expect(markdown).toContain(
-    ":warning: 1 test had no paired baseline/current rounds and was not compared.",
+    ":warning: 1 test had no comparable paired round and was not compared.",
   );
   expect(markdown.indexOf(":warning: 1 test")).toBeLessThan(
     markdown.indexOf("<details>"),
@@ -1143,7 +1163,7 @@ test("keeps node_modules script profile functions as unlinked code", () => {
   expect(markdown).not.toContain("react-dom-client.production.js");
 });
 
-test("omits metric tables for script profile comparisons", () => {
+test("renders script profiles below comparison tables", () => {
   const dir = createTempDir();
   const profiles: PerfProfiles = {
     script: [createScriptProfileEntry("profiledFn", 8)],
@@ -1156,16 +1176,50 @@ test("omits metric tables for script profile comparisons", () => {
   ]);
 
   const markdown = runCompare(dir);
+  const comparisonIndex = markdown.indexOf(
+    "| Total | 100.0ms | 130.0ms | +30.0ms (+30%) :warning: |",
+  );
+  const profileIndex = markdown.indexOf("#### Script profile");
 
-  expect(markdown).toContain("No significant performance changes detected.");
   expect(markdown).toContain("### profiled");
-  expect(markdown).toContain("#### Script profile");
+  expect(comparisonIndex).toBeGreaterThan(-1);
+  expect(profileIndex).toBeGreaterThan(comparisonIndex);
   expect(markdown).toContain("| `profiledFn` | 8.0ms | 8.0ms | 1 |");
-  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
-  expect(markdown).not.toContain("+30.0ms (+30%)");
 });
 
-test("omits new test metric rows for script profile results", () => {
+test("merges script profile rows into base comparisons", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    script: [createScriptProfileEntry("profiledFn", 8)],
+  };
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithLabel("profiled", 100),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    createResultWithLabel("profiled", 130),
+    {
+      ...createResultWithMetrics(
+        "profiled (script profile)",
+        createMetrics(300),
+        profiles,
+      ),
+      scriptProfile: true,
+    },
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("### profiled");
+  expect(markdown).toContain(
+    "| Total | 100.0ms | 130.0ms | +30.0ms (+30%) :warning: |",
+  );
+  expect(markdown).toContain("#### Script profile");
+  expect(markdown).toContain("| `profiledFn` | 8.0ms | 8.0ms | 1 |");
+  expect(markdown).not.toContain("### profiled (script profile)");
+  expect(markdown).not.toContain("300.0ms");
+});
+
+test("includes new test metric rows for script profile results", () => {
   const dir = createTempDir();
   const profiles: PerfProfiles = {
     script: [createScriptProfileEntry("profiledFn", 8)],
@@ -1180,15 +1234,15 @@ test("omits new test metric rows for script profile results", () => {
   expect(markdown).toContain("### New tests (no baseline)");
   expect(markdown).toContain("| Test | Scripting | Rendering | INP | Total |");
   expect(markdown).toContain("| regular | 100.0ms | 0.0ms | 0.0ms | 100.0ms |");
+  expect(markdown).toContain(
+    "| profiled | 130.0ms | 0.0ms | 0.0ms | 130.0ms |",
+  );
   expect(markdown).toContain("#### profiled");
   expect(markdown).toContain("#### Script profile");
   expect(markdown).toContain("| `profiledFn` | 8.0ms | 8.0ms | 1 |");
-  expect(markdown).not.toContain(
-    "| profiled | 130.0ms | 0.0ms | 0.0ms | 130.0ms |",
-  );
 });
 
-test("omits new test metric rows for selector profile results", () => {
+test("omits new test metric rows for profile-only results", () => {
   const dir = createTempDir();
   const profiles: PerfProfiles = {
     selectors: [createSelectorProfileEntry(".item")],
@@ -1218,28 +1272,130 @@ test("omits new test metric rows for selector profile results", () => {
   );
 });
 
-test("warns when only one side has profile data for a test", () => {
+test("omits new test metric rows for explicit profile-only results", () => {
   const dir = createTempDir();
-  writeJson(dir, "baseline-worker0.json", [
-    createResultWithMetrics("profile-mismatch", createMetrics(100), {
-      script: [createScriptProfileEntry("baselineProfile", 1)],
-    }),
-  ]);
+  const profiles: PerfProfiles = {
+    script: [createScriptProfileEntry("profiledFn", 8)],
+  };
   writeJson(dir, "current-worker0.json", [
-    createResultWithMetrics("profile-mismatch", createMetrics(130)),
+    {
+      ...createResultWithMetrics("profiled", createMetrics(130), profiles),
+      profileOnly: true,
+    },
   ]);
 
   const markdown = runCompare(dir);
 
-  expect(markdown).toContain("Profile mode differs between baseline");
-  expect(markdown).toContain("| profile-mismatch | script | yes | no |");
-  expect(markdown).toContain("No significant performance changes detected.");
-  expect(markdown).not.toContain("### profile-mismatch");
-  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
-  expect(markdown).not.toContain("+30.0ms (+30%)");
+  expect(markdown).toContain("### New tests (no baseline)");
+  expect(markdown).toContain("#### profiled");
+  expect(markdown).toContain("#### Script profile");
+  expect(markdown).toContain("| `profiledFn` | 8.0ms | 8.0ms | 1 |");
+  expect(markdown).not.toContain(
+    "| Test | Scripting | Rendering | INP | Total |",
+  );
+  expect(markdown).not.toContain(
+    "| profiled | 130.0ms | 0.0ms | 0.0ms | 130.0ms |",
+  );
 });
 
-test("omits metric tables when only current has script profile data", () => {
+test("ignores profile-only rounds in metric comparisons", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    script: [createScriptProfileEntry("profiledFn", 8)],
+  };
+  writeJson(dir, "baseline-1-worker0.json", [
+    createResultWithLabel("profiled", 100),
+  ]);
+  writeJson(dir, "current-1-worker0.json", [
+    createResultWithLabel("profiled", 130),
+  ]);
+  writeJson(dir, "baseline-2-worker0.json", [
+    createResultWithLabel("profiled", 100),
+  ]);
+  writeJson(dir, "current-2-worker0.json", [
+    {
+      ...createResultWithMetrics("profiled", createMetrics(300), profiles),
+      profileOnly: true,
+    },
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain(
+    "| Total | 100.0ms | 130.0ms | +30.0ms (+30%) :warning: |",
+  );
+  expect(markdown).toContain("#### Script profile");
+  expect(markdown).toContain("| `profiledFn` | 8.0ms | 8.0ms | 1 |");
+  expect(markdown).not.toContain("300.0ms");
+});
+
+test("reports tests with no non-profile paired rounds as unpaired", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    script: [createScriptProfileEntry("profiledFn", 8)],
+  };
+  writeJson(dir, "baseline-1-worker0.json", [
+    createResultWithLabel("profiled", 100),
+  ]);
+  writeJson(dir, "current-1-worker0.json", [
+    {
+      ...createResultWithMetrics("profiled", createMetrics(300), profiles),
+      profileOnly: true,
+    },
+  ]);
+  writeJson(dir, "baseline-2-worker0.json", [
+    {
+      ...createResultWithMetrics("profiled", createMetrics(200), profiles),
+      profileOnly: true,
+    },
+  ]);
+  writeJson(dir, "current-2-worker0.json", [
+    createResultWithLabel("profiled", 130),
+  ]);
+
+  const markdown = runCompare(dir);
+  const summary = readComparisonSummary(dir);
+
+  expect(markdown).toContain(
+    "No paired performance results available for comparison.",
+  );
+  expect(markdown).toContain(
+    ":warning: 1 test had no comparable paired round and was not compared.",
+  );
+  expect(markdown).toContain("| profiled | 1, 2 | 1, 2 |");
+  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
+  expect(summary.rows).toEqual([]);
+  expect(summary.unpairedTests).toMatchObject([
+    {
+      label: "profiled",
+      baselineRounds: [1, 2],
+      currentRounds: [1, 2],
+    },
+  ]);
+});
+
+test("compares metrics when only one side has attached profile data", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithMetrics("profiled", createMetrics(100)),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    createResultWithMetrics("profiled", createMetrics(130), {
+      script: [createScriptProfileEntry("currentProfile", 8)],
+    }),
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("### profiled");
+  expect(markdown).toContain(
+    "| Total | 100.0ms | 130.0ms | +30.0ms (+30%) :warning: |",
+  );
+  expect(markdown).toContain("| `currentProfile` | 8.0ms | 8.0ms | 1 |");
+  expect(markdown).not.toContain("Profile mode differs between baseline");
+});
+
+test("omits metric tables when only current has script profile mode", () => {
   const dir = createTempDir();
   const profiles: PerfProfiles = {
     script: [createScriptProfileEntry("currentProfile", 8)],
@@ -1248,7 +1404,14 @@ test("omits metric tables when only current has script profile data", () => {
     createResultWithMetrics("profile-mismatch", createMetrics(100)),
   ]);
   writeJson(dir, "current-worker0.json", [
-    createResultWithMetrics("profile-mismatch", createMetrics(130), profiles),
+    {
+      ...createResultWithMetrics(
+        "profile-mismatch",
+        createMetrics(130),
+        profiles,
+      ),
+      scriptProfile: true,
+    },
   ]);
 
   const markdown = runCompare(dir);
@@ -1305,7 +1468,7 @@ test("omits metric tables when selector profile has no retained entries", () => 
   expect(markdown).not.toContain("+30.0ms (+30%)");
 });
 
-test("omits metric tables for selector profile comparisons", () => {
+test("omits metric tables for profile-only comparisons", () => {
   const dir = createTempDir();
   const profiles: PerfProfiles = {
     selectors: [createSelectorProfileEntry(".item")],

@@ -1,9 +1,13 @@
 import type { CDPSession, Page } from "@playwright/test";
 import { afterEach, beforeEach, expect, test } from "vitest";
 import {
+  formatPerfTitlePath,
+  getPerfProfileBaseLabel,
+  getPerfProfileMode,
   getIntegerEnv,
   getPerfSamplingOptions,
   getUniquePerfLabel,
+  isPerfProfileLabel,
   parseScriptProfile,
   resolveScriptProfileSourceMaps,
   settleQuiescent,
@@ -13,8 +17,11 @@ const envName = "PERF_ITERATIONS";
 const envNames = [
   envName,
   "PERF_WARMUP",
+  "PERF_SCRIPT_PROFILE",
   "PERF_SCRIPT_PROFILE_ITERATIONS",
   "PERF_SCRIPT_PROFILE_WARMUP",
+  "PERF_SELECTOR_PROFILE",
+  "PERF_CSS_SELECTOR_PROFILE",
 ];
 const originalValues = new Map(
   envNames.map((name) => [name, process.env[name]]),
@@ -123,6 +130,105 @@ test("resolves duplicate perf labels with exact label counts", () => {
   expect(getUniquePerfLabel(["foo #2"], "foo")).toBe("foo");
   expect(getUniquePerfLabel(["foo", "foo #2"], "foo")).toBe("foo #3");
   expect(getUniquePerfLabel(["foo", "foo #3"], "foo")).toBe("foo #2");
+});
+
+test("formats perf title paths", () => {
+  expect(
+    formatPerfTitlePath([
+      "sandbox/dialog-perf/perf-chrome.ts",
+      "react",
+      "open dialog",
+    ]),
+  ).toBe("dialog-perf > react > open dialog");
+  expect(
+    formatPerfTitlePath([
+      "app/src/sandbox/dialog-perf/perf-chrome.ts",
+      "react",
+      "open dialog",
+    ]),
+  ).toBe("dialog-perf > react > open dialog");
+  expect(formatPerfTitlePath(["example.ts", "a/b"])).toBe("example.ts > a/b");
+});
+
+test("detects profile-only labels", () => {
+  expect(getPerfProfileBaseLabel("open dialog (script profile)")).toBe(
+    "open dialog",
+  );
+  expect(getPerfProfileBaseLabel("open dialog (selector profile)")).toBe(
+    "open dialog",
+  );
+  expect(getPerfProfileBaseLabel("open dialog")).toBe("open dialog");
+  expect(isPerfProfileLabel("open dialog (script profile)")).toBe(true);
+  expect(isPerfProfileLabel("open dialog")).toBe(false);
+});
+
+test("resolves explicit profile options as diagnostic iterations", () => {
+  expect(
+    getPerfProfileMode({ label: "open dialog", scriptProfile: true }),
+  ).toMatchObject({
+    profileOnly: false,
+    scriptProfile: true,
+    timingScriptProfile: false,
+    diagnosticScriptProfile: true,
+  });
+  expect(
+    getPerfProfileMode({
+      label: "open dialog",
+      selectorProfile: true,
+    }),
+  ).toMatchObject({
+    profileOnly: false,
+    selectorProfile: true,
+    timingSelectorProfile: false,
+    diagnosticSelectorProfile: true,
+  });
+});
+
+test("resolves env profile options as measured iterations", () => {
+  process.env.PERF_SCRIPT_PROFILE = "1";
+  process.env.PERF_SELECTOR_PROFILE = "1";
+
+  expect(getPerfProfileMode({ label: "open dialog" })).toMatchObject({
+    profileOnly: false,
+    scriptProfile: true,
+    selectorProfile: true,
+    timingScriptProfile: true,
+    timingSelectorProfile: true,
+    diagnosticScriptProfile: false,
+    diagnosticSelectorProfile: false,
+  });
+  expect(
+    getPerfProfileMode({ label: "open dialog", scriptProfile: false }),
+  ).toMatchObject({
+    scriptProfile: false,
+    selectorProfile: true,
+    timingScriptProfile: false,
+    timingSelectorProfile: true,
+  });
+
+  delete process.env.PERF_SELECTOR_PROFILE;
+  process.env.PERF_CSS_SELECTOR_PROFILE = "true";
+  expect(
+    getPerfProfileMode({ label: "open dialog", scriptProfile: false }),
+  ).toMatchObject({
+    scriptProfile: false,
+    selectorProfile: true,
+    timingSelectorProfile: true,
+  });
+});
+
+test("resolves profile-only labels as measured profile iterations", () => {
+  expect(
+    getPerfProfileMode({
+      label: "open dialog (script profile)",
+      scriptProfile: true,
+    }),
+  ).toMatchObject({
+    profileOnly: true,
+    scriptProfile: true,
+    timingScriptProfile: true,
+    diagnosticScriptProfile: false,
+  });
 });
 
 test("does not double-count recursive script profile frames", () => {
