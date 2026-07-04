@@ -1,0 +1,74 @@
+/* No transitions or animations: this sandbox is used by perf tests. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem;
+}
+
+.button,
+.card,
+.popover-item {
+  border: 1px solid hsl(204 10% 80%);
+  background: white;
+  color: hsl(204 10% 10%);
+  font: inherit;
+}
+
+.button {
+  display: inline-flex;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 10rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.card {
+  overflow: hidden;
+  min-width: 0;
+  border-radius: 0.375rem;
+  padding: 0.5rem;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.popover {
+  position: relative;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  min-width: 10rem;
+  max-height: min(var(--popover-available-height, 20rem), 20rem);
+  border: 1px solid hsl(204 10% 80%);
+  border-radius: 0.5rem;
+  background: white;
+  padding: 0.25rem;
+  color: hsl(204 10% 10%);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.popover-item {
+  min-height: 2rem;
+  border: 0;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.5rem;
+  text-align: left;
+}
+
+.popover-item[data-active-item] {
+  background: hsl(204 100% 40%);
+  color: white;
+}
