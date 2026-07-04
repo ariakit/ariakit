@@ -9,6 +9,22 @@ const HEADED = process.env.PWHEADED === "true";
 const PERF = process.env.PERF_TEST === "true";
 const port = Number(process.env.APP_PORT) || 4321;
 const nextjsPort = Number(process.env.NEXTJS_PORT) || 3000;
+// Pin the wrangler dev inspector ports outside the OS ephemeral range in CI.
+// When unset, wrangler preselects a random free high port and workerd binds
+// it later, so another process (such as a browser connection claiming it as
+// an outbound source port) can take it in between, which kills the server
+// with a fatal "Address already in use" on startup. Only pin by default in
+// CI, where each job owns the runner: fixed local defaults would make
+// concurrent sessions (such as per-worktree servers on overridden app ports)
+// collide deterministically. Zero means "let wrangler pick".
+const inspectorPort = Number(process.env.APP_INSPECTOR_PORT) || (CI ? 9339 : 0);
+const nextjsInspectorPort =
+  Number(process.env.NEXTJS_INSPECTOR_PORT) || (CI ? 9340 : 0);
+
+function inspectorPortArg(port: number) {
+  if (!port) return "";
+  return ` --inspector-port ${port}`;
+}
 
 function testMatchersFor(...kinds: string[]): RegExp[] {
   return kinds.flatMap((kind) => [
@@ -28,13 +44,13 @@ export default defineConfig({
   snapshotPathTemplate: "{testDir}/{testFileDir}/__snapshots__/{arg}{ext}",
   webServer: [
     {
-      command: `pnpm run preview-lite --log-level warn --port ${port} --var NEXTJS_PORT:${nextjsPort}`,
+      command: `pnpm run preview-lite --log-level warn --port ${port}${inspectorPortArg(inspectorPort)} --var NEXTJS_PORT:${nextjsPort}`,
       reuseExistingServer: !CI,
       stdout: CI ? "pipe" : "ignore",
       port,
     },
     {
-      command: `pnpm -F nextjs exec opennextjs-cloudflare preview --port ${nextjsPort}`,
+      command: `pnpm -F nextjs exec opennextjs-cloudflare preview --port ${nextjsPort}${inspectorPortArg(nextjsInspectorPort)}`,
       reuseExistingServer: !CI,
       stdout: CI ? "pipe" : "ignore",
       port: nextjsPort,
@@ -65,9 +81,29 @@ export default defineConfig({
             launchOptions: {
               args: ["--enable-precise-memory-info"],
             },
+            // Fail a wedged navigation fast instead of letting it consume
+            // the whole test budget; healthy CI page loads finish in a few
+            // seconds. Iteration contexts bound their navigations the same
+            // way in ariakit-scripts perf.ts.
+            navigationTimeout: 30_000,
+            // Tracing a retried attempt would add overhead to the retried
+            // measurement and distort its metrics.
+            trace: "off",
           },
-          retries: 0,
-          timeout: 120_000,
+          // Failed attempts record no results (the perf fixture only
+          // appends results for passing attempts) and results land in
+          // per-worker files, so retrying in a fresh worker (new browser)
+          // cannot double-count. It recovers the run when the previous
+          // worker's browser wedged mid-file. Same value as the root
+          // retries, but kept explicit: perf previously opted out and the
+          // retry safety argument lives here.
+          retries: 1,
+          // Script-profile tests do over 100s of real work on slow runners.
+          // This is headroom over observed durations, not a hang allowance:
+          // navigations are bounded above. CI perf runs pass the same value
+          // via --timeout in perf.yml (PLAYWRIGHT_TEST_TIMEOUT), which takes
+          // precedence, so keep the two in sync.
+          timeout: 180_000,
         },
       ]
     : [

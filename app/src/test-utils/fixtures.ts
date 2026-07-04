@@ -93,7 +93,12 @@ export const test = base.extend<{
           toPerfMeasureOptions(options),
         ),
     });
-    if (results.length > 0) {
+    // Only record results for passing attempts. A failed attempt is retried
+    // in a fresh worker, so appending its partial results (measures that
+    // succeeded before the failure in a multi-measure test) would count them
+    // again when the retry passes and records the full set.
+    const passed = testInfo.status === testInfo.expectedStatus;
+    if (passed && results.length > 0) {
       appendResults(results, testInfo);
     }
   },
