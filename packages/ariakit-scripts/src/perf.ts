@@ -156,6 +156,7 @@ export interface PerfResult {
   label: string;
   metrics: PerfMetrics;
   raw: PerfMetrics[];
+  profileOnly?: boolean;
   scriptProfile?: boolean;
   selectorProfile?: boolean;
   profiles?: PerfProfiles;
@@ -368,6 +369,21 @@ export function formatPerfTitlePath(titlePath: string[]): string {
     }
   }
   return titleParts.join(" > ");
+}
+
+const PROFILE_LABEL_SUFFIXES = [" (script profile)", " (selector profile)"];
+
+export function getPerfProfileBaseLabel(label: string): string {
+  for (const suffix of PROFILE_LABEL_SUFFIXES) {
+    if (label.endsWith(suffix)) {
+      return label.slice(0, -suffix.length);
+    }
+  }
+  return label;
+}
+
+export function isPerfProfileLabel(label: string): boolean {
+  return getPerfProfileBaseLabel(label) !== label;
 }
 
 function normalizeProfileUrl(url: string): string {
@@ -1328,10 +1344,15 @@ export async function createPerfMeasure(
     options.selectorProfile ??
     (isTruthyEnv("PERF_SELECTOR_PROFILE") ||
       isTruthyEnv("PERF_CSS_SELECTOR_PROFILE"));
+  const testTitle = formatPerfTitlePath(testInfo.titlePath);
+  const baseLabel = label ?? testTitle;
+  const profileOnly = isPerfProfileLabel(baseLabel);
+  const timingScriptProfile = profileOnly && scriptProfile;
+  const timingSelectorProfile = profileOnly && selectorProfile;
   const { iterations, warmup } = getPerfSamplingOptions({
     iterations: options.iterations,
     warmup: options.warmup,
-    scriptProfile,
+    scriptProfile: timingScriptProfile,
   });
 
   if (!Number.isInteger(iterations) || iterations <= 0) {
@@ -1365,36 +1386,69 @@ export async function createPerfMeasure(
     traceMapCache: new Map(),
   };
 
-  for (let i = 0; i < warmup + iterations; i++) {
-    const result = await measureIteration({
-      browser,
-      contextOptions,
-      testInfo,
-      url,
-      loadPage,
-      interaction,
-      setup,
-      verify,
+  const runIterations = async ({
+    iterationCount,
+    warmupCount,
+    scriptProfile,
+    selectorProfile,
+    collectMetrics,
+  }: {
+    iterationCount: number;
+    warmupCount: number;
+    scriptProfile: boolean;
+    selectorProfile: boolean;
+    collectMetrics: boolean;
+  }) => {
+    for (let i = 0; i < warmupCount + iterationCount; i++) {
+      const result = await measureIteration({
+        browser,
+        contextOptions,
+        testInfo,
+        url,
+        loadPage,
+        interaction,
+        setup,
+        verify,
+        scriptProfile,
+        selectorProfile,
+        scriptSourceMapResolver,
+      });
+
+      // Only keep measured (non-warmup) iterations.
+      if (i < warmupCount) continue;
+      if (collectMetrics) {
+        allMetrics.push(result.metrics);
+      }
+      if (result.profiles?.script && result.profiles.script.length > 0) {
+        scriptProfiles.push(result.profiles.script);
+      }
+      if (result.profiles?.selectors && result.profiles.selectors.length > 0) {
+        selectorProfiles.push(result.profiles.selectors);
+      }
+    }
+  };
+
+  await runIterations({
+    iterationCount: iterations,
+    warmupCount: warmup,
+    scriptProfile: timingScriptProfile,
+    selectorProfile: timingSelectorProfile,
+    collectMetrics: true,
+  });
+
+  if (!profileOnly && (scriptProfile || selectorProfile)) {
+    const profileSampling = getPerfSamplingOptions({ scriptProfile: true });
+    await runIterations({
+      iterationCount: profileSampling.iterations,
+      warmupCount: profileSampling.warmup,
       scriptProfile,
       selectorProfile,
-      scriptSourceMapResolver,
+      collectMetrics: false,
     });
-
-    // Only keep measured (non-warmup) iterations.
-    if (i < warmup) continue;
-    allMetrics.push(result.metrics);
-    if (result.profiles?.script && result.profiles.script.length > 0) {
-      scriptProfiles.push(result.profiles.script);
-    }
-    if (result.profiles?.selectors && result.profiles.selectors.length > 0) {
-      selectorProfiles.push(result.profiles.selectors);
-    }
   }
 
   const medianMetrics = computeMedianMetrics(allMetrics);
 
-  const testTitle = formatPerfTitlePath(testInfo.titlePath);
-  const baseLabel = label ?? testTitle;
   const resolvedLabel = getUniquePerfLabel(
     results.map((result) => result.label),
     baseLabel,
@@ -1406,8 +1460,9 @@ export async function createPerfMeasure(
     label: resolvedLabel,
     metrics: medianMetrics,
     raw: allMetrics,
-    scriptProfile: scriptProfile || undefined,
-    selectorProfile: selectorProfile || undefined,
+    profileOnly: profileOnly || undefined,
+    scriptProfile: timingScriptProfile || undefined,
+    selectorProfile: timingSelectorProfile || undefined,
     profiles: createProfiles(scriptProfiles, selectorProfiles, profileLimit),
   });
 

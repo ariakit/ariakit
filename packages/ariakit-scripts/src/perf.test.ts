@@ -2,9 +2,11 @@ import type { CDPSession, Page } from "@playwright/test";
 import { afterEach, beforeEach, expect, test } from "vitest";
 import {
   formatPerfTitlePath,
+  getPerfProfileBaseLabel,
   getIntegerEnv,
   getPerfSamplingOptions,
   getUniquePerfLabel,
+  isPerfProfileLabel,
   parseScriptProfile,
   resolveScriptProfileSourceMaps,
   settleQuiescent,
@@ -142,6 +144,18 @@ test("formats perf title paths", () => {
     ]),
   ).toBe("dialog-perf > react > open dialog");
   expect(formatPerfTitlePath(["example.ts", "a/b"])).toBe("example.ts > a/b");
+});
+
+test("detects profile-only labels", () => {
+  expect(getPerfProfileBaseLabel("open dialog (script profile)")).toBe(
+    "open dialog",
+  );
+  expect(getPerfProfileBaseLabel("open dialog (selector profile)")).toBe(
+    "open dialog",
+  );
+  expect(getPerfProfileBaseLabel("open dialog")).toBe("open dialog");
+  expect(isPerfProfileLabel("open dialog (script profile)")).toBe(true);
+  expect(isPerfProfileLabel("open dialog")).toBe(false);
 });
 
 test("does not double-count recursive script profile frames", () => {
