@@ -8,6 +8,9 @@ import {
 import path from "node:path";
 import {
   computeMedianMetrics,
+  formatPerfTitlePath,
+  getPerfProfileBaseLabel,
+  isPerfProfileLabel,
   median,
   mergeScriptProfiles,
   mergeSelectorProfiles,
@@ -350,10 +353,39 @@ function loadRounds(
       );
     }
     for (const result of data) {
-      rounds.push({ roundIndex, result: result as PerfResult });
+      rounds.push({
+        roundIndex,
+        result: normalizePerfResult(result as PerfResult),
+      });
     }
   }
   return rounds;
+}
+
+function normalizeGeneratedPerfLabel(label: string): string {
+  if (!label.includes("perf-chrome.ts")) return label;
+  return formatPerfTitlePath(label.split(" > "));
+}
+
+function normalizePerfResult(result: PerfResult): PerfResult {
+  const normalizedLabel = normalizeGeneratedPerfLabel(result.label);
+  const normalizedTitle = normalizeGeneratedPerfLabel(result.testTitle);
+  const label = getPerfProfileBaseLabel(normalizedLabel);
+  const testTitle = getPerfProfileBaseLabel(normalizedTitle);
+  const profileOnly =
+    result.profileOnly ||
+    result.scriptProfile ||
+    result.selectorProfile ||
+    isPerfProfileLabel(normalizedLabel) ||
+    isPerfProfileLabel(normalizedTitle);
+  if (
+    label === result.label &&
+    testTitle === result.testTitle &&
+    profileOnly === !!result.profileOnly
+  ) {
+    return result;
+  }
+  return { ...result, label, testTitle, profileOnly: profileOnly || undefined };
 }
 
 function mergeProfiles(results: PerfResult[]): PerfProfiles | undefined {
@@ -381,13 +413,19 @@ function mergeProfiles(results: PerfResult[]): PerfProfiles | undefined {
 function combineResults(results: PerfResult[]): PerfResult | undefined {
   const first = results[0];
   if (!first) return;
+  const metricResults = results.filter((result) => !result.profileOnly);
+  const metricsSource = metricResults.length > 0 ? metricResults : results;
+  const sourceFirst = metricsSource[0] ?? first;
   return {
-    ...first,
-    metrics: computeMedianMetrics(results.map((result) => result.metrics)),
-    raw: results.flatMap((result) => result.raw),
-    scriptProfile: results.some((result) => result.scriptProfile) || undefined,
+    ...sourceFirst,
+    metrics: computeMedianMetrics(
+      metricsSource.map((result) => result.metrics),
+    ),
+    raw: metricsSource.flatMap((result) => result.raw),
+    scriptProfile:
+      metricsSource.some((result) => result.scriptProfile) || undefined,
     selectorProfile:
-      results.some((result) => result.selectorProfile) || undefined,
+      metricsSource.some((result) => result.selectorProfile) || undefined,
     profiles: mergeProfiles(results),
   };
 }
@@ -716,27 +754,38 @@ function resultKey(result: PerfResult): string {
   return `${result.testFile}::${result.label}`;
 }
 
-function hasProfileData(
-  result: PerfResult | undefined,
-  profile: "script" | "selectors",
-): boolean {
-  return (result?.profiles?.[profile]?.length ?? 0) > 0;
-}
-
 function hasProfileMode(
   result: PerfResult | undefined,
   profile: "script" | "selectors",
 ): boolean {
   if (profile === "script") {
-    return !!result?.scriptProfile || hasProfileData(result, profile);
+    return !!result?.scriptProfile;
   }
-  return !!result?.selectorProfile || hasProfileData(result, profile);
+  return !!result?.selectorProfile;
 }
 
 function isProfileMode(result: PerfResult | undefined): boolean {
   return (
-    hasProfileMode(result, "script") || hasProfileMode(result, "selectors")
+    !!result?.profileOnly ||
+    hasProfileMode(result, "script") ||
+    hasProfileMode(result, "selectors")
   );
+}
+
+function getRoundIndices(result: AggregatedPerfResult): number[] {
+  return [...result.byRound.keys()].sort((a, b) => a - b);
+}
+
+function createUnpairedTest(
+  base: AggregatedPerfResult,
+  cur: AggregatedPerfResult,
+): UnpairedTest {
+  return {
+    testFile: cur.result.testFile,
+    label: cur.result.label,
+    baselineRounds: getRoundIndices(base),
+    currentRounds: getRoundIndices(cur),
+  };
 }
 
 function isRegression(row: ComparisonRow, options: PerfCompareOptions) {
@@ -796,21 +845,28 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
 
     const sharedRoundIndices = getSharedRoundIndices(base, cur);
     if (sharedRoundIndices.length === 0) {
-      unpairedTests.push({
-        testFile: cur.result.testFile,
-        label: cur.result.label,
-        baselineRounds: [...base.byRound.keys()].sort((a, b) => a - b),
-        currentRounds: [...cur.byRound.keys()].sort((a, b) => a - b),
-      });
+      unpairedTests.push(createUnpairedTest(base, cur));
       continue;
     }
 
     const profileMode = isProfileMode(base.result) || isProfileMode(cur.result);
+    const comparisonRoundIndices = profileMode
+      ? sharedRoundIndices
+      : sharedRoundIndices.filter((roundIndex) => {
+          const baselineRound = base.byRound.get(roundIndex);
+          const currentRound = cur.byRound.get(roundIndex);
+          if (!baselineRound || !currentRound) return false;
+          return !isProfileMode(baselineRound) && !isProfileMode(currentRound);
+        });
+    if (comparisonRoundIndices.length === 0) {
+      unpairedTests.push(createUnpairedTest(base, cur));
+      continue;
+    }
     const primary = !profileMode;
     for (const metric of primaryMetrics) {
       const baselineValues: number[] = [];
       const roundComparisons: RoundMetricComparison[] = [];
-      for (const roundIndex of sharedRoundIndices) {
+      for (const roundIndex of comparisonRoundIndices) {
         const baselineRound = base.byRound.get(roundIndex);
         const currentRound = cur.byRound.get(roundIndex);
         if (!baselineRound || !currentRound) continue;
@@ -846,7 +902,7 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
         current: curVal,
         delta,
         percent,
-        pairedRoundsCount: sharedRoundIndices.length,
+        pairedRoundsCount: comparisonRoundIndices.length,
         perRoundDeltas: roundComparisons.map((comparison) => comparison.delta),
         ...significance,
         profileMode,
@@ -1329,7 +1385,7 @@ function formatMarkdown(
     const verb = unpairedTests.length === 1 ? "was" : "were";
     lines.push("");
     lines.push(
-      `:warning: ${unpairedTests.length} ${label} had no paired baseline/current rounds and ${verb} not compared.`,
+      `:warning: ${unpairedTests.length} ${label} had no comparable paired round and ${verb} not compared.`,
     );
     for (const result of visibleUnpairedTests) {
       lines.push(`- ${result.label}`);
@@ -1394,7 +1450,7 @@ function formatMarkdown(
     lines.push(`### Unpaired ${resultsName}`);
     lines.push("");
     lines.push(
-      `These ${resultsName} produced baseline and current results, but no shared round index.`,
+      `These ${resultsName} produced baseline and current results, but no comparable paired round.`,
     );
     lines.push("");
     lines.push(`| ${resultName} | Baseline rounds | Current rounds |`);
