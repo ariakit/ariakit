@@ -6,7 +6,7 @@ const pageItems = Array.from(
   (_, index) => `Element ${index + 1}`,
 );
 
-const items = Array.from({ length: 20 }, (_, index) => `Item ${index + 1}`);
+const items = Array.from({ length: 200 }, (_, index) => `Item ${index + 1}`);
 
 export default function Example() {
   return (

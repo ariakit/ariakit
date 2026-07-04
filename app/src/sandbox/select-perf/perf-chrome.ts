@@ -3,7 +3,7 @@ import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
-const itemCount = 20;
+const itemCount = 200;
 type Query = ReturnType<typeof query>;
 
 async function openSelect(q: Query) {
