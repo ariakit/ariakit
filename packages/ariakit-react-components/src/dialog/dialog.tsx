@@ -239,7 +239,15 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // Sets --dialog-viewport-height CSS variable to the height of the visual
   // viewport. This allows the dialog to be positioned correctly when the
   // viewport height changes (e.g., when the keyboard is shown on mobile).
-  useEffect(() => {
+  // The initial write must run in the layout phase, before the effect below
+  // that disables the tree outside modal dialogs: the dialog subtree is
+  // still dirty from its own mount there, so the write gets absorbed by the
+  // style flush that disabling forces. As a passive effect, the write
+  // re-dirtied the dialog subtree right after that flush, forcing the next
+  // style read (the backdrop z-index sync or the auto focus tabbable scan)
+  // to recalc the dialog subtree a second time before the browser could
+  // paint.
+  useSafeLayoutEffect(() => {
     if (!mounted) return;
     if (!domReady) return;
     const dialog = ref.current;
@@ -247,8 +255,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const win = getWindow(dialog);
     const viewport = win.visualViewport || win;
     const setViewportHeight = () => {
-      const height = win.visualViewport?.height ?? win.innerHeight;
-      dialog.style.setProperty("--dialog-viewport-height", `${height}px`);
+      const height = `${win.visualViewport?.height ?? win.innerHeight}px`;
+      // Resizes that keep the height (horizontal-only window resizes) would
+      // still invalidate the dialog subtree's styles if the same value was
+      // written again.
+      const property = "--dialog-viewport-height";
+      if (dialog.style.getPropertyValue(property) === height) return;
+      dialog.style.setProperty(property, height);
     };
     setViewportHeight();
     viewport.addEventListener("resize", setViewportHeight);

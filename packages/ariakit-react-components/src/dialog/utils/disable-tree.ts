@@ -1,4 +1,10 @@
-import { contains, getAllTabbableIn, chain, noop } from "@ariakit/utils";
+import {
+  contains,
+  getAllTabbableIn,
+  getDocument,
+  chain,
+  noop,
+} from "@ariakit/utils";
 import { hideElementFromAccessibilityTree } from "./disable-accessibility-tree-outside.ts";
 import { isBackdrop } from "./is-backdrop.ts";
 import { isFocusTrap } from "./is-focus-trap.ts";
@@ -103,6 +109,28 @@ export function markAndDisableTreeOutside(id: string, elements: Elements) {
       addRoleNoneCleanup(cleanups, ancestor, elements);
     },
   );
+
+  // The writes above (inert on modern browsers, tabindex and inline styles
+  // on the legacy path) invalidate the computed styles of the entire outside
+  // tree, which can span the whole page. Something always reads styles
+  // before the browser paints the open dialog (the backdrop z-index sync,
+  // the auto focus tabbable scan, or focus itself), so that read would force
+  // this same recalc anyway, misattributing the cost to whichever read
+  // happens to run first. Flush it here instead, right after the writes, so
+  // the cost is paid where it originates and the later reads run on a clean
+  // tree. The walk above visits each connected element's own document, so
+  // elements living in other same-origin frames get their documents flushed
+  // too. The restore path must not flush: it runs among other cleanups and
+  // commit mutations, so the tree gets dirtied again before the next paint
+  // and the flush would be pure waste.
+  const documents = new Set<Document>();
+  for (const element of elements) {
+    if (!element?.isConnected) continue;
+    documents.add(getDocument(element));
+  }
+  for (const doc of documents) {
+    void doc.documentElement.offsetHeight;
+  }
 
   const restoreTreeOutside = () => {
     restoreCleanups(cleanups);
