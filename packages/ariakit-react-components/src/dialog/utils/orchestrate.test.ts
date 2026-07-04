@@ -294,11 +294,21 @@ test("markAndDisableTreeOutside skips focus traps and restores disabled elements
   const focusTrap = getElement("focus-trap");
   const outside = getElement("outside");
 
-  const restoreTree = markAndDisableTreeOutside("dialog", [dialog]);
+  const { disableTreeOutside, restoreTreeOutside } = markAndDisableTreeOutside(
+    "dialog",
+    [dialog],
+  );
 
   expect(isElementMarked(outside, "dialog")).toBe(true);
   // Focus traps are marked as outside the dialog, but not disabled.
   expect(isElementMarked(focusTrap, "dialog")).toBe(true);
+
+  // Marking is synchronous, but disabling is a separate step the dialog
+  // usually defers until after the open frame paints.
+  expect(outside.inert).toBe(false);
+  expect(outside.hasAttribute("aria-hidden")).toBe(false);
+
+  disableTreeOutside();
 
   if (supportsInert()) {
     expect(outside.inert).toBe(true);
@@ -310,7 +320,7 @@ test("markAndDisableTreeOutside skips focus traps and restores disabled elements
     expect(focusTrap.style.pointerEvents).toBe("");
   }
 
-  restoreTree();
+  restoreTreeOutside();
 
   expect(isElementMarked(outside, "dialog")).toBe(false);
   expect(isElementMarked(focusTrap, "dialog")).toBe(false);

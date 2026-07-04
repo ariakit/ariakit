@@ -14,7 +14,7 @@ interface WindowWithCSS extends Window {
   CSS?: Pick<typeof CSS, "supports">;
 }
 
-function supportsScrollbarGutter(win: Window) {
+export function supportsScrollbarGutter(win: Window) {
   const { CSS } = win as WindowWithCSS;
   return !!CSS?.supports("scrollbar-gutter", "stable");
 }

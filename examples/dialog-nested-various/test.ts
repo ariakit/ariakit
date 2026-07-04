@@ -1,4 +1,4 @@
-import { click, press, q } from "@ariakit/test";
+import { click, dispatch, press, q, sleep } from "@ariakit/test";
 import { expect, test, vi } from "vitest";
 
 function getBackdrop(name: string) {
@@ -270,6 +270,95 @@ test.each(["nested", "sibling"])(
     expectModalStyle(false);
   },
 );
+
+test("disables the outside tree before paint without scrollbar-gutter support", async () => {
+  // happy-dom's window.CSS getter returns a fresh object on every access, so
+  // the getter itself must be mocked rather than a single instance's method.
+  const unsupportedCSS: Pick<typeof CSS, "supports"> = {
+    supports: () => false,
+  };
+  using _supports = vi
+    .spyOn(window, "CSS", "get")
+    .mockReturnValue(unsupportedCSS as typeof CSS);
+  // Without scrollbar-gutter support, the scroll lock is about to write the
+  // --scrollbar-width property that invalidates the whole document before
+  // paint, so the dialog disables the outside tree synchronously to share
+  // that pass instead of deferring it. dispatch.click fires a single event
+  // without settling, so no animation frames have run when we assert.
+  await dispatch.click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toBeVisible();
+  expect(document.querySelector("[inert]")).not.toBeNull();
+  await press.Escape();
+  expect(q.dialog("Dialog")).not.toBeInTheDocument();
+  expect(document.querySelector("[inert]")).toBeNull();
+});
+
+test("closing before the deferred disable leaves no inert behind", async () => {
+  // dispatch.click fires a single event without settling, so no animation
+  // frames run between the open and close below: the close happens while the
+  // outside-tree disabling is still scheduled for the frame after the open
+  // paint.
+  await dispatch.click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toBeVisible();
+  // The deferred path applies: the outside tree is not inert yet.
+  expect(document.querySelector("[inert]")).toBeNull();
+  await dispatch.click(q.button("Close"));
+  expect(q.dialog("Dialog")).not.toBeInTheDocument();
+  // Let the frames the dialog canceled elapse: the deferred disable must not
+  // fire after the dialog closed.
+  await sleep(50);
+  expect(document.querySelector("[inert]")).toBeNull();
+});
+
+test("outside tree stays disabled when a sibling dialog takes over", async () => {
+  // happy-dom reports scrollbar-gutter support, so the sync fallback probe
+  // doesn't apply and the dialog takes the deferred path where the inert
+  // writes land right after the open frame paints, exercising the
+  // synchronous re-apply handoff below.
+  await click(q.button("Open dialog"));
+  const inertRoot = document.querySelector("[inert]");
+  expect(inertRoot).not.toBeNull();
+  if (!inertRoot) return;
+  // The closing dialog restores the outside tree synchronously, and the
+  // opening sibling must re-disable it in the same task. We record the inert
+  // state at every mutation delivery (a microtask checkpoint) to catch a
+  // handoff that leaves the tree enabled until a later frame.
+  const inertValues: boolean[] = [];
+  const observer = new MutationObserver(() => {
+    inertValues.push(inertRoot.hasAttribute("inert"));
+  });
+  observer.observe(inertRoot, {
+    attributes: true,
+    attributeFilter: ["inert"],
+  });
+  await click(q.button("sibling dismiss unmount"));
+  observer.disconnect();
+  expect(q.dialog("sibling dismiss unmount")).toBeVisible();
+  expect(inertRoot.hasAttribute("inert")).toBe(true);
+  expect(inertValues.every((inert) => inert)).toBe(true);
+});
+
+test("scroll stays locked when a sibling dialog takes over", async () => {
+  await click(q.button("Open dialog"));
+  expectModalStyle(true);
+  // The closing dialog defers its scroll unlock to a microtask while the
+  // opening dialog locks synchronously, so we watch every style change on the
+  // html element during the handoff to catch a transient unlock between the
+  // two.
+  const overflowValues: string[] = [];
+  const observer = new MutationObserver(() => {
+    overflowValues.push(document.documentElement.style.overflowY);
+  });
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["style"],
+  });
+  await click(q.button("sibling dismiss unmount"));
+  observer.disconnect();
+  expect(q.dialog("sibling dismiss unmount")).toBeVisible();
+  expectModalStyle(true);
+  expect(overflowValues.every((overflow) => overflow === "hidden")).toBe(true);
+});
 
 test.each(["sibling"])(
   "show %s dismiss unmount dialog and hide with escape",
