@@ -60,7 +60,6 @@ interface ComparisonRow {
   significant: boolean;
   candidate: boolean;
   profileMode: boolean;
-  profileModeMismatch: boolean;
 }
 
 interface ComparisonSummary {
@@ -773,6 +772,22 @@ function isProfileMode(result: PerfResult | undefined): boolean {
   );
 }
 
+function getRoundIndices(result: AggregatedPerfResult): number[] {
+  return [...result.byRound.keys()].sort((a, b) => a - b);
+}
+
+function createUnpairedTest(
+  base: AggregatedPerfResult,
+  cur: AggregatedPerfResult,
+): UnpairedTest {
+  return {
+    testFile: cur.result.testFile,
+    label: cur.result.label,
+    baselineRounds: getRoundIndices(base),
+    currentRounds: getRoundIndices(cur),
+  };
+}
+
 function isRegression(row: ComparisonRow, options: PerfCompareOptions) {
   return options.node ? row.delta < 0 : row.delta > 0;
 }
@@ -815,30 +830,22 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
       newTests.push(cur);
       continue;
     }
-    const resultProfileModeMismatches: ProfileModeMismatch[] = [];
     for (const profile of ["script", "selectors"] as const) {
       const baselineHasProfile = hasProfileMode(base.result, profile);
       const currentHasProfile = hasProfileMode(cur.result, profile);
       if (baselineHasProfile === currentHasProfile) continue;
-      const mismatch = {
+      profileModeMismatches.push({
         testFile: cur.result.testFile,
         label: cur.result.label,
         profile,
         baseline: baselineHasProfile,
         current: currentHasProfile,
-      };
-      profileModeMismatches.push(mismatch);
-      resultProfileModeMismatches.push(mismatch);
+      });
     }
 
     const sharedRoundIndices = getSharedRoundIndices(base, cur);
     if (sharedRoundIndices.length === 0) {
-      unpairedTests.push({
-        testFile: cur.result.testFile,
-        label: cur.result.label,
-        baselineRounds: [...base.byRound.keys()].sort((a, b) => a - b),
-        currentRounds: [...cur.byRound.keys()].sort((a, b) => a - b),
-      });
+      unpairedTests.push(createUnpairedTest(base, cur));
       continue;
     }
 
@@ -851,8 +858,10 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
           if (!baselineRound || !currentRound) return false;
           return !isProfileMode(baselineRound) && !isProfileMode(currentRound);
         });
-    if (comparisonRoundIndices.length === 0) continue;
-    const profileModeMismatch = resultProfileModeMismatches.length > 0;
+    if (comparisonRoundIndices.length === 0) {
+      unpairedTests.push(createUnpairedTest(base, cur));
+      continue;
+    }
     const primary = !profileMode;
     for (const metric of primaryMetrics) {
       const baselineValues: number[] = [];
@@ -897,7 +906,6 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
         perRoundDeltas: roundComparisons.map((comparison) => comparison.delta),
         ...significance,
         profileMode,
-        profileModeMismatch,
       });
     }
   }
@@ -1377,7 +1385,7 @@ function formatMarkdown(
     const verb = unpairedTests.length === 1 ? "was" : "were";
     lines.push("");
     lines.push(
-      `:warning: ${unpairedTests.length} ${label} had no paired baseline/current rounds and ${verb} not compared.`,
+      `:warning: ${unpairedTests.length} ${label} had no comparable paired round and ${verb} not compared.`,
     );
     for (const result of visibleUnpairedTests) {
       lines.push(`- ${result.label}`);
@@ -1442,7 +1450,7 @@ function formatMarkdown(
     lines.push(`### Unpaired ${resultsName}`);
     lines.push("");
     lines.push(
-      `These ${resultsName} produced baseline and current results, but no shared round index.`,
+      `These ${resultsName} produced baseline and current results, but no comparable paired round.`,
     );
     lines.push("");
     lines.push(`| ${resultName} | Baseline rounds | Current rounds |`);

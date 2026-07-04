@@ -948,7 +948,7 @@ test("surfaces unpaired tests outside the details block", () => {
 
   expect(markdown).toContain("No significant performance changes detected.");
   expect(markdown).toContain(
-    ":warning: 1 test had no paired baseline/current rounds and was not compared.",
+    ":warning: 1 test had no comparable paired round and was not compared.",
   );
   expect(markdown.indexOf(":warning: 1 test")).toBeLessThan(
     markdown.indexOf("<details>"),
@@ -1327,6 +1327,51 @@ test("ignores profile-only rounds in metric comparisons", () => {
   expect(markdown).toContain("#### Script profile");
   expect(markdown).toContain("| `profiledFn` | 8.0ms | 8.0ms | 1 |");
   expect(markdown).not.toContain("300.0ms");
+});
+
+test("reports tests with no non-profile paired rounds as unpaired", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    script: [createScriptProfileEntry("profiledFn", 8)],
+  };
+  writeJson(dir, "baseline-1-worker0.json", [
+    createResultWithLabel("profiled", 100),
+  ]);
+  writeJson(dir, "current-1-worker0.json", [
+    {
+      ...createResultWithMetrics("profiled", createMetrics(300), profiles),
+      profileOnly: true,
+    },
+  ]);
+  writeJson(dir, "baseline-2-worker0.json", [
+    {
+      ...createResultWithMetrics("profiled", createMetrics(200), profiles),
+      profileOnly: true,
+    },
+  ]);
+  writeJson(dir, "current-2-worker0.json", [
+    createResultWithLabel("profiled", 130),
+  ]);
+
+  const markdown = runCompare(dir);
+  const summary = readComparisonSummary(dir);
+
+  expect(markdown).toContain(
+    "No paired performance results available for comparison.",
+  );
+  expect(markdown).toContain(
+    ":warning: 1 test had no comparable paired round and was not compared.",
+  );
+  expect(markdown).toContain("| profiled | 1, 2 | 1, 2 |");
+  expect(markdown).not.toContain("| Metric | Baseline | Current | Delta |");
+  expect(summary.rows).toEqual([]);
+  expect(summary.unpairedTests).toMatchObject([
+    {
+      label: "profiled",
+      baselineRounds: [1, 2],
+      currentRounds: [1, 2],
+    },
+  ]);
 });
 
 test("compares metrics when only one side has attached profile data", () => {
