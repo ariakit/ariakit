@@ -8,6 +8,7 @@ import {
 import path from "node:path";
 import {
   computeMedianMetrics,
+  formatPerfTitlePath,
   median,
   mergeScriptProfiles,
   mergeSelectorProfiles,
@@ -56,7 +57,7 @@ interface ComparisonRow {
   threshold: boolean;
   significant: boolean;
   candidate: boolean;
-  profileMode: boolean;
+  profileModeMismatch: boolean;
 }
 
 interface ComparisonSummary {
@@ -350,10 +351,25 @@ function loadRounds(
       );
     }
     for (const result of data) {
-      rounds.push({ roundIndex, result: result as PerfResult });
+      rounds.push({
+        roundIndex,
+        result: normalizePerfResult(result as PerfResult),
+      });
     }
   }
   return rounds;
+}
+
+function normalizeGeneratedPerfLabel(label: string): string {
+  if (!label.includes("perf-chrome.ts")) return label;
+  return formatPerfTitlePath(label.split(" > "));
+}
+
+function normalizePerfResult(result: PerfResult): PerfResult {
+  const label = normalizeGeneratedPerfLabel(result.label);
+  const testTitle = normalizeGeneratedPerfLabel(result.testTitle);
+  if (label === result.label && testTitle === result.testTitle) return result;
+  return { ...result, label, testTitle };
 }
 
 function mergeProfiles(results: PerfResult[]): PerfProfiles | undefined {
@@ -733,12 +749,6 @@ function hasProfileMode(
   return !!result?.selectorProfile || hasProfileData(result, profile);
 }
 
-function isProfileMode(result: PerfResult | undefined): boolean {
-  return (
-    hasProfileMode(result, "script") || hasProfileMode(result, "selectors")
-  );
-}
-
 function isRegression(row: ComparisonRow, options: PerfCompareOptions) {
   return options.node ? row.delta < 0 : row.delta > 0;
 }
@@ -781,17 +791,20 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
       newTests.push(cur);
       continue;
     }
+    const resultProfileModeMismatches: ProfileModeMismatch[] = [];
     for (const profile of ["script", "selectors"] as const) {
       const baselineHasProfile = hasProfileMode(base.result, profile);
       const currentHasProfile = hasProfileMode(cur.result, profile);
       if (baselineHasProfile === currentHasProfile) continue;
-      profileModeMismatches.push({
+      const mismatch = {
         testFile: cur.result.testFile,
         label: cur.result.label,
         profile,
         baseline: baselineHasProfile,
         current: currentHasProfile,
-      });
+      };
+      profileModeMismatches.push(mismatch);
+      resultProfileModeMismatches.push(mismatch);
     }
 
     const sharedRoundIndices = getSharedRoundIndices(base, cur);
@@ -805,8 +818,8 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
       continue;
     }
 
-    const profileMode = isProfileMode(base.result) || isProfileMode(cur.result);
-    const primary = !profileMode;
+    const profileModeMismatch = resultProfileModeMismatches.length > 0;
+    const primary = !profileModeMismatch;
     for (const metric of primaryMetrics) {
       const baselineValues: number[] = [];
       const roundComparisons: RoundMetricComparison[] = [];
@@ -849,7 +862,7 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
         pairedRoundsCount: sharedRoundIndices.length,
         perRoundDeltas: roundComparisons.map((comparison) => comparison.delta),
         ...significance,
-        profileMode,
+        profileModeMismatch,
       });
     }
   }
@@ -1229,12 +1242,12 @@ function formatDetailedBreakdown({
     const testRows = rowsByKey.get(key) ?? [];
     const label = testRows[0]?.label ?? key;
     const currentResult = currentByKey.get(key)?.result;
-    const profileMode = testRows.some((row) => row.profileMode);
+    const profileModeMismatch = testRows.some((row) => row.profileModeMismatch);
     const profileLines = formatProfiles(currentResult);
-    if (profileMode && profileLines.length === 0) continue;
+    if (profileModeMismatch && profileLines.length === 0) continue;
     lines.push(`### ${label}`);
     lines.push("");
-    if (!profileMode) {
+    if (!profileModeMismatch) {
       lines.push("| Metric | Baseline | Current | Delta |");
       lines.push("|--------|----------|---------|-------|");
       for (const metric of primaryMetrics) {
@@ -1357,21 +1370,18 @@ function formatMarkdown(
 
   if (newTests.length > 0) {
     const primaryMetrics = getPrimaryMetrics(options);
-    const newTestsWithMetrics = newTests.filter(
-      ({ result }) => !isProfileMode(result),
-    );
     lines.push(`### New ${resultsName} (no baseline)`);
     lines.push("");
     if (options.node) {
-      lines.push(...formatNodeResultTables(newTestsWithMetrics, options));
-    } else if (newTestsWithMetrics.length > 0) {
+      lines.push(...formatNodeResultTables(newTests, options));
+    } else if (newTests.length > 0) {
       const headers = [
         resultName,
         ...primaryMetrics.map((metric) => getMetricLabel(metric, options)),
       ];
       lines.push(`| ${headers.join(" | ")} |`);
       lines.push(`| ${headers.map(() => "---").join(" | ")} |`);
-      for (const { result } of newTestsWithMetrics) {
+      for (const { result } of newTests) {
         const cells: string[] = [result.label];
         for (const metric of primaryMetrics) {
           cells.push(formatMetricValue(result.metrics[metric], options));

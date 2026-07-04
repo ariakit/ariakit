@@ -1,6 +1,7 @@
 import type { CDPSession, Page } from "@playwright/test";
 import { afterEach, beforeEach, expect, test } from "vitest";
 import {
+  formatPerfTitlePath,
   getIntegerEnv,
   getPerfSamplingOptions,
   getUniquePerfLabel,
@@ -123,6 +124,24 @@ test("resolves duplicate perf labels with exact label counts", () => {
   expect(getUniquePerfLabel(["foo #2"], "foo")).toBe("foo");
   expect(getUniquePerfLabel(["foo", "foo #2"], "foo")).toBe("foo #3");
   expect(getUniquePerfLabel(["foo", "foo #3"], "foo")).toBe("foo #2");
+});
+
+test("formats perf title paths", () => {
+  expect(
+    formatPerfTitlePath([
+      "sandbox/dialog-perf/perf-chrome.ts",
+      "react",
+      "open dialog",
+    ]),
+  ).toBe("dialog-perf > react > open dialog");
+  expect(
+    formatPerfTitlePath([
+      "app/src/sandbox/dialog-perf/perf-chrome.ts",
+      "react",
+      "open dialog",
+    ]),
+  ).toBe("dialog-perf > react > open dialog");
+  expect(formatPerfTitlePath(["example.ts", "a/b"])).toBe("example.ts > a/b");
 });
 
 test("does not double-count recursive script profile frames", () => {

@@ -352,6 +352,24 @@ export function getPerfSamplingOptions({
   };
 }
 
+export function formatPerfTitlePath(titlePath: string[]): string {
+  const titleParts: string[] = [];
+  for (const title of titlePath) {
+    if (!title) continue;
+    const pathParts = /\.tsx?$/.test(title) ? title.split(/[\\/]/) : [title];
+    const sandboxIndex = pathParts.lastIndexOf("sandbox");
+    const visibleParts =
+      sandboxIndex >= 0 ? pathParts.slice(sandboxIndex + 1) : pathParts;
+    for (const part of visibleParts) {
+      if (!part) continue;
+      if (part === "sandbox") continue;
+      if (part === "perf-chrome.ts") continue;
+      titleParts.push(part);
+    }
+  }
+  return titleParts.join(" > ");
+}
+
 function normalizeProfileUrl(url: string): string {
   try {
     const parsedUrl = new URL(url);
@@ -1375,7 +1393,7 @@ export async function createPerfMeasure(
 
   const medianMetrics = computeMedianMetrics(allMetrics);
 
-  const testTitle = testInfo.titlePath.filter(Boolean).join(" > ");
+  const testTitle = formatPerfTitlePath(testInfo.titlePath);
   const baseLabel = label ?? testTitle;
   const resolvedLabel = getUniquePerfLabel(
     results.map((result) => result.label),
