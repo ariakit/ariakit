@@ -1,4 +1,4 @@
-import { click, press, q, waitFor } from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
 import { expect, test, vi } from "vitest";
 
 function getBackdrop(name: string) {
@@ -270,55 +270,6 @@ test.each(["nested", "sibling"])(
     expectModalStyle(false);
   },
 );
-
-test("outside tree is disabled again when a sibling dialog takes over", async () => {
-  await click(q.button("Open dialog"));
-  const inertRoot = document.querySelector("[inert]");
-  expect(inertRoot).not.toBeNull();
-  if (!inertRoot) return;
-  // The closing dialog restores the outside tree synchronously, while the
-  // opening sibling defers its own disabling until after its open frame
-  // paints, so the tree may be enabled for a frame during the handoff. It
-  // must end up disabled again once the sibling settles.
-  await click(q.button("sibling dismiss unmount"));
-  expect(q.dialog("sibling dismiss unmount")).toBeVisible();
-  await waitFor(() => {
-    expect(inertRoot.hasAttribute("inert")).toBe(true);
-  });
-});
-
-test("body scroll stays locked when a sibling dialog takes over", async () => {
-  const { documentElement } = document;
-  await click(q.button("Open dialog"));
-  expectModalStyle(true);
-  // The closing dialog defers its scroll unlock to a microtask while the
-  // opening dialog locks synchronously. A transient unlock in between would
-  // rewrite the html style attribute, so we collect the attribute value each
-  // mutation replaced, plus the final value, and require the scroll to have
-  // stayed locked throughout the handoff. Reading the current style when the
-  // observer delivers its batch wouldn't do: only the value after the last
-  // mutation would be visible by then.
-  const styleValues: string[] = [];
-  const recordStyleValues = (records: MutationRecord[]) => {
-    for (const record of records) {
-      styleValues.push(record.oldValue ?? "");
-    }
-  };
-  const observer = new MutationObserver(recordStyleValues);
-  observer.observe(documentElement, {
-    attributes: true,
-    attributeFilter: ["style"],
-    attributeOldValue: true,
-  });
-  await click(q.button("sibling dismiss unmount"));
-  recordStyleValues(observer.takeRecords());
-  observer.disconnect();
-  styleValues.push(documentElement.getAttribute("style") ?? "");
-  expect(q.dialog("sibling dismiss unmount")).toBeVisible();
-  expectModalStyle(true);
-  const isLocked = (style: string) => /overflow-y:\s*hidden/.test(style);
-  expect(styleValues.every(isLocked)).toBe(true);
-});
 
 test.each(["sibling"])(
   "show %s dismiss unmount dialog and hide with escape",

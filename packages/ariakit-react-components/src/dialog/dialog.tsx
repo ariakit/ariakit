@@ -99,18 +99,6 @@ function getElementFromProp(
 }
 
 /**
- * Like `afterPaint` from `@ariakit/utils`, but scheduled on the given window
- * so dialogs rendered in other documents defer against their own paint cycle.
- * Returns a function that cancels the pending callback.
- */
-function afterPaintIn(win: Window, callback: () => void) {
-  let raf = win.requestAnimationFrame(() => {
-    raf = win.requestAnimationFrame(callback);
-  });
-  return () => win.cancelAnimationFrame(raf);
-}
-
-/**
  * Returns props to create a `Dialog` component.
  * @see https://ariakit.com/components/dialog
  * @example
@@ -268,17 +256,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       const height = win.visualViewport?.height ?? win.innerHeight;
       dialog.style.setProperty("--dialog-viewport-height", `${height}px`);
     };
-    // Reading the visual viewport height forces a synchronous reflow. React
-    // may flush this effect before the browser paints the newly mounted
-    // dialog, in which case the read lands on a dirty tree and can block the
-    // opening interaction for a long time on large pages. The initial write
-    // is deferred until right after the first paint instead, when the tree is
-    // clean. The stylesheets provide viewport-unit fallbacks that cover the
-    // first frames.
-    const cancelViewportWrite = afterPaintIn(win, setViewportHeight);
+    setViewportHeight();
     viewport.addEventListener("resize", setViewportHeight);
     return () => {
-      cancelViewportWrite();
       viewport.removeEventListener("resize", setViewportHeight);
     };
   }, [mounted, domReady]);
@@ -351,25 +331,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // every event instead. See https://github.com/ariakit/ariakit/issues/6344
     const restoreInsideMarks = markTreeInside(id, allElements);
     if (modal) {
-      const { disableTreeOutside, restoreTreeOutside } =
-        markAndDisableTreeOutside(id, allElements);
-      const win = getWindow(dialog);
-      // Disabling the outside tree sets inert on the top-level elements
-      // around the dialog, which invalidates the style of everything inside
-      // them. The resulting style recalc scales with the page size and
-      // matches what the browser charges for a native showModal() call, but
-      // paying it before the open frame delays the dialog's first paint
-      // (see issue 4075). Defer it to right after that frame paints. The
-      // marks above (JavaScript properties with no style impact) apply
-      // synchronously, so the outside listeners and Escape logic already
-      // treat the tree as outside during the brief window before the inert
-      // attributes land, including when an effect re-run or a sibling
-      // dialog handoff restores the previous disabling first.
-      const cancelDisableTreeOutside = afterPaintIn(win, disableTreeOutside);
       return chain(
         restoreInsideMarks,
-        cancelDisableTreeOutside,
-        restoreTreeOutside,
+        markAndDisableTreeOutside(id, allElements),
       );
     }
     return chain(

@@ -84,15 +84,11 @@ function addRoleNoneCleanup(
   cleanups.push(setAttribute(ancestor, "role", "none"));
 }
 
-// Marks the element tree outside the dialog in a single walk and collects the
-// disabling work into a separate function. Marking only sets JavaScript
-// properties, so it's cheap and must run synchronously: the outside event
-// listeners rely on the marks from the moment the dialog opens. Disabling
-// writes inert and role attributes, which invalidates the style of the entire
-// outside tree, so the dialog defers it until after the open frame paints.
+// Marks and disables the element tree outside the dialog in a single walk.
+// Modal dialogs always need both marking and disabling outside elements, so
+// this combines their callbacks to avoid walking the tree twice on open.
 export function markAndDisableTreeOutside(id: string, elements: Elements) {
   const cleanups: Array<() => void> = [];
-  const disableCallbacks: Array<() => void> = [];
   const ids = elements.map((el) => el?.id);
 
   walkTreeOutside(
@@ -100,29 +96,17 @@ export function markAndDisableTreeOutside(id: string, elements: Elements) {
     elements,
     (element) => {
       addElementMarkCleanup({ cleanups, element, id, ids });
-      disableCallbacks.push(() => {
-        addDisabledElementCleanup({ cleanups, element, elements, ids });
-      });
+      addDisabledElementCleanup({ cleanups, element, elements, ids });
     },
     (ancestor, element) => {
       addAncestorMarkCleanup({ cleanups, ancestor, element, id });
-      disableCallbacks.push(() => {
-        addRoleNoneCleanup(cleanups, ancestor, elements);
-      });
+      addRoleNoneCleanup(cleanups, ancestor, elements);
     },
   );
 
-  const disableTreeOutside = () => {
-    for (const disable of disableCallbacks) {
-      disable();
-    }
-  };
-
-  // Restores both the marks and, if disableTreeOutside has run, the disabled
-  // elements, since their cleanups accumulate in the same list.
   const restoreTreeOutside = () => {
     restoreCleanups(cleanups);
   };
 
-  return { disableTreeOutside, restoreTreeOutside };
+  return restoreTreeOutside;
 }
