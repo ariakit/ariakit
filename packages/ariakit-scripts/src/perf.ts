@@ -9,7 +9,13 @@ import {
 } from "@jridgewell/trace-mapping";
 import type { SourceMapInput } from "@jridgewell/trace-mapping";
 import { errors } from "@playwright/test";
-import type { CDPSession, Page, TestInfo } from "@playwright/test";
+import type {
+  Browser,
+  BrowserContextOptions,
+  CDPSession,
+  Page,
+  TestInfo,
+} from "@playwright/test";
 
 const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const DEFAULT_PROFILE_LIMIT = 10;
@@ -23,7 +29,6 @@ const initializedResultFiles = new Set<string>();
 const SCRIPT_DURATION = "ScriptDuration";
 const LAYOUT_DURATION = "LayoutDuration";
 const RECALC_STYLE_DURATION = "RecalcStyleDuration";
-const PAINTING_DURATION = "PaintingDuration";
 
 const SELECTOR_TRACE_CATEGORIES = [
   "-*",
@@ -42,9 +47,7 @@ const INTERNAL_SCRIPT_FUNCTIONS = new Set([
 
 export interface PerfMetrics {
   scripting: number;
-  layout: number;
-  styleRecalc: number;
-  painting: number;
+  /** Layout plus style recalc time. */
   rendering: number;
   inp: number;
   total: number;
@@ -90,24 +93,33 @@ export interface PerfProfiles {
   selectors?: PerfSelectorProfileEntry[];
 }
 
+/**
+ * Callback invoked with the iteration's page. Each iteration runs in a fresh
+ * browser context, so callbacks must use the page they receive instead of
+ * closing over the test's fixture page.
+ */
+export type PerfMeasureCallback = (page: Page) => Promise<void> | void;
+
 export interface PerfMeasureOptions {
   /** Number of measured iterations (warmup runs are additional). */
   iterations?: number;
   /** Number of discarded warm-up runs before measurement begins. */
   warmup?: number;
   /**
-   * Unmeasured setup callback run before every iteration, after the page
-   * reset. Useful for getting the page into the state the measured interaction
-   * expects, such as opening a dialog before measuring how long it takes to
-   * close it.
+   * Unmeasured setup callback run before every iteration's measured
+   * interaction. For interaction measurements it runs after the iteration
+   * page loads; for page-load measurements it runs on the blank page before
+   * the measured navigation. Useful for getting the page into the state the
+   * measured interaction expects, such as opening a dialog before measuring
+   * how long it takes to close it.
    */
-  setup?: () => Promise<void> | void;
+  setup?: PerfMeasureCallback;
   /**
    * Unmeasured verification callback run after the metrics snapshot for each
    * iteration. Use this for assertions so Playwright polling is not counted as
    * application work.
    */
-  verify?: () => Promise<void> | void;
+  verify?: PerfMeasureCallback;
   /** Override the auto-generated label for this measurement. */
   label?: string;
   /** Collect expensive JS functions. Adds overhead to measured metrics. */
@@ -119,8 +131,12 @@ export interface PerfMeasureOptions {
 }
 
 interface CreatePerfMeasureOptions extends PerfMeasureOptions {
-  /** Re-navigate to the current page URL before each measured interaction. */
-  resetPage?: boolean;
+  /**
+   * Navigate each iteration page to the measured URL before the interaction.
+   * Page-load measurements disable this and navigate inside the measured
+   * interaction instead.
+   */
+  loadPage?: boolean;
 }
 
 interface PerfSamplingOptions {
@@ -265,9 +281,6 @@ export function median(values: number[]): number {
 export function computeMedianMetrics(all: PerfMetrics[]): PerfMetrics {
   return {
     scripting: median(all.map((m) => m.scripting)),
-    layout: median(all.map((m) => m.layout)),
-    styleRecalc: median(all.map((m) => m.styleRecalc)),
-    painting: median(all.map((m) => m.painting)),
     rendering: median(all.map((m) => m.rendering)),
     inp: median(all.map((m) => m.inp)),
     total: median(all.map((m) => m.total)),
@@ -939,10 +952,9 @@ export interface SettleQuiescentOptions {
 }
 
 /**
- * Main-thread work in ms tracked for settle quiescence. Painting is excluded
- * on purpose: periodic repaints such as caret blinks would count as activity
- * and defeat quiescence detection, while any deferred work that produces paint
- * also shows up here first as script, style recalc, or layout time.
+ * Main-thread work in ms tracked for settle quiescence. Any deferred work that
+ * produces paint also shows up here first as script, style recalc, or layout
+ * time, so paint work needs no tracking of its own.
  */
 function getTrackedWork(
   metrics: Array<{ name: string; value: number }>,
@@ -1110,23 +1122,17 @@ async function measureOnce(
   const layoutAfter = getMetricValue(after.metrics, LAYOUT_DURATION);
   const styleBefore = getMetricValue(before.metrics, RECALC_STYLE_DURATION);
   const styleAfter = getMetricValue(after.metrics, RECALC_STYLE_DURATION);
-  const paintBefore = getMetricValue(before.metrics, PAINTING_DURATION);
-  const paintAfter = getMetricValue(after.metrics, PAINTING_DURATION);
 
   // CDP values are in seconds; convert to milliseconds.
   const scripting = (scriptAfter - scriptBefore) * 1000;
   const layout = (layoutAfter - layoutBefore) * 1000;
   const styleRecalc = (styleAfter - styleBefore) * 1000;
-  const painting = (paintAfter - paintBefore) * 1000;
-  const rendering = layout + styleRecalc + painting;
+  const rendering = layout + styleRecalc;
   const inp = inpValues.length > 0 ? Math.max(...inpValues) : 0;
   const total = scripting + rendering;
 
   const metrics = {
     scripting,
-    layout,
-    styleRecalc,
-    painting,
     rendering,
     inp,
     total,
@@ -1139,19 +1145,160 @@ async function measureOnce(
 }
 
 /**
+ * Context options mirrored from the test project configuration so iteration
+ * contexts match the fixture page environment. `browser.newContext` starts
+ * from Playwright's built-in defaults rather than the project's `use` block,
+ * so the context-relevant options are forwarded explicitly. Only project-level
+ * options are visible here: a per-file `test.use()` override would apply to
+ * the fixture page but not to iteration contexts.
+ */
+function getContextOptions(testInfo: TestInfo): BrowserContextOptions {
+  const use = testInfo.project.use;
+  return {
+    baseURL: use.baseURL,
+    colorScheme: use.colorScheme,
+    deviceScaleFactor: use.deviceScaleFactor,
+    hasTouch: use.hasTouch,
+    isMobile: use.isMobile,
+    // The test runner defaults the fixture page's locale to en-US, while raw
+    // contexts default to the system locale; pin it so they match.
+    locale: use.locale ?? "en-US",
+    timezoneId: use.timezoneId,
+    userAgent: use.userAgent,
+    viewport: use.viewport,
+  };
+}
+
+interface MeasureIterationParams {
+  browser: Browser;
+  contextOptions: BrowserContextOptions;
+  testInfo: TestInfo;
+  url: string;
+  loadPage: boolean;
+  interaction: PerfMeasureCallback;
+  setup?: PerfMeasureCallback;
+  verify?: PerfMeasureCallback;
+  scriptProfile: boolean;
+  selectorProfile: boolean;
+  scriptSourceMapResolver: SourceMapResolverOptions;
+}
+
+/**
+ * The runner's `screenshot: "only-on-failure"` captures the fixture page,
+ * which never receives the interaction; attach the iteration page so failures
+ * show the page that was actually measured. Best-effort: the original error
+ * matters more than a failed screenshot.
+ */
+async function attachFailureScreenshot(testInfo: TestInfo, page: Page) {
+  try {
+    // Bound the screenshot so a hung renderer cannot delay the rethrow of
+    // the original, more informative error.
+    const body = await page.screenshot({ timeout: 5000 });
+    await testInfo.attach("perf-iteration-failure", {
+      body,
+      contentType: "image/png",
+    });
+  } catch {}
+}
+
+/**
+ * Runs one measurement iteration in a dedicated browser context. A fresh
+ * context gets a fresh renderer process, so no browser state accumulated by
+ * previous iterations leaks into this measurement. Re-navigating the same tab
+ * is not enough: renderer state accumulated across same-URL navigations makes
+ * some interactions cost over 2x more scripting time from roughly the fourth
+ * navigation onward, which made per-iteration metrics bimodal.
+ */
+async function measureIteration(
+  params: MeasureIterationParams,
+): Promise<MeasureOnceResult> {
+  const context = await params.browser.newContext(params.contextOptions);
+  try {
+    const page = await context.newPage();
+    const cdp = await context.newCDPSession(page);
+    const styleSheetUrls = new Map<string, string>();
+    const scriptSourceMapUrls = new Map<string, string>();
+    const onStyleSheetAdded = (event: CssStyleSheetAddedEvent) => {
+      const { styleSheetId, sourceURL = "" } = event.header;
+      styleSheetUrls.set(styleSheetId, sourceURL);
+    };
+    const onScriptParsed = (event: DebuggerScriptParsedEvent) => {
+      const { scriptId, sourceMapURL = "" } = event;
+      if (sourceMapURL) {
+        scriptSourceMapUrls.set(scriptId, sourceMapURL);
+      }
+    };
+
+    // Track durations in thread CPU time instead of wall-clock time so time
+    // the renderer main thread spends preempted by other processes on a
+    // contended runner is not counted. The time domain must be set when the
+    // domain is enabled.
+    await cdp.send("Performance.enable", { timeDomain: "threadTicks" });
+    if (params.scriptProfile) {
+      cdp.on("Debugger.scriptParsed", onScriptParsed);
+      await cdp.send("Debugger.enable");
+      await cdp.send("Profiler.enable");
+    }
+    if (params.selectorProfile) {
+      cdp.on("CSS.styleSheetAdded", onStyleSheetAdded);
+      await cdp.send("DOM.enable");
+      await cdp.send("CSS.enable");
+    }
+
+    if (params.loadPage) {
+      await gotoAndSettle(page, params.url);
+    }
+
+    if (params.setup) {
+      // Run the unmeasured setup and let its work settle so it doesn't leak
+      // into the metrics snapshot taken right before the interaction.
+      await params.setup(page);
+      await settleQuiescent(page, cdp);
+    }
+
+    const interaction = async () => {
+      await params.interaction(page);
+    };
+    const result = await measureOnce(page, cdp, interaction, {
+      scriptProfile: params.scriptProfile,
+      selectorProfile: params.selectorProfile,
+      scriptSourceMapResolver: params.scriptSourceMapResolver,
+      styleSheetUrls,
+      scriptSourceMapUrls,
+    });
+
+    if (params.verify) {
+      await params.verify(page);
+    }
+
+    return result;
+  } catch (error) {
+    const page = context.pages()[0];
+    if (page) {
+      await attachFailureScreenshot(params.testInfo, page);
+    }
+    throw error;
+  } finally {
+    // Swallow close failures: by this point the result is already computed or
+    // a more informative error is in flight.
+    await context.close().catch(() => {});
+  }
+}
+
+/**
  * Runs the interaction multiple times, discards warm-up runs, and returns the
- * median metrics. By default, each iteration re-navigates to the page URL for
- * a clean state.
+ * median metrics. Each iteration runs in a fresh browser context so the
+ * samples are independent; see `measureIteration`.
  */
 export async function createPerfMeasure(
   page: Page,
-  interaction: () => Promise<void>,
+  interaction: PerfMeasureCallback,
   results: PerfResult[],
   testInfo: TestInfo,
   options: CreatePerfMeasureOptions = {},
 ): Promise<PerfMetrics> {
   const {
-    resetPage = true,
+    loadPage = true,
     setup,
     verify,
     label,
@@ -1179,92 +1326,51 @@ export async function createPerfMeasure(
     throw new Error(`Invalid perf profile limit: ${profileLimit}`);
   }
 
-  const cdp = await page.context().newCDPSession(page);
-  await cdp.send("Performance.enable");
+  const browser = page.context().browser();
+  if (!browser) {
+    throw new Error("Perf measurements require a browser-launched page.");
+  }
+
+  const contextOptions = getContextOptions(testInfo);
+  // The test navigated the fixture page to the measured URL; each iteration
+  // page visits the same URL in its own context.
+  const url = page.url();
 
   const allMetrics: PerfMetrics[] = [];
   const scriptProfiles: PerfScriptProfileEntry[][] = [];
   const selectorProfiles: PerfSelectorProfileEntry[][] = [];
-  const styleSheetUrls = new Map<string, string>();
-  const onStyleSheetAdded = (event: CssStyleSheetAddedEvent) => {
-    const { styleSheetId, sourceURL = "" } = event.header;
-    styleSheetUrls.set(styleSheetId, sourceURL);
-  };
-  const scriptSourceMapUrls = new Map<string, string>();
+  // Source map fetches are cached across iterations; the URLs are stable
+  // because every iteration loads the same build output.
   const scriptSourceMapResolver: SourceMapResolverOptions = {
     loadScript: createCachedLoader(defaultLoadText),
     loadSourceMap: createCachedLoader(defaultLoadSourceMap),
     traceMapCache: new Map(),
   };
-  const onScriptParsed = (event: DebuggerScriptParsedEvent) => {
-    const { scriptId, sourceMapURL = "" } = event;
-    if (sourceMapURL) {
-      scriptSourceMapUrls.set(scriptId, sourceMapURL);
+
+  for (let i = 0; i < warmup + iterations; i++) {
+    const result = await measureIteration({
+      browser,
+      contextOptions,
+      testInfo,
+      url,
+      loadPage,
+      interaction,
+      setup,
+      verify,
+      scriptProfile,
+      selectorProfile,
+      scriptSourceMapResolver,
+    });
+
+    // Only keep measured (non-warmup) iterations.
+    if (i < warmup) continue;
+    allMetrics.push(result.metrics);
+    if (result.profiles?.script && result.profiles.script.length > 0) {
+      scriptProfiles.push(result.profiles.script);
     }
-  };
-
-  try {
-    if (scriptProfile) {
-      cdp.on("Debugger.scriptParsed", onScriptParsed);
-      await cdp.send("Debugger.enable");
-      await cdp.send("Profiler.enable");
+    if (result.profiles?.selectors && result.profiles.selectors.length > 0) {
+      selectorProfiles.push(result.profiles.selectors);
     }
-    if (selectorProfile) {
-      cdp.on("CSS.styleSheetAdded", onStyleSheetAdded);
-      await cdp.send("DOM.enable");
-      await cdp.send("CSS.enable");
-    }
-
-    const url = page.url();
-
-    for (let i = 0; i < warmup + iterations; i++) {
-      if (resetPage) {
-        // Re-navigate for a clean state on every iteration.
-        await gotoAndSettle(page, url);
-      }
-
-      if (setup) {
-        // Run the unmeasured setup and let its work settle so it doesn't leak
-        // into the metrics snapshot taken right before the interaction.
-        await setup();
-        await settleQuiescent(page, cdp);
-      }
-
-      const result = await measureOnce(page, cdp, interaction, {
-        scriptProfile,
-        selectorProfile,
-        scriptSourceMapResolver,
-        styleSheetUrls,
-        scriptSourceMapUrls,
-      });
-
-      if (verify) {
-        await verify();
-      }
-
-      // Only keep measured (non-warmup) iterations.
-      if (i >= warmup) {
-        allMetrics.push(result.metrics);
-        if (result.profiles?.script && result.profiles.script.length > 0) {
-          scriptProfiles.push(result.profiles.script);
-        }
-        if (
-          result.profiles?.selectors &&
-          result.profiles.selectors.length > 0
-        ) {
-          selectorProfiles.push(result.profiles.selectors);
-        }
-      }
-    }
-  } finally {
-    cdp.off("Debugger.scriptParsed", onScriptParsed);
-    cdp.off("CSS.styleSheetAdded", onStyleSheetAdded);
-    await cdp.send("Profiler.disable").catch(() => {});
-    await cdp.send("Debugger.disable").catch(() => {});
-    await cdp.send("CSS.disable").catch(() => {});
-    await cdp.send("DOM.disable").catch(() => {});
-    await cdp.send("Performance.disable").catch(() => {});
-    await cdp.detach().catch(() => {});
   }
 
   const medianMetrics = computeMedianMetrics(allMetrics);
@@ -1299,12 +1405,12 @@ export async function createPerfPageLoadMeasure(
   const url = page.url();
   return createPerfMeasure(
     page,
-    () => gotoAndSettle(page, url),
+    (iterationPage) => gotoAndSettle(iterationPage, url),
     results,
     testInfo,
     {
       ...options,
-      resetPage: false,
+      loadPage: false,
     },
   );
 }
