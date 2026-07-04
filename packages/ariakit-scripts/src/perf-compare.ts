@@ -27,8 +27,16 @@ const THRESHOLD_PERCENT = 10;
 const MIN_SIGNIFICANT_DELTA_MS = 5;
 // Require at least 75% of each required round's pairwise raw-sample deltas to
 // support the paired median direction before a browser comparison becomes
-// significant.
+// significant. Threshold-sized changes whose rounds agree on direction but
+// fail this gate are reported as unconfirmed candidates instead.
 const RAW_SAMPLE_SUPPORT_QUANTILE = 0.25;
+// Cap the unconfirmed candidate table so a noisy run cannot flood the PR
+// comment; the detailed breakdown still lists every metric.
+const MAX_VISIBLE_CANDIDATE_ROWS = 10;
+// Pooled pairwise raw-sample agreement at or above this percent grades an
+// unconfirmed candidate as medium confidence: close to the 75% per-round
+// raw support gate without meeting it in every round.
+const MEDIUM_CONFIDENCE_PAIRWISE_PERCENT = 70;
 
 type MetricKey = keyof PerfMetrics;
 
@@ -44,14 +52,18 @@ interface ComparisonRow {
   perRoundDeltas: number[];
   agreement: number;
   sampleSupport: number;
+  pairwiseSupportPercent: number;
   threshold: boolean;
   significant: boolean;
+  candidate: boolean;
   profileMode: boolean;
 }
 
 interface ComparisonSummary {
   rows: ComparisonRow[];
   hasSignificantChanges: boolean;
+  hasCandidateChanges: boolean;
+  confirmationFiles: string[];
   currentResults: AggregatedPerfResult[];
   profileModeMismatches: ProfileModeMismatch[];
   newTests: AggregatedPerfResult[];
@@ -63,6 +75,8 @@ interface ComparisonSummary {
 interface PersistedComparisonSummary {
   rows: ComparisonRow[];
   hasSignificantChanges: boolean;
+  hasCandidateChanges: boolean;
+  confirmationFiles: string[];
   profileModeMismatches: ProfileModeMismatch[];
   newTests: PerfResult[];
   removedTests: PerfResult[];
@@ -137,43 +151,19 @@ export interface PerfCompareRunResult {
   markdown: string;
 }
 
-// Primary metrics shown in the summary table.
-const PRIMARY_METRICS: MetricKey[] = ["scripting", "rendering", "total"];
-
-// All metrics shown in the detailed breakdown.
-const ALL_METRICS: MetricKey[] = [
-  "scripting",
-  "rendering",
-  "layout",
-  "styleRecalc",
-  "painting",
-  "inp",
-  "total",
-];
+// Metrics shown in the summary table and detailed breakdown. All of them can
+// be flagged as significant or reported as unconfirmed candidates.
+const PRIMARY_METRICS: MetricKey[] = ["scripting", "rendering", "inp", "total"];
 
 const METRIC_LABELS: Record<MetricKey, string> = {
   scripting: "Scripting",
-  layout: "Layout",
-  styleRecalc: "Style recalc",
-  painting: "Painting",
   rendering: "Rendering",
   inp: "INP",
   total: "Total",
 };
 
-// Rendering sub-metrics are indented in the detailed breakdown.
-const RENDERING_SUB_METRICS = new Set<MetricKey>([
-  "layout",
-  "styleRecalc",
-  "painting",
-]);
-
 function getPrimaryMetrics(options: PerfCompareOptions): MetricKey[] {
   return options.node ? ["total"] : PRIMARY_METRICS;
-}
-
-function getAllMetrics(options: PerfCompareOptions): MetricKey[] {
-  return options.node ? ["total"] : ALL_METRICS;
 }
 
 function getResultName(options: PerfCompareOptions) {
@@ -264,9 +254,6 @@ function createNodeMetrics({ hz, mean }: { hz: number; mean: number }) {
   const total = hz > 0 ? hz : mean > 0 ? 1000 / mean : 0;
   return {
     scripting: 0,
-    layout: 0,
-    styleRecalc: 0,
-    painting: 0,
     rendering: 0,
     inp: 0,
     total,
@@ -512,6 +499,15 @@ function samplesSupportDirection(sampleDeltas: number[], direction: number) {
   return getQuantile(sampleDeltas, 1 - RAW_SAMPLE_SUPPORT_QUANTILE) < 0;
 }
 
+const EMPTY_SIGNIFICANCE = {
+  agreement: 0,
+  sampleSupport: 0,
+  pairwiseSupportPercent: 0,
+  threshold: false,
+  significant: false,
+  candidate: false,
+};
+
 function getRoundMetricComparison(
   baseline: PerfResult,
   current: PerfResult,
@@ -548,27 +544,19 @@ function computeSignificance({
   roundComparisons: RoundMetricComparison[];
 }) {
   if (roundComparisons.length === 0) {
-    return {
-      agreement: 0,
-      sampleSupport: 0,
-      threshold: false,
-      significant: false,
-    };
+    return EMPTY_SIGNIFICANCE;
   }
 
   const delta = current - baseline;
   const direction = Math.sign(delta);
   if (direction === 0) {
-    return {
-      agreement: 0,
-      sampleSupport: 0,
-      threshold: false,
-      significant: false,
-    };
+    return EMPTY_SIGNIFICANCE;
   }
 
   let agreement = 0;
   let sampleSupport = 0;
+  let pairwiseCount = 0;
+  let pairwiseSupportCount = 0;
   for (const comparison of roundComparisons) {
     if (Math.sign(comparison.delta) === direction) {
       agreement += 1;
@@ -576,7 +564,19 @@ function computeSignificance({
     if (samplesSupportDirection(comparison.sampleDeltas, direction)) {
       sampleSupport += 1;
     }
+    pairwiseCount += comparison.sampleDeltas.length;
+    for (const sampleDelta of comparison.sampleDeltas) {
+      if (Math.sign(sampleDelta) === direction) {
+        pairwiseSupportCount += 1;
+      }
+    }
   }
+
+  // Share of all raw sample pairs (baseline x current, pooled across rounds)
+  // that move in the median's direction. 50% means the raw distributions
+  // fully overlap; the per-round raw support gate needs 75%.
+  const pairwiseSupportPercent =
+    pairwiseCount > 0 ? (pairwiseSupportCount / pairwiseCount) * 100 : 0;
 
   const percentOk = Math.abs(percent) > THRESHOLD_PERCENT;
   const deltaOk = Math.abs(delta) >= minDelta;
@@ -586,12 +586,21 @@ function computeSignificance({
   const required = requiredAgreement(roundComparisons.length);
   const agreementOk = agreement >= required;
   const sampleSupportOk = !requireSampleSupport || sampleSupport >= required;
+  const significant = primary && magnitudeOk && agreementOk && sampleSupportOk;
 
   return {
     agreement,
     sampleSupport,
+    pairwiseSupportPercent,
     threshold: magnitudeOk,
-    significant: primary && magnitudeOk && agreementOk && sampleSupportOk,
+    significant,
+    // A candidate clears the magnitude threshold and rounds agree on
+    // direction, but the raw samples fail to support it. It is reported as an
+    // unconfirmed change and triggers confirmation rounds like significant
+    // rows do; the extra rounds can demote it (direction flips), promote it
+    // (enough rounds gain raw support under the n-1 rule), or leave it
+    // unconfirmed with more data behind its diagnostics.
+    candidate: primary && magnitudeOk && agreementOk && !significant,
   };
 }
 
@@ -739,11 +748,25 @@ function getSignificanceIcon(row: ComparisonRow, options: PerfCompareOptions) {
   return isRegression(row, options) ? " :warning:" : " :rocket:";
 }
 
+// Test files whose rows warrant extra confirmation rounds. Candidates are
+// included so a change that only fails raw sample support gets more data
+// before the final comparison is published.
+function getConfirmationFiles(rows: ComparisonRow[]): string[] {
+  const files = new Set<string>();
+  for (const row of rows) {
+    if (!row.significant && !row.candidate) continue;
+    if (!row.testFile) {
+      throw new Error(`Missing test file for comparison row: ${row.label}`);
+    }
+    files.add(row.testFile);
+  }
+  return [...files].sort();
+}
+
 function compare(options: PerfCompareOptions): ComparisonSummary {
   const baseline = aggregateByKey(loadRounds("baseline", options));
   const current = aggregateByKey(loadRounds("current", options));
   const primaryMetrics = getPrimaryMetrics(options);
-  const allMetrics = getAllMetrics(options);
   const minDelta = getMinSignificantDelta(options);
 
   const rows: ComparisonRow[] = [];
@@ -784,7 +807,7 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
 
     const profileMode = isProfileMode(base.result) || isProfileMode(cur.result);
     const primary = !profileMode;
-    for (const metric of allMetrics) {
+    for (const metric of primaryMetrics) {
       const baselineValues: number[] = [];
       const roundComparisons: RoundMetricComparison[] = [];
       for (const roundIndex of sharedRoundIndices) {
@@ -806,16 +829,15 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
       );
       const curVal = baseVal + delta;
       const percent = baseVal > 0 ? (delta / baseVal) * 100 : 0;
-      const { agreement, sampleSupport, threshold, significant } =
-        computeSignificance({
-          baseline: baseVal,
-          current: curVal,
-          minDelta,
-          primary: primary && primaryMetrics.includes(metric),
-          percent,
-          requireSampleSupport: !options.node,
-          roundComparisons,
-        });
+      const significance = computeSignificance({
+        baseline: baseVal,
+        current: curVal,
+        minDelta,
+        primary,
+        percent,
+        requireSampleSupport: !options.node,
+        roundComparisons,
+      });
       rows.push({
         testFile: cur.result.testFile,
         label: cur.result.label,
@@ -826,10 +848,7 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
         percent,
         pairedRoundsCount: sharedRoundIndices.length,
         perRoundDeltas: roundComparisons.map((comparison) => comparison.delta),
-        agreement,
-        sampleSupport,
-        threshold,
-        significant,
+        ...significance,
         profileMode,
       });
     }
@@ -846,6 +865,8 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
   return {
     rows,
     hasSignificantChanges: rows.some((r) => r.significant),
+    hasCandidateChanges: rows.some((r) => r.candidate),
+    confirmationFiles: getConfirmationFiles(rows),
     currentResults: [...current.values()],
     profileModeMismatches,
     newTests,
@@ -1019,20 +1040,90 @@ function formatSummaryTable(
 }
 
 function formatSupport(row: ComparisonRow, options: PerfCompareOptions) {
-  const rounds = `${row.agreement}/${row.pairedRoundsCount} rounds`;
+  const rounds = `rounds ${row.agreement}/${row.pairedRoundsCount}`;
   if (options.node) return rounds;
-  return `${rounds}, raw ${row.sampleSupport}/${row.pairedRoundsCount}`;
+  const raw = `raw ${row.sampleSupport}/${row.pairedRoundsCount}`;
+  const pairs = `pairs ${formatPercent(row.pairwiseSupportPercent)}`;
+  return `${rounds}, ${raw}, ${pairs}`;
+}
+
+// Candidate confidence comes from the pooled pairwise raw-sample agreement:
+// how many baseline x current sample pairs move in the median's direction.
+// Grade on the rounded value shown in the support diagnostics so a row can
+// never display a percent at the grade boundary with the lower grade.
+function getCandidateConfidence(row: ComparisonRow) {
+  const percent = Math.round(row.pairwiseSupportPercent);
+  if (percent >= MEDIUM_CONFIDENCE_PAIRWISE_PERCENT) {
+    return "medium";
+  }
+  return "low";
+}
+
+// Order by relative change size so the row cap keeps the most notable
+// candidates. Zero-baseline rows have no percent (an unbounded relative
+// change), so they rank first; ties fall back to the absolute delta.
+function compareCandidateRows(a: ComparisonRow, b: ComparisonRow) {
+  const aPercent = a.baseline === 0 ? Infinity : Math.abs(a.percent);
+  const bPercent = b.baseline === 0 ? Infinity : Math.abs(b.percent);
+  return bPercent - aPercent || Math.abs(b.delta) - Math.abs(a.delta);
+}
+
+// Candidate rows are shown outside the collapsed details, but without
+// significance icons: their uncertainty must stay explicit.
+function formatCandidateChanges(
+  rows: ComparisonRow[],
+  options: PerfCompareOptions,
+): string[] {
+  const candidateRows = rows
+    .filter((row) => row.candidate)
+    .sort(compareCandidateRows);
+  if (candidateRows.length === 0) return [];
+
+  const lines: string[] = [];
+  lines.push("#### Unconfirmed changes");
+  lines.push("");
+  lines.push(
+    "These changes pass the size threshold and rounds agree on direction, but the raw samples overlap too much to confirm them. Treat them as possible changes, not confirmed ones. Confidence reflects how many raw sample pairs move in the same direction as the median; low can mean the raw samples carry little to no directional evidence.",
+  );
+  lines.push("");
+  lines.push(
+    `| ${getResultName(options)} | Metric | Baseline | Current | Change | Confidence | Support |`,
+  );
+  lines.push(
+    "|------|--------|----------|---------|--------|------------|---------|",
+  );
+  const visibleRows = candidateRows.slice(0, MAX_VISIBLE_CANDIDATE_ROWS);
+  for (const row of visibleRows) {
+    const cells = [
+      escapeTableCell(row.label),
+      getMetricLabel(row.metric, options),
+      formatMetricValue(row.baseline, options),
+      formatMetricValue(row.current, options),
+      formatDelta(row.delta, row.percent, row.baseline, options),
+      getCandidateConfidence(row),
+      formatSupport(row, options),
+    ];
+    lines.push(`| ${cells.join(" | ")} |`);
+  }
+  const hiddenRows = candidateRows.length - visibleRows.length;
+  if (hiddenRows > 0) {
+    lines.push("");
+    lines.push(
+      `...and ${hiddenRows} more unconfirmed ${hiddenRows === 1 ? "change" : "changes"} in the full breakdown.`,
+    );
+  }
+  return lines;
 }
 
 function formatUnflaggedDiagnostics(
   rows: ComparisonRow[],
   options: PerfCompareOptions,
 ): string[] {
-  const primaryMetrics = getPrimaryMetrics(options);
   const diagnostics = rows.filter((row) => {
     if (row.significant) return false;
-    if (!row.threshold) return false;
-    return primaryMetrics.includes(row.metric);
+    // Candidates are already reported in the unconfirmed changes section.
+    if (row.candidate) return false;
+    return row.threshold;
   });
   if (diagnostics.length === 0) return [];
 
@@ -1133,7 +1224,7 @@ function formatDetailedBreakdown({
     return formatNodeComparisonTables(rowsByKey, keys, options);
   }
   const lines: string[] = [];
-  const allMetrics = getAllMetrics(options);
+  const primaryMetrics = getPrimaryMetrics(options);
   for (const key of keys) {
     const testRows = rowsByKey.get(key) ?? [];
     const label = testRows[0]?.label ?? key;
@@ -1146,11 +1237,9 @@ function formatDetailedBreakdown({
     if (!profileMode) {
       lines.push("| Metric | Baseline | Current | Delta |");
       lines.push("|--------|----------|---------|-------|");
-      for (const metric of allMetrics) {
+      for (const metric of primaryMetrics) {
         const row = testRows.find((r) => r.metric === metric);
         if (!row) continue;
-        const prefix = RENDERING_SUB_METRICS.has(metric) ? "- " : "";
-        const metricLabel = `${prefix}${getMetricLabel(metric, options)}`;
         const deltaStr = formatDelta(
           row.delta,
           row.percent,
@@ -1159,7 +1248,7 @@ function formatDetailedBreakdown({
         );
         const icon = getSignificanceIcon(row, options);
         lines.push(
-          `| ${metricLabel} | ${formatMetricValue(row.baseline, options)} | ${formatMetricValue(row.current, options)} | ${deltaStr}${icon} |`,
+          `| ${getMetricLabel(metric, options)} | ${formatMetricValue(row.baseline, options)} | ${formatMetricValue(row.current, options)} | ${deltaStr}${icon} |`,
         );
       }
       lines.push("");
@@ -1177,6 +1266,7 @@ function formatMarkdown(
   const {
     rows,
     hasSignificantChanges,
+    hasCandidateChanges,
     currentResults,
     profileModeMismatches,
     newTests,
@@ -1219,8 +1309,15 @@ function formatMarkdown(
     lines.push("No paired performance results available for comparison.");
   } else if (rows.length === 0 && newTests.length === 0) {
     lines.push("No performance results found.");
+  } else if (hasCandidateChanges) {
+    lines.push("No confirmed performance changes detected.");
   } else {
     lines.push("No significant performance changes detected.");
+  }
+
+  if (hasCandidateChanges) {
+    lines.push("");
+    lines.push(...formatCandidateChanges(rows, options));
   }
 
   if (unpairedTests.length > 0) {
@@ -1361,6 +1458,8 @@ function toPersistedSummary(
   return {
     rows: summary.rows,
     hasSignificantChanges: summary.hasSignificantChanges,
+    hasCandidateChanges: summary.hasCandidateChanges,
+    confirmationFiles: summary.confirmationFiles,
     profileModeMismatches: summary.profileModeMismatches,
     newTests: summary.newTests.map((entry) => entry.result),
     removedTests: summary.removedTests.map((entry) => entry.result),

@@ -14,9 +14,6 @@ import { afterEach, expect, test } from "vitest";
 
 interface PerfMetrics {
   scripting: number;
-  layout: number;
-  styleRecalc: number;
-  painting: number;
   rendering: number;
   inp: number;
   total: number;
@@ -72,9 +69,6 @@ function createTempDir() {
 function createMetrics(total: number): PerfMetrics {
   return {
     scripting: total,
-    layout: 0,
-    styleRecalc: 0,
-    painting: 0,
     rendering: 0,
     inp: 0,
     total,
@@ -228,6 +222,39 @@ function writeRawRound(
   writeJson(dir, `${prefix}-${round}-worker0.json`, [
     createResultWithRaw("raw samples", totals),
   ]);
+}
+
+function createResultWithInpRaw(label: string, inps: number[]): PerfResult {
+  return {
+    ...createResultWithLabel(label, 100),
+    metrics: { ...createMetrics(100), inp: medianValue(inps) },
+    raw: inps.map((inp) => ({ ...createMetrics(100), inp })),
+  };
+}
+
+function writeInpRawRound(
+  dir: string,
+  prefix: "baseline" | "current",
+  round: number,
+  inps: number[],
+) {
+  writeJson(dir, `${prefix}-${round}-worker0.json`, [
+    createResultWithInpRaw("inp test", inps),
+  ]);
+}
+
+function createFileResultWithRaw(
+  testFile: string,
+  label: string,
+  totals: number[],
+): PerfResult {
+  return { ...createResultWithRaw(label, totals), testFile };
+}
+
+function readComparisonSummary(dir: string) {
+  return JSON.parse(
+    readFileSync(path.join(dir, resultsDir, "comparison.json"), "utf-8"),
+  );
 }
 
 function runCompare(
@@ -405,11 +432,20 @@ test("describes Node multi-round comparisons by round agreement", () => {
   }
 
   const markdown = runCompare(dir, ["--node"]);
+  const summary = readComparisonSummary(dir);
 
   expect(markdown).toContain(
     "Aggregated across 2 interleaved rounds; a change is flagged only when the paired median delta exceeds the threshold, rounds agree on direction.",
   );
   expect(markdown).not.toContain("raw samples support it");
+  // Node mode does not require raw sample support, so rows that pass the
+  // magnitude and agreement gates are significant, never candidates.
+  expect(markdown).not.toContain("Unconfirmed changes");
+  expect(summary.hasCandidateChanges).toBe(false);
+  expect(summary.rows.every((row: any) => !row.candidate)).toBe(true);
+  expect(summary.confirmationFiles).toEqual([
+    "packages/ariakit-store/benchmark/store.bench.ts",
+  ]);
 });
 
 test("does not flag noisy rounds that disagree on direction", () => {
@@ -424,11 +460,12 @@ test("does not flag noisy rounds that disagree on direction", () => {
   const markdown = runCompare(dir);
 
   expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).not.toContain("Unconfirmed changes");
   expect(markdown).not.toMatch(/% :warning:/);
   expect(markdown).toContain("Aggregated across 5 interleaved rounds");
 });
 
-test("does not flag same-direction rounds with overlapping raw samples", () => {
+test("reports overlapping same-direction rounds as unconfirmed candidates", () => {
   const dir = createTempDir();
   for (const round of [1, 2]) {
     writeRawRound(dir, "baseline", round, [80, 100, 120, 140, 160]);
@@ -437,9 +474,38 @@ test("does not flag same-direction rounds with overlapping raw samples", () => {
 
   const markdown = runCompare(dir);
 
-  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain("No confirmed performance changes detected.");
+  expect(markdown).toContain("#### Unconfirmed changes");
+  expect(markdown.indexOf("#### Unconfirmed changes")).toBeLessThan(
+    markdown.indexOf("<details>"),
+  );
+  expect(markdown).toContain(
+    "| raw samples | Scripting | 120.0ms | 140.0ms | +20.0ms (+17%) | low | rounds 2/2, raw 0/2, pairs 60% |",
+  );
   expect(markdown).toContain("120.0ms | 140.0ms | +20.0ms (+17%)");
+  // Candidates are reported in the unconfirmed changes section, not repeated
+  // in the detailed breakdown diagnostics.
+  expect(markdown).not.toContain("Unflagged threshold-sized changes");
   expect(markdown).not.toMatch(/% :warning:/);
+  expect(markdown).not.toMatch(/% :rocket:/);
+});
+
+test("grades candidates by their displayed pairs percent", () => {
+  const dir = createTempDir();
+  const baseline = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+  // 70 of 100 pairwise deltas support round 1 and 69 of 100 support round 2,
+  // pooling to 139/200 = 69.5%, which displays as "pairs 70%". The medium
+  // grade must match the displayed percent, not the raw 69.5 value.
+  writeRawRound(dir, "baseline", 1, baseline);
+  writeRawRound(dir, "current", 1, [35, 45, 75, 85, 85, 85, 85, 85, 85, 85]);
+  writeRawRound(dir, "baseline", 2, baseline);
+  writeRawRound(dir, "current", 2, [35, 35, 75, 85, 85, 85, 85, 85, 85, 85]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain(
+    "| raw samples | Scripting | 55.0ms | 85.0ms | +30.0ms (+55%) | medium | rounds 2/2, raw 0/2, pairs 70% |",
+  );
 });
 
 test("flags same-direction rounds with separated raw samples", () => {
@@ -453,6 +519,7 @@ test("flags same-direction rounds with separated raw samples", () => {
 
   expect(markdown).toContain(":warning:");
   expect(markdown).toContain("100.0ms → 160.0ms (+60%) :warning:");
+  expect(markdown).not.toContain("Unconfirmed changes");
 });
 
 test("requires raw sample support in each required round", () => {
@@ -464,10 +531,176 @@ test("requires raw sample support in each required round", () => {
 
   const markdown = runCompare(dir);
 
-  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain("No confirmed performance changes detected.");
   expect(markdown).toContain("110.0ms | 150.0ms | +40.0ms (+36%)");
-  expect(markdown).toContain("raw 1/2");
+  expect(markdown).toContain(
+    "| raw samples | Scripting | 110.0ms | 150.0ms | +40.0ms (+36%) | medium | rounds 2/2, raw 1/2, pairs 80% |",
+  );
   expect(markdown).not.toMatch(/% :warning:/);
+});
+
+test("caps the unconfirmed changes table", () => {
+  const dir = createTempDir();
+  const labels = ["c1", "c2", "c3", "c4", "c5", "c6"];
+  for (const round of [1, 2]) {
+    writeJson(
+      dir,
+      `baseline-${round}-worker0.json`,
+      labels.map((label) =>
+        createResultWithRaw(label, [80, 100, 120, 140, 160]),
+      ),
+    );
+    writeJson(
+      dir,
+      `current-${round}-worker0.json`,
+      labels.map((label) =>
+        createResultWithRaw(label, [100, 120, 140, 160, 180]),
+      ),
+    );
+  }
+
+  const markdown = runCompare(dir);
+
+  // Each candidate test contributes a Scripting and a Total row, so six tests
+  // exceed the ten-row cap by two rows.
+  expect(markdown).toContain("| c5 | Total |");
+  expect(markdown).not.toContain("| c6 | Scripting |");
+  expect(markdown).toContain(
+    "...and 2 more unconfirmed changes in the full breakdown.",
+  );
+});
+
+test("keeps zero-baseline candidates visible under the cap", () => {
+  const dir = createTempDir();
+  const labels = ["c1", "c2", "c3", "c4", "c5", "c6"];
+  for (const round of [1, 2]) {
+    writeJson(dir, `baseline-${round}-worker0.json`, [
+      ...labels.map((label) =>
+        createResultWithRaw(label, [80, 100, 120, 140, 160]),
+      ),
+      createResultWithRaw("from zero", [0, 0, 0, 0, 0]),
+    ]);
+    writeJson(dir, `current-${round}-worker0.json`, [
+      ...labels.map((label) =>
+        createResultWithRaw(label, [100, 120, 140, 160, 180]),
+      ),
+      createResultWithRaw("from zero", [0, 0, 200, 250, 300]),
+    ]);
+  }
+
+  const markdown = runCompare(dir);
+
+  // Zero-baseline rows have no percent, so they must rank ahead of
+  // percent-sorted rows instead of falling behind them and off the cap.
+  expect(markdown).toContain(
+    "| from zero | Scripting | 0.0ms | 200.0ms | +200.0ms | low | rounds 2/2, raw 0/2, pairs 60% |",
+  );
+  expect(markdown.indexOf("| from zero | Scripting |")).toBeLessThan(
+    markdown.indexOf("| c1 | Scripting |"),
+  );
+  expect(markdown).toContain(
+    "...and 4 more unconfirmed changes in the full breakdown.",
+  );
+});
+
+test("reports INP-only changes as unconfirmed candidates", () => {
+  const dir = createTempDir();
+  for (const round of [1, 2]) {
+    writeInpRawRound(dir, "baseline", round, [600, 620, 650, 700, 710]);
+    writeInpRawRound(dir, "current", round, [380, 390, 400, 790, 800]);
+  }
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("No confirmed performance changes detected.");
+  expect(markdown).toContain(
+    "| inp test | INP | 650.0ms | 400.0ms | -250.0ms (-38%) | low | rounds 2/2, raw 0/2, pairs 60% |",
+  );
+  expect(markdown).not.toMatch(/% :rocket:/);
+});
+
+test("flags confirmed INP regressions", () => {
+  const dir = createTempDir();
+  for (const round of [1, 2]) {
+    writeInpRawRound(dir, "baseline", round, [100, 105, 110, 115, 120]);
+    writeInpRawRound(dir, "current", round, [200, 210, 220, 230, 240]);
+  }
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("| Test | Scripting | Rendering | INP | Total |");
+  expect(markdown).toContain("110.0ms → 220.0ms (+100%) :warning:");
+  expect(markdown).not.toContain("Unconfirmed changes");
+});
+
+test("flags confirmed INP improvements", () => {
+  const dir = createTempDir();
+  for (const round of [1, 2]) {
+    writeInpRawRound(dir, "baseline", round, [200, 210, 220, 230, 240]);
+    writeInpRawRound(dir, "current", round, [100, 105, 110, 115, 120]);
+  }
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("220.0ms → 110.0ms (-50%) :rocket:");
+  expect(markdown).not.toContain("Unconfirmed changes");
+});
+
+test("lists confirmation files for significant and candidate changes", () => {
+  const dir = createTempDir();
+  for (const round of [1, 2]) {
+    writeJson(dir, `baseline-${round}-worker0.json`, [
+      createFileResultWithRaw(
+        "sandbox/a/perf-chrome.ts",
+        "significant",
+        [80, 90, 100, 110, 120],
+      ),
+      createFileResultWithRaw(
+        "sandbox/b/perf-chrome.ts",
+        "candidate",
+        [80, 100, 120, 140, 160],
+      ),
+      createFileResultWithRaw(
+        "sandbox/c/perf-chrome.ts",
+        "stable",
+        [100, 100, 100, 100, 100],
+      ),
+    ]);
+    writeJson(dir, `current-${round}-worker0.json`, [
+      createFileResultWithRaw(
+        "sandbox/a/perf-chrome.ts",
+        "significant",
+        [140, 150, 160, 170, 180],
+      ),
+      createFileResultWithRaw(
+        "sandbox/b/perf-chrome.ts",
+        "candidate",
+        [100, 120, 140, 160, 180],
+      ),
+      createFileResultWithRaw(
+        "sandbox/c/perf-chrome.ts",
+        "stable",
+        [100, 100, 100, 100, 100],
+      ),
+    ]);
+  }
+
+  const markdown = runCompare(dir);
+  const summary = readComparisonSummary(dir);
+
+  expect(summary.hasSignificantChanges).toBe(true);
+  expect(summary.hasCandidateChanges).toBe(true);
+  expect(summary.confirmationFiles).toEqual([
+    "sandbox/a/perf-chrome.ts",
+    "sandbox/b/perf-chrome.ts",
+  ]);
+  // Significant and unconfirmed changes are reported side by side, without
+  // icons on the unconfirmed rows.
+  expect(markdown).toContain("100.0ms → 160.0ms (+60%) :warning:");
+  expect(markdown).toContain("#### Unconfirmed changes");
+  expect(markdown).toContain(
+    "| candidate | Scripting | 120.0ms | 140.0ms | +20.0ms (+17%) | low | rounds 2/2, raw 0/2, pairs 60% |",
+  );
 });
 
 test("flags a consistent regression across rounds", () => {
@@ -608,6 +841,22 @@ test("keeps zero-baseline paired rounds in the agreement count", () => {
   expect(markdown).not.toMatch(/% :warning:/);
 });
 
+test("fails when a flagged row has no test file", () => {
+  const dir = createTempDir();
+  for (const round of [1, 2]) {
+    writeJson(dir, `baseline-${round}-worker0.json`, [
+      createFileResultWithRaw("", "no file", [80, 90, 100, 110, 120]),
+    ]);
+    writeJson(dir, `current-${round}-worker0.json`, [
+      createFileResultWithRaw("", "no file", [140, 150, 160, 170, 180]),
+    ]);
+  }
+
+  const stderr = runCompareFailure(dir);
+
+  expect(stderr).toContain("Missing test file for comparison row: no file");
+});
+
 test("fails on malformed perf result files", () => {
   const dir = createTempDir();
   const outputDir = path.join(dir, resultsDir);
@@ -719,9 +968,11 @@ test("does not flag percentage-only changes below the absolute floor", () => {
   expect(markdown).not.toMatch(/% :warning:/);
 });
 
-test("does not flag rendering sub-metric noise", () => {
+test("ignores legacy rendering sub-metrics in older baselines", () => {
   const dir = createTempDir();
-  const baselineMetrics: PerfMetrics = {
+  // Baselines produced by an older harness carry the retired layout, style
+  // recalc, and painting keys alongside the current metrics.
+  const legacyMetrics = {
     scripting: 100,
     layout: 16,
     styleRecalc: 4,
@@ -730,30 +981,28 @@ test("does not flag rendering sub-metric noise", () => {
     inp: 0,
     total: 120,
   };
-  const currentMetrics: PerfMetrics = {
-    scripting: 100,
-    layout: 11,
-    styleRecalc: 9,
-    painting: 0,
-    rendering: 20,
-    inp: 0,
-    total: 120,
-  };
   writeJson(dir, "baseline-worker0.json", [
-    createResultWithMetrics("sub-metrics", baselineMetrics),
+    {
+      ...createResultWithLabel("legacy sub-metrics", legacyMetrics.total),
+      metrics: legacyMetrics,
+      raw: [legacyMetrics],
+    },
   ]);
   writeJson(dir, "current-worker0.json", [
-    createResultWithMetrics("sub-metrics", currentMetrics),
+    createResultWithMetrics("legacy sub-metrics", {
+      scripting: 100,
+      rendering: 20,
+      inp: 0,
+      total: 120,
+    }),
   ]);
 
   const markdown = runCompare(dir);
 
   expect(markdown).toContain("No significant performance changes detected.");
-  expect(markdown).toContain(
-    "| - Style recalc | 4.0ms | 9.0ms | +5.0ms (+125%) |",
-  );
-  expect(markdown).not.toContain("+5.0ms (+125%) :warning:");
-  expect(markdown).not.toContain("-5.0ms (-31%) :rocket:");
+  expect(markdown).toContain("| Rendering | 20.0ms | 20.0ms | +0.0ms (+0%) |");
+  expect(markdown).not.toContain("Style recalc");
+  expect(markdown).not.toContain("Painting");
 });
 
 test("aggregates worker shards within the same round", () => {
@@ -765,8 +1014,9 @@ test("aggregates worker shards within the same round", () => {
 
   const markdown = runCompare(dir);
 
-  expect(markdown).toContain("No significant performance changes detected.");
+  expect(markdown).toContain("No confirmed performance changes detected.");
   expect(markdown).toContain("100.0ms | 150.0ms | +50.0ms (+50%)");
+  expect(markdown).toContain("rounds 1/1, raw 0/1, pairs 50%");
   expect(markdown).not.toMatch(/% :warning:/);
 });
 
@@ -928,12 +1178,14 @@ test("omits new test metric rows for script profile results", () => {
   const markdown = runCompare(dir);
 
   expect(markdown).toContain("### New tests (no baseline)");
-  expect(markdown).toContain("| Test | Scripting | Rendering | Total |");
-  expect(markdown).toContain("| regular | 100.0ms | 0.0ms | 100.0ms |");
+  expect(markdown).toContain("| Test | Scripting | Rendering | INP | Total |");
+  expect(markdown).toContain("| regular | 100.0ms | 0.0ms | 0.0ms | 100.0ms |");
   expect(markdown).toContain("#### profiled");
   expect(markdown).toContain("#### Script profile");
   expect(markdown).toContain("| `profiledFn` | 8.0ms | 8.0ms | 1 |");
-  expect(markdown).not.toContain("| profiled | 130.0ms | 0.0ms | 130.0ms |");
+  expect(markdown).not.toContain(
+    "| profiled | 130.0ms | 0.0ms | 0.0ms | 130.0ms |",
+  );
 });
 
 test("omits new test metric rows for selector profile results", () => {
@@ -956,13 +1208,13 @@ test("omits new test metric rows for selector profile results", () => {
   const markdown = runCompare(dir);
 
   expect(markdown).toContain("### New tests (no baseline)");
-  expect(markdown).toContain("| Test | Scripting | Rendering | Total |");
-  expect(markdown).toContain("| regular | 100.0ms | 0.0ms | 100.0ms |");
+  expect(markdown).toContain("| Test | Scripting | Rendering | INP | Total |");
+  expect(markdown).toContain("| regular | 100.0ms | 0.0ms | 0.0ms | 100.0ms |");
   expect(markdown).toContain("#### selector-profiled");
   expect(markdown).toContain("#### Selector profile");
   expect(markdown).toContain("| .item | 8.0ms | 10 | 2 | 20% |");
   expect(markdown).not.toContain(
-    "| selector-profiled | 130.0ms | 0.0ms | 130.0ms |",
+    "| selector-profiled | 130.0ms | 0.0ms | 0.0ms | 130.0ms |",
   );
 });
 

@@ -5,8 +5,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await perf.measurePageLoad();
   });
 
-  test("toggle layer and text classes", async ({ page, perf }) => {
-    await perf.measure(() =>
+  test("toggle layer and text classes", async ({ perf }) => {
+    await perf.measure(({ page }) =>
       page.evaluate(() => {
         const sections = document.querySelectorAll<HTMLElement>(
           "section[aria-labelledby]",

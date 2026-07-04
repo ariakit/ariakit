@@ -302,10 +302,16 @@ jobs:
       actions: read
       contents: read
     env:
-      # Clean runs stop after two paired rounds. Significant deltas get one
-      # extra confirmation round before the PR comment is published.
+      # Clean runs stop after two paired rounds. Significant deltas and
+      # unconfirmed candidates get three extra confirmation rounds (five
+      # paired rounds total) before the PR comment is published. Five rounds
+      # matter: agreement and raw support are then required in n-1 = 4 rounds,
+      # so a near-miss candidate (raw 1/2) still has a path to confirmation,
+      # while fewer confirmation rounds could only ever demote candidates
+      # (with <= 4 rounds every round must pass, and a candidate has already
+      # failed raw support in an immutable initial round).
       PERF_INITIAL_ROUNDS: 2
-      PERF_CONFIRMATION_ROUNDS: 1
+      PERF_CONFIRMATION_ROUNDS: 3
       # Keep per-round samples modest; paired rounds and confirmation preserve
       # enough signal for noisy results.
       PERF_ITERATIONS: 5
@@ -544,12 +550,12 @@ jobs:
 
           # This per-shard comparison only decides whether THIS shard needs
           # confirmation rounds for its own files. When only a subset of this
-          # shard has significant deltas, rerun just those files for
-          # confirmation. The published comparison is produced once by the post
-          # job over every shard's raw round files.
+          # shard has significant deltas or unconfirmed candidates, rerun just
+          # those files for confirmation. The published comparison is produced
+          # once by the post job over every shard's raw round files.
           echo "::group::Preliminary comparison (shard $PERF_SHARD_INDEX)"
           pnpm -F app run perf-compare
-          significant_files="$(
+          confirmation_files="$(
             node --input-type=module <<'NODE'
           import { readFileSync } from "node:fs";
 
@@ -557,38 +563,30 @@ jobs:
             readFileSync("app/.perf-results/comparison.json", "utf-8"),
           );
 
-          if (!Array.isArray(summary.rows)) {
-            throw new Error("Missing comparison rows.");
+          if (!Array.isArray(summary.confirmationFiles)) {
+            throw new Error("Missing confirmation files in comparison summary.");
           }
 
-          const files = new Set();
-          for (const row of summary.rows) {
-            if (!row?.significant) continue;
-            if (!row.testFile) {
-              throw new Error("Missing test file for significant comparison row.");
-            }
-            files.add(row.testFile);
-          }
-          for (const file of [...files].sort()) {
+          for (const file of summary.confirmationFiles) {
             console.log(file);
           }
           NODE
           )"
           CONFIRMATION_FILES=()
-          if [ -n "$significant_files" ]; then
-            mapfile -t CONFIRMATION_FILES <<< "$significant_files"
+          if [ -n "$confirmation_files" ]; then
+            mapfile -t CONFIRMATION_FILES <<< "$confirmation_files"
           fi
           echo "::endgroup::"
 
           if [ ${#CONFIRMATION_FILES[@]} -gt 0 ]; then
-            echo "Significant changes detected; running confirmation rounds for: ${CONFIRMATION_FILES[*]}"
+            echo "Significant or candidate changes detected; running confirmation rounds for: ${CONFIRMATION_FILES[*]}"
             start_round=$((PERF_INITIAL_ROUNDS + 1))
             end_round=$((PERF_INITIAL_ROUNDS + PERF_CONFIRMATION_ROUNDS))
             for i in $(seq "$start_round" "$end_round"); do
               run_perf_round "$i" "${CONFIRMATION_FILES[@]}"
             done
           else
-            echo "No significant changes detected; skipping confirmation rounds."
+            echo "No significant or candidate changes detected; skipping confirmation rounds."
           fi
 
           manifest_status=success
@@ -723,7 +721,7 @@ jobs:
 
           echo "::group::Preliminary comparison"
           pnpm exec ariakit perf-compare --node
-          has_significant_changes=$(
+          needs_confirmation=$(
             node --input-type=module <<'NODE'
           import { readFileSync } from "node:fs";
 
@@ -731,12 +729,16 @@ jobs:
             readFileSync(".perf-results/comparison.json", "utf-8"),
           );
 
-          console.log(summary.hasSignificantChanges ? "true" : "false");
+          if (!Array.isArray(summary.confirmationFiles)) {
+            throw new Error("Missing confirmation files in comparison summary.");
+          }
+
+          console.log(summary.confirmationFiles.length > 0 ? "true" : "false");
           NODE
           )
           echo "::endgroup::"
 
-          if [ "$has_significant_changes" = "true" ]; then
+          if [ "$needs_confirmation" = "true" ]; then
             echo "Significant benchmark changes detected; running confirmation rounds."
             start_round=$((PERF_INITIAL_ROUNDS + 1))
             end_round=$((PERF_INITIAL_ROUNDS + PERF_CONFIRMATION_ROUNDS))
