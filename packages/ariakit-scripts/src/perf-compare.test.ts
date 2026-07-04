@@ -320,34 +320,6 @@ test("pairs legacy generated labels with normalized labels", () => {
   expect(summary.removedTests).toEqual([]);
 });
 
-test("does not pair legacy dialog perf labels after the workload changes", () => {
-  const dir = createTempDir();
-  writeJson(dir, "baseline-worker0.json", [
-    createResultWithLabel(
-      "sandbox/dialog-perf/perf-chrome.ts > react > open dialog",
-      100,
-    ),
-  ]);
-  writeJson(dir, "current-worker0.json", [
-    createResultWithLabel("dialog-perf > react > open dialog", 120),
-  ]);
-
-  const markdown = runCompare(dir);
-  const summary = readComparisonSummary(dir);
-
-  expect(markdown).toContain("| dialog-perf > react > open dialog |");
-  expect(markdown).toContain(
-    "- sandbox/dialog-perf/perf-chrome.ts > react > open dialog",
-  );
-  expect(summary.rows).toEqual([]);
-  expect(summary.newTests).toMatchObject([
-    { label: "dialog-perf > react > open dialog" },
-  ]);
-  expect(summary.removedTests).toMatchObject([
-    { label: "sandbox/dialog-perf/perf-chrome.ts > react > open dialog" },
-  ]);
-});
-
 test("compares Vitest benchmark reports in node mode", () => {
   const dir = createTempDir();
   writeJson(dir, "baseline-1.json", createStoreBenchmarkReport(1000));

@@ -365,7 +365,6 @@ function loadRounds(
 
 function normalizeGeneratedPerfLabel(label: string): string {
   if (!label.includes("perf-chrome.ts")) return label;
-  if (label.includes("sandbox/dialog-perf/perf-chrome.ts")) return label;
   return formatPerfTitlePath(label.split(" > "));
 }
 
