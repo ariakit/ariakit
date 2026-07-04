@@ -284,20 +284,94 @@ jobs:
           path: ${{ runner.temp }}/perf-node-baseline-build.tar.gz
           retention-days: 7
 
+  chrome-matrix:
+    name: Prepare Chrome matrix
+    runs-on: ubuntu-latest
+    outputs:
+      include: ${{ steps.matrix.outputs.include }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Create Chrome perf matrix
+        id: matrix
+        run: |
+          # Keep this find pattern a superset of the perf `testMatch` in
+          # app/playwright.config.ts; a file it misses would never get a job.
+          perf_files="$(
+            cd app && find src -type f \
+              \( -path '*perf*-chrome.ts' -o -path '*perf*-chrome.tsx' \) \
+              | sort
+          )"
+          include="$(
+            PERF_FILES="$perf_files" node --input-type=module <<'NODE'
+          import path from "node:path";
+
+          function getChromePerfTitle(file) {
+            const parts = file.split("/");
+            const sandboxIndex = parts.indexOf("sandbox");
+            if (sandboxIndex >= 0) {
+              const sandboxName = parts.at(sandboxIndex + 1);
+              if (sandboxName) return sandboxName;
+            }
+
+            const directory = path.basename(path.dirname(file));
+            if (directory && directory !== ".") return directory;
+
+            return path.basename(file, path.extname(file));
+          }
+
+          const files = (process.env.PERF_FILES ?? "")
+            .split("\n")
+            .filter(Boolean);
+          const titles = files.map((file) => getChromePerfTitle(file));
+          const titleCounts = new Map();
+          for (const title of titles) {
+            titleCounts.set(title, (titleCounts.get(title) ?? 0) + 1);
+          }
+          const include = files.map((file, index) => {
+            const title = titles[index];
+            const uniqueTitle = titleCounts.get(title) === 1;
+            return {
+              index: index + 1,
+              file,
+              title: uniqueTitle
+                ? title
+                : `${title}-${path.basename(file, path.extname(file))}`,
+            };
+          });
+          if (include.length === 0) {
+            include.push({ index: 1, file: "", title: "no-perf-files" });
+          }
+          console.log(JSON.stringify(include));
+          NODE
+          )"
+          if [ -n "$perf_files" ]; then
+            echo "Chrome perf files:"
+            printf '%s\n' "$perf_files"
+          else
+            echo "Chrome perf files: <none>"
+          fi
+          echo "Chrome perf matrix: $include"
+          {
+            echo "include<<EOF"
+            echo "$include"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
   chrome:
-    name: Chrome (${{ matrix.shard }}/${{ strategy.job-total }})
-    needs: [build, build-nextjs, chrome-baseline]
+    name: Chrome (${{ matrix.title }})
+    needs: [build, build-nextjs, chrome-baseline, chrome-matrix]
     runs-on: ubuntu-latest
     strategy:
-      # Let all shards finish even if one fails, so each shard's logs and
-      # uploaded rounds stay available for debugging. The post job marks
-      # Chrome inconclusive when any shard fails.
+      # Let all jobs finish even if one fails, so each job's logs and uploaded
+      # rounds stay available for debugging. The post job marks Chrome
+      # inconclusive when any job fails.
       fail-fast: false
       matrix:
-        # `shard` is the only matrix dimension, so the job count equals the
-        # shard count; PERF_SHARD_TOTAL below derives from strategy.job-total.
-        # Raise this list as the number of perf-chrome test files grows.
-        shard: [1, 2, 3]
+        include: ${{ fromJSON(needs.chrome-matrix.outputs.include) }}
     permissions:
       actions: read
       contents: read
@@ -317,12 +391,13 @@ jobs:
       PERF_ITERATIONS: 5
       PERF_WARMUP: 1
       PERF_SOURCE_BASE_URL: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha }}
-      # Each shard benchmarks a disjoint subset of the perf test files and runs
-      # its own interleaved baseline-vs-current rounds on this one runner, so the
-      # paired same-runner comparison is preserved. The post job runs
-      # perf-compare once over every shard's raw round files.
-      PERF_SHARD_INDEX: ${{ matrix.shard }}
-      PERF_SHARD_TOTAL: ${{ strategy.job-total }}
+      # Each matrix job benchmarks one perf test file and runs its own
+      # interleaved baseline-vs-current rounds on this one runner, so the paired
+      # same-runner comparison is preserved. The post job runs perf-compare once
+      # over every job's raw round files.
+      PERF_FILE: ${{ matrix.file }}
+      PERF_JOB_INDEX: ${{ matrix.index }}
+      PERF_JOB_TITLE: ${{ matrix.title }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -392,35 +467,31 @@ jobs:
           rm -rf app/.perf-results "$BASELINE_DIR/app/.perf-results"
           mkdir -p app/.perf-results
           shopt -s nullglob
-          SHARD_FILES=()
+          PERF_FILES=()
           ROUND_FILES=()
           manifest_status=failed
-          manifest_message="Chrome shard exited before completing."
+          manifest_message="Chrome perf job exited before completing."
 
           write_chrome_manifest() {
-            PERF_SHARD_STATUS="$manifest_status" \
-            PERF_SHARD_MESSAGE="$manifest_message" \
-            PERF_SHARD_FILES="$(printf '%s\n' "${SHARD_FILES[@]}")" \
-            PERF_SHARD_ROUND_FILES="$(printf '%s\n' "${ROUND_FILES[@]}")" \
+            PERF_JOB_STATUS="$manifest_status" \
+            PERF_JOB_MESSAGE="$manifest_message" \
+            PERF_JOB_ROUND_FILES="$(printf '%s\n' "${ROUND_FILES[@]}")" \
             node --input-type=module <<'NODE'
           import { writeFileSync } from "node:fs";
 
-          const files = (process.env.PERF_SHARD_FILES ?? "")
-            .split("\n")
-            .filter(Boolean);
-          const roundFiles = (process.env.PERF_SHARD_ROUND_FILES ?? "")
+          const roundFiles = (process.env.PERF_JOB_ROUND_FILES ?? "")
             .split("\n")
             .filter(Boolean);
           const manifest = {
-            shard: Number(process.env.PERF_SHARD_INDEX),
-            total: Number(process.env.PERF_SHARD_TOTAL),
-            status: process.env.PERF_SHARD_STATUS,
-            message: process.env.PERF_SHARD_MESSAGE,
-            files,
+            index: Number(process.env.PERF_JOB_INDEX),
+            title: process.env.PERF_JOB_TITLE,
+            file: process.env.PERF_FILE,
+            status: process.env.PERF_JOB_STATUS,
+            message: process.env.PERF_JOB_MESSAGE,
             roundFiles,
           };
           writeFileSync(
-            `app/.perf-results/shard-${process.env.PERF_SHARD_INDEX}-manifest.json`,
+            `app/.perf-results/job-${process.env.PERF_JOB_INDEX}-manifest.json`,
             `${JSON.stringify(manifest)}\n`,
           );
           NODE
@@ -433,24 +504,10 @@ jobs:
 
           trap write_chrome_manifest EXIT
 
-          # Partition the perf test files across shards. The list is computed
-          # from the current checkout and the SAME slice is passed to both the
-          # baseline and current runs below, so every test's baseline and
-          # current measurements stay on this one runner (paired comparison
-          # preserved) no matter how the base and head test sets differ.
-          # Keep this find pattern a superset of the perf `testMatch` in
-          # app/playwright.config.ts; a file it misses would never be sharded.
-          mapfile -t ALL_PERF_FILES < <(
-            cd app && find src -type f \
-              \( -path '*perf*-chrome.ts' -o -path '*perf*-chrome.tsx' \) \
-              | sort
-          )
-          for idx in "${!ALL_PERF_FILES[@]}"; do
-            if [ "$(( idx % PERF_SHARD_TOTAL ))" -eq "$(( PERF_SHARD_INDEX - 1 ))" ]; then
-              SHARD_FILES+=("${ALL_PERF_FILES[$idx]}")
-            fi
-          done
-          echo "Shard $PERF_SHARD_INDEX/$PERF_SHARD_TOTAL perf files: ${SHARD_FILES[*]:-<none>}"
+          if [ -n "$PERF_FILE" ]; then
+            PERF_FILES=("$PERF_FILE")
+          fi
+          echo "Chrome perf file: ${PERF_FILES[*]:-<none>}"
 
           run_baseline_perf_round() {
             local i="$1"
@@ -460,13 +517,13 @@ jobs:
             echo "::group::Round $i - baseline"
             if ! (
               cd "$BASELINE_DIR" || exit 1
-              PERF_RESULTS_FILE=baseline-$i-s$PERF_SHARD_INDEX.json \
+              PERF_RESULTS_FILE=baseline-$i-j$PERF_JOB_INDEX.json \
               PERF_ITERATIONS="$PERF_ITERATIONS" \
               PERF_WARMUP="$PERF_WARMUP" \
               xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_files[@]}"
             ); then
-              # The post job discards every shard's rounds when any shard
-              # fails, so fail fast instead of benchmarking output that is
+              # The post job discards every job's rounds when any job fails,
+              # so fail fast instead of benchmarking output that is
               # guaranteed to be thrown away.
               manifest_status=failed
               manifest_message="Baseline perf run failed for round $i."
@@ -478,7 +535,7 @@ jobs:
               # absent from the base worktree) stays comparable so
               # perf-compare can report them as new tests with no baseline.
               echo "::warning::No baseline perf results for round $i; writing an empty baseline."
-              local empty_baseline_file=app/.perf-results/baseline-"$i"-s"$PERF_SHARD_INDEX"-worker0.json
+              local empty_baseline_file=app/.perf-results/baseline-"$i"-j"$PERF_JOB_INDEX"-worker0.json
               printf '[]\n' > "$empty_baseline_file"
               add_round_file "$empty_baseline_file"
             else
@@ -497,7 +554,7 @@ jobs:
 
             echo "::group::Round $i - current"
             if ! (
-              PERF_RESULTS_FILE=current-$i-s$PERF_SHARD_INDEX.json \
+              PERF_RESULTS_FILE=current-$i-j$PERF_JOB_INDEX.json \
               PERF_ITERATIONS="$PERF_ITERATIONS" \
               PERF_WARMUP="$PERF_WARMUP" \
               xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_files[@]}"
@@ -537,23 +594,21 @@ jobs:
             fi
           }
 
-          if [ ${#SHARD_FILES[@]} -eq 0 ]; then
-            echo "No perf files assigned to this shard; nothing to benchmark."
+          if [ ${#PERF_FILES[@]} -eq 0 ]; then
+            echo "No perf file assigned to this job; nothing to benchmark."
             manifest_status=skipped
-            manifest_message="No perf files assigned to this shard."
+            manifest_message="No perf file assigned to this job."
             exit 0
           fi
 
           for i in $(seq 1 "$PERF_INITIAL_ROUNDS"); do
-            run_perf_round "$i" "${SHARD_FILES[@]}"
+            run_perf_round "$i" "${PERF_FILES[@]}"
           done
 
-          # This per-shard comparison only decides whether THIS shard needs
-          # confirmation rounds for its own files. When only a subset of this
-          # shard has significant deltas or unconfirmed candidates, rerun just
-          # those files for confirmation. The published comparison is produced
-          # once by the post job over every shard's raw round files.
-          echo "::group::Preliminary comparison (shard $PERF_SHARD_INDEX)"
+          # This per-file comparison only decides whether this job needs
+          # confirmation rounds. The published comparison is produced once by
+          # the post job over every job's raw round files.
+          echo "::group::Preliminary comparison ($PERF_FILE)"
           pnpm -F app run perf-compare
           confirmation_files="$(
             node --input-type=module <<'NODE'
@@ -592,13 +647,13 @@ jobs:
           manifest_status=success
           manifest_message=""
 
-      - name: Upload shard round results
+      - name: Upload Chrome round results
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: perf-chrome-rounds-${{ matrix.shard }}
+          name: perf-chrome-rounds-${{ matrix.index }}-${{ matrix.title }}
           path: |
-            app/.perf-results/shard-*-manifest.json
+            app/.perf-results/job-*-manifest.json
             app/.perf-results/baseline-*.json
             app/.perf-results/current-*.json
           if-no-files-found: ignore
@@ -771,10 +826,10 @@ jobs:
 
   post:
     name: Post PR comment
-    # Chrome shards upload raw `perf-chrome-rounds-*` artifacts that this job
+    # Chrome jobs upload raw `perf-chrome-rounds-*` artifacts that this job
     # compares into a Chrome section; the Node job uploads a pre-computed
     # `perf-results-node` artifact. Future perf jobs can do either.
-    needs: [chrome, node]
+    needs: [chrome, chrome-matrix, node]
     if: >
       always() &&
       github.event.pull_request.head.repo.full_name == github.repository
@@ -804,7 +859,7 @@ jobs:
           name: perf-results-node
           path: ${{ runner.temp }}/perf-results/perf-results-node
 
-      - name: Download Chrome shard round results
+      - name: Download Chrome round results
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
@@ -818,6 +873,7 @@ jobs:
         # inconclusive instead.
         continue-on-error: true
         env:
+          PERF_CHROME_MATRIX: ${{ needs.chrome-matrix.outputs.include }}
           PERF_CHROME_RESULT: ${{ needs.chrome.result }}
           PERF_RESULTS_DIR: ${{ runner.temp }}/perf-results
           PERF_SOURCE_BASE_URL: ${{ github.server_url }}/${{ github.repository }}/blob/${{ github.event.pull_request.head.sha }}
@@ -835,16 +891,17 @@ jobs:
           }
 
           if [ "$PERF_CHROME_RESULT" != "success" ]; then
-            write_chrome_inconclusive "Chrome shard job result was $PERF_CHROME_RESULT."
+            write_chrome_inconclusive "Chrome job result was $PERF_CHROME_RESULT."
             exit 0
           fi
 
-          manifests=("$RUNNER_TEMP"/perf-chrome-rounds/shard-*-manifest.json)
+          manifests=("$RUNNER_TEMP"/perf-chrome-rounds/job-*-manifest.json)
           if ! validation_message="$(
             node --input-type=module - "${manifests[@]}" <<'NODE'
           import { existsSync, readFileSync } from "node:fs";
           import path from "node:path";
 
+          const expectedJobs = JSON.parse(process.env.PERF_CHROME_MATRIX ?? "[]");
           const manifests = process.argv.slice(2).map((file) => {
             return {
               file,
@@ -852,81 +909,97 @@ jobs:
             };
           });
           if (manifests.length === 0) {
-            console.log("no shard manifests found.");
+            console.log("no job manifests found.");
             process.exit(0);
           }
           const issues = [];
-          const byShard = new Map();
-          for (const { data: manifest, file } of manifests) {
-            if (byShard.has(manifest.shard)) {
-              issues.push(`duplicate shard manifest: ${manifest.shard}`);
+          const expectedByIndex = new Map();
+          for (const job of expectedJobs) {
+            if (!Number.isInteger(job.index) || job.index < 1) {
+              issues.push(`invalid expected job index: ${job.index}`);
+              continue;
             }
-            byShard.set(manifest.shard, manifest);
+            if (expectedByIndex.has(job.index)) {
+              issues.push(`duplicate expected job index: ${job.index}`);
+            }
+            expectedByIndex.set(job.index, job);
+          }
+          const byIndex = new Map();
+          for (const { data: manifest, file } of manifests) {
+            const index = manifest.index;
+            const label = manifest.title || manifest.file || `job ${index}`;
+            if (!Number.isInteger(index) || index < 1) {
+              issues.push(`invalid job manifest index: ${index}`);
+              continue;
+            }
+            if (byIndex.has(index)) {
+              issues.push(`duplicate job manifest: ${index}`);
+            }
+            byIndex.set(index, manifest);
+            const expected = expectedByIndex.get(index);
+            if (!expected) {
+              issues.push(`unexpected job manifest: ${index}`);
+            } else {
+              if (manifest.file !== expected.file) {
+                issues.push(
+                  `job ${index} file mismatch: ${manifest.file} !== ${expected.file}`,
+                );
+              }
+              if (manifest.title !== expected.title) {
+                issues.push(
+                  `job ${index} title mismatch: ${manifest.title} !== ${expected.title}`,
+                );
+              }
+            }
             if (manifest.status !== "success" && manifest.status !== "skipped") {
               const message = manifest.message ? ` (${manifest.message})` : "";
-              issues.push(`failed shard: ${manifest.shard}${message}`);
+              issues.push(`failed job: ${label}${message}`);
             }
             if (manifest.status === "success") {
               const roundFiles = Array.isArray(manifest.roundFiles)
                 ? manifest.roundFiles
                 : [];
               if (roundFiles.length === 0) {
-                issues.push(
-                  `missing round file list for shard: ${manifest.shard}`,
-                );
+                issues.push(`missing round file list for job: ${label}`);
               }
               const seenRoundFiles = new Set();
               for (const roundFile of roundFiles) {
                 if (typeof roundFile !== "string" || roundFile.includes("/")) {
                   issues.push(
-                    `invalid round file for shard ${manifest.shard}: ${roundFile}`,
+                    `invalid round file for job ${label}: ${roundFile}`,
                   );
                   continue;
                 }
                 if (seenRoundFiles.has(roundFile)) {
                   issues.push(
-                    `duplicate round file for shard ${manifest.shard}: ${roundFile}`,
+                    `duplicate round file for job ${label}: ${roundFile}`,
                   );
                 }
                 seenRoundFiles.add(roundFile);
                 const roundPath = path.join(path.dirname(file), roundFile);
                 if (!existsSync(roundPath)) {
                   issues.push(
-                    `missing round file for shard ${manifest.shard}: ${roundFile}`,
+                    `missing round file for job ${label}: ${roundFile}`,
                   );
                 }
               }
             }
           }
-          const totals = new Set(
-            manifests.map(({ data: manifest }) => manifest.total),
-          );
-          if (totals.size > 1) {
-            const sortedTotals = [...totals].sort((a, b) => a - b);
-            issues.push(
-              `inconsistent shard totals: ${sortedTotals.join(", ")}`,
-            );
+          const missing = [];
+          for (const index of expectedByIndex.keys()) {
+            if (!byIndex.has(index)) {
+              missing.push(index);
+            }
           }
-          const total = [...totals][0];
-          if (!Number.isInteger(total) || total < 1) {
-            issues.push(`invalid shard total: ${total}`);
-          } else {
-            const missing = [];
-            for (let shard = 1; shard <= total; shard += 1) {
-              if (!byShard.has(shard)) {
-                missing.push(shard);
-              }
-            }
-            if (missing.length > 0) {
-              issues.push(`missing shard manifest(s): ${missing.join(", ")}`);
-            }
+          if (missing.length > 0) {
+            issues.push(`missing job manifest(s): ${missing.join(", ")}`);
           }
           if (issues.length > 0) {
             console.log(issues.join("; "));
           }
           NODE
           )"; then
-            write_chrome_inconclusive "shard manifest validation failed."
+            write_chrome_inconclusive "job manifest validation failed."
             exit 0
           fi
           if [ -n "$validation_message" ]; then
@@ -939,7 +1012,7 @@ jobs:
             "$RUNNER_TEMP"/perf-chrome-rounds/current-*.json
           )
           if [ ${#rounds[@]} -eq 0 ]; then
-            write_chrome_inconclusive "no Chrome shard rounds found."
+            write_chrome_inconclusive "no Chrome job rounds found."
             exit 0
           fi
           rm -rf app/.perf-results
