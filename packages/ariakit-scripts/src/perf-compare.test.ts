@@ -14,9 +14,6 @@ import { afterEach, expect, test } from "vitest";
 
 interface PerfMetrics {
   scripting: number;
-  layout: number;
-  styleRecalc: number;
-  painting: number;
   rendering: number;
   inp: number;
   total: number;
@@ -72,9 +69,6 @@ function createTempDir() {
 function createMetrics(total: number): PerfMetrics {
   return {
     scripting: total,
-    layout: 0,
-    styleRecalc: 0,
-    painting: 0,
     rendering: 0,
     inp: 0,
     total,
@@ -974,9 +968,11 @@ test("does not flag percentage-only changes below the absolute floor", () => {
   expect(markdown).not.toMatch(/% :warning:/);
 });
 
-test("does not flag rendering sub-metric noise", () => {
+test("ignores legacy rendering sub-metrics in older baselines", () => {
   const dir = createTempDir();
-  const baselineMetrics: PerfMetrics = {
+  // Baselines produced by an older harness carry the retired layout, style
+  // recalc, and painting keys alongside the current metrics.
+  const legacyMetrics = {
     scripting: 100,
     layout: 16,
     styleRecalc: 4,
@@ -985,30 +981,28 @@ test("does not flag rendering sub-metric noise", () => {
     inp: 0,
     total: 120,
   };
-  const currentMetrics: PerfMetrics = {
-    scripting: 100,
-    layout: 11,
-    styleRecalc: 9,
-    painting: 0,
-    rendering: 20,
-    inp: 0,
-    total: 120,
-  };
   writeJson(dir, "baseline-worker0.json", [
-    createResultWithMetrics("sub-metrics", baselineMetrics),
+    {
+      ...createResultWithLabel("legacy sub-metrics", legacyMetrics.total),
+      metrics: legacyMetrics,
+      raw: [legacyMetrics],
+    },
   ]);
   writeJson(dir, "current-worker0.json", [
-    createResultWithMetrics("sub-metrics", currentMetrics),
+    createResultWithMetrics("legacy sub-metrics", {
+      scripting: 100,
+      rendering: 20,
+      inp: 0,
+      total: 120,
+    }),
   ]);
 
   const markdown = runCompare(dir);
 
   expect(markdown).toContain("No significant performance changes detected.");
-  expect(markdown).toContain(
-    "| - Style recalc | 4.0ms | 9.0ms | +5.0ms (+125%) |",
-  );
-  expect(markdown).not.toContain("+5.0ms (+125%) :warning:");
-  expect(markdown).not.toContain("-5.0ms (-31%) :rocket:");
+  expect(markdown).toContain("| Rendering | 20.0ms | 20.0ms | +0.0ms (+0%) |");
+  expect(markdown).not.toContain("Style recalc");
+  expect(markdown).not.toContain("Painting");
 });
 
 test("aggregates worker shards within the same round", () => {

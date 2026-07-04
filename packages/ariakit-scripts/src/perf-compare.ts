@@ -151,45 +151,19 @@ export interface PerfCompareRunResult {
   markdown: string;
 }
 
-// Primary metrics eligible for top-level reporting: they form the summary
-// table columns and are the only metrics that can be flagged as significant
-// or reported as unconfirmed candidates.
+// Metrics shown in the summary table and detailed breakdown. All of them can
+// be flagged as significant or reported as unconfirmed candidates.
 const PRIMARY_METRICS: MetricKey[] = ["scripting", "rendering", "inp", "total"];
-
-// All metrics shown in the detailed breakdown.
-const ALL_METRICS: MetricKey[] = [
-  "scripting",
-  "rendering",
-  "layout",
-  "styleRecalc",
-  "painting",
-  "inp",
-  "total",
-];
 
 const METRIC_LABELS: Record<MetricKey, string> = {
   scripting: "Scripting",
-  layout: "Layout",
-  styleRecalc: "Style recalc",
-  painting: "Painting",
   rendering: "Rendering",
   inp: "INP",
   total: "Total",
 };
 
-// Rendering sub-metrics are indented in the detailed breakdown.
-const RENDERING_SUB_METRICS = new Set<MetricKey>([
-  "layout",
-  "styleRecalc",
-  "painting",
-]);
-
 function getPrimaryMetrics(options: PerfCompareOptions): MetricKey[] {
   return options.node ? ["total"] : PRIMARY_METRICS;
-}
-
-function getAllMetrics(options: PerfCompareOptions): MetricKey[] {
-  return options.node ? ["total"] : ALL_METRICS;
 }
 
 function getResultName(options: PerfCompareOptions) {
@@ -280,9 +254,6 @@ function createNodeMetrics({ hz, mean }: { hz: number; mean: number }) {
   const total = hz > 0 ? hz : mean > 0 ? 1000 / mean : 0;
   return {
     scripting: 0,
-    layout: 0,
-    styleRecalc: 0,
-    painting: 0,
     rendering: 0,
     inp: 0,
     total,
@@ -796,7 +767,6 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
   const baseline = aggregateByKey(loadRounds("baseline", options));
   const current = aggregateByKey(loadRounds("current", options));
   const primaryMetrics = getPrimaryMetrics(options);
-  const allMetrics = getAllMetrics(options);
   const minDelta = getMinSignificantDelta(options);
 
   const rows: ComparisonRow[] = [];
@@ -837,7 +807,7 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
 
     const profileMode = isProfileMode(base.result) || isProfileMode(cur.result);
     const primary = !profileMode;
-    for (const metric of allMetrics) {
+    for (const metric of primaryMetrics) {
       const baselineValues: number[] = [];
       const roundComparisons: RoundMetricComparison[] = [];
       for (const roundIndex of sharedRoundIndices) {
@@ -863,7 +833,7 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
         baseline: baseVal,
         current: curVal,
         minDelta,
-        primary: primary && primaryMetrics.includes(metric),
+        primary,
         percent,
         requireSampleSupport: !options.node,
         roundComparisons,
@@ -1149,13 +1119,11 @@ function formatUnflaggedDiagnostics(
   rows: ComparisonRow[],
   options: PerfCompareOptions,
 ): string[] {
-  const primaryMetrics = getPrimaryMetrics(options);
   const diagnostics = rows.filter((row) => {
     if (row.significant) return false;
     // Candidates are already reported in the unconfirmed changes section.
     if (row.candidate) return false;
-    if (!row.threshold) return false;
-    return primaryMetrics.includes(row.metric);
+    return row.threshold;
   });
   if (diagnostics.length === 0) return [];
 
@@ -1256,7 +1224,7 @@ function formatDetailedBreakdown({
     return formatNodeComparisonTables(rowsByKey, keys, options);
   }
   const lines: string[] = [];
-  const allMetrics = getAllMetrics(options);
+  const primaryMetrics = getPrimaryMetrics(options);
   for (const key of keys) {
     const testRows = rowsByKey.get(key) ?? [];
     const label = testRows[0]?.label ?? key;
@@ -1269,11 +1237,9 @@ function formatDetailedBreakdown({
     if (!profileMode) {
       lines.push("| Metric | Baseline | Current | Delta |");
       lines.push("|--------|----------|---------|-------|");
-      for (const metric of allMetrics) {
+      for (const metric of primaryMetrics) {
         const row = testRows.find((r) => r.metric === metric);
         if (!row) continue;
-        const prefix = RENDERING_SUB_METRICS.has(metric) ? "- " : "";
-        const metricLabel = `${prefix}${getMetricLabel(metric, options)}`;
         const deltaStr = formatDelta(
           row.delta,
           row.percent,
@@ -1282,7 +1248,7 @@ function formatDetailedBreakdown({
         );
         const icon = getSignificanceIcon(row, options);
         lines.push(
-          `| ${metricLabel} | ${formatMetricValue(row.baseline, options)} | ${formatMetricValue(row.current, options)} | ${deltaStr}${icon} |`,
+          `| ${getMetricLabel(metric, options)} | ${formatMetricValue(row.baseline, options)} | ${formatMetricValue(row.current, options)} | ${deltaStr}${icon} |`,
         );
       }
       lines.push("");
