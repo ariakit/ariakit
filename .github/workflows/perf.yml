@@ -509,25 +509,53 @@ jobs:
           fi
           echo "Chrome perf file: ${PERF_FILES[*]:-<none>}"
 
+          # Pass the per-test timeout on the CLI (it takes precedence over the
+          # config file) so the baseline worktree, which runs the base
+          # branch's Playwright config, gets the same headroom as the current
+          # side: script-profile tests can legitimately exceed the old 120s
+          # config default on slow runners. Playwright test retries are NOT
+          # passed here on purpose: the base worktree may predate the
+          # retry-safety guards (pass-only result recording and stale-attempt
+          # pruning), and a failed baseline invocation is retried whole below
+          # with its partial results removed.
+          PLAYWRIGHT_TEST_TIMEOUT=180000
+
+          baseline_perf_attempt() {
+            local i="$1"
+            shift
+            (
+              cd "$BASELINE_DIR" || exit 1
+              PERF_RESULTS_FILE=baseline-$i-j$PERF_JOB_INDEX.json \
+              PERF_ITERATIONS="$PERF_ITERATIONS" \
+              PERF_WARMUP="$PERF_WARMUP" \
+              xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests \
+                --timeout="$PLAYWRIGHT_TEST_TIMEOUT" "$@"
+            )
+          }
+
           run_baseline_perf_round() {
             local i="$1"
             shift
             local perf_files=("$@")
 
             echo "::group::Round $i - baseline"
-            if ! (
-              cd "$BASELINE_DIR" || exit 1
-              PERF_RESULTS_FILE=baseline-$i-j$PERF_JOB_INDEX.json \
-              PERF_ITERATIONS="$PERF_ITERATIONS" \
-              PERF_WARMUP="$PERF_WARMUP" \
-              xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_files[@]}"
-            ); then
-              # The post job discards every job's rounds when any job fails,
-              # so fail fast instead of benchmarking output that is
-              # guaranteed to be thrown away.
-              manifest_status=failed
-              manifest_message="Baseline perf run failed for round $i."
-              exit 1
+            # A perf invocation can fail for infra reasons unrelated to the
+            # code under test, such as a browser that wedges mid-run or a
+            # workerd port bind race at web server startup. Retry the
+            # invocation once with fresh servers and browsers, removing the
+            # failed attempt's partial result files first so the retry cannot
+            # double-count.
+            if ! baseline_perf_attempt "$i" "${perf_files[@]}"; then
+              echo "::warning::Baseline perf run failed for round $i; retrying once."
+              rm -f "$BASELINE_DIR"/app/.perf-results/baseline-"$i"*.json
+              if ! baseline_perf_attempt "$i" "${perf_files[@]}"; then
+                # The post job discards every job's rounds when any job fails,
+                # so fail fast instead of benchmarking output that is
+                # guaranteed to be thrown away.
+                manifest_status=failed
+                manifest_message="Baseline perf run failed for round $i."
+                exit 1
+              fi
             fi
             local baseline_files=("$BASELINE_DIR"/app/.perf-results/baseline-"$i"*.json)
             if [ ${#baseline_files[@]} -eq 0 ]; then
@@ -547,21 +575,32 @@ jobs:
             echo "::endgroup::"
           }
 
+          current_perf_attempt() {
+            local i="$1"
+            shift
+            PERF_RESULTS_FILE=current-$i-j$PERF_JOB_INDEX.json \
+            PERF_ITERATIONS="$PERF_ITERATIONS" \
+            PERF_WARMUP="$PERF_WARMUP" \
+            xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests \
+              --timeout="$PLAYWRIGHT_TEST_TIMEOUT" "$@"
+          }
+
           run_current_perf_round() {
             local i="$1"
             shift
             local perf_files=("$@")
 
             echo "::group::Round $i - current"
-            if ! (
-              PERF_RESULTS_FILE=current-$i-j$PERF_JOB_INDEX.json \
-              PERF_ITERATIONS="$PERF_ITERATIONS" \
-              PERF_WARMUP="$PERF_WARMUP" \
-              xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests "${perf_files[@]}"
-            ); then
-              manifest_status=failed
-              manifest_message="Current perf run failed for round $i."
-              exit 1
+            # See run_baseline_perf_round for why failed invocations get one
+            # retry with fresh servers and browsers.
+            if ! current_perf_attempt "$i" "${perf_files[@]}"; then
+              echo "::warning::Current perf run failed for round $i; retrying once."
+              rm -f app/.perf-results/current-"$i"*.json
+              if ! current_perf_attempt "$i" "${perf_files[@]}"; then
+                manifest_status=failed
+                manifest_message="Current perf run failed for round $i."
+                exit 1
+              fi
             fi
             local current_files=(app/.perf-results/current-"$i"*.json)
             if [ ${#current_files[@]} -eq 0 ]; then

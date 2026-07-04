@@ -1,5 +1,12 @@
 import { Buffer } from "node:buffer";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -17,12 +24,20 @@ import type {
   TestInfo,
 } from "@playwright/test";
 
-const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
 const DEFAULT_PROFILE_LIMIT = 10;
 const DEFAULT_PERF_ITERATIONS = 10;
 const DEFAULT_PERF_WARMUP = 1;
 const DEFAULT_SCRIPT_PROFILE_ITERATIONS = 3;
 const DEFAULT_SCRIPT_PROFILE_WARMUP = 0;
+// Upper bound for a single iteration navigation. Healthy CI page loads finish
+// in a few seconds even on contended runners; a navigation that runs this
+// long means the browser wedged (the server keeps serving a fresh browser
+// right away), so fail it fast and retry in a new context instead of letting
+// the pending navigation consume the remaining test budget.
+const ITERATION_NAVIGATION_TIMEOUT = 30_000;
+// Upper bound for closing an iteration context on a wedged browser; see the
+// close handling in measureIteration.
+const CONTEXT_CLOSE_TIMEOUT = 10_000;
 const initializedResultFiles = new Set<string>();
 
 // CDP metric names (values are in seconds).
@@ -1317,6 +1332,9 @@ async function measureIteration(
   params: MeasureIterationParams,
 ): Promise<MeasureOnceResult> {
   const context = await params.browser.newContext(params.contextOptions);
+  // Raw contexts do not inherit the test runner's navigationTimeout, so bound
+  // navigations here; see ITERATION_NAVIGATION_TIMEOUT.
+  context.setDefaultNavigationTimeout(ITERATION_NAVIGATION_TIMEOUT);
   try {
     const page = await context.newPage();
     const cdp = await context.newCDPSession(page);
@@ -1384,8 +1402,64 @@ async function measureIteration(
     throw error;
   } finally {
     // Swallow close failures: by this point the result is already computed or
-    // a more informative error is in flight.
-    await context.close().catch(() => {});
+    // a more informative error is in flight. Still log them: a context that
+    // fails to close stays open in the shared browser, and accumulated leaks
+    // precede wedged navigations in later iterations. `close()` has no
+    // timeout of its own and can also hang on a wedged browser, which would
+    // eat the budget the bounded navigation just saved, so give it a bounded
+    // window and abandon it otherwise.
+    const closed = context.close().then(
+      () => true,
+      (error) => {
+        console.warn(
+          `Failed to close perf iteration context: ${String(error)}`,
+        );
+        return true;
+      },
+    );
+    const closeTimer = new Promise<boolean>((resolve) => {
+      setTimeout(() => resolve(false), CONTEXT_CLOSE_TIMEOUT).unref?.();
+    });
+    const didClose = await Promise.race([closed, closeTimer]);
+    if (!didClose) {
+      console.warn("Perf iteration context close timed out; abandoning it.");
+    }
+  }
+}
+
+/**
+ * Whether `error` is a Playwright timeout thrown by a navigation. Only
+ * navigations are retried: other timeouts, such as interaction or verify
+ * steps, can reflect real behavior of the code under measurement. Page-load
+ * measures are the one case where the measured interaction is itself a
+ * navigation, so a page load that legitimately exceeds the navigation bound
+ * is retried too; that stays safe because the failed attempt records nothing
+ * and the retry fails the same way.
+ */
+export function isNavigationTimeoutError(error: unknown) {
+  if (!(error instanceof errors.TimeoutError)) return false;
+  return error.message.includes("page.goto");
+}
+
+/**
+ * Runs `measureIteration`, retrying once in a brand-new context when the
+ * iteration's navigation times out. A browser under repeated context churn
+ * occasionally wedges so that a new context's navigation never resolves even
+ * though the server stays healthy (a replacement browser passes against the
+ * same server immediately). The failed attempt recorded nothing, so the
+ * retried iteration is an independent, equally valid sample.
+ */
+async function measureIterationWithRetry(
+  params: MeasureIterationParams,
+): Promise<MeasureOnceResult> {
+  try {
+    return await measureIteration(params);
+  } catch (error) {
+    if (!isNavigationTimeoutError(error)) throw error;
+    console.warn(
+      "Perf iteration navigation timed out; retrying in a new context.",
+    );
+    return measureIteration(params);
   }
 }
 
@@ -1472,7 +1546,7 @@ export async function createPerfMeasure(
     collectMetrics: boolean;
   }) => {
     for (let i = 0; i < warmupCount + iterationCount; i++) {
-      const result = await measureIteration({
+      const result = await measureIterationWithRetry({
         browser,
         contextOptions,
         testInfo,
@@ -1560,17 +1634,74 @@ export async function createPerfPageLoadMeasure(
   );
 }
 
+interface RemoveStaleAttemptResultsParams {
+  resultsDir: string;
+  prefix: string;
+  fileName: string;
+  results: PerfResult[];
+}
+
+/**
+ * Drops the tests in `results` from the run's other worker files. A test can
+ * only appear in two worker files of one run when an earlier attempt recorded
+ * results and the test was retried anyway (for example a pass whose later
+ * fixture teardown failed, flipping the attempt's final status after the perf
+ * fixture already appended). Keeping both attempts would double-count the
+ * test in the run's collected results.
+ */
+function removeStaleAttemptResults({
+  resultsDir,
+  prefix,
+  fileName,
+  results,
+}: RemoveStaleAttemptResultsParams) {
+  const testKey = (result: PerfResult) =>
+    `${result.testFile}\n${result.testTitle}`;
+  const appendedKeys = new Set(results.map(testKey));
+  if (!appendedKeys.size) return;
+  for (const siblingName of readdirSync(resultsDir)) {
+    if (siblingName === fileName) continue;
+    if (!siblingName.startsWith(`${prefix}-worker`)) continue;
+    if (!siblingName.endsWith(".json")) continue;
+    const siblingPath = path.join(resultsDir, siblingName);
+    try {
+      const entries: PerfResult[] = JSON.parse(
+        readFileSync(siblingPath, "utf-8"),
+      );
+      const kept = entries.filter((entry) => !appendedKeys.has(testKey(entry)));
+      if (kept.length === entries.length) continue;
+      if (kept.length) {
+        writeFileSync(siblingPath, JSON.stringify(kept, null, 2));
+      } else {
+        rmSync(siblingPath);
+      }
+    } catch (error) {
+      // A malformed sibling file should not fail the passing attempt that is
+      // recording its results.
+      console.warn(
+        `Failed to prune stale perf results in ${siblingName}: ${String(error)}`,
+      );
+    }
+  }
+}
+
 /**
  * Appends collected results to a worker-specific JSON file inside the results
  * directory. Using per-worker files avoids write conflicts when Playwright runs
- * tests in parallel.
+ * tests in parallel. A retried test runs in a fresh worker with a new worker
+ * index, so any results an earlier attempt left in another worker file are
+ * pruned first; see `removeStaleAttemptResults`.
  */
 export function appendResults(results: PerfResult[], testInfo: TestInfo) {
-  mkdirSync(RESULTS_DIR, { recursive: true });
+  // Resolved at call time (not module load) so tests can point it at a
+  // temporary working directory.
+  const resultsDir = path.join(process.cwd(), ".perf-results");
+  mkdirSync(resultsDir, { recursive: true });
   const prefix =
     process.env.PERF_RESULTS_FILE?.replace(/\.json$/, "") ?? "current";
   const fileName = `${prefix}-worker${testInfo.workerIndex}.json`;
-  const filePath = path.join(RESULTS_DIR, fileName);
+  const filePath = path.join(resultsDir, fileName);
+  removeStaleAttemptResults({ resultsDir, prefix, fileName, results });
   let existing: PerfResult[] = [];
   if (initializedResultFiles.has(filePath) && existsSync(filePath)) {
     existing = JSON.parse(readFileSync(filePath, "utf-8"));
