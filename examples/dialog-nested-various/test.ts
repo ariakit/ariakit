@@ -1,5 +1,5 @@
 import { click, press, q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 
 function getBackdrop(name: string) {
   const dialog = q.dialog.hidden(name);
@@ -10,9 +10,14 @@ function getBackdrop(name: string) {
 function expectModalStyle(toHaveStyle: boolean) {
   const { documentElement, body } = document;
   const prop = toHaveStyle ? "itself" : "not";
-  expect(documentElement)[prop].toHaveStyle("--scrollbar-width: 1024px");
-  expect(body)[prop].toHaveStyle("overflow: hidden");
-  expect(body)[prop].toHaveStyle("padding-right: 1024px");
+  expect(documentElement)[prop].toHaveStyle("scrollbar-gutter: stable");
+  expect(documentElement)[prop].toHaveStyle("overflow-x: hidden");
+  expect(documentElement)[prop].toHaveStyle("overflow-y: hidden");
+  // The scrollbar-gutter lock neither defines --scrollbar-width nor touches
+  // the body styles.
+  expect(documentElement).not.toHaveStyle("--scrollbar-width: 1024px");
+  expect(body).not.toHaveStyle("overflow: hidden");
+  expect(body).not.toHaveStyle("padding-right: 1024px");
 }
 
 test("show dialog and hide with escape", async () => {
@@ -26,6 +31,32 @@ test("show dialog and hide with escape", async () => {
   expect(q.dialog("Dialog")).not.toBeInTheDocument();
   expect(q.button("Open dialog")).toHaveFocus();
   expectModalStyle(false);
+});
+
+test("fall back to body padding without scrollbar-gutter support", async () => {
+  const { documentElement, body } = document;
+  // happy-dom's window.CSS getter returns a fresh object on every access, so
+  // the getter itself must be mocked rather than a single instance's method.
+  const unsupportedCSS: Pick<typeof CSS, "supports"> = {
+    supports: () => false,
+  };
+  using _supports = vi
+    .spyOn(window, "CSS", "get")
+    .mockReturnValue(unsupportedCSS as typeof CSS);
+  await click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toBeVisible();
+  expect(documentElement).toHaveStyle("--scrollbar-width: 1024px");
+  expect(documentElement).not.toHaveStyle("scrollbar-gutter: stable");
+  // The html overflow is visible here, so the fallback must leave the html
+  // element's overflow alone and lock the body only.
+  expect(documentElement).not.toHaveStyle("overflow-y: hidden");
+  expect(body).toHaveStyle("overflow: hidden");
+  expect(body).toHaveStyle("padding-right: 1024px");
+  await press.Escape();
+  expect(q.dialog("Dialog")).not.toBeInTheDocument();
+  expect(documentElement).not.toHaveStyle("--scrollbar-width: 1024px");
+  expect(body).not.toHaveStyle("overflow: hidden");
+  expect(body).not.toHaveStyle("padding-right: 1024px");
 });
 
 test.each(["nested", "sibling"])(

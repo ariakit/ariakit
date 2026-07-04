@@ -18,7 +18,10 @@ async function verifyCompositeMounted(q: Query) {
 
 async function setupComposite(q: Query) {
   await q.button("Mount composite").click();
-  await expect(q.button("Item 1")).toBeVisible();
+  const firstItem = q.button("Item 1");
+  await expect(firstItem).toBeVisible();
+  await firstItem.focus();
+  await expect(firstItem).toBeFocused();
 }
 
 async function moveAcrossItems(page: Page) {
@@ -48,59 +51,49 @@ async function verifyControlledItemsUpdated(q: Query) {
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("mount composite", async ({ q, perf }) => {
-    await perf.measure(() => mountComposite(q), {
-      verify: () => verifyCompositeMounted(q),
+  test("mount composite", async ({ perf }) => {
+    await perf.measure(({ q }) => mountComposite(q), {
+      verify: ({ q }) => verifyCompositeMounted(q),
     });
   });
 
-  test("mount composite (script profile)", async ({ q, perf }) => {
-    await perf.measure(() => mountComposite(q), {
+  test("mount composite (script profile)", async ({ perf }) => {
+    await perf.measure(({ q }) => mountComposite(q), {
       scriptProfile: true,
       profileLimit: 20,
-      verify: () => verifyCompositeMounted(q),
+      verify: ({ q }) => verifyCompositeMounted(q),
     });
   });
 
-  test("move across items", async ({ q, page, perf }) => {
-    const firstItem = q.button("Item 1");
-
-    await perf.measure(() => moveAcrossItems(page), {
-      setup: async () => {
-        await setupComposite(q);
-        await firstItem.focus();
-        await expect(firstItem).toBeFocused();
-      },
-      verify: () => verifyMovedAcrossItems(q),
+  test("move across items", async ({ perf }) => {
+    await perf.measure(({ page }) => moveAcrossItems(page), {
+      setup: ({ q }) => setupComposite(q),
+      verify: ({ q }) => verifyMovedAcrossItems(q),
     });
   });
 
-  test("move across items (script profile)", async ({ q, page, perf }) => {
-    const firstItem = q.button("Item 1");
-
-    await perf.measure(() => moveAcrossItems(page), {
+  test("move across items (script profile)", async ({ perf }) => {
+    await perf.measure(({ page }) => moveAcrossItems(page), {
       scriptProfile: true,
       profileLimit: 20,
-      setup: async () => {
-        await setupComposite(q);
-        await firstItem.focus();
-        await expect(firstItem).toBeFocused();
+      setup: ({ q }) => setupComposite(q),
+      verify: ({ q }) => verifyMovedAcrossItems(q),
+    });
+  });
+
+  test("mount controlled composite", async ({ perf }) => {
+    await perf.measure(
+      ({ q }) => q.button("Mount controlled composite").click(),
+      {
+        verify: ({ q }) => verifyCompositeMounted(q),
       },
-      verify: () => verifyMovedAcrossItems(q),
-    });
+    );
   });
 
-  test("mount controlled composite", async ({ q, perf }) => {
-    const mountButton = q.button("Mount controlled composite");
-    await perf.measure(() => mountButton.click(), {
-      verify: () => verifyCompositeMounted(q),
-    });
-  });
-
-  test("update controlled items", async ({ q, perf }) => {
-    await perf.measure(() => updateControlledItems(q), {
-      setup: () => setupControlledComposite(q),
-      verify: () => verifyControlledItemsUpdated(q),
+  test("update controlled items", async ({ perf }) => {
+    await perf.measure(({ q }) => updateControlledItems(q), {
+      setup: ({ q }) => setupControlledComposite(q),
+      verify: ({ q }) => verifyControlledItemsUpdated(q),
     });
   });
 });

@@ -6,7 +6,7 @@ import {
   markTreeInside,
   markTreeOutside,
 } from "./mark-tree-outside.ts";
-import { assignStyle, setAttribute } from "./orchestrate.ts";
+import { assignStyle, setAttribute, setCSSProperty } from "./orchestrate.ts";
 import { supportsInert } from "./supports-inert.ts";
 import {
   createWalkTreeSnapshot,
@@ -109,6 +109,20 @@ test("orchestrate defers stale style cleanups", () => {
   restoreTwo();
 
   expect(element.style.display).toBe("flex");
+});
+
+test("setCSSProperty restores the previous value with its priority", () => {
+  const element = document.createElement("div");
+  element.style.setProperty("overflow-y", "scroll", "important");
+
+  const restore = setCSSProperty(element, "overflow-y", "hidden");
+
+  expect(element.style.getPropertyValue("overflow-y")).toBe("hidden");
+
+  restore();
+
+  expect(element.style.getPropertyValue("overflow-y")).toBe("scroll");
+  expect(element.style.getPropertyPriority("overflow-y")).toBe("important");
 });
 
 test("orchestrate keeps element and key cleanup stacks independent", () => {
