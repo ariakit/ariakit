@@ -377,15 +377,20 @@ jobs:
       contents: read
     env:
       # Clean runs stop after two paired rounds. Significant deltas and
-      # unconfirmed candidates get three extra confirmation rounds (five
-      # paired rounds total) before the PR comment is published. Five rounds
-      # matter: agreement and raw support are then required in n-1 = 4 rounds,
-      # so a near-miss candidate (raw 1/2) still has a path to confirmation,
-      # while fewer confirmation rounds could only ever demote candidates
-      # (with <= 4 rounds every round must pass, and a candidate has already
-      # failed raw support in an immutable initial round).
+      # unconfirmed candidates get up to two extra confirmation rounds (four
+      # paired rounds total), and the job re-compares between confirmation
+      # rounds so it can stop as soon as the report comes back clean; the
+      # comparison after the last round belongs to the post job. Confirmation
+      # is demote-only on purpose: with <= 4 paired rounds agreement and raw
+      # support are required in every round, so a candidate that already
+      # failed raw support in an immutable initial round can never be
+      # promoted to significant and stays reported as an unconfirmed
+      # candidate instead. A third confirmation round would open a promotion
+      # path (at five rounds the requirement relaxes to n-1 = 4), but in
+      # practice that path only ever confirmed noise: real changes pass
+      # agreement and raw support in every round.
       PERF_INITIAL_ROUNDS: 2
-      PERF_CONFIRMATION_ROUNDS: 3
+      PERF_CONFIRMATION_ROUNDS: 2
       # Keep per-round samples modest; paired rounds and confirmation preserve
       # enough signal for noisy results.
       PERF_ITERATIONS: 5
@@ -644,13 +649,16 @@ jobs:
             run_perf_round "$i" "${PERF_FILES[@]}"
           done
 
-          # This per-file comparison only decides whether this job needs
-          # confirmation rounds. The published comparison is produced once by
-          # the post job over every job's raw round files.
-          echo "::group::Preliminary comparison ($PERF_FILE)"
-          pnpm -F app run perf-compare
-          confirmation_files="$(
-            node --input-type=module <<'NODE'
+          # These per-file comparisons only decide whether this job needs
+          # more confirmation rounds. The published comparison is produced
+          # once by the post job over every job's raw round files.
+          read_confirmation_files() {
+            local label="$1"
+            echo "::group::$label ($PERF_FILE)"
+            pnpm -F app run perf-compare
+            local confirmation_files
+            confirmation_files="$(
+              node --input-type=module <<'NODE'
           import { readFileSync } from "node:fs";
 
           const summary = JSON.parse(
@@ -665,12 +673,15 @@ jobs:
             console.log(file);
           }
           NODE
-          )"
-          CONFIRMATION_FILES=()
-          if [ -n "$confirmation_files" ]; then
-            mapfile -t CONFIRMATION_FILES <<< "$confirmation_files"
-          fi
-          echo "::endgroup::"
+            )"
+            CONFIRMATION_FILES=()
+            if [ -n "$confirmation_files" ]; then
+              mapfile -t CONFIRMATION_FILES <<< "$confirmation_files"
+            fi
+            echo "::endgroup::"
+          }
+
+          read_confirmation_files "Preliminary comparison"
 
           if [ ${#CONFIRMATION_FILES[@]} -gt 0 ]; then
             echo "Significant or candidate changes detected; running confirmation rounds for: ${CONFIRMATION_FILES[*]}"
@@ -678,6 +689,17 @@ jobs:
             end_round=$((PERF_INITIAL_ROUNDS + PERF_CONFIRMATION_ROUNDS))
             for i in $(seq "$start_round" "$end_round"); do
               run_perf_round "$i" "${CONFIRMATION_FILES[@]}"
+              # Noise that triggered confirmation usually dies after one
+              # extra round, so re-compare between rounds and stop early once
+              # the report is clean. The last round needs no re-comparison
+              # here because the post job compares every job's rounds anyway.
+              if [ "$i" -lt "$end_round" ]; then
+                read_confirmation_files "Comparison after round $i"
+                if [ ${#CONFIRMATION_FILES[@]} -eq 0 ]; then
+                  echo "No significant or candidate changes remain after round $i; stopping confirmation rounds early."
+                  break
+                fi
+              fi
             done
           else
             echo "No significant or candidate changes detected; skipping confirmation rounds."
@@ -707,10 +729,12 @@ jobs:
       actions: read
       contents: read
     env:
-      # Clean runs stop after two paired rounds. Significant deltas get three
-      # extra confirmation rounds before the PR comment is published.
+      # Clean runs stop after two paired rounds. Significant deltas get up to
+      # two extra confirmation rounds, and the job re-compares after each one
+      # so it can stop as soon as the report comes back clean. See the Chrome
+      # job for why confirmation is demote-only.
       PERF_INITIAL_ROUNDS: 2
-      PERF_CONFIRMATION_ROUNDS: 3
+      PERF_CONFIRMATION_ROUNDS: 2
       PERF_RESULTS_TITLE: Node
     steps:
       - name: Checkout repository
@@ -813,10 +837,12 @@ jobs:
             run_bench_round "$i"
           done
 
-          echo "::group::Preliminary comparison"
-          pnpm exec ariakit perf-compare --node
-          needs_confirmation=$(
-            node --input-type=module <<'NODE'
+          check_confirmation() {
+            local label="$1"
+            echo "::group::$label"
+            pnpm exec ariakit perf-compare --node
+            needs_confirmation=$(
+              node --input-type=module <<'NODE'
           import { readFileSync } from "node:fs";
 
           const summary = JSON.parse(
@@ -829,8 +855,11 @@ jobs:
 
           console.log(summary.confirmationFiles.length > 0 ? "true" : "false");
           NODE
-          )
-          echo "::endgroup::"
+            )
+            echo "::endgroup::"
+          }
+
+          check_confirmation "Preliminary comparison"
 
           if [ "$needs_confirmation" = "true" ]; then
             echo "Significant benchmark changes detected; running confirmation rounds."
@@ -838,11 +867,15 @@ jobs:
             end_round=$((PERF_INITIAL_ROUNDS + PERF_CONFIRMATION_ROUNDS))
             for i in $(seq "$start_round" "$end_round"); do
               run_bench_round "$i"
+              # Unlike Chrome, this job publishes its own comparison, so
+              # re-compare after every confirmation round; the last
+              # comparison becomes the published one.
+              check_confirmation "Comparison after round $i"
+              if [ "$needs_confirmation" != "true" ]; then
+                echo "No significant changes remain after round $i."
+                break
+              fi
             done
-
-            echo "::group::Final comparison"
-            pnpm exec ariakit perf-compare --node
-            echo "::endgroup::"
           else
             echo "No significant changes detected; skipping confirmation rounds."
           fi

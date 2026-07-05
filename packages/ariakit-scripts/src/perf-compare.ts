@@ -635,9 +635,12 @@ function computeSignificance({
     // A candidate clears the magnitude threshold and rounds agree on
     // direction, but the raw samples fail to support it. It is reported as an
     // unconfirmed change and triggers confirmation rounds like significant
-    // rows do; the extra rounds can demote it (direction flips), promote it
-    // (enough rounds gain raw support under the n-1 rule), or leave it
-    // unconfirmed with more data behind its diagnostics.
+    // rows do; the extra rounds can demote it (direction flips) or leave it
+    // unconfirmed with more data behind its diagnostics. Promotion to
+    // significant would need five or more paired rounds (the n-1 rule), and
+    // CI stops at four on purpose: real changes pass agreement and raw
+    // support in every round, and the promotion path only ever confirmed
+    // noise.
     candidate: primary && magnitudeOk && agreementOk && !significant,
   };
 }
