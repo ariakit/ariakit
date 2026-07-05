@@ -1540,6 +1540,13 @@ export function runPerfCompare(
     JSON.stringify(persistedSummary, null, 2),
   );
   writeFileSync(path.join(RESULTS_DIR, "comparison.md"), markdown);
+  // The perf workflow decides whether to run more confirmation rounds by
+  // reading this plain-text list (one flagged test file per line, empty when
+  // clean), so the shell needs no JSON parsing.
+  writeFileSync(
+    path.join(RESULTS_DIR, "confirmation-files.txt"),
+    persistedSummary.confirmationFiles.map((file) => `${file}\n`).join(""),
+  );
 
   return { summary: persistedSummary, markdown };
 }

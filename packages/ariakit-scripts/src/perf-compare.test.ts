@@ -258,6 +258,13 @@ function readComparisonSummary(dir: string) {
   );
 }
 
+function readConfirmationFilesList(dir: string) {
+  return readFileSync(
+    path.join(dir, resultsDir, "confirmation-files.txt"),
+    "utf-8",
+  );
+}
+
 function runCompare(
   dir: string,
   args: string[] = [],
@@ -468,6 +475,9 @@ test("describes Node multi-round comparisons by round agreement", () => {
   expect(summary.confirmationFiles).toEqual([
     "packages/ariakit-store/benchmark/store.bench.ts",
   ]);
+  expect(readConfirmationFilesList(dir)).toBe(
+    "packages/ariakit-store/benchmark/store.bench.ts\n",
+  );
 });
 
 test("does not flag noisy rounds that disagree on direction", () => {
@@ -485,6 +495,9 @@ test("does not flag noisy rounds that disagree on direction", () => {
   expect(markdown).not.toContain("Unconfirmed changes");
   expect(markdown).not.toMatch(/% :warning:/);
   expect(markdown).toContain("Aggregated across 5 interleaved rounds");
+  // Clean comparisons still write the workflow list so shell consumers can
+  // read it unconditionally.
+  expect(readConfirmationFilesList(dir)).toBe("");
 });
 
 test("reports overlapping same-direction rounds as unconfirmed candidates", () => {
@@ -716,6 +729,11 @@ test("lists confirmation files for significant and candidate changes", () => {
     "sandbox/a/perf-chrome.ts",
     "sandbox/b/perf-chrome.ts",
   ]);
+  // The perf workflow consumes the flagged files as a plain-text list, one
+  // per line.
+  expect(readConfirmationFilesList(dir)).toBe(
+    "sandbox/a/perf-chrome.ts\nsandbox/b/perf-chrome.ts\n",
+  );
   // Significant and unconfirmed changes are reported side by side, without
   // icons on the unconfirmed rows.
   expect(markdown).toContain("100.0ms → 160.0ms (+60%) :warning:");
