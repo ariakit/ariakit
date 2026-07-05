@@ -635,9 +635,12 @@ function computeSignificance({
     // A candidate clears the magnitude threshold and rounds agree on
     // direction, but the raw samples fail to support it. It is reported as an
     // unconfirmed change and triggers confirmation rounds like significant
-    // rows do; the extra rounds can demote it (direction flips), promote it
-    // (enough rounds gain raw support under the n-1 rule), or leave it
-    // unconfirmed with more data behind its diagnostics.
+    // rows do; the extra rounds can demote it (direction flips) or leave it
+    // unconfirmed with more data behind its diagnostics. Promotion to
+    // significant would need five or more paired rounds (the n-1 rule), and
+    // CI stops at four on purpose: real changes pass agreement and raw
+    // support in every round, and the promotion path only ever confirmed
+    // noise.
     candidate: primary && magnitudeOk && agreementOk && !significant,
   };
 }
@@ -1537,6 +1540,13 @@ export function runPerfCompare(
     JSON.stringify(persistedSummary, null, 2),
   );
   writeFileSync(path.join(RESULTS_DIR, "comparison.md"), markdown);
+  // The perf workflow decides whether to run more confirmation rounds by
+  // reading this plain-text list (one flagged test file per line, empty when
+  // clean), so the shell needs no JSON parsing.
+  writeFileSync(
+    path.join(RESULTS_DIR, "confirmation-files.txt"),
+    persistedSummary.confirmationFiles.map((file) => `${file}\n`).join(""),
+  );
 
   return { summary: persistedSummary, markdown };
 }
