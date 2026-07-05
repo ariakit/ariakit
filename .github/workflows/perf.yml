@@ -711,11 +711,14 @@ jobs:
       contents: read
     env:
       # Clean runs stop after two paired rounds. Significant deltas get up to
-      # two extra confirmation rounds, and the job re-compares after each one
-      # so it can stop as soon as the report comes back clean. See the Chrome
-      # job for why confirmation is demote-only.
+      # three extra confirmation rounds, and the job re-compares after each
+      # one so it can stop as soon as the report comes back clean. Unlike
+      # Chrome, Node keeps the fifth paired round: node mode has no raw
+      # sample gate, so there are no unconfirmed candidates to promote, and
+      # five rounds relax the required agreement to n-1 = 4, which lets a
+      # real benchmark change survive one noisy round.
       PERF_INITIAL_ROUNDS: 2
-      PERF_CONFIRMATION_ROUNDS: 2
+      PERF_CONFIRMATION_ROUNDS: 3
       PERF_RESULTS_TITLE: Node
     steps:
       - name: Checkout repository
