@@ -69,7 +69,7 @@
     "@react-aria/utils": "3.34.1",
     "@shikijs/langs": "4.3.0",
     "@shikijs/themes": "4.3.0",
-    "@stackblitz/sdk": "1.11.0",
+    "@stackblitz/sdk": "1.11.1",
     "@stripe/stripe-js": "9.9.0",
     "@tailwindcss/vite": "4.3.2",
     "@tanstack/react-query": "5.101.2",
