@@ -472,7 +472,6 @@ jobs:
           rm -rf app/.perf-results "$BASELINE_DIR/app/.perf-results"
           mkdir -p app/.perf-results
           shopt -s nullglob
-          PERF_FILES=()
           ROUND_FILES=()
           manifest_status=failed
           manifest_message="Chrome perf job exited before completing."
@@ -509,10 +508,7 @@ jobs:
 
           trap write_chrome_manifest EXIT
 
-          if [ -n "$PERF_FILE" ]; then
-            PERF_FILES=("$PERF_FILE")
-          fi
-          echo "Chrome perf file: ${PERF_FILES[*]:-<none>}"
+          echo "Chrome perf file: ${PERF_FILE:-<none>}"
 
           # Pass the per-test timeout on the CLI (it takes precedence over the
           # config file) so the baseline worktree, which runs the base
@@ -638,7 +634,7 @@ jobs:
             fi
           }
 
-          if [ ${#PERF_FILES[@]} -eq 0 ]; then
+          if [ -z "$PERF_FILE" ]; then
             echo "No perf file assigned to this job; nothing to benchmark."
             manifest_status=skipped
             manifest_message="No perf file assigned to this job."
@@ -646,37 +642,38 @@ jobs:
           fi
 
           for i in $(seq 1 "$PERF_INITIAL_ROUNDS"); do
-            run_perf_round "$i" "${PERF_FILES[@]}"
+            run_perf_round "$i" "$PERF_FILE"
           done
 
           # These per-file comparisons only decide whether this job needs
           # more confirmation rounds. The published comparison is produced
           # once by the post job over every job's raw round files.
-          read_confirmation_files() {
+          run_perf_compare() {
             local label="$1"
             echo "::group::$label ($PERF_FILE)"
             pnpm -F app run perf-compare
-            # perf-compare writes the flagged test files as a plain-text
-            # list, one per line, empty when the comparison is clean.
-            mapfile -t CONFIRMATION_FILES < app/.perf-results/confirmation-files.txt
             echo "::endgroup::"
           }
 
-          read_confirmation_files "Preliminary comparison"
+          run_perf_compare "Preliminary comparison"
 
-          if [ ${#CONFIRMATION_FILES[@]} -gt 0 ]; then
-            echo "Significant or candidate changes detected; running confirmation rounds for: ${CONFIRMATION_FILES[*]}"
+          # perf-compare writes the flagged test files as a plain-text list,
+          # one per line, empty when the comparison is clean. This job
+          # benchmarks a single perf file, so the list is either empty or
+          # exactly that file.
+          if [ -s app/.perf-results/confirmation-files.txt ]; then
+            echo "Significant or candidate changes detected; running confirmation rounds for: $PERF_FILE"
             start_round=$((PERF_INITIAL_ROUNDS + 1))
             end_round=$((PERF_INITIAL_ROUNDS + PERF_CONFIRMATION_ROUNDS))
             for i in $(seq "$start_round" "$end_round"); do
-              run_perf_round "$i" "${CONFIRMATION_FILES[@]}"
+              run_perf_round "$i" "$PERF_FILE"
               # Noise that triggered confirmation usually dies after one
               # extra round, so re-compare between rounds and stop early once
               # the report is clean. The last round needs no re-comparison
               # here because the post job compares every job's rounds anyway.
               if [ "$i" -lt "$end_round" ]; then
-                read_confirmation_files "Comparison after round $i"
-                if [ ${#CONFIRMATION_FILES[@]} -eq 0 ]; then
+                run_perf_compare "Comparison after round $i"
+                if [ ! -s app/.perf-results/confirmation-files.txt ]; then
                   echo "No significant or candidate changes remain after round $i; stopping confirmation rounds early."
                   break
                 fi
