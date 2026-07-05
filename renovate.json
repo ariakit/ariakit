@@ -44,6 +44,10 @@
       ]
     },
     {
+      "groupName": "astro",
+      "matchPackageNames": ["astro", "/^@astrojs\\//"]
+    },
+    {
       "groupName": "changesets",
       "matchPackageNames": ["/^@changesets\\//"]
     },
