@@ -140,6 +140,19 @@ function createResultWithTitle(
   };
 }
 
+function createFileResultWithTitle(
+  testFile: string,
+  label: string,
+  testTitle: string,
+  metrics: PerfMetrics,
+  profiles?: PerfProfiles,
+): PerfResult {
+  return {
+    ...createResultWithTitle(label, testTitle, metrics, profiles),
+    testFile,
+  };
+}
+
 function createScriptProfileEntry(
   functionName: string,
   selfTime: number,
@@ -1196,16 +1209,15 @@ test("keeps node_modules script profile functions as unlinked code", () => {
 
 test("renders script profiles below comparison tables", () => {
   const dir = createTempDir();
-  const label = "custom label";
   const testTitle = "ariakit-tailwind > react > page load";
   const profiles: PerfProfiles = {
     script: [createScriptProfileEntry("profiledFn", 8)],
   };
   writeJson(dir, "baseline-worker0.json", [
-    createResultWithTitle(label, testTitle, createMetrics(100), profiles),
+    createResultWithTitle(testTitle, testTitle, createMetrics(100), profiles),
   ]);
   writeJson(dir, "current-worker0.json", [
-    createResultWithTitle(label, testTitle, createMetrics(130), profiles),
+    createResultWithTitle(testTitle, testTitle, createMetrics(130), profiles),
   ]);
 
   const markdown = runCompare(dir);
@@ -1222,8 +1234,59 @@ test("renders script profiles below comparison tables", () => {
   expect(comparisonIndex).toBeGreaterThan(-1);
   expect(profileIndex).toBeGreaterThan(comparisonIndex);
   expect(markdown).toContain("| `profiledFn` | 8ms | 8ms | 1 |");
-  expect(markdown).not.toContain("#### custom label");
   expect(markdown).not.toContain("#### Script profile");
+});
+
+test("includes custom labels when test titles are shared", () => {
+  const dir = createTempDir();
+  const testTitle = "combobox-perf > react > open combobox";
+  const profiles: PerfProfiles = {
+    script: [createScriptProfileEntry("profiledFn", 8)],
+  };
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithTitle(
+      "open with mouse",
+      testTitle,
+      createMetrics(100),
+      profiles,
+    ),
+    createResultWithTitle(
+      "open with keyboard",
+      testTitle,
+      createMetrics(100),
+      profiles,
+    ),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    createResultWithTitle(
+      "open with mouse",
+      testTitle,
+      createMetrics(130),
+      profiles,
+    ),
+    createResultWithTitle(
+      "open with keyboard",
+      testTitle,
+      createMetrics(120),
+      profiles,
+    ),
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain(
+    "| [combobox-perf > react > open combobox > open with mouse](#user-content-script-profile-combobox-perf-react-open-combobox-open-with-mouse) | 100ms → 130ms (+30%) :warning:",
+  );
+  expect(markdown).toContain(
+    "| [combobox-perf > react > open combobox > open with keyboard](#user-content-script-profile-combobox-perf-react-open-combobox-open-with-keyboard) | 100ms → 120ms (+20%) :warning:",
+  );
+  expect(markdown).toContain(
+    "#### combobox-perf > react > open combobox > open with mouse",
+  );
+  expect(markdown).toContain(
+    "#### combobox-perf > react > open combobox > open with keyboard",
+  );
+  expect(markdown).not.toContain("| [combobox-perf > react > open combobox](#");
 });
 
 test("merges script profile rows into base comparisons", () => {
@@ -1265,40 +1328,46 @@ test("escapes and disambiguates script profile anchors", () => {
     script: [createScriptProfileEntry("profiledFn", 8)],
   };
   writeJson(dir, "baseline-worker0.json", [
-    createResultWithTitle(
-      "first custom label",
+    createFileResultWithTitle(
+      "sandbox/first/perf-chrome.ts",
+      "same [title] | test",
       "same [title] | test",
       createMetrics(100),
       profiles,
     ),
-    createResultWithTitle(
-      "second custom label",
+    createFileResultWithTitle(
+      "sandbox/second/perf-chrome.ts",
+      "same title test",
       "same title test",
       createMetrics(100),
       profiles,
     ),
-    createResultWithTitle(
-      "third custom label",
+    createFileResultWithTitle(
+      "sandbox/third/perf-chrome.ts",
+      "same title test 2",
       "same title test 2",
       createMetrics(100),
       profiles,
     ),
   ]);
   writeJson(dir, "current-worker0.json", [
-    createResultWithTitle(
-      "first custom label",
+    createFileResultWithTitle(
+      "sandbox/first/perf-chrome.ts",
+      "same [title] | test",
       "same [title] | test",
       createMetrics(130),
       profiles,
     ),
-    createResultWithTitle(
-      "second custom label",
+    createFileResultWithTitle(
+      "sandbox/second/perf-chrome.ts",
+      "same title test",
       "same title test",
       createMetrics(130),
       profiles,
     ),
-    createResultWithTitle(
-      "third custom label",
+    createFileResultWithTitle(
+      "sandbox/third/perf-chrome.ts",
+      "same title test 2",
       "same title test 2",
       createMetrics(130),
       profiles,
@@ -1342,11 +1411,12 @@ test("includes new test metric rows for script profile results", () => {
   expect(markdown).toContain("| Test | Scripting | Rendering | INP | Total |");
   expect(markdown).toContain("| regular | 100ms | 0ms | 0ms | 100ms |");
   expect(markdown).toContain(
-    "| [profiled title](#user-content-script-profile-profiled-title) | 130ms | 0ms | 0ms | 130ms |",
+    "| [profiled title > profiled label](#user-content-script-profile-profiled-title-profiled-label) | 130ms | 0ms | 0ms | 130ms |",
   );
-  expect(markdown).toContain(`<a id="script-profile-profiled-title"></a>`);
-  expect(markdown).toContain("#### profiled title");
-  expect(markdown).not.toContain("#### profiled label");
+  expect(markdown).toContain(
+    `<a id="script-profile-profiled-title-profiled-label"></a>`,
+  );
+  expect(markdown).toContain("#### profiled title > profiled label");
   expect(markdown).not.toContain("#### Script profile");
   expect(markdown).toContain("| `profiledFn` | 8ms | 8ms | 1 |");
 });

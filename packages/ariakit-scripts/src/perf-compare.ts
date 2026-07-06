@@ -1334,8 +1334,17 @@ function formatProfileAnchorSlug(value: string) {
   return slug || "profile";
 }
 
+function getResultDisplayTitle({
+  label,
+  testTitle,
+}: Pick<PerfResult, "label" | "testTitle">) {
+  if (!testTitle) return label;
+  if (!label || label === testTitle) return testTitle;
+  return `${testTitle} > ${label}`;
+}
+
 function getProfileHeading(result: PerfResult) {
-  return result.testTitle || result.label;
+  return getResultDisplayTitle(result);
 }
 
 function createScriptProfileAnchor(heading: string, usedAnchors: Set<string>) {
@@ -1391,7 +1400,7 @@ function formatDetailedComparisonTable({
     if (testRows.length === 0) continue;
     if (testRows.some((row) => row.profileMode)) continue;
 
-    const label = testRows[0]?.testTitle ?? testRows[0]?.label ?? key;
+    const label = testRows[0] ? getResultDisplayTitle(testRows[0]) : key;
     const cells = [
       formatDetailedTestCell(label, scriptProfileAnchors.get(key)),
     ];
