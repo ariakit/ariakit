@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { createPortal } from "react-dom";
 
 function RadioForm() {
@@ -27,27 +27,16 @@ function RadioForm() {
 }
 
 export default function Example() {
-  const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null);
-  const [iframeContainer, setIframeContainer] = useState<HTMLElement | null>(
-    null,
-  );
+  const [iframeBody, setIframeBody] = useState<HTMLElement | null>(null);
 
-  useEffect(() => {
-    if (!iframe) return;
-    const doc = iframe.contentDocument;
-    if (!doc?.body) return;
-    const container = doc.createElement("div");
-    doc.body.appendChild(container);
-    setIframeContainer(container);
-    return () => {
-      container.remove();
-    };
-  }, [iframe]);
+  const setIframe = useCallback((element: HTMLIFrameElement | null) => {
+    setIframeBody(element?.contentDocument?.body ?? null);
+  }, []);
 
   return (
     <>
       <RadioForm />
-      {iframeContainer ? createPortal(<RadioForm />, iframeContainer) : null}
+      {iframeBody ? createPortal(<RadioForm />, iframeBody) : null}
       <iframe
         ref={setIframe}
         title="Embedded options"

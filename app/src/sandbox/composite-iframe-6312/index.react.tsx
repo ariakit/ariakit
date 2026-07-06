@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { createPortal } from "react-dom";
 
 function EmbeddedList() {
@@ -30,30 +30,24 @@ function EmbeddedList() {
 }
 
 export default function Example() {
-  const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null);
-  const [iframeContainer, setIframeContainer] = useState<HTMLElement | null>(
-    null,
-  );
+  const [iframeBody, setIframeBody] = useState<HTMLElement | null>(null);
 
-  useEffect(() => {
-    if (!iframe) return;
+  const setIframe = useCallback((element: HTMLIFrameElement | null) => {
     // Same-origin embedded widget (react-frame-component style): the list is
     // taller than the iframe viewport and there's no overflow container inside,
     // so the iframe's own document is the scroller.
-    const doc = iframe.contentDocument;
-    if (!doc?.body) return;
-    doc.body.style.margin = "0";
-    const container = doc.createElement("div");
-    doc.body.appendChild(container);
-    setIframeContainer(container);
-    return () => {
-      container.remove();
-    };
-  }, [iframe]);
+    const body = element?.contentDocument?.body;
+    if (!body) {
+      setIframeBody(null);
+      return;
+    }
+    body.style.margin = "0";
+    setIframeBody(body);
+  }, []);
 
   return (
     <>
-      {iframeContainer ? createPortal(<EmbeddedList />, iframeContainer) : null}
+      {iframeBody ? createPortal(<EmbeddedList />, iframeBody) : null}
       <iframe
         ref={setIframe}
         title="Embedded list"
