@@ -16,6 +16,7 @@ import type { ElementType, FocusEvent, RefObject } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useFormItem } from "./form-context.tsx";
+import { useFormValidate } from "./form-store.ts";
 import type { FormStore, FormStoreState } from "./form-store.ts";
 
 const TagName = "input" satisfies ElementType;
@@ -108,7 +109,7 @@ function useControlState(form: FormStore, name: string) {
  * ```jsx
  * const store = useFormStore({ defaultValues: { content: "" } });
  * const props = useFormControl({ store, name: store.names.content });
- * const value = store.useValue(store.names.content);
+ * const value = useFormValue(store, store.names.content);
  *
  * <Form store={store}>
  *   <FormLabel name={store.names.content}>Content</FormLabel>
@@ -144,7 +145,7 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
       component: "FormControl",
     });
 
-    form.useValidate(async () => {
+    useFormValidate(form, async () => {
       const element = getNamedElement(ref, name);
       if (!element) return;
       // Flush microtasks to make sure the validity state is up to date
@@ -207,7 +208,7 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
  *   },
  * });
  *
- * const value = form.useValue(form.names.content);
+ * const value = useFormValue(form, form.names.content);
  *
  * <Form store={form}>
  *   <FormLabel name={form.names.content}>Content</FormLabel>

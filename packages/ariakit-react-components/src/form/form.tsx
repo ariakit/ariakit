@@ -218,7 +218,7 @@ export interface FormOptions<_T extends ElementType = TagName> extends Options {
   /**
    * Determines if the form should invoke the validation callbacks registered
    * with
-   * [`useValidate`](https://ariakit.com/reference/use-form-store#usevalidate)
+   * [`useFormValidate`](https://ariakit.com/reference/use-form-validate)
    * when the [`values`](https://ariakit.com/reference/use-form-store#values)
    * change.
    * @default true
@@ -227,7 +227,7 @@ export interface FormOptions<_T extends ElementType = TagName> extends Options {
   /**
    * Determines if the form should invoke the validation callbacks registered
    * with
-   * [`useValidate`](https://ariakit.com/reference/use-form-store#usevalidate)
+   * [`useFormValidate`](https://ariakit.com/reference/use-form-validate)
    * when a field loses focus.
    * @default true
    */

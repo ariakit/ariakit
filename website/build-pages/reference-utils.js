@@ -1,13 +1,13 @@
-import { join } from "node:path";
+import { basename, join } from "node:path";
 import invariant from "tiny-invariant";
 import { Node, Project, ts } from "ts-morph";
 import { getPageName } from "./get-page-name.js";
 
+const cwd = process.cwd();
+const root = basename(cwd) === "website" ? join(cwd, "..") : cwd;
+
 const project = new Project({
-  tsConfigFilePath: join(
-    process.cwd(),
-    "../packages/ariakit-react/tsconfig.json",
-  ),
+  tsConfigFilePath: join(root, "packages/ariakit-react/tsconfig.json"),
 });
 
 /**
@@ -182,7 +182,6 @@ function getExamples(node) {
     const text = tag.text?.toString();
     if (!text) continue;
     const match = text.match(
-      // @ts-expect-error
       /^(?<description>(.|\n)*)```(?<language>[^\n]+)\n(?<code>(.|\n)+)\n```$/m,
     );
     examples.push({
@@ -236,6 +235,22 @@ function getFunction(node) {
 
 /**
  * @param {Node} node
+ * @param {string} name
+ */
+function getPropsParameter(node, name) {
+  const param = getFunction(node)?.getParameters()?.at(0);
+  if (!param) return;
+  const nameNode = param.getNameNode();
+  if (Node.isIdentifier(nameNode) && nameNode.getText() === "props") {
+    return param;
+  }
+  const type = param.getTypeNode()?.getText();
+  if (type !== `${name}Props` && type !== `${name}Options`) return;
+  return param;
+}
+
+/**
+ * @param {Node} node
  */
 function getNodeName(node) {
   if (Node.isVariableStatement(node)) {
@@ -261,7 +276,7 @@ function getReference(filename, node, props, returnedProps) {
 
   const hasProps = getPageName(filename) !== "store";
   if (hasProps) {
-    props = props || getFunction(node)?.getParameters()?.at(0);
+    props = props || getPropsParameter(node, name);
   }
 
   returnedProps =

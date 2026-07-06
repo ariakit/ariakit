@@ -9,20 +9,17 @@ interface NameFieldProps extends Ariakit.FormInputProps {
 }
 
 function RequiredField({ store, label, name, ...props }: NameFieldProps) {
-  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
-  store.useValidate(() => {
+  Ariakit.useFormValidate(store, () => {
     if (!store.getValue(name)) {
       store.setError(name, `${store.getError(name)} - Field 1`);
     }
   });
-  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
-  store.useValidate(() => {
+  Ariakit.useFormValidate(store, () => {
     if (!store.getValue(name)) {
       store.setError(name, `${store.getError(name)} - Field 2`);
     }
   });
-  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
-  store.useSubmit(async () => {
+  Ariakit.useFormSubmit(store, async () => {
     await Promise.resolve();
     store.setError(name, "Field");
   });
@@ -42,22 +39,19 @@ interface FormProps extends Ariakit.FormProps {
 function RequiredForm({ store, requiredNames, ...props }: FormProps) {
   invariant(store);
 
-  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
-  store.useValidate(() => {
+  Ariakit.useFormValidate(store, () => {
     for (const name of requiredNames) {
       if (!store.getValue(name)) {
         store.setError(name, `${store.getError(name)} - Abstract Form`);
       }
     }
   });
-  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
-  store.useSubmit(() => {
+  Ariakit.useFormSubmit(store, () => {
     for (const name of requiredNames) {
       store.setError(name, `${store.getError(name)} - Abstract Form 1`);
     }
   });
-  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
-  store.useSubmit(() => {
+  Ariakit.useFormSubmit(store, () => {
     for (const name of requiredNames) {
       store.setError(name, `${store.getError(name)} - Abstract Form 2`);
     }
@@ -70,8 +64,7 @@ export default function Example() {
   const form = Ariakit.useFormStore({ defaultValues: { name: "", email: "" } });
   const requiredNames = [form.names.name, form.names.email];
 
-  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
-  form.useValidate(() => {
+  Ariakit.useFormValidate(form, () => {
     for (const name of requiredNames) {
       if (!form.getValue(name)) {
         form.setError(name, `${form.getError(name)} - Form`);
@@ -79,15 +72,13 @@ export default function Example() {
     }
   });
 
-  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
-  form.useSubmit(() => {
+  Ariakit.useFormSubmit(form, () => {
     for (const name of requiredNames) {
       form.setError(name, `${form.getError(name)} - Form 1`);
     }
   });
 
-  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
-  form.useSubmit(() => {
+  Ariakit.useFormSubmit(form, () => {
     for (const name of requiredNames) {
       form.setError(name, `${form.getError(name)} - Form 2`);
     }
