@@ -10,7 +10,7 @@ export default function Example() {
   const form = ak.useFormStore({ defaultValues: { draft: "" } });
   const [saveState, setSaveState] = useState("Idle");
 
-  form.useSubmit(async () => {
+  ak.useFormSubmit(form, async () => {
     // Simulate a quick network request that saves the draft. Timers keep
     // running while the tab is hidden, so this resolves regardless of
     // visibility.

@@ -37,7 +37,7 @@ export default function Example() {
 
   const form = Ariakit.useFormStore({ defaultValues: { list: "" } });
 
-  form.useSubmit((state) => {
+  Ariakit.useFormSubmit(form, (state) => {
     setLists((prevLists) => [...prevLists, state.values.list]);
     setValues((prevValues) => ({
       ...prevValues,

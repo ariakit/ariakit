@@ -21,6 +21,9 @@ Submit information with accessible interactive controls in React. Take advantage
 ```jsx
 useFormStore()
 useFormContext()
+useFormValue()
+useFormValidate()
+useFormSubmit()
 
 <FormProvider>
   <Form>
@@ -46,14 +49,14 @@ useFormContext()
 
 ## Submitting the form
 
-The [`useFormStore`](/reference/use-form-store) function returns a [`useSubmit`](/reference/use-form-store#usesubmit) hook that can be used to register a submit handler on the form store. All registered handlers run when the user submits the form or the program calls the [`submit`](/reference/use-form-store#submit) function.
+The [`useFormSubmit`](/reference/use-form-submit) function can be used to register a submit handler on the form store. All registered handlers run when the user submits the form or the program calls the [`submit`](/reference/use-form-store#submit) function.
 
 Submit handlers may return a promise and interact with the form store. This means we can access the form [`values`](/reference/use-form-store#values) and call methods such as [`setErrors`](/reference/use-form-store#seterrors) to display errors when the form is submitted:
 
 ```js
 const form = useFormStore();
 
-form.useSubmit(async (state) => {
+useFormSubmit(form, async (state) => {
   const response = await fetch("https://jsonplaceholder.typicode.com/posts", {
     method: "POST",
     body: JSON.stringify(state.values),
@@ -79,13 +82,13 @@ Thankfully, JavaScript allows us to hook into this validation process using the 
 
 ### Custom validation
 
-Similar to [Submitting the form](#submitting-the-form), the [`useFormStore`](/reference/use-form-store) function also returns a [`useValidate`](/reference/use-form-store#usevalidate) hook that can be used to register a validation handler on the form store.
+Similar to [Submitting the form](#submitting-the-form), the [`useFormValidate`](/reference/use-form-validate) function can be used to register a validation handler on the form store.
 
 We can pass this hook to other components as a prop to create field-level validations:
 
 ```jsx
 function MyForm() {
-  const form = useFormStore({ defaultValue: { name: "" } });
+  const form = useFormStore({ defaultValues: { name: "" } });
   return (
     <Form store={form}>
       <NameInput store={form} name={form.names.name} />
@@ -94,7 +97,7 @@ function MyForm() {
 }
 
 function NameInput({ store, name, ...props }) {
-  store.useValidate(() => {
+  useFormValidate(store, () => {
     const value = store.getValue(name);
     if (value.length < 3) {
       store.setError(name, "Name must be at least 3 characters long");

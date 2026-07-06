@@ -12,9 +12,89 @@ import type {
 } from "../collection/collection-store.ts";
 import { useCollectionStoreProps } from "../collection/collection-store.ts";
 
-export function useFormStoreProps<
-  T extends Omit<FormStore, "useValue" | "useValidate" | "useSubmit">,
->(store: T, update: () => void, props: FormStoreProps) {
+type FormStoreHookStore<T extends FormStoreValues = FormStoreValues> = Omit<
+  FormStore<T>,
+  "useValue" | "useValidate" | "useSubmit"
+>;
+
+/**
+ * Re-renders the component when the value of the given field changes and
+ * returns the current value.
+ *
+ * Live examples:
+ * - [Form with Select](https://ariakit.com/examples/form-select)
+ * @example
+ * const form = useFormStore({
+ *   defaultValues: { email: "" },
+ * });
+ * const emailValue = useFormValue(form, form.names.email);
+ */
+// oxlint-disable-next-line no-unnecessary-type-parameters
+export function useFormValue<T = any>(
+  store: FormStoreHookStore,
+  name: StringLike,
+): T {
+  return useStoreState(store, () => store.getValue<T>(name));
+}
+
+/**
+ * Registers a callback that will be used to validate the form when
+ * [`validate`](https://ariakit.com/reference/use-form-store#validate) is
+ * called, typically when a form field is touched or when the form is submitted.
+ *
+ * Live examples:
+ * - [FormRadio](https://ariakit.com/examples/form-radio)
+ * @example
+ * useFormValidate(form, async (state) => {
+ *   const errors = await api.validate(state.values);
+ *   if (errors) {
+ *     form.setErrors(errors);
+ *   }
+ * });
+ */
+export function useFormValidate<T extends FormStoreValues = FormStoreValues>(
+  store: FormStoreHookStore<T>,
+  callback: Core.FormStoreCallback<FormStoreState<T>>,
+) {
+  callback = useEvent(callback);
+  // Whenever the items change (for example, when form fields are lazily
+  // rendered), we need to reset the callbacks so they always run in a
+  // consistent order.
+  const items = useStoreState(store, "items");
+  useEffect(() => store.onValidate(callback), [store, items, callback]);
+}
+
+/**
+ * Registers a callback that will be used to submit the form when
+ * [`submit`](https://ariakit.com/reference/use-form-store#submit) is called.
+ *
+ * Live examples:
+ * - [FormRadio](https://ariakit.com/examples/form-radio)
+ * - [Form with Select](https://ariakit.com/examples/form-select)
+ * @example
+ * useFormSubmit(form, async (state) => {
+ *   try {
+ *     await api.submit(state.values);
+ *   } catch (errors) {
+ *     form.setErrors(errors);
+ *   }
+ * });
+ */
+export function useFormSubmit<T extends FormStoreValues = FormStoreValues>(
+  store: FormStoreHookStore<T>,
+  callback: Core.FormStoreCallback<FormStoreState<T>>,
+) {
+  callback = useEvent(callback);
+  // Same logic as useFormValidate.
+  const items = useStoreState(store, "items");
+  useEffect(() => store.onSubmit(callback), [store, items, callback]);
+}
+
+export function useFormStoreProps<T extends FormStoreHookStore>(
+  store: T,
+  update: () => void,
+  props: FormStoreProps,
+) {
   store = useCollectionStoreProps(store, update, props);
 
   useStoreProps(store, props, "values", "setValues");
@@ -22,28 +102,20 @@ export function useFormStoreProps<
   useStoreProps(store, props, "touched", "setTouched");
 
   const useValue = useCallback<FormStore["useValue"]>(
-    (name) => useStoreState(store, () => store.getValue(name)),
+    (name) => useFormValue(store, name),
     [store],
   );
 
   const useValidate = useCallback<FormStore["useValidate"]>(
     (callback) => {
-      callback = useEvent(callback);
-      // Whenever the items change (for example, when form fields are lazily
-      // rendered), we need to reset the callbacks so they always run in a
-      // consistent order.
-      const items = useStoreState(store, "items");
-      useEffect(() => store.onValidate(callback), [items, callback]);
+      useFormValidate(store, callback);
     },
     [store],
   );
 
   const useSubmit = useCallback<FormStore["useSubmit"]>(
     (callback) => {
-      callback = useEvent(callback);
-      // Same logic as useValidate.
-      const items = useStoreState(store, "items");
-      useEffect(() => store.onSubmit(callback), [items, callback]);
+      useFormSubmit(store, callback);
     },
     [store],
   );
@@ -115,9 +187,11 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    * Live examples:
    * - [Form with Select](https://ariakit.com/examples/form-select)
    * @example
-   * const nameValue = store.useValue("name");
+   * const nameValue = useFormValue(store, "name");
    * // Can also use store.names for type safety.
-   * const emailValue = store.useValue(store.names.email);
+   * const emailValue = useFormValue(store, store.names.email);
+   * @deprecated Use
+   * [`useFormValue`](https://ariakit.com/reference/use-form-value) instead.
    */
   // oxlint-disable-next-line no-unnecessary-type-parameters
   useValue: <T = any>(name: StringLike) => T;
@@ -130,12 +204,15 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    * Live examples:
    * - [FormRadio](https://ariakit.com/examples/form-radio)
    * @example
-   * store.useValidate(async (state) => {
+   * useFormValidate(store, async (state) => {
    *   const errors = await api.validate(state.values);
    *   if (errors) {
    *     store.setErrors(errors);
    *   }
    * });
+   * @deprecated Use
+   * [`useFormValidate`](https://ariakit.com/reference/use-form-validate)
+   * instead.
    */
   useValidate: (callback: Core.FormStoreCallback<FormStoreState<T>>) => void;
   /**
@@ -147,13 +224,15 @@ export interface FormStoreFunctions<T extends FormStoreValues = FormStoreValues>
    * - [FormRadio](https://ariakit.com/examples/form-radio)
    * - [Form with Select](https://ariakit.com/examples/form-select)
    * @example
-   * store.useSubmit(async (state) => {
+   * useFormSubmit(store, async (state) => {
    *   try {
    *     await api.submit(state.values);
    *   } catch (errors) {
    *     store.setErrors(errors);
    *   }
    * });
+   * @deprecated Use
+   * [`useFormSubmit`](https://ariakit.com/reference/use-form-submit) instead.
    */
   useSubmit: (callback: Core.FormStoreCallback<FormStoreState<T>>) => void;
 }
