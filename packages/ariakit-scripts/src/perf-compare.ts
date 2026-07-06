@@ -45,6 +45,7 @@ type MetricKey = keyof PerfMetrics;
 
 interface ComparisonRow {
   testFile: string;
+  testTitle: string;
   label: string;
   metric: MetricKey;
   baseline: number;
@@ -646,7 +647,9 @@ function computeSignificance({
 }
 
 function formatMs(value: number): string {
-  return `${value.toFixed(1)}ms`;
+  const rounded = value.toFixed(1);
+  const normalized = rounded === "-0.0" ? "0.0" : rounded;
+  return `${normalized.replace(/\.0$/, "")}ms`;
 }
 
 function formatOpsPerSecond(value: number) {
@@ -680,6 +683,21 @@ function formatDelta(
   return `${formatMetricValue(delta, options, true)} (${sign}${percent.toFixed(0)}%)`;
 }
 
+function formatComparisonCell(row: ComparisonRow, options: PerfCompareOptions) {
+  let cell = `${formatMetricValue(row.baseline, options)} \u2192 ${formatMetricValue(
+    row.current,
+    options,
+  )}`;
+  cell +=
+    row.baseline === 0
+      ? " (n/a)"
+      : ` (${row.delta >= 0 ? "+" : ""}${row.percent.toFixed(0)}%)`;
+  if (row.significant) {
+    cell += getSignificanceIcon(row, options);
+  }
+  return cell;
+}
+
 function formatPercent(value: number): string {
   return `${value.toFixed(0)}%`;
 }
@@ -690,6 +708,21 @@ function escapeTableCell(value: string): string {
     .replace(/\|/g, "\\|")
     .replace(/[\r\n\t]/g, " ")
     .trim();
+}
+
+function escapeHtmlAttribute(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function escapeHtmlText(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 function getGitHubSourceBaseUrl(): string | undefined {
@@ -899,6 +932,7 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
       });
       rows.push({
         testFile: cur.result.testFile,
+        testTitle: cur.result.testTitle,
         label: cur.result.label,
         metric,
         baseline: baseVal,
@@ -1072,26 +1106,15 @@ function formatSummaryTable(
 
   for (const key of keys) {
     const testRows = rowsByKey.get(key) ?? [];
-    const label = testRows[0]?.label ?? key;
-    const cells: string[] = [label];
+    const label = testRows[0] ? getResultDisplayTitle(testRows[0]) : key;
+    const cells: string[] = [escapeTableCell(label)];
     for (const metric of primaryMetrics) {
       const row = testRows.find((r) => r.metric === metric);
       if (!row) {
         cells.push("--");
         continue;
       }
-      let cell = `${formatMetricValue(row.baseline, options)} \u2192 ${formatMetricValue(
-        row.current,
-        options,
-      )}`;
-      cell +=
-        row.baseline === 0
-          ? " (n/a)"
-          : ` (${row.delta >= 0 ? "+" : ""}${row.percent.toFixed(0)}%)`;
-      if (row.significant) {
-        cell += getSignificanceIcon(row, options);
-      }
-      cells.push(cell);
+      cells.push(formatComparisonCell(row, options));
     }
     lines.push(`| ${cells.join(" | ")} |`);
   }
@@ -1154,7 +1177,7 @@ function formatCandidateChanges(
   const visibleRows = candidateRows.slice(0, MAX_VISIBLE_CANDIDATE_ROWS);
   for (const row of visibleRows) {
     const cells = [
-      escapeTableCell(row.label),
+      escapeTableCell(getResultDisplayTitle(row)),
       getMetricLabel(row.metric, options),
       formatMetricValue(row.baseline, options),
       formatMetricValue(row.current, options),
@@ -1177,6 +1200,7 @@ function formatCandidateChanges(
 function formatUnflaggedDiagnostics(
   rows: ComparisonRow[],
   options: PerfCompareOptions,
+  label?: string,
 ): string[] {
   const diagnostics = rows.filter((row) => {
     if (row.significant) return false;
@@ -1190,20 +1214,23 @@ function formatUnflaggedDiagnostics(
     const metric = getMetricLabel(row.metric, options);
     return `${metric} (${formatSupport(row, options)})`;
   });
+  const labelPart = label ? ` for ${escapeHtmlText(label)}` : "";
   return [
-    `<sub>Unflagged threshold-sized changes: ${details.join("; ")}.</sub>`,
+    `<sub>Unflagged threshold-sized changes${labelPart}: ${details.join("; ")}.</sub>`,
     "",
   ];
 }
 
-function formatScriptProfile(result: PerfResult): string[] {
+function hasScriptProfile(result: PerfResult | undefined): boolean {
+  return !!result?.profiles?.script?.length;
+}
+
+function formatScriptProfileTable(result: PerfResult): string[] {
   const profile = result.profiles?.script;
   if (!profile) return [];
   if (profile.length === 0) return [];
 
   const lines: string[] = [];
-  lines.push("#### Script profile");
-  lines.push("");
   lines.push("| Function | Self | Total | Hits |");
   lines.push("|----------|------|-------|------|");
 
@@ -1217,14 +1244,12 @@ function formatScriptProfile(result: PerfResult): string[] {
   return lines;
 }
 
-function formatSelectorProfile(result: PerfResult): string[] {
+function formatSelectorProfileTable(result: PerfResult): string[] {
   const profile = result.profiles?.selectors;
   if (!profile) return [];
   if (profile.length === 0) return [];
 
   const lines: string[] = [];
-  lines.push("#### Selector profile");
-  lines.push("");
   lines.push(
     "| Selector | Elapsed | Attempts | Matches | Slow non-match | Stylesheet |",
   );
@@ -1242,9 +1267,29 @@ function formatSelectorProfile(result: PerfResult): string[] {
   return lines;
 }
 
-function formatProfiles(result?: PerfResult): string[] {
+function formatProfileSection(
+  result: PerfResult | undefined,
+  anchor?: string,
+): string[] {
   if (!result) return [];
-  return [...formatScriptProfile(result), ...formatSelectorProfile(result)];
+  const scriptProfile = formatScriptProfileTable(result);
+  const selectorProfile = formatSelectorProfileTable(result);
+  if (scriptProfile.length === 0 && selectorProfile.length === 0) return [];
+
+  const lines: string[] = [];
+  if (anchor) {
+    lines.push(`<a id="${escapeHtmlAttribute(anchor)}"></a>`);
+    lines.push("");
+  }
+  lines.push(`#### ${getProfileHeading(result)}`);
+  lines.push("");
+  lines.push(...scriptProfile);
+  if (selectorProfile.length > 0) {
+    lines.push("##### Selector profile");
+    lines.push("");
+    lines.push(...selectorProfile);
+  }
+  return lines;
 }
 
 function formatProfileModeWarning(mismatches: ProfileModeMismatch[]): string[] {
@@ -1270,49 +1315,139 @@ interface FormatDetailedBreakdownParams {
   rowsByKey: Map<string, ComparisonRow[]>;
   keys: string[];
   currentByKey: Map<string, AggregatedPerfResult>;
+  scriptProfileAnchors: Map<string, string>;
   options: PerfCompareOptions;
+}
+
+interface FormatDetailedComparisonTableParams {
+  rowsByKey: Map<string, ComparisonRow[]>;
+  keys: string[];
+  scriptProfileAnchors: Map<string, string>;
+  options: PerfCompareOptions;
+}
+
+function formatProfileAnchorSlug(value: string) {
+  const slug = value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return slug || "profile";
+}
+
+function getResultDisplayTitle({
+  label,
+  testTitle,
+}: Pick<PerfResult, "label" | "testTitle">) {
+  if (!testTitle) return label;
+  if (!label || label === testTitle) return testTitle;
+  return `${testTitle} > ${label}`;
+}
+
+function getProfileHeading(result: PerfResult) {
+  return getResultDisplayTitle(result);
+}
+
+function createScriptProfileAnchor(heading: string, usedAnchors: Set<string>) {
+  const baseAnchor = `script-profile-${formatProfileAnchorSlug(heading)}`;
+  let anchor = baseAnchor;
+  for (let index = 2; usedAnchors.has(anchor); index += 1) {
+    anchor = `${baseAnchor}-${index}`;
+  }
+  usedAnchors.add(anchor);
+  return anchor;
+}
+
+function createResultScriptProfileAnchors(
+  results: AggregatedPerfResult[],
+  usedAnchors: Set<string>,
+) {
+  const anchors = new Map<string, string>();
+  for (const { key, result } of results) {
+    if (!hasScriptProfile(result)) continue;
+    anchors.set(
+      key,
+      createScriptProfileAnchor(getProfileHeading(result), usedAnchors),
+    );
+  }
+  return anchors;
+}
+
+function getGitHubAnchorHref(anchor: string) {
+  return `#user-content-${anchor}`;
+}
+
+function formatDetailedTestCell(label: string, anchor?: string) {
+  if (!anchor) return escapeTableCell(label);
+  return `[${escapeLinkText(label)}](${getGitHubAnchorHref(anchor)})`;
+}
+
+function formatDetailedComparisonTable({
+  rowsByKey,
+  keys,
+  scriptProfileAnchors,
+  options,
+}: FormatDetailedComparisonTableParams): string[] {
+  const primaryMetrics = getPrimaryMetrics(options);
+  const headers = [
+    getResultName(options),
+    ...primaryMetrics.map((metric) => getMetricLabel(metric, options)),
+  ];
+  const tableRows: string[] = [];
+  const diagnostics: string[] = [];
+
+  for (const key of keys) {
+    const testRows = rowsByKey.get(key) ?? [];
+    if (testRows.length === 0) continue;
+    if (testRows.some((row) => row.profileMode)) continue;
+
+    const label = testRows[0] ? getResultDisplayTitle(testRows[0]) : key;
+    const cells = [
+      formatDetailedTestCell(label, scriptProfileAnchors.get(key)),
+    ];
+    for (const metric of primaryMetrics) {
+      const row = testRows.find((r) => r.metric === metric);
+      cells.push(row ? formatComparisonCell(row, options) : "--");
+    }
+    tableRows.push(`| ${cells.join(" | ")} |`);
+    diagnostics.push(...formatUnflaggedDiagnostics(testRows, options, label));
+  }
+
+  if (tableRows.length === 0) return [];
+
+  const lines: string[] = [];
+  lines.push(`| ${headers.join(" | ")} |`);
+  lines.push(`| ${headers.map(() => "---").join(" | ")} |`);
+  lines.push(...tableRows);
+  lines.push("");
+  lines.push(...diagnostics);
+  return lines;
 }
 
 function formatDetailedBreakdown({
   rowsByKey,
   keys,
   currentByKey,
+  scriptProfileAnchors,
   options,
 }: FormatDetailedBreakdownParams): string[] {
   if (options.node) {
     return formatNodeComparisonTables(rowsByKey, keys, options);
   }
   const lines: string[] = [];
-  const primaryMetrics = getPrimaryMetrics(options);
+  lines.push(
+    ...formatDetailedComparisonTable({
+      rowsByKey,
+      keys,
+      scriptProfileAnchors,
+      options,
+    }),
+  );
   for (const key of keys) {
-    const testRows = rowsByKey.get(key) ?? [];
-    const label = testRows[0]?.label ?? key;
-    const currentResult = currentByKey.get(key)?.result;
-    const profileMode = testRows.some((row) => row.profileMode);
-    const profileLines = formatProfiles(currentResult);
-    if (profileMode && profileLines.length === 0) continue;
-    lines.push(`### ${label}`);
-    lines.push("");
-    if (!profileMode) {
-      lines.push("| Metric | Baseline | Current | Delta |");
-      lines.push("|--------|----------|---------|-------|");
-      for (const metric of primaryMetrics) {
-        const row = testRows.find((r) => r.metric === metric);
-        if (!row) continue;
-        const deltaStr = formatDelta(
-          row.delta,
-          row.percent,
-          row.baseline,
-          options,
-        );
-        const icon = getSignificanceIcon(row, options);
-        lines.push(
-          `| ${getMetricLabel(metric, options)} | ${formatMetricValue(row.baseline, options)} | ${formatMetricValue(row.current, options)} | ${deltaStr}${icon} |`,
-        );
-      }
-      lines.push("");
-      lines.push(...formatUnflaggedDiagnostics(testRows, options));
-    }
+    const profileLines = formatProfileSection(
+      currentByKey.get(key)?.result,
+      scriptProfileAnchors.get(key),
+    );
+    if (profileLines.length === 0) continue;
     lines.push(...profileLines);
   }
   return lines;
@@ -1344,6 +1479,18 @@ function formatMarkdown(
     const testRows = rowsByKey.get(key);
     return testRows?.some((row) => row.significant) ?? false;
   });
+  const usedScriptProfileAnchors = new Set<string>();
+  const scriptProfileAnchors = createResultScriptProfileAnchors(
+    allKeys.flatMap((key) => {
+      const result = currentByKey.get(key);
+      return result ? [result] : [];
+    }),
+    usedScriptProfileAnchors,
+  );
+  const newTestScriptProfileAnchors = createResultScriptProfileAnchors(
+    newTests,
+    usedScriptProfileAnchors,
+  );
 
   const totalTests =
     allKeys.length +
@@ -1410,6 +1557,7 @@ function formatMarkdown(
       rowsByKey,
       keys: allKeys,
       currentByKey,
+      scriptProfileAnchors,
       options,
     }),
   );
@@ -1430,8 +1578,14 @@ function formatMarkdown(
       ];
       lines.push(`| ${headers.join(" | ")} |`);
       lines.push(`| ${headers.map(() => "---").join(" | ")} |`);
-      for (const { result } of newTestsWithMetrics) {
-        const cells: string[] = [result.label];
+      for (const entry of newTestsWithMetrics) {
+        const { result } = entry;
+        const cells: string[] = [
+          formatDetailedTestCell(
+            getProfileHeading(result),
+            newTestScriptProfileAnchors.get(entry.key),
+          ),
+        ];
         for (const metric of primaryMetrics) {
           cells.push(formatMetricValue(result.metrics[metric], options));
         }
@@ -1440,11 +1594,13 @@ function formatMarkdown(
       lines.push("");
     }
 
-    for (const { result } of newTests) {
-      const profileLines = formatProfiles(result);
+    for (const entry of newTests) {
+      const { result } = entry;
+      const profileLines = formatProfileSection(
+        result,
+        newTestScriptProfileAnchors.get(entry.key),
+      );
       if (profileLines.length === 0) continue;
-      lines.push(`#### ${result.label}`);
-      lines.push("");
       lines.push(...profileLines);
     }
   }
