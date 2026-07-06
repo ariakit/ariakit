@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { useEffect, useState } from "react";
-import { createRoot } from "react-dom/client";
+import { createPortal } from "react-dom";
 
 function FormattingToolbar() {
   return (
@@ -17,21 +17,28 @@ function FormattingToolbar() {
 
 export default function Example() {
   const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null);
+  const [iframeContainer, setIframeContainer] = useState<HTMLElement | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!iframe) return;
     const doc = iframe.contentDocument;
     if (!doc?.body) return;
-    const root = createRoot(doc.body);
-    root.render(<FormattingToolbar />);
+    const container = doc.createElement("div");
+    doc.body.appendChild(container);
+    setIframeContainer(container);
     return () => {
-      setTimeout(() => root.unmount());
+      container.remove();
     };
   }, [iframe]);
 
   return (
     <div style={{ display: "grid", gap: 16 }}>
       <FormattingToolbar />
+      {iframeContainer
+        ? createPortal(<FormattingToolbar />, iframeContainer)
+        : null}
       <iframe
         ref={setIframe}
         title="Embedded editor"

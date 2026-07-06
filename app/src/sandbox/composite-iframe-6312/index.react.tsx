@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { useEffect, useState } from "react";
-import { createRoot } from "react-dom/client";
+import { createPortal } from "react-dom";
 
 function EmbeddedList() {
   const composite = Ariakit.useCompositeStore({ orientation: "vertical" });
@@ -31,6 +31,9 @@ function EmbeddedList() {
 
 export default function Example() {
   const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null);
+  const [iframeContainer, setIframeContainer] = useState<HTMLElement | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!iframe) return;
@@ -40,18 +43,27 @@ export default function Example() {
     const doc = iframe.contentDocument;
     if (!doc?.body) return;
     doc.body.style.margin = "0";
-    const root = createRoot(doc.body);
-    root.render(<EmbeddedList />);
+    const container = doc.createElement("div");
+    doc.body.appendChild(container);
+    setIframeContainer(container);
     return () => {
-      setTimeout(() => root.unmount());
+      container.remove();
     };
   }, [iframe]);
 
   return (
-    <iframe
-      ref={setIframe}
-      title="Embedded list"
-      style={{ border: "1px solid", display: "block", height: 220, width: 320 }}
-    />
+    <>
+      {iframeContainer ? createPortal(<EmbeddedList />, iframeContainer) : null}
+      <iframe
+        ref={setIframe}
+        title="Embedded list"
+        style={{
+          border: "1px solid",
+          display: "block",
+          height: 220,
+          width: 320,
+        }}
+      />
+    </>
   );
 }
