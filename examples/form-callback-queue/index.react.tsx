@@ -85,7 +85,6 @@ export default function Example() {
   });
 
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler -- Lazily mounts a field.
     setShowEmail(true);
   }, []);
 

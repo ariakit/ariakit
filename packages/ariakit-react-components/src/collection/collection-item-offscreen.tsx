@@ -78,7 +78,6 @@ export function useCollectionItemOffscreen<
             "The offscreenRoot is not available. Please make sure the root element is mounted.",
           );
         }
-        // oxlint-disable-next-line react/react-compiler -- Reruns this ref callback.
         forceUpdate();
         return;
       }

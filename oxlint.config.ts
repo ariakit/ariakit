@@ -15,7 +15,6 @@ export default defineConfig({
     "no-unsafe-type-assertion": "off",
     "no-unassigned-import": "off",
     "react-in-jsx-scope": "off",
-    "react/react-compiler": "error",
     "no-shadow": "off",
     "no-underscore-dangle": "off",
     "iframe-missing-sandbox": "off",
@@ -39,13 +38,6 @@ export default defineConfig({
       files: ["*.d.ts"],
       rules: {
         "consistent-type-imports": "off",
-      },
-    },
-    {
-      files: ["**/*.solid.{ts,tsx}"],
-      rules: {
-        "react/exhaustive-deps": "off",
-        "react/react-compiler": "off",
       },
     },
     {

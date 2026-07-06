@@ -24,7 +24,7 @@ export function useRootDialog({
     const { body } = getDocument(contentElement);
     const id = body.getAttribute(attribute);
     return !id || id === contentId;
-    // oxlint-disable-next-line exhaustive-deps react/react-compiler
+    // oxlint-disable-next-line exhaustive-deps
   }, [updated, enabled, contentElement, attribute, contentId]);
 
   // Run in the layout phase so consumers that also moved to the layout phase

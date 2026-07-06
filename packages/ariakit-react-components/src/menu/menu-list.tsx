@@ -44,7 +44,6 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
     if (!menu) return;
     const menuLabel = label || menu.hasAttribute("aria-label");
     if (menuLabel) {
-      // oxlint-disable-next-line react/react-compiler -- DOM label state.
       setId(undefined);
     } else if (disclosure.id) {
       setId(disclosure.id);

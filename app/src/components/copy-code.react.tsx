@@ -36,7 +36,6 @@ export function CopyCode({
 
   // Reset state when text changes
   useEffect(() => {
-    // oxlint-disable-next-line react/react-compiler -- Follows prop changes.
     setState("idle");
   }, [text]);
 

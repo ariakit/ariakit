@@ -117,7 +117,6 @@ function useAutoFocusOnHide({
   // Resets autoFocusOnHide
   useEffect(() => {
     if (!mounted) {
-      // oxlint-disable-next-line react/react-compiler -- Resets focus restoration.
       setAutoFocusOnHide(false);
     }
   }, [mounted]);

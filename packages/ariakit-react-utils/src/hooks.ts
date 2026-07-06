@@ -87,14 +87,11 @@ export function useEvent<T extends AnyFunction>(callback?: T) {
   const ref = useRef<AnyFunction | undefined>(() => {
     throw new Error("Cannot call an event handler while rendering.");
   });
-  // oxlint-disable-next-line react/react-compiler -- React 17 fallback.
   if (useReactInsertionEffect) {
-    // oxlint-disable-next-line react/react-compiler -- React 17 fallback.
     useReactInsertionEffect(() => {
       ref.current = callback;
     });
   } else {
-    // oxlint-disable-next-line react/react-compiler -- React 17 fallback.
     ref.current = callback;
   }
   return useCallback<AnyFunction>((...args) => ref.current?.(...args), []) as T;
@@ -164,7 +161,7 @@ export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
         }
       };
     };
-    // oxlint-disable-next-line exhaustive-deps react/react-compiler
+    // oxlint-disable-next-line exhaustive-deps
   }, refs);
 }
 
@@ -172,16 +169,12 @@ export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
  * Generates a unique ID. Uses React's useId if available.
  */
 export function useId(defaultId?: string): string | undefined {
-  // oxlint-disable-next-line react/react-compiler -- React 17 fallback.
   if (useReactId) {
-    // oxlint-disable-next-line react/react-compiler -- React 17 fallback.
     const reactId = useReactId();
     if (defaultId) return defaultId;
     return reactId;
   }
-  // oxlint-disable-next-line react/react-compiler -- React 17 fallback.
   const [id, setId] = useState(defaultId);
-  // oxlint-disable-next-line react/react-compiler -- React 17 fallback.
   useSafeLayoutEffect(() => {
     if (defaultId || id) return;
     const random = Math.random().toString(36).slice(2, 8);
@@ -194,14 +187,10 @@ export function useId(defaultId?: string): string | undefined {
  * Uses React's useDeferredValue if available.
  */
 export function useDeferredValue<T>(value: T): T {
-  // oxlint-disable-next-line react/react-compiler -- React 17 fallback.
   if (useReactDeferredValue) {
-    // oxlint-disable-next-line react/react-compiler -- React 17 fallback.
     return useReactDeferredValue(value);
   }
-  // oxlint-disable-next-line react/react-compiler -- React 17 fallback.
   const [deferredValue, setDeferredValue] = useState(value);
-  // oxlint-disable-next-line react/react-compiler -- React 17 fallback.
   useEffect(() => {
     const raf = requestAnimationFrame(() => setDeferredValue(value));
     return () => cancelAnimationFrame(raf);
@@ -364,7 +353,7 @@ export function useWrapElement<P>(
       }
       return callback(element);
     },
-    // oxlint-disable-next-line exhaustive-deps react/react-compiler
+    // oxlint-disable-next-line exhaustive-deps
     [...deps, props.wrapElement],
   );
 

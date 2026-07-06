@@ -13,6 +13,7 @@ import type { Props } from "@ariakit/react-utils";
 import { getDocument, cx } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, FocusEvent, RefObject } from "react";
+import { useMemo } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useFormItem } from "./form-context.tsx";
@@ -69,31 +70,24 @@ function getControlItemIds(items: FormStoreState["items"], name: string) {
   return ids;
 }
 
-const controlItemIdsCache = new WeakMap<
-  FormStoreState["items"],
-  Map<string, ControlItemIds>
->();
-
-function getCachedControlItemIds(items: FormStoreState["items"], name: string) {
-  let cache = controlItemIdsCache.get(items);
-  if (!cache) {
-    cache = new Map();
-    controlItemIdsCache.set(items, cache);
-  }
-  let ids = cache.get(name);
-  if (!ids) {
-    ids = getControlItemIds(items, name);
-    cache.set(name, ids);
-  }
-  return ids;
-}
-
 function useControlState(form: FormStore, name: string) {
+  const getItemIds = useMemo(() => {
+    let prevItems: FormStoreState["items"] | undefined;
+    let prevIds: ControlItemIds = {};
+
+    return (state: FormStoreState) => {
+      if (state.items !== prevItems) {
+        prevItems = state.items;
+        prevIds = getControlItemIds(state.items, name);
+      }
+      return prevIds;
+    };
+  }, [name]);
+
   return useStoreStateObject(form, {
-    labelId: (state) => getCachedControlItemIds(state.items, name).labelId,
-    errorId: (state) => getCachedControlItemIds(state.items, name).errorId,
-    descriptionId: (state) =>
-      getCachedControlItemIds(state.items, name).descriptionId,
+    labelId: (state) => getItemIds(state).labelId,
+    errorId: (state) => getItemIds(state).errorId,
+    descriptionId: (state) => getItemIds(state).descriptionId,
     invalid: () => !!form.getError(name) && form.getFieldTouched(name),
   });
 }

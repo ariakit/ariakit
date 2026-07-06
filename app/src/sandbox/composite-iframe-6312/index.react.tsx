@@ -29,10 +29,6 @@ function EmbeddedList() {
   );
 }
 
-function initializeFrameBody(body: HTMLElement) {
-  body.style.margin = "0";
-}
-
 export default function Example() {
   const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null);
 
@@ -43,7 +39,7 @@ export default function Example() {
     // so the iframe's own document is the scroller.
     const doc = iframe.contentDocument;
     if (!doc?.body) return;
-    initializeFrameBody(doc.body);
+    doc.body.style.margin = "0";
     const root = createRoot(doc.body);
     root.render(<EmbeddedList />);
     return () => {

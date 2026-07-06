@@ -557,7 +557,6 @@ export function useCollectionRenderer<T extends Item = any>({
     if (!items) return;
     const nextData = computeData(data, baseId, items);
     if (nextData) {
-      // oxlint-disable-next-line react/react-compiler -- DOM measurement state.
       setData(nextData);
     }
   }, [elementsUpdated, itemSize, baseId, items, data, computeData]);
@@ -609,7 +608,6 @@ export function useCollectionRenderer<T extends Item = any>({
     });
     // oxlint-disable-next-line exhaustive-deps
   }, [
-    // oxlint-disable-next-line react/react-compiler -- DOM measurement invalidation.
     elementsUpdated,
     items,
     baseId,
@@ -771,7 +769,6 @@ export function useCollectionRenderer<T extends Item = any>({
         elementObserver?.unobserve(prevElement);
       }
       updateElements();
-      // oxlint-disable-next-line react/react-compiler -- DOM node registry.
       elements.set(element.id, element);
       elementObserver?.observe(element);
     },
@@ -836,7 +833,6 @@ export function useCollectionRenderer<T extends Item = any>({
     for (const [id, element] of elements) {
       if (renderedIds.has(id)) continue;
       elementObserver?.unobserve(element);
-      // oxlint-disable-next-line react/react-compiler -- DOM node registry.
       elements.delete(id);
     }
   }, [itemsProps, itemSize, elements, elementObserver]);
