@@ -64,8 +64,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await setComposition(cdp, "사");
     await setComposition(cdp, "삭");
     await setComposition(cdp, "사");
-    await cdp.send("Input.insertText", { text: "사" });
-    await setComposition(cdp, "고");
+    const insertText = cdp.send("Input.insertText", { text: "사" });
+    const nextSyllable = setComposition(cdp, "고");
+    await Promise.all([insertText, nextSyllable]);
 
     const focusMove = await page.evaluate(() => {
       const events = window.__comboboxImeEvents ?? [];
