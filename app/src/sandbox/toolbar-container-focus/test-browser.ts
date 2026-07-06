@@ -34,6 +34,29 @@ function getSelectionStart(input: Locator) {
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  // Reproduces https://github.com/ariakit/ariakit/issues/6300
+  for (const key of ["Backspace", "Delete"]) {
+    test(`keeps focus in the field after ${key} on an empty container field`, async ({
+      page,
+      q,
+    }) => {
+      const container = q.group("Empty font family");
+      const input = q.textbox("Empty font family");
+
+      await q.button("Before empty toolbar").focus();
+      await page.keyboard.press("Tab");
+
+      await test.expect(container).toBeFocused();
+      await page.keyboard.press(key);
+      await test.expect(input).toBeFocused();
+
+      await page.keyboard.press("a");
+
+      await test.expect(input).toHaveValue("a");
+      await test.expect(input).toBeFocused();
+    });
+  }
+
   test("ToolbarContainer keeps its inner input out of the tab order until opened", async ({
     page,
     q,
@@ -41,7 +64,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const container = q.group("Font family");
     const input = q.textbox("Font family");
 
-    await q.button("Before toolbar").focus();
+    await q.button("Before filled toolbar").focus();
     await page.keyboard.press("Tab");
 
     await test.expect(container).toBeFocused();
