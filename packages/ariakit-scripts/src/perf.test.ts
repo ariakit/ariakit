@@ -1,17 +1,24 @@
-import type { CDPSession, Page } from "@playwright/test";
-import { afterEach, beforeEach, expect, test } from "vitest";
+import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
+import { errors } from "@playwright/test";
+import type { CDPSession, Page, TestInfo } from "@playwright/test";
+import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import {
+  appendResults,
   formatPerfTitlePath,
   getPerfProfileBaseLabel,
   getPerfProfileMode,
   getIntegerEnv,
   getPerfSamplingOptions,
   getUniquePerfLabel,
+  isNavigationTimeoutError,
   isPerfProfileLabel,
   parseScriptProfile,
   resolveScriptProfileSourceMaps,
   settleQuiescent,
 } from "./perf.ts";
+import type { PerfResult } from "./perf.ts";
 
 const envName = "PERF_ITERATIONS";
 const envNames = [
@@ -46,6 +53,84 @@ afterEach(() => {
       process.env[name] = originalValue;
     }
   }
+});
+
+test("prunes an earlier attempt's results when a retried test records", () => {
+  const makeResult = (testTitle: string): PerfResult => ({
+    testFile: "src/sandbox/select-perf/perf-chrome.ts",
+    testTitle,
+    label: testTitle,
+    metrics: { scripting: 1, rendering: 1, inp: 0, total: 2 },
+    raw: [],
+  });
+  // The worker index is the only TestInfo field appendResults reads.
+  const workerInfo = (workerIndex: number) =>
+    ({ workerIndex }) as unknown as TestInfo;
+  const workDir = mkdtempSync(path.join(tmpdir(), "perf-results-"));
+  const resultsDir = path.join(workDir, ".perf-results");
+  const cwdSpy = vi.spyOn(process, "cwd").mockReturnValue(workDir);
+  const originalResultsFile = process.env.PERF_RESULTS_FILE;
+  process.env.PERF_RESULTS_FILE = "current-1-j0.json";
+  const readTitles = (workerIndex: number) => {
+    const filePath = path.join(
+      resultsDir,
+      `current-1-j0-worker${workerIndex}.json`,
+    );
+    if (!existsSync(filePath)) return null;
+    const entries: PerfResult[] = JSON.parse(readFileSync(filePath, "utf-8"));
+    return entries.map((entry) => entry.testTitle);
+  };
+  try {
+    // Worker 0: an attempt records two tests, then one of them is retried in
+    // worker 1 (a pass whose later fixture teardown failed still appends).
+    appendResults([makeResult("mount"), makeResult("open")], workerInfo(0));
+    appendResults([makeResult("open")], workerInfo(1));
+    expect(readTitles(0)).toEqual(["mount"]);
+    expect(readTitles(1)).toEqual(["open"]);
+
+    // A retry that supersedes every entry removes the stale file entirely.
+    appendResults([makeResult("mount")], workerInfo(2));
+    expect(readTitles(0)).toBeNull();
+    expect(readTitles(1)).toEqual(["open"]);
+    expect(readTitles(2)).toEqual(["mount"]);
+  } finally {
+    cwdSpy.mockRestore();
+    if (originalResultsFile == null) {
+      delete process.env.PERF_RESULTS_FILE;
+    } else {
+      process.env.PERF_RESULTS_FILE = originalResultsFile;
+    }
+    rmSync(workDir, { recursive: true, force: true });
+  }
+});
+
+test("detects navigation timeouts by class and message", () => {
+  // Real navigation timeout message format, verified against Playwright:
+  // bounded goto on a hanging server throws errors.TimeoutError with a
+  // "page.goto:"-prefixed message.
+  const navigationTimeout = new errors.TimeoutError(
+    "page.goto: Timeout 30000ms exceeded.\nCall log:\n  - navigating to ...",
+  );
+  expect(isNavigationTimeoutError(navigationTimeout)).toBe(true);
+
+  // Same message on a plain Error must not match: only Playwright timeouts
+  // are transient navigation stalls.
+  const plainError = new Error("page.goto: Timeout 30000ms exceeded.");
+  expect(isNavigationTimeoutError(plainError)).toBe(false);
+
+  // Non-navigation Playwright timeouts (interactions, verify steps) must not
+  // be retried; they can reflect real behavior of the measured code.
+  const clickTimeout = new errors.TimeoutError(
+    'locator.click: Timeout 5000ms exceeded.\nCall log:\n  - waiting for locator("#nope")',
+  );
+  expect(isNavigationTimeoutError(clickTimeout)).toBe(false);
+  const loadStateTimeout = new errors.TimeoutError(
+    "page.waitForLoadState: Timeout 5000ms exceeded.",
+  );
+  expect(isNavigationTimeoutError(loadStateTimeout)).toBe(false);
+
+  expect(isNavigationTimeoutError(undefined)).toBe(false);
+  expect(isNavigationTimeoutError("page.goto: timeout")).toBe(false);
 });
 
 test("gets integer env values with range validation", () => {
