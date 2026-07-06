@@ -1372,50 +1372,6 @@ function formatDetailedTestCell(label: string, anchor?: string) {
   return `[${escapeLinkText(label)}](${getGitHubAnchorHref(anchor)})`;
 }
 
-interface DetailedTestTitle {
-  group?: string;
-  title: string;
-}
-
-function splitDetailedTestTitle(title: string): DetailedTestTitle {
-  const separator = " > ";
-  const separatorIndex = title.lastIndexOf(separator);
-  if (separatorIndex <= 0) return { title };
-
-  const group = title.slice(0, separatorIndex);
-  const shortTitle = title.slice(separatorIndex + separator.length);
-  if (!group || !shortTitle) return { title };
-  return { group, title: shortTitle };
-}
-
-function getDetailedComparisonLabel(
-  key: string,
-  rows: ComparisonRow[],
-): string {
-  return rows[0]?.testTitle ?? rows[0]?.label ?? key;
-}
-
-function getDetailedComparisonGroups(
-  rowsByKey: Map<string, ComparisonRow[]>,
-  keys: string[],
-) {
-  const counts = new Map<string, number>();
-  for (const key of keys) {
-    const rows = rowsByKey.get(key) ?? [];
-    if (rows.length === 0) continue;
-    if (rows.some((row) => row.profileMode)) continue;
-
-    const label = getDetailedComparisonLabel(key, rows);
-    const { group } = splitDetailedTestTitle(label);
-    if (!group) continue;
-
-    counts.set(group, (counts.get(group) ?? 0) + 1);
-  }
-  return new Set(
-    [...counts].filter(([, count]) => count > 1).map(([group]) => group),
-  );
-}
-
 function formatDetailedComparisonTable({
   rowsByKey,
   keys,
@@ -1429,36 +1385,15 @@ function formatDetailedComparisonTable({
   ];
   const tableRows: string[] = [];
   const diagnostics: string[] = [];
-  const groupedTitles = getDetailedComparisonGroups(rowsByKey, keys);
-  let currentGroup: string | undefined;
 
   for (const key of keys) {
     const testRows = rowsByKey.get(key) ?? [];
     if (testRows.length === 0) continue;
     if (testRows.some((row) => row.profileMode)) continue;
 
-    const label = getDetailedComparisonLabel(key, testRows);
-    const title = splitDetailedTestTitle(label);
-    const group =
-      title.group && groupedTitles.has(title.group) ? title.group : undefined;
-    if (group) {
-      if (group !== currentGroup) {
-        const cells = [
-          `**${escapeTableCell(group)}**`,
-          ...primaryMetrics.map(() => ""),
-        ];
-        tableRows.push(`| ${cells.join(" | ")} |`);
-        currentGroup = group;
-      }
-    } else {
-      currentGroup = undefined;
-    }
-
+    const label = testRows[0]?.testTitle ?? testRows[0]?.label ?? key;
     const cells = [
-      formatDetailedTestCell(
-        group ? title.title : label,
-        scriptProfileAnchors.get(key),
-      ),
+      formatDetailedTestCell(label, scriptProfileAnchors.get(key)),
     ];
     for (const metric of primaryMetrics) {
       const row = testRows.find((r) => r.metric === metric);

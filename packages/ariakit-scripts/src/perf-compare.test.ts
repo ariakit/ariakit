@@ -1226,53 +1226,6 @@ test("renders script profiles below comparison tables", () => {
   expect(markdown).not.toContain("#### Script profile");
 });
 
-test("groups detailed comparison rows by shared title prefix", () => {
-  const dir = createTempDir();
-  const profiles: PerfProfiles = {
-    script: [createScriptProfileEntry("profiledFn", 8)],
-  };
-  writeJson(dir, "baseline-worker0.json", [
-    createResultWithTitle(
-      "mount label",
-      "composite-perf > react > mount composite",
-      createMetrics(100),
-      profiles,
-    ),
-    createResultWithTitle(
-      "move label",
-      "composite-perf > react > move across items",
-      createMetrics(100),
-    ),
-  ]);
-  writeJson(dir, "current-worker0.json", [
-    createResultWithTitle(
-      "mount label",
-      "composite-perf > react > mount composite",
-      createMetrics(130),
-      profiles,
-    ),
-    createResultWithTitle(
-      "move label",
-      "composite-perf > react > move across items",
-      createMetrics(120),
-    ),
-  ]);
-
-  const markdown = runCompare(dir);
-
-  expect(markdown).toContain("| **composite-perf > react** |  |  |  |  |");
-  expect(markdown).toContain(
-    "| [mount composite](#user-content-script-profile-composite-perf-react-mount-composite) | 100ms → 130ms (+30%) :warning:",
-  );
-  expect(markdown).toContain(
-    "| move across items | 100ms → 120ms (+20%) :warning:",
-  );
-  expect(markdown).toContain("#### composite-perf > react > mount composite");
-  expect(markdown).not.toContain(
-    "| composite-perf > react > move across items |",
-  );
-});
-
 test("merges script profile rows into base comparisons", () => {
   const dir = createTempDir();
   const profiles: PerfProfiles = {
