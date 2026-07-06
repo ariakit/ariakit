@@ -6,13 +6,13 @@ export default function Example() {
   const id = useId();
   const form = Ariakit.useFormStore({ defaultValues: { color: "" } });
 
-  form.useValidate(() => {
+  Ariakit.useFormValidate(form, () => {
     if (!form.getValue(form.names.color)) {
       form.setError(form.names.color, "Please select a color.");
     }
   });
 
-  form.useSubmit(async (state) => {
+  Ariakit.useFormSubmit(form, async (state) => {
     alert(JSON.stringify(state.values));
   });
 

@@ -3,13 +3,13 @@ import * as ak from "@ariakit/react";
 export default function Example() {
   const form = ak.useFormStore({ defaultValues: { color: "" } });
 
-  form.useValidate(() => {
+  ak.useFormValidate(form, () => {
     if (!form.getValue(form.names.color)) {
       form.setError(form.names.color, "Please select a color.");
     }
   });
 
-  form.useSubmit(async (state) => {
+  ak.useFormSubmit(form, async (state) => {
     alert(JSON.stringify(state.values));
   });
 

@@ -4,6 +4,7 @@ import {
   FormInput,
   FormSelect,
   FormSubmit,
+  useFormSubmit,
   useFormStore,
 } from "./form.tsx";
 import { SelectItem } from "./select.tsx";
@@ -13,7 +14,7 @@ export default function Example() {
   const form = useFormStore({ defaultValues: { name: "", fruit: "" } });
   const $ = form.names;
 
-  form.useSubmit(() => {
+  useFormSubmit(form, () => {
     alert(JSON.stringify(form.getState().values));
   });
 

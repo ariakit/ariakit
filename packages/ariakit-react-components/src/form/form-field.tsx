@@ -23,7 +23,7 @@ type TagName = typeof TagName;
  * ```jsx
  * const store = useFormStore({ defaultValues: { content: "" } });
  * const props = useFormField({ store, name: store.names.content });
- * const value = store.useValue(store.names.content);
+ * const value = useFormValue(store, store.names.content);
  *
  * <Form store={store}>
  *   <FormLabel name={store.names.content}>Content</FormLabel>
@@ -61,7 +61,7 @@ export const useFormField = createHook<TagName, FormFieldOptions>(
  *   },
  * });
  *
- * const value = form.useValue(form.names.content);
+ * const value = useFormValue(form, form.names.content);
  *
  * <Form store={form}>
  *   <FormLabel name={form.names.content}>Content</FormLabel>

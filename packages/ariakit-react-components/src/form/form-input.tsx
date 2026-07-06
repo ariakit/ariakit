@@ -12,6 +12,7 @@ import { useFocusable } from "../focusable/focusable.tsx";
 import { useFormItemContext } from "./form-context.tsx";
 import type { FormControlOptions } from "./form-control.tsx";
 import { useFormControl } from "./form-control.tsx";
+import { useFormValue } from "./form-store.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
@@ -47,7 +48,7 @@ export const useFormInput = createHook<TagName, FormInputOptions>(
       form.setValue(name, event.target.value);
     });
 
-    const value = form.useValue(name);
+    const value = useFormValue(form, name);
 
     props = {
       value,
