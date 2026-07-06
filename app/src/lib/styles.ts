@@ -26,6 +26,9 @@ import {
   toRegexFromWildcard,
 } from "./styles-shared.ts";
 
+// The JSON import keeps its generated literal type, but the resolver needs the
+// public schema shape shared with the build script.
+// oxlint-disable-next-line no-unnecessary-type-assertion
 const styles = stylesRaw as unknown as StylesJson;
 
 export type {
