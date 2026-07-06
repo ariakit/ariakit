@@ -33,10 +33,10 @@ export function Sidebar({
   const context = React.useContext(SidebarContext);
   const hasSidebarProvider = React.useContext(SidebarProviderContext);
 
-  side = side ?? context.side;
-  collapsible = collapsible ?? hasSidebarProvider;
+  const sideValue = side ?? context.side;
+  const collapsibleValue = collapsible ?? hasSidebarProvider;
 
-  const contextValue = React.useMemo(() => ({ side }), [side]);
+  const contextValue = React.useMemo(() => ({ side: sideValue }), [sideValue]);
 
   props = {
     ...props,
@@ -52,7 +52,7 @@ export function Sidebar({
     ),
   };
 
-  if (collapsible === true || (collapsible && isMobile)) {
+  if (collapsibleValue === true || (collapsibleValue && isMobile)) {
     return (
       <ak.Dialog
         modal={isMobile}

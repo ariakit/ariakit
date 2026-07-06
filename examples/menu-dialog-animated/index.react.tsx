@@ -37,6 +37,7 @@ export default function Example() {
 
   const form = Ariakit.useFormStore({ defaultValues: { list: "" } });
 
+  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
   form.useSubmit((state) => {
     setLists((prevLists) => [...prevLists, state.values.list]);
     setValues((prevValues) => ({

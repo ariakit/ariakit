@@ -69,6 +69,7 @@ export default function Example() {
   useEffect(() => {
     let raf = requestAnimationFrame(function tick() {
       setDetached(countDetachedObservedItems());
+      // oxlint-disable-next-line react/react-compiler -- Repeated RAF probe.
       raf = requestAnimationFrame(tick);
     });
     return () => cancelAnimationFrame(raf);

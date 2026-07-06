@@ -147,7 +147,6 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
     const menu = Ariakit.useMenuContext();
     const searchable = React.useContext(SearchableContext);
     const defaultProps: MenuItemProps = {
-      ref,
       focusOnHover: true,
       blurOnHoverEnd: false,
       ...props,
@@ -165,42 +164,47 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
       return state?.values[name] === value;
     });
 
-    // If the item is checkable, we render a checkmark icon next to the label.
-    if (checkable) {
-      defaultProps.children = (
-        <React.Fragment>
-          <span className="label">{defaultProps.children}</span>
-          <Ariakit.MenuItemCheck checked={checked} />
-          {searchable && (
-            // When an item is displayed in a search menu as a role=option
-            // element instead of a role=menuitemradio, we can't depend on the
-            // aria-checked attribute. Although NVDA and JAWS announce it
-            // accurately, VoiceOver doesn't. TalkBack does announce the checked
-            // state, but misleadingly implies that a double tap will change the
-            // state, which isn't the case. Therefore, we use a visually hidden
-            // element to indicate whether the item is checked or not, ensuring
-            // cross-browser/AT compatibility.
-            <Ariakit.VisuallyHidden>
-              {checked ? " checked" : " not checked"}
-            </Ariakit.VisuallyHidden>
-          )}
-        </React.Fragment>
-      );
-    }
+    const children = checkable ? (
+      <React.Fragment>
+        <span className="label">{props.children}</span>
+        <Ariakit.MenuItemCheck checked={checked} />
+        {searchable && (
+          // When an item is displayed in a search menu as a role=option
+          // element instead of a role=menuitemradio, we can't depend on the
+          // aria-checked attribute. Although NVDA and JAWS announce it
+          // accurately, VoiceOver doesn't. TalkBack does announce the checked
+          // state, but misleadingly implies that a double tap will change the
+          // state, which isn't the case. Therefore, we use a visually hidden
+          // element to indicate whether the item is checked or not, ensuring
+          // cross-browser/AT compatibility.
+          <Ariakit.VisuallyHidden>
+            {checked ? " checked" : " not checked"}
+          </Ariakit.VisuallyHidden>
+        )}
+      </React.Fragment>
+    ) : (
+      props.children
+    );
+
+    const itemProps = {
+      ...defaultProps,
+      children,
+    };
 
     // If the item is not rendered in a search menu (listbox), we can render it
     // as a MenuItem/MenuItemRadio.
     if (!searchable) {
       if (name != null && value != null) {
-        const radioProps = { ...defaultProps, name, value, hideOnClick: true };
-        return <Ariakit.MenuItemRadio {...radioProps} />;
+        const radioProps = { ...itemProps, name, value, hideOnClick: true };
+        return <Ariakit.MenuItemRadio ref={ref} {...radioProps} />;
       }
-      return <Ariakit.MenuItem {...defaultProps} />;
+      return <Ariakit.MenuItem ref={ref} {...itemProps} />;
     }
 
     return (
       <Ariakit.ComboboxItem
-        {...defaultProps}
+        ref={ref}
+        {...itemProps}
         setValueOnClick={false}
         value={checkable ? value : undefined}
         selectValueOnClick={() => {

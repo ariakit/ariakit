@@ -288,7 +288,10 @@ export function useStore<T extends CoreStore, P>(
   useSafeLayoutEffect(() => init(store), [store]);
 
   const useState: UseState<StoreState<T>> = React.useCallback<AnyFunction>(
-    (keyOrSelector) => useStoreState(store, keyOrSelector),
+    (keyOrSelector) => {
+      // oxlint-disable-next-line react/react-compiler -- Store hook method.
+      return useStoreState(store, keyOrSelector);
+    },
     [store],
   );
 

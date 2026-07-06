@@ -10,6 +10,7 @@ export default function Example() {
   const form = ak.useFormStore({ defaultValues: { draft: "" } });
   const [saveState, setSaveState] = useState("Idle");
 
+  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
   form.useSubmit(async () => {
     // Simulate a quick network request that saves the draft. Timers keep
     // running while the tab is hidden, so this resolves regardless of

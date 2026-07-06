@@ -15,47 +15,58 @@ import { useCollectionStoreProps } from "../collection/collection-store.ts";
 export function useFormStoreProps<
   T extends Omit<FormStore, "useValue" | "useValidate" | "useSubmit">,
 >(store: T, update: () => void, props: FormStoreProps) {
-  store = useCollectionStoreProps(store, update, props);
+  const collectionStore = useCollectionStoreProps(store, update, props);
 
-  useStoreProps(store, props, "values", "setValues");
-  useStoreProps(store, props, "errors", "setErrors");
-  useStoreProps(store, props, "touched", "setTouched");
+  useStoreProps(collectionStore, props, "values", "setValues");
+  useStoreProps(collectionStore, props, "errors", "setErrors");
+  useStoreProps(collectionStore, props, "touched", "setTouched");
 
   const useValue = useCallback<FormStore["useValue"]>(
-    (name) => useStoreState(store, () => store.getValue(name)),
-    [store],
+    (name) => {
+      // oxlint-disable-next-line react/react-compiler -- Store hook method.
+      return useStoreState(collectionStore, () =>
+        collectionStore.getValue(name),
+      );
+    },
+    [collectionStore],
   );
 
   const useValidate = useCallback<FormStore["useValidate"]>(
     (callback) => {
+      // oxlint-disable-next-line react/react-compiler -- Store hook method.
       callback = useEvent(callback);
       // Whenever the items change (for example, when form fields are lazily
       // rendered), we need to reset the callbacks so they always run in a
       // consistent order.
-      const items = useStoreState(store, "items");
-      useEffect(() => store.onValidate(callback), [items, callback]);
+      // oxlint-disable-next-line react/react-compiler -- Store hook method.
+      const items = useStoreState(collectionStore, "items");
+      // oxlint-disable-next-line react/react-compiler -- Store hook method.
+      useEffect(() => collectionStore.onValidate(callback), [items, callback]);
     },
-    [store],
+    [collectionStore],
   );
 
   const useSubmit = useCallback<FormStore["useSubmit"]>(
     (callback) => {
+      // oxlint-disable-next-line react/react-compiler -- Store hook method.
       callback = useEvent(callback);
       // Same logic as useValidate.
-      const items = useStoreState(store, "items");
-      useEffect(() => store.onSubmit(callback), [items, callback]);
+      // oxlint-disable-next-line react/react-compiler -- Store hook method.
+      const items = useStoreState(collectionStore, "items");
+      // oxlint-disable-next-line react/react-compiler -- This is a custom hook exposed as a store method.
+      useEffect(() => collectionStore.onSubmit(callback), [items, callback]);
     },
-    [store],
+    [collectionStore],
   );
 
   return useMemo(
     () => ({
-      ...store,
+      ...collectionStore,
       useValue,
       useValidate,
       useSubmit,
     }),
-    [store, useValue, useValidate, useSubmit],
+    [collectionStore, useValue, useValidate, useSubmit],
   );
 }
 

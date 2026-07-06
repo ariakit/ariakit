@@ -65,5 +65,6 @@ function usePrevious<T>(value: T) {
   useEffect(() => {
     ref.current = value;
   }, [value]);
+  // oxlint-disable-next-line react/react-compiler -- usePrevious ref read.
   return ref.current;
 }

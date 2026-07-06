@@ -4,6 +4,7 @@ import "./style.css";
 
 function useLoaded() {
   const [loaded, setLoaded] = useState(false);
+  // oxlint-disable-next-line react/react-compiler -- Hydration flag.
   useEffect(() => setLoaded(true), []);
   return loaded;
 }

@@ -13,6 +13,7 @@ export default function Example() {
   const form = useFormStore({ defaultValues: { name: "", fruit: "" } });
   const $ = form.names;
 
+  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
   form.useSubmit(() => {
     alert(JSON.stringify(form.getState().values));
   });

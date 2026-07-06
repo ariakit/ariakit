@@ -6,12 +6,14 @@ export default function Example() {
   const id = useId();
   const form = Ariakit.useFormStore({ defaultValues: { color: "" } });
 
+  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
   form.useValidate(() => {
     if (!form.getValue(form.names.color)) {
       form.setError(form.names.color, "Please select a color.");
     }
   });
 
+  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
   form.useSubmit(async (state) => {
     alert(JSON.stringify(state.values));
   });

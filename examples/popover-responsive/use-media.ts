@@ -15,6 +15,7 @@ export default function useMedia(query: string, defaultState?: boolean) {
 
   useEffect(() => {
     const mql = window.matchMedia(query);
+    // oxlint-disable-next-line react/react-compiler -- Syncs changed queries.
     setMatches(mql.matches);
     const onChange = () => setMatches(mql.matches);
     mql.addEventListener("change", onChange);

@@ -84,6 +84,13 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
     return () => parentWrapper.removeEventListener("scroll", onScroll);
   }, [parent, menu]);
 
+  const menuButtonChildren = (
+    <>
+      <span className="label">{label}</span>
+      <Ariakit.MenuButtonArrow />
+    </>
+  );
+
   const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
     <Ariakit.MenuButton
       store={menu}
@@ -92,8 +99,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
       render={<button />}
       {...menuButtonProps}
     >
-      <span className="label">{label}</span>
-      <Ariakit.MenuButtonArrow />
+      {menuButtonChildren}
     </Ariakit.MenuButton>
   );
 
@@ -125,7 +131,16 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
         />
       ) : (
         // Otherwise, we just render the menu button.
-        renderMenuButton({ ref, ...props })
+        <Ariakit.MenuButton
+          ref={ref}
+          store={menu}
+          showOnHover={false}
+          className="button"
+          render={<button />}
+          {...props}
+        >
+          {menuButtonChildren}
+        </Ariakit.MenuButton>
       )}
       <Ariakit.Menu
         store={menu}

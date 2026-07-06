@@ -17,6 +17,7 @@ export default function Example() {
   // API so the invalid state is deterministic across environments. `validate()`
   // resets the errors before running this callback, so it only needs to set the
   // current violation.
+  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
   form.useValidate(() => {
     if (!form.getValue(form.names.email)) {
       form.setError(form.names.email, "Email is required");

@@ -143,6 +143,7 @@ function useScheduleFocus(store: CompositeStore) {
     const activeElement = activeItem?.element;
     if (!scheduled) return;
     if (!activeElement) return;
+    // oxlint-disable-next-line react/react-compiler -- Scheduled focus task.
     setScheduled(false);
     withBaseScrollPreserved(store, () => {
       activeElement.focus({ preventScroll: true });

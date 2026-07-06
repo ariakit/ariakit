@@ -47,8 +47,10 @@ export function usePreventBodyScroll(
   // (capture on lock, scrollTo on unlock) depends on the passive timing
   // relative to the dialog's focus effects. The hook choice is stable because
   // isIOS never changes within a session.
+  // oxlint-disable-next-line react/react-compiler -- Stable platform hook.
   const useLockEffect = isIOS ? useEffect : useSafeLayoutEffect;
 
+  // oxlint-disable-next-line react/react-compiler -- Stable platform hook.
   useLockEffect(() => {
     if (!isRootDialog()) return;
     if (!contentElement) return;

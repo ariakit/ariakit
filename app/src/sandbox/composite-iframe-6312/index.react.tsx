@@ -39,6 +39,7 @@ export default function Example() {
     // so the iframe's own document is the scroller.
     const doc = iframe.contentDocument;
     if (!doc?.body) return;
+    // oxlint-disable-next-line react/react-compiler -- Initializes iframe body.
     doc.body.style.margin = "0";
     const root = createRoot(doc.body);
     root.render(<EmbeddedList />);

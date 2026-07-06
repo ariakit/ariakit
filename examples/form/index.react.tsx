@@ -4,6 +4,7 @@ import "./style.css";
 export default function Example() {
   const form = Ariakit.useFormStore({ defaultValues: { name: "", email: "" } });
 
+  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
   form.useSubmit(async (state) => {
     alert(JSON.stringify(state.values));
   });

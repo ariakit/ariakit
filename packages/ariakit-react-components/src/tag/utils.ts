@@ -55,6 +55,7 @@ export function useTouchDevice() {
   const [touchDevice, setTouchDevice] = useState(false);
 
   useEffect(() => {
+    // oxlint-disable-next-line react/react-compiler -- SSR hydration.
     setTouchDevice(isTouchDevice());
   }, []);
 

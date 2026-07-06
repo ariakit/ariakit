@@ -75,6 +75,7 @@ export const FormSelect = React.forwardRef<HTMLButtonElement, FormSelectProps>(
     const form = Ariakit.useFormContext();
     if (!form) throw new Error("FormSelect must be used within a Form");
 
+    // oxlint-disable-next-line react/react-compiler -- Public form hook method.
     const value = form.useValue(name);
 
     const select = (

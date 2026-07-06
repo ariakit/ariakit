@@ -15,6 +15,8 @@ export default defineConfig({
     "no-unsafe-type-assertion": "off",
     "no-unassigned-import": "off",
     "react-in-jsx-scope": "off",
+    "react/exhaustive-deps": "error",
+    "react/react-compiler": "error",
     "no-shadow": "off",
     "no-underscore-dangle": "off",
     "iframe-missing-sandbox": "off",

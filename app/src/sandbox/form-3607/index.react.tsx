@@ -12,6 +12,7 @@ export default function Example() {
     },
   });
 
+  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
   form.useValidate(() => {
     const items = form.getValue(form.names.items);
     for (const [i, item] of items.entries()) {
@@ -23,6 +24,7 @@ export default function Example() {
     }
   });
 
+  // oxlint-disable-next-line react/react-compiler -- Public form hook method.
   form.useSubmit(async (state) => {
     alert(JSON.stringify(state.values));
   });
