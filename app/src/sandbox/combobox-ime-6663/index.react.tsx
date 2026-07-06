@@ -15,6 +15,11 @@ export default function Example() {
         <Ariakit.ComboboxLabel>Fruit</Ariakit.ComboboxLabel>
         <Ariakit.Combobox
           autoSelect
+          onCompositionEnd={(event) => {
+            // TODO: Remove once https://github.com/ariakit/ariakit/issues/6663
+            // is fixed.
+            event.preventDefault();
+          }}
           placeholder="과일을 검색하세요"
           value={keyword}
           onChange={(event) => setKeyword(event.target.value)}
