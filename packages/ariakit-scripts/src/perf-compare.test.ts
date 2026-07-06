@@ -1210,7 +1210,7 @@ test("renders script profiles below comparison tables", () => {
 
   const markdown = runCompare(dir);
   const comparisonIndex = markdown.indexOf(
-    "| [ariakit-tailwind > react > page load](#script-profile-ariakit-tailwind-react-page-load) | 100ms → 130ms (+30%) :warning:",
+    "| [ariakit-tailwind > react > page load](#user-content-script-profile-ariakit-tailwind-react-page-load) | 100ms → 130ms (+30%) :warning:",
   );
   const profileIndex = markdown.indexOf(
     "#### ariakit-tailwind > react > page load",
@@ -1224,6 +1224,53 @@ test("renders script profiles below comparison tables", () => {
   expect(markdown).toContain("| `profiledFn` | 8ms | 8ms | 1 |");
   expect(markdown).not.toContain("#### custom label");
   expect(markdown).not.toContain("#### Script profile");
+});
+
+test("groups detailed comparison rows by shared title prefix", () => {
+  const dir = createTempDir();
+  const profiles: PerfProfiles = {
+    script: [createScriptProfileEntry("profiledFn", 8)],
+  };
+  writeJson(dir, "baseline-worker0.json", [
+    createResultWithTitle(
+      "mount label",
+      "composite-perf > react > mount composite",
+      createMetrics(100),
+      profiles,
+    ),
+    createResultWithTitle(
+      "move label",
+      "composite-perf > react > move across items",
+      createMetrics(100),
+    ),
+  ]);
+  writeJson(dir, "current-worker0.json", [
+    createResultWithTitle(
+      "mount label",
+      "composite-perf > react > mount composite",
+      createMetrics(130),
+      profiles,
+    ),
+    createResultWithTitle(
+      "move label",
+      "composite-perf > react > move across items",
+      createMetrics(120),
+    ),
+  ]);
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain("| **composite-perf > react** |  |  |  |  |");
+  expect(markdown).toContain(
+    "| [mount composite](#user-content-script-profile-composite-perf-react-mount-composite) | 100ms → 130ms (+30%) :warning:",
+  );
+  expect(markdown).toContain(
+    "| move across items | 100ms → 120ms (+20%) :warning:",
+  );
+  expect(markdown).toContain("#### composite-perf > react > mount composite");
+  expect(markdown).not.toContain(
+    "| composite-perf > react > move across items |",
+  );
 });
 
 test("merges script profile rows into base comparisons", () => {
@@ -1249,7 +1296,7 @@ test("merges script profile rows into base comparisons", () => {
   const markdown = runCompare(dir);
 
   expect(markdown).toContain(
-    "| [profiled](#script-profile-profiled) | 100ms → 130ms (+30%) :warning:",
+    "| [profiled](#user-content-script-profile-profiled) | 100ms → 130ms (+30%) :warning:",
   );
   expect(markdown).toContain(`<a id="script-profile-profiled"></a>`);
   expect(markdown).toContain("#### profiled");
@@ -1308,13 +1355,13 @@ test("escapes and disambiguates script profile anchors", () => {
   const markdown = runCompare(dir);
 
   expect(markdown).toContain(
-    "| [same \\[title\\] \\| test](#script-profile-same-title-test) |",
+    "| [same \\[title\\] \\| test](#user-content-script-profile-same-title-test) |",
   );
   expect(markdown).toContain(
-    "| [same title test](#script-profile-same-title-test-2) |",
+    "| [same title test](#user-content-script-profile-same-title-test-2) |",
   );
   expect(markdown).toContain(
-    "| [same title test 2](#script-profile-same-title-test-2-2) |",
+    "| [same title test 2](#user-content-script-profile-same-title-test-2-2) |",
   );
   expect(markdown).toContain(`<a id="script-profile-same-title-test"></a>`);
   expect(markdown).toContain(`<a id="script-profile-same-title-test-2"></a>`);
@@ -1342,7 +1389,7 @@ test("includes new test metric rows for script profile results", () => {
   expect(markdown).toContain("| Test | Scripting | Rendering | INP | Total |");
   expect(markdown).toContain("| regular | 100ms | 0ms | 0ms | 100ms |");
   expect(markdown).toContain(
-    "| [profiled title](#script-profile-profiled-title) | 130ms | 0ms | 0ms | 130ms |",
+    "| [profiled title](#user-content-script-profile-profiled-title) | 130ms | 0ms | 0ms | 130ms |",
   );
   expect(markdown).toContain(`<a id="script-profile-profiled-title"></a>`);
   expect(markdown).toContain("#### profiled title");
@@ -1429,7 +1476,7 @@ test("ignores profile-only rounds in metric comparisons", () => {
   const markdown = runCompare(dir);
 
   expect(markdown).toContain(
-    "| [profiled](#script-profile-profiled) | 100ms → 130ms (+30%) :warning:",
+    "| [profiled](#user-content-script-profile-profiled) | 100ms → 130ms (+30%) :warning:",
   );
   expect(markdown).toContain("#### profiled");
   expect(markdown).not.toContain("#### Script profile");
@@ -1496,7 +1543,7 @@ test("compares metrics when only one side has attached profile data", () => {
   const markdown = runCompare(dir);
 
   expect(markdown).toContain(
-    "| [profiled](#script-profile-profiled) | 100ms → 130ms (+30%) :warning:",
+    "| [profiled](#user-content-script-profile-profiled) | 100ms → 130ms (+30%) :warning:",
   );
   expect(markdown).toContain("#### profiled");
   expect(markdown).toContain("| `currentProfile` | 8ms | 8ms | 1 |");
