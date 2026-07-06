@@ -56,12 +56,15 @@ export function useFormValidate<T extends FormStoreValues = FormStoreValues>(
   store: FormStoreHookStore<T>,
   callback: Core.FormStoreCallback<FormStoreState<T>>,
 ) {
-  callback = useEvent(callback);
+  const eventCallback = useEvent(callback);
   // Whenever the items change (for example, when form fields are lazily
   // rendered), we need to reset the callbacks so they always run in a
   // consistent order.
   const items = useStoreState(store, "items");
-  useEffect(() => store.onValidate(callback), [store, items, callback]);
+  useEffect(
+    () => store.onValidate(eventCallback),
+    [store, items, eventCallback],
+  );
 }
 
 /**
@@ -84,10 +87,10 @@ export function useFormSubmit<T extends FormStoreValues = FormStoreValues>(
   store: FormStoreHookStore<T>,
   callback: Core.FormStoreCallback<FormStoreState<T>>,
 ) {
-  callback = useEvent(callback);
+  const eventCallback = useEvent(callback);
   // Same logic as useFormValidate.
   const items = useStoreState(store, "items");
-  useEffect(() => store.onSubmit(callback), [store, items, callback]);
+  useEffect(() => store.onSubmit(eventCallback), [store, items, eventCallback]);
 }
 
 export function useFormStoreProps<T extends FormStoreHookStore>(
@@ -95,39 +98,39 @@ export function useFormStoreProps<T extends FormStoreHookStore>(
   update: () => void,
   props: FormStoreProps,
 ) {
-  store = useCollectionStoreProps(store, update, props);
+  const collectionStore = useCollectionStoreProps(store, update, props);
 
-  useStoreProps(store, props, "values", "setValues");
-  useStoreProps(store, props, "errors", "setErrors");
-  useStoreProps(store, props, "touched", "setTouched");
+  useStoreProps(collectionStore, props, "values", "setValues");
+  useStoreProps(collectionStore, props, "errors", "setErrors");
+  useStoreProps(collectionStore, props, "touched", "setTouched");
 
   const useValue = useCallback<FormStore["useValue"]>(
-    (name) => useFormValue(store, name),
-    [store],
+    (name) => useFormValue(collectionStore, name),
+    [collectionStore],
   );
 
   const useValidate = useCallback<FormStore["useValidate"]>(
     (callback) => {
-      useFormValidate(store, callback);
+      useFormValidate(collectionStore, callback);
     },
-    [store],
+    [collectionStore],
   );
 
   const useSubmit = useCallback<FormStore["useSubmit"]>(
     (callback) => {
-      useFormSubmit(store, callback);
+      useFormSubmit(collectionStore, callback);
     },
-    [store],
+    [collectionStore],
   );
 
   return useMemo(
     () => ({
-      ...store,
+      ...collectionStore,
       useValue,
       useValidate,
       useSubmit,
     }),
-    [store, useValue, useValidate, useSubmit],
+    [collectionStore, useValue, useValidate, useSubmit],
   );
 }
 

@@ -255,14 +255,16 @@ export interface TableCellProps extends React.ComponentProps<"td"> {
 export function TableCell({ numeric, header, ...props }: TableCellProps) {
   const contextGroup = React.useContext(TableRowGroupContext);
   const group = contextGroup ?? "body";
-  header = header ?? (group === "head" ? "column" : false);
-  const isColumnHeader = header === "column" || (header && group === "head");
+  const headerValue = header ?? (group === "head" ? "column" : false);
+  const isColumnHeader =
+    headerValue === "column" || (headerValue && group === "head");
   const isRowHeader =
-    header === "row" || (header && !isColumnHeader && group !== "head");
-  const Component = header ? "th" : "td";
+    headerValue === "row" ||
+    (headerValue && !isColumnHeader && group !== "head");
+  const Component = headerValue ? "th" : "td";
 
   const getScope = () => {
-    if (!header) return;
+    if (!headerValue) return;
     if (isColumnHeader) return "col";
     if (isRowHeader) return "row";
     return;
@@ -273,7 +275,7 @@ export function TableCell({ numeric, header, ...props }: TableCellProps) {
       {...props}
       scope={getScope()}
       className={clsx(
-        !header && "ak-table-cell",
+        !headerValue && "ak-table-cell",
         isColumnHeader && "ak-table-column-header",
         isRowHeader && "ak-table-row-header",
         numeric && "ak-table-numeric",

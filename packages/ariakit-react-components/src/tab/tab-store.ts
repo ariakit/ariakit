@@ -21,15 +21,15 @@ export function useTabStoreProps<T extends Core.TabStore>(
 ) {
   useUpdateEffect(update, [props.composite, props.combobox]);
 
-  store = useCompositeStoreProps(store, update, props);
-  useStoreProps(store, props, "selectedId", "setSelectedId");
-  useStoreProps(store, props, "selectOnMove");
+  const compositeStore = useCompositeStoreProps(store, update, props);
+  useStoreProps(compositeStore, props, "selectedId", "setSelectedId");
+  useStoreProps(compositeStore, props, "selectOnMove");
 
-  const [panels, updatePanels] = useStore(() => store.panels, {});
-  useUpdateEffect(updatePanels, [store, updatePanels]);
+  const [panels, updatePanels] = useStore(() => compositeStore.panels, {});
+  useUpdateEffect(updatePanels, [compositeStore, updatePanels]);
 
   return Object.assign(
-    useMemo(() => ({ ...store, panels }), [store, panels]),
+    useMemo(() => ({ ...compositeStore, panels }), [compositeStore, panels]),
     { composite: props.composite, combobox: props.combobox },
   );
 }
@@ -53,13 +53,13 @@ export function useTabStoreProps<T extends Core.TabStore>(
 export function useTabStore(props: TabStoreProps = {}): TabStore {
   const combobox = useComboboxContext();
   const composite = useSelectContext() || combobox;
-  props = {
+  const storeProps = {
     ...props,
     composite: props.composite !== undefined ? props.composite : composite,
     combobox: props.combobox !== undefined ? props.combobox : combobox,
   };
-  const [store, update] = useStore(Core.createTabStore, props);
-  return useTabStoreProps(store, update, props);
+  const [store, update] = useStore(Core.createTabStore, storeProps);
+  return useTabStoreProps(store, update, storeProps);
 }
 
 export interface TabStoreItem extends Core.TabStoreItem {}

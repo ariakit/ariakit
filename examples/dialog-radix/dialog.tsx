@@ -110,10 +110,10 @@ export const Overlay = React.forwardRef<HTMLDivElement, OverlayProps>(
   function Overlay({ asChild, forceMount, ...props }, ref) {
     const { store } = React.useContext(DialogContext)!;
     const forceMountContext = React.useContext(ForceMountContext);
-    forceMount = forceMount ?? forceMountContext;
+    const forceMountValue = forceMount ?? forceMountContext;
     const mounted = Ariakit.useStoreState(
       store,
-      (state) => forceMount || state.mounted,
+      (state) => forceMountValue || state.mounted,
     );
 
     const open = Ariakit.useStoreState(store, "open");
@@ -175,10 +175,10 @@ export const Content = React.forwardRef<HTMLDivElement, ContentProps>(
   ) {
     const { store, modal } = React.useContext(DialogContext)!;
     const forceMountContext = React.useContext(ForceMountContext);
-    forceMount = forceMount ?? forceMountContext;
+    const forceMountValue = forceMount ?? forceMountContext;
     const mounted = Ariakit.useStoreState(
       store,
-      (state) => forceMount || state.mounted,
+      (state) => forceMountValue || state.mounted,
     );
     const contentElement = Ariakit.useStoreState(store, "contentElement");
 
@@ -205,7 +205,7 @@ export const Content = React.forwardRef<HTMLDivElement, ContentProps>(
         portal={false}
         backdrop={false}
         data-state={state}
-        alwaysVisible={forceMount}
+        alwaysVisible={forceMountValue}
         render={asChild ? <Slot /> : <div />}
         autoFocusOnShow={() => {
           const type = "focusScope.autoFocusOnMount";

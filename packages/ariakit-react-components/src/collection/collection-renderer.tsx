@@ -427,7 +427,7 @@ function getData<T extends Item>(props: {
 }
 
 export function useCollectionRenderer<T extends Item = any>({
-  store,
+  store: storeProp,
   items: itemsProp,
   initialItems = 0,
   gap = 0,
@@ -445,7 +445,7 @@ export function useCollectionRenderer<T extends Item = any>({
   ...props
 }: CollectionRendererProps<T>) {
   const context = useCollectionContext();
-  store = store || (context as typeof store);
+  const store = storeProp || (context as typeof storeProp);
 
   const items = useStoreState(
     store,
@@ -458,11 +458,8 @@ export function useCollectionRenderer<T extends Item = any>({
       "CollectionRenderer must be either wrapped in a Collection component or be given an `items` prop.",
   );
 
-  let parent = useContext(CollectionRendererContext);
-
-  if (store && parent?.store !== store) {
-    parent = null;
-  }
+  const contextParent = useContext(CollectionRendererContext);
+  const parent = store && contextParent?.store !== store ? null : contextParent;
 
   const parentData = parent?.childrenData;
   const orientation = orientationProp ?? parent?.orientation ?? "vertical";
