@@ -107,6 +107,18 @@ function createResultWithRaw(label: string, totals: number[]): PerfResult {
   };
 }
 
+function createResultWithTitleRaw(
+  label: string,
+  testTitle: string,
+  totals: number[],
+): PerfResult {
+  const metrics = createMetrics(medianValue(totals));
+  return {
+    ...createResultWithTitle(label, testTitle, metrics),
+    raw: totals.map(createMetrics),
+  };
+}
+
 function createResultWithLabel(label: string, total: number): PerfResult {
   return {
     ...createResult(total),
@@ -548,6 +560,34 @@ test("reports overlapping same-direction rounds as unconfirmed candidates", () =
   expect(markdown).not.toContain("Unflagged threshold-sized changes");
   expect(markdown).not.toMatch(/% :warning:/);
   expect(markdown).not.toMatch(/% :rocket:/);
+});
+
+test("includes custom labels in unconfirmed candidate rows", () => {
+  const dir = createTempDir();
+  const testTitle = "combobox-perf > react > open combobox";
+  for (const round of [1, 2]) {
+    writeJson(dir, `baseline-${round}-worker0.json`, [
+      createResultWithTitleRaw(
+        "open with mouse",
+        testTitle,
+        [80, 100, 120, 140, 160],
+      ),
+    ]);
+    writeJson(dir, `current-${round}-worker0.json`, [
+      createResultWithTitleRaw(
+        "open with mouse",
+        testTitle,
+        [100, 120, 140, 160, 180],
+      ),
+    ]);
+  }
+
+  const markdown = runCompare(dir);
+
+  expect(markdown).toContain(
+    "| combobox-perf > react > open combobox > open with mouse | Scripting | 120ms | 140ms | +20ms (+17%) | low | rounds 2/2, raw 0/2, pairs 60% |",
+  );
+  expect(markdown).not.toContain("| open with mouse | Scripting |");
 });
 
 test("grades candidates by their displayed pairs percent", () => {
@@ -1275,6 +1315,12 @@ test("includes custom labels when test titles are shared", () => {
   const markdown = runCompare(dir);
 
   expect(markdown).toContain(
+    "| combobox-perf > react > open combobox > open with mouse | 100ms → 130ms (+30%) :warning:",
+  );
+  expect(markdown).toContain(
+    "| combobox-perf > react > open combobox > open with keyboard | 100ms → 120ms (+20%) :warning:",
+  );
+  expect(markdown).toContain(
     "| [combobox-perf > react > open combobox > open with mouse](#user-content-script-profile-combobox-perf-react-open-combobox-open-with-mouse) | 100ms → 130ms (+30%) :warning:",
   );
   expect(markdown).toContain(
@@ -1286,6 +1332,8 @@ test("includes custom labels when test titles are shared", () => {
   expect(markdown).toContain(
     "#### combobox-perf > react > open combobox > open with keyboard",
   );
+  expect(markdown).not.toContain("| open with mouse |");
+  expect(markdown).not.toContain("| open with keyboard |");
   expect(markdown).not.toContain("| [combobox-perf > react > open combobox](#");
 });
 

@@ -1106,8 +1106,8 @@ function formatSummaryTable(
 
   for (const key of keys) {
     const testRows = rowsByKey.get(key) ?? [];
-    const label = testRows[0]?.label ?? key;
-    const cells: string[] = [label];
+    const label = testRows[0] ? getResultDisplayTitle(testRows[0]) : key;
+    const cells: string[] = [escapeTableCell(label)];
     for (const metric of primaryMetrics) {
       const row = testRows.find((r) => r.metric === metric);
       if (!row) {
@@ -1177,7 +1177,7 @@ function formatCandidateChanges(
   const visibleRows = candidateRows.slice(0, MAX_VISIBLE_CANDIDATE_ROWS);
   for (const row of visibleRows) {
     const cells = [
-      escapeTableCell(row.label),
+      escapeTableCell(getResultDisplayTitle(row)),
       getMetricLabel(row.metric, options),
       formatMetricValue(row.baseline, options),
       formatMetricValue(row.current, options),
