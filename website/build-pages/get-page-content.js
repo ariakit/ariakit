@@ -61,6 +61,7 @@ export function createReferencePageContent(reference) {
 
   const requiredProps = props.filter((prop) => !prop.optional).sort(sortProp);
   const optionalProps = props.filter((prop) => prop.optional).sort(sortProp);
+  const sortedReturnProps = returnProps?.slice().sort(sortProp);
 
   /** @param {string | boolean} [deprecated] */
   const renderDeprecated = (deprecated, warn = false) => {
@@ -159,12 +160,12 @@ ${optionalProps.map(renderProp).join("\n\n---\n\n")}\n`
     : ""
 }
 ${
-  returnProps && returnProps.length > 0
+  sortedReturnProps && sortedReturnProps.length > 0
     ? `## Return Props
 
 ---
 
-${returnProps.map(renderProp).join("\n\n---\n\n")}\n`
+${sortedReturnProps.map(renderProp).join("\n\n---\n\n")}\n`
     : ""
 }
 `;
