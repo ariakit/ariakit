@@ -91,14 +91,15 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
     </>
   );
 
+  const menuButtonDefaults = {
+    store: menu,
+    showOnHover: false,
+    className: "button",
+    render: <button />,
+  } satisfies Ariakit.MenuButtonProps;
+
   const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
-    <Ariakit.MenuButton
-      store={menu}
-      showOnHover={false}
-      className="button"
-      render={<button />}
-      {...menuButtonProps}
-    >
+    <Ariakit.MenuButton {...menuButtonDefaults} {...menuButtonProps}>
       {menuButtonChildren}
     </Ariakit.MenuButton>
   );
@@ -131,14 +132,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
         />
       ) : (
         // Otherwise, we just render the menu button.
-        <Ariakit.MenuButton
-          ref={ref}
-          store={menu}
-          showOnHover={false}
-          className="button"
-          render={<button />}
-          {...props}
-        >
+        <Ariakit.MenuButton ref={ref} {...menuButtonDefaults} {...props}>
           {menuButtonChildren}
         </Ariakit.MenuButton>
       )}

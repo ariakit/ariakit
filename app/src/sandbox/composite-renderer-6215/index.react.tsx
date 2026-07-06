@@ -67,12 +67,17 @@ export default function Example() {
   // Surface the leak live as the user scrolls. React bails out of re-rendering
   // when the count is unchanged, so this only re-renders when it actually moves.
   useEffect(() => {
-    let raf = requestAnimationFrame(function tick() {
+    let canceled = false;
+    const tick = () => {
+      if (canceled) return;
       setDetached(countDetachedObservedItems());
-      // oxlint-disable-next-line react/react-compiler -- Repeated RAF probe.
-      raf = requestAnimationFrame(tick);
-    });
-    return () => cancelAnimationFrame(raf);
+      requestAnimationFrame(tick);
+    };
+    const raf = requestAnimationFrame(tick);
+    return () => {
+      canceled = true;
+      cancelAnimationFrame(raf);
+    };
   }, []);
 
   return (

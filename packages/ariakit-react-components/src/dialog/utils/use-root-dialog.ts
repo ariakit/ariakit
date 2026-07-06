@@ -24,15 +24,8 @@ export function useRootDialog({
     const { body } = getDocument(contentElement);
     const id = body.getAttribute(attribute);
     return !id || id === contentId;
-    // oxlint-disable-next-line exhaustive-deps
-  }, [
-    // oxlint-disable-next-line react/react-compiler -- Force-update token.
-    updated,
-    enabled,
-    contentElement,
-    attribute,
-    contentId,
-  ]);
+    // oxlint-disable-next-line exhaustive-deps react/react-compiler
+  }, [updated, enabled, contentElement, attribute, contentId]);
 
   // Run in the layout phase so consumers that also moved to the layout phase
   // (such as usePreventBodyScroll, registered after this hook) see the root

@@ -20,9 +20,7 @@ export default function Example() {
       <label class="flex flex-col gap-1">
         Name
         <input
-          // oxlint-disable-next-line react/react-compiler -- Solid ref callback.
           ref={(element) => {
-            // oxlint-disable-next-line react/react-compiler -- Solid ref callback.
             nameInput = element;
           }}
           class="rounded border border-gray-300 px-3 py-1"
@@ -31,7 +29,6 @@ export default function Example() {
       <label class="flex flex-col gap-1">
         Email
         <input
-          // oxlint-disable-next-line react/react-compiler -- Solid ref callback.
           ref={(element) => {
             emailInput = element;
           }}
