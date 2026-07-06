@@ -57,14 +57,12 @@ export function isTabbable(
   // If we are in a radio group, we must check if the active element is part of
   // the same group, which would make all the other radio buttons in the group
   // non-tabbable.
-  const activeElement = getActiveElement(element) as
-    | HTMLElement
-    | HTMLInputElement
-    | null;
+  const activeElement = getActiveElement(element);
   if (!activeElement) return true;
   if (activeElement === element) return true;
   if (!("form" in activeElement)) return true;
   if (activeElement.form !== element.form) return true;
+  if (!("name" in activeElement)) return true;
   if (activeElement.name !== element.name) return true;
   return false;
 }

@@ -4,7 +4,7 @@ import * as React from "react";
 import type { SelectProps } from "./select.tsx";
 import { Select } from "./select.tsx";
 
-export { useFormStore } from "@ariakit/react";
+export { useFormStore, useFormSubmit } from "@ariakit/react";
 
 export interface FormProps extends Ariakit.FormProps {}
 
@@ -75,7 +75,7 @@ export const FormSelect = React.forwardRef<HTMLButtonElement, FormSelectProps>(
     const form = Ariakit.useFormContext();
     if (!form) throw new Error("FormSelect must be used within a Form");
 
-    const value = form.useValue(name);
+    const value = Ariakit.useFormValue(form, name);
 
     const select = (
       <Select

@@ -26,7 +26,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * const store = useFormStore({ defaultValues: { email: "" } });
  * const props = useFormError({ store, name: store.names.email });
  *
- * store.useValidate(() => {
+ * useFormValidate(store, () => {
  *   if (!store.getValue(store.names.email)) {
  *     store.setError(store.names.email, "Email is required!");
  *   }
@@ -94,8 +94,8 @@ export const useFormError = createHook<TagName, FormErrorOptions>(
  *   },
  * });
  *
- * form.useValidate(() => {
- *   if (!form.values.email) {
+ * useFormValidate(form, () => {
+ *   if (!form.getValue(form.names.email)) {
  *     form.setError(form.names.email, "Email is required!");
  *   }
  * });

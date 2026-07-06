@@ -12,7 +12,7 @@ export default function Example() {
     },
   });
 
-  form.useValidate(() => {
+  ak.useFormValidate(form, () => {
     const items = form.getValue(form.names.items);
     for (const [i, item] of items.entries()) {
       const name = form.names.items[i]?.name;
@@ -23,7 +23,7 @@ export default function Example() {
     }
   });
 
-  form.useSubmit(async (state) => {
+  ak.useFormSubmit(form, async (state) => {
     alert(JSON.stringify(state.values));
   });
 

@@ -12,6 +12,7 @@ import { useCheckbox } from "../checkbox/checkbox.tsx";
 import { useFormItemContext } from "./form-context.tsx";
 import type { FormControlOptions } from "./form-control.tsx";
 import { useFormControl } from "./form-control.tsx";
+import { useFormValue } from "./form-store.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
@@ -47,7 +48,7 @@ export const useFormCheckbox = createHook<TagName, FormCheckboxOptions>(
     });
 
     const checkboxStore = useCheckboxStore({
-      value: form.useValue(name),
+      value: useFormValue(form, name),
       setValue: (value) => form.setValue(name, value),
     });
 

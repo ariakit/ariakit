@@ -148,6 +148,14 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const [valueUpdated, forceValueUpdate] = useForceUpdate();
     const canAutoSelectRef = useRef(false);
     const composingRef = useRef(false);
+    const compositionEndFrameRef = useRef<number | null>(null);
+
+    const cancelCompositionEndFrame = () => {
+      const frame = compositionEndFrameRef.current;
+      if (frame == null) return;
+      cancelAnimationFrame(frame);
+      compositionEndFrameRef.current = null;
+    };
 
     // We can only allow auto select when the combobox focus is handled via the
     // aria-activedescendant attribute. Othwerwise, the focus would move to the
@@ -383,6 +391,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       const canAutoSelect = canAutoSelectRef.current;
       if (!store) return;
       if (!open) return;
+      if (composingRef.current) return;
       if (!canAutoSelect && (!resetValueOnSelect || userScrolledRef.current))
         return;
       const { baseElement, contentElement, activeId } = store.getState();
@@ -555,6 +564,17 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       }
     });
 
+    useEffect(() => cancelCompositionEndFrame, []);
+
+    const onCompositionStartProp = props.onCompositionStart;
+
+    const onCompositionStart = useEvent((event: CompositionEvent<HTMLType>) => {
+      cancelCompositionEndFrame();
+      canAutoSelectRef.current = false;
+      composingRef.current = true;
+      onCompositionStartProp?.(event);
+    });
+
     const onCompositionEndProp = props.onCompositionEnd;
 
     // When dealing with composition text (for example, when the user is typing
@@ -568,7 +588,12 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       onCompositionEndProp?.(event);
       if (event.defaultPrevented) return;
       if (!autoSelect) return;
-      forceValueUpdate();
+      cancelCompositionEndFrame();
+      compositionEndFrameRef.current = requestAnimationFrame(() => {
+        compositionEndFrameRef.current = null;
+        if (composingRef.current) return;
+        forceValueUpdate();
+      });
     });
 
     const onMouseDownProp = props.onMouseDown;
@@ -668,6 +693,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       id,
       ref: useMergeRefs(ref, props.ref),
       onChange,
+      onCompositionStart,
       onCompositionEnd,
       onMouseDown,
       onKeyDown,

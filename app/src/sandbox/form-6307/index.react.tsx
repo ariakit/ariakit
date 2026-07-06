@@ -13,11 +13,11 @@ export default function Example() {
     defaultValues: { email: "", nickname: "" },
   });
 
-  // The email is required. Validation runs through the standard `useValidate`
-  // API so the invalid state is deterministic across environments. `validate()`
-  // resets the errors before running this callback, so it only needs to set the
-  // current violation.
-  form.useValidate(() => {
+  // The email is required. Validation runs through the standard
+  // `useFormValidate` API so the invalid state is deterministic across
+  // environments. `validate()` resets the errors before running this callback,
+  // so it only needs to set the current violation.
+  ak.useFormValidate(form, () => {
     if (!form.getValue(form.names.email)) {
       form.setError(form.names.email, "Email is required");
     }

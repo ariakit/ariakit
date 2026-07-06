@@ -1,4 +1,5 @@
 import {
+  applyState,
   omit as _omit,
   pick as _pick,
   chain,
@@ -718,10 +719,7 @@ export function createStore<S extends State>(
     if (!hasOwnProperty(state, key)) return;
 
     const currentValue = state[key];
-    const nextValue =
-      typeof value === "function"
-        ? (value as (current: S[typeof key]) => S[typeof key])(currentValue)
-        : value;
+    const nextValue = applyState(value, () => currentValue);
 
     if (isSameValue(nextValue, currentValue)) return;
 
