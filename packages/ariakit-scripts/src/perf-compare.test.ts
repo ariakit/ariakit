@@ -861,6 +861,9 @@ test("requires both rounds to agree in two-round comparisons", () => {
 
   expect(markdown).toContain("No significant performance changes detected.");
   expect(markdown).toContain("100ms → 115ms (+15%)");
+  expect(markdown).toContain(
+    "Unflagged threshold-sized changes for example &gt; react &gt; example:",
+  );
   expect(markdown).not.toMatch(/% :warning:/);
 });
 
@@ -1274,6 +1277,12 @@ test("escapes and disambiguates script profile anchors", () => {
       createMetrics(100),
       profiles,
     ),
+    createResultWithTitle(
+      "third custom label",
+      "same title test 2",
+      createMetrics(100),
+      profiles,
+    ),
   ]);
   writeJson(dir, "current-worker0.json", [
     createResultWithTitle(
@@ -1288,6 +1297,12 @@ test("escapes and disambiguates script profile anchors", () => {
       createMetrics(130),
       profiles,
     ),
+    createResultWithTitle(
+      "third custom label",
+      "same title test 2",
+      createMetrics(130),
+      profiles,
+    ),
   ]);
 
   const markdown = runCompare(dir);
@@ -1298,8 +1313,12 @@ test("escapes and disambiguates script profile anchors", () => {
   expect(markdown).toContain(
     "| [same title test](#script-profile-same-title-test-2) |",
   );
+  expect(markdown).toContain(
+    "| [same title test 2](#script-profile-same-title-test-2-2) |",
+  );
   expect(markdown).toContain(`<a id="script-profile-same-title-test"></a>`);
   expect(markdown).toContain(`<a id="script-profile-same-title-test-2"></a>`);
+  expect(markdown).toContain(`<a id="script-profile-same-title-test-2-2"></a>`);
 });
 
 test("includes new test metric rows for script profile results", () => {

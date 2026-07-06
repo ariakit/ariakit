@@ -710,10 +710,6 @@ function escapeTableCell(value: string): string {
     .trim();
 }
 
-function escapeMarkdownLinkText(value: string): string {
-  return escapeTableCell(value).replace(/([[\]])/g, "\\$1");
-}
-
 function escapeHtmlAttribute(value: string): string {
   return value
     .replace(/&/g, "&amp;")
@@ -1273,7 +1269,6 @@ function formatSelectorProfileTable(result: PerfResult): string[] {
 
 function formatProfileSection(
   result: PerfResult | undefined,
-  heading: string,
   anchor?: string,
 ): string[] {
   if (!result) return [];
@@ -1286,7 +1281,7 @@ function formatProfileSection(
     lines.push(`<a id="${escapeHtmlAttribute(anchor)}"></a>`);
     lines.push("");
   }
-  lines.push(`#### ${heading}`);
+  lines.push(`#### ${getProfileHeading(result)}`);
   lines.push("");
   lines.push(...scriptProfile);
   if (selectorProfile.length > 0) {
@@ -1343,37 +1338,19 @@ function getProfileHeading(result: PerfResult) {
   return result.testTitle || result.label;
 }
 
-function createScriptProfileAnchor(
-  heading: string,
-  usedAnchors: Map<string, number>,
-) {
+function createScriptProfileAnchor(heading: string, usedAnchors: Set<string>) {
   const baseAnchor = `script-profile-${formatProfileAnchorSlug(heading)}`;
-  const count = usedAnchors.get(baseAnchor) ?? 0;
-  usedAnchors.set(baseAnchor, count + 1);
-  return count === 0 ? baseAnchor : `${baseAnchor}-${count + 1}`;
-}
-
-function createScriptProfileAnchors(
-  keys: string[],
-  currentByKey: Map<string, AggregatedPerfResult>,
-  usedAnchors: Map<string, number>,
-) {
-  const anchors = new Map<string, string>();
-  for (const key of keys) {
-    const result = currentByKey.get(key)?.result;
-    if (!result) continue;
-    if (!hasScriptProfile(result)) continue;
-    anchors.set(
-      key,
-      createScriptProfileAnchor(getProfileHeading(result), usedAnchors),
-    );
+  let anchor = baseAnchor;
+  for (let index = 2; usedAnchors.has(anchor); index += 1) {
+    anchor = `${baseAnchor}-${index}`;
   }
-  return anchors;
+  usedAnchors.add(anchor);
+  return anchor;
 }
 
 function createResultScriptProfileAnchors(
   results: AggregatedPerfResult[],
-  usedAnchors: Map<string, number>,
+  usedAnchors: Set<string>,
 ) {
   const anchors = new Map<string, string>();
   for (const { key, result } of results) {
@@ -1388,7 +1365,7 @@ function createResultScriptProfileAnchors(
 
 function formatDetailedTestCell(label: string, anchor?: string) {
   if (!anchor) return escapeTableCell(label);
-  return `[${escapeMarkdownLinkText(label)}](#${anchor})`;
+  return `[${escapeLinkText(label)}](#${anchor})`;
 }
 
 function formatDetailedComparisonTable({
@@ -1453,15 +1430,8 @@ function formatDetailedBreakdown({
     }),
   );
   for (const key of keys) {
-    const testRows = rowsByKey.get(key) ?? [];
-    const currentResult = currentByKey.get(key)?.result;
-    const label =
-      currentResult != null
-        ? getProfileHeading(currentResult)
-        : (testRows[0]?.testTitle ?? testRows[0]?.label ?? key);
     const profileLines = formatProfileSection(
-      currentResult,
-      label,
+      currentByKey.get(key)?.result,
       scriptProfileAnchors.get(key),
     );
     if (profileLines.length === 0) continue;
@@ -1496,10 +1466,12 @@ function formatMarkdown(
     const testRows = rowsByKey.get(key);
     return testRows?.some((row) => row.significant) ?? false;
   });
-  const usedScriptProfileAnchors = new Map<string, number>();
-  const scriptProfileAnchors = createScriptProfileAnchors(
-    allKeys,
-    currentByKey,
+  const usedScriptProfileAnchors = new Set<string>();
+  const scriptProfileAnchors = createResultScriptProfileAnchors(
+    allKeys.flatMap((key) => {
+      const result = currentByKey.get(key);
+      return result ? [result] : [];
+    }),
     usedScriptProfileAnchors,
   );
   const newTestScriptProfileAnchors = createResultScriptProfileAnchors(
@@ -1613,7 +1585,6 @@ function formatMarkdown(
       const { result } = entry;
       const profileLines = formatProfileSection(
         result,
-        getProfileHeading(result),
         newTestScriptProfileAnchors.get(entry.key),
       );
       if (profileLines.length === 0) continue;
