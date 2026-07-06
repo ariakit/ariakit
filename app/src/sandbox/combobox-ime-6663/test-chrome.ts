@@ -22,9 +22,11 @@ async function traceImeEvents(page: Page) {
         type,
         (event) => {
           const target = event.target as HTMLElement | null;
+          const data =
+            event instanceof CompositionEvent ? event.data : undefined;
           events.push({
             type,
-            data: "data" in event ? event.data : undefined,
+            data,
             role: target?.getAttribute("role"),
           });
         },
