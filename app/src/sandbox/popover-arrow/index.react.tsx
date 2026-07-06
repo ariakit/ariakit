@@ -36,6 +36,20 @@ function RingPopover({ label, boxShadow, style }: RingPopoverProps) {
 }
 
 // See https://github.com/ariakit/ariakit/issues/6320
+//
+// In an RTL context, a popover that resolves to a `right` placement writes
+// `right: 100%` on its arrow element. Later position updates never clear that
+// declaration: they only write `left`, `top`, and the new side. With both
+// `left` and `right` set, RTL over-constrained absolute positioning ignores
+// `left`, so the stale `right: 100%` pins the arrow to the popover's left
+// edge, visually detached from the anchor.
+//
+// Two user-level triggers change the resolved placement while the popover is
+// open:
+// 1. Scrolling the container so the anchor nears its right edge, which makes
+//    the popover flip above the anchor (browser test).
+// 2. Clicking "Show above", which changes the `placement` prop (also covered
+//    by the happy-dom test, where layout-driven flips can't happen).
 function RtlPlacementPopover() {
   const [placement, setPlacement] = useState<"right" | "top">("right");
   return (

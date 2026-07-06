@@ -34,6 +34,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(popover).toBeVisible();
     const arrow = popover.locator(".arrow");
 
+    // Sanity-check the initial `right` placement: the popover opens on the
+    // physical right of the anchor with the arrow vertically pointing at it.
     const anchorBox = await getBox(disclosure);
     const popoverBox = await getBox(popover);
     test
@@ -46,6 +48,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(arrowCenterY)
       .toBeLessThanOrEqual(anchorBox.y + anchorBox.height);
 
+    // Scroll the container so the anchor lands near its right edge, leaving no
+    // room for the popover on the right. The `flip` middleware then moves the
+    // popover above the anchor while it stays open. Scroll by the measured
+    // distance so the test doesn't depend on RTL scrollLeft coordinates.
     await disclosure.evaluate((element) => {
       const scroller = element.closest(".scroller");
       if (!scroller) {
@@ -58,6 +64,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
     await test.expect.poll(() => isAbove(popover, disclosure)).toBe(true);
 
+    // After the flip, the arrow's horizontal center must fall within the
+    // anchor's span. Before the fix, the stale `right: 100%` from the initial
+    // placement wins over `left` in RTL and pins the arrow to the popover's
+    // left edge, outside the popover and away from the anchor.
     const flippedAnchorBox = await getBox(disclosure);
     await test.expect
       .poll(() => getHorizontalCenter(arrow))

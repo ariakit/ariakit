@@ -93,6 +93,15 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(content).toHaveAttribute("data-enter", "true");
     await test.expect(section).toHaveAttribute("data-animating-state", "false");
 
+    // Hide it and measure how long the content stays mounted. The content has
+    // a transition (delay 500ms + duration 10ms = ends at 510ms; see
+    // style.css) and a leave animation (delay 0ms + duration 300ms = ends at
+    // 300ms), so the longest per-property end time is 510ms. The buggy timeout
+    // was max(delays) + max(durations) = 500 + 300 = 800ms, keeping the
+    // content mounted ~290ms too long. We measure the unmount delay in the
+    // browser because it's the only precise, user-observable signal for "the
+    // content stays mounted too long"; Playwright command latency is too coarse
+    // to tell 510ms from 800ms.
     const unmountDelay = await page.evaluate(async () => {
       const region = document.querySelector(
         '[aria-label="Mixed transition and animation"]',
@@ -118,7 +127,12 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
     });
 
+    // The content should unmount close to 510ms, not 800ms. 700ms sits well
+    // between the two so the assertion fails on the buggy timeout and passes
+    // on the fix, with margin for setTimeout/requestAnimationFrame jitter.
     test.expect(unmountDelay).toBeLessThan(700);
+    // Sanity check: it still waited for the real animation rather than
+    // unmounting immediately.
     test.expect(unmountDelay).toBeGreaterThan(400);
 
     await test.expect(content).not.toBeAttached();
