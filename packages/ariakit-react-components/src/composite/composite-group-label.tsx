@@ -1,5 +1,5 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { GroupLabelOptions } from "../group/group-label.tsx";
 import { useGroupLabel } from "../group/group-label.tsx";
@@ -64,7 +64,7 @@ export interface CompositeGroupLabelOptions<
    * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
    */
-  store?: CompositeStore;
+  store?: CompositeStore | ProviderComponent<CompositeStore>;
 }
 
 export type CompositeGroupLabelProps<T extends ElementType = TagName> = Props<

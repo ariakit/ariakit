@@ -7,8 +7,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
@@ -38,7 +39,7 @@ const symbol = Symbol("disclosure");
 export const useDisclosure = createHook<TagName, DisclosureOptions>(
   function useDisclosure({ store, toggleOnClick = true, ...props }) {
     const context = useDisclosureProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -123,8 +124,13 @@ export interface DisclosureOptions<
    * hook. If not provided, the closest
    * [`DisclosureProvider`](https://ariakit.com/reference/disclosure-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`DisclosureProvider`](https://ariakit.com/reference/disclosure-provider)).
+   * In that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: DisclosureStore;
+  store?: DisclosureStore | ProviderComponent<DisclosureStore>;
   /**
    * Determines whether
    * [`toggle`](https://ariakit.com/reference/use-disclosure-store#toggle) will

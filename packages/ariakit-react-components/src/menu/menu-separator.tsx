@@ -1,5 +1,10 @@
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.tsx";
 import { useCompositeSeparator } from "../composite/composite-separator.tsx";
@@ -28,7 +33,7 @@ type TagName = typeof TagName;
 export const useMenuSeparator = createHook<TagName, MenuSeparatorOptions>(
   function useMenuSeparator({ store, ...props }) {
     const context = useMenuContext();
-    store = store || context;
+    store = useStoreProp(store, context);
     props = useCompositeSeparator({ store, ...props });
     return props;
   },
@@ -69,8 +74,13 @@ export interface MenuSeparatorOptions<
    * provided, the closest [`Menu`](https://ariakit.com/reference/menu) or
    * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: MenuStore;
+  store?: MenuStore | ProviderComponent<MenuStore>;
 }
 
 export type MenuSeparatorProps<T extends ElementType = TagName> = Props<

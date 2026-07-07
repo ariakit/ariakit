@@ -1,11 +1,12 @@
 import {
   useEvent,
+  useStoreProp,
   createElement,
   createHook,
   forwardRef,
   memo,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   getDocument,
   getTextboxSelection,
@@ -14,6 +15,7 @@ import {
 } from "@ariakit/utils";
 import type { ElementType, FocusEvent, KeyboardEvent } from "react";
 import { useEffect } from "react";
+import { useCompositeScopedContext } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 import { selectTextField } from "./utils.ts";
 
@@ -49,6 +51,8 @@ function getValueLength(element: HTMLElement) {
  */
 export const useCompositeInput = createHook<TagName, CompositeInputOptions>(
   function useCompositeInput({ store, ...props }) {
+    const context = useCompositeScopedContext();
+    store = useStoreProp(store, context);
     const onKeyDownCaptureProp = props.onKeyDownCapture;
 
     if (process.env.NODE_ENV !== "production") {
@@ -137,8 +141,13 @@ export interface CompositeInputOptions<
    * [`Composite`](https://ariakit.com/reference/composite) or
    * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: CompositeStore;
+  store?: CompositeStore | ProviderComponent<CompositeStore>;
 }
 
 export type CompositeInputProps<T extends ElementType = TagName> = Props<

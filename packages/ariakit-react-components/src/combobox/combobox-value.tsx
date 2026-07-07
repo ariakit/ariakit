@@ -1,4 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
+import { useStoreProp } from "@ariakit/react-utils";
+import type { ProviderComponent } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ReactNode } from "react";
 import { useComboboxContext } from "./combobox-context.tsx";
@@ -29,7 +31,7 @@ import type { ComboboxStore, ComboboxStoreState } from "./combobox-store.ts";
  */
 export function ComboboxValue({ store, children }: ComboboxValueProps = {}) {
   const context = useComboboxContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -53,8 +55,13 @@ export interface ComboboxValueProps {
    * hook. If not provided, the closest
    * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: ComboboxStore;
+  store?: ComboboxStore | ProviderComponent<ComboboxStore>;
   /**
    * A function that gets called with the current value as an argument. It can
    * be used to render the combobox value in a custom way.

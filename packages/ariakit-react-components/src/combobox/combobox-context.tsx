@@ -42,6 +42,8 @@ export const ComboboxContextProvider = ctx.ContextProvider;
 
 export const ComboboxScopedContextProvider = ctx.ScopedContextProvider;
 
+export const createComboboxProvider = ctx.createProviderComponent;
+
 export const ComboboxItemValueContext = createContext<string | undefined>(
   undefined,
 );

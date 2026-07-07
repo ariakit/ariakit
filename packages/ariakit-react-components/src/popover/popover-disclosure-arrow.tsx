@@ -1,6 +1,11 @@
 import { useStoreState } from "@ariakit/react-store";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo } from "react";
@@ -36,7 +41,7 @@ export const usePopoverDisclosureArrow = createHook<
   PopoverDisclosureArrowOptions
 >(function usePopoverDisclosureArrow({ store, placement, ...props }) {
   const context = usePopoverContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -119,8 +124,13 @@ export interface PopoverDisclosureArrowOptions<
    * [`PopoverDisclosure`](https://ariakit.com/reference/popover-disclosure) or
    * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: PopoverStore;
+  store?: PopoverStore | ProviderComponent<PopoverStore>;
   /**
    * Arrow's placement direction. If not provided, it will be inferred from the
    * context.

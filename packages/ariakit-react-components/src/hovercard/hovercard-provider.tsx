@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import { HovercardContextProvider } from "./hovercard-context.tsx";
+import {
+  createHovercardProvider,
+  HovercardContextProvider,
+} from "./hovercard-context.tsx";
 import type { HovercardStoreProps } from "./hovercard-store.ts";
 import { useHovercardStore } from "./hovercard-store.ts";
 
@@ -15,14 +18,16 @@ import { useHovercardStore } from "./hovercard-store.ts";
  * </HovercardProvider>
  * ```
  */
-export function HovercardProvider(props: HovercardProviderProps = {}) {
-  const store = useHovercardStore(props);
-  return (
-    <HovercardContextProvider value={store}>
-      {props.children}
-    </HovercardContextProvider>
-  );
-}
+export const HovercardProvider = createHovercardProvider(
+  function HovercardProvider(props: HovercardProviderProps = {}) {
+    const store = useHovercardStore(props);
+    return (
+      <HovercardContextProvider value={store}>
+        {props.children}
+      </HovercardContextProvider>
+    );
+  },
+);
 
 export interface HovercardProviderProps extends HovercardStoreProps {
   children?: ReactNode;

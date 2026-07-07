@@ -1,6 +1,11 @@
 import { useStoreState } from "@ariakit/react-store";
-import { useId, createElement, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  useId,
+  useStoreProp,
+  createElement,
+  forwardRef,
+} from "@ariakit/react-utils";
+import type { ProviderComponent, Props } from "@ariakit/react-utils";
 import type { ElementType, ReactNode } from "react";
 import { useMemo } from "react";
 import type {
@@ -142,7 +147,7 @@ export function useCompositeRenderer<T extends Item = any>({
   ...props
 }: CompositeRendererProps<T>) {
   const context = useCompositeScopedContext();
-  store = store || (context as typeof store);
+  store = useStoreProp(store, context);
 
   const orientation = useStoreState(
     store,
@@ -253,10 +258,17 @@ export interface CompositeRendererOptions<T extends Item = any> extends Omit<
    * will be used to render the items if the
    * [`items`](https://ariakit.com/reference/composite-items#items) prop is not
    * provided.
+   *
+   * You can also pass a provider component (for example,
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)).
+   * In that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: CompositeStore<
-    T extends CollectionStoreItem ? T : CompositeStoreItem
-  >;
+  store?:
+    | CompositeStore<T extends CollectionStoreItem ? T : CompositeStoreItem>
+    | ProviderComponent<
+        CompositeStore<T extends CollectionStoreItem ? T : CompositeStoreItem>
+      >;
   /**
    * The `children` should be a function that receives item props and returns a
    * React element. The item props should be spread onto the element that

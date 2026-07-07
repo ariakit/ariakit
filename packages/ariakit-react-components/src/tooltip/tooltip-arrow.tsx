@@ -1,5 +1,10 @@
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.tsx";
@@ -29,7 +34,7 @@ export const useTooltipArrow = createHook<TagName, TooltipArrowOptions>(
     // We need to get the tooltip store here because Tooltip is not using the
     // Popover component, so PopoverArrow can't access the popover context.
     const context = useTooltipContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -74,8 +79,13 @@ export interface TooltipArrowOptions<
    * [`Tooltip`](https://ariakit.com/reference/tooltip) or
    * [`TooltipProvider`](https://ariakit.com/reference/tooltip-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`TooltipProvider`](https://ariakit.com/reference/tooltip-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: TooltipStore;
+  store?: TooltipStore | ProviderComponent<TooltipStore>;
 }
 
 export type TooltipArrowProps<T extends ElementType = TagName> = Props<

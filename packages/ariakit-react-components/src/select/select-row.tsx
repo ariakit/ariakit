@@ -1,6 +1,11 @@
 import { useStoreState } from "@ariakit/react-store";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { getPopupRole, invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { CompositeRowOptions } from "../composite/composite-row.tsx";
@@ -29,7 +34,7 @@ type TagName = typeof TagName;
 export const useSelectRow = createHook<TagName, SelectRowOptions>(
   function useSelectRow({ store, ...props }) {
     const context = useSelectContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -87,8 +92,13 @@ export interface SelectRowOptions<
    * [`SelectList`](https://ariakit.com/reference/select-list) or
    * [`SelectPopover`](https://ariakit.com/reference/select-popover) components'
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: SelectStore;
+  store?: SelectStore | ProviderComponent<SelectStore>;
 }
 
 export type SelectRowProps<T extends ElementType = TagName> = Props<

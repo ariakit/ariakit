@@ -1,5 +1,10 @@
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.tsx";
 import { usePopoverArrow } from "../popover/popover-arrow.tsx";
@@ -25,7 +30,7 @@ type TagName = typeof TagName;
 export const useMenuArrow = createHook<TagName, MenuArrowOptions>(
   function useMenuArrow({ store, ...props }) {
     const context = useMenuContext();
-    store = store || context;
+    store = useStoreProp(store, context);
     return usePopoverArrow({ store, ...props });
   },
 );
@@ -59,8 +64,13 @@ export interface MenuArrowOptions<
    * provided, the closest [`Menu`](https://ariakit.com/reference/menu) or
    * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: MenuStore;
+  store?: MenuStore | ProviderComponent<MenuStore>;
 }
 
 export type MenuArrowProps<T extends ElementType = TagName> = Props<

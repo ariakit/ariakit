@@ -2,12 +2,13 @@ import { useStoreState } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
+  useStoreProp,
   createElement,
   createHook,
   forwardRef,
   memo,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   getDocument,
   getPopupItemRole,
@@ -84,7 +85,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
     // it renders a MenuButton inside a Menubar.
     const menuContext = useMenuScopedContext(true);
     const menubarContext = useMenubarScopedContext();
-    store = store || menuContext || (menubarContext as any);
+    store = useStoreProp(store, menuContext, menubarContext);
 
     invariant(
       store,
@@ -221,8 +222,17 @@ export interface MenuItemOptions<T extends ElementType = TagName>
    * [`Menubar`](https://ariakit.com/reference/menubar), or
    * [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider) or
+   * [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: MenubarStore | MenuStore;
+  store?:
+    | MenubarStore
+    | MenuStore
+    | ProviderComponent<MenubarStore | MenuStore>;
   /**
    * Determines if the menu should hide when this item is clicked.
    *

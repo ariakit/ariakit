@@ -1,6 +1,11 @@
 import { useStoreState } from "@ariakit/react-store";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
@@ -26,7 +31,7 @@ type TagName = typeof TagName;
 export const useFormReset = createHook<TagName, FormResetOptions>(
   function useFormReset({ store, ...props }) {
     const context = useFormContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -75,8 +80,13 @@ export interface FormResetOptions<
    * provided, the closest [`Form`](https://ariakit.com/reference/form) or
    * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`FormProvider`](https://ariakit.com/reference/form-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: FormStore;
+  store?: FormStore | ProviderComponent<FormStore>;
 }
 
 export type FormResetProps<T extends ElementType = TagName> = Props<

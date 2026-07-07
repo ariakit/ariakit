@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import { PopoverContextProvider } from "./popover-context.tsx";
+import {
+  createPopoverProvider,
+  PopoverContextProvider,
+} from "./popover-context.tsx";
 import type { PopoverStoreProps } from "./popover-store.ts";
 import { usePopoverStore } from "./popover-store.ts";
 
@@ -15,14 +18,16 @@ import { usePopoverStore } from "./popover-store.ts";
  * </PopoverProvider>
  * ```
  */
-export function PopoverProvider(props: PopoverProviderProps = {}) {
+export const PopoverProvider = createPopoverProvider(function PopoverProvider(
+  props: PopoverProviderProps = {},
+) {
   const store = usePopoverStore(props);
   return (
     <PopoverContextProvider value={store}>
       {props.children}
     </PopoverContextProvider>
   );
-}
+});
 
 export interface PopoverProviderProps extends PopoverStoreProps {
   children?: ReactNode;

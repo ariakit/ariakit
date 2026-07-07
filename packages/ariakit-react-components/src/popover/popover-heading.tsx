@@ -1,5 +1,5 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { DialogHeadingOptions } from "../dialog/dialog-heading.tsx";
 import { useDialogHeading } from "../dialog/dialog-heading.tsx";
@@ -60,7 +60,7 @@ export interface PopoverHeadingOptions<
    * component through React context, so it must be rendered inside the popover
    * for the `aria-labelledby` prop to be set on the popover element.
    */
-  store?: PopoverStore;
+  store?: PopoverStore | ProviderComponent<PopoverStore>;
 }
 
 export type PopoverHeadingProps<T extends ElementType = TagName> = Props<

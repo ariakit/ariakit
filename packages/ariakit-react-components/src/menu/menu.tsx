@@ -4,6 +4,7 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
@@ -50,7 +51,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   ...props
 }) {
   const context = useMenuProviderContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,

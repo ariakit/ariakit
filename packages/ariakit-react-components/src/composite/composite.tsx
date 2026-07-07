@@ -10,8 +10,9 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   flatten2DArray,
   reverseArray,
@@ -240,7 +241,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     ...props
   }) {
     const context = useCompositeProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -553,8 +554,13 @@ export interface CompositeOptions<
    * hook. If not provided, the closest
    * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: CompositeStore;
+  store?: CompositeStore | ProviderComponent<CompositeStore>;
   /**
    * Determines if the component should act as a composite widget. This prop
    * needs to be set to `false` when merging various composite widgets where

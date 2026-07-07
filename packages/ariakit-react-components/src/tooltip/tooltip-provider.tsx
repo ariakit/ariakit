@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import { TooltipContextProvider } from "./tooltip-context.tsx";
+import {
+  createTooltipProvider,
+  TooltipContextProvider,
+} from "./tooltip-context.tsx";
 import type { TooltipStoreProps } from "./tooltip-store.ts";
 import { useTooltipStore } from "./tooltip-store.ts";
 
@@ -15,14 +18,16 @@ import { useTooltipStore } from "./tooltip-store.ts";
  * </TooltipProvider>
  * ```
  */
-export function TooltipProvider(props: TooltipProviderProps = {}) {
+export const TooltipProvider = createTooltipProvider(function TooltipProvider(
+  props: TooltipProviderProps = {},
+) {
   const store = useTooltipStore(props);
   return (
     <TooltipContextProvider value={store}>
       {props.children}
     </TooltipContextProvider>
   );
-}
+});
 
 export interface TooltipProviderProps extends TooltipStoreProps {
   children?: ReactNode;

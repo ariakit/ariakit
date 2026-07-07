@@ -1,4 +1,9 @@
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
@@ -27,7 +32,7 @@ type TagName = typeof TagName;
 export const useSelectPopover = createHook<TagName, SelectPopoverOptions>(
   function useSelectPopover({ store, alwaysVisible, ...props }) {
     const context = useSelectProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
     props = useSelectList({ store, alwaysVisible, ...props });
     props = usePopover({ store, alwaysVisible, ...props });
     return props;

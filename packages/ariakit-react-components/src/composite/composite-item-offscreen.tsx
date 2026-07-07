@@ -1,5 +1,10 @@
 import { useStoreStateObject } from "@ariakit/react-store";
-import { useId, useMergeRefs, forwardRef } from "@ariakit/react-utils";
+import {
+  useId,
+  useMergeRefs,
+  useStoreProp,
+  forwardRef,
+} from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { disabledFromProps, getPopupItemRole } from "@ariakit/utils";
 import type { ElementType } from "react";
@@ -27,7 +32,7 @@ export function useCompositeItemOffscreen<
   ...props
 }: P) {
   const context = useCompositeScopedContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   const id = useId(props.id);
 

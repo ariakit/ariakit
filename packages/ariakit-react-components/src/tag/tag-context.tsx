@@ -38,3 +38,5 @@ export const useTagProviderContext = ctx.useProviderContext;
 export const TagContextProvider = ctx.ContextProvider;
 
 export const TagScopedContextProvider = ctx.ScopedContextProvider;
+
+export const createTagProvider = ctx.createProviderComponent;

@@ -8,8 +8,9 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   getPopupItemRole,
   isDownloading,
@@ -68,7 +69,7 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
     ...props
   }) {
     const context = useSelectScopedContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -239,8 +240,13 @@ export interface SelectItemOptions<T extends ElementType = TagName>
    * [`SelectList`](https://ariakit.com/reference/select-list) or
    * [`SelectPopover`](https://ariakit.com/reference/select-popover) components'
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: SelectStore;
+  store?: SelectStore | ProviderComponent<SelectStore>;
   /**
    * The value of the item. This will be rendered as the children by default.
    * - If

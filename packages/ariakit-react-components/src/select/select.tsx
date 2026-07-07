@@ -7,8 +7,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   toArray,
   getPopupRole,
@@ -91,7 +92,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   ...props
 }) {
   const context = useSelectProviderContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -325,8 +326,13 @@ export interface SelectOptions<T extends ElementType = TagName>
    * not provided, the closest
    * [`SelectProvider`](https://ariakit.com/reference/select-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: SelectStore;
+  store?: SelectStore | ProviderComponent<SelectStore>;
   /**
    * Determines if the
    * [`SelectList`](https://ariakit.com/reference/select-list) or

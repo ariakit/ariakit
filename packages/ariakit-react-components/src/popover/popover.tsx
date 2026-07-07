@@ -7,8 +7,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import {
   arrow,
@@ -242,7 +243,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     ...props
   }) {
     const context = usePopoverProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -542,8 +543,13 @@ export interface PopoverOptions<
    * If not provided, the closest
    * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: PopoverStore;
+  store?: PopoverStore | ProviderComponent<PopoverStore>;
   /**
    * Props that will be passed to the popover wrapper element. This element will
    * be used to position the popover.

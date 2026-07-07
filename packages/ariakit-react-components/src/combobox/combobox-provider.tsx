@@ -1,13 +1,28 @@
+import type { ProviderComponent } from "@ariakit/react-utils";
 import type { PickRequired } from "@ariakit/utils";
 import type { ReactElement, ReactNode } from "react";
-import { ComboboxContextProvider } from "./combobox-context.tsx";
+import {
+  ComboboxContextProvider,
+  createComboboxProvider,
+} from "./combobox-context.tsx";
 import type {
+  ComboboxStore,
   ComboboxStoreProps,
   ComboboxStoreSelectedValue,
 } from "./combobox-store.ts";
 import { useComboboxStore } from "./combobox-store.ts";
 
 type Value = ComboboxStoreSelectedValue;
+
+export interface ComboboxProviderComponent extends ProviderComponent<ComboboxStore> {
+  <T extends Value = Value>(
+    props: PickRequired<
+      ComboboxProviderProps<T>,
+      "selectedValue" | "defaultSelectedValue"
+    >,
+  ): ReactElement;
+  (props?: ComboboxProviderProps): ReactElement;
+}
 
 /**
  * Provides a combobox store that controls the state of
@@ -25,23 +40,17 @@ type Value = ComboboxStoreSelectedValue;
  * </ComboboxProvider>
  * ```
  */
-export function ComboboxProvider<T extends Value = Value>(
-  props: PickRequired<
-    ComboboxProviderProps<T>,
-    "selectedValue" | "defaultSelectedValue"
-  >,
-): ReactElement;
-
-export function ComboboxProvider(props?: ComboboxProviderProps): ReactElement;
-
-export function ComboboxProvider(props: ComboboxProviderProps = {}) {
-  const store = useComboboxStore(props);
-  return (
-    <ComboboxContextProvider value={store}>
-      {props.children}
-    </ComboboxContextProvider>
-  );
-}
+export const ComboboxProvider: ComboboxProviderComponent =
+  createComboboxProvider(function ComboboxProvider(
+    props: ComboboxProviderProps = {},
+  ) {
+    const store = useComboboxStore(props);
+    return (
+      <ComboboxContextProvider value={store}>
+        {props.children}
+      </ComboboxContextProvider>
+    );
+  });
 
 export interface ComboboxProviderProps<
   T extends Value = Value,

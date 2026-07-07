@@ -6,8 +6,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   addGlobalEventListener,
   disabledFromProps,
@@ -39,7 +40,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
   function useHovercardAnchor({ store, showOnHover = true, ...props }) {
     const context = useHovercardProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -174,8 +175,13 @@ export interface HovercardAnchorOptions<
    * hook. If not provided, the closest
    * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: HovercardStore;
+  store?: HovercardStore | ProviderComponent<HovercardStore>;
   /**
    * Shows the content element based on the user's _hover intent_ over the
    * anchor element. This behavior purposely ignores mobile touch and

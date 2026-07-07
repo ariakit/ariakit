@@ -1,5 +1,5 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { useContext } from "react";
 import type { CheckboxCheckOptions } from "../checkbox/checkbox-check.tsx";
@@ -78,7 +78,7 @@ export interface MenuItemCheckOptions<
    * [`MenuItemRadio`](https://ariakit.com/reference/menu-item-radio)
    * component.
    */
-  store?: MenuStore;
+  store?: MenuStore | ProviderComponent<MenuStore>;
 }
 
 export type MenuItemCheckProps<T extends ElementType = TagName> = Props<

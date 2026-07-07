@@ -7,8 +7,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   getPopupItemRole,
   getPopupRole,
@@ -81,7 +82,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     ...props
   }) {
     const context = useMenuProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -317,8 +318,13 @@ export interface MenuButtonOptions<T extends ElementType = TagName>
    * provided, the closest
    * [`MenuProvider`](https://ariakit.com/reference/menu-provider) component's
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: MenuStore;
+  store?: MenuStore | ProviderComponent<MenuStore>;
   /**
    * Determines whether pressing a character key while focusing on the
    * [`MenuButton`](https://ariakit.com/reference/menu-button) should move focus

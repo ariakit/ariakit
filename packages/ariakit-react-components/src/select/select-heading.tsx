@@ -5,7 +5,7 @@ import {
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { useContext } from "react";
 import type { PopoverHeadingOptions } from "../popover/popover-heading.tsx";
@@ -91,7 +91,7 @@ export interface SelectHeadingOptions<
    * component through React context, so it must be rendered inside the list or
    * popover for the `aria-labelledby` prop to be set on that element.
    */
-  store?: SelectStore;
+  store?: SelectStore | ProviderComponent<SelectStore>;
 }
 
 export type SelectHeadingProps<T extends ElementType = TagName> = Props<

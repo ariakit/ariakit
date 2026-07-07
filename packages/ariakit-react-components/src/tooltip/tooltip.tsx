@@ -4,8 +4,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { contains, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
@@ -42,7 +43,7 @@ export const useTooltip = createHook<TagName, TooltipOptions>(
     ...props
   }) {
     const context = useTooltipProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -135,8 +136,13 @@ export interface TooltipOptions<
    * If not provided, the closest
    * [`TooltipProvider`](https://ariakit.com/reference/tooltip-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`TooltipProvider`](https://ariakit.com/reference/tooltip-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: TooltipStore;
+  store?: TooltipStore | ProviderComponent<TooltipStore>;
   /**
    * @default true
    */

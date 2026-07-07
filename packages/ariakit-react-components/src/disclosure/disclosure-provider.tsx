@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import { DisclosureContextProvider } from "./disclosure-context.tsx";
+import {
+  createDisclosureProvider,
+  DisclosureContextProvider,
+} from "./disclosure-context.tsx";
 import type { DisclosureStoreProps } from "./disclosure-store.ts";
 import { useDisclosureStore } from "./disclosure-store.ts";
 
@@ -15,14 +18,16 @@ import { useDisclosureStore } from "./disclosure-store.ts";
  * </DisclosureProvider>
  * ```
  */
-export function DisclosureProvider(props: DisclosureProviderProps = {}) {
-  const store = useDisclosureStore(props);
-  return (
-    <DisclosureContextProvider value={store}>
-      {props.children}
-    </DisclosureContextProvider>
-  );
-}
+export const DisclosureProvider = createDisclosureProvider(
+  function DisclosureProvider(props: DisclosureProviderProps = {}) {
+    const store = useDisclosureStore(props);
+    return (
+      <DisclosureContextProvider value={store}>
+        {props.children}
+      </DisclosureContextProvider>
+    );
+  },
+);
 
 export interface DisclosureProviderProps extends DisclosureStoreProps {
   children?: ReactNode;

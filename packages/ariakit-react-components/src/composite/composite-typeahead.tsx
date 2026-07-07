@@ -3,8 +3,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   getDocument,
   isTextField,
@@ -138,7 +139,7 @@ export const useCompositeTypeahead = createHook<
   CompositeTypeaheadOptions
 >(function useCompositeTypeahead({ store, typeahead = true, ...props }) {
   const context = useCompositeScopedContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -263,8 +264,13 @@ export interface CompositeTypeaheadOptions<
    * [`Composite`](https://ariakit.com/reference/composite) or
    * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: CompositeStore;
+  store?: CompositeStore | ProviderComponent<CompositeStore>;
   /**
    * When enabled, pressing printable character keys will move focus to the next
    * composite item that starts with the entered characters.

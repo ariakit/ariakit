@@ -32,3 +32,5 @@ export const useTabProviderContext = ctx.useProviderContext;
 export const TabContextProvider = ctx.ContextProvider;
 
 export const TabScopedContextProvider = ctx.ScopedContextProvider;
+
+export const createTabProvider = ctx.createProviderComponent;

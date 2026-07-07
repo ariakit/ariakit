@@ -1,5 +1,10 @@
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { PopoverArrowOptions } from "../popover/popover-arrow.tsx";
 import { usePopoverArrow } from "../popover/popover-arrow.tsx";
@@ -25,7 +30,7 @@ type TagName = typeof TagName;
 export const useHovercardArrow = createHook<TagName, HovercardArrowOptions>(
   function useHovercardArrow({ store, ...props }) {
     const context = useHovercardContext();
-    store = store || context;
+    store = useStoreProp(store, context);
     props = usePopoverArrow({ store, ...props });
     return props;
   },
@@ -64,8 +69,13 @@ export interface HovercardArrowOptions<
    * [`Hovercard`](https://ariakit.com/reference/hovercard) or
    * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: HovercardStore;
+  store?: HovercardStore | ProviderComponent<HovercardStore>;
 }
 
 export type HovercardArrowProps<T extends ElementType = TagName> = Props<

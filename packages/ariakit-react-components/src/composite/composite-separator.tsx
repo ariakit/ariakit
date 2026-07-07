@@ -1,6 +1,11 @@
 import { useStoreState } from "@ariakit/react-store";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { SeparatorOptions } from "../separator/separator.tsx";
@@ -34,7 +39,7 @@ export const useCompositeSeparator = createHook<
   ...props
 }) {
   const context = useCompositeScopedContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -86,8 +91,13 @@ export interface CompositeSeparatorOptions<
    * [`Composite`](https://ariakit.com/reference/composite) or
    * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: CompositeStore;
+  store?: CompositeStore | ProviderComponent<CompositeStore>;
   /**
    * The orientation of the separator. By default, this is the opposite of the
    * [`orientation`](https://ariakit.com/reference/composite-provider#orientation)

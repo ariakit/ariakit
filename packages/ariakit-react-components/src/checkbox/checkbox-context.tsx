@@ -25,3 +25,5 @@ export const useCheckboxProviderContext = ctx.useProviderContext;
 export const CheckboxContextProvider = ctx.ContextProvider;
 
 export const CheckboxScopedContextProvider = ctx.ScopedContextProvider;
+
+export const createCheckboxProvider = ctx.createProviderComponent;

@@ -5,8 +5,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   queueBeforeEvent,
   getClosestFocusable,
@@ -40,7 +41,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 export const useTagList = createHook<TagName, TagListOptions>(
   function useTagList({ store, ...props }) {
     const context = useTagProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -200,8 +201,13 @@ export interface TagListOptions<
    * provided, the closest
    * [`TagProvider`](https://ariakit.com/reference/tag-provider) component's
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`TagProvider`](https://ariakit.com/reference/tag-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: TagStore;
+  store?: TagStore | ProviderComponent<TagStore>;
 }
 
 export type TagListProps<T extends ElementType = TagName> = Props<

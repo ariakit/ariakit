@@ -3,8 +3,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import { removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import {
@@ -35,7 +36,7 @@ type TagName = typeof TagName;
 export const useCollection = createHook<TagName, CollectionOptions>(
   function useCollection({ store, ...props }) {
     const context = useCollectionProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     props = useWrapElement(
       props,
@@ -83,8 +84,13 @@ export interface CollectionOptions<
    * hook. If not provided, the closest
    * [`CollectionProvider`](https://ariakit.com/reference/collection-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`CollectionProvider`](https://ariakit.com/reference/collection-provider)).
+   * In that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: CollectionStore;
+  store?: CollectionStore | ProviderComponent<CollectionStore>;
 }
 
 export type CollectionProps<T extends ElementType = TagName> = Props<

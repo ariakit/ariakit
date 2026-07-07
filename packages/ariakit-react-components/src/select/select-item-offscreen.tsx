@@ -1,4 +1,4 @@
-import { useMergeRefs, forwardRef } from "@ariakit/react-utils";
+import { useMergeRefs, forwardRef, useStoreProp } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item-offscreen.tsx";
@@ -16,7 +16,7 @@ export function useSelectItemOffscreen<
   P extends SelectItemProps<T>,
 >({ store, value, ...props }: P) {
   const context = useSelectScopedContext();
-  store = store || context;
+  store = useStoreProp(store, context);
   return useCompositeItemOffscreen({ store, value, ...props });
 }
 

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { TabContextProvider } from "./tab-context.tsx";
+import { createTabProvider, TabContextProvider } from "./tab-context.tsx";
 import type { TabStoreProps } from "./tab-store.ts";
 import { useTabStore } from "./tab-store.ts";
 
@@ -18,12 +18,14 @@ import { useTabStore } from "./tab-store.ts";
  * </TabProvider>
  * ```
  */
-export function TabProvider(props: TabProviderProps = {}) {
+export const TabProvider = createTabProvider(function TabProvider(
+  props: TabProviderProps = {},
+) {
   const store = useTabStore(props);
   return (
     <TabContextProvider value={store}>{props.children}</TabContextProvider>
   );
-}
+});
 
 export interface TabProviderProps extends TabStoreProps {
   children?: ReactNode;

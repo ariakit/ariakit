@@ -1,5 +1,5 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { PopoverHeadingOptions } from "../popover/popover-heading.tsx";
 import { usePopoverHeading } from "../popover/popover-heading.tsx";
@@ -62,7 +62,7 @@ export interface HovercardHeadingOptions<
    * React context, so it must be rendered inside the hovercard for the
    * `aria-labelledby` prop to be set on the hovercard element.
    */
-  store?: HovercardStore;
+  store?: HovercardStore | ProviderComponent<HovercardStore>;
 }
 
 export type HovercardHeadingProps<T extends ElementType = TagName> = Props<

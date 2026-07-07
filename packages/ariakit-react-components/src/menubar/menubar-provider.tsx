@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
-import { MenubarContextProvider } from "./menubar-context.tsx";
+import {
+  createMenubarProvider,
+  MenubarContextProvider,
+} from "./menubar-context.tsx";
 import type { MenubarStoreProps } from "./menubar-store.ts";
 import { useMenubarStore } from "./menubar-store.ts";
 
@@ -29,14 +32,16 @@ import { useMenubarStore } from "./menubar-store.ts";
  * </MenubarProvider>
  * ```
  */
-export function MenubarProvider(props: MenubarProviderProps = {}) {
+export const MenubarProvider = createMenubarProvider(function MenubarProvider(
+  props: MenubarProviderProps = {},
+) {
   const store = useMenubarStore(props);
   return (
     <MenubarContextProvider value={store}>
       {props.children}
     </MenubarContextProvider>
   );
-}
+});
 
 export interface MenubarProviderProps extends MenubarStoreProps {
   children?: ReactNode;

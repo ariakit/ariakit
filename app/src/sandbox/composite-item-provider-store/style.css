@@ -1,0 +1,22 @@
+.combobox {
+  height: 2.5rem;
+  padding: 0 0.5rem;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.button {
+  height: 2.5rem;
+  padding: 0 0.75rem;
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 1rem;
+}

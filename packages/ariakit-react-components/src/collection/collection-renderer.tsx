@@ -5,11 +5,12 @@ import {
   useForceUpdate,
   useId,
   useMergeRefs,
+  useStoreProp,
   useWrapElement,
   createElement,
   forwardRef,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, ProviderComponent, Props } from "@ariakit/react-utils";
 import {
   getScrollingElement,
   getWindow,
@@ -445,7 +446,7 @@ export function useCollectionRenderer<T extends Item = any>({
   ...props
 }: CollectionRendererProps<T>) {
   const context = useCollectionContext();
-  const store = storeProp || (context as typeof storeProp);
+  const store = useStoreProp(storeProp, context);
 
   const items = useStoreState(
     store,
@@ -913,10 +914,17 @@ export interface CollectionRendererOptions<
    * will be used to render the items if the
    * [`items`](https://ariakit.com/reference/collection-items#items) prop is not
    * provided.
+   *
+   * You can also pass a provider component (for example,
+   * [`CollectionProvider`](https://ariakit.com/reference/collection-provider)).
+   * In that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: CollectionStore<
-    T extends CollectionStoreItem ? T : CollectionStoreItem
-  >;
+  store?:
+    | CollectionStore<T extends CollectionStoreItem ? T : CollectionStoreItem>
+    | ProviderComponent<
+        CollectionStore<T extends CollectionStoreItem ? T : CollectionStoreItem>
+      >;
   /**
    * All items to be rendered. This prop can be either a memoized array of items
    * or a number representing the total number of items to be rendered.

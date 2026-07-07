@@ -59,6 +59,10 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`memo`](#memo)
   - [`createElement`](#createelement)
   - [`createHook`](#createhook)
+  - [`providerComponentSymbol`](#providercomponentsymbol)
+  - [`ProviderComponent`](#providercomponent)
+  - [`isProviderComponent`](#isprovidercomponent)
+  - [`useStoreProp`](#usestoreprop)
   - [`createStoreContext`](#createstorecontext)
 - [Type utilities](#type-utilities)
   - [`RenderProp`](#renderprop)
@@ -501,6 +505,75 @@ Creates a component hook that accepts props and returns props so they can be pas
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
+#### `providerComponentSymbol`
+
+```ts
+const providerComponentSymbol: typeof providerComponentSymbol;
+```
+
+Key used to brand provider components created by `createStoreContext` so store props and `useStoreState` can resolve them to their store context. `Symbol.for` is used so different copies of this module still recognize each other's provider components.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `ProviderComponent`
+
+```ts
+interface ProviderComponentBrand<T extends Store = Store> {
+  /**
+   * Phantom property that carries the provider's store type. It makes provider
+   * components assignable to `ProviderComponent` types of base stores (for
+   * example, `ComboboxProvider` to `ProviderComponent<CompositeStore>`), which
+   * wouldn't be possible if the store type only appeared in the invariant
+   * `React.Context` position. Never set at runtime.
+   */
+  store?: T;
+}
+
+interface ProviderComponent<T extends Store = Store> {
+  readonly [providerComponentSymbol]: ProviderComponentBrand<T>;
+}
+```
+
+A provider component (for example, `ComboboxProvider`) that can be passed to store props and [`useStoreState`](https://ariakit.com/reference/use-store-state) in place of a store object. The store is then read from the closest matching provider via context.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `isProviderComponent`
+
+```ts
+function isProviderComponent<T extends Store>(
+  value: T | ProviderComponent<T> | null | undefined,
+): value is ProviderComponent<T>;
+function isProviderComponent(value: unknown): value is ProviderComponent;
+```
+
+Checks whether the value is a provider component created by `createStoreContext` (for example, `ComboboxProvider`).
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `useStoreProp`
+
+```ts
+function useStoreProp<T extends Store>(
+  store: T | ProviderComponent<T> | null | undefined,
+  ...fallbacks: Array<Store | null | undefined>
+): T | undefined;
+```
+
+Resolves the value of a `store` prop that may receive either a store object or a provider component. When a provider component is passed, it's an explicit reference to that specific provider: the store is read only from the closest matching provider's context, without falling back to the given fallback stores, so it may be `undefined` if no matching provider is found. Otherwise, the store prop itself is returned, falling back to the given fallback stores (typically the component's own context) when it's not provided.
+
+The store type is inferred only from the `store` prop; the fallback stores are loosely typed so they never widen or poison that inference.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `createStoreContext`
 
 ```ts
@@ -524,6 +597,9 @@ function createStoreContext<T extends Store>(
   ScopedContextProvider: (
     props: React.ComponentPropsWithoutRef<React.Provider<T | undefined>>,
   ) => React.JSX.Element;
+  createProviderComponent: <C extends AnyFunction>(
+    component: C,
+  ) => C & ProviderComponent<T>;
 };
 ```
 

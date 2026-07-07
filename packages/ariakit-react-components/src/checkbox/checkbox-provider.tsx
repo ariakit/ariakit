@@ -1,13 +1,25 @@
+import type { ProviderComponent } from "@ariakit/react-utils";
 import type { PickRequired } from "@ariakit/utils";
 import type { ReactElement, ReactNode } from "react";
-import { CheckboxContextProvider } from "./checkbox-context.tsx";
+import {
+  CheckboxContextProvider,
+  createCheckboxProvider,
+} from "./checkbox-context.tsx";
 import type {
+  CheckboxStore,
   CheckboxStoreProps,
   CheckboxStoreValue,
 } from "./checkbox-store.ts";
 import { useCheckboxStore } from "./checkbox-store.ts";
 
 type Value = CheckboxStoreValue;
+
+export interface CheckboxProviderComponent extends ProviderComponent<CheckboxStore> {
+  <T extends Value = Value>(
+    props: PickRequired<CheckboxProviderProps<T>, "value" | "defaultValue">,
+  ): ReactElement;
+  (props?: CheckboxProviderProps): ReactElement;
+}
 
 /**
  * Provides a checkbox store for its descendants. This comes in handy when
@@ -30,21 +42,17 @@ type Value = CheckboxStoreValue;
  * </CheckboxProvider>
  * ```
  */
-
-export function CheckboxProvider<T extends Value = Value>(
-  props: PickRequired<CheckboxProviderProps<T>, "value" | "defaultValue">,
-): ReactElement;
-
-export function CheckboxProvider(props?: CheckboxProviderProps): ReactElement;
-
-export function CheckboxProvider(props: CheckboxProviderProps = {}) {
-  const store = useCheckboxStore(props);
-  return (
-    <CheckboxContextProvider value={store}>
-      {props.children}
-    </CheckboxContextProvider>
-  );
-}
+export const CheckboxProvider: CheckboxProviderComponent =
+  createCheckboxProvider(function CheckboxProvider(
+    props: CheckboxProviderProps = {},
+  ) {
+    const store = useCheckboxStore(props);
+    return (
+      <CheckboxContextProvider value={store}>
+        {props.children}
+      </CheckboxContextProvider>
+    );
+  });
 
 export interface CheckboxProviderProps<
   T extends Value = Value,

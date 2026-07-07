@@ -1,6 +1,11 @@
 import { useStoreState } from "@ariakit/react-store";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   toArray,
   normalizeString,
@@ -198,7 +203,7 @@ export const useComboboxItemValue = createHook<
   ComboboxItemValueOptions
 >(function useComboboxItemValue({ store, value, userValue, ...props }) {
   const context = useComboboxScopedContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   const itemContext = useContext(ComboboxItemValueContext);
   const itemValue = value ?? itemContext;
@@ -275,8 +280,13 @@ export interface ComboboxItemValueOptions<
    * [`ComboboxList`](https://ariakit.com/reference/combobox-list) or
    * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: ComboboxStore;
+  store?: ComboboxStore | ProviderComponent<ComboboxStore>;
   /**
    * The current combobox item value. If not provided, the parent
    * [`ComboboxItem`](https://ariakit.com/reference/combobox-item) component's

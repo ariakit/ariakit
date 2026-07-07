@@ -32,3 +32,5 @@ export const useHovercardProviderContext = ctx.useProviderContext;
 export const HovercardContextProvider = ctx.ContextProvider;
 
 export const HovercardScopedContextProvider = ctx.ScopedContextProvider;
+
+export const createHovercardProvider = ctx.createProviderComponent;

@@ -32,3 +32,5 @@ export const useTooltipProviderContext = ctx.useProviderContext;
 export const TooltipContextProvider = ctx.ContextProvider;
 
 export const TooltipScopedContextProvider = ctx.ScopedContextProvider;
+
+export const createTooltipProvider = ctx.createProviderComponent;

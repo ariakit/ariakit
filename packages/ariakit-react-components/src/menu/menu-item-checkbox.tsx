@@ -5,8 +5,9 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant, shallowEqual } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useEffect } from "react";
@@ -72,7 +73,7 @@ export const useMenuItemCheckbox = createHook<TagName, MenuItemCheckboxOptions>(
     ...props
   }) {
     const context = useMenuScopedContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -187,8 +188,13 @@ export interface MenuItemCheckboxOptions<T extends ElementType = TagName>
    * provided, the closest [`Menu`](https://ariakit.com/reference/menu) or
    * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: MenuStore;
+  store?: MenuStore | ProviderComponent<MenuStore>;
   /**
    * The name of the field in the
    * [`values`](https://ariakit.com/reference/menu-provider#values) state.

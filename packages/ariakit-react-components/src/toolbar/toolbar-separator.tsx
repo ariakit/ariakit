@@ -1,5 +1,10 @@
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.tsx";
 import { useCompositeSeparator } from "../composite/composite-separator.tsx";
@@ -26,7 +31,7 @@ type TagName = typeof TagName;
 export const useToolbarSeparator = createHook<TagName, ToolbarSeparatorOptions>(
   function useToolbarSeparator({ store, ...props }) {
     const context = useToolbarContext();
-    store = store || context;
+    store = useStoreProp(store, context);
     props = useCompositeSeparator({ store, ...props });
     return props;
   },
@@ -61,8 +66,13 @@ export interface ToolbarSeparatorOptions<
    * If not provided, the closest
    * [`Toolbar`](https://ariakit.com/reference/toolbar) component's context will
    * be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`ToolbarProvider`](https://ariakit.com/reference/toolbar-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: ToolbarStore;
+  store?: ToolbarStore | ProviderComponent<ToolbarStore>;
 }
 
 export type ToolbarSeparatorProps<T extends ElementType = TagName> = Props<

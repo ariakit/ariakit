@@ -5,7 +5,7 @@ import {
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import { removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useContext } from "react";
@@ -80,7 +80,7 @@ export interface DialogDescriptionOptions<
    * component through React context, so it must be rendered inside the dialog
    * for the `aria-describedby` prop to be set on the dialog element.
    */
-  store?: DialogStore;
+  store?: DialogStore | ProviderComponent<DialogStore>;
 }
 
 export type DialogDescriptionProps<T extends ElementType = TagName> = Props<

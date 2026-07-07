@@ -7,8 +7,9 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   contains,
   hasFocus,
@@ -70,7 +71,7 @@ export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
     ...props
   }) {
     const context = useCompositeScopedContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -173,8 +174,13 @@ export interface CompositeHoverOptions<
    * [`Composite`](https://ariakit.com/reference/composite) or
    * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: CompositeStore;
+  store?: CompositeStore | ProviderComponent<CompositeStore>;
   /**
    * Determines if the composite item should be _focused_ when hovered over.
    *

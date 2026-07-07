@@ -4,8 +4,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { createStore, sync } from "@ariakit/store";
 import { chain, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
 import type { ElementType, FocusEvent, MouseEvent } from "react";
@@ -58,7 +59,7 @@ function hideStore(store: TooltipStore | null) {
 export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
   function useTooltipAnchor({ store, showOnHover = true, ...props }) {
     const context = useTooltipProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -215,8 +216,13 @@ export interface TooltipAnchorOptions<
    * If not provided, the closest
    * [`TooltipProvider`](https://ariakit.com/reference/tooltip-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`TooltipProvider`](https://ariakit.com/reference/tooltip-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: TooltipStore;
+  store?: TooltipStore | ProviderComponent<TooltipStore>;
 }
 
 export type TooltipAnchorProps<T extends ElementType = TagName> = Props<

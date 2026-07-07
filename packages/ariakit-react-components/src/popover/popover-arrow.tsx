@@ -7,8 +7,9 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import { getWindow, invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo, useState } from "react";
@@ -147,7 +148,7 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
     ...props
   }) {
     const context = usePopoverContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -285,8 +286,13 @@ export interface PopoverArrowOptions<
    * [`Popover`](https://ariakit.com/reference/popover) or
    * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: PopoverStore;
+  store?: PopoverStore | ProviderComponent<PopoverStore>;
   /**
    * The size of the arrow.
    *

@@ -3,12 +3,13 @@ import {
   useId,
   useMergeRefs,
   useSafeLayoutEffect,
+  useStoreProp,
   useWrapElement,
   createElement,
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, ProviderComponent, Props } from "@ariakit/react-utils";
 import { afterPaint, invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType, RefObject } from "react";
 import { useMemo, useRef, useState } from "react";
@@ -111,7 +112,7 @@ export const useDisclosureContent = createHook<
   ...props
 }) {
   const context = useDisclosureProviderContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -314,7 +315,7 @@ export const DisclosureContent = forwardRef(function DisclosureContent({
   ...props
 }: DisclosureContentProps) {
   const context = useDisclosureProviderContext();
-  const store = props.store || context;
+  const store = useStoreProp(props.store, context);
   const mounted = useStoreState(
     store,
     (state) => !unmountOnHide || state?.mounted,
@@ -332,8 +333,13 @@ export interface DisclosureContentOptions<
    * hook. If not provided, the closest
    * [`DisclosureProvider`](https://ariakit.com/reference/disclosure-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`DisclosureProvider`](https://ariakit.com/reference/disclosure-provider)).
+   * In that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: DisclosureStore;
+  store?: DisclosureStore | ProviderComponent<DisclosureStore>;
   /**
    * A ref to another element whose CSS transitions and animations should be
    * taken into account when computing the animation timeout, such as the

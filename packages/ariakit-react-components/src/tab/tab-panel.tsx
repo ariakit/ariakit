@@ -8,8 +8,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { getFirstTabbableIn, invariant } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent, RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -54,7 +55,7 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     ...props
   }) {
     const context = useTabProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -243,8 +244,13 @@ export interface TabPanelOptions<T extends ElementType = TagName>
    * provided, the closest
    * [`TabProvider`](https://ariakit.com/reference/tab-provider) component's
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`TabProvider`](https://ariakit.com/reference/tab-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: TabStore;
+  store?: TabStore | ProviderComponent<TabStore>;
   /**
    * The [`id`](https://ariakit.com/reference/tab#id) of the tab controlling
    * this panel. This connection is used to assign the `aria-labelledby`

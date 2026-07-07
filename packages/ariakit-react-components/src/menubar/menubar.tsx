@@ -1,11 +1,12 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useStoreProp,
   useWrapElement,
   createElement,
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
@@ -50,7 +51,7 @@ export const useMenubar = createHook<TagName, MenubarOptions>(
     ...props
   }) {
     const context = useMenubarProviderContext();
-    storeProp = storeProp || context;
+    storeProp = useStoreProp(storeProp, context);
 
     const store = useMenubarStore({
       store: storeProp,
@@ -135,8 +136,13 @@ export interface MenubarOptions<T extends ElementType = TagName>
    * component context will be used. If the component is not wrapped in a
    * [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)
    * component, an internal store will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: MenubarStore;
+  store?: MenubarStore | ProviderComponent<MenubarStore>;
 }
 
 export type MenubarProps<T extends ElementType = TagName> = Props<

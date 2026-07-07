@@ -1,5 +1,5 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { GroupLabelOptions } from "../group/group-label.tsx";
 import { useGroupLabel } from "../group/group-label.tsx";
@@ -70,7 +70,7 @@ export interface FormGroupLabelOptions<
    * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
    */
-  store?: FormStore;
+  store?: FormStore | ProviderComponent<FormStore>;
 }
 
 export type FormGroupLabelProps<T extends ElementType = TagName> = Props<

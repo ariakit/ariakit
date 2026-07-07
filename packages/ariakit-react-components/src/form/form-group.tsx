@@ -1,5 +1,5 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { GroupOptions } from "../group/group.tsx";
 import { useGroup } from "../group/group.tsx";
@@ -70,7 +70,7 @@ export interface FormGroupOptions<
    * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
    */
-  store?: FormStore;
+  store?: FormStore | ProviderComponent<FormStore>;
 }
 
 export type FormGroupProps<T extends ElementType = TagName> = Props<

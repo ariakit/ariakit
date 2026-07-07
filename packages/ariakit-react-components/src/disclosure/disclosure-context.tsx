@@ -25,3 +25,5 @@ export const useDisclosureProviderContext = ctx.useProviderContext;
 export const DisclosureContextProvider = ctx.ContextProvider;
 
 export const DisclosureScopedContextProvider = ctx.ScopedContextProvider;
+
+export const createDisclosureProvider = ctx.createProviderComponent;

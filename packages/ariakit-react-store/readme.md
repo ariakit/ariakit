@@ -30,14 +30,19 @@ This package is ESM-only and exposes a single public entrypoint.
 
 ## API reference
 
-- [`UseState`](#usestate)
-- [`useStoreState`](#usestorestate)
-- [`useStoreStateObject`](#usestorestateobject)
-- [`useStoreProps`](#usestoreprops)
-- [`useStore`](#usestore)
-- [`Store`](#store)
+- [Other exports](#other-exports)
+  - [`UseState`](#usestate)
+  - [`useStoreState`](#usestorestate)
+  - [`useStoreStateObject`](#usestorestateobject)
+  - [`useStoreProps`](#usestoreprops)
+  - [`useStore`](#usestore)
+  - [`Store`](#store)
+- [System utilities](#system-utilities)
+  - [`ProviderComponent`](#providercomponent)
 
-### `UseState`
+### Other exports
+
+#### `UseState`
 
 ```ts
 interface UseState<S> {
@@ -65,7 +70,7 @@ interface UseState<S> {
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
-### `useStoreState`
+#### `useStoreState`
 
 ```ts
 type StateStore<T = CoreStore> = T | null | undefined;
@@ -74,14 +79,14 @@ type StateKey<T = CoreStore> = keyof StoreState<T>;
 
 function useStoreState<T extends CoreStore>(store: T): StoreState<T>;
 function useStoreState<T extends CoreStore>(
-  store: StateStore<T>,
+  store: StateStore<T> | ProviderComponent<T>,
 ): StoreState<T> | undefined;
 function useStoreState<T extends CoreStore, K extends StateKey<T>>(
   store: T,
   key: K,
 ): StoreState<T>[K];
 function useStoreState<T extends CoreStore, K extends StateKey<T>>(
-  store: StateStore<T>,
+  store: StateStore<T> | ProviderComponent<T>,
   key: K,
 ): StoreState<T>[K] | undefined;
 function useStoreState<T extends CoreStore, V>(
@@ -89,12 +94,12 @@ function useStoreState<T extends CoreStore, V>(
   selector: (state: StoreState<T>) => V,
 ): V;
 function useStoreState<T extends CoreStore, V>(
-  store: StateStore<T>,
+  store: StateStore<T> | ProviderComponent<T>,
   selector: (state?: StoreState<T>) => V,
 ): V;
 ```
 
-Receives an Ariakit store object (which can be `null` or `undefined`) and returns the current state. If a key is provided as the second argument, it returns the value of that key. If a selector function is provided, the state is passed to it, and its return value is used.
+Receives an Ariakit store object (which can be `null` or `undefined`) or a provider component (for example, `ComboboxProvider`) and returns the current state. When a provider component is passed, the store is read from the closest matching provider via context. If a key is provided as the second argument, it returns the value of that key. If a selector function is provided, the state is passed to it, and its return value is used.
 
 The component using this hook will re-render when the returned value changes.
 
@@ -135,11 +140,20 @@ const combobox = Ariakit.useComboboxContext();
 const value = Ariakit.useStoreState(combobox, "value");
 ```
 
+Example:
+
+Passing a provider component instead of a store object, in which case the
+store is read from the closest matching provider:
+
+```js
+const value = Ariakit.useStoreState(Ariakit.ComboboxProvider, "value");
+```
+
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
-### `useStoreStateObject`
+#### `useStoreStateObject`
 
 ```ts
 type StateStore<T = CoreStore> = T | null | undefined;
@@ -170,18 +184,21 @@ function useStoreStateObject<
   O extends StoreStateObject<T, StoreState<T>>,
 >(store: T, object: O): StoreStateObjectResult<T, StoreState<T>, O>;
 function useStoreStateObject<
-  T extends StateStore,
+  T extends CoreStore,
   O extends StoreStateObject<T, StoreState<T> | undefined>,
->(store: T, object: O): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
+>(
+  store: StateStore<T> | ProviderComponent<T>,
+  object: O,
+): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
 ```
 
-Receives an Ariakit store object (which can be `null` or `undefined`) and returns the current state. Unlike `useStoreState`, this hook receives an object with keys that map to store keys or selector functions.
+Receives an Ariakit store object (which can be `null` or `undefined`) or a provider component (for example, `ComboboxProvider`) and returns the current state. Unlike `useStoreState`, this hook receives an object with keys that map to store keys or selector functions. When a provider component is passed, the store is read from the closest matching provider via context.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
-### `useStoreProps`
+#### `useStoreProps`
 
 ```ts
 function useStoreProps<
@@ -198,7 +215,7 @@ Synchronizes the store with the props, including parent store props.
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
-### `useStore`
+#### `useStore`
 
 ```ts
 function useStore<T extends CoreStore, P>(
@@ -213,7 +230,7 @@ Creates a React store from a core store object and returns a tuple with the stor
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
-### `Store`
+#### `Store`
 
 ```ts
 type Store<T extends CoreStore = CoreStore> = T & {
@@ -226,6 +243,35 @@ type Store<T extends CoreStore = CoreStore> = T & {
   useState: UseState<StoreState<T>>;
 };
 ```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+### System utilities
+
+Helpers for creating and composing Ariakit React components.
+
+#### `ProviderComponent`
+
+```ts
+interface ProviderComponentBrand<T extends Store = Store> {
+  /**
+   * Phantom property that carries the provider's store type. It makes provider
+   * components assignable to `ProviderComponent` types of base stores (for
+   * example, `ComboboxProvider` to `ProviderComponent<CompositeStore>`), which
+   * wouldn't be possible if the store type only appeared in the invariant
+   * `React.Context` position. Never set at runtime.
+   */
+  store?: T;
+}
+
+interface ProviderComponent<T extends Store = Store> {
+  readonly [providerComponentSymbol]: ProviderComponentBrand<T>;
+}
+```
+
+A provider component (for example, `ComboboxProvider`) that can be passed to store props and [`useStoreState`](https://ariakit.com/reference/use-store-state) in place of a store object. The store is then read from the closest matching provider via context.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>

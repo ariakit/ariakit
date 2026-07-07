@@ -1,5 +1,10 @@
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { CompositeSeparatorOptions } from "../composite/composite-separator.tsx";
@@ -31,7 +36,7 @@ export const useComboboxSeparator = createHook<
   ComboboxSeparatorOptions
 >(function useComboboxSeparator({ store, ...props }) {
   const context = useComboboxScopedContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -80,8 +85,13 @@ export interface ComboboxSeparatorOptions<
    * [`ComboboxList`](https://ariakit.com/reference/combobox-list) or
    * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: ComboboxStore;
+  store?: ComboboxStore | ProviderComponent<ComboboxStore>;
 }
 
 export type ComboboxSeparatorProps<T extends ElementType = TagName> = Props<

@@ -7,8 +7,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
 import { useEffect, useState } from "react";
@@ -70,7 +71,7 @@ function useAriaLabelledBy({ store, ...props }: MenuListProps) {
 export const useMenuList = createHook<TagName, MenuListOptions>(
   function useMenuList({ store, alwaysVisible, composite, ...props }) {
     const context = useMenuProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -234,8 +235,13 @@ export interface MenuListOptions<T extends ElementType = TagName>
    * provided, the closest
    * [`MenuProvider`](https://ariakit.com/reference/menu-provider) component's
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`MenuProvider`](https://ariakit.com/reference/menu-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: MenuStore;
+  store?: MenuStore | ProviderComponent<MenuStore>;
 }
 
 export type MenuListProps<T extends ElementType = TagName> = Props<

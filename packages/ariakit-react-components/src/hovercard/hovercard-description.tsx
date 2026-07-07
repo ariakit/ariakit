@@ -1,5 +1,5 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { PopoverDescriptionOptions } from "../popover/popover-description.tsx";
 import { usePopoverDescription } from "../popover/popover-description.tsx";
@@ -63,7 +63,7 @@ export interface HovercardDescriptionOptions<
    * React context, so it must be rendered inside the hovercard for the
    * `aria-describedby` prop to be set on the hovercard element.
    */
-  store?: HovercardStore;
+  store?: HovercardStore | ProviderComponent<HovercardStore>;
 }
 
 export type HovercardDescriptionProps<T extends ElementType = TagName> = Props<

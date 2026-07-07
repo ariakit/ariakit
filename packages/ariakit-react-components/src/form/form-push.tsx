@@ -6,7 +6,7 @@ import {
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
@@ -166,8 +166,13 @@ export interface FormPushOptions<T extends ElementType = TagName>
    * provided, the closest [`Form`](https://ariakit.com/reference/form) or
    * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`FormProvider`](https://ariakit.com/reference/form-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: FormStore;
+  store?: FormStore | ProviderComponent<FormStore>;
   /**
    * Name of the array field. This can either be a string or a reference to a
    * field name from the

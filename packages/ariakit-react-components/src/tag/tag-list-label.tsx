@@ -5,8 +5,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useTagContext } from "./tag-context.tsx";
@@ -27,7 +28,7 @@ type TagName = typeof TagName;
 export const useTagListLabel = createHook<TagName, TagListLabelOptions>(
   function useTagListLabel({ store, ...props }) {
     const context = useTagContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -91,8 +92,13 @@ export interface TagListLabelOptions<
    * provided, the closest
    * [`TagProvider`](https://ariakit.com/reference/tag-provider) component's
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`TagProvider`](https://ariakit.com/reference/tag-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: TagStore;
+  store?: TagStore | ProviderComponent<TagStore>;
 }
 
 export type TagListLabelProps<T extends ElementType = TagName> = Props<

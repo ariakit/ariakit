@@ -9,7 +9,7 @@ import {
   forwardRef,
   memo,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { getFirstTabbableIn } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
@@ -160,8 +160,13 @@ export interface FormLabelOptions<
    * provided, the closest [`Form`](https://ariakit.com/reference/form) or
    * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`FormProvider`](https://ariakit.com/reference/form-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: FormStore;
+  store?: FormStore | ProviderComponent<FormStore>;
   /**
    * Name of the field labeled by this element. This can either be a string or a
    * reference to a field name from the

@@ -1,5 +1,5 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { ProviderComponent, Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { GroupOptions } from "../group/group.tsx";
 import { useGroup } from "../group/group.tsx";
@@ -68,7 +68,7 @@ export interface CompositeGroupOptions<
    * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
    */
-  store?: CompositeStore;
+  store?: CompositeStore | ProviderComponent<CompositeStore>;
 }
 
 export type CompositeGroupProps<T extends ElementType = TagName> = Props<

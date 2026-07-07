@@ -9,8 +9,9 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { disabledFromProps, removeUndefinedValues } from "@ariakit/utils";
 import type { BivariantCallback } from "@ariakit/utils";
 import type { ChangeEvent, ElementType, FocusEvent, MouseEvent } from "react";
@@ -60,7 +61,7 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   ...props
 }) {
   const context = useRadioContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   const id = useId(props.id);
 
@@ -219,8 +220,13 @@ export interface RadioOptions<
    * [`RadioGroup`](https://ariakit.com/reference/radio-group) or
    * [`RadioProvider`](https://ariakit.com/reference/radio-provider) components'
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`RadioProvider`](https://ariakit.com/reference/radio-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: RadioStore;
+  store?: RadioStore | ProviderComponent<RadioStore>;
   /**
    * The value of the radio button.
    *

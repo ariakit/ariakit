@@ -45,6 +45,8 @@ export const MenuContextProvider = menu.ContextProvider;
 
 export const MenuScopedContextProvider = menu.ScopedContextProvider;
 
+export const createMenuProvider = menu.createProviderComponent;
+
 /**
  * Returns the menuBar store from the nearest menuBar container.
  * @deprecated

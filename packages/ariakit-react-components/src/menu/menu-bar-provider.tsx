@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createMenubarProvider } from "../menubar/menubar-context.tsx";
 import type { MenubarProviderProps } from "../menubar/menubar-provider.tsx";
 import { MenubarProvider } from "../menubar/menubar-provider.tsx";
 
@@ -29,7 +30,9 @@ import { MenubarProvider } from "../menubar/menubar-provider.tsx";
  * </MenuBarProvider>
  * ```
  */
-export function MenuBarProvider(props: MenuBarProviderProps = {}) {
+export const MenuBarProvider = createMenubarProvider(function MenuBarProvider(
+  props: MenuBarProviderProps = {},
+) {
   useEffect(() => {
     if (process.env.NODE_ENV !== "production") {
       console.warn(
@@ -39,6 +42,6 @@ export function MenuBarProvider(props: MenuBarProviderProps = {}) {
     }
   }, []);
   return <MenubarProvider {...props} />;
-}
+});
 
 export interface MenuBarProviderProps extends MenubarProviderProps {}

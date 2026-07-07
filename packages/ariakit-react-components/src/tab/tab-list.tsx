@@ -4,8 +4,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
@@ -37,7 +38,7 @@ type TagName = typeof TagName;
 export const useTabList = createHook<TagName, TabListOptions>(
   function useTabList({ store, ...props }) {
     const context = useTabProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -110,8 +111,13 @@ export interface TabListOptions<
    * provided, the closest
    * [`TabProvider`](https://ariakit.com/reference/tab-provider) component's
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`TabProvider`](https://ariakit.com/reference/tab-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: TabStore;
+  store?: TabStore | ProviderComponent<TabStore>;
 }
 
 export type TabListProps<T extends ElementType = TagName> = Props<

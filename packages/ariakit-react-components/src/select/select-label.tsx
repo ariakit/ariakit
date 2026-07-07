@@ -6,8 +6,9 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useSelectProviderContext } from "./select-context.tsx";
@@ -34,7 +35,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
   function useSelectLabel({ store, ...props }) {
     const context = useSelectProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -107,8 +108,13 @@ export interface SelectLabelOptions<
    * not provided, the closest
    * [`SelectProvider`](https://ariakit.com/reference/select-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: SelectStore;
+  store?: SelectStore | ProviderComponent<SelectStore>;
 }
 
 export type SelectLabelProps<T extends ElementType = TagName> = Props<

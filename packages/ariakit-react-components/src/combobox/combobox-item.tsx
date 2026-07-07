@@ -7,8 +7,9 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   getItemRoleByPopupRole,
   hasFocus,
@@ -80,7 +81,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     ...props
   }) {
     const context = useComboboxScopedContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -274,8 +275,13 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
+   *
+   * You can also pass a provider component (for example,
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: ComboboxStore;
+  store?: ComboboxStore | ProviderComponent<ComboboxStore>;
   /**
    * The value of the item. This will be rendered as the children by default.
    * - If

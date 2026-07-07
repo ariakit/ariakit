@@ -4,8 +4,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant, isFocusEventOutside } from "@ariakit/utils";
 import type { ElementType, FocusEvent } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
@@ -54,7 +55,7 @@ function getCheckedRadioId(store: RadioStore) {
 export const useRadioGroup = createHook<TagName, RadioGroupOptions>(
   function useRadioGroup({ store, ...props }) {
     const context = useRadioProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -124,8 +125,13 @@ export interface RadioGroupOptions<
    * not provided, the closest
    * [`RadioProvider`](https://ariakit.com/reference/radio-provider) component's
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`RadioProvider`](https://ariakit.com/reference/radio-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: RadioStore;
+  store?: RadioStore | ProviderComponent<RadioStore>;
 }
 
 export type RadioGroupProps<T extends ElementType = TagName> = Props<

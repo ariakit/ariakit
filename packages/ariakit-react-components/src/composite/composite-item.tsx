@@ -4,13 +4,14 @@ import {
   useEvent,
   useId,
   useMergeRefs,
+  useStoreProp,
   useWrapElement,
   createElement,
   createHook,
   forwardRef,
   memo,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { ProviderComponent, Props } from "@ariakit/react-utils";
 import { subscribe } from "@ariakit/store";
 import {
   getActiveElement,
@@ -158,7 +159,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     ...props
   }) {
     const context = useCompositeScopedContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
@@ -552,8 +553,13 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    * [`Composite`](https://ariakit.com/reference/composite) or
    * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)).
+   * In that case, the store is read from the closest matching provider, even
+   * if another compatible store context is closer.
    */
-  store?: CompositeStore;
+  store?: CompositeStore | ProviderComponent<CompositeStore>;
   /**
    * Determines if the item should be registered as part of the collection. If
    * this is set to `false`, the item won't be accessible via arrow keys.

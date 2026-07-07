@@ -4,8 +4,9 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
@@ -28,7 +29,7 @@ type TagName = typeof TagName;
 export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
   function useComboboxLabel({ store, ...props }) {
     const context = useComboboxProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -79,8 +80,13 @@ export interface ComboboxLabelOptions<
    * hook. If not provided, the closest
    * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: ComboboxStore;
+  store?: ComboboxStore | ProviderComponent<ComboboxStore>;
 }
 
 export type ComboboxLabelProps<T extends ElementType = TagName> = Props<

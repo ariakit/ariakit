@@ -5,8 +5,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import { identity, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useEffect, useRef } from "react";
@@ -40,7 +41,7 @@ export const useCollectionItem = createHook<TagName, CollectionItemOptions>(
     ...props
   }) {
     const context = useCollectionContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     const id = useId(props.id);
     const ref = useRef<HTMLType>(element);
@@ -98,8 +99,13 @@ export interface CollectionItemOptions<
    *
    * Live examples:
    * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
+   *
+   * You can also pass a provider component (for example,
+   * [`CollectionProvider`](https://ariakit.com/reference/collection-provider)).
+   * In that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: CollectionStore;
+  store?: CollectionStore | ProviderComponent<CollectionStore>;
   /**
    * The unique ID of the item. This will be used to register the item in the
    * store and for the element's `id` attribute. If not provided, a unique ID

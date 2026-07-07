@@ -1,5 +1,5 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { DialogDescriptionOptions } from "../dialog/dialog-description.tsx";
 import { useDialogDescription } from "../dialog/dialog-description.tsx";
@@ -61,7 +61,7 @@ export interface PopoverDescriptionOptions<
    * component through React context, so it must be rendered inside the popover
    * for the `aria-describedby` prop to be set on the popover element.
    */
-  store?: PopoverStore;
+  store?: PopoverStore | ProviderComponent<PopoverStore>;
 }
 
 export type PopoverDescriptionProps<T extends ElementType = TagName> = Props<

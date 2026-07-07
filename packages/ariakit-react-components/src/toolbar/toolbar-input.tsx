@@ -3,6 +3,7 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
@@ -29,7 +30,7 @@ type TagName = typeof TagName;
 export const useToolbarInput = createHook<TagName, ToolbarInputOptions>(
   function useToolbarInput({ store, ...props }) {
     const context = useToolbarContext();
-    store = store || context;
+    store = useStoreProp(store, context);
     props = useToolbarItem<TagName>({ store, ...props });
     return props;
   },

@@ -5,7 +5,7 @@ import {
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { useContext } from "react";
 import type { HeadingOptions } from "../heading/heading.tsx";
@@ -82,7 +82,7 @@ export interface DialogHeadingOptions<
    * component through React context, so it must be rendered inside the dialog
    * for the `aria-labelledby` prop to be set on the dialog element.
    */
-  store?: DialogStore;
+  store?: DialogStore | ProviderComponent<DialogStore>;
 }
 
 export type DialogHeadingProps<T extends ElementType = TagName> = Props<

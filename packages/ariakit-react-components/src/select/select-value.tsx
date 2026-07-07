@@ -1,4 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
+import { useStoreProp } from "@ariakit/react-utils";
+import type { ProviderComponent } from "@ariakit/react-utils";
 import type { PickRequired, ToPrimitive } from "@ariakit/utils";
 import type { ReactNode } from "react";
 import { useSelectContext } from "./select-context.tsx";
@@ -69,7 +71,7 @@ export function SelectValue({
   children,
 }: SelectValueProps = {}) {
   const context = useSelectContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   const value = useStoreState(store, (state) => {
     if (!state?.value.length) return fallback;
@@ -91,8 +93,13 @@ export interface SelectValueProps<T extends Value = Value> {
    * [`SelectList`](https://ariakit.com/reference/select-list) or
    * [`SelectPopover`](https://ariakit.com/reference/select-popover) components'
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: SelectStore<T>;
+  store?: SelectStore<T> | ProviderComponent<SelectStore<T>>;
   /**
    * The value to use as a default if the store's
    * [`value`](https://ariakit.com/reference/use-select-store#value) is

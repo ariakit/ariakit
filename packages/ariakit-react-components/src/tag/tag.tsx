@@ -7,8 +7,9 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant, isApple } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
@@ -44,7 +45,7 @@ export const useTag = createHook<TagName, TagOptions>(function useTag({
   ...props
 }) {
   const context = useTagContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -180,8 +181,13 @@ export interface TagOptions<
    * [`useTagStore`](https://ariakit.com/reference/use-tag-store) hook. If not
    * provided, the closest [`TagList`](https://ariakit.com/reference/tag-list)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`TagProvider`](https://ariakit.com/reference/tag-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: TagStore;
+  store?: TagStore | ProviderComponent<TagStore>;
   /**
    * The unique value of the tag. This is automatically rendered as the tag's
    * content if no children are provided.

@@ -1,5 +1,10 @@
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { PopoverDisclosureArrowOptions } from "../popover/popover-disclosure-arrow.tsx";
 import { usePopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.tsx";
@@ -29,7 +34,7 @@ type TagName = typeof TagName;
 export const useSelectArrow = createHook<TagName, SelectArrowOptions>(
   function useSelectArrow({ store, ...props }) {
     const context = useSelectContext();
-    store = store || context;
+    store = useStoreProp(store, context);
     props = usePopoverDisclosureArrow({ store, ...props });
     return props;
   },
@@ -70,8 +75,13 @@ export interface SelectArrowOptions<
    * not provided, the closest [`Select`](https://ariakit.com/reference/select)
    * or [`SelectProvider`](https://ariakit.com/reference/select-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: SelectStore;
+  store?: SelectStore | ProviderComponent<SelectStore>;
 }
 
 export type SelectArrowProps<T extends ElementType = TagName> = Props<

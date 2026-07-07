@@ -1,6 +1,11 @@
 import { useStoreState } from "@ariakit/react-store";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { getPopupRole, invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { DisclosureOptions } from "../disclosure/disclosure.tsx";
@@ -25,7 +30,7 @@ type TagName = typeof TagName;
 export const useDialogDisclosure = createHook<TagName, DialogDisclosureOptions>(
   function useDialogDisclosure({ store, ...props }) {
     const context = useDialogProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -74,8 +79,13 @@ export interface DialogDisclosureOptions<
    * not provided, the closest
    * [`DialogProvider`](https://ariakit.com/reference/dialog-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`DialogProvider`](https://ariakit.com/reference/dialog-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: DialogStore;
+  store?: DialogStore | ProviderComponent<DialogStore>;
 }
 
 export type DialogDisclosureProps<T extends ElementType = TagName> = Props<

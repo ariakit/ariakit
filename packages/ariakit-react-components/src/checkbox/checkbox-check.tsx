@@ -1,5 +1,5 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import { removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useContext } from "react";
@@ -99,7 +99,7 @@ export interface CheckboxCheckOptions<
    * when it's not provided, from the closest
    * [`Checkbox`](https://ariakit.com/reference/checkbox) component.
    */
-  store?: CheckboxStore;
+  store?: CheckboxStore | ProviderComponent<CheckboxStore>;
   /**
    * Determines if the checkmark should be rendered. This value is automatically
    * derived from the context when it exists. Manually setting this prop will

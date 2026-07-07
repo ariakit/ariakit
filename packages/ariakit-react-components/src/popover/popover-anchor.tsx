@@ -3,8 +3,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { usePopoverProviderContext } from "./popover-context.tsx";
 import type { PopoverStore } from "./popover-store.ts";
@@ -26,7 +27,7 @@ type TagName = typeof TagName;
 export const usePopoverAnchor = createHook<TagName, PopoverAnchorOptions>(
   function usePopoverAnchor({ store, ...props }) {
     const context = usePopoverProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
     props = {
       ...props,
       ref: useMergeRefs(store?.setAnchorElement, props.ref),
@@ -64,8 +65,13 @@ export interface PopoverAnchorOptions<
    * If not provided, the closest
    * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: PopoverStore;
+  store?: PopoverStore | ProviderComponent<PopoverStore>;
 }
 
 export type PopoverAnchorProps<T extends ElementType = TagName> = Props<

@@ -6,8 +6,9 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { disabledFromProps, invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
@@ -42,7 +43,7 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
   ...props
 }) {
   const context = useTabScopedContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -194,8 +195,13 @@ export interface TabOptions<
    * [`useTabStore`](https://ariakit.com/reference/use-tab-store) hook. If not
    * provided, the closest [`TabList`](https://ariakit.com/reference/tab-list)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`TabProvider`](https://ariakit.com/reference/tab-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: TabStore;
+  store?: TabStore | ProviderComponent<TabStore>;
   /**
    * @default true
    */

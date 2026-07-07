@@ -9,7 +9,7 @@ import {
   forwardRef,
   memo,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { getDocument, cx } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, FocusEvent, RefObject } from "react";
@@ -234,8 +234,13 @@ export interface FormControlOptions<
    * provided, the closest [`Form`](https://ariakit.com/reference/form) or
    * [`FormProvider`](https://ariakit.com/reference/form-provider) components'
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`FormProvider`](https://ariakit.com/reference/form-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: FormStore;
+  store?: FormStore | ProviderComponent<FormStore>;
   /**
    * Field name. This can either be a string corresponding to an existing
    * property name in the

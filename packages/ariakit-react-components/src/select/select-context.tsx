@@ -39,6 +39,8 @@ export const SelectContextProvider = ctx.ContextProvider;
 
 export const SelectScopedContextProvider = ctx.ScopedContextProvider;
 
+export const createSelectProvider = ctx.createProviderComponent;
+
 export const SelectItemCheckedContext = createContext(false);
 
 export const SelectHeadingContext = createContext<

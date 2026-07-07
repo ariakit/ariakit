@@ -1,11 +1,12 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useStoreProp,
   useWrapElement,
   createElement,
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
@@ -42,7 +43,7 @@ export const useToolbar = createHook<TagName, ToolbarOptions>(
     ...props
   }) {
     const context = useToolbarProviderContext();
-    storeProp = storeProp || context;
+    storeProp = useStoreProp(storeProp, context);
 
     const store = useToolbarStore({
       store: storeProp,
@@ -109,8 +110,13 @@ export interface ToolbarOptions<T extends ElementType = TagName>
    * component context will be used. If the component is not wrapped in a
    * [`ToolbarProvider`](https://ariakit.com/reference/toolbar-provider)
    * component, an internal store will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`ToolbarProvider`](https://ariakit.com/reference/toolbar-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: ToolbarStore;
+  store?: ToolbarStore | ProviderComponent<ToolbarStore>;
 }
 
 export type ToolbarProps<T extends ElementType = TagName> = Props<

@@ -4,7 +4,7 @@
  */
 
 import type { Store } from "@ariakit/store";
-import type { AnyObject, EmptyObject } from "@ariakit/utils";
+import type { AnyFunction, AnyObject, EmptyObject } from "@ariakit/utils";
 import * as React from "react";
 import { useMergeRefs } from "./hooks.ts";
 import { getRefProperty, mergeProps } from "./misc.ts";
@@ -89,6 +89,109 @@ type StoreProvider<T extends Store> = React.ComponentType<{
 }>;
 
 /**
+ * Key used to brand provider components created by `createStoreContext` so
+ * store props and `useStoreState` can resolve them to their store context.
+ * `Symbol.for` is used so different copies of this module still recognize each
+ * other's provider components.
+ */
+export const providerComponentSymbol: unique symbol = Symbol.for(
+  "ariakit.provider-component",
+);
+
+interface ProviderComponentBrand<T extends Store = Store> {
+  /**
+   * Phantom property that carries the provider's store type. It makes provider
+   * components assignable to `ProviderComponent` types of base stores (for
+   * example, `ComboboxProvider` to `ProviderComponent<CompositeStore>`), which
+   * wouldn't be possible if the store type only appeared in the invariant
+   * `React.Context` position. Never set at runtime.
+   */
+  store?: T;
+}
+
+interface ProviderComponentValue<
+  T extends Store = Store,
+> extends ProviderComponentBrand<T> {
+  context: React.Context<T | undefined>;
+}
+
+/**
+ * A provider component (for example, `ComboboxProvider`) that can be passed to
+ * store props and [`useStoreState`](https://ariakit.com/reference/use-store-state)
+ * in place of a store object. The store is then read from the closest matching
+ * provider via context.
+ */
+export interface ProviderComponent<T extends Store = Store> {
+  readonly [providerComponentSymbol]: ProviderComponentBrand<T>;
+}
+
+/**
+ * Checks whether the value is a provider component created by
+ * `createStoreContext` (for example, `ComboboxProvider`).
+ */
+export function isProviderComponent<T extends Store>(
+  value: T | ProviderComponent<T> | null | undefined,
+): value is ProviderComponent<T>;
+
+export function isProviderComponent(value: unknown): value is ProviderComponent;
+
+export function isProviderComponent(
+  value: unknown,
+): value is ProviderComponent {
+  if (typeof value !== "function") return false;
+  return providerComponentSymbol in value;
+}
+
+function getProviderComponentContext<T extends Store>(
+  provider: ProviderComponent<T>,
+) {
+  // The brand slot is always created by createStoreContext with the context
+  // attached, so it can be safely narrowed to its full runtime shape.
+  const value = provider[providerComponentSymbol] as ProviderComponentValue<T>;
+  return value.context;
+}
+
+const emptyStoreContext = React.createContext<Store | undefined>(undefined);
+
+/**
+ * Resolves the value of a `store` prop that may receive either a store object
+ * or a provider component. When a provider component is passed, it's an
+ * explicit reference to that specific provider: the store is read only from
+ * the closest matching provider's context, without falling back to the given
+ * fallback stores, so it may be `undefined` if no matching provider is found.
+ * Otherwise, the store prop itself is returned, falling back to the given
+ * fallback stores (typically the component's own context) when it's not
+ * provided.
+ *
+ * The store type is inferred only from the `store` prop; the fallback stores
+ * are loosely typed so they never widen or poison that inference.
+ */
+export function useStoreProp<T extends Store>(
+  store: T | ProviderComponent<T> | null | undefined,
+  ...fallbacks: Array<Store | null | undefined>
+): T | undefined;
+
+export function useStoreProp(
+  store: Store | ProviderComponent | null | undefined,
+  ...fallbacks: Array<Store | null | undefined>
+): Store | undefined {
+  const isProvider = isProviderComponent(store);
+  // Hooks must be called unconditionally, so always read a context: the
+  // provider component's own context when the store is a provider component, or
+  // an always empty context otherwise (its value is always undefined).
+  const providerContext = isProvider
+    ? getProviderComponentContext(store)
+    : emptyStoreContext;
+  const contextStore = React.useContext(providerContext);
+  if (isProvider) return contextStore;
+  if (store) return store;
+  for (const fallback of fallbacks) {
+    if (fallback) return fallback;
+  }
+  return;
+}
+
+/**
  * Creates an Ariakit store context with hooks and provider components.
  */
 export function createStoreContext<T extends Store>(
@@ -138,6 +241,13 @@ export function createStoreContext<T extends Store>(
     );
   };
 
+  const createProviderComponent = <C extends AnyFunction>(
+    component: C,
+  ): C & ProviderComponent<T> => {
+    const value: ProviderComponentValue<T> = { context };
+    return Object.assign(component, { [providerComponentSymbol]: value });
+  };
+
   return {
     context,
     scopedContext,
@@ -146,5 +256,6 @@ export function createStoreContext<T extends Store>(
     useProviderContext,
     ContextProvider,
     ScopedContextProvider,
+    createProviderComponent,
   };
 }

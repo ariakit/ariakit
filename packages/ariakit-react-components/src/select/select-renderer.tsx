@@ -1,6 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
-import { createElement, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import { createElement, forwardRef, useStoreProp } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { toArray } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo } from "react";
@@ -75,7 +75,7 @@ function useSelectRenderer<T extends Item = any>({
   ...props
 }: SelectRendererProps<T>) {
   const context = useSelectContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   const items = useStoreState(store, (state) => {
     if (!state) return itemsProp;
@@ -142,8 +142,13 @@ export interface SelectRendererOptions<T extends Item = any> extends Omit<
    * state will be used to render the items if the
    * [`items`](https://ariakit.com/reference/select-items#items) prop is not
    * provided.
+   *
+   * You can also pass a provider component (for example,
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: SelectStore;
+  store?: SelectStore | ProviderComponent<SelectStore>;
   /**
    * The current value of the select. This will ensure the item with the given
    * value is rendered even if it's not in the viewport, so it can be

@@ -1,4 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
+import { useStoreProp } from "@ariakit/react-utils";
+import type { ProviderComponent } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ReactNode } from "react";
 import { useTagContext } from "./tag-context.tsx";
@@ -29,7 +31,7 @@ import type { TagStore, TagStoreState } from "./tag-store.ts";
  */
 export function TagValue({ store, children }: TagValueProps = {}) {
   const context = useTagContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -53,8 +55,13 @@ export interface TagValueProps {
    * hook. If not provided, the closest
    * [`TagProvider`](https://ariakit.com/reference/tag-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`TagProvider`](https://ariakit.com/reference/tag-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: TagStore;
+  store?: TagStore | ProviderComponent<TagStore>;
   /**
    * A function that gets called with the current value as an argument. It can
    * be used to render the tag value in a custom way.

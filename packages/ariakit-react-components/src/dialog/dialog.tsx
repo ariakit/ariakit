@@ -6,12 +6,13 @@ import {
   useMergeRefs,
   usePortalRef,
   useSafeLayoutEffect,
+  useStoreProp,
   useWrapElement,
   createElement,
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
   chain,
@@ -129,11 +130,12 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   ...props
 }) {
   const context = useDialogProviderContext();
+  storeProp = useStoreProp(storeProp, context);
   const ref = useRef<HTMLType>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
 
   const store = useDialogStore({
-    store: storeProp || context,
+    store: storeProp,
     open: openProp,
     setOpen(open) {
       if (open) return;
@@ -630,7 +632,7 @@ export function createDialogComponent<T extends DialogOptions>(
 ) {
   return forwardRef(function DialogComponent(props: T) {
     const context = useProviderContext();
-    const store = props.store || context;
+    const store = useStoreProp(props.store, context);
     const mounted = useStoreState(
       store,
       (state) => !props.unmountOnHide || state?.mounted || !!props.open,
@@ -695,8 +697,13 @@ export interface DialogOptions<T extends ElementType = TagName>
    * [`DialogProvider`](https://ariakit.com/reference/dialog-provider)
    * component's context will be used. Otherwise, an internal store will be
    * created.
+   *
+   * You can also pass a provider component (for example,
+   * [`DialogProvider`](https://ariakit.com/reference/dialog-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: DialogStore;
+  store?: DialogStore | ProviderComponent<DialogStore>;
   /**
    * Controls the open state of the dialog. This is similar to the
    * [`open`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/open)

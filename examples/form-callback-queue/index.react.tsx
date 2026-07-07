@@ -33,6 +33,7 @@ function RequiredField({ store, label, name, ...props }: NameFieldProps) {
 }
 
 interface FormProps extends Ariakit.FormProps {
+  store?: Ariakit.FormStore;
   requiredNames: Array<NameFieldProps["name"]>;
 }
 

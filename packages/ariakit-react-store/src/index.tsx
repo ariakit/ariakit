@@ -2,8 +2,12 @@ import {
   useEvent,
   useLiveRef,
   useSafeLayoutEffect,
+  useStoreProp,
 } from "@ariakit/react-utils";
+import type { ProviderComponent } from "@ariakit/react-utils";
 import { batch, init, subscribe, sync } from "@ariakit/store";
+
+export type { ProviderComponent } from "@ariakit/react-utils";
 import type { Store as CoreStore, State, StoreState } from "@ariakit/store";
 import { hasOwnProperty, identity } from "@ariakit/utils";
 import type {
@@ -55,10 +59,12 @@ type StateKey<T = CoreStore> = keyof StoreState<T>;
 const noopSubscribe = () => () => {};
 
 /**
- * Receives an Ariakit store object (which can be `null` or `undefined`) and
- * returns the current state. If a key is provided as the second argument, it
- * returns the value of that key. If a selector function is provided, the state
- * is passed to it, and its return value is used.
+ * Receives an Ariakit store object (which can be `null` or `undefined`) or a
+ * provider component (for example, `ComboboxProvider`) and returns the current
+ * state. When a provider component is passed, the store is read from the
+ * closest matching provider via context. If a key is provided as the second
+ * argument, it returns the value of that key. If a selector function is
+ * provided, the state is passed to it, and its return value is used.
  *
  * The component using this hook will re-render when the returned value changes.
  * @example
@@ -86,12 +92,18 @@ const noopSubscribe = () => () => {};
  * const combobox = Ariakit.useComboboxContext();
  * const value = Ariakit.useStoreState(combobox, "value");
  * ```
+ * @example
+ * Passing a provider component instead of a store object, in which case the
+ * store is read from the closest matching provider:
+ * ```js
+ * const value = Ariakit.useStoreState(Ariakit.ComboboxProvider, "value");
+ * ```
  */
 
 export function useStoreState<T extends CoreStore>(store: T): StoreState<T>;
 
 export function useStoreState<T extends CoreStore>(
-  store: StateStore<T>,
+  store: StateStore<T> | ProviderComponent<T>,
 ): StoreState<T> | undefined;
 
 export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
@@ -100,7 +112,7 @@ export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
 ): StoreState<T>[K];
 
 export function useStoreState<T extends CoreStore, K extends StateKey<T>>(
-  store: StateStore<T>,
+  store: StateStore<T> | ProviderComponent<T>,
   key: K,
 ): StoreState<T>[K] | undefined;
 
@@ -110,14 +122,15 @@ export function useStoreState<T extends CoreStore, V>(
 ): V;
 
 export function useStoreState<T extends CoreStore, V>(
-  store: StateStore<T>,
+  store: StateStore<T> | ProviderComponent<T>,
   selector: (state?: StoreState<T>) => V,
 ): V;
 
 export function useStoreState(
-  store: StateStore,
+  storeOrProvider: StateStore | ProviderComponent,
   keyOrSelector: StateKey | ((state?: AnyObject) => any) = identity,
 ) {
+  const store = useStoreProp(storeOrProvider);
   const storeSubscribe = React.useCallback(
     (callback: () => void) => {
       if (!store) return noopSubscribe();
@@ -160,9 +173,11 @@ type StoreStateObjectResult<
 };
 
 /**
- * Receives an Ariakit store object (which can be `null` or `undefined`) and
- * returns the current state. Unlike `useStoreState`, this hook receives an
- * object with keys that map to store keys or selector functions.
+ * Receives an Ariakit store object (which can be `null` or `undefined`) or a
+ * provider component (for example, `ComboboxProvider`) and returns the current
+ * state. Unlike `useStoreState`, this hook receives an object with keys that
+ * map to store keys or selector functions. When a provider component is
+ * passed, the store is read from the closest matching provider via context.
  */
 export function useStoreStateObject<
   T extends CoreStore,
@@ -170,14 +185,18 @@ export function useStoreStateObject<
 >(store: T, object: O): StoreStateObjectResult<T, StoreState<T>, O>;
 
 export function useStoreStateObject<
-  T extends StateStore,
+  T extends CoreStore,
   O extends StoreStateObject<T, StoreState<T> | undefined>,
->(store: T, object: O): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
+>(
+  store: StateStore<T> | ProviderComponent<T>,
+  object: O,
+): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
 
 export function useStoreStateObject(
-  store: StateStore,
+  storeOrProvider: StateStore | ProviderComponent,
   object: StoreStateObject<StateStore, State | undefined>,
 ) {
+  const store = useStoreProp(storeOrProvider);
   const objRef = React.useRef(
     {} as StoreStateObjectResult<StateStore, State, any>,
   );

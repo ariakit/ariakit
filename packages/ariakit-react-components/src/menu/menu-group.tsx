@@ -1,5 +1,5 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { CompositeGroupOptions } from "../composite/composite-group.tsx";
 import { useCompositeGroup } from "../composite/composite-group.tsx";
@@ -67,7 +67,7 @@ export interface MenuGroupOptions<
    * [`MenuProvider`](https://ariakit.com/reference/menu-provider) components'
    * context will be used.
    */
-  store?: MenuStore;
+  store?: MenuStore | ProviderComponent<MenuStore>;
 }
 
 export type MenuGroupProps<T extends ElementType = TagName> = Props<

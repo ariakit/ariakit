@@ -8,8 +8,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { disabledFromProps, removeUndefinedValues } from "@ariakit/utils";
 import type {
   ChangeEvent,
@@ -62,7 +63,7 @@ export const useCheckbox = createHook<TagName, CheckboxOptions>(
     ...props
   }) {
     const context = useCheckboxContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     const [_checked, setChecked] = useState(defaultChecked ?? false);
 
@@ -213,8 +214,13 @@ export interface CheckboxOptions<
    *
    * Live examples:
    * - [Checkbox as button](https://ariakit.com/examples/checkbox-as-button)
+   *
+   * You can also pass a provider component (for example,
+   * [`CheckboxProvider`](https://ariakit.com/reference/checkbox-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: CheckboxStore;
+  store?: CheckboxStore | ProviderComponent<CheckboxStore>;
   /**
    * The native `name` attribute.
    *

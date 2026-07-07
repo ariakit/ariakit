@@ -1,5 +1,10 @@
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import {
+  createElement,
+  createHook,
+  forwardRef,
+  useStoreProp,
+} from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { DialogDismissOptions } from "../dialog/dialog-dismiss.tsx";
 import { useDialogDismiss } from "../dialog/dialog-dismiss.tsx";
@@ -24,7 +29,7 @@ type TagName = typeof TagName;
 export const usePopoverDismiss = createHook<TagName, PopoverDismissOptions>(
   function usePopoverDismiss({ store, ...props }) {
     const context = usePopoverScopedContext();
-    store = store || context;
+    store = useStoreProp(store, context);
     props = useDialogDismiss({ store, ...props });
     return props;
   },
@@ -60,8 +65,13 @@ export interface PopoverDismissOptions<
    * [`Popover`](https://ariakit.com/reference/popover) or
    * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: PopoverStore;
+  store?: PopoverStore | ProviderComponent<PopoverStore>;
 }
 
 export type PopoverDismissProps<T extends ElementType = TagName> = Props<

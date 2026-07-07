@@ -6,8 +6,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import {
   isButton,
   isTextField,
@@ -57,7 +58,7 @@ export const useCompositeContainer = createHook<
   CompositeContainerOptions
 >(function useCompositeContainer({ store, ...props }) {
   const context = useCompositeScopedContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   const ref = useRef<HTMLType>(null);
   const isOpenRef = useRef(false);
@@ -288,8 +289,13 @@ export interface CompositeContainerOptions<
    * [`Composite`](https://ariakit.com/reference/composite) or
    * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)
    * components' context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: CompositeStore;
+  store?: CompositeStore | ProviderComponent<CompositeStore>;
 }
 
 export type CompositeContainerProps<T extends ElementType = TagName> = Props<

@@ -1,4 +1,4 @@
-import { useMergeRefs, forwardRef } from "@ariakit/react-utils";
+import { useMergeRefs, forwardRef, useStoreProp } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { useContext } from "react";
@@ -20,7 +20,7 @@ export function useComboboxItemOffscreen<
   P extends ComboboxItemProps<T>,
 >({ store, value, ...props }: P) {
   const context = useComboboxScopedContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   const offscreenProps = useCompositeItemOffscreen({ store, value, ...props });
   const popupRole = useContext(ComboboxListRoleContext);

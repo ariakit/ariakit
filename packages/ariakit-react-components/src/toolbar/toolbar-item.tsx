@@ -3,8 +3,9 @@ import {
   createHook,
   forwardRef,
   memo,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
@@ -29,7 +30,7 @@ type TagName = typeof TagName;
 export const useToolbarItem = createHook<TagName, ToolbarItemOptions>(
   function useToolbarItem({ store, ...props }) {
     const context = useToolbarContext();
-    store = store || context;
+    store = useStoreProp(store, context);
     props = useCompositeItem({ store, ...props });
     return props;
   },
@@ -62,8 +63,13 @@ export interface ToolbarItemOptions<
    * If not provided, the closest
    * [`Toolbar`](https://ariakit.com/reference/toolbar) component's context will
    * be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`ToolbarProvider`](https://ariakit.com/reference/toolbar-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: ToolbarStore;
+  store?: ToolbarStore | ProviderComponent<ToolbarStore>;
 }
 
 export type ToolbarItemProps<T extends ElementType = TagName> = Props<

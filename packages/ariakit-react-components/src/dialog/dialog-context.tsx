@@ -35,6 +35,8 @@ export const DialogContextProvider = ctx.ContextProvider;
 
 export const DialogScopedContextProvider = ctx.ScopedContextProvider;
 
+export const createDialogProvider = ctx.createProviderComponent;
+
 export const DialogHeadingContext = createContext<
   SetState<string | undefined> | undefined
 >(undefined);

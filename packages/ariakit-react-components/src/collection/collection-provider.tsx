@@ -1,11 +1,23 @@
+import type { ProviderComponent } from "@ariakit/react-utils";
 import type { PickRequired } from "@ariakit/utils";
 import type { ReactElement, ReactNode } from "react";
-import { CollectionContextProvider } from "./collection-context.tsx";
+import {
+  CollectionContextProvider,
+  createCollectionProvider,
+} from "./collection-context.tsx";
 import type {
+  CollectionStore,
   CollectionStoreItem,
   CollectionStoreProps,
 } from "./collection-store.ts";
 import { useCollectionStore } from "./collection-store.ts";
+
+export interface CollectionProviderComponent extends ProviderComponent<CollectionStore> {
+  <T extends CollectionStoreItem = CollectionStoreItem>(
+    props: PickRequired<CollectionProviderProps<T>, "items" | "defaultItems">,
+  ): ReactElement;
+  (props?: CollectionProviderProps): ReactElement;
+}
 
 /**
  * Provides a collection store to
@@ -20,25 +32,17 @@ import { useCollectionStore } from "./collection-store.ts";
  * </CollectionProvider>
  * ```
  */
-
-export function CollectionProvider<
-  T extends CollectionStoreItem = CollectionStoreItem,
->(
-  props: PickRequired<CollectionProviderProps<T>, "items" | "defaultItems">,
-): ReactElement;
-
-export function CollectionProvider(
-  props?: CollectionProviderProps,
-): ReactElement;
-
-export function CollectionProvider(props: CollectionProviderProps = {}) {
-  const store = useCollectionStore(props);
-  return (
-    <CollectionContextProvider value={store}>
-      {props.children}
-    </CollectionContextProvider>
-  );
-}
+export const CollectionProvider: CollectionProviderComponent =
+  createCollectionProvider(function CollectionProvider(
+    props: CollectionProviderProps = {},
+  ) {
+    const store = useCollectionStore(props);
+    return (
+      <CollectionContextProvider value={store}>
+        {props.children}
+      </CollectionContextProvider>
+    );
+  });
 
 export interface CollectionProviderProps<
   T extends CollectionStoreItem = CollectionStoreItem,

@@ -9,8 +9,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
+import type { Options, Props, ProviderComponent } from "@ariakit/react-utils";
 import { isTextField, invariant, sortBasedOnDOMPosition } from "@ariakit/utils";
 import type { ElementType, FocusEvent, FormEvent } from "react";
 import { useEffect, useRef, useState } from "react";
@@ -56,7 +57,7 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
   ...props
 }) {
   const context = useFormContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -213,8 +214,13 @@ export interface FormOptions<_T extends ElementType = TagName> extends Options {
    * provided, the closest
    * [`FormProvider`](https://ariakit.com/reference/form-provider) component's
    * context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`FormProvider`](https://ariakit.com/reference/form-provider)). In that case,
+   * the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: FormStore;
+  store?: FormStore | ProviderComponent<FormStore>;
   /**
    * Determines if the form should invoke the validation callbacks registered
    * with

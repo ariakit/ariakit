@@ -11,8 +11,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
   addGlobalEventListener,
@@ -174,7 +175,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     ...props
   }) {
     const context = useHovercardProviderContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -441,8 +442,13 @@ export interface HovercardOptions<
    * hook. If not provided, the closest
    * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: HovercardStore;
+  store?: HovercardStore | ProviderComponent<HovercardStore>;
   /**
    * Determines whether the popover should hide when the mouse leaves the
    * popover or the anchor element and there's no _hover intent_, meaning, the

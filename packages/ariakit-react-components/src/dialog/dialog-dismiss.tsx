@@ -3,8 +3,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import type { ElementType, MouseEvent } from "react";
 import { useMemo } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
@@ -31,7 +32,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 export const useDialogDismiss = createHook<TagName, DialogDismissOptions>(
   function useDialogDismiss({ store, ...props }) {
     const context = useDialogScopedContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     const onClickProp = props.onClick;
 
@@ -103,8 +104,13 @@ export interface DialogDismissOptions<
    * [`useDialogStore`](https://ariakit.com/reference/use-dialog-store) hook. If
    * not provided, the closest [`Dialog`](https://ariakit.com/reference/dialog)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`DialogProvider`](https://ariakit.com/reference/dialog-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: DialogStore;
+  store?: DialogStore | ProviderComponent<DialogStore>;
 }
 
 export type DialogDismissProps<T extends ElementType = TagName> = Props<

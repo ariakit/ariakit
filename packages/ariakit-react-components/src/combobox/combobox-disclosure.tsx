@@ -5,8 +5,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
@@ -58,7 +59,7 @@ export const useComboboxDisclosure = createHook<
   ComboboxDisclosureOptions
 >(function useComboboxDisclosure({ store, ...props }) {
   const context = useComboboxProviderContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -153,8 +154,13 @@ export interface ComboboxDisclosureOptions<
    * hook. If not provided, the closest
    * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: ComboboxStore;
+  store?: ComboboxStore | ProviderComponent<ComboboxStore>;
 }
 
 export type ComboboxDisclosureProps<T extends ElementType = TagName> = Props<

@@ -4,8 +4,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
   contains,
@@ -47,7 +48,7 @@ export const useHovercardDisclosure = createHook<
   HovercardDisclosureOptions
 >(function useHovercardDisclosure({ store, ...props }) {
   const context = useHovercardProviderContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,
@@ -200,8 +201,13 @@ export interface HovercardDisclosureOptions<
    * hook. If not provided, the closest
    * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`HovercardProvider`](https://ariakit.com/reference/hovercard-provider)). In
+   * that case, the store is read from the closest matching provider, even if
+   * another compatible store context is closer.
    */
-  store?: HovercardStore;
+  store?: HovercardStore | ProviderComponent<HovercardStore>;
 }
 
 export type HovercardDisclosureProps<T extends ElementType = TagName> = Props<

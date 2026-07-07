@@ -25,3 +25,5 @@ export const useCollectionProviderContext = ctx.useProviderContext;
 export const CollectionContextProvider = ctx.ContextProvider;
 
 export const CollectionScopedContextProvider = ctx.ScopedContextProvider;
+
+export const createCollectionProvider = ctx.createProviderComponent;

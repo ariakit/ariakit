@@ -1,5 +1,6 @@
 import type { StringLike } from "@ariakit/components/form/types";
-import { createStoreContext, useId } from "@ariakit/react-utils";
+import type { ProviderComponent } from "@ariakit/react-utils";
+import { createStoreContext, useId, useStoreProp } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import { useCallback, useRef } from "react";
 import {
@@ -13,7 +14,7 @@ type FormItemType = FormStoreItem["type"];
 type FormItemGetItem = NonNullable<CollectionItemOptions["getItem"]>;
 
 interface FormItemContextOptions {
-  store?: FormStore;
+  store?: FormStore | ProviderComponent<FormStore>;
   name: StringLike;
   component: string;
 }
@@ -44,7 +45,7 @@ export function useFormItemContext({
   component,
 }: FormItemContextOptions) {
   const context = useFormContext();
-  const form = store || context;
+  const form = useStoreProp(store, context);
 
   invariant(
     form,
@@ -94,3 +95,5 @@ export const useFormProviderContext = ctx.useProviderContext;
 export const FormContextProvider = ctx.ContextProvider;
 
 export const FormScopedContextProvider = ctx.ScopedContextProvider;
+
+export const createFormProvider = ctx.createProviderComponent;

@@ -32,3 +32,5 @@ export const useMenubarProviderContext = menubar.useProviderContext;
 export const MenubarContextProvider = menubar.ContextProvider;
 
 export const MenubarScopedContextProvider = menubar.ScopedContextProvider;
+
+export const createMenubarProvider = menubar.createProviderComponent;

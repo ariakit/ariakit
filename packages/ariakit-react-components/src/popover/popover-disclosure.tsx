@@ -4,6 +4,7 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
@@ -37,7 +38,7 @@ export const usePopoverDisclosure = createHook<
   PopoverDisclosureOptions
 >(function usePopoverDisclosure({ store, ...props }) {
   const context = usePopoverProviderContext();
-  store = store || context;
+  store = useStoreProp(store, context);
 
   invariant(
     store,

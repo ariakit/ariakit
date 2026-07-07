@@ -32,3 +32,5 @@ export const useToolbarProviderContext = ctx.useProviderContext;
 export const ToolbarContextProvider = ctx.ContextProvider;
 
 export const ToolbarScopedContextProvider = ctx.ScopedContextProvider;
+
+export const createToolbarProvider = ctx.createProviderComponent;

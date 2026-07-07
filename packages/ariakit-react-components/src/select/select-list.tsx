@@ -9,8 +9,9 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useStoreProp,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Props, ProviderComponent } from "@ariakit/react-utils";
 import { isSelfTarget, invariant } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
@@ -59,7 +60,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     ...props
   }) {
     const context = useSelectContext();
-    store = store || context;
+    store = useStoreProp(store, context);
 
     invariant(
       store,
@@ -214,8 +215,13 @@ export interface SelectListOptions<T extends ElementType = TagName>
    * not provided, the closest
    * [`SelectProvider`](https://ariakit.com/reference/select-provider)
    * component's context will be used.
+   *
+   * You can also pass a provider component (for example,
+   * [`SelectProvider`](https://ariakit.com/reference/select-provider)). In that
+   * case, the store is read from the closest matching provider, even if another
+   * compatible store context is closer.
    */
-  store?: SelectStore;
+  store?: SelectStore | ProviderComponent<SelectStore>;
   /**
    * Whether the select value should be reset to the value before the list got
    * shown when Escape is pressed. This has effect only when
