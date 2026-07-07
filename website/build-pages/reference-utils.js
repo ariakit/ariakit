@@ -32,7 +32,14 @@ export function getReferences(filename) {
     const decl = decls.at(0);
     if (!decl) continue;
     if (Node.isVariableDeclaration(decl)) {
-      const options = exportedDecls.get(`${name}Options`)?.at(0);
+      // Prefer the `${name}Options` type, falling back to `${name}Props`. The
+      // latter matters for provider components, which expose a `${name}Props`
+      // type and are exported as `const X = createXProvider(function X() {})`.
+      // The function-parameter fallback can't reach the wrapped function
+      // expression, so the props must come from the type here.
+      const options =
+        exportedDecls.get(`${name}Options`)?.at(0) ??
+        exportedDecls.get(`${name}Props`)?.at(0);
       references.push(getReference(filename, decl, options));
     } else if (Node.isFunctionDeclaration(decl)) {
       references.push(getReference(filename, decl));

@@ -53,3 +53,16 @@ test("uses typed destructured props parameters as reference props", () => {
   expect(comboboxProps).toContain("children");
   expect(headingProps).toContain("level");
 });
+
+test("uses the props type for branded provider const exports", () => {
+  // Provider components are exported as `const X = createXProvider(function
+  // X() {})` and expose a `XProviderProps` type instead of `XProviderOptions`.
+  // Their props must still be resolved from that type.
+  const props = getReference(comboboxFilename, "ComboboxProvider").props.map(
+    (prop) => {
+      return prop.name;
+    },
+  );
+
+  expect(props).toContain("virtualFocus");
+});
