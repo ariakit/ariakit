@@ -48,6 +48,14 @@
       "matchPackageNames": ["astro", "/^@astrojs\\//"]
     },
     {
+      "groupName": "solid",
+      "matchPackageNames": [
+        "solid-js",
+        "/^@solidjs\\//",
+        "/^@solid-primitives\\//"
+      ]
+    },
+    {
       "groupName": "changesets",
       "matchPackageNames": ["/^@changesets\\//"]
     },
