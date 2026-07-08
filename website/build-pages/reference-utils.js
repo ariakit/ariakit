@@ -56,8 +56,7 @@ function nonNullable(value) {
 }
 
 /**
- * @template {Node | import("ts-morph").JSDocStructure} T
- * @param {T} value
+ * @param {Node | import("ts-morph").JSDocStructure} value
  * @returns {value is import("ts-morph").JSDocStructure}
  */
 function isJSDocStructure(value) {
