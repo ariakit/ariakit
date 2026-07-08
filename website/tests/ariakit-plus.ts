@@ -281,7 +281,7 @@ for (const plan of ["month", "year"] as const) {
     expect(checkoutPrice).toBe(nextPrice);
 
     await fillCheckout(page, email);
-    await fq.button("Pay").click();
+    await fq.button(/^Pay$/).click();
     await expect(q.text("Purchased")).toBeVisible({ timeout: 10000 });
 
     const stripe = getStripeClient();
@@ -334,7 +334,7 @@ test("purchase Plus from /plus, sign out, sign in again, and access the billing 
   const frame = await fillCheckout(page, email);
   const fq = query(frame);
 
-  await fq.button("Pay").click();
+  await fq.button(/^Pay$/).click();
   await expect(q.text("Purchased")).toBeVisible({ timeout: 10000 });
 
   await page.goto("/", { waitUntil: "networkidle" });
@@ -383,7 +383,7 @@ test("purchase Plus from /components, sign out, sign in again, and access the bi
   const frame = await fillCheckout(page, email);
   const fq = query(frame);
 
-  await fq.button("Pay").click();
+  await fq.button(/^Pay$/).click();
   await expect(q.text("Purchased")).toBeVisible({ timeout: 10000 });
 
   await expect(async () => {
