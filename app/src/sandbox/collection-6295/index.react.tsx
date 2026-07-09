@@ -40,7 +40,13 @@ export default function Example() {
   }
 
   function showDetails(id: string) {
-    const item = collection.item(id);
+    // TODO: Remove this workaround once
+    // https://github.com/ariakit/ariakit/issues/6295 is fixed. The items state
+    // is the source of truth for item metadata, so look the item up there
+    // instead of using collection.item(id).
+    const item = collection
+      .getState()
+      .items.find((stateItem) => stateItem.id === id);
     setDetails(item?.label ?? "Item not found");
   }
 
