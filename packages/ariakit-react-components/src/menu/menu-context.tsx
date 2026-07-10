@@ -75,6 +75,15 @@ export const MenuItemCheckedContext = createContext<boolean | undefined>(
   undefined,
 );
 
+export interface MenuListRoleContextValue {
+  store: MenuStore;
+  role?: string;
+}
+
+export const MenuListRoleContext = createContext<
+  MenuListRoleContextValue | undefined
+>(undefined);
+
 /**
  * Whether the enclosing menu list is currently hidden (e.g. a closed menu
  * rendered without `unmountOnHide`). `MenuItem` uses it to skip registering

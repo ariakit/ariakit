@@ -1,7 +1,9 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
   useEvent,
+  useForceUpdate,
   useId,
+  useLiveRef,
   useMergeRefs,
   useWrapElement,
   createElement,
@@ -11,7 +13,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { CompositeOptions } from "../composite/composite.tsx";
@@ -21,6 +23,7 @@ import { isHidden } from "../disclosure/disclosure-content.tsx";
 import { getBasePlacement } from "../popover/__utils.ts";
 import {
   MenuListHiddenContext,
+  MenuListRoleContext,
   MenuScopedContextProvider,
   useMenuProviderContext,
 } from "./menu-context.tsx";
@@ -81,7 +84,33 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
     const parentMenu = store.parent;
     const parentMenubar = store.menubar;
     const hasParentMenu = !!parentMenu;
+    const hasCombobox = !!store.combobox;
+    composite = composite ?? !hasCombobox;
+
+    const [element, setElement] = useState<HTMLType | null>(null);
     const id = useId(props.id);
+    const defaultRole = props.role ?? (composite ? "menu" : undefined);
+    const [, forceRoleUpdate] = useForceUpdate();
+    const role = element
+      ? (element.getAttribute("role") ?? undefined)
+      : defaultRole;
+    const roleRef = useLiveRef(role);
+
+    useEffect(() => {
+      if (!element) return;
+      const updateRole = () => {
+        const nextRole = element.getAttribute("role") ?? undefined;
+        if (nextRole === roleRef.current) return;
+        roleRef.current = nextRole;
+        forceRoleUpdate();
+      };
+      const observer = new MutationObserver(updateRole);
+      observer.observe(element, { attributeFilter: ["role"] });
+      updateRole();
+      return () => observer.disconnect();
+    }, [element, forceRoleUpdate, roleRef]);
+
+    const roleContextValue = useMemo(() => ({ store, role }), [store, role]);
 
     const onKeyDownProp = props.onKeyDown;
     const dir = useStoreState(store, (state) =>
@@ -146,10 +175,12 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
       props,
       (element) => (
         <MenuScopedContextProvider value={store}>
-          {element}
+          <MenuListRoleContext.Provider value={roleContextValue}>
+            {element}
+          </MenuListRoleContext.Provider>
         </MenuScopedContextProvider>
       ),
-      [store],
+      [store, roleContextValue],
     );
 
     const ariaLabelledBy = useAriaLabelledBy({ store, ...props });
@@ -176,13 +207,14 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
       hidden,
       ...props,
       id,
-      ref: useMergeRefs(id ? store.setContentElement : null, props.ref),
+      ref: useMergeRefs(
+        id ? store.setContentElement : null,
+        setElement,
+        props.ref,
+      ),
       style,
       onKeyDown,
     };
-
-    const hasCombobox = !!store.combobox;
-    composite = composite ?? !hasCombobox;
 
     if (composite) {
       props = {

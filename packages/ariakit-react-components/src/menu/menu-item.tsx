@@ -10,6 +10,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import {
   getDocument,
+  getItemRoleByPopupRole,
   getPopupItemRole,
   isDownloading,
   isOpeningInNewTab,
@@ -27,6 +28,7 @@ import { useMenubarScopedContext } from "../menubar/menubar-context.tsx";
 import type { MenubarStore } from "../menubar/menubar-store.ts";
 import {
   MenuListHiddenContext,
+  MenuListRoleContext,
   useMenuScopedContext,
 } from "./menu-context.tsx";
 import type { MenuStore, MenuStoreState } from "./menu-store.ts";
@@ -111,15 +113,24 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       hideMenu();
     });
 
-    const contentElement = useStoreState(store, (state) =>
-      "contentElement" in state ? state.contentElement : null,
-    );
-
     // Whether the enclosing menu list is currently hidden (provided by
     // `MenuList`; see `MenuListHiddenContext`).
     const menuListHidden = useContext(MenuListHiddenContext);
+    const menuListRoleContext = useContext(MenuListRoleContext);
+    const hasMatchingMenuList = menuListRoleContext?.store === store;
+    // Hooks composed outside MenuList don't receive its context, so preserve
+    // store-based role resolution only for that path or an explicit mismatch.
+    const contentElement = useStoreState(
+      hasMatchingMenuList ? undefined : store,
+      (state): HTMLElement | null =>
+        state && "contentElement" in state
+          ? (state.contentElement as HTMLElement | null)
+          : null,
+    );
 
-    const role = getPopupItemRole(contentElement, "menuitem");
+    const role = hasMatchingMenuList
+      ? (getItemRoleByPopupRole(menuListRoleContext.role) ?? "menuitem")
+      : getPopupItemRole(contentElement, "menuitem");
 
     props = {
       role,
