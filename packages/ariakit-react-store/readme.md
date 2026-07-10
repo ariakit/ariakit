@@ -99,7 +99,7 @@ function useStoreState<T extends CoreStore, V>(
 ): V;
 ```
 
-Receives an Ariakit store object (which can be `null` or `undefined`) or a provider component (for example, `ComboboxProvider`) and returns the current state. When a provider component is passed, the store is read from the closest matching provider via context. If a key is provided as the second argument, it returns the value of that key. If a selector function is provided, the state is passed to it, and its return value is used.
+Receives an Ariakit store object (which can be `null` or `undefined`) or a provider component (for example, `ComboboxProvider`) and returns the current state. When a provider component is passed, the store is read from the closest context of that provider's kind (set by that provider, an extending provider, or a compatible container component), skipping less specific store contexts. If a key is provided as the second argument, it returns the value of that key. If a selector function is provided, the state is passed to it, and its return value is used.
 
 The component using this hook will re-render when the returned value changes.
 
@@ -143,7 +143,7 @@ const value = Ariakit.useStoreState(combobox, "value");
 Example:
 
 Passing a provider component instead of a store object, in which case the
-store is read from the closest matching provider:
+store is read from the closest context of that provider's kind:
 
 ```js
 const value = Ariakit.useStoreState(Ariakit.ComboboxProvider, "value");
@@ -192,7 +192,7 @@ function useStoreStateObject<
 ): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
 ```
 
-Receives an Ariakit store object (which can be `null` or `undefined`) or a provider component (for example, `ComboboxProvider`) and returns the current state. Unlike `useStoreState`, this hook receives an object with keys that map to store keys or selector functions. When a provider component is passed, the store is read from the closest matching provider via context.
+Receives an Ariakit store object (which can be `null` or `undefined`) or a provider component (for example, `ComboboxProvider`) and returns the current state. Unlike `useStoreState`, this hook receives an object with keys that map to store keys or selector functions. When a provider component is passed, the store is read from the closest context of that provider's kind (set by that provider, an extending provider, or a compatible container component), skipping less specific store contexts.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
@@ -271,7 +271,7 @@ interface ProviderComponent<T extends Store = Store> {
 }
 ```
 
-A provider component (for example, `ComboboxProvider`) that can be passed to store props and [`useStoreState`](https://ariakit.com/reference/use-store-state) in place of a store object. The store is then read from the closest matching provider via context.
+A provider component (for example, `ComboboxProvider`) that can be passed to store props and [`useStoreState`](https://ariakit.com/reference/use-store-state) in place of a store object. The store is then read from the closest context of that provider's kind (set by that provider, an extending provider, or a compatible container component), skipping less specific store contexts.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>

@@ -226,8 +226,9 @@ export interface MenuItemOptions<T extends ElementType = TagName>
    * You can also pass a provider component (for example,
    * [`MenuProvider`](https://ariakit.com/reference/menu-provider) or
    * [`MenubarProvider`](https://ariakit.com/reference/menubar-provider)). In
-   * that case, the store is read from the closest matching provider, even if
-   * another compatible store context is closer.
+   * that case, the store is read from the closest context of that provider's
+   * kind (set by that provider, an extending provider, or a compatible
+   * container component), skipping less specific store contexts.
    */
   store?:
     | MenubarStore

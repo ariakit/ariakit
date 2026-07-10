@@ -126,9 +126,10 @@ export interface PopoverDisclosureArrowOptions<
    * components' context will be used.
    *
    * You can also pass a provider component (for example,
-   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)). In that
-   * case, the store is read from the closest matching provider, even if another
-   * compatible store context is closer.
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)). In
+   * that case, the store is read from the closest context of that provider's
+   * kind (set by that provider, an extending provider, or a compatible
+   * container component), skipping less specific store contexts.
    */
   store?: PopoverStore | ProviderComponent<PopoverStore>;
   /**

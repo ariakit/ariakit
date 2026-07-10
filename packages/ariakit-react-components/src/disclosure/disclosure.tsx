@@ -127,8 +127,9 @@ export interface DisclosureOptions<
    *
    * You can also pass a provider component (for example,
    * [`DisclosureProvider`](https://ariakit.com/reference/disclosure-provider)).
-   * In that case, the store is read from the closest matching provider, even if
-   * another compatible store context is closer.
+   * In that case, the store is read from the closest context of that provider's
+   * kind (set by that provider, an extending provider, or a compatible
+   * container component), skipping less specific store contexts.
    */
   store?: DisclosureStore | ProviderComponent<DisclosureStore>;
   /**

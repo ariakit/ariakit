@@ -217,8 +217,9 @@ export interface CheckboxOptions<
    *
    * You can also pass a provider component (for example,
    * [`CheckboxProvider`](https://ariakit.com/reference/checkbox-provider)). In
-   * that case, the store is read from the closest matching provider, even if
-   * another compatible store context is closer.
+   * that case, the store is read from the closest context of that provider's
+   * kind (set by that provider, an extending provider, or a compatible
+   * container component), skipping less specific store contexts.
    */
   store?: CheckboxStore | ProviderComponent<CheckboxStore>;
   /**

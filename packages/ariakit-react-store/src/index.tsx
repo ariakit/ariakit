@@ -6,8 +6,6 @@ import {
 } from "@ariakit/react-utils";
 import type { ProviderComponent } from "@ariakit/react-utils";
 import { batch, init, subscribe, sync } from "@ariakit/store";
-
-export type { ProviderComponent } from "@ariakit/react-utils";
 import type { Store as CoreStore, State, StoreState } from "@ariakit/store";
 import { hasOwnProperty, identity } from "@ariakit/utils";
 import type {
@@ -18,6 +16,8 @@ import type {
 } from "@ariakit/utils";
 import * as React from "react";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
+
+export type { ProviderComponent } from "@ariakit/react-utils";
 
 export interface UseState<S> {
   /**
@@ -62,9 +62,11 @@ const noopSubscribe = () => () => {};
  * Receives an Ariakit store object (which can be `null` or `undefined`) or a
  * provider component (for example, `ComboboxProvider`) and returns the current
  * state. When a provider component is passed, the store is read from the
- * closest matching provider via context. If a key is provided as the second
- * argument, it returns the value of that key. If a selector function is
- * provided, the state is passed to it, and its return value is used.
+ * closest context of that provider's kind (set by that provider, an extending
+ * provider, or a compatible container component), skipping less specific store
+ * contexts. If a key is provided as the second argument, it returns the value
+ * of that key. If a selector function is provided, the state is passed to it,
+ * and its return value is used.
  *
  * The component using this hook will re-render when the returned value changes.
  * @example
@@ -94,7 +96,7 @@ const noopSubscribe = () => () => {};
  * ```
  * @example
  * Passing a provider component instead of a store object, in which case the
- * store is read from the closest matching provider:
+ * store is read from the closest context of that provider's kind:
  * ```js
  * const value = Ariakit.useStoreState(Ariakit.ComboboxProvider, "value");
  * ```
@@ -177,7 +179,9 @@ type StoreStateObjectResult<
  * provider component (for example, `ComboboxProvider`) and returns the current
  * state. Unlike `useStoreState`, this hook receives an object with keys that
  * map to store keys or selector functions. When a provider component is
- * passed, the store is read from the closest matching provider via context.
+ * passed, the store is read from the closest context of that provider's kind
+ * (set by that provider, an extending provider, or a compatible container
+ * component), skipping less specific store contexts.
  */
 export function useStoreStateObject<
   T extends CoreStore,

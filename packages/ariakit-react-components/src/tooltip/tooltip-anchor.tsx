@@ -218,9 +218,10 @@ export interface TooltipAnchorOptions<
    * component's context will be used.
    *
    * You can also pass a provider component (for example,
-   * [`TooltipProvider`](https://ariakit.com/reference/tooltip-provider)). In that
-   * case, the store is read from the closest matching provider, even if another
-   * compatible store context is closer.
+   * [`TooltipProvider`](https://ariakit.com/reference/tooltip-provider)). In
+   * that case, the store is read from the closest context of that provider's
+   * kind (set by that provider, an extending provider, or a compatible
+   * container component), skipping less specific store contexts.
    */
   store?: TooltipStore | ProviderComponent<TooltipStore>;
 }
