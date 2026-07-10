@@ -5,7 +5,7 @@
 "@ariakit/react": patch
 ---
 
-Support provider components in store props and store hooks
+Store props and store hooks accept provider components
 
 Component `store` props now accept a provider component (for example, [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)) in place of a store object. The store is read from that provider's context, which lets you explicitly bind a component to a specific provider kind even when a different compatible provider is nested closer.
 
