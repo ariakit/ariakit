@@ -88,7 +88,7 @@ function createRefData(
 }
 
 function makeRef(id: string, data: RefData): CollectionEntry<"references"> {
-  return { id, data } as unknown as CollectionEntry<"references">;
+  return { id, collection: "references", data };
 }
 
 function refs(): CollectionEntry<"references">[] {

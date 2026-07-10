@@ -1,7 +1,8 @@
 import { mergeProps } from "@react-aria/utils";
 import * as rac from "react-aria-components";
+import type { ProgressBarProps } from "react-aria-components";
 
-export interface ProgressProps extends rac.ProgressBarProps {}
+export interface ProgressProps extends ProgressBarProps {}
 
 export function Progress(props: ProgressProps) {
   return (

@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import * as React from "react";
 import * as rac from "react-aria-components";
+import type { DisclosurePanelProps } from "react-aria-components";
 import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
 
 export interface DisclosureProps extends Omit<rac.DisclosureProps, "children"> {
@@ -175,7 +176,7 @@ export function DisclosureButton({
 }
 
 export interface DisclosureContentProps
-  extends rac.DisclosurePanelProps, Pick<DisclosureContentBodyProps, "prose"> {
+  extends DisclosurePanelProps, Pick<DisclosureContentBodyProps, "prose"> {
   body?: React.ReactElement | DisclosureContentBodyProps;
   guide?: boolean;
   baseClassName?: string;
