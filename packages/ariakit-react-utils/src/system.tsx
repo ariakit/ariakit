@@ -121,6 +121,10 @@ interface ProviderComponentValue<
  * in place of a store object. The store is then read from the closest context
  * of that provider's kind (set by that provider, an extending provider, or a
  * compatible container component), skipping less specific store contexts.
+ *
+ * If no such context is found, the store resolves to `undefined`. Components
+ * composed from multiple layers may still bind lower-level behavior to their
+ * own contexts in that case.
  */
 export interface ProviderComponent<T extends Store = Store> {
   readonly [providerComponentSymbol]: ProviderComponentBrand<T>;

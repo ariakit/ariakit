@@ -15,6 +15,8 @@ For example, [`CompositeItem`](https://ariakit.com/reference/composite-item) can
 <CompositeItem store={ComboboxProvider} />
 ```
 
+If no matching provider context exists above the component, the store resolves to `undefined` rather than falling back to a closer compatible context. Note that components composed from multiple layers may still bind lower-level behavior to their own contexts in that case.
+
 The [`useStoreState`](https://ariakit.com/reference/use-store-state) and `useStoreStateObject` hooks accept provider components as well:
 
 ```tsx

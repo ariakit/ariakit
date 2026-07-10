@@ -538,6 +538,8 @@ interface ProviderComponent<T extends Store = Store> {
 
 A provider component (for example, `ComboboxProvider`) that can be passed to store props and [`useStoreState`](https://ariakit.com/reference/use-store-state) in place of a store object. The store is then read from the closest context of that provider's kind (set by that provider, an extending provider, or a compatible container component), skipping less specific store contexts.
 
+If no such context is found, the store resolves to `undefined`. Components composed from multiple layers may still bind lower-level behavior to their own contexts in that case.
+
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
 </div>
