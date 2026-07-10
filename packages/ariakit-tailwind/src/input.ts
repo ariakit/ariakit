@@ -609,8 +609,14 @@ const layerColorVars = {
 };
 
 const layerContrastMathVars = {
+  // This value is also read by layer push utilities and must not inherit from
+  // contrast ancestors.
   layerContrastDirection: _ak.prop.zero("lcd"),
-  layerContrastParentL: _ak.prop.zero("lcpl"),
+  // This scratch value is reset and consumed only by ak-layer-contrast.
+  layerContrastParentL: _ak.var("lcpl", 0),
+  // Keep the resolved value non-inherited so ordinary nested layers use the
+  // cheaper fallback instead of their parent's contrast calculation.
+  layerContrastL: _ak.prop("lcl"),
 };
 
 const outlineMathVars = {
@@ -1127,25 +1133,26 @@ const layerIdleOffset = fn.oklch(layerIdleMixed, {
 });
 
 /**
- * Computes parent-relative contrast lightness. When `ak-layer-contrast` is
- * active (layerContrastDirection !== 0), derives the target lightness from the
- * parent layer's lightness rather than the current color's lightness. Falls
- * back to the self-relative `selfRelativeL` when inactive.
+ * Computes parent-relative lightness for `ak-layer-contrast`.
  */
-function getContrastL(selfRelativeL: Value, contrastValue: Value) {
+function getParentContrastL(contrastValue: Value) {
   const direction = vars.layerContrastDirection;
-  // Use the contrast value as the shift magnitude, pushed in the parent-
-  // relative direction (positive = lighter, negative = darker).
   const parentShift = fn.mul(contrastValue, direction);
   const parentTargetL = fn.clamp01(
     fn.add(vars.layerContrastParentL, parentShift),
   );
-  const parentDirectedL = getDirectionalLightness(l, parentTargetL, direction);
-  // When ak-layer-contrast is active, direction is ±1 so |direction|=1.
-  // When inactive, direction=0. Use this as a blend mask.
+  return getDirectionalLightness(l, parentTargetL, direction);
+}
+
+/**
+ * Uses parent-relative contrast when a quantized parent lightness matches,
+ * otherwise preserves the ordinary layer lightness.
+ */
+function getContrastL(selfRelativeL: Value, contrastValue: Value) {
+  const direction = vars.layerContrastDirection;
   const isActive = fn.mul(direction, direction);
   return fn.add(
-    fn.mul(parentDirectedL, isActive),
+    fn.mul(getParentContrastL(contrastValue), isActive),
     fn.mul(selfRelativeL, fn.sub(1, isActive)),
   );
 }
@@ -1158,12 +1165,13 @@ const layerIdleContrastBias = fn.mul(
   vars.layerContrastBias,
   layerContrastInactive,
 );
+const layerIdleFallbackL = fn.add(
+  l,
+  fn.mul(vars.layerContrastBias, fn.sub(1, vars.layerIdlePushEnabled)),
+);
 
 const layerIdle = fn.oklch(vars.layerIdleOffset, {
-  l: fn.add(
-    getContrastL(l, getPushValue(inputs.layerIdleContrastL)),
-    fn.mul(layerIdleContrastBias, fn.sub(1, vars.layerIdlePushEnabled)),
-  ),
+  l: fn.var(vars.layerContrastL, layerIdleFallbackL),
 });
 
 const layerState = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
@@ -1493,6 +1501,11 @@ utility(
 utility(
   "layer-contrast",
   set(inputs.layerIdleContrastL, 0.25),
+  set(vars.layerContrastParentL, 0),
+  set(
+    vars.layerContrastL,
+    getContrastL(layerIdleFallbackL, getPushValue(inputs.layerIdleContrastL)),
+  ),
   mapLayerLightnessSteps((parentL, isDark) => [
     set(vars.layerContrastDirection, isDark ? 1 : -1),
     set(vars.layerContrastParentL, parentL),
