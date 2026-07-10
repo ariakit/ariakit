@@ -48,6 +48,14 @@
       "matchPackageNames": ["astro", "/^@astrojs\\//"]
     },
     {
+      "groupName": "solid",
+      "matchPackageNames": [
+        "solid-js",
+        "/^@solidjs\\//",
+        "/^@solid-primitives\\//"
+      ]
+    },
+    {
       "groupName": "changesets",
       "matchPackageNames": ["/^@changesets\\//"]
     },
@@ -118,7 +126,9 @@
         "pnpm",
         "textarea-caret",
         "tsup",
+        "@typescript/typescript6",
         "typescript",
+        "typescript-7",
         "playwright",
         "zod",
         "/^@playwright//",

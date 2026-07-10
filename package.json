@@ -91,7 +91,7 @@
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.0.3",
-    "@vitest/coverage-v8": "4.1.9",
+    "@vitest/coverage-v8": "4.1.10",
     "autoprefixer": "10.5.2",
     "chalk": "5.6.2",
     "chokidar": "5.0.0",
@@ -122,10 +122,11 @@
     "tailwindcss": "3.4.18",
     "tailwindcss-animate": "1.0.7",
     "tsup": "8.5.1",
-    "typescript": "6.0.3",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
+    "typescript-7": "npm:typescript@7.0.2",
     "vite": "8.1.3",
     "vite-plugin-solid": "2.11.12",
-    "vitest": "4.1.9",
+    "vitest": "4.1.10",
     "vitest-fail-on-console": "0.10.1",
     "wrangler": "4.107.0"
   },
@@ -136,5 +137,5 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
-  "packageManager": "pnpm@11.9.0"
+  "packageManager": "pnpm@11.10.0"
 }

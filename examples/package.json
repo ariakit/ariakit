@@ -10,8 +10,8 @@
     "@ariakit/react": "workspace:*",
     "@ariakit/react-components": "workspace:*",
     "@ariakit/solid": "workspace:*",
-    "@radix-ui/react-popover": "1.1.18",
-    "@radix-ui/react-select": "2.3.2",
+    "@radix-ui/react-popover": "1.1.19",
+    "@radix-ui/react-select": "2.3.3",
     "@wordpress/components": "36.1.0",
     "clsx": "2.1.1",
     "lodash-es": "4.18.1",
@@ -34,6 +34,6 @@
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "@types/textarea-caret": "3.0.4",
-    "vitest": "4.1.9"
+    "vitest": "4.1.10"
   }
 }
