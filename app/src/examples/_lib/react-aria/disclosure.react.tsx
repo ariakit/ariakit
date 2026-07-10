@@ -175,8 +175,6 @@ export function DisclosureButton({
 }
 
 export interface DisclosureContentProps
-  // https://github.com/oxc-project/oxc/issues/13258
-  // oxlint-disable-next-line import/namespace -- Type-only export false positive.
   extends rac.DisclosurePanelProps, Pick<DisclosureContentBodyProps, "prose"> {
   body?: React.ReactElement | DisclosureContentBodyProps;
   guide?: boolean;

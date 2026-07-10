@@ -24,7 +24,6 @@ export function Icon({ name, animateStroke, ...props }: IconProps) {
   const hasLabel =
     props["aria-label"] !== undefined || props["aria-labelledby"] !== undefined;
 
-  // oxlint-disable-next-line import/namespace -- Icon names are dynamic.
   const icon = icons[name];
   const { html, stroke, replaceId, fill, size = 24, emSize = 1 } = icon;
   const strokeWidth = props.strokeWidth ?? icon.strokeWidth ?? 1.5;
