@@ -37,6 +37,8 @@
 
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);
+  /* Kept for pages inherited from main that still use the legacy `primary`
+     color name. Branch-owned code uses `brand` instead. */
   --color-primary: oklch(56.7% 0.154556 248.5156);
   --color-secondary: oklch(65.59% 0.2118 354.31);
   --color-success: var(--color-green-700);
@@ -155,6 +157,13 @@
 
 @custom-variant ui-focus-visible {
   &:is(:focus-visible, [data-focus-visible]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-focus-visible-within {
+  &:is(:focus-visible, [data-focus-visible]),
+  &:has(:is(:focus-visible, [data-focus-visible])) {
     @slot;
   }
 }

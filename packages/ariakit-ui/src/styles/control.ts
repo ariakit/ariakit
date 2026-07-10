@@ -1,17 +1,6 @@
 import { cv } from "clava";
-import { frame } from "./frame.ts";
+import { frame, isFrameBorderColor } from "./frame.ts";
 import { text } from "./text.ts";
-
-function isFrameBorderColor(
-  value: unknown,
-): value is "brand" | "success" | "warning" | "danger" {
-  return (
-    value === "brand" ||
-    value === "success" ||
-    value === "warning" ||
-    value === "danger"
-  );
-}
 
 export const control = cv({
   extend: [frame, text],

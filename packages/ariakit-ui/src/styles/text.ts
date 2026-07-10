@@ -33,7 +33,7 @@ export const text = cv({
       }
       if (includes(COLOR_VALUES, value)) {
         const colorMap = {
-          canvas: "ui-text:ak-text ui-text:ak-text-color",
+          canvas: "ui-text:ak-text ui-text:ak-text-canvas",
           brand: "ui-text:ak-text ui-text:ak-text-brand",
           secondary: "ui-text:ak-text ui-text:ak-text-secondary",
           success: "ui-text:ak-text ui-text:ak-text-success",

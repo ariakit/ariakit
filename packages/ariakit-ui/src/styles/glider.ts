@@ -49,7 +49,7 @@ export const glider = cv({
         "[.control:has(~&)]:ui-focus-visible:[--glider-focus:--glider-focus]",
         "not-peer-ui-focus-visible:outline-none",
         "supports-anchor:[.control:has(~&)]:ui-focus-visible:outline-none",
-        "outline-2 outline-offset-1 outline-primary",
+        "ak-outline ak-outline-brand outline-2 outline-offset-1",
       ],
       selected: [
         "[position-anchor:--glider-selected] selected",
@@ -134,19 +134,9 @@ export const gliderGroup = cv({
     anchorScope:
       "--glider-group, --glider-hover, --glider-focus, --glider-selected",
   },
-  refine({ variants }) {
-    const classes: string[] = [];
+  refine({ variants, addClass }) {
     if (variants.$gap !== "none") {
-      classes.push(
-        "supports-anchor:has-[>.glider]:p-0",
-        // "supports-anchor:has-[>.glider]:[--inset-gap:var(--gap)]",
-      );
+      addClass(["supports-anchor:has-[>.glider]:p-0"]);
     }
-    if (variants.$p !== "none") {
-      // classes.push(
-      //   "supports-anchor:has-[>.glider]:[--inset-padding:calc(var(--ak-frame-padding,0px)+0px)]",
-      // );
-    }
-    return classes;
   },
 });

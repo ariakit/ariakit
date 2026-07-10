@@ -1,16 +1,6 @@
 import { cv } from "clava";
 import { control, controlLabel, controlSlot } from "./control.ts";
-
-function isFrameBorderColor(
-  value: unknown,
-): value is "brand" | "success" | "warning" | "danger" {
-  return (
-    value === "brand" ||
-    value === "success" ||
-    value === "warning" ||
-    value === "danger"
-  );
-}
+import { isFrameBorderColor } from "./frame.ts";
 
 export const badge = cv({
   extend: [control],

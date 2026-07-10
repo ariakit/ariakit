@@ -12,11 +12,11 @@ export const checkboxCard = cv({
   class: [
     "group/checkbox",
     "[--checkbox-card-edge:var(--ak-edge)]",
-    "not-ui-disabled:ui-checked-within:ak-edge-primary",
+    "not-ui-disabled:ui-checked-within:ak-edge-brand",
     "not-ui-disabled:ui-checked-within:ak-edge-raw",
     "ui-focus-visible-within:outline-2 outline-offset-2",
-    "ui-checked-within:ak-layer-primary ui-checked-within:ak-layer-mix-20",
-    "ui-checked-within:[--_ak-layer-idle-lightness-offset:0]",
+    "ui-checked-within:ak-layer-brand ui-checked-within:ak-layer-mix-20",
+    "ui-checked-within:ak-layer-offset-0",
     "[&_input]:sr-only",
   ],
   defaultVariants: {
@@ -55,12 +55,6 @@ export const checkboxCardCheck = cv({
     "group-not-ui-disabled/checkbox:group-ui-checked-within/checkbox:border-0",
     "group-ui-checked-within/checkbox:*:block!",
   ],
-  variants: {
-    $layer: {
-      dark: "group-not-ui-disabled/checkbox:ak-layer-darken-6",
-      pop: "group-not-ui-disabled/checkbox:ak-layer-6",
-    },
-  },
   defaultVariants: {
     $darken: 6,
     $border: true,

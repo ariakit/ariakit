@@ -44,7 +44,6 @@ export const tab = cv({
         "not-ui-selected:ui-hover:after:[--inset-t:min(var(--inset-x),var(--inset-b))]",
         "not-ui-selected:ui-hover:after:[--round-t:calc(var(--ak-frame-radius)-var(--fbo)-var(--inset-t))]",
         "not-ui-selected:ui-hover:after:[--round-b:calc(var(--ak-frame-radius)-var(--inset-b))]",
-        // "not-ui-selected:ui-hover:after:[clip-path:inset(var(--inset-t)_var(--inset-x)_var(--inset-b)_round_var(--round-t)_var(--round-t)_var(--round-b)_var(--round-b))]",
         "not-ui-selected:ui-hover:after:top-(--inset-t)",
         "not-ui-selected:ui-hover:after:bottom-(--inset-b)",
         "not-ui-selected:ui-hover:after:inset-x-(--inset-x)",
@@ -59,11 +58,6 @@ export const tab = cv({
     $rounded: "unset",
     $border: "inherit",
   },
-  // refine: ({ variants, addClass }) => {
-  //   if (variants.$kind === "folder" && variants.$border !== false) {
-  //     addClass("ak-frame-border-(--fb)");
-  //   }
-  // },
 });
 
 export const tabSlot = buttonSlot;
@@ -86,13 +80,10 @@ export const tabGlider = cv({
         "supports-anchor:[.control:has(~&)]:ui-selected:border-transparent",
         "supports-anchor:[.control:has(~&)]:ui-selected:ring-transparent",
         "[.glider-group:has(&)_.control]:ui-selected:nth-[1_of_.control]:[&~.glider]:before:[--ak-frame-radius:min(var(--tab-radius),var(--fp)*0.5)]",
-        // "ak-border border-0! ring",
-        // "[clip-path:inset(-999px_-999px_0_-999px)]",
       ],
     },
     $state: {
       hover: [
-        // "mx-0 w-[calc(anchor-size()+var(--inset-gap))]!",
         "[--inset:max(0px,0.2em-var(--fp)/2)] rounded-none",
         "[--inset-x:calc(var(--inset)+var(--fb))]",
         "[--inset-b:calc(var(--inset)+var(--fb))]",
@@ -104,15 +95,11 @@ export const tabGlider = cv({
       focus: [
         "[--inset:calc(0.2em)]",
         "[clip-path:inset(var(--inset)_var(--inset)_calc(var(--inset))_round_calc(var(--ak-frame-radius)-var(--inset))_calc(var(--ak-frame-radius)-var(--inset))_calc(var(--ak-frame-radius)-var(--inset)-var(--fp))_calc(var(--ak-frame-radius)-var(--inset)-var(--fp)))]",
-        // "-outline-offset-(--inset)! rounded-b-[calc(var(--ak-frame-radius)-var(--fp))]",
       ],
     },
   },
   defaultVariants: {
-    $lightnessOffset(defaultValue, variants) {
-      if (variants.$kind === "folder") {
-        return defaultValue ?? true;
-      }
+    $lightnessOffset(defaultValue) {
       return defaultValue ?? true;
     },
     $border: "inherit",
@@ -128,11 +115,6 @@ export const tabGlider = cv({
       if (variants.$kind === "folder") return "unset";
       return defaultValue;
     },
-  },
-  refine({ variants }) {
-    if (variants.$kind === "folder" && variants.$border !== false) {
-      // addClass("ak-frame-border-(--fb)");
-    }
   },
 });
 
@@ -151,24 +133,21 @@ export const tabList = cv({
   },
 });
 
-// TODO: It should be tabPanels.
 export const tabPanels = cv({
   extend: [frame],
   class: [
     "relative panel ease-tabs -mt-(--ak-frame-border) overflow-clip",
-    // "rounded-ss-none",
     "[.tabs:has(:first-child>.control[aria-selected='false']:nth-child(1_of_.control))_&]:starting:rounded-ss-[min(var(--tab-radius,var(--ak-frame-radius,0px)),var(--fp)*0.5)]!",
     "[.tabs:has(:first-child>.control[aria-selected='true']:nth-child(1_of_.control))_&]:starting:rounded-ss-(--tab-radius,var(--ak-frame-radius,0px))!",
     "supports-anchor:[.tabs:has(.glider.selected)_&]:transition-[border-radius]",
     "supports-anchor:[.tabs:has(.glider.selected)_&]:duration-(--duration-tabs)",
     "[.tabs:has(:first-child>.control[aria-selected='true']:nth-child(1_of_.control))_&]:rounded-ss-[min(var(--tab-radius,var(--ak-frame-radius,0px)),var(--fp)*0.5)]",
-    // "ak-border border-0! ring",
   ],
   variants: {
     $roundedTop: {
       false: "",
       true: "rounded-t-(--ak-frame-radius)",
-      auto: "[--tab-radius:calc(var(--ak-frame-radius)*(1-min(1,abs(var(--fb)/1px)*9999999)))]_ [--tab-radius:var(--ak-frame-radius)] rounded-t-(--tab-radius)",
+      auto: "[--tab-radius:var(--ak-frame-radius)] rounded-t-(--tab-radius)",
     },
   },
   defaultVariants: {
@@ -178,10 +157,5 @@ export const tabPanels = cv({
     $cover: true,
     $rounded: "unset",
     $border: "inherit",
-  },
-  refine({ variants }) {
-    if (variants.$border !== false) {
-      // addClass("ak-frame-border-(--fb)");
-    }
   },
 });

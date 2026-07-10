@@ -15,13 +15,21 @@ import * as ButtonSolid from "@ariakit/ui/html/button.solid.tsx";
 import {
   CheckboxCard,
   CheckboxCardCheck,
+  CheckboxCardContent,
+  CheckboxCardDescription,
+  CheckboxCardLabel,
 } from "@ariakit/ui/html/checkbox-card.react.tsx";
+import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox-card.ts";
+import { Kbd } from "@ariakit/ui/html/kbd.react.tsx";
 import {
   CheckIcon,
   ChevronDownIcon,
   CircleCheckBigIcon,
   CopyIcon,
+  SettingsIcon,
+  UserIcon,
 } from "lucide-react";
+import { IndexTabs } from "./_index-tabs.react.tsx";
 import Layout from "./_layout.astro";
 ---
 
@@ -29,7 +37,11 @@ import Layout from "./_layout.astro";
   Soon
 
   <div class="flex flex-wrap gap-2 items-center p-2">
-    <button class="ak-button-classic">Button</button>
+    <button
+      class="ak-layer ak-layer-10 ak-frame ak-frame-lg/2 ak-frame-border hover:ak-state-10 active:ak-state-darken-3 focus-visible:ak-outline focus-visible:ak-outline-brand focus-visible:outline-2 focus-visible:outline-offset-1"
+    >
+      Button
+    </button>
     <ButtonSolid.Button $invert>
       <ButtonSolid.ButtonSlot>
         <CopyIcon />
@@ -225,4 +237,160 @@ import Layout from "./_layout.astro";
       </Badge>
     </div>
   </div>
+
+  <section class="flex flex-col gap-3 p-2">
+    <h2 class="ak-ink-60 text-sm font-medium">Button layers</h2>
+    <div class="flex flex-wrap gap-2 items-center">
+      <ButtonReact.Button>Default</ButtonReact.Button>
+      <ButtonReact.Button $layer="brand">Brand</ButtonReact.Button>
+      <ButtonReact.Button $layer="secondary">Secondary</ButtonReact.Button>
+      <ButtonReact.Button $layer="success">Success</ButtonReact.Button>
+      <ButtonReact.Button $layer="warning">Warning</ButtonReact.Button>
+      <ButtonReact.Button $layer="danger">Danger</ButtonReact.Button>
+      <ButtonReact.Button $layer="ghost">Ghost</ButtonReact.Button>
+      <ButtonReact.Button $invert>Invert</ButtonReact.Button>
+      <ButtonReact.Button $layer="brand" $hue="complementary">
+        Complementary
+      </ButtonReact.Button>
+      <ButtonReact.Button $contrast>Contrast</ButtonReact.Button>
+    </div>
+
+    <h2 class="ak-ink-60 text-sm font-medium">Button kinds and borders</h2>
+    <div class="flex flex-wrap gap-2 items-center">
+      <ButtonReact.Button $kind="bevel">Bevel</ButtonReact.Button>
+      <ButtonReact.Button $kind="bevel" $layer="brand">
+        Bevel brand
+      </ButtonReact.Button>
+      <ButtonReact.Button $lightnessOffset={false} $border>
+        Border
+      </ButtonReact.Button>
+      <ButtonReact.Button
+        $lightnessOffset={false}
+        $border
+        $borderColor="danger"
+        $borderRaw
+      >
+        Danger border
+      </ButtonReact.Button>
+      <ButtonReact.Button $border={2} $borderWeight="bold">
+        Bold border
+      </ButtonReact.Button>
+      <ButtonReact.Button $hoverOffset={false} $hoverPush={2}>
+        Hover push
+      </ButtonReact.Button>
+      <ButtonReact.Button disabled>Disabled</ButtonReact.Button>
+      <ButtonReact.Button $kind="bevel" disabled>
+        Disabled bevel
+      </ButtonReact.Button>
+    </div>
+
+    <h2 class="ak-ink-60 text-sm font-medium">Button sizes</h2>
+    <div class="flex flex-wrap gap-2 items-center">
+      <ButtonReact.Button $size="xs">Extra small</ButtonReact.Button>
+      <ButtonReact.Button $size="sm">Small</ButtonReact.Button>
+      <ButtonReact.Button $size="md">Medium</ButtonReact.Button>
+      <ButtonReact.Button $size="lg">Large</ButtonReact.Button>
+      <ButtonReact.Button $size="xl">Extra large</ButtonReact.Button>
+      <ButtonReact.Button $rounded="full" $px="xl">Pill</ButtonReact.Button>
+      <ButtonReact.Button $rounded={false}>Sharp</ButtonReact.Button>
+    </div>
+
+    <h2 class="ak-ink-60 text-sm font-medium">Button group</h2>
+    <div class="flex flex-wrap gap-2 items-center">
+      <ButtonReact.ButtonGroup>
+        <ButtonReact.Button $layer="ghost" $px="lg" aria-current="true">
+          <ButtonReact.ButtonSlot>
+            <UserIcon />
+          </ButtonReact.ButtonSlot>
+          <ButtonReact.ButtonLabel>Profile</ButtonReact.ButtonLabel>
+        </ButtonReact.Button>
+        <ButtonReact.ButtonSeparator />
+        <ButtonReact.Button $layer="ghost" $px="lg">
+          <ButtonReact.ButtonSlot>
+            <SettingsIcon />
+          </ButtonReact.ButtonSlot>
+          <ButtonReact.ButtonLabel>Settings</ButtonReact.ButtonLabel>
+        </ButtonReact.Button>
+        <ButtonReact.ButtonSeparator />
+        <ButtonReact.Button $layer="ghost" $px="lg">
+          <ButtonReact.ButtonSlot>
+            <CopyIcon />
+          </ButtonReact.ButtonSlot>
+          <ButtonReact.ButtonLabel>Copy</ButtonReact.ButtonLabel>
+        </ButtonReact.Button>
+        <ButtonReact.ButtonGlider $state="hover" />
+        <ButtonReact.ButtonGlider $state="focus" />
+        <ButtonReact.ButtonGlider $state="selected" />
+      </ButtonReact.ButtonGroup>
+    </div>
+
+    <h2 class="ak-ink-60 text-sm font-medium">Badge chroma and text</h2>
+    <div class="flex flex-wrap gap-2 items-center">
+      <Badge $layer="brand" $chroma="muted">
+        <BadgeLabel>Muted</BadgeLabel>
+      </Badge>
+      <Badge $layer="brand" $chroma="vivid">
+        <BadgeLabel>Vivid</BadgeLabel>
+      </Badge>
+      <Badge $layer="brand" $chroma="neon">
+        <BadgeLabel>Neon</BadgeLabel>
+      </Badge>
+      <Badge $layer="secondary">
+        <BadgeLabel>Secondary</BadgeLabel>
+      </Badge>
+      <Badge $layer="canvas">
+        <BadgeLabel>Canvas</BadgeLabel>
+      </Badge>
+      <Badge $layer="danger" $textChroma="neon">
+        <BadgeLabel>Neon text</BadgeLabel>
+      </Badge>
+      <Badge $layer="warning" $textWarm={60}>
+        <BadgeLabel>Warm text</BadgeLabel>
+      </Badge>
+    </div>
+
+    <h2 class="ak-ink-60 text-sm font-medium">Checkbox cards</h2>
+    <div {...checkboxCardGrid.html({ $minItemSize: "12rem", class: "max-w-3xl" })}>
+      <CheckboxCard>
+        <CheckboxCardCheck />
+        <CheckboxCardLabel>Culture</CheckboxCardLabel>
+      </CheckboxCard>
+      <CheckboxCard defaultChecked>
+        <CheckboxCardCheck />
+        <CheckboxCardLabel>Finance</CheckboxCardLabel>
+      </CheckboxCard>
+      <CheckboxCard disabled>
+        <CheckboxCardCheck />
+        <CheckboxCardLabel>Disabled</CheckboxCardLabel>
+      </CheckboxCard>
+      <CheckboxCard defaultChecked disabled>
+        <CheckboxCardCheck />
+        <CheckboxCardLabel>Disabled checked</CheckboxCardLabel>
+      </CheckboxCard>
+      <CheckboxCard defaultChecked>
+        <CheckboxCardCheck />
+        <CheckboxCardContent>
+          <CheckboxCardLabel>Analytics</CheckboxCardLabel>
+          <CheckboxCardDescription>
+            Track usage across the app
+          </CheckboxCardDescription>
+        </CheckboxCardContent>
+      </CheckboxCard>
+    </div>
+
+    <h2 class="ak-ink-60 text-sm font-medium">Kbd</h2>
+    <div class="flex flex-wrap gap-4 items-center">
+      <span class="flex items-center gap-1">
+        Press <Kbd>⌘</Kbd><Kbd>K</Kbd> to search
+      </span>
+      <span
+        class="ak-layer ak-layer-black ak-frame ak-frame-lg/3 flex items-center gap-1"
+      >
+        Press <Kbd>Shift</Kbd><Kbd>Esc</Kbd> on a dark layer
+      </span>
+    </div>
+
+    <h2 class="ak-ink-60 text-sm font-medium">Tabs</h2>
+    <IndexTabs client:load />
+  </section>
 </Layout>

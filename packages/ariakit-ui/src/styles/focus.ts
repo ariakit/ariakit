@@ -17,7 +17,7 @@ export const focus = cv({
      */
     $focusColor: {
       unset: "",
-      primary: "ak-outline ak-outline-primary",
+      brand: "ak-outline ak-outline-brand",
     },
     /**
      * The offset of the focus ring.
@@ -31,7 +31,7 @@ export const focus = cv({
   defaultVariants: {
     $focusColor(defaultValue, variants) {
       if (variants.$focus) {
-        return defaultValue ?? "primary";
+        return defaultValue ?? "brand";
       }
       return defaultValue;
     },

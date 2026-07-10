@@ -46,7 +46,7 @@ export const hover = cv({
       return getLightnessStyleClass({
         value,
         property: "--hover-push",
-        class: "ui-hover:ak-state-(--hover-push)",
+        class: "ui-hover:ak-state-push-(--hover-push)",
       });
     },
     /**

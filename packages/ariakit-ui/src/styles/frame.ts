@@ -5,13 +5,32 @@ import {
   HUE_VALUES,
   getScaledStyleClass,
 } from "../utils/styles.ts";
-import type { ChromaValues, HueValues } from "../utils/styles.ts";
+import type { ChromaValues, ColorValues, HueValues } from "../utils/styles.ts";
 import { layer } from "./layer.ts";
 
 function getSpacingValue(value: string | number) {
   return typeof value === "string"
     ? value
     : `calc(var(--spacing) * (${value}))`;
+}
+
+const FRAME_BORDER_COLOR_VALUES = [
+  "brand",
+  "success",
+  "warning",
+  "danger",
+] as const satisfies readonly ColorValues[];
+
+export type FrameBorderColorValues = (typeof FRAME_BORDER_COLOR_VALUES)[number];
+
+/**
+ * Checks whether a value is one of the named colors accepted by the frame's
+ * `$borderColor` variant.
+ */
+export function isFrameBorderColor(
+  value: unknown,
+): value is FrameBorderColorValues {
+  return includes(FRAME_BORDER_COLOR_VALUES, value);
 }
 
 export const frame = cv({
@@ -123,7 +142,7 @@ export const frame = cv({
       success: "ak-edge-success",
       warning: "ak-edge-warning",
       danger: "ak-edge-danger",
-    },
+    } satisfies Record<FrameBorderColorValues | "unset", string>,
     /**
      * Applies the border color exactly as specified, without the default alpha
      * and lightness adjustments.
