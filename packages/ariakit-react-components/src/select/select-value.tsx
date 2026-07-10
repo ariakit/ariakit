@@ -96,10 +96,16 @@ export interface SelectValueProps<T extends Value = Value> {
    *
    * You can also pass a provider component (for example,
    * [`SelectProvider`](https://ariakit.com/reference/select-provider)). In that
-   * case, the store is read from the closest matching provider, even if another
-   * compatible store context is closer.
+   * case, the store is read from the closest context of that provider's kind
+   * (set by that provider, an extending provider, or a compatible container
+   * component), skipping less specific store contexts.
    */
-  store?: SelectStore<T> | ProviderComponent<SelectStore<T>>;
+  store?:
+    | SelectStore<T>
+    // The provider brand never carries the value type and runtime resolution
+    // doesn't depend on `T`, so the provider arm uses the base store to keep
+    // `T` inference and explicit generic arguments working.
+    | ProviderComponent<SelectStore>;
   /**
    * The value to use as a default if the store's
    * [`value`](https://ariakit.com/reference/use-select-store#value) is

@@ -116,7 +116,9 @@ type Data = Map<
 >;
 
 interface CollectionRendererContextValue {
-  store: CollectionRendererOptions["store"];
+  // The context value is built from the resolved store (the `useStoreProp`
+  // result), so the `ProviderComponent` arm of the option never occurs here.
+  store: Exclude<CollectionRendererOptions["store"], ProviderComponent>;
   orientation: CollectionRendererOptions["orientation"];
   overscan: CollectionRendererOptions["overscan"];
   childrenData: Map<string, Data>;
@@ -917,14 +919,16 @@ export interface CollectionRendererOptions<
    *
    * You can also pass a provider component (for example,
    * [`CollectionProvider`](https://ariakit.com/reference/collection-provider)).
-   * In that case, the store is read from the closest matching provider, even if
-   * another compatible store context is closer.
+   * In that case, the store is read from the closest context of that provider's
+   * kind (set by that provider, an extending provider, or a compatible
+   * container component), skipping less specific store contexts.
    */
   store?:
     | CollectionStore<T extends CollectionStoreItem ? T : CollectionStoreItem>
-    | ProviderComponent<
-        CollectionStore<T extends CollectionStoreItem ? T : CollectionStoreItem>
-      >;
+    // The provider brand never carries the item type and runtime resolution
+    // doesn't depend on `T`, so the provider arm uses the base store to keep
+    // `T` inference and explicit generic arguments working.
+    | ProviderComponent<CollectionStore>;
   /**
    * All items to be rendered. This prop can be either a memoized array of items
    * or a number representing the total number of items to be rendered.

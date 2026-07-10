@@ -261,14 +261,16 @@ export interface CompositeRendererOptions<T extends Item = any> extends Omit<
    *
    * You can also pass a provider component (for example,
    * [`CompositeProvider`](https://ariakit.com/reference/composite-provider)).
-   * In that case, the store is read from the closest matching provider, even if
-   * another compatible store context is closer.
+   * In that case, the store is read from the closest context of that provider's
+   * kind (set by that provider, an extending provider, or a compatible
+   * container component), skipping less specific store contexts.
    */
   store?:
     | CompositeStore<T extends CollectionStoreItem ? T : CompositeStoreItem>
-    | ProviderComponent<
-        CompositeStore<T extends CollectionStoreItem ? T : CompositeStoreItem>
-      >;
+    // The provider brand never carries the item type and runtime resolution
+    // doesn't depend on `T`, so the provider arm uses the base store to keep
+    // `T` inference and explicit generic arguments working.
+    | ProviderComponent<CompositeStore>;
   /**
    * The `children` should be a function that receives item props and returns a
    * React element. The item props should be spread onto the element that

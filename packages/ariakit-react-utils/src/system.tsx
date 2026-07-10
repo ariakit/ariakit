@@ -118,8 +118,9 @@ interface ProviderComponentValue<
 /**
  * A provider component (for example, `ComboboxProvider`) that can be passed to
  * store props and [`useStoreState`](https://ariakit.com/reference/use-store-state)
- * in place of a store object. The store is then read from the closest matching
- * provider via context.
+ * in place of a store object. The store is then read from the closest context
+ * of that provider's kind (set by that provider, an extending provider, or a
+ * compatible container component), skipping less specific store contexts.
  */
 export interface ProviderComponent<T extends Store = Store> {
   readonly [providerComponentSymbol]: ProviderComponentBrand<T>;
@@ -156,18 +157,22 @@ const emptyStoreContext = React.createContext<Store | undefined>(undefined);
 /**
  * Resolves the value of a `store` prop that may receive either a store object
  * or a provider component. When a provider component is passed, it's an
- * explicit reference to that specific provider: the store is read only from
- * the closest matching provider's context, without falling back to the given
- * fallback stores, so it may be `undefined` if no matching provider is found.
- * Otherwise, the store prop itself is returned, falling back to the given
- * fallback stores (typically the component's own context) when it's not
+ * explicit reference to that provider's context kind: the store is read only
+ * from the closest context of that kind (set by that provider, an extending
+ * provider, or a compatible container component), without falling back to the
+ * given fallback stores, so it may be `undefined` if no such context value is
+ * found. Otherwise, the store prop itself is returned, falling back to the
+ * given fallback stores (typically the component's own context) when it's not
  * provided.
  *
- * The store type is inferred only from the `store` prop; the fallback stores
- * are loosely typed so they never widen or poison that inference.
+ * The store type is inferred only from the store object arm of the `store`
+ * prop; the provider component arm and the fallback stores are loosely typed
+ * so they never widen or poison that inference. This matters for generic
+ * options (for example, renderers), whose provider arm is branded with the
+ * base store type.
  */
 export function useStoreProp<T extends Store>(
-  store: T | ProviderComponent<T> | null | undefined,
+  store: T | ProviderComponent | null | undefined,
   ...fallbacks: Array<Store | null | undefined>
 ): T | undefined;
 
