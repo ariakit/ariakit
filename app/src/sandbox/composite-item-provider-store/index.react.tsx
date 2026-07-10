@@ -1,17 +1,18 @@
 import * as Ariakit from "@ariakit/react";
+import { useStoreStateObject } from "@ariakit/react-components/store";
 import "./style.css";
 
 // Reads state directly from provider components instead of store objects.
-// `useStoreState` resolves each provider component to the closest matching
-// provider through context, so this works without threading stores as props.
+// `useStoreState` and `useStoreStateObject` resolve each provider component
+// through that provider's context, so this works without threading stores as
+// props.
 function StoreStatus() {
-  const comboboxValue = Ariakit.useStoreState(
+  const { comboboxValue, comboboxItemCount } = useStoreStateObject(
     Ariakit.ComboboxProvider,
-    "value",
-  );
-  const comboboxItemCount = Ariakit.useStoreState(
-    Ariakit.ComboboxProvider,
-    (state) => state?.renderedItems.length ?? 0,
+    {
+      comboboxValue: "value",
+      comboboxItemCount: (state) => state?.renderedItems.length ?? 0,
+    },
   );
   const toolbarItemCount = Ariakit.useStoreState(
     Ariakit.ToolbarProvider,
@@ -39,6 +40,7 @@ export default function Example() {
     <>
       <OutsideStatus />
       <ComboboxWithToolbar />
+      <OutsideCollection />
     </>
   );
 }
@@ -59,11 +61,45 @@ function ComboboxWithToolbar() {
             store={Ariakit.ComboboxProvider}
             className="button"
           >
-            Focus first option
+            Combobox item
           </Ariakit.CompositeItem>
         </Ariakit.Toolbar>
         <StoreStatus />
       </Ariakit.ToolbarProvider>
     </Ariakit.ComboboxProvider>
+  );
+}
+
+// Rendered outside any ComboboxProvider. The second CollectionItem explicitly
+// targets ComboboxProvider, and provider components have no fallback, so it
+// must not register with the closer collection even though that compatible
+// context is right above it.
+function OutsideCollection() {
+  return (
+    <Ariakit.CollectionProvider>
+      <Ariakit.Collection className="collection">
+        <Ariakit.CollectionItem className="button" render={<button />}>
+          Plain item
+        </Ariakit.CollectionItem>
+        <Ariakit.CollectionItem
+          className="button"
+          render={<button />}
+          store={Ariakit.ComboboxProvider}
+        >
+          Outside combobox item
+        </Ariakit.CollectionItem>
+      </Ariakit.Collection>
+      <OutsideCollectionStatus />
+    </Ariakit.CollectionProvider>
+  );
+}
+
+function OutsideCollectionStatus() {
+  const collectionItemCount = Ariakit.useStoreState(
+    Ariakit.CollectionProvider,
+    (state) => state?.renderedItems.length ?? 0,
+  );
+  return (
+    <output aria-label="Outside collection items">{collectionItemCount}</output>
   );
 }

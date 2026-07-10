@@ -1,13 +1,13 @@
 import { q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-test("useStoreState reads state through a provider component", async () => {
+test("useStoreStateObject reads state through a provider component", async () => {
   await expect
     .poll(() => q.status.ensure("Combobox value").textContent)
     .toBe("Apple");
 
   // Typing updates the combobox store, and the readout reflects it live
-  // through the provider component passed to `useStoreState`.
+  // through the provider component passed to `useStoreStateObject`.
   await type("s", q.combobox.ensure("Fruit"));
 
   await expect
@@ -25,7 +25,7 @@ test("provider components have no fallback: useStoreState is undefined outside a
 });
 
 test("CompositeItem store={ComboboxProvider} binds to the combobox, not the closer toolbar", async () => {
-  // The `Focus first option` item is nested inside the Toolbar (its closest
+  // The `Combobox item` item is nested inside the Toolbar (its closest
   // composite context) but explicitly targets the ComboboxProvider, so it
   // registers with the combobox instead of the toolbar.
   await expect
@@ -37,5 +37,17 @@ test("CompositeItem store={ComboboxProvider} binds to the combobox, not the clos
 
   // Both items render as buttons regardless of which store they belong to.
   expect(q.button("Clear")).toBeInTheDocument();
-  expect(q.button("Focus first option")).toBeInTheDocument();
+  expect(q.button("Combobox item")).toBeInTheDocument();
+});
+
+test("provider components have no fallback: CollectionItem store={ComboboxProvider} skips the closer collection outside a matching provider", async () => {
+  // The outside collection renders one plain CollectionItem plus a
+  // CollectionItem that targets ComboboxProvider. No ComboboxProvider wraps
+  // that region, and provider components have no fallback, so the second item
+  // must not register with the closer collection: the count stays at the
+  // plain item.
+  await expect
+    .poll(() => q.status.ensure("Outside collection items").textContent)
+    .toBe("1");
+  expect(q.button("Outside combobox item")).toBeInTheDocument();
 });
