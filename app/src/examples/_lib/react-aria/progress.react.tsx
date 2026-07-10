@@ -1,8 +1,9 @@
 import { mergeProps } from "@react-aria/utils";
 import * as rac from "react-aria-components";
-import type { ProgressBarProps } from "react-aria-components";
 
-export interface ProgressProps extends ProgressBarProps {}
+// https://github.com/oxc-project/oxc/issues/13258
+// oxlint-disable-next-line import/namespace -- Type-only export false positive.
+export interface ProgressProps extends rac.ProgressBarProps {}
 
 export function Progress(props: ProgressProps) {
   return (
