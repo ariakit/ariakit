@@ -1,4 +1,4 @@
-import { afterEach, expect, test } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
 import {
   getAllTabbableIn,
   getClosestFocusable,
@@ -73,6 +73,20 @@ test("keeps radios outside a form tabbable", () => {
   document.body.append(radio);
 
   expect(isTabbable(radio)).toBe(true);
+});
+
+test("skips visibility checks for elements with a negative tab index", () => {
+  const button = document.createElement("button");
+  button.tabIndex = -1;
+  const checkVisibility = vi.fn(() => true);
+  Object.defineProperty(button, "checkVisibility", {
+    configurable: true,
+    value: checkVisibility,
+  });
+  document.body.append(button);
+
+  expect(isTabbable(button)).toBe(false);
+  expect(checkVisibility).not.toHaveBeenCalled();
 });
 
 test("getFirstTabbableIn returns the first tabbable element in order", () => {

@@ -42,8 +42,8 @@ export function isFocusable(element: Element) {
 export function isTabbable(
   element: Element | HTMLElement | HTMLInputElement,
 ): element is HTMLElement {
-  if (!isFocusable(element)) return false;
   if (hasNegativeTabIndex(element)) return false;
+  if (!isFocusable(element)) return false;
   // If the element is a radio button in a form, we must take roving tabindex
   // into account.
   if (!("form" in element)) return true;

@@ -36,7 +36,7 @@ import type {
   RefObject,
   SyntheticEvent,
 } from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import {
   isHidden,
@@ -96,6 +96,131 @@ function getElementFromProp(
   if (!element) return null;
   if (focusable) return isFocusable(element) ? element : null;
   return element;
+}
+
+interface FocusOnHideSession {
+  captureBatch: () => FocusOnHideBatch;
+  finish: (batch: FocusOnHideBatch) => boolean;
+  finishRetry: () => void;
+  isCurrent: () => boolean;
+  waitForRetry: () => void;
+}
+
+interface FocusOnHideBatch {
+  sessions: Set<object>;
+}
+
+interface FocusOnHideSessionState {
+  superseded: boolean;
+}
+
+interface FocusOnHideDocumentState {
+  batch?: FocusOnHideBatch;
+  pending: Set<FocusOnHideSessionState>;
+}
+
+const focusOnHideSessions = new WeakMap<object, Set<object>>();
+const focusOnHideDocumentStates = new WeakMap<
+  Document,
+  FocusOnHideDocumentState
+>();
+
+function getFocusOnHideDocumentState(document: Document) {
+  let state = focusOnHideDocumentStates.get(document);
+  if (!state) {
+    state = { pending: new Set() };
+    focusOnHideDocumentStates.set(document, state);
+  }
+  return state;
+}
+
+// React may replace a dialog or replay its effects without logically closing
+// it. Sessions created in the same task are grouped so the obsolete cleanup
+// doesn't restore focus. The batch is document-scoped to support DOM realms.
+function getFocusOnHideBatch(
+  document: Document,
+  documentState = getFocusOnHideDocumentState(document),
+) {
+  if (documentState.batch) return documentState.batch;
+  const batch: FocusOnHideBatch = { sessions: new Set() };
+  documentState.batch = batch;
+  queueMicrotask(() => {
+    if (documentState.batch !== batch) return;
+    documentState.batch = undefined;
+  });
+  return batch;
+}
+
+function createFocusOnHideSession(
+  document: Document,
+  keys: Iterable<object>,
+): FocusOnHideSession {
+  const token = {};
+  const uniqueKeys = new Set(keys);
+  const documentState = getFocusOnHideDocumentState(document);
+  // A newly opened dialog takes precedence over focus restoration that
+  // another dialog deferred until the next animation frame.
+  for (const pendingSession of documentState.pending) {
+    pendingSession.superseded = true;
+  }
+  documentState.pending.clear();
+  getFocusOnHideBatch(document, documentState).sessions.add(token);
+  for (const key of uniqueKeys) {
+    let sessions = focusOnHideSessions.get(key);
+    if (!sessions) {
+      sessions = new Set();
+      focusOnHideSessions.set(key, sessions);
+    }
+    sessions.add(token);
+  }
+  let finished = false;
+  const sessionState: FocusOnHideSessionState = { superseded: false };
+  return {
+    captureBatch() {
+      return getFocusOnHideBatch(document, documentState);
+    },
+    finish(batch) {
+      if (finished) return false;
+      finished = true;
+      let isLast = true;
+      for (const key of uniqueKeys) {
+        const sessions = focusOnHideSessions.get(key);
+        if (!sessions) continue;
+        sessions.delete(token);
+        if (sessions.size) {
+          isLast = false;
+          continue;
+        }
+        focusOnHideSessions.delete(key);
+      }
+      if (isLast) {
+        for (const session of batch.sessions) {
+          if (session === token) continue;
+          isLast = false;
+          break;
+        }
+      }
+      sessionState.superseded = !isLast;
+      return isLast;
+    },
+    finishRetry() {
+      documentState.pending.delete(sessionState);
+    },
+    isCurrent() {
+      if (sessionState.superseded) return false;
+      for (const key of uniqueKeys) {
+        const sessions = focusOnHideSessions.get(key);
+        if (!sessions) continue;
+        if (sessions.size !== 1) return false;
+        if (!sessions.has(token)) return false;
+      }
+      return true;
+    },
+    waitForRetry() {
+      if (sessionState.superseded) return;
+      documentState.pending.add(sessionState);
+    },
+  };
 }
 
 /**
@@ -412,18 +537,26 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const mayAutoFocusOnHide = !!autoFocusOnHide;
   const autoFocusOnHideProp = useBooleanEvent(autoFocusOnHide);
 
-  // Sets a `hasOpened` flag on an effect so we only auto focus on hide if the
-  // dialog was open before.
-  const [hasOpened, setHasOpened] = useState(false);
+  const focusedOnHideRef = useRef(false);
+  const focusOnHideGenerationRef = useRef(0);
+  const focusOnHideSessionRef = useRef<FocusOnHideSession | null>(null);
+  const wasOpenRef = useRef(false);
+  const focusOnHideOpen = openProp ?? open;
 
-  useSafeLayoutEffect(() => {
-    if (!open) return;
-    setHasOpened(true);
-    return () => setHasOpened(false);
-  }, [open]);
+  const getFocusOnHideSessionKeys = useEvent(() => {
+    const { disclosureElement } = store.getState();
+    const focusTarget = finalFocus || disclosureElement;
+    return focusTarget ? [store, focusTarget] : [store];
+  });
 
-  const focusOnHide = useCallback(
-    (dialog: HTMLElement | null, retry = true) => {
+  const focusOnHide = useEvent(
+    (
+      dialog: HTMLElement | null,
+      retry = true,
+      generation = focusOnHideGenerationRef.current,
+      session = focusOnHideSessionRef.current,
+    ) => {
+      if (!autoFocusOnHide) return;
       // Hide was triggered by clicking or right-clicking outside the dialog.
       // Native HTML dialogs and popovers don't restore focus to the trigger
       // in this case, so we skip focus restoration entirely.
@@ -465,43 +598,78 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         // again on the next frame. This is sometimes necessary because there
         // may be nested dialogs that still need a tick to remove the inert
         // attribute from elements outside.
-        requestAnimationFrame(() => focusOnHide(dialog, false));
+        session?.waitForRetry();
+        requestAnimationFrame(() => {
+          session?.finishRetry();
+          if (generation !== focusOnHideGenerationRef.current) return;
+          if (session && !session.isCurrent()) return;
+          focusOnHide(dialog, false, generation, session);
+        });
         return;
       }
       if (!autoFocusOnHideProp(isElementFocusable ? element : null)) return;
       if (!isElementFocusable) return;
       element?.focus();
     },
-    [store, finalFocus, autoFocusOnHideProp],
   );
-
-  const focusedOnHideRef = useRef(false);
 
   // Auto focus on hide with an always rendered dialog.
   useSafeLayoutEffect(() => {
-    if (open) return;
-    if (!hasOpened) return;
+    const wasOpen = wasOpenRef.current;
+    wasOpenRef.current = focusOnHideOpen;
+    if (focusOnHideOpen) {
+      if (!wasOpen) {
+        focusOnHideGenerationRef.current += 1;
+      }
+      return;
+    }
+    if (!wasOpen) return;
     if (!mayAutoFocusOnHide) return;
     const dialog = ref.current;
     // We don't want to focus on hide twice if the dialog is not unmounted, so
     // we set this flag here that will be checked in the cleanup effect below.
     focusedOnHideRef.current = true;
     focusOnHide(dialog);
-  }, [open, hasOpened, domReady, mayAutoFocusOnHide, focusOnHide]);
+  }, [focusOnHideOpen, domReady, mayAutoFocusOnHide, focusOnHide]);
 
   // Auto focus on hide with a dialog that gets unmounted when hidden.
   useEffect(() => {
-    if (!hasOpened) return;
+    if (!open) return;
+    if (!focusOnHideOpen) return;
     if (!mayAutoFocusOnHide) return;
+    const generation = focusOnHideGenerationRef.current;
     const dialog = ref.current;
+    const session = createFocusOnHideSession(
+      getDocument(dialog),
+      getFocusOnHideSessionKeys(),
+    );
+    focusOnHideSessionRef.current = session;
+    focusedOnHideRef.current = false;
     return () => {
-      if (focusedOnHideRef.current) {
-        focusedOnHideRef.current = false;
-        return;
-      }
-      focusOnHide(dialog);
+      const batch = session.captureBatch();
+      queueMicrotask(() => {
+        if (focusOnHideSessionRef.current === session) {
+          focusOnHideSessionRef.current = null;
+        }
+        // React may replay effects in Strict Mode. A replacement dialog or a
+        // dialog that reopens before this cleanup runs creates another session.
+        if (!session.finish(batch)) return;
+        if (generation !== focusOnHideGenerationRef.current) return;
+        if (focusedOnHideRef.current) {
+          focusedOnHideRef.current = false;
+          return;
+        }
+        wasOpenRef.current = false;
+        focusOnHide(dialog, true, generation, session);
+      });
     };
-  }, [hasOpened, mayAutoFocusOnHide, focusOnHide]);
+  }, [
+    open,
+    focusOnHideOpen,
+    mayAutoFocusOnHide,
+    focusOnHide,
+    getFocusOnHideSessionKeys,
+  ]);
 
   const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
