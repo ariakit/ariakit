@@ -35,9 +35,9 @@
 @import "./ak-list.css";
 @import "./ak-sidebar.css";
 @import "./ak-nav.css";
+@import "./ak-table.css";
 
-/* @import "./ak-table.css";
-@import "./ak-prose.css"; */
+/* @import "./ak-prose.css"; */
 
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);

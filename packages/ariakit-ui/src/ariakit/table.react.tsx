@@ -1,22 +1,32 @@
 import * as ak from "@ariakit/react";
-import { clsx } from "clsx";
+import type { VariantProps } from "clava";
+import { splitProps } from "clava";
 import * as React from "react";
 import { createRender } from "../react-utils/create-render.ts";
 import { isIterable } from "../react-utils/is-iterable.ts";
+import {
+  table,
+  tableCell,
+  tableContainer,
+  tableFoot,
+  tableHead,
+  tableRow,
+  tableRowGroup,
+  tableScroller,
+} from "../styles/table.ts";
 
-type TableRowGroup = "head" | "body" | "foot";
+type TableRowGroupKind = "head" | "body" | "foot";
 
 export type TableRow<K extends keyof any> = {
-  group?: TableRowGroup;
+  group?: TableRowGroupKind;
 } & Record<K, React.ReactNode | TableCellProps>;
 
 export type TableRows<K extends keyof any> = TableRow<K>[];
 
-const TableRowGroupContext = React.createContext<TableRowGroup>("body");
+const TableRowGroupContext = React.createContext<TableRowGroupKind>("body");
 
-export interface TableProps<
-  K extends keyof any,
-> extends React.ComponentProps<"table"> {
+export interface TableProps<K extends keyof any>
+  extends React.ComponentProps<"table">, VariantProps<typeof table> {
   /** Custom container element or props to render a `TableContainer`. */
   container?: React.ReactElement | TableContainerProps;
   /** Custom scroller element or props to render a `TableScroller`. */
@@ -78,6 +88,7 @@ export function Table<K extends keyof any>({
   rows,
   ...props
 }: TableProps<K>) {
+  const [variantProps, rest] = splitProps(props, table);
   const containerEl = createRender(TableContainer, container);
   const scrollerEl = createRender(TableScroller, scroller);
   const headEl = createRender(TableRowGroup, head, { group: "head" });
@@ -130,7 +141,7 @@ export function Table<K extends keyof any>({
   return (
     <ak.Role render={containerEl}>
       <ak.Role render={scrollerEl}>
-        <table {...props} className={clsx("ak-table", props.className)}>
+        <table {...table.jsx(variantProps)} {...rest}>
           {rows?.length ? (
             <>
               {!!headRows?.length && (
@@ -159,27 +170,28 @@ export function Table<K extends keyof any>({
   );
 }
 
-export interface TableContainerProps extends React.ComponentProps<"div"> {}
+export interface TableContainerProps
+  extends React.ComponentProps<"div">, VariantProps<typeof tableContainer> {}
 
 export function TableContainer(props: TableContainerProps) {
-  return (
-    <div {...props} className={clsx("ak-table-container", props.className)} />
-  );
+  const [variantProps, rest] = splitProps(props, tableContainer);
+  return <div {...tableContainer.jsx(variantProps)} {...rest} />;
 }
 
-export interface TableScrollerProps extends React.ComponentProps<"div"> {}
+export interface TableScrollerProps
+  extends React.ComponentProps<"div">, VariantProps<typeof tableScroller> {}
 
 export function TableScroller(props: TableScrollerProps) {
-  return (
-    <div {...props} className={clsx("ak-table-scroller", props.className)} />
-  );
+  const [variantProps, rest] = splitProps(props, tableScroller);
+  return <div {...tableScroller.jsx(variantProps)} {...rest} />;
 }
 
-export interface TableRowGroupProps extends React.ComponentProps<
-  "tbody" | "thead" | "tfoot"
-> {
+export interface TableRowGroupProps
+  extends
+    React.ComponentProps<"tbody" | "thead" | "tfoot">,
+    VariantProps<typeof tableRowGroup> {
   /** The group of rows to render. */
-  group?: TableRowGroup;
+  group?: TableRowGroupKind;
 }
 
 export function TableRowGroup({
@@ -188,43 +200,40 @@ export function TableRowGroup({
 }: TableRowGroupProps) {
   const Component =
     group === "head" ? "thead" : group === "foot" ? "tfoot" : "tbody";
+  const groupStyle =
+    group === "head" ? tableHead : group === "foot" ? tableFoot : tableRowGroup;
+  const [variantProps, rest] = splitProps(props, groupStyle);
   return (
     <TableRowGroupContext.Provider value={group}>
-      <Component
-        {...props}
-        className={clsx(
-          group === "body" && "ak-table-rowgroup",
-          group === "head" && `ak-table-head`,
-          group === "foot" && `ak-table-foot`,
-          props.className,
-        )}
-      />
+      <Component {...groupStyle.jsx(variantProps)} {...rest} />
     </TableRowGroupContext.Provider>
   );
 }
 
-export interface TableRowProps extends React.ComponentProps<"tr"> {
+export interface TableRowProps
+  extends React.ComponentProps<"tr">, VariantProps<typeof tableRow> {
   /** The group of rows to render. */
-  group?: TableRowGroup;
+  group?: TableRowGroupKind;
 }
 
 export function TableRow({ group, ...props }: TableRowProps) {
   const contextGroup = React.useContext(TableRowGroupContext);
   group = group ?? contextGroup;
+  const [variantProps, rest] = splitProps(props, tableRow);
   return (
     <tr
-      {...props}
-      className={clsx(
-        group === "body" && "ak-table-row",
-        group === "head" && `ak-table-head-row`,
-        group === "foot" && `ak-table-foot-row`,
-        props.className,
-      )}
+      {...tableRow.jsx({ $hover: group === "body", ...variantProps })}
+      {...rest}
     />
   );
 }
 
-export interface TableCellProps extends React.ComponentProps<"td"> {
+export interface TableCellProps
+  extends
+    React.ComponentProps<"td">,
+    // The semantic props below compute these variants along with the
+    // element and its scope, so they stay in sync.
+    Omit<VariantProps<typeof tableCell>, "$header" | "$numeric"> {
   /** Whether the cell is numeric. */
   numeric?: boolean;
   /** Whether the cell is a header. */
@@ -239,6 +248,7 @@ export function TableCell({ numeric, header, ...props }: TableCellProps) {
   const isRowHeader =
     header === "row" || (header && !isColumnHeader && group !== "head");
   const Component = header ? "th" : "td";
+  const [variantProps, rest] = splitProps(props, tableCell);
 
   const getScope = () => {
     if (!header) return;
@@ -249,15 +259,13 @@ export function TableCell({ numeric, header, ...props }: TableCellProps) {
 
   return (
     <Component
-      {...props}
       scope={getScope()}
-      className={clsx(
-        !header && "ak-table-cell",
-        isColumnHeader && "ak-table-column-header",
-        isRowHeader && "ak-table-row-header",
-        numeric && "ak-table-numeric",
-        props.className,
-      )}
+      {...tableCell.jsx({
+        $header: isColumnHeader ? "column" : isRowHeader ? "row" : false,
+        $numeric: !!numeric,
+        ...variantProps,
+      })}
+      {...rest}
     />
   );
 }
