@@ -47,4 +47,14 @@ bench(
   options,
 );
 
+bench(
+  "repeatedly find the last enabled composite item",
+  () => {
+    for (let i = 0; i < itemCount; i += 1) {
+      sink = store.last();
+    }
+  },
+  options,
+);
+
 export { sink };

@@ -21,6 +21,25 @@ test("moves through enabled items in one-dimensional composites", () => {
   expect(store.previous({ activeId: "one" })).toBeUndefined();
 });
 
+test("finds the last enabled item", () => {
+  const store = createComposite([
+    { id: "" },
+    { id: "two" },
+    { id: "three", disabled: true },
+  ]);
+
+  expect(store.last()).toBe("two");
+
+  store.setState("renderedItems", [
+    { id: "", disabled: true },
+    { id: "two", disabled: true },
+  ]);
+  expect(store.last()).toBeUndefined();
+
+  store.setState("renderedItems", [{ id: "" }]);
+  expect(store.last()).toBe("");
+});
+
 test("moves through rendered items with different object identities", () => {
   const registeredItems = [{ id: "one" }, { id: "two" }];
   const renderedItems = registeredItems.map((item) => ({ ...item }));

@@ -46,6 +46,16 @@ export function findFirstEnabledItem(
   });
 }
 
+function findLastEnabledItem(items: CompositeStoreItem[]) {
+  for (let i = items.length - 1; i >= 0; i -= 1) {
+    const item = items[i];
+    if (!item) continue;
+    if (item.disabled) continue;
+    return item;
+  }
+  return undefined;
+}
+
 function getEnabledItems(items: CompositeStoreItem[], excludeId?: string) {
   return items.filter((item) => {
     if (excludeId) {
@@ -445,9 +455,7 @@ export function createCompositeStore<
     },
 
     first: () => findFirstEnabledItem(composite.getState().renderedItems)?.id,
-    last: () =>
-      findFirstEnabledItem(reverseArray(composite.getState().renderedItems))
-        ?.id,
+    last: () => findLastEnabledItem(composite.getState().renderedItems)?.id,
 
     next: (options) => getNextIdFromOptions("next", options),
     previous: (options) => getNextIdFromOptions("previous", options),
