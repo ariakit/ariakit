@@ -27,6 +27,7 @@ import { Radio } from "@ariakit/ui/html/radio.react.tsx";
 import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox-card.ts";
 import { containerSize } from "@ariakit/ui/styles/container.ts";
 import { input } from "@ariakit/ui/styles/input.ts";
+import { option } from "@ariakit/ui/styles/option.ts";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -483,6 +484,26 @@ import Layout from "./_layout.astro";
         >
           Press <Kbd>Shift</Kbd><Kbd>Esc</Kbd> here
         </span>
+      </div>
+
+      <h3>Option</h3>
+      <div class="theme-main compare-cell">
+        <div class="flex flex-col gap-1 w-40">
+          <div class="ak-option" tabindex="0">Apple</div>
+          <div class="ak-option" tabindex="0">Banana</div>
+          <div class="ak-option" aria-disabled="true">Cherry</div>
+        </div>
+      </div>
+      <div class="compare-cell">
+        <div class="flex flex-col gap-1 w-40">
+          <div {...option.html({})} tabindex="0">Apple</div>
+          {/* data-focus-visible shows the virtual-focus highlight Ariakit
+              composites need; legacy only reacted to real :focus-visible */}
+          <div {...option.html({})} tabindex="0" data-focus-visible>
+            Banana
+          </div>
+          <div {...option.html({})} aria-disabled="true">Cherry</div>
+        </div>
       </div>
 
       <h3>Popover</h3>
