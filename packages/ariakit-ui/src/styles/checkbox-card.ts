@@ -14,6 +14,10 @@ export const checkboxCard = cv({
     // Like the legacy card, lay content out in a wrapping row so a
     // description placed directly inside the card falls to its own line.
     "flex-wrap justify-start content-start",
+    // Wrapped rows sit closer together than inline siblings: the legacy card
+    // uses `gap: padding/2 padding*0.75`. Defining --gap-y here also reaches
+    // the content wrapper, whose gap-y-(--gap-y) is inert without it.
+    "[--gap-y:calc(var(--py)/2)] gap-y-(--gap-y)",
     "[--checkbox-card-edge:var(--ak-edge)]",
     // The disabled state must be detected with the -within variants because
     // only the visually hidden input inside the label carries the disabled

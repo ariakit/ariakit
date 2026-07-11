@@ -203,8 +203,10 @@ export const controlSlot = cv({
       return defaultValue ?? "auto";
     },
     $p(defaultValue, variants) {
+      // Only badges get the default horizontal padding: the $p values pad the
+      // x axis for text content, while avatar children (images) must fill the
+      // whole slot, or the round clip turns them into straight-sided slabs.
       if (variants.$kind === "badge") return variants.$size;
-      if (variants.$kind === "avatar") return variants.$size;
       return defaultValue ?? "unset";
     },
     $rowSpan: 1,

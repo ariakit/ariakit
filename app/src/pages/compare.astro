@@ -20,7 +20,7 @@ import {
 } from "@ariakit/ui/html/checkbox-card.react.tsx";
 import { Kbd } from "@ariakit/ui/html/kbd.react.tsx";
 import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox-card.ts";
-import { CheckIcon, ChevronDownIcon, CopyIcon, UserIcon } from "lucide-react";
+import { CheckIcon, ChevronDownIcon, CopyIcon } from "lucide-react";
 import { CompareTabs, CompareTabsGliders } from "./_compare-tabs.react.tsx";
 import Layout from "./_layout.astro";
 ---
@@ -140,7 +140,9 @@ import Layout from "./_layout.astro";
       </div>
       <div class="compare-cell">
         <ButtonReact.Button $rounded="full" $px="xl" $gap="lg">
-          <ButtonReact.ButtonSlot $kind="avatar" $size="full" $rowSpan={2}>
+          {/* xl spans the two text rows; full would bleed through the
+              padding and fill the button's entire height */}
+          <ButtonReact.ButtonSlot $kind="avatar" $size="xl" $rowSpan={2}>
             <span class="size-full bg-linear-to-br from-blue-500 to-pink-500"
             ></span>
           </ButtonReact.ButtonSlot>
@@ -490,27 +492,49 @@ import Layout from "./_layout.astro";
         </div>
       </div>
       <div class="compare-cell">
-        <ButtonReact.ButtonGroup>
-          <ButtonReact.Button $layer="ghost" $px="lg" aria-current="true">
-            <ButtonReact.ButtonSlot>
-              <UserIcon />
-            </ButtonReact.ButtonSlot>
-            <ButtonReact.ButtonLabel>Profile</ButtonReact.ButtonLabel>
+        {/* Legacy ak-segmented equivalent: pill track darkened like
+            ak-layer-darken-3 (0.6 on the 0-20 variant scale), raised selected
+            glider like ak-layer-lighten-12 (2.4) with the same visible ring in
+            light mode (ak-edge-10) and adaptive ring in dark (ak-edge-0). */}
+        <ButtonReact.ButtonGroup
+          $rounded="full"
+          $darken={0.6}
+          $border
+          className="w-max text-sm"
+        >
+          <ButtonReact.Button
+            $layer="ghost"
+            $px="lg"
+            aria-current="true"
+            className="not-ui-selected:ak-ink-70"
+          >
+            <ButtonReact.ButtonLabel>Preview</ButtonReact.ButtonLabel>
           </ButtonReact.Button>
           <ButtonReact.ButtonSeparator />
-          <ButtonReact.Button $layer="ghost" $px="lg">
-            <ButtonReact.ButtonSlot>
-              <CopyIcon />
-            </ButtonReact.ButtonSlot>
-            <ButtonReact.ButtonLabel>Copy</ButtonReact.ButtonLabel>
+          <ButtonReact.Button
+            $layer="ghost"
+            $px="lg"
+            className="not-ui-selected:ak-ink-70"
+          >
+            <ButtonReact.ButtonLabel>Code</ButtonReact.ButtonLabel>
           </ButtonReact.Button>
           <ButtonReact.ButtonSeparator />
-          <ButtonReact.Button $layer="ghost" $px="lg">
+          <ButtonReact.Button
+            $layer="ghost"
+            $px="lg"
+            className="not-ui-selected:ak-ink-70"
+          >
             <ButtonReact.ButtonLabel>Export</ButtonReact.ButtonLabel>
           </ButtonReact.Button>
           <ButtonReact.ButtonGlider $state="hover" />
           <ButtonReact.ButtonGlider $state="focus" />
-          <ButtonReact.ButtonGlider $state="selected" />
+          <ButtonReact.ButtonGlider
+            $state="selected"
+            $lightnessOffset={false}
+            $lighten={2.4}
+            $borderWeight="normal"
+            className="shadow-sm ak-dark:ak-edge-0"
+          />
         </ButtonReact.ButtonGroup>
       </div>
     </div>

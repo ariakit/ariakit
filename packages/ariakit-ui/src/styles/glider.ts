@@ -86,7 +86,16 @@ export const glider = cv({
       return defaultValue ?? "full";
     },
     $p: "none",
-    $borderType: "ring",
+    $borderType(defaultValue, variants) {
+      // Hover feedback is a flat layer with no border semantics. The ring
+      // class must not be emitted here, or it picks up a bordered group's
+      // inherited --border-width. Selected and focus gliders keep the ring so
+      // the adaptive high-contrast edge can use the group's width.
+      if (variants.$state === "hover") {
+        return defaultValue ?? "unset";
+      }
+      return defaultValue ?? "ring";
+    },
     $borderWeight(defaultValue, variants) {
       if (variants.$state === "selected") {
         return defaultValue ?? "adaptive";
