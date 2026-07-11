@@ -24,7 +24,13 @@ export const tabs = cv({
 
 export const tab = cv({
   extend: [button, folder],
-  class: ["ui-selected:ak-layer", "not-ui-selected:bg-transparent"],
+  class: [
+    "ui-selected:ak-layer",
+    "not-ui-selected:bg-transparent",
+    // The selected tab already reads as active; hovering it must not shift
+    // its layer like an ordinary button hover would.
+    "ui-selected:ui-hover:ak-state-0",
+  ],
   variants: {
     $kind: {
       folder: [
@@ -75,7 +81,7 @@ export const tabGlider = cv({
     $kind: {
       folder: [
         "m-(--inset-padding) mb-0 [--tab-radius:var(--ak-frame-radius)]",
-        "start-[anchor(start)] bottom-[anchor(bottom)] w-[calc(anchor-size()-var(--inset-padding)*2)] h-[calc(anchor-size()-var(--inset-padding))]",
+        "inset-s-[anchor(start)] bottom-[anchor(bottom)] w-[calc(anchor-size()-var(--inset-padding)*2)] h-[calc(anchor-size()-var(--inset-padding))]",
         "supports-anchor:[.control:has(~&)]:ui-selected:bg-transparent",
         "supports-anchor:[.control:has(~&)]:ui-selected:border-transparent",
         "supports-anchor:[.control:has(~&)]:ui-selected:ring-transparent",

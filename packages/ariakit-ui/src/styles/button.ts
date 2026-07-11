@@ -40,9 +40,33 @@ export const button = cv({
       }
       return defaultValue ?? true;
     },
+    $lighten(defaultValue, variants) {
+      if (variants.$kind === "bevel") {
+        // The legacy classic button lightens its base layer
+        // (ak-layer-lighten-6) so it stands out from the parent layer,
+        // especially in dark mode where the bevel gradient alone is subtle.
+        return defaultValue ?? 1.2;
+      }
+      return defaultValue;
+    },
     $hoverOffset: true,
     $focus: true,
     $active: true,
+  },
+  refine({ variants, setVariants }) {
+    if (!variants.$disabled) return;
+    // Native buttons suppress these through the :disabled-aware ui-hover and
+    // ui-active variants, but label-based controls such as the checkbox card
+    // are never :disabled themselves, so drop the state variants here.
+    setVariants({
+      $hoverOffset: false,
+      $hoverPush: false,
+      $hoverLighten: false,
+      $hoverDarken: false,
+      $hoverSaturate: false,
+      $hoverDesaturate: false,
+      $active: false,
+    });
   },
 });
 

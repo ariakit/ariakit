@@ -96,7 +96,7 @@ export const controlSlot = cv({
     "[--my:calc((1lh-var(--size,1lh))/2*var(--row-span))]",
     "[--mx:calc((var(--py)-var(--px))+var(--my))]",
     "min-w-(--size) h-[calc(var(--size)*var(--row-span))]",
-    "[&>svg]:block [&>svg]:size-(--size) mx-(--mx) my-(--my)",
+    "[&>svg]:block [&>svg]:size-(--slot-icon-size,var(--size)) mx-(--mx) my-(--my)",
   ],
   variants: {
     /**
@@ -246,6 +246,29 @@ export const controlSlot = cv({
 
     if ($size !== variants.$size) {
       setVariants({ $size });
+    }
+
+    // Slots only paint their own background when a layer modifier requires
+    // it. Otherwise the control's actual background must show through, which
+    // may differ from the layer color (ghost controls, controls made
+    // transparent so a glider behind them is visible).
+    const paints =
+      variants.$kind === "badge" ||
+      variants.$kind === "avatar" ||
+      variants.$floating ||
+      typeof variants.$layer === "string" ||
+      variants.$lightnessOffset ||
+      variants.$lightnessPush ||
+      variants.$lighten ||
+      variants.$darken ||
+      variants.$mix ||
+      variants.$contrast ||
+      variants.$saturate ||
+      variants.$desaturate ||
+      variants.$chroma != null ||
+      variants.$hue != null;
+    if (!paints) {
+      addClass("bg-transparent");
     }
   },
 });
