@@ -179,14 +179,30 @@ import Layout from "./_layout.astro";
 
       <h3>Aurora</h3>
       <div class="theme-main compare-cell">
+        {/* ak-frame-border makes the legacy ring visible: its 1px fallback
+            is dead (registered property), so borderless legacy buttons
+            never rendered the effect */}
         <button
-          class="ak-button ak-button-aurora-(--color-purple-500)/(--color-pink-500)"
+          class="ak-button ak-frame-border ak-button-aurora-(--color-purple-500)/(--color-pink-500)"
         >
           Aurora
         </button>
       </div>
       <div class="compare-cell">
-        <span class="ak-ink-60 text-sm">(not migrated yet)</span>
+        <ButtonReact.Button
+          $border
+          $borderType="border"
+          $aurora="var(--color-purple-500)"
+          $auroraTo="var(--color-pink-500)"
+        >
+          Aurora
+        </ButtonReact.Button>
+        <ButtonReact.Button
+          $aurora="var(--color-purple-500)"
+          $auroraTo="var(--color-pink-500)"
+        >
+          Borderless
+        </ButtonReact.Button>
       </div>
 
       <h3>Badge</h3>
