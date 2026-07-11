@@ -20,15 +20,18 @@ import {
 } from "@ariakit/ui/html/checkbox-card.react.tsx";
 import { Container } from "@ariakit/ui/html/container.react.tsx";
 import { Heading } from "@ariakit/ui/html/heading.react.tsx";
+import { Input } from "@ariakit/ui/html/input.react.tsx";
 import { Kbd } from "@ariakit/ui/html/kbd.react.tsx";
 import { Link } from "@ariakit/ui/html/link.react.tsx";
 import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox-card.ts";
 import { containerSize } from "@ariakit/ui/styles/container.ts";
+import { input } from "@ariakit/ui/styles/input.ts";
 import {
   CheckIcon,
   ChevronDownIcon,
   CopyIcon,
   ExternalLinkIcon,
+  SearchIcon,
 } from "lucide-react";
 import { CompareTabs, CompareTabsGliders } from "./_compare-tabs.react.tsx";
 import Layout from "./_layout.astro";
@@ -481,6 +484,22 @@ import Layout from "./_layout.astro";
       </div>
       <div class="compare-cell">
         <CompareTabsGliders client:load />
+      </div>
+
+      <h3>Input</h3>
+      <div class="theme-main compare-cell">
+        <input class="ak-input" placeholder="Search docs…" />
+        <label class="ak-input flex items-center gap-2">
+          <SearchIcon className="size-[1em]" />
+          <input class="w-32" placeholder="With icon" />
+        </label>
+      </div>
+      <div class="compare-cell">
+        <Input placeholder="Search docs…" />
+        <label {...input.html({ class: "flex items-center gap-2" })}>
+          <SearchIcon className="size-[1em]" />
+          <input class="w-32" placeholder="With icon" />
+        </label>
       </div>
 
       <h3>Container</h3>

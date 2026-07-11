@@ -374,6 +374,11 @@ export const frame = cv({
       if (variants.$border === "inherit") {
         return "unset";
       }
+      // An explicit or component-level $borderType wins; $border alone only
+      // implies the adaptive type when nothing else asked for a specific one.
+      if (defaultValue !== undefined) {
+        return defaultValue;
+      }
       if (variants.$border) {
         return "auto";
       }
