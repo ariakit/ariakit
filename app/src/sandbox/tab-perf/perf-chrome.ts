@@ -8,6 +8,8 @@ type Query = ReturnType<typeof query>;
 
 async function mountTabs(q: Query) {
   await q.button("Mount tabs").click();
+  await expect(q.tab(`Tab ${tabCount}`)).toBeVisible();
+  await expect(q.tab("Tab 1")).toHaveAttribute("type", "button");
 }
 
 async function verifyTabControlsPanel(q: Query, label: string) {
@@ -21,6 +23,7 @@ async function verifyTabControlsPanel(q: Query, label: string) {
 async function verifyTabsMounted(q: Query) {
   await expect(q.tab(`Tab ${tabCount}`)).toBeVisible();
   await expect(q.tab("Tab 1")).toHaveAttribute("aria-selected", "true");
+  await expect(q.tab("Tab 1")).toHaveAttribute("type", "button");
   await expect(q.tabpanel("Tab 1")).toBeVisible();
   await verifyTabControlsPanel(q, "Tab 1");
 }

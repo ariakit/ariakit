@@ -188,7 +188,9 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
  */
 export const Tab = memo(
   forwardRef(function Tab(props: TabProps) {
-    const htmlProps = useTab(props);
+    const htmlProps = useTab(
+      props.render ? props : { ...props, type: props.type ?? "button" },
+    );
     return createElement(TagName, htmlProps);
   }),
 );

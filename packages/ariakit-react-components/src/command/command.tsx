@@ -65,11 +65,15 @@ export const useCommand = createHook<TagName, CommandOptions>(
   function useCommand({ clickOnEnter = true, clickOnSpace = true, ...props }) {
     const ref = useRef<HTMLType>(null);
     const [isNativeButton, setIsNativeButton] = useState(false);
+    const type = props.type;
 
     useEffect(() => {
+      // An explicit type already wins over the default below, so detecting the
+      // element would only schedule a render with the same final props.
+      if (type !== undefined) return;
       if (!ref.current) return;
       setIsNativeButton(isButton(ref.current));
-    }, []);
+    }, [type]);
 
     const [active, setActive] = useState(false);
     const activeRef = useRef(false);
