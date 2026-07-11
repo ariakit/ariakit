@@ -53,6 +53,7 @@
     "@ariakit/utils": "workspace:*"
   },
   "devDependencies": {
-    "@ariakit/scripts": "workspace:*"
+    "@ariakit/scripts": "workspace:*",
+    "vitest": "4.1.10"
   }
 }
