@@ -80,8 +80,9 @@ function findEnabledItemId({
     if (!item) continue;
     if (item.rowId !== rowId) continue;
     if (item.disabled) continue;
-    if (excludeId != null && item.id === excludeId) continue;
-    return item.id;
+    const itemId = item.id;
+    if (excludeId != null && itemId === excludeId) continue;
+    return itemId;
   }
   return undefined;
 }
@@ -281,9 +282,21 @@ export function createCompositeStore<
         ? true
         : !canShift && !renderedItems.some((item) => item.rowId != null);
       if (canFastScan) {
-        const activeIndex = renderedItems.findIndex(
-          (item) => item.id === activeId,
-        );
+        let activeIndex = -1;
+        if (renderedItems === defaultState.renderedItems) {
+          const firstItem = renderedItems[0];
+          // Avoid scanning twice when the rendered items were replaced with
+          // cloned or external objects that aren't in the collection map.
+          if (firstItem && collection.item(firstItem.id) === firstItem) {
+            const registeredItem = collection.item(activeId);
+            if (registeredItem?.id === activeId) {
+              activeIndex = renderedItems.indexOf(registeredItem);
+            }
+          }
+        }
+        if (activeIndex === -1) {
+          activeIndex = renderedItems.findIndex((item) => item.id === activeId);
+        }
         const activeItem = renderedItems[activeIndex];
         if (activeItem) {
           const step: 1 | -1 = canReverse ? -1 : 1;

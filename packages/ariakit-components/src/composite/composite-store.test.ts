@@ -3,7 +3,7 @@ import type { CompositeStoreItem } from "./composite-store.ts";
 import { createCompositeStore } from "./composite-store.ts";
 
 function createComposite(items: CompositeStoreItem[]) {
-  const store = createCompositeStore();
+  const store = createCompositeStore({ defaultItems: items });
   store.setState("renderedItems", items);
   return store;
 }
@@ -19,6 +19,20 @@ test("moves through enabled items in one-dimensional composites", () => {
   expect(store.previous({ activeId: "three" })).toBe("one");
   expect(store.next({ activeId: "three" })).toBeUndefined();
   expect(store.previous({ activeId: "one" })).toBeUndefined();
+});
+
+test("moves through rendered items with different object identities", () => {
+  const registeredItems = [{ id: "one" }, { id: "two" }];
+  const renderedItems = registeredItems.map((item) => ({ ...item }));
+  const store = createCompositeStore({ defaultItems: registeredItems });
+  store.setState("renderedItems", renderedItems);
+
+  expect(store.next({ activeId: "one" })).toBe("two");
+  expect(store.previous({ activeId: "two" })).toBe("one");
+
+  store.setState("renderedItems", registeredItems);
+  expect(store.next({ activeId: "one", renderedItems })).toBe("two");
+  expect(store.previous({ activeId: "two", renderedItems })).toBe("one");
 });
 
 test("supports the deprecated skip number overload", () => {
@@ -164,6 +178,10 @@ test("handles falsy item ids and row ids", () => {
   // An item with an empty string id must not return itself when looping.
   const single = createComposite([{ id: "" }]);
   expect(single.next({ activeId: "", focusLoop: true })).toBeUndefined();
+
+  const items = createComposite([{ id: "" }, { id: "next" }]);
+  expect(items.next({ activeId: "" })).toBe("next");
+  expect(items.previous({ activeId: "next" })).toBe("");
 
   // Empty string row ids behave like undefined row ids when moving
   // vertically.
