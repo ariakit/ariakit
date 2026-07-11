@@ -1,4 +1,7 @@
-import { createCompositeStore } from "@ariakit/components/composite/composite-store";
+import {
+  createCompositeStore,
+  groupItemsByRows,
+} from "@ariakit/components/composite/composite-store";
 import { bench } from "vitest";
 
 // CI compares these benchmarks across paired baseline/current rounds with a
@@ -52,6 +55,56 @@ bench(
   () => {
     for (let i = 0; i < itemCount; i += 1) {
       sink = store.last();
+    }
+  },
+  options,
+);
+
+for (const rowCount of [1, 4, 10, 200]) {
+  const gridItems = Array.from({ length: itemCount }, (_, index) => ({
+    id: `grid-item-${rowCount}-${index + 1}`,
+    rowId:
+      rowCount === 1
+        ? undefined
+        : `row-${Math.floor((index * rowCount) / itemCount) + 1}`,
+  }));
+  const rowLabel = rowCount === 1 ? "row" : "rows";
+  bench(
+    `group 200 composite items into ${rowCount} ${rowLabel}`,
+    () => {
+      for (let i = 0; i < 50; i += 1) {
+        sink = groupItemsByRows(gridItems);
+      }
+    },
+    options,
+  );
+}
+
+const smallGridItems = Array.from({ length: 8 }, (_, index) => ({
+  id: `small-grid-item-${index + 1}`,
+  rowId: `row-${Math.floor(index / 2) + 1}`,
+}));
+// Guard the small-item linear path against regressions.
+bench(
+  "group 8 composite items into 4 rows",
+  () => {
+    for (let i = 0; i < 50; i += 1) {
+      sink = groupItemsByRows(smallGridItems);
+    }
+  },
+  options,
+);
+
+const thresholdGridItems = Array.from({ length: 48 }, (_, index) => ({
+  id: `threshold-grid-item-${index + 1}`,
+  rowId: `row-${(index % 2) + 1}`,
+}));
+// Guard the threshold large-path, few-row case against regressions.
+bench(
+  "group 48 interleaved composite items into 2 rows",
+  () => {
+    for (let i = 0; i < 50; i += 1) {
+      sink = groupItemsByRows(thresholdGridItems);
     }
   },
   options,

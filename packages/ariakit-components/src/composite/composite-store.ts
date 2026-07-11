@@ -119,10 +119,56 @@ export function flipItems(
   ];
 }
 
+// Paired benchmarks show the linear path is faster below these cutoffs.
+const rowMapItemThreshold = 48;
+const rowMapRowThreshold = 4;
+
+function groupLargeItemsByRows(items: CompositeStoreItem[]) {
+  const firstItem = items[0];
+  if (!firstItem) return [];
+
+  let itemIndex = 1;
+  while (
+    itemIndex < items.length &&
+    items[itemIndex]?.rowId === firstItem.rowId
+  ) {
+    itemIndex += 1;
+  }
+  const firstRow = items.slice(0, itemIndex);
+  if (itemIndex === items.length) return [firstRow];
+
+  const rows = [firstRow];
+  let rowsById: Map<string | undefined, CompositeStoreItem[]> | undefined;
+  for (; itemIndex < items.length; itemIndex += 1) {
+    const item = items[itemIndex];
+    if (!item) continue;
+    const row = rowsById
+      ? rowsById.get(item.rowId)
+      : rows.find((currentRow) => currentRow[0]?.rowId === item.rowId);
+    if (row) {
+      row.push(item);
+      continue;
+    }
+    const newRow = [item];
+    rows.push(newRow);
+    if (rowsById) {
+      rowsById.set(item.rowId, newRow);
+    } else if (rows.length === rowMapRowThreshold) {
+      rowsById = new Map(
+        rows.map((currentRow) => [currentRow[0]?.rowId, currentRow]),
+      );
+    }
+  }
+  return rows;
+}
+
 /**
  * Creates a two-dimensional array with items grouped by their rowId's.
  */
 export function groupItemsByRows(items: CompositeStoreItem[]) {
+  if (items.length >= rowMapItemThreshold) {
+    return groupLargeItemsByRows(items);
+  }
   const rows: CompositeStoreItem[][] = [];
   for (const item of items) {
     const row = rows.find((currentRow) => currentRow[0]?.rowId === item.rowId);
