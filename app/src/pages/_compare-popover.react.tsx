@@ -17,6 +17,12 @@ import {
   PopoverHeading,
   PopoverProvider,
 } from "@ariakit/ui/ariakit/popover.react.tsx";
+import {
+  Tooltip,
+  TooltipAnchor,
+  TooltipProvider,
+} from "@ariakit/ui/ariakit/tooltip.react.tsx";
+import { Button } from "@ariakit/ui/html/button.react.tsx";
 
 export function ComparePopoverLegacy() {
   return (
@@ -49,5 +55,29 @@ export function ComparePopoverNew() {
         </PopoverDescription>
       </Popover>
     </PopoverProvider>
+  );
+}
+
+export function CompareTooltipLegacy() {
+  return (
+    <ak.TooltipProvider>
+      <ak.TooltipAnchor
+        render={<button className="ak-button ak-layer ak-layer-6" />}
+      >
+        Hover me
+      </ak.TooltipAnchor>
+      <ak.Tooltip className="ak-tooltip data-open:ak-tooltip_open not-data-open:ak-tooltip_closed max-w-80 origin-(--popover-transform-origin)">
+        Tooltip label
+      </ak.Tooltip>
+    </ak.TooltipProvider>
+  );
+}
+
+export function CompareTooltipNew() {
+  return (
+    <TooltipProvider>
+      <TooltipAnchor render={<Button />}>Hover me</TooltipAnchor>
+      <Tooltip className="max-w-80">Tooltip label</Tooltip>
+    </TooltipProvider>
   );
 }

@@ -37,6 +37,8 @@ import {
 import {
   ComparePopoverLegacy,
   ComparePopoverNew,
+  CompareTooltipLegacy,
+  CompareTooltipNew,
 } from "./_compare-popover.react.tsx";
 import { CompareTabs, CompareTabsGliders } from "./_compare-tabs.react.tsx";
 import Layout from "./_layout.astro";
@@ -487,6 +489,14 @@ import Layout from "./_layout.astro";
       </div>
       <div class="compare-cell">
         <ComparePopoverNew client:load />
+      </div>
+
+      <h3>Tooltip</h3>
+      <div class="theme-main compare-cell">
+        <CompareTooltipLegacy client:load />
+      </div>
+      <div class="compare-cell">
+        <CompareTooltipNew client:load />
       </div>
 
       <h3>Tabs</h3>

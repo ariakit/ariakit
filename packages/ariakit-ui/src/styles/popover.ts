@@ -6,7 +6,7 @@ import { layer } from "./layer.ts";
 export const popover = cv({
   extend: [layer, frame],
   class: [
-    "z-10 shadow-xl",
+    "z-10",
     "[transition-property:overlay,display,scale,opacity] transition-discrete",
     // Popover edges adapt to the theme: a ring reads better over light
     // content, a border over dark.
@@ -17,6 +17,17 @@ export const popover = cv({
     "origin-(--popover-transform-origin)",
   ],
   variants: {
+    /**
+     * Sets the popover shadow. A variant rather than a base class so
+     * extending styles like the tooltip can lighten it — clava concatenates
+     * classes, and a competing shadow class would lose to the base one by
+     * stylesheet order.
+     */
+    $shadow: {
+      none: "",
+      md: "shadow-md",
+      xl: "shadow-xl",
+    },
     /**
      * Selects how the open state is detected for the enter and leave
      * transitions. `auto` targets native `dialog` and `[popover]` elements
@@ -61,6 +72,7 @@ export const popover = cv({
   },
   defaultVariants: {
     $state: "auto",
+    $shadow: "xl",
     $rounded: "2xl",
     $forceRounded: true,
     $p: 4,
