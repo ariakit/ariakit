@@ -35,6 +35,18 @@ let nextId = lastId;
 let sink: unknown;
 
 bench(
+  "render 200 new tab items",
+  () => {
+    const store = createTabStore();
+    for (const item of items) {
+      store.renderItem(item);
+    }
+    sink = store.item(lastId);
+  },
+  options,
+);
+
+bench(
   "move when selected tab follows active tab",
   async () => {
     for (const { store } of stops) {
