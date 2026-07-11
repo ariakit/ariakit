@@ -43,6 +43,10 @@ import {
   CompareTooltipLegacy,
   CompareTooltipNew,
 } from "./_compare-popover.react.tsx";
+import {
+  CompareSelectLegacy,
+  CompareSelectNew,
+} from "./_compare-select.react.tsx";
 import { CompareTabs, CompareTabsGliders } from "./_compare-tabs.react.tsx";
 import Layout from "./_layout.astro";
 ---
@@ -528,6 +532,14 @@ import Layout from "./_layout.astro";
       </div>
       <div class="compare-cell">
         <CompareDialogNew client:load />
+      </div>
+
+      <h3>Select</h3>
+      <div class="theme-main compare-cell">
+        <CompareSelectLegacy client:load />
+      </div>
+      <div class="compare-cell">
+        <CompareSelectNew client:load />
       </div>
 
       <h3>Tabs</h3>

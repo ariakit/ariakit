@@ -1,7 +1,16 @@
 import * as ak from "@ariakit/react";
-import { clsx } from "clsx";
+import type { VariantProps } from "clava";
+import { splitProps } from "clava";
+import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import type * as React from "react";
 import { createRender } from "../react-utils/create-render.ts";
+import {
+  select,
+  selectArrow,
+  selectItem,
+  selectItemCheck,
+  selectPopover,
+} from "../styles/select.ts";
 
 export interface SelectProps
   extends
@@ -63,31 +72,36 @@ export function Select({
 
 export interface SelectProviderProps extends ak.SelectProviderProps {}
 
+/**
+ * @see https://ariakit.com/reference/select-provider
+ */
 export function SelectProvider(props: SelectProviderProps) {
   return <ak.SelectProvider {...props} />;
 }
 
 export interface SelectValueProps extends ak.SelectValueProps {}
 
+/**
+ * @see https://ariakit.com/reference/select-value
+ */
 export function SelectValue(props: SelectValueProps) {
   return <ak.SelectValue {...props} />;
 }
 
 export interface SelectLabelProps extends ak.SelectLabelProps {}
 
+/**
+ * @see https://ariakit.com/reference/select-label
+ */
 export function SelectLabel(props: SelectLabelProps) {
-  return (
-    <ak.SelectLabel
-      {...props}
-      className={clsx("ak-select-label", props.className)}
-    />
-  );
+  return <ak.SelectLabel {...props} />;
 }
 
-export interface SelectButtonProps extends ak.SelectProps {
+export interface SelectButtonProps
+  extends ak.SelectProps, VariantProps<typeof select> {
   /**
-   * Custom icon element that will be rendered before or after the display value
-   * depending on the `chevron` position.
+   * Custom icon element that will be rendered before or after the display
+   * value depending on the `chevron` position.
    */
   icon?: React.ReactNode;
   /** Selects chevron/icon placement (before, after). Set `false` to hide. */
@@ -96,75 +110,89 @@ export interface SelectButtonProps extends ak.SelectProps {
   displayValue?: React.ReactNode;
 }
 
+/**
+ * @see https://ariakit.com/reference/select
+ */
 export function SelectButton({
   icon,
   chevron = "after",
   displayValue,
   ...props
 }: SelectButtonProps) {
+  const [variantProps, rest] = splitProps(props, select);
+  const arrow = chevron !== false && (
+    <span {...selectArrow.jsx({})}>
+      <ChevronDownIcon />
+    </span>
+  );
   return (
     <ak.Select
-      {...props}
-      className={clsx(
-        "ak-select",
-        chevron === "before" && "before:ak-select-arrow",
-        chevron === "after" && "after:ak-select-arrow",
-        props.className,
-      )}
+      {...select.jsx({ $disabled: rest.disabled, ...variantProps })}
+      {...rest}
     >
+      {chevron === "before" && arrow}
       {chevron !== "before" && icon}
-      <span className="flex-1">
-        {displayValue || props.children || <SelectValue />}
+      <span className="flex-1 text-start">
+        {displayValue || rest.children || <SelectValue />}
       </span>
       {chevron === "before" && icon}
+      {chevron === "after" && arrow}
     </ak.Select>
   );
 }
 
-export interface SelectPopoverProps extends ak.SelectPopoverProps {}
+export interface SelectPopoverProps
+  extends ak.SelectPopoverProps, VariantProps<typeof selectPopover> {}
 
+/**
+ * @see https://ariakit.com/reference/select-popover
+ */
 export function SelectPopover(props: SelectPopoverProps) {
+  const [variantProps, rest] = splitProps(props, selectPopover);
+  // Ariakit signals the open state through data-open; an explicit $state
+  // prop still wins.
   return (
     <ak.SelectPopover
       gutter={8}
       shift={-3}
-      {...props}
-      className={clsx(
-        "ak-select-popover data-open:ak-select-popover_open not-data-open:ak-select-popover_closed origin-(--popover-transform-origin)",
-        props.className,
-      )}
+      {...selectPopover.jsx({ $state: "data", ...variantProps })}
+      {...rest}
     />
   );
 }
 
-export interface SelectItemProps extends ak.SelectItemProps {
+export interface SelectItemProps
+  extends ak.SelectItemProps, VariantProps<typeof selectItem> {
   /**
-   * Custom icon element that will be rendered before or after the display value
-   * depending on the `checkmark` position.
+   * Custom icon element that will be rendered before or after the display
+   * value depending on the `checkmark` position.
    */
   icon?: React.ReactNode;
   /** Selects checkmark/icon placement (before, after). Set `false` to hide. */
   checkmark?: "before" | "after" | false;
 }
 
+/**
+ * @see https://ariakit.com/reference/select-item
+ */
 export function SelectItem({
   icon,
   checkmark = "before",
   ...props
 }: SelectItemProps) {
+  const [variantProps, rest] = splitProps(props, selectItem);
+  const check = checkmark !== false && (
+    <span {...selectItemCheck.jsx({})}>
+      <CheckIcon />
+    </span>
+  );
   return (
-    <ak.SelectItem
-      {...props}
-      className={clsx(
-        "ak-select-item data-focus-visible:ak-select-item_focus",
-        checkmark === "before" && "before:ak-select-item-check",
-        checkmark === "after" && "after:ak-select-item-check",
-        props.className,
-      )}
-    >
+    <ak.SelectItem {...selectItem.jsx(variantProps)} {...rest}>
+      {checkmark === "before" && check}
       {checkmark !== "before" && icon}
-      <span className="flex-1">{props.children || props.value}</span>
+      <span className="flex-1">{rest.children || rest.value}</span>
       {checkmark === "before" && icon}
+      {checkmark === "after" && check}
     </ak.SelectItem>
   );
 }
