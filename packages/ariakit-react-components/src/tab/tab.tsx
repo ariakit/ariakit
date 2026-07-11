@@ -83,22 +83,22 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
   );
   const shouldRegisterItem = defaultId ? props.shouldRegisterItem : false;
 
-  const isActive = useStoreState(
-    store,
-    ["activeId"],
-    (state) => !!id && state.activeId === id,
-  );
   const selected = useStoreState(
     store,
     ["selectedId"],
     (state) => !!id && state.selectedId === id,
   );
-  const hasActiveItem = useStoreState(
-    store,
-    ["activeId", "items"],
-    (state) => !!store.item(state.activeId),
+  const canRegisterComposedItem = useStoreState(
+    store.composite ? store : undefined,
+    ["activeId", "items", "selectedId"],
+    (state) => {
+      if (!state) return false;
+      if (!id) return false;
+      if (state.activeId === id) return true;
+      if (state.selectedId !== id) return false;
+      return !store.item(state.activeId);
+    },
   );
-  const canRegisterComposedItem = isActive || (selected && !hasActiveItem);
   const accessibleWhenDisabled =
     selected || (props.accessibleWhenDisabled ?? true);
 
