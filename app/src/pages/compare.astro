@@ -18,6 +18,7 @@ import {
   CheckboxCardLabel,
   CheckboxCardSlot,
 } from "@ariakit/ui/html/checkbox-card.react.tsx";
+import { Heading } from "@ariakit/ui/html/heading.react.tsx";
 import { Kbd } from "@ariakit/ui/html/kbd.react.tsx";
 import { Link } from "@ariakit/ui/html/link.react.tsx";
 import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox-card.ts";
@@ -478,6 +479,46 @@ import Layout from "./_layout.astro";
       </div>
       <div class="compare-cell">
         <CompareTabsGliders client:load />
+      </div>
+
+      <h3>Heading</h3>
+      <div class="theme-main compare-cell">
+        <div class="w-full">
+          <h1 class="ak-heading">Heading one</h1>
+          <h2 class="ak-heading">Heading two</h2>
+          <h3 class="ak-heading">Heading three</h3>
+          <h4 class="ak-heading">Heading four</h4>
+          <h5 class="ak-heading">Heading five</h5>
+          <p>Body text after the heading stack.</p>
+          <h3 class="ak-heading ak-heading-2">
+            <a href="#">Visually h2, semantically h3</a>
+          </h3>
+          <ul>
+            <li>
+              <h4 class="ak-heading">Heading in a list item</h4>
+              keeps the rest of the item close.
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="compare-cell">
+        <div class="w-full">
+          <Heading level={1}>Heading one</Heading>
+          <Heading level={2}>Heading two</Heading>
+          <Heading level={3}>Heading three</Heading>
+          <Heading level={4}>Heading four</Heading>
+          <Heading level={5}>Heading five</Heading>
+          <p>Body text after the heading stack.</p>
+          <Heading level={3} $level={2}>
+            <a href="#">Visually h2, semantically h3</a>
+          </Heading>
+          <ul>
+            <li>
+              <Heading level={4}>Heading in a list item</Heading>
+              keeps the rest of the item close.
+            </li>
+          </ul>
+        </div>
       </div>
 
       <h3>Link</h3>
