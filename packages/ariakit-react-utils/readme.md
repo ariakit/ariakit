@@ -332,8 +332,7 @@ Returns props with an additional `wrapElement` prop.
 function usePortalRef(
   portalProp = false,
   portalRefProp?:
-    | RefCallback<HTMLElement>
-    | MutableRefObject<HTMLElement | null>,
+    RefCallback<HTMLElement> | MutableRefObject<HTMLElement | null>,
 ): {
   portalRef: ((value: unknown) => (() => void) | undefined) | undefined;
   portalNode: HTMLElement | null;

@@ -1759,11 +1759,13 @@ ToPrimitive<1>;
 
 ```ts
 type PickByValue<T, Value> = {
-  [K in keyof T as [Value] extends [T[K]]
-    ? T[K] extends Value | undefined
-      ? K
+  [
+    K in keyof T as [Value] extends [T[K]]
+      ? T[K] extends Value | undefined
+        ? K
+        : never
       : never
-    : never]: T[K];
+  ]: T[K];
 };
 ```
 

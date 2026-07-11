@@ -12,6 +12,9 @@ export default defineConfig({
     pedantic: "off",
   },
   rules: {
+    // Type-only exports are incorrectly reported as missing.
+    // https://github.com/oxc-project/oxc/issues/13258
+    "import/namespace": "off",
     "no-unsafe-type-assertion": "off",
     "no-unassigned-import": "off",
     "react-in-jsx-scope": "off",
