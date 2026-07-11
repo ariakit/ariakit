@@ -30,10 +30,10 @@
 @import "./ak-dialog.css";
 @import "./ak-option.css";
 @import "./ak-select.css";
+@import "./ak-progress.css";
 
 /* @import "./ak-disclosure.css";
 @import "./ak-nav.css";
-@import "./ak-progress.css";
 @import "./ak-list.css";
 @import "./ak-table.css";
 @import "./ak-sidebar.css";
@@ -122,6 +122,14 @@
     --color-warning: var(--color-yellow-400);
     --color-danger: var(--color-red-400);
   }
+}
+
+/* Registered so the @ariakit/ui progress fills can transition it: the width
+   calc and the conic sweep both read this inherited number. */
+@property --progress-value {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
 }
 
 @custom-variant ui-disabled {

@@ -23,6 +23,10 @@ import { Heading } from "@ariakit/ui/html/heading.react.tsx";
 import { Input } from "@ariakit/ui/html/input.react.tsx";
 import { Kbd } from "@ariakit/ui/html/kbd.react.tsx";
 import { Link } from "@ariakit/ui/html/link.react.tsx";
+import {
+  Progress,
+  ProgressCircular,
+} from "@ariakit/ui/ariakit/progress.react.tsx";
 import { Radio } from "@ariakit/ui/html/radio.react.tsx";
 import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox-card.ts";
 import { containerSize } from "@ariakit/ui/styles/container.ts";
@@ -488,6 +492,29 @@ import Layout from "./_layout.astro";
         >
           Press <Kbd>Shift</Kbd><Kbd>Esc</Kbd> here
         </span>
+      </div>
+
+      <h3>Progress</h3>
+      <div class="theme-main compare-cell">
+        <div
+          role="progressbar"
+          class="ak-progress ak-progress-value-[0.6] after:ak-progress-fill w-40"
+        >
+        </div>
+        <div class="size-16">
+          <div class="ak-progress-circular">
+            <div class="ak-progress-circular-fill ak-progress-value-[0.6]">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="compare-cell">
+        {/* max-w composes with the cv's w-full; a plain w-* utility would
+            lose to it by stylesheet order */}
+        <Progress value={0.6} className="max-w-40" />
+        <div class="size-16">
+          <ProgressCircular value={0.6} />
+        </div>
       </div>
 
       <h3>Option</h3>
