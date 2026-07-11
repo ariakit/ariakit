@@ -82,7 +82,10 @@ export const control = cv({
       addClass([
         "[--px:calc(var(--ak-frame-padding,0px)+(1lh-1cap)*var(--px-scale))]",
         "[--py:calc(var(--ak-frame-padding,0px))]",
-        "px-[calc(var(--px)+var(--inset-padding,0px))]",
+        // The resolved paddings get their own properties so extending
+        // styles can reference the formula without restating it.
+        "[--control-px:calc(var(--px)+var(--inset-padding,0px))]",
+        "px-(--control-px)",
         "py-[calc(var(--py)+var(--inset-padding,0px))]",
       ]);
     }
