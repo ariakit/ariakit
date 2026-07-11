@@ -10,6 +10,13 @@
 
 import * as ak from "@ariakit/react";
 import {
+  Dialog,
+  DialogDisclosure,
+  DialogDismiss,
+  DialogHeading,
+  DialogProvider,
+} from "@ariakit/ui/ariakit/dialog.react.tsx";
+import {
   Popover,
   PopoverArrow,
   PopoverDescription,
@@ -79,5 +86,44 @@ export function CompareTooltipNew() {
       <TooltipAnchor render={<Button />}>Hover me</TooltipAnchor>
       <Tooltip className="max-w-80">Tooltip label</Tooltip>
     </TooltipProvider>
+  );
+}
+
+export function CompareDialogLegacy() {
+  return (
+    <ak.DialogProvider>
+      <ak.DialogDisclosure className="ak-button ak-layer ak-layer-6">
+        Show modal
+      </ak.DialogDisclosure>
+      <ak.Dialog
+        className="ak-dialog data-open:ak-dialog_open not-data-open:ak-dialog_closed flex flex-col items-start gap-4 max-w-100"
+        backdrop={<div className="ak-dialog-backdrop" />}
+      >
+        <ak.DialogHeading className="text-xl">Success</ak.DialogHeading>
+        <p>
+          Your payment has been successfully processed. We have emailed your
+          receipt.
+        </p>
+        <ak.DialogDismiss className="ak-button ak-layer ak-layer-6">
+          OK
+        </ak.DialogDismiss>
+      </ak.Dialog>
+    </ak.DialogProvider>
+  );
+}
+
+export function CompareDialogNew() {
+  return (
+    <DialogProvider>
+      <DialogDisclosure>Show modal</DialogDisclosure>
+      <Dialog className="flex flex-col items-start gap-4 max-w-100">
+        <DialogHeading>Success</DialogHeading>
+        <p>
+          Your payment has been successfully processed. We have emailed your
+          receipt.
+        </p>
+        <DialogDismiss>OK</DialogDismiss>
+      </Dialog>
+    </DialogProvider>
   );
 }

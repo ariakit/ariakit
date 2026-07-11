@@ -35,6 +35,8 @@ import {
   SearchIcon,
 } from "lucide-react";
 import {
+  CompareDialogLegacy,
+  CompareDialogNew,
   ComparePopoverLegacy,
   ComparePopoverNew,
   CompareTooltipLegacy,
@@ -497,6 +499,14 @@ import Layout from "./_layout.astro";
       </div>
       <div class="compare-cell">
         <CompareTooltipNew client:load />
+      </div>
+
+      <h3>Dialog</h3>
+      <div class="theme-main compare-cell">
+        <CompareDialogLegacy client:load />
+      </div>
+      <div class="compare-cell">
+        <CompareDialogNew client:load />
       </div>
 
       <h3>Tabs</h3>
