@@ -32,9 +32,9 @@
 @import "./ak-select.css";
 @import "./ak-progress.css";
 @import "./ak-disclosure.css";
+@import "./ak-list.css";
 
 /* @import "./ak-nav.css";
-@import "./ak-list.css";
 @import "./ak-table.css";
 @import "./ak-sidebar.css";
 @import "./ak-prose.css"; */
@@ -156,6 +156,50 @@
 @custom-variant ui-disclosure-hover {
   &:has(> :where(summary, button, [data-disclosure-button]):hover),
   &:where(summary, button, [data-disclosure-button]):hover {
+    @slot;
+  }
+}
+
+/* List state channels: the list root publishes its flags as custom
+   properties, and items, markers, and nested lists react through container
+   style queries, like the legacy ak-list-* variants. */
+@custom-variant ui-list {
+  @container style(--list: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-ol {
+  @container style(--list-ol: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-ul {
+  @container style(--list-ul: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-item-blocks {
+  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-blocks {
+  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+    @slot;
+  }
+  @container style(--list-blocks: 1) {
+    @slot;
+  }
+}
+
+/* Registered after ui-list-blocks so the sections gap wins when a list
+   matches both. */
+@custom-variant ui-list-sections {
+  &:has(:where(h1, h2, h3, h4)) {
     @slot;
   }
 }
