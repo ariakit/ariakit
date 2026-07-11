@@ -53,6 +53,10 @@ import {
 } from "./_compare-disclosure.react.tsx";
 import { CompareListLegacy, CompareListNew } from "./_compare-list.react.tsx";
 import {
+  CompareSidebarLegacy,
+  CompareSidebarNew,
+} from "./_compare-sidebar.react.tsx";
+import {
   CompareSelectLegacy,
   CompareSelectNew,
 } from "./_compare-select.react.tsx";
@@ -588,6 +592,14 @@ import Layout from "./_layout.astro";
       </div>
       <div class="compare-cell">
         <CompareListNew client:load />
+      </div>
+
+      <h3>Sidebar</h3>
+      <div class="theme-main compare-cell">
+        <CompareSidebarLegacy client:load />
+      </div>
+      <div class="compare-cell">
+        <CompareSidebarNew client:load />
       </div>
 
       <h3>Tabs</h3>

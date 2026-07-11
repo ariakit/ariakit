@@ -1,7 +1,9 @@
 import * as ak from "@ariakit/react";
-import { clsx } from "clsx";
+import type { VariantProps } from "clava";
+import { splitProps } from "clava";
 import * as React from "react";
 import { useIsMobile } from "../react-hooks/use-is-mobile.ts";
+import { sidebar, sidebarBody, sidebarSection } from "../styles/sidebar.ts";
 
 interface SidebarContextType {
   side: "start" | "end";
@@ -16,18 +18,19 @@ const SidebarContext = React.createContext<SidebarContextType>(
 );
 
 export interface SidebarProps
-  extends ak.RoleProps<"div">, Partial<SidebarContextType> {
+  extends
+    ak.RoleProps<"div">,
+    VariantProps<typeof sidebar>,
+    Partial<SidebarContextType> {
   collapsible?: boolean | "icon";
+  /** Whether the sidebar is collapsed to its minimum width. */
   collapsed?: boolean;
-  /** Custom base class name. */
-  baseClassName?: string;
 }
 
 export function Sidebar({
   side,
   collapsible,
   collapsed,
-  baseClassName,
   ...props
 }: SidebarProps) {
   const isMobile = useIsMobile();
@@ -38,33 +41,36 @@ export function Sidebar({
   collapsible = collapsible ?? !!dialog;
 
   const contextValue = React.useMemo(() => ({ side }), [side]);
+  const [variantProps, rest] = splitProps(props, sidebar);
+  const isDialog = collapsible === true || (collapsible && isMobile);
 
   props = {
-    ...props,
-    className: clsx(
-      baseClassName || "ak-sidebar",
-      collapsed && "ak-sidebar-collapsed",
-      props.className,
-    ),
+    ...sidebar.jsx({
+      $collapsed: !!collapsed,
+      // Modal sidebars live in a portal where container units can't reach
+      // the app container.
+      $fullHeight: isDialog && isMobile,
+      ...variantProps,
+    }),
+    ...rest,
     children: (
       <SidebarContext.Provider value={contextValue}>
-        {props.children}
+        {rest.children}
       </SidebarContext.Provider>
     ),
   };
 
-  if (collapsible === true || (collapsible && isMobile)) {
+  if (isDialog) {
     return (
       <ak.Dialog
         modal={isMobile}
         hideOnEscape={isMobile}
         hideOnInteractOutside={isMobile}
+        // TODO: The unconditional open prop is controlled, so a
+        // SidebarProvider store can never hide the sidebar; revisit when a
+        // collapsible consumer migrates.
         open
         {...props}
-        className={clsx(
-          isMobile && "fixed start-0 top-0 h-full z-10",
-          props.className,
-        )}
       />
     );
   }
@@ -86,19 +92,13 @@ export function SidebarProvider({
   );
 }
 
-export interface SidebarToggleProps extends ak.DialogDisclosureProps {
-  /** Custom base class name. */
-  baseClassName?: string;
-}
+export interface SidebarToggleProps extends ak.DialogDisclosureProps {}
 
-export function SidebarToggle({ baseClassName, ...props }: SidebarToggleProps) {
+export function SidebarToggle(props: SidebarToggleProps) {
   const context = ak.useDialogContext();
   const isOpen = ak.useStoreState(context, "open");
   return (
-    <ak.DialogDisclosure
-      {...props}
-      className={clsx(baseClassName || "ak-sidebar-toggle", props.className)}
-    >
+    <ak.DialogDisclosure {...props}>
       <span className="sr-only">
         {isOpen ? "Collapse sidebar" : "Expand sidebar"}
       </span>
@@ -106,44 +106,26 @@ export function SidebarToggle({ baseClassName, ...props }: SidebarToggleProps) {
   );
 }
 
-export interface SidebarHeaderProps extends ak.RoleProps<"div"> {
-  /** Custom base class name. */
-  baseClassName?: string;
+export interface SidebarHeaderProps
+  extends ak.RoleProps<"div">, VariantProps<typeof sidebarSection> {}
+
+export function SidebarHeader(props: SidebarHeaderProps) {
+  const [variantProps, rest] = splitProps(props, sidebarSection);
+  return <ak.Role {...sidebarSection.jsx(variantProps)} {...rest} />;
 }
 
-export function SidebarHeader({ baseClassName, ...props }: SidebarHeaderProps) {
-  return (
-    <ak.Role
-      {...props}
-      className={clsx(baseClassName || "ak-sidebar-header", props.className)}
-    />
-  );
+export interface SidebarBodyProps
+  extends ak.RoleProps<"div">, VariantProps<typeof sidebarBody> {}
+
+export function SidebarBody(props: SidebarBodyProps) {
+  const [variantProps, rest] = splitProps(props, sidebarBody);
+  return <ak.Role {...sidebarBody.jsx(variantProps)} {...rest} />;
 }
 
-export interface SidebarBodyProps extends ak.RoleProps<"div"> {
-  /** Custom base class name. */
-  baseClassName?: string;
-}
+export interface SidebarFooterProps
+  extends ak.RoleProps<"div">, VariantProps<typeof sidebarSection> {}
 
-export function SidebarBody({ baseClassName, ...props }: SidebarBodyProps) {
-  return (
-    <ak.Role
-      {...props}
-      className={clsx(baseClassName || "ak-sidebar-body", props.className)}
-    />
-  );
-}
-
-export interface SidebarFooterProps extends ak.RoleProps<"div"> {
-  /** Custom base class name. */
-  baseClassName?: string;
-}
-
-export function SidebarFooter({ baseClassName, ...props }: SidebarFooterProps) {
-  return (
-    <ak.Role
-      {...props}
-      className={clsx(baseClassName || "ak-sidebar-footer", props.className)}
-    />
-  );
+export function SidebarFooter(props: SidebarFooterProps) {
+  const [variantProps, rest] = splitProps(props, sidebarSection);
+  return <ak.Role {...sidebarSection.jsx(variantProps)} {...rest} />;
 }

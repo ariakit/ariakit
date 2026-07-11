@@ -33,10 +33,10 @@
 @import "./ak-progress.css";
 @import "./ak-disclosure.css";
 @import "./ak-list.css";
+@import "./ak-sidebar.css";
 
 /* @import "./ak-nav.css";
 @import "./ak-table.css";
-@import "./ak-sidebar.css";
 @import "./ak-prose.css"; */
 
 @theme {
@@ -200,6 +200,14 @@
    matches both. */
 @custom-variant ui-list-sections {
   &:has(:where(h1, h2, h3, h4)) {
+    @slot;
+  }
+}
+
+/* Sidebar collapse flag published by the sidebar root and read by
+   descendants (such as nav labels) through container style queries. */
+@custom-variant ui-sidebar-collapsed {
+  @container style(--sidebar-collapsed: 1) {
     @slot;
   }
 }
