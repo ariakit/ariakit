@@ -115,11 +115,16 @@ function renderIndicator(
 ) {
   const className = indicator.endsWith("-end") ? "ms-auto" : undefined;
   if (indicator.startsWith("plus")) {
-    return <span {...disclosurePlus.jsx({ className })} />;
+    return (
+      <span data-disclosure-indicator {...disclosurePlus.jsx({ className })} />
+    );
   }
   const $direction = indicator.startsWith("chevron-down") ? "down" : "right";
   return (
-    <span {...disclosureChevron.jsx({ $direction, className })}>
+    <span
+      data-disclosure-indicator
+      {...disclosureChevron.jsx({ $direction, className })}
+    >
       <ChevronDownIcon />
     </span>
   );

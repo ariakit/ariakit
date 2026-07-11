@@ -34,9 +34,9 @@
 @import "./ak-disclosure.css";
 @import "./ak-list.css";
 @import "./ak-sidebar.css";
+@import "./ak-nav.css";
 
-/* @import "./ak-nav.css";
-@import "./ak-table.css";
+/* @import "./ak-table.css";
 @import "./ak-prose.css"; */
 
 @theme {
@@ -208,6 +208,20 @@
    descendants (such as nav labels) through container style queries. */
 @custom-variant ui-sidebar-collapsed {
   @container style(--sidebar-collapsed: 1) {
+    @slot;
+  }
+}
+
+/* Nav flag published by the nav root; stacking it lets nav rules sort
+   after the disclosure rules they override. */
+@custom-variant ui-nav {
+  @container style(--nav: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-nav-current {
+  &:where([aria-current="true"], [aria-current="page"]) {
     @slot;
   }
 }

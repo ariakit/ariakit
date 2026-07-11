@@ -56,6 +56,7 @@ import {
   CompareSidebarLegacy,
   CompareSidebarNew,
 } from "./_compare-sidebar.react.tsx";
+import { CompareNavLegacy, CompareNavNew } from "./_compare-nav.react.tsx";
 import {
   CompareSelectLegacy,
   CompareSelectNew,
@@ -600,6 +601,14 @@ import Layout from "./_layout.astro";
       </div>
       <div class="compare-cell">
         <CompareSidebarNew client:load />
+      </div>
+
+      <h3>Nav</h3>
+      <div class="theme-main compare-cell">
+        <CompareNavLegacy client:load />
+      </div>
+      <div class="compare-cell">
+        <CompareNavNew client:load />
       </div>
 
       <h3>Tabs</h3>
