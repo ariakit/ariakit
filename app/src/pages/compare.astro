@@ -19,8 +19,14 @@ import {
   CheckboxCardSlot,
 } from "@ariakit/ui/html/checkbox-card.react.tsx";
 import { Kbd } from "@ariakit/ui/html/kbd.react.tsx";
+import { Link } from "@ariakit/ui/html/link.react.tsx";
 import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox-card.ts";
-import { CheckIcon, ChevronDownIcon, CopyIcon } from "lucide-react";
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  CopyIcon,
+  ExternalLinkIcon,
+} from "lucide-react";
 import { CompareTabs, CompareTabsGliders } from "./_compare-tabs.react.tsx";
 import Layout from "./_layout.astro";
 ---
@@ -472,6 +478,41 @@ import Layout from "./_layout.astro";
       </div>
       <div class="compare-cell">
         <CompareTabsGliders client:load />
+      </div>
+
+      <h3>Link</h3>
+      <div class="theme-main compare-cell">
+        <p>
+          Read the <a href="#" class="ak-link">documentation</a> or check the
+          <a href="#" class="ak-link"
+            >release notes <ExternalLinkIcon
+              className="inline size-[0.875em]"
+            /></a
+          > to learn more.
+        </p>
+      </div>
+      <div class="compare-cell">
+        <p>
+          Read the <Link href="#">documentation</Link> or check the
+          <Link href="#"
+            >release notes <ExternalLinkIcon
+              className="inline size-[0.875em]"
+            /></Link
+          > to learn more.
+        </p>
+      </div>
+
+      <h3>Link on layers</h3>
+      <div class="theme-main compare-cell">
+        <p class="ak-layer ak-layer-5 ak-frame ak-frame-lg/3">
+          A link <a href="#" class="ak-link">on a raised layer</a> stays
+          readable.
+        </p>
+      </div>
+      <div class="compare-cell">
+        <p class="ak-layer ak-layer-5 ak-frame ak-frame-lg/3">
+          A link <Link href="#">on a raised layer</Link> stays readable.
+        </p>
       </div>
 
       <h3>Segmented group</h3>
