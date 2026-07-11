@@ -68,11 +68,14 @@ export const useCommand = createHook<TagName, CommandOptions>(
     const type = props.type;
 
     useEffect(() => {
-      // An explicit type already wins over the default below, so detecting the
-      // element would only schedule a render with the same final props.
-      if (type !== undefined) return;
-      if (!ref.current) return;
-      setIsNativeButton(isButton(ref.current));
+      const element = ref.current;
+      if (!element) return;
+      const nativeButton = isButton(element);
+      // React 19's useFormStatus relies on the post-mount render below for
+      // native submit controls. A native type="button" control already has the
+      // default type, so updating state would only schedule a redundant render.
+      if (nativeButton && element.type === "button") return;
+      setIsNativeButton(nativeButton);
     }, [type]);
 
     const [active, setActive] = useState(false);
