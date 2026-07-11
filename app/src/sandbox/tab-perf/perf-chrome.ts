@@ -57,17 +57,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("move across tabs", async ({ perf }) => {
     await perf.measure(({ page }) => moveAcrossTabs(page), {
-      setup: ({ q }) => setupTabs(q),
-      verify: ({ q }) => verifyMovedAcrossTabs(q),
-    });
-  });
-
-  // Keep the profiled traversal separate so its expensive diagnostic samples
-  // do not share a Playwright timeout with the timing samples above.
-  test("move across tabs (script profile)", async ({ perf }) => {
-    await perf.measure(({ page }) => moveAcrossTabs(page), {
       scriptProfile: true,
-      profileLimit: 20,
       setup: ({ q }) => setupTabs(q),
       verify: ({ q }) => verifyMovedAcrossTabs(q),
     });
