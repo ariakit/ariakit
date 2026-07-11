@@ -43,6 +43,16 @@ export type HueValues = (typeof HUE_VALUES)[number];
 type StyleValue = string | number;
 type OptionalStyleValue = StyleValue | boolean | null | undefined;
 
+/**
+ * Converts a spacing prop value to CSS: numbers scale the `--spacing` theme
+ * token and strings pass through as raw lengths or expressions.
+ */
+export function getSpacingValue(value: string | number) {
+  return typeof value === "string"
+    ? value
+    : `calc(var(--spacing) * (${value}))`;
+}
+
 interface GetScaledStyleClassParams {
   /** Class name to emit when the value produces a style class. */
   class: string;

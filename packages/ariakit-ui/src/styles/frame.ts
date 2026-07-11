@@ -4,15 +4,10 @@ import {
   CHROMA_VALUES,
   HUE_VALUES,
   getScaledStyleClass,
+  getSpacingValue,
 } from "../utils/styles.ts";
 import type { ChromaValues, ColorValues, HueValues } from "../utils/styles.ts";
 import { layer } from "./layer.ts";
-
-function getSpacingValue(value: string | number) {
-  return typeof value === "string"
-    ? value
-    : `calc(var(--spacing) * (${value}))`;
-}
 
 const FRAME_BORDER_COLOR_VALUES = [
   "brand",

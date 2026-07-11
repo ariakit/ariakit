@@ -17,17 +17,25 @@
   --color-canvas: oklch(99.33% 0.0011 197.14);
   --color-brand: oklch(56.7% 0.1546 248.5156);
 
+  --leading-loose: 1.85;
+
+  --radius-playground: calc(var(--radius) * 3.5);
+  --spacing-playground: --spacing(0);
+}
+
+/* Container tokens are read at runtime by the @ariakit/ui container ($size
+   writes inline var(--container-*) references that Tailwind's scanner can't
+   see), so they must always be emitted, not tree-shaken. --container-content
+   stays in the @theme inline block below: its inner var() references must
+   resolve at the use site to respond to the scoped --container-sidebar
+   overrides, which emitting it at :root would freeze. */
+@theme static {
   --container-wider: 92rem;
   --container-wide: 84rem;
   --container-default: 72rem;
   --container-sidebar: 22rem;
 
   --container-overlap: 100.05rem;
-
-  --leading-loose: 1.85;
-
-  --radius-playground: calc(var(--radius) * 3.5);
-  --spacing-playground: --spacing(0);
 }
 
 :root {

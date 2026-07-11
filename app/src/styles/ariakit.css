@@ -22,6 +22,7 @@
 @import "./ak-segmented.css";
 @import "./ak-link.css";
 @import "./ak-heading.css";
+@import "./ak-container.css";
 
 /* @import "./ak-radio.css";
 @import "./ak-option.css";
@@ -31,7 +32,6 @@
 @import "./ak-nav.css";
 @import "./ak-tooltip.css";
 @import "./ak-select.css";
-@import "./ak-container.css";
 @import "./ak-input.css";
 @import "./ak-progress.css";
 @import "./ak-list.css";

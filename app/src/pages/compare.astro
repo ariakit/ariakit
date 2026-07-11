@@ -18,10 +18,12 @@ import {
   CheckboxCardLabel,
   CheckboxCardSlot,
 } from "@ariakit/ui/html/checkbox-card.react.tsx";
+import { Container } from "@ariakit/ui/html/container.react.tsx";
 import { Heading } from "@ariakit/ui/html/heading.react.tsx";
 import { Kbd } from "@ariakit/ui/html/kbd.react.tsx";
 import { Link } from "@ariakit/ui/html/link.react.tsx";
 import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox-card.ts";
+import { containerSize } from "@ariakit/ui/styles/container.ts";
 import {
   CheckIcon,
   ChevronDownIcon,
@@ -479,6 +481,49 @@ import Layout from "./_layout.astro";
       </div>
       <div class="compare-cell">
         <CompareTabsGliders client:load />
+      </div>
+
+      <h3>Container</h3>
+      <div class="theme-main compare-cell">
+        <div class="ak-container-size-[14rem]/3 w-full">
+          <div class="ak-container ak-layer ak-layer-5 ak-frame ak-frame-lg/2">
+            Sized by an ancestor
+          </div>
+          <div class="ak-container ak-container-size-[10rem] mt-2 ak-layer ak-layer-5 ak-frame ak-frame-lg/2">
+            Own smaller size
+          </div>
+          <div class="ak-container ak-container-size-sidebar mt-2 ak-layer ak-layer-5 ak-frame ak-frame-lg/2">
+            Theme token size
+          </div>
+          <div class="ak-container ak-container-size-[calc(8rem+4rem)] mt-2 ak-layer ak-layer-5 ak-frame ak-frame-lg/2">
+            Calc size
+          </div>
+        </div>
+      </div>
+      <div class="compare-cell">
+        <div {...containerSize.html({ $size: "14rem", $p: 3, class: "w-full" })}>
+          <Container className="ak-layer ak-layer-5 ak-frame ak-frame-lg/2">
+            Sized by an ancestor
+          </Container>
+          <Container
+            $size="10rem"
+            className="mt-2 ak-layer ak-layer-5 ak-frame ak-frame-lg/2"
+          >
+            Own smaller size
+          </Container>
+          <Container
+            $size="sidebar"
+            className="mt-2 ak-layer ak-layer-5 ak-frame ak-frame-lg/2"
+          >
+            Theme token size
+          </Container>
+          <Container
+            $size="calc(8rem + 4rem)"
+            className="mt-2 ak-layer ak-layer-5 ak-frame ak-frame-lg/2"
+          >
+            Calc size
+          </Container>
+        </div>
       </div>
 
       <h3>Heading</h3>
