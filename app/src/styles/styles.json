@@ -1,9 +1,3380 @@
 {
   "version": 2,
-  "modules": [],
+  "modules": [
+    {
+      "id": "icon",
+      "path": "app/src/styles/ak-icon.css",
+      "atProperties": {},
+      "utilities": {
+        "ak-icon": {
+          "name": "ak-icon",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply block size-full flex-none bg-current!",
+              "value": {}
+            },
+            {
+              "name": "mask-repeat",
+              "value": "no-repeat"
+            },
+            {
+              "name": "mask-position",
+              "value": "center"
+            },
+            {
+              "name": "mask-type",
+              "value": "alpha"
+            },
+            {
+              "name": "mask-size",
+              "value": "100%"
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-icon-chevron": {
+          "name": "ak-icon-chevron",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-icon",
+              "value": {}
+            },
+            {
+              "name": "mask-image",
+              "value": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' stroke-width='1.5' stroke='black' fill='none'%3E%3Cpolyline vector-effect='non-scaling-stroke' stroke-linecap='round' stroke-linejoin='round' points='4,6 8,10 12,6'%3E%3C/polyline%3E%3C/svg%3E\")"
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-icon",
+              "module": "icon"
+            }
+          ]
+        },
+        "ak-icon-check": {
+          "name": "ak-icon-check",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-icon",
+              "value": {}
+            },
+            {
+              "name": "mask-image",
+              "value": "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' stroke-width='1.5' stroke='black' fill='none'%3E%3Cpath vector-effect='non-scaling-stroke' stroke-linecap='round' stroke-linejoin='round' d='m4.5 12.75 6 6 9-13.5'/%3E%3C/svg%3E\")"
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-icon",
+              "module": "icon"
+            }
+          ]
+        }
+      },
+      "variants": {}
+    },
+    {
+      "id": "badge",
+      "path": "app/src/styles/ak-badge.css",
+      "atProperties": {},
+      "utilities": {
+        "ak-badge_base": {
+          "name": "ak-badge_base",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-frame ak-frame-badge/badge",
+              "value": {}
+            },
+            {
+              "name": "@apply flex items-center gap-1 text-xs font-medium leading-[1em]",
+              "value": {}
+            },
+            {
+              "name": "padding-inline",
+              "value": "calc(var(--spacing-badge) * 1.5)"
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-badge/badge",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-badge": {
+          "name": "ak-badge",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-badge_base",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-badge_base",
+              "module": "badge"
+            }
+          ]
+        },
+        "ak-badge-*": {
+          "name": "ak-badge-*",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-badge-color",
+              "value": "--value(--color, [*])"
+            },
+            {
+              "name": "@apply ak-badge_base",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-layer ak-layer-color-(--ak-badge-color) ak-layer-mix-15 ak-dark:ak-edge-color-(--ak-badge-color) ak-edge-20 ak-light:ak-edge-color-(--ak-badge-color)",
+              "value": {}
+            },
+            {
+              "name": "&::before,\n  &::after,\n  :where(& > *)",
+              "value": [
+                {
+                  "name": "@apply ak-text ak-text-color-(--ak-badge-color) ak-text-25",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-badge_base",
+              "module": "badge"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-color-(--ak-badge-color)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-mix-15",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-dark",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-color-(--ak-badge-color)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-20",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-light",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-text",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-text-color-(--ak-badge-color)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-text-25",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-badge-icon": {
+          "name": "ak-badge-icon",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply flex-none",
+              "value": {}
+            },
+            {
+              "name": ":has(> &:first-child)",
+              "value": [
+                {
+                  "name": "padding-inline-start",
+                  "value": "calc(var(--spacing-badge))"
+                }
+              ]
+            },
+            {
+              "name": ":has(> &:last-child)",
+              "value": [
+                {
+                  "name": "padding-inline-end",
+                  "value": "calc(var(--spacing-badge))"
+                }
+              ]
+            }
+          ],
+          "dependencies": []
+        }
+      },
+      "variants": {}
+    },
+    {
+      "id": "command",
+      "path": "app/src/styles/ak-command.css",
+      "atProperties": {
+        "--ak-command-depth-x": {
+          "name": "--ak-command-depth-x",
+          "type": "at-property",
+          "syntax": "\"<number>\"",
+          "inherits": "false",
+          "initialValue": "0"
+        },
+        "--ak-command-depth-y": {
+          "name": "--ak-command-depth-y",
+          "type": "at-property",
+          "syntax": "\"<number>\"",
+          "inherits": "false",
+          "initialValue": "0"
+        }
+      },
+      "utilities": {
+        "ak-command_idle": {
+          "name": "ak-command_idle",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply not-[a]:cursor-default relative block",
+              "value": {}
+            },
+            {
+              "name": "&:not(button)",
+              "value": [
+                {
+                  "name": "@apply select-none",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "/* Only apply cursor-pointer to submit buttons that are not disabled */",
+              "value": {}
+            },
+            {
+              "name": "&:where([type=\"submit\"], form button:only-of-type, a &)",
+              "value": [
+                {
+                  "name": "@variant not-ak-command-disabled",
+                  "value": [
+                    {
+                      "name": "@apply cursor-pointer",
+                      "value": {}
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "variant",
+              "name": "ak-command-disabled",
+              "module": "command"
+            }
+          ]
+        },
+        "ak-command_focus": {
+          "name": "ak-command_focus",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-command-focus",
+              "value": "1"
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-command_active": {
+          "name": "ak-command_active",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply origin-bottom",
+              "value": {}
+            },
+            {
+              "name": "@apply scale-x-(--ak-command-scale-x) scale-y-(--ak-command-scale-y) origin-bottom",
+              "value": {}
+            },
+            {
+              "name": "--ak-command-scale-x",
+              "value": "min(100%, 98% + 2% * var(--ak-command-depth-x, 0))"
+            },
+            {
+              "name": "--ak-command-scale-y",
+              "value": "min(100%, 96% + 4% * var(--ak-command-depth-y, 0))"
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "at-property",
+              "name": "--ak-command-depth-x",
+              "module": "command"
+            },
+            {
+              "type": "at-property",
+              "name": "--ak-command-depth-y",
+              "module": "command"
+            }
+          ]
+        },
+        "ak-command": {
+          "name": "ak-command",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-command_idle",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-focus:ak-command_focus",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-active:ak-command_active",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-command_idle",
+              "module": "command"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-focus",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-command_focus",
+              "module": "command"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-active",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-command_active",
+              "module": "command"
+            }
+          ]
+        },
+        "ak-command-depth-*": {
+          "name": "ak-command-depth-*",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-command-depth-x",
+              "value": "calc(1 - clamp(0, --value(number, [number]) / 10, 1))"
+            },
+            {
+              "name": "--ak-command-depth-y",
+              "value": "calc(1 - clamp(0, --value(number, [number]) / 10, 1))"
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-command-depth-x-*": {
+          "name": "ak-command-depth-x-*",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-command-depth-x",
+              "value": "calc(1 - clamp(0, --value(number, [number]) / 10, 1))"
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-command-depth-y-*": {
+          "name": "ak-command-depth-y-*",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-command-depth-y",
+              "value": "calc(1 - clamp(0, --value(number, [number]) / 10, 1))"
+            }
+          ],
+          "dependencies": []
+        }
+      },
+      "variants": {
+        "ak-command-focus": {
+          "name": "ak-command-focus",
+          "type": "variant",
+          "properties": [
+            {
+              "name": "&:focus-visible",
+              "value": [
+                {
+                  "name": "@slot",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-command-disabled": {
+          "name": "ak-command-disabled",
+          "type": "variant",
+          "properties": [
+            {
+              "name": "&:disabled,\n  &[aria-disabled=\"true\"]",
+              "value": [
+                {
+                  "name": "@slot",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-command-active": {
+          "name": "ak-command-active",
+          "type": "variant",
+          "properties": [
+            {
+              "name": "&:not(:disabled, [aria-disabled=\"true\"], :has(button:active)):active",
+              "value": [
+                {
+                  "name": "@slot",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-command-hover": {
+          "name": "ak-command-hover",
+          "type": "variant",
+          "properties": [
+            {
+              "name": "&:not(\n      :disabled,\n      [aria-disabled=\"true\"],\n      :has(button:hover),\n      :has(*:hover > button)\n    ):hover",
+              "value": [
+                {
+                  "name": "@slot",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": []
+        }
+      }
+    },
+    {
+      "id": "aurora",
+      "path": "app/src/styles/ak-aurora.css",
+      "atProperties": {},
+      "utilities": {
+        "ak-aurora_hover": {
+          "name": "ak-aurora_hover",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "&::after",
+              "value": [
+                {
+                  "name": "background-position",
+                  "value": "100% 100%"
+                }
+              ]
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-aurora-*": {
+          "name": "ak-aurora-*",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "position",
+              "value": "relative"
+            },
+            {
+              "name": "--ak-aurora-border",
+              "value": "var(--ak-frame-border, 1px)"
+            },
+            {
+              "name": "--ak-aurora-color-1",
+              "value": "--value(--color, [*])"
+            },
+            {
+              "name": "--ak-aurora-color-2",
+              "value": "--modifier(--color, [*])"
+            },
+            {
+              "name": "&::after",
+              "value": [
+                {
+                  "name": "@apply duration-750 absolute transition-[background-position]",
+                  "value": {}
+                },
+                {
+                  "name": "content",
+                  "value": "\"\""
+                },
+                {
+                  "name": "pointer-events",
+                  "value": "none"
+                },
+                {
+                  "name": "border-radius",
+                  "value": "inherit"
+                },
+                {
+                  "name": "inset",
+                  "value": "calc(var(--ak-aurora-border) * -1)"
+                },
+                {
+                  "name": "padding",
+                  "value": "var(--ak-aurora-border)"
+                },
+                {
+                  "name": "mask",
+                  "value": "linear-gradient(#000 0 0) content-box exclude,\n      linear-gradient(#fff 0 0)"
+                },
+                {
+                  "name": "background",
+                  "value": "linear-gradient(\n      to bottom right,\n      var(--ak-aurora-color-1),\n      transparent,\n      transparent,\n      var(--ak-aurora-color-2, transparent),\n      transparent,\n      transparent,\n      var(--ak-aurora-color-1)\n    )"
+                },
+                {
+                  "name": "background-size",
+                  "value": "200% 200%"
+                }
+              ]
+            }
+          ],
+          "dependencies": []
+        }
+      },
+      "variants": {}
+    },
+    {
+      "id": "button",
+      "path": "app/src/styles/ak-button.css",
+      "atProperties": {},
+      "utilities": {
+        "ak-button_idle": {
+          "name": "ak-button_idle",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-command_idle ak-outline ak-outline-primary ak-frame ak-frame-field/field",
+              "value": {}
+            },
+            {
+              "name": "@apply leading-(--ak-button-leading) flex items-center justify-center whitespace-nowrap font-[calc(500+2*var(--contrast))]",
+              "value": {}
+            },
+            {
+              "name": "--ak-button-leading",
+              "value": "1.5em"
+            },
+            {
+              "name": "--ak-button-padding-block",
+              "value": "calc(\n    var(--ak-frame-padding) - (var(--ak-button-leading) - 1em) * 0.5\n  )"
+            },
+            {
+              "name": "padding-block",
+              "value": "var(--ak-button-padding-block)"
+            },
+            {
+              "name": "gap",
+              "value": "max(--spacing(2), var(--ak-frame-padding) * 0.5)"
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-command_idle",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-outline",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-outline-primary",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-field/field",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-button_hover": {
+          "name": "ak-button_hover",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-layer ak-state-6",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-state-6",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-button_focus": {
+          "name": "ak-button_focus",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-command_focus outline-2",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-command_focus",
+              "module": "command"
+            }
+          ]
+        },
+        "ak-button_active": {
+          "name": "ak-button_active",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-command_active",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-command_active",
+              "module": "command"
+            }
+          ]
+        },
+        "ak-button_disabled": {
+          "name": "ak-button_disabled",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-layer ak-ink-50 ak-layer-mix-20",
+              "value": {}
+            },
+            {
+              "name": "@apply inset-shadow-none bg-none shadow-none",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-50",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-mix-20",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-button": {
+          "name": "ak-button",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_idle",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-hover:ak-button_hover",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-focus:ak-button_focus",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-active:ak-button_active",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-disabled:ak-button_disabled",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_idle",
+              "module": "button"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-hover",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-button_hover",
+              "module": "button"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-focus",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-button_focus",
+              "module": "button"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-active",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-button_active",
+              "module": "button"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-disabled",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-button_disabled",
+              "module": "button"
+            }
+          ]
+        },
+        "ak-button-square": {
+          "name": "ak-button-square",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply aspect-square p-0",
+              "value": {}
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-button-square-*": {
+          "name": "ak-button-square-*",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "height",
+              "value": "--spacing(--value(number))"
+            },
+            {
+              "name": "height",
+              "value": "--value(--spacing, [length])"
+            },
+            {
+              "name": "@apply aspect-square p-0",
+              "value": {}
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-button-classic_idle": {
+          "name": "ak-button-classic_idle",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_idle ak-layer ak-layer-lighten-6",
+              "value": {}
+            },
+            {
+              "name": "@apply inset-shadow-(--ak-button-inset-shadow) from-(--ak-button-bg-dark) to-(--ak-button-bg-light) bg-linear-to-b from-50% bg-clip-padding",
+              "value": {}
+            },
+            {
+              "name": "--ak-button-min-l",
+              "value": "0.25"
+            },
+            {
+              "name": "--ak-button-max-l",
+              "value": "1"
+            },
+            {
+              "name": "--ak-button-bg-dark-l",
+              "value": "l - 0.02 - 0.1 * c"
+            },
+            {
+              "name": "--ak-button-bg-light-l",
+              "value": "l + 0.01"
+            },
+            {
+              "name": "--ak-button-bg-dark",
+              "value": "oklch(\n    from var(--ak-layer)\n      clamp(\n        var(--ak-button-min-l),\n        var(--ak-button-bg-dark-l),\n        var(--ak-button-max-l)\n      )\n      c h\n  )"
+            },
+            {
+              "name": "--ak-button-bg-light",
+              "value": "oklch(\n    from var(--ak-layer)\n      clamp(\n        var(--ak-button-min-l),\n        var(--ak-button-bg-light-l),\n        var(--ak-button-max-l)\n      )\n      c h\n  )"
+            },
+            {
+              "name": "--ak-button-shadow-color",
+              "value": "oklch(\n    from var(--ak-button-bg-dark) calc(l - 0.15) c h\n  )"
+            },
+            {
+              "name": "--ak-button-shadow",
+              "value": "0 -0.5px 0.5px 1px var(--ak-button-shadow-color)"
+            },
+            {
+              "name": "--ak-button-highlight",
+              "value": "0 2px 0.5px\n    oklch(from var(--ak-button-bg-dark) calc(l + 0.2) calc(c / 2) h)"
+            },
+            {
+              "name": "--ak-button-inset-shadow",
+              "value": "var(--ak-button-shadow), inset var(--ak-button-highlight)"
+            },
+            {
+              "name": "@variant ak-dark",
+              "value": [
+                {
+                  "name": "--ak-button-min-l",
+                  "value": "0.15"
+                },
+                {
+                  "name": "--ak-button-max-l",
+                  "value": "0.85"
+                },
+                {
+                  "name": "--ak-button-bg-dark-l",
+                  "value": "l"
+                },
+                {
+                  "name": "--ak-button-highlight",
+                  "value": "0 1.5px 0.5px\n      oklch(from var(--ak-button-bg-dark) calc(l + 0.1) c h)"
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_idle",
+              "module": "button"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-lighten-6",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-dark",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-button-classic_hover": {
+          "name": "ak-button-classic_hover",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_hover",
+              "value": {}
+            },
+            {
+              "name": "--ak-button-min-l",
+              "value": "0.35"
+            },
+            {
+              "name": "--ak-button-max-l",
+              "value": "1"
+            },
+            {
+              "name": "@variant ak-dark",
+              "value": [
+                {
+                  "name": "--ak-button-min-l",
+                  "value": "0.25"
+                },
+                {
+                  "name": "--ak-button-max-l",
+                  "value": "1"
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_hover",
+              "module": "button"
+            },
+            {
+              "type": "variant",
+              "name": "ak-dark",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-button-classic_focus": {
+          "name": "ak-button-classic_focus",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_focus outline-offset-1",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_focus",
+              "module": "button"
+            }
+          ]
+        },
+        "ak-button-classic_active": {
+          "name": "ak-button-classic_active",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_active",
+              "value": {}
+            },
+            {
+              "name": "@apply from-(--ak-button-bg-dark-active) to-(--ak-button-bg-light-active) from-60%",
+              "value": {}
+            },
+            {
+              "name": "--ak-button-bg-dark-active",
+              "value": "oklch(from var(--ak-button-bg-dark) l c h)"
+            },
+            {
+              "name": "--ak-button-bg-light-active",
+              "value": "oklch(\n    from var(--ak-button-bg-dark) calc(l + 0.02) c h\n  )"
+            },
+            {
+              "name": "--ak-button-shadow",
+              "value": "0 1px 0.5px 1px var(--ak-button-shadow-color)"
+            },
+            {
+              "name": "--ak-button-highlight",
+              "value": "0 0 transparent"
+            },
+            {
+              "name": "@variant ak-dark",
+              "value": [
+                {
+                  "name": "--ak-button-bg-dark-active",
+                  "value": "oklch(\n      from var(--ak-button-bg-dark) calc(l - 0.02) c h\n    )"
+                },
+                {
+                  "name": "--ak-button-bg-light-active",
+                  "value": "oklch(from var(--ak-button-bg-dark) l c h)"
+                },
+                {
+                  "name": "--ak-button-shadow",
+                  "value": "0 1px 0.5px var(--ak-button-shadow-color)"
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_active",
+              "module": "button"
+            },
+            {
+              "type": "variant",
+              "name": "ak-dark",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-button-classic_disabled": {
+          "name": "ak-button-classic_disabled",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_disabled",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_disabled",
+              "module": "button"
+            }
+          ]
+        },
+        "ak-button-classic": {
+          "name": "ak-button-classic",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button-classic_idle",
+              "value": {}
+            },
+            {
+              "name": "@apply hover:ak-button-classic_hover",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-focus:ak-button-classic_focus",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-active:ak-button-classic_active",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-disabled:ak-button-classic_disabled",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button-classic_idle",
+              "module": "button"
+            },
+            {
+              "type": "utility",
+              "name": "ak-button-classic_hover",
+              "module": "button"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-focus",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-button-classic_focus",
+              "module": "button"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-active",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-button-classic_active",
+              "module": "button"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-disabled",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-button-classic_disabled",
+              "module": "button"
+            }
+          ]
+        },
+        "ak-button-aurora-*": {
+          "name": "ak-button-aurora-*",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-button-aurora-color-1",
+              "value": "--value(--color, [*])"
+            },
+            {
+              "name": "--ak-button-aurora-color-2",
+              "value": "--modifier(--color, [*])"
+            },
+            {
+              "name": "@apply ak-aurora-(--ak-button-aurora-color-1)/(--ak-button-aurora-color-2)",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-hover:ak-aurora_hover",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-aurora-*",
+              "module": "aurora"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-hover",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-aurora_hover",
+              "module": "aurora"
+            }
+          ]
+        }
+      },
+      "variants": {}
+    },
+    {
+      "id": "checkbox",
+      "path": "app/src/styles/ak-checkbox.css",
+      "atProperties": {},
+      "utilities": {
+        "ak-checkbox-card-grid": {
+          "name": "ak-checkbox-card-grid",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply grid auto-rows-fr gap-3",
+              "value": {}
+            },
+            {
+              "name": "grid-template-columns",
+              "value": "repeat(\n    auto-fill,\n    minmax(var(--ak-checkbox-min-w, 10rem), 1fr)\n  )"
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-checkbox-card-grid-min-w-*": {
+          "name": "ak-checkbox-card-grid-min-w-*",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-checkbox-min-w",
+              "value": "--spacing(--value(number))"
+            },
+            {
+              "name": "--ak-checkbox-min-w",
+              "value": "--value(--spacing, [length])"
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-checkbox-card_idle": {
+          "name": "ak-checkbox-card_idle",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_idle ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering",
+              "value": {}
+            },
+            {
+              "name": "@apply outline-offset-3 flex flex-wrap content-start justify-start text-wrap",
+              "value": {}
+            },
+            {
+              "name": "--ak-checkbox-card-edge",
+              "value": "var(--ak-edge)"
+            },
+            {
+              "name": "gap",
+              "value": "calc(var(--ak-frame-padding) / 2) calc(var(--ak-frame-padding) * 0.75)"
+            },
+            {
+              "name": "input[type=\"checkbox\"]",
+              "value": [
+                {
+                  "name": "@apply sr-only absolute",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "&:has(> *:nth-child(4), > div > div)",
+              "value": [
+                {
+                  "name": "@apply ak-command-depth-4",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_idle",
+              "module": "button"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-card/card",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-lighten-6",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-bordering",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-command-depth-*",
+              "module": "command"
+            }
+          ]
+        },
+        "ak-checkbox-card_hover": {
+          "name": "ak-checkbox-card_hover",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_hover",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_hover",
+              "module": "button"
+            }
+          ]
+        },
+        "ak-checkbox-card_focus": {
+          "name": "ak-checkbox-card_focus",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_focus",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_focus",
+              "module": "button"
+            }
+          ]
+        },
+        "ak-checkbox-card_active": {
+          "name": "ak-checkbox-card_active",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_active",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_active",
+              "module": "button"
+            }
+          ]
+        },
+        "ak-checkbox-card_disabled": {
+          "name": "ak-checkbox-card_disabled",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-checkbox-disabled",
+              "value": "1"
+            },
+            {
+              "name": "&&",
+              "value": [
+                {
+                  "name": "@apply ak-edge-5 ak-layer-mix-20 ak-ink-0",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "svg,\n  img",
+              "value": [
+                {
+                  "name": "@apply opacity-50",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-edge-5",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-mix-20",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-0",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-checkbox-card_checked": {
+          "name": "ak-checkbox-card_checked",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-checkbox-checked",
+              "value": "1"
+            },
+            {
+              "name": "@variant not-has-disabled",
+              "value": [
+                {
+                  "name": "@variant not-has-aria-disabled",
+                  "value": [
+                    {
+                      "name": "@apply ak-edge-primary ak-edge-raw",
+                      "value": {}
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-edge-primary",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-raw",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-checkbox-card": {
+          "name": "ak-checkbox-card",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-checkbox-card_idle",
+              "value": {}
+            },
+            {
+              "name": "@apply hover:not-has-disabled:not-has-aria-disabled:ak-checkbox-card_hover",
+              "value": {}
+            },
+            {
+              "name": "@apply has-focus-visible:ak-checkbox-card_focus",
+              "value": {}
+            },
+            {
+              "name": "@apply has-active:not-has-disabled:not-has-aria-disabled:ak-checkbox-card_active",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-checkbox-checked:ak-checkbox-card_checked",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-checkbox-disabled:ak-checkbox-card_disabled",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-checkbox-card_idle",
+              "module": "checkbox"
+            },
+            {
+              "type": "utility",
+              "name": "ak-checkbox-card_hover",
+              "module": "checkbox"
+            },
+            {
+              "type": "utility",
+              "name": "ak-checkbox-card_focus",
+              "module": "checkbox"
+            },
+            {
+              "type": "utility",
+              "name": "ak-checkbox-card_active",
+              "module": "checkbox"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-checked",
+              "module": "checkbox"
+            },
+            {
+              "type": "utility",
+              "name": "ak-checkbox-card_checked",
+              "module": "checkbox"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-disabled",
+              "module": "checkbox"
+            },
+            {
+              "type": "utility",
+              "name": "ak-checkbox-card_disabled",
+              "module": "checkbox"
+            }
+          ]
+        },
+        "ak-checkbox-card-vertical": {
+          "name": "ak-checkbox-card-vertical",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply grid justify-stretch",
+              "value": {}
+            },
+            {
+              "name": "--ak-checkbox-vertical",
+              "value": "1"
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-checkbox-card-round": {
+          "name": "ak-checkbox-card-round",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-frame ak-frame-full/2",
+              "value": {}
+            },
+            {
+              "name": "--ak-checkbox-round",
+              "value": "1"
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-full/2",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-checkbox-card-label": {
+          "name": "ak-checkbox-card-label",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply me-auto flex-1 self-start truncate",
+              "value": {}
+            },
+            {
+              "name": "width",
+              "value": "calc-size(auto, size + --spacing(4))"
+            },
+            {
+              "name": "@variant ak-checkbox-round",
+              "value": [
+                {
+                  "name": "@apply text-center",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "@variant ak-checkbox-vertical",
+              "value": [
+                {
+                  "name": "@apply w-full text-center",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "variant",
+              "name": "ak-checkbox-round",
+              "module": "checkbox"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-vertical",
+              "module": "checkbox"
+            }
+          ]
+        },
+        "ak-checkbox-card-check_idle": {
+          "name": "ak-checkbox-card-check_idle",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-layer ak-layer-darken-6 ak-frame ak-frame-force ak-frame-full/1 ak-frame-bordering",
+              "value": {}
+            },
+            {
+              "name": "@apply size-6 flex-none self-start *:hidden",
+              "value": {}
+            },
+            {
+              "name": "@variant ak-checkbox-vertical",
+              "value": [
+                {
+                  "name": "@apply justify-self-end",
+                  "value": {}
+                },
+                {
+                  "name": "grid-column",
+                  "value": "1"
+                },
+                {
+                  "name": "grid-row",
+                  "value": "1"
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-darken-6",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-force",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-full/1",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-bordering",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-vertical",
+              "module": "checkbox"
+            }
+          ]
+        },
+        "ak-checkbox-card-check_checked": {
+          "name": "ak-checkbox-card-check_checked",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-layer ak-layer-color-(--ak-checkbox-card-edge) ak-layer-darken-0 empty:before:ak-icon-check",
+              "value": {}
+            },
+            {
+              "name": "@apply ring-(--ak-layer) border-0 ring *:block",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-color-(--ak-checkbox-card-edge)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-darken-0",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-icon-check",
+              "module": "icon"
+            }
+          ]
+        },
+        "ak-checkbox-card-check_disabled": {
+          "name": "ak-checkbox-card-check_disabled",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-layer ak-layer-color-(--ak-layer-parent) ak-layer-darken-0 ak-ink-0 ak-edge-10",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-color-(--ak-layer-parent)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-darken-0",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-0",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-10",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-checkbox-card-check": {
+          "name": "ak-checkbox-card-check",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-checkbox-card-check_idle",
+              "value": {}
+            },
+            {
+              "name": "@variant ak-checkbox-checked",
+              "value": [
+                {
+                  "name": "@apply ak-checkbox-card-check_checked",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "@variant ak-checkbox-disabled",
+              "value": [
+                {
+                  "name": "@apply ak-checkbox-card-check_disabled",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-checkbox-card-check_idle",
+              "module": "checkbox"
+            },
+            {
+              "type": "utility",
+              "name": "ak-checkbox-card-check_checked",
+              "module": "checkbox"
+            },
+            {
+              "type": "utility",
+              "name": "ak-checkbox-card-check_disabled",
+              "module": "checkbox"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-checked",
+              "module": "checkbox"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-disabled",
+              "module": "checkbox"
+            }
+          ]
+        },
+        "ak-checkbox-card-image": {
+          "name": "ak-checkbox-card-image",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-frame ak-frame-p-2 flex h-full w-20 items-center justify-center",
+              "value": {}
+            },
+            {
+              "name": "@variant ak-checkbox-vertical",
+              "value": [
+                {
+                  "name": "@apply max-w-4/5 w-full justify-self-center",
+                  "value": {}
+                },
+                {
+                  "name": "grid-column",
+                  "value": "1"
+                },
+                {
+                  "name": "grid-row",
+                  "value": "1"
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-p-2",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-vertical",
+              "module": "checkbox"
+            }
+          ]
+        },
+        "ak-checkbox-card-description": {
+          "name": "ak-checkbox-card-description",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-ink-70",
+              "value": {}
+            },
+            {
+              "name": "@apply w-full self-start font-normal",
+              "value": {}
+            },
+            {
+              "name": "@variant ak-checkbox-disabled",
+              "value": [
+                {
+                  "name": "@apply ak-ink-0",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-ink-70",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-0",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-checkbox-disabled",
+              "module": "checkbox"
+            }
+          ]
+        },
+        "ak-checkbox-card-content": {
+          "name": "ak-checkbox-card-content",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply flex flex-1 flex-wrap content-start gap-[inherit] self-start",
+              "value": {}
+            }
+          ],
+          "dependencies": []
+        }
+      },
+      "variants": {
+        "ak-checkbox-checked": {
+          "name": "ak-checkbox-checked",
+          "type": "variant",
+          "properties": [
+            {
+              "name": "&:has(*:checked, [aria-checked=\"true\"])",
+              "value": [
+                {
+                  "name": "@slot",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "@container style(--ak-checkbox-checked: 1)",
+              "value": [
+                {
+                  "name": "@slot",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-checkbox-disabled": {
+          "name": "ak-checkbox-disabled",
+          "type": "variant",
+          "properties": [
+            {
+              "name": "&:has(*:disabled, [aria-disabled=\"true\"])",
+              "value": [
+                {
+                  "name": "@slot",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "@container style(--ak-checkbox-disabled: 1)",
+              "value": [
+                {
+                  "name": "@slot",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-checkbox-round": {
+          "name": "ak-checkbox-round",
+          "type": "variant",
+          "properties": [
+            {
+              "name": "@container style(--ak-checkbox-round: 1)",
+              "value": [
+                {
+                  "name": "@slot",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-checkbox-vertical": {
+          "name": "ak-checkbox-vertical",
+          "type": "variant",
+          "properties": [
+            {
+              "name": "@container style(--ak-checkbox-vertical: 1)",
+              "value": [
+                {
+                  "name": "@slot",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": []
+        }
+      }
+    },
+    {
+      "id": "kbd",
+      "path": "app/src/styles/ak-kbd.css",
+      "atProperties": {},
+      "utilities": {
+        "ak-kbd": {
+          "name": "ak-kbd",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-layer ak-layer-9 ak-edge-100 ak-edge-lighten-60",
+              "value": {}
+            },
+            {
+              "name": "@apply font-sans",
+              "value": {}
+            },
+            {
+              "name": "border-radius",
+              "value": "0.27em 0.27em 0.34em 0.34em"
+            },
+            {
+              "name": "border-width",
+              "value": "max(1px, 0.067em) 0 max(1px, 0.15em)"
+            },
+            {
+              "name": "border-color",
+              "value": "white transparent var(--ak-edge)"
+            },
+            {
+              "name": "background-image",
+              "value": "linear-gradient(\n    to bottom,\n    transparent,\n    oklch(from var(--ak-layer) calc(l + 0.05) c h)\n  )"
+            },
+            {
+              "name": "box-shadow",
+              "value": "0 0 0 max(1px, 0.034em) var(--ak-edge)"
+            },
+            {
+              "name": "padding",
+              "value": "0.1em 0.25em"
+            },
+            {
+              "name": "font-size-adjust",
+              "value": "0.49"
+            },
+            {
+              "name": "@variant ak-dark",
+              "value": [
+                {
+                  "name": "@apply ak-edge-16",
+                  "value": {}
+                },
+                {
+                  "name": "@apply rounded-b-[0.4em]",
+                  "value": {}
+                },
+                {
+                  "name": "border-width",
+                  "value": "0 0 max(1px, 0.2em)"
+                },
+                {
+                  "name": "border-bottom-color",
+                  "value": "oklch(from var(--ak-layer) calc(l - 0.08) c h)"
+                },
+                {
+                  "name": "background-image",
+                  "value": "linear-gradient(\n      to bottom,\n      transparent,\n      oklch(from var(--ak-layer) calc(l + 0.08) c h)\n    )"
+                },
+                {
+                  "name": "box-shadow",
+                  "value": "0 min(-1px, -0.06em) var(--ak-edge),\n      0 0 0 max(1px, 0.06em) var(--ak-edge)"
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-9",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-100",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-lighten-60",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-16",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "variant",
+              "name": "ak-dark",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        }
+      },
+      "variants": {}
+    },
+    {
+      "id": "tab",
+      "path": "app/src/styles/ak-tab.css",
+      "atProperties": {
+        "--ak-tab-border-width": {
+          "name": "--ak-tab-border-width",
+          "type": "at-property",
+          "syntax": "\"<length>\"",
+          "inherits": "true",
+          "initialValue": "0px"
+        }
+      },
+      "utilities": {
+        "ak-tabs": {
+          "name": "ak-tabs",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-tab-border-width",
+              "value": "var(--ak-frame-border, 1px)"
+            },
+            {
+              "name": "--ak-tab-border-color",
+              "value": "var(--ak-edge)"
+            },
+            {
+              "name": "--ak-tab-bg",
+              "value": "var(--ak-layer)"
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-tab-list": {
+          "name": "ak-tab-list",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-frame ak-frame-cover ak-layer ak-layer-darken-6 -ak-frame-m-(--ak-tab-border-width)",
+              "value": {}
+            },
+            {
+              "name": "@apply -mb-(--ak-tab-border-width) -space-x-(--ak-tab-border-width) pb-0! relative flex flex-none items-end overflow-x-auto overflow-y-clip overscroll-x-contain",
+              "value": {}
+            },
+            {
+              "name": "scrollbar-width",
+              "value": "none"
+            },
+            {
+              "name": "&::after",
+              "value": [
+                {
+                  "name": "@apply from-(--ak-layer) z-3 -end-(--ak-frame-padding) mb-(--ak-tab-border-width) bg-linear-to-l pointer-events-none sticky h-full w-8 flex-none to-transparent bg-clip-padding content-['']",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "&:dir(rtl)",
+              "value": [
+                {
+                  "name": "&::after",
+                  "value": [
+                    {
+                      "name": "@apply bg-linear-to-r",
+                      "value": {}
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-cover",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-darken-6",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-tab-panel": {
+          "name": "ak-tab-panel",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-frame-border-(--ak-tab-border-width) ak-layer ak-layer-color-(--ak-tab-bg) ak-frame ak-frame-cover",
+              "value": {}
+            },
+            {
+              "name": "@apply border-(--ak-tab-border-color)! relative",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-frame-border-(--ak-tab-border-width)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-color-(--ak-tab-bg)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-cover",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-tab_idle": {
+          "name": "ak-tab_idle",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-command_idle ak-ink-70",
+              "value": {}
+            },
+            {
+              "name": "@apply z-1 relative flex items-center gap-1.5 whitespace-nowrap font-medium leading-[1em]",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-command_idle",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-70",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-tab-folder_idle": {
+          "name": "ak-tab-folder_idle",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-tab_idle ak-frame ak-frame-container/container ak-frame-border-(--ak-tab-border-width)",
+              "value": {}
+            },
+            {
+              "name": "@apply border-(length:--ak-tab-border-width) border-b-0! border-transparent",
+              "value": {}
+            },
+            {
+              "name": "padding-block-end",
+              "value": "calc(\n    var(--ak-tab-border-width) + var(--ak-frame-padding)\n  ) !important"
+            },
+            {
+              "name": "--ak-tab-folder-padding",
+              "value": "var(--ak-frame-padding)"
+            },
+            {
+              "name": "&:not(:last-child)::after",
+              "value": [
+                {
+                  "name": "@apply border-(--ak-tab-border-color) absolute -end-px h-1/2 w-px border-r transition-colors content-['']",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "> *",
+              "value": [
+                {
+                  "name": "@apply ak-frame ak-frame-field ak-frame-p-[calc(var(--spacing-field)-var(--ak-tab-folder-padding))]",
+                  "value": {}
+                },
+                {
+                  "name": "@apply flex h-full items-center gap-1.5 whitespace-nowrap transition-colors",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-tab_idle",
+              "module": "tab"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-container/container",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-border-(--ak-tab-border-width)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "at-property",
+              "name": "--ak-tab-border-width",
+              "module": "tab"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-field",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-p-[calc(var(--spacing-field)-var(--ak-tab-folder-padding))]",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-tab-folder_hover": {
+          "name": "ak-tab-folder_hover",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "&:not(:last-child)::after",
+              "value": [
+                {
+                  "name": "@apply border-transparent",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": ":has(+ &)::after",
+              "value": [
+                {
+                  "name": "@apply border-transparent",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "> *",
+              "value": [
+                {
+                  "name": "@apply ak-layer ak-state-6",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-state-6",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-tab-folder_focus": {
+          "name": "ak-tab-folder_focus",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-command_focus",
+              "value": {}
+            },
+            {
+              "name": "@apply outline-none",
+              "value": {}
+            },
+            {
+              "name": "&:not(:last-child)::after",
+              "value": [
+                {
+                  "name": "@apply border-transparent",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": ":has(+ &)::after",
+              "value": [
+                {
+                  "name": "@apply border-transparent",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "> *",
+              "value": [
+                {
+                  "name": "@apply ak-layer ak-layer-primary ak-layer-contrast ak-ink-100",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-command_focus",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-primary",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-contrast",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-100",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-tab-folder_active": {
+          "name": "ak-tab-folder_active",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "> *",
+              "value": [
+                {
+                  "name": "@apply ak-command_active",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-command_active",
+              "module": "command"
+            }
+          ]
+        },
+        "ak-tab-folder_selected": {
+          "name": "ak-tab-folder_selected",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-layer ak-layer-color-(--ak-tab-bg) ak-ink-100",
+              "value": {}
+            },
+            {
+              "name": "@apply z-2 border-(--ak-tab-border-color)! rounded-b-none!",
+              "value": {}
+            },
+            {
+              "name": "&:not(:last-child)::after",
+              "value": [
+                {
+                  "name": "@apply border-transparent",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": ":has(+ &)::after",
+              "value": [
+                {
+                  "name": "@apply border-transparent",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "&::after,\n  &::before",
+              "value": [
+                {
+                  "name": "@apply pointer-events-none absolute bottom-0 border-none bg-no-repeat content-['']",
+                  "value": {}
+                },
+                {
+                  "name": "--ak-tab-smoothness",
+                  "value": "min(0.2px, var(--ak-tab-border-width))"
+                },
+                {
+                  "name": "--ak-tab-inner",
+                  "value": "var(--ak-frame-radius)"
+                },
+                {
+                  "name": "--ak-tab-inner-border",
+                  "value": "calc(var(--ak-tab-inner) - var(--ak-tab-smoothness))"
+                },
+                {
+                  "name": "--ak-tab-inner-bg",
+                  "value": "calc(var(--ak-tab-inner) + var(--ak-tab-smoothness))"
+                },
+                {
+                  "name": "--ak-tab-outer",
+                  "value": "calc(var(--ak-tab-inner) - var(--ak-tab-border-width))"
+                },
+                {
+                  "name": "--ak-tab-outer-border",
+                  "value": "calc(var(--ak-tab-outer) + var(--ak-tab-smoothness))"
+                },
+                {
+                  "name": "--ak-tab-outer-bg",
+                  "value": "calc(var(--ak-tab-outer) - var(--ak-tab-smoothness))"
+                },
+                {
+                  "name": "--ak-tab-transparent",
+                  "value": "transparent var(--ak-tab-outer-bg)"
+                },
+                {
+                  "name": "--ak-tab-border",
+                  "value": "var(--ak-tab-border-color) var(--ak-tab-outer-border),\n      var(--ak-tab-border-color) var(--ak-tab-inner-border)"
+                },
+                {
+                  "name": "--ak-tab-bg",
+                  "value": "var(--ak-layer) var(--ak-tab-inner-bg)"
+                },
+                {
+                  "name": "--ak-tab-gradient",
+                  "value": "var(--ak-tab-transparent), var(--ak-tab-border), var(--ak-tab-bg)"
+                },
+                {
+                  "name": "--ak-tab-backdrop",
+                  "value": "transparent var(--ak-tab-outer),\n      var(--ak-layer) var(--ak-tab-outer-border)"
+                },
+                {
+                  "name": "height",
+                  "value": "var(--ak-frame-radius)"
+                },
+                {
+                  "name": "width",
+                  "value": "var(--ak-frame-radius)"
+                }
+              ]
+            },
+            {
+              "name": "&::before",
+              "value": [
+                {
+                  "name": "right",
+                  "value": "100%"
+                },
+                {
+                  "name": "background-image",
+                  "value": "radial-gradient(circle at 0 0, var(--ak-tab-gradient)),\n      radial-gradient(circle at 0 0, var(--ak-tab-backdrop))"
+                }
+              ]
+            },
+            {
+              "name": "&::after",
+              "value": [
+                {
+                  "name": "left",
+                  "value": "100%"
+                },
+                {
+                  "name": "background-position",
+                  "value": "100%, 100%"
+                },
+                {
+                  "name": "background-image",
+                  "value": "radial-gradient(circle at 100% 0, var(--ak-tab-gradient)),\n      radial-gradient(circle at 100% 0, var(--ak-tab-backdrop))"
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-color-(--ak-tab-bg)",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-100",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "at-property",
+              "name": "--ak-tab-border-width",
+              "module": "tab"
+            }
+          ]
+        },
+        "ak-tab-folder": {
+          "name": "ak-tab-folder",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-tab-folder_idle hover:not-aria-selected:ak-tab-folder_hover focus-visible:ak-tab-folder_focus aria-selected:ak-tab-folder_selected active:ak-tab-folder_active",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-tab-folder_idle",
+              "module": "tab"
+            },
+            {
+              "type": "utility",
+              "name": "ak-tab-folder_hover",
+              "module": "tab"
+            },
+            {
+              "type": "utility",
+              "name": "ak-tab-folder_focus",
+              "module": "tab"
+            },
+            {
+              "type": "utility",
+              "name": "ak-tab-folder_selected",
+              "module": "tab"
+            },
+            {
+              "type": "utility",
+              "name": "ak-tab-folder_active",
+              "module": "tab"
+            }
+          ]
+        }
+      },
+      "variants": {}
+    },
+    {
+      "id": "segmented",
+      "path": "app/src/styles/ak-segmented.css",
+      "atProperties": {},
+      "utilities": {
+        "ak-segmented": {
+          "name": "ak-segmented",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-frame ak-frame-full/container ak-layer ak-layer-darken-3 ak-frame-bordering after:ak-segmented-indicator",
+              "value": {}
+            },
+            {
+              "name": "@apply gap-(--ak-frame-padding) relative flex overflow-clip",
+              "value": {}
+            },
+            {
+              "name": "--ak-segmented-padding",
+              "value": "var(--ak-frame-padding)"
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-full/container",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-darken-3",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-bordering",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-segmented-indicator",
+              "module": "segmented"
+            }
+          ]
+        },
+        "ak-segmented-separator": {
+          "name": "ak-segmented-separator",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-layer",
+              "value": {}
+            },
+            {
+              "name": "@apply pointer-events-none absolute h-1/2 border-r transition-opacity delay-150 ease-in",
+              "value": {}
+            },
+            {
+              "name": "content",
+              "value": "\"\""
+            },
+            {
+              "name": "inset-inline-start",
+              "value": "calc((var(--ak-segmented-padding) / 2 + 1px) * -1)"
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-segmented-indicator-base": {
+          "name": "ak-segmented-indicator-base",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-layer ak-layer-lighten-12 ak-dark:ak-edge-0 ak-frame-bordering",
+              "value": {}
+            },
+            {
+              "name": "@apply shadow",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-lighten-12",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-dark",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-0",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-bordering",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-segmented-indicator": {
+          "name": "ak-segmented-indicator",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-segmented-indicator-base ak-frame ak-frame-field/0",
+              "value": {}
+            },
+            {
+              "name": "@apply absolute transition-[inset]",
+              "value": {}
+            },
+            {
+              "name": "position-anchor",
+              "value": "--ak-segmented-button_selected"
+            },
+            {
+              "name": "inset",
+              "value": "anchor(start) anchor(end) anchor(end) anchor(start)"
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-segmented-indicator-base",
+              "module": "segmented"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-frame-field/0",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-segmented-button_idle": {
+          "name": "ak-segmented-button_idle",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_idle ak-ink-70",
+              "value": {}
+            },
+            {
+              "name": "@apply z-1 font-medium transition-colors",
+              "value": {}
+            },
+            {
+              "name": "padding-block",
+              "value": "calc(var(--ak-button-padding-block) * 0.75)"
+            },
+            {
+              "name": "input[type=\"radio\"]",
+              "value": [
+                {
+                  "name": "@apply sr-only",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "&:not(:first-of-type)::before",
+              "value": [
+                {
+                  "name": "@apply ak-segmented-separator",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_idle",
+              "module": "button"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-70",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-segmented-separator",
+              "module": "segmented"
+            }
+          ]
+        },
+        "ak-segmented-button_selected": {
+          "name": "ak-segmented-button_selected",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-ink-100",
+              "value": {}
+            },
+            {
+              "name": "&::before,\n  & + *::before",
+              "value": [
+                {
+                  "name": "@apply opacity-0 delay-0",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": "@supports (anchor-name: --a)",
+              "value": [
+                {
+                  "name": "@apply ak-layer ak-layer-lighten-12",
+                  "value": {}
+                },
+                {
+                  "name": "@apply bg-transparent!",
+                  "value": {}
+                },
+                {
+                  "name": "anchor-name",
+                  "value": "--ak-segmented-button_selected"
+                }
+              ]
+            },
+            {
+              "name": "@supports not (anchor-name: --a)",
+              "value": [
+                {
+                  "name": "@apply ak-segmented-indicator-base",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-ink-100",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-lighten-12",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-segmented-indicator-base",
+              "module": "segmented"
+            }
+          ]
+        },
+        "ak-segmented-button_hover": {
+          "name": "ak-segmented-button_hover",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_hover",
+              "value": {}
+            },
+            {
+              "name": "&::before,\n  & + *::before",
+              "value": [
+                {
+                  "name": "@apply opacity-0 delay-0",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_hover",
+              "module": "button"
+            }
+          ]
+        },
+        "ak-segmented-button_focus": {
+          "name": "ak-segmented-button_focus",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_focus",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_focus",
+              "module": "button"
+            }
+          ]
+        },
+        "ak-segmented-button_active": {
+          "name": "ak-segmented-button_active",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_active",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_active",
+              "module": "button"
+            }
+          ]
+        },
+        "ak-segmented-button_disabled": {
+          "name": "ak-segmented-button_disabled",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-button_disabled",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-button_disabled",
+              "module": "button"
+            }
+          ]
+        },
+        "ak-segmented-button": {
+          "name": "ak-segmented-button",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-segmented-button_idle",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-hover:ak-segmented-button_hover",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-focus:ak-segmented-button_focus",
+              "value": {}
+            },
+            {
+              "name": "@apply has-focus-visible:ak-segmented-button_focus",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-active:ak-segmented-button_active",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-command-disabled:ak-segmented-button_disabled",
+              "value": {}
+            },
+            {
+              "name": "@apply ak-segmented-button-selected:ak-segmented-button_selected",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-segmented-button_idle",
+              "module": "segmented"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-hover",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-segmented-button_hover",
+              "module": "segmented"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-focus",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-segmented-button_focus",
+              "module": "segmented"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-active",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-segmented-button_active",
+              "module": "segmented"
+            },
+            {
+              "type": "variant",
+              "name": "ak-command-disabled",
+              "module": "command"
+            },
+            {
+              "type": "utility",
+              "name": "ak-segmented-button_disabled",
+              "module": "segmented"
+            },
+            {
+              "type": "variant",
+              "name": "ak-segmented-button-selected",
+              "module": "segmented"
+            },
+            {
+              "type": "utility",
+              "name": "ak-segmented-button_selected",
+              "module": "segmented"
+            }
+          ]
+        }
+      },
+      "variants": {
+        "ak-segmented-button-selected": {
+          "name": "ak-segmented-button-selected",
+          "type": "variant",
+          "properties": [
+            {
+              "name": "&:checked,\n  &[aria-selected=\"true\"],\n  &[aria-checked=\"true\"],\n  &:has(:checked),\n  &:has([aria-checked=\"true\"]),\n  &:has([aria-selected=\"true\"])",
+              "value": [
+                {
+                  "name": "@slot",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": []
+        }
+      }
+    }
+  ],
   "index": {
-    "utilities": {},
-    "variants": {},
-    "atProperties": {}
+    "utilities": {
+      "ak-icon": {
+        "module": "icon"
+      },
+      "ak-icon-chevron": {
+        "module": "icon"
+      },
+      "ak-icon-check": {
+        "module": "icon"
+      },
+      "ak-badge_base": {
+        "module": "badge"
+      },
+      "ak-badge": {
+        "module": "badge"
+      },
+      "ak-badge-*": {
+        "module": "badge"
+      },
+      "ak-badge-icon": {
+        "module": "badge"
+      },
+      "ak-command_idle": {
+        "module": "command"
+      },
+      "ak-command_focus": {
+        "module": "command"
+      },
+      "ak-command_active": {
+        "module": "command"
+      },
+      "ak-command": {
+        "module": "command"
+      },
+      "ak-command-depth-*": {
+        "module": "command"
+      },
+      "ak-command-depth-x-*": {
+        "module": "command"
+      },
+      "ak-command-depth-y-*": {
+        "module": "command"
+      },
+      "ak-aurora_hover": {
+        "module": "aurora"
+      },
+      "ak-aurora-*": {
+        "module": "aurora"
+      },
+      "ak-button_idle": {
+        "module": "button"
+      },
+      "ak-button_hover": {
+        "module": "button"
+      },
+      "ak-button_focus": {
+        "module": "button"
+      },
+      "ak-button_active": {
+        "module": "button"
+      },
+      "ak-button_disabled": {
+        "module": "button"
+      },
+      "ak-button": {
+        "module": "button"
+      },
+      "ak-button-square": {
+        "module": "button"
+      },
+      "ak-button-square-*": {
+        "module": "button"
+      },
+      "ak-button-classic_idle": {
+        "module": "button"
+      },
+      "ak-button-classic_hover": {
+        "module": "button"
+      },
+      "ak-button-classic_focus": {
+        "module": "button"
+      },
+      "ak-button-classic_active": {
+        "module": "button"
+      },
+      "ak-button-classic_disabled": {
+        "module": "button"
+      },
+      "ak-button-classic": {
+        "module": "button"
+      },
+      "ak-button-aurora-*": {
+        "module": "button"
+      },
+      "ak-checkbox-card-grid": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card-grid-min-w-*": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card_idle": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card_hover": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card_focus": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card_active": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card_disabled": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card_checked": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card-vertical": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card-round": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card-label": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card-check_idle": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card-check_checked": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card-check_disabled": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card-check": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card-image": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card-description": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-card-content": {
+        "module": "checkbox"
+      },
+      "ak-kbd": {
+        "module": "kbd"
+      },
+      "ak-tabs": {
+        "module": "tab"
+      },
+      "ak-tab-list": {
+        "module": "tab"
+      },
+      "ak-tab-panel": {
+        "module": "tab"
+      },
+      "ak-tab_idle": {
+        "module": "tab"
+      },
+      "ak-tab-folder_idle": {
+        "module": "tab"
+      },
+      "ak-tab-folder_hover": {
+        "module": "tab"
+      },
+      "ak-tab-folder_focus": {
+        "module": "tab"
+      },
+      "ak-tab-folder_active": {
+        "module": "tab"
+      },
+      "ak-tab-folder_selected": {
+        "module": "tab"
+      },
+      "ak-tab-folder": {
+        "module": "tab"
+      },
+      "ak-segmented": {
+        "module": "segmented"
+      },
+      "ak-segmented-separator": {
+        "module": "segmented"
+      },
+      "ak-segmented-indicator-base": {
+        "module": "segmented"
+      },
+      "ak-segmented-indicator": {
+        "module": "segmented"
+      },
+      "ak-segmented-button_idle": {
+        "module": "segmented"
+      },
+      "ak-segmented-button_selected": {
+        "module": "segmented"
+      },
+      "ak-segmented-button_hover": {
+        "module": "segmented"
+      },
+      "ak-segmented-button_focus": {
+        "module": "segmented"
+      },
+      "ak-segmented-button_active": {
+        "module": "segmented"
+      },
+      "ak-segmented-button_disabled": {
+        "module": "segmented"
+      },
+      "ak-segmented-button": {
+        "module": "segmented"
+      }
+    },
+    "variants": {
+      "ak-command-focus": {
+        "module": "command"
+      },
+      "ak-command-disabled": {
+        "module": "command"
+      },
+      "ak-command-active": {
+        "module": "command"
+      },
+      "ak-command-hover": {
+        "module": "command"
+      },
+      "ak-checkbox-checked": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-disabled": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-round": {
+        "module": "checkbox"
+      },
+      "ak-checkbox-vertical": {
+        "module": "checkbox"
+      },
+      "ak-segmented-button-selected": {
+        "module": "segmented"
+      }
+    },
+    "atProperties": {
+      "--ak-command-depth-x": {
+        "module": "command"
+      },
+      "--ak-command-depth-y": {
+        "module": "command"
+      },
+      "--ak-tab-border-width": {
+        "module": "tab"
+      }
+    }
   }
 }
