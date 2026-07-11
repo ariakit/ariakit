@@ -23,6 +23,7 @@ import { Heading } from "@ariakit/ui/html/heading.react.tsx";
 import { Input } from "@ariakit/ui/html/input.react.tsx";
 import { Kbd } from "@ariakit/ui/html/kbd.react.tsx";
 import { Link } from "@ariakit/ui/html/link.react.tsx";
+import { Radio } from "@ariakit/ui/html/radio.react.tsx";
 import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox-card.ts";
 import { containerSize } from "@ariakit/ui/styles/container.ts";
 import { input } from "@ariakit/ui/styles/input.ts";
@@ -261,6 +262,34 @@ import Layout from "./_layout.astro";
         <ButtonReact.Button $size="xs" $rounded="full" $p={1} $px="lg">
           <ButtonReact.ButtonLabel>v1.0.0</ButtonReact.ButtonLabel>
         </ButtonReact.Button>
+      </div>
+
+      <h3>Radio</h3>
+      <div class="theme-main compare-cell">
+        <label class="ak-radio">
+          <input name="legacy-radio" type="radio" checked />
+          Comfortable
+        </label>
+        <label class="ak-radio">
+          <input name="legacy-radio" type="radio" />
+          Compact
+        </label>
+        <label class="ak-radio">
+          <input name="legacy-radio" type="radio" disabled />
+          Disabled
+        </label>
+        <label class="ak-radio">
+          <input name="legacy-radio-2" type="radio" checked disabled />
+          Checked disabled
+        </label>
+      </div>
+      <div class="compare-cell">
+        <Radio name="new-radio" defaultChecked>Comfortable</Radio>
+        <Radio name="new-radio">Compact</Radio>
+        <Radio name="new-radio" disabled>Disabled</Radio>
+        <Radio name="new-radio-2" defaultChecked disabled>
+          Checked disabled
+        </Radio>
       </div>
 
       <h3>Checkbox card</h3>
