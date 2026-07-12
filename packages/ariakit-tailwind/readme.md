@@ -10,6 +10,7 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
 
 - [Installation](#installation)
 - [How it works](#how-it-works)
+- [Mental model](#mental-model)
 - [Theming](#theming)
 - [`ak-layer`](#ak-layer) — background, text, border colors for a surface
 - [`ak-ink`](#ak-ink) — text opacity inside a layer
@@ -38,39 +39,294 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
    @import "@ariakit/tailwind";
    ```
 
-4. Apply the base layer to a container element (must **not** be `html` or `:root`):
+4. Define the application canvas and starter component tokens:
+
+   ```css
+   @theme {
+     --color-canvas: #f5f8f7;
+     --color-primary: #2563eb;
+     --color-warning: #d97706;
+
+     --radius-card: var(--radius-2xl);
+     --spacing-card: --spacing(4);
+
+     --radius-field: var(--radius-xl);
+     --spacing-field: --spacing(2);
+
+     --radius-badge: calc(infinity * 1px);
+     --spacing-badge: --spacing(1.5);
+   }
+
+   :root {
+     color-scheme: light;
+
+     @variant dark {
+       --color-canvas: #0b1110;
+       color-scheme: dark;
+     }
+   }
+   ```
+
+   This follows Tailwind's `dark` variant. For a manual theme toggle, configure that variant to match your root selector or override `--color-canvas` and `color-scheme` on the selector directly.
+
+5. Apply the base layer to a container element (must **not** be `html` or `:root`):
 
    <!-- prettier-ignore -->
    ```html
-   <body class="ak-layer ak-layer-white dark:ak-layer-gray-950">
+   <body class="ak-layer ak-layer-canvas">
    ```
 
    Or via `@apply`:
 
    ```css
    body {
-     @apply ak-layer ak-layer-white dark:ak-layer-gray-950;
+     @apply ak-layer ak-layer-canvas;
    }
    ```
+
+   Choose descendant surfaces deliberately, as described in the [mental model](#mental-model).
 
 ## How it works
 
 Ariakit Tailwind revolves around a few families of utilities:
 
-- **[`ak-layer`](#ak-layer)** turns any element into a _layer_ — a surface with its own background, text, and edge colors. Layers can nest, and lightness modifiers such as `ak-layer-lighten-*`, `ak-layer-darken-*`, and numeric `ak-layer-*` modifiers shift nested surfaces relative to their parent so stacked surfaces read correctly in both light and dark modes.
+- **[`ak-layer`](#ak-layer)** turns an element into a _layer_, a surface with its own background, text, and edge colors. Directional modifiers such as `ak-layer-lighten-*` and `ak-layer-darken-*` express raised and recessed surfaces, while numeric `ak-layer-*` modifiers provide appearance-aware separation without assigning a fixed depth direction.
 - **[`ak-ink`](#ak-ink)** sets the text opacity for the layer's own text. Safe to apply on the same element as `ak-layer` or on a descendant.
 - **[`ak-text`](#ak-text)** colors inline text _inside_ a layer with automatic WCAG contrast. Must go on a descendant, not on the `ak-layer` element itself.
 - **[`ak-edge`](#ak-edge)** colors borders and rings, adapting opacity and contrast to the element's own layer. `ak-edge-*` utilities require the static `ak-layer` class on the same element.
 - **[`ak-outline`](#ak-outline)** colors outlines in the same adaptive way.
 - **[`ak-frame`](#ak-frame)** handles radius, padding, margin, borders, and concentric-radius layout.
 
-Color channel utilities are authored in [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch), so modifiers like `ak-layer-warm-40` or `ak-text-saturate-50` behave predictably across hues. Text contrast is converted to LCH at the final contrast step, and layer mixing can use any supported CSS `color-mix()` interpolation method. Because every value is computed relatively, changing a single theme token ripples through every layer, text, edge, and frame that depends on it — so users can reskin the whole system without breaking contrast, depth, or shape relationships.
+Static utilities activate their context, while modifiers configure it. Pair `ak-layer-*`, `ak-state-*`, and `ak-edge-*` with `ak-layer` on the same element; pair `ak-text-*` with `ak-text` on the same descendant; pair `ak-frame-*` with `ak-frame`; and pair `ak-outline-*` with `ak-outline`. `ak-ink-*` is self-contained.
+
+Color channel utilities are authored in [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch), so modifiers like `ak-layer-warm-40` or `ak-text-saturate-50` behave predictably across hues. Text contrast is converted to LCH at the final contrast step, and layer mixing can use any supported CSS `color-mix()` interpolation method. Because every value is computed relatively, changing a single theme token ripples through every layer, text, edge, and frame that depends on it, so users can reskin the whole system without breaking contrast, depth, or shape relationships.
 
 ### Value scales
 
 Bare numeric modifiers use Ariakit's documented authoring scales. For example, lightness and alpha values use `0`–`100`, chroma values use `0`–`40`, and mix amounts use `0`–`100`.
 
 Arbitrary values and custom properties are raw CSS values. That means percent-style modifiers use normalized `0`–`1` values in arbitrary/custom-property form, even when their bare numeric forms use Ariakit's `0`–`100` or `0`–`40` authoring scales. Use normalized OKLCH channel values like `ak-layer-l-[0.8]`, normalized percent-style values like `ak-layer-warm-[0.4]` or `ak-text-saturate-[0.25]`, raw deltas like `ak-layer-[calc(l+0.1)]`, percentages where CSS expects percentages like `ak-layer-mix-amount-[35%]`, and custom properties that already contain those raw values.
+
+## Mental model
+
+Think in materials, not elements. Ariakit Tailwind models a small tree of intentional surfaces and the content, boundaries, and shapes that belong to them. This material tree is usually much smaller than the DOM tree.
+
+This does not imply skeuomorphic decoration. A flat interface still needs a coherent answer to what lies on the same plane, what sits above it, what is recessed into it, and what has a different material or semantic finish. Tone, containment, edges, and shape communicate those relationships even when there are no realistic textures or shadows.
+
+### Think about the whole scene
+
+Start with one canvas for the application. Then add a layer only when an element represents a visible surface with a purpose. Layout containers, headers, rows, text wrappers, and spacing elements should usually inherit the nearest surface.
+
+Every `ak-layer` paints a background and establishes the text, edge, and contrast context inherited by its descendants. Adding one at every level turns DOM nesting into a tonal staircase:
+
+```html
+<!-- Avoid: none of these nested layers has a distinct material purpose. -->
+<article class="ak-layer ak-layer-3">
+  <header class="ak-layer ak-layer-3">
+    <h2 class="ak-layer ak-layer-3">Deployment</h2>
+  </header>
+</article>
+```
+
+A more intentional scene uses one raised card, keeps its ordinary content on the card, and creates a new layer only for the recessed well:
+
+```html
+<body class="ak-layer ak-layer-canvas">
+  <main class="p-6">
+    <article
+      class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card ak-frame-bordering grid gap-4"
+    >
+      <header class="grid gap-1">
+        <h2>Deployment</h2>
+        <p class="ak-ink-70">Updated two minutes ago</p>
+      </header>
+
+      <section
+        class="ak-layer ak-layer-darken-3 ak-frame ak-frame-field/field ak-frame-bordering"
+      >
+        Recessed deployment details
+      </section>
+    </article>
+  </main>
+</body>
+```
+
+The `body`, card, and well are materials. The `main`, `header`, heading, and paragraph are structure or content on those materials, so they do not need layers.
+
+### Give every surface a spatial role
+
+In ordinary lighting, an exposed surface catches more light while a cutout or well receives less. Ariakit expresses that directional relationship directly, and the same intent holds on light and dark canvases:
+
+| Intent                      | Visual role                                                                          | Utilities                                                                                 |
+| --------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| Same plane                  | Content or layout that belongs to the current material                               | No new `ak-layer`                                                                         |
+| Raised or exposed           | Card, popover, floating toolbar, or control above its support                        | `ak-layer ak-layer-lighten-*`                                                             |
+| Recessed                    | Well, track, code area, media bed, input bed, or pressed region                      | `ak-layer ak-layer-darken-*`                                                              |
+| Appearance-aware separation | Selected row, adjacent pane, or neutral control that should contrast in either theme | `ak-layer ak-layer-*`                                                                     |
+| New material or pigment     | Canvas, primary action, warning, brand region, or another intentional color boundary | `ak-layer ak-layer-<color>`, optionally with `ak-layer-mix-*`                             |
+| Interactive response        | The same material responding to hover, press, focus, selection, or disabled state    | Variant-prefixed `ak-state-*`, `ak-ink-*`, `ak-outline-*`, and other contextual modifiers |
+| Parent-directed contrast    | A surface whose lightness must move against its supporting layer                     | `ak-layer-contrast`                                                                       |
+| Self-relative tonal push    | A surface that needs a minimum tonal move and must skip the ambiguous midrange       | `ak-layer-push-*`                                                                         |
+
+Numeric `ak-layer-<number>` modifiers are not elevation values. They request appearance-aware separation from the selected source, which defaults to the parent layer. They normally move light sources darker and dark sources lighter, but the contrast-safe lightness pipeline may clamp the target or move it past an ambiguous midrange. Use them to separate a surface without declaring that it is above or below, and use `ak-layer-lighten-*` or `ak-layer-darken-*` when spatial direction matters.
+
+Relative adjustments accumulate. Repeating them through wrappers creates competing boxes and can exhaust the useful tonal range. A practical test for every layer is: "Why is this a different material?" If the answer is only "because this element is nested," remove it.
+
+Interactive states usually change the existing material instead of creating another nested surface:
+
+```html
+<button
+  class="ak-layer ak-layer-lighten-6 hover:ak-state-lighten-2 active:ak-state-darken-3 ak-frame ak-frame-field/field focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
+>
+  Save
+</button>
+```
+
+The button starts raised, becomes slightly more exposed on hover, and darkens when pressed. Its focus outline is an external signal, not another material.
+
+### Treat color as a material finish
+
+Lightness usually communicates spatial relationship. Hue, chroma, warmth, and mixing describe the material's pigment, atmosphere, or semantic identity. Changing hue at every nesting level does not create meaningful depth.
+
+Use an absolute `ak-layer-<color>` at a deliberate boundary such as the canvas, a primary action, or a warning surface. Use `ak-layer-mix-*` when that pigment should feel tinted by its surrounding material:
+
+```html
+<aside
+  class="ak-layer ak-layer-warning ak-layer-mix-15 ak-frame ak-frame-card/card ak-frame-bordering"
+>
+  <strong>Pending review</strong>
+</aside>
+```
+
+Mixing creates a contextual solid color, not transparency and not another depth level. Hue and chroma adjustments similarly change the finish of the current material.
+
+Custom gradients, patterns, and textures are also surface paint. Derive them from the resolved layer variables so the visible pixels stay related to the contrast context:
+
+```html
+<div
+  class="surface-pattern ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card"
+>
+  ...
+</div>
+```
+
+```css
+.surface-pattern {
+  --pattern-color: color-mix(
+    in oklab,
+    var(--ak-layer),
+    var(--ak-layer-parent) 35%
+  );
+  background-image: linear-gradient(
+    135deg,
+    var(--pattern-color) 1px,
+    transparent 1px
+  );
+  background-size: 0.75rem 0.75rem;
+}
+```
+
+A custom image or multistop gradient can still vary independently across the surface, so inspect text contrast against its actual pixels.
+
+### Put content and boundaries on the material
+
+The other utility families describe what belongs to a surface rather than creating more surfaces:
+
+| Feature        | Material role                                                                       |
+| -------------- | ----------------------------------------------------------------------------------- |
+| Normal text    | Inherits the layer's default ink                                                    |
+| `ak-ink-*`     | Changes the strength of neutral writing while preserving a readable contrast floor  |
+| `ak-text-*`    | Applies adaptive colored pigment to a descendant inside a layer                     |
+| `ak-edge-*`    | Configures the seam between the current material and its surroundings               |
+| `ak-outline-*` | Draws an external focus or attention signal                                         |
+| `ak-frame-*`   | Defines the material's silhouette, inset, border thickness, and concentric geometry |
+| `ak-state-*`   | Changes the current material temporarily in response to interaction                 |
+
+Normal text needs no utility. Use `ak-ink-*` for hierarchy and `ak-text` on a descendant when text needs its own adaptive color:
+
+```html
+<article class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card">
+  <h2>Build complete</h2>
+  <p class="ak-ink-70">Finished three minutes ago</p>
+  <a class="ak-text ak-text-primary" href="/builds/1284">View build 1284</a>
+</article>
+```
+
+A neutral badge can use a semantic edge and adaptive colored text without turning either mark into another layer:
+
+```html
+<span
+  class="ak-layer ak-layer-6 ak-edge-warning ak-edge-35 ak-frame ak-frame-badge/badge ak-frame-bordering"
+>
+  <span class="ak-text ak-text-warning ak-text-25">Pending review</span>
+</span>
+```
+
+Do not put `ak-text` on the `ak-layer` element itself. It makes its own background transparent so the ancestor layer can show through.
+
+Use edges where materials meet closely or a control needs a clearer affordance. Avoid outlining every surface. Tonal separation, spacing, and shape should carry most of the hierarchy. `ak-frame-bordering` is a useful adaptive seam because it chooses a border or ring from the parent appearance and the layer's explicit lighten or darken relationship.
+
+### Give isolated components their own shape
+
+Every isolated card, control, popover, dialog, and badge should declare a non-zero radius by default. An isolated `ak-frame` has a zero declared radius until a radius modifier is applied, while a nested frame may derive an effective concentric radius from its parent. Component recipes should still select a semantic radius and usually its padding:
+
+```css
+@theme {
+  --radius-card: var(--radius-2xl);
+  --spacing-card: --spacing(4);
+
+  --radius-field: var(--radius-xl);
+  --spacing-field: --spacing(2);
+
+  --radius-dialog: var(--radius-3xl);
+  --spacing-dialog: --spacing(6);
+
+  --radius-badge: calc(infinity * 1px);
+  --spacing-badge: --spacing(1.5);
+}
+```
+
+```html
+<article class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card">
+  ...
+</article>
+<button class="ak-layer ak-layer-6 ak-frame ak-frame-field/field">...</button>
+<div class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-dialog/dialog">
+  Dialog
+</div>
+<span class="ak-layer ak-layer-6 ak-frame ak-frame-badge/badge">Badge</span>
+```
+
+These recipes own their shapes even when rendered without a parent frame. When frames are nested, Ariakit reconciles their effective radii with the parent's radius, padding, and border plus the child's frame margin so nearby corners remain concentric.
+
+A square visual language is a theme decision. Override the shared radius tokens once instead of putting `ak-frame-rounded-none` in every component recipe:
+
+```css
+:root[data-shape="square"] {
+  --radius-card: 0px;
+  --radius-field: 0px;
+  --radius-dialog: 0px;
+  --radius-badge: 0px;
+}
+```
+
+Local square corners are still appropriate when geometry is intentionally attached or flush, such as a viewport sidebar or an internal segment of a composite control. Use `ak-frame ak-frame-force ak-frame-rounded-none` when that local shape must be exactly square. Let `ak-frame-cover`, `ak-frame-start`, and `ak-frame-end` compute any corners that meet the parent's outer silhouette.
+
+Frame padding and borders participate in concentric geometry. Use `ak-frame-p-*`, the combined `ak-frame-<radius>/<padding>` form, and `ak-frame-border`, `ak-frame-ring`, or `ak-frame-bordering` for component chrome. Do not override frame padding with `p-*`, `px-*`, or `py-*` on the same element. Put asymmetric layout spacing on an inner wrapper instead.
+
+### Judge the whole scene
+
+Accessibility math protects contrast, not taste. Before shipping, inspect the complete scene and ask:
+
+- Can every layer be described as the canvas, raised, recessed, appearance-aware separation, semantic material, or interactive material?
+- Does removing any layer make the hierarchy clearer?
+- Do raised and recessed relationships remain coherent when only the canvas changes between light and dark?
+- Do hover, active, selected, focus, and disabled states change the existing material with a clear purpose?
+- Do isolated component recipes remain intentionally rounded, and can a square theme be achieved by changing shared tokens only?
+- Do nested corners and adaptive edges describe the intended material boundaries?
+- Does the composition remain coherent in [`contrast-more`](#accessibility), inside another semantic layer, and across supported browsers?
+
+Package contributors should use the existing light, dark, and high-contrast computed-style snapshot matrix. That sandbox deliberately exercises many utilities at once and is a behavior test, not an aesthetic example.
 
 ## Theming
 
@@ -80,8 +336,8 @@ Ariakit Tailwind integrates directly with Tailwind's theming system. Every `--co
 @theme {
   /* Any --color-* token can be used in ak-layer, ak-text, ak-edge, ak-outline */
   --color-canvas: #f1f1f1;
-  --color-primary: #007acc;
-  --color-secondary: #ec4899;
+  --color-primary: #2563eb;
+  --color-warning: #d97706;
 
   /* Any --radius-* / --spacing-* token can be used in ak-frame.
    * Sharing names lets you reference both sides with a single modifier:
@@ -89,14 +345,14 @@ Ariakit Tailwind integrates directly with Tailwind's theming system. Every `--co
   --radius-field: var(--radius-xl);
   --spacing-field: --spacing(2);
 
-  --radius-container: var(--radius-xl);
-  --spacing-container: --spacing(1);
+  --radius-card: var(--radius-2xl);
+  --spacing-card: --spacing(4);
 }
 
 /* Theme overrides per variant */
 :root {
   @variant dark {
-    --color-canvas: #0e0e11;
+    --color-canvas: #0b1110;
   }
 }
 ```
@@ -135,12 +391,19 @@ Override any of these in your own `@theme` block:
 
 ## `ak-layer`
 
-Layers are the foundation of Ariakit Styles. Every element with `ak-layer` is a surface with its own background, text, and edge colors. Add lightness modifiers to nested layers so stacked cards read progressively lighter in light mode and progressively darker-to-lighter in dark mode.
+Layers are the foundation of Ariakit Styles. Every element with `ak-layer` is a surface with its own background, text, and edge colors, so only use it when the element represents an intentional material. Use `ak-layer-lighten-*` for raised surfaces, `ak-layer-darken-*` for recessed surfaces, and numeric `ak-layer-*` modifiers for appearance-aware separation that does not imply a fixed depth direction.
 
 ```html
 <body class="ak-layer ak-layer-canvas">
-  <div class="ak-layer ak-layer-lighten-5">Subtly lighter surface</div>
-  <div class="ak-layer ak-layer-primary">Brand-colored surface</div>
+  <article class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card">
+    Raised card
+  </article>
+  <div class="ak-layer ak-layer-darken-3 ak-frame ak-frame-field/field">
+    Recessed well
+  </div>
+  <button class="ak-layer ak-layer-6 ak-frame ak-frame-field/field">
+    Appearance-aware control
+  </button>
 </body>
 ```
 
@@ -153,24 +416,26 @@ A layer automatically sets border and ring colors through the shared `--ak-edge`
 
 Use [`ak-edge`](#ak-edge) to fine-tune border and ring colors without touching the layer background.
 
+Custom backgrounds can read the resolved `--ak-layer` and `--ak-layer-parent` colors. See [Treat color as a material finish](#treat-color-as-a-material-finish) for patterns that stay related to their contrast context.
+
 ### Setting the layer color
 
-| Utility                   | Description                                                                                                                                                                                         |
-| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-layer`                | Required base class. Sets background, text, border, and ring colors.                                                                                                                                |
-| `ak-layer-<color>`        | Sets the layer to a specific color. Accepts any theme color (e.g. `ak-layer-primary`, `ak-layer-blue-500`) or arbitrary value (`ak-layer-[#131418]`).                                               |
-| `ak-layer-color-<color>`  | Explicit color-only alias. Useful for custom properties without a typed arbitrary value hint (`ak-layer-color-(--surface)`).                                                                        |
-| `ak-layer-<number>`       | Shifts lightness relative to parent layer (`0`–`100`). Bare `ak-layer` doesn't shift lightness on its own. Arbitrary values are raw, e.g. `ak-layer-[calc(l+0.1)]`.                                 |
-| `ak-layer-offset-<value>` | Explicit lightness-offset alias for `ak-layer-<number>`. Useful for custom properties without a typed arbitrary value hint (`ak-layer-offset-(--depth)`). Arbitrary/custom-property values are raw. |
-| `ak-layer-<chroma>`       | Sets chroma from a named preset, e.g. `ak-layer-vivid`, `ak-layer-muted`. See `--chroma-*` tokens.                                                                                                  |
-| `ak-layer-<hue>`          | Sets hue from a named preset, e.g. `ak-layer-red`, `ak-layer-blue`. See `--hue-*` tokens.                                                                                                           |
+| Utility                   | Description                                                                                                                                                                                                                                                                                      |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ak-layer`                | Required base class. Sets background, text, border, and ring colors.                                                                                                                                                                                                                             |
+| `ak-layer-<color>`        | Sets the layer to a specific color. Accepts any theme color (e.g. `ak-layer-primary`, `ak-layer-blue-500`) or arbitrary value (`ak-layer-[#131418]`).                                                                                                                                            |
+| `ak-layer-color-<color>`  | Explicit color-only alias. Useful for custom properties without a typed arbitrary value hint (`ak-layer-color-(--surface)`).                                                                                                                                                                     |
+| `ak-layer-<number>`       | Applies an appearance-aware lightness offset relative to the selected source, which defaults to the parent layer (`0`–`100`). This provides separation rather than fixed elevation. Bare `ak-layer` doesn't shift lightness on its own. Arbitrary values are raw, e.g. `ak-layer-[calc(l+0.1)]`. |
+| `ak-layer-offset-<value>` | Explicit lightness-offset alias for `ak-layer-<number>`. Useful for custom properties without a typed arbitrary value hint (`ak-layer-offset-(--depth)`). Arbitrary/custom-property values are raw.                                                                                              |
+| `ak-layer-<chroma>`       | Sets chroma from a named preset, e.g. `ak-layer-vivid`, `ak-layer-muted`. See `--chroma-*` tokens.                                                                                                                                                                                               |
+| `ak-layer-<hue>`          | Sets hue from a named preset, e.g. `ak-layer-red`, `ak-layer-blue`. See `--hue-*` tokens.                                                                                                                                                                                                        |
 
 ### Lightness adjustments
 
 | Utility                      | Description                                                                                                                                                            |
 | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-layer-lighten-<number>`  | Lightens the layer by `<number>`%. Arbitrary values are raw (`ak-layer-lighten-[0.05]`).                                                                               |
-| `ak-layer-darken-<number>`   | Darkens the layer by `<number>`%. Arbitrary values are raw (`ak-layer-darken-[0.05]`).                                                                                 |
+| `ak-layer-lighten-<number>`  | Lightens the layer by `<number>`%, useful for intentionally raised or exposed surfaces. Arbitrary values are raw (`ak-layer-lighten-[0.05]`).                          |
+| `ak-layer-darken-<number>`   | Darkens the layer by `<number>`%, useful for intentionally recessed or pressed surfaces. Arbitrary values are raw (`ak-layer-darken-[0.05]`).                          |
 | `ak-layer-push-<number>`     | Minimum lightness shift (self-relative), jumping the forbidden mid-luminance range where contrast math becomes unreliable.                                             |
 | `ak-layer-contrast`          | Adapts the layer to contrast against its parent (preset `25`).                                                                                                         |
 | `ak-layer-contrast-<number>` | Custom contrast amount (`0`–`100`, default `25`).                                                                                                                      |
@@ -207,12 +472,12 @@ Use [`ak-edge`](#ak-edge) to fine-tune border and ring colors without touching t
 | `ak-layer-mix`                 | Enables mixing. By default, mixes with the parent layer at `50%` using the `oklab` interpolation method.                                                           |
 | `ak-layer-mix-<color>`         | Enables mixing with a color, e.g. `ak-layer-mix-primary` or `ak-layer-mix-[#000]`.                                                                                 |
 | `ak-layer-mix-color-<color>`   | Sets the mix color for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-color-(--mix-color)`).                                                          |
-| `ak-layer-mix-<number>`        | Sets the mix amount (`0`–`100`).                                                                                                                                   |
+| `ak-layer-mix-<number>`        | Enables mixing and sets the mix amount (`0`–`100`).                                                                                                                |
 | `ak-layer-mix-amount-<value>`  | Sets the amount for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-amount-(--mix-amount)`). Arbitrary/custom-property values are raw CSS percentages. |
 | `ak-layer-mix-<method>`        | Sets the interpolation method, e.g. `ak-layer-mix-oklch`, `ak-layer-mix-oklch-shorter-hue`, `ak-layer-mix-srgb`. See the `--mix-*` tokens.                         |
 | `ak-layer-mix-method-<method>` | Sets the interpolation method for `ak-layer-mix`. Useful for custom properties (`ak-layer-mix-method-(--mix-method)`).                                             |
 
-Combine freely — `ak-layer ak-layer-primary ak-layer-mix ak-layer-mix-30 ak-layer-mix-oklch` mixes the primary color 30% into the parent layer using OKLCH.
+Combine freely: `ak-layer ak-layer-primary ak-layer-mix-30 ak-layer-mix-oklch` mixes the primary color 30% into the parent layer using OKLCH.
 
 The explicit `ak-layer-mix-*` longhands configure the mix color, amount, and method, but don't enable mixing by themselves. Pair them with `ak-layer-mix` when setting any of these values independently.
 
@@ -223,7 +488,9 @@ The explicit `ak-layer-mix-*` longhands configure the mix color, amount, and met
 The static `ak-layer` class must be applied to the same element as `ak-state-*`. Keep `ak-layer` unprefixed, then add state utilities with variants such as `hover:` or `active:`.
 
 ```html
-<button class="ak-layer ak-layer-primary hover:ak-state-10 active:ak-state-20">
+<button
+  class="ak-layer ak-layer-primary hover:ak-state-lighten-2 active:ak-state-darken-3 ak-frame ak-frame-field/field"
+>
   Primary action
 </button>
 ```
@@ -260,6 +527,8 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 > **Apply `ak-text` to a descendant, not to the layer element itself.** It forces `background-color: transparent` to let the layer show through, which would erase the surface if placed on the `ak-layer` element. For styling the layer's own text color, use [`ak-ink`](#ak-ink) instead.
 
+Normal text should inherit the layer's text color without an extra utility. Use `ak-ink-*` for secondary or translucent text. Use `ak-text` on a descendant when the text needs its own adaptive color or additional contrast, and add `ak-text-<color>` when it needs a specific hue.
+
 ```html
 <div class="ak-layer ak-layer-canvas">
   <span class="ak-text ak-text-primary">Primary text</span>
@@ -292,18 +561,18 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Channels and bounds
 
-| Utility                     | Description                                                                                                           |
-| --------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `ak-text-l-<value>`         | Absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values).                    |
-| `ak-text-c-<value>`         | Absolute chroma (`0`–`40` for bare numbers, raw OKLCH chroma for arbitrary/custom-property values) or a named preset. |
-| `ak-text-h-<value>`         | Absolute hue. Accepts named hues or degrees, including custom properties.                                             |
-| `ak-text-h-rotate-<number>` | Rotates hue by degrees.                                                                                               |
-| `ak-text-max-<value>`       | Caps lightness, or caps chroma when given a named chroma preset.                                                      |
-| `ak-text-min-<value>`       | Floors lightness or chroma, same form.                                                                                |
-| `ak-text-max-l-<value>`     | Caps lightness specifically. Arbitrary/custom-property values are raw.                                                |
-| `ak-text-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                              |
-| `ak-text-max-c-<value>`     | Caps chroma specifically. Arbitrary/custom-property values are raw.                                                   |
-| `ak-text-min-c-<value>`     | Floors chroma specifically. Arbitrary/custom-property values are raw.                                                 |
+| Utility                     | Description                                                                                                                                                                 |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-text-l-<value>`         | Sets the candidate absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values). Automatic contrast may adjust the rendered lightness. |
+| `ak-text-c-<value>`         | Absolute chroma (`0`–`40` for bare numbers, raw OKLCH chroma for arbitrary/custom-property values) or a named preset.                                                       |
+| `ak-text-h-<value>`         | Absolute hue. Accepts named hues or degrees, including custom properties.                                                                                                   |
+| `ak-text-h-rotate-<number>` | Rotates hue by degrees.                                                                                                                                                     |
+| `ak-text-max-<value>`       | Caps lightness, or caps chroma when given a named chroma preset.                                                                                                            |
+| `ak-text-min-<value>`       | Floors lightness or chroma, same form.                                                                                                                                      |
+| `ak-text-max-l-<value>`     | Caps lightness specifically. Arbitrary/custom-property values are raw.                                                                                                      |
+| `ak-text-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                                                                                    |
+| `ak-text-max-c-<value>`     | Caps chroma specifically. Arbitrary/custom-property values are raw.                                                                                                         |
+| `ak-text-min-c-<value>`     | Floors chroma specifically. Arbitrary/custom-property values are raw.                                                                                                       |
 
 ## `ak-edge`
 
@@ -364,7 +633,7 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ```html
 <button
-  class="ak-layer ak-outline ak-outline-primary outline-2 focus-visible:outline"
+  class="ak-layer ak-frame ak-frame-field/field ak-outline ak-outline-primary outline-2 focus-visible:outline"
 >
   Outlined button
 </button>
@@ -412,6 +681,10 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 `ak-frame` defines border radius, padding, margin, borders, and layout flow **relative to the parent frame**. Nested frames automatically compute concentric radii that look correct regardless of the outermost container's size. When no parent frame exists, values are treated as absolute.
 
+See [Give isolated components their own shape](#give-isolated-components-their-own-shape) for choosing semantic radii, preserving default roundness, and implementing a square theme.
+
+Use `ak-frame-p-*` or the combined `ak-frame-<radius>/<padding>` form when padding belongs to component chrome. This keeps padding, borders, and nested radii in the same geometry model.
+
 ```html
 <!-- radius 2xl, padding 1 -->
 <div class="ak-frame ak-frame-2xl/1">
@@ -433,10 +706,10 @@ Controls the opacity of text inside a layer — useful for secondary text, capti
 
 ### Setup
 
-| Utility          | Description                                                                        |
-| ---------------- | ---------------------------------------------------------------------------------- |
-| `ak-frame`       | Required base class. Sets up the frame context for radius and padding inheritance. |
-| `ak-frame-force` | Uses the declared radius exactly, ignoring parent-frame context.                   |
+| Utility          | Description                                                                                                                                                                                                        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ak-frame`       | Required base class. Sets up the frame context for radius and padding inheritance. An isolated frame declares zero radius until a radius modifier is applied, while a nested frame may derive a concentric radius. |
+| `ak-frame-force` | Uses the declared radius exactly, ignoring parent-frame context.                                                                                                                                                   |
 
 ### Radius and padding
 
@@ -447,30 +720,19 @@ The shortcut form `ak-frame-<radius>/<padding>` sets both values at once. The pa
 <!-- rounded-xl, p-4 -->
 <div class="ak-frame ak-frame-[1rem]/2"></div>
 <!-- r 1rem, p-2 -->
-<div class="ak-frame ak-frame-container/container"></div>
-<!-- --radius-container, --spacing-container -->
+<div class="ak-frame ak-frame-card/card"></div>
+<!-- --radius-card, --spacing-card -->
 ```
 
-Frame presets make paired radius/spacing tokens ergonomic:
+Sharing a name between radius and spacing tokens lets one modifier set both values.
 
-```css
-@theme {
-  --radius-card: var(--radius-xl);
-  --spacing-card: --spacing(6);
-}
-```
-
-```html
-<div class="ak-frame ak-frame-card/card">Card</div>
-```
-
-| Utility                       | Description                                                                                                                                           |
-| ----------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-frame-<radius>`           | Sets border radius only. Accepts any `--radius-*` token (e.g. `ak-frame-xl`, `ak-frame-2xl`, `ak-frame-full`) or arbitrary value (`ak-frame-[1rem]`). |
-| `ak-frame-<radius>/<padding>` | Sets radius **and** padding. Padding accepts `--spacing-*` tokens or numeric values (`/4`).                                                           |
-| `ak-frame-rounded-<radius>`   | Alias for radius-only.                                                                                                                                |
-| `ak-frame-rounded-none`       | Sets radius to `0px`.                                                                                                                                 |
-| `ak-frame-p-<spacing>`        | Padding only. Accepts `--spacing-*` tokens, numeric values, or arbitrary values.                                                                      |
+| Utility                       | Description                                                                                                                                                                |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-frame-<radius>`           | Sets border radius only. Accepts any defined `--radius-*` token (e.g. `ak-frame-xl`, `ak-frame-2xl`, or a custom `ak-frame-badge`) or arbitrary value (`ak-frame-[1rem]`). |
+| `ak-frame-<radius>/<padding>` | Sets radius **and** padding. Padding accepts `--spacing-*` tokens or numeric values (`/4`).                                                                                |
+| `ak-frame-rounded-<radius>`   | Alias for radius-only.                                                                                                                                                     |
+| `ak-frame-rounded-none`       | Sets the declared radius to `0px`. Add `ak-frame-force` when a nested frame must remain exactly square.                                                                    |
+| `ak-frame-p-<spacing>`        | Padding only. Accepts `--spacing-*` tokens, numeric values, or arbitrary values.                                                                                           |
 
 ### Margin
 
@@ -483,12 +745,12 @@ Frame presets make paired radius/spacing tokens ergonomic:
 
 All three utilities accept no argument (defaults to `1px`), named widths (`0`, `1`, `2`, `4`, `8`), or arbitrary values (`[3px]`).
 
-| Utility                                             | Description                                                                                                                                                                |
-| --------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-frame-border` / `ak-frame-border-<width>`       | Applies a border whose width is factored into nested-frame radius calculations.                                                                                            |
-| `ak-frame-ring` / `ak-frame-ring-<width>`           | Applies a ring with the same treatment. Rings draw outside the border-box without shifting layout.                                                                         |
-| `ak-frame-bordering` / `ak-frame-bordering-<width>` | Adaptive edge: chooses border or ring based on parent layer appearance and whether the layer is lightening or darkening, keeping surfaces visually separated across modes. |
-| `ak-frame-bordering-inherit`                        | Inherits the nearest ancestor frame border, ring, or bordering width, skipping intermediate frames that do not explicitly set one; falls back to `0px`.                    |
+| Utility                                             | Description                                                                                                                                                                         |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-frame-border` / `ak-frame-border-<width>`       | Applies a border whose width is factored into nested-frame radius calculations.                                                                                                     |
+| `ak-frame-ring` / `ak-frame-ring-<width>`           | Applies a ring with the same treatment. Rings draw outside the border-box without shifting layout.                                                                                  |
+| `ak-frame-bordering` / `ak-frame-bordering-<width>` | Adaptive edge: chooses a border or ring based on parent layer appearance and the layer's explicit lighten or darken relationship, keeping surfaces visually separated across modes. |
+| `ak-frame-bordering-inherit`                        | Inherits the nearest ancestor frame border, ring, or bordering width, skipping intermediate frames that do not explicitly set one; falls back to `0px`.                             |
 
 ### Cover and flow
 
@@ -513,7 +775,7 @@ All three utilities accept no argument (defaults to `1px`), named widths (`0`, `
 
 ## Variants
 
-Variants apply utilities conditionally based on the parent layer or user preference. Use them like any Tailwind variant: `ak-dark:ak-layer-darken-6`.
+Variants apply utilities conditionally based on the parent layer or user preference. Use them like any Tailwind variant: `ak-dark:ak-ink-80`.
 
 ### Layer appearance
 
@@ -533,17 +795,19 @@ Each layer appearance variant also has a `not-*` counterpart, such as
 
 ```html
 <div class="ak-layer ak-layer-canvas">
-  <div class="ak-layer ak-dark:ak-layer-darken-6 ak-light:ak-layer-lighten-6">
-    Adapts to its parent layer's appearance.
-  </div>
+  <p class="ak-dark:ak-ink-80 ak-light:ak-ink-70">
+    Appearance-adjusted secondary text.
+  </p>
 
-  <div class="ak-layer ak-dark-high:ak-edge-20 ak-light-high:ak-edge-10">
+  <div
+    class="ak-layer ak-frame ak-frame-field/field ak-frame-border ak-dark-high:ak-edge-20 ak-light-high:ak-edge-10"
+  >
     Stronger edges on the darkest surfaces.
   </div>
 
-  <div class="ak-layer not-ak-dark:ak-layer-lighten-6">
-    Applies inside this layer when the current layer is not dark.
-  </div>
+  <p class="not-ak-dark:ak-ink-60">
+    Subdued when the current layer is not dark.
+  </p>
 </div>
 ```
 
@@ -558,7 +822,9 @@ Each layer appearance variant also has a `not-*` counterpart, such as
 You can opt extra utilities into high-contrast mode with `contrast-more:`:
 
 ```html
-<button class="ak-layer ak-frame ak-frame-ring contrast-more:ak-frame-border-2">
+<button
+  class="ak-layer ak-frame ak-frame-field/field ak-frame-ring contrast-more:ak-frame-border-2"
+>
   Extra border weight in high-contrast mode.
 </button>
 ```
