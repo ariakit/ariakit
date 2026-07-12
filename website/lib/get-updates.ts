@@ -15,7 +15,7 @@ function getReleaseUpdates() {
     return releasesCache;
   }
   try {
-    const response = spawn.sync("npm", [
+    const response = spawn.sync("pnpm", [
       "view",
       "@ariakit/react",
       "versions",

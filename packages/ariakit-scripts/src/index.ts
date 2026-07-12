@@ -3,6 +3,7 @@
 import { program } from "commander";
 import { build, clean } from "./build.ts";
 import { dev } from "./dev.ts";
+import { runWithOpEnv } from "./op-env.ts";
 import { react18 } from "./react18.ts";
 
 program.name("ariakit");
@@ -37,6 +38,14 @@ program
   .option("--clean", "Clean and watch package builds", true)
   .option("--no-clean", "Use current package exports without cleaning")
   .action(dev);
+
+program
+  .command("op-env")
+  .description("Run a command with a 1Password Environment")
+  .argument("[command...]", "Root script or command to run")
+  .allowUnknownOption()
+  .helpOption(false)
+  .action(runWithOpEnv);
 
 program
   .command("docs")

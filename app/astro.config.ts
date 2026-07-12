@@ -8,7 +8,6 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { join } from "node:path";
-import { loadEnvFile } from "node:process";
 import cloudflare from "@astrojs/cloudflare";
 import { rehypeHeadingIds, unified } from "@astrojs/markdown-remark";
 import mdx from "@astrojs/mdx";
@@ -28,10 +27,6 @@ import {
 } from "./src/lib/rehype.ts";
 import { sourcePlugin } from "./src/lib/source-plugin.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "./src/lib/url.ts";
-
-try {
-  loadEnvFile(join(import.meta.dirname, "../.dev.vars"));
-} catch (_error) {}
 
 const port = Number(process.env.APP_PORT) || 4321;
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;

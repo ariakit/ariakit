@@ -7,7 +7,7 @@
 This guide is intended to help you get started with contributing to the project. By following these steps — **which should take no more than 30 minutes** —, you will understand the development process and workflow.
 
 1. [Cloning the repository](#cloning-the-repository)
-2. [Installing Node.js and pnpm](#installing-nodejs-and-pnpm)
+2. [Installing pnpm](#installing-pnpm)
 3. [Installing dependencies](#installing-dependencies)
 4. [Starting the development server](#starting-the-development-server)
 5. [Creating a component](#creating-a-component)
@@ -51,26 +51,17 @@ Alternatively, you can [open the project in Gitpod](https://gitpod.io/#https://g
   <a href="#basic-tutorial">&uarr; back to top</a></b>
 </div>
 
-## Installing Node.js and pnpm
+## Installing pnpm
 
-This repository uses [pnpm workspaces](https://pnpm.io/workspaces) to manage multiple ESM projects. You need to install **[pnpm](https://pnpm.io/installation)** and **Node.js v24 or higher**.
+This repository uses [pnpm workspaces](https://pnpm.io/workspaces) to manage multiple ESM projects. pnpm automatically installs the version of Node.js required by the project.
 
-You can run the following commands in your terminal to check your local Node.js and pnpm versions:
-
-```bash
-node -v
-pnpm -v
-```
-
-If you don't have Node.js installed, download it from https://nodejs.org. You can install pnpm via `corepack enable` (built into Node.js) or follow the [pnpm installation guide](https://pnpm.io/installation).
-
-Alternatively, you can use [nvm](https://github.com/nvm-sh/nvm) to install the project's Node.js version. Once in the project's root directory, run the following command in your terminal:
+Install pnpm with the [standalone installer](https://pnpm.io/installation#using-a-standalone-script). It does not require Node.js:
 
 ```bash
-nvm use
+curl -fsSL https://get.pnpm.io/install.sh | sh -
 ```
 
-> If you haven't installed the specific Node.js version yet, `nvm` will ask you to run `nvm install` to install it. Follow the instructions in your terminal.
+The standalone installer is not available on Intel Macs, and pnpm recommends a Node.js-based installation on Windows. See the [pnpm installation guide](https://pnpm.io/installation) for supported alternatives.
 
 <div align="right">
   <a href="#basic-tutorial">&uarr; back to top</a></b>
@@ -82,6 +73,12 @@ Once in the project's root directory, run the following command to install the p
 
 ```bash
 pnpm install
+```
+
+This command also installs the project's Node.js version. Use pnpm to run Node.js with the correct version:
+
+```bash
+pnpm exec node --version
 ```
 
 <div align="right">
