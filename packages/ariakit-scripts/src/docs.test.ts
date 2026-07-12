@@ -1,4 +1,5 @@
 import {
+  chmodSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -7,8 +8,8 @@ import {
 } from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { afterEach, expect, test } from "vitest";
+import { delimiter, join } from "node:path";
+import { afterEach, expect, test, vi } from "vitest";
 import {
   generateDocsMarkdown,
   getDocsMarkers,
@@ -40,9 +41,45 @@ function createPackage() {
 }
 
 afterEach(() => {
+  vi.unstubAllEnvs();
   for (const root of roots.splice(0)) {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("ignores partial formatter output after signal termination", () => {
+  const root = createPackage();
+  const binPath = join(root, "bin");
+  mkdirSync(binPath);
+  writeFileSync(
+    join(root, "src", "index.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const oxfmtPath = join(binPath, "oxfmt");
+  writeFileSync(
+    oxfmtPath,
+    `#!/usr/bin/env node
+require("node:fs").writeSync(1, "partial output");
+process.kill(process.pid, "SIGTERM");
+`,
+  );
+  chmodSync(oxfmtPath, 0o755);
+  vi.stubEnv(
+    "PATH",
+    [binPath, process.env.PATH].filter(Boolean).join(delimiter),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("## API reference");
+  expect(markdown).not.toBe("partial output");
 });
 
 test("generates markdown from exported JSDoc and TypeScript declarations", () => {
