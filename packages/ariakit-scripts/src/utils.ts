@@ -30,9 +30,11 @@ export function getCommandOutput(command: string, args: string[], cwd: string) {
   });
 
   if (result.error) throw result.error;
-  if (result.status) {
+  if (result.status !== 0) {
     const commandText = [command, ...args].join(" ");
-    throw new Error(`${commandText} failed with ${result.status}`);
+    throw new Error(
+      `${commandText} failed with ${result.signal ?? result.status}`,
+    );
   }
 
   const output = result.stdout.trim();
