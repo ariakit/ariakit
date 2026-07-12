@@ -180,21 +180,12 @@ jobs:
         with:
           cache: true
 
-      - name: Resolve Node version file
-        id: node-version-file
-        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
-        run: |
-          if [ -f .nvmrc ]; then
-            echo "path=.nvmrc" >> "$GITHUB_OUTPUT"
-          else
-            echo "path=package.json" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Set up Node
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
         uses: actions/setup-node@v6
         with:
-          node-version-file: ${{ steps.node-version-file.outputs.path }}
+          # The baseline checkout may predate the package.json runtime config.
+          node-version-file: ${{ hashFiles('.nvmrc') != '' && '.nvmrc' || 'package.json' }}
 
       - name: Install dependencies
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
