@@ -1,4 +1,3 @@
-import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   mkdir,
@@ -14,20 +13,17 @@ import { delimiter, dirname, isAbsolute, join, relative } from "node:path";
 import { watch } from "chokidar";
 import type { FSWatcher } from "chokidar";
 import {
+  getCommandOutput,
   normalizePath,
   readPackageJson,
   readPackageJsonFile,
+  runCommand,
 } from "./utils.ts";
-import type { PackageJson } from "./utils.ts";
+import type { PackageJson, RunCommandOptions } from "./utils.ts";
 
 interface React18Command {
   bin: string;
   args: string[];
-}
-
-interface RunCommandOptions {
-  cwd: string;
-  env?: NodeJS.ProcessEnv;
 }
 
 const dependencyFields = [
@@ -51,7 +47,7 @@ const excludedSegments = new Set([
   "test-results",
 ]);
 
-const excludedFiles = new Set([".DS_Store", ".dev.vars", "pnpm-lock.yaml"]);
+const excludedFiles = new Set([".DS_Store", "pnpm-lock.yaml"]);
 const excludedFilePatterns = [".env*", "*.pem"];
 
 const pathKey =
@@ -65,27 +61,6 @@ function log(message: string) {
 function isErrnoException(error: unknown): error is NodeJS.ErrnoException {
   if (!(error instanceof Error)) return false;
   return "code" in error;
-}
-
-function getCommandOutput(command: string, args: string[], cwd: string) {
-  const result = spawnSync(command, args, {
-    cwd,
-    encoding: "utf-8",
-  });
-
-  if (result.error) throw result.error;
-  if (result.status) {
-    const commandText = [command, ...args].join(" ");
-    throw new Error(`${commandText} failed with ${result.status}`);
-  }
-
-  const output = result.stdout.trim();
-  if (!output) {
-    const commandText = [command, ...args].join(" ");
-    throw new Error(`${commandText} returned empty output`);
-  }
-
-  return output;
 }
 
 function getRepositoryRoot() {
@@ -123,51 +98,6 @@ function shouldIgnoreWatchPath(rootPath: string, path: string) {
   if (normalizedPath === "package.json") return true;
 
   return shouldIgnoreRelativePath(normalizedPath);
-}
-
-async function runCommand(
-  command: string,
-  args: string[],
-  options: RunCommandOptions,
-) {
-  return await new Promise<number>((resolvePromise, reject) => {
-    const child = spawn(command, args, {
-      cwd: options.cwd,
-      env: options.env,
-      stdio: "inherit",
-    });
-
-    const onSigint = () => child.kill("SIGINT");
-    const onSigterm = () => child.kill("SIGTERM");
-    const cleanup = () => {
-      process.off("SIGINT", onSigint);
-      process.off("SIGTERM", onSigterm);
-    };
-
-    child.on("error", (error) => {
-      cleanup();
-      reject(error);
-    });
-    child.on("exit", (code, signal) => {
-      cleanup();
-      if (code != null) {
-        resolvePromise(code);
-        return;
-      }
-      if (signal === "SIGINT") {
-        resolvePromise(130);
-        return;
-      }
-      if (signal === "SIGTERM") {
-        resolvePromise(143);
-        return;
-      }
-      resolvePromise(1);
-    });
-
-    process.once("SIGINT", onSigint);
-    process.once("SIGTERM", onSigterm);
-  });
 }
 
 async function runChecked(
