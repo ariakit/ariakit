@@ -137,5 +137,12 @@
       "oxfmt --no-error-on-unmatched-pattern"
     ]
   },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "24.18.0",
+      "onFail": "download"
+    }
+  },
   "packageManager": "pnpm@11.11.0"
 }
