@@ -703,11 +703,14 @@ importers:
         specifier: 1.1.5
         version: 1.1.5
       rolldown-plugin-dts:
-        specifier: 0.27.1
-        version: 0.27.1(rolldown@1.1.5)(typescript@6.0.3)
+        specifier: 0.27.3
+        version: 0.27.3(@typescript/typescript6@6.0.2)(rolldown@1.1.5)
       ts-morph:
         specifier: 28.0.0
         version: 28.0.0
+      typescript:
+        specifier: npm:@typescript/typescript6@6.0.2
+        version: '@typescript/typescript6@6.0.2'
       vite-plugin-solid:
         specifier: 2.11.12
         version: 2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.14)(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
@@ -9053,14 +9056,14 @@ packages:
     engines: {node: 20 || >=22}
     hasBin: true
 
-  rolldown-plugin-dts@0.27.1:
-    resolution: {integrity: sha512-s1HLtZfsXcLsBrcqW6nmIcTqkBZd7Y9srgL9SMS2hNvl37US5jFl193d5ki2w9Ei5myP7ERLVlQX2o6ZTL/AQQ==}
+  rolldown-plugin-dts@0.27.3:
+    resolution: {integrity: sha512-J57nfkYu6dd6s/Pt4LwGHipbUcm969tyXbQ/kBz9+7m+oeVzD90AynO2u133I61LISwbCUh9l0bt0/tvhOdd7w==}
     engines: {node: ^22.18.0 || >=24.11.0}
     peerDependencies:
       '@ts-macro/tsc': ^0.3.6
       '@typescript/native-preview': '>=7.0.0-dev.20260325.1'
       rolldown: ^1.0.0
-      typescript: ^5.0.0 || ^6.0.0
+      typescript: ^5.0.0 || ^6.0.0 || ^7.0.0
       vue-tsc: ~3.2.0 || ~3.3.0
     peerDependenciesMeta:
       '@ts-macro/tsc':
@@ -9729,11 +9732,6 @@ packages:
 
   typescript@6.0.2:
     resolution: {integrity: sha512-bGdAIrZ0wiGDo5l8c++HWtbaNCWTS4UTv7RaTH/ThVIgjkveJt83m74bBHMJkuCbslY8ixgLBVZJIOiQlQTjfQ==}
-    engines: {node: '>=14.17'}
-    hasBin: true
-
-  typescript@6.0.3:
-    resolution: {integrity: sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -19505,7 +19503,7 @@ snapshots:
       glob: 13.0.6
       package-json-from-dist: 1.0.1
 
-  rolldown-plugin-dts@0.27.1(rolldown@1.1.5)(typescript@6.0.3):
+  rolldown-plugin-dts@0.27.3(@typescript/typescript6@6.0.2)(rolldown@1.1.5):
     dependencies:
       dts-resolver: 3.0.0
       get-tsconfig: 5.0.0-beta.5
@@ -19515,7 +19513,7 @@ snapshots:
       yuku-codegen: 0.5.44
       yuku-parser: 0.5.44
     optionalDependencies:
-      typescript: 6.0.3
+      typescript: '@typescript/typescript6@6.0.2'
     transitivePeerDependencies:
       - oxc-resolver
 
@@ -20328,9 +20326,6 @@ snapshots:
       semver: 7.7.4
 
   typescript@6.0.2: {}
-
-  typescript@6.0.3:
-    optional: true
 
   typescript@7.0.2:
     optionalDependencies:
