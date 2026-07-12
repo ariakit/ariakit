@@ -792,7 +792,7 @@ function formatMarkdown(markdown: string) {
   });
 
   if (result.error) return markdown;
-  if (result.status) return markdown;
+  if (result.status !== 0) return markdown;
   return result.stdout || markdown;
 }
 
