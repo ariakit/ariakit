@@ -180,11 +180,21 @@ jobs:
         with:
           cache: true
 
+      - name: Resolve Node version file
+        id: node-version-file
+        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
+        run: |
+          if [ -f .nvmrc ]; then
+            echo "path=.nvmrc" >> "$GITHUB_OUTPUT"
+          else
+            echo "path=package.json" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Set up Node
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
         uses: actions/setup-node@v6
         with:
-          node-version-file: .nvmrc
+          node-version-file: ${{ steps.node-version-file.outputs.path }}
 
       - name: Install dependencies
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
@@ -294,6 +304,11 @@ jobs:
         uses: actions/checkout@v7
         with:
           persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: package.json
 
       - name: Create Chrome perf matrix
         id: matrix
