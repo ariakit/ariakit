@@ -1,5 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useEvent,
   createElement,
   createHook,
@@ -150,12 +151,13 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       }
     });
 
-    const labelledBy = useStoreState(
+    const labelElement = useStoreState(
       store,
       ["type", "contentElement"],
-      (state) =>
-        state.type === "label" ? state.contentElement?.id : undefined,
+      (state) => (state.type === "label" ? state.contentElement : null),
     );
+    useAttribute(labelElement, "id");
+    const labelledBy = labelElement?.id;
 
     props = {
       "aria-labelledby": props["aria-label"] == null ? labelledBy : undefined,

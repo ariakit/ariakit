@@ -1,5 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useEvent,
   useWrapElement,
   createElement,
@@ -114,11 +115,9 @@ export const useTagList = createHook<TagName, TagListOptions>(
       (state) => state.renderedItems,
     );
     const itemIds = items.filter((item) => !!item.value).map((item) => item.id);
-    const labelId = useStoreState(
-      store,
-      ["labelElement"],
-      (state) => state.labelElement?.id,
-    );
+    const labelElement = useStoreState(store, "labelElement");
+    useAttribute(labelElement, "id");
+    const labelId = labelElement?.id;
 
     // Remove aria attributes from tha TagList element and add them to a
     // separate div that will serve as the accessible listbox element.

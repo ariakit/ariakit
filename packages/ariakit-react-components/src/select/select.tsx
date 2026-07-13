@@ -1,5 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useBooleanEvent,
   useEvent,
   useMergeRefs,
@@ -173,11 +174,9 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
     setAutofill(false);
   }, [value]);
 
-  const labelId = useStoreState(
-    store,
-    ["labelElement"],
-    (state) => state.labelElement?.id,
-  );
+  const labelElement = useStoreState(store, "labelElement");
+  useAttribute(labelElement, "id");
+  const labelId = labelElement?.id;
   const label = props["aria-label"];
   const labelledBy = props["aria-labelledby"] || labelId;
   const items = useStoreState(store, ["items"], (state) => {
