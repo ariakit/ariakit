@@ -109,11 +109,7 @@ export const useTagList = createHook<TagName, TagListOptions>(
     const orientation = useStoreState(store, ["orientation"], (state) =>
       state.orientation === "both" ? undefined : state.orientation,
     );
-    const items = useStoreState(
-      store,
-      ["renderedItems"],
-      (state) => state.renderedItems,
-    );
+    const items = useStoreState(store, "renderedItems");
     const itemIds = items.filter((item) => !!item.value).map((item) => item.id);
     const labelElement = useStoreState(store, "labelElement");
     useAttribute(labelElement, "id");

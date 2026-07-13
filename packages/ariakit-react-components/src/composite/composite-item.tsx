@@ -181,23 +181,11 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       return row.id;
     };
 
-    const {
-      rowId,
-      baseElement,
-      isActiveItem,
-      ariaSetSize,
-      ariaPosInSet,
-      isTabbable,
-    } = useStoreStateObject(
-      store,
-      ["baseElement", "activeId", "renderedItems", "virtualFocus", "items"],
-      {
+    const { rowId, baseElement, ariaSetSize, ariaPosInSet } =
+      useStoreStateObject(store, ["baseElement", "renderedItems"], {
         rowId: getRowId,
         baseElement(state) {
           return state?.baseElement || undefined;
-        },
-        isActiveItem(state) {
-          return !!state && state.activeId === id;
         },
         ariaSetSize(state) {
           if (ariaSetSizeProp != null) return ariaSetSizeProp;
@@ -218,6 +206,15 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           return (
             row.ariaPosInSet + itemsInRow.findIndex((item) => item.id === id)
           );
+        },
+      });
+
+    const { isActiveItem, isTabbable } = useStoreStateObject(
+      store,
+      ["activeId", "renderedItems", "virtualFocus", "items"],
+      {
+        isActiveItem(state) {
+          return !!state && state.activeId === id;
         },
         isTabbable(state) {
           if (!state?.renderedItems.length) return true;
