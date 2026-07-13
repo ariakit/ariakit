@@ -47,6 +47,8 @@ interface ComparisonRow {
   testFile: string;
   testTitle: string;
   label: string;
+  baselineBenchmarkPattern?: string;
+  currentBenchmarkPattern?: string;
   metric: MetricKey;
   baseline: number;
   current: number;
@@ -63,11 +65,19 @@ interface ComparisonRow {
   profileMode: boolean;
 }
 
+interface ConfirmationTarget {
+  baselineTestNamePattern: string;
+  benchmarkCount: number;
+  currentTestNamePattern: string;
+  file: string;
+}
+
 interface ComparisonSummary {
   rows: ComparisonRow[];
   hasSignificantChanges: boolean;
   hasCandidateChanges: boolean;
   confirmationFiles: string[];
+  confirmationTargets: ConfirmationTarget[];
   currentResults: AggregatedPerfResult[];
   profileModeMismatches: ProfileModeMismatch[];
   newTests: AggregatedPerfResult[];
@@ -81,6 +91,7 @@ interface PersistedComparisonSummary {
   hasSignificantChanges: boolean;
   hasCandidateChanges: boolean;
   confirmationFiles: string[];
+  confirmationTargets: ConfirmationTarget[];
   profileModeMismatches: ProfileModeMismatch[];
   newTests: PerfResult[];
   removedTests: PerfResult[];
@@ -254,6 +265,26 @@ function formatBenchmarkLabel({
   return parts.join(" > ");
 }
 
+/**
+ * Returns an escaped task pattern matched by Vitest's `--testNamePattern`.
+ * Vitest's report uses ` > ` between suites, but its task matcher uses spaces.
+ * Accept both because a suite name may itself contain the report separator.
+ */
+function formatBenchmarkPattern({
+  file,
+  groupName,
+  name,
+}: {
+  file: string;
+  groupName: string;
+  name: string;
+}) {
+  const parts = [...normalizeBenchmarkGroupName(groupName, file), name].filter(
+    Boolean,
+  );
+  return parts.map(escapeRegExp).join("(?: > | )");
+}
+
 function createNodeMetrics({ hz, mean }: { hz: number; mean: number }) {
   const total = hz > 0 ? hz : mean > 0 ? 1000 / mean : 0;
   return {
@@ -288,6 +319,11 @@ function resultsFromBenchmarkReport(report: BenchmarkReport): PerfResult[] {
             ? `${groupName} > ${normalizedName}`
             : normalizedName,
           label,
+          benchmarkPattern: formatBenchmarkPattern({
+            file: filePath,
+            groupName,
+            name,
+          }),
           metrics,
           raw: [metrics],
         });
@@ -295,6 +331,28 @@ function resultsFromBenchmarkReport(report: BenchmarkReport): PerfResult[] {
     }
   }
   return results;
+}
+
+/** Verifies that a focused Vitest report contains every expected benchmark. */
+export function checkNodeBenchmarkResults(
+  filePath: string,
+  expectedCount: number,
+) {
+  if (!Number.isInteger(expectedCount) || expectedCount < 0) {
+    throw new Error(`Invalid expected benchmark count: ${expectedCount}`);
+  }
+  const report = readJsonFile(filePath) as BenchmarkReport;
+  let actualCount = 0;
+  for (const file of report.files ?? []) {
+    for (const group of file.groups ?? []) {
+      actualCount += group.benchmarks?.length ?? 0;
+    }
+  }
+  if (actualCount !== expectedCount) {
+    throw new Error(
+      `Expected ${expectedCount} benchmark results in ${filePath}, found ${actualCount}`,
+    );
+  }
 }
 
 // Discover round files like `baseline-1-worker0.json` and
@@ -848,6 +906,44 @@ function getConfirmationFiles(rows: ComparisonRow[]): string[] {
   return [...files].sort();
 }
 
+/** Groups flagged Node benchmark task patterns by source file. */
+function getConfirmationTargets(rows: ComparisonRow[]): ConfirmationTarget[] {
+  const patternsByFile = new Map<
+    string,
+    Map<string, { baseline: string; current: string }>
+  >();
+  for (const row of rows) {
+    if (!row.significant && !row.candidate) continue;
+    if (!row.baselineBenchmarkPattern || !row.currentBenchmarkPattern) {
+      throw new Error(
+        `Missing benchmark patterns for comparison row: ${row.label}`,
+      );
+    }
+    let patterns = patternsByFile.get(row.testFile);
+    if (!patterns) {
+      patterns = new Map();
+      patternsByFile.set(row.testFile, patterns);
+    }
+    patterns.set(row.label, {
+      baseline: row.baselineBenchmarkPattern,
+      current: row.currentBenchmarkPattern,
+    });
+  }
+  return [...patternsByFile]
+    .sort(([fileA], [fileB]) => fileA.localeCompare(fileB))
+    .map(([file, patterns]) => {
+      const pairs = [...patterns.values()].sort((pairA, pairB) =>
+        pairA.current.localeCompare(pairB.current),
+      );
+      return {
+        baselineTestNamePattern: `^(?:${pairs.map((pair) => pair.baseline).join("|")})$`,
+        benchmarkCount: pairs.length,
+        currentTestNamePattern: `^(?:${pairs.map((pair) => pair.current).join("|")})$`,
+        file,
+      };
+    });
+}
+
 function compare(options: PerfCompareOptions): ComparisonSummary {
   const baseline = aggregateByKey(loadRounds("baseline", options));
   const current = aggregateByKey(loadRounds("current", options));
@@ -934,6 +1030,8 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
         testFile: cur.result.testFile,
         testTitle: cur.result.testTitle,
         label: cur.result.label,
+        baselineBenchmarkPattern: base.result.benchmarkPattern,
+        currentBenchmarkPattern: cur.result.benchmarkPattern,
         metric,
         baseline: baseVal,
         current: curVal,
@@ -960,6 +1058,7 @@ function compare(options: PerfCompareOptions): ComparisonSummary {
     hasSignificantChanges: rows.some((r) => r.significant),
     hasCandidateChanges: rows.some((r) => r.candidate),
     confirmationFiles: getConfirmationFiles(rows),
+    confirmationTargets: options.node ? getConfirmationTargets(rows) : [],
     currentResults: [...current.values()],
     profileModeMismatches,
     newTests,
@@ -1675,6 +1774,7 @@ function toPersistedSummary(
     hasSignificantChanges: summary.hasSignificantChanges,
     hasCandidateChanges: summary.hasCandidateChanges,
     confirmationFiles: summary.confirmationFiles,
+    confirmationTargets: summary.confirmationTargets,
     profileModeMismatches: summary.profileModeMismatches,
     newTests: summary.newTests.map((entry) => entry.result),
     removedTests: summary.removedTests.map((entry) => entry.result),
@@ -1696,12 +1796,17 @@ export function runPerfCompare(
     JSON.stringify(persistedSummary, null, 2),
   );
   writeFileSync(path.join(RESULTS_DIR, "comparison.md"), markdown);
-  // The perf workflow decides whether to run more confirmation rounds by
-  // reading this plain-text list (one flagged test file per line, empty when
-  // clean), so the shell needs no JSON parsing.
+  // The perf workflow uses the plain-text list as its confirmation gate and
+  // reads the JSON targets only when the list contains a flagged test file.
   writeFileSync(
     path.join(RESULTS_DIR, "confirmation-files.txt"),
     persistedSummary.confirmationFiles.map((file) => `${file}\n`).join(""),
+  );
+  // Node runs each file separately so duplicate benchmark names in different
+  // files cannot select stable cases through one global name pattern.
+  writeFileSync(
+    path.join(RESULTS_DIR, "confirmation-targets.json"),
+    JSON.stringify(persistedSummary.confirmationTargets, null, 2),
   );
 
   return { summary: persistedSummary, markdown };

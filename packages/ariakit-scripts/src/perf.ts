@@ -195,6 +195,8 @@ export interface PerfResult {
   testFile: string;
   testTitle: string;
   label: string;
+  /** Escaped Vitest task pattern used to select a Node benchmark. */
+  benchmarkPattern?: string;
   metrics: PerfMetrics;
   raw: PerfMetrics[];
   profileOnly?: boolean;
