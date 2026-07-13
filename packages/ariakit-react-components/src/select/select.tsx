@@ -311,8 +311,8 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
  * ```
  */
 export const Select = forwardRef(function Select(props: SelectProps) {
-  const htmlProps = useSelect(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useSelect(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface SelectOptions<T extends ElementType = TagName>

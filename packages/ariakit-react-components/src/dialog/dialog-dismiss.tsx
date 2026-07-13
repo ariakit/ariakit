@@ -92,8 +92,8 @@ export const useDialogDismiss = createHook<TagName, DialogDismissOptions>(
 export const DialogDismiss = forwardRef(function DialogDismiss(
   props: DialogDismissProps,
 ) {
-  const htmlProps = useDialogDismiss(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useDialogDismiss(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface DialogDismissOptions<

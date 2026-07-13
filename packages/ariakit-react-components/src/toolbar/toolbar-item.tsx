@@ -49,8 +49,8 @@ export const useToolbarItem = createHook<TagName, ToolbarItemOptions>(
  */
 export const ToolbarItem = memo(
   forwardRef(function ToolbarItem(props: ToolbarItemProps) {
-    const htmlProps = useToolbarItem(props);
-    return createElement(TagName, withDefaultButtonType(htmlProps));
+    const htmlProps = useToolbarItem(withDefaultButtonType(props));
+    return createElement(TagName, htmlProps);
   }),
 );
 

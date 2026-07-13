@@ -17,6 +17,10 @@ function expectSharedButtonTypes(query: ReturnType<typeof q.within>) {
   expect(query.button("Submit button")).toHaveAttribute("type", "submit");
   expect(query.button("Reset button")).toHaveAttribute("type", "reset");
   expect(query.button("Toolbar item")).toHaveAttribute("type", "button");
+  expect(query.button("Root menu")).toHaveAttribute("type", "button");
+  const nestedMenuButton = query.menuitem("Nested menu");
+  expect(nestedMenuButton).toHaveProperty("tagName", "DIV");
+  expect(nestedMenuButton).not.toHaveAttribute("type");
 }
 
 function expectServerButtonTypes(query: ReturnType<typeof q.within>) {
@@ -43,10 +47,6 @@ test("preserves custom element semantics", () => {
   expect(q.link("Disabled anchor")).toHaveAttribute("tabindex", "-1");
   expect(q.link("Disabled anchor")).not.toHaveAttribute("disabled");
   expect(q.button("Disabled button")).toHaveAttribute("disabled");
-
-  const nestedMenuButton = q.menuitem("Nested menu");
-  expect(nestedMenuButton).toHaveProperty("tagName", "DIV");
-  expect(nestedMenuButton).not.toHaveAttribute("type");
 });
 
 test("updates custom focusability", async () => {

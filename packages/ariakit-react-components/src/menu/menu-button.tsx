@@ -303,6 +303,8 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
 export const MenuButton = forwardRef(function MenuButton(
   props: MenuButtonProps,
 ) {
+  // useMenuButton renders nested menu buttons as a div, so apply the default
+  // button type only after the hook has chosen the final host.
   const htmlProps = useMenuButton(props);
   return createElement(TagName, withDefaultButtonType(htmlProps));
 });

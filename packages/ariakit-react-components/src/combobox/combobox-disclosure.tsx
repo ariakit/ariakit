@@ -141,8 +141,8 @@ export const useComboboxDisclosure = createHook<
 export const ComboboxDisclosure = forwardRef(function ComboboxDisclosure(
   props: ComboboxDisclosureProps,
 ) {
-  const htmlProps = useComboboxDisclosure(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useComboboxDisclosure(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface ComboboxDisclosureOptions<

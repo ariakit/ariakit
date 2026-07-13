@@ -63,34 +63,39 @@ export function TypeFixture({
   toolbarItemRef,
 }: TypeFixtureProps) {
   return (
-    <TabProvider>
-      <Ariakit.TabList aria-label="Types">
-        <Ariakit.Tab ref={tabRef}>Default tab</Ariakit.Tab>
-        <Ariakit.Tab render={<button type="submit" />}>Submit tab</Ariakit.Tab>
-        <Ariakit.Tab render={<CustomButton type="reset" />}>
-          Reset tab
-        </Ariakit.Tab>
-        <Ariakit.Tab render={<div />}>Div tab</Ariakit.Tab>
-        <Ariakit.Tab render={<button />}>Button tab</Ariakit.Tab>
-        <HookTab />
-      </Ariakit.TabList>
-      <Ariakit.Command
-        aria-label="Input command"
-        render={<input type="submit" value="Input command" />}
-      />
-      <Ariakit.Command ref={commandRef}>Default command</Ariakit.Command>
-      <Ariakit.Button ref={buttonRef}>Default button</Ariakit.Button>
-      <Ariakit.Button type="submit">Submit button</Ariakit.Button>
-      <Ariakit.Button render={<CustomButton type="reset" />}>
-        Reset button
-      </Ariakit.Button>
-      <Ariakit.Button render={<div />}>Div button</Ariakit.Button>
-      <Ariakit.Toolbar>
-        <Ariakit.ToolbarItem ref={toolbarItemRef}>
-          Toolbar item
-        </Ariakit.ToolbarItem>
-      </Ariakit.Toolbar>
-    </TabProvider>
+    <>
+      <TabProvider>
+        <Ariakit.TabList aria-label="Types">
+          <Ariakit.Tab ref={tabRef}>Default tab</Ariakit.Tab>
+          <Ariakit.Tab render={<button type="submit" />}>
+            Submit tab
+          </Ariakit.Tab>
+          <Ariakit.Tab render={<CustomButton type="reset" />}>
+            Reset tab
+          </Ariakit.Tab>
+          <Ariakit.Tab render={<div />}>Div tab</Ariakit.Tab>
+          <Ariakit.Tab render={<button />}>Button tab</Ariakit.Tab>
+          <HookTab />
+        </Ariakit.TabList>
+        <Ariakit.Command
+          aria-label="Input command"
+          render={<input type="submit" value="Input command" />}
+        />
+        <Ariakit.Command ref={commandRef}>Default command</Ariakit.Command>
+        <Ariakit.Button ref={buttonRef}>Default button</Ariakit.Button>
+        <Ariakit.Button type="submit">Submit button</Ariakit.Button>
+        <Ariakit.Button render={<CustomButton type="reset" />}>
+          Reset button
+        </Ariakit.Button>
+        <Ariakit.Button render={<div />}>Div button</Ariakit.Button>
+        <Ariakit.Toolbar>
+          <Ariakit.ToolbarItem ref={toolbarItemRef}>
+            Toolbar item
+          </Ariakit.ToolbarItem>
+        </Ariakit.Toolbar>
+      </TabProvider>
+      <NestedMenuFixture />
+    </>
   );
 }
 
@@ -125,7 +130,6 @@ export default function Example() {
         Toggle focusable
       </button>
       <CapabilityFixture focusable={focusable} />
-      <NestedMenuFixture />
     </div>
   );
 }

@@ -188,8 +188,8 @@ export const useHovercardDisclosure = createHook<
 export const HovercardDisclosure = forwardRef(function HovercardDisclosure(
   props: HovercardDisclosureProps,
 ) {
-  const htmlProps = useHovercardDisclosure(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useHovercardDisclosure(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface HovercardDisclosureOptions<

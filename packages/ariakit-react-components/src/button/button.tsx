@@ -63,8 +63,8 @@ export const useButton = createHook<TagName, ButtonOptions>(
  * ```
  */
 export const Button = forwardRef(function Button(props: ButtonProps) {
-  const htmlProps = useButton(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useButton(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface ButtonOptions<

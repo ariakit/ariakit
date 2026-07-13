@@ -62,8 +62,8 @@ export const useDialogDisclosure = createHook<TagName, DialogDisclosureOptions>(
 export const DialogDisclosure = forwardRef(function DialogDisclosure(
   props: DialogDisclosureProps,
 ) {
-  const htmlProps = useDialogDisclosure(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useDialogDisclosure(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface DialogDisclosureOptions<

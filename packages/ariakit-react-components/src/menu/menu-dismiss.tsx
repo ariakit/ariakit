@@ -47,8 +47,8 @@ export const useMenuDismiss = createHook<TagName, MenuDismissOptions>(
 export const MenuDismiss = forwardRef(function MenuDismiss(
   props: MenuDismissProps,
 ) {
-  const htmlProps = useMenuDismiss(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useMenuDismiss(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface MenuDismissOptions<

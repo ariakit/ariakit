@@ -99,8 +99,10 @@ export const CompositeOverflowDisclosure = forwardRef(
   function CompositeOverflowDisclosure(
     props: CompositeOverflowDisclosureProps,
   ) {
-    const htmlProps = useCompositeOverflowDisclosure(props);
-    return createElement(TagName, withDefaultButtonType(htmlProps));
+    const htmlProps = useCompositeOverflowDisclosure(
+      withDefaultButtonType(props),
+    );
+    return createElement(TagName, htmlProps);
   },
 );
 

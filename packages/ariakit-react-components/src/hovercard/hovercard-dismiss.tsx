@@ -47,8 +47,8 @@ export const useHovercardDismiss = createHook<TagName, HovercardDismissOptions>(
 export const HovercardDismiss = forwardRef(function HovercardDismiss(
   props: HovercardDismissProps,
 ) {
-  const htmlProps = useHovercardDismiss(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useHovercardDismiss(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface HovercardDismissOptions<

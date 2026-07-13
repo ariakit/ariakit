@@ -73,10 +73,9 @@ export const useCommand = createHook<TagName, CommandOptions>(
       if (!element) return;
       const nativeButton = isButton(element);
       // React 19's useFormStatus relies on the post-mount render below for
-      // native submit controls. An explicit native type="button" control
-      // already has the same type that Command would apply, so updating state
-      // would only schedule a redundant render. Implicit types still reconcile
-      // here so ordinary Buttons warm this path before their first interaction.
+      // native submit controls. A native type="button" control already has the
+      // same type that Command would apply, so updating state would only
+      // schedule a redundant render.
       if (type !== undefined && nativeButton && element.type === "button")
         return;
       setIsNativeButton(nativeButton);
@@ -240,8 +239,8 @@ export const useCommand = createHook<TagName, CommandOptions>(
  * ```
  */
 export const Command = forwardRef(function Command(props: CommandProps) {
-  const htmlProps = useCommand(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useCommand(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface CommandOptions<

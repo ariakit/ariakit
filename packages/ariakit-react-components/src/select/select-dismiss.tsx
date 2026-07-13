@@ -56,8 +56,8 @@ export const useSelectDismiss = createHook<TagName, SelectDismissOptions>(
 export const SelectDismiss = forwardRef(function SelectDismiss(
   props: SelectDismissProps,
 ) {
-  const htmlProps = useSelectDismiss(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useSelectDismiss(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface SelectDismissOptions<

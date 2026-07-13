@@ -155,8 +155,8 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
  * ```
  */
 export const FormPush = forwardRef(function FormPush(props: FormPushProps) {
-  const htmlProps = useFormPush(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useFormPush(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface FormPushOptions<T extends ElementType = TagName>

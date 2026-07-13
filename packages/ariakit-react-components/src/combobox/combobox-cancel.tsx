@@ -129,8 +129,8 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
 export const ComboboxCancel = forwardRef(function ComboboxCancel(
   props: ComboboxCancelProps,
 ) {
-  const htmlProps = useComboboxCancel(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useComboboxCancel(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface ComboboxCancelOptions<

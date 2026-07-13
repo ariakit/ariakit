@@ -111,8 +111,8 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
 export const Disclosure = forwardRef(function Disclosure(
   props: DisclosureProps,
 ) {
-  const htmlProps = useDisclosure(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useDisclosure(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface DisclosureOptions<

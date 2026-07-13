@@ -89,8 +89,8 @@ export const usePopoverDisclosure = createHook<
 export const PopoverDisclosure = forwardRef(function PopoverDisclosure(
   props: PopoverDisclosureProps,
 ) {
-  const htmlProps = usePopoverDisclosure(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = usePopoverDisclosure(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface PopoverDisclosureOptions<T extends ElementType = TagName>

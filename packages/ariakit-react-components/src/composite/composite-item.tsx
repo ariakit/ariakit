@@ -540,8 +540,8 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
  */
 export const CompositeItem = memo(
   forwardRef(function CompositeItem(props: CompositeItemProps) {
-    const htmlProps = useCompositeItem(props);
-    return createElement(TagName, withDefaultButtonType(htmlProps));
+    const htmlProps = useCompositeItem(withDefaultButtonType(props));
+    return createElement(TagName, htmlProps);
   }),
 );
 

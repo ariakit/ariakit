@@ -47,8 +47,8 @@ export const usePopoverDismiss = createHook<TagName, PopoverDismissOptions>(
 export const PopoverDismiss = forwardRef(function PopoverDismiss(
   props: PopoverDismissProps,
 ) {
-  const htmlProps = usePopoverDismiss(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = usePopoverDismiss(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface PopoverDismissOptions<

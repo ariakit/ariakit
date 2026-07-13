@@ -155,8 +155,8 @@ export const useFormRemove = createHook<TagName, FormRemoveOptions>(
 export const FormRemove = forwardRef(function FormRemove(
   props: FormRemoveProps,
 ) {
-  const htmlProps = useFormRemove(props);
-  return createElement(TagName, withDefaultButtonType(htmlProps));
+  const htmlProps = useFormRemove(withDefaultButtonType(props));
+  return createElement(TagName, htmlProps);
 });
 
 export interface FormRemoveOptions<

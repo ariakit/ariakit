@@ -27,6 +27,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test
       .expect(q.button("Toolbar item"))
       .toHaveAttribute("type", "button");
+    await test.expect(q.button("Root menu")).toHaveAttribute("type", "button");
     await test.expect(q.status("Default button ref type")).toHaveText("button");
     await test
       .expect(q.status("Default command ref type"))
