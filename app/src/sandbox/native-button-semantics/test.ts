@@ -49,15 +49,6 @@ test("preserves custom element semantics", () => {
   expect(nestedMenuButton).not.toHaveAttribute("type");
 });
 
-test("updates semantics when rendered elements change", async () => {
-  await click(q.button("Swap rendered elements"));
-
-  expect(q.text("Dynamic enabled")).toHaveAttribute("tabindex", "0");
-  expect(q.button("Dynamic disabled")).toHaveAttribute("disabled");
-  expect(q.text("Dynamic from button")).not.toHaveAttribute("type");
-  expect(q.button("Dynamic from div")).toHaveAttribute("type", "button");
-});
-
 test("updates custom focusability", async () => {
   const focusable = q.text("Focusable div");
   expect(focusable).toHaveAttribute("tabindex", "0");

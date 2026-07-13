@@ -47,6 +47,7 @@ export function createDisclosureStore(
     disclosureElement: defaultValue(syncState?.disclosureElement, null),
   };
 
+  // Omit an undefined parent so createStore keeps its zero-parent fast path.
   const disclosure = store
     ? createStore(initialState, store)
     : createStore(initialState);

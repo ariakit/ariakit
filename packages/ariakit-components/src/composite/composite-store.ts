@@ -123,6 +123,29 @@ export function flipItems(
 const rowMapItemThreshold = 48;
 const rowMapRowThreshold = 4;
 
+function groupSmallItemsByRows(items: CompositeStoreItem[]) {
+  const rows: CompositeStoreItem[][] = [];
+  let previousRow: CompositeStoreItem[] | undefined;
+  let previousRowId: string | undefined;
+  for (const item of items) {
+    const rowId = item.rowId;
+    if (previousRow && previousRowId === rowId) {
+      previousRow.push(item);
+      continue;
+    }
+    const row = rows.find((currentRow) => currentRow[0]?.rowId === rowId);
+    if (row) {
+      row.push(item);
+      previousRow = row;
+    } else {
+      previousRow = [item];
+      rows.push(previousRow);
+    }
+    previousRowId = rowId;
+  }
+  return rows;
+}
+
 function groupLargeItemsByRows(items: CompositeStoreItem[]) {
   const firstItem = items[0];
   if (!firstItem) return [];
@@ -169,16 +192,7 @@ export function groupItemsByRows(items: CompositeStoreItem[]) {
   if (items.length >= rowMapItemThreshold) {
     return groupLargeItemsByRows(items);
   }
-  const rows: CompositeStoreItem[][] = [];
-  for (const item of items) {
-    const row = rows.find((currentRow) => currentRow[0]?.rowId === item.rowId);
-    if (row) {
-      row.push(item);
-    } else {
-      rows.push([item]);
-    }
-  }
-  return rows;
+  return groupSmallItemsByRows(items);
 }
 
 function getMaxRowLength(array: CompositeStoreItem[][]) {

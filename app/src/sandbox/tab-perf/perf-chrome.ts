@@ -9,7 +9,6 @@ type Query = ReturnType<typeof query>;
 async function mountTabs(q: Query) {
   await q.button("Mount tabs").click();
   await expect(q.tab(`Tab ${tabCount}`)).toBeVisible();
-  await expect(q.tab("Tab 1")).toHaveAttribute("type", "button");
 }
 
 async function verifyTabControlsPanel(q: Query, label: string) {

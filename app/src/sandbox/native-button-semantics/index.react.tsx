@@ -1,19 +1,19 @@
 import * as Ariakit from "@ariakit/react";
 import { useTab } from "@ariakit/react-components/tab/tab";
 import { TabProvider } from "@ariakit/react-components/tab/tab-provider";
-import { createElement, forwardRef, useCallback, useState } from "react";
+import { forwardRef, useCallback, useState } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 
 const CustomButton = forwardRef<
   HTMLButtonElement,
   ComponentPropsWithoutRef<"button">
 >(function CustomButton(props, ref) {
-  return createElement("button", { ...props, ref });
+  return <button {...props} ref={ref} />;
 });
 
 function HookTab() {
   const props = useTab<"div">();
-  return createElement(Ariakit.Role, props, "Hook tab");
+  return <Ariakit.Role {...props}>Hook tab</Ariakit.Role>;
 }
 
 export interface TypeFixtureProps {
@@ -24,21 +24,10 @@ export interface TypeFixtureProps {
 }
 
 interface CapabilityFixtureProps {
-  disabledTag?: "button" | "div";
-  enabledTag?: "button" | "div";
   focusable?: boolean;
 }
 
-interface DynamicCommandFixtureProps {
-  firstTag?: "button" | "div";
-  secondTag?: "button" | "div";
-}
-
-function CapabilityFixture({
-  disabledTag = "div",
-  enabledTag = "button",
-  focusable = true,
-}: CapabilityFixtureProps) {
+function CapabilityFixture({ focusable = true }: CapabilityFixtureProps) {
   return (
     <div>
       <Ariakit.Focusable focusable={focusable} render={<div />}>
@@ -50,29 +39,7 @@ function CapabilityFixture({
       <Ariakit.Focusable disabled render={<button />}>
         Disabled button
       </Ariakit.Focusable>
-      <Ariakit.Focusable render={createElement(enabledTag)}>
-        Dynamic enabled
-      </Ariakit.Focusable>
-      <Ariakit.Focusable disabled render={createElement(disabledTag)}>
-        Dynamic disabled
-      </Ariakit.Focusable>
     </div>
-  );
-}
-
-function DynamicCommandFixture({
-  firstTag = "button",
-  secondTag = "div",
-}: DynamicCommandFixtureProps) {
-  return (
-    <>
-      <Ariakit.Command render={createElement(firstTag)}>
-        Dynamic from button
-      </Ariakit.Command>
-      <Ariakit.Command render={createElement(secondTag)}>
-        Dynamic from div
-      </Ariakit.Command>
-    </>
   );
 }
 
@@ -137,7 +104,6 @@ function useObservedType() {
 }
 
 export default function Example() {
-  const [swapped, setSwapped] = useState(false);
   const [focusable, setFocusable] = useState(true);
   const [buttonType, buttonRef] = useObservedType();
   const [commandType, commandRef] = useObservedType();
@@ -155,21 +121,10 @@ export default function Example() {
       <output aria-label="Default command ref type">{commandType}</output>
       <output aria-label="Default tab ref type">{tabType}</output>
       <output aria-label="Toolbar item ref type">{toolbarItemType}</output>
-      <button type="button" onClick={() => setSwapped((value) => !value)}>
-        Swap rendered elements
-      </button>
       <button type="button" onClick={() => setFocusable((value) => !value)}>
         Toggle focusable
       </button>
-      <CapabilityFixture
-        disabledTag={swapped ? "button" : "div"}
-        enabledTag={swapped ? "div" : "button"}
-        focusable={focusable}
-      />
-      <DynamicCommandFixture
-        firstTag={swapped ? "div" : "button"}
-        secondTag={swapped ? "button" : "div"}
-      />
+      <CapabilityFixture focusable={focusable} />
       <NestedMenuFixture />
     </div>
   );

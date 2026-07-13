@@ -50,6 +50,9 @@ interface ItemIdCache<T extends CollectionStoreItem> {
   ids?: Set<string>;
 }
 
+// Cache IDs only for large immutable state arrays so repeated registrations can
+// skip O(n) absence scans. Replacing the array invalidates the cache. Existing
+// IDs still use findIndex to preserve their position and previous value.
 function getCachedItemIds<T extends CollectionStoreItem>(
   items: T[],
   cache: ItemIdCache<T>,
@@ -123,6 +126,7 @@ export function createCollectionStore<
   );
 
   const itemsMap = new Map<string, T>(items.map((item) => [item.id, item]));
+  // These arrays are replaced independently, so each needs its own cache.
   const itemIdCache: ItemIdCache<T> = {};
   const renderedItemIdCache: ItemIdCache<T> = {};
 

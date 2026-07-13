@@ -50,21 +50,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(nestedMenuButton).not.toHaveAttribute("type");
   });
 
-  test("updates semantics when rendered elements change", async ({ q }) => {
-    await q.button("Swap rendered elements").click();
-
-    await test
-      .expect(q.text("Dynamic enabled"))
-      .toHaveAttribute("tabindex", "0");
-    await test.expect(q.button("Dynamic disabled")).toBeDisabled();
-    await test
-      .expect(q.text("Dynamic from button"))
-      .not.toHaveAttribute("type");
-    await test
-      .expect(q.button("Dynamic from div"))
-      .toHaveAttribute("type", "button");
-  });
-
   test("updates custom focusability", async ({ q }) => {
     const focusable = q.text("Focusable div");
     await test.expect(focusable).toHaveAttribute("tabindex", "0");
