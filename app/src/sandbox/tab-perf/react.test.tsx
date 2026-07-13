@@ -29,10 +29,16 @@ interface TypeFixtureProps {
 }
 
 interface CapabilityFixtureProps {
+  disabledTag?: "button" | "div";
+  enabledTag?: "button" | "div";
   focusable?: boolean;
 }
 
-function CapabilityFixture({ focusable = true }: CapabilityFixtureProps) {
+function CapabilityFixture({
+  disabledTag = "div",
+  enabledTag = "button",
+  focusable = true,
+}: CapabilityFixtureProps) {
   return createElement(
     "div",
     null,
@@ -59,6 +65,16 @@ function CapabilityFixture({ focusable = true }: CapabilityFixtureProps) {
         render: createElement("button"),
       },
       "Disabled button",
+    ),
+    createElement(
+      Ariakit.Focusable,
+      { render: createElement(enabledTag) },
+      "Dynamic enabled",
+    ),
+    createElement(
+      Ariakit.Focusable,
+      { disabled: true, render: createElement(disabledTag) },
+      "Dynamic disabled",
     ),
   );
 }
@@ -184,6 +200,15 @@ test("preserves focusable capabilities for custom elements", async () => {
   expect(anchor).toHaveAttribute("tabindex", "-1");
   expect(anchor).not.toHaveAttribute("disabled");
   expect(button).toHaveAttribute("disabled");
+
+  await rerender(
+    createElement(CapabilityFixture, {
+      disabledTag: "button",
+      enabledTag: "div",
+    }),
+  );
+  expect(q.text("Dynamic enabled")).toHaveAttribute("tabindex", "0");
+  expect(q.button("Dynamic disabled")).toHaveAttribute("disabled");
 
   await rerender(createElement(CapabilityFixture, { focusable: false }));
   expect(div).not.toHaveAttribute("tabindex");

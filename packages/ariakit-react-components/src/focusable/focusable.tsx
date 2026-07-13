@@ -2,7 +2,6 @@ import {
   useEvent,
   useMergeRefs,
   useMetadataProps,
-  useSafeLayoutEffect,
   createElement,
   createHook,
   forwardRef,
@@ -410,15 +409,14 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     const [elementCapabilities, setElementCapabilities] = useState(
       defaultElementCapabilities,
     );
-    useSafeLayoutEffect(() => {
-      const element = ref.current;
+    const elementCapabilitiesRef = useEvent((element: HTMLElement | null) => {
       if (!element) return;
       const nextCapabilities = getElementCapabilities(
         element.tagName.toLowerCase(),
       );
-      if (nextCapabilities === defaultElementCapabilities) return;
+      if (nextCapabilities === elementCapabilities) return;
       setElementCapabilities(nextCapabilities);
-    }, []);
+    });
     const nativeTabbable =
       focusable && !!(elementCapabilities & nativeTabbableMask);
     const supportsDisabled =
@@ -456,7 +454,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       "aria-disabled": disabled || undefined,
       ...props,
       ...metadataProps,
-      ref: useMergeRefs(ref, autoFocusRef, props.ref),
+      ref: useMergeRefs(ref, elementCapabilitiesRef, autoFocusRef, props.ref),
       style,
       tabIndex: getTabIndex({
         focusable,
