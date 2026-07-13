@@ -152,6 +152,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
 
     const labelId = useStoreState(
       store,
+      ["labelElement"],
       (state) => headingId || state.labelElement?.id,
     );
 

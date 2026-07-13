@@ -105,12 +105,20 @@ export const useTagList = createHook<TagName, TagListOptions>(
 
     props = useComposite({ store, ...props });
 
-    const orientation = useStoreState(store, (state) =>
+    const orientation = useStoreState(store, ["orientation"], (state) =>
       state.orientation === "both" ? undefined : state.orientation,
     );
-    const items = useStoreState(store, (state) => state.renderedItems);
+    const items = useStoreState(
+      store,
+      ["renderedItems"],
+      (state) => state.renderedItems,
+    );
     const itemIds = items.filter((item) => !!item.value).map((item) => item.id);
-    const labelId = useStoreState(store, (state) => state.labelElement?.id);
+    const labelId = useStoreState(
+      store,
+      ["labelElement"],
+      (state) => state.labelElement?.id,
+    );
 
     // Remove aria attributes from tha TagList element and add them to a
     // separate div that will serve as the accessible listbox element.

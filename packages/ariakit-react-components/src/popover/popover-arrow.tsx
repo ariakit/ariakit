@@ -155,7 +155,7 @@ export const usePopoverArrow = createHook<TagName, PopoverArrowOptions>(
         "PopoverArrow must be wrapped in a Popover component.",
     );
 
-    const dir = useStoreState(store, (state) =>
+    const dir = useStoreState(store, ["currentPlacement"], (state) =>
       getBasePlacement(state.currentPlacement),
     );
 

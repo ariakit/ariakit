@@ -36,7 +36,11 @@ export const useTagListLabel = createHook<TagName, TagListLabelOptions>(
     );
 
     const id = useId(props.id);
-    const htmlFor = useStoreState(store, (state) => state.inputElement?.id);
+    const htmlFor = useStoreState(
+      store,
+      ["inputElement"],
+      (state) => state.inputElement?.id,
+    );
 
     props = {
       htmlFor,

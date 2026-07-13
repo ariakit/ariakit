@@ -57,6 +57,7 @@ export const useCompositeRow = createHook<TagName, CompositeRowOptions>(
 
     const baseElement = useStoreState(
       store,
+      ["baseElement"],
       (state) => state.baseElement || undefined,
     );
 

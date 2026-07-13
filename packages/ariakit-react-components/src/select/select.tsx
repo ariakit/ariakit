@@ -173,10 +173,14 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
     setAutofill(false);
   }, [value]);
 
-  const labelId = useStoreState(store, (state) => state.labelElement?.id);
+  const labelId = useStoreState(
+    store,
+    ["labelElement"],
+    (state) => state.labelElement?.id,
+  );
   const label = props["aria-label"];
   const labelledBy = props["aria-labelledby"] || labelId;
-  const items = useStoreState(store, (state) => {
+  const items = useStoreState(store, ["items"], (state) => {
     if (!name) return;
     return state.items;
   });

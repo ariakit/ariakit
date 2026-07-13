@@ -130,7 +130,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       }
     });
 
-    const dir = useStoreState(store, (state) =>
+    const dir = useStoreState(store, ["placement"], (state) =>
       getBasePlacement(state.placement),
     );
 

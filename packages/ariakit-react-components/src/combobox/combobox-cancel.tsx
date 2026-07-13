@@ -71,8 +71,16 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
       store?.move(null);
     });
 
-    const comboboxId = useStoreState(store, (state) => state.baseElement?.id);
-    const empty = useStoreState(store, (state) => state.value === "");
+    const comboboxId = useStoreState(
+      store,
+      ["baseElement"],
+      (state) => state.baseElement?.id,
+    );
+    const empty = useStoreState(
+      store,
+      ["value"],
+      (state) => state.value === "",
+    );
 
     props = useWrapElement(
       props,

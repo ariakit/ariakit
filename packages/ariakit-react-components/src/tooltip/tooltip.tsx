@@ -60,7 +60,7 @@ export const useTooltip = createHook<TagName, TooltipOptions>(
       [store],
     );
 
-    const role = useStoreState(store, (state) =>
+    const role = useStoreState(store, ["type"], (state) =>
       state.type === "description" ? "tooltip" : "none",
     );
 

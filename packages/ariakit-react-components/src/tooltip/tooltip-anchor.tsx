@@ -150,8 +150,11 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       }
     });
 
-    const labelledBy = useStoreState(store, (state) =>
-      state.type === "label" ? state.contentElement?.id : undefined,
+    const labelledBy = useStoreState(
+      store,
+      ["type", "contentElement"],
+      (state) =>
+        state.type === "label" ? state.contentElement?.id : undefined,
     );
 
     props = {

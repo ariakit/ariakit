@@ -36,7 +36,11 @@ export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
         "ComboboxLabel must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
-    const comboboxId = useStoreState(store, (state) => state.baseElement?.id);
+    const comboboxId = useStoreState(
+      store,
+      ["baseElement"],
+      (state) => state.baseElement?.id,
+    );
 
     props = {
       htmlFor: comboboxId,

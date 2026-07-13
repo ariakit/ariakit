@@ -89,7 +89,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     );
 
     const { resetValueOnSelectState, multiSelectable, selected } =
-      useStoreStateObject(store, {
+      useStoreStateObject(store, ["selectedValue"], {
         resetValueOnSelectState: "resetValueOnSelect",
         multiSelectable(state) {
           return Array.isArray(state.selectedValue);

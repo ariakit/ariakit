@@ -136,7 +136,7 @@ function useScheduleFocus(store: CompositeStore) {
   // Only track the active item while a focus is scheduled. Otherwise, this
   // subscription would re-render the composite component on every active item
   // change, such as when moving through items with arrow keys.
-  const activeItem = useStoreState(store, (state) =>
+  const activeItem = useStoreState(store, ["activeId", "items"], (state) =>
     scheduled ? getEnabledItem(store, state.activeId) : null,
   );
   useEffect(() => {
@@ -261,8 +261,10 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     // solely by the effect below, which is a no-op otherwise, so this avoids
     // re-rendering the composite component on every active item change when
     // moving through items with roving tabindex.
-    const activeId = useStoreState(store, (state) =>
-      state.virtualFocus ? state.activeId : null,
+    const activeId = useStoreState(
+      store,
+      ["virtualFocus", "activeId"],
+      (state) => (state.virtualFocus ? state.activeId : null),
     );
 
     // At this point, if the activeId has changed and we still have a
@@ -497,12 +499,16 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       [store, composite, focusOnMove],
     );
 
-    const activeDescendant = useStoreState(store, (state) => {
-      if (!store) return;
-      if (!composite) return;
-      if (!state.virtualFocus) return;
-      return getEnabledItem(store, state.activeId)?.id;
-    });
+    const activeDescendant = useStoreState(
+      store,
+      ["virtualFocus", "activeId", "items"],
+      (state) => {
+        if (!store) return;
+        if (!composite) return;
+        if (!state.virtualFocus) return;
+        return getEnabledItem(store, state.activeId)?.id;
+      },
+    );
 
     props = {
       "aria-activedescendant": activeDescendant,
@@ -518,6 +524,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const focusable = useStoreState(
       store,
+      ["virtualFocus", "activeId"],
       (state) => composite && (state.virtualFocus || state.activeId === null),
     );
 

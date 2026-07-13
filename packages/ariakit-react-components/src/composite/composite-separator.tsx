@@ -44,6 +44,7 @@ export const useCompositeSeparator = createHook<
 
   const orientation = useStoreState(
     store,
+    ["orientation"],
     (state) =>
       orientationProp ??
       (state.orientation === "horizontal" ? "vertical" : "horizontal"),
