@@ -4,8 +4,17 @@
 "@ariakit/react": patch
 ---
 
-Added keyed store subscriptions
+Keyed store subscriptions
 
-The [`useStoreState`](https://ariakit.com/reference/use-store-state) and `useStoreStateObject` hooks now accept selector dependency keys, so selectors skip unrelated store updates while receiving the complete store state at runtime.
+The [`useStoreState`](https://ariakit.com/reference/use-store-state) and `useStoreStateObject` hooks now accept selector dependency keys, so selectors skip unrelated store updates while receiving the complete store state at runtime. The key list must include every store key a selector reads, or its result may stay stale.
 
-Updated React components to use keyed selector subscriptions internally.
+```ts
+const isEmpty = useStoreState(store, ["value"], (state) => !state.value);
+
+const values = useStoreStateObject(store, ["value"], {
+  value: "value",
+  valueLength: (state) => state.value.length,
+});
+```
+
+React components now use keyed selector subscriptions internally.
