@@ -18,6 +18,7 @@ import {
 } from "@ariakit/utils";
 import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useRef } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
@@ -303,7 +304,7 @@ export const MenuButton = forwardRef(function MenuButton(
   props: MenuButtonProps,
 ) {
   const htmlProps = useMenuButton(props);
-  return createElement(TagName, htmlProps);
+  return createElement(TagName, withDefaultButtonType(htmlProps));
 });
 
 export interface MenuButtonOptions<T extends ElementType = TagName>

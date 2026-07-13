@@ -1,6 +1,7 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { PopoverDismissOptions } from "../popover/popover-dismiss.tsx";
 import { usePopoverDismiss } from "../popover/popover-dismiss.tsx";
 import { useHovercardScopedContext } from "./hovercard-context.tsx";
@@ -47,7 +48,7 @@ export const HovercardDismiss = forwardRef(function HovercardDismiss(
   props: HovercardDismissProps,
 ) {
   const htmlProps = useHovercardDismiss(props);
-  return createElement(TagName, htmlProps);
+  return createElement(TagName, withDefaultButtonType(htmlProps));
 });
 
 export interface HovercardDismissOptions<

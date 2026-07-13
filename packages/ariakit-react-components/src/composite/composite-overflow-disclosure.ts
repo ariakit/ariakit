@@ -9,6 +9,7 @@ import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import type { ElementType, FocusEvent } from "react";
 import { useEffect, useRef, useState } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import type { CompositeItemOptions } from "./composite-item.tsx";
@@ -99,7 +100,7 @@ export const CompositeOverflowDisclosure = forwardRef(
     props: CompositeOverflowDisclosureProps,
   ) {
     const htmlProps = useCompositeOverflowDisclosure(props);
-    return createElement(TagName, htmlProps);
+    return createElement(TagName, withDefaultButtonType(htmlProps));
   },
 );
 

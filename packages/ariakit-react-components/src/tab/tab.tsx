@@ -11,6 +11,7 @@ import type { Props } from "@ariakit/react-utils";
 import { disabledFromProps, invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import {
   CompositeItem,
@@ -188,10 +189,8 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
  */
 export const Tab = memo(
   forwardRef(function Tab(props: TabProps) {
-    const htmlProps = useTab(
-      props.render ? props : { ...props, type: props.type ?? "button" },
-    );
-    return createElement(TagName, htmlProps);
+    const htmlProps = useTab(props);
+    return createElement(TagName, withDefaultButtonType(htmlProps));
   }),
 );
 

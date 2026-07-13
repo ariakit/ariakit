@@ -15,6 +15,7 @@ import type { ElementType, MouseEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
+import { withDefaultButtonType } from "../button/utils.ts";
 import { useDisclosureProviderContext } from "./disclosure-context.tsx";
 import type { DisclosureStore } from "./disclosure-store.ts";
 
@@ -111,7 +112,7 @@ export const Disclosure = forwardRef(function Disclosure(
   props: DisclosureProps,
 ) {
   const htmlProps = useDisclosure(props);
-  return createElement(TagName, htmlProps);
+  return createElement(TagName, withDefaultButtonType(htmlProps));
 });
 
 export interface DisclosureOptions<

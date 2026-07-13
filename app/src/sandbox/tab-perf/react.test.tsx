@@ -22,7 +22,10 @@ function HookTab() {
 }
 
 interface TypeFixtureProps {
+  buttonRef?: (element: HTMLButtonElement | null) => void;
+  commandRef?: (element: HTMLButtonElement | null) => void;
   tabRef?: (element: HTMLButtonElement | null) => void;
+  toolbarItemRef?: (element: HTMLButtonElement | null) => void;
 }
 
 interface CapabilityFixtureProps {
@@ -60,7 +63,27 @@ function CapabilityFixture({ focusable = true }: CapabilityFixtureProps) {
   );
 }
 
-function TypeFixture({ tabRef }: TypeFixtureProps) {
+function NestedMenuFixture() {
+  return (
+    <Ariakit.MenuProvider>
+      <Ariakit.MenuButton>Root menu</Ariakit.MenuButton>
+      <Ariakit.Menu alwaysVisible>
+        <Ariakit.MenuProvider>
+          <Ariakit.MenuButton id="nested-menu-button">
+            Nested menu
+          </Ariakit.MenuButton>
+        </Ariakit.MenuProvider>
+      </Ariakit.Menu>
+    </Ariakit.MenuProvider>
+  );
+}
+
+function TypeFixture({
+  buttonRef,
+  commandRef,
+  tabRef,
+  toolbarItemRef,
+}: TypeFixtureProps) {
   return (
     <TabProvider defaultSelectedId="default-tab">
       <Ariakit.TabList aria-label="Types">
@@ -85,26 +108,66 @@ function TypeFixture({ tabRef }: TypeFixtureProps) {
         aria-label="Input command"
         render={<input type="submit" value="Input command" />}
       />
+      <Ariakit.Command id="default-command" ref={commandRef}>
+        Default command
+      </Ariakit.Command>
+      <Ariakit.Button id="default-button" ref={buttonRef}>
+        Default button
+      </Ariakit.Button>
+      <Ariakit.Button id="submit-button" type="submit">
+        Submit button
+      </Ariakit.Button>
+      <Ariakit.Button id="reset-button" render={<CustomButton type="reset" />}>
+        Reset button
+      </Ariakit.Button>
+      <Ariakit.Button id="div-button" render={<div />}>
+        Div button
+      </Ariakit.Button>
+      <Ariakit.Toolbar>
+        <Ariakit.ToolbarItem id="toolbar-item" ref={toolbarItemRef}>
+          Toolbar item
+        </Ariakit.ToolbarItem>
+      </Ariakit.Toolbar>
     </TabProvider>
   );
 }
 
-test("default tabs declare their native button type", async () => {
-  const observedTypes: Array<string | null> = [];
-  const tabRef = (element: HTMLButtonElement | null) => {
-    if (!element) return;
-    observedTypes.push(element.getAttribute("type"));
-  };
-  const { unmount } = await render(createElement(TypeFixture, { tabRef }));
+test("default button components declare their native type", async () => {
+  const observedButtonTypes: Array<string | null> = [];
+  const observedCommandTypes: Array<string | null> = [];
+  const observedTabTypes: Array<string | null> = [];
+  const observedToolbarItemTypes: Array<string | null> = [];
+  const observeType = (types: Array<string | null>) =>
+    function observeType(element: HTMLButtonElement | null) {
+      if (!element) return;
+      types.push(element.getAttribute("type"));
+    };
+  const { unmount } = await render(
+    createElement(TypeFixture, {
+      buttonRef: observeType(observedButtonTypes),
+      commandRef: observeType(observedCommandTypes),
+      tabRef: observeType(observedTabTypes),
+      toolbarItemRef: observeType(observedToolbarItemTypes),
+    }),
+  );
 
   expect(q.tab("Default tab")).toHaveAttribute("type", "button");
-  expect(observedTypes).toEqual(["button"]);
+  expect(observedTabTypes).toEqual(["button"]);
   expect(q.tab("Submit tab")).toHaveAttribute("type", "submit");
   expect(q.tab("Reset tab")).toHaveAttribute("type", "reset");
   expect(q.tab("Button tab")).toHaveAttribute("type", "button");
   expect(q.tab("Div tab")).not.toHaveAttribute("type");
   expect(q.tab("Hook tab")).not.toHaveAttribute("type");
   expect(q.button("Input command")).toHaveAttribute("type", "submit");
+  expect(q.button("Default command")).toHaveAttribute("type", "button");
+  expect(observedCommandTypes).toEqual(["button"]);
+  expect(q.button("Default button")).toHaveAttribute("type", "button");
+  expect(observedButtonTypes).toEqual(["button"]);
+  expect(q.button("Submit button")).toHaveAttribute("type", "submit");
+  expect(q.button("Reset button")).toHaveAttribute("type", "reset");
+  expect(q.text("Div button")).not.toHaveAttribute("type");
+  expect(q.button("Toolbar item")).toHaveAttribute("type", "button");
+  expect(observedToolbarItemTypes).toEqual(["button"]);
 
   unmount();
 });
@@ -131,29 +194,32 @@ test("preserves focusable capabilities for custom elements", async () => {
   unmount();
 });
 
+test("does not pass the default type to internal custom renders", async () => {
+  const { unmount } = await render(createElement(NestedMenuFixture));
+  const nestedMenuButton = document.querySelector("#nested-menu-button");
+
+  expect(nestedMenuButton).toHaveProperty("tagName", "DIV");
+  expect(nestedMenuButton).not.toHaveAttribute("type");
+
+  unmount();
+});
+
 test("server markup and hydration use the same native button type", async () => {
   const scope = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };
   const previousActEnvironment = scope.IS_REACT_ACT_ENVIRONMENT;
   scope.IS_REACT_ACT_ENVIRONMENT = true;
   const element = createElement(TypeFixture, {});
   const container = document.createElement("div");
+  const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
   let root: ReturnType<typeof hydrateRoot> | undefined;
   try {
-    const consoleError = vi
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
-    let serverErrors: Array<unknown[]> = [];
-    try {
-      container.innerHTML = renderToString(element);
-      serverErrors = consoleError.mock.calls;
-    } finally {
-      consoleError.mockRestore();
-    }
-    const unexpectedServerErrors = serverErrors.filter(
+    container.innerHTML = renderToString(element);
+    const unexpectedServerErrors = consoleError.mock.calls.filter(
       ([message]) =>
         !String(message).includes("useLayoutEffect does nothing on the server"),
     );
     expect(unexpectedServerErrors).toEqual([]);
+    consoleError.mockClear();
     document.body.appendChild(container);
 
     expect(container.querySelector("#default-tab")).toHaveAttribute(
@@ -168,10 +234,32 @@ test("server markup and hydration use the same native button type", async () => 
     expect(
       container.querySelector('input[value="Input command"]'),
     ).toHaveAttribute("type", "submit");
+    expect(container.querySelector("#default-command")).toHaveAttribute(
+      "type",
+      "button",
+    );
+    expect(container.querySelector("#default-button")).toHaveAttribute(
+      "type",
+      "button",
+    );
+    expect(container.querySelector("#submit-button")).toHaveAttribute(
+      "type",
+      "submit",
+    );
+    expect(container.querySelector("#reset-button")).toHaveAttribute(
+      "type",
+      "reset",
+    );
+    expect(container.querySelector("#div-button")).not.toHaveAttribute("type");
+    expect(container.querySelector("#toolbar-item")).toHaveAttribute(
+      "type",
+      "button",
+    );
 
     await act(async () => {
       root = hydrateRoot(container, element);
     });
+    expect(consoleError).not.toHaveBeenCalled();
 
     expect(container.querySelector("#default-tab")).toHaveAttribute(
       "type",
@@ -185,7 +273,29 @@ test("server markup and hydration use the same native button type", async () => 
     expect(
       container.querySelector('input[value="Input command"]'),
     ).toHaveAttribute("type", "submit");
+    expect(container.querySelector("#default-command")).toHaveAttribute(
+      "type",
+      "button",
+    );
+    expect(container.querySelector("#default-button")).toHaveAttribute(
+      "type",
+      "button",
+    );
+    expect(container.querySelector("#submit-button")).toHaveAttribute(
+      "type",
+      "submit",
+    );
+    expect(container.querySelector("#reset-button")).toHaveAttribute(
+      "type",
+      "reset",
+    );
+    expect(container.querySelector("#div-button")).not.toHaveAttribute("type");
+    expect(container.querySelector("#toolbar-item")).toHaveAttribute(
+      "type",
+      "button",
+    );
   } finally {
+    consoleError.mockRestore();
     if (root) {
       await act(async () => root?.unmount());
     }

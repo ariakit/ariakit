@@ -19,6 +19,7 @@ import {
 } from "@ariakit/utils";
 import type { ElementType, FocusEvent, KeyboardEvent } from "react";
 import { useEffect, useRef, useState } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 
@@ -73,7 +74,8 @@ export const useCommand = createHook<TagName, CommandOptions>(
       const nativeButton = isButton(element);
       // React 19's useFormStatus relies on the post-mount render below for
       // native submit controls. A native type="button" control already has the
-      // default type, so updating state would only schedule a redundant render.
+      // same type that Command would apply, so updating state would only
+      // schedule a redundant render.
       if (nativeButton && element.type === "button") return;
       setIsNativeButton(nativeButton);
     }, [type]);
@@ -237,7 +239,7 @@ export const useCommand = createHook<TagName, CommandOptions>(
  */
 export const Command = forwardRef(function Command(props: CommandProps) {
   const htmlProps = useCommand(props);
-  return createElement(TagName, htmlProps);
+  return createElement(TagName, withDefaultButtonType(htmlProps));
 });
 
 export interface CommandOptions<

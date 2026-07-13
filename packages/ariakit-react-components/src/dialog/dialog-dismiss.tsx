@@ -9,6 +9,7 @@ import type { ElementType, MouseEvent } from "react";
 import { useMemo } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
+import { withDefaultButtonType } from "../button/utils.ts";
 import { useDialogScopedContext } from "./dialog-context.tsx";
 import type { DialogStore } from "./dialog-store.ts";
 
@@ -92,7 +93,7 @@ export const DialogDismiss = forwardRef(function DialogDismiss(
   props: DialogDismissProps,
 ) {
   const htmlProps = useDialogDismiss(props);
-  return createElement(TagName, htmlProps);
+  return createElement(TagName, withDefaultButtonType(htmlProps));
 });
 
 export interface DialogDismissOptions<

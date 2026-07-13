@@ -20,6 +20,7 @@ import type {
   FocusEvent as ReactFocusEvent,
 } from "react";
 import { useEffect, useState } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
 import { useVisuallyHidden } from "../visually-hidden/visually-hidden.tsx";
@@ -188,7 +189,7 @@ export const HovercardDisclosure = forwardRef(function HovercardDisclosure(
   props: HovercardDisclosureProps,
 ) {
   const htmlProps = useHovercardDisclosure(props);
-  return createElement(TagName, htmlProps);
+  return createElement(TagName, withDefaultButtonType(htmlProps));
 });
 
 export interface HovercardDisclosureOptions<
