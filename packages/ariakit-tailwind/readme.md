@@ -2,27 +2,26 @@
 
 **Important:** This package is experimental and does not follow semantic versioning, meaning breaking changes may occur in patch and minor versions.
 
-Ariakit Tailwind is a Tailwind CSS v4 plugin that brings Ariakit Styles to your projects. It enables developers to build accessible design systems with **relative colors and radii** instead of fixed values, giving end users full freedom to customize the theme without sacrificing visual consistency. Swap any token — a brand color, a radius, a spacing scale — and every derived surface, text, and border rebalances itself automatically.
+Ariakit Tailwind is a Tailwind CSS v4 plugin that brings Ariakit Styles to your projects. It enables developers to build accessible design systems with **relative colors and radii** instead of fixed values, giving end users full freedom to customize the theme without sacrificing visual consistency. Swap a brand color, radius, or spacing scale, and every derived surface, text, and border rebalances itself automatically.
 
 Ariakit Tailwind is framework and library agnostic. It works with any frontend framework (React, Vue, Svelte, Astro, …) and any component library (Ariakit React, Radix UI, React Aria, …).
 
 ## Contents
 
-- [Installation](#installation)
-- [How it works](#how-it-works)
-- [Mental model](#mental-model)
+- [Quick start](#quick-start)
 - [Theming](#theming)
-- [`ak-layer`](#ak-layer) — background, text, border colors for a surface
-- [`ak-ink`](#ak-ink) — text opacity inside a layer
-- [`ak-text`](#ak-text) — colored text with automatic contrast
-- [`ak-edge`](#ak-edge) — border and ring colors
-- [`ak-outline`](#ak-outline) — outline colors
-- [`ak-frame`](#ak-frame) — radius, padding, margin, borders, layout
-- [`ak-state-*`](#ak-state) — interactive state adjustments
+- [Mental model](#mental-model)
+- [`ak-layer`](#ak-layer): background, text, and border colors for a surface
+- [`ak-state-*`](#ak-state): interactive state adjustments
+- [`ak-ink`](#ak-ink): text opacity inside a layer
+- [`ak-text`](#ak-text): colored text with automatic contrast
+- [`ak-edge`](#ak-edge): border and ring colors
+- [`ak-outline`](#ak-outline): outline colors
+- [`ak-frame`](#ak-frame): radius, padding, margin, borders, and layout
 - [Variants](#variants)
 - [Migrating to v0.2](#migrating-to-v02)
 
-## Installation
+## Quick start
 
 1. [Install Tailwind v4](https://tailwindcss.com/docs/installation/using-vite).
 
@@ -39,73 +38,91 @@ Ariakit Tailwind is framework and library agnostic. It works with any frontend f
    @import "@ariakit/tailwind";
    ```
 
-4. Define the application canvas and starter component tokens:
-
-   ```css
-   @theme {
-     --color-canvas: #f5f8f7;
-     --color-primary: #2563eb;
-     --color-warning: #d97706;
-
-     --radius-card: var(--radius-2xl);
-     --spacing-card: --spacing(4);
-
-     --radius-field: var(--radius-xl);
-     --spacing-field: --spacing(2);
-
-     --radius-badge: calc(infinity * 1px);
-     --spacing-badge: --spacing(1.5);
-   }
-
-   :root {
-     color-scheme: light;
-
-     @variant dark {
-       --color-canvas: #0b1110;
-       color-scheme: dark;
-     }
-   }
-   ```
-
-   This follows Tailwind's `dark` variant. For a manual theme toggle, configure that variant to match your root selector or override `--color-canvas` and `color-scheme` on the selector directly.
-
-5. Apply the base layer to a container element (must **not** be `html` or `:root`):
+4. Apply the base layer to a container element (must **not** be `html` or `:root`):
 
    <!-- prettier-ignore -->
    ```html
-   <body class="ak-layer ak-layer-canvas">
+   <body class="ak-layer ak-layer-white dark:ak-layer-gray-950">
    ```
 
    Or via `@apply`:
 
    ```css
    body {
-     @apply ak-layer ak-layer-canvas;
+     @apply ak-layer ak-layer-white dark:ak-layer-gray-950;
    }
    ```
 
-   Choose descendant surfaces deliberately, as described in the [mental model](#mental-model).
+   These root colors establish one application canvas. The [theming](#theming) section replaces them with a semantic canvas token, and the [mental model](#mental-model) explains how to choose descendant surfaces.
 
-## How it works
+## Theming
 
-Ariakit Tailwind revolves around a few families of utilities:
+Ariakit Tailwind integrates directly with Tailwind's theming system. Every `--color-*`, `--radius-*`, and `--spacing-*` token in your `@theme` block becomes available to the matching Ariakit utilities.
 
-- **[`ak-layer`](#ak-layer)** turns an element into a _layer_, a surface with its own background, text, and edge colors. Directional modifiers such as `ak-layer-lighten-*` and `ak-layer-darken-*` express raised and recessed surfaces, while numeric `ak-layer-*` modifiers provide appearance-aware separation without assigning a fixed depth direction.
-- **[`ak-ink`](#ak-ink)** sets the text opacity for the layer's own text. Safe to apply on the same element as `ak-layer` or on a descendant.
-- **[`ak-text`](#ak-text)** colors inline text _inside_ a layer with automatic WCAG contrast. Must go on a descendant, not on the `ak-layer` element itself.
-- **[`ak-edge`](#ak-edge)** colors borders and rings, adapting opacity and contrast to the element's own layer. `ak-edge-*` utilities require the static `ak-layer` class on the same element.
-- **[`ak-outline`](#ak-outline)** colors outlines in the same adaptive way.
-- **[`ak-frame`](#ak-frame)** handles radius, padding, margin, borders, and concentric-radius layout.
+```css
+@theme {
+  --spacing-px: 1px;
 
-Static utilities activate their context, while modifiers configure it. Pair `ak-layer-*`, `ak-state-*`, and `ak-edge-*` with `ak-layer` on the same element; pair `ak-text-*` with `ak-text` on the same descendant; pair `ak-frame-*` with `ak-frame`; and pair `ak-outline-*` with `ak-outline`. `ak-ink-*` is self-contained.
+  --color-canvas: #f5f8f7;
+  --color-primary: #2563eb;
+  --color-warning: #d97706;
 
-Color channel utilities are authored in [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch), so modifiers like `ak-layer-warm-40` or `ak-text-saturate-50` behave predictably across hues. Text contrast is converted to LCH at the final contrast step, and layer mixing can use any supported CSS `color-mix()` interpolation method. Because every value is computed relatively, changing a single theme token ripples through every layer, text, edge, and frame that depends on it, so users can reskin the whole system without breaking contrast, depth, or shape relationships.
+  --radius-card: var(--radius-2xl);
+  --spacing-card: --spacing(4);
 
-### Value scales
+  --radius-field: var(--radius-xl);
+  --spacing-field: --spacing(2);
 
-Bare numeric modifiers use Ariakit's documented authoring scales. For example, lightness and alpha values use `0`–`100`, chroma values use `0`–`40`, and mix amounts use `0`–`100`.
+  --radius-dialog: var(--radius-3xl);
+  --spacing-dialog: --spacing(6);
 
-Arbitrary values and custom properties are raw CSS values. That means percent-style modifiers use normalized `0`–`1` values in arbitrary/custom-property form, even when their bare numeric forms use Ariakit's `0`–`100` or `0`–`40` authoring scales. Use normalized OKLCH channel values like `ak-layer-l-[0.8]`, normalized percent-style values like `ak-layer-warm-[0.4]` or `ak-text-saturate-[0.25]`, raw deltas like `ak-layer-[calc(l+0.1)]`, percentages where CSS expects percentages like `ak-layer-mix-amount-[35%]`, and custom properties that already contain those raw values.
+  --radius-badge: calc(infinity * 1px);
+  --spacing-badge: --spacing(1.5);
+}
+
+:root {
+  color-scheme: light;
+
+  @variant dark {
+    --color-canvas: #0b1110;
+    color-scheme: dark;
+  }
+}
+```
+
+Matching radius and spacing names produce semantic frame shortcuts. For example, `ak-frame-card/card` uses `--radius-card` and `--spacing-card`. The `--spacing-px` token enables compact frame padding such as `ak-frame-field/px`.
+
+This setup follows Tailwind's `dark` variant. For a manual theme toggle, configure that variant to match your root selector or override `--color-canvas` and `color-scheme` on the selector directly.
+
+Use the custom canvas instead of repeating absolute colors:
+
+<!-- prettier-ignore -->
+```diff
+- <body class="ak-layer ak-layer-white dark:ak-layer-gray-950">
++ <body class="ak-layer ak-layer-canvas">
+```
+
+### Advanced theme tokens
+
+Ariakit Tailwind exposes additional tokens beyond `--color-*`, `--radius-*`, and `--spacing-*`:
+
+| Token family | Purpose                                                                                                                                                                                                    | Defaults                                                                                                                                                                                                                                                                                                                                            |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--contrast` | Global contrast preference (`0`–`100`). Utilities like `ak-text` push lightness farther from the layer as `--contrast` grows. Automatically set to `100` by the [`contrast-more`](#accessibility) variant. | `0`                                                                                                                                                                                                                                                                                                                                                 |
+| `--chroma-*` | Named chroma presets for `ak-layer-*`, `ak-text-*`, `ak-edge-*`, `ak-outline-*`, and all `-c-*` / `-max-c-*` / `-min-c-*` utilities.                                                                       | `grayscale` (0), `muted` (0.05), `balanced` (0.15), `vivid` (0.22), `neon` (0.32)                                                                                                                                                                                                                                                                   |
+| `--hue-*`    | Named hue presets (OKLCH degrees) for `-<hue>` / `-h-*` utilities.                                                                                                                                         | Absolute: `red`, `orange`, `yellow`, `green`, `cyan`, `blue`, `magenta`. Relational (relative to current hue): `complementary`, `split1`/`split2`, `analogous1`/`analogous2`, `triadic1`/`triadic2`, `tetradic1`/`tetradic2`/`tetradic3`, `square1`/`square2`/`square3`. `--hue-warm` and `--hue-cool` are used by `-warm-*` / `-cool-*` utilities. |
+| `--mix-*`    | Named `color-mix()` interpolation methods used by `ak-layer-mix-*`.                                                                                                                                        | Every CSS color-mix method, e.g. `oklab`, `oklch`, `lab`, `lch`, `hsl`, `hwb`, `srgb`, `srgb-linear`, `display-p3`, `rec2020`, etc. Hyphen-separated forms like `oklch-shorter-hue` are available via `ak-layer-mix-oklch-shorter-hue`.                                                                                                             |
+
+Override any of these in your own `@theme` block:
+
+```css
+@theme {
+  --contrast: 50;
+  --chroma-balanced: 0.18;
+  --hue-brand: 250;
+  --hue-warm: var(--hue-orange);
+}
+```
 
 ## Mental model
 
@@ -186,19 +203,27 @@ The button starts raised, becomes slightly more exposed on hover, and darkens wh
 
 ### Treat color as a material finish
 
-Lightness usually communicates spatial relationship. Hue, chroma, warmth, and mixing describe the material's pigment, atmosphere, or semantic identity. Changing hue at every nesting level does not create meaningful depth.
+Lightness usually communicates spatial relationship. Hue, chroma, warmth, and mixing describe the material's pigment, atmosphere, or semantic identity. Changing hue at every nesting level does not create meaningful depth, but keeping every material neutral can hide meaning that should be recognizable at a glance.
 
-Use an absolute `ak-layer-<color>` at a deliberate boundary such as the canvas, a primary action, or a warning surface. Use `ak-layer-mix-*` when that pigment should feel tinted by its surrounding material:
+Treat hue as information. Keep most of the scene in one family, then spend stronger colors where identity, status, or priority should survive scanning before someone reads the label. A primary action can carry a concentrated brand color, while a status badge can use a lighter tint of its semantic color so it still belongs to the surrounding scene:
 
 ```html
-<aside
-  class="ak-layer ak-layer-warning ak-layer-mix-15 ak-frame ak-frame-card/card ak-frame-bordering"
->
-  <strong>Pending review</strong>
-</aside>
+<div class="flex items-center gap-2">
+  <button
+    class="ak-layer ak-layer-primary hover:ak-state-lighten-2 active:ak-state-darken-3 ak-frame ak-frame-field/field focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
+  >
+    Deploy now
+  </button>
+
+  <span
+    class="ak-layer ak-layer-warning ak-layer-mix-15 ak-frame ak-frame-badge/badge"
+  >
+    <span class="ak-text ak-text-warning ak-text-25">Needs review</span>
+  </span>
+</div>
 ```
 
-Mixing creates a contextual solid color, not transparency and not another depth level. Hue and chroma adjustments similarly change the finish of the current material.
+These materials do not need borders because pigment, tone, and shape already separate them from the canvas. Mixing creates a contextual solid color, not transparency and not another depth level. Hue and chroma adjustments similarly change the finish of the current material.
 
 Custom gradients, patterns, and textures are also surface paint. Derive them from the resolved layer variables so the visible pixels stay related to the contrast context:
 
@@ -215,7 +240,7 @@ Custom gradients, patterns, and textures are also surface paint. Derive them fro
   --pattern-color: color-mix(
     in oklab,
     var(--ak-layer),
-    var(--ak-layer-parent) 35%
+    var(--ak-layer-parent, canvas) 35%
   );
   background-image: linear-gradient(
     135deg,
@@ -226,21 +251,27 @@ Custom gradients, patterns, and textures are also surface paint. Derive them fro
 }
 ```
 
+A top-level layer has no resolved parent custom property, so the `canvas` fallback keeps its pattern valid. Nested layers still mix with their actual parent.
+
 A custom image or multistop gradient can still vary independently across the surface, so inspect text contrast against its actual pixels.
 
 ### Put content and boundaries on the material
 
 The other utility families describe what belongs to a surface rather than creating more surfaces:
 
-| Feature        | Material role                                                                       |
-| -------------- | ----------------------------------------------------------------------------------- |
-| Normal text    | Inherits the layer's default ink                                                    |
-| `ak-ink-*`     | Changes the strength of neutral writing while preserving a readable contrast floor  |
-| `ak-text-*`    | Applies adaptive colored pigment to a descendant inside a layer                     |
-| `ak-edge-*`    | Configures the seam between the current material and its surroundings               |
-| `ak-outline-*` | Draws an external focus or attention signal                                         |
-| `ak-frame-*`   | Defines the material's silhouette, inset, border thickness, and concentric geometry |
-| `ak-state-*`   | Changes the current material temporarily in response to interaction                 |
+| Feature                       | Material role                                                                       |
+| ----------------------------- | ----------------------------------------------------------------------------------- |
+| Normal text                   | Inherits the layer's default ink                                                    |
+| [`ak-ink-*`](#ak-ink)         | Changes the strength of neutral writing while preserving a readable contrast floor  |
+| [`ak-text-*`](#ak-text)       | Applies adaptive colored pigment to a descendant inside a layer                     |
+| [`ak-edge-*`](#ak-edge)       | Configures the seam between the current material and its surroundings               |
+| [`ak-outline-*`](#ak-outline) | Draws an external focus or attention signal                                         |
+| [`ak-frame-*`](#ak-frame)     | Defines the material's silhouette, inset, border thickness, and concentric geometry |
+| [`ak-state-*`](#ak-state)     | Changes the current material temporarily in response to interaction                 |
+
+Static utilities activate their context, while modifiers configure it. Pair `ak-layer-*`, `ak-state-*`, and `ak-edge-*` with `ak-layer` on the same element; pair `ak-text-*` with `ak-text` on the same descendant; pair `ak-frame-*` with `ak-frame`; and pair `ak-outline-*` with `ak-outline`. `ak-ink-*` is self-contained.
+
+Color channel utilities are authored in [OKLCH](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/oklch), so modifiers like `ak-layer-warm-40` or `ak-text-saturate-50` behave predictably across hues. Text contrast is converted to LCH at the final contrast step, and layer mixing can use any supported CSS `color-mix()` interpolation method. Because values are computed relatively, changing one theme token ripples through every material role that depends on it.
 
 Normal text needs no utility. Use `ak-ink-*` for hierarchy and `ak-text` on a descendant when text needs its own adaptive color:
 
@@ -252,49 +283,94 @@ Normal text needs no utility. Use `ak-ink-*` for hierarchy and `ak-text` on a de
 </article>
 ```
 
-A neutral badge can use a semantic edge and adaptive colored text without turning either mark into another layer:
-
-```html
-<span
-  class="ak-layer ak-layer-6 ak-edge-warning ak-edge-35 ak-frame ak-frame-badge/badge ak-frame-bordering"
->
-  <span class="ak-text ak-text-warning ak-text-25">Pending review</span>
-</span>
-```
-
 Do not put `ak-text` on the `ak-layer` element itself. It makes its own background transparent so the ancestor layer can show through.
 
-Use edges where materials meet closely or a control needs a clearer affordance. Avoid outlining every surface. Tonal separation, spacing, and shape should carry most of the hierarchy. `ak-frame-bordering` is a useful adaptive seam because it chooses a border or ring from the parent appearance and the layer's explicit lighten or darken relationship.
+### Let groups share a material
+
+An edge is a seam between materials, not decoration for every control. Add one when an isolated control needs a clearer affordance or two neighboring materials would otherwise merge. When a toolbar reads as one instrument, let the group own the surface and seam while its buttons share that material:
+
+```html
+<div
+  role="toolbar"
+  aria-label="Formatting"
+  class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-field/0.5 ak-frame-bordering inline-flex gap-0.5"
+>
+  <button
+    type="button"
+    class="ak-frame ak-frame-field/0.5 border-0 bg-transparent ak-ink-70 hover:ak-ink-100"
+  >
+    <span class="block px-3 py-1.5">Bold</span>
+  </button>
+  <button
+    type="button"
+    class="ak-frame ak-frame-field/0.5 border-0 bg-transparent ak-ink-70 hover:ak-ink-100"
+  >
+    <span class="block px-3 py-1.5">Italic</span>
+  </button>
+  <button
+    type="button"
+    class="ak-frame ak-frame-field/0.5 border-0 bg-transparent ak-ink-70 hover:ak-ink-100"
+  >
+    <span class="block px-3 py-1.5">Link</span>
+  </button>
+</div>
+```
+
+Repeating a border or ring on every button would fragment the toolbar into unrelated boxes. `ak-frame-bordering` works on the group because its surface has an explicit lighten relationship. With an appearance-aware numeric `ak-layer-*`, choose a fixed `ak-frame-border` or `ak-frame-ring` instead.
+
+Frame padding describes the thickness between a material's silhouette and its contents or a nested surface. A generous inset makes one surface feel contained inside another. A hairline or half-step inset makes adjacent pieces feel cut from the same control, which can make a selected segment sit precisely inside a recessed track:
+
+```html
+<div
+  role="group"
+  aria-label="Period"
+  class="ak-layer ak-layer-darken-3 ak-frame ak-frame-field/px inline-flex"
+>
+  <button
+    type="button"
+    aria-pressed="false"
+    class="ak-frame ak-frame-field/0.5 border-0 bg-transparent"
+  >
+    <span class="block px-3 py-1.5">Day</span>
+  </button>
+  <button
+    type="button"
+    aria-pressed="true"
+    class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-field/0.5 border-0"
+  >
+    <span class="block px-3 py-1.5">Week</span>
+  </button>
+  <button
+    type="button"
+    aria-pressed="false"
+    class="ak-frame ak-frame-field/0.5 border-0 bg-transparent"
+  >
+    <span class="block px-3 py-1.5">Month</span>
+  </button>
+</div>
+```
+
+The one-pixel track inset and half-step child insets create a crisp nested silhouette, while the inner spans preserve comfortable hit areas. The track and selected segment are the only distinct materials.
 
 ### Give isolated components their own shape
 
-Every isolated card, control, popover, dialog, and badge should declare a non-zero radius by default. An isolated `ak-frame` has a zero declared radius until a radius modifier is applied, while a nested frame may derive an effective concentric radius from its parent. Component recipes should still select a semantic radius and usually its padding:
-
-```css
-@theme {
-  --radius-card: var(--radius-2xl);
-  --spacing-card: --spacing(4);
-
-  --radius-field: var(--radius-xl);
-  --spacing-field: --spacing(2);
-
-  --radius-dialog: var(--radius-3xl);
-  --spacing-dialog: --spacing(6);
-
-  --radius-badge: calc(infinity * 1px);
-  --spacing-badge: --spacing(1.5);
-}
-```
+Every isolated card, control, popover, dialog, and badge should declare a non-zero radius by default. An isolated `ak-frame` has a zero declared radius until a radius modifier is applied, while a nested frame may derive an effective concentric radius from its parent. Define semantic radius and padding pairs in the [theme](#theming), then select them in component recipes:
 
 ```html
 <article class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-card/card">
   ...
 </article>
-<button class="ak-layer ak-layer-6 ak-frame ak-frame-field/field">...</button>
+<button class="ak-layer ak-layer-primary ak-frame ak-frame-field/field">
+  Primary action
+</button>
 <div class="ak-layer ak-layer-lighten-6 ak-frame ak-frame-dialog/dialog">
   Dialog
 </div>
-<span class="ak-layer ak-layer-6 ak-frame ak-frame-badge/badge">Badge</span>
+<span
+  class="ak-layer ak-layer-warning ak-layer-mix-15 ak-frame ak-frame-badge/badge"
+>
+  Badge
+</span>
 ```
 
 These recipes own their shapes even when rendered without a parent frame. When frames are nested, Ariakit reconciles their effective radii with the parent's radius, padding, and border plus the child's frame margin so nearby corners remain concentric.
@@ -314,6 +390,12 @@ Local square corners are still appropriate when geometry is intentionally attach
 
 Frame padding and borders participate in concentric geometry. Use `ak-frame-p-*`, the combined `ak-frame-<radius>/<padding>` form, and `ak-frame-border`, `ak-frame-ring`, or `ak-frame-bordering` for component chrome. Do not override frame padding with `p-*`, `px-*`, or `py-*` on the same element. Put asymmetric layout spacing on an inner wrapper instead.
 
+### Read utility values
+
+Bare numeric modifiers use Ariakit's documented authoring scales. For example, lightness and alpha values use `0`–`100`, chroma values use `0`–`40`, and mix amounts use `0`–`100`.
+
+Arbitrary values and custom properties are raw CSS values. Percent-style modifiers use normalized `0`–`1` values in arbitrary or custom-property form, even when their bare numeric forms use Ariakit's `0`–`100` or `0`–`40` authoring scales. Use normalized OKLCH channel values like `ak-layer-l-[0.8]`, normalized percent-style values like `ak-layer-warm-[0.4]` or `ak-text-saturate-[0.25]`, raw deltas like `ak-layer-[calc(l+0.1)]`, percentages where CSS expects them like `ak-layer-mix-amount-[35%]`, and custom properties that already contain those raw values.
+
 ### Judge the whole scene
 
 Accessibility math protects contrast, not taste. Before shipping, inspect the complete scene and ask:
@@ -321,71 +403,15 @@ Accessibility math protects contrast, not taste. Before shipping, inspect the co
 - Can every layer be described as the canvas, raised, recessed, appearance-aware separation, semantic material, or interactive material?
 - Does removing any layer make the hierarchy clearer?
 - Do raised and recessed relationships remain coherent when only the canvas changes between light and dark?
+- Do hue choices make identity, status, and priority easier to scan without turning every surface into an accent?
 - Do hover, active, selected, focus, and disabled states change the existing material with a clear purpose?
+- Can a group own one surface and seam instead of bordering every control?
+- Would a hairline or half-step frame inset describe a nested relationship better than another roomy box?
 - Do isolated component recipes remain intentionally rounded, and can a square theme be achieved by changing shared tokens only?
 - Do nested corners and adaptive edges describe the intended material boundaries?
 - Does the composition remain coherent in [`contrast-more`](#accessibility), inside another semantic layer, and across supported browsers?
 
 Package contributors should use the existing light, dark, and high-contrast computed-style snapshot matrix. That sandbox deliberately exercises many utilities at once and is a behavior test, not an aesthetic example.
-
-## Theming
-
-Ariakit Tailwind integrates directly with Tailwind's theming system. Every `--color-*`, `--radius-*`, and `--spacing-*` token in your `@theme` block becomes available to the matching Ariakit utilities.
-
-```css
-@theme {
-  /* Any --color-* token can be used in ak-layer, ak-text, ak-edge, ak-outline */
-  --color-canvas: #f1f1f1;
-  --color-primary: #2563eb;
-  --color-warning: #d97706;
-
-  /* Any --radius-* / --spacing-* token can be used in ak-frame.
-   * Sharing names lets you reference both sides with a single modifier:
-   * ak-frame-field/field applies --radius-field AND --spacing-field. */
-  --radius-field: var(--radius-xl);
-  --spacing-field: --spacing(2);
-
-  --radius-card: var(--radius-2xl);
-  --spacing-card: --spacing(4);
-}
-
-/* Theme overrides per variant */
-:root {
-  @variant dark {
-    --color-canvas: #0b1110;
-  }
-}
-```
-
-With the theme above, you can use your custom colors anywhere Ariakit expects a color:
-
-<!-- prettier-ignore -->
-```diff
-- <body class="ak-layer ak-layer-white dark:ak-layer-gray-950">
-+ <body class="ak-layer ak-layer-canvas">
-```
-
-### Advanced theme tokens
-
-Ariakit Tailwind exposes additional tokens beyond `--color-*`, `--radius-*`, and `--spacing-*`:
-
-| Token family | Purpose                                                                                                                                                                                               | Defaults                                                                                                                                                                                                                                                                                                                                            |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `--contrast` | Global contrast preference (`0`–`100`). Utilities like `ak-text` push lightness farther from the layer as `--contrast` grows. Automatically set to `100` by the [`contrast-more`](#variants) variant. | `0`                                                                                                                                                                                                                                                                                                                                                 |
-| `--chroma-*` | Named chroma presets for `ak-layer-*`, `ak-text-*`, `ak-edge-*`, `ak-outline-*`, and all `-c-*` / `-max-c-*` / `-min-c-*` utilities.                                                                  | `grayscale` (0), `muted` (0.05), `balanced` (0.15), `vivid` (0.22), `neon` (0.32)                                                                                                                                                                                                                                                                   |
-| `--hue-*`    | Named hue presets (OKLCH degrees) for `-<hue>` / `-h-*` utilities.                                                                                                                                    | Absolute: `red`, `orange`, `yellow`, `green`, `cyan`, `blue`, `magenta`. Relational (relative to current hue): `complementary`, `split1`/`split2`, `analogous1`/`analogous2`, `triadic1`/`triadic2`, `tetradic1`/`tetradic2`/`tetradic3`, `square1`/`square2`/`square3`. `--hue-warm` and `--hue-cool` are used by `-warm-*` / `-cool-*` utilities. |
-| `--mix-*`    | Named `color-mix()` interpolation methods used by `ak-layer-mix-*`.                                                                                                                                   | Every CSS color-mix method, e.g. `oklab`, `oklch`, `lab`, `lch`, `hsl`, `hwb`, `srgb`, `srgb-linear`, `display-p3`, `rec2020`, etc. Hyphen-separated forms like `oklch-shorter-hue` are available via `ak-layer-mix-oklch-shorter-hue`.                                                                                                             |
-
-Override any of these in your own `@theme` block:
-
-```css
-@theme {
-  --contrast: 50;
-  --chroma-balanced: 0.18;
-  --hue-brand: 250;
-  --hue-warm: var(--hue-orange);
-}
-```
 
 ---
 
@@ -416,7 +442,7 @@ A layer automatically sets border and ring colors through the shared `--ak-edge`
 
 Use [`ak-edge`](#ak-edge) to fine-tune border and ring colors without touching the layer background.
 
-Custom backgrounds can read the resolved `--ak-layer` and `--ak-layer-parent` colors. See [Treat color as a material finish](#treat-color-as-a-material-finish) for patterns that stay related to their contrast context.
+Custom backgrounds can read the resolved `--ak-layer` color and `var(--ak-layer-parent, canvas)`. See [Treat color as a material finish](#treat-color-as-a-material-finish) for patterns that stay related to their contrast context.
 
 ### Setting the layer color
 
@@ -508,7 +534,7 @@ The static `ak-layer` class must be applied to the same element as `ak-state-*`.
 
 ## `ak-ink`
 
-Controls the opacity of text inside a layer — useful for secondary text, captions, and disabled states. It only sets text color, so it works either on the same element as [`ak-layer`](#ak-layer) (styling the layer's own text) or on a descendant element.
+Controls the opacity of text inside a layer, which is useful for secondary text, captions, and disabled states. It only sets text color, so it works either on the same element as [`ak-layer`](#ak-layer) (styling the layer's own text) or on a descendant element.
 
 ```html
 <div class="ak-layer ak-layer-canvas ak-ink-70">
@@ -597,7 +623,7 @@ Normal text should inherit the layer's text color without an extra utility. Use 
 | `ak-edge-color-<color>` | Explicit color-only alias. Useful for custom properties (`ak-edge-color-(--edge-color)`).                                                                     |
 | `ak-edge-<chroma>`      | Sets chroma from a named preset.                                                                                                                              |
 | `ak-edge-<hue>`         | Sets hue from a named preset.                                                                                                                                 |
-| `ak-edge-raw`           | Applies the color exactly as specified — shorthand for `ak-edge-100` + `ak-edge-push-0`.                                                                      |
+| `ak-edge-raw`           | Applies the color exactly as specified, a shorthand for `ak-edge-100` + `ak-edge-push-0`.                                                                     |
 | `ak-edge-inherit`       | Uses the edge from the nearest ancestor that explicitly sets a frame border, ring, or bordering width; falls back to the current layer edge when none exists. |
 
 ### Adjustments
@@ -688,7 +714,7 @@ Use `ak-frame-p-*` or the combined `ak-frame-<radius>/<padding>` form when paddi
 ```html
 <!-- radius 2xl, padding 1 -->
 <div class="ak-frame ak-frame-2xl/1">
-  <!-- nested child — radius adjusted to be concentric with the parent, padding 4 -->
+  <!-- nested child, radius adjusted to be concentric with the parent, padding 4 -->
   <div class="ak-frame ak-frame-2xl/4"></div>
 </div>
 ```
@@ -697,7 +723,7 @@ Use `ak-frame-p-*` or the combined `ak-frame-<radius>/<padding>` form when paddi
 > Border widths affect radius math. Always use `ak-frame-border` instead of Tailwind's `border` utility so concentric radii stay correct:
 >
 > ```html
-> <!-- ❌ — Tailwind border isn't factored into the radius calculation -->
+> <!-- ❌: Tailwind border isn't factored into the radius calculation -->
 > <div class="ak-frame ak-frame-xl/1 border">Border</div>
 >
 > <!-- ✅ -->
