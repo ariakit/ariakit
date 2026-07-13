@@ -68,8 +68,7 @@ export const useCommand = createHook<TagName, CommandOptions>(
     const [isNativeButton, setIsNativeButton] = useState(false);
     const type = props.type;
 
-    useEffect(() => {
-      const element = ref.current;
+    const nativeButtonRef = useEvent((element: HTMLType | null) => {
       if (!element) return;
       const nativeButton = isButton(element);
       // React 19's useFormStatus relies on the post-mount render below for
@@ -77,8 +76,11 @@ export const useCommand = createHook<TagName, CommandOptions>(
       // same type that Command would apply, so updating state would only
       // schedule a redundant render.
       if (nativeButton && element.type === "button") return;
+      if (nativeButton === isNativeButton) return;
       setIsNativeButton(nativeButton);
-    }, [type]);
+    });
+
+    useEffect(() => nativeButtonRef(ref.current), [type, nativeButtonRef]);
 
     const [active, setActive] = useState(false);
     const activeRef = useRef(false);
@@ -208,7 +210,7 @@ export const useCommand = createHook<TagName, CommandOptions>(
       type: isNativeButton ? "button" : undefined,
       ...metadataProps,
       ...props,
-      ref: useMergeRefs(ref, props.ref),
+      ref: useMergeRefs(ref, nativeButtonRef, props.ref),
       onKeyDown,
       onKeyUp,
       onBlur,
