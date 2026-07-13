@@ -5,20 +5,33 @@ import { renderToString } from "react-dom/server";
 import { expect, test, vi } from "vitest";
 import { TypeFixture } from "./index.react.tsx";
 
+function expectSharedButtonTypes(query: ReturnType<typeof q.within>) {
+  expect(query.tab("Default tab")).toHaveAttribute("type", "button");
+  expect(query.tab("Submit tab")).toHaveAttribute("type", "submit");
+  expect(query.tab("Reset tab")).toHaveAttribute("type", "reset");
+  expect(query.tab("Div tab")).not.toHaveAttribute("type");
+  expect(query.tab("Hook tab")).not.toHaveAttribute("type");
+  expect(query.button("Input command")).toHaveAttribute("type", "submit");
+  expect(query.button("Default command")).toHaveAttribute("type", "button");
+  expect(query.button("Default button")).toHaveAttribute("type", "button");
+  expect(query.button("Submit button")).toHaveAttribute("type", "submit");
+  expect(query.button("Reset button")).toHaveAttribute("type", "reset");
+  expect(query.button("Toolbar item")).toHaveAttribute("type", "button");
+}
+
+function expectServerButtonTypes(query: ReturnType<typeof q.within>) {
+  expectSharedButtonTypes(query);
+  expect(query.text("Div button")).not.toHaveAttribute("type");
+}
+
+function expectNativeButtonTypes(query: ReturnType<typeof q.within>) {
+  expectSharedButtonTypes(query);
+  expect(query.tab("Button tab")).toHaveAttribute("type", "button");
+  expect(query.button("Div button")).not.toHaveAttribute("type");
+}
+
 test("declares native button types before refs run", () => {
-  expect(q.tab("Default tab")).toHaveAttribute("type", "button");
-  expect(q.tab("Submit tab")).toHaveAttribute("type", "submit");
-  expect(q.tab("Reset tab")).toHaveAttribute("type", "reset");
-  expect(q.tab("Button tab")).toHaveAttribute("type", "button");
-  expect(q.tab("Div tab")).not.toHaveAttribute("type");
-  expect(q.tab("Hook tab")).not.toHaveAttribute("type");
-  expect(q.button("Input command")).toHaveAttribute("type", "submit");
-  expect(q.button("Default command")).toHaveAttribute("type", "button");
-  expect(q.button("Default button")).toHaveAttribute("type", "button");
-  expect(q.button("Submit button")).toHaveAttribute("type", "submit");
-  expect(q.button("Reset button")).toHaveAttribute("type", "reset");
-  expect(q.text("Div button")).not.toHaveAttribute("type");
-  expect(q.button("Toolbar item")).toHaveAttribute("type", "button");
+  expectNativeButtonTypes(q);
   expect(q.status("Default button ref type")).toHaveTextContent("button");
   expect(q.status("Default command ref type")).toHaveTextContent("button");
   expect(q.status("Default tab ref type")).toHaveTextContent("button");
@@ -31,7 +44,7 @@ test("preserves custom element semantics", () => {
   expect(q.link("Disabled anchor")).not.toHaveAttribute("disabled");
   expect(q.button("Disabled button")).toHaveAttribute("disabled");
 
-  const nestedMenuButton = document.querySelector("#nested-menu-button");
+  const nestedMenuButton = q.menuitem("Nested menu");
   expect(nestedMenuButton).toHaveProperty("tagName", "DIV");
   expect(nestedMenuButton).not.toHaveAttribute("type");
 });
@@ -74,78 +87,15 @@ test("server markup and hydration use the same native button type", async () => 
     consoleError.mockClear();
     document.body.appendChild(container);
 
-    expect(container.querySelector("#default-tab")).toHaveAttribute(
-      "type",
-      "button",
-    );
-    expect(container.querySelector("#submit-tab")).toHaveAttribute(
-      "type",
-      "submit",
-    );
-    expect(container.querySelector("#div-tab")).not.toHaveAttribute("type");
-    expect(
-      container.querySelector('input[value="Input command"]'),
-    ).toHaveAttribute("type", "submit");
-    expect(container.querySelector("#default-command")).toHaveAttribute(
-      "type",
-      "button",
-    );
-    expect(container.querySelector("#default-button")).toHaveAttribute(
-      "type",
-      "button",
-    );
-    expect(container.querySelector("#submit-button")).toHaveAttribute(
-      "type",
-      "submit",
-    );
-    expect(container.querySelector("#reset-button")).toHaveAttribute(
-      "type",
-      "reset",
-    );
-    expect(container.querySelector("#div-button")).not.toHaveAttribute("type");
-    expect(container.querySelector("#toolbar-item")).toHaveAttribute(
-      "type",
-      "button",
-    );
+    const containerQuery = q.within(container);
+    expectServerButtonTypes(containerQuery);
 
     await act(async () => {
       root = hydrateRoot(container, element);
     });
     expect(consoleError).not.toHaveBeenCalled();
 
-    expect(container.querySelector("#default-tab")).toHaveAttribute(
-      "type",
-      "button",
-    );
-    expect(container.querySelector("#submit-tab")).toHaveAttribute(
-      "type",
-      "submit",
-    );
-    expect(container.querySelector("#div-tab")).not.toHaveAttribute("type");
-    expect(
-      container.querySelector('input[value="Input command"]'),
-    ).toHaveAttribute("type", "submit");
-    expect(container.querySelector("#default-command")).toHaveAttribute(
-      "type",
-      "button",
-    );
-    expect(container.querySelector("#default-button")).toHaveAttribute(
-      "type",
-      "button",
-    );
-    expect(container.querySelector("#submit-button")).toHaveAttribute(
-      "type",
-      "submit",
-    );
-    expect(container.querySelector("#reset-button")).toHaveAttribute(
-      "type",
-      "reset",
-    );
-    expect(container.querySelector("#div-button")).not.toHaveAttribute("type");
-    expect(container.querySelector("#toolbar-item")).toHaveAttribute(
-      "type",
-      "button",
-    );
+    expectNativeButtonTypes(containerQuery);
   } finally {
     consoleError.mockRestore();
     if (root) {

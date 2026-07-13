@@ -12,7 +12,7 @@ const CustomButton = forwardRef<
 });
 
 function HookTab() {
-  const props = useTab<"div">({ id: "hook-tab" });
+  const props = useTab<"div">();
   return createElement(Ariakit.Role, props, "Hook tab");
 }
 
@@ -82,9 +82,7 @@ function NestedMenuFixture() {
       <Ariakit.MenuButton>Root menu</Ariakit.MenuButton>
       <Ariakit.Menu alwaysVisible>
         <Ariakit.MenuProvider>
-          <Ariakit.MenuButton id="nested-menu-button">
-            Nested menu
-          </Ariakit.MenuButton>
+          <Ariakit.MenuButton>Nested menu</Ariakit.MenuButton>
         </Ariakit.MenuProvider>
       </Ariakit.Menu>
     </Ariakit.MenuProvider>
@@ -98,46 +96,30 @@ export function TypeFixture({
   toolbarItemRef,
 }: TypeFixtureProps) {
   return (
-    <TabProvider defaultSelectedId="default-tab">
+    <TabProvider>
       <Ariakit.TabList aria-label="Types">
-        <Ariakit.Tab id="default-tab" ref={tabRef}>
-          Default tab
-        </Ariakit.Tab>
-        <Ariakit.Tab id="submit-tab" render={<button type="submit" />}>
-          Submit tab
-        </Ariakit.Tab>
-        <Ariakit.Tab id="reset-tab" render={<CustomButton type="reset" />}>
+        <Ariakit.Tab ref={tabRef}>Default tab</Ariakit.Tab>
+        <Ariakit.Tab render={<button type="submit" />}>Submit tab</Ariakit.Tab>
+        <Ariakit.Tab render={<CustomButton type="reset" />}>
           Reset tab
         </Ariakit.Tab>
-        <Ariakit.Tab id="div-tab" render={<div />}>
-          Div tab
-        </Ariakit.Tab>
-        <Ariakit.Tab id="button-tab" render={<button />}>
-          Button tab
-        </Ariakit.Tab>
+        <Ariakit.Tab render={<div />}>Div tab</Ariakit.Tab>
+        <Ariakit.Tab render={<button />}>Button tab</Ariakit.Tab>
         <HookTab />
       </Ariakit.TabList>
       <Ariakit.Command
         aria-label="Input command"
         render={<input type="submit" value="Input command" />}
       />
-      <Ariakit.Command id="default-command" ref={commandRef}>
-        Default command
-      </Ariakit.Command>
-      <Ariakit.Button id="default-button" ref={buttonRef}>
-        Default button
-      </Ariakit.Button>
-      <Ariakit.Button id="submit-button" type="submit">
-        Submit button
-      </Ariakit.Button>
-      <Ariakit.Button id="reset-button" render={<CustomButton type="reset" />}>
+      <Ariakit.Command ref={commandRef}>Default command</Ariakit.Command>
+      <Ariakit.Button ref={buttonRef}>Default button</Ariakit.Button>
+      <Ariakit.Button type="submit">Submit button</Ariakit.Button>
+      <Ariakit.Button render={<CustomButton type="reset" />}>
         Reset button
       </Ariakit.Button>
-      <Ariakit.Button id="div-button" render={<div />}>
-        Div button
-      </Ariakit.Button>
+      <Ariakit.Button render={<div />}>Div button</Ariakit.Button>
       <Ariakit.Toolbar>
-        <Ariakit.ToolbarItem id="toolbar-item" ref={toolbarItemRef}>
+        <Ariakit.ToolbarItem ref={toolbarItemRef}>
           Toolbar item
         </Ariakit.ToolbarItem>
       </Ariakit.Toolbar>

@@ -23,7 +23,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test
       .expect(q.button("Reset button"))
       .toHaveAttribute("type", "reset");
-    await test.expect(q.text("Div button")).not.toHaveAttribute("type");
+    await test.expect(q.button("Div button")).not.toHaveAttribute("type");
     await test
       .expect(q.button("Toolbar item"))
       .toHaveAttribute("type", "button");
@@ -35,7 +35,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.status("Toolbar item ref type")).toHaveText("button");
   });
 
-  test("preserves custom element semantics", async ({ page, q }) => {
+  test("preserves custom element semantics", async ({ q }) => {
     await test.expect(q.text("Focusable div")).toHaveAttribute("tabindex", "0");
     await test
       .expect(q.link("Disabled anchor"))
@@ -45,7 +45,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .not.toHaveAttribute("disabled");
     await test.expect(q.button("Disabled button")).toBeDisabled();
 
-    const nestedMenuButton = page.locator("#nested-menu-button");
+    const nestedMenuButton = q.menuitem("Nested menu");
     await test.expect(nestedMenuButton).toHaveJSProperty("tagName", "DIV");
     await test.expect(nestedMenuButton).not.toHaveAttribute("type");
   });
