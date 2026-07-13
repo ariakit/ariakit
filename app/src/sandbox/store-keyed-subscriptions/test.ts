@@ -136,3 +136,31 @@ test("runs selectors only for subscribed keys", async () => {
   await click(q.button("Update foo"));
   expect(q.status("Optional value")).toHaveTextContent("2");
 });
+
+test("updates dynamic selector dependencies", async () => {
+  const selectorValue = q.status("Dynamic selector value");
+  const objectValue = q.status("Dynamic object selector value");
+
+  expect(selectorValue).toHaveTextContent("foo:0");
+  expect(objectValue).toHaveTextContent("foo:0");
+
+  await click(q.button("Update bar"));
+
+  expect(selectorValue).toHaveTextContent("foo:0");
+  expect(objectValue).toHaveTextContent("foo:0");
+
+  await click(q.button("Subscribe to bar"));
+
+  expect(selectorValue).toHaveTextContent("bar:1");
+  expect(objectValue).toHaveTextContent("bar:1");
+
+  await click(q.button("Update foo"));
+
+  expect(selectorValue).toHaveTextContent("bar:1");
+  expect(objectValue).toHaveTextContent("bar:1");
+
+  await click(q.button("Update bar"));
+
+  expect(selectorValue).toHaveTextContent("bar:2");
+  expect(objectValue).toHaveTextContent("bar:2");
+});

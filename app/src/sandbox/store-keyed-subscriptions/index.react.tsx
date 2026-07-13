@@ -134,10 +134,42 @@ function DirectValues({ store }: StoreProps) {
   );
 }
 
+function DynamicSelectors({ store }: StoreProps) {
+  const [key, setKey] = useState<keyof TestState>("foo");
+  const value = useStoreState(store, [key], (state) => state[key]);
+  const object = useStoreStateObject(store, [key], {
+    value: (state) => state[key],
+  });
+
+  return (
+    <>
+      <button type="button" onClick={() => setKey("bar")}>
+        Subscribe to bar
+      </button>
+      <p>
+        Dynamic selector value:{" "}
+        <output aria-label="Dynamic selector value">
+          {key}:{value}
+        </output>
+      </p>
+      <p>
+        Dynamic object selector value:{" "}
+        <output aria-label="Dynamic object selector value">
+          {key}:{object.value}
+        </output>
+      </p>
+    </>
+  );
+}
+
 function Controls({ store, calls }: SelectorProps) {
+  const [hydrated, setHydrated] = useState(false);
   const [, forceUpdate] = useReducer((count: number) => count + 1, 0);
 
-  useEffect(() => forceUpdate(), []);
+  useEffect(() => setHydrated(true), []);
+
+  const getCallCount = (key: keyof SelectorCalls) =>
+    hydrated ? calls[key] : 0;
 
   const update = (key: keyof TestState) => {
     store.setState(key, (value) => value + 1);
@@ -154,24 +186,32 @@ function Controls({ store, calls }: SelectorProps) {
       </button>
       <p>
         useStoreState calls:{" "}
-        <output aria-label="useStoreState calls">{calls.state}</output>
+        <output aria-label="useStoreState calls">
+          {getCallCount("state")}
+        </output>
       </p>
       <p>
         useStoreStateObject calls:{" "}
-        <output aria-label="useStoreStateObject calls">{calls.object}</output>
+        <output aria-label="useStoreStateObject calls">
+          {getCallCount("object")}
+        </output>
       </p>
       <p>
         Unkeyed selector calls:{" "}
-        <output aria-label="Unkeyed selector calls">{calls.unkeyed}</output>
+        <output aria-label="Unkeyed selector calls">
+          {getCallCount("unkeyed")}
+        </output>
       </p>
       <p>
         Empty selector calls:{" "}
-        <output aria-label="Empty selector calls">{calls.empty}</output>
+        <output aria-label="Empty selector calls">
+          {getCallCount("empty")}
+        </output>
       </p>
       <p>
         Empty object selector calls:{" "}
         <output aria-label="Empty object selector calls">
-          {calls.emptyObject}
+          {getCallCount("emptyObject")}
         </output>
       </p>
     </>
@@ -196,6 +236,7 @@ export default function Example() {
       <EmptyObjectSelector store={store} calls={calls.current} />
       <DirectValues store={store} />
       <MixedValues store={store} />
+      <DynamicSelectors store={store} />
       <OptionalSelector store={store} />
       <Controls store={store} calls={calls.current} />
     </>
