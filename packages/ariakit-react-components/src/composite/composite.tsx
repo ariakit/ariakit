@@ -259,14 +259,15 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     );
 
     const virtualFocus = useStoreState(store, "virtualFocus");
-    // Only track the activeId state when virtual focus is enabled. It's used
-    // solely by the effect below, which is a no-op otherwise, so this avoids
-    // re-rendering the composite component on every active item change when
-    // moving through items with roving tabindex.
+    // Only track the activeId state when composite and virtual focus are
+    // enabled. It's shared by the effect below and aria-activedescendant, both
+    // of which are no-ops otherwise, so this avoids re-rendering the composite
+    // component on every active item change when moving through items with
+    // roving tabindex.
     const activeId = useStoreState(
       store,
-      virtualFocus ? ["activeId"] : [],
-      (state) => (virtualFocus ? state.activeId : null),
+      composite && virtualFocus ? ["activeId"] : [],
+      (state) => (composite && virtualFocus ? state.activeId : null),
     );
 
     // At this point, if the activeId has changed and we still have a
@@ -503,12 +504,12 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const activeDescendant = useStoreState(
       store,
-      composite && virtualFocus ? ["activeId", "items"] : [],
-      (state) => {
+      composite && virtualFocus ? ["items"] : [],
+      () => {
         if (!store) return;
         if (!composite) return;
         if (!virtualFocus) return;
-        return getEnabledItem(store, state.activeId)?.id;
+        return getEnabledItem(store, activeId)?.id;
       },
     );
 
