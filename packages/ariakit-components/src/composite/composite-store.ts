@@ -69,7 +69,7 @@ function getItemsInRow(items: CompositeStoreItem[], rowId?: string) {
   return items.filter((item) => item.rowId === rowId);
 }
 
-interface FindEnabledItemIndexParams {
+interface FindEnabledItemParams {
   items: CompositeStoreItem[];
   fromIndex: number;
   /** 1 to scan forward, -1 to scan backward. */
@@ -85,13 +85,31 @@ function findItemIndex(items: CompositeStoreItem[], id: string) {
   return items.findIndex((item) => item.id === id);
 }
 
+function findEnabledItemId({
+  items,
+  fromIndex,
+  step,
+  rowId,
+  excludeId,
+}: FindEnabledItemParams) {
+  for (let i = fromIndex; i >= 0 && i < items.length; i += step) {
+    const item = items[i];
+    if (!item) continue;
+    if (item.rowId !== rowId) continue;
+    if (item.disabled) continue;
+    if (excludeId != null && item.id === excludeId) continue;
+    return item.id;
+  }
+  return undefined;
+}
+
 function findEnabledItemIndex({
   items,
   fromIndex,
   step,
   rowId,
   excludeId,
-}: FindEnabledItemIndexParams) {
+}: FindEnabledItemParams) {
   for (let i = fromIndex; i >= 0 && i < items.length; i += step) {
     const item = items[i];
     if (!item) continue;
@@ -390,6 +408,29 @@ export function createCompositeStore<
         const activeItem = renderedItems[activeIndex];
         if (activeItem) {
           const step: 1 | -1 = canReverse ? -1 : 1;
+          if (!canCache) {
+            const nextId = findEnabledItemId({
+              items: renderedItems,
+              fromIndex: activeIndex + step,
+              step,
+              rowId: activeItem.rowId,
+              excludeId: activeId,
+            });
+            if (nextId !== undefined) return nextId;
+            const canLoop =
+              focusLoop &&
+              (isVerticalDirection
+                ? focusLoop !== "horizontal"
+                : focusLoop !== "vertical");
+            if (!canLoop) return undefined;
+            return findEnabledItemId({
+              items: renderedItems,
+              fromIndex: step === 1 ? 0 : renderedItems.length - 1,
+              step,
+              rowId: activeItem.rowId,
+              excludeId: activeId,
+            });
+          }
           const nextIndex = findEnabledItemIndex({
             items: renderedItems,
             fromIndex: activeIndex + step,
@@ -398,9 +439,7 @@ export function createCompositeStore<
             excludeId: activeId,
           });
           if (nextIndex !== undefined) {
-            if (canCache) {
-              cachedItemIndex = nextIndex;
-            }
+            cachedItemIndex = nextIndex;
             return renderedItems[nextIndex]?.id;
           }
           const canLoop =
@@ -420,9 +459,7 @@ export function createCompositeStore<
             excludeId: activeId,
           });
           if (loopIndex !== undefined) {
-            if (canCache) {
-              cachedItemIndex = loopIndex;
-            }
+            cachedItemIndex = loopIndex;
             return renderedItems[loopIndex]?.id;
           }
           return undefined;
