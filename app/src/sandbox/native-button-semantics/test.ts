@@ -1,4 +1,4 @@
-import { click, q } from "@ariakit/test";
+import { click, focus, press, q } from "@ariakit/test";
 import { act, createElement } from "react";
 import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
@@ -58,6 +58,16 @@ test("updates custom focusability", async () => {
 
   await click(q.button("Toggle focusable"));
   expect(focusable).toHaveAttribute("tabindex", "0");
+});
+
+test("clears submit focus visibility when focusable is disabled", async () => {
+  const button = q.button("Submit focus target");
+  await focus(button);
+  await press("a");
+  expect(button).toHaveAttribute("data-focus-visible", "true");
+
+  await press("f");
+  expect(button).not.toHaveAttribute("data-focus-visible");
 });
 
 test("server markup and hydration use the same native button type", async () => {

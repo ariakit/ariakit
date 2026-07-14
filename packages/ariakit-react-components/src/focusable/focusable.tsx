@@ -243,12 +243,11 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       element?.removeAttribute("data-focus-visible");
     });
 
-    // When the focusable element is disabled, it doesn't trigger a blur event
-    // so we can't set focusVisible to false there. Instead, we have to do it
-    // here by checking the element's disabled attribute.
+    // When the focusable element is disabled, it doesn't trigger a blur event,
+    // and turning focusable off disables the blur handler below. Clear the
+    // internal focus-visible state here in both cases.
     useEffect(() => {
-      if (!focusable) return;
-      if (!trulyDisabled) return;
+      if (focusable && !trulyDisabled) return;
       cleanupFocusVisible(ref.current);
       if (focusVisible) {
         setFocusVisible(false);

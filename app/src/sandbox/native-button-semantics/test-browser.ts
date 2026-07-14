@@ -61,4 +61,17 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Toggle focusable").click();
     await test.expect(focusable).toHaveAttribute("tabindex", "0");
   });
+
+  test("clears submit focus visibility when focusable is disabled", async ({
+    page,
+    q,
+  }) => {
+    const button = q.button("Submit focus target");
+    await button.focus();
+    await page.keyboard.press("a");
+    await test.expect(button).toHaveAttribute("data-focus-visible", "true");
+
+    await page.keyboard.press("f");
+    await test.expect(button).not.toHaveAttribute("data-focus-visible");
+  });
 });

@@ -108,6 +108,22 @@ function useObservedType() {
   return [type, ref] as const;
 }
 
+function SubmitFocusFixture() {
+  const [focusable, setFocusable] = useState(true);
+  return (
+    <Ariakit.Button
+      focusable={focusable}
+      type="submit"
+      onKeyDown={(event) => {
+        if (event.key !== "f") return;
+        setFocusable(false);
+      }}
+    >
+      Submit focus target
+    </Ariakit.Button>
+  );
+}
+
 export default function Example() {
   const [focusable, setFocusable] = useState(true);
   const [buttonType, buttonRef] = useObservedType();
@@ -130,6 +146,7 @@ export default function Example() {
         Toggle focusable
       </button>
       <CapabilityFixture focusable={focusable} />
+      <SubmitFocusFixture />
     </div>
   );
 }
