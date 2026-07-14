@@ -170,10 +170,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const firstValue = q.status("First setter value");
     const secondValue = q.status("Second setter value");
     const nanSetterCalls = q.status("NaN setter calls");
+    const activeSubscriptions = q.status("Active setter subscriptions");
 
     await test.expect(firstValue).toHaveText("none");
     await test.expect(secondValue).toHaveText("none");
     await test.expect(nanSetterCalls).toHaveText("0");
+    await test.expect(activeSubscriptions).toHaveText("0");
 
     await q.button("Enable NaN setter").click();
     await test.expect(nanSetterCalls).toHaveText("0");
@@ -189,21 +191,28 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(secondValue).toHaveText("none");
 
     await q.button("Use first setter").click();
+    await test.expect(activeSubscriptions).toHaveText("1");
+    await test.expect(firstValue).toHaveText("none");
     await q.button("Update foo").click();
     await test.expect(firstValue).toHaveText("2");
     await test.expect(secondValue).toHaveText("none");
 
     await q.button("Use second setter").click();
+    await test.expect(activeSubscriptions).toHaveText("1");
+    await test.expect(secondValue).toHaveText("none");
     await q.button("Update foo").click();
     await test.expect(firstValue).toHaveText("2");
     await test.expect(secondValue).toHaveText("3");
 
     await q.button("Clear setter").click();
+    await test.expect(activeSubscriptions).toHaveText("0");
     await q.button("Update foo").click();
     await test.expect(firstValue).toHaveText("2");
     await test.expect(secondValue).toHaveText("3");
 
     await q.button("Use first setter").click();
+    await test.expect(activeSubscriptions).toHaveText("1");
+    await test.expect(firstValue).toHaveText("2");
     await q.button("Update foo").click();
     await test.expect(firstValue).toHaveText("5");
     await test.expect(secondValue).toHaveText("3");

@@ -35,6 +35,63 @@ interface NaNStoreProps {
   setValue?: SetState<number>;
 }
 
+type StoreListener<S> = (state: S, prevState: S) => void | (() => void);
+type StoreSubscription<S> = (
+  keys: Array<keyof S> | null,
+  listener: StoreListener<S>,
+) => () => void;
+
+interface StoreInternals<S> {
+  subscribe: StoreSubscription<S>;
+  sync: StoreSubscription<S>;
+}
+
+function hasStoreInternals<S>(
+  store: Store<S>,
+): store is Store<S> & { __unstableInternals: StoreInternals<S> } {
+  if (!Object.hasOwn(store, "__unstableInternals")) return false;
+  const internals = Reflect.get(store, "__unstableInternals");
+  if (!internals || typeof internals !== "object") return false;
+  if (typeof Reflect.get(internals, "subscribe") !== "function") return false;
+  return typeof Reflect.get(internals, "sync") === "function";
+}
+
+function observeStoreSubscriptions<S>(store: Store<S>) {
+  if (!hasStoreInternals(store)) {
+    throw new TypeError("Expected an Ariakit store");
+  }
+  const internals = store.__unstableInternals;
+  let activeSubscriptions = 0;
+
+  const observe =
+    (subscribe: StoreSubscription<S>): StoreSubscription<S> =>
+    (keys, listener) => {
+      const unsubscribe = subscribe(keys, listener);
+      activeSubscriptions += 1;
+      let active = true;
+      return () => {
+        if (!active) return;
+        active = false;
+        activeSubscriptions -= 1;
+        unsubscribe();
+      };
+    };
+
+  return [
+    {
+      ...store,
+      __unstableInternals: {
+        ...internals,
+        // Observe both paths so this fails if useStoreProps restores its old
+        // unconditional synchronous listener.
+        subscribe: observe(internals.subscribe),
+        sync: observe(internals.sync),
+      },
+    },
+    () => activeSubscriptions,
+  ] as const;
+}
+
 interface SelectorProps extends StoreProps {
   calls: SelectorCalls;
 }
@@ -225,6 +282,10 @@ function DynamicSelectors({ store }: StoreProps) {
 
 function StorePropsSetter({ store }: StoreProps) {
   const [activeSetter, setActiveSetter] = useState<"first" | "second">();
+  const [[observedStore, getActiveSubscriptions]] = useState(() =>
+    observeStoreSubscriptions(store),
+  );
+  const [activeSubscriptions, setActiveSubscriptions] = useState(0);
   const [firstValue, setFirstValue] = useState(-1);
   const [secondValue, setSecondValue] = useState(-1);
   const [nanStore] = useState(() => createStore({ value: Number.NaN }));
@@ -246,8 +307,12 @@ function StorePropsSetter({ store }: StoreProps) {
     value: nanControlled ? Number.NaN : undefined,
   };
 
-  useStoreProps(store, storeProps, "foo", "setFoo");
+  useStoreProps(observedStore, storeProps, "foo", "setFoo");
   useStoreProps(nanStore, nanStoreProps, "value", "setValue");
+
+  useEffect(() => {
+    setActiveSubscriptions(getActiveSubscriptions());
+  }, [activeSetter, getActiveSubscriptions]);
 
   return (
     <>
@@ -269,6 +334,12 @@ function StorePropsSetter({ store }: StoreProps) {
       <button type="button" onClick={() => setNanControlled(true)}>
         Control NaN value
       </button>
+      <p>
+        Active setter subscriptions:{" "}
+        <output aria-label="Active setter subscriptions">
+          {activeSubscriptions}
+        </output>
+      </p>
       <p>
         First setter value:{" "}
         <output aria-label="First setter value">

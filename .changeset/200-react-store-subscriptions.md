@@ -4,6 +4,4 @@
 "@ariakit/react": patch
 ---
 
-Improved React store subscription performance
-
-Store hooks now avoid registering change listeners when no setter callback is provided. [`DisclosureContent`](https://ariakit.com/reference/disclosure-content) also reads related state through a single keyed subscription, improving navigation performance in widgets powered by [`Composite`](https://ariakit.com/reference/composite), including [`Tab`](https://ariakit.com/reference/tab) components.
+Reduced React store subscription overhead by skipping listeners when setter callbacks are absent and reading four related [`DisclosureContent`](https://ariakit.com/reference/disclosure-content) state values through one subscription, including in [`TabPanel`](https://ariakit.com/reference/tab-panel) and [`Dialog`](https://ariakit.com/reference/dialog) components.
