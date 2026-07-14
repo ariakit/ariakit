@@ -165,4 +165,47 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(selectorValue).toHaveText("paused");
     await test.expect(calls).toHaveText(detachedCalls);
   });
+
+  test("updates the store props setter subscription", async ({ q }) => {
+    const firstValue = q.status("First setter value");
+    const secondValue = q.status("Second setter value");
+    const nanSetterCalls = q.status("NaN setter calls");
+
+    await test.expect(firstValue).toHaveText("none");
+    await test.expect(secondValue).toHaveText("none");
+    await test.expect(nanSetterCalls).toHaveText("0");
+
+    await q.button("Enable NaN setter").click();
+    await test.expect(nanSetterCalls).toHaveText("0");
+
+    await q.button("Update NaN value").click();
+    await test.expect(nanSetterCalls).toHaveText("1");
+
+    await q.button("Control NaN value").click();
+    await test.expect(nanSetterCalls).toHaveText("1");
+
+    await q.button("Update foo").click();
+    await test.expect(firstValue).toHaveText("none");
+    await test.expect(secondValue).toHaveText("none");
+
+    await q.button("Use first setter").click();
+    await q.button("Update foo").click();
+    await test.expect(firstValue).toHaveText("2");
+    await test.expect(secondValue).toHaveText("none");
+
+    await q.button("Use second setter").click();
+    await q.button("Update foo").click();
+    await test.expect(firstValue).toHaveText("2");
+    await test.expect(secondValue).toHaveText("3");
+
+    await q.button("Clear setter").click();
+    await q.button("Update foo").click();
+    await test.expect(firstValue).toHaveText("2");
+    await test.expect(secondValue).toHaveText("3");
+
+    await q.button("Use first setter").click();
+    await q.button("Update foo").click();
+    await test.expect(firstValue).toHaveText("5");
+    await test.expect(secondValue).toHaveText("3");
+  });
 });

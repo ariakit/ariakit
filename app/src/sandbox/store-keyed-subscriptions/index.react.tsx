@@ -1,6 +1,11 @@
-import { useStoreState, useStoreStateObject } from "@ariakit/react-store";
+import {
+  useStoreProps,
+  useStoreState,
+  useStoreStateObject,
+} from "@ariakit/react-store";
 import { createStore } from "@ariakit/store";
 import type { Store } from "@ariakit/store";
+import type { SetState } from "@ariakit/utils";
 import { useEffect, useReducer, useRef, useState } from "react";
 
 interface TestState {
@@ -19,6 +24,15 @@ interface SelectorCalls {
 
 interface StoreProps {
   store: Store<TestState>;
+}
+
+interface StorePropsSetterProps extends Partial<TestState> {
+  setFoo?: SetState<number>;
+}
+
+interface NaNStoreProps {
+  value?: number;
+  setValue?: SetState<number>;
 }
 
 interface SelectorProps extends StoreProps {
@@ -209,6 +223,72 @@ function DynamicSelectors({ store }: StoreProps) {
   );
 }
 
+function StorePropsSetter({ store }: StoreProps) {
+  const [activeSetter, setActiveSetter] = useState<"first" | "second">();
+  const [firstValue, setFirstValue] = useState(-1);
+  const [secondValue, setSecondValue] = useState(-1);
+  const [nanStore] = useState(() => createStore({ value: Number.NaN }));
+  const [nanSetterEnabled, setNanSetterEnabled] = useState(false);
+  const [nanControlled, setNanControlled] = useState(false);
+  const [nanSetterCalls, setNanSetterCalls] = useState(0);
+  const setFoo =
+    activeSetter === "first"
+      ? setFirstValue
+      : activeSetter === "second"
+        ? setSecondValue
+        : undefined;
+  const setNanValue: SetState<number> | undefined = nanSetterEnabled
+    ? () => setNanSetterCalls((calls) => calls + 1)
+    : undefined;
+  const storeProps: StorePropsSetterProps = { setFoo };
+  const nanStoreProps: NaNStoreProps = {
+    setValue: setNanValue,
+    value: nanControlled ? Number.NaN : undefined,
+  };
+
+  useStoreProps(store, storeProps, "foo", "setFoo");
+  useStoreProps(nanStore, nanStoreProps, "value", "setValue");
+
+  return (
+    <>
+      <button type="button" onClick={() => setActiveSetter("first")}>
+        Use first setter
+      </button>
+      <button type="button" onClick={() => setActiveSetter("second")}>
+        Use second setter
+      </button>
+      <button type="button" onClick={() => setActiveSetter(undefined)}>
+        Clear setter
+      </button>
+      <button type="button" onClick={() => setNanSetterEnabled(true)}>
+        Enable NaN setter
+      </button>
+      <button type="button" onClick={() => nanStore.setState("value", 1)}>
+        Update NaN value
+      </button>
+      <button type="button" onClick={() => setNanControlled(true)}>
+        Control NaN value
+      </button>
+      <p>
+        First setter value:{" "}
+        <output aria-label="First setter value">
+          {firstValue < 0 ? "none" : firstValue}
+        </output>
+      </p>
+      <p>
+        Second setter value:{" "}
+        <output aria-label="Second setter value">
+          {secondValue < 0 ? "none" : secondValue}
+        </output>
+      </p>
+      <p>
+        NaN setter calls:{" "}
+        <output aria-label="NaN setter calls">{nanSetterCalls}</output>
+      </p>
+    </>
+  );
+}
+
 function Controls({ store, calls }: SelectorProps) {
   const [hydrated, setHydrated] = useState(false);
   const [, forceUpdate] = useReducer((count: number) => count + 1, 0);
@@ -293,6 +373,7 @@ export default function Example() {
       <MixedValues store={store} />
       <DynamicSelectors store={store} />
       <OptionalSelector store={store} />
+      <StorePropsSetter store={store} />
       <Controls store={store} calls={calls.current} />
     </>
   );

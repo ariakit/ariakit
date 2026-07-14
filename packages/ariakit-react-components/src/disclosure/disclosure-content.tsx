@@ -1,4 +1,4 @@
-import { useStoreState } from "@ariakit/react-store";
+import { useStoreState, useStoreStateObject } from "@ariakit/react-store";
 import {
   useId,
   useMergeRefs,
@@ -122,10 +122,15 @@ export const useDisclosureContent = createHook<
   const ref = useRef<HTMLType>(null);
   const id = useId(props.id);
   const [transition, setTransition] = useState<TransitionState>(null);
-  const open = useStoreState(store, "open");
-  const mounted = useStoreState(store, "mounted");
-  const animated = useStoreState(store, "animated");
-  const contentElement = useStoreState(store, "contentElement");
+  const { open, mounted, animated, contentElement } = useStoreStateObject(
+    store,
+    {
+      open: "open",
+      mounted: "mounted",
+      animated: "animated",
+      contentElement: "contentElement",
+    },
+  );
   const otherElement = useStoreState(store.disclosure, "contentElement");
   const hasClosedRef = useRef(false);
 
