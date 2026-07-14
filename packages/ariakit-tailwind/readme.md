@@ -523,7 +523,7 @@ Custom backgrounds can read the resolved `--ak-layer` color and `var(--ak-layer-
 
 Combine freely: `ak-layer ak-layer-primary ak-layer-mix-30 ak-layer-mix-oklch` mixes the primary color 30% into the parent layer using OKLCH.
 
-The explicit `ak-layer-mix-*` longhands configure the mix color, amount, and method, but don't enable mixing by themselves. Pair them with `ak-layer-mix` when setting any of these values independently.
+The explicit `ak-layer-mix-color-*`, `ak-layer-mix-amount-*`, and `ak-layer-mix-method-*` longhands configure the mix color, amount, and method, but don't enable mixing by themselves. Pair them with `ak-layer-mix` when setting any of these values independently.
 
 ## `ak-state`
 
