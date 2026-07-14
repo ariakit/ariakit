@@ -83,19 +83,28 @@ When the element already has `ak-layer`, only `hover:ak-state-6` needs to be add
 
 Compound contrast layer utilities are decomposed into color + parent-relative contrast.
 
-In v0.1, `ak-layer-contrast-<color>` adjusted the color's lightness to contrast against the **parent** layer. In v0.2, this is handled by `ak-layer-contrast` (base) + optionally `ak-layer-contrast-N` (amount). The base utility uses container queries to derive contrast direction from the parent layer's lightness and includes a default contrast amount of 25 (matching the old default of ~3:1).
+In v0.1, `ak-layer-contrast-<color>` adjusted the color's lightness to contrast against the **parent** layer. A trailing number set the selected color's lightness level before automatic parent contrast. The `0` level kept the theme color unchanged, but it did not set or disable contrast.
+
+In v0.2, this is handled by `ak-layer-contrast` (base) + optionally `ak-layer-contrast-N` (amount). The base utility uses container queries to derive contrast direction from the parent layer's lightness and includes a default contrast amount of 25, matching the old numerical default. This is a parent-directed lightness amount, not a guaranteed contrast ratio.
 
 ```diff
 - ak-layer-contrast-primary
 + ak-layer ak-layer-primary ak-layer-contrast
 ```
 
-`ak-layer-contrast-N` overrides the default contrast amount. Higher values push the color further from the parent's lightness; `ak-layer-contrast-0` disables the push entirely (useful when you want the raw color without any contrast adjustment):
+The v0.1 trailing `0` can be omitted while preserving parent contrast:
 
 ```diff
-  <!-- Keep the color as-is, no automatic contrast -->
+- ak-layer-contrast-secondary-0
++ ak-layer ak-layer-secondary ak-layer-contrast
+```
+
+`ak-layer-contrast-N` overrides the default contrast amount. Higher values set a target farther from the parent's lightness. A value of `0` targets the parent's own lightness and may still move a color to the parent-selected side. To migrate a color without parent-directed contrast, omit both contrast utilities:
+
+```diff
+  <!-- Keep the color without parent-directed contrast -->
 - ak-layer-secondary
-+ ak-layer ak-layer-secondary ak-layer-contrast ak-layer-contrast-0
++ ak-layer ak-layer-secondary
 ```
 
 ### `ak-layer-canvas` → `ak-layer ak-layer-canvas`
