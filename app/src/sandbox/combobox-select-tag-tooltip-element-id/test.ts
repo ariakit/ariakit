@@ -16,3 +16,16 @@ test("updates combobox relationships when the input id changes", async () => {
   expect(cancel).toHaveAttribute("aria-controls", "combobox-after");
   expect(combobox).toHaveAttribute("id", "combobox-after");
 });
+
+test("updates the tooltip anchor when the content id changes", async () => {
+  const section = q.within(q.region("Tooltip"));
+  const anchor = section.button.ensure("Tooltip label");
+
+  expect(anchor).toHaveAttribute("aria-labelledby", "tooltip-before");
+
+  await click(section.button("Change tooltip id"));
+
+  await expect
+    .poll(() => anchor.getAttribute("aria-labelledby"))
+    .toBe("tooltip-after");
+});
