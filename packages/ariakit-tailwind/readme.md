@@ -406,7 +406,23 @@ A square visual language is a theme decision. Override the shared radius tokens 
 
 Local square corners are still appropriate when geometry is intentionally attached or flush, such as a viewport sidebar or an internal segment of a composite control. Use `ak-frame ak-frame-force ak-frame-rounded-none` when that local shape must be exactly square. Let `ak-frame-cover`, `ak-frame-start`, and `ak-frame-end` compute any corners that meet the parent's outer silhouette.
 
-Frame padding and borders participate in concentric geometry. Use `ak-frame-p-*`, the combined `ak-frame-<radius>/<padding>` form, and `ak-frame-border`, `ak-frame-ring`, or `ak-frame-bordering` for component chrome. Do not override frame padding with `p-*`, `px-*`, or `py-*` on the same element. Put asymmetric layout spacing on an inner wrapper instead.
+Frame padding and borders participate in concentric geometry. Use `ak-frame-p-*`, the combined `ak-frame-<radius>/<padding>` form, and `ak-frame-border`, `ak-frame-ring`, or `ak-frame-bordering` for the symmetric chrome that shapes a component and stays concentric with its nested frames. Do not replace that chrome wholesale with a full `p-*` override or Tailwind's full `border`, and put large asymmetric layout spacing on an inner wrapper instead.
+
+Axis-specific spacing and seams are a different case, and Tailwind's built-in utilities are the right tool for them. A button commonly needs more horizontal than vertical padding, and a raised header bar commonly uses a bottom border as its seam to the content below. Reach for `px-*` or `py-*` (not the full `p-*`) and side-specific borders such as `border-b`, `border-t`, or `border-x` (not the full `border`) in those cases:
+
+```html
+<!-- More horizontal than vertical padding on a control -->
+<button class="ak-layer ak-layer-primary ak-frame ak-frame-field/field px-6">
+  Wide button
+</button>
+
+<!-- A raised header bar whose seam to the content below is a bottom edge -->
+<header class="ak-layer ak-layer-lighten-6 border-b px-6 py-4">
+  Page header
+</header>
+```
+
+These axis values are not folded into the concentric radius math, and that is exactly what you want here: the extra horizontal padding and the single-side seam do not describe a rounded corner that a nested frame must stay concentric with, so leaving them out keeps the silhouette correct while still giving you the spacing or separator you asked for. Each example still earns its `ak-layer` as a real material, the raised bar rather than a wrapper added only to color a border, and that layer is what lets the `border-b` pick up the adaptive edge color.
 
 ### Read utility values
 
@@ -740,7 +756,7 @@ Use `ak-frame-p-*` or the combined `ak-frame-<radius>/<padding>` form when paddi
 ```
 
 > [!WARNING]
-> Border widths affect radius math. Always use `ak-frame-border` instead of Tailwind's `border` utility so concentric radii stay correct:
+> Border widths affect radius math. When a border defines the frame's rounded silhouette, always use `ak-frame-border` instead of Tailwind's `border` utility so concentric radii stay correct:
 >
 > ```html
 > <!-- ❌: Tailwind border isn't factored into the radius calculation -->
@@ -749,6 +765,8 @@ Use `ak-frame-p-*` or the combined `ak-frame-<radius>/<padding>` form when paddi
 > <!-- ✅ -->
 > <div class="ak-frame ak-frame-xl/1 ak-frame-border">Border</div>
 > ```
+>
+> Side-specific borders used as a seam rather than the frame's silhouette, such as a `border-b` separator, are fine as plain Tailwind utilities. They intentionally stay out of the concentric radius math. See [Give isolated components their own shape](#give-isolated-components-their-own-shape).
 
 ### Setup
 
