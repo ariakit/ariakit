@@ -25,3 +25,5 @@ The `--scrollbar-width` CSS variable is now only defined in the fallback path fo
   padding-inline-end: calc(16px + var(--scrollbar-width, 0px));
 }
 ```
+
+Thanks to [@mirka](https://github.com/mirka) for reporting the issue, and to [@benrodrs](https://github.com/benrodrs) for documenting a workaround that informed this solution.

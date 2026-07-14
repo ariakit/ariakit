@@ -3,4 +3,4 @@
 "@ariakit/react": patch
 ---
 
-Fixed [`Combobox`](https://ariakit.com/reference/combobox) with [`autoSelect`](https://ariakit.com/reference/combobox#autoselect) moving focus between Korean IME composition steps.
+Fixed [`Combobox`](https://ariakit.com/reference/combobox) with [`autoSelect`](https://ariakit.com/reference/combobox#autoselect) moving focus between Korean IME composition steps. Thanks to [@flex-kwoncheol](https://github.com/flex-kwoncheol).
