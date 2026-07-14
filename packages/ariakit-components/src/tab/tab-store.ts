@@ -169,13 +169,10 @@ export function createTabStore({
       // widget should handle the initial activeId state.
       if (parentComposite && state.selectedId === prev.selectedId) return;
       const { activeId, renderedItems } = tab.getState();
+      if (activeId === state.selectedId) return;
       const focusedTab = getFocusedTab(renderedItems);
       const selectedTab = getTabById(renderedItems, state.selectedId);
-      if (
-        focusedTab &&
-        isEnabledTab(selectedTab) &&
-        activeId !== selectedTab.id
-      ) {
+      if (focusedTab && isEnabledTab(selectedTab)) {
         composite.move(selectedTab.id);
         return;
       }

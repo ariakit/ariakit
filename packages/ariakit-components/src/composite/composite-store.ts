@@ -46,6 +46,16 @@ export function findFirstEnabledItem(
   });
 }
 
+function findLastEnabledItem(items: CompositeStoreItem[]) {
+  for (let i = items.length - 1; i >= 0; i -= 1) {
+    const item = items[i];
+    if (!item) continue;
+    if (item.disabled) continue;
+    return item;
+  }
+  return undefined;
+}
+
 function getEnabledItems(items: CompositeStoreItem[], excludeId?: string) {
   return items.filter((item) => {
     if (excludeId) {
@@ -80,8 +90,9 @@ function findEnabledItemId({
     if (!item) continue;
     if (item.rowId !== rowId) continue;
     if (item.disabled) continue;
-    if (excludeId != null && item.id === excludeId) continue;
-    return item.id;
+    const itemId = item.id;
+    if (excludeId != null && itemId === excludeId) continue;
+    return itemId;
   }
   return undefined;
 }
@@ -108,20 +119,80 @@ export function flipItems(
   ];
 }
 
+// Paired benchmarks show the linear path is faster below these cutoffs.
+const rowMapItemThreshold = 48;
+const rowMapRowThreshold = 4;
+
+function groupSmallItemsByRows(items: CompositeStoreItem[]) {
+  const rows: CompositeStoreItem[][] = [];
+  let previousRow: CompositeStoreItem[] | undefined;
+  let previousRowId: string | undefined;
+  for (const item of items) {
+    const rowId = item.rowId;
+    if (previousRow && previousRowId === rowId) {
+      previousRow.push(item);
+      continue;
+    }
+    const row = rows.find((currentRow) => currentRow[0]?.rowId === rowId);
+    if (row) {
+      row.push(item);
+      previousRow = row;
+    } else {
+      previousRow = [item];
+      rows.push(previousRow);
+    }
+    previousRowId = rowId;
+  }
+  return rows;
+}
+
+function groupLargeItemsByRows(items: CompositeStoreItem[]) {
+  const firstItem = items[0];
+  if (!firstItem) return [];
+
+  let itemIndex = 1;
+  while (
+    itemIndex < items.length &&
+    items[itemIndex]?.rowId === firstItem.rowId
+  ) {
+    itemIndex += 1;
+  }
+  const firstRow = items.slice(0, itemIndex);
+  if (itemIndex === items.length) return [firstRow];
+
+  const rows = [firstRow];
+  let rowsById: Map<string | undefined, CompositeStoreItem[]> | undefined;
+  for (; itemIndex < items.length; itemIndex += 1) {
+    const item = items[itemIndex];
+    if (!item) continue;
+    const row = rowsById
+      ? rowsById.get(item.rowId)
+      : rows.find((currentRow) => currentRow[0]?.rowId === item.rowId);
+    if (row) {
+      row.push(item);
+      continue;
+    }
+    const newRow = [item];
+    rows.push(newRow);
+    if (rowsById) {
+      rowsById.set(item.rowId, newRow);
+    } else if (rows.length === rowMapRowThreshold) {
+      rowsById = new Map(
+        rows.map((currentRow) => [currentRow[0]?.rowId, currentRow]),
+      );
+    }
+  }
+  return rows;
+}
+
 /**
  * Creates a two-dimensional array with items grouped by their rowId's.
  */
 export function groupItemsByRows(items: CompositeStoreItem[]) {
-  const rows: CompositeStoreItem[][] = [];
-  for (const item of items) {
-    const row = rows.find((currentRow) => currentRow[0]?.rowId === item.rowId);
-    if (row) {
-      row.push(item);
-    } else {
-      rows.push([item]);
-    }
+  if (items.length >= rowMapItemThreshold) {
+    return groupLargeItemsByRows(items);
   }
-  return rows;
+  return groupSmallItemsByRows(items);
 }
 
 function getMaxRowLength(array: CompositeStoreItem[][]) {
@@ -281,9 +352,21 @@ export function createCompositeStore<
         ? true
         : !canShift && !renderedItems.some((item) => item.rowId != null);
       if (canFastScan) {
-        const activeIndex = renderedItems.findIndex(
-          (item) => item.id === activeId,
-        );
+        let activeIndex = -1;
+        if (renderedItems === defaultState.renderedItems) {
+          const firstItem = renderedItems[0];
+          // Avoid scanning twice when the rendered items were replaced with
+          // cloned or external objects that aren't in the collection map.
+          if (firstItem && collection.item(firstItem.id) === firstItem) {
+            const registeredItem = collection.item(activeId);
+            if (registeredItem?.id === activeId) {
+              activeIndex = renderedItems.indexOf(registeredItem);
+            }
+          }
+        }
+        if (activeIndex === -1) {
+          activeIndex = renderedItems.findIndex((item) => item.id === activeId);
+        }
         const activeItem = renderedItems[activeIndex];
         if (activeItem) {
           const step: 1 | -1 = canReverse ? -1 : 1;
@@ -432,9 +515,7 @@ export function createCompositeStore<
     },
 
     first: () => findFirstEnabledItem(composite.getState().renderedItems)?.id,
-    last: () =>
-      findFirstEnabledItem(reverseArray(composite.getState().renderedItems))
-        ?.id,
+    last: () => findLastEnabledItem(composite.getState().renderedItems)?.id,
 
     next: (options) => getNextIdFromOptions("next", options),
     previous: (options) => getNextIdFromOptions("previous", options),

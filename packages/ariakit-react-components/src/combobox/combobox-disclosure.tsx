@@ -9,6 +9,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
@@ -140,7 +141,7 @@ export const useComboboxDisclosure = createHook<
 export const ComboboxDisclosure = forwardRef(function ComboboxDisclosure(
   props: ComboboxDisclosureProps,
 ) {
-  const htmlProps = useComboboxDisclosure(props);
+  const htmlProps = useComboboxDisclosure(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

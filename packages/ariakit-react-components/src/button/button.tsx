@@ -11,6 +11,7 @@ import type { ElementType } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
+import { withDefaultButtonType } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -62,7 +63,7 @@ export const useButton = createHook<TagName, ButtonOptions>(
  * ```
  */
 export const Button = forwardRef(function Button(props: ButtonProps) {
-  const htmlProps = useButton(props);
+  const htmlProps = useButton(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

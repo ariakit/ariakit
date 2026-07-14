@@ -10,6 +10,7 @@ import { isTextField } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
+import { withDefaultButtonType } from "../button/utils.ts";
 import { useFormItemContext } from "./form-context.tsx";
 import type { FormStore, FormStoreState } from "./form-store.ts";
 import { getArrayFieldIndex, isArrayFieldName } from "./utils.ts";
@@ -154,7 +155,7 @@ export const useFormRemove = createHook<TagName, FormRemoveOptions>(
 export const FormRemove = forwardRef(function FormRemove(
   props: FormRemoveProps,
 ) {
-  const htmlProps = useFormRemove(props);
+  const htmlProps = useFormRemove(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

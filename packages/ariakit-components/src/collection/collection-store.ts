@@ -43,6 +43,71 @@ function getPrivateStore<T extends CollectionStoreItem>(
   return store?.__unstablePrivateStore;
 }
 
+const itemIdCacheThreshold = 64;
+
+interface ItemIdCache<T extends CollectionStoreItem> {
+  items?: T[];
+  ids?: Set<string>;
+}
+
+// Cache IDs only for large immutable state arrays so repeated registrations can
+// skip O(n) absence scans. Replacing the array invalidates the cache. Existing
+// IDs still use findIndex to preserve their position and previous value.
+function getCachedItemIds<T extends CollectionStoreItem>(
+  items: T[],
+  cache: ItemIdCache<T>,
+) {
+  if (items.length < itemIdCacheThreshold) {
+    if (cache.ids) {
+      cache.items = undefined;
+      cache.ids = undefined;
+    }
+    return;
+  }
+  if (cache.items === items) {
+    return cache.ids;
+  }
+  const ids = new Set<string>();
+  for (const item of items) {
+    ids.add(item.id);
+  }
+  cache.items = items;
+  cache.ids = ids;
+  return ids;
+}
+
+function setCachedItemIds<T extends CollectionStoreItem>(
+  items: T[],
+  cache: ItemIdCache<T>,
+  ids?: Set<string>,
+) {
+  if (items.length < itemIdCacheThreshold) {
+    if (cache.ids) {
+      cache.items = undefined;
+      cache.ids = undefined;
+    }
+    return;
+  }
+  if (!ids) {
+    ids = new Set<string>();
+    for (const item of items) {
+      ids.add(item.id);
+    }
+  }
+  cache.items = items;
+  cache.ids = ids;
+}
+
+type SetItems<T extends CollectionStoreItem> = (
+  getItems: (items: T[]) => T[],
+) => void;
+
+interface MergeItemOptions<T extends CollectionStoreItem> {
+  cache: ItemIdCache<T>;
+  setItems: SetItems<T>;
+  canDeleteFromMap?: boolean;
+}
+
 /**
  * Creates a collection store.
  */
@@ -61,6 +126,9 @@ export function createCollectionStore<
   );
 
   const itemsMap = new Map<string, T>(items.map((item) => [item.id, item]));
+  // These arrays are replaced independently, so each needs its own cache.
+  const itemIdCache: ItemIdCache<T> = {};
+  const renderedItemIdCache: ItemIdCache<T> = {};
 
   const initialState: CollectionStoreState<T> = {
     items,
@@ -138,12 +206,19 @@ export function createCollectionStore<
 
   const mergeItem = (
     item: T,
-    setItems: (getItems: (items: T[]) => T[]) => void,
-    canDeleteFromMap = false,
+    { cache, setItems, canDeleteFromMap = false }: MergeItemOptions<T>,
   ) => {
     let prevItem: T | undefined;
     setItems((items) => {
-      const index = items.findIndex(({ id }) => id === item.id);
+      const shouldUseCache =
+        !!cache.ids ||
+        (items.length >= itemIdCacheThreshold &&
+          (!canDeleteFromMap || !itemsMap.has(item.id)));
+      const ids = shouldUseCache ? getCachedItemIds(items, cache) : undefined;
+      const index =
+        ids && !ids.has(item.id)
+          ? -1
+          : items.findIndex(({ id }) => id === item.id);
       const nextItems = items.slice();
       if (index !== -1) {
         prevItem = items[index];
@@ -153,46 +228,72 @@ export function createCollectionStore<
       } else {
         nextItems.push(item);
         itemsMap.set(item.id, item);
+        ids?.add(item.id);
+      }
+      if (
+        cache.ids ||
+        (index === -1 && nextItems.length >= itemIdCacheThreshold)
+      ) {
+        setCachedItemIds(nextItems, cache, ids);
       }
       return nextItems;
     });
     const unmergeItem = () => {
       setItems((items) => {
+        const ids = cache.ids ? getCachedItemIds(items, cache) : undefined;
         if (!prevItem) {
           if (canDeleteFromMap) {
             itemsMap.delete(item.id);
           }
-          return items.filter(({ id }) => id !== item.id);
+          const nextItems = items.filter(({ id }) => id !== item.id);
+          ids?.delete(item.id);
+          if (cache.ids) {
+            setCachedItemIds(nextItems, cache, ids);
+          }
+          return nextItems;
         }
         const index = items.findIndex(({ id }) => id === item.id);
-        if (index === -1) return items;
+        if (index === -1) {
+          return items;
+        }
         const nextItems = items.slice();
         nextItems[index] = prevItem;
         itemsMap.set(item.id, prevItem);
+        if (cache.ids) {
+          setCachedItemIds(nextItems, cache, ids);
+        }
         return nextItems;
       });
     };
     return unmergeItem;
   };
 
+  const setItems: SetItems<T> = (getItems) =>
+    privateStore.setState("items", getItems);
+
+  const setRenderedItems: SetItems<T> = (getItems) =>
+    privateStore.setState("renderedItems", getItems);
+
+  const itemMergeOptions: MergeItemOptions<T> = {
+    cache: itemIdCache,
+    setItems,
+    canDeleteFromMap: true,
+  };
+
+  const renderedItemMergeOptions: MergeItemOptions<T> = {
+    cache: renderedItemIdCache,
+    setItems: setRenderedItems,
+  };
+
   const registerItem: CollectionStore<T>["registerItem"] = (item) =>
-    mergeItem(
-      item,
-      (getItems) => privateStore.setState("items", getItems),
-      true,
-    );
+    mergeItem(item, itemMergeOptions);
 
   return {
     ...collection,
 
     registerItem,
     renderItem: (item) =>
-      chain(
-        registerItem(item),
-        mergeItem(item, (getItems) =>
-          privateStore.setState("renderedItems", getItems),
-        ),
-      ),
+      chain(registerItem(item), mergeItem(item, renderedItemMergeOptions)),
 
     item: (id) => {
       if (!id) return null;

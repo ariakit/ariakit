@@ -13,6 +13,7 @@ import type { ElementType, MouseEvent } from "react";
 import { Fragment } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
+import { withDefaultButtonType } from "../button/utils.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
@@ -128,7 +129,7 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
 export const ComboboxCancel = forwardRef(function ComboboxCancel(
   props: ComboboxCancelProps,
 ) {
-  const htmlProps = useComboboxCancel(props);
+  const htmlProps = useComboboxCancel(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

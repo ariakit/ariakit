@@ -24,6 +24,7 @@ import type {
   SelectHTMLAttributes,
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { getBasePlacement } from "../popover/__utils.ts";
@@ -310,7 +311,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
  * ```
  */
 export const Select = forwardRef(function Select(props: SelectProps) {
-  const htmlProps = useSelect(props);
+  const htmlProps = useSelect(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

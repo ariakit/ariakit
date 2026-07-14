@@ -11,6 +11,7 @@ import type { ElementType, MouseEvent } from "react";
 import { useCallback, useEffect, useState } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import { useFormItemContext } from "./form-context.tsx";
@@ -154,7 +155,7 @@ export const useFormPush = createHook<TagName, FormPushOptions>(
  * ```
  */
 export const FormPush = forwardRef(function FormPush(props: FormPushProps) {
-  const htmlProps = useFormPush(props);
+  const htmlProps = useFormPush(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

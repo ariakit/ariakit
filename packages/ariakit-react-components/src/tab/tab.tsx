@@ -11,6 +11,7 @@ import type { Props } from "@ariakit/react-utils";
 import { disabledFromProps, invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useCallback } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import {
   CompositeItem,
@@ -83,22 +84,22 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
   );
   const shouldRegisterItem = defaultId ? props.shouldRegisterItem : false;
 
-  const isActive = useStoreState(
-    store,
-    ["activeId"],
-    (state) => !!id && state.activeId === id,
-  );
   const selected = useStoreState(
     store,
     ["selectedId"],
     (state) => !!id && state.selectedId === id,
   );
-  const hasActiveItem = useStoreState(
-    store,
-    ["activeId", "items"],
-    (state) => !!store.item(state.activeId),
+  const canRegisterComposedItem = useStoreState(
+    store.composite ? store : undefined,
+    ["activeId", "items", "selectedId"],
+    (state) => {
+      if (!state) return false;
+      if (!id) return false;
+      if (state.activeId === id) return true;
+      if (state.selectedId !== id) return false;
+      return !store.item(state.activeId);
+    },
   );
-  const canRegisterComposedItem = isActive || (selected && !hasActiveItem);
   const accessibleWhenDisabled =
     selected || (props.accessibleWhenDisabled ?? true);
 
@@ -188,7 +189,7 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
  */
 export const Tab = memo(
   forwardRef(function Tab(props: TabProps) {
-    const htmlProps = useTab(props);
+    const htmlProps = useTab(withDefaultButtonType(props));
     return createElement(TagName, htmlProps);
   }),
 );
