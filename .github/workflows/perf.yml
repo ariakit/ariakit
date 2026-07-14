@@ -705,9 +705,15 @@ jobs:
           retention-days: 7
 
   node:
-    name: Node
+    name: Node (${{ matrix.shard }}/${{ strategy.job-total }})
     needs: [node-baseline]
     runs-on: ubuntu-latest
+    strategy:
+      # Let both shards finish so each shard's logs and uploaded comparison
+      # stay available when the other shard fails.
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
     permissions:
       actions: read
       contents: read
@@ -725,6 +731,7 @@ jobs:
       PERF_INITIAL_ROUNDS: 2
       PERF_CONFIRMATION_ROUNDS: 3
       PERF_RESULTS_TITLE: Node
+      PERF_SHARD: ${{ matrix.shard }}/${{ strategy.job-total }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -838,6 +845,9 @@ jobs:
             if [ -n "$benchmark_file" ]; then
               baseline_args=("$benchmark_file" --testNamePattern "$baseline_pattern")
               current_args=("$benchmark_file" --testNamePattern "$current_pattern")
+            else
+              baseline_args=(--shard="$PERF_SHARD")
+              current_args=(--shard="$PERF_SHARD")
             fi
 
             # Alternate sides first so same-runner drift cannot consistently
@@ -916,7 +926,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: perf-results-node
+          name: perf-results-node-${{ matrix.shard }}
           path: .perf-results
           if-no-files-found: ignore
           include-hidden-files: true
@@ -925,8 +935,8 @@ jobs:
   post:
     name: Post PR comment
     # Chrome jobs upload raw `perf-chrome-rounds-*` artifacts that this job
-    # compares into a Chrome section; the Node job uploads a pre-computed
-    # `perf-results-node` artifact. Future perf jobs can do either.
+    # compares into a Chrome section; the Node shards upload pre-computed
+    # `perf-results-node-*` artifacts. Future perf jobs can do either.
     needs: [chrome, chrome-matrix, node]
     if: >
       always() &&
@@ -947,15 +957,31 @@ jobs:
       # Download both engines' artifacts before comparing, so a Chrome-side
       # problem can never prevent the Node section from being posted.
       - name: Download Node performance results
-        # Only publish Node results when the Node job fully succeeded. Its
-        # artifact is uploaded with `if: always()` and may hold a stale
-        # preliminary comparison if a later confirmation round failed.
+        # Only publish Node results when both shards fully succeeded. Their
+        # artifacts are uploaded with `if: always()` and may hold stale
+        # preliminary comparisons if a later confirmation round failed.
         if: needs.node.result == 'success'
         continue-on-error: true
         uses: actions/download-artifact@v8
         with:
-          name: perf-results-node
-          path: ${{ runner.temp }}/perf-results/perf-results-node
+          pattern: perf-results-node-*
+          path: ${{ runner.temp }}/perf-results
+
+      - name: Validate Node performance results
+        if: needs.node.result == 'success'
+        env:
+          PERF_RESULTS_DIR: ${{ runner.temp }}/perf-results
+        run: |
+          shopt -s nullglob
+          node_dirs=("$PERF_RESULTS_DIR"/perf-results-node-*)
+          node_comparisons=("$PERF_RESULTS_DIR"/perf-results-node-*/comparison.md)
+          if [ ${#node_comparisons[@]} -eq 2 ]; then
+            exit 0
+          fi
+          echo "::warning::Expected 2 Node performance results, found ${#node_comparisons[@]}; skipping Node report."
+          if [ ${#node_dirs[@]} -gt 0 ]; then
+            rm -rf "${node_dirs[@]}"
+          fi
 
       - name: Download Chrome round results
         continue-on-error: true
