@@ -1,5 +1,8 @@
 ---
 "@ariakit/store": patch
+"@ariakit/react-store": patch
+"@ariakit/react-components": patch
+"@ariakit/react": patch
 "@ariakit/solid-store": patch
 ---
 
