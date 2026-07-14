@@ -1,5 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useId,
   useMergeRefs,
   createElement,
@@ -36,7 +37,9 @@ export const useTagListLabel = createHook<TagName, TagListLabelOptions>(
     );
 
     const id = useId(props.id);
-    const htmlFor = useStoreState(store, (state) => state.inputElement?.id);
+    const inputElement = useStoreState(store, "inputElement");
+    useAttribute(inputElement, "id");
+    const htmlFor = inputElement?.id;
 
     props = {
       htmlFor,

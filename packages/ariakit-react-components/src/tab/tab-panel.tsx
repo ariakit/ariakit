@@ -67,10 +67,12 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
 
     const tabId = useStoreState(
       store.panels,
+      ["items"],
       () => tabIdProp || store?.panels.item(id)?.tabId,
     );
     const open = useStoreState(
       store,
+      ["selectedId"],
       (state) => !!tabId && state.selectedId === tabId,
     );
 

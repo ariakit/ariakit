@@ -84,6 +84,7 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
 
     const isChecked = useStoreState(
       store,
+      ["values"],
       (state) => state.values[name] === value,
     );
 

@@ -84,15 +84,16 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
     const id = useId(props.id);
 
     const onKeyDownProp = props.onKeyDown;
-    const dir = useStoreState(store, (state) =>
+    const dir = useStoreState(store, ["placement"], (state) =>
       getBasePlacement(state.placement),
     );
-    const orientation = useStoreState(store, (state) =>
+    const orientation = useStoreState(store, ["orientation"], (state) =>
       state.orientation === "both" ? undefined : state.orientation,
     );
     const isHorizontal = orientation !== "vertical";
     const isMenubarHorizontal = useStoreState(
       parentMenubar,
+      ["orientation"],
       (state) => !!state && state.orientation !== "vertical",
     );
 

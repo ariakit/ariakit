@@ -317,6 +317,7 @@ export const DisclosureContent = forwardRef(function DisclosureContent({
   const store = props.store || context;
   const mounted = useStoreState(
     store,
+    ["mounted"],
     (state) => !unmountOnHide || state?.mounted,
   );
   if (mounted === false) return null;

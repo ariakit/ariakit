@@ -85,7 +85,7 @@ function hasUpdatedKey<S>(
   for (const currentKey of keys) {
     if (updatedKey instanceof Set) {
       if (updatedKey.has(currentKey)) return true;
-    } else if (currentKey === updatedKey) {
+    } else if (isSameValue(currentKey, updatedKey)) {
       return true;
     }
   }

@@ -5,12 +5,12 @@ import { disabledFromProps, getPopupItemRole } from "@ariakit/utils";
 import type { ElementType } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item-offscreen.tsx";
 import { useCollectionItemOffscreen } from "../collection/collection-item-offscreen.tsx";
-import type { ComboboxStoreState } from "../combobox/combobox-store.ts";
+import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import { Role } from "../role/role.tsx";
-import type { SelectStoreState } from "../select/select-store.ts";
+import type { SelectStore } from "../select/select-store.ts";
 import { useCompositeScopedContext } from "./composite-context.tsx";
 import * as Base from "./composite-item.tsx";
-import type { CompositeStoreState } from "./composite-store.ts";
+import type { CompositeStore } from "./composite-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -30,26 +30,33 @@ export function useCompositeItemOffscreen<
   store = store || context;
 
   const id = useId(props.id);
+  // The public prop uses the base CompositeStore type, but this component is
+  // also rendered by Combobox and Select stores with additional state keys.
+  // oxlint-disable-next-line no-unnecessary-type-assertion
+  const stateStore = store as
+    | CompositeStore
+    | ComboboxStore
+    | SelectStore
+    | undefined;
 
   const { storeId, active, listElement, offscreenRoot } = useStoreStateObject(
-    store,
+    stateStore,
+    ["value", "activeId", "listElement", "contentElement"],
     {
       storeId: "id",
-      active(
-        state?: CompositeStoreState | ComboboxStoreState | SelectStoreState,
-      ) {
+      active(state) {
         if (!state) return;
         if (!("selectedValue" in state) && "value" in state) {
           if (state.value === value) return true;
         }
         return !!id && state.activeId === id;
       },
-      listElement(state?: CompositeStoreState | SelectStoreState) {
+      listElement(state) {
         if (!state) return;
         if (!("listElement" in state)) return;
         return state.listElement;
       },
-      offscreenRoot(state?: CompositeStoreState | ComboboxStoreState) {
+      offscreenRoot(state) {
         if (props.offscreenRoot) return props.offscreenRoot;
         if (!state) return;
         if (!("contentElement" in state)) return;

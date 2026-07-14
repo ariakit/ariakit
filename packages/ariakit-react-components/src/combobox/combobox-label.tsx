@@ -1,5 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   createElement,
   createHook,
   forwardRef,
@@ -36,7 +37,9 @@ export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
         "ComboboxLabel must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
-    const comboboxId = useStoreState(store, (state) => state.baseElement?.id);
+    const baseElement = useStoreState(store, "baseElement");
+    useAttribute(baseElement, "id");
+    const comboboxId = baseElement?.id;
 
     props = {
       htmlFor: comboboxId,

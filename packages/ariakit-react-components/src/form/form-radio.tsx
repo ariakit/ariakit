@@ -54,6 +54,7 @@ export const useFormRadio = createHook<TagName, FormRadioOptions>(
     const checkedProp = props.checked;
     const checked = useStoreState(
       form,
+      ["values"],
       () => checkedProp ?? form.getValue(name) === value,
     );
 

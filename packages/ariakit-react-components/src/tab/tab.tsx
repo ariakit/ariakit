@@ -76,19 +76,26 @@ export const useTab = createHook<TagName, TabOptions>(function useTab({
     store?.setSelectedId(id);
   });
 
-  const panelId = useStoreState(store.panels, () => store.panel(id)?.id);
+  const panelId = useStoreState(
+    store.panels,
+    ["items"],
+    () => store.panel(id)?.id,
+  );
   const shouldRegisterItem = defaultId ? props.shouldRegisterItem : false;
 
   const isActive = useStoreState(
     store,
+    ["activeId"],
     (state) => !!id && state.activeId === id,
   );
   const selected = useStoreState(
     store,
+    ["selectedId"],
     (state) => !!id && state.selectedId === id,
   );
   const hasActiveItem = useStoreState(
     store,
+    ["activeId", "items"],
     (state) => !!store.item(state.activeId),
   );
   const canRegisterComposedItem = isActive || (selected && !hasActiveItem);

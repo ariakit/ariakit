@@ -45,7 +45,7 @@ export const useTabList = createHook<TagName, TabListOptions>(
         "TabList must receive a `store` prop or be wrapped in a TabProvider component.",
     );
 
-    const orientation = useStoreState(store, (state) =>
+    const orientation = useStoreState(store, ["orientation"], (state) =>
       state.orientation === "both" ? undefined : state.orientation,
     );
 

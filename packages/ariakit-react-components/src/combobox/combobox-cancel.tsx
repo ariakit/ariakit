@@ -1,5 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useEvent,
   useWrapElement,
   createElement,
@@ -71,8 +72,14 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
       store?.move(null);
     });
 
-    const comboboxId = useStoreState(store, (state) => state.baseElement?.id);
-    const empty = useStoreState(store, (state) => state.value === "");
+    const baseElement = useStoreState(store, "baseElement");
+    useAttribute(baseElement, "id");
+    const comboboxId = baseElement?.id;
+    const empty = useStoreState(
+      store,
+      ["value"],
+      (state) => state.value === "",
+    );
 
     props = useWrapElement(
       props,
