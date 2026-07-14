@@ -9,14 +9,14 @@ const HEADED = process.env.PWHEADED === "true";
 const PERF = process.env.PERF_TEST === "true";
 const port = Number(process.env.APP_PORT) || 4321;
 const nextjsPort = Number(process.env.NEXTJS_PORT) || 3000;
-// Pin the wrangler dev inspector ports outside the OS ephemeral range in CI.
-// When unset, wrangler preselects a random free high port and workerd binds
+// Pin the workerd inspector ports outside the OS ephemeral range in CI.
+// When unset, the preview server preselects a random free high port and workerd binds
 // it later, so another process (such as a browser connection claiming it as
 // an outbound source port) can take it in between, which kills the server
 // with a fatal "Address already in use" on startup. Only pin by default in
 // CI, where each job owns the runner: fixed local defaults would make
 // concurrent sessions (such as per-worktree servers on overridden app ports)
-// collide deterministically. Zero means "let wrangler pick".
+// collide deterministically. Zero means "let the preview server pick".
 const inspectorPort = Number(process.env.APP_INSPECTOR_PORT) || (CI ? 9339 : 0);
 const nextjsInspectorPort =
   Number(process.env.NEXTJS_INSPECTOR_PORT) || (CI ? 9340 : 0);
@@ -44,7 +44,12 @@ export default defineConfig({
   snapshotPathTemplate: "{testDir}/{testFileDir}/__snapshots__/{arg}{ext}",
   webServer: [
     {
-      command: `pnpm run preview-lite --log-level warn --port ${port}${inspectorPortArg(inspectorPort)} --var NEXTJS_PORT:${nextjsPort}`,
+      command: `pnpm run preview-lite --port ${port}`,
+      env: {
+        APP_INSPECTOR_PORT: String(inspectorPort),
+        CLOUDFLARE_INCLUDE_PROCESS_ENV: "true",
+        NEXTJS_PORT: String(nextjsPort),
+      },
       reuseExistingServer: !CI,
       stdout: CI ? "pipe" : "ignore",
       port,

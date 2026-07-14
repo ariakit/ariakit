@@ -29,6 +29,7 @@ import { sourcePlugin } from "./src/lib/source-plugin.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "./src/lib/url.ts";
 
 const port = Number(process.env.APP_PORT) || 4321;
+const inspectorPort = Number(process.env.APP_INSPECTOR_PORT) || 0;
 const hasClerk = process.env.PUBLIC_CLERK_PUBLISHABLE_KEY;
 const viteCacheDir = process.env.APP_VITE_CACHE_DIR;
 
@@ -53,6 +54,7 @@ export default defineConfig({
 
   adapter: cloudflare({
     imageService: "compile",
+    inspectorPort,
   }),
 
   build: {
