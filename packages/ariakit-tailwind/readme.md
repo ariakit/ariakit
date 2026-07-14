@@ -182,7 +182,7 @@ In ordinary lighting, an exposed surface catches more light while a cutout or we
 | Appearance-aware separation | Selected row, adjacent pane, or neutral standalone button that should remain visibly separate in either theme | `ak-layer ak-layer-*`                                                                     |
 | New material or pigment     | Canvas, primary action, warning, brand region, or another intentional color boundary                          | `ak-layer ak-layer-<color>`, optionally with `ak-layer-mix-*`                             |
 | Interactive response        | The same material responding to hover, press, focus, selection, or disabled state                             | Variant-prefixed `ak-state-*`, `ak-ink-*`, `ak-outline-*`, and other contextual modifiers |
-| Parent-directed contrast    | A surface whose lightness must move against its supporting layer                                              | `ak-layer-contrast`                                                                       |
+| Parent-directed contrast    | A neutral or pigmented surface whose lightness must move against its supporting layer                         | `ak-layer ak-layer-contrast`, optionally with `ak-layer-<color>`                          |
 | Self-relative tonal push    | A surface that needs a minimum tonal move and must skip the ambiguous midrange                                | `ak-layer-push-*`                                                                         |
 
 Numeric `ak-layer-<number>` modifiers are not elevation values. They request appearance-aware separation from the selected source, which defaults to the parent layer. They normally move light sources darker and dark sources lighter, but the contrast-safe lightness pipeline may clamp the target or move it past an ambiguous midrange. Use them to separate a surface without declaring that it is above or below, and use `ak-layer-lighten-*` or `ak-layer-darken-*` when spatial direction matters.
@@ -212,7 +212,7 @@ Treat hue as information. Keep most of the scene in one family, then spend stron
 ```html
 <div class="flex items-center gap-2">
   <button
-    class="ak-layer ak-layer-primary hover:ak-state-6 active:ak-state-darken-6 ak-frame ak-frame-field/field focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
+    class="ak-layer ak-layer-primary ak-layer-contrast hover:ak-state-6 active:ak-state-darken-6 ak-frame ak-frame-field/field focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
   >
     Deploy now
   </button>
@@ -225,9 +225,25 @@ Treat hue as information. Keep most of the scene in one family, then spend stron
 </div>
 ```
 
-These materials do not need borders because pigment, tone, and shape already separate them from the canvas. Mixing creates a contextual solid color, not transparency and not another depth level. Hue and chroma adjustments similarly change the finish of the current material.
+A finish can be fixed or contextual. The primary action keeps one recognizable pigment but lets its tone move away from its support when needed. The default parent-directed contrast amount is usually a useful starting point, but it does not guarantee a particular contrast ratio. The badge softens its warning pigment into the surrounding material.
 
-Custom gradients, patterns, and textures are also surface paint. Derive them from the resolved layer variables so the visible pixels stay related to the contrast context:
+When belonging to the local material matters more than preserving one global swatch, derive the finish from the parent:
+
+```html
+<div class="ak-layer ak-layer-primary ak-frame ak-frame-card/card">
+  <span
+    class="ak-layer ak-layer-6 ak-layer-h-analogous1 ak-layer-c-muted ak-frame ak-frame-badge/badge"
+  >
+    Related material
+  </span>
+</div>
+```
+
+The child selects an analogous hue, a quieter chroma, and appearance-aware tonal separation from its parent. Complementary, analogous, and triadic hue tokens express other color relationships. Hue changes the pigment family, chroma changes its intensity, and lightness changes its tonal plane. A hue difference can be meaningful without implying depth, but it does not replace tonal separation or an edge when the boundary itself must remain perceivable.
+
+These materials do not need borders when pigment, tone, and shape already separate them from the canvas. Mixing creates a contextual solid color, not transparency and not another depth level.
+
+Custom gradients, patterns, and textures are also surface paint. Derive them from the resolved layer variables so the visible pixels stay related to the contrast context. Define repeated paint as a reusable Tailwind utility:
 
 ```html
 <div
@@ -238,15 +254,15 @@ Custom gradients, patterns, and textures are also surface paint. Derive them fro
 ```
 
 ```css
-.surface-pattern {
-  --pattern-color: color-mix(
+@utility surface-pattern {
+  --surface-pattern-color: color-mix(
     in oklab,
     var(--ak-layer),
     var(--ak-layer-parent, canvas) 35%
   );
   background-image: linear-gradient(
     135deg,
-    var(--pattern-color) 1px,
+    var(--surface-pattern-color) 1px,
     transparent 1px
   );
   background-size: 0.75rem 0.75rem;
@@ -460,27 +476,27 @@ Custom backgrounds can read the resolved `--ak-layer` color and `var(--ak-layer-
 
 ### Lightness adjustments
 
-| Utility                      | Description                                                                                                                                                            |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-layer-lighten-<number>`  | Lightens the layer by `<number>`%, useful for intentionally raised or exposed surfaces. Arbitrary values are raw (`ak-layer-lighten-[0.05]`).                          |
-| `ak-layer-darken-<number>`   | Darkens the layer by `<number>`%, useful for intentionally recessed or pressed surfaces. Arbitrary values are raw (`ak-layer-darken-[0.05]`).                          |
-| `ak-layer-push-<number>`     | Minimum lightness shift (self-relative), jumping the forbidden mid-luminance range where contrast math becomes unreliable.                                             |
-| `ak-layer-contrast`          | Adapts the layer to contrast against its parent (preset `25`).                                                                                                         |
-| `ak-layer-contrast-<number>` | Custom contrast amount (`0`–`100`, default `25`).                                                                                                                      |
-| `ak-layer-l-<value>`         | Sets absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values).                                                                |
-| `ak-layer-max-<value>`       | Caps lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values) or caps chroma with a named chroma preset (`ak-layer-max-muted`).        |
-| `ak-layer-min-<value>`       | Floors lightness or chroma, same form as `max-*`.                                                                                                                      |
-| `ak-layer-max-l-<value>`     | Caps lightness specifically. Useful for custom properties without a typed arbitrary value hint (`ak-layer-max-l-(--max-l)`). Arbitrary/custom-property values are raw. |
-| `ak-layer-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                                                                               |
+| Utility                      | Description                                                                                                                                                                                        |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer-lighten-<number>`  | Lightens the layer by `<number>`%, useful for intentionally raised or exposed surfaces. Arbitrary values are raw (`ak-layer-lighten-[0.05]`).                                                      |
+| `ak-layer-darken-<number>`   | Darkens the layer by `<number>`%, useful for intentionally recessed or pressed surfaces. Arbitrary values are raw (`ak-layer-darken-[0.05]`).                                                      |
+| `ak-layer-push-<number>`     | Minimum lightness shift (self-relative), jumping the forbidden mid-luminance range where contrast math becomes unreliable.                                                                         |
+| `ak-layer-contrast`          | Applies a parent-directed tonal target (preset `25`), preserving hue and chroma. Lightness stays unchanged when it is already farther in that direction. This does not guarantee a contrast ratio. |
+| `ak-layer-contrast-<number>` | Custom contrast amount (`0`–`100`, default `25`).                                                                                                                                                  |
+| `ak-layer-l-<value>`         | Sets absolute lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values).                                                                                            |
+| `ak-layer-max-<value>`       | Caps lightness (`0`–`100` for bare numbers, raw `0`–`1` for arbitrary/custom-property values) or caps chroma with a named chroma preset (`ak-layer-max-muted`).                                    |
+| `ak-layer-min-<value>`       | Floors lightness or chroma, same form as `max-*`.                                                                                                                                                  |
+| `ak-layer-max-l-<value>`     | Caps lightness specifically. Useful for custom properties without a typed arbitrary value hint (`ak-layer-max-l-(--max-l)`). Arbitrary/custom-property values are raw.                             |
+| `ak-layer-min-l-<value>`     | Floors lightness specifically. Arbitrary/custom-property values are raw.                                                                                                                           |
 
 ### Hue adjustments
 
-| Utility                      | Description                                                                                                     |
-| ---------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `ak-layer-warm-<number>`     | Shifts hue toward `--hue-warm` by `<number>`%, along the shortest arc.                                          |
-| `ak-layer-cool-<number>`     | Shifts hue toward `--hue-cool` by `<number>`%, along the shortest arc.                                          |
-| `ak-layer-h-<value>`         | Sets absolute hue. Accepts a named hue (`ak-layer-h-blue`) or degrees (`ak-layer-h-240`, `ak-layer-h-(--hue)`). |
-| `ak-layer-h-rotate-<number>` | Rotates hue by `<number>` degrees. Accepts named relational hues (`ak-layer-h-rotate-complementary`).           |
+| Utility                      | Description                                                                                                                                                                   |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-layer-warm-<number>`     | Shifts hue toward `--hue-warm` by `<number>`%, along the shortest arc.                                                                                                        |
+| `ak-layer-cool-<number>`     | Shifts hue toward `--hue-cool` by `<number>`%, along the shortest arc.                                                                                                        |
+| `ak-layer-h-<value>`         | Sets hue from degrees or a named token. Relational presets such as `ak-layer-h-complementary`, `ak-layer-h-analogous1`, and `ak-layer-h-triadic1` derive from the source hue. |
+| `ak-layer-h-rotate-<number>` | Rotates the source hue by numeric degrees, for example `ak-layer-h-rotate-30`.                                                                                                |
 
 ### Chroma (saturation) adjustments
 
