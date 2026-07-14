@@ -78,6 +78,13 @@ interface FindEnabledItemIdParams {
   excludeId?: string;
 }
 
+// Keep this lookup outside getNextId. Inlining its callback there regresses
+// explicit activeId navigation in benchmarks because that path shares a
+// closure with the mutable navigation index.
+function findItemIndex(items: CompositeStoreItem[], id: string) {
+  return items.findIndex((item) => item.id === id);
+}
+
 function findEnabledItemId({
   items,
   fromIndex,
@@ -90,9 +97,8 @@ function findEnabledItemId({
     if (!item) continue;
     if (item.rowId !== rowId) continue;
     if (item.disabled) continue;
-    const itemId = item.id;
-    if (excludeId != null && itemId === excludeId) continue;
-    return itemId;
+    if (excludeId != null && item.id === excludeId) continue;
+    return item.id;
   }
   return undefined;
 }
@@ -305,6 +311,9 @@ export function createCompositeStore<
   };
 
   const composite = createStore(initialState, collection, props.store);
+  // Sequential navigation usually makes the returned item active before the
+  // next call, so remember that item's index without retaining the array.
+  let cachedItemIndex = -1;
 
   // When the activeId is undefined, we need to find the first enabled item and
   // set it as the activeId.
@@ -352,8 +361,19 @@ export function createCompositeStore<
         ? true
         : !canShift && !renderedItems.some((item) => item.rowId != null);
       if (canFastScan) {
+        // Explicit active ids may jump arbitrarily, so preserve their direct
+        // lookup path and cache only navigation driven by store state.
+        const canCache =
+          options.activeId === undefined &&
+          renderedItems === defaultState.renderedItems;
         let activeIndex = -1;
-        if (renderedItems === defaultState.renderedItems) {
+        if (canCache && renderedItems[cachedItemIndex]?.id === activeId) {
+          activeIndex = cachedItemIndex;
+        }
+        if (
+          activeIndex === -1 &&
+          renderedItems === defaultState.renderedItems
+        ) {
           const firstItem = renderedItems[0];
           // Avoid scanning twice when the rendered items were replaced with
           // cloned or external objects that aren't in the collection map.
@@ -365,7 +385,7 @@ export function createCompositeStore<
           }
         }
         if (activeIndex === -1) {
-          activeIndex = renderedItems.findIndex((item) => item.id === activeId);
+          activeIndex = findItemIndex(renderedItems, activeId);
         }
         const activeItem = renderedItems[activeIndex];
         if (activeItem) {
@@ -377,7 +397,12 @@ export function createCompositeStore<
             rowId: activeItem.rowId,
             excludeId: activeId,
           });
-          if (nextId !== undefined) return nextId;
+          if (nextId !== undefined) {
+            if (canCache) {
+              cachedItemIndex = activeIndex + step;
+            }
+            return nextId;
+          }
           const canLoop =
             focusLoop &&
             (isVerticalDirection
@@ -387,13 +412,17 @@ export function createCompositeStore<
           // Wrap around to the beginning (or end, when scanning backward) of
           // the same row, matching the flipItems behavior in the generic
           // logic below.
-          return findEnabledItemId({
+          const loopId = findEnabledItemId({
             items: renderedItems,
             fromIndex: step === 1 ? 0 : renderedItems.length - 1,
             step,
             rowId: activeItem.rowId,
             excludeId: activeId,
           });
+          if (canCache) {
+            cachedItemIndex = step === 1 ? 0 : renderedItems.length - 1;
+          }
+          return loopId;
         }
       }
     }

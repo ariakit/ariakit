@@ -21,6 +21,49 @@ test("moves through enabled items in one-dimensional composites", () => {
   expect(store.previous({ activeId: "one" })).toBeUndefined();
 });
 
+test("does not advance when the active item does not move", () => {
+  const store = createComposite([
+    { id: "one" },
+    { id: "two" },
+    { id: "three" },
+  ]);
+
+  store.setActiveId("one");
+  expect(store.next()).toBe("two");
+  expect(store.next()).toBe("two");
+});
+
+test("moves through disabled items and loops using store state", () => {
+  const items = [{ id: "one" }, { id: "two", disabled: true }, { id: "three" }];
+  const store = createCompositeStore({
+    defaultActiveId: "one",
+    defaultItems: items,
+    focusLoop: true,
+  });
+  store.setState("renderedItems", items);
+
+  expect(store.next()).toBe("three");
+  store.setActiveId("three");
+  expect(store.next()).toBe("one");
+  store.setActiveId("one");
+  expect(store.previous()).toBe("three");
+});
+
+test("invalidates the cached item index when items move", () => {
+  const items = [{ id: "one" }, { id: "two" }, { id: "three" }, { id: "four" }];
+  const store = createComposite(items);
+
+  store.setActiveId("one");
+  expect(store.next()).toBe("two");
+  store.setActiveId("two");
+  const item = items.splice(1, 1)[0];
+  if (!item) {
+    throw new Error("Expected an item");
+  }
+  items.push(item);
+  expect(store.previous()).toBe("four");
+});
+
 test("finds the last enabled item", () => {
   const store = createComposite([
     { id: "" },
@@ -95,6 +138,70 @@ test("moves through rendered items with different object identities", () => {
   store.setState("renderedItems", registeredItems);
   expect(store.next({ activeId: "one", renderedItems })).toBe("two");
   expect(store.previous({ activeId: "two", renderedItems })).toBe("one");
+});
+
+test("invalidates the navigation index when rendered items change", () => {
+  const items = Array.from({ length: 100 }, (_, index) => ({
+    id: `item-${index}`,
+  }));
+  const store = createComposite(items);
+
+  store.setActiveId("item-50");
+  expect(store.next()).toBe("item-51");
+  store.setActiveId("item-51");
+
+  const item = items[51];
+  if (!item) {
+    throw new Error("Expected an item");
+  }
+  const reorderedItems = [item, ...items.slice(0, 51), ...items.slice(52)];
+  store.setState("renderedItems", reorderedItems);
+
+  expect(store.next()).toBe("item-0");
+  expect(store.previous()).toBeUndefined();
+});
+
+test("indexes large rendered item arrays with cloned objects", () => {
+  const items = Array.from({ length: 100 }, (_, index) => ({
+    id: `item-${index}`,
+  }));
+  const renderedItems = items.map((item) => ({ ...item }));
+  const store = createCompositeStore({ defaultItems: items });
+  store.setState("renderedItems", renderedItems);
+
+  store.setActiveId("item-50");
+  expect(store.next()).toBe("item-51");
+  store.setActiveId("item-51");
+  expect(store.next()).toBe("item-52");
+  store.setActiveId("item-52");
+  expect(store.previous()).toBe("item-51");
+  expect(store.next({ activeId: "missing" })).toBe("item-0");
+});
+
+test("uses the live order for overridden rendered items", () => {
+  const items = Array.from({ length: 100 }, (_, index) => ({
+    id: `item-${index}`,
+  }));
+  const store = createComposite(items);
+
+  store.setActiveId("item-50");
+  expect(store.next()).toBe("item-51");
+
+  const item = items[50];
+  if (!item) {
+    throw new Error("Expected an item");
+  }
+  const renderedItems = [item, ...items.slice(0, 50), ...items.slice(51)];
+  expect(store.next({ activeId: "item-50", renderedItems })).toBe("item-0");
+  const firstItem = renderedItems.shift();
+  if (!firstItem) {
+    throw new Error("Expected a rendered item");
+  }
+  renderedItems.push(firstItem);
+  expect(store.next({ activeId: "item-50", renderedItems })).toBeUndefined();
+  expect(store.previous({ activeId: "item-50", renderedItems })).toBe(
+    "item-99",
+  );
 });
 
 test("supports the deprecated skip number overload", () => {
