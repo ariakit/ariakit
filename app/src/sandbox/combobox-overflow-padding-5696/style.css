@@ -1,0 +1,4 @@
+.popover {
+  box-sizing: border-box;
+  width: calc(100vw - var(--popover-overflow-padding) * 2);
+}
