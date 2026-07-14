@@ -69,7 +69,7 @@ function getItemsInRow(items: CompositeStoreItem[], rowId?: string) {
   return items.filter((item) => item.rowId === rowId);
 }
 
-interface FindEnabledItemIdParams {
+interface FindEnabledItemIndexParams {
   items: CompositeStoreItem[];
   fromIndex: number;
   /** 1 to scan forward, -1 to scan backward. */
@@ -85,20 +85,20 @@ function findItemIndex(items: CompositeStoreItem[], id: string) {
   return items.findIndex((item) => item.id === id);
 }
 
-function findEnabledItemId({
+function findEnabledItemIndex({
   items,
   fromIndex,
   step,
   rowId,
   excludeId,
-}: FindEnabledItemIdParams) {
+}: FindEnabledItemIndexParams) {
   for (let i = fromIndex; i >= 0 && i < items.length; i += step) {
     const item = items[i];
     if (!item) continue;
     if (item.rowId !== rowId) continue;
     if (item.disabled) continue;
     if (excludeId != null && item.id === excludeId) continue;
-    return item.id;
+    return i;
   }
   return undefined;
 }
@@ -390,18 +390,18 @@ export function createCompositeStore<
         const activeItem = renderedItems[activeIndex];
         if (activeItem) {
           const step: 1 | -1 = canReverse ? -1 : 1;
-          const nextId = findEnabledItemId({
+          const nextIndex = findEnabledItemIndex({
             items: renderedItems,
             fromIndex: activeIndex + step,
             step,
             rowId: activeItem.rowId,
             excludeId: activeId,
           });
-          if (nextId !== undefined) {
+          if (nextIndex !== undefined) {
             if (canCache) {
-              cachedItemIndex = activeIndex + step;
+              cachedItemIndex = nextIndex;
             }
-            return nextId;
+            return renderedItems[nextIndex]?.id;
           }
           const canLoop =
             focusLoop &&
@@ -412,17 +412,20 @@ export function createCompositeStore<
           // Wrap around to the beginning (or end, when scanning backward) of
           // the same row, matching the flipItems behavior in the generic
           // logic below.
-          const loopId = findEnabledItemId({
+          const loopIndex = findEnabledItemIndex({
             items: renderedItems,
             fromIndex: step === 1 ? 0 : renderedItems.length - 1,
             step,
             rowId: activeItem.rowId,
             excludeId: activeId,
           });
-          if (canCache) {
-            cachedItemIndex = step === 1 ? 0 : renderedItems.length - 1;
+          if (loopIndex !== undefined) {
+            if (canCache) {
+              cachedItemIndex = loopIndex;
+            }
+            return renderedItems[loopIndex]?.id;
           }
-          return loopId;
+          return undefined;
         }
       }
     }

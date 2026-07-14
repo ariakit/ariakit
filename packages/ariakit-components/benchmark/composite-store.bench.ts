@@ -49,6 +49,20 @@ statefulClonedStore.setState(
   items.map((item) => ({ ...item })),
 );
 
+const disabledItems = items.map((item, index) => ({
+  ...item,
+  disabled: index % 2 === 1,
+}));
+const enabledItemCount = disabledItems.length / 2;
+const statefulDisabledStore = createCompositeStore({
+  defaultActiveId: disabledItems[0]?.id,
+  defaultItems: disabledItems,
+});
+statefulDisabledStore.setState(
+  "renderedItems",
+  disabledItems.map((item) => ({ ...item })),
+);
+
 const smallStore = createCompositeStore({ defaultItems: smallItems });
 smallStore.setState("renderedItems", smallItems);
 
@@ -107,6 +121,19 @@ bench(
       statefulClonedStore.setActiveId(nextId);
     }
     sink = statefulClonedStore.getState().activeId;
+  },
+  options,
+);
+
+bench(
+  "move sequentially through disabled composite items",
+  () => {
+    statefulDisabledStore.setActiveId(disabledItems[0]?.id);
+    for (let index = 1; index < enabledItemCount; index += 1) {
+      const nextId = statefulDisabledStore.next();
+      statefulDisabledStore.setActiveId(nextId);
+    }
+    sink = statefulDisabledStore.getState().activeId;
   },
   options,
 );
