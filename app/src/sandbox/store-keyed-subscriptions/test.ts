@@ -53,6 +53,15 @@ test("supports keyed selector types", () => {
     );
     expectTypeOf(optionalKey).toEqualTypeOf<string | undefined>();
 
+    const optionalObject = useStoreStateObject(optionalStore, ["key"], {
+      direct: "otherKey",
+      derived: (state) => state?.key,
+    });
+    expectTypeOf(optionalObject).toEqualTypeOf<{
+      direct: string | undefined;
+      derived: string | undefined;
+    }>();
+
     const unionStore: typeof countStore | typeof labelStore =
       Math.random() > 0.5 ? countStore : labelStore;
     const unionValue = useStoreState(
@@ -72,6 +81,10 @@ test("supports keyed selector types", () => {
     useStoreState("store", ["foo"], "foo");
     // @ts-expect-error Object selector reads an undeclared key.
     useStoreStateObject(store, ["foo"], { bar: (state) => state.bar });
+    useStoreStateObject(optionalStore, ["foo"], {
+      // @ts-expect-error Optional object selector reads an undeclared key.
+      bar: (state) => state?.bar,
+    });
     // @ts-expect-error Key arrays require a third object argument.
     useStoreStateObject(store, ["foo"]);
     // @ts-expect-error The third argument must be an object.
@@ -93,6 +106,8 @@ test("runs selectors only for subscribed keys", async () => {
   ).textContent;
 
   expect(q.status("Optional value")).toHaveTextContent("none");
+  expect(q.status("Optional object direct bar")).toHaveTextContent("none");
+  expect(q.status("Optional object derived foo")).toHaveTextContent("none");
 
   await click(q.button("Update bar"));
 
@@ -111,6 +126,7 @@ test("runs selectors only for subscribed keys", async () => {
   expect(q.status("Mixed direct bar")).toHaveTextContent("1");
   expect(q.status("Mixed doubled foo")).toHaveTextContent("0");
   expect(q.status("Runtime bar")).toHaveTextContent("0");
+  expect(q.status("Object runtime bar")).toHaveTextContent("0");
 
   await click(q.button("Update foo"));
 
@@ -129,12 +145,27 @@ test("runs selectors only for subscribed keys", async () => {
   expect(q.status("Direct foo")).toHaveTextContent("1");
   expect(q.status("Mixed doubled foo")).toHaveTextContent("2");
   expect(q.status("Runtime bar")).toHaveTextContent("1");
+  expect(q.status("Object runtime bar")).toHaveTextContent("1");
 
   await click(q.button("Use optional store"));
   expect(q.status("Optional value")).toHaveTextContent("1");
+  expect(q.status("Optional object direct bar")).toHaveTextContent("1");
+  expect(q.status("Optional object derived foo")).toHaveTextContent("1");
+
+  await click(q.button("Update bar"));
+  expect(q.status("Optional value")).toHaveTextContent("1");
+  expect(q.status("Optional object direct bar")).toHaveTextContent("2");
+  expect(q.status("Optional object derived foo")).toHaveTextContent("1");
 
   await click(q.button("Update foo"));
   expect(q.status("Optional value")).toHaveTextContent("2");
+  expect(q.status("Optional object direct bar")).toHaveTextContent("2");
+  expect(q.status("Optional object derived foo")).toHaveTextContent("2");
+
+  await click(q.button("Clear optional store"));
+  expect(q.status("Optional value")).toHaveTextContent("none");
+  expect(q.status("Optional object direct bar")).toHaveTextContent("none");
+  expect(q.status("Optional object derived foo")).toHaveTextContent("none");
 });
 
 test("updates dynamic selector dependencies", async () => {

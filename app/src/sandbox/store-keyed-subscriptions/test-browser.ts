@@ -30,6 +30,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .innerText();
 
     await test.expect(q.status("Optional value")).toHaveText("none");
+    await test
+      .expect(q.status("Optional object direct bar"))
+      .toHaveText("none");
+    await test
+      .expect(q.status("Optional object derived foo"))
+      .toHaveText("none");
 
     await q.button("Update bar").click();
 
@@ -48,6 +54,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.status("Mixed direct bar")).toHaveText("1");
     await test.expect(q.status("Mixed doubled foo")).toHaveText("0");
     await test.expect(q.status("Runtime bar")).toHaveText("0");
+    await test.expect(q.status("Object runtime bar")).toHaveText("0");
 
     await q.button("Update foo").click();
 
@@ -66,12 +73,31 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.status("Direct foo")).toHaveText("1");
     await test.expect(q.status("Mixed doubled foo")).toHaveText("2");
     await test.expect(q.status("Runtime bar")).toHaveText("1");
+    await test.expect(q.status("Object runtime bar")).toHaveText("1");
 
     await q.button("Use optional store").click();
     await test.expect(q.status("Optional value")).toHaveText("1");
+    await test.expect(q.status("Optional object direct bar")).toHaveText("1");
+    await test.expect(q.status("Optional object derived foo")).toHaveText("1");
+
+    await q.button("Update bar").click();
+    await test.expect(q.status("Optional value")).toHaveText("1");
+    await test.expect(q.status("Optional object direct bar")).toHaveText("2");
+    await test.expect(q.status("Optional object derived foo")).toHaveText("1");
 
     await q.button("Update foo").click();
     await test.expect(q.status("Optional value")).toHaveText("2");
+    await test.expect(q.status("Optional object direct bar")).toHaveText("2");
+    await test.expect(q.status("Optional object derived foo")).toHaveText("2");
+
+    await q.button("Clear optional store").click();
+    await test.expect(q.status("Optional value")).toHaveText("none");
+    await test
+      .expect(q.status("Optional object direct bar"))
+      .toHaveText("none");
+    await test
+      .expect(q.status("Optional object derived foo"))
+      .toHaveText("none");
   });
 
   test("updates dynamic selector dependencies", async ({ q }) => {

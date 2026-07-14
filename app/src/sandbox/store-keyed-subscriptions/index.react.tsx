@@ -34,6 +34,7 @@ function KeyedSelectors({ store, calls }: SelectorProps) {
       calls.object += 1;
       return state.foo;
     },
+    runtimeBar: (state) => Reflect.get(state, "bar"),
   });
   const runtimeBar = useStoreState(store, ["foo"], (state) =>
     Reflect.get(state, "bar"),
@@ -47,6 +48,10 @@ function KeyedSelectors({ store, calls }: SelectorProps) {
       <p>
         Object selector value:{" "}
         <output aria-label="Object selector value">{object.value}</output>
+      </p>
+      <p>
+        Object runtime bar:{" "}
+        <output aria-label="Object runtime bar">{object.runtimeBar}</output>
       </p>
       <p>
         Runtime bar: <output aria-label="Runtime bar">{runtimeBar}</output>
@@ -104,15 +109,34 @@ function MixedValues({ store }: StoreProps) {
 function OptionalSelector({ store }: StoreProps) {
   const [currentStore, setCurrentStore] = useState<Store<TestState>>();
   const value = useStoreState(currentStore, ["foo"], (state) => state?.foo);
+  const object = useStoreStateObject(currentStore, ["foo"], {
+    directBar: "bar",
+    derivedFoo: (state) => state?.foo,
+  });
 
   return (
     <>
       <button type="button" onClick={() => setCurrentStore(store)}>
         Use optional store
       </button>
+      <button type="button" onClick={() => setCurrentStore(undefined)}>
+        Clear optional store
+      </button>
       <p>
         Optional value:{" "}
         <output aria-label="Optional value">{value ?? "none"}</output>
+      </p>
+      <p>
+        Optional object direct bar:{" "}
+        <output aria-label="Optional object direct bar">
+          {object.directBar ?? "none"}
+        </output>
+      </p>
+      <p>
+        Optional object derived foo:{" "}
+        <output aria-label="Optional object derived foo">
+          {object.derivedFoo ?? "none"}
+        </output>
       </p>
     </>
   );
