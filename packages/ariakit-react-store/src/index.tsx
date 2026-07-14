@@ -202,6 +202,7 @@ export function useStoreState(
   const storeSubscribe = React.useCallback(
     (callback: () => void) => {
       if (!store) return noopSubscribe();
+      if (subscriptionKeys?.length === 0) return noopSubscribe();
       return subscribe(store, subscriptionKeys, callback);
     },
     [store, subscriptionKeys],
@@ -341,6 +342,7 @@ export function useStoreStateObject(
   const storeSubscribe = React.useCallback(
     (callback: () => void) => {
       if (!store) return noopSubscribe();
+      if (subscriptionKeys?.length === 0) return noopSubscribe();
       return subscribe(store, subscriptionKeys, callback);
     },
     [store, subscriptionKeys],
