@@ -174,32 +174,34 @@ The `body`, card, and well are materials. The `main`, `header`, heading, and par
 
 In ordinary lighting, an exposed surface catches more light while a cutout or well receives less. Ariakit expresses that directional relationship directly, and the same intent holds on light and dark canvases:
 
-| Intent                      | Visual role                                                                          | Utilities                                                                                 |
-| --------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
-| Same plane                  | Content or layout that belongs to the current material                               | No new `ak-layer`                                                                         |
-| Raised or exposed           | Card, popover, floating toolbar, or control above its support                        | `ak-layer ak-layer-lighten-*`                                                             |
-| Recessed                    | Well, track, code area, media bed, input bed, or pressed region                      | `ak-layer ak-layer-darken-*`                                                              |
-| Appearance-aware separation | Selected row, adjacent pane, or neutral control that should contrast in either theme | `ak-layer ak-layer-*`                                                                     |
-| New material or pigment     | Canvas, primary action, warning, brand region, or another intentional color boundary | `ak-layer ak-layer-<color>`, optionally with `ak-layer-mix-*`                             |
-| Interactive response        | The same material responding to hover, press, focus, selection, or disabled state    | Variant-prefixed `ak-state-*`, `ak-ink-*`, `ak-outline-*`, and other contextual modifiers |
-| Parent-directed contrast    | A surface whose lightness must move against its supporting layer                     | `ak-layer-contrast`                                                                       |
-| Self-relative tonal push    | A surface that needs a minimum tonal move and must skip the ambiguous midrange       | `ak-layer-push-*`                                                                         |
+| Intent                      | Visual role                                                                                                   | Utilities                                                                                 |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Same plane                  | Content or layout that belongs to the current material                                                        | No new `ak-layer`                                                                         |
+| Raised or exposed           | Card, popover, floating toolbar, or control above its support                                                 | `ak-layer ak-layer-lighten-*`                                                             |
+| Recessed                    | Well, track, code area, media bed, input bed, or pressed region                                               | `ak-layer ak-layer-darken-*`                                                              |
+| Appearance-aware separation | Selected row, adjacent pane, or neutral standalone button that should remain visibly separate in either theme | `ak-layer ak-layer-*`                                                                     |
+| New material or pigment     | Canvas, primary action, warning, brand region, or another intentional color boundary                          | `ak-layer ak-layer-<color>`, optionally with `ak-layer-mix-*`                             |
+| Interactive response        | The same material responding to hover, press, focus, selection, or disabled state                             | Variant-prefixed `ak-state-*`, `ak-ink-*`, `ak-outline-*`, and other contextual modifiers |
+| Parent-directed contrast    | A surface whose lightness must move against its supporting layer                                              | `ak-layer-contrast`                                                                       |
+| Self-relative tonal push    | A surface that needs a minimum tonal move and must skip the ambiguous midrange                                | `ak-layer-push-*`                                                                         |
 
 Numeric `ak-layer-<number>` modifiers are not elevation values. They request appearance-aware separation from the selected source, which defaults to the parent layer. They normally move light sources darker and dark sources lighter, but the contrast-safe lightness pipeline may clamp the target or move it past an ambiguous midrange. Use them to separate a surface without declaring that it is above or below, and use `ak-layer-lighten-*` or `ak-layer-darken-*` when spatial direction matters.
 
+A neutral standalone button can use this material when its affordance should remain visible at rest. Use it selectively: buttons inside a toolbar or another shared surface can stay on that plane and rely on state or ink changes for interaction.
+
 Relative adjustments accumulate. Repeating them through wrappers creates competing boxes and can exhaust the useful tonal range. A practical test for every layer is: "Why is this a different material?" If the answer is only "because this element is nested," remove it.
 
-Interactive states usually change the existing material instead of creating another nested surface:
+Interactive states usually change the existing material instead of creating another nested surface. For routine hover feedback, prefer an appearance-aware tonal response so it remains perceptible when the component moves between light and dark scenes. Use a fixed lighten or darken direction only when that direction carries meaning, such as a pressed surface moving inward:
 
 ```html
 <button
-  class="ak-layer ak-layer-lighten-6 hover:ak-state-lighten-2 active:ak-state-darken-3 ak-frame ak-frame-field/field focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
+  class="ak-layer ak-layer-6 hover:ak-state-6 active:ak-state-darken-6 ak-frame ak-frame-field/field focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
 >
   Save
 </button>
 ```
 
-The button starts raised, becomes slightly more exposed on hover, and darkens when pressed. Its focus outline is an external signal, not another material.
+The button has its own neutral material because it needs to stand out from nearby content. Hover moves its tone in the useful direction for the current theme, while pressing intentionally darkens it. Its focus outline is an external signal, not another material.
 
 ### Treat color as a material finish
 
@@ -210,7 +212,7 @@ Treat hue as information. Keep most of the scene in one family, then spend stron
 ```html
 <div class="flex items-center gap-2">
   <button
-    class="ak-layer ak-layer-primary hover:ak-state-lighten-2 active:ak-state-darken-3 ak-frame ak-frame-field/field focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
+    class="ak-layer ak-layer-primary hover:ak-state-6 active:ak-state-darken-6 ak-frame ak-frame-field/field focus-visible:ak-outline focus-visible:ak-outline-primary focus-visible:outline-2"
   >
     Deploy now
   </button>
@@ -511,26 +513,28 @@ The explicit `ak-layer-mix-*` longhands configure the mix color, amount, and met
 
 `ak-state-*` utilities are companions to `ak-layer-*` that target interactive states (hover, active, focus). They shift the state layer's lightness, chroma, and hue separately from the idle layer setup. Descendant text and edges still respond to the resulting layer color.
 
+For routine hover feedback, prefer appearance-aware numeric `ak-state-*`. It chooses a useful lightness direction from the current material, so the response remains perceptible across light and dark scenes. Use `ak-state-lighten-*` or `ak-state-darken-*` when the direction itself is intentional.
+
 The static `ak-layer` class must be applied to the same element as `ak-state-*`. Keep `ak-layer` unprefixed, then add state utilities with variants such as `hover:` or `active:`.
 
 ```html
 <button
-  class="ak-layer ak-layer-primary hover:ak-state-lighten-2 active:ak-state-darken-3 ak-frame ak-frame-field/field"
+  class="ak-layer ak-layer-primary hover:ak-state-6 active:ak-state-darken-6 ak-frame ak-frame-field/field"
 >
   Primary action
 </button>
 ```
 
-| Utility                        | Description                                                                                                                                                            |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ak-state-<value>`             | Adjusts lightness for interactive state (`0`–`100` for bare numbers), parallel to `ak-layer-<number>`. Custom properties can use `ak-state-(--depth)` with raw values. |
-| `ak-state-offset-<value>`      | Explicit lightness-offset alias for `ak-state-<value>`. Useful for custom properties (`ak-state-offset-(--depth)`). Arbitrary/custom-property values are raw.          |
-| `ak-state-lighten-<number>`    | Lightens in state context.                                                                                                                                             |
-| `ak-state-darken-<number>`     | Darkens in state context.                                                                                                                                              |
-| `ak-state-saturate-<number>`   | Increases chroma in state context.                                                                                                                                     |
-| `ak-state-desaturate-<number>` | Decreases chroma in state context.                                                                                                                                     |
-| `ak-state-push-<number>`       | Minimum lightness shift in state context.                                                                                                                              |
-| `ak-state-h-rotate-<number>`   | Rotates hue in state context.                                                                                                                                          |
+| Utility                        | Description                                                                                                                                                                                       |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ak-state-<value>`             | Applies an appearance-aware lightness offset for interactive state (`0`–`100` for bare numbers), parallel to `ak-layer-<number>`. Custom properties can use `ak-state-(--depth)` with raw values. |
+| `ak-state-offset-<value>`      | Explicit lightness-offset alias for `ak-state-<value>`. Useful for custom properties (`ak-state-offset-(--depth)`). Arbitrary/custom-property values are raw.                                     |
+| `ak-state-lighten-<number>`    | Lightens in state context when that fixed direction is intentional.                                                                                                                               |
+| `ak-state-darken-<number>`     | Darkens in state context when that fixed direction is intentional.                                                                                                                                |
+| `ak-state-saturate-<number>`   | Increases chroma in state context.                                                                                                                                                                |
+| `ak-state-desaturate-<number>` | Decreases chroma in state context.                                                                                                                                                                |
+| `ak-state-push-<number>`       | Minimum lightness shift in state context.                                                                                                                                                         |
+| `ak-state-h-rotate-<number>`   | Rotates hue in state context.                                                                                                                                                                     |
 
 ## `ak-ink`
 
