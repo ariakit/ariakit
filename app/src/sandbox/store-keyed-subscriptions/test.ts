@@ -195,3 +195,39 @@ test("updates dynamic selector dependencies", async () => {
   expect(selectorValue).toHaveTextContent("bar:2");
   expect(objectValue).toHaveTextContent("bar:2");
 });
+
+test("attaches and detaches conditional selector dependencies", async () => {
+  const selectorValue = q.status("Conditional selector value");
+  const calls = q.status.ensure("Conditional selector calls");
+  const pausedCalls = calls.textContent;
+
+  expect(selectorValue).toHaveTextContent("paused");
+
+  await click(q.button("Update foo"));
+
+  expect(selectorValue).toHaveTextContent("paused");
+  expect(calls.textContent).toBe(pausedCalls);
+
+  await click(q.button("Enable conditional selector"));
+
+  expect(selectorValue).toHaveTextContent("1");
+
+  await click(q.button("Update foo"));
+
+  expect(selectorValue).toHaveTextContent("2");
+  expect(calls.textContent).not.toBe(pausedCalls);
+
+  await click(q.button("Pause conditional selector"));
+
+  expect(selectorValue).toHaveTextContent("paused");
+
+  await click(q.button("Update bar"));
+
+  expect(selectorValue).toHaveTextContent("paused");
+  const detachedCalls = calls.textContent;
+
+  await click(q.button("Update foo"));
+
+  expect(selectorValue).toHaveTextContent("paused");
+  expect(calls.textContent).toBe(detachedCalls);
+});

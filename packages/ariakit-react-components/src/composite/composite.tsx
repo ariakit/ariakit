@@ -136,8 +136,10 @@ function useScheduleFocus(store: CompositeStore) {
   // Only track the active item while a focus is scheduled. Otherwise, this
   // subscription would re-render the composite component on every active item
   // change, such as when moving through items with arrow keys.
-  const activeItem = useStoreState(store, ["activeId", "items"], (state) =>
-    scheduled ? getEnabledItem(store, state.activeId) : null,
+  const activeItem = useStoreState(
+    store,
+    scheduled ? ["activeId", "items"] : [],
+    (state) => (scheduled ? getEnabledItem(store, state.activeId) : null),
   );
   useEffect(() => {
     const activeElement = activeItem?.element;
@@ -263,8 +265,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     // moving through items with roving tabindex.
     const activeId = useStoreState(
       store,
-      ["virtualFocus", "activeId"],
-      (state) => (state.virtualFocus ? state.activeId : null),
+      virtualFocus ? ["activeId"] : [],
+      (state) => (virtualFocus ? state.activeId : null),
     );
 
     // At this point, if the activeId has changed and we still have a
@@ -501,11 +503,11 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const activeDescendant = useStoreState(
       store,
-      ["virtualFocus", "activeId", "items"],
+      composite && virtualFocus ? ["activeId", "items"] : [],
       (state) => {
         if (!store) return;
         if (!composite) return;
-        if (!state.virtualFocus) return;
+        if (!virtualFocus) return;
         return getEnabledItem(store, state.activeId)?.id;
       },
     );
@@ -524,8 +526,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const focusable = useStoreState(
       store,
-      ["virtualFocus", "activeId"],
-      (state) => composite && (state.virtualFocus || state.activeId === null),
+      composite && !virtualFocus ? ["activeId"] : [],
+      (state) => composite && (virtualFocus || state.activeId === null),
     );
 
     props = useFocusable({ focusable, ...props });

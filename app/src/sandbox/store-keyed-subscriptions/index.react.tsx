@@ -14,6 +14,7 @@ interface SelectorCalls {
   unkeyed: number;
   empty: number;
   emptyObject: number;
+  conditional: number;
 }
 
 interface StoreProps {
@@ -84,6 +85,28 @@ function EmptyObjectSelector({ store, calls }: SelectorProps) {
     },
   });
   return null;
+}
+
+function ConditionalSelector({ store, calls }: SelectorProps) {
+  const [enabled, setEnabled] = useState(false);
+  const value = useStoreState(store, enabled ? ["foo"] : [], (state) => {
+    calls.conditional += 1;
+    return enabled ? state.foo : null;
+  });
+
+  return (
+    <>
+      <button type="button" onClick={() => setEnabled((value) => !value)}>
+        {enabled ? "Pause conditional selector" : "Enable conditional selector"}
+      </button>
+      <p>
+        Conditional selector value:{" "}
+        <output aria-label="Conditional selector value">
+          {value ?? "paused"}
+        </output>
+      </p>
+    </>
+  );
 }
 
 function MixedValues({ store }: StoreProps) {
@@ -238,6 +261,12 @@ function Controls({ store, calls }: SelectorProps) {
           {getCallCount("emptyObject")}
         </output>
       </p>
+      <p>
+        Conditional selector calls:{" "}
+        <output aria-label="Conditional selector calls">
+          {getCallCount("conditional")}
+        </output>
+      </p>
     </>
   );
 }
@@ -250,6 +279,7 @@ export default function Example() {
     unkeyed: 0,
     empty: 0,
     emptyObject: 0,
+    conditional: 0,
   });
 
   return (
@@ -258,6 +288,7 @@ export default function Example() {
       <UnkeyedSelector store={store} calls={calls.current} />
       <EmptySelector store={store} calls={calls.current} />
       <EmptyObjectSelector store={store} calls={calls.current} />
+      <ConditionalSelector store={store} calls={calls.current} />
       <DirectValues store={store} />
       <MixedValues store={store} />
       <DynamicSelectors store={store} />

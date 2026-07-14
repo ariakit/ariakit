@@ -127,4 +127,42 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(selectorValue).toHaveText("bar:2");
     await test.expect(objectValue).toHaveText("bar:2");
   });
+
+  test("attaches and detaches conditional selector dependencies", async ({
+    q,
+  }) => {
+    const selectorValue = q.status("Conditional selector value");
+    const calls = q.status("Conditional selector calls");
+    const pausedCalls = await calls.innerText();
+
+    await test.expect(selectorValue).toHaveText("paused");
+
+    await q.button("Update foo").click();
+
+    await test.expect(selectorValue).toHaveText("paused");
+    await test.expect(calls).toHaveText(pausedCalls);
+
+    await q.button("Enable conditional selector").click();
+
+    await test.expect(selectorValue).toHaveText("1");
+
+    await q.button("Update foo").click();
+
+    await test.expect(selectorValue).toHaveText("2");
+    await test.expect(calls).not.toHaveText(pausedCalls);
+
+    await q.button("Pause conditional selector").click();
+
+    await test.expect(selectorValue).toHaveText("paused");
+
+    await q.button("Update bar").click();
+
+    await test.expect(selectorValue).toHaveText("paused");
+    const detachedCalls = await calls.innerText();
+
+    await q.button("Update foo").click();
+
+    await test.expect(selectorValue).toHaveText("paused");
+    await test.expect(calls).toHaveText(detachedCalls);
+  });
 });
