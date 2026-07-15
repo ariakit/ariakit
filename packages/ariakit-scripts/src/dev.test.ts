@@ -10,15 +10,11 @@ import {
   rm,
   writeFile,
 } from "node:fs/promises";
+import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { delimiter, join } from "node:path";
 import { afterEach, expect, test, vi } from "vitest";
-import {
-  dev,
-  shouldIgnorePackageWatchPath,
-  watchPackageChanges,
-} from "./dev.ts";
-import { getCommandOutput } from "./utils.ts";
+import { shouldIgnorePackageWatchPath, watchPackageChanges } from "./dev.ts";
 
 async function waitForFile(filename: string) {
   const timeout = Date.now() + 5000;
@@ -33,47 +29,36 @@ async function waitForFile(filename: string) {
   throw new Error(`Timed out waiting for ${filename}`);
 }
 
-/**
- * Waits until a test process has written the expected signal sequence.
- */
-async function waitForFileContents(filename: string, expected: string) {
-  const timeout = Date.now() + 5000;
-  while (Date.now() < timeout) {
-    try {
-      if ((await readFile(filename, "utf8")) === expected) return;
-    } catch {
-      // The signal log may not exist yet.
-    }
-    await new Promise((resolve) => setTimeout(resolve, 25));
-  }
-  throw new Error(`Timed out waiting for ${expected.trim()} in ${filename}`);
+async function isPortAvailable(port: number) {
+  return await new Promise<boolean>((resolve, reject) => {
+    const server = createServer();
+    server.once("error", (error: NodeJS.ErrnoException) => {
+      if (error.code === "EADDRINUSE") {
+        resolve(false);
+        return;
+      }
+      reject(error);
+    });
+    server.once("listening", () => {
+      server.close(() => resolve(true));
+    });
+    server.listen(port, "127.0.0.1");
+  });
 }
 
-/**
- * Waits until a test process has spawned a direct child.
- */
-async function waitForChildProcess(pid: number) {
+async function waitForPortsAvailable(ports: number[]) {
   const timeout = Date.now() + 5000;
   while (Date.now() < timeout) {
-    try {
-      const output = getCommandOutput(
-        "pgrep",
-        ["-P", String(pid)],
-        process.cwd(),
-      );
-      const childPid = Number(output.split("\n")[0]);
-      if (Number.isInteger(childPid)) return childPid;
-    } catch {
-      // The child may not have started yet.
-    }
+    const available = await Promise.all(ports.map(isPortAvailable));
+    if (available.every(Boolean)) return;
     await new Promise((resolve) => setTimeout(resolve, 25));
   }
-  throw new Error(`Timed out waiting for a child of process ${pid}`);
+  throw new Error(`Timed out waiting for ports ${ports.join(", ")}`);
 }
 
-function killProcessGroup(pid: number, signal: NodeJS.Signals) {
+function killProcess(pid: number, signal: NodeJS.Signals) {
   try {
-    process.kill(-pid, signal);
+    process.kill(pid, signal);
   } catch (error) {
     if (!(error instanceof Error)) {
       throw error;
@@ -87,76 +72,35 @@ function killProcessGroup(pid: number, signal: NodeJS.Signals) {
   }
 }
 
-/**
- * Force-kills a running test child and waits for its process resources to be
- * released.
- */
-async function forceKillAndWait(child: ChildProcess, kill: () => void) {
+function killProcessGroup(pid: number, signal: NodeJS.Signals) {
+  killProcess(-pid, signal);
+}
+
+async function forceKillAndWait(child: ChildProcess, pid: number) {
   if (child.exitCode != null) return;
   if (child.signalCode != null) return;
 
   const exitPromise = once(child, "exit", {
-    signal: AbortSignal.timeout(2000),
+    signal: AbortSignal.timeout(5000),
   });
-  kill();
+  killProcessGroup(pid, "SIGKILL");
   await exitPromise;
 }
 
-/**
- * Waits until an isolated test process group has fully exited.
- */
-async function waitForProcessGroupExit(pid: number) {
-  const timeout = Date.now() + 2000;
-  while (Date.now() < timeout) {
-    try {
-      process.kill(-pid, 0);
-    } catch (error) {
-      if (!(error instanceof Error)) {
-        throw error;
-      }
-      if (!("code" in error)) {
-        throw error;
-      }
-      if (error.code === "ESRCH") return;
-      // Every process in this test group runs as the current user. EPERM means
-      // the original group exited and its id is no longer ours to inspect.
-      if (error.code === "EPERM") return;
-      throw error;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 25));
+async function readProcessIds(filename: string) {
+  try {
+    const contents = await readFile(filename, "utf8");
+    return contents
+      .split("\n")
+      .map(Number)
+      .filter((pid) => Number.isInteger(pid) && pid > 0);
+  } catch {
+    return [];
   }
-  throw new Error(`Timed out waiting for process group ${pid}`);
-}
-
-/**
- * Waits until an isolated test coordinator has stopped for job control.
- */
-async function waitForProcessStopped(pid: number) {
-  const timeout = Date.now() + 2000;
-  while (Date.now() < timeout) {
-    try {
-      const status = getCommandOutput(
-        "ps",
-        ["-o", "stat=", "-p", String(pid)],
-        process.cwd(),
-      );
-      if (status.startsWith("T")) return;
-    } catch {
-      // The coordinator may still be starting.
-    }
-    await new Promise((resolve) => setTimeout(resolve, 25));
-  }
-  throw new Error(`Timed out waiting for process ${pid} to stop`);
 }
 
 class FakePackageWatcher {
   private listeners = new Map<string, ((filename: string) => void)[]>();
-
-  closed = false;
-
-  async close() {
-    this.closed = true;
-  }
 
   on(event: string, listener: (filename: string) => void) {
     const listeners = this.listeners.get(event) ?? [];
@@ -178,7 +122,6 @@ class FakePackageWatcher {
 afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
-  vi.unstubAllEnvs();
 });
 
 test("ignores package watch paths outside source and package json", () => {
@@ -216,177 +159,87 @@ test("ignores package watch paths outside source and package json", () => {
   ).toBe(false);
 });
 
-test("rejects native Windows dev mode", async () => {
-  const rootPath = await mkdtemp(join(tmpdir(), "ariakit-dev-windows-"));
-  vi.spyOn(process, "platform", "get").mockReturnValue("win32");
-  vi.stubEnv("PATH", rootPath);
-
-  try {
-    await expect(dev({ clean: false })).rejects.toThrow(
-      "ariakit dev is not supported on native Windows. Use WSL.",
-    );
-  } finally {
-    await rm(rootPath, { recursive: true, force: true });
-  }
-});
-
-test.skipIf(process.platform === "win32").each([
-  {
-    expectedExit: [0, null] as const,
-    resumeBeforeShutdown: true,
-    shutdownSignal: "SIGINT" as const,
-  },
-  {
-    expectedExit: [131, null] as const,
-    resumeBeforeShutdown: true,
-    shutdownSignal: "SIGQUIT" as const,
-  },
-  {
-    expectedExit: [null, "SIGKILL"] as const,
-    resumeBeforeShutdown: false,
-    shutdownSignal: "SIGKILL" as const,
-  },
-])(
-  "handles $shutdownSignal without leaving dev processes",
-  async ({ expectedExit, resumeBeforeShutdown, shutdownSignal }) => {
+test.skipIf(process.platform === "win32").each(["SIGINT", "SIGKILL"] as const)(
+  "releases both dev ports after %s",
+  async (signal) => {
     const rootPath = await mkdtemp(join(tmpdir(), "ariakit-dev-command-"));
-    const appSignalsPath = join(rootPath, "app-signals.txt");
-    const argsPath = join(rootPath, "args.json");
-    const commandScriptPath = join(rootPath, "command");
+    const appReadyPath = join(rootPath, "app-ready.txt");
     const concPath = join(rootPath, "conc");
-    const concPidPath = join(rootPath, "conc-pid.txt");
-    const concSignalsPath = join(rootPath, "conc-signals.txt");
-    const nextjsSignalsPath = join(rootPath, "nextjs-signals.txt");
+    const nextjsReadyPath = join(rootPath, "nextjs-ready.txt");
+    const processIdsPath = join(rootPath, "process-ids.txt");
+    const readyPath = join(rootPath, "ready.txt");
+    const serverPath = join(rootPath, "server.cjs");
     const scriptPath = join(
       process.cwd(),
       "packages/ariakit-scripts/src/index.ts",
     );
-    const stoppedPath = join(rootPath, "stopped");
-    const supervisorPidPath = join(rootPath, "supervisor-pid.txt");
-    const supervisorPreloadPath = join(rootPath, "supervisor-preload.cjs");
     const searchPath = [rootPath, process.env.PATH]
       .filter(Boolean)
       .join(delimiter);
-    const signalPaths = [concSignalsPath, appSignalsPath, nextjsSignalsPath];
+    const portSeed = 30000 + (process.pid % 5000);
 
     await writeFile(
-      supervisorPreloadPath,
-      `const { writeFileSync } = require("node:fs");
-if (process.argv[1]?.endsWith("command-supervisor.ts")) {
-  writeFileSync(process.env.SUPERVISOR_PID_PATH, String(process.pid));
-  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 300);
-}
+      serverPath,
+      `const { createServer } = require("node:net");
+const { writeFileSync } = require("node:fs");
+const port = Number(process.argv[2]);
+const server = createServer();
+server.listen(port, "127.0.0.1", () => {
+  writeFileSync(process.argv[3], String(process.pid));
+});
 `,
     );
-
-    await writeFile(
-      commandScriptPath,
-      `#!/usr/bin/env node
-const { appendFileSync } = require("node:fs");
-const signalsPath = process.argv[2];
-const ignoreSigterm = process.env.IGNORE_SIGTERM_PATH === signalsPath;
-const recordSignal = (signal) => {
-  appendFileSync(signalsPath, signal + "\\n");
-};
-const stop = (signal) => {
-  recordSignal(signal);
-  if (signal === "SIGTERM" && ignoreSigterm) return;
-  setTimeout(() => process.exit(0), 100);
-};
-process.on("SIGCONT", recordSignal);
-process.on("SIGINT", stop);
-process.on("SIGQUIT", stop);
-process.on("SIGTERM", stop);
-if (process.send) {
-  process.send("ready");
-}
-setInterval(() => {}, 1000);
-`,
-    );
-    await chmod(commandScriptPath, 0o755);
-
     await writeFile(
       concPath,
       `#!/usr/bin/env node
 const { spawn } = require("node:child_process");
-const { appendFileSync, writeFileSync } = require("node:fs");
-writeFileSync(process.env.CONC_PID_PATH, String(process.pid));
+const { writeFileSync } = require("node:fs");
 const children = [
-  process.env.APP_SIGNALS_PATH,
-  process.env.NEXTJS_SIGNALS_PATH,
-].map((signalsPath) =>
-  spawn(process.env.COMMAND_SCRIPT_PATH, [signalsPath], {
-    stdio: ["ignore", "ignore", "ignore", "ipc"],
-  }),
+  // Model Astro 7 daemonizing unless background mode is explicitly disabled.
+  spawn(
+    process.execPath,
+    [process.env.SERVER_PATH, process.env.APP_PORT, process.env.APP_READY_PATH],
+    {
+      detached: process.env.ASTRO_DEV_BACKGROUND !== "0",
+      stdio: "ignore",
+    },
+  ),
+  spawn(
+    process.execPath,
+    [
+      process.env.SERVER_PATH,
+      process.env.NEXTJS_PORT,
+      process.env.NEXTJS_READY_PATH,
+    ],
+    { stdio: "ignore" },
+  ),
+];
+writeFileSync(
+  process.env.PROCESS_IDS_PATH,
+  children.map((child) => child.pid).join("\\n"),
 );
-let readyChildren = 0;
-for (const child of children) {
-  child.once("message", () => {
-    readyChildren += 1;
-    if (readyChildren !== children.length) return;
-    writeFileSync(process.env.ARGS_PATH, JSON.stringify({
-      args: process.argv.slice(2),
-      astroDevBackground: process.env.ASTRO_DEV_BACKGROUND,
-    }));
-  });
-}
-let stopping = false;
-const recordSignal = (signal) => {
-  appendFileSync(process.env.CONC_SIGNALS_PATH, signal + "\\n");
-};
-const stop = (signal) => {
-  recordSignal(signal);
-  for (const child of children) {
-    child.kill(signal);
-  }
-  if (process.env.CONC_EXITS_BEFORE_CHILDREN) {
-    process.exit(0);
-  }
-  if (stopping) return;
-  stopping = true;
-  Promise.all(
-    children.map((child) => new Promise((resolve) => child.once("exit", resolve))),
-  ).then(() => {
-    writeFileSync(process.env.STOPPED_PATH, "");
-    process.exit(0);
-  });
-};
-process.on("SIGCONT", recordSignal);
-process.on("SIGINT", stop);
-process.on("SIGQUIT", (signal) => {
-  recordSignal(signal);
-  Promise.all(
-    children.map((child) => new Promise((resolve) => child.once("exit", resolve))),
-  ).then(() => process.exit(131));
-});
-process.on("SIGTERM", stop);
-setInterval(() => {}, 1000);
+writeFileSync(
+  process.env.READY_PATH,
+  [process.env.APP_PORT, process.env.NEXTJS_PORT].join("\\n"),
+);
 `,
     );
     await chmod(concPath, 0o755);
 
-    let concPid: number | undefined;
+    // Isolate the test group so its signals never reach the Vitest process.
     const child = spawn(process.execPath, [scriptPath, "dev", "--no-clean"], {
       detached: true,
       env: {
         ...process.env,
-        APP_SIGNALS_PATH: appSignalsPath,
-        ARGS_PATH: argsPath,
-        COMMAND_SCRIPT_PATH: commandScriptPath,
-        CONC_PID_PATH: concPidPath,
-        CONC_SIGNALS_PATH: concSignalsPath,
-        CONC_EXITS_BEFORE_CHILDREN: resumeBeforeShutdown ? "" : "1",
-        IGNORE_SIGTERM_PATH: resumeBeforeShutdown ? "" : nextjsSignalsPath,
-        NEXTJS_SIGNALS_PATH: nextjsSignalsPath,
-        NODE_OPTIONS: [
-          process.env.NODE_OPTIONS,
-          `--require=${supervisorPreloadPath}`,
-        ]
-          .filter(Boolean)
-          .join(" "),
+        APP_PORT: String(portSeed),
+        APP_READY_PATH: appReadyPath,
+        ASTRO_DEV_BACKGROUND: "",
+        NEXTJS_PORT: String(portSeed + 10000),
+        NEXTJS_READY_PATH: nextjsReadyPath,
         PATH: searchPath,
-        STOPPED_PATH: stoppedPath,
-        SUPERVISOR_PID_PATH: supervisorPidPath,
+        PROCESS_IDS_PATH: processIdsPath,
+        READY_PATH: readyPath,
+        SERVER_PATH: serverPath,
       },
       stdio: "ignore",
     });
@@ -395,124 +248,45 @@ setInterval(() => {}, 1000);
       throw new Error("Failed to start the dev command");
     }
 
+    let ports: number[] = [];
     try {
-      if (resumeBeforeShutdown) {
-        await waitForFile(supervisorPidPath);
-        const supervisorPid = Number(await readFile(supervisorPidPath, "utf8"));
-        killProcessGroup(pid, "SIGTSTP");
-        concPid = await waitForChildProcess(supervisorPid);
-        await waitForProcessStopped(concPid);
-        killProcessGroup(pid, "SIGCONT");
-      } else {
-        await waitForFile(concPidPath);
-        concPid = Number(await readFile(concPidPath, "utf8"));
-      }
+      await Promise.all([
+        waitForFile(appReadyPath),
+        waitForFile(nextjsReadyPath),
+      ]);
+      const [actualAppPort, actualNextjsPort] = (
+        await readFile(readyPath, "utf8")
+      ).split("\n");
 
-      await waitForFile(argsPath);
-      await expect(readFile(concPidPath, "utf8")).resolves.toBe(
-        String(concPid),
-      );
-      const result: unknown = JSON.parse(await readFile(argsPath, "utf8"));
-      expect(result).toEqual({
-        args: [
-          "-r",
-          expect.stringMatching(/^pnpm -F app run dev --port \d+$/),
-          expect.stringMatching(/^pnpm -F nextjs run dev --port \d+$/),
-        ],
-        astroDevBackground: "0",
-      });
-
-      if (resumeBeforeShutdown) {
-        await Promise.all(
-          signalPaths.map((filename) => writeFile(filename, "")),
-        );
-        killProcessGroup(pid, "SIGTSTP");
-        await waitForProcessStopped(concPid);
-        killProcessGroup(pid, "SIGCONT");
-        await Promise.all(
-          signalPaths.map((filename) =>
-            waitForFileContents(filename, "SIGCONT\n"),
-          ),
-        );
-      } else {
-        killProcessGroup(pid, "SIGTSTP");
-        await waitForProcessStopped(concPid);
+      ports = [Number(actualAppPort), Number(actualNextjsPort)];
+      if (!ports.every(Number.isInteger)) {
+        throw new Error(`Invalid dev ports: ${ports.join(", ")}`);
       }
 
       const exitPromise = once(child, "exit", {
-        signal: AbortSignal.timeout(2000),
+        signal: AbortSignal.timeout(5000),
       });
-      killProcessGroup(pid, shutdownSignal);
-      const [exitCode, signal] = await exitPromise;
-      expect([exitCode, signal]).toEqual(expectedExit);
-      await waitForProcessGroupExit(concPid);
-      concPid = undefined;
-      if (shutdownSignal === "SIGINT") {
-        await expect(
-          access(stoppedPath),
-          `dev exited with ${exitCode ?? signal} before cleanup finished`,
-        ).resolves.toBeUndefined();
-      }
-      for (const filename of signalPaths) {
-        const signals = await readFile(filename, "utf8");
-        if (resumeBeforeShutdown) {
-          expect(signals).toBe(`SIGCONT\n${shutdownSignal}\n`);
-        } else {
-          const receivedSignals = signals.trim().split("\n");
-          // SIGCONT resumes a process before its JavaScript handler runs, so
-          // an immediately exiting coordinator may only record SIGTERM.
-          expect(
-            receivedSignals.every(
-              (signal) => signal === "SIGCONT" || signal === "SIGTERM",
-            ),
-          ).toBe(true);
-          expect(
-            receivedSignals.filter((signal) => signal === "SIGCONT").length,
-          ).toBeLessThanOrEqual(1);
-          expect(
-            receivedSignals.filter((signal) => signal === "SIGTERM"),
-          ).toHaveLength(1);
-        }
-      }
+      killProcessGroup(pid, signal);
+      await exitPromise;
+      await waitForPortsAvailable(ports);
     } finally {
-      if (concPid) {
-        killProcessGroup(concPid, "SIGKILL");
+      await forceKillAndWait(child, pid);
+      const processIds = await readProcessIds(processIdsPath);
+      for (let index = 0; index < ports.length; index += 1) {
+        const port = ports[index];
+        const processId = processIds[index];
+        if (!port) continue;
+        if (!processId) continue;
+        if (await isPortAvailable(port)) continue;
+        killProcess(processId, "SIGKILL");
       }
-      await forceKillAndWait(child, () => {
-        killProcessGroup(pid, "SIGKILL");
-      });
+      if (ports.length) {
+        await waitForPortsAvailable(ports);
+      }
       await rm(rootPath, { recursive: true, force: true });
     }
   },
 );
-
-test("closes the package watcher when the dev command fails", async () => {
-  const rootPath = await mkdtemp(join(tmpdir(), "ariakit-dev-failure-"));
-  const scriptPath = join(
-    process.cwd(),
-    "packages/ariakit-scripts/src/index.ts",
-  );
-  await mkdir(join(rootPath, "packages"));
-
-  const child = spawn(process.execPath, [scriptPath, "dev"], {
-    cwd: rootPath,
-    env: {
-      ...process.env,
-      PATH: rootPath,
-    },
-    stdio: "ignore",
-  });
-
-  try {
-    const [exitCode, signal] = await once(child, "exit", {
-      signal: AbortSignal.timeout(2000),
-    });
-    expect([exitCode, signal]).toEqual([1, null]);
-  } finally {
-    await forceKillAndWait(child, () => child.kill("SIGKILL"));
-    await rm(rootPath, { recursive: true, force: true });
-  }
-});
 
 test("watches packages and cleans changed package entries", async () => {
   const rootPath = await mkdtemp(join(tmpdir(), "ariakit-dev-"));
@@ -571,57 +345,6 @@ test("watches packages and cleans changed package entries", async () => {
     ]);
     expect(cleanPackages).toHaveBeenCalledTimes(2);
   } finally {
-    await rm(rootPath, { recursive: true, force: true });
-  }
-});
-
-test("flushes pending package changes when the watcher closes", async () => {
-  const rootPath = await mkdtemp(join(tmpdir(), "ariakit-dev-close-"));
-  let finishClean = () => {};
-  const cleanFinished = new Promise<void>((resolve) => {
-    finishClean = resolve;
-  });
-  let closePromise: Promise<void> | undefined;
-
-  try {
-    await mkdir(join(rootPath, "packages/foo/src"), { recursive: true });
-    await writeFile(
-      join(rootPath, "packages/foo/package.json"),
-      `${JSON.stringify({ scripts: { clean: "ariakit clean" } }, null, 2)}\n`,
-    );
-
-    vi.useFakeTimers();
-    vi.spyOn(process, "cwd").mockReturnValue(rootPath);
-
-    const watcher = new FakePackageWatcher();
-    const cleanPackages = vi.fn(() => cleanFinished);
-    const handle = watchPackageChanges({
-      cleanPackages,
-      watch: () => watcher,
-    });
-
-    watcher.emit("change", "packages/foo/src/index.ts");
-    let closed = false;
-    closePromise = handle.close().then(() => {
-      closed = true;
-    });
-    await vi.advanceTimersByTimeAsync(0);
-
-    expect(watcher.closed).toBe(true);
-    expect(cleanPackages).toHaveBeenCalledWith([
-      {
-        path: join(rootPath, "packages/foo"),
-      },
-    ]);
-    expect(vi.getTimerCount()).toBe(0);
-    expect(closed).toBe(false);
-
-    finishClean();
-    await closePromise;
-    expect(closed).toBe(true);
-  } finally {
-    finishClean();
-    await closePromise;
     await rm(rootPath, { recursive: true, force: true });
   }
 });

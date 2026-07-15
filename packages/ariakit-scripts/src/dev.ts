@@ -1,9 +1,10 @@
+import { spawn } from "node:child_process";
 import { readdir } from "node:fs/promises";
 import { createServer } from "node:net";
 import { isAbsolute, join, relative } from "node:path";
 import { watch } from "chokidar";
 import { cleanPackage } from "./build.ts";
-import { normalizePath, readPackageJson, runCommand } from "./utils.ts";
+import { normalizePath, readPackageJson } from "./utils.ts";
 
 interface DevOptions {
   clean?: boolean;
@@ -15,11 +16,6 @@ interface CleanPackage {
 
 interface PackageWatcher {
   on(event: string, listener: (filename: string) => void): PackageWatcher;
-  close(): Promise<void>;
-}
-
-interface PackageWatchHandle {
-  close(): Promise<void>;
 }
 
 interface WatchPackageChangesOptions {
@@ -103,9 +99,7 @@ async function cleanPackages(packages: CleanPackage[]) {
   }
 }
 
-export function watchPackageChanges(
-  options: WatchPackageChangesOptions = {},
-): PackageWatchHandle {
+export function watchPackageChanges(options: WatchPackageChangesOptions = {}) {
   const watchPackages = options.watch ?? watch;
   const cleanPackageList = options.cleanPackages ?? cleanPackages;
   let timeout: NodeJS.Timeout | undefined;
@@ -134,7 +128,7 @@ export function watchPackageChanges(
     timeout = setTimeout(runClean, 100);
   };
 
-  const watcher = watchPackages("packages", {
+  watchPackages("packages", {
     ignoreInitial: true,
     ignored: shouldIgnorePackageWatchPath,
   })
@@ -142,18 +136,6 @@ export function watchPackageChanges(
     .on("change", scheduleClean)
     .on("unlink", scheduleClean)
     .on("unlinkDir", scheduleClean);
-
-  return {
-    async close() {
-      try {
-        await watcher.close();
-      } finally {
-        clearTimeout(timeout);
-        runClean();
-        await queue;
-      }
-    },
-  };
 }
 
 /**
@@ -190,46 +172,35 @@ async function findAvailablePort(
 }
 
 export async function dev(options: DevOptions = {}) {
-  if (process.platform === "win32") {
-    throw new Error("ariakit dev is not supported on native Windows. Use WSL.");
-  }
-
-  let packageWatcher: PackageWatchHandle | undefined;
   if (options.clean !== false) {
     await cleanPackages(await getCleanPackages());
-    packageWatcher = watchPackageChanges();
+    watchPackageChanges();
   }
 
-  try {
-    const appPort = await findAvailablePort(
-      Number(process.env.APP_PORT) || 4321,
-    );
-    const nextjsPort = await findAvailablePort(
-      Number(process.env.NEXTJS_PORT) || 3000,
-      [appPort],
-    );
+  const appPort = await findAvailablePort(Number(process.env.APP_PORT) || 4321);
+  const nextjsPort = await findAvailablePort(
+    Number(process.env.NEXTJS_PORT) || 3000,
+    [appPort],
+  );
 
-    const exitCode = await runCommand(
-      "conc",
-      [
-        "-r",
-        `pnpm -F app run dev --port ${appPort}`,
-        `pnpm -F nextjs run dev --port ${nextjsPort}`,
-      ],
-      {
-        cwd: process.cwd(),
-        env: {
-          ...process.env,
-          // Prevent Astro from daemonizing when an agent is detected.
-          ASTRO_DEV_BACKGROUND: "0",
-          APP_PORT: String(appPort),
-          NEXTJS_PORT: String(nextjsPort),
-        },
-        signalMode: "supervised",
+  const child = spawn(
+    "conc",
+    [
+      "-r",
+      `pnpm -F app run dev --port ${appPort}`,
+      `pnpm -F nextjs run dev --port ${nextjsPort}`,
+    ],
+    {
+      stdio: "inherit",
+      env: {
+        ...process.env,
+        // Prevent Astro from daemonizing when an agent is detected.
+        ASTRO_DEV_BACKGROUND: "0",
+        APP_PORT: String(appPort),
+        NEXTJS_PORT: String(nextjsPort),
       },
-    );
-    process.exitCode = exitCode;
-  } finally {
-    await packageWatcher?.close();
-  }
+    },
+  );
+
+  child.on("exit", (code) => process.exit(code ?? 0));
 }
