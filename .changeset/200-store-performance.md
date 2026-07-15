@@ -4,4 +4,4 @@
 "@ariakit/react": patch
 ---
 
-Improved store performance by 13–4,834% in targeted benchmarks.
+Improved store performance across targeted benchmarks, reaching up to 49× the previous throughput.
