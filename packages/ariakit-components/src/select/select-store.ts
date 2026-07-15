@@ -170,6 +170,9 @@ export function createSelectStore({
     select.setState("value", item.value);
   };
 
+  // Tracks strict-equal setter calls that state subscriptions don't observe.
+  let setValueVersion = 0;
+
   // Sets the select value when the active item changes by moving (which usually
   // happens when moving to an item using the keyboard).
   setup(select, () =>
@@ -190,6 +193,7 @@ export function createSelectStore({
       if (publicItem.disabled) return;
       if (publicItem.value == null) return;
 
+      const setValueVersionAtBatch = setValueVersion;
       let canceled = false;
       const stopValueSubscription = subscribe(select, ["value"], () => {
         canceled = true;
@@ -197,6 +201,7 @@ export function createSelectStore({
       queueMicrotask(() => {
         stopValueSubscription();
         if (canceled) return;
+        if (setValueVersion !== setValueVersionAtBatch) return;
         const currentState = select.getState();
         if (currentState.moves !== moves) return;
         if (currentState.activeId !== activeId) return;
@@ -219,7 +224,10 @@ export function createSelectStore({
     ...popover,
     ...select,
     combobox,
-    setValue: (value) => select.setState("value", value),
+    setValue: (value) => {
+      setValueVersion += 1;
+      select.setState("value", value);
+    },
     setLabelElement: (element) => select.setState("labelElement", element),
     setSelectElement: (element) => select.setState("selectElement", element),
     setListElement: (element) => select.setState("listElement", element),

@@ -126,6 +126,22 @@ test("does not overwrite a value set after moving", async () => {
   }
 });
 
+test("does not overwrite a reasserted value after moving", async () => {
+  const store = createSelectStore({ defaultValue: "Orange" });
+  const stop = init(store);
+
+  try {
+    store.setState("items", [apple]);
+    store.move("apple");
+    queueMicrotask(() => store.setValue("Orange"));
+    await flushBatch();
+
+    expect(store.getState().value).toBe("Orange");
+  } finally {
+    stop();
+  }
+});
+
 test("does not overwrite a value that changes back after moving", async () => {
   const store = createSelectStore({
     defaultValue: "Orange",
