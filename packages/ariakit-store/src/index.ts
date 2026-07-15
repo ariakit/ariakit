@@ -19,6 +19,9 @@ type Sync<S, K extends keyof S> = (
 
 type StoreSetup = (callback: () => void | (() => void)) => () => void;
 type StoreInit = () => () => void;
+type SameValueListener = (key: PropertyKey) => void;
+type StoreSubscribeSameValue = (listener: SameValueListener) => () => void;
+type StoreNotifySameValue = (key: PropertyKey) => void;
 // These three are intentionally identical `Sync<S, K>` signatures; they differ
 // only in runtime timing semantics, not in types: subscribe fires after a
 // change; sync fires immediately on registration and synchronously on every
@@ -60,6 +63,8 @@ interface FastPathFrame<S> {
 
 interface StoreInternals<S = State> {
   stores: ReadonlyArray<Store<Partial<S>> | undefined>;
+  subscribeSameValue: StoreSubscribeSameValue;
+  notifySameValue: StoreNotifySameValue;
   setup: StoreSetup;
   init: StoreInit;
   subscribe: StoreSubscribe<S>;
@@ -388,6 +393,7 @@ export function createStore<S extends State>(
   let batchPending = false;
   let inDispatch = false;
   let updatedKeys = new Set<keyof S>();
+  let sameValueListeners: Set<SameValueListener> | undefined;
   const instances = new Set<symbol>();
 
   const setups = new Set<() => void | (() => void)>();
@@ -405,6 +411,32 @@ export function createStore<S extends State>(
   const storeSetup: StoreSetup = (callback) => {
     setups.add(callback);
     return () => setups.delete(callback);
+  };
+
+  const storeSubscribeSameValue: StoreSubscribeSameValue = (listener) => {
+    sameValueListeners ??= new Set();
+    sameValueListeners.add(listener);
+    return () => {
+      sameValueListeners?.delete(listener);
+      if (!sameValueListeners?.size) {
+        sameValueListeners = undefined;
+      }
+    };
+  };
+
+  const storeNotifySameValue: StoreNotifySameValue = (key) => {
+    for (const listener of sameValueListeners ?? []) {
+      listener(key);
+    }
+    for (const store of stores) {
+      const storeState = store?.getState?.();
+      if (!storeState) continue;
+      if (!hasOwnProperty(storeState, key)) continue;
+      const internals = (
+        store as Store & { __unstableInternals?: StoreInternals }
+      ).__unstableInternals;
+      internals?.notifySameValue(key);
+    }
   };
 
   const storeInit: StoreInit = () => {
@@ -722,7 +754,13 @@ export function createStore<S extends State>(
     const currentValue = state[key];
     const nextValue = applyState(value, () => currentValue);
 
-    if (isSameValue(nextValue, currentValue)) return;
+    if (isSameValue(nextValue, currentValue)) {
+      // Normal subscriptions do not observe same-value setter calls.
+      if (!fromStores) {
+        storeNotifySameValue(key);
+      }
+      return;
+    }
 
     // Track the active dispatch so storeBatch can distinguish idle
     // registration (refresh prevStateBatch) from registration during an
@@ -845,6 +883,8 @@ export function createStore<S extends State>(
     setState,
     __unstableInternals: {
       stores,
+      subscribeSameValue: storeSubscribeSameValue,
+      notifySameValue: storeNotifySameValue,
       setup: storeSetup,
       init: storeInit,
       subscribe: storeSubscribe,

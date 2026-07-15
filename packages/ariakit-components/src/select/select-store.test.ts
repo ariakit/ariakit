@@ -217,6 +217,52 @@ test.each([
   ["public", false],
   ["registered", true],
 ] as const)(
+  "does not overwrite a value reasserted by a backing store with a %s item",
+  async (_, registered) => {
+    const backing = createStore({ value: "Orange" });
+    const mover = createSelectStore({ store: backing });
+    const stop = init(mover);
+    const unregister = registered ? mover.registerItem(apple) : undefined;
+
+    try {
+      if (!registered) {
+        mover.setState("items", [apple]);
+      }
+      mover.move("apple");
+      queueMicrotask(() => backing.setState("value", "Orange"));
+      await flushBatch();
+
+      expect(backing.getState().value).toBe("Orange");
+      expect(mover.getState().value).toBe("Orange");
+    } finally {
+      unregister?.();
+      stop();
+    }
+  },
+);
+
+test("does not cancel the fallback after an unrelated backing write", async () => {
+  const backing = createStore({ flag: false, value: "Orange" });
+  const mover = createSelectStore({ store: backing });
+  const stop = init(mover);
+
+  try {
+    mover.setState("items", [apple]);
+    mover.move("apple");
+    queueMicrotask(() => backing.setState("flag", false));
+    await flushBatch();
+
+    expect(backing.getState().value).toBe("Apple");
+    expect(mover.getState().value).toBe("Apple");
+  } finally {
+    stop();
+  }
+});
+
+test.each([
+  ["public", false],
+  ["registered", true],
+] as const)(
   "does not overwrite a value reasserted across derived stores with a %s item",
   async (_, registered) => {
     const backing = createStore({ value: "Orange" });
@@ -248,6 +294,30 @@ test.each([
     }
   },
 );
+
+test("does not overwrite a value reasserted by a derived backing store", async () => {
+  const backing = createStore({ value: "Orange" });
+  const writer = pick(backing, ["value"]);
+  const mover = createSelectStore({
+    store: pick(backing, ["value"]),
+  });
+  const stopWriter = init(writer);
+  const stopMover = init(mover);
+
+  try {
+    mover.setState("items", [apple]);
+    mover.move("apple");
+    queueMicrotask(() => writer.setState("value", "Orange"));
+    await flushBatch();
+
+    expect(backing.getState().value).toBe("Orange");
+    expect(writer.getState().value).toBe("Orange");
+    expect(mover.getState().value).toBe("Orange");
+  } finally {
+    stopMover();
+    stopWriter();
+  }
+});
 
 test.each([
   ["public", false],
@@ -301,7 +371,7 @@ test("does not share value writes between merged parent stores", async () => {
   try {
     mover.setState("items", [apple]);
     mover.move("apple");
-    queueMicrotask(() => writer.setValue("Orange"));
+    queueMicrotask(() => writerBacking.setState("value", "Orange"));
     await flushBatch();
 
     expect(writer.getState().value).toBe("Orange");

@@ -31,18 +31,22 @@ type MutableValue<T extends SelectStoreValue = SelectStoreValue> =
 
 interface ValueWriteTracker {
   version: number;
+  subscriptions: number;
+  subscribeSameValue?: (listener: (key: PropertyKey) => void) => () => void;
+  unsubscribeSameValue?: () => void;
 }
 
 interface StoreWithInternals extends Store {
   __unstableInternals?: {
     stores?: ReadonlyArray<Store | undefined>;
+    subscribeSameValue?: (listener: (key: PropertyKey) => void) => () => void;
   };
 }
 
 const valueWriteTrackerMap = new WeakMap<object, ValueWriteTracker>();
 
 function getValueWriteTrackers(store: Store) {
-  const roots = new Set<object>();
+  const roots = new Map<object, StoreWithInternals>();
   const visited = new Set<object>();
 
   const visit = (store: StoreWithInternals) => {
@@ -59,19 +63,44 @@ function getValueWriteTrackers(store: Store) {
       visit(parent);
     }
     if (!hasValueParent) {
-      roots.add(identity);
+      roots.set(identity, store);
     }
   };
 
   visit(store);
 
   const trackers: ValueWriteTracker[] = [];
-  for (const root of roots) {
-    const tracker = valueWriteTrackerMap.get(root) ?? { version: 0 };
-    valueWriteTrackerMap.set(root, tracker);
+  for (const [identity, root] of roots) {
+    let tracker = valueWriteTrackerMap.get(identity);
+    if (!tracker) {
+      const nextTracker: ValueWriteTracker = {
+        version: 0,
+        subscriptions: 0,
+        subscribeSameValue: root.__unstableInternals?.subscribeSameValue,
+      };
+      tracker = nextTracker;
+      valueWriteTrackerMap.set(identity, nextTracker);
+    }
     trackers.push(tracker);
   }
   return trackers;
+}
+
+function retainValueWriteTracker(tracker: ValueWriteTracker) {
+  tracker.subscriptions += 1;
+  if (tracker.subscriptions === 1) {
+    tracker.unsubscribeSameValue = tracker.subscribeSameValue?.((key) => {
+      if (key === "value") {
+        tracker.version += 1;
+      }
+    });
+  }
+  return () => {
+    tracker.subscriptions -= 1;
+    if (tracker.subscriptions) return;
+    tracker.unsubscribeSameValue?.();
+    tracker.unsubscribeSameValue = undefined;
+  };
 }
 
 function getValueWriteVersion(trackers: ValueWriteTracker[]) {
@@ -174,6 +203,15 @@ export function createSelectStore({
 
   const valueWriteTrackers = getValueWriteTrackers(select);
 
+  setup(select, () => {
+    const releases = valueWriteTrackers.map(retainValueWriteTracker);
+    return () => {
+      for (const release of releases) {
+        release();
+      }
+    };
+  });
+
   // Automatically sets the default value if it's not set.
   setup(select, () =>
     sync(select, ["value", "items"], (state) => {
@@ -222,6 +260,7 @@ export function createSelectStore({
     if (!item) return;
     if (item.disabled) return;
     if (item.value == null) return;
+    if (select.getState().value === item.value) return;
     select.setState("value", item.value);
   };
 
