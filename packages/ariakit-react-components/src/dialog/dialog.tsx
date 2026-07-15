@@ -153,7 +153,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // domReady can be also the portal node element so it's updated when the
   // portal node changes (like in between re-renders), triggering effects
   // again.
-  const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
+  const { portalRef, portalNode, domReady } = usePortalRef(
+    portal,
+    props.portalRef,
+  );
   // Sets preserveTabOrder to true only if the dialog is not a modal and is
   // open.
   const preserveTabOrderProp = props.preserveTabOrder;
@@ -290,6 +293,19 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   }, [open, mounted, domReady]);
 
   const canTakeTreeSnapshot = open && domReady;
+  const getPersistentElementsProp = useEvent(getPersistentElements);
+  const stackPortal = portal && !props.portalElement ? portalNode : null;
+  const [
+    stackedElements,
+    setStackBackdrop,
+    stackTopologyVersion,
+    backgroundStackElements,
+  ] = useDialogStack(contentElement, modal && open, {
+    portal: stackPortal,
+    store,
+    nestedDialogs,
+  });
+  const backdropRefs = useMergeRefs(backdropRef, setStackBackdrop);
 
   useSafeLayoutEffect(() => {
     if (!id) return;
@@ -305,13 +321,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     return createWalkTreeSnapshot(id, [dialog]);
   }, [id, canTakeTreeSnapshot, unstable_treeSnapshotKey]);
 
-  const getPersistentElementsProp = useEvent(getPersistentElements);
-  const [stackedElements, setStackBackdrop] = useDialogStack(
-    contentElement,
-    modal && !!canTakeTreeSnapshot,
-  );
-  const backdropRefs = useMergeRefs(backdropRef, setStackBackdrop);
-
   // Disables/enables the element tree around the modal dialog element.
   useSafeLayoutEffect(() => {
     if (!id) return;
@@ -325,6 +334,16 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       ...stackedElements,
       ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
     ];
+    // The opening snapshot intentionally excludes DOM mounted later. A
+    // background dialog can still replace or move its host while open, so
+    // disable its current elements directly without recapturing unrelated
+    // third-party DOM.
+    const backgroundElements = backgroundStackElements.filter(
+      (backgroundElement) =>
+        !allElements.some(
+          (element) => element && contains(backgroundElement, element),
+        ),
+    );
     // Positively mark the elements the dialog knows about as "inside" so the
     // outside event listeners can recognize them even before the dialog has
     // been focused. The disclosure is excluded because it can change while
@@ -336,6 +355,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       return chain(
         restoreInsideMarks,
         markAndDisableTreeOutside(id, allElements),
+        ...backgroundElements.map((element) => disableTree(element)),
       );
     }
     return chain(
@@ -348,6 +368,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     canTakeTreeSnapshot,
     getPersistentElementsProp,
     stackedElements,
+    stackTopologyVersion,
+    backgroundStackElements,
     nestedDialogs,
     modal,
     unstable_treeSnapshotKey,

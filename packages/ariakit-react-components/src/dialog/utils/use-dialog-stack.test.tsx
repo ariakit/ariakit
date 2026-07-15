@@ -8,6 +8,12 @@ interface TestProps {
   results: HTMLElement[][];
 }
 
+function createConnectedElement() {
+  const element = document.createElement("div");
+  document.body.appendChild(element);
+  return element;
+}
+
 function Test({ dialog, results }: TestProps) {
   const [stackedElements] = useDialogStack(dialog, true);
   results.push(stackedElements);
@@ -17,10 +23,9 @@ function Test({ dialog, results }: TestProps) {
 test("reuses the empty result when the dialog registers", async () => {
   const results: HTMLElement[][] = [];
   const { rerender } = await render(<Test dialog={null} results={results} />);
+  const dialog = createConnectedElement();
 
-  await rerender(
-    <Test dialog={document.createElement("div")} results={results} />,
-  );
+  await rerender(<Test dialog={dialog} results={results} />);
 
   expect(results.every((elements) => elements.length === 0)).toBe(true);
   expect(new Set(results).size).toBe(1);
@@ -53,11 +58,14 @@ function StackTest({
 
 test("reuses the empty result when the frontmost entry updates", async () => {
   const results: HTMLElement[][] = [];
+  const background = createConnectedElement();
+  const foreground = createConnectedElement();
+  const backdrop = createConnectedElement();
   await render(
     <StackTest
-      background={document.createElement("div")}
-      foreground={document.createElement("div")}
-      backdrop={document.createElement("div")}
+      background={background}
+      foreground={foreground}
+      backdrop={backdrop}
       results={results}
     />,
   );
