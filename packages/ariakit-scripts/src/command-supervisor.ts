@@ -47,7 +47,6 @@ function supervise(command: string, args: string[]) {
   let coordinatorPid: number | undefined;
   let parentDisconnected = !process.connected;
   let shutdownStarted = false;
-  let shutdownTimer: NodeJS.Timeout | undefined;
   const pendingSignals: NodeJS.Signals[] = [];
 
   const forwardSignal = (signal: NodeJS.Signals) => {
@@ -81,7 +80,9 @@ function supervise(command: string, args: string[]) {
     pendingSignals.length = 0;
     sendGroupSignal(pid, "SIGCONT");
     sendSignal(pid, "SIGTERM");
-    shutdownTimer = setTimeout(() => {
+    // Keep the supervisor alive through the grace period even if the
+    // coordinator exits before one of its descendants.
+    setTimeout(() => {
       sendGroupSignal(pid, "SIGKILL");
     }, shutdownTimeout);
   };
@@ -120,7 +121,6 @@ function supervise(command: string, args: string[]) {
     console.error(error);
   });
   coordinator.once("close", (code, signal) => {
-    clearTimeout(shutdownTimer);
     cleanup();
     process.exitCode = spawnError ? 1 : getExitCode(code, signal);
     if (process.connected) {

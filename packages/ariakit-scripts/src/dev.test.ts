@@ -265,11 +265,13 @@ if (process.argv[1]?.endsWith("command-supervisor.ts")) {
       `#!/usr/bin/env node
 const { appendFileSync } = require("node:fs");
 const signalsPath = process.argv[2];
+const ignoreSigterm = process.env.IGNORE_SIGTERM_PATH === signalsPath;
 const recordSignal = (signal) => {
   appendFileSync(signalsPath, signal + "\\n");
 };
 const stop = (signal) => {
   recordSignal(signal);
+  if (signal === "SIGTERM" && ignoreSigterm) return;
   setTimeout(() => process.exit(0), 100);
 };
 process.on("SIGCONT", recordSignal);
@@ -318,6 +320,9 @@ const stop = (signal) => {
   for (const child of children) {
     child.kill(signal);
   }
+  if (process.env.CONC_EXITS_BEFORE_CHILDREN) {
+    process.exit(0);
+  }
   if (stopping) return;
   stopping = true;
   Promise.all(
@@ -351,6 +356,8 @@ setInterval(() => {}, 1000);
         COMMAND_SCRIPT_PATH: commandScriptPath,
         CONC_PID_PATH: concPidPath,
         CONC_SIGNALS_PATH: concSignalsPath,
+        CONC_EXITS_BEFORE_CHILDREN: resumeBeforeShutdown ? "" : "1",
+        IGNORE_SIGTERM_PATH: resumeBeforeShutdown ? "" : nextjsSignalsPath,
         NEXTJS_SIGNALS_PATH: nextjsSignalsPath,
         NODE_OPTIONS: [
           process.env.NODE_OPTIONS,
@@ -432,10 +439,20 @@ setInterval(() => {}, 1000);
         if (resumeBeforeShutdown) {
           expect(signals).toBe(`SIGCONT\n${shutdownSignal}\n`);
         } else {
-          expect(signals.trim().split("\n").sort()).toEqual([
-            "SIGCONT",
-            "SIGTERM",
-          ]);
+          const receivedSignals = signals.trim().split("\n");
+          // SIGCONT resumes a process before its JavaScript handler runs, so
+          // an immediately exiting coordinator may only record SIGTERM.
+          expect(
+            receivedSignals.every(
+              (signal) => signal === "SIGCONT" || signal === "SIGTERM",
+            ),
+          ).toBe(true);
+          expect(
+            receivedSignals.filter((signal) => signal === "SIGCONT").length,
+          ).toBeLessThanOrEqual(1);
+          expect(
+            receivedSignals.filter((signal) => signal === "SIGTERM"),
+          ).toHaveLength(1);
         }
       }
     } finally {
