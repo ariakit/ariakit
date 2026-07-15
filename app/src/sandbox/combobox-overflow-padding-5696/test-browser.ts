@@ -2,7 +2,7 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("supports object overflow padding in CSS sizing", async ({
+  test("uses the greatest horizontal overflow padding for CSS sizing", async ({
     page,
     q,
   }) => {

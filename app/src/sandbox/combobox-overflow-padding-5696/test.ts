@@ -12,7 +12,7 @@ function expectOverflowPadding(popover: HTMLElement) {
   ).toBe("32px");
 }
 
-test("supports object overflow padding in CSS sizing", async () => {
+test("uses the greatest horizontal overflow padding for CSS sizing", async () => {
   const popover = q.listbox.ensure();
   expectOverflowPadding(popover);
 

@@ -20,6 +20,7 @@ import {
   shift,
   size,
 } from "@floating-ui/dom";
+import type { Padding } from "@floating-ui/dom";
 import type { ElementType, HTMLAttributes } from "react";
 import { useRef, useState } from "react";
 import type { DialogOptions } from "../dialog/dialog.tsx";
@@ -93,6 +94,11 @@ function isValidPlacement(flip: string): flip is Placement {
 function roundByDPR(value: number) {
   const dpr = window.devicePixelRatio || 1;
   return Math.round(value * dpr) / dpr;
+}
+
+function getOverflowPaddingValue(padding: Padding) {
+  if (typeof padding === "number") return padding;
+  return Math.max(padding.left ?? 0, padding.right ?? 0);
 }
 
 function getOffsetMiddleware(
@@ -277,7 +283,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
       popoverElement.style.setProperty(
         "--popover-overflow-padding",
-        `${overflowPadding}px`,
+        `${getOverflowPaddingValue(overflowPadding)}px`,
       );
 
       const anchor = getAnchorElement(anchorElement, getAnchorRectProp);
@@ -649,15 +655,18 @@ export interface PopoverOptions<
    */
   arrowPadding?: number;
   /**
-   * The minimum padding between the popover and the viewport edge. This will be
-   * exposed to CSS as
+   * The minimum padding between the popover and the viewport edge. Pass a
+   * number to use the same padding on every side, or an object to define each
+   * side separately. This will be exposed to CSS as
    * [`--popover-overflow-padding`](https://ariakit.com/guide/styling#--popover-overflow-padding).
+   * When passing an object, the CSS variable is the maximum of the horizontal
+   * `left` and `right` values, with omitted sides treated as `0`.
    *
    * Live examples:
    * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
    * @default 8
    */
-  overflowPadding?: number;
+  overflowPadding?: Padding;
   /**
    * Function that returns the anchor element's DOMRect. If this is explicitly
    * passed, it will override the anchor `getBoundingClientRect` method.
