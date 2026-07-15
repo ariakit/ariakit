@@ -3,6 +3,7 @@ import { useStore, useStoreProps } from "@ariakit/react-store";
 import type { Store } from "@ariakit/react-store";
 import { useUpdateEffect } from "@ariakit/react-utils";
 import type { BivariantCallback, PickRequired } from "@ariakit/utils";
+import { useEffect } from "react";
 import { useComboboxProviderContext } from "../combobox/combobox-context.tsx";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
@@ -74,6 +75,14 @@ export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
     combobox: props.combobox !== undefined ? props.combobox : combobox,
   };
   const [store, update] = useStore(Core.createMenuStore, props);
+  useEffect(() => {
+    // Menus that mount already open don't go through the MenuButton
+    // interactions that enable automatic focus.
+    const { open, autoFocusOnShow } = store.getState();
+    if (!open) return;
+    if (autoFocusOnShow) return;
+    store.setAutoFocusOnShow(true);
+  }, [store]);
   return useMenuStoreProps(store, update, props);
 }
 

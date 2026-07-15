@@ -14,4 +14,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(q.menuitem("Rename"))
       .not.toHaveAttribute("data-active-item");
   });
+
+  test("respects autofocus opt-out when mounting open", async ({ page, q }) => {
+    await q.button("Add passive item").click();
+
+    await test.expect(q.menu("Actions for new item")).toBeVisible();
+    await test.expect(page.locator("body")).toBeFocused();
+  });
 });

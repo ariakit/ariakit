@@ -10,3 +10,10 @@ test("focuses a conditionally mounted menu that opens by default", async () => {
   expect(menu).toHaveFocus();
   expect(q.menuitem("Rename")).not.toHaveAttribute("data-active-item");
 });
+
+test("respects autofocus opt-out when mounting open", async () => {
+  await click(q.button("Add passive item"));
+
+  expect(q.menu("Actions for new item")).toBeVisible();
+  expect(document.body).toHaveFocus();
+});

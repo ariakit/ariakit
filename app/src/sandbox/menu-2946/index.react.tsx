@@ -1,31 +1,28 @@
 import * as Ariakit from "@ariakit/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-function NewItemActions() {
-  const store = Ariakit.useMenuStore({ defaultOpen: true });
+export default function Example() {
+  const [mode, setMode] = useState<"active" | "passive">();
 
-  useEffect(() => {
-    // TODO: Remove after https://github.com/ariakit/ariakit/issues/2946
-    store.setAutoFocusOnShow(true);
-  }, [store]);
+  if (!mode) {
+    return (
+      <>
+        <button onClick={() => setMode("active")}>Add item</button>
+        <button onClick={() => setMode("passive")}>Add passive item</button>
+      </>
+    );
+  }
 
   return (
-    <Ariakit.MenuProvider store={store}>
+    <Ariakit.MenuProvider defaultOpen>
       <Ariakit.MenuButton>Actions for new item</Ariakit.MenuButton>
-      <Ariakit.Menu modal={false}>
+      <Ariakit.Menu
+        autoFocusOnShow={mode === "passive" ? false : undefined}
+        modal={false}
+      >
         <Ariakit.MenuItem>Rename</Ariakit.MenuItem>
         <Ariakit.MenuItem>Duplicate</Ariakit.MenuItem>
       </Ariakit.Menu>
     </Ariakit.MenuProvider>
   );
-}
-
-export default function Example() {
-  const [created, setCreated] = useState(false);
-
-  if (!created) {
-    return <button onClick={() => setCreated(true)}>Add item</button>;
-  }
-
-  return <NewItemActions />;
 }
