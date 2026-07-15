@@ -20,7 +20,6 @@ import {
   shift,
   size,
 } from "@floating-ui/dom";
-import type { Padding } from "@floating-ui/dom";
 import type { ElementType, HTMLAttributes } from "react";
 import { useRef, useState } from "react";
 import type { DialogOptions } from "../dialog/dialog.tsx";
@@ -42,6 +41,15 @@ interface AnchorRect {
   width?: number;
   height?: number;
 }
+
+interface OverflowPaddingObject {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
+}
+
+type OverflowPadding = number | OverflowPaddingObject;
 
 function createDOMRect(x = 0, y = 0, width = 0, height = 0) {
   if (typeof DOMRect === "function") {
@@ -96,7 +104,7 @@ function roundByDPR(value: number) {
   return Math.round(value * dpr) / dpr;
 }
 
-function getOverflowPaddingValue(padding: Padding) {
+function getOverflowPaddingValue(padding: OverflowPadding) {
   if (typeof padding === "number") return padding;
   return Math.max(padding.left ?? 0, padding.right ?? 0);
 }
@@ -280,19 +288,19 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     const overflowPaddingTop =
       typeof overflowPadding === "number"
         ? overflowPadding
-        : overflowPadding.top;
+        : (overflowPadding.top ?? 0);
     const overflowPaddingRight =
       typeof overflowPadding === "number"
         ? overflowPadding
-        : overflowPadding.right;
+        : (overflowPadding.right ?? 0);
     const overflowPaddingBottom =
       typeof overflowPadding === "number"
         ? overflowPadding
-        : overflowPadding.bottom;
+        : (overflowPadding.bottom ?? 0);
     const overflowPaddingLeft =
       typeof overflowPadding === "number"
         ? overflowPadding
-        : overflowPadding.left;
+        : (overflowPadding.left ?? 0);
 
     useSafeLayoutEffect(() => {
       if (!popoverElement?.isConnected) return;
@@ -700,7 +708,7 @@ export interface PopoverOptions<
    * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
    * @default 8
    */
-  overflowPadding?: Padding;
+  overflowPadding?: OverflowPadding;
   /**
    * Function that returns the anchor element's DOMRect. If this is explicitly
    * passed, it will override the anchor `getBoundingClientRect` method.
