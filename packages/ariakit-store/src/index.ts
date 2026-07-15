@@ -435,7 +435,7 @@ export function createStore<S extends State>(
       const internals = (
         store as Store & { __unstableInternals?: StoreInternals }
       ).__unstableInternals;
-      internals?.notifySameValue(key);
+      internals?.notifySameValue?.(key);
     }
   };
 
