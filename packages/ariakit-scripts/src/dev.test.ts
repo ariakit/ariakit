@@ -13,7 +13,11 @@ import {
 import { tmpdir } from "node:os";
 import { delimiter, join } from "node:path";
 import { afterEach, expect, test, vi } from "vitest";
-import { shouldIgnorePackageWatchPath, watchPackageChanges } from "./dev.ts";
+import {
+  dev,
+  shouldIgnorePackageWatchPath,
+  watchPackageChanges,
+} from "./dev.ts";
 import { getCommandOutput } from "./utils.ts";
 
 async function waitForFile(filename: string) {
@@ -174,6 +178,7 @@ class FakePackageWatcher {
 afterEach(() => {
   vi.useRealTimers();
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
 
 test("ignores package watch paths outside source and package json", () => {
@@ -209,6 +214,20 @@ test("ignores package watch paths outside source and package json", () => {
   expect(
     shouldIgnorePackageWatchPath("packages/foo/src/benchmark/index.ts"),
   ).toBe(false);
+});
+
+test("rejects native Windows dev mode", async () => {
+  const rootPath = await mkdtemp(join(tmpdir(), "ariakit-dev-windows-"));
+  vi.spyOn(process, "platform", "get").mockReturnValue("win32");
+  vi.stubEnv("PATH", rootPath);
+
+  try {
+    await expect(dev({ clean: false })).rejects.toThrow(
+      "ariakit dev is not supported on native Windows. Use WSL.",
+    );
+  } finally {
+    await rm(rootPath, { recursive: true, force: true });
+  }
 });
 
 test.skipIf(process.platform === "win32").each([

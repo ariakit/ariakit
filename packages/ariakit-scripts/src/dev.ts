@@ -190,6 +190,10 @@ async function findAvailablePort(
 }
 
 export async function dev(options: DevOptions = {}) {
+  if (process.platform === "win32") {
+    throw new Error("ariakit dev is not supported on native Windows. Use WSL.");
+  }
+
   let packageWatcher: PackageWatchHandle | undefined;
   if (options.clean !== false) {
     await cleanPackages(await getCleanPackages());
@@ -205,9 +209,6 @@ export async function dev(options: DevOptions = {}) {
       [appPort],
     );
 
-    // POSIX isolation gives Concurrently one copy of each signal. A separate
-    // supervisor keeps it inside the wrapper's cleanup boundary.
-    const signalMode = process.platform === "win32" ? "shared" : "supervised";
     const exitCode = await runCommand(
       "conc",
       [
@@ -224,7 +225,7 @@ export async function dev(options: DevOptions = {}) {
           APP_PORT: String(appPort),
           NEXTJS_PORT: String(nextjsPort),
         },
-        signalMode,
+        signalMode: "supervised",
       },
     );
     process.exitCode = exitCode;

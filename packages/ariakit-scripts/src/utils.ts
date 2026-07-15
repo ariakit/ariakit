@@ -7,12 +7,7 @@ import { join, sep } from "node:path";
 export interface RunCommandOptions {
   cwd: string;
   env?: NodeJS.ProcessEnv;
-  signalMode?: "forward" | "shared" | "supervised";
-}
-
-interface PendingSignal {
-  signal: NodeJS.Signals;
-  onSent?: () => void;
+  signalMode?: "forward" | "supervised";
 }
 
 export interface PackageJson {
@@ -66,9 +61,8 @@ export async function runCommand(
   return await new Promise<number>((resolvePromise, reject) => {
     let child: ChildProcess | undefined;
     let stopRequest = 0;
-    const pendingSignals: PendingSignal[] = [];
 
-    const deliverSignal = ({ signal, onSent }: PendingSignal) => {
+    const forwardSignal = (signal: NodeJS.Signals, onSent?: () => void) => {
       const currentChild = child;
       if (!currentChild) return;
       if (signalMode === "supervised") {
@@ -82,15 +76,6 @@ export async function runCommand(
       if (currentChild.kill(signal)) {
         onSent?.();
       }
-    };
-    const forwardSignal = (signal: NodeJS.Signals, onSent?: () => void) => {
-      if (signalMode === "shared") return;
-      const pendingSignal = { signal, onSent };
-      if (!child) {
-        pendingSignals.push(pendingSignal);
-        return;
-      }
-      deliverSignal(pendingSignal);
     };
     const onSigcont = () => {
       stopRequest += 1;
@@ -116,8 +101,8 @@ export async function runCommand(
       process.off("SIGTSTP", onSigtstp);
     };
 
-    // Install these handlers before forking so startup signals can be queued
-    // until the supervisor's IPC channel is available.
+    // Install these handlers before forking so the process catches startup
+    // signals. IPC buffers their messages until the supervisor can read them.
     if (signalMode === "supervised") {
       process.on("SIGHUP", onSighup);
       process.on("SIGINT", onSigint);
@@ -185,10 +170,6 @@ export async function runCommand(
     if (signalMode !== "supervised") {
       process.once("SIGINT", onSigint);
       process.once("SIGTERM", onSigterm);
-    }
-    const queuedSignals = pendingSignals.splice(0);
-    for (const pendingSignal of queuedSignals) {
-      deliverSignal(pendingSignal);
     }
   });
 }

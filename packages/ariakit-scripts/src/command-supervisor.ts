@@ -47,14 +47,10 @@ function supervise(command: string, args: string[]) {
   let coordinatorPid: number | undefined;
   let parentDisconnected = !process.connected;
   let shutdownStarted = false;
-  const pendingSignals: NodeJS.Signals[] = [];
 
   const forwardSignal = (signal: NodeJS.Signals) => {
     if (parentDisconnected) return;
-    if (!coordinatorPid) {
-      pendingSignals.push(signal);
-      return;
-    }
+    if (!coordinatorPid) return;
 
     if (signal === "SIGCONT") {
       sendGroupSignal(coordinatorPid, signal);
@@ -77,7 +73,6 @@ function supervise(command: string, args: string[]) {
     if (!pid) return;
 
     shutdownStarted = true;
-    pendingSignals.length = 0;
     sendGroupSignal(pid, "SIGCONT");
     sendSignal(pid, "SIGTERM");
     // Keep the supervisor alive through the grace period even if the
@@ -127,14 +122,6 @@ function supervise(command: string, args: string[]) {
       process.disconnect();
     }
   });
-
-  if (parentDisconnected) {
-    shutdownCoordinator();
-    return;
-  }
-  for (const signal of pendingSignals) {
-    forwardSignal(signal);
-  }
 }
 
 const command = process.argv[2];
