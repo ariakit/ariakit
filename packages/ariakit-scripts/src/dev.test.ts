@@ -87,18 +87,6 @@ async function forceKillAndWait(child: ChildProcess, pid: number) {
   await exitPromise;
 }
 
-async function readProcessIds(filename: string) {
-  try {
-    const contents = await readFile(filename, "utf8");
-    return contents
-      .split("\n")
-      .map(Number)
-      .filter((pid) => Number.isInteger(pid) && pid > 0);
-  } catch {
-    return [];
-  }
-}
-
 class FakePackageWatcher {
   private listeners = new Map<string, ((filename: string) => void)[]>();
 
@@ -166,7 +154,6 @@ test.skipIf(process.platform === "win32").each(["SIGINT", "SIGKILL"] as const)(
     const appReadyPath = join(rootPath, "app-ready.txt");
     const concPath = join(rootPath, "conc");
     const nextjsReadyPath = join(rootPath, "nextjs-ready.txt");
-    const processIdsPath = join(rootPath, "process-ids.txt");
     const readyPath = join(rootPath, "ready.txt");
     const serverPath = join(rootPath, "server.cjs");
     const scriptPath = join(
@@ -181,9 +168,14 @@ test.skipIf(process.platform === "win32").each(["SIGINT", "SIGKILL"] as const)(
     await writeFile(
       serverPath,
       `const { createServer } = require("node:net");
-const { writeFileSync } = require("node:fs");
+const { existsSync, writeFileSync } = require("node:fs");
 const port = Number(process.argv[2]);
 const server = createServer();
+const interval = setInterval(() => {
+  if (existsSync(process.env.ROOT_PATH)) return;
+  clearInterval(interval);
+  server.close(() => process.exit(0));
+}, 25);
 server.listen(port, "127.0.0.1", () => {
   writeFileSync(process.argv[3], String(process.pid));
 });
@@ -193,35 +185,31 @@ server.listen(port, "127.0.0.1", () => {
       concPath,
       `#!/usr/bin/env node
 const { spawn } = require("node:child_process");
-const { writeFileSync } = require("node:fs");
-const children = [
-  // Model Astro 7 daemonizing unless background mode is explicitly disabled.
-  spawn(
-    process.execPath,
-    [process.env.SERVER_PATH, process.env.APP_PORT, process.env.APP_READY_PATH],
-    {
-      detached: process.env.ASTRO_DEV_BACKGROUND !== "0",
-      stdio: "ignore",
-    },
-  ),
-  spawn(
-    process.execPath,
-    [
-      process.env.SERVER_PATH,
-      process.env.NEXTJS_PORT,
-      process.env.NEXTJS_READY_PATH,
-    ],
-    { stdio: "ignore" },
-  ),
-];
-writeFileSync(
-  process.env.PROCESS_IDS_PATH,
-  children.map((child) => child.pid).join("\\n"),
+const { renameSync, writeFileSync } = require("node:fs");
+// Model Astro 7 daemonizing unless background mode is explicitly disabled.
+spawn(
+  process.execPath,
+  [process.env.SERVER_PATH, process.env.APP_PORT, process.env.APP_READY_PATH],
+  {
+    detached: process.env.ASTRO_DEV_BACKGROUND !== "0",
+    stdio: "ignore",
+  },
 );
+spawn(
+  process.execPath,
+  [
+    process.env.SERVER_PATH,
+    process.env.NEXTJS_PORT,
+    process.env.NEXTJS_READY_PATH,
+  ],
+  { stdio: "ignore" },
+);
+const readyTempPath = process.env.READY_PATH + ".tmp";
 writeFileSync(
-  process.env.READY_PATH,
+  readyTempPath,
   [process.env.APP_PORT, process.env.NEXTJS_PORT].join("\\n"),
 );
+renameSync(readyTempPath, process.env.READY_PATH);
 `,
     );
     await chmod(concPath, 0o755);
@@ -237,8 +225,8 @@ writeFileSync(
         NEXTJS_PORT: String(portSeed + 10000),
         NEXTJS_READY_PATH: nextjsReadyPath,
         PATH: searchPath,
-        PROCESS_IDS_PATH: processIdsPath,
         READY_PATH: readyPath,
+        ROOT_PATH: rootPath,
         SERVER_PATH: serverPath,
       },
       stdio: "ignore",
@@ -250,18 +238,20 @@ writeFileSync(
 
     let ports: number[] = [];
     try {
-      await Promise.all([
-        waitForFile(appReadyPath),
-        waitForFile(nextjsReadyPath),
-      ]);
+      await waitForFile(readyPath);
       const [actualAppPort, actualNextjsPort] = (
         await readFile(readyPath, "utf8")
       ).split("\n");
 
-      ports = [Number(actualAppPort), Number(actualNextjsPort)];
-      if (!ports.every(Number.isInteger)) {
-        throw new Error(`Invalid dev ports: ${ports.join(", ")}`);
+      const actualPorts = [Number(actualAppPort), Number(actualNextjsPort)];
+      if (!actualPorts.every(Number.isInteger)) {
+        throw new Error(`Invalid dev ports: ${actualPorts.join(", ")}`);
       }
+      ports = actualPorts;
+      await Promise.all([
+        waitForFile(appReadyPath),
+        waitForFile(nextjsReadyPath),
+      ]);
 
       const exitPromise = once(child, "exit", {
         signal: AbortSignal.timeout(5000),
@@ -271,19 +261,10 @@ writeFileSync(
       await waitForPortsAvailable(ports);
     } finally {
       await forceKillAndWait(child, pid);
-      const processIds = await readProcessIds(processIdsPath);
-      for (let index = 0; index < ports.length; index += 1) {
-        const port = ports[index];
-        const processId = processIds[index];
-        if (!port) continue;
-        if (!processId) continue;
-        if (await isPortAvailable(port)) continue;
-        killProcess(processId, "SIGKILL");
-      }
+      await rm(rootPath, { recursive: true, force: true });
       if (ports.length) {
         await waitForPortsAvailable(ports);
       }
-      await rm(rootPath, { recursive: true, force: true });
     }
   },
 );
