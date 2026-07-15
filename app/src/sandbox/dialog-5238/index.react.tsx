@@ -1,17 +1,23 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 export default function Example() {
   const [orangesOpen, setOrangesOpen] = useState(true);
   const [applesOpen, setApplesOpen] = useState(true);
   const [orangesEaten, setOrangesEaten] = useState(0);
   const [applesEaten, setApplesEaten] = useState(0);
+  const applesDialogId = useId();
 
   return (
     <>
       <Ariakit.Dialog
         open={orangesOpen}
         onClose={() => setOrangesOpen(false)}
+        // Work around #5238 by preserving the foreground sibling dialog.
+        getPersistentElements={() => {
+          const applesDialog = document.getElementById(applesDialogId);
+          return applesDialog ? [applesDialog] : [];
+        }}
         unmountOnHide
         className="fixed inset-3 m-auto flex h-fit w-72 flex-col items-start gap-3 rounded-lg border border-gray-300 bg-white p-4 shadow-lg"
       >
@@ -34,6 +40,7 @@ export default function Example() {
       </Ariakit.Dialog>
 
       <Ariakit.Dialog
+        id={applesDialogId}
         open={applesOpen}
         onClose={() => setApplesOpen(false)}
         unmountOnHide
