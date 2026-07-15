@@ -306,10 +306,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   }, [id, canTakeTreeSnapshot, unstable_treeSnapshotKey]);
 
   const getPersistentElementsProp = useEvent(getPersistentElements);
-  const stackedDialogs = useDialogStack(
+  const [stackedElements, setStackBackdrop] = useDialogStack(
     contentElement,
     modal && !!canTakeTreeSnapshot,
   );
+  const backdropRefs = useMergeRefs(backdropRef, setStackBackdrop);
 
   // Disables/enables the element tree around the modal dialog element.
   useSafeLayoutEffect(() => {
@@ -321,7 +322,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const allElements = [
       dialog,
       ...persistentElements,
-      ...stackedDialogs,
+      ...stackedElements,
       ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
     ];
     // Positively mark the elements the dialog knows about as "inside" so the
@@ -346,7 +347,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     store,
     canTakeTreeSnapshot,
     getPersistentElementsProp,
-    stackedDialogs,
+    stackedElements,
     nestedDialogs,
     modal,
     unstable_treeSnapshotKey,
@@ -578,7 +579,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
           <DialogBackdrop
             store={store}
             backdrop={backdrop}
-            backdropRef={backdropRef}
+            backdropRef={backdropRefs}
             hidden={hiddenProp}
             alwaysVisible={alwaysVisible}
           />
@@ -586,7 +587,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         </>
       );
     },
-    [store, backdrop, hiddenProp, alwaysVisible],
+    [store, backdrop, backdropRefs, hiddenProp, alwaysVisible],
   );
 
   const [headingId, setHeadingId] = useState<string>();

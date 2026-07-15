@@ -1,7 +1,7 @@
 import { useStoreState } from "@ariakit/react-store";
-import { useMergeRefs, useSafeLayoutEffect } from "@ariakit/react-utils";
-import { isValidElement, useRef } from "react";
-import type { RefObject } from "react";
+import { useSafeLayoutEffect } from "@ariakit/react-utils";
+import { isValidElement } from "react";
+import type { Ref } from "react";
 import { useDisclosureContent } from "../disclosure/disclosure-content.tsx";
 import { useDisclosureStore } from "../disclosure/disclosure-store.ts";
 import { Role } from "../role/role.tsx";
@@ -14,7 +14,7 @@ interface DialogBackdropProps extends Pick<
   "backdrop" | "alwaysVisible" | "hidden"
 > {
   store: DialogStore;
-  backdropRef?: RefObject<HTMLDivElement | null>;
+  backdropRef?: Ref<HTMLDivElement>;
 }
 
 export function DialogBackdrop({
@@ -24,21 +24,21 @@ export function DialogBackdrop({
   alwaysVisible,
   hidden,
 }: DialogBackdropProps) {
-  const ref = useRef<HTMLDivElement>(null);
   const disclosure = useDisclosureStore({ disclosure: store });
   const contentElement = useStoreState(store, "contentElement");
+  const backdropElement = useStoreState(disclosure, "contentElement");
 
   // Synchronize the backdrop's z-index with the dialog's in the layout phase,
   // where the commit's style recalc absorbs the getComputedStyle read. As a
   // passive effect, this read ran after other effects had already written
   // styles, forcing an extra full style recalc on every open.
   useSafeLayoutEffect(() => {
-    const backdrop = ref.current;
+    const backdrop = backdropElement;
     const dialog = contentElement;
     if (!backdrop) return;
     if (!dialog) return;
     backdrop.style.zIndex = getComputedStyle(dialog).zIndex;
-  }, [contentElement]);
+  }, [backdropElement, contentElement]);
 
   // Mark the backdrop element as an ancestor of the dialog, otherwise clicking
   // on it won't close the dialog when the dialog uses portal, in which case
@@ -46,13 +46,13 @@ export function DialogBackdrop({
   useSafeLayoutEffect(() => {
     const id = contentElement?.id;
     if (!id) return;
-    const backdrop = ref.current;
+    const backdrop = backdropElement;
     if (!backdrop) return;
     return markAncestor(backdrop, id);
-  }, [contentElement]);
+  }, [backdropElement, contentElement]);
 
   const props = useDisclosureContent({
-    ref: useMergeRefs(ref, backdropRef),
+    ref: backdropRef,
     store: disclosure,
     role: "presentation",
     "data-backdrop": contentElement?.id || "",
