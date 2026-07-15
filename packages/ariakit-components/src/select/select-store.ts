@@ -4,6 +4,7 @@ import {
   mergeStore,
   omit,
   setup,
+  subscribe,
   sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
@@ -190,7 +191,11 @@ export function createSelectStore({
       if (publicItem.value == null) return;
 
       let canceled = false;
+      const stopValueSubscription = subscribe(select, ["value"], () => {
+        canceled = true;
+      });
       queueMicrotask(() => {
+        stopValueSubscription();
         if (canceled) return;
         const currentState = select.getState();
         if (currentState.moves !== moves) return;
@@ -204,6 +209,7 @@ export function createSelectStore({
 
       return () => {
         canceled = true;
+        stopValueSubscription();
       };
     }),
   );

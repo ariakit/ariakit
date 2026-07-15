@@ -126,6 +126,33 @@ test("does not overwrite a value set after moving", async () => {
   }
 });
 
+test("does not overwrite a value that changes back after moving", async () => {
+  const store = createSelectStore({
+    defaultValue: "Orange",
+    setValueOnMove: true,
+  });
+  const stop = init(store);
+
+  try {
+    store.show();
+    await flushBatch();
+
+    store.setState("items", [apple, banana]);
+    store.move("apple");
+    queueMicrotask(() => {
+      store.setValue("Banana");
+      store.setValue("Orange");
+    });
+    await flushBatch();
+
+    expect(store.getState().mounted).toBe(true);
+    expect(store.getState().activeId).toBe("apple");
+    expect(store.getState().value).toBe("Orange");
+  } finally {
+    stop();
+  }
+});
+
 test("does not set the value after the active id changes", async () => {
   const store = createSelectStore({ defaultValue: "Orange" });
   const stop = init(store);
