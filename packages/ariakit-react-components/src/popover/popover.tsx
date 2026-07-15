@@ -277,13 +277,36 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     const getAnchorRectProp = useEvent(getAnchorRect);
     const updatePositionProp = useEvent(updatePosition);
     const hasCustomUpdatePosition = !!updatePosition;
+    const overflowPaddingTop =
+      typeof overflowPadding === "number"
+        ? overflowPadding
+        : overflowPadding.top;
+    const overflowPaddingRight =
+      typeof overflowPadding === "number"
+        ? overflowPadding
+        : overflowPadding.right;
+    const overflowPaddingBottom =
+      typeof overflowPadding === "number"
+        ? overflowPadding
+        : overflowPadding.bottom;
+    const overflowPaddingLeft =
+      typeof overflowPadding === "number"
+        ? overflowPadding
+        : overflowPadding.left;
 
     useSafeLayoutEffect(() => {
       if (!popoverElement?.isConnected) return;
 
+      const positioningPadding = {
+        top: overflowPaddingTop,
+        right: overflowPaddingRight,
+        bottom: overflowPaddingBottom,
+        left: overflowPaddingLeft,
+      };
+
       popoverElement.style.setProperty(
         "--popover-overflow-padding",
-        `${getOverflowPaddingValue(overflowPadding)}px`,
+        `${getOverflowPaddingValue(positioningPadding)}px`,
       );
 
       const anchor = getAnchorElement(anchorElement, getAnchorRectProp);
@@ -311,14 +334,22 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
         const middleware = [
           getOffsetMiddleware(arrow, { gutter, shift }),
-          getFlipMiddleware({ flip, overflowPadding }),
-          getShiftMiddleware({ slide, shift, overlap, overflowPadding }),
+          getFlipMiddleware({
+            flip,
+            overflowPadding: positioningPadding,
+          }),
+          getShiftMiddleware({
+            slide,
+            shift,
+            overlap,
+            overflowPadding: positioningPadding,
+          }),
           getArrowMiddleware(arrow, { arrowPadding }),
           getSizeMiddleware(
             {
               sameWidth,
               fitViewport,
-              overflowPadding,
+              overflowPadding: positioningPadding,
             },
             shouldCancelUpdate,
           ),
@@ -429,7 +460,10 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       fitViewport,
       gutter,
       arrowPadding,
-      overflowPadding,
+      overflowPaddingTop,
+      overflowPaddingRight,
+      overflowPaddingBottom,
+      overflowPaddingLeft,
       getAnchorRectProp,
       hasCustomUpdatePosition,
       updatePositionProp,
