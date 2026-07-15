@@ -1,5 +1,9 @@
 # @ariakit/react-utils
 
+## 0.2.1
+
+- Updated dependencies: `@ariakit/store@0.1.5`
+
 ## 0.2.0
 
 ### Removed unused React utility hooks
