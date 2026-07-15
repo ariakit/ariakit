@@ -1,9 +1,12 @@
 import * as Core from "@ariakit/components/menu/menu-store";
 import { useStore, useStoreProps } from "@ariakit/react-store";
 import type { Store } from "@ariakit/react-store";
-import { useUpdateEffect } from "@ariakit/react-utils";
+import {
+  useInitialValue,
+  useSafeLayoutEffect,
+  useUpdateEffect,
+} from "@ariakit/react-utils";
 import type { BivariantCallback, PickRequired } from "@ariakit/utils";
-import { useEffect } from "react";
 import { useComboboxProviderContext } from "../combobox/combobox-context.tsx";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
@@ -20,6 +23,7 @@ import type {
 import { useHovercardStoreProps } from "../hovercard/hovercard-store.ts";
 import { useMenubarContext } from "../menubar/menubar-context.tsx";
 import type { MenubarStore } from "../menubar/menubar-store.ts";
+import { setMenuStoreSetup } from "./__utils.ts";
 import { useMenuContext } from "./menu-context.tsx";
 
 export function useMenuStoreProps<T extends Core.MenuStore>(
@@ -75,15 +79,18 @@ export function useMenuStore(props: MenuStoreProps = {}): MenuStore {
     combobox: props.combobox !== undefined ? props.combobox : combobox,
   };
   const [store, update] = useStore(Core.createMenuStore, props);
-  useEffect(() => {
-    // Menus that mount already open don't go through the MenuButton
-    // interactions that enable automatic focus.
-    const { open, autoFocusOnShow } = store.getState();
-    if (!open) return;
-    if (autoFocusOnShow) return;
-    store.setAutoFocusOnShow(true);
-  }, [store]);
-  return useMenuStoreProps(store, update, props);
+  const setup = useInitialValue(() => ({
+    autoFocusOnMount: store.getState().open,
+    hasCommitted: false,
+  }));
+  // Keep the initial setup associated with replacement store wrappers.
+  setMenuStoreSetup(store, setup);
+  const storeWithProps = useMenuStoreProps(store, update, props);
+  // Mount autofocus only applies to menus rendered in the initial commit.
+  useSafeLayoutEffect(() => {
+    setup.hasCommitted = true;
+  }, [setup]);
+  return storeWithProps;
 }
 
 export type MenuStoreValues = Core.MenuStoreValues;

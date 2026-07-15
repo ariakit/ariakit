@@ -4,6 +4,7 @@ import {
   createElement,
   createHook,
   forwardRef,
+  useInitialValue,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
@@ -17,13 +18,51 @@ import { createRef, useEffect, useMemo, useRef, useState } from "react";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { HovercardOptions } from "../hovercard/hovercard.tsx";
 import { useHovercard } from "../hovercard/hovercard.tsx";
+import { getMenuStoreSetup } from "./__utils.ts";
 import { useMenuProviderContext } from "./menu-context.tsx";
 import type { MenuListOptions } from "./menu-list.tsx";
 import { useMenuList } from "./menu-list.tsx";
+import type { MenuStore } from "./menu-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+interface AutoFocusOnMountOptions {
+  store: MenuStore | null | undefined;
+  modal: boolean;
+  open?: boolean;
+  autoFocusOnShow?: HovercardOptions["autoFocusOnShow"];
+}
+
+function useAutoFocusOnMount({
+  store,
+  modal,
+  open,
+  autoFocusOnShow,
+}: AutoFocusOnMountOptions) {
+  const setup = getMenuStoreSetup(store);
+  const initial = useInitialValue({
+    store,
+    setup,
+    modal,
+    open: !setup?.hasCommitted && (open ?? setup?.autoFocusOnMount),
+    autoFocusOnShow,
+  });
+
+  useEffect(() => {
+    // Menus that mount already open don't go through the MenuButton
+    // interactions that enable automatic focus.
+    if (!initial.store) return;
+    if (!initial.open) return;
+    if (initial.modal) return;
+    if (initial.autoFocusOnShow === false) return;
+    const { open, autoFocusOnShow } = initial.store.getState();
+    if (!open) return;
+    if (autoFocusOnShow) return;
+    initial.store.setAutoFocusOnShow(true);
+  }, [initial]);
+}
 
 /**
  * Returns props to create a `Menu` component.
@@ -66,6 +105,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   const parentIsMenubar = !!parentMenubar && !hasParentMenu;
   // If it's a submenu, it shouldn't behave like a modal dialog.
   const modal = hasParentMenu ? false : modalProp;
+  const open = props.open;
 
   props = {
     ...props,
@@ -244,8 +284,17 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
     ...props,
   };
 
+  useAutoFocusOnMount({ store, modal, open, autoFocusOnShow });
+
   return props;
 });
+
+const MenuImpl = forwardRef(function MenuImpl(props: MenuProps) {
+  const htmlProps = useMenu(props);
+  return createElement(TagName, htmlProps);
+});
+
+const MenuWithStore = createDialogComponent(MenuImpl, useMenuProviderContext);
 
 /**
  * Renders a dropdown menu element that's controlled by a
@@ -267,13 +316,19 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
  * </MenuProvider>
  * ```
  */
-export const Menu = createDialogComponent(
-  forwardRef(function Menu(props: MenuProps) {
-    const htmlProps = useMenu(props);
-    return createElement(TagName, htmlProps);
-  }),
-  useMenuProviderContext,
-);
+export const Menu = forwardRef(function Menu(props: MenuProps) {
+  const context = useMenuProviderContext();
+  const store = props.store || context;
+  const modal = store?.parent ? false : (props.modal ?? false);
+  useAutoFocusOnMount({
+    store,
+    modal,
+    open: props.open,
+    autoFocusOnShow: props.autoFocusOnShow,
+  });
+
+  return <MenuWithStore {...props} />;
+});
 
 export interface MenuOptions<T extends ElementType = TagName>
   extends MenuListOptions<T>, Omit<HovercardOptions<T>, "store"> {}
