@@ -358,3 +358,23 @@ test("omits the use client banner for non-React packages", async () => {
     await rm(rootPath, { recursive: true, force: true });
   }
 });
+
+test("includes build output in published packages", async () => {
+  const rootPath = await createBuildFixture({
+    sources: {
+      "index.ts": "export {};\n",
+    },
+  });
+
+  try {
+    runBuild(rootPath);
+
+    const npmignore = await readFile(join(rootPath, ".npmignore"), "utf-8");
+
+    expect(npmignore).toContain(
+      "# Include package build output ignored at the workspace root.\n!dist/\n",
+    );
+  } finally {
+    await rm(rootPath, { recursive: true, force: true });
+  }
+});
