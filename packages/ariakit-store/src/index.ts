@@ -59,6 +59,7 @@ interface FastPathFrame<S> {
 }
 
 interface StoreInternals<S = State> {
+  stores: ReadonlyArray<Store<Partial<S>> | undefined>;
   setup: StoreSetup;
   init: StoreInit;
   subscribe: StoreSubscribe<S>;
@@ -843,6 +844,7 @@ export function createStore<S extends State>(
     getState,
     setState,
     __unstableInternals: {
+      stores,
       setup: storeSetup,
       init: storeInit,
       subscribe: storeSubscribe,

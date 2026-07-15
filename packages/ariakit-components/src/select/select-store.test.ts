@@ -1,4 +1,4 @@
-import { init } from "@ariakit/store";
+import { createStore, init, mergeStore, pick } from "@ariakit/store";
 import { expect, test } from "vitest";
 import { createCompositeStore } from "../composite/composite-store.ts";
 import { createSelectStore } from "./select-store.ts";
@@ -139,6 +139,178 @@ test("does not overwrite a reasserted value after moving", async () => {
     expect(store.getState().value).toBe("Orange");
   } finally {
     stop();
+  }
+});
+
+test("does not overwrite a value reasserted with setState", async () => {
+  const store = createSelectStore({ defaultValue: "Orange" });
+  const stop = init(store);
+
+  try {
+    store.setState("items", [apple]);
+    store.move("apple");
+    queueMicrotask(() => store.setState("value", "Orange"));
+    await flushBatch();
+
+    expect(store.getState().value).toBe("Orange");
+  } finally {
+    stop();
+  }
+});
+
+test.each([
+  ["setValue", "parent"],
+  ["setValue", "child"],
+  ["setState", "parent"],
+  ["setState", "child"],
+] as const)(
+  "does not overwrite a value reasserted with %s by a synchronized %s store",
+  async (method, target) => {
+    const parent = createSelectStore({ defaultValue: "Orange" });
+    const child = createSelectStore({ store: parent });
+    const stop = init(child);
+
+    try {
+      child.setState("items", [apple]);
+      child.move("apple");
+      queueMicrotask(() => {
+        const store = target === "parent" ? parent : child;
+        if (method === "setValue") {
+          store.setValue("Orange");
+        } else {
+          store.setState("value", "Orange");
+        }
+      });
+      await flushBatch();
+
+      expect(parent.getState().value).toBe("Orange");
+      expect(child.getState().value).toBe("Orange");
+    } finally {
+      stop();
+    }
+  },
+);
+
+test("does not overwrite a value reasserted by a sibling store", async () => {
+  const backing = createStore<{ value: string }>({ value: "Orange" });
+  const writer = createSelectStore({ store: backing });
+  const mover = createSelectStore({ store: backing });
+  const stopWriter = init(writer);
+  const stopMover = init(mover);
+
+  try {
+    mover.setState("items", [apple]);
+    mover.move("apple");
+    queueMicrotask(() => writer.setValue("Orange"));
+    await flushBatch();
+
+    expect(backing.getState().value).toBe("Orange");
+    expect(writer.getState().value).toBe("Orange");
+    expect(mover.getState().value).toBe("Orange");
+  } finally {
+    stopMover();
+    stopWriter();
+  }
+});
+
+test.each([
+  ["public", false],
+  ["registered", true],
+] as const)(
+  "does not overwrite a value reasserted across derived stores with a %s item",
+  async (_, registered) => {
+    const backing = createStore({ value: "Orange" });
+    const writer = createSelectStore({
+      store: pick(backing, ["value"]),
+    });
+    const mover = createSelectStore({
+      store: pick(backing, ["value"]),
+    });
+    const stopWriter = init(writer);
+    const stopMover = init(mover);
+    const unregister = registered ? mover.registerItem(apple) : undefined;
+
+    try {
+      if (!registered) {
+        mover.setState("items", [apple]);
+      }
+      mover.move("apple");
+      queueMicrotask(() => writer.setValue("Orange"));
+      await flushBatch();
+
+      expect(backing.getState().value).toBe("Orange");
+      expect(writer.getState().value).toBe("Orange");
+      expect(mover.getState().value).toBe("Orange");
+    } finally {
+      unregister?.();
+      stopMover();
+      stopWriter();
+    }
+  },
+);
+
+test.each([
+  ["public", false],
+  ["registered", true],
+] as const)(
+  "does not share value writes through a synchronized store with a %s item",
+  async (_, registered) => {
+    const composite = createCompositeStore<SelectStoreItem>();
+    const writer = createSelectStore({
+      store: composite,
+      defaultValue: "Orange",
+    });
+    const mover = createSelectStore({
+      store: composite,
+      defaultValue: "Orange",
+    });
+    const stopWriter = init(writer);
+    const stopMover = init(mover);
+    const unregister = registered ? mover.registerItem(apple) : undefined;
+
+    try {
+      if (!registered) {
+        mover.setState("items", [apple]);
+      }
+      mover.move("apple");
+      queueMicrotask(() => writer.setValue("Orange"));
+      await flushBatch();
+
+      expect(writer.getState().value).toBe("Orange");
+      expect(mover.getState().value).toBe("Apple");
+    } finally {
+      unregister?.();
+      stopMover();
+      stopWriter();
+    }
+  },
+);
+
+test("does not share value writes between merged parent stores", async () => {
+  const writerBacking = createStore({ value: "Orange" });
+  const moverBacking = createStore({ value: "Orange" });
+  const writer = createSelectStore({ store: writerBacking });
+  const mover = createSelectStore({ store: moverBacking });
+  const bridge = createSelectStore({
+    store: mergeStore(writerBacking, moverBacking),
+  });
+  const stopWriter = init(writer);
+  const stopMover = init(mover);
+  const stopBridge = init(bridge);
+
+  try {
+    mover.setState("items", [apple]);
+    mover.move("apple");
+    queueMicrotask(() => writer.setValue("Orange"));
+    await flushBatch();
+
+    expect(writer.getState().value).toBe("Orange");
+    expect(mover.getState().value).toBe("Apple");
+    expect(bridge.getState().value).toBe("Apple");
+  } finally {
+    stopBridge();
+    stopMover();
+    stopWriter();
   }
 });
 

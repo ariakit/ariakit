@@ -9,7 +9,7 @@ import {
   throwOnConflictingProps,
 } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
-import { toArray, defaultValue } from "@ariakit/utils";
+import { toArray, defaultValue, hasOwnProperty } from "@ariakit/utils";
 import type { PickRequired, SetState } from "@ariakit/utils";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
 import type {
@@ -28,6 +28,59 @@ import { createPopoverStore } from "../popover/popover-store.ts";
 
 type MutableValue<T extends SelectStoreValue = SelectStoreValue> =
   T extends string ? string : T;
+
+interface ValueWriteTracker {
+  version: number;
+}
+
+interface StoreWithInternals extends Store {
+  __unstableInternals?: {
+    stores?: ReadonlyArray<Store | undefined>;
+  };
+}
+
+const valueWriteTrackerMap = new WeakMap<object, ValueWriteTracker>();
+
+function getValueWriteTrackers(store: Store) {
+  const roots = new Set<object>();
+  const visited = new Set<object>();
+
+  const visit = (store: StoreWithInternals) => {
+    // Store objects may be spread while preserving the same internals.
+    const identity = store.__unstableInternals ?? store;
+    if (visited.has(identity)) return;
+    visited.add(identity);
+
+    let hasValueParent = false;
+    for (const parent of store.__unstableInternals?.stores ?? []) {
+      if (!parent) continue;
+      if (!hasOwnProperty(parent.getState(), "value")) continue;
+      hasValueParent = true;
+      visit(parent);
+    }
+    if (!hasValueParent) {
+      roots.add(identity);
+    }
+  };
+
+  visit(store);
+
+  const trackers: ValueWriteTracker[] = [];
+  for (const root of roots) {
+    const tracker = valueWriteTrackerMap.get(root) ?? { version: 0 };
+    valueWriteTrackerMap.set(root, tracker);
+    trackers.push(tracker);
+  }
+  return trackers;
+}
+
+function getValueWriteVersion(trackers: ValueWriteTracker[]) {
+  let version = 0;
+  for (const tracker of trackers) {
+    version += tracker.version;
+  }
+  return version;
+}
 
 export function createSelectStore<
   T extends SelectStoreValue = SelectStoreValue,
@@ -119,6 +172,8 @@ export function createSelectStore({
 
   const select = createStore(initialState, composite, popover, store);
 
+  const valueWriteTrackers = getValueWriteTrackers(select);
+
   // Automatically sets the default value if it's not set.
   setup(select, () =>
     sync(select, ["value", "items"], (state) => {
@@ -170,9 +225,6 @@ export function createSelectStore({
     select.setState("value", item.value);
   };
 
-  // Tracks strict-equal setter calls that state subscriptions don't observe.
-  let setValueVersion = 0;
-
   // Sets the select value when the active item changes by moving (which usually
   // happens when moving to an item using the keyboard).
   setup(select, () =>
@@ -193,7 +245,7 @@ export function createSelectStore({
       if (publicItem.disabled) return;
       if (publicItem.value == null) return;
 
-      const setValueVersionAtBatch = setValueVersion;
+      const valueWriteVersion = getValueWriteVersion(valueWriteTrackers);
       let canceled = false;
       const stopValueSubscription = subscribe(select, ["value"], () => {
         canceled = true;
@@ -201,7 +253,9 @@ export function createSelectStore({
       queueMicrotask(() => {
         stopValueSubscription();
         if (canceled) return;
-        if (setValueVersion !== setValueVersionAtBatch) return;
+        if (getValueWriteVersion(valueWriteTrackers) !== valueWriteVersion) {
+          return;
+        }
         const currentState = select.getState();
         if (currentState.moves !== moves) return;
         if (currentState.activeId !== activeId) return;
@@ -219,15 +273,22 @@ export function createSelectStore({
     }),
   );
 
+  const setState: SelectStore["setState"] = (key, value) => {
+    if (key === "value") {
+      for (const tracker of valueWriteTrackers) {
+        tracker.version += 1;
+      }
+    }
+    select.setState(key, value);
+  };
+
   return {
     ...composite,
     ...popover,
     ...select,
     combobox,
-    setValue: (value) => {
-      setValueVersion += 1;
-      select.setState("value", value);
-    },
+    setState,
+    setValue: (value) => setState("value", value),
     setLabelElement: (element) => select.setState("labelElement", element),
     setSelectElement: (element) => select.setState("selectElement", element),
     setListElement: (element) => select.setState("listElement", element),
