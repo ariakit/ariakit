@@ -4,24 +4,24 @@ import { expect, test } from "vitest";
 test("typeahead open", async () => {
   await press.Tab();
   await press.Enter();
-  await type("b");
-  expect(q.option("🍌 Banana")).toHaveFocus();
-  expect(q.option("🍎 Apple", { selected: true })).toBeVisible();
-  expect(q.option("🍌 Banana", { selected: false })).toBeVisible();
+  await type("c");
+  expect(q.option("🇨🇦 Canada")).toHaveFocus();
+  expect(q.option("🇧🇷 Brazil", { selected: true })).toBeVisible();
+  expect(q.option("🇨🇦 Canada", { selected: false })).toBeVisible();
   await sleep(600);
-  await type("ora");
-  expect(q.option("🍊 Orange")).toHaveFocus();
-  expect(q.option("🍎 Apple", { selected: true })).toBeVisible();
-  expect(q.option("🍊 Orange", { selected: false })).toBeVisible();
+  await type("uni");
+  expect(q.option("🇺🇸 United States")).toHaveFocus();
+  expect(q.option("🇧🇷 Brazil", { selected: true })).toBeVisible();
+  expect(q.option("🇺🇸 United States", { selected: false })).toBeVisible();
 });
 
 test("typeahead hidden", async () => {
   await press.Tab();
-  await type("g");
-  expect(q.combobox()).toHaveTextContent("Apple");
+  await type("v");
+  expect(q.combobox()).toHaveTextContent("Brazil");
   expect(q.listbox()).not.toBeInTheDocument();
   await sleep(600);
-  await type("ora");
-  expect(q.combobox()).toHaveTextContent("Orange");
+  await type("can");
+  expect(q.combobox()).toHaveTextContent("Canada");
   expect(q.listbox()).not.toBeInTheDocument();
 });
