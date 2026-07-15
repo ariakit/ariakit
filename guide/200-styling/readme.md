@@ -260,6 +260,8 @@ The `--popover-available-width` variable exposes the available horizontal space 
 
 The `--popover-overflow-padding` variable exposes the amount of padding that should be added between the popover element and the viewport edges. You can use this in combination with `100%` or `100vw` values to make the popover element fill the entire viewport width, while still keeping the padding.
 
+When the [`overflowPadding`](/reference/popover#overflowpadding) prop is a number, the variable uses that number. When the prop is an object, the variable uses the larger of its `left` and `right` values, treating an omitted horizontal side as `0`.
+
 ```css
 .popover {
   width: calc(100vw - var(--popover-overflow-padding) * 2);
