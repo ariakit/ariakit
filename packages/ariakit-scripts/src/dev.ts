@@ -1,10 +1,9 @@
-import { spawn } from "node:child_process";
 import { readdir } from "node:fs/promises";
 import { createServer } from "node:net";
 import { isAbsolute, join, relative } from "node:path";
 import { watch } from "chokidar";
 import { cleanPackage } from "./build.ts";
-import { normalizePath, readPackageJson } from "./utils.ts";
+import { normalizePath, readPackageJson, runCommand } from "./utils.ts";
 
 interface DevOptions {
   clean?: boolean;
@@ -16,6 +15,7 @@ interface CleanPackage {
 
 interface PackageWatcher {
   on(event: string, listener: (filename: string) => void): PackageWatcher;
+  close(): Promise<void>;
 }
 
 interface WatchPackageChangesOptions {
@@ -128,7 +128,7 @@ export function watchPackageChanges(options: WatchPackageChangesOptions = {}) {
     timeout = setTimeout(runClean, 100);
   };
 
-  watchPackages("packages", {
+  return watchPackages("packages", {
     ignoreInitial: true,
     ignored: shouldIgnorePackageWatchPath,
   })
@@ -172,33 +172,41 @@ async function findAvailablePort(
 }
 
 export async function dev(options: DevOptions = {}) {
+  let packageWatcher: PackageWatcher | undefined;
   if (options.clean !== false) {
     await cleanPackages(await getCleanPackages());
-    watchPackageChanges();
+    packageWatcher = watchPackageChanges();
   }
 
-  const appPort = await findAvailablePort(Number(process.env.APP_PORT) || 4321);
-  const nextjsPort = await findAvailablePort(
-    Number(process.env.NEXTJS_PORT) || 3000,
-    [appPort],
-  );
+  try {
+    const appPort = await findAvailablePort(
+      Number(process.env.APP_PORT) || 4321,
+    );
+    const nextjsPort = await findAvailablePort(
+      Number(process.env.NEXTJS_PORT) || 3000,
+      [appPort],
+    );
 
-  const child = spawn(
-    "conc",
-    [
-      "-r",
-      `pnpm -F app run dev --port ${appPort}`,
-      `pnpm -F nextjs run dev --port ${nextjsPort}`,
-    ],
-    {
-      stdio: "inherit",
-      env: {
-        ...process.env,
-        APP_PORT: String(appPort),
-        NEXTJS_PORT: String(nextjsPort),
+    const exitCode = await runCommand(
+      "conc",
+      [
+        "-r",
+        `pnpm -F app run dev --port ${appPort}`,
+        `pnpm -F nextjs run dev --port ${nextjsPort}`,
+      ],
+      {
+        cwd: process.cwd(),
+        env: {
+          ...process.env,
+          // Prevent Astro from daemonizing when an agent is detected.
+          ASTRO_DEV_BACKGROUND: "0",
+          APP_PORT: String(appPort),
+          NEXTJS_PORT: String(nextjsPort),
+        },
       },
-    },
-  );
-
-  child.on("exit", (code) => process.exit(code ?? 0));
+    );
+    process.exitCode = exitCode;
+  } finally {
+    await packageWatcher?.close();
+  }
 }
