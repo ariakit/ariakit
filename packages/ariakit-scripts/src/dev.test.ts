@@ -45,6 +45,28 @@ async function waitForFileContents(filename: string, expected: string) {
   throw new Error(`Timed out waiting for ${expected.trim()} in ${filename}`);
 }
 
+/**
+ * Waits until a test process has spawned a direct child.
+ */
+async function waitForChildProcess(pid: number) {
+  const timeout = Date.now() + 5000;
+  while (Date.now() < timeout) {
+    try {
+      const output = getCommandOutput(
+        "pgrep",
+        ["-P", String(pid)],
+        process.cwd(),
+      );
+      const childPid = Number(output.split("\n")[0]);
+      if (Number.isInteger(childPid)) return childPid;
+    } catch {
+      // The child may not have started yet.
+    }
+    await new Promise((resolve) => setTimeout(resolve, 25));
+  }
+  throw new Error(`Timed out waiting for a child of process ${pid}`);
+}
+
 function killProcessGroup(pid: number, signal: NodeJS.Signals) {
   try {
     process.kill(-pid, signal);
@@ -92,6 +114,9 @@ async function waitForProcessGroupExit(pid: number) {
         throw error;
       }
       if (error.code === "ESRCH") return;
+      // Every process in this test group runs as the current user. EPERM means
+      // the original group exited and its id is no longer ours to inspect.
+      if (error.code === "EPERM") return;
       throw error;
     }
     await new Promise((resolve) => setTimeout(resolve, 25));
@@ -187,11 +212,24 @@ test("ignores package watch paths outside source and package json", () => {
 });
 
 test.skipIf(process.platform === "win32").each([
-  { expectedExitCode: 0, shutdownSignal: "SIGINT" as const },
-  { expectedExitCode: 131, shutdownSignal: "SIGQUIT" as const },
+  {
+    expectedExit: [0, null] as const,
+    resumeBeforeShutdown: true,
+    shutdownSignal: "SIGINT" as const,
+  },
+  {
+    expectedExit: [131, null] as const,
+    resumeBeforeShutdown: true,
+    shutdownSignal: "SIGQUIT" as const,
+  },
+  {
+    expectedExit: [null, "SIGKILL"] as const,
+    resumeBeforeShutdown: false,
+    shutdownSignal: "SIGKILL" as const,
+  },
 ])(
   "handles $shutdownSignal without leaving dev processes",
-  async ({ expectedExitCode, shutdownSignal }) => {
+  async ({ expectedExit, resumeBeforeShutdown, shutdownSignal }) => {
     const rootPath = await mkdtemp(join(tmpdir(), "ariakit-dev-command-"));
     const appSignalsPath = join(rootPath, "app-signals.txt");
     const argsPath = join(rootPath, "args.json");
@@ -205,10 +243,22 @@ test.skipIf(process.platform === "win32").each([
       "packages/ariakit-scripts/src/index.ts",
     );
     const stoppedPath = join(rootPath, "stopped");
+    const supervisorPidPath = join(rootPath, "supervisor-pid.txt");
+    const supervisorPreloadPath = join(rootPath, "supervisor-preload.cjs");
     const searchPath = [rootPath, process.env.PATH]
       .filter(Boolean)
       .join(delimiter);
     const signalPaths = [concSignalsPath, appSignalsPath, nextjsSignalsPath];
+
+    await writeFile(
+      supervisorPreloadPath,
+      `const { writeFileSync } = require("node:fs");
+if (process.argv[1]?.endsWith("command-supervisor.ts")) {
+  writeFileSync(process.env.SUPERVISOR_PID_PATH, String(process.pid));
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 300);
+}
+`,
+    );
 
     await writeFile(
       commandScriptPath,
@@ -281,7 +331,9 @@ process.on("SIGCONT", recordSignal);
 process.on("SIGINT", stop);
 process.on("SIGQUIT", (signal) => {
   recordSignal(signal);
-  setTimeout(() => process.exit(131), 100);
+  Promise.all(
+    children.map((child) => new Promise((resolve) => child.once("exit", resolve))),
+  ).then(() => process.exit(131));
 });
 process.on("SIGTERM", stop);
 setInterval(() => {}, 1000);
@@ -300,8 +352,15 @@ setInterval(() => {}, 1000);
         CONC_PID_PATH: concPidPath,
         CONC_SIGNALS_PATH: concSignalsPath,
         NEXTJS_SIGNALS_PATH: nextjsSignalsPath,
+        NODE_OPTIONS: [
+          process.env.NODE_OPTIONS,
+          `--require=${supervisorPreloadPath}`,
+        ]
+          .filter(Boolean)
+          .join(" "),
         PATH: searchPath,
         STOPPED_PATH: stoppedPath,
+        SUPERVISOR_PID_PATH: supervisorPidPath,
       },
       stdio: "ignore",
     });
@@ -311,9 +370,22 @@ setInterval(() => {}, 1000);
     }
 
     try {
-      await waitForFile(concPidPath);
-      concPid = Number(await readFile(concPidPath, "utf8"));
+      if (resumeBeforeShutdown) {
+        await waitForFile(supervisorPidPath);
+        const supervisorPid = Number(await readFile(supervisorPidPath, "utf8"));
+        killProcessGroup(pid, "SIGTSTP");
+        concPid = await waitForChildProcess(supervisorPid);
+        await waitForProcessStopped(concPid);
+        killProcessGroup(pid, "SIGCONT");
+      } else {
+        await waitForFile(concPidPath);
+        concPid = Number(await readFile(concPidPath, "utf8"));
+      }
+
       await waitForFile(argsPath);
+      await expect(readFile(concPidPath, "utf8")).resolves.toBe(
+        String(concPid),
+      );
       const result: unknown = JSON.parse(await readFile(argsPath, "utf8"));
       expect(result).toEqual({
         args: [
@@ -324,22 +396,31 @@ setInterval(() => {}, 1000);
         astroDevBackground: "0",
       });
 
-      killProcessGroup(pid, "SIGTSTP");
-      await waitForProcessStopped(concPid);
-      killProcessGroup(pid, "SIGCONT");
-      await Promise.all(
-        signalPaths.map((filename) =>
-          waitForFileContents(filename, "SIGCONT\n"),
-        ),
-      );
+      if (resumeBeforeShutdown) {
+        await Promise.all(
+          signalPaths.map((filename) => writeFile(filename, "")),
+        );
+        killProcessGroup(pid, "SIGTSTP");
+        await waitForProcessStopped(concPid);
+        killProcessGroup(pid, "SIGCONT");
+        await Promise.all(
+          signalPaths.map((filename) =>
+            waitForFileContents(filename, "SIGCONT\n"),
+          ),
+        );
+      } else {
+        killProcessGroup(pid, "SIGTSTP");
+        await waitForProcessStopped(concPid);
+      }
 
       const exitPromise = once(child, "exit", {
         signal: AbortSignal.timeout(2000),
       });
       killProcessGroup(pid, shutdownSignal);
       const [exitCode, signal] = await exitPromise;
-      expect([exitCode, signal]).toEqual([expectedExitCode, null]);
+      expect([exitCode, signal]).toEqual(expectedExit);
       await waitForProcessGroupExit(concPid);
+      concPid = undefined;
       if (shutdownSignal === "SIGINT") {
         await expect(
           access(stoppedPath),
@@ -347,9 +428,15 @@ setInterval(() => {}, 1000);
         ).resolves.toBeUndefined();
       }
       for (const filename of signalPaths) {
-        await expect(readFile(filename, "utf8")).resolves.toBe(
-          `SIGCONT\n${shutdownSignal}\n`,
-        );
+        const signals = await readFile(filename, "utf8");
+        if (resumeBeforeShutdown) {
+          expect(signals).toBe(`SIGCONT\n${shutdownSignal}\n`);
+        } else {
+          expect(signals.trim().split("\n").sort()).toEqual([
+            "SIGCONT",
+            "SIGTERM",
+          ]);
+        }
       }
     } finally {
       if (concPid) {

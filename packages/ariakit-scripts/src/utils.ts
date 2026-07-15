@@ -1,13 +1,18 @@
-import { spawn, spawnSync } from "node:child_process";
+import { fork, spawn, spawnSync } from "node:child_process";
+import type { ChildProcess } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join, sep } from "node:path";
 
 export interface RunCommandOptions {
   cwd: string;
-  detached?: boolean;
   env?: NodeJS.ProcessEnv;
-  forwardSignals?: boolean;
+  signalMode?: "forward" | "shared" | "supervised";
+}
+
+interface PendingSignal {
+  signal: NodeJS.Signals;
+  onSent?: () => void;
 }
 
 export interface PackageJson {
@@ -53,47 +58,54 @@ export async function runCommand(
   args: string[],
   options: RunCommandOptions,
 ) {
-  return await new Promise<number>((resolvePromise, reject) => {
-    const child = spawn(command, args, {
-      cwd: options.cwd,
-      detached: options.detached,
-      env: options.env,
-      stdio: "inherit",
-    });
+  const signalMode = options.signalMode ?? "forward";
+  if (signalMode === "supervised" && process.platform === "win32") {
+    throw new Error("Supervised commands are not supported on Windows");
+  }
 
-    const forwardSignal = (signal: NodeJS.Signals) => {
-      if (options.forwardSignals === false) return;
-      child.kill(signal);
-    };
-    const forwardProcessGroupSignal = (signal: NodeJS.Signals) => {
-      if (options.forwardSignals === false) return;
-      const pid = child.pid;
-      if (!pid) return;
-      try {
-        process.kill(-pid, signal);
-      } catch (error) {
-        if (!(error instanceof Error)) {
-          throw error;
-        }
-        if (!("code" in error)) {
-          throw error;
-        }
-        if (error.code !== "ESRCH") {
-          throw error;
-        }
+  return await new Promise<number>((resolvePromise, reject) => {
+    let child: ChildProcess | undefined;
+    let stopRequest = 0;
+    const pendingSignals: PendingSignal[] = [];
+
+    const deliverSignal = ({ signal, onSent }: PendingSignal) => {
+      const currentChild = child;
+      if (!currentChild) return;
+      if (signalMode === "supervised") {
+        if (!currentChild.connected) return;
+        currentChild.send(signal, (error) => {
+          if (error) return;
+          onSent?.();
+        });
+        return;
+      }
+      if (currentChild.kill(signal)) {
+        onSent?.();
       }
     };
-    const onSigcont = () => forwardProcessGroupSignal("SIGCONT");
+    const forwardSignal = (signal: NodeJS.Signals, onSent?: () => void) => {
+      if (signalMode === "shared") return;
+      const pendingSignal = { signal, onSent };
+      if (!child) {
+        pendingSignals.push(pendingSignal);
+        return;
+      }
+      deliverSignal(pendingSignal);
+    };
+    const onSigcont = () => {
+      stopRequest += 1;
+      forwardSignal("SIGCONT");
+    };
     const onSighup = () => forwardSignal("SIGHUP");
     const onSigint = () => forwardSignal("SIGINT");
-    // Concurrently doesn't handle SIGQUIT, so signal its isolated group.
-    const onSigquit = () => forwardProcessGroupSignal("SIGQUIT");
+    const onSigquit = () => forwardSignal("SIGQUIT");
     const onSigterm = () => forwardSignal("SIGTERM");
     const onSigtstp = () => {
-      // Detached sessions ignore the default SIGTSTP action, so use the
-      // uncatchable stop signal for the isolated process group.
-      forwardProcessGroupSignal("SIGSTOP");
-      process.kill(process.pid, "SIGSTOP");
+      const request = ++stopRequest;
+      forwardSignal("SIGTSTP", () => {
+        if (request !== stopRequest) return;
+        process.kill(process.pid, "SIGSTOP");
+      });
     };
     const cleanup = () => {
       process.off("SIGCONT", onSigcont);
@@ -104,11 +116,52 @@ export async function runCommand(
       process.off("SIGTSTP", onSigtstp);
     };
 
-    child.on("error", (error) => {
+    // Install these handlers before forking so startup signals can be queued
+    // until the supervisor's IPC channel is available.
+    if (signalMode === "supervised") {
+      process.on("SIGHUP", onSighup);
+      process.on("SIGINT", onSigint);
+      process.on("SIGQUIT", onSigquit);
+      process.on("SIGTERM", onSigterm);
+      process.on("SIGCONT", onSigcont);
+      process.on("SIGTSTP", onSigtstp);
+    }
+
+    try {
+      child =
+        signalMode === "supervised"
+          ? fork(
+              new URL("./command-supervisor.ts", import.meta.url),
+              [command, ...args],
+              {
+                cwd: options.cwd,
+                detached: true,
+                env: options.env,
+                stdio: ["inherit", "inherit", "inherit", "ipc"],
+              },
+            )
+          : spawn(command, args, {
+              cwd: options.cwd,
+              env: options.env,
+              stdio: "inherit",
+            });
+    } catch (error) {
+      cleanup();
+      reject(error);
+      return;
+    }
+
+    const spawnedChild = child;
+    if (!spawnedChild) {
+      cleanup();
+      reject(new Error("Failed to start command"));
+      return;
+    }
+    spawnedChild.on("error", (error) => {
       cleanup();
       reject(error);
     });
-    child.on("exit", (code, signal) => {
+    spawnedChild.on("exit", (code, signal) => {
       cleanup();
       if (code != null) {
         resolvePromise(code);
@@ -129,20 +182,13 @@ export async function runCommand(
       resolvePromise(1);
     });
 
-    // Detached children rely on the parent for terminal and job-control
-    // signals until they exit, including repeated signals and SIGHUP.
-    if (options.detached) {
-      process.on("SIGHUP", onSighup);
-      process.on("SIGINT", onSigint);
-      process.on("SIGTERM", onSigterm);
-      if (options.forwardSignals !== false && process.platform !== "win32") {
-        process.on("SIGCONT", onSigcont);
-        process.on("SIGQUIT", onSigquit);
-        process.on("SIGTSTP", onSigtstp);
-      }
-    } else {
+    if (signalMode !== "supervised") {
       process.once("SIGINT", onSigint);
       process.once("SIGTERM", onSigterm);
+    }
+    const queuedSignals = pendingSignals.splice(0);
+    for (const pendingSignal of queuedSignals) {
+      deliverSignal(pendingSignal);
     }
   });
 }

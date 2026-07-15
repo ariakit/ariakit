@@ -205,10 +205,9 @@ export async function dev(options: DevOptions = {}) {
       [appPort],
     );
 
-    // A POSIX process group prevents Concurrently from receiving the same
-    // terminal signal directly and again through Ariakit. Windows console
-    // signals remain shared because child.kill() would terminate abruptly.
-    const isolateCoordinator = process.platform !== "win32";
+    // POSIX isolation gives Concurrently one copy of each signal. A separate
+    // supervisor keeps it inside the wrapper's cleanup boundary.
+    const signalMode = process.platform === "win32" ? "shared" : "supervised";
     const exitCode = await runCommand(
       "conc",
       [
@@ -218,7 +217,6 @@ export async function dev(options: DevOptions = {}) {
       ],
       {
         cwd: process.cwd(),
-        detached: isolateCoordinator,
         env: {
           ...process.env,
           // Prevent Astro from daemonizing when an agent is detected.
@@ -226,7 +224,7 @@ export async function dev(options: DevOptions = {}) {
           APP_PORT: String(appPort),
           NEXTJS_PORT: String(nextjsPort),
         },
-        forwardSignals: isolateCoordinator,
+        signalMode,
       },
     );
     process.exitCode = exitCode;
