@@ -1,5 +1,10 @@
 # @ariakit/react-store
 
+## 0.1.7
+
+- Fixed published packages omitting their build output. Thanks to [@shahednasser](https://github.com/shahednasser).
+- Updated dependencies: `@ariakit/react-utils@0.2.2`, `@ariakit/store@0.1.6`
+
 ## 0.1.6
 
 This version adds keyed selector subscriptions to reduce updates from unrelated state changes, lowers React store subscription overhead, and fixes unnecessary controlled `NaN` callbacks and subscriptions with `NaN` keys.

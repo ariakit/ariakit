@@ -1,5 +1,10 @@
 # @ariakit/react
 
+## 0.4.34
+
+- Fixed published packages omitting their build output. Thanks to [@shahednasser](https://github.com/shahednasser).
+- Updated dependencies: `@ariakit/react-components@0.3.3`
+
 ## 0.4.33
 
 This version adds React Compiler-compatible form hooks and side-specific popover overflow padding, improves store and component performance, and refines modal scroll locking and native button markup. It also includes fixes for Korean IME focus, controlled `NaN` values, and focus-visible styling.

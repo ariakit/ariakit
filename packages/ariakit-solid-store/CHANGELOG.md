@@ -1,5 +1,10 @@
 # @ariakit/solid-store
 
+## 0.1.6
+
+- Fixed published packages omitting their build output. Thanks to [@shahednasser](https://github.com/shahednasser).
+- Updated dependencies: `@ariakit/store@0.1.6`
+
 ## 0.1.5
 
 - Fixed store subscriptions to respond consistently to updates made with `NaN` keys.
