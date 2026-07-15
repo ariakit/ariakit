@@ -3,7 +3,7 @@ import {
   useLiveRef,
   useSafeLayoutEffect,
 } from "@ariakit/react-utils";
-import { batch, init, subscribe, sync } from "@ariakit/store";
+import { batch, init, subscribe } from "@ariakit/store";
 import type { Store as CoreStore, State, StoreState } from "@ariakit/store";
 import { hasOwnProperty, identity } from "@ariakit/utils";
 import type { AnyFunction, PickByValue, SetState } from "@ariakit/utils";
@@ -59,8 +59,8 @@ function isStoreKeyArray(value: unknown): value is readonly StoreKey[] {
   return Array.isArray(value);
 }
 
-function isSameStoreKey(key: StoreKey, other: StoreKey | undefined) {
-  return key === other || (key !== key && other !== other);
+function isSameValue(value: unknown, other: unknown) {
+  return value === other || (value !== value && other !== other);
 }
 
 function hasSameStoreKeys(
@@ -71,7 +71,7 @@ function hasSameStoreKeys(
   for (let index = 0; index < keys.length; index += 1) {
     const key = keys[index];
     if (key === undefined) return false;
-    if (isSameStoreKey(key, otherKeys[index])) continue;
+    if (isSameValue(key, otherKeys[index])) continue;
     return false;
   }
   return true;
@@ -407,18 +407,20 @@ export function useStoreProps<
 >(store: CoreStore<S>, props: P, key: K, setKey?: SK) {
   const value = hasOwnProperty(props, key) ? props[key] : undefined;
   const setValue = setKey ? props[setKey] : undefined;
+  const hasSetValue = !!setValue;
   const propsRef = useLiveRef({ value, setValue });
 
   // Calls setValue when the state value changes.
   useSafeLayoutEffect(() => {
-    return sync(store, [key], (state, prev) => {
+    if (!hasSetValue) return;
+    return subscribe(store, [key], (state, prev) => {
       const { value, setValue } = propsRef.current;
       if (!setValue) return;
-      if (state[key] === prev[key]) return;
-      if (state[key] === value) return;
+      if (isSameValue(state[key], prev[key])) return;
+      if (isSameValue(state[key], value)) return;
       setValue(state[key]);
     });
-  }, [store, key]);
+  }, [store, key, hasSetValue]);
 
   // If the value prop is provided, we'll always reset the store state to it.
   useSafeLayoutEffect(() => {

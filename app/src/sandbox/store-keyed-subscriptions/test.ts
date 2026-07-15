@@ -231,3 +231,55 @@ test("attaches and detaches conditional selector dependencies", async () => {
   expect(selectorValue).toHaveTextContent("paused");
   expect(calls.textContent).toBe(detachedCalls);
 });
+
+test("updates the store props setter subscription", async () => {
+  const firstValue = q.status("First setter value");
+  const secondValue = q.status("Second setter value");
+  const nanSetterCalls = q.status("NaN setter calls");
+  const activeSubscriptions = q.status("Active setter subscriptions");
+
+  expect(firstValue).toHaveTextContent("none");
+  expect(secondValue).toHaveTextContent("none");
+  expect(nanSetterCalls).toHaveTextContent("0");
+  expect(activeSubscriptions).toHaveTextContent("0");
+
+  await click(q.button("Enable NaN setter"));
+  expect(nanSetterCalls).toHaveTextContent("0");
+
+  await click(q.button("Update NaN value"));
+  expect(nanSetterCalls).toHaveTextContent("1");
+
+  await click(q.button("Control NaN value"));
+  expect(nanSetterCalls).toHaveTextContent("1");
+
+  await click(q.button("Update foo"));
+  expect(firstValue).toHaveTextContent("none");
+  expect(secondValue).toHaveTextContent("none");
+
+  await click(q.button("Use first setter"));
+  expect(activeSubscriptions).toHaveTextContent("1");
+  expect(firstValue).toHaveTextContent("none");
+  await click(q.button("Update foo"));
+  expect(firstValue).toHaveTextContent("2");
+  expect(secondValue).toHaveTextContent("none");
+
+  await click(q.button("Use second setter"));
+  expect(activeSubscriptions).toHaveTextContent("1");
+  expect(secondValue).toHaveTextContent("none");
+  await click(q.button("Update foo"));
+  expect(firstValue).toHaveTextContent("2");
+  expect(secondValue).toHaveTextContent("3");
+
+  await click(q.button("Clear setter"));
+  expect(activeSubscriptions).toHaveTextContent("0");
+  await click(q.button("Update foo"));
+  expect(firstValue).toHaveTextContent("2");
+  expect(secondValue).toHaveTextContent("3");
+
+  await click(q.button("Use first setter"));
+  expect(activeSubscriptions).toHaveTextContent("1");
+  expect(firstValue).toHaveTextContent("2");
+  await click(q.button("Update foo"));
+  expect(firstValue).toHaveTextContent("5");
+  expect(secondValue).toHaveTextContent("3");
+});
