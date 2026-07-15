@@ -88,6 +88,10 @@ function createRefData(
 }
 
 function makeRef(id: string, data: RefData): CollectionEntry<"references"> {
+  // Oxlint reports this assertion inconsistently depending on the file set.
+  // https://github.com/oxc-project/oxc/issues/21752
+  // https://github.com/oxc-project/tsgolint/issues/1047
+  // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- Partial fixture.
   return { id, data } as unknown as CollectionEntry<"references">;
 }
 
@@ -128,7 +132,12 @@ function refs(): CollectionEntry<"references">[] {
     "react/disclosure/store",
     createRefData("store", "useDisclosureStore", "disclosure", {
       state: [createProp("mounted")],
-      params: [createProp("props", { optional: true })],
+      params: [
+        createProp("props", {
+          optional: true,
+          props: [createProp("open"), createProp("setOpen")],
+        }),
+      ],
       returnProps: [
         createProp("getState"),
         createProp("open"),
@@ -184,6 +193,24 @@ function refs(): CollectionEntry<"references">[] {
   ];
 }
 
+function sharedStateRefs(): CollectionEntry<"references">[] {
+  const storeCombobox = makeRef(
+    "react/combobox/store",
+    createRefData("store", "useComboboxStore", "combobox", {
+      state: [createProp("open"), createProp("mounted")],
+    }),
+  );
+
+  const storeDisclosure = makeRef(
+    "react/disclosure/store",
+    createRefData("store", "useDisclosureStore", "disclosure", {
+      state: [createProp("open"), createProp("mounted")],
+    }),
+  );
+
+  return [storeCombobox, storeDisclosure];
+}
+
 function tokensAt(
   code: string,
   perLine: ReturnType<typeof findCodeReferenceAnchors>,
@@ -197,6 +224,20 @@ function tokensAt(
     }
   });
   return out;
+}
+
+function anchorsWithHrefs(
+  code: string,
+  perLine: ReturnType<typeof findCodeReferenceAnchors>,
+) {
+  const lines = code.trim().split("\n");
+  return perLine.flatMap((ranges, i) => {
+    const line = lines[i] || "";
+    return ranges.map((range) => ({
+      text: line.slice(range.start, range.end),
+      href: range.href,
+    }));
+  });
 }
 
 test("tokenizes useStoreState state key (string) with ak namespace", () => {
@@ -253,6 +294,49 @@ const value = ak.useStoreState(combobox, (state) => state.value);
       },
     ]
   `);
+});
+
+test("does not attribute later useStoreState state keys to previous stores", () => {
+  const code = `
+import * as ak from "@ariakit/react";
+const combobox = ak.useComboboxStore();
+const disclosure = ak.useDisclosureStore();
+const open = ak.useStoreState(combobox, (state) => state.open);
+const mounted = ak.useStoreState(disclosure, "mounted");
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: sharedStateRefs(),
+    framework: "react",
+  });
+  const anchors = anchorsWithHrefs(code, perLine);
+  const openAnchors = anchors.filter((anchor) => anchor.text === "open");
+  const mountedAnchors = anchors.filter((anchor) => anchor.text === "mounted");
+
+  expect(openAnchors).toHaveLength(1);
+  expect(openAnchors[0]?.href).toContain("/combobox/");
+  expect(mountedAnchors).toHaveLength(1);
+  expect(mountedAnchors[0]?.href).toContain("/disclosure/");
+});
+
+test("ignores single-argument useStoreState calls when finding state keys", () => {
+  const code = `
+import * as ak from "@ariakit/react";
+const combobox = ak.useComboboxStore();
+const disclosure = ak.useDisclosureStore();
+const state = ak.useStoreState(combobox);
+const mounted = ak.useStoreState(disclosure, "mounted");
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: sharedStateRefs(),
+    framework: "react",
+  });
+  const anchors = anchorsWithHrefs(code, perLine);
+  const mountedAnchors = anchors.filter((anchor) => anchor.text === "mounted");
+
+  expect(mountedAnchors).toHaveLength(1);
+  expect(mountedAnchors[0]?.href).toContain("/disclosure/");
 });
 
 test("does not tokenize props on non-Ariakit namespaced components (rac.Disclosure)", () => {
@@ -585,6 +669,308 @@ const combobox = useComboboxStore({ setMounted: () => {} });
         "kind": "prop",
         "line": 2,
         "text": "setMounted",
+      },
+    ]
+  `);
+});
+
+test("tokenizes store object props without value-position identifiers", () => {
+  const code = `
+import { useComboboxStore } from "@ariakit/react";
+const setMounted = (mounted) => mounted;
+const combobox = useComboboxStore({
+  setMounted: (mounted) => setMounted(mounted),
+});
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 1,
+        "text": "useComboboxStore",
+      },
+      {
+        "kind": "store",
+        "line": 3,
+        "text": "useComboboxStore",
+      },
+      {
+        "kind": "prop",
+        "line": 4,
+        "text": "setMounted",
+      },
+    ]
+  `);
+});
+
+test("tokenizes shorthand store object props", () => {
+  const code = `
+import { useDisclosureStore } from "@ariakit/react";
+const open = true;
+const disclosure = useDisclosureStore({ open });
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 1,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "store",
+        "line": 3,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "prop",
+        "line": 3,
+        "text": "open",
+      },
+    ]
+  `);
+});
+
+test("tokenizes store object props after comments", () => {
+  const code = `
+import { useDisclosureStore } from "@ariakit/react";
+const disclosure = useDisclosureStore({
+  // Controlled state setter
+  setOpen: (open) => setOpen(open),
+});
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 1,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "store",
+        "line": 2,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "prop",
+        "line": 4,
+        "text": "setOpen",
+      },
+    ]
+  `);
+});
+
+test("tokenizes store object props after comments with braces", () => {
+  const code = `
+import { useDisclosureStore } from "@ariakit/react";
+const disclosure = useDisclosureStore({
+  // } closes nothing here
+  setOpen: (open) => setOpen(open),
+});
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 1,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "store",
+        "line": 2,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "prop",
+        "line": 4,
+        "text": "setOpen",
+      },
+    ]
+  `);
+});
+
+test("tokenizes store object props after comments before object", () => {
+  const code = `
+import { useDisclosureStore } from "@ariakit/react";
+const disclosure = useDisclosureStore(
+  // { closes nothing here
+  // ) closes nothing here
+  { setOpen: (open) => setOpen(open) },
+);
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 1,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "store",
+        "line": 2,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "prop",
+        "line": 5,
+        "text": "setOpen",
+      },
+    ]
+  `);
+});
+
+test("tokenizes store object props before delimiter comments", () => {
+  const code = `
+import { useDisclosureStore } from "@ariakit/react";
+const disclosure = useDisclosureStore({
+  setOpen /* setter */: (open) => setOpen(open),
+  open /* current */,
+});
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 1,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "store",
+        "line": 2,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "prop",
+        "line": 3,
+        "text": "setOpen",
+      },
+      {
+        "kind": "prop",
+        "line": 4,
+        "text": "open",
+      },
+    ]
+  `);
+});
+
+test("tokenizes method shorthand store object props", () => {
+  const code = `
+import { useDisclosureStore } from "@ariakit/react";
+const disclosure = useDisclosureStore({
+  setOpen(open) {
+    return open;
+  },
+});
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 1,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "store",
+        "line": 2,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "prop",
+        "line": 3,
+        "text": "setOpen",
+      },
+    ]
+  `);
+});
+
+test("tokenizes prefixed method store object props", () => {
+  const code = `
+import { useDisclosureStore } from "@ariakit/react";
+const disclosure = useDisclosureStore({
+  async setOpen(open) {
+    return open;
+  },
+  get open() {
+    return true;
+  },
+  *setOpen(open) {
+    return open;
+  },
+});
+`;
+  const perLine = findCodeReferenceAnchors({
+    code,
+    references: refs(),
+    framework: "react",
+  });
+  const ts = tokensAt(code, perLine);
+  expect(ts).toMatchInlineSnapshot(`
+    [
+      {
+        "kind": "store",
+        "line": 1,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "store",
+        "line": 2,
+        "text": "useDisclosureStore",
+      },
+      {
+        "kind": "prop",
+        "line": 3,
+        "text": "setOpen",
+      },
+      {
+        "kind": "prop",
+        "line": 6,
+        "text": "open",
+      },
+      {
+        "kind": "prop",
+        "line": 9,
+        "text": "setOpen",
       },
     ]
   `);

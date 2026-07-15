@@ -82,7 +82,12 @@ export type {
   FormStoreProps,
   FormStoreState,
 } from "@ariakit/react-components/form/form-store";
-export { useFormStore } from "@ariakit/react-components/form/form-store";
+export {
+  useFormStore,
+  useFormSubmit,
+  useFormValidate,
+  useFormValue,
+} from "@ariakit/react-components/form/form-store";
 export type {
   FormSubmitOptions,
   FormSubmitProps,

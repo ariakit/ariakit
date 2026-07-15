@@ -5,9 +5,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await perf.measurePageLoad();
   });
 
-  test("toggle layer and text classes", async ({ page, perf }) => {
-    await perf.measure(async () => {
-      await page.evaluate(() => {
+  test("toggle layer and text classes", async ({ perf }) => {
+    await perf.measure(({ page }) =>
+      page.evaluate(() => {
         const sections = document.querySelectorAll<HTMLElement>(
           "section[aria-labelledby]",
         );
@@ -24,7 +24,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
           section.classList.toggle("*:ak-text-red-600");
           section.classList.toggle("ak-frame-p-4");
         }
-      });
-    });
+      }),
+    );
   });
 });

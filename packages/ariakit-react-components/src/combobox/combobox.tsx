@@ -22,6 +22,7 @@ import {
   isFocusEventOutside,
   queueBeforeEvent,
   hasFocus,
+  isInputEvent,
   invariant,
   isFalsyBooleanCallback,
   noop,
@@ -67,15 +68,16 @@ function isFirstItemAutoSelected(
 function hasCompletionString(value?: string, activeValue?: string) {
   if (!activeValue) return false;
   if (value == null) return false;
-  value = normalizeString(value);
+  const normalizedValue = normalizeString(value);
+  const normalizedActiveValue = normalizeString(activeValue);
+  if (normalizedValue.length !== value.length) return false;
+  if (normalizedActiveValue.length !== activeValue.length) return false;
   return (
-    activeValue.length > value.length &&
-    activeValue.toLowerCase().indexOf(value.toLowerCase()) === 0
+    normalizedActiveValue.length > normalizedValue.length &&
+    normalizedActiveValue
+      .toLowerCase()
+      .startsWith(normalizedValue.toLowerCase())
   );
-}
-
-function isInputEvent(event: Event): event is InputEvent {
-  return event.type === "input";
 }
 
 function isAriaAutoCompleteValue(
@@ -146,12 +148,21 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const [valueUpdated, forceValueUpdate] = useForceUpdate();
     const canAutoSelectRef = useRef(false);
     const composingRef = useRef(false);
+    const compositionEndFrameRef = useRef<number | null>(null);
+
+    const cancelCompositionEndFrame = () => {
+      const frame = compositionEndFrameRef.current;
+      if (frame == null) return;
+      cancelAnimationFrame(frame);
+      compositionEndFrameRef.current = null;
+    };
 
     // We can only allow auto select when the combobox focus is handled via the
     // aria-activedescendant attribute. Othwerwise, the focus would move to the
     // first item on every keypress.
     const autoSelect = useStoreState(
       store,
+      ["virtualFocus"],
       (state) => state.virtualFocus && autoSelectProp,
     );
 
@@ -181,23 +192,27 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       });
     }, [store]);
 
-    const inlineActiveValue = useStoreState(store, (state) => {
-      if (!inline) return;
-      if (!canInline) return;
-      // It doesn't make sense to inline the active value if it's already
-      // selected or just got deselected. Inlining the value typically implies
-      // an addition, but if the value is already selected, the action actually
-      // becomes a deletion. If the value was just deselected, pressing Enter
-      // again would reselect it, but it's not the usual path, so we also take
-      // into account the previously selected values. See tag-combobox test
-      // named "deselecting a tag should not highlight the input text if it is
-      // not the first combobox item".
-      if (state.activeValue && Array.isArray(state.selectedValue)) {
-        if (state.selectedValue.includes(state.activeValue)) return;
-        if (prevSelectedValueRef.current?.includes(state.activeValue)) return;
-      }
-      return state.activeValue;
-    });
+    const inlineActiveValue = useStoreState(
+      store,
+      ["activeValue", "selectedValue", "activeId"],
+      (state) => {
+        if (!inline) return;
+        if (!canInline) return;
+        // It doesn't make sense to inline the active value if it's already
+        // selected or just got deselected. Inlining the value typically implies
+        // an addition, but if the value is already selected, the action actually
+        // becomes a deletion. If the value was just deselected, pressing Enter
+        // again would reselect it, but it's not the usual path, so we also take
+        // into account the previously selected values. See tag-combobox test
+        // named "deselecting a tag should not highlight the input text if it is
+        // not the first combobox item".
+        if (state.activeValue && Array.isArray(state.selectedValue)) {
+          if (state.selectedValue.includes(state.activeValue)) return;
+          if (prevSelectedValueRef.current?.includes(state.activeValue)) return;
+        }
+        return state.activeValue;
+      },
+    );
 
     const items = useStoreState(store, "renderedItems");
     const open = useStoreState(store, "open");
@@ -290,9 +305,18 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       storeValue,
     ]);
 
-    const scrollingElementRef = useRef<Element | null>(null);
     const getAutoSelectIdProp = useEvent(getAutoSelectId);
     const autoSelectIdRef = useRef<string | null | undefined>(null);
+    // Tracks the item (id and value) the autoSelect behavior last moved focus
+    // to, so we can tell an already-focused item apart from one that only looks
+    // the same, such as a different value under the same id (e.g. an index-keyed
+    // list after filtering) or an item that became active without focus. This is
+    // distinct from autoSelectIdRef above, which tracks the current target for
+    // the scroll guard. Reset when the popover closes so reopening re-focuses.
+    const autoSelectMovedRef = useRef<{
+      id: string | null;
+      value?: string;
+    }>(undefined);
     const userScrolledRef = useRef(false);
     const isAutoScrollingRef = useRef(false);
 
@@ -304,7 +328,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (!contentElement) return;
       const scrollingElement = getScrollingElement(contentElement);
       if (!scrollingElement) return;
-      scrollingElementRef.current = scrollingElement;
       const onUserScroll = () => {
         // A wheel event is always initiated by the user, so we can disable the
         // autoSelect behavior without any additional checks.
@@ -358,6 +381,13 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       canAutoSelectRef.current = open;
     }, [autoSelect, open]);
 
+    // Reset the auto-moved item when the popover closes so reopening re-focuses
+    // the auto-selected item.
+    useSafeLayoutEffect(() => {
+      if (open) return;
+      autoSelectMovedRef.current = undefined;
+    }, [open]);
+
     const resetValueOnSelect = useStoreState(store, "resetValueOnSelect");
 
     // Auto select the first item on type. This effect runs both when the value
@@ -366,6 +396,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       const canAutoSelect = canAutoSelectRef.current;
       if (!store) return;
       if (!open) return;
+      if (composingRef.current) return;
       if (!canAutoSelect && (!resetValueOnSelect || userScrolledRef.current))
         return;
       const { baseElement, contentElement, activeId } = store.getState();
@@ -391,7 +422,36 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         // are disabled), we should move the focus to the input (null),
         // otherwise, with async items, the activeValue won't be reset. TODO:
         // Test this.
-        store.move(autoSelectId ?? null);
+        const nextActiveId = autoSelectId ?? null;
+        const nextActiveValue = store.item(nextActiveId)?.value;
+        const moved = autoSelectMovedRef.current;
+        // Move when the auto-select target changes: a different active item, a
+        // different target id, or the same id now holding a different value
+        // (for example, a list keyed by index whose first item's value changes
+        // after filtering, or asynchronously loaded items). We avoid re-moving
+        // to the exact item we already moved to, because store.move() always
+        // increments the `moves` counter, which makes the Composite component
+        // re-focus the active item. Re-focusing when only the rendered items
+        // changed (for example, a virtualized list resizing because a mobile
+        // keyboard's autocomplete bar changed the available height) would bounce
+        // focus off the input and back and drop characters as the user types.
+        // See https://github.com/ariakit/ariakit/issues/3837
+        if (
+          nextActiveId !== activeId ||
+          moved?.id !== nextActiveId ||
+          moved?.value !== nextActiveValue
+        ) {
+          autoSelectMovedRef.current = {
+            id: nextActiveId,
+            value: nextActiveValue,
+          };
+          store.move(nextActiveId);
+        } else {
+          // The same item is already the focused active item, so we skip the
+          // move to avoid re-focusing it. Keep activeValue in sync (a no-op
+          // here since the value is unchanged) the way store.move() would.
+          store.setState("activeValue", nextActiveValue);
+        }
       } else {
         // Reset the scroll position to the active item when an item is selected
         // and the combobox value is reset, which might move the active item
@@ -509,6 +569,17 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       }
     });
 
+    useEffect(() => cancelCompositionEndFrame, []);
+
+    const onCompositionStartProp = props.onCompositionStart;
+
+    const onCompositionStart = useEvent((event: CompositionEvent<HTMLType>) => {
+      cancelCompositionEndFrame();
+      canAutoSelectRef.current = false;
+      composingRef.current = true;
+      onCompositionStartProp?.(event);
+    });
+
     const onCompositionEndProp = props.onCompositionEnd;
 
     // When dealing with composition text (for example, when the user is typing
@@ -522,7 +593,12 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       onCompositionEndProp?.(event);
       if (event.defaultPrevented) return;
       if (!autoSelect) return;
-      forceValueUpdate();
+      cancelCompositionEndFrame();
+      compositionEndFrameRef.current = requestAnimationFrame(() => {
+        compositionEndFrameRef.current = null;
+        if (composingRef.current) return;
+        forceValueUpdate();
+      });
     });
 
     const onMouseDownProp = props.onMouseDown;
@@ -594,7 +670,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       // cleared. See combobox-cancel tests.
       canAutoSelectRef.current = false;
       onBlurProp?.(event);
-      if (event.defaultPrevented) return;
     });
 
     // This is necessary so other components like ComboboxCancel can reference
@@ -608,6 +683,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 
     const isActiveItem = useStoreState(
       store,
+      ["activeId"],
       (state) => state.activeId === null,
     );
 
@@ -623,6 +699,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       id,
       ref: useMergeRefs(ref, props.ref),
       onChange,
+      onCompositionStart,
       onCompositionEnd,
       onMouseDown,
       onKeyDown,

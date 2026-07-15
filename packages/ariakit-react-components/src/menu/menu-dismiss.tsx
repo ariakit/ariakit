@@ -1,6 +1,7 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { HovercardDismissOptions } from "../hovercard/hovercard-dismiss.tsx";
 import { useHovercardDismiss } from "../hovercard/hovercard-dismiss.tsx";
 import { useMenuScopedContext } from "./menu-context.tsx";
@@ -46,7 +47,7 @@ export const useMenuDismiss = createHook<TagName, MenuDismissOptions>(
 export const MenuDismiss = forwardRef(function MenuDismiss(
   props: MenuDismissProps,
 ) {
-  const htmlProps = useMenuDismiss(props);
+  const htmlProps = useMenuDismiss(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

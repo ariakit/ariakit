@@ -1,19 +1,13 @@
 import { lstatSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
-import { join, relative, sep } from "node:path";
+import { join } from "node:path";
 import { build as rolldownBuild } from "rolldown";
-import type { Plugin } from "rolldown";
 import { dts } from "rolldown-plugin-dts";
 import solidPlugin from "vite-plugin-solid";
-
-interface PackageJson {
-  name: string;
-  scripts?: Record<string, string>;
-  exports?: Record<string, unknown>;
-  dependencies?: Record<string, string>;
-  peerDependencies?: Record<string, string>;
-  [key: string]: unknown;
-}
+import { cleanLegacyBuild } from "./legacy-clean.ts";
+import { escapeRegExp } from "./regexp.ts";
+import { normalizePath, readPackageJson } from "./utils.ts";
+import type { PackageJson } from "./utils.ts";
 
 interface PublicFile {
   name: string;
@@ -23,10 +17,12 @@ interface PublicFile {
 
 interface BuildOptions {
   indexOnly?: boolean;
+  entries?: string[];
 }
 
 interface CleanOptions {
   indexOnly?: boolean;
+  entries?: string[];
 }
 
 type ExportMode = "source" | "build";
@@ -34,10 +30,20 @@ type ExportMode = "source" | "build";
 const sourceDir = "src";
 const distDir = "dist";
 const solidDir = "solid";
-
-function normalizePath(path: string) {
-  return path.split(sep).join("/");
-}
+const npmIgnoreEntries = [
+  "coverage",
+  "benchmark",
+  "src/test.ts",
+  "src/**/*.test.*",
+  "src/**/__tests__/**",
+  "tsconfig*.json",
+  "*.log",
+  "*.config.*",
+  "*.lock",
+];
+// Use the neutral platform for published libraries so Rolldown doesn't inline
+// runtime process.env.NODE_ENV checks for browser builds.
+const buildPlatform = "neutral";
 
 function removeExtension(path: string) {
   return path.replace(/\.[^.]+$/, "");
@@ -51,9 +57,54 @@ function isPrivateModule(filename: string) {
   return filename.startsWith("__");
 }
 
-function readPackageJson(rootPath: string): PackageJson {
-  const packageJsonPath = join(rootPath, "package.json");
-  return JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+function matchesBasenamePattern(name: string, pattern: string) {
+  if (!pattern.includes("*")) {
+    return name === pattern;
+  }
+
+  const source = pattern.split("*").map(escapeRegExp).join(".*");
+  return new RegExp(`^${source}$`).test(name);
+}
+
+// Keep npmIgnoreEntries within this small subset: *, **, and slash-free
+// basename patterns. This is not a full gitignore parser.
+function matchesPathPattern(parts: string[], patternParts: string[]): boolean {
+  const pattern = patternParts[0];
+  if (pattern == null) {
+    return parts.length === 0;
+  }
+
+  if (pattern === "**") {
+    const remainingPatternParts = patternParts.slice(1);
+    if (!remainingPatternParts.length) return true;
+
+    for (let i = 0; i <= parts.length; i += 1) {
+      if (matchesPathPattern(parts.slice(i), remainingPatternParts)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  const part = parts[0];
+  if (part == null) return false;
+  if (!matchesBasenamePattern(part, pattern)) return false;
+  return matchesPathPattern(parts.slice(1), patternParts.slice(1));
+}
+
+function matchesNpmIgnoreEntry(path: string, entry: string) {
+  const parts = path.split("/");
+
+  if (!entry.includes("/")) {
+    return parts.some((part) => matchesBasenamePattern(part, entry));
+  }
+
+  return matchesPathPattern(parts, entry.split("/"));
+}
+
+function isNpmIgnored(path: string) {
+  return npmIgnoreEntries.some((entry) => matchesNpmIgnoreEntry(path, entry));
 }
 
 function writePackageJson(rootPath: string, packageJson: PackageJson) {
@@ -70,27 +121,21 @@ function isDirectory(path: string) {
   return lstatSync(path).isDirectory();
 }
 
-async function getPublicFiles(
-  sourcePath: string,
-  rootPath: string,
-  prefix = "",
-) {
+async function getPublicFiles(sourcePath: string, prefix = "") {
   const files: PublicFile[] = [];
   const entries = await readdir(sourcePath);
   const sortedEntries = entries.sort((a, b) => a.localeCompare(b));
 
   for (const entry of sortedEntries) {
-    if (isPrivateModule(entry)) continue;
-
     const entryPath = join(sourcePath, entry);
     const prefixedPath = join(prefix, entry);
+    const source = normalizePath(join(sourceDir, prefixedPath));
+
+    if (isNpmIgnored(source)) continue;
+    if (isPrivateModule(entry)) continue;
 
     if (isDirectory(entryPath)) {
-      const childFiles = await getPublicFiles(
-        entryPath,
-        rootPath,
-        prefixedPath,
-      );
+      const childFiles = await getPublicFiles(entryPath, prefixedPath);
       files.push(...childFiles);
       continue;
     }
@@ -100,22 +145,23 @@ async function getPublicFiles(
     files.push({
       name: removeExtension(normalizePath(prefixedPath)),
       path: entryPath,
-      source: `./${normalizePath(relative(rootPath, entryPath))}`,
+      source: `./${source}`,
     });
   }
 
   return files;
 }
 
-async function getIndexFile(sourcePath: string, rootPath: string) {
-  const files = await getPublicFiles(sourcePath, rootPath);
-  const indexFile = files.find((file) => file.name === "index");
+async function getEntryFiles(sourcePath: string, entryNames: string[]) {
+  const files = await getPublicFiles(sourcePath);
 
-  if (!indexFile) {
-    throw new Error(`Missing ${sourceDir}/index.ts entrypoint`);
-  }
-
-  return [indexFile];
+  return entryNames.map((name) => {
+    const file = files.find((file) => file.name === name);
+    if (!file) {
+      throw new Error(`Missing ${sourceDir}/${name} entrypoint`);
+    }
+    return file;
+  });
 }
 
 function getExportName(name: string) {
@@ -179,17 +225,31 @@ async function updatePackageExports(
   writePackageJson(rootPath, packageJson);
 }
 
-function shouldUseIndexOnly(packageJson: PackageJson, options: BuildOptions) {
-  if (options.indexOnly) return true;
-  return packageJson.scripts?.build?.includes("--index-only") ?? false;
+// Resolve the explicit entry file names for a package, or null to export every
+// public file. Reads `options` (from the CLI) first, then falls back to the
+// `--entries`/`--index-only` markers in the package's own `build` script, so
+// that `clean` — which lint-staged runs without those flags — applies the same
+// entrypoints as `build`.
+function getConfiguredEntryNames(
+  packageJson: PackageJson,
+  options: BuildOptions,
+) {
+  if (options.entries) return options.entries;
+  if (options.indexOnly) return ["index"];
+  const buildScript = packageJson.scripts?.build ?? "";
+  const entriesMatch = buildScript.match(/--entries[=\s]+([\w,./-]+)/);
+  if (entriesMatch?.[1]) return entriesMatch[1].split(",");
+  if (buildScript.includes("--index-only")) return ["index"];
+  return null;
 }
 
 async function getPackagePublicFiles(rootPath: string, options: BuildOptions) {
   const sourcePath = join(rootPath, sourceDir);
   const packageJson = readPackageJson(rootPath);
-  return shouldUseIndexOnly(packageJson, options)
-    ? await getIndexFile(sourcePath, rootPath)
-    : await getPublicFiles(sourcePath, rootPath);
+  const entryNames = getConfiguredEntryNames(packageJson, options);
+  return entryNames
+    ? await getEntryFiles(sourcePath, entryNames)
+    : await getPublicFiles(sourcePath);
 }
 
 export async function updateSourcePackageJson(
@@ -198,6 +258,7 @@ export async function updateSourcePackageJson(
 ) {
   const publicFiles = await getPackagePublicFiles(rootPath, options);
   await updatePackageExports(rootPath, publicFiles, "source");
+  return publicFiles;
 }
 
 function getExternal(packageJson: PackageJson) {
@@ -213,18 +274,6 @@ function getExternal(packageJson: PackageJson) {
 
 function getInput(publicFiles: PublicFile[]) {
   return Object.fromEntries(publicFiles.map((file) => [file.name, file.path]));
-}
-
-function getUseClientPlugin(enabled: boolean): Plugin[] {
-  if (!enabled) return [];
-  return [
-    {
-      name: "ariakit-use-client",
-      renderChunk(code) {
-        return `"use client";\n${code}`;
-      },
-    },
-  ];
 }
 
 function cleanOutput(rootPath: string, isSolid: boolean) {
@@ -246,15 +295,9 @@ function writeGitignore(rootPath: string, isSolid: boolean) {
 function writeNpmignore(rootPath: string) {
   const contents = [
     "# Automatically generated",
-    "coverage",
-    "benchmark",
-    "src/test.ts",
-    "src/**/*.test.*",
-    "src/**/__tests__/**",
-    "tsconfig*.json",
-    "*.log",
-    "*.config.*",
-    "*.lock",
+    ...npmIgnoreEntries,
+    "# Include package build output ignored at the workspace root.",
+    `!${distDir}/`,
   ];
   writeFileSync(join(rootPath, ".npmignore"), `${contents.join("\n")}\n`);
 }
@@ -266,6 +309,7 @@ async function buildSolidSource(
   await rolldownBuild({
     input,
     external: getExternal(readPackageJson(rootPath)),
+    platform: buildPlatform,
     output: {
       dir: solidDir,
       cleanDir: true,
@@ -286,6 +330,7 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
   await rolldownBuild({
     input,
     external: getExternal(packageJson),
+    platform: buildPlatform,
     output: {
       dir: distDir,
       cleanDir: true,
@@ -304,6 +349,7 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
   await rolldownBuild({
     input,
     external: getExternal(packageJson),
+    platform: buildPlatform,
     output: {
       dir: distDir,
       cleanDir: false,
@@ -311,9 +357,9 @@ async function buildDist(rootPath: string, publicFiles: PublicFile[]) {
       entryFileNames: "[name].js",
       chunkFileNames: "__chunks/[hash].js",
       sourcemap: true,
+      ...(isReactPackage && { banner: '"use client";' }),
     },
     plugins: [
-      ...getUseClientPlugin(isReactPackage),
       ...(isSolid ? [solidPlugin({ solid: { generate: "dom" } })] : []),
     ],
   });
@@ -347,6 +393,10 @@ export async function cleanPackage(
 ) {
   const packageJson = readPackageJson(rootPath);
   const isSolid = isSolidPackage(packageJson);
-  await updateSourcePackageJson(rootPath, options);
+  const publicFiles = await updateSourcePackageJson(rootPath, options);
   cleanOutput(rootPath, isSolid);
+  cleanLegacyBuild(
+    rootPath,
+    publicFiles.map((file) => file.name),
+  );
 }

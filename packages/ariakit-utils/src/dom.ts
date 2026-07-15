@@ -3,6 +3,7 @@
  * @module DOM utilities
  */
 
+import { hasOwnProperty } from "./misc.ts";
 import type { AriaHasPopup, AriaRole } from "./types.ts";
 
 /**
@@ -81,6 +82,50 @@ export function contains(parent: Node, child: Node): boolean {
 }
 
 /**
+ * Checks whether the given event target is an element.
+ *
+ * `event.target` and `event.relatedTarget` are `EventTarget`s, which aren't
+ * necessarily elements — for example `window` or an `XMLHttpRequest` when an
+ * event is dispatched programmatically. Calling `Element`-only methods such as
+ * `hasAttribute` on those throws, so guard with this before treating them as
+ * elements. When you only need a `Node` — for example to call `contains` — use
+ * `isNode` instead.
+ *
+ * It tests `nodeType` rather than `instanceof Element` so that elements coming
+ * from same-origin child frames (which `addGlobalEventListener` also listens
+ * on) aren't wrongly rejected for belonging to a different realm.
+ * @example
+ * if (isElement(event.target)) {
+ *   event.target.hasAttribute("data-active");
+ * }
+ */
+export function isElement(
+  target: EventTarget | null | undefined,
+): target is Element {
+  // Reading `nodeType` on a non-node target yields `undefined`. The numeric
+  // literal (Node.ELEMENT_NODE === 1) avoids referencing the `Node` global, so
+  // the guard stays safe even if it's ever evaluated during SSR.
+  return (target as Node | null)?.nodeType === 1;
+}
+
+/**
+ * Checks whether the given event target is a node.
+ *
+ * Like `isElement`, but only requires the target to be a `Node` rather than an
+ * element — useful before calling `contains`, which accepts any node. It still
+ * rejects non-node `EventTarget`s (such as `window` or an `XMLHttpRequest`)
+ * that would make `contains` throw.
+ * @example
+ * if (isNode(event.target)) {
+ *   contains(element, event.target);
+ * }
+ */
+export function isNode(target: EventTarget | null | undefined): target is Node {
+  // Non-node targets don't have a numeric `nodeType`.
+  return typeof (target as Node | null)?.nodeType === "number";
+}
+
+/**
  * Checks whether `element` is a frame element.
  */
 export function isFrame(element: Element): element is HTMLIFrameElement {
@@ -142,10 +187,11 @@ export function isTextField(
   element: Element,
 ): element is HTMLInputElement | HTMLTextAreaElement {
   try {
-    const isTextInput =
-      element instanceof HTMLInputElement && element.selectionStart !== null;
-    const isTextArea = element.tagName === "TEXTAREA";
-    return isTextInput || isTextArea || false;
+    // Use tag names instead of realm-bound constructors so text fields from
+    // same-origin child frames are recognized.
+    if (element.tagName === "TEXTAREA") return true;
+    if (element.tagName !== "INPUT") return false;
+    return (element as HTMLInputElement).selectionStart !== null;
   } catch (_error) {
     // Safari throws an exception when trying to get `selectionStart` on
     // non-text <input> elements (which, understandably, don't have the text
@@ -211,6 +257,14 @@ export function getTextboxSelection(element: HTMLElement) {
   return { start, end };
 }
 
+const allowedPopupRoles = ["dialog", "menu", "listbox", "tree", "grid"];
+
+const itemRoleByPopupRole = {
+  menu: "menuitem",
+  listbox: "option",
+  tree: "treeitem",
+};
+
 /**
  * Returns the popup role from the element's role attribute, if it has one.
  */
@@ -218,12 +272,20 @@ export function getPopupRole(
   element?: Element | null,
   fallback?: AriaHasPopup,
 ) {
-  const allowedPopupRoles = ["dialog", "menu", "listbox", "tree", "grid"];
   const role = element?.getAttribute("role");
   if (role && allowedPopupRoles.indexOf(role) !== -1) {
     return role as "dialog" | "menu" | "listbox" | "tree" | "grid";
   }
   return fallback;
+}
+
+/**
+ * Returns the item role based on the popup role.
+ */
+export function getItemRoleByPopupRole(popupRole?: string | null) {
+  if (popupRole == null) return;
+  if (!hasOwnProperty(itemRoleByPopupRole, popupRole)) return;
+  return itemRoleByPopupRole[popupRole];
 }
 
 /**
@@ -233,15 +295,9 @@ export function getPopupItemRole(
   element?: Element | null,
   fallback?: AriaRole,
 ) {
-  const itemRoleByPopupRole = {
-    menu: "menuitem",
-    listbox: "option",
-    tree: "treeitem",
-  };
   const popupRole = getPopupRole(element);
-  if (!popupRole) return fallback;
-  const key = popupRole as keyof typeof itemRoleByPopupRole;
-  return itemRoleByPopupRole[key] ?? fallback;
+  if (typeof popupRole !== "string") return fallback;
+  return getItemRoleByPopupRole(popupRole) ?? fallback;
 }
 
 /**
@@ -276,10 +332,17 @@ export function getScrollingElement(
     const { overflowX } = getComputedStyle(element);
     if (isScrollableOverflow(overflowX)) return element;
   }
+  // When no scrollable ancestor is found, fall back to the scrolling element of
+  // the element's own document rather than the global one. For an element
+  // inside an iframe, `parentElement` never crosses the frame boundary, so the
+  // recursion bottoms out at the iframe's `<html>` and would otherwise resolve
+  // against the top-level page's scroller. `getDocument` returns the same global
+  // `document` for top-level elements, so this leaves the common case unchanged.
+  const doc = getDocument(element);
   return (
     getScrollingElement(element.parentElement) ||
-    document.scrollingElement ||
-    document.body
+    doc.scrollingElement ||
+    doc.body
   );
 }
 

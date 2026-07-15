@@ -35,6 +35,11 @@ const useReactId = _React.useId;
 const useReactDeferredValue = _React.useDeferredValue;
 const useReactInsertionEffect = _React.useInsertionEffect;
 
+interface MergedRefEffect {
+  ref: Ref<any>;
+  cleanup?: () => void;
+}
+
 /**
  * `React.useLayoutEffect` that fallbacks to `React.useEffect` on server side.
  */
@@ -53,21 +58,6 @@ export function useInitialValue<T>(value: T | (() => T)) {
 }
 
 /**
- * Returns a value that is lazily initiated and never changes.
- * @example
- * function Component() {
- *   const set = useLazyValue(() => new Set());
- * }
- */
-export function useLazyValue<T>(init: () => T) {
-  const ref = useRef<T>(undefined);
-  if (ref.current === undefined) {
-    ref.current = init();
-  }
-  return ref.current;
-}
-
-/**
  * Creates a `React.RefObject` that is constantly updated with the incoming
  * value.
  * @example
@@ -81,17 +71,6 @@ export function useLiveRef<T>(value: T) {
     ref.current = value;
   });
   return ref;
-}
-
-/**
- * Keeps the reference of the previous value to be used in the render phase.
- */
-export function usePreviousValue<T>(value: T) {
-  const [previousValue, setPreviousValue] = useState(value);
-  if (value !== previousValue) {
-    setPreviousValue(value);
-  }
-  return previousValue;
 }
 
 /**
@@ -156,9 +135,31 @@ export function useMergeRefs(...refs: Array<Ref<any> | undefined>) {
   return useMemo(() => {
     if (!refs.some(Boolean)) return;
     return (value: unknown) => {
+      const refEffects: MergedRefEffect[] = [];
+
       for (const ref of refs) {
-        setRef(ref, value);
+        if (!ref) continue;
+        const cleanup = setRef(ref, value);
+        refEffects.push({
+          ref,
+          cleanup: typeof cleanup === "function" ? cleanup : undefined,
+        });
       }
+
+      if (!refEffects.some((effect) => effect.cleanup)) return;
+
+      return () => {
+        for (const { ref, cleanup } of refEffects) {
+          if (cleanup) {
+            cleanup();
+          } else {
+            // React only sees the merged ref, so its cleanup replaces the
+            // usual null call for all refs. Child refs that didn't return a
+            // cleanup still need the null detach they would receive alone.
+            setRef(ref, null);
+          }
+        }
+      };
     };
     // oxlint-disable-next-line exhaustive-deps
   }, refs);

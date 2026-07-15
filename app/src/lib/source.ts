@@ -20,23 +20,27 @@ import type { StyleDependency } from "./styles.ts";
 // interpolation).
 const PATH_QUOTED = String.raw`(?:'(?<single>[^']+)'|"(?<double>[^"]+)"|\`(?<template>(?:[^\`$]|\$(?!\{))+?)\`)`;
 const FROM_CLAUSE = String.raw`\s+from\s+${PATH_QUOTED}`;
+const IMPORT_ATTRIBUTES = String.raw`(?<attributes>\s+(?:with|assert)\s+\{[\s\S]*?\})?`;
 
 // Import patterns
-const IMPORT_SIDE_EFFECT = new RegExp(String.raw`import\s+${PATH_QUOTED}`, "g");
+const IMPORT_SIDE_EFFECT = new RegExp(
+  String.raw`import\s+${PATH_QUOTED}${IMPORT_ATTRIBUTES}[\t ]*;?`,
+  "g",
+);
 const IMPORT_NAMED = new RegExp(
-  String.raw`import\s+(?!type\b)\{[\s\S]*?\}${FROM_CLAUSE}`,
+  String.raw`import\s+(?!type\b)\{[\s\S]*?\}${FROM_CLAUSE}${IMPORT_ATTRIBUTES}[\t ]*;?`,
   "g",
 );
 const IMPORT_FROM_ANY = new RegExp(
-  String.raw`import\s+(?!type\b)[^;]*?${FROM_CLAUSE}`,
+  String.raw`import\s+(?!type\b)[^;]*?${FROM_CLAUSE}${IMPORT_ATTRIBUTES}[\t ]*;?`,
   "g",
 );
 const IMPORT_TYPE_NAMED = new RegExp(
-  String.raw`import\s+type\s+\{[\s\S]*?\}${FROM_CLAUSE}`,
+  String.raw`import\s+type\s+\{[\s\S]*?\}${FROM_CLAUSE}${IMPORT_ATTRIBUTES}[\t ]*;?`,
   "g",
 );
 const IMPORT_TYPE_NAMESPACE = new RegExp(
-  String.raw`import\s+type\s+\*\s+as\s+[^;]*?${FROM_CLAUSE}`,
+  String.raw`import\s+type\s+\*\s+as\s+[^;]*?${FROM_CLAUSE}${IMPORT_ATTRIBUTES}[\t ]*;?`,
   "g",
 );
 const IMPORT_DYNAMIC = new RegExp(
@@ -156,7 +160,7 @@ function getOrCreate<K, V>(map: Map<K, V>, key: K, factory: () => V): V {
  * deleting import declarations via regex replacements.
  */
 function cleanSemicolonOnlyLines(text: string): string {
-  return text.replace(/^[\t ]*;[\t ]*\r?\n/gm, "");
+  return text.replace(/^[\t ]*;[\t ]*(?:\r?\n|$)/gm, "");
 }
 
 /**
@@ -193,6 +197,14 @@ function getQuoteFromGroups(groups: RegExpExecArray["groups"]): string {
   return "`";
 }
 
+function getAttributesFromGroups(groups: RegExpExecArray["groups"]): string {
+  return groups?.attributes ?? "";
+}
+
+function buildModuleSource(path: string, attributes = ""): string {
+  return `"${path}"${attributes}`;
+}
+
 /**
  * Extracts the comma-separated specifier text inside braces from an
  * import-like declaration string.
@@ -222,14 +234,14 @@ interface ParsedSpecifiers {
 }
 
 /**
- * Extracts the base name from an import specifier, handling `as` aliases.
+ * Normalizes an import specifier, collapsing whitespace while preserving `as`
+ * aliases.
  * @example
- * extractSpecifierName("Foo as Bar") // Returns "Foo"
- * extractSpecifierName("Foo") // Returns "Foo"
+ * normalizeSpecifier("Foo  as  Bar") // Returns "Foo as Bar"
+ * normalizeSpecifier("Foo") // Returns "Foo"
  */
-function extractSpecifierName(specifier: string): string {
-  const beforeAs = specifier.split(/\s+as\s+/i)[0] ?? "";
-  return beforeAs.trim();
+function normalizeSpecifier(specifier: string): string {
+  return specifier.trim().replace(/\s+/g, " ");
 }
 
 /**
@@ -237,7 +249,7 @@ function extractSpecifierName(specifier: string): string {
  * names. Handles inline `type` modifiers.
  * @example
  * parseNamedSpecifiers("A, type B, C as D")
- * // Returns { runtime: ["A", "C"], typeOnly: ["B"] }
+ * // Returns { runtime: ["A", "C as D"], typeOnly: ["B"] }
  */
 function parseNamedSpecifiers(inside: string): ParsedSpecifiers {
   const runtime: string[] = [];
@@ -251,7 +263,7 @@ function parseNamedSpecifiers(inside: string): ParsedSpecifiers {
   for (const item of items) {
     const isType = /^type\s+/i.test(item);
     const raw = isType ? item.replace(/^type\s+/i, "") : item;
-    const name = extractSpecifierName(raw);
+    const name = normalizeSpecifier(raw);
     if (!name) continue;
 
     if (isType) {
@@ -272,7 +284,7 @@ function parseTypeOnlySpecifiers(inside: string): string[] {
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean)
-    .map(extractSpecifierName)
+    .map(normalizeSpecifier)
     .filter(Boolean);
 }
 
@@ -386,22 +398,22 @@ function buildHoistedImports(
   valueNamed: Map<string, Set<string>>,
   typeNamed: Map<string, Set<string>>,
 ): string {
-  const allPaths = sortStrings(
+  const allSources = sortStrings(
     new Set<string>([...valueNamed.keys(), ...typeNamed.keys()]),
   );
 
   const lines: string[] = [];
-  for (const modulePath of allPaths) {
-    const typeNames = typeNamed.get(modulePath);
-    const valueNames = valueNamed.get(modulePath);
+  for (const moduleSource of allSources) {
+    const typeNames = typeNamed.get(moduleSource);
+    const valueNames = valueNamed.get(moduleSource);
 
     if (typeNames?.size) {
       const sorted = sortStrings(typeNames).join(", ");
-      lines.push(`import type { ${sorted} } from "${modulePath}";`);
+      lines.push(`import type { ${sorted} } from ${moduleSource};`);
     }
     if (valueNames?.size) {
       const sorted = sortStrings(valueNames).join(", ");
-      lines.push(`import { ${sorted} } from "${modulePath}";`);
+      lines.push(`import { ${sorted} } from ${moduleSource};`);
     }
   }
 
@@ -415,7 +427,7 @@ function buildHoistedImports(
 function buildRemainingImport(
   remainingRuntime: string[],
   remainingType: string[],
-  modulePath: string,
+  moduleSource: string,
 ): string {
   // All specifiers transformed - remove the line
   if (remainingRuntime.length === 0 && remainingType.length === 0) {
@@ -425,18 +437,18 @@ function buildRemainingImport(
   // Both kinds remain - split into two lines
   if (remainingRuntime.length > 0 && remainingType.length > 0) {
     return [
-      `import { ${remainingRuntime.join(", ")} } from "${modulePath}"`,
-      `import type { ${remainingType.join(", ")} } from "${modulePath}"`,
+      `import { ${remainingRuntime.join(", ")} } from ${moduleSource};`,
+      `import type { ${remainingType.join(", ")} } from ${moduleSource};`,
     ].join("\n");
   }
 
   // Only runtime specifiers remain
   if (remainingRuntime.length > 0) {
-    return `import { ${remainingRuntime.join(", ")} } from "${modulePath}"`;
+    return `import { ${remainingRuntime.join(", ")} } from ${moduleSource};`;
   }
 
   // Only type specifiers remain
-  return `import type { ${remainingType.join(", ")} } from "${modulePath}"`;
+  return `import type { ${remainingType.join(", ")} } from ${moduleSource};`;
 }
 
 /**
@@ -468,8 +480,9 @@ function insertHoistedImports(hoisted: string, body: string): string {
  *   specifiers, only the transformed specifiers are hoisted; the remaining
  *   specifiers stay in place and the original import line may be rewritten to
  *   preserve them without duplication.
- * - Deduplicates specifiers by name and sorts both specifier names and module
- *   specifiers lexicographically within each group.
+ * - Deduplicates specifiers by their full text (preserving `as` aliases) and
+ *   sorts both specifiers and module specifiers lexicographically within each
+ *   group.
  * - Preserves overall content by removing the original named import statements
  *   and returning the full transformed content with hoisted imports. Any
  *   orphaned semicolon-only lines left by the removal are also cleaned up to
@@ -489,7 +502,7 @@ export function mergeImports(
   content: string,
   transform: (path: string, type: ImportPathType) => string | false,
 ): string {
-  // Collect value and type-only named imports keyed by the final transformed path
+  // Collect value and type-only named imports keyed by the final module source
   const valueNamed = new Map<string, Set<string>>();
   const typeNamed = new Map<string, Set<string>>();
 
@@ -497,12 +510,15 @@ export function mergeImports(
     originalPath: string,
     names: string[],
     type: ImportPathType,
+    attributes = "",
   ) => {
     const transformedPath = transform(originalPath, type);
     if (transformedPath === false) return;
 
     const collector = type === "import" ? valueNamed : typeNamed;
-    const specifiers = getOrCreate(collector, transformedPath, () => new Set());
+    const nextAttributes = transformedPath === originalPath ? attributes : "";
+    const moduleSource = buildModuleSource(transformedPath, nextAttributes);
+    const specifiers = getOrCreate(collector, moduleSource, () => new Set());
     for (const name of names) {
       specifiers.add(name);
     }
@@ -516,20 +532,21 @@ export function mergeImports(
       const inside = extractSpecifiersInsideBraces(match[0]);
       if (inside == null) continue;
 
+      const attributes = getAttributesFromGroups(match.groups);
       if (isTypeOnly) {
         const items = parseTypeOnlySpecifiers(inside);
         if (items.length) {
-          addSpecifiers(path, items, "import-type");
+          addSpecifiers(path, items, "import-type", attributes);
         }
         continue;
       }
 
       const { runtime, typeOnly } = parseNamedSpecifiers(inside);
       if (runtime.length) {
-        addSpecifiers(path, runtime, "import");
+        addSpecifiers(path, runtime, "import", attributes);
       }
       if (typeOnly.length) {
-        addSpecifiers(path, typeOnly, "import-type");
+        addSpecifiers(path, typeOnly, "import-type", attributes);
       }
     }
   };
@@ -559,7 +576,7 @@ export function mergeImports(
         if (transformed === false) return match;
 
         // Entire declaration is transformed - remove it (will be hoisted)
-        return "";
+        return ";";
       }
 
       const { runtime, typeOnly } = parseNamedSpecifiers(inside);
@@ -573,8 +590,12 @@ export function mergeImports(
       // Keep specifiers that weren't transformed
       const remainingRuntime = transformedValue === false ? runtime : [];
       const remainingType = transformedType === false ? typeOnly : [];
+      const attributes = getAttributesFromGroups(groups);
+      const source = buildModuleSource(path, attributes);
 
-      return buildRemainingImport(remainingRuntime, remainingType, path);
+      return (
+        buildRemainingImport(remainingRuntime, remainingType, source) || ";"
+      );
     });
   };
 
@@ -753,7 +774,7 @@ function stripInternalImports(
         );
       }
 
-      return "";
+      return ";";
     });
   };
 
@@ -860,16 +881,8 @@ export function hoistImports(content: string): string {
   let body = content;
 
   const extractImports = (pattern: RegExp) => {
-    body = body.replace(pattern, (match, ...args) => {
-      const offset = (args[args.length - 3] as number) ?? 0;
-      const fullText = (args[args.length - 2] as string) ?? body;
-
-      let statement = match;
-      // Include trailing semicolon if present
-      if (fullText[offset + match.length] === ";") {
-        statement += ";";
-      }
-      imports.add(statement);
+    body = body.replace(pattern, (match) => {
+      imports.add(match);
       return "";
     });
   };

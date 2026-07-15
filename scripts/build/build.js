@@ -1,15 +1,13 @@
 import { cpSync } from "node:fs";
 import spawn from "cross-spawn";
-import { solidPlugin } from "esbuild-plugin-solid";
 import { glob } from "glob";
 import { build } from "tsup";
-import { cwd, isFramework, isReact, isSolid } from "./context.js";
+import { cwd, isFramework, isReact } from "./context.js";
 import {
   cleanBuild,
   getCJSDir,
   getESMDir,
   getPublicFiles,
-  getSolidSourceDir,
   getSourcePath,
   makeGitignore,
   makeProxies,
@@ -33,9 +31,8 @@ const sourcePath = getSourcePath(cwd);
 const entry = getPublicFiles(sourcePath);
 const esmDir = getESMDir();
 const cjsDir = getCJSDir();
-const solidSourceDir = getSolidSourceDir();
 
-spawn.sync(
+const result = spawn.sync(
   "tsc",
   [
     "--emitDeclarationOnly",
@@ -48,6 +45,11 @@ spawn.sync(
   ],
   { stdio: "inherit" },
 );
+
+if (result.error) throw result.error;
+if (result.status !== 0) {
+  process.exit(result.status ?? 1);
+}
 
 cpSync(esmDir, cjsDir, { recursive: true });
 
@@ -76,38 +78,13 @@ const cjsInternalPackages = [
 ];
 
 /** @param {{ format: import("tsup").Format, outDir: string }} options */
-function buildStandard({ format, outDir }) {
-  if (isFramework) return;
+async function buildPackage({ format, outDir }) {
+  if (isFramework && !isReact) return;
   return build({
     entry,
     format,
     outDir,
     noExternal: format === "cjs" ? cjsInternalPackages : undefined,
-    // dts: true,
-    // tsconfig: "tsconfig.build.json",
-    splitting: true,
-    esbuildOptions(options) {
-      options.chunkNames = "__chunks/[hash]";
-      // TODO: this might not be necessary for anything other than react and react-components
-      if (format === "esm") {
-        options.banner = {
-          js: '"use client";',
-        };
-      }
-    },
-  });
-}
-
-/** @param {{ format: import("tsup").Format, outDir: string }} options */
-function buildReact({ format, outDir }) {
-  if (!isReact) return;
-  return build({
-    entry,
-    format,
-    outDir,
-    noExternal: format === "cjs" ? cjsInternalPackages : undefined,
-    // dts: true,
-    // tsconfig: "tsconfig.build.json",
     splitting: true,
     esbuildOptions(options) {
       options.chunkNames = "__chunks/[hash]";
@@ -120,44 +97,4 @@ function buildReact({ format, outDir }) {
   });
 }
 
-/** @param {{ format: import("tsup").Format, outDir: string }} options */
-function buildSolid({ format, outDir }) {
-  if (!isSolid) return;
-  return build({
-    entry,
-    format,
-    outDir,
-    // dts: true,
-    // tsconfig: "tsconfig.build.json",
-    splitting: true,
-    esbuildOptions(options) {
-      options.chunkNames = "__chunks/[hash]";
-      options.jsx = "preserve";
-    },
-    esbuildPlugins: [solidPlugin({ solid: { generate: "dom" } })],
-  });
-}
-
-function buildSolidSource() {
-  if (!isSolid) return;
-  return build({
-    entry,
-    format: "esm",
-    outDir: solidSourceDir,
-    splitting: true,
-    outExtension() {
-      return { js: ".jsx" };
-    },
-    esbuildOptions(options) {
-      options.chunkNames = "__chunks/[hash]";
-      options.jsx = "preserve";
-    },
-  });
-}
-
-await Promise.all([
-  ...builds.map(buildStandard),
-  ...builds.map(buildReact),
-  ...builds.map(buildSolid),
-  buildSolidSource(),
-]);
+await Promise.all(builds.map(buildPackage));

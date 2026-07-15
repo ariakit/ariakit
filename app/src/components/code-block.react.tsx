@@ -468,6 +468,10 @@ export function CodeBlockPreviewIframe({
       cancelAnimationFrame(raf);
       cancelAnimationFrame(scrollRaf);
       iframe.removeEventListener("load", onLoad);
+      iframe.contentDocument?.body?.removeEventListener(
+        "focusin",
+        setDataFocus,
+      );
       iframe.contentWindow?.removeEventListener("focus", setDataFocus);
       iframe.contentWindow?.removeEventListener("blur", setDataFocus);
       iframe.contentWindow?.removeEventListener(

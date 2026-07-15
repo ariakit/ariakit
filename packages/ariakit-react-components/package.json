@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-components",
-  "version": "0.1.1",
+  "version": "0.3.3",
   "description": "Ariakit React components",
   "keywords": [
     "ariakit",
@@ -35,8 +35,8 @@
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
-    "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0",
@@ -45,6 +45,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./button/button": "./src/button/button.tsx",
+    "./button/utils": "./src/button/utils.ts",
     "./checkbox/checkbox": "./src/checkbox/checkbox.tsx",
     "./checkbox/checkbox-check": "./src/checkbox/checkbox-check.tsx",
     "./checkbox/checkbox-checked-context": "./src/checkbox/checkbox-checked-context.tsx",
@@ -113,6 +114,7 @@
     "./dialog/utils/orchestrate": "./src/dialog/utils/orchestrate.ts",
     "./dialog/utils/prepend-hidden-dismiss": "./src/dialog/utils/prepend-hidden-dismiss.ts",
     "./dialog/utils/supports-inert": "./src/dialog/utils/supports-inert.ts",
+    "./dialog/utils/tree-cleanup": "./src/dialog/utils/tree-cleanup.ts",
     "./dialog/utils/use-hide-on-interact-outside": "./src/dialog/utils/use-hide-on-interact-outside.ts",
     "./dialog/utils/use-nested-dialogs": "./src/dialog/utils/use-nested-dialogs.tsx",
     "./dialog/utils/use-prevent-body-scroll": "./src/dialog/utils/use-prevent-body-scroll.ts",
@@ -148,6 +150,7 @@
     "./form/form-reset": "./src/form/form-reset.tsx",
     "./form/form-store": "./src/form/form-store.ts",
     "./form/form-submit": "./src/form/form-submit.tsx",
+    "./form/utils": "./src/form/utils.ts",
     "./group/group": "./src/group/group.tsx",
     "./group/group-label": "./src/group/group-label.tsx",
     "./group/group-label-context": "./src/group/group-label-context.tsx",

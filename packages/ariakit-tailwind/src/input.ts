@@ -262,13 +262,18 @@ function getWcagLightnessTarget(parentLightness: number, isDark: boolean) {
 }
 
 /**
- * Returns whether `value` is within `[min, max]`
+ * Returns whether `value` is greater than or equal to `min`. The epsilon keeps
+ * adjacent bands from leaving a gap at shared boundaries.
+ */
+function getMinMask(value: Value, min: number) {
+  return fn.binary(fn.sub(value, roundToDecimals(min - 1e-6, 6)));
+}
+
+/**
+ * Returns whether `value` is within `[min, max)`.
  */
 function getRangeMask(value: Value, min: number, max: number) {
-  return fn.mul(
-    fn.binary(fn.sub(value, roundToDecimals(min - 1e-6, 6))),
-    fn.binary(fn.sub(max, value)),
-  );
+  return fn.mul(getMinMask(value, min), fn.binary(fn.sub(max, value)));
 }
 
 /**
@@ -440,7 +445,7 @@ const globalContrastT = fn.div(fn.relu(contrast), CONTRAST_HIGH);
 const bandDarkHigh = getRangeMask(l, 0, DARK_HIGH_MAX_L);
 const bandDarkLow = getRangeMask(l, DARK_HIGH_MAX_L, LA_BASE);
 const bandLightLow = getRangeMask(l, LB_BASE, LIGHT_LOW_MAX_L);
-const bandLightHigh = fn.binary(fn.sub(l, LIGHT_LOW_MAX_L));
+const bandLightHigh = getMinMask(l, LIGHT_LOW_MAX_L);
 
 function getLayerTextLightness() {
   const lightChromaDamping = fn.mul(
@@ -473,7 +478,6 @@ function getLayerTextLightness() {
 // Constants registered once as @property initial values. They only depend on
 // color channels or fixed numeric constants.
 const constantMathVars = {
-  textContrastL: _ak.prop("tcl", { initial: TEXT_CONTRAST_L }),
   textForegroundContrastL: _ak.prop("tfcl", {
     initial: TEXT_FOREGROUND_CONTRAST_L,
   }),
@@ -542,7 +546,6 @@ const layerMathVars = {
   layerContrastBias: _ak.var("lcb"),
   forbiddenLa: _ak.var("fla"),
   forbiddenLb: _ak.var("flb"),
-  safeL: _ak.var("sl"),
   offsetDirectionToLight: _ak.var("odtl"),
   forbiddenBandWidth: _ak.var("bw"),
   forbiddenEntryBoundary: _ak.var("eb"),
@@ -552,7 +555,6 @@ const layerMathVars = {
   layerOffsetDelta: _ak.prop("lodl", { initial: 0 }),
   layerIdlePushValue: _ak.prop.zero("lipv"),
   layerIdlePushEnabled: _ak.prop.zero("lipe"),
-  layerIdlePushDirectionToLight: _ak.prop.zero("lipdtl"),
   // These scratch vars only resolve the pushed lightness in ak-layer-push-*.
   // Keep them unregistered so each push utility avoids extra @property work.
   layerIdlePushBaseL: _ak.var("lipbl"),
@@ -560,10 +562,8 @@ const layerMathVars = {
 
   layerIdlePushResolvedL: _ak.prop("liprl"),
   layerPushValue: _ak.prop.zero("lpv"),
-  layerPushDirectionToLight: _ak.prop.zero("lpdtl"),
   layerPushBaseL: _ak.prop("lpbl", { initial: l }),
   layerPushL: _ak.prop("lpl", { initial: l }),
-  layerIdleContrastValue: _ak.prop.zero("licv", { inherits: true }),
   edgeContrastValue: _ak.prop.zero("ecv", { inherits: true }),
   edgePushDirection: _ak.var("epd", -1),
 };
@@ -580,16 +580,24 @@ const themeTokenVars = {
 // Color pipeline stages and exported visual tokens.
 const layerColorVars = {
   layerIdleBase: _ak.prop.canvas("lib"),
-  layerIdleMixed: _ak.prop.canvas("lim"),
   layerIdleOffset: _ak.prop.canvas("lio"),
   layerIdle: _ak.prop.canvas("li"),
   layerL: _ak.prop.canvas("ll", { inherits: true }),
   layerTextL: _ak.prop.canvas("ltl", { inherits: true }),
-  layerScheme: _ak.prop.black("ls", { inherits: true }),
+  // Parity copies of layerTextL routed through layerContext. They let ak-text
+  // read the parent layer's quantized text lightness from its own computed
+  // style (for if() style queries), even when the same element is also a layer
+  // that overwrites layerTextL for its descendants. Registered so style()
+  // comparisons match computed colors rather than token streams.
+  layerTextLContext: _ak.var("ltlc"),
+  layerTextLContextEven: _ak.prop.canvas("ltlc-even", { inherits: true }),
+  layerTextLContextOdd: _ak.prop.canvas("ltlc-odd", { inherits: true }),
+  // This must not match the light/dark style queries until an ancestor layer
+  // provides an actual scheme color.
+  layerScheme: _ak.prop.color("ls", { inherits: true, initial: "transparent" }),
   layerBand: _ak.prop.black("lbd", { inherits: true }),
   layerBase: _ak.prop.canvas("lb"),
   layerOffset: _ak.prop.canvas("lo"),
-  layerPush: _ak.prop.canvas("lp"),
   layer: ak.prop.canvas("layer", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
   layerEdgeContext: _ak.var("lec"),
@@ -634,14 +642,13 @@ const frameVars = {
   frameParentRadiusContext: _ak.var("fprc"),
   frameParentPaddingContext: _ak.var("fppc"),
   frameParentBorderContext: _ak.var("fpbc"),
-  frameParentRingContext: _ak.var("fpgc"),
   frameParentBorderingBorderContext: _ak.var("fpbbc"),
   frameParentBorderingRingContext: _ak.var("fpbgc"),
   frameParentRowContext: _ak.var("fpwc"),
-  frameParentCornerTLContext: _ak.var("fpctl"),
-  frameParentCornerTRContext: _ak.var("fpctr"),
-  frameParentCornerBLContext: _ak.var("fpcbl"),
-  frameParentCornerBRContext: _ak.var("fpcbr"),
+  frameParentCornerStartStartContext: _ak.var("fpcss"),
+  frameParentCornerStartEndContext: _ak.var("fpcse"),
+  frameParentCornerEndStartContext: _ak.var("fpces"),
+  frameParentCornerEndEndContext: _ak.var("fpcee"),
   frameAutoRadius: _ak.var("far"),
   frameInflatedExcess: _ak.var("fie"),
   frameBorderingDarkening: _ak.var("fbd"),
@@ -785,6 +792,9 @@ const light = createVariant(
   at.container(fn.style(vars.layerScheme, "oklch(0 0 0)"), set("@slot")),
 );
 
+// Parses as a valid declaration only in browsers that support if().
+const IF_SUPPORTS_CONDITION = "(color: if(else: red))";
+
 const darkHigh = createVariant(
   "ak-dark-high",
   at.container(
@@ -875,16 +885,29 @@ function getPushL(baseLightness: Value, directionToLight: Value) {
 
 /**
  * Resolves layer lightness from relative offset and optional absolute input.
+ * `baseLightness` defaults to the context's `l` channel; passing another
+ * expression inlines the floor boost math because the registered
+ * `layerLFloorBoost` initial value only evaluates against the raw channel.
  */
-function getLayerL(relativeLightness: Value, absoluteLightness?: VarProperty) {
+function getLayerL(
+  relativeLightness: Value,
+  absoluteLightness?: VarProperty,
+  baseLightness: Value = l,
+) {
   // Boost lightness up to LAYER_L_FLOOR only when the relative shift is
   // strictly positive: ak-layer-0 (no shift) and ak-layer-l-*/ak-layer-darken-*
   // downstream stages with rel=0 must preserve the current lightness.
   const floorBoost = fn.mul(
     fn.binary(relativeLightness),
-    vars.layerLFloorBoost,
+    baseLightness === l
+      ? vars.layerLFloorBoost
+      : fn.relu(fn.sub(LAYER_L_FLOOR, baseLightness)),
   );
-  const fallbackLightness = fn.add(l, relativeLightness, floorBoost);
+  const fallbackLightness = fn.add(
+    baseLightness,
+    relativeLightness,
+    floorBoost,
+  );
   return absoluteLightness
     ? fn.var(absoluteLightness, fallbackLightness)
     : fallbackLightness;
@@ -992,19 +1015,33 @@ function mapLayerLightnessSteps(callback: LayerLightnessStepsCallback) {
   );
 }
 
-function mapLayerTextLightnessSteps(callback: LayerLightnessStepsCallback) {
-  return getQuantizedLchLightnessSteps().flatMap((parentLightness) => {
+interface TextLightnessStep {
+  parentLightness: number;
+  contrastDirection: number;
+  parentL: number;
+  accessibleL: number;
+  chromaCap: number;
+}
+
+/**
+ * Precomputed text values per quantized parent lightness. Both ak-text
+ * delivery paths (the if() chains and the container query fallback) read this
+ * table, so they always produce identical values.
+ */
+function getTextLightnessSteps(): TextLightnessStep[] {
+  return getQuantizedLchLightnessSteps().map((parentLightness) => {
     const isDark = parentLightness < LCH_DARK_THRESHOLD_L;
-    const children = callback(parentLightness, isDark).filter(
-      (child) => child != null,
+    const contrastParentL = getConservativeLchParentLightness(
+      parentLightness,
+      isDark,
     );
-    if (children.length === 0) {
-      return [];
-    }
-    return at.container(
-      fn.style(vars.layerTextL, fn.lch({ l: parentLightness })),
-      ...children,
-    );
+    return {
+      parentLightness,
+      contrastDirection: isDark ? 1 : -1,
+      parentL: contrastParentL,
+      accessibleL: getWcagLightnessTarget(contrastParentL, isDark),
+      chromaCap: getLchTextChromaCap(parentLightness, isDark),
+    };
   });
 }
 
@@ -1079,7 +1116,13 @@ function getLayerIdleOffsetL() {
   );
 }
 
-const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
+// The mix stage feeds this stage as a plain var fallback rather than as a
+// separate registered color property, so each ak-layer element resolves one
+// relative color fewer. The offset stage itself stays a registered color:
+// inlining its lightness into the contrast math duplicates the offset
+// expression at several slots, which measures slower than the extra relative
+// color resolution it saves.
+const layerIdleOffset = fn.oklch(layerIdleMixed, {
   l: fn.var(vars.layerIdlePushResolvedL, getLayerIdleOffsetL()),
 });
 
@@ -1087,7 +1130,7 @@ const layerIdleOffset = fn.oklch(vars.layerIdleMixed, {
  * Computes parent-relative contrast lightness. When `ak-layer-contrast` is
  * active (layerContrastDirection !== 0), derives the target lightness from the
  * parent layer's lightness rather than the current color's lightness. Falls
- * back to the self-relative `getContrastL` when inactive.
+ * back to the self-relative `selfRelativeL` when inactive.
  */
 function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   const direction = vars.layerContrastDirection;
@@ -1107,33 +1150,35 @@ function getContrastL(selfRelativeL: Value, contrastValue: Value) {
   );
 }
 
+const layerContrastInactive = fn.sub(
+  1,
+  fn.mul(vars.layerContrastDirection, vars.layerContrastDirection),
+);
+const layerIdleContrastBias = fn.mul(
+  vars.layerContrastBias,
+  layerContrastInactive,
+);
+
 const layerIdle = fn.oklch(vars.layerIdleOffset, {
   l: fn.add(
-    getContrastL(l, vars.layerIdleContrastValue),
-    fn.mul(
-      vars.layerContrastBias,
-      fn.sub(
-        1,
-        fn.mul(vars.layerContrastDirection, vars.layerContrastDirection),
-      ),
-    ),
+    getContrastL(l, getPushValue(inputs.layerIdleContrastL)),
+    fn.mul(layerIdleContrastBias, fn.sub(1, vars.layerIdlePushEnabled)),
   ),
 });
 
 const layerState = fn.oklch(fn.oklch(vars.layerIdle, stateLayerChannels), {
-  l: vars.safeL,
+  l: getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb),
 });
 
 const layerOffset = fn.oklch(vars.layerBase, {
   l: fn.var(inputs.layerLOffsetL, getLayerL(inputs.layerLOffset)),
 });
 
-const layerPush = fn.oklch(vars.layerOffset, {
-  l: vars.layerPushL,
-});
-
-const layer = fn.oklch(vars.layerPush, {
-  l: vars.safeL,
+// The push stage folds into the final stage: layerPushL defaults to `l`, so
+// applying the safe-lightness math to it directly skips one relative color
+// resolution per ak-layer element.
+const layer = fn.oklch(vars.layerOffset, {
+  l: getSafeLightness(vars.layerPushL, vars.forbiddenLa, vars.forbiddenLb),
   c: fn.clamp(inputs.layerCMin, c, inputs.layerCMax),
 });
 
@@ -1166,20 +1211,6 @@ function getBaseDeclarations(sourceColor: string | VarProperty) {
   ];
 }
 
-function getLayerIdleContrastBiasDirection() {
-  const pushDirection = fn.sub(
-    fn.double(vars.layerIdlePushDirectionToLight),
-    1,
-  );
-  return fn.add(
-    vars.lightnessOffsetDirection,
-    fn.mul(
-      vars.layerIdlePushEnabled,
-      fn.sub(pushDirection, vars.lightnessOffsetDirection),
-    ),
-  );
-}
-
 // Assign derived math first so later color stages can reference short vars.
 const layerMathDeclarations = [
   // Set contrastT explicitly so the 5+ references inside this body resolve
@@ -1187,15 +1218,12 @@ const layerMathDeclarations = [
   // contrast-scale math at each call site.
   set(vars.contrastT, fn.mul(globalContrastT, disabledVars.contrastScale)),
   set(vars.contrastPushScale, fn.add(1, fn.mul(vars.contrastT, 3.334))),
-  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
-  set(vars.layerIdlePushDirectionToLight, vars.offsetDirectionToLight),
-  set(vars.layerPushDirectionToLight, vars.offsetDirectionToLight),
   set(
     vars.layerContrastBias,
     fn.mul(
       fn.neg(vars.contrastT),
       CONTRAST_SCALE,
-      getLayerIdleContrastBiasDirection(),
+      vars.lightnessOffsetDirection,
     ),
   ),
   set(vars.forbiddenLa, forbiddenLa),
@@ -1212,20 +1240,16 @@ const layerMathDeclarations = [
       ),
     ),
   ),
-  set(vars.safeL, getSafeLightness(l, vars.forbiddenLa, vars.forbiddenLb)),
-  set(vars.layerIdleContrastValue, getPushValue(inputs.layerIdleContrastL)),
   set(vars.edgeContrastValue, fn.mul(vars.contrastT, CONTRAST_SCALE)),
 ];
 
 // Build the layered color stages from idle -> base -> offset -> final.
 const layerColorDeclarations = [
   set(vars.layerIdleBase, layerIdleBase),
-  set(vars.layerIdleMixed, layerIdleMixed),
   set(vars.layerIdleOffset, layerIdleOffset),
   set(vars.layerIdle, layerIdle),
   set(vars.layerBase, layerState),
   set(vars.layerOffset, layerOffset),
-  set(vars.layerPush, layerPush),
 ];
 
 const edgeBaseColor = fn.var(inputs.edgeColor, vars.layer);
@@ -1236,14 +1260,15 @@ const edgeDirectionalShift = fn.mul(
   edgeDirectionalDelta,
   vars.edgePushDirection,
 );
-const edgeDirectional = fn.oklch(edgeBaseColor, {
-  l: fn.clamp01(fn.add(l, edgeDirectionalShift)),
-});
+// The directional push and the relative adjustments share one relative color:
+// the pushed lightness feeds getLayerL as the base expression, skipping one
+// relative color resolution per ak-layer element.
+const edgeDirectionalL = fn.clamp01(fn.add(l, edgeDirectionalShift));
 const edgeAlpha = fn.clamp01(fn.add(inputs.edgeA, vars.edgeContrastValue));
-const edgeRelative = fn.oklch(edgeDirectional, {
+const edge = fn.oklch(edgeBaseColor, {
   l: fn.clamp(
     inputs.edgeLMin,
-    getLayerL(inputs.edgeRelativeL, inputs.edgeL),
+    getLayerL(inputs.edgeRelativeL, inputs.edgeL, edgeDirectionalL),
     inputs.edgeLMax,
   ),
   c: fn.clamp(
@@ -1254,7 +1279,6 @@ const edgeRelative = fn.oklch(edgeDirectional, {
   h: getLayerH(inputs.edgeRelativeH, inputs.edgeH),
   a: edgeAlpha,
 });
-const edge = edgeRelative;
 
 // Collapse the continuous layer scale into five semantic buckets so variants
 // can target broad tonal ranges instead of exact lightness values.
@@ -1313,27 +1337,18 @@ utility(
   getBaseDeclarations(vars.layer),
   layerMathDeclarations,
   layerColorDeclarations,
-  at.variant(
-    light,
-    set(vars.layerIdlePushDirectionToLight, 0),
-    set(vars.layerPushDirectionToLight, 0),
-    set(vars.edgePushDirection, -1),
-  ),
-  at.variant(
-    dark,
-    set(vars.layerIdlePushDirectionToLight, 1),
-    set(vars.layerPushDirectionToLight, 1),
-    set(vars.edgePushDirection, 1),
-  ),
+  at.variant(light, set(vars.edgePushDirection, -1)),
+  at.variant(dark, set(vars.edgePushDirection, 1)),
   layerContext(({ provide, inherit }) => [
     set(provide(vars.layerParentContext), vars.layer),
     set(vars.layerParent, inherit(vars.layerParentContext)),
+    set(provide(vars.layerTextLContext), vars.layerTextL),
   ]),
 );
 
 function getLayerOffsetDeclarations(arbitraryPattern = "[*]") {
   const bareValue = getBarePercentTokenValue();
-  const arbitraryValue = fn.value(arbitraryPattern ?? "[*]");
+  const arbitraryValue = fn.value(arbitraryPattern);
   const bareDelta = fn.mul(bareValue, vars.lightnessOffsetDirection);
   const arbitraryDelta = fn.mul(arbitraryValue, vars.lightnessOffsetDirection);
   const getDeclarations = (
@@ -1422,13 +1437,12 @@ const layerLighten = utility(
 
 utility("layer-darken-*", getNegatedDeclarations(layerLighten));
 
-utility("state-lighten-*", getRawPercentDeclarations(inputs.layerRelativeL));
-
-utility(
-  "state-darken-*",
-  set(inputs.layerRelativeL, fn.neg(getBarePercentTokenValue())),
-  set(inputs.layerRelativeL, fn.neg(fn.value("[*]"))),
+const stateLighten = utility(
+  "state-lighten-*",
+  getRawPercentDeclarations(inputs.layerRelativeL),
 );
+
+utility("state-darken-*", getNegatedDeclarations(stateLighten));
 
 /**
  * Moves a hue toward a target by percentage on the shortest circular path.
@@ -1456,6 +1470,7 @@ utility(
   "layer-push-*",
   getRawPercentDeclarations(inputs.layerIdlePushL),
   set(vars.layerIdlePushEnabled, 1),
+  set(vars.layerIdlePushValue, getPushValue(inputs.layerIdlePushL)),
   set(
     vars.layerIdlePushBaseL,
     getLimitedLayerL(
@@ -1467,9 +1482,12 @@ utility(
   ),
   set(
     vars.layerIdlePushL,
-    getPushL(vars.layerIdlePushBaseL, vars.layerIdlePushDirectionToLight),
+    getPushL(vars.layerIdlePushBaseL, vars.offsetDirectionToLight),
   ),
-  set(vars.layerIdlePushResolvedL, vars.layerIdlePushL),
+  set(
+    vars.layerIdlePushResolvedL,
+    fn.add(vars.layerIdlePushL, layerIdleContrastBias),
+  ),
 );
 
 utility(
@@ -1607,23 +1625,16 @@ utility(
   ),
   set(
     vars.layerPushL,
-    getPushL(vars.layerPushBaseL, vars.layerPushDirectionToLight),
+    getPushL(vars.layerPushBaseL, vars.offsetDirectionToLight),
   ),
 );
 
-utility(
+const stateSaturate = utility(
   "state-saturate-*",
   getRawPercentDeclarations(inputs.layerRelativeC, CHROMA_TOKEN_OPTIONS),
 );
 
-utility(
-  "state-desaturate-*",
-  set(
-    inputs.layerRelativeC,
-    fn.neg(getBarePercentTokenValue(CHROMA_TOKEN_OPTIONS)),
-  ),
-  set(inputs.layerRelativeC, fn.neg(fn.value("[*]"))),
-);
+utility("state-desaturate-*", getNegatedDeclarations(stateSaturate));
 
 utility(
   "edge-*",
@@ -1800,23 +1811,83 @@ function getTextDirectional() {
   });
 }
 
+const textLightnessSteps = getTextLightnessSteps();
+
+/**
+ * Resolves a per-step text value as a single if() chain over the parent
+ * layer's quantized text lightness. The else value must match the variable's
+ * registered initial so unmatched contexts keep today's behavior.
+ */
+function getTextStepIf(
+  parentTextL: VarProperty,
+  getStepValue: (step: TextLightnessStep) => number,
+  elseValue: number,
+) {
+  return fn.if(
+    textLightnessSteps.map((step): [string, Value] => [
+      fn.style(parentTextL, fn.lch({ l: step.parentLightness })),
+      getStepValue(step),
+    ]),
+    elseValue,
+  );
+}
+
 utility(
   "text",
   set.backgroundColor(fn.important("transparent")),
   set.color(vars.text),
   at.container(fn.style(vars.layerTextL), set.color(getTextDirectional())),
-  mapLayerTextLightnessSteps((parentL, isDark) => {
-    const contrastParentL = getConservativeLchParentLightness(parentL, isDark);
-    return [
-      set(vars.textContrastDirection, isDark ? 1 : -1),
-      set(vars.textParentL, contrastParentL),
-      set(
-        vars.textAccessibleL,
-        getWcagLightnessTarget(contrastParentL, isDark),
+  // Each emitted rule is selector-matched per element, which gets expensive
+  // under child variants like `*:ak-text` whose rules land in the universal
+  // bucket. Where if() is available, deliver the whole quantized table as one
+  // if() chain per variable inside the two parity rules instead of one rule
+  // per step. The parity vars carry the parent layer's quantized lightness, so
+  // values match the container query fallback even when the same element is
+  // also a layer.
+  at.supports(
+    IF_SUPPORTS_CONDITION,
+    ...layerContext.read(({ parityVar }) => {
+      const parentTextL = parityVar(vars.layerTextLContext);
+      return [
+        set(
+          vars.textContrastDirection,
+          getTextStepIf(parentTextL, (step) => step.contrastDirection, 1),
+        ),
+        set(
+          vars.textParentL,
+          getTextStepIf(parentTextL, (step) => step.parentL, 0),
+        ),
+        set(
+          vars.textAccessibleL,
+          getTextStepIf(
+            parentTextL,
+            (step) => step.accessibleL,
+            LCH_LIGHTNESS_MAX,
+          ),
+        ),
+        set(
+          vars.textChromaCap,
+          getTextStepIf(
+            parentTextL,
+            (step) => step.chromaCap,
+            LCH_TEXT_CHROMA_CAP,
+          ),
+        ),
+      ];
+    }),
+  ),
+  at.supports.not(
+    IF_SUPPORTS_CONDITION,
+    ...textLightnessSteps.map((step) =>
+      at.container(
+        fn.style(vars.layerTextL, fn.lch({ l: step.parentLightness })),
+        set(vars.textContrastDirection, step.contrastDirection),
+        set(vars.textParentL, step.parentL),
+        set(vars.textAccessibleL, step.accessibleL),
+        set(vars.textChromaCap, step.chromaCap),
       ),
-      set(vars.textChromaCap, getLchTextChromaCap(parentL, isDark)),
-    ];
-  }),
+    ),
+  ),
 );
 
 utility(
@@ -2111,33 +2182,61 @@ function getFrameStretchDeclarations({
 
   // Inherit per-corner flags from the parent stretch element (default: 1 = all
   // corners rounded, provided by the frame utility for non-stretch parents).
-  const parentCornerTL = inherit(vars.frameParentCornerTLContext, 1);
-  const parentCornerTR = inherit(vars.frameParentCornerTRContext, 1);
-  const parentCornerBL = inherit(vars.frameParentCornerBLContext, 1);
-  const parentCornerBR = inherit(vars.frameParentCornerBRContext, 1);
+  const parentCornerStartStart = inherit(
+    vars.frameParentCornerStartStartContext,
+    1,
+  );
+  const parentCornerStartEnd = inherit(
+    vars.frameParentCornerStartEndContext,
+    1,
+  );
+  const parentCornerEndStart = inherit(
+    vars.frameParentCornerEndStartContext,
+    1,
+  );
+  const parentCornerEndEnd = inherit(vars.frameParentCornerEndEndContext, 1);
 
-  // Own corner factors based on edge position and parent layout direction.
-  const ownCornerTL = inputs.frameStart;
-  const ownCornerTR = fn.max(
+  // Own corner factors based on logical edge position and parent layout axis.
+  const ownCornerStartStart = inputs.frameStart;
+  const ownCornerStartEnd = fn.max(
     fn.mul(isCol, inputs.frameStart),
     fn.mul(isRow, inputs.frameEnd),
   );
-  const ownCornerBL = fn.max(
+  const ownCornerEndStart = fn.max(
     fn.mul(isCol, inputs.frameEnd),
     fn.mul(isRow, inputs.frameStart),
   );
-  const ownCornerBR = inputs.frameEnd;
+  const ownCornerEndEnd = inputs.frameEnd;
 
   // Effective corner factors: only round a corner when both this element AND
   // the parent have a rounded corner at the same position.
-  const cornerTL = fn.mul(ownCornerTL, parentCornerTL);
-  const cornerTR = fn.mul(ownCornerTR, parentCornerTR);
-  const cornerBL = fn.mul(ownCornerBL, parentCornerBL);
-  const cornerBR = fn.mul(ownCornerBR, parentCornerBR);
-  const childCornerTL = provide(vars.frameParentCornerTLContext);
-  const childCornerTR = provide(vars.frameParentCornerTRContext);
-  const childCornerBL = provide(vars.frameParentCornerBLContext);
-  const childCornerBR = provide(vars.frameParentCornerBRContext);
+  const cornerStartStart = fn.mul(ownCornerStartStart, parentCornerStartStart);
+  const cornerStartEnd = fn.mul(ownCornerStartEnd, parentCornerStartEnd);
+  const cornerEndStart = fn.mul(ownCornerEndStart, parentCornerEndStart);
+  const cornerEndEnd = fn.mul(ownCornerEndEnd, parentCornerEndEnd);
+  const childCornerStartStart = provide(
+    vars.frameParentCornerStartStartContext,
+  );
+  const childCornerStartEnd = provide(vars.frameParentCornerStartEndContext);
+  const childCornerEndStart = provide(vars.frameParentCornerEndStartContext);
+  const childCornerEndEnd = provide(vars.frameParentCornerEndEndContext);
+
+  const blockStartMargin = fn.mul(
+    fn.max(isRow, fn.mul(isCol, inputs.frameStart)),
+    vars.frameMargin,
+  );
+  const blockEndMargin = fn.mul(
+    fn.max(isRow, fn.mul(isCol, inputs.frameEnd)),
+    vars.frameMargin,
+  );
+  const inlineStartMargin = fn.mul(
+    fn.max(isCol, fn.mul(isRow, inputs.frameStart)),
+    vars.frameMargin,
+  );
+  const inlineEndMargin = fn.mul(
+    fn.max(isCol, fn.mul(isRow, inputs.frameEnd)),
+    vars.frameMargin,
+  );
 
   return [
     rule("&:first-child", set(inputs.frameStart, 1)),
@@ -2155,48 +2254,20 @@ function getFrameStretchDeclarations({
     // the stretch-derived value rather than the frame-* hint radius.
     set(vars.frameRadius, childRadius),
     // Propagate per-corner flags to children.
-    set(childCornerTL, cornerTL),
-    set(childCornerTR, cornerTR),
-    set(childCornerBL, cornerBL),
-    set(childCornerBR, cornerBR),
+    set(childCornerStartStart, cornerStartStart),
+    set(childCornerStartEnd, cornerStartEnd),
+    set(childCornerEndStart, cornerEndStart),
+    set(childCornerEndEnd, cornerEndEnd),
     // Cross-axis margins always applied; main-axis margins only at edges
     // Col: inline = cross, block = main
     // Row: block = cross, inline = main
-    set.margin(
-      fn.join(
-        [
-          fn.mul(
-            fn.max(isRow, fn.mul(isCol, inputs.frameStart)),
-            vars.frameMargin,
-          ),
-          fn.mul(
-            fn.max(isCol, fn.mul(isRow, inputs.frameEnd)),
-            vars.frameMargin,
-          ),
-          fn.mul(
-            fn.max(isRow, fn.mul(isCol, inputs.frameEnd)),
-            vars.frameMargin,
-          ),
-          fn.mul(
-            fn.max(isCol, fn.mul(isRow, inputs.frameStart)),
-            vars.frameMargin,
-          ),
-        ],
-        " ",
-      ),
-    ),
-    // Corner radii: each corner inherits its parent's corner state.
-    set.borderRadius(
-      fn.join(
-        [
-          fn.mul(childCornerTL, vars.frameRadius),
-          fn.mul(childCornerTR, vars.frameRadius),
-          fn.mul(childCornerBR, vars.frameRadius),
-          fn.mul(childCornerBL, vars.frameRadius),
-        ],
-        " ",
-      ),
-    ),
+    set.marginBlock(fn.join([blockStartMargin, blockEndMargin], " ")),
+    set.marginInline(fn.join([inlineStartMargin, inlineEndMargin], " ")),
+    // Corner radii: each logical corner inherits its parent's corner state.
+    set.borderStartStartRadius(fn.mul(childCornerStartStart, vars.frameRadius)),
+    set.borderStartEndRadius(fn.mul(childCornerStartEnd, vars.frameRadius)),
+    set.borderEndStartRadius(fn.mul(childCornerEndStart, vars.frameRadius)),
+    set.borderEndEndRadius(fn.mul(childCornerEndEnd, vars.frameRadius)),
   ];
 }
 
@@ -2270,7 +2341,6 @@ utility(
       set(provide(vars.frameParentRadiusContext), vars.frameRadius),
       set(provide(vars.frameParentPaddingContext), vars.framePadding),
       set(provide(vars.frameParentBorderContext), vars.frameBorder),
-      set(provide(vars.frameParentRingContext), vars.frameRing),
       set(
         provide(vars.frameParentBorderingBorderContext),
         fn.add(
@@ -2287,10 +2357,10 @@ utility(
       ),
       set(provide(vars.frameParentRowContext), inputs.frameRow),
       // Default: all corners rounded (non-stretch parents).
-      set(provide(vars.frameParentCornerTLContext), 1),
-      set(provide(vars.frameParentCornerTRContext), 1),
-      set(provide(vars.frameParentCornerBLContext), 1),
-      set(provide(vars.frameParentCornerBRContext), 1),
+      set(provide(vars.frameParentCornerStartStartContext), 1),
+      set(provide(vars.frameParentCornerStartEndContext), 1),
+      set(provide(vars.frameParentCornerEndStartContext), 1),
+      set(provide(vars.frameParentCornerEndEndContext), 1),
     ];
   }),
 );

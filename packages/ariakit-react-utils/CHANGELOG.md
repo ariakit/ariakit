@@ -1,5 +1,60 @@
 # @ariakit/react-utils
 
+## 0.2.2
+
+- Fixed published packages omitting their build output. Thanks to [@shahednasser](https://github.com/shahednasser).
+- Updated dependencies: `@ariakit/store@0.1.6`
+
+## 0.2.1
+
+- Updated dependencies: `@ariakit/store@0.1.5`
+
+## 0.2.0
+
+### Removed unused React utility hooks
+
+**BREAKING** if you import `useLazyValue` or `usePreviousValue` from `@ariakit/react-utils`.
+
+These hooks were not used by Ariakit packages and have been removed. Replace `useLazyValue` with `useInitialValue`, which accepts a lazy initializer. Inline the previous-value state pattern if you still need `usePreviousValue`.
+
+Before:
+
+```ts
+import { useLazyValue, usePreviousValue } from "@ariakit/react-utils";
+
+const set = useLazyValue(() => new Set());
+const previous = usePreviousValue(value);
+```
+
+After:
+
+```ts
+import { useInitialValue } from "@ariakit/react-utils";
+import { useState } from "react";
+
+const set = useInitialValue(() => new Set());
+
+const [previous, setPrevious] = useState(value);
+if (value !== previous) {
+  setPrevious(value);
+}
+```
+
+### Other updates
+
+- Fixed React package sourcemaps so generated mappings account for the `"use client"` directive.
+- Updated dependencies: `@ariakit/utils@0.1.4`, `@ariakit/store@0.1.4`
+
+## 0.1.3
+
+- Fixed merged refs in React components and [`Portal`](https://ariakit.com/reference/portal) to preserve React 19 callback ref cleanup functions while still detaching refs that don't return a cleanup.
+- Updated dependencies: `@ariakit/utils@0.1.3`, `@ariakit/store@0.1.3`
+
+## 0.1.2
+
+- Fixed runtime `process.env.NODE_ENV` checks in published package output, including test-only behavior and development warnings.
+- Updated dependencies: `@ariakit/store@0.1.2`, `@ariakit/utils@0.1.2`
+
 ## 0.1.1
 
 - Release artifacts now include npm trusted publishing provenance.

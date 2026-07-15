@@ -146,36 +146,46 @@ const { title, headerBorder = false } = Astro.props;
 </style>
 
 <script>
-  const themeToggle = document.getElementById("theme-toggle");
-  const themeSidebar = document.getElementById("theme-sidebar");
+  function getThemeSidebar() {
+    return document.getElementById("theme-sidebar");
+  }
 
-  themeToggle?.addEventListener("click", () => {
+  function toggleSidebar() {
+    const themeSidebar = getThemeSidebar();
     if (!themeSidebar) return;
-    console.log("clicked", themeSidebar.dataset.state);
     themeSidebar.dataset.state =
       themeSidebar.dataset.state !== "open" ? "open" : "closed";
+  }
+
+  function isEditableTarget(target: EventTarget | null) {
+    if (!(target instanceof HTMLElement)) return false;
+    if (target.closest("input, textarea, select")) return true;
+    return target.isContentEditable;
+  }
+
+  document.addEventListener("astro:page-load", () => {
+    const themeToggle = document.getElementById("theme-toggle");
+    themeToggle?.addEventListener("click", toggleSidebar);
   });
 
-  document.addEventListener("keydown", (e) => {
-    if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return;
-    if (e.key === "t" || e.key === "T") {
-      if (!themeSidebar) return;
-      console.log("clicked", themeSidebar.dataset.state);
-      themeSidebar.dataset.state =
-        themeSidebar.dataset.state !== "open" ? "open" : "closed";
+  document.addEventListener("keydown", (event) => {
+    if (event.defaultPrevented) return;
+    if (event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) {
+      return;
     }
+    if (event.key !== "t" && event.key !== "T") return;
+    if (isEditableTarget(event.target)) return;
+    toggleSidebar();
   });
 
   // Mark the sidebar as transitioning during view transitions
   document.addEventListener("astro:before-preparation", () => {
-    if (!themeSidebar) return;
-    themeSidebar.setAttribute("data-view-transitioning", "true");
+    getThemeSidebar()?.setAttribute("data-view-transitioning", "true");
   });
 
   document.addEventListener("astro:after-swap", () => {
     requestAnimationFrame(() => {
-      if (!themeSidebar) return;
-      themeSidebar.removeAttribute("data-view-transitioning");
+      getThemeSidebar()?.removeAttribute("data-view-transitioning");
     });
   });
 </script>

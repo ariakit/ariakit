@@ -199,7 +199,7 @@ dialog.toggle(); // dialog.setOpen((open) => !open)
 When you need to access the store in child components, passing it as a prop is usually the most straightforward approach. However, if the component is deeply nested within the component tree or if you're unable to pass the store as a prop for some reason, you can leverage React Context instead:
 
 ```jsx "useFormContext"
-import { useFormContext, FormInput } from "@ariakit/react";
+import { useFormContext, useFormValidate, FormInput } from "@ariakit/react";
 
 function RequiredInput(props) {
   const form = useFormContext();
@@ -208,7 +208,7 @@ function RequiredInput(props) {
     throw new Error("RequiredInput must be used within a Form component");
   }
 
-  form.useValidate(() => {
+  useFormValidate(form, () => {
     if (!form.getValue(props.name)) {
       form.setError(props.name, "This field is required");
     }

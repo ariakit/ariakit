@@ -152,8 +152,21 @@ export async function setCustomer(
 
 export interface CreateTeamParams {
   context: APIContext;
+  checkoutSession?: string;
   name?: string;
   user?: User | string | null;
+}
+
+// Clerk enforces unique organization slugs, so deriving one from the checkout
+// session gives retries and concurrent fulfillment an idempotency key.
+// Keep the slug compact while preserving 128 bits of the session hash.
+async function getCheckoutTeamSlug(checkoutSession: string) {
+  const data = new TextEncoder().encode(checkoutSession);
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  const hex = Array.from(new Uint8Array(hash), (byte) => {
+    return byte.toString(16).padStart(2, "0");
+  }).join("");
+  return `checkout-${hex.slice(0, 32)}`;
 }
 
 export async function createTeam(params: CreateTeamParams) {
@@ -165,13 +178,52 @@ export async function createTeam(params: CreateTeamParams) {
   const userName =
     user.firstName ?? user.primaryEmailAddress?.emailAddress.split("@")[0];
   const name = params.name ?? `${userName} Team`;
-  const team = await clerk.organizations.createOrganization({
-    name,
-    createdBy: user.id,
-    maxAllowedMemberships: 10,
-  });
-  info("Created team %s", name);
-  return team;
+  const checkoutSession = params.checkoutSession;
+  const checkoutSlug = checkoutSession
+    ? await getCheckoutTeamSlug(checkoutSession)
+    : undefined;
+  if (checkoutSession) {
+    const teams = await clerk.users.getOrganizationMembershipList({
+      userId: user.id,
+      limit: 100,
+    });
+    const existingTeam = teams.data.find((team) => {
+      return (
+        team.organization.privateMetadata.stripeCheckoutSessionId ===
+        checkoutSession
+      );
+    });
+    if (existingTeam) {
+      info("Found team %s", existingTeam.organization.name);
+      return existingTeam.organization;
+    }
+  }
+  try {
+    const team = await clerk.organizations.createOrganization({
+      name,
+      slug: checkoutSlug,
+      createdBy: user.id,
+      maxAllowedMemberships: 10,
+      privateMetadata: checkoutSession
+        ? { stripeCheckoutSessionId: checkoutSession }
+        : undefined,
+    });
+    info("Created team %s", name);
+    return team;
+  } catch (error) {
+    if (!checkoutSlug) throw error;
+    const existingTeam = await clerk.organizations
+      .getOrganization({ slug: checkoutSlug })
+      .catch(() => null);
+    if (!existingTeam) throw error;
+    if (
+      existingTeam.privateMetadata.stripeCheckoutSessionId !== checkoutSession
+    ) {
+      throw error;
+    }
+    info("Found team %s", existingTeam.name);
+    return existingTeam;
+  }
 }
 
 export interface AddPlusToUserParams {
@@ -224,33 +276,4 @@ export async function isAdmin(context: APIContext) {
   const teams = await getCurrentUserTeams(context);
   const orgRole = teams.get(orgId);
   return orgRole === "org:admin";
-}
-
-export interface GetAllUsersParams {
-  context: APIContext;
-  limit?: number;
-  offset?: number;
-}
-
-export async function getAllUsers({
-  context,
-  limit = 100,
-  offset = 0,
-}: GetAllUsersParams) {
-  if (!isClerkEnabled()) return [];
-  const clerk = clerkClient(context);
-  const allUsers: User[] = [];
-  let hasMore = false;
-  do {
-    const users = await clerk.users.getUserList({
-      limit: 100,
-      offset: offset,
-      orderBy: "+created_at",
-    });
-    if (users.data.length === 0) break;
-    allUsers.push(...users.data);
-    offset += users.data.length;
-    hasMore = users.data.length === limit;
-  } while (hasMore);
-  return allUsers;
 }

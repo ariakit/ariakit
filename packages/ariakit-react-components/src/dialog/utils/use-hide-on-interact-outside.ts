@@ -5,12 +5,13 @@ import {
   getDocument,
   getWindow,
   addGlobalEventListener,
+  isElement,
 } from "@ariakit/utils";
 import type { MutableRefObject } from "react";
 import { useEffect, useRef } from "react";
 import type { DialogStore } from "../dialog-store.ts";
 import type { DialogOptions } from "../dialog.tsx";
-import { isElementMarked } from "./mark-tree-outside.ts";
+import { isElementInside, isElementMarked } from "./mark-tree-outside.ts";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.ts";
 
 interface EventOutsideOptions {
@@ -18,7 +19,13 @@ interface EventOutsideOptions {
   type: string;
   listener: (event: Event) => void;
   capture?: boolean;
-  domReady?: boolean | HTMLElement | null;
+  // The open and contentElement states and the focusedRef are tracked once by
+  // useHideOnInteractOutside and shared with each useEventOutside call so the
+  // dialog doesn't pay for one store subscription (and focusin listener) per
+  // event type.
+  open?: boolean;
+  contentElement?: HTMLElement | null;
+  focusedRef: MutableRefObject<boolean>;
 }
 
 function isInDocument(target: Element) {
@@ -56,31 +63,19 @@ function useEventOutside({
   type,
   listener,
   capture,
-  domReady,
+  open,
+  contentElement,
+  focusedRef,
 }: EventOutsideOptions) {
   const callListener = useEvent(listener);
-  const open = useStoreState(store, "open");
-  const contentElement = useStoreState(store, "contentElement");
-  const focusedRef = useRef(false);
-
-  useSafeLayoutEffect(() => {
-    if (!open) return;
-    if (!domReady) return;
-    if (!contentElement) return;
-    const onFocus = () => {
-      focusedRef.current = true;
-    };
-    contentElement.addEventListener("focusin", onFocus, true);
-    return () => contentElement.removeEventListener("focusin", onFocus, true);
-  }, [open, domReady, contentElement]);
 
   useEffect(() => {
     if (!open) return;
     const onEvent = (event: Event) => {
       const { contentElement, disclosureElement } = store.getState();
-      const target = event.target as Element | null;
+      const target = event.target;
       if (!contentElement) return;
-      if (!target) return;
+      if (!isElement(target)) return;
       // When an element is unmounted right after it receives focus, the focus
       // event is triggered after that, when the element isn't part of the
       // current document anymore. We just ignore it.
@@ -93,6 +88,12 @@ function useEventOutside({
       if (target.hasAttribute("data-focus-trap")) return;
       // Clicked on dialog's bounding box
       if (isMouseEventOnDialog(event, contentElement)) return;
+      // The dialog itself, persistent elements, and nested dialogs are marked
+      // as "inside" when the dialog opens. Events on them must never trigger
+      // the outside listeners, even before the dialog has been focused (for
+      // example, with autoFocusOnShow={false}). See
+      // https://github.com/ariakit/ariakit/issues/6344
+      if (isElementInside(target, contentElement.id)) return;
       // We need to check if the content element has been focused at least once
       // before checking if it's marked. This is so hovercards and tooltips
       // don't stay open when new nodes are added to the DOM and focused.
@@ -104,7 +105,7 @@ function useEventOutside({
     };
     const win = contentElement ? getWindow(contentElement) : undefined;
     return addGlobalEventListener(type, onEvent, capture, win);
-  }, [open, capture, store, type, callListener, contentElement]);
+  }, [open, capture, store, type, callListener, contentElement, focusedRef]);
 }
 
 function shouldHideOnInteractOutside(
@@ -127,7 +128,24 @@ export function useHideOnInteractOutside(
   const contentElement = useStoreState(store, "contentElement");
   const contentWindow = contentElement ? getWindow(contentElement) : undefined;
   const previousMouseDownRef = usePreviousMouseDownRef(open, contentWindow);
-  const props = { store, domReady, capture: true };
+  const focusedRef = useRef(false);
+
+  // Tracks whether the content element has been focused at least once since
+  // the dialog opened. The event listeners below use this to decide whether
+  // the marked-tree check applies. Shared by all event types.
+  useSafeLayoutEffect(() => {
+    if (!open) return;
+    if (!domReady) return;
+    if (!contentElement) return;
+    focusedRef.current = false;
+    const onFocus = () => {
+      focusedRef.current = true;
+    };
+    contentElement.addEventListener("focusin", onFocus, true);
+    return () => contentElement.removeEventListener("focusin", onFocus, true);
+  }, [open, domReady, contentElement]);
+
+  const props = { store, capture: true, open, contentElement, focusedRef };
 
   useEventOutside({
     ...props,

@@ -9,17 +9,17 @@ interface NameFieldProps extends Ariakit.FormInputProps {
 }
 
 function RequiredField({ store, label, name, ...props }: NameFieldProps) {
-  store.useValidate(() => {
+  Ariakit.useFormValidate(store, () => {
     if (!store.getValue(name)) {
       store.setError(name, `${store.getError(name)} - Field 1`);
     }
   });
-  store.useValidate(() => {
+  Ariakit.useFormValidate(store, () => {
     if (!store.getValue(name)) {
       store.setError(name, `${store.getError(name)} - Field 2`);
     }
   });
-  store.useSubmit(async () => {
+  Ariakit.useFormSubmit(store, async () => {
     await Promise.resolve();
     store.setError(name, "Field");
   });
@@ -39,19 +39,19 @@ interface FormProps extends Ariakit.FormProps {
 function RequiredForm({ store, requiredNames, ...props }: FormProps) {
   invariant(store);
 
-  store.useValidate(() => {
+  Ariakit.useFormValidate(store, () => {
     for (const name of requiredNames) {
       if (!store.getValue(name)) {
         store.setError(name, `${store.getError(name)} - Abstract Form`);
       }
     }
   });
-  store.useSubmit(() => {
+  Ariakit.useFormSubmit(store, () => {
     for (const name of requiredNames) {
       store.setError(name, `${store.getError(name)} - Abstract Form 1`);
     }
   });
-  store.useSubmit(() => {
+  Ariakit.useFormSubmit(store, () => {
     for (const name of requiredNames) {
       store.setError(name, `${store.getError(name)} - Abstract Form 2`);
     }
@@ -64,7 +64,7 @@ export default function Example() {
   const form = Ariakit.useFormStore({ defaultValues: { name: "", email: "" } });
   const requiredNames = [form.names.name, form.names.email];
 
-  form.useValidate(() => {
+  Ariakit.useFormValidate(form, () => {
     for (const name of requiredNames) {
       if (!form.getValue(name)) {
         form.setError(name, `${form.getError(name)} - Form`);
@@ -72,13 +72,13 @@ export default function Example() {
     }
   });
 
-  form.useSubmit(() => {
+  Ariakit.useFormSubmit(form, () => {
     for (const name of requiredNames) {
       form.setError(name, `${form.getError(name)} - Form 1`);
     }
   });
 
-  form.useSubmit(() => {
+  Ariakit.useFormSubmit(form, () => {
     for (const name of requiredNames) {
       form.setError(name, `${form.getError(name)} - Form 2`);
     }

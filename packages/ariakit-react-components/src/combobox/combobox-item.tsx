@@ -10,10 +10,12 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
+  getItemRoleByPopupRole,
+  hasFocus,
   isTextField,
   isDownloading,
   isOpeningInNewTab,
-  hasFocus,
+  isApple,
   invariant,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
@@ -47,14 +49,11 @@ function isSelected(
   return storeValue === itemValue;
 }
 
-function getItemRole(popupRole?: string) {
-  const itemRoleByPopupRole = {
-    menu: "menuitem",
-    listbox: "option",
-    tree: "treeitem",
-  };
-  const key = popupRole as keyof typeof itemRoleByPopupRole;
-  return itemRoleByPopupRole[key] ?? "option";
+/**
+ * Returns the role for a combobox item based on the popup role.
+ */
+export function getItemRole(popupRole?: string) {
+  return getItemRoleByPopupRole(popupRole) ?? "option";
 }
 
 /**
@@ -90,7 +89,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     );
 
     const { resetValueOnSelectState, multiSelectable, selected } =
-      useStoreStateObject(store, {
+      useStoreStateObject(store, ["selectedValue"], {
         resetValueOnSelectState: "resetValueOnSelect",
         multiSelectable(state) {
           return Array.isArray(state.selectedValue);
@@ -161,8 +160,15 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       // receive DOM focus. Therefore, pressing printable keys will not fill
       // the text field. So we need to programmatically focus on the text
       // field when the user presses printable keys.
-      const printable = event.key.length === 1;
-      if (printable || event.key === "Backspace" || event.key === "Delete") {
+      const printable =
+        event.key.length === 1 && !event.ctrlKey && !event.metaKey;
+      const pc = !isApple();
+      const modifier = pc ? event.ctrlKey : event.metaKey;
+      // If it's cmd/ctrl+v, focus on the text field so the value is pasted
+      // there.
+      const paste = modifier && event.key.toLowerCase() === "v";
+      const deleteKey = event.key === "Backspace" || event.key === "Delete";
+      if (printable || paste || deleteKey) {
         queueMicrotask(() => baseElement.focus());
         if (isTextField(baseElement)) {
           // If the combobox element is a text field, we should update the

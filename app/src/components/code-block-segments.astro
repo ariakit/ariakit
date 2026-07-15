@@ -1,0 +1,152 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { ReferenceHovercardAnchor } from "#app/components/reference-hovercard.react.tsx";
+import type { CodeReferenceAnchorRange } from "#app/lib/reference-tokenizer.ts";
+import { invariant } from "@ariakit/utils";
+import type { ThemedToken } from "shiki";
+import type { Segment, TokenFragment } from "./code-block.types.ts";
+
+interface Props {
+  segments: Segment[];
+  isAdded: boolean;
+  anchors: CodeReferenceAnchorRange[];
+}
+
+type FragmentPiece =
+  | { type: "text"; start: number; end: number }
+  | {
+      type: "anchor";
+      start: number;
+      end: number;
+      href: string;
+      kind: CodeReferenceAnchorRange["kind"];
+    };
+
+const { segments, isAdded, anchors } = Astro.props;
+
+const HIGHLIGHT_CHIP_CLASS = "ring rounded px-[0.25em] py-0.5";
+const HIGHLIGHT_ADDED_CHIP_CLASS =
+  "ak-layer ak-layer-green-500 ak-layer-mix-30 ak-edge-green-500 ak-edge-20 ring mx-[0.1em] rounded px-[0.25em] py-0.5";
+const MULTI_TOKEN_HIGHLIGHT_CLASS = "ak-layer ak-layer-6 ak-edge-25";
+
+function getTokenColors(token: ThemedToken) {
+  const style = token.htmlStyle;
+  const dark = style?.["--shiki-dark"] || token.color;
+  const light = style?.color || token.color;
+  return { dark, light } as const;
+}
+
+function getFragmentPieces(
+  fragment: TokenFragment,
+  lineAnchors: CodeReferenceAnchorRange[],
+) {
+  const start = fragment.charStart;
+  const end = fragment.charEnd;
+  const pieces: FragmentPiece[] = [];
+  let cursor = start;
+  const overlapping = lineAnchors
+    .filter((anchor) => anchor.start < end && anchor.end > start)
+    .sort((a, b) => a.start - b.start);
+  for (const anchor of overlapping) {
+    const anchorStart = Math.max(start, anchor.start);
+    const anchorEnd = Math.min(end, anchor.end);
+    if (cursor < anchorStart) {
+      pieces.push({ type: "text", start: cursor, end: anchorStart });
+    }
+    if (anchorEnd > anchorStart) {
+      pieces.push({
+        type: "anchor",
+        start: anchorStart,
+        end: anchorEnd,
+        href: anchor.href,
+        kind: anchor.kind,
+      });
+      cursor = anchorEnd;
+    }
+  }
+  if (cursor < end) {
+    pieces.push({ type: "text", start: cursor, end });
+  }
+  return pieces;
+}
+---
+
+{
+  segments.map((segment) => {
+    const segmentElements = segment.fragments.flatMap(
+      (fragment: TokenFragment) => {
+        const { dark, light } = getTokenColors(fragment.token);
+        const pieces = getFragmentPieces(fragment, anchors);
+        const textFrom = (a: number, b: number) =>
+          fragment.content.slice(
+            a - fragment.charStart,
+            b - fragment.charStart,
+          );
+        return pieces.map((piece) => (
+          <span
+            style={`--dark:${dark}; --light:${light}`}
+            class="ak-text ak-text-color-(--dark) ak-light:ak-text-color-(--light)"
+          >
+            {piece.type === "anchor" ? (
+              <ReferenceHovercardAnchor
+                client:idle
+                inCodeBlock
+                href={piece.href}
+                kind={piece.kind}
+                inHovercard={!!Astro.locals.reference}
+              >
+                {textFrom(piece.start, piece.end)}
+              </ReferenceHovercardAnchor>
+            ) : (
+              textFrom(piece.start, piece.end) || ""
+            )}
+          </span>
+        ));
+      },
+    );
+
+    if (segment.isHighlighted) {
+      const highlightClass = HIGHLIGHT_CHIP_CLASS;
+
+      if (isAdded || segment.isDiff) {
+        return (
+          <span class={HIGHLIGHT_ADDED_CHIP_CLASS}>{segmentElements}</span>
+        );
+      }
+
+      if (segment.spansMultipleTokens) {
+        return (
+          <span class:list={[MULTI_TOKEN_HIGHLIGHT_CLASS, highlightClass]}>
+            {segmentElements}
+          </span>
+        );
+      }
+
+      const firstFragment = segment.fragments[0];
+      invariant(firstFragment, "First fragment is required");
+      const { dark, light } = getTokenColors(firstFragment.token);
+
+      return (
+        <span
+          style={`--dark:${dark}; --light:${light}`}
+          class:list={[
+            "ak-text ak-text-color-(--dark) ak-light:ak-text-color-(--light) ak-layer ak-layer-color-(--ak-text) ak-layer-mix-10 ak-edge-color-(--ak-text) ak-edge-20",
+            HIGHLIGHT_CHIP_CLASS,
+          ]}
+        >
+          {segmentElements}
+        </span>
+      );
+    }
+
+    return segmentElements;
+  })
+}

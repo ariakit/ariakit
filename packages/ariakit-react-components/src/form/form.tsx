@@ -11,7 +11,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { isTextField, invariant } from "@ariakit/utils";
+import { isTextField, invariant, sortBasedOnDOMPosition } from "@ariakit/utils";
 import type { ElementType, FocusEvent, FormEvent } from "react";
 import { useEffect, useRef, useState } from "react";
 import { FormScopedContextProvider, useFormContext } from "./form-context.tsx";
@@ -28,7 +28,8 @@ function isField(element: HTMLElement, items: FormStoreState["items"]) {
 }
 
 function getFirstInvalidField(items: FormStoreState["items"]) {
-  return items.find(
+  const sortedItems = sortBasedOnDOMPosition(items, (item) => item.element);
+  return sortedItems.find(
     (item) =>
       item.type === "field" &&
       item.element?.getAttribute("aria-invalid") === "true",
@@ -88,6 +89,15 @@ export const useForm = createHook<TagName, FormOptions>(function useForm({
   }, [resetOnSubmit, submitSucceed, store]);
 
   const [shouldFocusOnSubmit, setShouldFocusOnSubmit] = useState(false);
+
+  // Clear the flag once a submission succeeds so auto-focus stays tied to the
+  // submission outcome. The flag is armed on every submit but only cleared when
+  // the focus effect finds an invalid field; on success it finds none, so it
+  // would otherwise leak and steal focus on a later `items` change.
+  useEffect(() => {
+    if (!submitSucceed) return;
+    setShouldFocusOnSubmit(false);
+  }, [submitSucceed]);
 
   useEffect(() => {
     if (!shouldFocusOnSubmit) return;
@@ -208,7 +218,7 @@ export interface FormOptions<_T extends ElementType = TagName> extends Options {
   /**
    * Determines if the form should invoke the validation callbacks registered
    * with
-   * [`useValidate`](https://ariakit.com/reference/use-form-store#usevalidate)
+   * [`useFormValidate`](https://ariakit.com/reference/use-form-validate)
    * when the [`values`](https://ariakit.com/reference/use-form-store#values)
    * change.
    * @default true
@@ -217,7 +227,7 @@ export interface FormOptions<_T extends ElementType = TagName> extends Options {
   /**
    * Determines if the form should invoke the validation callbacks registered
    * with
-   * [`useValidate`](https://ariakit.com/reference/use-form-store#usevalidate)
+   * [`useFormValidate`](https://ariakit.com/reference/use-form-validate)
    * when a field loses focus.
    * @default true
    */

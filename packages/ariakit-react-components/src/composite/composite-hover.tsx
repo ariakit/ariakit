@@ -15,6 +15,7 @@ import {
   hasFocusWithin,
   hasOwnProperty,
   invariant,
+  isElement,
   removeUndefinedValues,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
@@ -27,17 +28,9 @@ const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
-function getMouseDestination(event: ReactMouseEvent<HTMLElement>) {
-  const relatedTarget = event.relatedTarget as Node | null;
-  if (relatedTarget?.nodeType === Node.ELEMENT_NODE) {
-    return relatedTarget as Element;
-  }
-  return null;
-}
-
 function hoveringInside(event: ReactMouseEvent<HTMLElement>) {
-  const nextElement = getMouseDestination(event);
-  if (!nextElement) return false;
+  const nextElement = event.relatedTarget;
+  if (!isElement(nextElement)) return false;
   return contains(event.currentTarget, nextElement);
 }
 
@@ -45,8 +38,9 @@ const symbol = Symbol("composite-hover");
 type ElementWithSymbol = HTMLElement & { [symbol]?: boolean };
 
 function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
-  let dest = getMouseDestination(event);
-  if (!dest) return false;
+  const { relatedTarget } = event;
+  if (!isElement(relatedTarget)) return false;
+  let dest: Element | null = relatedTarget;
   do {
     if (hasOwnProperty(dest, symbol) && dest[symbol]) return true;
     dest = dest.parentElement;

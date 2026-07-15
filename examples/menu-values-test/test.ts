@@ -11,8 +11,8 @@ beforeEach(() => {
 });
 
 function getVisualState() {
-  const checkboxes = q.menuitemcheckbox.all.includesHidden();
-  const radios = q.menuitemradio.all.includesHidden();
+  const checkboxes = q.menuitemcheckbox.all.hidden();
+  const radios = q.menuitemradio.all.hidden();
   return [...checkboxes, ...radios].reduce<Record<string, string | string[]>>(
     (acc, element: HTMLElement | HTMLInputElement) => {
       if (!("name" in element)) return acc;
@@ -58,7 +58,7 @@ test("interact with checkboxControlled items", async () => {
   await click(q.button("Menu"));
   await click(q.menuitemcheckbox("Apple (checkboxControlled)"));
   await click(q.menuitemcheckbox("Banana (checkboxControlled)"));
-  await click(q.menuitemcheckbox.includesHidden("Grape (checkboxControlled)"));
+  await click(q.menuitemcheckbox.hidden("Grape (checkboxControlled)"));
   await click(q.menuitemcheckbox("Orange (checkboxControlled)"));
   expect(getVisualState().checkboxControlled).toEqual(["Orange"]);
   expect(log.mock.lastCall?.at(0).checkboxControlled).toEqual(["Orange"]);
@@ -72,9 +72,7 @@ test("interact with checkboxUncontrolled items", async () => {
   await click(q.button("Menu"));
   await click(q.menuitemcheckbox("Apple (checkboxUncontrolled)"));
   await click(q.menuitemcheckbox("Banana (checkboxUncontrolled)"));
-  await click(
-    q.menuitemcheckbox.includesHidden("Grape (checkboxUncontrolled)"),
-  );
+  await click(q.menuitemcheckbox.hidden("Grape (checkboxUncontrolled)"));
   await click(q.menuitemcheckbox("Orange (checkboxUncontrolled)"));
   expect(getVisualState().checkboxUncontrolled).toEqual([
     "Apple",
@@ -97,7 +95,7 @@ test("interact with checkboxParent items", async () => {
   await click(q.button("Menu"));
   await click(q.menuitemcheckbox("Apple (checkboxParent)"));
   await click(q.menuitemcheckbox("Banana (checkboxParent)"));
-  await click(q.menuitemcheckbox.includesHidden("Grape (checkboxParent)"));
+  await click(q.menuitemcheckbox.hidden("Grape (checkboxParent)"));
   await click(q.menuitemcheckbox("Orange (checkboxParent)"));
   expect(getVisualState().checkboxParent).toEqual(["Banana"]);
   expect(log.mock.lastCall?.at(0).checkboxParent).toEqual(["Banana"]);
@@ -118,7 +116,7 @@ test("interact with radioControlled items", async () => {
   expect(getVisualState().radioControlled).toBe("Banana");
   expect(log.mock.calls).toHaveLength(0);
   log.mockClear();
-  await click(q.menuitemradio.includesHidden("Grape (radioControlled)"));
+  await click(q.menuitemradio.hidden("Grape (radioControlled)"));
   expect(getVisualState().radioControlled).toBe("Banana");
   expect(log.mock.calls).toHaveLength(0);
   log.mockClear();
@@ -142,7 +140,7 @@ test("interact with radioUncontrolled items", async () => {
   expect(getVisualState().radioUncontrolled).toBe("Banana");
   expect(log.mock.lastCall?.at(0).radioUncontrolled).toBe("Banana");
   log.mockClear();
-  await click(q.menuitemradio.includesHidden("Grape (radioUncontrolled)"));
+  await click(q.menuitemradio.hidden("Grape (radioUncontrolled)"));
   expect(getVisualState().radioUncontrolled).toBe("Banana");
   expect(log.mock.calls).toHaveLength(0);
   log.mockClear();
@@ -162,7 +160,7 @@ test("interact with radioParent items", async () => {
   expect(getVisualState().radioParent).toBe("Orange");
   expect(log.mock.calls).toHaveLength(0);
   log.mockClear();
-  await click(q.menuitemradio.includesHidden("Grape (radioParent)"));
+  await click(q.menuitemradio.hidden("Grape (radioParent)"));
   expect(getVisualState().radioParent).toBe("Orange");
   expect(log.mock.calls).toHaveLength(0);
   log.mockClear();

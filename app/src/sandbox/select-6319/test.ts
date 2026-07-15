@@ -1,0 +1,35 @@
+import { click, press, q } from "@ariakit/test";
+import { expect, test } from "vitest";
+
+// https://github.com/ariakit/ariakit/issues/6319
+// The page-freeze variant (two trailing items without value) is covered only
+// by the browser test: on the buggy code, the keydown handler loops forever
+// synchronously, which would hang the happy-dom worker instead of failing.
+test("arrow keys on the closed select skip the trailing item without value", async () => {
+  const combobox = q.combobox("Favorite color");
+  await click(combobox);
+  expect(q.option("Green")).toBeVisible();
+  await press.Escape();
+  expect(combobox).toHaveFocus();
+  expect(combobox).toHaveTextContent("Green");
+  await press.ArrowDown();
+  expect(combobox).toHaveTextContent("Blue");
+  // The only item after Blue has no value, so this should be a no-op
+  await press.ArrowDown();
+  expect(combobox).toHaveTextContent("Blue");
+  await press.ArrowUp();
+  expect(combobox).toHaveTextContent("Green");
+});
+
+test("arrow keys on the closed select with focusLoop wrap past the item without value", async () => {
+  const combobox = q.combobox("Favorite shape");
+  await click(combobox);
+  expect(q.option("Triangle")).toBeVisible();
+  await press.Escape();
+  expect(combobox).toHaveFocus();
+  expect(combobox).toHaveTextContent("Triangle");
+  // The item after Triangle has no value, so the wrap should skip it and
+  // land on the first valued item
+  await press.ArrowDown();
+  expect(combobox).toHaveTextContent("Square");
+});

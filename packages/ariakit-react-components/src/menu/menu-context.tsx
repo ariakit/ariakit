@@ -74,3 +74,11 @@ export const MenuBarScopedContextProvider = MenubarScopedContextProvider;
 export const MenuItemCheckedContext = createContext<boolean | undefined>(
   undefined,
 );
+
+/**
+ * Whether the enclosing menu list is currently hidden (e.g. a closed menu
+ * rendered without `unmountOnHide`). `MenuItem` uses it to skip registering
+ * items that aren't shown yet. Defaults to `false` so items without a menu list
+ * ancestor (such as menubar items) keep registering.
+ */
+export const MenuListHiddenContext = createContext(false);

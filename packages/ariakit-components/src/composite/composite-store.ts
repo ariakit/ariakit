@@ -11,6 +11,7 @@ import type {
 import { createCollectionStore } from "../collection/collection-store.ts";
 
 type Orientation = "horizontal" | "vertical" | "both";
+type CompositeStoreDirection = "next" | "previous" | "up" | "down";
 
 interface NextOptions extends Pick<
   Partial<CompositeStoreState>,
@@ -28,15 +29,31 @@ interface NextOptions extends Pick<
   skip?: number;
 }
 
-const NULL_ITEM = { id: null as unknown as string };
+export const NULL_ITEM = { id: null as unknown as string };
 
-function findFirstEnabledItem(items: CompositeStoreItem[], excludeId?: string) {
+/**
+ * Finds the first enabled item.
+ */
+export function findFirstEnabledItem(
+  items: CompositeStoreItem[],
+  excludeId?: string,
+) {
   return items.find((item) => {
     if (excludeId) {
       return !item.disabled && item.id !== excludeId;
     }
     return !item.disabled;
   });
+}
+
+function findLastEnabledItem(items: CompositeStoreItem[]) {
+  for (let i = items.length - 1; i >= 0; i -= 1) {
+    const item = items[i];
+    if (!item) continue;
+    if (item.disabled) continue;
+    return item;
+  }
+  return undefined;
 }
 
 function getEnabledItems(items: CompositeStoreItem[], excludeId?: string) {
@@ -52,7 +69,44 @@ function getItemsInRow(items: CompositeStoreItem[], rowId?: string) {
   return items.filter((item) => item.rowId === rowId);
 }
 
-function flipItems(
+interface FindEnabledItemIdParams {
+  items: CompositeStoreItem[];
+  fromIndex: number;
+  /** 1 to scan forward, -1 to scan backward. */
+  step: 1 | -1;
+  rowId?: string;
+  excludeId?: string;
+}
+
+function findEnabledItemId({
+  items,
+  fromIndex,
+  step,
+  rowId,
+  excludeId,
+}: FindEnabledItemIdParams) {
+  for (let i = fromIndex; i >= 0 && i < items.length; i += step) {
+    const item = items[i];
+    if (!item) continue;
+    if (item.rowId !== rowId) continue;
+    if (item.disabled) continue;
+    const itemId = item.id;
+    if (excludeId != null && itemId === excludeId) continue;
+    return itemId;
+  }
+  return undefined;
+}
+
+/**
+ * Moves all the items before the passed `id` to the end of the array. This is
+ * useful when we want to loop through the items in the same row or column as
+ * the first items will be placed after the last items.
+ *
+ * The null item that's inserted when `shouldInsertNullItem` is set to `true`
+ * represents the composite container itself. When the active item is null, the
+ * composite container has focus.
+ */
+export function flipItems(
   items: CompositeStoreItem[],
   activeId: string,
   shouldInsertNullItem = false,
@@ -65,17 +119,80 @@ function flipItems(
   ];
 }
 
-function groupItemsByRows(items: CompositeStoreItem[]) {
+// Paired benchmarks show the linear path is faster below these cutoffs.
+const rowMapItemThreshold = 48;
+const rowMapRowThreshold = 4;
+
+function groupSmallItemsByRows(items: CompositeStoreItem[]) {
   const rows: CompositeStoreItem[][] = [];
+  let previousRow: CompositeStoreItem[] | undefined;
+  let previousRowId: string | undefined;
   for (const item of items) {
-    const row = rows.find((currentRow) => currentRow[0]?.rowId === item.rowId);
+    const rowId = item.rowId;
+    if (previousRow && previousRowId === rowId) {
+      previousRow.push(item);
+      continue;
+    }
+    const row = rows.find((currentRow) => currentRow[0]?.rowId === rowId);
     if (row) {
       row.push(item);
+      previousRow = row;
     } else {
-      rows.push([item]);
+      previousRow = [item];
+      rows.push(previousRow);
+    }
+    previousRowId = rowId;
+  }
+  return rows;
+}
+
+function groupLargeItemsByRows(items: CompositeStoreItem[]) {
+  const firstItem = items[0];
+  if (!firstItem) return [];
+
+  let itemIndex = 1;
+  while (
+    itemIndex < items.length &&
+    items[itemIndex]?.rowId === firstItem.rowId
+  ) {
+    itemIndex += 1;
+  }
+  const firstRow = items.slice(0, itemIndex);
+  if (itemIndex === items.length) return [firstRow];
+
+  const rows = [firstRow];
+  let rowsById: Map<string | undefined, CompositeStoreItem[]> | undefined;
+  for (; itemIndex < items.length; itemIndex += 1) {
+    const item = items[itemIndex];
+    if (!item) continue;
+    const row = rowsById
+      ? rowsById.get(item.rowId)
+      : rows.find((currentRow) => currentRow[0]?.rowId === item.rowId);
+    if (row) {
+      row.push(item);
+      continue;
+    }
+    const newRow = [item];
+    rows.push(newRow);
+    if (rowsById) {
+      rowsById.set(item.rowId, newRow);
+    } else if (rows.length === rowMapRowThreshold) {
+      rowsById = new Map(
+        rows.map((currentRow) => [currentRow[0]?.rowId, currentRow]),
+      );
     }
   }
   return rows;
+}
+
+/**
+ * Creates a two-dimensional array with items grouped by their rowId's.
+ */
+export function groupItemsByRows(items: CompositeStoreItem[]) {
+  if (items.length >= rowMapItemThreshold) {
+    return groupLargeItemsByRows(items);
+  }
+  return groupSmallItemsByRows(items);
 }
 
 function getMaxRowLength(array: CompositeStoreItem[][]) {
@@ -201,7 +318,7 @@ export function createCompositeStore<
   );
 
   const getNextId = (
-    direction: "next" | "previous" | "up" | "down" = "next",
+    direction: CompositeStoreDirection = "next",
     options: NextOptions = {},
   ): string | null | undefined => {
     const defaultState = composite.getState();
@@ -224,6 +341,62 @@ export function createCompositeStore<
       : !rtl || isVerticalDirection;
 
     const canShift = focusShift && !skip;
+
+    // Fast path for the most common cases: moving from an active item on
+    // one-dimensional composites or within the same row on two-dimensional
+    // composites, without wrapping, shifting, or skipping. The generic logic
+    // below copies the rendered items array multiple times, which is wasteful
+    // when this function runs on every keyboard navigation event.
+    if (!skip && !focusWrap && !includesBaseElement && activeId != null) {
+      const canFastScan = !isVerticalDirection
+        ? true
+        : !canShift && !renderedItems.some((item) => item.rowId != null);
+      if (canFastScan) {
+        let activeIndex = -1;
+        if (renderedItems === defaultState.renderedItems) {
+          const firstItem = renderedItems[0];
+          // Avoid scanning twice when the rendered items were replaced with
+          // cloned or external objects that aren't in the collection map.
+          if (firstItem && collection.item(firstItem.id) === firstItem) {
+            const registeredItem = collection.item(activeId);
+            if (registeredItem?.id === activeId) {
+              activeIndex = renderedItems.indexOf(registeredItem);
+            }
+          }
+        }
+        if (activeIndex === -1) {
+          activeIndex = renderedItems.findIndex((item) => item.id === activeId);
+        }
+        const activeItem = renderedItems[activeIndex];
+        if (activeItem) {
+          const step: 1 | -1 = canReverse ? -1 : 1;
+          const nextId = findEnabledItemId({
+            items: renderedItems,
+            fromIndex: activeIndex + step,
+            step,
+            rowId: activeItem.rowId,
+            excludeId: activeId,
+          });
+          if (nextId !== undefined) return nextId;
+          const canLoop =
+            focusLoop &&
+            (isVerticalDirection
+              ? focusLoop !== "horizontal"
+              : focusLoop !== "vertical");
+          if (!canLoop) return undefined;
+          // Wrap around to the beginning (or end, when scanning backward) of
+          // the same row, matching the flipItems behavior in the generic
+          // logic below.
+          return findEnabledItemId({
+            items: renderedItems,
+            fromIndex: step === 1 ? 0 : renderedItems.length - 1,
+            step,
+            rowId: activeItem.rowId,
+            excludeId: activeId,
+          });
+        }
+      }
+    }
 
     let items = !isVerticalDirection
       ? renderedItems
@@ -316,6 +489,17 @@ export function createCompositeStore<
     return nextItem?.id;
   };
 
+  const getNextIdFromOptions = (
+    direction: CompositeStoreDirection,
+    options?: NextOptions | number,
+  ) => {
+    // Support the deprecated number overloads such as next(skip).
+    if (typeof options === "number") {
+      return getNextId(direction, { skip: options });
+    }
+    return getNextId(direction, options);
+  };
+
   return {
     ...collection,
     ...composite,
@@ -331,37 +515,12 @@ export function createCompositeStore<
     },
 
     first: () => findFirstEnabledItem(composite.getState().renderedItems)?.id,
-    last: () =>
-      findFirstEnabledItem(reverseArray(composite.getState().renderedItems))
-        ?.id,
+    last: () => findLastEnabledItem(composite.getState().renderedItems)?.id,
 
-    next: (options) => {
-      if (options !== undefined && typeof options === "number") {
-        options = { skip: options };
-      }
-      return getNextId("next", options);
-    },
-
-    previous: (options) => {
-      if (options !== undefined && typeof options === "number") {
-        options = { skip: options };
-      }
-      return getNextId("previous", options);
-    },
-
-    down: (options) => {
-      if (options !== undefined && typeof options === "number") {
-        options = { skip: options };
-      }
-      return getNextId("down", options);
-    },
-
-    up: (options) => {
-      if (options !== undefined && typeof options === "number") {
-        options = { skip: options };
-      }
-      return getNextId("up", options);
-    },
+    next: (options) => getNextIdFromOptions("next", options),
+    previous: (options) => getNextIdFromOptions("previous", options),
+    down: (options) => getNextIdFromOptions("down", options),
+    up: (options) => getNextIdFromOptions("up", options),
   };
 }
 

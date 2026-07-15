@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-utils",
-  "version": "0.1.1",
+  "version": "0.2.2",
   "description": "Ariakit React utilities",
   "keywords": [
     "ariakit",
@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@ariakit/scripts": "workspace:*",
-    "react": "19.2.6"
+    "react": "19.2.7"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0"

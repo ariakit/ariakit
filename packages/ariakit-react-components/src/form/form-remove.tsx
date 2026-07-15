@@ -6,12 +6,14 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { isTextField, invariant } from "@ariakit/utils";
+import { isTextField } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
-import { useFormContext } from "./form-context.tsx";
+import { withDefaultButtonType } from "../button/utils.ts";
+import { useFormItemContext } from "./form-context.tsx";
 import type { FormStore, FormStoreState } from "./form-store.ts";
+import { getArrayFieldIndex, isArrayFieldName } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -23,18 +25,15 @@ function findNextOrPreviousField(
   index: number,
 ) {
   const fields = items?.filter(
-    (item) => item.type === "field" && item.name.startsWith(name),
+    (item) => item.type === "field" && isArrayFieldName(item.name, name),
   );
-  const regex = new RegExp(`^${name}\\.(\\d+)`);
-  const nextField = fields?.find((field) => {
-    const fieldIndex = field.name.replace(regex, "$1");
-    return Number.parseInt(fieldIndex, 10) > index;
-  });
+  const nextField = fields?.find(
+    (field) => getArrayFieldIndex(field.name, name) > index,
+  );
   if (nextField) return nextField;
-  return fields?.reverse().find((field) => {
-    const fieldIndex = field.name.replace(regex, "$1");
-    return Number.parseInt(fieldIndex, 10) < index;
-  });
+  return fields
+    ?.reverse()
+    .find((field) => getArrayFieldIndex(field.name, name) < index);
 }
 
 function findPushButton(
@@ -62,9 +61,10 @@ function findPushButton(
  * const values = useStoreState(store, "values");
  *
  * <Form store={store}>
- *   {values.languages.map((_, i) => (
- *     <FormInput key={i} name={store.names.languages[i]} />
- *   ))}
+ *   {values.languages.map((language, i) => {
+ *     if (language == null) return null;
+ *     return <FormInput key={i} name={store.names.languages[i]} />;
+ *   })}
  *   <Role {...props}>Remove first language</Role>
  * </Form>
  * ```
@@ -77,25 +77,19 @@ export const useFormRemove = createHook<TagName, FormRemoveOptions>(
     autoFocusOnClick = true,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
-
-    invariant(
+    const { store: form, name } = useFormItemContext({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "FormRemove must be wrapped in a Form component.",
-    );
-
-    const name = String(nameProp);
+      name: nameProp,
+      component: "FormRemove",
+    });
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
       onClickProp?.(event);
       if (event.defaultPrevented) return;
-      if (!store) return;
-      store.removeValue(name, index);
+      form.removeValue(name, index);
       if (!autoFocusOnClick) return;
-      const { items } = store.getState();
+      const { items } = form.getState();
       const item = findNextOrPreviousField(items, name, index);
       const element = item?.element;
       if (element) {
@@ -136,7 +130,7 @@ export const useFormRemove = createHook<TagName, FormRemoveOptions>(
  * prop to `false`.
  * @see https://ariakit.com/components/form
  * @example
- * ```jsx {13}
+ * ```jsx {15}
  * const form = useFormStore({
  *   defaultValues: {
  *     languages: ["JavaScript", "PHP"],
@@ -146,19 +140,22 @@ export const useFormRemove = createHook<TagName, FormRemoveOptions>(
  * const values = useStoreState(form, "values");
  *
  * <Form store={form}>
- *   {values.languages.map((_, i) => (
- *     <div key={i}>
- *       <FormInput name={form.names.languages[i]} />
- *       <FormRemove name={form.names.languages} index={i} />
- *     </div>
- *   ))}
+ *   {values.languages.map((language, i) => {
+ *     if (language == null) return null;
+ *     return (
+ *       <div key={i}>
+ *         <FormInput name={form.names.languages[i]} />
+ *         <FormRemove name={form.names.languages} index={i} />
+ *       </div>
+ *     );
+ *   })}
  * </Form>
  * ```
  */
 export const FormRemove = forwardRef(function FormRemove(
   props: FormRemoveProps,
 ) {
-  const htmlProps = useFormRemove(props);
+  const htmlProps = useFormRemove(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

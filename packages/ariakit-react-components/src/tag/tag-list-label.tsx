@@ -1,15 +1,15 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useId,
   useMergeRefs,
   createElement,
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Options, Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
-import type { CompositeOptions } from "../composite/composite.tsx";
 import { useTagContext } from "./tag-context.tsx";
 import type { TagStore } from "./tag-store.ts";
 
@@ -37,7 +37,9 @@ export const useTagListLabel = createHook<TagName, TagListLabelOptions>(
     );
 
     const id = useId(props.id);
-    const htmlFor = useStoreState(store, (state) => state.inputElement?.id);
+    const inputElement = useStoreState(store, "inputElement");
+    useAttribute(inputElement, "id");
+    const htmlFor = inputElement?.id;
 
     props = {
       htmlFor,
@@ -84,8 +86,8 @@ export const TagListLabel = forwardRef(function TagListLabel(
 });
 
 export interface TagListLabelOptions<
-  T extends ElementType = TagName,
-> extends CompositeOptions<T> {
+  _T extends ElementType = TagName,
+> extends Options {
   /**
    * Object returned by the
    * [`useTagStore`](https://ariakit.com/reference/use-tag-store) hook. If not

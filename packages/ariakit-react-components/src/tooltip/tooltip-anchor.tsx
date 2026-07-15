@@ -1,5 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useEvent,
   createElement,
   createHook,
@@ -81,12 +82,13 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
 
     useEffect(() => {
       if (!store) return;
+      const removeStore = createRemoveStoreCallback(store);
       return chain(
         // Immediately remove the current store from the global store when
         // the component unmounts. This is useful, for example, to avoid
         // showing tooltips immediately on serial tests.
-        createRemoveStoreCallback(store),
-        sync(store, ["mounted", "skipTimeout"], (state) => {
+        removeStore,
+        sync(store, ["mounted"], (state) => {
           if (!store) return;
           // If the current tooltip is open, we should immediately hide the
           // active one and set the current one as the active tooltip. If a
@@ -105,10 +107,9 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
           // timeout to hide the active tooltip in the global store. This is so
           // we can show other tooltips without a delay when there's already an
           // active tooltip (see the showOnHover method below).
-          const id = setTimeout(
-            createRemoveStoreCallback(store),
-            state.skipTimeout,
-          );
+          // Read skipTimeout lazily because this sync only subscribes to
+          // mounted.
+          const id = setTimeout(removeStore, store.getState().skipTimeout);
           return () => clearTimeout(id);
         }),
       );
@@ -150,12 +151,16 @@ export const useTooltipAnchor = createHook<TagName, TooltipAnchorOptions>(
       }
     });
 
-    const type = useStoreState(store, "type");
-    const contentId = useStoreState(store, (state) => state.contentElement?.id);
+    const labelElement = useStoreState(
+      store,
+      ["type", "contentElement"],
+      (state) => (state.type === "label" ? state.contentElement : null),
+    );
+    useAttribute(labelElement, "id");
+    const labelledBy = labelElement?.id;
 
     props = {
-      "aria-labelledby":
-        type === "label" && props["aria-label"] == null ? contentId : undefined,
+      "aria-labelledby": props["aria-label"] == null ? labelledBy : undefined,
       ...props,
       onMouseEnter,
       onFocusVisible,

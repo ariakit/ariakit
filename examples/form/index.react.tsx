@@ -4,7 +4,7 @@ import "./style.css";
 export default function Example() {
   const form = Ariakit.useFormStore({ defaultValues: { name: "", email: "" } });
 
-  form.useSubmit(async (state) => {
+  Ariakit.useFormSubmit(form, async (state) => {
     alert(JSON.stringify(state.values));
   });
 

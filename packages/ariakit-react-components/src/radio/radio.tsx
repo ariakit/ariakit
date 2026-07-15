@@ -67,13 +67,14 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   const ref = useRef<HTMLType>(null);
   const isChecked = useStoreState(
     store,
+    ["value"],
     (state) => checked ?? getIsChecked(value, state?.value),
   );
 
   // Use the store's id as the default name to ensure radios in different
   // groups have unique names. This prevents the browser from treating all
   // radios as a single group. See https://github.com/ariakit/ariakit/issues/3833
-  const storeId = useStoreState(store, (state) => state?.id);
+  const storeId = useStoreState(store, "id");
   const name = nameProp ?? storeId;
 
   // When the radio store has a default value, we need to update the active id
@@ -146,11 +147,20 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     onFocusProp?.(event);
     if (event.defaultPrevented) return;
     if (!nativeRadio) return;
+    if (disabled) return;
     if (!store) return;
     const { moves, activeId } = store.getState();
     if (!moves) return;
     if (id && activeId !== id) return;
-    onChange(event);
+    // The composite keydown handler calls preventDefault() before moving
+    // focus, which suppresses the browser's native check-on-arrow-key
+    // behavior. Replay that activation with a real click so React delivers an
+    // actual change event with checked already set, going through its
+    // controlled input state restoration. The checked guard keeps no-op focus
+    // events, such as tabbing back to the checked radio, from dispatching
+    // spurious clicks. See https://github.com/ariakit/ariakit/issues/6345
+    if (event.currentTarget.checked) return;
+    event.currentTarget.click();
   });
 
   props = {

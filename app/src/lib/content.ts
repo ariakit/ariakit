@@ -8,8 +8,8 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { invariant } from "@ariakit/utils";
-import { createMarkdownProcessor } from "@astrojs/markdown-remark";
-import type { MarkdownProcessor, RehypePlugin } from "@astrojs/markdown-remark";
+import { unified as createUnifiedProcessor } from "@astrojs/markdown-remark";
+import type { MarkdownRenderer, RehypePlugin } from "@astrojs/markdown-remark";
 import type { CollectionEntry } from "astro:content";
 import { toText } from "hast-util-to-text";
 import rehypeParse from "rehype-parse";
@@ -127,28 +127,43 @@ export function filterPreviews(
   return hasPreviews ? previewsOrParams.filter(filter) : filter;
 }
 
-let markdownProcessor: MarkdownProcessor | null = null;
+let markdownRenderer: MarkdownRenderer | null = null;
 
-async function getMarkdownProcessor() {
-  if (markdownProcessor) {
-    return markdownProcessor;
+async function getMarkdownRenderer() {
+  if (markdownRenderer) {
+    return markdownRenderer;
   }
-  markdownProcessor = await createMarkdownProcessor({
-    syntaxHighlight: false,
+  markdownRenderer = await createUnifiedProcessor({
     rehypePlugins: [
       [
         rehypeAsTagName as RehypePlugin,
         { tags: ["h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol"] },
       ],
     ],
+  }).createRenderer({
+    syntaxHighlight: false,
   });
-  return markdownProcessor;
+  return markdownRenderer;
 }
 
-export async function markdownToHtml(markdownString: string) {
-  const processor = await getMarkdownProcessor();
-  const result = await processor.render(markdownString);
-  return result.code;
+// Rendering markdown is a pure text transform, and reference descriptions
+// repeat heavily (inherited props share docs across components and
+// frameworks), so memoizing by source string collapses thousands of renders
+// into a few hundred unique ones.
+const markdownHtmlCache = new Map<string, Promise<string>>();
+
+export function markdownToHtml(markdownString: string) {
+  const cached = markdownHtmlCache.get(markdownString);
+  if (cached) return cached;
+  const promise = (async () => {
+    const renderer = await getMarkdownRenderer();
+    const result = await renderer.render(markdownString);
+    return result.code;
+  })();
+  markdownHtmlCache.set(markdownString, promise);
+  // Drop rejected renders so a transient failure is not cached forever.
+  promise.catch(() => markdownHtmlCache.delete(markdownString));
+  return promise;
 }
 
 function unwrapContentLinks(markdown: string) {

@@ -1,4 +1,3 @@
-import { createStore } from "@ariakit/store";
 import type { Store, StoreProps } from "@ariakit/store";
 import { defaultValue } from "@ariakit/utils";
 import type {
@@ -16,7 +15,7 @@ export function createMenubarStore(
 ): MenubarStore {
   const syncState = props.store?.getState();
 
-  const composite = createCompositeStore({
+  return createCompositeStore({
     ...props,
     orientation: defaultValue(
       props.orientation,
@@ -25,17 +24,6 @@ export function createMenubarStore(
     ),
     focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
   });
-
-  const initialState: MenubarStoreState = {
-    ...composite.getState(),
-  };
-
-  const menubar = createStore(initialState, composite, props.store);
-
-  return {
-    ...composite,
-    ...menubar,
-  };
 }
 
 export interface MenubarStoreState extends CompositeStoreState {}

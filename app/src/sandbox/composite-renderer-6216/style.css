@@ -1,0 +1,19 @@
+/* Each rendered row and group is exactly one row tall, so the renderer measures
+   the horizontal group's height from this element instead of the sum of the
+   columns' widths. */
+.row,
+.group {
+  box-sizing: border-box;
+  display: block;
+  height: 40px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  appearance: none;
+}
+
+.group {
+  overflow: hidden;
+  white-space: nowrap;
+}

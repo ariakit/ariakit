@@ -1,15 +1,10 @@
 import "@testing-library/jest-dom/vitest";
-import { render as renderReact } from "@ariakit/test/react";
 import * as matchers from "@testing-library/jest-dom/matchers";
 import { createElement, Suspense as ReactSuspense } from "react";
-import {
-  createComponent,
-  render as renderSolid,
-  Suspense as SolidSuspense,
-} from "solid-js/web";
 import { expect, beforeEach } from "vitest";
 import failOnConsole from "vitest-fail-on-console";
-import type { AllowedTestLoader } from "./vitest.config.ts";
+import { getTestLoader, isAllowedTestLoader } from "./test-loader.ts";
+import type { AllowedTestLoader } from "./test-loader.ts";
 
 failOnConsole();
 
@@ -52,6 +47,7 @@ async function tryImport(path: string) {
 }
 
 async function loadReact(dir: string) {
+  const { render } = await import("@ariakit/test/react");
   const { component, failedImport } = await tryImport(
     `./${dir}/index.react.tsx`,
   );
@@ -61,20 +57,21 @@ async function loadReact(dir: string) {
     // oxlint-disable-next-line react/no-children-prop -- createElement requires children prop
     children: createElement(component),
   });
-  const { unmount } = await renderReact(element, { strictMode: true });
+  const { unmount } = await render(element, { strictMode: true });
   return unmount;
 }
 
 async function loadSolid(dir: string) {
+  const { createComponent, render, Suspense } = await import("solid-js/web");
   const { component, failedImport } = await tryImport(
     `./${dir}/index.solid.tsx`,
   );
   if (failedImport) return false;
   const div = document.createElement("div");
   document.body.appendChild(div);
-  const dispose = renderSolid(
+  const dispose = render(
     () =>
-      createComponent(SolidSuspense, {
+      createComponent(Suspense, {
         fallback: null,
         get children() {
           return createComponent(component, {});
@@ -103,7 +100,7 @@ Example/test naming conventions:
 <example name>/
   index.<react|solid>.tsx        - example, the loader is optional and defaults to "react"
   test.ts                        - test, runs for all loaders
-  test.<react|solid>.ts          - test, runs only for the specified loader
+  <react|solid>.test.ts          - test, runs only for the specified loader
 
 Note: test files can also be named `test-<browser target>.` instead of `test.` to run with Playwright. Available targets are:
 
@@ -120,26 +117,32 @@ Note: test files can also be named `test-<browser target>.` instead of `test.` t
 function parseTest(filename?: string) {
   if (!filename) return false;
   const match = filename.match(
-    /^(?<dir>(?:.*\/)?(?:examples|sandbox)\/.+?)\/test\.((?<loader>react|solid)\.)?ts$/,
+    /^(?<dir>(?:.*\/)?(?:examples|sandbox)\/.+?)\/((?<loader>react|solid)\.)?test\.ts$/,
   );
   if (!match?.groups) return false;
   const { dir, loader } = match.groups;
   if (!dir) return false;
+  if (loader && !isAllowedTestLoader(loader)) return false;
   return {
     dir,
-    loader: (loader ?? "all") as AllowedTestLoader | "all",
+    loader: loader ?? "all",
   };
 }
-
-const LOADER = (process.env.ARIAKIT_TEST_LOADER ??
-  "react") as AllowedTestLoader;
 
 beforeEach(async ({ task, skip }) => {
   const parseResult = parseTest(task.file?.name);
   if (!parseResult) return;
-  const { dir, loader } = parseResult;
-  if (loader !== "all" && loader !== LOADER) skip();
-  const result = await LOADERS[LOADER](dir);
+  const loader = getTestLoader();
+  if (!loader) {
+    skip();
+    return;
+  }
+  const { dir, loader: testLoader } = parseResult;
+  if (testLoader !== "all" && testLoader !== loader) {
+    skip();
+    return;
+  }
+  const result = await LOADERS[loader](dir);
   if (result === false) skip();
   return result;
 });

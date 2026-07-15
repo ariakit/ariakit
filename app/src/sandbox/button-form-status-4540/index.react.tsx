@@ -21,15 +21,14 @@ function NativeButton({
   ...props
 }: NativeButtonProps) {
   const { pending } = useFormStatus();
-  if (accessibleWhenDisabled) {
-    props["aria-disabled"] = pending;
-  } else {
-    props.disabled = pending;
-  }
+  const disabledProps = accessibleWhenDisabled
+    ? { "aria-disabled": pending }
+    : { disabled: pending };
   return (
     <button
       type="submit"
       {...props}
+      {...disabledProps}
       onClick={(event) => {
         if (accessibleWhenDisabled && pending) {
           event.preventDefault();
@@ -70,6 +69,11 @@ export default function Example() {
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <Form label="AriakitButton">
         <AriakitButton>AriakitButton</AriakitButton>
+      </Form>
+      <Form label="AriakitButton rendered submit">
+        <AriakitButton type="button" render={<button type="submit" />}>
+          AriakitButton rendered submit
+        </AriakitButton>
       </Form>
       <Form label="AriakitButton focusable">
         <AriakitButton accessibleWhenDisabled onClick={countClicks}>

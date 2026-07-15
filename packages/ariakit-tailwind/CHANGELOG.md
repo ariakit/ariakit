@@ -1,5 +1,33 @@
 # @ariakit/tailwind
 
+## 0.2.6
+
+- Expanded the README with a material mental model and practical examples for composing layers, interactive states, frames, and contextual colors, and corrected the v0.2 contrast migration guidance.
+
+## 0.2.5
+
+### Frame covers support RTL rows
+
+Fixed `ak-frame-cover` to apply stretch margins and corner rounding to the correct logical sides in RTL rows.
+
+Since `ak-frame-cover` now uses logical CSS properties, override its stretch margin with axis or side utilities such as `mx-*`, `my-*`, `ms-*`, or `me-*` instead of the bare `m-*` shorthand on the same element. Covers should also inherit their frame's `dir` and `writing-mode`; apply direction changes inside the cover when the content needs a different flow.
+
+### Other updates
+
+- Fixed `ak-light-high:` to match layers at the exact lightness boundary shared with `ak-light-low:`.
+- Fixed `ak-layer-push-*` and `ak-state-push-*` in `@ariakit/tailwind` to escape the forbidden lightness band based on the current layer, regardless of the parent layer.
+
+## 0.2.4
+
+### Improved `ak-layer`, `ak-edge`, and `ak-text` style recalculation performance
+
+Layer and edge colors now resolve fewer intermediate colors per element. In browsers that support the CSS `if()` function, `ak-text` delivers its quantized lightness table as four conditional declarations instead of one rule per quantized step, which removes most of its selector matching work — especially under child variants such as `*:ak-text`.
+
+## 0.2.3
+
+- Made the `--ak-edge` CSS custom property inheriting so descendants of an `.ak-layer` element can read it directly.
+- Improved the rendering performance of the layer utilities by reducing redundant per-element style work in the generated CSS.
+
 ## 0.2.2
 
 - Fixed `ak-edge-inherit` and `ak-frame-bordering-inherit` to inherit from the nearest ancestor that explicitly configures a frame border, ring, or bordering width.

@@ -12,6 +12,7 @@ import { Type } from "./lib.ts";
 type BlockChild = AtRule["children"][number];
 type DeclarationNode = Extract<BlockChild, { type: Type["Declaration"] }>;
 type OutputNode = CustomProperty | CustomVariant | BlockChild | Var;
+type RenderableOutputNode = Exclude<OutputNode, Var>;
 type IdentifierType = Type["Var"] | Type["CustomProperty"];
 
 const INDENT = "  ";
@@ -113,11 +114,6 @@ function renderCustomVariant(variant: CustomVariant, depth: number) {
   );
 }
 
-function renderVar(_variable: Var): string {
-  // Vars are references used inside values, not standalone CSS statements.
-  return "";
-}
-
 function renderBlockChild(child: BlockChild, depth: number) {
   switch (child.type) {
     case Type.Declaration:
@@ -133,10 +129,8 @@ function renderBlockChild(child: BlockChild, depth: number) {
   }
 }
 
-function renderNode(node: OutputNode, depth: number): string {
+function renderNode(node: RenderableOutputNode, depth: number): string {
   switch (node.type) {
-    case Type.Var:
-      return renderVar(node);
     case Type.CustomProperty:
       return renderCustomProperty(node, depth);
     case Type.CustomVariant:
@@ -148,6 +142,12 @@ function renderNode(node: OutputNode, depth: number): string {
     default:
       return assertNever(node);
   }
+}
+
+function isRenderableOutputNode(
+  node: OutputNode,
+): node is RenderableOutputNode {
+  return node.type !== Type.Var;
 }
 
 function assertNever(value: never): never {
@@ -249,8 +249,8 @@ function assertUniqueIdentifiers(nodes: OutputNode[]) {
 export function output(nodes: OutputNode[] = input) {
   assertUniqueIdentifiers(nodes);
   const css = nodes
+    .filter(isRenderableOutputNode)
     .map((node) => renderNode(node, 0))
-    .filter((value) => value.length > 0)
     .join("\n\n")
     .trim();
   return `${css}\n`;

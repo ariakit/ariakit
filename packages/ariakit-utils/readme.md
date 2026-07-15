@@ -41,6 +41,8 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`getWindow`](#getwindow)
   - [`getActiveElement`](#getactiveelement)
   - [`contains`](#contains)
+  - [`isElement`](#iselement)
+  - [`isNode`](#isnode)
   - [`isFrame`](#isframe)
   - [`isButton`](#isbutton)
   - [`isVisible`](#isvisible)
@@ -49,6 +51,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`getTextboxValue`](#gettextboxvalue)
   - [`getTextboxSelection`](#gettextboxselection)
   - [`getPopupRole`](#getpopuprole)
+  - [`getItemRoleByPopupRole`](#getitemrolebypopuprole)
   - [`getPopupItemRole`](#getpopupitemrole)
   - [`scrollIntoViewIfNeeded`](#scrollintoviewifneeded)
   - [`getScrollingElement`](#getscrollingelement)
@@ -67,6 +70,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`fireClickEvent`](#fireclickevent)
   - [`isFocusEventOutside`](#isfocuseventoutside)
   - [`getInputType`](#getinputtype)
+  - [`isInputEvent`](#isinputevent)
   - [`queueBeforeEvent`](#queuebeforeevent)
   - [`addGlobalEventListener`](#addglobaleventlistener)
 - [Focus utilities](#focus-utilities)
@@ -307,6 +311,52 @@ contains(document.getElementById("parent"), document.getElementById("child"));
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
+#### `isElement`
+
+```ts
+function isElement(target: EventTarget | null | undefined): target is Element;
+```
+
+Checks whether the given event target is an element.
+
+`event.target` and `event.relatedTarget` are `EventTarget`s, which aren't necessarily elements — for example `window` or an `XMLHttpRequest` when an event is dispatched programmatically. Calling `Element`-only methods such as `hasAttribute` on those throws, so guard with this before treating them as elements. When you only need a `Node` — for example to call `contains` — use `isNode` instead.
+
+It tests `nodeType` rather than `instanceof Element` so that elements coming from same-origin child frames (which `addGlobalEventListener` also listens on) aren't wrongly rejected for belonging to a different realm.
+
+Example:
+
+```ts
+if (isElement(event.target)) {
+  event.target.hasAttribute("data-active");
+}
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `isNode`
+
+```ts
+function isNode(target: EventTarget | null | undefined): target is Node;
+```
+
+Checks whether the given event target is a node.
+
+Like `isElement`, but only requires the target to be a `Node` rather than an element — useful before calling `contains`, which accepts any node. It still rejects non-node `EventTarget`s (such as `window` or an `XMLHttpRequest`) that would make `contains` throw.
+
+Example:
+
+```ts
+if (isNode(event.target)) {
+  contains(element, event.target);
+}
+```
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `isFrame`
 
 ```ts
@@ -425,6 +475,18 @@ function getPopupRole(
 ```
 
 Returns the popup role from the element's role attribute, if it has one.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `getItemRoleByPopupRole`
+
+```ts
+function getItemRoleByPopupRole(popupRole?: string | null): string | undefined;
+```
+
+Returns the item role based on the popup role.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
@@ -721,6 +783,18 @@ Returns the `inputType` property of the event, if available.
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
+#### `isInputEvent`
+
+```ts
+function isInputEvent(event: Event): event is InputEvent;
+```
+
+Checks whether the event is an input event.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
 #### `queueBeforeEvent`
 
 ```ts
@@ -1000,7 +1074,7 @@ Returns the previous tabbable element in `container`.
 
 ```ts
 function getPreviousTabbable(
-  fallbackToFirst?: boolean,
+  fallbackToLast?: boolean,
   fallbackToFocusable?: boolean,
 ): HTMLElement | null;
 ```
@@ -1685,11 +1759,13 @@ ToPrimitive<1>;
 
 ```ts
 type PickByValue<T, Value> = {
-  [K in keyof T as [Value] extends [T[K]]
-    ? T[K] extends Value | undefined
-      ? K
+  [
+    K in keyof T as [Value] extends [T[K]]
+      ? T[K] extends Value | undefined
+        ? K
+        : never
       : never
-    : never]: T[K];
+  ]: T[K];
 };
 ```
 

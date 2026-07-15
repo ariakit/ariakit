@@ -14,17 +14,6 @@ import * as Base from "./combobox-item.tsx";
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
-const itemRoleByPopupRole = {
-  menu: "menuitem",
-  listbox: "option",
-  tree: "treeitem",
-};
-
-function getItemRole(popupRole?: string) {
-  const key = popupRole as keyof typeof itemRoleByPopupRole;
-  return itemRoleByPopupRole[key] ?? "option";
-}
-
 export function useComboboxItemOffscreen<
   T extends ElementType,
   // oxlint-disable-next-line no-unnecessary-type-parameters
@@ -39,7 +28,7 @@ export function useComboboxItemOffscreen<
   if (!offscreenProps.active) {
     return {
       ...offscreenProps,
-      role: getItemRole(popupRole),
+      role: Base.getItemRole(popupRole),
     };
   }
 
@@ -60,17 +49,28 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
   if (active) {
     return <Base.ComboboxItem {...allProps} />;
   }
-  // Remove ComboboxItem props
+  // Remove ComboboxItem props. Custom renders own their native disabled state.
   const {
     store,
     value,
+    disabled,
+    shouldRegisterItem,
+    rowId,
     hideOnClick,
     setValueOnClick,
     selectValueOnClick,
     resetValueOnSelect,
+    preventScrollOnKeyDown,
     focusOnHover,
     blurOnHoverEnd,
     moveOnKeyPress,
+    tabbable,
+    clickOnEnter,
+    clickOnSpace,
+    focusable,
+    accessibleWhenDisabled,
+    autoFocus,
+    onFocusVisible,
     getItem,
     ...htmlProps
   } = allProps;

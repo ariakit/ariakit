@@ -3,13 +3,62 @@ import {
   isVisible,
   getClosestFocusable,
   isFocusable,
+  isTextbox,
   invariant,
 } from "@ariakit/utils";
-import { wrapAsync } from "./__utils.ts";
+import { setPreventMouseEvents, wrapAsync } from "./__utils.ts";
 import { blur } from "./blur.ts";
 import { dispatch } from "./dispatch.ts";
 import { focus } from "./focus.ts";
 
+const selectionClearingInputTypes = [
+  "date",
+  "datetime-local",
+  "email",
+  "month",
+  "number",
+  "password",
+  "search",
+  "tel",
+  "text",
+  "time",
+  "url",
+  "week",
+];
+
+function preservesSelectionOnMouseDown(element: Element) {
+  const control = element.closest("button,input,select,a[href]");
+  if (control instanceof HTMLButtonElement) return true;
+  if (control instanceof HTMLSelectElement) return true;
+  if (control?.tagName.toLowerCase() === "a") return true;
+  if (control instanceof HTMLInputElement) {
+    return !selectionClearingInputTypes.includes(control.type);
+  }
+  return false;
+}
+
+function shouldClearSelection(element: Element) {
+  if (element instanceof HTMLElement && isTextbox(element)) {
+    return true;
+  }
+  return !preservesSelectionOnMouseDown(element);
+}
+
+/**
+ * Presses the primary pointer button down on an element, firing `pointerdown` and
+ * `mousedown` and moving focus the way a browser would. Disabled elements still
+ * receive `pointerdown` but not `mousedown`, and focus falls back to the closest
+ * focusable ancestor when the target itself isn't focusable.
+ *
+ * This is one step of a full `click`; use it directly to test press-and-hold
+ * behavior. Pass `options` to set event properties such as modifier keys.
+ * @example
+ * ```ts
+ * await mouseDown(q.button("Resize"));
+ * // ...assert the press state, then release:
+ * await mouseUp(q.button("Resize"));
+ * ```
+ */
 export function mouseDown(element: Element | null, options?: PointerEventInit) {
   return wrapAsync(async () => {
     invariant(element, "Unable to mouseDown on null element");
@@ -18,9 +67,12 @@ export function mouseDown(element: Element | null, options?: PointerEventInit) {
 
     const { disabled } = element as HTMLButtonElement;
 
-    let defaultAllowed = await dispatch.pointerDown(element, options);
+    const pointerDefaultAllowed = await dispatch.pointerDown(element, options);
+    setPreventMouseEvents(getDocument(element), !pointerDefaultAllowed);
 
-    if (!disabled) {
+    let defaultAllowed = pointerDefaultAllowed;
+
+    if (!disabled && pointerDefaultAllowed) {
       // Mouse events are not called on disabled elements
       if (!(await dispatch.mouseDown(element, { detail: 1, ...options }))) {
         defaultAllowed = false;
@@ -30,11 +82,10 @@ export function mouseDown(element: Element | null, options?: PointerEventInit) {
     // Do not enter this if event.preventDefault() has been called on
     // pointerdown or mousedown.
     if (defaultAllowed) {
-      // Remove current selection
       const selection = getDocument(element).getSelection();
       if (selection?.rangeCount) {
         const range = selection.getRangeAt(0);
-        if (!range.collapsed) {
+        if (!range.collapsed && shouldClearSelection(element)) {
           selection.removeAllRanges();
         }
       }

@@ -1,6 +1,7 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { PopoverDismissOptions } from "../popover/popover-dismiss.tsx";
 import { usePopoverDismiss } from "../popover/popover-dismiss.tsx";
 import { useSelectScopedContext } from "./select-context.tsx";
@@ -55,7 +56,7 @@ export const useSelectDismiss = createHook<TagName, SelectDismissOptions>(
 export const SelectDismiss = forwardRef(function SelectDismiss(
   props: SelectDismissProps,
 ) {
-  const htmlProps = useSelectDismiss(props);
+  const htmlProps = useSelectDismiss(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

@@ -9,9 +9,9 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import PageCard from "#app/components/page-card.astro";
+import { getCachedCollection } from "#app/lib/collection-cache.ts";
 import { filterPreviews } from "#app/lib/content.ts";
 import type { Framework } from "#app/lib/schemas.ts";
-import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import pluralize from "pluralize";
 
@@ -22,12 +22,11 @@ interface Props {
 
 const { entry, framework = Astro.locals.framework } = Astro.props;
 
-const examples = await getCollection("examples", (example) =>
+const examples = (await getCachedCollection("examples")).filter((example) =>
   example.data.components.some((c) => c.id === entry.id)
 );
 
-const previews = await getCollection(
-  "previews",
+const previews = (await getCachedCollection("previews")).filter(
   filterPreviews({ framework, entries: [...examples, entry] })
 );
 

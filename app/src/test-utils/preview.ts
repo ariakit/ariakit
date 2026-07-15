@@ -1,10 +1,14 @@
-import { readdirSync } from "node:fs";
 import { relative, resolve } from "node:path";
 import { query } from "@ariakit/test/playwright";
 import { errors } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import { frameworks, getIndexFile } from "#app/lib/frameworks.ts";
-import { keys } from "#app/lib/object.ts";
+import { isInDirectory, toPosixPath } from "#app/lib/paths.ts";
+import { previewConfig } from "#app/lib/preview-config.ts";
+import {
+  getPreviewFrameworksSync,
+  resolvePreviewRoots,
+} from "#app/lib/preview-discovery.ts";
+import type { Framework } from "#app/lib/schemas.ts";
 import { test } from "./fixtures.ts";
 
 /**
@@ -19,7 +23,7 @@ import { test } from "./fixtures.ts";
  *
  * Kept in sync with the copy in `packages/ariakit-scripts/src/perf.ts`.
  */
-async function gotoAndSettle(page: Page, url: string) {
+export async function gotoAndSettle(page: Page, url: string) {
   await page.goto(url, { waitUntil: "load" });
   await page
     .waitForLoadState("networkidle", { timeout: 5_000 })
@@ -28,32 +32,42 @@ async function gotoAndSettle(page: Page, url: string) {
     });
 }
 
-const SRC_DIR = resolve(import.meta.dirname, "..");
-
-function getPreviewId(dirname: string) {
-  const relativeDir = relative(SRC_DIR, dirname);
-  const [kind, ...idParts] = relativeDir.split(/[\\/]/);
-  if (kind !== "examples" && kind !== "sandbox") return null;
-  if (!idParts.length) return null;
-  return idParts.join("/");
+/** Waits for animation frames in the page so effects can settle. */
+export function flushFrames(page: Page, frames = 2) {
+  return page.evaluate(
+    (frameCount) =>
+      new Promise<void>((resolve) => {
+        const tick = () => {
+          if (frameCount-- <= 0) {
+            resolve();
+            return;
+          }
+          requestAnimationFrame(tick);
+        };
+        tick();
+      }),
+    frames,
+  );
 }
 
-function getPreviewFramworks(dirname: string) {
-  const files = readdirSync(dirname);
-  const frameworkNames: (keyof typeof frameworks)[] = [];
-  for (const framework of keys(frameworks)) {
-    const indexFile = getIndexFile(framework);
-    if (indexFile && files.includes(indexFile)) {
-      frameworkNames.push(framework);
-    }
+const SRC_DIR = resolve(import.meta.dirname, "..");
+const previewRoots = resolvePreviewRoots({ ...previewConfig, srcDir: SRC_DIR });
+
+function getPreviewId(dirname: string) {
+  const dir = resolve(dirname);
+  for (const root of previewRoots) {
+    if (!isInDirectory(dir, root.dir)) continue;
+    const id = toPosixPath(relative(root.dir, dir));
+    if (!id) return null;
+    return id;
   }
-  return frameworkNames;
+  return null;
 }
 
 interface WithFrameworkCallbackParams {
   id: string;
   test: typeof test;
-  framework: keyof typeof frameworks;
+  framework: Framework;
   query: typeof query;
 }
 
@@ -65,9 +79,9 @@ export function withFramework(
   if (!id) {
     throw new Error(`Cannot parse preview id from ${dirname}`);
   }
-  const frameworkNames = id.includes("nextjs")
-    ? (["react"] as const)
-    : getPreviewFramworks(dirname);
+  const frameworkNames: readonly Framework[] = id.includes("nextjs")
+    ? ["react"]
+    : getPreviewFrameworksSync(dirname);
   for (const framework of frameworkNames) {
     test.describe(framework, { tag: `@${framework}` }, () => {
       test.beforeEach(async ({ page }) => {

@@ -60,7 +60,7 @@ export const useMenubar = createHook<TagName, MenubarOptions>(
       rtl,
     });
 
-    const orientation = useStoreState(store, (state) =>
+    const orientation = useStoreState(store, ["orientation"], (state) =>
       !composite || state.orientation === "both"
         ? undefined
         : state.orientation,

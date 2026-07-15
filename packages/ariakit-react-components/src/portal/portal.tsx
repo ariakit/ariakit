@@ -1,4 +1,5 @@
 import {
+  useLiveRef,
   useMergeRefs,
   useSafeLayoutEffect,
   useWrapElement,
@@ -32,7 +33,8 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 function getRootElement(element?: Element | null) {
   const doc = getDocument(element);
   const { fullscreenElement } = doc;
-  if (fullscreenElement instanceof HTMLElement) {
+  const HTMLElementClass = doc.defaultView?.HTMLElement;
+  if (HTMLElementClass && fullscreenElement instanceof HTMLElementClass) {
     return fullscreenElement;
   }
   return doc.body;
@@ -61,6 +63,29 @@ function queueFocus(element?: HTMLElement | null) {
   queueMicrotask(() => {
     element?.focus();
   });
+}
+
+interface AttachedPortalRef {
+  ref: PortalOptions["portalRef"];
+  node: HTMLElement;
+  cleanup: void | (() => void);
+}
+
+function attachPortalRef(
+  ref: PortalOptions["portalRef"],
+  node: HTMLElement,
+): AttachedPortalRef {
+  return { ref, node, cleanup: setRef(ref, node) };
+}
+
+function detachPortalRef(attached: AttachedPortalRef) {
+  // Preserve React 19 callback ref cleanup semantics. Otherwise, detach the
+  // ref with null like any other React ref.
+  if (typeof attached.cleanup === "function") {
+    attached.cleanup();
+  } else {
+    setRef(attached.ref, null);
+  }
 }
 
 /**
@@ -93,6 +118,11 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
   const innerAfterRef = useRef<HTMLSpanElement>(null);
   const outerAfterRef = useRef<HTMLSpanElement>(null);
 
+  const portalRefProp = useLiveRef(portalRef);
+  // Tracks the currently attached portalRef so the two effects below can
+  // detach and re-attach it without sharing dependencies.
+  const attachedPortalRefRef = useRef<AttachedPortalRef | null>(null);
+
   // Create the portal node and attach it to the DOM.
   useSafeLayoutEffect(() => {
     const element = ref.current;
@@ -117,18 +147,40 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
       // produce predictable results.
       portalEl.id = element.id ? `portal/${element.id}` : getRandomId();
     }
-    // Set the internal portal node state and the portalRef prop.
+    // Set the internal portal node state and attach the portalRef prop. The
+    // ref is read through a live ref so its identity is not a dependency of
+    // this effect: a portalRef identity change must not recreate the portal
+    // node. The effect below re-fires the ref in that case.
     setPortalNode(portalEl);
-    setRef(portalRef, portalEl);
-    // If the portal element was already in the document, we don't need to
-    // remove it when the element is unmounted, so we just return.
-    if (isPortalInDocument) return;
-    // Otherwise, we need to remove the portal from the DOM.
+    attachedPortalRefRef.current = attachPortalRef(
+      portalRefProp.current,
+      portalEl,
+    );
     return () => {
-      portalEl.remove();
-      setRef(portalRef, null);
+      const attached = attachedPortalRefRef.current;
+      // Detach the portalRef first so ref cleanups still observe a connected
+      // portal node.
+      if (attached) {
+        attachedPortalRefRef.current = null;
+        detachPortalRef(attached);
+      }
+      // Connected portals keep their DOM node.
+      if (!isPortalInDocument) {
+        portalEl.remove();
+      }
     };
-  }, [portal, portalElement, context, portalRef]);
+  }, [portal, portalElement, context]);
+
+  // Re-fire the portalRef against the same portal node when only its identity
+  // changes (e.g. an inline callback on a parent re-render), mirroring how
+  // React re-fires element refs without recreating the DOM node.
+  useSafeLayoutEffect(() => {
+    const attached = attachedPortalRefRef.current;
+    if (!attached) return;
+    if (attached.ref === portalRef) return;
+    detachPortalRef(attached);
+    attachedPortalRefRef.current = attachPortalRef(portalRef, attached.node);
+  }, [portalRef]);
 
   // Move the portal node when fullscreen state changes so it stays visible.
   useEffect(() => {
@@ -144,8 +196,12 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
     };
     // Sync immediately in case fullscreen was entered before this effect
     // ran, which can happen if the portal mounts while already in
-    // fullscreen mode.
-    onFullscreenChange();
+    // fullscreen mode. Skip when the captured node is already disconnected,
+    // which happens for a StrictMode cleanup node whose layout cleanup
+    // already removed it.
+    if (portalNode.isConnected) {
+      onFullscreenChange();
+    }
     doc.addEventListener("fullscreenchange", onFullscreenChange);
     return () => {
       doc.removeEventListener("fullscreenchange", onFullscreenChange);
@@ -232,7 +288,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
 
       element = (
         <>
-          {preserveTabOrder && portalNode && (
+          {preserveTabOrder && (
             <FocusTrap
               ref={innerBeforeRef}
               data-focus-trap={props.id}
@@ -247,7 +303,7 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
             />
           )}
           {element}
-          {preserveTabOrder && portalNode && (
+          {preserveTabOrder && (
             <FocusTrap
               ref={innerAfterRef}
               data-focus-trap={props.id}
@@ -264,13 +320,11 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
         </>
       );
 
-      if (portalNode) {
-        element = createPortal(element, portalNode);
-      }
+      element = createPortal(element, portalNode);
 
       let preserveTabOrderElement = (
         <>
-          {preserveTabOrder && portalNode && (
+          {preserveTabOrder && (
             <FocusTrap
               ref={outerBeforeRef}
               data-focus-trap={props.id}
@@ -292,9 +346,9 @@ export const usePortal = createHook<TagName, PortalOptions>(function usePortal({
           {preserveTabOrder && (
             // We're using position: fixed here so that the browser doesn't
             // add margin to the element when setting gap on a parent element.
-            <span aria-owns={portalNode?.id} style={{ position: "fixed" }} />
+            <span aria-owns={portalNode.id} style={{ position: "fixed" }} />
           )}
-          {preserveTabOrder && portalNode && (
+          {preserveTabOrder && (
             <FocusTrap
               ref={outerAfterRef}
               data-focus-trap={props.id}

@@ -248,6 +248,7 @@ export interface WithContextParams {
 
 interface WithContextReadParams {
   inherit: typeof fn.var;
+  parityVar: (property: VarProperty | DashedIdent) => VarProperty;
 }
 
 type GetContextChildren = (
@@ -322,6 +323,7 @@ export function createContext(reset?: boolean): Context {
         const inheritedVar = getParityVar(property, parity);
         return fn.var(inheritedVar, ...fallbacks);
       },
+      parityVar: (property) => getParityVar(property, parity),
     }).filter((child) => child != null);
   };
 
@@ -687,6 +689,23 @@ export const fn = {
   /** Builds a style() query condition. */
   style: (property: Property | VarProperty, value?: Value) =>
     `style${fn.query(property, value)}`,
+
+  /**
+   * Builds an if() conditional expression. No space is allowed between `if`
+   * and the opening parenthesis.
+   */
+  if: (
+    branches: [condition: string, value: Value][],
+    elseValue?: Value,
+  ): string => {
+    const parts = branches.map(
+      ([condition, value]) => `${condition}: ${exp(value)}`,
+    );
+    if (elseValue != null) {
+      parts.push(`else: ${exp(elseValue)}`);
+    }
+    return `if(${parts.join("; ")})`;
+  },
 
   /** Wraps a value with `!important`. */
   important: (value: Value) => `${exp(value)} !important`,

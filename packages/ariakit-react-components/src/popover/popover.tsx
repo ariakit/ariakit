@@ -24,6 +24,8 @@ import type { ElementType, HTMLAttributes } from "react";
 import { useRef, useState } from "react";
 import type { DialogOptions } from "../dialog/dialog.tsx";
 import { createDialogComponent, useDialog } from "../dialog/dialog.tsx";
+import type { Placement } from "./__utils.ts";
+import { getBasePlacement } from "./__utils.ts";
 import {
   PopoverScopedContextProvider,
   usePopoverProviderContext,
@@ -32,12 +34,6 @@ import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
-type BasePlacement = "top" | "bottom" | "left" | "right";
-
-type Placement =
-  | BasePlacement
-  | `${BasePlacement}-start`
-  | `${BasePlacement}-end`;
 
 interface AnchorRect {
   x?: number;
@@ -45,6 +41,15 @@ interface AnchorRect {
   width?: number;
   height?: number;
 }
+
+interface OverflowPaddingObject {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
+}
+
+type OverflowPadding = number | OverflowPaddingObject;
 
 function createDOMRect(x = 0, y = 0, width = 0, height = 0) {
   if (typeof DOMRect === "function") {
@@ -97,6 +102,11 @@ function isValidPlacement(flip: string): flip is Placement {
 function roundByDPR(value: number) {
   const dpr = window.devicePixelRatio || 1;
   return Math.round(value * dpr) / dpr;
+}
+
+function getOverflowPaddingValue(padding: OverflowPadding) {
+  if (typeof padding === "number") return padding;
+  return Math.max(padding.left ?? 0, padding.right ?? 0);
 }
 
 function getOffsetMiddleware(
@@ -160,11 +170,16 @@ function getShiftMiddleware(
 
 function getSizeMiddleware(
   props: Pick<PopoverOptions, "sameWidth" | "fitViewport" | "overflowPadding">,
+  shouldCancel?: () => boolean,
 ) {
   // https://floating-ui.com/docs/size
   return size({
     padding: props.overflowPadding,
     apply({ elements, availableWidth, availableHeight, rects }) {
+      // The size middleware runs during computePosition, before the awaited
+      // call resolves. Ignore stale runs before mutating sizing styles.
+      if (shouldCancel?.()) return;
+
       const wrapper = elements.floating;
       const referenceWidth = Math.round(rects.reference.width);
 
@@ -270,18 +285,52 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     const getAnchorRectProp = useEvent(getAnchorRect);
     const updatePositionProp = useEvent(updatePosition);
     const hasCustomUpdatePosition = !!updatePosition;
+    const overflowPaddingTop =
+      typeof overflowPadding === "number"
+        ? overflowPadding
+        : (overflowPadding.top ?? 0);
+    const overflowPaddingRight =
+      typeof overflowPadding === "number"
+        ? overflowPadding
+        : (overflowPadding.right ?? 0);
+    const overflowPaddingBottom =
+      typeof overflowPadding === "number"
+        ? overflowPadding
+        : (overflowPadding.bottom ?? 0);
+    const overflowPaddingLeft =
+      typeof overflowPadding === "number"
+        ? overflowPadding
+        : (overflowPadding.left ?? 0);
 
     useSafeLayoutEffect(() => {
       if (!popoverElement?.isConnected) return;
 
+      const positioningPadding = {
+        top: overflowPaddingTop,
+        right: overflowPaddingRight,
+        bottom: overflowPaddingBottom,
+        left: overflowPaddingLeft,
+      };
+
       popoverElement.style.setProperty(
         "--popover-overflow-padding",
-        `${overflowPadding}px`,
+        `${getOverflowPaddingValue(positioningPadding)}px`,
       );
 
       const anchor = getAnchorElement(anchorElement, getAnchorRectProp);
 
+      // Each effect run owns this flag. Cleanup marks stale runs so in-flight
+      // async positioning work can skip state and style writes.
+      let canceled = false;
+
+      const shouldCancelUpdate = () => {
+        if (canceled) return true;
+        if (!popoverElement.isConnected) return true;
+        return false;
+      };
+
       const updatePosition = async () => {
+        if (shouldCancelUpdate()) return;
         if (!mounted) return;
 
         if (!arrowElement) {
@@ -293,14 +342,25 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
         const middleware = [
           getOffsetMiddleware(arrow, { gutter, shift }),
-          getFlipMiddleware({ flip, overflowPadding }),
-          getShiftMiddleware({ slide, shift, overlap, overflowPadding }),
-          getArrowMiddleware(arrow, { arrowPadding }),
-          getSizeMiddleware({
-            sameWidth,
-            fitViewport,
-            overflowPadding,
+          getFlipMiddleware({
+            flip,
+            overflowPadding: positioningPadding,
           }),
+          getShiftMiddleware({
+            slide,
+            shift,
+            overlap,
+            overflowPadding: positioningPadding,
+          }),
+          getArrowMiddleware(arrow, { arrowPadding }),
+          getSizeMiddleware(
+            {
+              sameWidth,
+              fitViewport,
+              overflowPadding: positioningPadding,
+            },
+            shouldCancelUpdate,
+          ),
         ];
 
         // https://floating-ui.com/docs/computePosition
@@ -309,6 +369,10 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           strategy: fixed ? "fixed" : "absolute",
           middleware,
         });
+
+        // autoUpdate cleanup doesn't abort an in-flight computePosition call.
+        // Check again before writing state or styles from an obsolete run.
+        if (shouldCancelUpdate()) return;
 
         store?.setState("currentPlacement", pos.placement);
         setPositioned(true);
@@ -327,7 +391,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         if (arrow && pos.middlewareData.arrow) {
           const { x: arrowX, y: arrowY } = pos.middlewareData.arrow;
 
-          const side = pos.placement.split("-")[0] as BasePlacement;
+          const side = getBasePlacement(pos.placement);
 
           const centerX = arrow.clientWidth / 2;
           const centerY = arrow.clientHeight / 2;
@@ -348,14 +412,27 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           Object.assign(arrow.style, {
             left: arrowX != null ? `${arrowX}px` : "",
             top: arrowY != null ? `${arrowY}px` : "",
+            // Reset the static side written for a previous placement before
+            // writing the current one. Otherwise a stale `right`/`bottom`
+            // lingers after a placement change and, in RTL contexts,
+            // over-constrained absolute positioning lets the stale `right`
+            // win over the freshly written `left`, detaching the arrow from
+            // the anchor.
+            right: "",
+            bottom: "",
             [side]: "100%",
           });
         }
       };
 
       const update = async () => {
+        if (shouldCancelUpdate()) return;
+
         if (hasCustomUpdatePosition) {
           await updatePositionProp({ updatePosition });
+          // User callbacks may keep awaiting after updatePosition has run, so
+          // make sure this effect is still current before marking it ready.
+          if (shouldCancelUpdate()) return;
           setPositioned(true);
         } else {
           await updatePosition();
@@ -369,6 +446,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       });
 
       return () => {
+        canceled = true;
         setPositioned(false);
         cancelAutoUpdate();
       };
@@ -378,7 +456,6 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       popoverElement,
       arrowElement,
       anchorElement,
-      popoverElement,
       placement,
       mounted,
       domReady,
@@ -391,7 +468,10 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       fitViewport,
       gutter,
       arrowPadding,
-      overflowPadding,
+      overflowPaddingTop,
+      overflowPaddingRight,
+      overflowPaddingBottom,
+      overflowPaddingLeft,
       getAnchorRectProp,
       hasCustomUpdatePosition,
       updatePositionProp,
@@ -617,15 +697,18 @@ export interface PopoverOptions<
    */
   arrowPadding?: number;
   /**
-   * The minimum padding between the popover and the viewport edge. This will be
-   * exposed to CSS as
+   * The minimum padding between the popover and the viewport edge. Pass a
+   * number to use the same padding on every side, or an object to define each
+   * side separately. This will be exposed to CSS as
    * [`--popover-overflow-padding`](https://ariakit.com/guide/styling#--popover-overflow-padding).
+   * When passing an object, the CSS variable is the maximum of the horizontal
+   * `left` and `right` values, with omitted sides treated as `0`.
    *
    * Live examples:
    * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
    * @default 8
    */
-  overflowPadding?: number;
+  overflowPadding?: OverflowPadding;
   /**
    * Function that returns the anchor element's DOMRect. If this is explicitly
    * passed, it will override the anchor `getBoundingClientRect` method.

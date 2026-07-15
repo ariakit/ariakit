@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up environment
         uses: ./.github/workflows/setup
@@ -22,7 +22,7 @@ jobs:
       - name: Build app
         env:
           CLOUDFLARE_ENV: preview
-        run: pnpm -F app run build-lite
+        run: pnpm -F app run build
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v7
@@ -39,10 +39,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+
+      - name: Type check Next.js app
+        run: pnpm -F nextjs run tsc
 
       - name: Build Next.js app
         run: pnpm -F nextjs run build-worker
@@ -94,7 +97,7 @@ jobs:
           #   visual: pnpm -F app run test-visual
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up environment
         uses: ./.github/workflows/setup

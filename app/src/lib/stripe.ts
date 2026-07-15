@@ -60,7 +60,7 @@ function createHttpClient(enabled: boolean) {
         info(url.pathname);
       } else {
         error(url.pathname, response.status);
-        error(response.status, await response.text());
+        error(response.status, await response.clone().text());
       }
       return response;
     },
@@ -123,6 +123,14 @@ export async function createSalePromo({
   maxRedemptions,
 }: CreateSalePromoParams) {
   if (!stripe) return;
+  const userObject = await getSalePromoUser({ context, user });
+  const customer = userObject
+    ? await getOrCreateCustomer({ context, user: userObject })
+    : undefined;
+  if (userObject && !customer) {
+    throw new Error("Cannot create a customer promo: no Stripe customer");
+  }
+
   const coupons: Stripe.Coupon[] = [];
   for await (const coupon of stripe.coupons.list({ limit: 100 })) {
     if (!isSalePromo(coupon)) continue;
@@ -145,7 +153,6 @@ export async function createSalePromo({
     });
   }
 
-  const customer = user ? await getCustomer({ context, user }) : undefined;
   const expiresAtTime = expiresAt ? getUnixTime(expiresAt) : undefined;
 
   const promo = await stripe.promotionCodes.create({
@@ -159,8 +166,8 @@ export async function createSalePromo({
   });
   await putPromo({
     id: promo.id,
-    type: user ? "customer" : "sale",
-    user: user ? objectId(user) : null,
+    type: userObject ? "customer" : "sale",
+    user: userObject ? objectId(userObject) : null,
     percentOff,
     expiresAt: expiresAtTime ?? null,
     maxRedemptions: maxRedemptions ?? null,
@@ -168,6 +175,36 @@ export async function createSalePromo({
     timesRedeemed: 0,
   });
   return promo;
+}
+
+interface GetSalePromoUserParams {
+  context: APIContext;
+  user?: User | string | null;
+}
+
+function createCustomerPromoUserNotFoundError(cause?: unknown) {
+  return new Error("Cannot create a customer promo: user not found", {
+    cause,
+  });
+}
+
+function isNotFoundError(error: unknown) {
+  if (typeof error !== "object") return false;
+  if (error == null) return false;
+  if (!("status" in error)) return false;
+  return error.status === 404;
+}
+
+async function getSalePromoUser({ context, user }: GetSalePromoUserParams) {
+  if (!user) return null;
+  try {
+    const userObject = await getUser({ context, user });
+    if (userObject) return userObject;
+  } catch (error) {
+    if (!isNotFoundError(error)) throw error;
+    throw createCustomerPromoUserNotFoundError(error);
+  }
+  throw createCustomerPromoUserNotFoundError();
 }
 
 export interface CreateCustomerParams extends Stripe.CustomerCreateParams {
@@ -191,6 +228,26 @@ export async function createCustomer({
   });
   await setCustomer(context, userId, customer.id);
   return customer;
+}
+
+interface GetOrCreateCustomerParams {
+  context: APIContext;
+  user: User;
+}
+
+async function getOrCreateCustomer({
+  context,
+  user,
+}: GetOrCreateCustomerParams) {
+  const customer = await getCustomer({ context, user });
+  if (customer) return customer;
+  const email = user.primaryEmailAddress?.emailAddress;
+  const newCustomer = await createCustomer({
+    context,
+    email,
+    user,
+  });
+  return newCustomer?.id ?? null;
 }
 
 export interface PlusPrice
@@ -280,14 +337,9 @@ export async function createCheckout({
   if (!user) {
     return logger.error("User not found", user);
   }
-  let customer = await getCustomer({ context, user });
+  const customer = await getOrCreateCustomer({ context, user });
   if (!customer) {
-    const email = user.primaryEmailAddress?.emailAddress;
-    const newCustomer = await createCustomer({ context, email, user });
-    customer = newCustomer?.id || null;
-    if (!customer) {
-      return logger.error("Failed to create customer", user.id);
-    }
+    return logger.error("Failed to create customer", user.id);
   }
 
   const url = new URL(returnUrl);
@@ -376,12 +428,13 @@ export async function processCheckout({
     logger.info("Checkout session already processed", session.id);
     return session;
   }
-  await processEvent(session.id);
   if (type === "team") {
+    // Create or reuse the team before removing personal Plus credit so a
+    // failed upgrade retry doesn't take away the user's existing access.
+    await createTeam({ context, user: clerkId, checkoutSession: session.id });
     if (Number(creditUsed)) {
       await removePlusFromUser({ context, user: clerkId });
     }
-    await createTeam({ context, user: clerkId });
   } else {
     await addPlusToUser({
       context,
@@ -391,5 +444,8 @@ export async function processCheckout({
       currency: session.currency ?? "usd",
     });
   }
+  // Keep this marker last so webhook and return-page retries can rerun
+  // fulfillment when any entitlement update above fails.
+  await processEvent(session.id);
   return session;
 }

@@ -34,20 +34,25 @@ test("check/uncheck with enter", async () => {
 test("check/uncheck item after filtering", async () => {
   await press.Tab();
   await type("b");
-  expect(q.option("Apple")).not.toBeInTheDocument();
+  await expect.poll(q.option.lazy("Apple")).not.toBeInTheDocument();
   expect(q.option("Bacon")).toHaveAttribute("aria-selected", "true");
   await press.ArrowDown();
   await press.Enter();
-  expect(q.option("Apple")).toHaveAttribute("aria-selected", "false");
+  await expect
+    .poll(q.option.lazy("Apple"))
+    .toHaveAttribute("aria-selected", "false");
   expect(q.option("Bacon")).toHaveAttribute("aria-selected", "false");
   expect(q.combobox()).toHaveValue("");
   await type("ap");
   await press.ArrowUp();
   await press.Enter();
-  expect(q.option("Pineapple")).toHaveAttribute("aria-selected", "true");
+  await expect
+    .poll(q.option.lazy("Pineapple"))
+    .toHaveAttribute("aria-selected", "true");
   expect(q.combobox()).toHaveValue("");
+  await expect.poll(q.option.lazy("Pizza")).toBeInTheDocument();
   await press.ArrowDown();
-  expect(q.option("Pizza")).toHaveFocus();
+  await expect.poll(q.option.lazy("Pizza")).toHaveFocus();
 });
 
 test("open with keyboard, then try to open again", async () => {

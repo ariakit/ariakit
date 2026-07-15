@@ -33,9 +33,7 @@ This package is ESM-only and exposes a single public entrypoint.
 - [Hooks](#hooks)
   - [`useSafeLayoutEffect`](#usesafelayouteffect)
   - [`useInitialValue`](#useinitialvalue)
-  - [`useLazyValue`](#uselazyvalue)
   - [`useLiveRef`](#useliveref)
-  - [`usePreviousValue`](#usepreviousvalue)
   - [`useEvent`](#useevent)
   - [`useTransactionState`](#usetransactionstate)
   - [`useMergeRefs`](#usemergerefs)
@@ -106,26 +104,6 @@ function Component({ prop }) {
   <a href="#api-reference">&uarr; back to top</a>
 </div>
 
-#### `useLazyValue`
-
-```ts
-function useLazyValue<T>(init: () => T): T;
-```
-
-Returns a value that is lazily initiated and never changes.
-
-Example:
-
-```ts
-function Component() {
-  const set = useLazyValue(() => new Set());
-}
-```
-
-<div align="right">
-  <a href="#api-reference">&uarr; back to top</a>
-</div>
-
 #### `useLiveRef`
 
 ```ts
@@ -141,18 +119,6 @@ function Component({ prop }) {
   const propRef = useLiveRef(prop);
 }
 ```
-
-<div align="right">
-  <a href="#api-reference">&uarr; back to top</a>
-</div>
-
-#### `usePreviousValue`
-
-```ts
-function usePreviousValue<T>(value: T): T;
-```
-
-Keeps the reference of the previous value to be used in the render phase.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
@@ -198,7 +164,7 @@ Creates a React state that calls a callback function whenever the state changes 
 ```ts
 function useMergeRefs(
   ...refs: Array<Ref<any> | undefined>
-): ((value: unknown) => void) | undefined;
+): ((value: unknown) => (() => void) | undefined) | undefined;
 ```
 
 Merges React Refs into a single memoized function ref so you can pass it to an element.
@@ -366,10 +332,9 @@ Returns props with an additional `wrapElement` prop.
 function usePortalRef(
   portalProp = false,
   portalRefProp?:
-    | RefCallback<HTMLElement>
-    | MutableRefObject<HTMLElement | null>,
+    RefCallback<HTMLElement> | MutableRefObject<HTMLElement | null>,
 ): {
-  portalRef: ((value: unknown) => void) | undefined;
+  portalRef: ((value: unknown) => (() => void) | undefined) | undefined;
   portalNode: HTMLElement | null;
   domReady: true | HTMLElement | null;
 };
@@ -422,10 +387,12 @@ Helpers for working with refs, elements, and props.
 function setRef<T>(
   ref: RefCallback<T> | MutableRefObject<T> | null | undefined,
   value: T,
-): void;
+): void | (() => void);
 ```
 
 Sets both a function and object React ref.
+
+Returns a callback ref cleanup function when one is provided.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
@@ -552,10 +519,10 @@ function createStoreContext<T extends Store>(
   useProviderContext: () => T | undefined;
   ContextProvider: (
     props: React.ComponentPropsWithoutRef<React.Provider<T | undefined>>,
-  ) => import("react/jsx-runtime").JSX.Element;
+  ) => React.JSX.Element;
   ScopedContextProvider: (
     props: React.ComponentPropsWithoutRef<React.Provider<T | undefined>>,
-  ) => import("react/jsx-runtime").JSX.Element;
+  ) => React.JSX.Element;
 };
 ```
 
@@ -612,7 +579,13 @@ interface Options {
    * original component props and gives back a React element with the props
    * merged.
    *
-   * Check out the [Composition](https://ariakit.com/guide/composition) guide
+   * Some Ariakit components detect the type of the underlying element when
+   * they mount. If the render element's type may change while the component
+   * is mounted, pass a
+   * [`key`](https://react.dev/learn/preserving-and-resetting-state) prop that
+   * changes with the element type so React remounts the component with the
+   * new element. Remounting resets uncontrolled state, so keep the relevant
+   // ... 11 more lines
    * for more details.
    */
   render?: RenderProp | React.ReactElement;

@@ -68,7 +68,7 @@ test("scanAkTokensInFiles preserves colons inside arbitrary values", () => {
 
 test("styleDefToCss renders @property block", () => {
   const def = getStyleDefinition("--ak-tab-border-width", "at-property");
-  expect(def).toBeTruthy();
+  expect(def?.type).toBe("at-property");
   const css = styleDefToCss(def!);
   expect(css).toMatchInlineSnapshot(`
     "@property --ak-tab-border-width {
@@ -121,7 +121,7 @@ test("styleDefToCss renders ak-list-item-ol-border utility fully", () => {
         content: "";
         width: var(--ak-list-border-width);
         top: var(--ak-list-border-top);
-        left: calc(
+        inset-inline-start: calc(
           var(--ak-list-item-marker-center) - var(--ak-list-border-width) / 2 +
             var(--ak-frame-padding)
         );
@@ -136,6 +136,36 @@ test("styleDefToCss renders ak-list-item-ol-border utility fully", () => {
       &:is(li):last-of-type::after {
         @apply from-(--ak-layer) bg-linear-to-b bg-transparent from-[calc(100%-1rem)] to-transparent;
         height: calc(100% - var(--ak-list-border-top));
+      }
+    }"
+  `);
+});
+
+test("progress value utilities do not advertise percentage values", () => {
+  const progress = getStyleDefinition("ak-progress-value-*", "utility");
+  expect(styleDefToCss(progress!)).toMatchInlineSnapshot(`
+    "@utility ak-progress-value-* {
+      --ak-progress-value: calc(--value(number) / 100);
+      --ak-progress-value: calc(--value(ratio));
+      --ak-progress-value: --value([*]);
+    }"
+  `);
+
+  const checkProgress = getStyleDefinition(
+    "ak-list-item-check-progress-*",
+    "utility",
+  );
+  expect(styleDefToCss(checkProgress!)).toMatchInlineSnapshot(`
+    "@utility ak-list-item-check-progress-* {
+      @apply before:ak-progress-circular-fill ak-progress-value-(--value);
+      --value: calc(--value(number) / 100);
+      --value: calc(--value(ratio));
+      --value: --value([*]);
+      @variant ak-list-ol {
+        @apply ak-progress-thickness-[0.15em];
+      }
+      @variant ak-list-ul {
+        @apply ak-progress-thickness-[calc(30%+0.25%*var(--contrast,0))];
       }
     }"
   `);
@@ -165,6 +195,7 @@ test("getStyleDefinition returns exact definitions and wildcard fallback within 
     "--ak-tab-border-width",
     "at-property",
   );
+  expect(atPropExact?.type).toBe("at-property");
   expect(atPropExact?.name).toBe("--ak-tab-border-width");
   const atPropWildcard = getStyleDefinition(
     "--ak-tab-border-width-extra",
@@ -218,6 +249,27 @@ test("getTransitiveDependencies returns BFS dependencies, excluding root and ded
   expect(deps.some((d) => d.name === root.name && d.type === root.type)).toBe(
     false,
   );
+});
+
+test("getTransitiveDependencies includes at-properties without expanding them", () => {
+  const root = {
+    type: "utility" as const,
+    name: "ak-command_active",
+    module: "command",
+  };
+
+  expect(getTransitiveDependencies(root)).toEqual([
+    {
+      type: "at-property",
+      name: "--ak-command-depth-x",
+      module: "command",
+    },
+    {
+      type: "at-property",
+      name: "--ak-command-depth-y",
+      module: "command",
+    },
+  ]);
 });
 
 test("resolveStyles aggregates base + transitive, deduped by identity", () => {

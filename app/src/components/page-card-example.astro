@@ -9,9 +9,9 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import PageCard from "#app/components/page-card.astro";
+import { getCachedCollection } from "#app/lib/collection-cache.ts";
 import { filterPreviews } from "#app/lib/content.ts";
 import type { Framework } from "#app/lib/schemas.ts";
-import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
 import pluralize from "pluralize";
 import type { ComponentProps } from "react";
@@ -23,8 +23,7 @@ interface Props extends Partial<ComponentProps<typeof PageCard>> {
 
 const { entry, framework = Astro.locals.framework, ...props } = Astro.props;
 
-const previews = await getCollection(
-  "previews",
+const previews = (await getCachedCollection("previews")).filter(
   filterPreviews({ framework, type: "examples", entries: [entry] })
 );
 const length = previews.length;

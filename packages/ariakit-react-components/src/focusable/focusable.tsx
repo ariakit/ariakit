@@ -2,7 +2,7 @@ import {
   useEvent,
   useMergeRefs,
   useMetadataProps,
-  useTagName,
+  useSafeLayoutEffect,
   createElement,
   createHook,
   forwardRef,
@@ -10,6 +10,8 @@ import {
 import type { Options, Props } from "@ariakit/react-utils";
 import {
   addGlobalEventListener,
+  isButton,
+  isElement,
   isFocusEventOutside,
   isSelfTarget,
   queueBeforeEvent,
@@ -37,6 +39,10 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 const accessibleWhenDisabledSymbol = Symbol("accessibleWhenDisabled");
 
 const isSafariBrowser = isSafari();
+
+const nativeTabbableMask = 1;
+const supportsDisabledMask = 2;
+const defaultElementCapabilities = nativeTabbableMask | supportsDisabledMask;
 
 const alwaysFocusVisibleInputTypes = [
   "text",
@@ -92,6 +98,17 @@ function supportsDisabledAttribute(tagName?: string) {
   );
 }
 
+function getElementCapabilities(tagName?: string) {
+  let capabilities = 0;
+  if (isNativeTabbable(tagName)) {
+    capabilities |= nativeTabbableMask;
+  }
+  if (supportsDisabledAttribute(tagName)) {
+    capabilities |= supportsDisabledMask;
+  }
+  return capabilities;
+}
+
 interface GetTabIndexParams {
   focusable: boolean;
   trulyDisabled: boolean;
@@ -99,24 +116,6 @@ interface GetTabIndexParams {
   supportsDisabled: boolean;
   safariTabIndex: boolean;
   tabIndexProp?: number;
-}
-
-const buttonInputTypes = [
-  "button",
-  "color",
-  "file",
-  "image",
-  "reset",
-  "submit",
-];
-
-function needsSafariTabIndex(tagName?: string, inputType?: string) {
-  if (tagName === "button") return true;
-  if (tagName === "input" && inputType) {
-    if (inputType === "checkbox" || inputType === "radio") return true;
-    return buttonInputTypes.includes(inputType);
-  }
-  return false;
 }
 
 function isNativeSubmitControl(element: HTMLElement) {
@@ -182,13 +181,11 @@ let hasInstalledGlobalEventListeners = false;
 let isKeyboardModality = true;
 
 function onGlobalMouseDown(event: MouseEvent) {
-  const target = event.target as HTMLElement | EventTarget | null;
-  if (target && "hasAttribute" in target) {
-    // If the target element is already focus-visible, we keep the keyboard
-    // modality.
-    if (!target.hasAttribute("data-focus-visible")) {
-      isKeyboardModality = false;
-    }
+  const target = event.target;
+  // If the target element is already focus-visible, we keep the keyboard
+  // modality.
+  if (isElement(target) && !target.hasAttribute("data-focus-visible")) {
+    isKeyboardModality = false;
   }
 }
 
@@ -246,12 +243,11 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       element?.removeAttribute("data-focus-visible");
     });
 
-    // When the focusable element is disabled, it doesn't trigger a blur event
-    // so we can't set focusVisible to false there. Instead, we have to do it
-    // here by checking the element's disabled attribute.
+    // When the focusable element is disabled, it doesn't trigger a blur event,
+    // and turning focusable off disables the blur handler below. Clear the
+    // internal focus-visible state here in both cases.
     useEffect(() => {
-      if (!focusable) return;
-      if (!trulyDisabled) return;
+      if (focusable && !trulyDisabled) return;
       cleanupFocusVisible(ref.current);
       if (focusVisible) {
         setFocusVisible(false);
@@ -408,9 +404,24 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       });
     });
 
-    const tagName = useTagName(ref);
-    const nativeTabbable = focusable && isNativeTabbable(tagName);
-    const supportsDisabled = focusable && supportsDisabledAttribute(tagName);
+    // Track only the element capabilities that affect the returned props so
+    // resolving the default native element doesn't require another render.
+    const [elementCapabilities, setElementCapabilities] = useState(
+      defaultElementCapabilities,
+    );
+    useSafeLayoutEffect(() => {
+      const element = ref.current;
+      if (!element) return;
+      const nextCapabilities = getElementCapabilities(
+        element.tagName.toLowerCase(),
+      );
+      if (nextCapabilities === defaultElementCapabilities) return;
+      setElementCapabilities(nextCapabilities);
+    }, []);
+    const nativeTabbable =
+      focusable && !!(elementCapabilities & nativeTabbableMask);
+    const supportsDisabled =
+      focusable && !!(elementCapabilities & supportsDisabledMask);
 
     // On Safari, buttons and button-like inputs don't receive focus on
     // mousedown. We detect this from the DOM element (not props) so it works
@@ -422,9 +433,11 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
         if (!focusable) return;
         const element = ref.current;
         if (!element) return;
-        const tag = element.tagName.toLowerCase();
-        const type = (element as HTMLInputElement).type;
-        setSafariTabIndex(needsSafariTabIndex(tag, type));
+        const { type } = element as HTMLInputElement;
+        const isNativeCheckboxOrRadio =
+          element.tagName === "INPUT" &&
+          (type === "checkbox" || type === "radio");
+        setSafariTabIndex(isButton(element) || isNativeCheckboxOrRadio);
       }, [focusable]);
     }
 

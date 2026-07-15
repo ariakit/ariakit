@@ -4,12 +4,12 @@ import type { Options, Props } from "@ariakit/react-utils";
 import { invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo } from "react";
+import { getBasePlacement } from "./__utils.ts";
 import { usePopoverContext } from "./popover-context.tsx";
 import type { PopoverStore, PopoverStoreState } from "./popover-store.ts";
 
 const TagName = "span" satisfies ElementType;
 type TagName = typeof TagName;
-type BasePlacement = "top" | "bottom" | "left" | "right";
 
 const pointsMap = {
   top: "4,10 8,6 12,10",
@@ -46,9 +46,10 @@ export const usePopoverDisclosureArrow = createHook<
 
   const position = useStoreState(
     store,
+    ["placement"],
     (state) => placement || state.placement,
   );
-  const dir = position.split("-")[0] as BasePlacement;
+  const dir = getBasePlacement(position);
   const points = pointsMap[dir];
 
   const children = useMemo(

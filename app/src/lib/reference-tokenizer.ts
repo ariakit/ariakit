@@ -34,10 +34,6 @@ interface NameToReference {
   [exportedName: string]: CollectionEntry<"references"> | undefined;
 }
 
-interface KindByName {
-  [exportedName: string]: ReferenceLabelKind | undefined;
-}
-
 interface ImportInfo {
   hasAriakitImport: boolean;
   namespaceAliases: Set<string>;
@@ -56,6 +52,9 @@ interface TokenRange {
 
 /** Matches a valid JavaScript identifier */
 const IDENTIFIER_PATTERN = "[A-Za-z_$][\\w$]*";
+
+/** Matches the first character of a valid JavaScript identifier */
+const IDENTIFIER_START_CHAR_PATTERN = /[A-Za-z_$]/;
 
 /** Matches an identifier starting with uppercase (component-like) */
 const COMPONENT_NAME_PATTERN = "[A-Z][\\w$]*";
@@ -103,6 +102,45 @@ function skipStringLiteral(code: string, startIndex: number): number {
 }
 
 /**
+ * Skips over a line or block comment starting at the given index.
+ */
+function skipComment(code: string, startIndex: number): number | null {
+  if (code[startIndex] === "/" && code[startIndex + 1] === "/") {
+    const newlineIndex = code.indexOf("\n", startIndex);
+    return newlineIndex === -1 ? code.length : newlineIndex + 1;
+  }
+
+  if (code[startIndex] === "/" && code[startIndex + 1] === "*") {
+    const closeIndex = code.indexOf("*/", startIndex + 2);
+    return closeIndex === -1 ? code.length : closeIndex + 2;
+  }
+
+  return null;
+}
+
+/**
+ * Skips whitespace and comments starting at the given index.
+ */
+function skipWhitespaceAndComments(code: string, startIndex: number): number {
+  let index = startIndex;
+
+  while (index < code.length) {
+    const char = code[index] ?? "";
+    if (/\s/.test(char)) {
+      index++;
+      continue;
+    }
+
+    const commentEnd = skipComment(code, index);
+    if (commentEnd == null) break;
+
+    index = commentEnd;
+  }
+
+  return index;
+}
+
+/**
  * Finds the index of a closing bracket/brace/paren, respecting nesting and
  * string literals.
  */
@@ -119,6 +157,11 @@ function findMatchingClose(
     const char = code[index] ?? "";
     if (isQuoteChar(char)) {
       index = skipStringLiteral(code, index);
+      continue;
+    }
+    const commentEnd = skipComment(code, index);
+    if (commentEnd != null) {
+      index = commentEnd;
       continue;
     }
     if (char === openChar) {
@@ -259,28 +302,44 @@ function parseLocalImports(code: string): Map<string, string> {
 
 // #region Reference Helpers
 
-function getFrameworkReferences(
+// Both caches key on the references array identity, so they only hit while
+// the same collection array is reused (the production build caches it; dev
+// gets a fresh array per call and skips memoization naturally). Code blocks
+// across reference partials repeat the same short snippets thousands of
+// times, so memoizing whole anchor results avoids re-scanning them.
+const nameToReferenceCache = new WeakMap<
+  CollectionEntry<"references">[],
+  Map<string, NameToReference>
+>();
+const anchorsCache = new WeakMap<
+  CollectionEntry<"references">[],
+  Map<string, CodeReferenceAnchorRange[][]>
+>();
+
+/**
+ * Builds a lookup from exported name to reference entry.
+ */
+function getNameToReference(
   references: CollectionEntry<"references">[],
   framework?: Framework,
-) {
-  const list = framework
-    ? references.filter((r) => r.data.framework === framework)
-    : references;
-  const nameToRef: NameToReference = Object.create(null);
-  const kindByName: KindByName = Object.create(null);
+): NameToReference {
+  let byFramework = nameToReferenceCache.get(references);
+  if (!byFramework) {
+    byFramework = new Map();
+    nameToReferenceCache.set(references, byFramework);
+  }
+  const cacheKey = framework ?? "";
+  const cached = byFramework.get(cacheKey);
+  if (cached) return cached;
 
-  for (const ref of list) {
+  const nameToRef: NameToReference = Object.create(null);
+  for (const ref of references) {
+    if (framework && ref.data.framework !== framework) continue;
     nameToRef[ref.data.name] = ref;
-    if (ref.data.kind === "component") {
-      kindByName[ref.data.name] = "component";
-    } else if (ref.data.kind === "store") {
-      kindByName[ref.data.name] = "store";
-    } else {
-      kindByName[ref.data.name] = "function";
-    }
   }
 
-  return { list, nameToRef, kindByName } as const;
+  byFramework.set(cacheKey, nameToRef);
+  return nameToRef;
 }
 
 /**
@@ -407,6 +466,12 @@ function findObjectLiteralAtFirstArg(
       continue;
     }
 
+    const commentEnd = skipComment(code, index);
+    if (commentEnd != null) {
+      index = commentEnd;
+      continue;
+    }
+
     if (char === "(") depth++;
     if (char === ")") {
       if (depth === 0) break;
@@ -438,6 +503,9 @@ function findTopLevelObjectKeys(
   const keys: TokenRange[] = [];
   const text = code.slice(objStart, objEnd);
   let depth = 0;
+  let parenDepth = 0;
+  let bracketDepth = 0;
+  let lastSignificant = "";
   let index = 0;
   let inString: false | QuoteChar = false;
 
@@ -456,28 +524,71 @@ function findTopLevelObjectKeys(
 
     if (isQuoteChar(char)) {
       inString = char;
+      lastSignificant = char;
       index++;
+      continue;
+    }
+
+    const commentEnd = skipComment(text, index);
+    if (commentEnd != null) {
+      index = commentEnd;
       continue;
     }
 
     if (char === "{") depth++;
     if (char === "}") depth--;
+    if (char === "(") parenDepth++;
+    if (char === ")") parenDepth--;
+    if (char === "[") bracketDepth++;
+    if (char === "]") bracketDepth--;
 
-    // At top level inside the object, look for identifier keys
-    if (depth === 1) {
+    const inKeyPosition =
+      depth === 1 &&
+      parenDepth === 0 &&
+      bracketDepth === 0 &&
+      (lastSignificant === "{" || lastSignificant === ",");
+
+    if (inKeyPosition && char === "*") {
+      index++;
+      continue;
+    }
+
+    if (inKeyPosition) {
       const idRegex = new RegExp(`(${IDENTIFIER_PATTERN})`, "y");
       idRegex.lastIndex = index;
       const match = idRegex.exec(text);
       if (match) {
         const name = match[1] ?? "";
-        const start = objStart + match.index;
-        const end = start + name.length;
-        keys.push({ start, end, name });
+        const afterIndex = skipWhitespaceAndComments(
+          text,
+          match.index + name.length,
+        );
+        const nextChar = text[afterIndex] ?? "";
+        const isKey =
+          nextChar === ":" ||
+          nextChar === "," ||
+          nextChar === "}" ||
+          nextChar === "(";
+        const isKeyPrefix =
+          (name === "async" || name === "get" || name === "set") &&
+          (IDENTIFIER_START_CHAR_PATTERN.test(nextChar) || nextChar === "*");
+
+        if (isKey) {
+          const start = objStart + match.index;
+          const end = start + name.length;
+          keys.push({ start, end, name });
+        }
+        if (!isKeyPrefix) {
+          lastSignificant = name.slice(-1);
+        }
         index = match.index + name.length;
         continue;
       }
     }
 
+    if (!/\s/.test(char)) {
+      lastSignificant = char;
+    }
     index++;
   }
 
@@ -497,7 +608,7 @@ function findUseStoreStateStateRanges(
 
   // String literal variant: useStoreState(store, "value")
   const stringRegex = new RegExp(
-    `useStoreState\\s*\\(\\s*[^,]*,\\s*(["'\`])(${IDENTIFIER_PATTERN})\\1`,
+    `^(?:${IDENTIFIER_PATTERN}\\s*\\.\\s*)?useStoreState\\s*\\(\\s*[^,()]*,\\s*(["'\`])(${IDENTIFIER_PATTERN})\\1`,
   );
   const stringMatch = stringRegex.exec(callText);
   if (stringMatch) {
@@ -515,7 +626,7 @@ function findUseStoreStateStateRanges(
 
   // Arrow selector variant: useStoreState(store, (s) => s.value)
   const arrowRegex = new RegExp(
-    `useStoreState\\s*\\(\\s*[^,]*,\\s*\\(?(${IDENTIFIER_PATTERN})\\)?\\s*=>\\s*\\1\\s*\\.\\s*(${IDENTIFIER_PATTERN})`,
+    `^(?:${IDENTIFIER_PATTERN}\\s*\\.\\s*)?useStoreState\\s*\\(\\s*[^,()]*,\\s*\\(?(${IDENTIFIER_PATTERN})\\)?\\s*=>\\s*\\1\\s*\\.\\s*(${IDENTIFIER_PATTERN})`,
   );
   const arrowMatch = arrowRegex.exec(callText);
   if (arrowMatch) {
@@ -921,6 +1032,28 @@ export function findCodeReferenceAnchors({
   references,
   framework,
 }: FindCodeReferenceAnchorsParams): CodeReferenceAnchorRange[][] {
+  let byCode = anchorsCache.get(references);
+  if (!byCode) {
+    byCode = new Map();
+    anchorsCache.set(references, byCode);
+  }
+  const cacheKey = `${framework ?? ""}\u0000${code}`;
+  const cached = byCode.get(cacheKey);
+  if (cached) return cached;
+  const result = computeCodeReferenceAnchors({ code, references, framework });
+  byCode.set(cacheKey, result);
+  return result;
+}
+
+/**
+ * Uncached implementation of `findCodeReferenceAnchors`. Callers must treat
+ * the returned ranges as read-only since the result is memoized.
+ */
+function computeCodeReferenceAnchors({
+  code,
+  references,
+  framework,
+}: FindCodeReferenceAnchorsParams): CodeReferenceAnchorRange[][] {
   const trimmed = code.trim();
   const anchors: CodeReferenceAnchorRange[] = [];
 
@@ -948,7 +1081,7 @@ export function findCodeReferenceAnchors({
     return lines.map(() => []);
   }
 
-  const { nameToRef } = getFrameworkReferences(references, framework);
+  const nameToRef = getNameToReference(references, framework);
 
   // Parse imports lazily
   let namedImports: Map<string, string> = new Map();

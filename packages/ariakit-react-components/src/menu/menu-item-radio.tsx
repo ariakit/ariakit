@@ -51,6 +51,7 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
     name,
     value,
     checked,
+    defaultChecked: defaultCheckedProp,
     onChange: onChangeProp,
     hideOnClick = false,
     ...props
@@ -64,7 +65,7 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
         "MenuItemRadio must be wrapped in a MenuList or Menu component",
     );
 
-    const defaultChecked = useInitialValue(props.defaultChecked);
+    const defaultChecked = useInitialValue(defaultCheckedProp);
 
     // Sets defaultChecked in store
     useEffect(() => {
@@ -83,6 +84,7 @@ export const useMenuItemRadio = createHook<TagName, MenuItemRadioOptions>(
 
     const isChecked = useStoreState(
       store,
+      ["values"],
       (state) => state.values[name] === value,
     );
 

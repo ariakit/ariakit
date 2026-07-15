@@ -1,4 +1,4 @@
-import { click, dispatch, hover, press, q, type } from "@ariakit/test";
+import { click, dispatch, hover, press, q, sleep, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 function getSelectionValue(element: Element | HTMLInputElement | null) {
@@ -115,6 +115,7 @@ test("composition text", async () => {
   expect(q.option("John Smith")).not.toBeInTheDocument();
   await type("á", q.combobox(), { isComposing: true });
   await dispatch.compositionEnd(q.combobox());
+  await sleep();
   expect(q.combobox()).toHaveValue("ánnual_report.pdf");
   expect(getSelectionValue(q.combobox())).toBe("nnual_report.pdf");
   expect(q.option("annual_report.pdf")).toHaveFocus();

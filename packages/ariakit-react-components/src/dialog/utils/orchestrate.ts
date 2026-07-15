@@ -1,40 +1,51 @@
-const cleanups = new WeakMap<Element, Map<string, () => void>>();
+interface CleanupEntry {
+  cleanup: () => void;
+  disposed: boolean;
+}
+
+const cleanups = new WeakMap<Element, Map<string, CleanupEntry[]>>();
+
+function flushCleanupStack(
+  elementCleanups: Map<string, CleanupEntry[]>,
+  key: string,
+  stack: CleanupEntry[],
+) {
+  while (stack.length) {
+    const entry = stack[stack.length - 1];
+    if (!entry) {
+      elementCleanups.delete(key);
+      return;
+    }
+    if (!entry.disposed) return;
+    stack.pop();
+    entry.cleanup();
+  }
+  elementCleanups.delete(key);
+}
 
 export function orchestrate(
   element: Element,
   key: string,
   setup: () => () => void,
 ) {
-  if (!cleanups.has(element)) {
-    cleanups.set(element, new Map());
+  let elementCleanups = cleanups.get(element);
+  if (!elementCleanups) {
+    elementCleanups = new Map();
+    cleanups.set(element, elementCleanups);
   }
 
-  const elementCleanups = cleanups.get(element)!;
-  const prevCleanup = elementCleanups.get(key);
+  const stack = elementCleanups.get(key) ?? [];
+  const entry: CleanupEntry = { cleanup: setup(), disposed: false };
 
-  if (!prevCleanup) {
-    elementCleanups.set(key, setup());
-    return () => {
-      elementCleanups.get(key)?.();
-      elementCleanups.delete(key);
-    };
+  if (!stack.length) {
+    elementCleanups.set(key, stack);
   }
-
-  const cleanup = setup();
-
-  const nextCleanup = () => {
-    cleanup();
-    prevCleanup();
-    elementCleanups.delete(key);
-  };
-
-  elementCleanups.set(key, nextCleanup);
+  stack.push(entry);
 
   return () => {
-    const isCurrent = elementCleanups.get(key) === nextCleanup;
-    if (!isCurrent) return;
-    cleanup();
-    elementCleanups.set(key, prevCleanup);
+    if (!stack.includes(entry)) return;
+    entry.disposed = true;
+    flushCleanupStack(elementCleanups, key, stack);
   };
 }
 
@@ -109,10 +120,11 @@ export function setCSSProperty(
 
   const setup = () => {
     const previousValue = element.style.getPropertyValue(property);
+    const previousPriority = element.style.getPropertyPriority(property);
     element.style.setProperty(property, value);
     return () => {
       if (previousValue) {
-        element.style.setProperty(property, previousValue);
+        element.style.setProperty(property, previousValue, previousPriority);
       } else {
         element.style.removeProperty(property);
       }

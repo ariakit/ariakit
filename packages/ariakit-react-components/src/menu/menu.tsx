@@ -87,10 +87,33 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   const [initialFocusRef, setInitialFocusRef] =
     useState<MutableRefObject<HTMLElement | null>>();
 
-  const autoFocusOnShowState = useStoreState(store, "autoFocusOnShow");
-  const initialFocus = useStoreState(store, "initialFocus");
-  const baseElement = useStoreState(store, "baseElement");
-  const items = useStoreState(store, "renderedItems");
+  // Resolve the initial focus element inside a selector so the component
+  // re-renders only when the resolved element changes, not whenever
+  // `renderedItems` gets a new array identity. Returning `undefined` means
+  // auto focus on show is disabled.
+  const initialFocusElement = useStoreState(
+    store,
+    ["autoFocusOnShow", "initialFocus", "renderedItems", "baseElement"],
+    (state) => {
+      if (!state.autoFocusOnShow) return;
+      const isEnabled = (item: (typeof state.renderedItems)[number]) =>
+        !item.disabled && !!item.element;
+      switch (state.initialFocus) {
+        case "first":
+          return state.renderedItems.find(isEnabled)?.element || null;
+        case "last":
+          for (let i = state.renderedItems.length - 1; i >= 0; i -= 1) {
+            const item = state.renderedItems[i];
+            if (item && isEnabled(item)) {
+              return item.element;
+            }
+          }
+          return null;
+        default:
+          return state.baseElement;
+      }
+    },
+  );
 
   // Sets the initial focus ref.
   useEffect(() => {
@@ -100,34 +123,21 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
       if (modal && prevInitialFocusRef?.current?.isConnected) {
         return prevInitialFocusRef;
       }
-      if (!autoFocusOnShowState) return;
-      let element: HTMLElement | null;
-      switch (initialFocus) {
-        // TODO: Refactor
-        case "first":
-          element =
-            items.find((item) => !item.disabled && item.element)?.element ||
-            null;
-          break;
-        case "last":
-          element =
-            [...items].reverse().find((item) => !item.disabled && item.element)
-              ?.element || null;
-          break;
-        default:
-          element = baseElement;
-      }
-      if (element && element === prevInitialFocusRef?.current) {
+      if (initialFocusElement === undefined) return;
+      if (
+        initialFocusElement &&
+        initialFocusElement === prevInitialFocusRef?.current
+      ) {
         return prevInitialFocusRef;
       }
       const ref = createRef() as MutableRefObject<HTMLElement | null>;
-      ref.current = element;
+      ref.current = initialFocusElement;
       return ref;
     });
     return () => {
       cleaning = true;
     };
-  }, [store, modal, autoFocusOnShowState, initialFocus, items, baseElement]);
+  }, [modal, initialFocusElement]);
 
   // When the `autoFocusOnShow` prop is set to `true` (default), we'll only
   // move focus to the menu when there's an initialFocusRef set or the menu is

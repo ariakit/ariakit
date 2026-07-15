@@ -1,4 +1,4 @@
-import { click, hover, press, q, sleep, type, waitFor } from "@ariakit/test";
+import { click, hover, press, q, sleep, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("show/hide on click", async () => {
@@ -37,7 +37,7 @@ test("show/hide on space", async () => {
   await press.Tab();
   await press.Space();
   expect(q.menu("File")).toBeVisible();
-  await waitFor(() => expect(q.menuitem("New Tab")).toHaveFocus());
+  await expect.poll(q.menuitem.lazy("New Tab")).toHaveFocus();
   await press.Space();
   expect(q.menu("File")).not.toBeInTheDocument();
   expect(q.menuitem("File")).toHaveFocus();
@@ -88,6 +88,21 @@ test("show/hide on key down", async () => {
   expect(q.menu("File")).toBeVisible();
 });
 
+test("typeahead from menu button continues after focus moves to menu", async () => {
+  await press.Tab();
+  await press.Enter();
+  await press.ShiftTab();
+
+  expect(q.menu("File")).toBeVisible();
+  expect(q.menuitem("File")).toHaveFocus();
+
+  await type("s");
+  expect(q.menuitem("Save Page As")).toHaveFocus();
+
+  await type("h");
+  expect(q.menuitem("Share")).toHaveFocus();
+});
+
 test("show/hide on hover", async () => {
   await hover(q.menuitem("File"));
   expect(q.menu("File")).not.toBeInTheDocument();
@@ -113,7 +128,7 @@ test("hide on escape", async () => {
   expect(q.menuitem("Share")).toHaveFocus();
   await sleep(600);
   await press.Space();
-  await waitFor(() => expect(q.menuitem("Email Link")).toHaveFocus());
+  await expect.poll(q.menuitem.lazy("Email Link")).toHaveFocus();
   await press.Escape();
   expect(q.menuitem("File")).toHaveFocus();
   expect(q.menu("Share")).not.toBeInTheDocument();

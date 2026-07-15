@@ -1,36 +1,29 @@
-import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   mkdir,
   copyFile,
   readdir,
-  readFile,
   readlink,
   rm,
   symlink,
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { delimiter, dirname, isAbsolute, join, relative, sep } from "node:path";
+import { delimiter, dirname, isAbsolute, join, relative } from "node:path";
 import { watch } from "chokidar";
 import type { FSWatcher } from "chokidar";
-
-interface PackageJson {
-  scripts?: Record<string, string>;
-  dependencies?: Record<string, string>;
-  devDependencies?: Record<string, string>;
-  optionalDependencies?: Record<string, string>;
-  [key: string]: unknown;
-}
+import {
+  getCommandOutput,
+  normalizePath,
+  readPackageJson,
+  readPackageJsonFile,
+  runCommand,
+} from "./utils.ts";
+import type { PackageJson, RunCommandOptions } from "./utils.ts";
 
 interface React18Command {
   bin: string;
   args: string[];
-}
-
-interface RunCommandOptions {
-  cwd: string;
-  env?: NodeJS.ProcessEnv;
 }
 
 const dependencyFields = [
@@ -54,7 +47,7 @@ const excludedSegments = new Set([
   "test-results",
 ]);
 
-const excludedFiles = new Set([".DS_Store", ".dev.vars", "pnpm-lock.yaml"]);
+const excludedFiles = new Set([".DS_Store", "pnpm-lock.yaml"]);
 const excludedFilePatterns = [".env*", "*.pem"];
 
 const pathKey =
@@ -65,34 +58,9 @@ function log(message: string) {
   console.error(`[react18] ${message}`);
 }
 
-function normalizePath(path: string) {
-  return path.split(sep).join("/");
-}
-
 function isErrnoException(error: unknown): error is NodeJS.ErrnoException {
   if (!(error instanceof Error)) return false;
   return "code" in error;
-}
-
-function getCommandOutput(command: string, args: string[], cwd: string) {
-  const result = spawnSync(command, args, {
-    cwd,
-    encoding: "utf-8",
-  });
-
-  if (result.error) throw result.error;
-  if (result.status) {
-    const commandText = [command, ...args].join(" ");
-    throw new Error(`${commandText} failed with ${result.status}`);
-  }
-
-  const output = result.stdout.trim();
-  if (!output) {
-    const commandText = [command, ...args].join(" ");
-    throw new Error(`${commandText} returned empty output`);
-  }
-
-  return output;
 }
 
 function getRepositoryRoot() {
@@ -130,51 +98,6 @@ function shouldIgnoreWatchPath(rootPath: string, path: string) {
   if (normalizedPath === "package.json") return true;
 
   return shouldIgnoreRelativePath(normalizedPath);
-}
-
-async function runCommand(
-  command: string,
-  args: string[],
-  options: RunCommandOptions,
-) {
-  return await new Promise<number>((resolvePromise, reject) => {
-    const child = spawn(command, args, {
-      cwd: options.cwd,
-      env: options.env,
-      stdio: "inherit",
-    });
-
-    const onSigint = () => child.kill("SIGINT");
-    const onSigterm = () => child.kill("SIGTERM");
-    const cleanup = () => {
-      process.off("SIGINT", onSigint);
-      process.off("SIGTERM", onSigterm);
-    };
-
-    child.on("error", (error) => {
-      cleanup();
-      reject(error);
-    });
-    child.on("exit", (code, signal) => {
-      cleanup();
-      if (code != null) {
-        resolvePromise(code);
-        return;
-      }
-      if (signal === "SIGINT") {
-        resolvePromise(130);
-        return;
-      }
-      if (signal === "SIGTERM") {
-        resolvePromise(143);
-        return;
-      }
-      resolvePromise(1);
-    });
-
-    process.once("SIGINT", onSigint);
-    process.once("SIGTERM", onSigterm);
-  });
 }
 
 async function runChecked(
@@ -294,13 +217,8 @@ function getDependencyVersion(packageJson: PackageJson, name: string) {
   throw new Error(`${name} must be declared in website/package.json`);
 }
 
-async function readPackageJson(path: string) {
-  const contents = await readFile(path, "utf-8");
-  return JSON.parse(contents) as PackageJson;
-}
-
 async function getReact18DependencyVersions(rootPath: string) {
-  const packageJson = await readPackageJson(
+  const packageJson = await readPackageJsonFile(
     join(rootPath, "website/package.json"),
   );
 
@@ -338,7 +256,7 @@ async function rewritePackageJson(
   path: string,
   versions: Record<string, string>,
 ) {
-  const packageJson = await readPackageJson(path);
+  const packageJson = await readPackageJsonFile(path);
 
   if (!updateReactDependencies(packageJson, versions)) return false;
 
@@ -358,10 +276,6 @@ async function rewriteReactDependencies(rootPath: string) {
   }
 
   return updatedCount;
-}
-
-async function readRootPackageJson(rootPath: string) {
-  return await readPackageJson(join(rootPath, "package.json"));
 }
 
 function stripLeadingSeparator(args: string[]) {
@@ -385,24 +299,30 @@ function printHelp() {
   );
 }
 
-async function getReact18Command(
-  rootPath: string,
-  args: string[],
-): Promise<React18Command> {
+function getReact18Command(rootPath: string, args: string[]): React18Command {
   const [command, ...commandArgs] = stripLeadingSeparator(args);
 
   if (!command) {
     throw new Error("Missing command. Use `ariakit react18 <script>`.");
   }
 
-  const packageJson = await readRootPackageJson(rootPath);
-  // `react18` and `test-react-18` scripts would recurse here. Run the
-  // underlying test script directly instead.
-  if (command === "react18" || command === "test-react-18") {
+  const packageJson = readPackageJson(rootPath);
+  // The `react18` script would recurse here. Run the underlying test script
+  // directly instead.
+  if (command === "react18") {
     log(`Mapping ${command} to test to avoid recursion`);
     return {
       bin: "pnpm",
       args: ["run", "test", ...commandArgs],
+    };
+  }
+  // The `test-react18` script delegates to `react18 test-react`. Preserve the
+  // narrowed React test suite when users invoke it through the wrapper.
+  if (command === "test-react18") {
+    log(`Mapping ${command} to test-react to avoid recursion`);
+    return {
+      bin: "pnpm",
+      args: ["run", "test-react", ...commandArgs],
     };
   }
   if (packageJson.scripts?.[command]) {
@@ -530,7 +450,7 @@ export async function react18(args: string[]) {
     { cwd: workspacePath },
   );
 
-  const command = await getReact18Command(workspacePath, args);
+  const command = getReact18Command(workspacePath, args);
   const watcher = startWorkspaceWatcher(rootPath, workspacePath);
 
   try {

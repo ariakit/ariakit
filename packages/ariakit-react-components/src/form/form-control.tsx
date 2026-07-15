@@ -1,9 +1,8 @@
 import type { StringLike } from "@ariakit/components/form/types";
-import { useStoreState } from "@ariakit/react-store";
+import { useStoreStateObject } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
-  useId,
   useMergeRefs,
   createElement,
   createHook,
@@ -11,19 +10,25 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getDocument, cx, invariant } from "@ariakit/utils";
+import { getDocument, cx } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, FocusEvent, RefObject } from "react";
-import { useCallback, useRef } from "react";
+import { useMemo } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
-import { useFormContext } from "./form-context.tsx";
-import type { FormStore } from "./form-store.ts";
+import { useFormItem } from "./form-context.tsx";
+import { useFormValidate } from "./form-store.ts";
+import type { FormStore, FormStoreState } from "./form-store.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-type ItemType = "label" | "error" | "description";
+
+interface ControlItemIds {
+  labelId?: string;
+  errorId?: string;
+  descriptionId?: string;
+}
 
 function getNamedElement(
   ref: RefObject<HTMLInputElement | null>,
@@ -39,10 +44,52 @@ function getNamedElement(
   return document.getElementsByName(name)[0] as HTMLInputElement | null;
 }
 
-function useItem(store: FormStore, name: string, type: ItemType) {
-  return useStoreState(store, (state) =>
-    state.items.find((item) => item.type === type && item.name === name),
-  );
+function getControlItemIds(items: FormStoreState["items"], name: string) {
+  const ids: ControlItemIds = {};
+
+  for (const item of items) {
+    if (item.name !== name) continue;
+
+    if (item.type === "label" && ids.labelId === undefined) {
+      ids.labelId = item.id;
+    } else if (item.type === "error" && ids.errorId === undefined) {
+      ids.errorId = item.id;
+    } else if (item.type === "description" && ids.descriptionId === undefined) {
+      ids.descriptionId = item.id;
+    }
+
+    if (
+      ids.labelId !== undefined &&
+      ids.errorId !== undefined &&
+      ids.descriptionId !== undefined
+    ) {
+      break;
+    }
+  }
+
+  return ids;
+}
+
+function useControlState(form: FormStore, name: string) {
+  const getItemIds = useMemo(() => {
+    let prevItems: FormStoreState["items"] | undefined;
+    let prevIds: ControlItemIds = {};
+
+    return (state: Pick<FormStoreState, "items">) => {
+      if (state.items !== prevItems) {
+        prevItems = state.items;
+        prevIds = getControlItemIds(state.items, name);
+      }
+      return prevIds;
+    };
+  }, [name]);
+
+  return useStoreStateObject(form, ["items", "errors", "touched"], {
+    labelId: (state) => getItemIds(state).labelId,
+    errorId: (state) => getItemIds(state).errorId,
+    descriptionId: (state) => getItemIds(state).descriptionId,
+    invalid: () => !!form.getError(name) && form.getFieldTouched(name),
+  });
 }
 
 /**
@@ -56,7 +103,7 @@ function useItem(store: FormStore, name: string, type: ItemType) {
  * ```jsx
  * const store = useFormStore({ defaultValues: { content: "" } });
  * const props = useFormControl({ store, name: store.names.content });
- * const value = store.useValue(store.names.content);
+ * const value = useFormValue(store, store.names.content);
  *
  * <Form store={store}>
  *   <FormLabel name={store.names.content}>Content</FormLabel>
@@ -77,39 +124,30 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
     touchOnBlur = true,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
-
-    invariant(
+    const {
+      store: form,
+      name,
+      id,
+      ref,
+      getItem,
+    } = useFormItem<HTMLType>({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "FormControl must be wrapped in a Form component.",
-    );
+      name: nameProp,
+      id: props.id,
+      type: "field",
+      getItem: getItemProp,
+      component: "FormControl",
+    });
 
-    const name = String(nameProp);
-    const id = useId(props.id);
-    const ref = useRef<HTMLType>(null);
-
-    store.useValidate(async () => {
+    useFormValidate(form, async () => {
       const element = getNamedElement(ref, name);
       if (!element) return;
       // Flush microtasks to make sure the validity state is up to date
       await Promise.resolve();
       if ("validity" in element && !element.validity.valid) {
-        store?.setError(name, element.validationMessage);
+        form.setError(name, element.validationMessage);
       }
     });
-
-    const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
-      (item) => {
-        const nextItem = { ...item, id: id || item.id, name, type: "field" };
-        if (getItemProp) {
-          return getItemProp(nextItem);
-        }
-        return nextItem;
-      },
-      [id, name, getItemProp],
-    );
 
     const onBlurProp = props.onBlur;
     const touchOnBlurProp = useBooleanEvent(touchOnBlur);
@@ -118,25 +156,17 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
       onBlurProp?.(event);
       if (event.defaultPrevented) return;
       if (!touchOnBlurProp(event)) return;
-      store?.setFieldTouched(name, true);
+      form.setFieldTouched(name, true);
     });
 
-    const label = useItem(store, name, "label");
-    const error = useItem(store, name, "error");
-    const description = useItem(store, name, "description");
-    const describedBy = cx(
-      error?.id,
-      description?.id,
-      props["aria-describedby"],
+    const { labelId, errorId, descriptionId, invalid } = useControlState(
+      form,
+      name,
     );
-
-    const invalid = useStoreState(
-      store,
-      () => !!store?.getError(name) && store.getFieldTouched(name),
-    );
+    const describedBy = cx(errorId, descriptionId, props["aria-describedby"]);
 
     props = {
-      "aria-labelledby": props["aria-label"] != null ? undefined : label?.id,
+      "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       "aria-invalid": invalid,
       ...props,
       id,
@@ -145,7 +175,12 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
       onBlur,
     };
 
-    props = useCollectionItem<TagName>({ store, ...props, name, getItem });
+    props = useCollectionItem<TagName>({
+      store: form,
+      ...props,
+      name,
+      getItem,
+    });
 
     return props;
   },
@@ -167,7 +202,7 @@ export const useFormControl = createHook<TagName, FormControlOptions>(
  *   },
  * });
  *
- * const value = form.useValue(form.names.content);
+ * const value = useFormValue(form, form.names.content);
  *
  * <Form store={form}>
  *   <FormLabel name={form.names.content}>Content</FormLabel>

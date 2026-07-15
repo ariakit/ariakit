@@ -1,5 +1,5 @@
 import { isVisible, invariant } from "@ariakit/utils";
-import { wrapAsync } from "./__utils.ts";
+import { settle, wrapAsync } from "./__utils.ts";
 import { dispatch } from "./dispatch.ts";
 import { sleep } from "./sleep.ts";
 
@@ -11,6 +11,19 @@ function isPointerEventsEnabled(element: Element) {
   return getComputedStyle(element).pointerEvents !== "none";
 }
 
+/**
+ * Moves the pointer over an element, simulating a real user hovering it. Fires
+ * the relevant `pointer`/`mouse` enter, over, and move events, and dispatches the
+ * matching leave events on the previously hovered element.
+ *
+ * Hidden elements and elements with `pointer-events: none` are handled the way a
+ * browser would. Pass `options` to set event properties such as modifier keys.
+ * @example
+ * ```ts
+ * await hover(q.button("More options"));
+ * expect(q.menu()).toBeVisible();
+ * ```
+ */
 export function hover(element: Element | null, options?: PointerEventInit) {
   return wrapAsync(async () => {
     invariant(element, "Unable to hover on null element");
@@ -45,7 +58,9 @@ export function hover(element: Element | null, options?: PointerEventInit) {
       }
     }
 
-    await sleep();
+    // Settle between leaving the previously hovered element and entering the new
+    // one — a cheap settle covers the transition's microtask/rAF work.
+    await settle();
 
     if (pointerEventsEnabled) {
       const enterOptions = lastHovered

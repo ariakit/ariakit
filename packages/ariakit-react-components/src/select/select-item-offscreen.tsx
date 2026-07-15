@@ -34,14 +34,25 @@ export const SelectItem = forwardRef(function SelectItem({
   if (active) {
     return <Base.SelectItem {...allProps} />;
   }
-  // Remove SelectItem props
+  // Remove SelectItem props. Custom renders own their native disabled state.
   const {
     store,
     value,
+    disabled,
+    shouldRegisterItem,
+    rowId,
     getItem,
     hideOnClick,
     setValueOnClick,
     preventScrollOnKeyDown,
+    moveOnKeyPress,
+    tabbable,
+    clickOnEnter,
+    clickOnSpace,
+    focusable,
+    accessibleWhenDisabled,
+    autoFocus,
+    onFocusVisible,
     focusOnHover,
     blurOnHoverEnd,
     ...htmlProps

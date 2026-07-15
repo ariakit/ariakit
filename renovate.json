@@ -3,6 +3,16 @@
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
   "minimumReleaseAge": "3 days",
   "semanticCommits": "disabled",
+  "postUpdateOptions": ["pnpmDedupe"],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/bower_components/**",
+    "**/vendor/**",
+    "**/__tests__/**",
+    "**/test/**",
+    "**/tests/**",
+    "**/__fixtures__/**"
+  ],
   "packageRules": [
     {
       "matchFileNames": ["website/package.json"],
@@ -16,7 +26,7 @@
     {
       "matchFileNames": ["app/package.json"],
       "matchPackageNames": ["vite"],
-      "allowedVersions": "/^7\\./"
+      "allowedVersions": "/^8\\./"
     },
     {
       "matchPackageNames": ["tailwindcss"],
@@ -31,6 +41,18 @@
         "/remark/",
         "/unified/",
         "/unist/"
+      ]
+    },
+    {
+      "groupName": "astro",
+      "matchPackageNames": ["astro", "/^@astrojs\\//"]
+    },
+    {
+      "groupName": "solid",
+      "matchPackageNames": [
+        "solid-js",
+        "/^@solidjs\\//",
+        "/^@solid-primitives\\//"
       ]
     },
     {
@@ -55,7 +77,12 @@
     },
     {
       "groupName": "react",
-      "matchPackageNames": ["react", "react-dom"]
+      "matchPackageNames": [
+        "react",
+        "react-dom",
+        "@types/react",
+        "@types/react-dom"
+      ]
     },
     {
       "groupName": "vite",
@@ -86,7 +113,7 @@
         "motion",
         "fs-extra",
         "glob",
-        "jsdom",
+        "happy-dom",
         "lodash-es",
         "match-sorter",
         "react",
@@ -99,7 +126,9 @@
         "pnpm",
         "textarea-caret",
         "tsup",
+        "@typescript/typescript6",
         "typescript",
+        "typescript-7",
         "playwright",
         "zod",
         "/^@playwright//",

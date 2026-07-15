@@ -5,12 +5,17 @@ import updates from "@/updates.ts";
 
 let releasesCache: UpdateItem[] | null = null;
 
+function isArchivedReactRelease(version: string) {
+  const [major, minor] = version.split(".");
+  return major === "0" && Number(minor) < 4;
+}
+
 function getReleaseUpdates() {
   if (releasesCache) {
     return releasesCache;
   }
   try {
-    const response = spawn.sync("npm", [
+    const response = spawn.sync("pnpm", [
       "view",
       "@ariakit/react",
       "versions",
@@ -25,10 +30,9 @@ function getReleaseUpdates() {
       type: "release",
       title: `New release: ${version}`,
       dateTime: `${dateTime}`,
-      href:
-        new Date(`${dateTime}`) < new Date("2023-11-18")
-          ? `https://github.com/ariakit/ariakit/releases/tag/@ariakit/react@${version}`
-          : `/changelog#${version.replace(/\./g, "")}`,
+      href: isArchivedReactRelease(version)
+        ? `https://github.com/ariakit/ariakit/releases/tag/@ariakit/react@${version}`
+        : `/changelog#${version.replace(/\./g, "")}`,
     }));
   } catch {
     releasesCache = [];

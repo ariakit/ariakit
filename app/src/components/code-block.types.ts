@@ -7,10 +7,28 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import type { BundledLanguage } from "shiki";
+import type { ThemedToken } from "shiki";
+import type { CodeBlockLanguage } from "#app/lib/shiki.ts";
 import type * as icons from "../icons/icons.ts";
 
 type IconName = keyof typeof icons;
+
+export interface TokenFragment {
+  content: string;
+  token: ThemedToken;
+  isHighlighted: boolean;
+  tokenIndex: number;
+  isDiff?: boolean;
+  charStart: number;
+  charEnd: number;
+}
+
+export interface Segment {
+  fragments: TokenFragment[];
+  isHighlighted: boolean;
+  spansMultipleTokens: boolean;
+  isDiff?: boolean;
+}
 
 export interface CodeBlockProps {
   code: string;
@@ -18,7 +36,7 @@ export interface CodeBlockProps {
   preferMultilineDiff?: boolean | number;
   filename?: string;
   filenameIcon?: IconName;
-  lang?: BundledLanguage;
+  lang?: CodeBlockLanguage;
   maxLines?: number;
   lineNumbers?: boolean;
   highlightLines?: number[];

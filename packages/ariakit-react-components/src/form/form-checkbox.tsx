@@ -5,14 +5,14 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useCheckboxStore } from "../checkbox/checkbox-store.ts";
 import type { CheckboxOptions } from "../checkbox/checkbox.tsx";
 import { useCheckbox } from "../checkbox/checkbox.tsx";
-import { useFormContext } from "./form-context.tsx";
+import { useFormItemContext } from "./form-context.tsx";
 import type { FormControlOptions } from "./form-control.tsx";
 import { useFormControl } from "./form-control.tsx";
+import { useFormValue } from "./form-store.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
@@ -41,26 +41,21 @@ export const useFormCheckbox = createHook<TagName, FormCheckboxOptions>(
     defaultChecked,
     ...props
   }) {
-    const context = useFormContext();
-    store = store || context;
-
-    invariant(
+    const { store: form, name } = useFormItemContext({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "FormCheckbox must be wrapped in a Form component.",
-    );
-
-    const name = String(nameProp);
+      name: nameProp,
+      component: "FormCheckbox",
+    });
 
     const checkboxStore = useCheckboxStore({
-      value: store.useValue(name),
-      setValue: (value) => store?.setValue(name, value),
+      value: useFormValue(form, name),
+      setValue: (value) => form.setValue(name, value),
     });
 
     props = useCheckbox({ store: checkboxStore, value, checked, ...props });
 
     props = useFormControl({
-      store,
+      store: form,
       name,
       "aria-labelledby": undefined,
       ...props,

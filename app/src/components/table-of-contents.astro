@@ -84,7 +84,7 @@ const allHeadings = title
    *   - when scrolling down: the last visible link
    *   - when scrolling up: the first visible link
    *
-   * The script is initialized on `DOMContentLoaded` and `astro:page-load`.
+   * The script is initialized on `astro:page-load`.
    */
   function initTableOfContents() {
     const tocElements = document.querySelectorAll<HTMLElement>(
@@ -113,6 +113,10 @@ const allHeadings = title
 
     for (const tocElement of tocElements) {
       if (tocElement.dataset.inert) continue;
+      if (tocElement.hasAttribute("data-table-of-contents-initialized")) {
+        continue;
+      }
+
       const topOffset = Number.parseInt(tocElement.dataset.topOffset || "0");
 
       // Get all the links within the table of contents.
@@ -127,12 +131,15 @@ const allHeadings = title
         })
         .filter((heading): heading is HTMLElement => heading !== null);
 
-      if (headings.length === 0) return;
+      if (headings.length === 0) continue;
+
+      tocElement.setAttribute("data-table-of-contents-initialized", "true");
 
       // Use IntersectionObserver to show indicators for headings that are
       // currently visible in the viewport.
+      let observer: IntersectionObserver | null = null;
       if ("IntersectionObserver" in window) {
-        const observer = new IntersectionObserver(
+        observer = new IntersectionObserver(
           (entries) => {
             for (const entry of entries) {
               const heading = entry.target;
@@ -163,13 +170,6 @@ const allHeadings = title
         for (const heading of headings) {
           observer.observe(heading);
         }
-
-        // Clean up the observer when the page is about to be torn down by Astro.
-        document.addEventListener("astro:before-preparation", () => {
-          for (const heading of headings) {
-            observer.unobserve(heading);
-          }
-        });
       }
 
       let activeLink: Element | null = null;
@@ -246,6 +246,25 @@ const allHeadings = title
       }
 
       let timeout: number;
+      let headingThresholds: number[] = [];
+
+      // Scroll margins can change with responsive header size and font loading,
+      // but they do not need to be recomputed on every scroll frame.
+      const updateHeadingThresholds = () => {
+        headingThresholds = headings.map((heading) => {
+          const style = window.getComputedStyle(heading);
+          const scrollMargin = Number.parseFloat(style.scrollMarginBlockStart);
+          return (Number.isNaN(scrollMargin) ? 0 : scrollMargin) + topOffset;
+        });
+      };
+
+      updateHeadingThresholds();
+
+      let resizeObserver: ResizeObserver | null = null;
+      if ("ResizeObserver" in window) {
+        resizeObserver = new ResizeObserver(updateHeadingThresholds);
+        resizeObserver.observe(document.body);
+      }
 
       /**
        * This function is called on scroll. It determines which heading is
@@ -273,11 +292,10 @@ const allHeadings = title
         // last one whose top edge is above the viewport's "fold" (adjusted for
         // the sticky header).
         let currentActiveHeading: HTMLElement | null = null;
-        for (const heading of headings) {
-          const style = window.getComputedStyle(heading);
-          const scrollMargin = parseFloat(style.scrollMarginBlockStart);
-          const threshold =
-            (isNaN(scrollMargin) ? 0 : scrollMargin) + topOffset;
+        for (let index = 0; index < headings.length; index += 1) {
+          const heading = headings[index];
+          if (!heading) continue;
+          const threshold = headingThresholds[index] ?? topOffset;
           if (heading.getBoundingClientRect().top < threshold + 2) {
             currentActiveHeading = heading;
           }
@@ -301,20 +319,26 @@ const allHeadings = title
         timeout = window.requestAnimationFrame(onScroll);
       };
 
+      const cleanup = () => {
+        observer?.disconnect();
+        resizeObserver?.disconnect();
+        window.removeEventListener("scroll", throttledScroll);
+        if (timeout) window.cancelAnimationFrame(timeout);
+        tocElement.removeAttribute("data-table-of-contents-initialized");
+      };
+
       window.addEventListener("scroll", throttledScroll, { passive: true });
       // Call onScroll once to set the initial state.
       onScroll();
 
-      // Clean up the scroll listener when the page is about to be torn down.
-      document.addEventListener("astro:before-preparation", () => {
-        window.removeEventListener("scroll", throttledScroll);
-        if (timeout) window.cancelAnimationFrame(timeout);
+      // Clean up when the page is about to be torn down by Astro.
+      document.addEventListener("astro:before-preparation", cleanup, {
+        once: true,
       });
     }
   }
 
-  // Initialize the table of contents script when the DOM is ready or when Astro
-  // navigates to a new page.
-  document.addEventListener("DOMContentLoaded", initTableOfContents);
+  // Initialize the table of contents script when Astro loads or navigates to a
+  // new page.
   document.addEventListener("astro:page-load", initTableOfContents);
 </script>

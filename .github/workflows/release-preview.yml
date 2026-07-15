@@ -12,7 +12,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -59,9 +59,9 @@ jobs:
         env:
           AFFECTED_PACKAGES: ${{ steps.compute-affected-packages.outputs.affected-packages }}
         run: |
-          packages=$(echo $AFFECTED_PACKAGES | jq -r '.[]' | tr '\n' ' ')
+          packages=$(echo "$AFFECTED_PACKAGES" | jq -r '.[]' | tr '\n' ' ')
           if [ -n "$packages" ]; then
-            pnpm dlx pkg-pr-new publish --compact --template './templates/*' $packages
+            pnpm exec pkg-pr-new publish --pnpm --compact --template './templates/*' $packages
           else
             echo "No affected packages to publish"
           fi

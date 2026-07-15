@@ -1,4 +1,5 @@
 import { getDocument } from "@ariakit/utils";
+import { getVisuallyHiddenStyle } from "../../visually-hidden/visually-hidden.tsx";
 
 export function prependHiddenDismiss(
   container: HTMLElement,
@@ -10,18 +11,7 @@ export function prependHiddenDismiss(
   button.tabIndex = -1;
   button.textContent = "Dismiss popup";
 
-  // Visually hidden styles
-  Object.assign(button.style, {
-    border: "0px",
-    clip: "rect(0 0 0 0)",
-    height: "1px",
-    margin: "-1px",
-    overflow: "hidden",
-    padding: "0px",
-    position: "absolute",
-    whiteSpace: "nowrap",
-    width: "1px",
-  });
+  Object.assign(button.style, getVisuallyHiddenStyle());
 
   button.addEventListener("click", onClick);
   container.prepend(button);

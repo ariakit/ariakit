@@ -171,8 +171,11 @@ function getItemObject(item: Item): ItemObject {
 
 function getItemId(item: Item, index: number, baseId?: string) {
   invariant(baseId, "CollectionRenderer must be given an `id` prop.");
-  const defaultId = `${baseId}/${index}`;
-  return getItemObject(item).id ?? defaultId;
+  if (item && typeof item === "object") {
+    const itemObject = getItemObject(item);
+    if (itemObject.id != null) return itemObject.id;
+  }
+  return `${baseId}/${index}`;
 }
 
 function getItem<T extends Item = any>(
@@ -195,7 +198,6 @@ function getItemSize(
   fallbackElement?: HTMLElement | null | false,
 ): number {
   const itemObject = getItemObject(item);
-  horizontal = itemObject.orientation === "horizontal" || horizontal;
   const prop = horizontal ? "width" : "height";
   const style = itemObject.style;
   if (style) {
@@ -203,16 +205,20 @@ function getItemSize(
     if (typeof size === "number") return size;
   }
   const items = itemObject.items;
-  if (items?.length) {
-    const hasSameOrientation =
-      !itemObject.orientation ||
-      (horizontal && itemObject.orientation === "horizontal") ||
-      (!horizontal && itemObject.orientation === "vertical");
+  const hasSameOrientation =
+    !itemObject.orientation ||
+    (horizontal && itemObject.orientation === "horizontal") ||
+    (!horizontal && itemObject.orientation === "vertical");
+  // When the nested items run along the axis being measured, the item's size is
+  // the sum of its children's sizes. When they run along the cross axis (e.g. a
+  // horizontal group inside a vertical list), summing would measure the wrong
+  // axis, so we fall through to the element/max-child measurement below instead.
+  if (items?.length && hasSameOrientation) {
     const paddingStart = itemObject.paddingStart ?? itemObject.padding ?? 0;
     const paddingEnd = itemObject.paddingEnd ?? itemObject.padding ?? 0;
-    const padding = hasSameOrientation ? paddingStart + paddingEnd : 0;
+    const padding = paddingStart + paddingEnd;
     const initialSize = (itemObject.gap ?? 0) * (items.length - 1) + padding;
-    if (hasSameOrientation && itemObject.itemSize) {
+    if (itemObject.itemSize) {
       return initialSize + itemObject.itemSize * items.length;
     }
     // oxlint-disable-next-line no-unnecessary-type-arguments
@@ -226,6 +232,16 @@ function getItemSize(
     fallbackElement !== false ? itemObject.element || fallbackElement : null;
   if (element?.isConnected) {
     return element.getBoundingClientRect()[prop];
+  }
+  // The nested items run along the cross axis, so the item's extent along the
+  // measured axis is the largest child extent rather than the sum.
+  if (items?.length && !hasSameOrientation) {
+    // oxlint-disable-next-line no-unnecessary-type-arguments
+    const maxSize = items.reduce<number>(
+      (max, item) => Math.max(max, getItemSize(item, horizontal)),
+      0,
+    );
+    if (maxSize) return maxSize;
   }
   return 0;
 }
@@ -364,7 +380,6 @@ function getData<T extends Item>(props: {
   horizontal: boolean;
   elements: Map<string, HTMLElement>;
   paddingStart: number;
-  itemSize?: number;
   estimatedItemSize: number;
 }) {
   const length = getItemsLength(props.items);
@@ -379,7 +394,9 @@ function getData<T extends Item>(props: {
     const prevRendered = itemData?.rendered ?? false;
 
     const setSize = (size: number, rendered = prevRendered) => {
-      start = start ? start + props.gap : start;
+      if (index > 0) {
+        start += props.gap;
+      }
       const end = start + size;
       const nextItemData = { index, rendered, start, end };
       if (!shallowEqual(itemData, nextItemData)) {
@@ -410,7 +427,7 @@ function getData<T extends Item>(props: {
 }
 
 export function useCollectionRenderer<T extends Item = any>({
-  store,
+  store: storeProp,
   items: itemsProp,
   initialItems = 0,
   gap = 0,
@@ -428,10 +445,11 @@ export function useCollectionRenderer<T extends Item = any>({
   ...props
 }: CollectionRendererProps<T>) {
   const context = useCollectionContext();
-  store = store || (context as typeof store);
+  const store = storeProp || (context as typeof storeProp);
 
   const items = useStoreState(
     store,
+    ["items"],
     (state) => itemsProp ?? (state?.items as T[]),
   );
 
@@ -441,11 +459,8 @@ export function useCollectionRenderer<T extends Item = any>({
       "CollectionRenderer must be either wrapped in a Collection component or be given an `items` prop.",
   );
 
-  let parent = useContext(CollectionRendererContext);
-
-  if (store && parent?.store !== store) {
-    parent = null;
-  }
+  const contextParent = useContext(CollectionRendererContext);
+  const parent = store && contextParent?.store !== store ? null : contextParent;
 
   const parentData = parent?.childrenData;
   const orientation = orientationProp ?? parent?.orientation ?? "vertical";
@@ -456,6 +471,21 @@ export function useCollectionRenderer<T extends Item = any>({
   const horizontal = orientation === "horizontal";
   const elements = useMemo(() => new Map<string, HTMLElement>(), []);
   const [elementsUpdated, updateElements] = useForceUpdate();
+  const computeData = useCallback(
+    (currentData: Data, currentBaseId: string, currentItems: Items<T>) => {
+      return getData({
+        baseId: currentBaseId,
+        items: currentItems,
+        data: currentData,
+        gap,
+        elements,
+        horizontal,
+        paddingStart,
+        estimatedItemSize,
+      });
+    },
+    [gap, elements, horizontal, paddingStart, estimatedItemSize],
+  );
 
   const [defaultVisibleIndices, setVisibleIndices] = useState<number[]>(() => {
     if (!initialItems) return [];
@@ -487,17 +517,7 @@ export function useCollectionRenderer<T extends Item = any>({
     const data = parentData?.get(baseId) || new Map();
     if (itemSize != null) return data;
     if (!items) return data;
-    const nextData = getData({
-      baseId,
-      items,
-      data,
-      gap,
-      elements,
-      horizontal,
-      paddingStart,
-      itemSize,
-      estimatedItemSize,
-    });
+    const nextData = computeData(data, baseId, items);
     return nextData || data;
   });
 
@@ -536,32 +556,11 @@ export function useCollectionRenderer<T extends Item = any>({
     if (itemSize != null) return;
     if (!baseId) return;
     if (!items) return;
-    const nextData = getData({
-      baseId,
-      items,
-      data,
-      gap,
-      elements,
-      horizontal,
-      paddingStart,
-      itemSize,
-      estimatedItemSize,
-    });
+    const nextData = computeData(data, baseId, items);
     if (nextData) {
       setData(nextData);
     }
-  }, [
-    elementsUpdated,
-    itemSize,
-    baseId,
-    items,
-    data,
-    gap,
-    elements,
-    horizontal,
-    paddingStart,
-    estimatedItemSize,
-  ]);
+  }, [elementsUpdated, itemSize, baseId, items, data, computeData]);
 
   const scroller = useScroller(items ? ref : null);
   const offsetsRef = useRef({ start: 0, end: 0 });
@@ -748,10 +747,28 @@ export function useCollectionRenderer<T extends Item = any>({
     });
   }, [updateElements]);
 
+  // Disconnect the observer when the renderer unmounts so it doesn't retain the
+  // measured item nodes or keep firing resize callbacks. Re-observe the tracked
+  // elements on setup so observation survives a simulated unmount/remount (e.g.,
+  // React StrictMode), which runs this cleanup but doesn't necessarily re-run
+  // the item ref callbacks.
+  useEffect(() => {
+    for (const element of elements.values()) {
+      elementObserver?.observe(element);
+    }
+    return () => elementObserver?.disconnect();
+  }, [elementObserver, elements]);
+
   const itemRef = useCallback<RefCallback<HTMLElement>>(
     (element) => {
       if (!element) return;
       if (itemSize) return;
+      // If an id is reassigned to a different node, stop observing the previous
+      // node so its detached element isn't retained.
+      const prevElement = elements.get(element.id);
+      if (prevElement && prevElement !== element) {
+        elementObserver?.unobserve(prevElement);
+      }
       updateElements();
       elements.set(element.id, element);
       elementObserver?.observe(element);
@@ -802,6 +819,24 @@ export function useCollectionRenderer<T extends Item = any>({
       })
       .filter((value): value is NonNullable<typeof value> => value != null);
   }, [items, visibleIndices, getItemProps]);
+
+  // Stop observing and forget item nodes that are no longer rendered (for
+  // example, dropped from the virtualized window), so neither the observer nor
+  // the `elements` map retains their detached nodes.
+  useEffect(() => {
+    // When `itemSize` is set the renderer doesn't measure items, so nothing
+    // should stay observed; otherwise keep the items that are still rendered.
+    // The empty set also cleans up if `itemSize` switches from unset to a fixed
+    // size at runtime, which would otherwise leave already-measured nodes behind.
+    const renderedIds = itemSize
+      ? new Set<string>()
+      : new Set(itemsProps.map((itemProps) => itemProps.id));
+    for (const [id, element] of elements) {
+      if (renderedIds.has(id)) continue;
+      elementObserver?.unobserve(element);
+      elements.delete(id);
+    }
+  }, [itemsProps, itemSize, elements, elementObserver]);
 
   const children = itemsProps?.map((itemProps) => {
     return renderItem?.(itemProps);

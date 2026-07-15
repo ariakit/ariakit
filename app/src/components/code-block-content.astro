@@ -8,36 +8,23 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { ReferenceHovercardAnchor } from "#app/components/reference-hovercard.react.tsx";
+import { getCachedCollection } from "#app/lib/collection-cache.ts";
 import { findCodeReferenceAnchors } from "#app/lib/reference-tokenizer.ts";
-import { getLangFromFilename, highlighter } from "#app/lib/shiki.ts";
+import { codeToTokens, getLangFromFilename } from "#app/lib/shiki.ts";
 import { invariant } from "@ariakit/utils";
-import { getCollection } from "astro:content";
 import { diffLines, diffWordsWithSpace } from "diff";
 import type { ThemedToken } from "shiki";
-import type { CodeBlockProps } from "./code-block.types.ts";
+import CodeBlockSegments from "./code-block-segments.astro";
+import type {
+  CodeBlockProps,
+  Segment,
+  TokenFragment,
+} from "./code-block.types.ts";
 
 interface Props extends CodeBlockProps {
   grammarContextCode?: string;
   disableSyntaxHighlighting?: boolean;
   disableReferenceLinks?: boolean;
-}
-
-interface TokenFragment {
-  content: string;
-  token: ThemedToken;
-  isHighlighted: boolean;
-  tokenIndex: number;
-  isDiff?: boolean;
-  charStart: number;
-  charEnd: number;
-}
-
-interface Segment {
-  fragments: TokenFragment[];
-  isHighlighted: boolean;
-  spansMultipleTokens: boolean;
-  isDiff?: boolean;
 }
 
 interface DiffInfoItem {
@@ -109,15 +96,7 @@ const {
 
 function getTokens() {
   if (disableSyntaxHighlighting) return null;
-  const { tokens } = highlighter.codeToTokens(code.trim(), {
-    lang,
-    grammarContextCode,
-    themes: {
-      light: "github-light",
-      dark: "dark-plus",
-    },
-  });
-  return tokens;
+  return codeToTokens({ code: code.trim(), lang, grammarContextCode });
 }
 
 const tokens = getTokens();
@@ -127,18 +106,7 @@ let diffInfo: DiffInfo | null = null;
 // Reusable UI class constants (template-only consumers)
 const REMOVED_TOKEN_CLASS =
   "ak-layer ak-layer-red-500 ak-layer-mix-30 ak-edge-red-500 ak-edge-20 ring mx-[0.1em] rounded px-[0.25em] py-0.5 ak-ink-0 [text-decoration:none] relative after:absolute after:top-1/2 after:w-full after:start-0 after:h-px after:ak-layer-contrast";
-const HIGHLIGHT_CHIP_CLASS = "ring rounded px-[0.25em] py-0.5";
-const HIGHLIGHT_ADDED_CHIP_CLASS =
-  "ak-layer ak-layer-green-500 ak-layer-mix-30 ak-edge-green-500 ak-edge-20 ring mx-[0.1em] rounded px-[0.25em] py-0.5";
-const MULTI_TOKEN_HIGHLIGHT_CLASS = "ak-layer ak-layer-6 ak-edge-25";
 const LINE_DIV_BASE_CLASS = "pe-14 [content-visibility:auto] h-(--line-height)";
-
-function getTokenColors(token: ThemedToken) {
-  const style = token.htmlStyle as any;
-  const dark = style?.["--shiki-dark"] || token.color;
-  const light = style?.color || token.color;
-  return { dark, light } as const;
-}
 
 function mergeHighlightRanges<
   T extends { start: number; end: number; isDiff?: boolean },
@@ -643,7 +611,7 @@ const showGridColumns = lineNumbers || Boolean(diffInfo);
 // Reference hovercards: compute anchor ranges per line (disabled in lite mode)
 let anchorsByLine: ReturnType<typeof findCodeReferenceAnchors> = [];
 if (!disableReferenceLinks) {
-  const references = await getCollection("references");
+  const references = await getCachedCollection("references");
   anchorsByLine = findCodeReferenceAnchors({
     code: code.trim(),
     references,
@@ -651,41 +619,8 @@ if (!disableReferenceLinks) {
   });
 }
 
-function getFragmentPieces(
-  fragment: TokenFragment,
-  lineZeroBasedIndex: number,
-) {
-  const lineAnchors = anchorsByLine?.[lineZeroBasedIndex] || [];
-  const start = fragment.charStart;
-  const end = fragment.charEnd;
-  const pieces: Array<
-    | { type: "text"; start: number; end: number }
-    | { type: "anchor"; start: number; end: number; href: string; kind: any }
-  > = [];
-  let cursor = start;
-  const overlapping = lineAnchors
-    .filter((a) => a.start < end && a.end > start)
-    .sort((a, b) => a.start - b.start);
-  for (const a of overlapping) {
-    const aStart = Math.max(start, a.start);
-    const aEnd = Math.min(end, a.end);
-    if (cursor < aStart)
-      pieces.push({ type: "text", start: cursor, end: aStart });
-    if (aEnd > aStart) {
-      pieces.push({
-        type: "anchor",
-        start: aStart,
-        end: aEnd,
-        href: a.href,
-        kind: a.kind,
-      });
-      cursor = aEnd;
-    }
-  }
-  if (cursor < end) {
-    pieces.push({ type: "text", start: cursor, end });
-  }
-  return pieces;
+function getLineAnchors(lineNumber: number) {
+  return anchorsByLine[lineNumber - 1] || [];
 }
 ---
 
@@ -818,90 +753,13 @@ function getFragmentPieces(
                   if (part.renderType === "segments") {
                     const { isEmpty, segments } = part;
                     if (isEmpty) return null;
-                    return segments.map((segment: Segment) => {
-                      const segmentElements = segment.fragments.flatMap(
-                        (fragment: TokenFragment) => {
-                          const { dark, light } = getTokenColors(
-                            fragment.token,
-                          );
-                          const pieces = getFragmentPieces(
-                            fragment,
-                            (lineInfo.lineNum || 1) - 1,
-                          );
-                          const textFrom = (a: number, b: number) =>
-                            fragment.content.slice(
-                              a - fragment.charStart,
-                              b - fragment.charStart,
-                            );
-                          return pieces.map((piece) => (
-                            <span
-                              style={`--dark:${dark}; --light:${light}`}
-                              class="ak-text ak-text-color-(--dark) ak-light:ak-text-color-(--light)"
-                            >
-                              {piece.type === "anchor" ? (
-                                <ReferenceHovercardAnchor
-                                  client:idle
-                                  inCodeBlock
-                                  href={piece.href}
-                                  kind={piece.kind}
-                                  inHovercard={!!Astro.locals.reference}
-                                >
-                                  {textFrom(piece.start, piece.end)}
-                                </ReferenceHovercardAnchor>
-                              ) : (
-                                textFrom(piece.start, piece.end) || ""
-                              )}
-                            </span>
-                          ));
-                        },
-                      );
-
-                      // Apply highlighting if needed
-                      if (segment.isHighlighted) {
-                        const highlightClass = HIGHLIGHT_CHIP_CLASS;
-                        if (isAdded || segment.isDiff) {
-                          return (
-                            <span class={HIGHLIGHT_ADDED_CHIP_CLASS}>
-                              {segmentElements}
-                            </span>
-                          );
-                        }
-
-                        if (segment.spansMultipleTokens) {
-                          // Multi-token highlight
-                          return (
-                            <span
-                              class:list={[
-                                MULTI_TOKEN_HIGHLIGHT_CLASS,
-                                highlightClass,
-                              ]}
-                            >
-                              {segmentElements}
-                            </span>
-                          );
-                        }
-                        // Single token highlight - use token colors for background
-                        const firstFragment = segment.fragments[0];
-                        invariant(firstFragment, "First fragment is required");
-                        const { dark, light } = getTokenColors(
-                          firstFragment.token,
-                        );
-
-                        return (
-                          <span
-                            style={`--dark:${dark}; --light:${light}`}
-                            class:list={[
-                              "ak-text ak-text-color-(--dark) ak-light:ak-text-color-(--light) ak-layer ak-layer-color-(--ak-text) ak-layer-mix-10 ak-edge-color-(--ak-text) ak-edge-20",
-                              HIGHLIGHT_CHIP_CLASS,
-                            ]}
-                          >
-                            {segmentElements}
-                          </span>
-                        );
-                      }
-
-                      return segmentElements;
-                    });
+                    return (
+                      <CodeBlockSegments
+                        segments={segments}
+                        isAdded={isAdded}
+                        anchors={getLineAnchors(lineInfo.lineNum || 1)}
+                      />
+                    );
                   }
                   return null;
                 })}
@@ -924,93 +782,15 @@ function getFragmentPieces(
                   isCollapsed(lineInfo.i) && "in-data-collapsed:hidden",
                 ]}
               >
-                {isEmpty
-                  ? "\n"
-                  : segments.map((segment) => {
-                      const segmentElements = segment.fragments.flatMap(
-                        (fragment: TokenFragment) => {
-                          const { dark, light } = getTokenColors(
-                            fragment.token,
-                          );
-                          const pieces = getFragmentPieces(
-                            fragment,
-                            (lineInfo.lineNum || 1) - 1,
-                          );
-                          const textFrom = (a: number, b: number) =>
-                            fragment.content.slice(
-                              a - fragment.charStart,
-                              b - fragment.charStart,
-                            );
-                          return pieces.map((piece) => (
-                            <span
-                              style={`--dark:${dark}; --light:${light}`}
-                              class="ak-text ak-text-color-(--dark) ak-light:ak-text-color-(--light)"
-                            >
-                              {piece.type === "anchor" ? (
-                                <ReferenceHovercardAnchor
-                                  client:idle
-                                  inCodeBlock
-                                  href={piece.href}
-                                  kind={piece.kind}
-                                  inHovercard={!!Astro.locals.reference}
-                                >
-                                  {textFrom(piece.start, piece.end)}
-                                </ReferenceHovercardAnchor>
-                              ) : (
-                                textFrom(piece.start, piece.end) || ""
-                              )}
-                            </span>
-                          ));
-                        },
-                      );
-
-                      // Apply highlighting if needed
-                      if (segment.isHighlighted) {
-                        const highlightClass = HIGHLIGHT_CHIP_CLASS;
-
-                        if (isAdded || segment.isDiff) {
-                          return (
-                            <span class={HIGHLIGHT_ADDED_CHIP_CLASS}>
-                              {segmentElements}
-                            </span>
-                          );
-                        }
-
-                        if (segment.spansMultipleTokens) {
-                          // Multi-token highlight
-                          return (
-                            <span
-                              class:list={[
-                                MULTI_TOKEN_HIGHLIGHT_CLASS,
-                                highlightClass,
-                              ]}
-                            >
-                              {segmentElements}
-                            </span>
-                          );
-                        }
-                        // Single token highlight - use token colors for background
-                        const firstFragment = segment.fragments[0];
-                        invariant(firstFragment, "First fragment is required");
-                        const { dark, light } = getTokenColors(
-                          firstFragment.token,
-                        );
-
-                        return (
-                          <span
-                            style={`--dark:${dark}; --light:${light}`}
-                            class:list={[
-                              "ak-text ak-text-color-(--dark) ak-light:ak-text-color-(--light) ak-layer ak-layer-color-(--ak-text) ak-layer-mix-10 ak-edge-color-(--ak-text) ak-edge-20",
-                              HIGHLIGHT_CHIP_CLASS,
-                            ]}
-                          >
-                            {segmentElements}
-                          </span>
-                        );
-                      }
-
-                      return segmentElements;
-                    })}
+                {isEmpty ? (
+                  "\n"
+                ) : (
+                  <CodeBlockSegments
+                    segments={segments}
+                    isAdded={isAdded}
+                    anchors={getLineAnchors(lineInfo.lineNum || 1)}
+                  />
+                )}
               </div>
             );
           }

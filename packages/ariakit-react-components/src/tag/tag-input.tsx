@@ -9,10 +9,10 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
-  toArray,
   getTextboxSelection,
   setSelectionRange,
   getInputType,
+  isInputEvent,
   invariant,
   UndoManager,
 } from "@ariakit/utils";
@@ -28,6 +28,7 @@ import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useTagContext } from "./tag-context.tsx";
 import type { TagStore } from "./tag-store.ts";
+import { getDelimiters, splitValueByDelimiter } from "./utils.ts";
 
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
@@ -36,31 +37,6 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 type EventWithValues<T extends SyntheticEvent> = T & {
   values: string[];
 };
-
-const DEFAULT_DELIMITER = ["\n", ";", ",", /\s/];
-
-function getDelimiters(
-  delimiter: TagInputOptions["delimiter"],
-  defaultDelimiter: TagInputOptions["delimiter"] = DEFAULT_DELIMITER,
-) {
-  const finalDelimiter = delimiter === undefined ? defaultDelimiter : delimiter;
-  if (!finalDelimiter) return [];
-  return toArray(finalDelimiter);
-}
-
-function splitValueByDelimiter(value: string, delimiters: (string | RegExp)[]) {
-  for (const delimiter of delimiters) {
-    let match = value.match(delimiter);
-    // Remove delimiter from the start of the string
-    while (match?.index === 0) {
-      value = value.slice(match[0].length);
-      match = value.match(delimiter);
-    }
-    if (!match) continue;
-    return value.split(delimiter);
-  }
-  return [];
-}
 
 /**
  * Returns props to create a `TagInput` component.
@@ -123,7 +99,6 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
     const onChange = useEvent((event: ChangeEvent<HTMLType>) => {
       onChangeProp?.(event);
       if (event.defaultPrevented) return;
-      if (!store) return;
       const { value: prevValue } = store.getState();
       const inputType = getInputType(event);
       const currentTarget = event.currentTarget;
@@ -142,13 +117,15 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
           return () => store.setValue(prevValue);
         }, inputType);
       }
+      const nativeEvent = event.nativeEvent;
+      if (isInputEvent(nativeEvent) && nativeEvent.isComposing) return;
       // Add values to the store if the input value ends with a delimiter
       const isTrailingCaret = start === end && start === value.length;
       if (isTrailingCaret) {
         const delimiters = getDelimiters(delimiter);
         // Split values and get the trailing value that will remain in the input
         let values = splitValueByDelimiter(value, delimiters);
-        const trailingvalue = values.pop() || "";
+        const trailingValue = values.pop() || "";
         values = values
           .map((value) => value.trim())
           .filter((value) => value !== "");
@@ -164,8 +141,8 @@ export const useTagInput = createHook<TagName, TagInputOptions>(
             store.addValue(tagValue);
           }
           void UndoManager.execute(() => {
-            store.setValue(trailingvalue);
-            if (trailingvalue === prevValue) return;
+            store.setValue(trailingValue);
+            if (trailingValue === prevValue) return;
             return () => store.setValue(prevValue);
           }, inputType);
         }

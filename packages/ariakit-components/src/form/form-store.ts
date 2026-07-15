@@ -6,7 +6,7 @@ import {
   throwOnConflictingProps,
 } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
-import { applyState, defaultValue, isInteger, isObject } from "@ariakit/utils";
+import { applyState, defaultValue, isObject } from "@ariakit/utils";
 import type {
   AnyObject,
   PickRequired,
@@ -23,61 +23,142 @@ import { createCollectionStore } from "../collection/collection-store.ts";
 import type { DeepMap, DeepPartial, Names, StringLike } from "./types.ts";
 
 type ErrorMessage = string | undefined | null;
+type PathSegment = string | number;
+const maxArrayIndex = 2 ** 32 - 2;
+
+function getPath(path: StringLike | unknown[]) {
+  if (!Array.isArray(path)) {
+    return String(path).split(".");
+  }
+  return path.map((key) => {
+    if (typeof key === "number") return key;
+    return String(key);
+  });
+}
+
+function isPrototypePathSegment(key: PathSegment) {
+  if (key === "__proto__") return true;
+  if (key === "constructor") return true;
+  return false;
+}
 
 function nextFrame() {
-  return new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
+  return new Promise<void>((resolve) => {
+    // Browsers pause `requestAnimationFrame` in hidden documents, which would
+    // stall `validate()`/`submit()` until the tab becomes visible again. Race it
+    // against a timeout so a hidden document still makes progress; in a visible
+    // document the frame wins first, preserving the "after the next render"
+    // timing.
+    const timeoutId = setTimeout(resolve, 100);
+    requestAnimationFrame(() => {
+      clearTimeout(timeoutId);
+      resolve();
+    });
+  });
 }
 
 export function hasMessages(object: FormStoreValues): boolean {
-  return Object.keys(object).some((key) => {
+  const keys = Object.keys(object);
+  for (const key of keys) {
+    if (isPrototypePathSegment(key)) continue;
     if (isObject(object[key])) {
-      return hasMessages(object[key]);
+      if (hasMessages(object[key])) return true;
+      continue;
     }
-    return !!object[key];
-  });
+    if (object[key]) return true;
+  }
+  return false;
 }
 
 export function get<T>(
   values: FormStoreValues,
-  path: StringLike | string[],
+  path: StringLike | Array<string | number>,
   defaultValue?: T,
 ): T {
-  const [key, ...rest] = Array.isArray(path) ? path : String(path).split(".");
-  if (key == null || !values) {
+  const pathKeys = getPath(path);
+  return getPathValue(values, pathKeys, defaultValue);
+}
+
+function getPathValue<T>(
+  values: FormStoreValues,
+  path: PathSegment[],
+  defaultValue?: T,
+): T {
+  const [key, ...rest] = path;
+  if (key == null || !values || isPrototypePathSegment(key)) {
     return defaultValue as T;
   }
   if (!rest.length) {
     return values[key] ?? defaultValue;
   }
-  return get(values[key], rest, defaultValue);
+  return getPathValue(values[key], rest, defaultValue);
+}
+
+function isArrayIndex(key: PathSegment) {
+  if (typeof key !== "string" && typeof key !== "number") return false;
+  const stringKey = String(key);
+  const index = Number(stringKey);
+  return (
+    Number.isInteger(index) &&
+    index >= 0 &&
+    index <= maxArrayIndex &&
+    String(index) === stringKey
+  );
 }
 
 // Returns the existing nested value if it is an array or object, otherwise
-// creates a new container based on whether the next key is an integer.
-function getOrCreateNested(nestedValues: unknown, nextKey: string) {
+// creates a new container based on whether the next key is an array index.
+function getOrCreateNested(nestedValues: unknown, nextKey: PathSegment) {
   if (Array.isArray(nestedValues) || isObject(nestedValues)) {
     return nestedValues;
   }
-  return isInteger(nextKey) ? [] : {};
+  return isArrayIndex(nextKey) ? [] : {};
+}
+
+function setObjectValue<T extends FormStoreValues | unknown[]>(
+  values: T,
+  key: keyof T,
+  value: unknown,
+) {
+  const result = {} as T;
+  if (values) {
+    const keys = Object.keys(values);
+    for (const propertyKey of keys) {
+      if (isPrototypePathSegment(propertyKey)) continue;
+      result[propertyKey as keyof T] = values[propertyKey as keyof T];
+    }
+  }
+  result[key] = value as T[keyof T];
+  return result;
 }
 
 function set<T extends FormStoreValues | unknown[]>(
   values: T,
-  path: StringLike | string[],
+  path: StringLike | Array<string | number>,
   value: unknown,
 ): T {
-  const [k, ...rest] = Array.isArray(path) ? path : String(path).split(".");
+  const pathKeys = getPath(path);
+  if (pathKeys.some(isPrototypePathSegment)) return values;
+  return setPath(values, pathKeys, value);
+}
+
+function setPath<T extends FormStoreValues | unknown[]>(
+  values: T,
+  path: PathSegment[],
+  value: unknown,
+): T {
+  const [k, ...rest] = path;
   if (k == null) return values;
   const key = k as keyof T;
-  const isIntegerKey = isInteger(key);
-  const nextValues = isIntegerKey ? values || [] : values || {};
+  const isArrayIndexKey = isArrayIndex(k);
+  const nextValues = isArrayIndexKey ? values || [] : values || {};
   const nestedValues = nextValues[key];
   const nextKey = rest[0];
   const result =
     rest.length && nextKey != null
-      ? set(getOrCreateNested(nestedValues, nextKey), rest, value)
+      ? setPath(getOrCreateNested(nestedValues, nextKey), rest, value)
       : value;
-  if (isIntegerKey) {
+  if (isArrayIndexKey) {
     const index = Number(key);
     if (values && Array.isArray(values)) {
       const copy = [...values];
@@ -88,13 +169,14 @@ function set<T extends FormStoreValues | unknown[]>(
     nextValues[index as keyof T] = result as T[keyof T];
     return nextValues;
   }
-  return Object.assign({}, values, { [key]: result });
+  return setObjectValue(values, key, result);
 }
 
 function setAll<T extends FormStoreValues, V>(values: T, value: V) {
   const result = {} as FormStoreValues;
   const keys = Object.keys(values);
   for (const key of keys) {
+    if (isPrototypePathSegment(key)) continue;
     const currentValue = values[key];
     if (Array.isArray(currentValue)) {
       result[key] = currentValue.map((v) => {
@@ -112,13 +194,24 @@ function setAll<T extends FormStoreValues, V>(values: T, value: V) {
   return result as DeepMap<T, V>;
 }
 
-function getNameHandler(
-  cache: FormStoreValues,
-  prevKeys: Array<string | symbol> = [],
-) {
+function getNameHandler(cache: FormStoreValues, prevKeys: string[] = []) {
   const handler: ProxyHandler<FormStoreValues> = {
     get(target, key) {
-      if (["toString", "valueOf", Symbol.toPrimitive].includes(key)) {
+      if (typeof key === "symbol") {
+        // Support string coercion through `Symbol.toPrimitive`, but resolve
+        // every other symbol to `undefined` like a plain object would. Joining
+        // the key path below would otherwise throw "Cannot convert a Symbol
+        // value to a string" for probes such as `Symbol.iterator` (used when
+        // rendering a name as a React child) or `Symbol.toStringTag`.
+        if (key === Symbol.toPrimitive) {
+          return () => prevKeys.join(".");
+        }
+        return undefined;
+      }
+      if (key === "toString") {
+        return () => prevKeys.join(".");
+      }
+      if (key === "valueOf") {
         return () => prevKeys.join(".");
       }
       const nextKeys = [...prevKeys, key];
@@ -472,6 +565,12 @@ export interface FormStoreFunctions<
   pushValue: <T>(name: StringLike, value: T) => void;
   /**
    * Removes a value from an array field.
+   *
+   * The array length is preserved: the removed index is replaced with `null`
+   * so indices stay stable for field keys, touched state, errors, and
+   * [`FormRemove`](https://ariakit.com/reference/form-remove) focus handling.
+   * Filter out `null` values before submitting if your payload should omit
+   * removed items.
    * @example
    * store.removeValue("tags", 0);
    * store.removeValue("tags", 1);

@@ -1,4 +1,5 @@
 import {
+  chmodSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -7,11 +8,12 @@ import {
 } from "node:fs";
 import { createRequire } from "node:module";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { afterEach, expect, test } from "vitest";
+import { delimiter, join } from "node:path";
+import { afterEach, expect, test, vi } from "vitest";
 import {
   generateDocsMarkdown,
   getDocsMarkers,
+  getPrecedingHeadings,
   injectDocsMarkdown,
 } from "./docs.ts";
 
@@ -39,9 +41,45 @@ function createPackage() {
 }
 
 afterEach(() => {
+  vi.unstubAllEnvs();
   for (const root of roots.splice(0)) {
     rmSync(root, { recursive: true, force: true });
   }
+});
+
+test("ignores partial formatter output after signal termination", () => {
+  const root = createPackage();
+  const binPath = join(root, "bin");
+  mkdirSync(binPath);
+  writeFileSync(
+    join(root, "src", "index.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const oxfmtPath = join(binPath, "oxfmt");
+  writeFileSync(
+    oxfmtPath,
+    `#!/usr/bin/env node
+require("node:fs").writeSync(1, "partial output");
+process.kill(process.pid, "SIGTERM");
+`,
+  );
+  chmodSync(oxfmtPath, 0o755);
+  vi.stubEnv(
+    "PATH",
+    [binPath, process.env.PATH].filter(Boolean).join(delimiter),
+  );
+
+  const markdown = generateDocsMarkdown({ rootPath: root });
+
+  expect(markdown).toContain("## API reference");
+  expect(markdown).not.toBe("partial output");
 });
 
 test("generates markdown from exported JSDoc and TypeScript declarations", () => {
@@ -238,6 +276,215 @@ test("probes past taken suffixes when building contents links", () => {
   expect(markdown).toContain("- [Value 1](#value-1-1)");
 });
 
+test("uses preceding readme headings when building contents links", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+      "/** Bar helper. */",
+      "export function bar() {",
+      "  return false;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(root, "readme.md"),
+    [
+      "# Test",
+      "",
+      "## foo",
+      "",
+      "<!-- ariakit-docs:start -->",
+      "<!-- ariakit-docs:end -->",
+      "",
+    ].join("\n"),
+  );
+
+  injectDocsMarkdown({ rootPath: root });
+
+  const readme = readFileSync(join(root, "readme.md"), "utf-8");
+  expect(readme).toContain("- [`foo`](#foo-1)");
+  expect(readme).toContain("- [`bar`](#bar)");
+});
+
+test("uses rendered link text from preceding readme headings", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+      "/** Bar helper. */",
+      "export function bar() {",
+      "  return false;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(root, "readme.md"),
+    [
+      "# Test",
+      "",
+      "## [foo](#details)",
+      "",
+      "<!-- ariakit-docs:start -->",
+      "<!-- ariakit-docs:end -->",
+      "",
+    ].join("\n"),
+  );
+
+  injectDocsMarkdown({ rootPath: root });
+
+  const readme = readFileSync(join(root, "readme.md"), "utf-8");
+  expect(readme).toContain("- [`foo`](#foo-1)");
+});
+
+test("ignores later readme headings when building contents links", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+      "/** Bar helper. */",
+      "export function bar() {",
+      "  return false;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+  writeFileSync(
+    join(root, "readme.md"),
+    [
+      "# Test",
+      "",
+      "<!-- ariakit-docs:start -->",
+      "<!-- ariakit-docs:end -->",
+      "",
+      "## foo",
+      "",
+    ].join("\n"),
+  );
+
+  injectDocsMarkdown({ rootPath: root });
+
+  const readme = readFileSync(join(root, "readme.md"), "utf-8");
+  expect(readme).toContain("- [`foo`](#foo)");
+  expect(readme).not.toContain("- [`foo`](#foo-1)");
+});
+
+test("disambiguates entries and back-to-top links from section headings", () => {
+  const root = createPackage();
+  const sourcePath = join(root, "src");
+  writeFileSync(join(sourcePath, "index.ts"), 'export * from "./foo.ts";\n');
+  writeFileSync(
+    join(sourcePath, "foo.ts"),
+    [
+      "/** Foo helper. */",
+      "export function foo() {",
+      "  return true;",
+      "}",
+      "",
+      "/** Bar helper. */",
+      "export function bar() {",
+      "  return false;",
+      "}",
+      "",
+    ].join("\n"),
+  );
+
+  const markdown = generateDocsMarkdown({
+    rootPath: root,
+    heading: "foo",
+    precedingHeadings: ["foo"],
+  });
+
+  expect(markdown).toContain("- [`foo`](#foo-2)");
+  expect(markdown).toContain('<a href="#foo-1">&uarr; back to top</a>');
+});
+
+test("ignores fenced code when collecting preceding headings", () => {
+  const { start } = getDocsMarkers();
+  const readme = [
+    "# Test",
+    "",
+    "````md",
+    "```sh",
+    "# Not a heading",
+    "```",
+    "````",
+    "",
+    "```",
+    "```ts",
+    "# Also not a heading",
+    "```",
+    "",
+    "## Real heading",
+    "",
+    start,
+    "",
+    "## Later heading",
+    "",
+  ].join("\n");
+
+  expect(getPrecedingHeadings(readme, start)).toEqual(["Test", "Real heading"]);
+});
+
+test("ignores HTML comments when collecting preceding headings", () => {
+  const { start } = getDocsMarkers();
+  const readme = [
+    "# Test",
+    "",
+    "<!--",
+    "## Hidden heading",
+    "-->",
+    "",
+    "## Real heading <!-- comment -->",
+    "",
+    start,
+    "",
+  ].join("\n");
+
+  expect(getPrecedingHeadings(readme, start)).toEqual(["Test", "Real heading"]);
+});
+
+test("ignores setext-style blocks before the docs marker", () => {
+  const { start } = getDocsMarkers();
+  const readme = [
+    "# Test",
+    "",
+    "Setext heading",
+    "==============",
+    "",
+    "- item",
+    "---",
+    "",
+    start,
+    "",
+  ].join("\n");
+
+  expect(getPrecedingHeadings(readme, start)).toEqual(["Test"]);
+});
+
 test("uses later JSDoc descriptions after tag-only blocks", () => {
   const root = createPackage();
   const sourcePath = join(root, "src");
@@ -311,7 +558,12 @@ test("injects generated markdown into a readme", () => {
   writeFileSync(
     join(sourcePath, "foo.ts"),
     [
-      "/** Foo helper. */",
+      "/**",
+      " * Foo helper.",
+      " * @example",
+      ' * const price = "$$50";',
+      ' * const replacement = "$&";',
+      " */",
       "export function foo() {",
       "  return true;",
       "}",
@@ -337,6 +589,8 @@ test("injects generated markdown into a readme", () => {
   expect(readme).toContain("<!-- ariakit-docs:end -->");
   expect(readme).toContain("### `foo`");
   expect(readme).toContain("Foo helper.");
+  expect(readme).toContain('const price = "$$50";');
+  expect(readme).toContain('const replacement = "$&";');
   expect(readme).not.toContain("Old docs");
 });
 
@@ -737,6 +991,7 @@ test.skipIf(reactMajor < 19).each(docsPackages)(
       const markdown = generateDocsMarkdown({
         rootPath: root,
         ...target,
+        precedingHeadings: getPrecedingHeadings(readme, start),
       }).trimEnd();
       const readmeMarkdown = readme
         .slice(startIndex + start.length, endIndex)

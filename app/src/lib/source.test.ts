@@ -195,6 +195,68 @@ test("mergeImports filters imports", () => {
   `);
 });
 
+test("mergeImports terminates rewritten mixed imports", () => {
+  const code = [
+    'import { A, type T } from "keep";',
+    'import { B } from "move";',
+    "export const value = A + B;",
+  ].join("\n");
+  expect(mergeImports(code, (p) => (p === "move" ? "moved" : false)))
+    .toMatchInlineSnapshot(`
+    "import { A } from "keep";
+    import type { T } from "keep";
+    import { B } from "moved";
+    export const value = A + B;"
+  `);
+});
+
+test("mergeImports preserves attributes on remaining imports", () => {
+  const code = [
+    'import { A, type T } from "./data.json" with { type: "json" };',
+    "export const value = A;",
+  ].join("\n");
+  expect(
+    mergeImports(code, (_path, type) =>
+      type === "import-type" ? "./types" : false,
+    ),
+  ).toMatchInlineSnapshot(`
+    "import { A } from "./data.json" with { type: "json" };
+    import type { T } from "./types";
+    export const value = A;"
+  `);
+});
+
+test("mergeImports preserves attributes on hoisted imports", () => {
+  const code = [
+    'import { A, type T } from "./data.json" with { type: "json" };',
+    "export const value = A;",
+  ].join("\n");
+  expect(mergeImports(code, (p) => p)).toMatchInlineSnapshot(`
+    "import type { T } from "./data.json" with { type: "json" };
+    import { A } from "./data.json" with { type: "json" };
+    export const value = A;"
+  `);
+});
+
+test("mergeImports drops attributes when transformed type imports change paths", () => {
+  const code = [
+    'import type { T } from "./data.json" with { type: "json" };',
+    "export const value: T = {};",
+  ].join("\n");
+  expect(mergeImports(code, () => "./types")).toMatchInlineSnapshot(`
+    "import type { T } from "./types";
+    export const value: T = {};"
+  `);
+});
+
+test("mergeImports removes transformed imports at EOF", () => {
+  expect(mergeImports('import { A } from "x"', (p) => p))
+    .toMatchInlineSnapshot(`
+    "import { A } from "x";
+    "
+  `);
+});
+
 test("mergeImports ignores specific imports", () => {
   const code = [
     'import "side-effect";',
@@ -246,6 +308,24 @@ test("mergeFiles removes internal imports between merged files", () => {
     export function a() {
       return b + 1;
     }
+    "
+  `);
+});
+
+test("mergeFiles removes internal imports at EOF", () => {
+  const files = {
+    "/path/to/utils/a.ts": {
+      id: "/path/to/utils/a.ts",
+      content: 'import { b } from "./b";',
+    },
+    "/path/to/utils/b.ts": {
+      id: "/path/to/utils/b.ts",
+      content: "export const b = 1;",
+    },
+  };
+  const merged = mergeFiles(files);
+  expect(merged["/path/to/utils.ts"]?.content).toMatchInlineSnapshot(`
+    "export const b = 1;
     "
   `);
 });
@@ -523,6 +603,17 @@ test("hoistImports hoists import type namespace", () => {
   );
 });
 
+test("hoistImports preserves import attributes", () => {
+  const code = [
+    'import { A } from "./data.json" with { type: "json" };',
+    "",
+    "export const value = A;",
+  ].join("\n");
+  expect(hoistImports(code)).toBe(
+    'import { A } from "./data.json" with { type: "json" };\n\nexport const value = A;',
+  );
+});
+
 test("mergeFiles hoists and merges namespace imports", () => {
   const files = {
     "/path/to/utils/a.ts": {
@@ -576,5 +667,49 @@ test("mergeImports handles specifiers containing 'from' substring", () => {
     import { convertFromJSON, transformFrom } from "./utils";
 
     export const x = transformFrom(fromDate);"
+  `);
+});
+
+test("mergeImports preserves aliases in transformed imports", () => {
+  const code = [
+    'import { interests as data } from "./utils/data.ts";',
+    "",
+    "export const x = data;",
+  ].join("\n");
+  expect(
+    mergeImports(code, (p) =>
+      p.startsWith("./utils/") ? "./utils.ts" : false,
+    ),
+  ).toMatchInlineSnapshot(`
+    "import { interests as data } from "./utils.ts";
+
+    export const x = data;"
+  `);
+});
+
+test("mergeImports preserves aliases in untouched imports", () => {
+  const code = [
+    'import { foo as bar, type Baz as Qux } from "keep";',
+    "",
+    "export const y: Qux = bar;",
+  ].join("\n");
+  expect(mergeImports(code, () => false)).toMatchInlineSnapshot(`
+    "import { foo as bar } from "keep";
+    import type { Baz as Qux } from "keep";
+
+    export const y: Qux = bar;"
+  `);
+});
+
+test("mergeImports preserves aliases in type-only imports", () => {
+  const code = [
+    'import type { T as U } from "./x";',
+    "",
+    "export const z: U = 1;",
+  ].join("\n");
+  expect(mergeImports(code, (p) => p)).toMatchInlineSnapshot(`
+    "import type { T as U } from "./x";
+
+    export const z: U = 1;"
   `);
 });

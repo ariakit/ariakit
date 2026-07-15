@@ -10,7 +10,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getAllTabbableIn, invariant } from "@ariakit/utils";
+import { getFirstTabbableIn, invariant } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent, RefObject } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
@@ -66,11 +66,13 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     const id = useId(props.id);
 
     const tabId = useStoreState(
-      store.panels,
+      tabIdProp ? undefined : store.panels,
+      ["items"],
       () => tabIdProp || store?.panels.item(id)?.tabId,
     );
     const open = useStoreState(
       store,
+      ["selectedId"],
       (state) => !!tabId && state.selectedId === tabId,
     );
 
@@ -80,9 +82,10 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     // Store the scroll position for each tabId. The component may receive
     // different tab ids if it's a single tab panel with dynamic tab id and
     // content.
-    const scrollPositionRef = useRef(
-      new Map<string, { x: number; y: number }>(),
-    );
+    const scrollPositionRef = useRef<Map<
+      string,
+      { x: number; y: number }
+    > | null>(null);
 
     const getScrollElement = useEvent(() => {
       const panelElement = ref.current;
@@ -110,11 +113,16 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
         return;
       }
       if (!tabId) return;
-      const position = scrollPositionRef.current.get(tabId);
+      let scrollPositions = scrollPositionRef.current;
+      if (!scrollPositions) {
+        scrollPositions = new Map();
+        scrollPositionRef.current = scrollPositions;
+      }
+      const position = scrollPositions.get(tabId);
       element.scroll(position?.x ?? 0, position?.y ?? 0);
       // On scroll, save the scroll position for the current tab id.
       const onScroll = () => {
-        scrollPositionRef.current.set(tabId, {
+        scrollPositions.set(tabId, {
           x: element.scrollLeft,
           y: element.scrollTop,
         });
@@ -123,18 +131,20 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
       return () => {
         element.removeEventListener("scroll", onScroll);
       };
-    }, [scrollRestoration, mounted, tabId, getScrollElement, store]);
+    }, [scrollRestoration, mounted, tabId, getScrollElement]);
 
     const [hasTabbableChildren, setHasTabbableChildren] = useState(false);
 
     // Re-check tabbable children each time the panel becomes visible so
-    // content rendered conditionally on tab selection is accounted for.
+    // content rendered conditionally on tab selection is accounted for. The
+    // tabId dependency covers the single-panel pattern, where the panel stays
+    // mounted and only its tabId and children change on tab selection.
     useSafeLayoutEffect(() => {
       if (!mounted) return;
       const element = ref.current;
       if (!element) return;
-      setHasTabbableChildren(!!getAllTabbableIn(element).length);
-    }, [mounted]);
+      setHasTabbableChildren(!!getFirstTabbableIn(element));
+    }, [mounted, tabId]);
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {

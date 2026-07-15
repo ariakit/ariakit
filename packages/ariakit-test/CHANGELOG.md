@@ -1,5 +1,122 @@
 # @ariakit/test
 
+## 0.7.1
+
+- Added `rightClick` to simulate secondary mouse clicks in tests.
+- Updated dependencies: `@ariakit/utils@0.1.4`
+
+## 0.7.0
+
+### Renamed the `includesHidden` query variant to `hidden`
+
+**BREAKING** if you use the `includesHidden` role-query variant from `@ariakit/test`.
+
+The role-query variant that also matches elements hidden from the accessibility tree (such as `inert` or `aria-hidden` elements) has been renamed from `includesHidden` to `hidden`.
+
+Before:
+
+```ts
+q.dialog.includesHidden("Settings");
+q.menuitemcheckbox.all.includesHidden();
+```
+
+After:
+
+```ts
+q.dialog.hidden("Settings");
+q.menuitemcheckbox.all.hidden();
+```
+
+### Applied the browser shims for the whole test environment
+
+**BREAKING** if you import helpers from individual subpaths such as `@ariakit/test/click`.
+
+`@ariakit/test` now exposes only the `@ariakit/test`, `@ariakit/test/react`, and `@ariakit/test/playwright` entry points; the individual helper subpaths have been removed. Import the helpers from the root `@ariakit/test` instead.
+
+Before:
+
+```ts
+import { click } from "@ariakit/test/click";
+```
+
+After:
+
+```ts
+import { click } from "@ariakit/test";
+```
+
+`@ariakit/test` installs browser shims (most importantly a `getClientRects` visibility shim that jsdom lacks). They were only active while a simulated interaction ran, but component code reads layout and focusability between interactions too — for example a dialog's auto-focus picks the first tabbable element with `getFirstTabbableIn`, which depends on `getClientRects`. When such a read ran outside an interaction (e.g. when asserting with `expect.poll`), it hit jsdom's empty layout and misbehaved. The shims now apply for the whole test environment, and are applied automatically when importing `@ariakit/test` or `@ariakit/test/react`.
+
+### Faster simulated interactions
+
+The `click`, `type`, `press`, `hover`, and `select` helpers now settle between their internal sub-steps using microtasks and animation frames instead of a wall-clock delay, and the delay of the final settle after each interaction was shortened. The components under test schedule their per-step updates with microtasks and animation frames, so this speeds up test suites while preserving their behavior. Interactions that rely on a real timer (animations, tooltip/typeahead timeouts) are unaffected — pass an explicit delay to `sleep(ms)` when you need one.
+
+### Improved happy-dom support
+
+When simulating interactions in a happy-dom environment, `@ariakit/test` now polyfills several gaps so behavior matches jsdom and real browsers:
+
+- `validationMessage` returns a non-empty message for elements failing built-in constraint validation (happy-dom leaves it empty).
+- Disabled `<select>` and `<textarea>` controls are excluded from `FormData` (happy-dom incorrectly includes them).
+- The `selectionchange` event that happy-dom fires synchronously inside `Selection.removeAllRanges()` is deferred to a task, as the spec requires.
+- `window.alert` is stubbed as a no-op (happy-dom doesn't implement it).
+
+### Batched `requestAnimationFrame` callbacks under happy-dom
+
+`@ariakit/test` now runs happy-dom's `requestAnimationFrame` callbacks as a batched frame: all callbacks scheduled before a frame run together with a single shared timestamp, and a callback scheduled while the frame is running is deferred to the next frame. This matches the HTML specification, jsdom, and real browsers.
+
+happy-dom otherwise runs each callback as its own task, so components that schedule work in the same frame could observe each other's mid-flight state — for example, an animated [`Dialog`](https://ariakit.com/reference/dialog) and its backdrop reading each other's computed styles while a leave animation is being set up. The batching keeps happy-dom's fast cadence, so test runs are not slowed down.
+
+### Ran `click` listeners and activation on disabled controls under happy-dom
+
+`@ariakit/test` now runs both the event listeners and the activation behavior for a `click` dispatched on a disabled `button` or `input` under happy-dom. This matches jsdom and real browsers, which only bar clicks queued from user interaction on a disabled control — not a scripted `dispatchEvent`.
+
+A disabled `checkbox`/`radio` now toggles before its click listener runs (which still sees it disabled) and fires `input`/`change`, reverting — and restoring the rest of the radio group — when a listener calls `preventDefault()`. Disabled submit/reset controls run their listeners without submitting or resetting the form.
+
+happy-dom otherwise drops such a click entirely, so a test couldn't observe a click reaching a control that became disabled mid-interaction, and a disabled checkbox wouldn't toggle.
+
+### Added `press.down` and `press.up`
+
+The `press` utility now provides `press.down` and `press.up` to fire only the keydown or keyup half of a key press, each with the same per-key shortcuts as `press` (`press.down.Space()`, `press.up.Enter()`, and so on). Both default to the currently focused element, so a key released after focus moved away — for example, an element that disables itself on keydown — lands where a real browser would deliver it.
+
+```ts
+// Press and release in two steps; the keyup lands wherever focus is at release
+// time, not necessarily where the keydown happened.
+await press.down.Space();
+await press.up.Space();
+```
+
+### Hardened interaction settling under load
+
+The settle that runs after each simulated interaction now drains pending React work before resolving. React 18 renders concurrently while interactions run, so under CPU contention it can split a render or commit across several scheduler tasks; a fixed delay could return between two of them and leave the DOM momentarily unsettled. Waiting for those slices to finish makes assertions after `click`, `press`, `type`, and the other helpers reliable under load.
+
+### Populated `window.event` during simulated events under happy-dom
+
+`@ariakit/test` now exposes the event currently being dispatched on the legacy `window.event` global for the synchronous duration of each simulated event under happy-dom, matching jsdom and real browsers.
+
+React 18 reads `window.event` to give state updates triggered from native event listeners discrete-event priority. happy-dom doesn't implement the global, so without this those updates fell back to a lower priority and flushed later, reordering commits — for example, a controlled [`Dialog`](https://ariakit.com/reference/dialog) hidden by clicking outside could momentarily re-open and restore focus to the wrong element. Simulated interactions on React 18 now match the other environments; the divergence this fixes doesn't reproduce under React 19.
+
+### Other updates
+
+- Slightly reduced the default delay between simulated interactions in non-browser test environments, speeding up test suites.
+- Added JSDoc descriptions and usage examples to the `@ariakit/test` public API, surfaced in editor hover hints and the package's API reference.
+- Added `.lazy` to `@ariakit/test` queries so a query can be stored and re-run later by calling the returned function.
+- Fixed `press.Enter` to respect disabled default submit buttons and activate enabled ones during implicit form submission.
+- Fixed `@ariakit/test` event helpers to use empty-string defaults instead of `"undefined"` for omitted keyboard and input event string fields.
+- Fixed `press.Enter()` and `type("\n")` to emit an Enter `keypress` with `charCode` `13` when typing into text fields.
+- Fixed `mouseDown()` preserving or clearing the document selection based on the pressed target, matching browser behavior for native non-text controls and text targets.
+- Fixed `click()` on native options to preserve default selectedness and anchor shift-click selection from the current selected option.
+- Fixed `click`, `tap`, `mouseDown`, and `mouseUp` to suppress compatibility mouse events after a canceled `pointerdown`.
+- Fixed `press` extending text selections past the anchor when pressing Shift+Home or Shift+End.
+- Fixed `type` so readonly fields, prevented keydowns, non-text-field targets, and no-op deletion keys no longer cause `blur` or `focus` to dispatch a `change` event when the value did not change.
+- Fixed nested test helpers to reuse browser polyfills and act-environment overrides instead of reapplying them.
+- Updated dependencies: `@ariakit/utils@0.1.3`
+
+## 0.6.1
+
+- Improved text selection performance in `@ariakit/test`.
+- Fixed runtime `process.env.NODE_ENV` checks in published package output, including test-only behavior and development warnings.
+- Updated dependencies: `@ariakit/utils@0.1.2`
+
 ## 0.6.0
 
 ### Removed React 17 support from `@ariakit/test`

@@ -57,14 +57,12 @@ export function isTabbable(
   // If we are in a radio group, we must check if the active element is part of
   // the same group, which would make all the other radio buttons in the group
   // non-tabbable.
-  const activeElement = getActiveElement(element) as
-    | HTMLElement
-    | HTMLInputElement
-    | null;
+  const activeElement = getActiveElement(element);
   if (!activeElement) return true;
   if (activeElement === element) return true;
   if (!("form" in activeElement)) return true;
   if (activeElement.form !== element.form) return true;
+  if (!("name" in activeElement)) return true;
   if (activeElement.name !== element.name) return true;
   return false;
 }
@@ -151,7 +149,10 @@ export function getAllTabbableIn(
   });
 
   if (!tabbableElements.length && fallbackToFocusable) {
-    return elements;
+    // Filter the fallback to focusable elements (and expand iframes like the
+    // tabbable path) so callers don't get non-focusable matches such as a
+    // `display: none` input, which a `focus()` call silently ignores.
+    return getAllFocusableIn(container);
   }
   return tabbableElements;
 }
@@ -171,13 +172,48 @@ export function getFirstTabbableIn(
   container: HTMLElement,
   includeContainer?: boolean,
   fallbackToFocusable?: boolean,
-) {
-  const [first] = getAllTabbableIn(
-    container,
-    includeContainer,
-    fallbackToFocusable,
-  );
-  return first || null;
+): HTMLElement | null {
+  // Unlike getAllTabbableIn, this returns as soon as a tabbable element is
+  // found. Each isTabbable check queries style and layout, so collecting every
+  // tabbable element just to take the first one is wasteful in containers with
+  // many tabbable elements, such as dialogs with forms.
+  if (includeContainer && isTabbable(container)) {
+    if (!isFrame(container)) return container;
+    const containerFrameBody = container.contentDocument?.body;
+    if (!containerFrameBody) return container;
+    const frameTabbable = getFirstTabbableIn(
+      containerFrameBody,
+      false,
+      fallbackToFocusable,
+    );
+    if (frameTabbable) return frameTabbable;
+    // The container frame has no tabbable content. Fall through to the
+    // container's own descendants, like getAllTabbableIn, which removed the
+    // empty frame from the list and continued.
+  }
+  const elements = container.querySelectorAll<HTMLElement>(selector);
+  for (const element of elements) {
+    if (!isTabbable(element)) continue;
+    if (isFrame(element)) {
+      const frameBody = element.contentDocument?.body;
+      if (!frameBody) return element;
+      const frameTabbable = getFirstTabbableIn(
+        frameBody,
+        false,
+        fallbackToFocusable,
+      );
+      if (frameTabbable) return frameTabbable;
+      continue;
+    }
+    return element;
+  }
+  if (fallbackToFocusable) {
+    // Filter the fallback to focusable elements so callers don't get a
+    // non-focusable match such as a `display: none` input, which a `focus()`
+    // call silently ignores.
+    return getFirstFocusableIn(container);
+  }
+  return null;
 }
 
 /**
@@ -211,6 +247,36 @@ export function getLastTabbable(fallbackToFocusable?: boolean) {
   return getLastTabbableIn(document.body, false, fallbackToFocusable);
 }
 
+interface GetTabbableInDirectionParams {
+  container: HTMLElement;
+  includeContainer?: boolean;
+  reverse?: boolean;
+  fallbackToEdge?: boolean;
+  fallbackToFocusable?: boolean;
+}
+
+function getTabbableInDirection({
+  container,
+  includeContainer,
+  reverse,
+  fallbackToEdge,
+  fallbackToFocusable,
+}: GetTabbableInDirectionParams) {
+  const activeElement = getActiveElement(container);
+  const allFocusable = getAllFocusableIn(container, includeContainer);
+  if (reverse) {
+    allFocusable.reverse();
+  }
+  const activeIndex = allFocusable.indexOf(activeElement as HTMLElement);
+  const candidates = allFocusable.slice(activeIndex + 1);
+  return (
+    candidates.find(isTabbable) ||
+    (fallbackToEdge ? allFocusable.find(isTabbable) : null) ||
+    (fallbackToFocusable ? candidates[0] : null) ||
+    null
+  );
+}
+
 /**
  * Returns the next tabbable element in `container`.
  */
@@ -220,16 +286,12 @@ export function getNextTabbableIn(
   fallbackToFirst?: boolean,
   fallbackToFocusable?: boolean,
 ) {
-  const activeElement = getActiveElement(container);
-  const allFocusable = getAllFocusableIn(container, includeContainer);
-  const activeIndex = allFocusable.indexOf(activeElement as HTMLElement);
-  const nextFocusableElements = allFocusable.slice(activeIndex + 1);
-  return (
-    nextFocusableElements.find(isTabbable) ||
-    (fallbackToFirst ? allFocusable.find(isTabbable) : null) ||
-    (fallbackToFocusable ? nextFocusableElements[0] : null) ||
-    null
-  );
+  return getTabbableInDirection({
+    container,
+    includeContainer,
+    fallbackToEdge: fallbackToFirst,
+    fallbackToFocusable,
+  });
 }
 
 /**
@@ -257,29 +319,26 @@ export function getPreviousTabbableIn(
   fallbackToLast?: boolean,
   fallbackToFocusable?: boolean,
 ) {
-  const activeElement = getActiveElement(container);
-  const allFocusable = getAllFocusableIn(container, includeContainer).reverse();
-  const activeIndex = allFocusable.indexOf(activeElement as HTMLElement);
-  const previousFocusableElements = allFocusable.slice(activeIndex + 1);
-  return (
-    previousFocusableElements.find(isTabbable) ||
-    (fallbackToLast ? allFocusable.find(isTabbable) : null) ||
-    (fallbackToFocusable ? previousFocusableElements[0] : null) ||
-    null
-  );
+  return getTabbableInDirection({
+    container,
+    includeContainer,
+    reverse: true,
+    fallbackToEdge: fallbackToLast,
+    fallbackToFocusable,
+  });
 }
 
 /**
  * Returns the previous tabbable element in the document.
  */
 export function getPreviousTabbable(
-  fallbackToFirst?: boolean,
+  fallbackToLast?: boolean,
   fallbackToFocusable?: boolean,
 ) {
   return getPreviousTabbableIn(
     document.body,
     false,
-    fallbackToFirst,
+    fallbackToLast,
     fallbackToFocusable,
   );
 }
@@ -288,8 +347,13 @@ export function getPreviousTabbable(
  * Returns the closest focusable element.
  */
 export function getClosestFocusable(element?: HTMLElement | null) {
+  // Start each search from the parent so the loop always advances strictly
+  // upward. The current element was already rejected by `isFocusable`, and the
+  // self-inclusive `closest` would otherwise re-return a selector-matching but
+  // non-focusable element (e.g. a box-less `display: contents` ancestor),
+  // looping forever.
   while (element && !isFocusable(element)) {
-    element = element.closest<HTMLElement>(selector);
+    element = element.parentElement?.closest<HTMLElement>(selector) ?? null;
   }
   return element || null;
 }

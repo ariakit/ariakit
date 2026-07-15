@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react",
-  "version": "0.4.28",
+  "version": "0.4.34",
   "description": "Toolkit for building accessible web apps with React",
   "keywords": [
     "a11y",
@@ -39,8 +39,8 @@
     "@ariakit/react-components": "workspace:*"
   },
   "devDependencies": {
-    "react": "19.2.6",
-    "react-dom": "19.2.6"
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0 || ^19.0.0",

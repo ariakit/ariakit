@@ -1,5 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useBooleanEvent,
   useEvent,
   useMergeRefs,
@@ -23,10 +24,13 @@ import type {
   SelectHTMLAttributes,
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
+import { getVisuallyHiddenStyle } from "../visually-hidden/visually-hidden.tsx";
 import { SelectArrow } from "./select-arrow.tsx";
 import {
   SelectScopedContextProvider,
@@ -37,7 +41,6 @@ import type { SelectStore } from "./select-store.ts";
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function getSelectedValues(select: HTMLSelectElement) {
   return Array.from(select.selectedOptions).map((option) => option.value);
@@ -47,19 +50,24 @@ function getSelectedValues(select: HTMLSelectElement) {
 // to move to items without value, so we filter them out here.
 function nextWithValue(store: SelectStore, next: SelectStore["next"]) {
   return () => {
-    const nextId = next();
-    if (!nextId) return;
-    let i = 0;
-    let nextItem = store.item(nextId);
-    const firstItem = nextItem;
-    while (nextItem && nextItem.value == null) {
-      const nextId = next(++i);
-      if (!nextId) return;
-      nextItem = store.item(nextId);
-      // Prevents infinite loop when focusLoop is true
-      if (nextItem === firstItem) break;
+    const visitedIds = new Set<string>();
+    let nextId = next();
+    while (nextId) {
+      const nextItem = store.item(nextId);
+      if (!nextItem) return;
+      if (nextItem.value != null) {
+        return nextItem.id;
+      }
+      // Walking from the last returned id, as if the key was pressed again
+      // from there, skips items without value even across focusLoop
+      // boundaries. A repeated id means the walk cycled through every
+      // reachable item without finding one with value, so we return undefined
+      // to keep move() from changing the active item.
+      if (visitedIds.has(nextId)) return;
+      visitedIds.add(nextId);
+      nextId = next({ activeId: nextId });
     }
-    return nextItem?.id;
+    return;
   };
 }
 
@@ -97,7 +105,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
   const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
   const placement = useStoreState(store, "placement");
-  const dir = placement.split("-")[0] as BasePlacement;
+  const dir = getBasePlacement(placement);
   const value = useStoreState(store, "value");
   const multiSelectable = Array.isArray(value);
 
@@ -167,16 +175,19 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
     setAutofill(false);
   }, [value]);
 
-  const labelId = useStoreState(store, (state) => state.labelElement?.id);
+  const labelElement = useStoreState(store, "labelElement");
+  useAttribute(labelElement, "id");
+  const labelId = labelElement?.id;
   const label = props["aria-label"];
   const labelledBy = props["aria-labelledby"] || labelId;
-  const items = useStoreState(store, (state) => {
+  const items = useStoreState(store, ["items"], (state) => {
     if (!name) return;
     return state.items;
   });
   const values = useMemo(() => {
     // Filter out items without value and duplicate values.
-    return [...new Set(items?.map((i) => i.value!).filter((v) => v != null))];
+    const itemValues = items?.flatMap((item) => item.value ?? []);
+    return [...new Set(itemValues)];
   }, [items]);
 
   // Renders a native select element with the same value as the select so we
@@ -189,17 +200,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
       return (
         <>
           <select
-            style={{
-              border: 0,
-              clip: "rect(0 0 0 0)",
-              height: "1px",
-              margin: "-1px",
-              overflow: "hidden",
-              padding: 0,
-              position: "absolute",
-              whiteSpace: "nowrap",
-              width: "1px",
-            }}
+            style={getVisuallyHiddenStyle()}
             tabIndex={-1}
             aria-hidden
             aria-label={label}
@@ -310,7 +311,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
  * ```
  */
 export const Select = forwardRef(function Select(props: SelectProps) {
-  const htmlProps = useSelect(props);
+  const htmlProps = useSelect(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 
@@ -347,7 +348,7 @@ export interface SelectOptions<T extends ElementType = TagName>
    * the [`SelectList`](https://ariakit.com/reference/select-list) or
    * [`SelectPopover`](https://ariakit.com/reference/select-popover) components
    * are hidden.
-   * @default false
+   * @default true
    */
   moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
   /**

@@ -27,6 +27,7 @@ import {
   findSiblingConventionFiles,
   isNextjsConventionFile,
 } from "./nextjs.ts";
+import { toPosixPath } from "./paths.ts";
 import type { Source, SourceFile } from "./source.ts";
 import { getImportPaths, mergeFiles, replaceImportPaths } from "./source.ts";
 import { resolveStyles } from "./styles.ts";
@@ -35,7 +36,10 @@ const APP_LIB_PATH = join(import.meta.dirname, "../examples/_lib");
 const NEXTJS_LIB_PATH = join(import.meta.dirname, "../../../nextjs/components");
 
 // Cache for package information to avoid repeated lookups
-const packageCache = new Map<string, any>();
+const packageCache = new Map<
+  string,
+  NonNullable<ReturnType<typeof readPackageUpSync>> | null
+>();
 
 // TypeScript compiler host for resolving modules
 const host = ts.createCompilerHost({});
@@ -48,15 +52,9 @@ interface CachedFileData {
 
 const fileProcessCache = new Map<string, CachedFileData>();
 
-// Cache generated flattened files (final files record entries), keyed by abs id
-interface FlattenedCacheData {
-  // files record key (basename)
-  key: string;
-  // flattened content and metadata
-  file: SourceFile;
-}
-
-const flattenedFileCache = new Map<string, FlattenedCacheData>();
+// Cache generated flattened file contents keyed by abs id + content hash. The
+// files record key depends on baseDir, so recompute it on each call.
+const flattenedFileCache = new Map<string, SourceFile>();
 
 type SourcePluginContext = ThisParameterType<
   HookHandler<NonNullable<Plugin["load"]>>
@@ -73,13 +71,22 @@ function cacheKeyForFile(id: string, content: string) {
   return `${id}?h=${hashContent(content)}`;
 }
 
+function getPackage(source: string) {
+  const packageDir = dirname(source);
+  if (packageCache.has(packageDir)) {
+    return packageCache.get(packageDir) ?? null;
+  }
+  const result = readPackageUpSync({ cwd: packageDir }) ?? null;
+  packageCache.set(packageDir, result);
+  return result;
+}
+
 /**
  * Get the package version from the package.json
  */
 function getPackageVersion(source: string) {
-  const result = packageCache.get(source) || readPackageUpSync({ cwd: source });
+  const result = getPackage(source);
   if (!result) return "latest";
-  packageCache.set(source, result);
   const { version } = result.packageJson;
   if (!version) {
     console.log("No version found for", source);
@@ -91,9 +98,8 @@ function getPackageVersion(source: string) {
  * Get the package name from the package.json
  */
 function getPackageName(source: string) {
-  const result = packageCache.get(source) || readPackageUpSync({ cwd: source });
+  const result = getPackage(source);
   if (!result) return null;
-  packageCache.set(source, result);
   return result.packageJson.name;
 }
 
@@ -107,13 +113,6 @@ function isLibPath(path: string) {
     path.startsWith(APP_LIB_PATH) ||
     path.startsWith(NEXTJS_LIB_PATH)
   );
-}
-
-/**
- * Normalize path separators to posix style.
- */
-function toPosixPath(filePath: string) {
-  return filePath.replace(/\\/g, "/");
 }
 
 /**
@@ -175,7 +174,11 @@ async function formatWithPrettier(
   if (!parser) return code;
   try {
     const resolvedConfig = (await prettier.resolveConfig(filePath)) ?? {};
-    return await prettier.format(code, { ...resolvedConfig, parser });
+    return await prettier.format(code, {
+      ...resolvedConfig,
+      filepath: filePath,
+      parser,
+    });
   } catch {
     // Fail silently: if Prettier isn't available or config fails, return unformatted code
     return code;
@@ -469,27 +472,24 @@ function computeSourceStylesFromSources(sources: Record<string, SourceFile>) {
  */
 async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
   const cacheKey = cacheKeyForFile(file.id, file.content);
-  const cached = flattenedFileCache.get(cacheKey);
-  if (cached) return cached;
   const filename = normalizeFilename(file.id, baseDir);
+  const cached = flattenedFileCache.get(cacheKey);
+  if (cached) return { key: filename, file: cached };
   let content = replaceImportPaths(file.content, (path) =>
     normalizeImportPath(path),
   );
   if (content !== file.content) {
     content = await formatWithPrettier(content, file.id, basename(filename));
   }
-  const out: FlattenedCacheData = {
-    key: filename,
-    file: {
-      id: file.id,
-      content,
-      styles: file.styles,
-      dependencies: file.dependencies,
-      devDependencies: file.devDependencies,
-    },
+  const generated: SourceFile = {
+    id: file.id,
+    content,
+    styles: file.styles,
+    dependencies: file.dependencies,
+    devDependencies: file.devDependencies,
   };
-  flattenedFileCache.set(cacheKey, out);
-  return out;
+  flattenedFileCache.set(cacheKey, generated);
+  return { key: filename, file: generated };
 }
 
 /**

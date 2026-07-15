@@ -15,7 +15,7 @@ import { getFlagEmoji } from "#app/lib/locale.ts";
 const paramsSchema = z.object({
   query: z.string().optional(),
   offset: z.coerce.number().nonnegative().default(0),
-  limit: z.coerce.number().nonnegative().default(25),
+  limit: z.coerce.number().min(1).default(25),
 });
 
 type Params = z.infer<typeof paramsSchema>;
@@ -23,7 +23,7 @@ type Params = z.infer<typeof paramsSchema>;
 export async function getPaginationData(context: APIContext) {
   const session = await context.session?.get("admin");
   const schema = paramsSchema.extend({
-    limit: paramsSchema.shape.limit.default(session?.limit ?? 25),
+    limit: paramsSchema.shape.limit.default(Math.max(session?.limit ?? 25, 1)),
   });
   const { data, success } = schema.safeParse(
     Object.fromEntries(context.url.searchParams),
@@ -77,10 +77,38 @@ export function getStripeDashboardUrl() {
   return `https://dashboard.stripe.com`;
 }
 
+export function getAvatarUrl(imageUrl: string, size = 32) {
+  const url = new URL(imageUrl);
+  url.searchParams.set("width", String(size));
+  url.searchParams.set("height", String(size));
+  return url.toString();
+}
+
 interface GetPageUrlsOptions {
   totalCount: number;
   limit: number;
   offset: number;
+}
+
+interface GetPaginationDisplayDataOptions {
+  totalCount: number;
+  limit: number;
+  offset: number;
+}
+
+export function getPaginationDisplayData(
+  options: GetPaginationDisplayDataOptions,
+) {
+  const { totalCount, limit, offset } = options;
+  const safeLimit = limit > 0 ? limit : 1;
+  const totalPages = Math.max(1, Math.ceil(totalCount / safeLimit));
+  const currentPage = totalCount === 0 ? 1 : Math.ceil(offset / safeLimit) + 1;
+  const hasPageResults = offset < totalCount;
+  const firstResult = hasPageResults ? offset + 1 : 0;
+  const lastResult = hasPageResults
+    ? Math.min(offset + safeLimit, totalCount)
+    : 0;
+  return { currentPage, totalPages, firstResult, lastResult };
 }
 
 export function getPageUrls(context: APIContext, options: GetPageUrlsOptions) {

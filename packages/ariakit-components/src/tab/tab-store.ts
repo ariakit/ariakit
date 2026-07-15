@@ -45,6 +45,29 @@ function isEnabledTab(
   return true;
 }
 
+function createPanelsStore() {
+  const panels = createCollectionStore<TabStorePanel>();
+  const panelsByTabId = new Map<string, TabStorePanel>();
+
+  sync(panels, ["items"], (state) => {
+    panelsByTabId.clear();
+    for (const panel of state.items) {
+      const { tabId } = panel;
+      if (tabId == null) continue;
+      if (panelsByTabId.has(tabId)) continue;
+      panelsByTabId.set(tabId, panel);
+    }
+  });
+
+  return {
+    panels,
+    panel: (tabId) => {
+      if (tabId == null) return null;
+      return panelsByTabId.get(tabId) || null;
+    },
+  } satisfies Pick<TabStoreFunctions, "panels" | "panel">;
+}
+
 export function createTabStore({
   composite: parentComposite,
   combobox,
@@ -90,7 +113,7 @@ export function createTabStore({
     focusLoop: defaultValue(props.focusLoop, syncState?.focusLoop, true),
   });
 
-  const panels = createCollectionStore<TabStorePanel>();
+  const { panels, panel } = createPanelsStore();
 
   const initialState: TabStoreState = {
     ...composite.getState(),
@@ -122,36 +145,40 @@ export function createTabStore({
     }),
   );
 
-  let syncActiveId = true;
+  let pendingRestore = false;
+  let restoredSelectedId: TabStoreState["selectedId"];
 
   // Keep activeId in sync with selectedId.
-  setup(tab, () =>
-    batch(tab, ["selectedId"], (state, prev) => {
+  setup(tab, () => {
+    // A restore armed right before the store was destroyed (for example, when
+    // the popover unmounted) must not leak into this init. Reset before
+    // registering the listener below since it also runs on registration.
+    pendingRestore = false;
+    return batch(tab, ["selectedId"], (state, prev) => {
       // There are cases where we don't want to sync activeId with selectedId.
       // For example, restoring the selectedId from a select or combobox
-      // selected value. In those cases, we set syncActiveId to false.
-      if (!syncActiveId) {
-        syncActiveId = true;
-        return;
+      // selected value. Batch listeners are microtask-coalesced, so a restore
+      // may share a flush with a later legitimate change. In that case, the
+      // flushed value differs from the restored one and we must still sync.
+      if (pendingRestore) {
+        pendingRestore = false;
+        if (state.selectedId === restoredSelectedId) return;
       }
       // If there's a parent composite widget, we don't need to sync the
       // activeId state with the initial selectedId state. The parent composite
       // widget should handle the initial activeId state.
       if (parentComposite && state.selectedId === prev.selectedId) return;
       const { activeId, renderedItems } = tab.getState();
+      if (activeId === state.selectedId) return;
       const focusedTab = getFocusedTab(renderedItems);
       const selectedTab = getTabById(renderedItems, state.selectedId);
-      if (
-        focusedTab &&
-        isEnabledTab(selectedTab) &&
-        activeId !== selectedTab.id
-      ) {
+      if (focusedTab && isEnabledTab(selectedTab)) {
         composite.move(selectedTab.id);
         return;
       }
       tab.setState("activeId", state.selectedId);
-    }),
-  );
+    });
+  });
 
   // Automatically set selectedId if it's undefined.
   setup(tab, () =>
@@ -200,10 +227,16 @@ export function createTabStore({
       selectedIdFromSelectedValue = tab.getState().selectedId;
     };
     const restoreSelectedId = () => {
-      // We set syncActiveId to false to prevent the activeId state from being
-      // set to the selectedId state since this is just a restoration of the
-      // selectedId state from a select or combobox selected value.
-      syncActiveId = false;
+      // We suppress the activeId sync to prevent the activeId state from
+      // being set to the selectedId state since this is just a restoration of
+      // the selectedId state from a select or combobox selected value.
+      // setState early-returns on unchanged values and emits no batch event
+      // to consume the suppression, so only arm it when the restore will
+      // actually change the state.
+      const { selectedId } = tab.getState();
+      if (selectedId === selectedIdFromSelectedValue) return;
+      pendingRestore = true;
+      restoredSelectedId = selectedIdFromSelectedValue;
       tab.setState("selectedId", selectedIdFromSelectedValue);
     };
     if (parentComposite && "setSelectElement" in parentComposite) {
@@ -223,6 +256,7 @@ export function createTabStore({
     ...composite,
     ...tab,
     panels,
+    panel,
     setSelectedId: (id) => tab.setState("selectedId", id),
     select: (id) => {
       tab.setState("selectedId", id);
@@ -297,6 +331,12 @@ export interface TabStoreFunctions extends CompositeStoreFunctions<TabStoreItem>
    * - [Animated TabPanel](https://ariakit.com/examples/tab-panel-animated)
    */
   panels: CollectionStore<TabStorePanel>;
+  /**
+   * Gets the panel associated with the given tab id.
+   * @example
+   * const panel = store.panel("tab-1");
+   */
+  panel: (tabId: string | null | undefined) => TabStorePanel | null;
   /**
    * Selects the tab for the given id and moves focus to it. If you want to set
    * the [`selectedId`](https://ariakit.com/reference/tab-provider#selectedid)

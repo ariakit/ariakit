@@ -1,4 +1,4 @@
-import { click, hover, press, q, type, waitFor } from "@ariakit/test";
+import { click, hover, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 async function hoverOutside() {
@@ -14,9 +14,13 @@ test("open dialog with click and hide with esc", async () => {
   expect(q.option("Search Contacts")).toHaveFocus();
   expect(q.group("Suggestions")).toBeVisible();
   await press.Escape();
-  expect(q.option("Search Contacts")).not.toHaveAttribute("data-active-item");
+  // The dialog is closing and therefore inert, so query the option inside it
+  // with `hidden` to assert it's no longer the active item.
+  expect(q.option.hidden("Search Contacts")).not.toHaveAttribute(
+    "data-active-item",
+  );
   expect(q.button("Open Command Menu")).toHaveFocus();
-  await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
+  await expect.poll(q.dialog).not.toBeInTheDocument();
 });
 
 test("open dialog with click and hide by clicking outside", async () => {
@@ -24,9 +28,13 @@ test("open dialog with click and hide by clicking outside", async () => {
   expect(q.dialog("Command Menu")).toBeVisible();
   expect(q.combobox("Search for apps and commands...")).toHaveFocus();
   await click(document.body);
-  expect(q.option("Search Contacts")).not.toHaveAttribute("data-active-item");
+  // The dialog is closing and therefore inert, so query the option inside it
+  // with `hidden` to assert it's no longer the active item.
+  expect(q.option.hidden("Search Contacts")).not.toHaveAttribute(
+    "data-active-item",
+  );
   expect(q.button("Open Command Menu")).not.toHaveFocus();
-  await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
+  await expect.poll(q.dialog).not.toBeInTheDocument();
 });
 
 test("open dialog with enter and hide by pressing enter on esc button", async () => {
@@ -37,7 +45,7 @@ test("open dialog with enter and hide by pressing enter on esc button", async ()
   await press.Tab();
   expect(q.button("Esc")).toHaveFocus();
   await press.Enter();
-  await waitFor(() => expect(q.dialog()).not.toBeInTheDocument());
+  await expect.poll(q.dialog).not.toBeInTheDocument();
 });
 
 test("navigate through items with keyboard", async () => {

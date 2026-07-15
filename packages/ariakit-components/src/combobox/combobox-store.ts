@@ -267,7 +267,9 @@ export interface ComboboxStoreState<
    * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
    * or
    * [`defaultSelectedValue`](https://ariakit.com/reference/combobox-provider#defaultselectedvalue)
-   * props are arrays.
+   * props are arrays. However, when the combobox is connected to a
+   * [`tag`](https://ariakit.com/reference/combobox-provider#tag) store, the
+   * default is `false` so the input value is kept when the popover closes.
    *
    * Live examples:
    * - [Multi-selectable

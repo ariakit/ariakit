@@ -18,7 +18,9 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
+import { getBasePlacement } from "../popover/__utils.ts";
 import {
+  MenuListHiddenContext,
   MenuScopedContextProvider,
   useMenuProviderContext,
 } from "./menu-context.tsx";
@@ -27,7 +29,6 @@ import type { MenuStore } from "./menu-store.ts";
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function useAriaLabelledBy({ store, ...props }: MenuListProps) {
   const [id, setId] = useState<string | undefined>(undefined);
@@ -83,16 +84,16 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
     const id = useId(props.id);
 
     const onKeyDownProp = props.onKeyDown;
-    const dir = useStoreState(
-      store,
-      (state) => state.placement.split("-")[0] as BasePlacement,
+    const dir = useStoreState(store, ["placement"], (state) =>
+      getBasePlacement(state.placement),
     );
-    const orientation = useStoreState(store, (state) =>
+    const orientation = useStoreState(store, ["orientation"], (state) =>
       state.orientation === "both" ? undefined : state.orientation,
     );
     const isHorizontal = orientation !== "vertical";
     const isMenubarHorizontal = useStoreState(
       parentMenubar,
+      ["orientation"],
       (state) => !!state && state.orientation !== "vertical",
     );
 
@@ -156,6 +157,20 @@ export const useMenuList = createHook<TagName, MenuListOptions>(
     const mounted = useStoreState(store, "mounted");
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
+
+    // Expose the list's actual hidden state so MenuItem can avoid registering
+    // items while they're not shown. This accounts for `alwaysVisible` and
+    // `hidden={false}`, where the list is visible even though the store is
+    // closed. See https://github.com/ariakit/ariakit/issues/3214.
+    props = useWrapElement(
+      props,
+      (element) => (
+        <MenuListHiddenContext.Provider value={hidden}>
+          {element}
+        </MenuListHiddenContext.Provider>
+      ),
+      [hidden],
+    );
 
     props = {
       "aria-labelledby": ariaLabelledBy,
