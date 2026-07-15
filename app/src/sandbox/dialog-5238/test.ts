@@ -26,7 +26,8 @@ test("keeps the frontmost initially open sibling dialog interactive", async () =
 // Reproduces the backdrop replacement case found while fixing #5238.
 test("keeps the background open after replacing the foreground backdrop", async () => {
   const previousBackdrop = getBackdrop("Apples");
-  previousBackdrop?.setAttribute("data-previous-backdrop", "");
+  expect(previousBackdrop).toBeInTheDocument();
+  previousBackdrop!.setAttribute("data-previous-backdrop", "");
 
   await click(q.button("Replace apple backdrop"));
   expect(document.querySelector("[data-previous-backdrop]")).toBeNull();
