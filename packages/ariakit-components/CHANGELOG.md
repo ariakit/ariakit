@@ -1,5 +1,10 @@
 # @ariakit/components
 
+## 0.1.7
+
+- Fixed published packages omitting their build output. Thanks to [@shahednasser](https://github.com/shahednasser).
+- Updated dependencies: `@ariakit/store@0.1.6`
+
 ## 0.1.6
 
 - Improved store performance across targeted benchmarks, reaching up to 49× the previous throughput.
