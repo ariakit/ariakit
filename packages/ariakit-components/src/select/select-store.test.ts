@@ -9,6 +9,7 @@ function flushBatch() {
 }
 
 const apple: SelectStoreItem = { id: "apple", value: "Apple" };
+const banana: SelectStoreItem = { id: "banana", value: "Banana" };
 
 test("sets the value only from eligible late public items", async () => {
   const store = createSelectStore({ defaultValue: "Orange" });
@@ -120,6 +121,23 @@ test("does not overwrite a value set after moving", async () => {
     await flushBatch();
 
     expect(store.getState().value).toBe("Banana");
+  } finally {
+    stop();
+  }
+});
+
+test("does not set the value after the active id changes", async () => {
+  const store = createSelectStore({ defaultValue: "Orange" });
+  const stop = init(store);
+
+  try {
+    store.setState("items", [apple, banana]);
+    store.move("apple");
+    queueMicrotask(() => store.setActiveId("banana"));
+    await flushBatch();
+
+    expect(store.getState().activeId).toBe("banana");
+    expect(store.getState().value).toBe("Orange");
   } finally {
     stop();
   }
