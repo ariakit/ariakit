@@ -1,5 +1,9 @@
 # @ariakit/store
 
+## 0.1.5
+
+- Fixed store subscriptions to respond consistently to updates made with `NaN` keys.
+
 ## 0.1.4
 
 ### Fixed merged stores to keep values in sync when `sync` listeners update parent
