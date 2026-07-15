@@ -11,5 +11,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const popover = q.listbox();
     await test.expect(popover).toBeVisible();
     await test.expect(popover).toHaveCSS("width", "736px");
+
+    const combobox = q.combobox("Favorite fruit");
+    await combobox.click();
+    await combobox.press("Escape");
+    await test.expect(popover).toBeHidden();
+    await combobox.click();
+    await test.expect(popover).toBeVisible();
+    await test.expect(popover).toHaveCSS("width", "736px");
   });
 });
