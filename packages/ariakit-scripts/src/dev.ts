@@ -18,6 +18,10 @@ interface PackageWatcher {
   close(): Promise<void>;
 }
 
+interface PackageWatchHandle {
+  close(): Promise<void>;
+}
+
 interface WatchPackageChangesOptions {
   cleanPackages?: typeof cleanPackages;
   watch?: (
@@ -99,7 +103,9 @@ async function cleanPackages(packages: CleanPackage[]) {
   }
 }
 
-export function watchPackageChanges(options: WatchPackageChangesOptions = {}) {
+export function watchPackageChanges(
+  options: WatchPackageChangesOptions = {},
+): PackageWatchHandle {
   const watchPackages = options.watch ?? watch;
   const cleanPackageList = options.cleanPackages ?? cleanPackages;
   let timeout: NodeJS.Timeout | undefined;
@@ -128,7 +134,7 @@ export function watchPackageChanges(options: WatchPackageChangesOptions = {}) {
     timeout = setTimeout(runClean, 100);
   };
 
-  return watchPackages("packages", {
+  const watcher = watchPackages("packages", {
     ignoreInitial: true,
     ignored: shouldIgnorePackageWatchPath,
   })
@@ -136,6 +142,18 @@ export function watchPackageChanges(options: WatchPackageChangesOptions = {}) {
     .on("change", scheduleClean)
     .on("unlink", scheduleClean)
     .on("unlinkDir", scheduleClean);
+
+  return {
+    async close() {
+      try {
+        await watcher.close();
+      } finally {
+        clearTimeout(timeout);
+        runClean();
+        await queue;
+      }
+    },
+  };
 }
 
 /**
@@ -172,7 +190,7 @@ async function findAvailablePort(
 }
 
 export async function dev(options: DevOptions = {}) {
-  let packageWatcher: PackageWatcher | undefined;
+  let packageWatcher: PackageWatchHandle | undefined;
   if (options.clean !== false) {
     await cleanPackages(await getCleanPackages());
     packageWatcher = watchPackageChanges();
@@ -187,6 +205,10 @@ export async function dev(options: DevOptions = {}) {
       [appPort],
     );
 
+    // A POSIX process group prevents Concurrently from receiving the same
+    // terminal signal directly and again through Ariakit. Windows console
+    // signals remain shared because child.kill() would terminate abruptly.
+    const isolateCoordinator = process.platform !== "win32";
     const exitCode = await runCommand(
       "conc",
       [
@@ -196,6 +218,7 @@ export async function dev(options: DevOptions = {}) {
       ],
       {
         cwd: process.cwd(),
+        detached: isolateCoordinator,
         env: {
           ...process.env,
           // Prevent Astro from daemonizing when an agent is detected.
@@ -203,6 +226,7 @@ export async function dev(options: DevOptions = {}) {
           APP_PORT: String(appPort),
           NEXTJS_PORT: String(nextjsPort),
         },
+        forwardSignals: isolateCoordinator,
       },
     );
     process.exitCode = exitCode;

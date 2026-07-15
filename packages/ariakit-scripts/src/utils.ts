@@ -5,7 +5,9 @@ import { join, sep } from "node:path";
 
 export interface RunCommandOptions {
   cwd: string;
+  detached?: boolean;
   env?: NodeJS.ProcessEnv;
+  forwardSignals?: boolean;
 }
 
 export interface PackageJson {
@@ -54,15 +56,52 @@ export async function runCommand(
   return await new Promise<number>((resolvePromise, reject) => {
     const child = spawn(command, args, {
       cwd: options.cwd,
+      detached: options.detached,
       env: options.env,
       stdio: "inherit",
     });
 
-    const onSigint = () => child.kill("SIGINT");
-    const onSigterm = () => child.kill("SIGTERM");
+    const forwardSignal = (signal: NodeJS.Signals) => {
+      if (options.forwardSignals === false) return;
+      child.kill(signal);
+    };
+    const forwardProcessGroupSignal = (signal: NodeJS.Signals) => {
+      if (options.forwardSignals === false) return;
+      const pid = child.pid;
+      if (!pid) return;
+      try {
+        process.kill(-pid, signal);
+      } catch (error) {
+        if (!(error instanceof Error)) {
+          throw error;
+        }
+        if (!("code" in error)) {
+          throw error;
+        }
+        if (error.code !== "ESRCH") {
+          throw error;
+        }
+      }
+    };
+    const onSigcont = () => forwardProcessGroupSignal("SIGCONT");
+    const onSighup = () => forwardSignal("SIGHUP");
+    const onSigint = () => forwardSignal("SIGINT");
+    // Concurrently doesn't handle SIGQUIT, so signal its isolated group.
+    const onSigquit = () => forwardProcessGroupSignal("SIGQUIT");
+    const onSigterm = () => forwardSignal("SIGTERM");
+    const onSigtstp = () => {
+      // Detached sessions ignore the default SIGTSTP action, so use the
+      // uncatchable stop signal for the isolated process group.
+      forwardProcessGroupSignal("SIGSTOP");
+      process.kill(process.pid, "SIGSTOP");
+    };
     const cleanup = () => {
+      process.off("SIGCONT", onSigcont);
+      process.off("SIGHUP", onSighup);
       process.off("SIGINT", onSigint);
+      process.off("SIGQUIT", onSigquit);
       process.off("SIGTERM", onSigterm);
+      process.off("SIGTSTP", onSigtstp);
     };
 
     child.on("error", (error) => {
@@ -79,6 +118,10 @@ export async function runCommand(
         resolvePromise(130);
         return;
       }
+      if (signal === "SIGQUIT") {
+        resolvePromise(131);
+        return;
+      }
       if (signal === "SIGTERM") {
         resolvePromise(143);
         return;
@@ -86,8 +129,21 @@ export async function runCommand(
       resolvePromise(1);
     });
 
-    process.once("SIGINT", onSigint);
-    process.once("SIGTERM", onSigterm);
+    // Detached children rely on the parent for terminal and job-control
+    // signals until they exit, including repeated signals and SIGHUP.
+    if (options.detached) {
+      process.on("SIGHUP", onSighup);
+      process.on("SIGINT", onSigint);
+      process.on("SIGTERM", onSigterm);
+      if (options.forwardSignals !== false && process.platform !== "win32") {
+        process.on("SIGCONT", onSigcont);
+        process.on("SIGQUIT", onSigquit);
+        process.on("SIGTSTP", onSigtstp);
+      }
+    } else {
+      process.once("SIGINT", onSigint);
+      process.once("SIGTERM", onSigterm);
+    }
   });
 }
 
