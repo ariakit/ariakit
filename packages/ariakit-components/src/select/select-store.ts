@@ -162,18 +162,49 @@ export function createSelectStore({
     }),
   );
 
+  const setValueFromItem = (item: SelectStoreItem | null | undefined) => {
+    if (!item) return;
+    if (item.disabled) return;
+    if (item.value == null) return;
+    select.setState("value", item.value);
+  };
+
   // Sets the select value when the active item changes by moving (which usually
   // happens when moving to an item using the keyboard).
   setup(select, () =>
-    batch(select, ["setValueOnMove", "moves"], (state) => {
-      const { mounted, value, activeId } = select.getState();
-      if (!state.setValueOnMove && mounted) return;
+    batch(select, ["setValueOnMove", "moves"], () => {
+      const { activeId, items, mounted, moves, setValueOnMove, value } =
+        select.getState();
+      if (!setValueOnMove && mounted) return;
       if (Array.isArray(value)) return;
-      if (!state.moves) return;
+      if (!moves) return;
       if (!activeId) return;
       const item = composite.item(activeId);
-      if (!item || item.disabled || item.value == null) return;
-      select.setState("value", item.value);
+      if (item) {
+        setValueFromItem(item);
+        return;
+      }
+      const publicItem = items.find((item) => item.id === activeId);
+      if (!publicItem) return;
+      if (publicItem.disabled) return;
+      if (publicItem.value == null) return;
+
+      let canceled = false;
+      queueMicrotask(() => {
+        if (canceled) return;
+        const currentState = select.getState();
+        if (currentState.moves !== moves) return;
+        if (currentState.activeId !== activeId) return;
+        if (currentState.value !== value) return;
+        const currentItem =
+          composite.item(activeId) ??
+          currentState.items.find((item) => item.id === activeId);
+        setValueFromItem(currentItem);
+      });
+
+      return () => {
+        canceled = true;
+      };
     }),
   );
 
