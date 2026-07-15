@@ -13,4 +13,4 @@ The [`overflowPadding`](https://ariakit.com/reference/popover#overflowpadding) p
 
 When [`overflowPadding`](https://ariakit.com/reference/popover#overflowpadding) is an object, the [`--popover-overflow-padding`](https://ariakit.com/guide/styling#--popover-overflow-padding) CSS variable uses the larger of the horizontal `left` and `right` values, treating omitted sides as `0`.
 
-Thanks to [@mririgoyen](https://github.com/mririgoyen) for reporting the issue, and to [@georgekaran](https://github.com/georgekaran) for providing the approach that informed this solution.
+Thanks to [@mririgoyen](https://github.com/mririgoyen) for reporting the issue, and [@georgekaran](https://github.com/georgekaran) for providing the approach that informed this solution.

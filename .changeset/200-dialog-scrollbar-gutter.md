@@ -26,4 +26,4 @@ The `--scrollbar-width` CSS variable is now only defined in the fallback path fo
 }
 ```
 
-Thanks to [@mirka](https://github.com/mirka) for reporting the issue, and to [@benrodrs](https://github.com/benrodrs) for documenting a workaround that informed this solution.
+Thanks to [@mirka](https://github.com/mirka) for reporting the issue, and [@benrodrs](https://github.com/benrodrs) for documenting a workaround that informed this solution.
