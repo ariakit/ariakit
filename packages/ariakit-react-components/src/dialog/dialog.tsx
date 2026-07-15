@@ -68,6 +68,7 @@ import {
 } from "./utils/mark-tree-outside.ts";
 import { prependHiddenDismiss } from "./utils/prepend-hidden-dismiss.ts";
 import { supportsInert } from "./utils/supports-inert.ts";
+import { useDialogStack } from "./utils/use-dialog-stack.ts";
 import { useHideOnInteractOutside } from "./utils/use-hide-on-interact-outside.ts";
 import { useNestedDialogs } from "./utils/use-nested-dialogs.tsx";
 import { usePreventBodyScroll } from "./utils/use-prevent-body-scroll.ts";
@@ -305,6 +306,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   }, [id, canTakeTreeSnapshot, unstable_treeSnapshotKey]);
 
   const getPersistentElementsProp = useEvent(getPersistentElements);
+  const stackedDialogs = useDialogStack(
+    contentElement,
+    modal && !!canTakeTreeSnapshot,
+  );
 
   // Disables/enables the element tree around the modal dialog element.
   useSafeLayoutEffect(() => {
@@ -316,6 +321,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const allElements = [
       dialog,
       ...persistentElements,
+      ...stackedDialogs,
       ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
     ];
     // Positively mark the elements the dialog knows about as "inside" so the
@@ -340,6 +346,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     store,
     canTakeTreeSnapshot,
     getPersistentElementsProp,
+    stackedDialogs,
     nestedDialogs,
     modal,
     unstable_treeSnapshotKey,

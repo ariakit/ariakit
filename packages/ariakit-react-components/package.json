@@ -115,6 +115,7 @@
     "./dialog/utils/prepend-hidden-dismiss": "./src/dialog/utils/prepend-hidden-dismiss.ts",
     "./dialog/utils/supports-inert": "./src/dialog/utils/supports-inert.ts",
     "./dialog/utils/tree-cleanup": "./src/dialog/utils/tree-cleanup.ts",
+    "./dialog/utils/use-dialog-stack": "./src/dialog/utils/use-dialog-stack.ts",
     "./dialog/utils/use-hide-on-interact-outside": "./src/dialog/utils/use-hide-on-interact-outside.ts",
     "./dialog/utils/use-nested-dialogs": "./src/dialog/utils/use-nested-dialogs.tsx",
     "./dialog/utils/use-prevent-body-scroll": "./src/dialog/utils/use-prevent-body-scroll.ts",
