@@ -2,7 +2,7 @@ import * as Ariakit from "@ariakit/react";
 
 export default function Example() {
   return (
-    <Ariakit.SelectProvider defaultValue="Apple">
+    <Ariakit.SelectProvider defaultValue="Apple" virtualFocus={false}>
       <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
       <Ariakit.Select />
       <Ariakit.SelectPopover gutter={4} sameWidth>
