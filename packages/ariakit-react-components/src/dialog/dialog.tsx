@@ -510,7 +510,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   useEffect(() => {
     if (!domReady) return;
     if (!mounted) return;
-    const onKeyDown = (event: KeyboardEvent) => {
+    const pendingEscapeEvents = new WeakSet<KeyboardEvent>();
+    const onKeyDownCapture = (event: KeyboardEvent) => {
+      // Clear state left by a previous stopped dispatch if the event is reused.
+      pendingEscapeEvents.delete(event);
       if (event.key !== "Escape") return;
       if (event.defaultPrevented) return;
       const dialog = ref.current;
@@ -539,14 +542,31 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       };
       if (!isValidTarget()) return;
       if (!hideOnEscapeProp(event)) return;
+      // The bubble listener won't run if the hideOnEscape callback stopped
+      // propagation or the event doesn't bubble, so we hide immediately in
+      // these cases.
+      if (event.cancelBubble || !event.bubbles) {
+        store.hide();
+        return;
+      }
+      pendingEscapeEvents.add(event);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!pendingEscapeEvents.delete(event)) return;
+      // React may delegate events to document, where stopPropagation doesn't
+      // prevent later listeners on the same target.
+      if (event.cancelBubble) return;
       store.hide();
     };
-    // We're attatching the listener to the document instead of the dialog
-    // element so we can listen to the Escape key anywhere in the document, even
-    // when the dialog is not focused. By using the capture phase, users can
-    // call `event.stopPropagation()` on the `hideOnEscape` function prop.
+    // Listen on the document so Escape works even when the dialog isn't
+    // focused. The capture listener lets hideOnEscape stop the event before it
+    // reaches third-party dialogs. The bubble listener lets descendants stop
+    // the event before this dialog hides.
     const win = contentElement ? getWindow(contentElement) : undefined;
-    return addGlobalEventListener("keydown", onKeyDown, true, win);
+    return chain(
+      addGlobalEventListener("keydown", onKeyDownCapture, true, win),
+      addGlobalEventListener("keydown", onKeyDown, false, win),
+    );
   }, [store, domReady, mounted, contentElement, hideOnEscapeProp]);
 
   // Resets the heading levels inside the modal dialog so they start with h1.

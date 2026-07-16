@@ -1,5 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
+import { createRoot } from "react-dom/client";
 
 function Autocomplete() {
   const [open, setOpen] = useState(true);
@@ -33,25 +34,45 @@ function Autocomplete() {
   );
 }
 
-export default function Example() {
-  const dialog = Ariakit.useDialogStore();
+interface DialogExampleProps {
+  portal?: boolean;
+}
+
+function DialogExample({ portal }: DialogExampleProps) {
   return (
-    <>
-      <Ariakit.DialogDisclosure store={dialog}>
-        Open dialog
-      </Ariakit.DialogDisclosure>
-      <Ariakit.Dialog
-        store={dialog}
-        hideOnEscape={false}
-        onKeyDown={(event) => {
-          if (event.key !== "Escape") return;
-          // TODO: Remove when https://github.com/ariakit/ariakit/issues/5179 is fixed.
-          dialog.hide();
-        }}
-      >
+    <Ariakit.DialogProvider>
+      <Ariakit.DialogDisclosure>Open dialog</Ariakit.DialogDisclosure>
+      <Ariakit.Dialog portal={portal}>
         <Ariakit.DialogHeading>Dialog</Ariakit.DialogHeading>
         <Autocomplete />
       </Ariakit.Dialog>
+    </Ariakit.DialogProvider>
+  );
+}
+
+function DocumentRootExample() {
+  const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null);
+
+  useEffect(() => {
+    const document = iframe?.contentDocument;
+    if (!document) return;
+    const root = createRoot(document);
+    root.render(<DialogExample portal={false} />);
+    return () => root.unmount();
+  }, [iframe]);
+
+  return <iframe ref={setIframe} title="Document root example" />;
+}
+
+export default function Example() {
+  const [showDocumentRoot, setShowDocumentRoot] = useState(false);
+  return (
+    <>
+      <DialogExample />
+      <button onClick={() => setShowDocumentRoot(true)}>
+        Show document root example
+      </button>
+      {showDocumentRoot && <DocumentRootExample />}
     </>
   );
 }
