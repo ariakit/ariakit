@@ -26,8 +26,17 @@ export const list = cv({
     "[--list-gap:calc(var(--list-gap-base)*0.5-var(--list-item-padding))]",
     "[--list-item-ps:calc(var(--list-leading)+--spacing(1.5))]",
     "[--list-marker-center:calc(var(--list-leading)*0.5)]",
+    // Inside prose the base gap follows the prose rhythm, like legacy
+    // ak-prose setting ak-list-gap on descendant lists.
+    "ui-prose:[--list-gap-base:var(--prose-gap)]",
+    // Lists inside prose also re-derive the prose ink so they stay readable
+    // inside layered children, like the paragraph rule in prose.ts.
+    "ui-prose:ak-dark:ak-ink-75 ui-prose:ak-light:ak-ink-90",
     // Nested lists tighten their base gap. Unlike legacy, an explicit $gap
-    // wins over this because it lands in the inline style.
+    // wins over this because it lands in the inline style. This rule also
+    // beats the prose rhythm above by stylesheet order (ui-list registers
+    // after ui-prose), so nested lists stay compact inside prose, like
+    // legacy.
     "ui-list:[--list-gap-base:--spacing(2)]",
     // Blocks mode (block children or an ancestor list flag): looser gap,
     // roomier items.

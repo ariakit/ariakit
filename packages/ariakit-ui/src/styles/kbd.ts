@@ -1,5 +1,7 @@
 import { cv } from "clava";
 
+// The prose style in prose.ts mirrors this class list as descendant styles
+// for plain kbd markup. Keep the two lists in sync.
 export const kbd = cv({
   class: [
     "ak-layer ak-layer-9",

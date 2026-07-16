@@ -37,7 +37,7 @@
 @import "./ak-nav.css";
 @import "./ak-table.css";
 
-/* @import "./ak-prose.css"; */
+@import "./ak-prose.css";
 
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);
@@ -156,6 +156,16 @@
 @custom-variant ui-disclosure-hover {
   &:has(> :where(summary, button, [data-disclosure-button]):hover),
   &:where(summary, button, [data-disclosure-button]):hover {
+    @slot;
+  }
+}
+
+/* Prose flag published by the prose root and read by descendant components
+   (such as lists) through container style queries. Registered before ui-list
+   so the nested-list tighten still wins over the prose rhythm, like
+   legacy. */
+@custom-variant ui-prose {
+  @container style(--prose: 1) {
     @slot;
   }
 }
