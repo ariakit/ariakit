@@ -7,6 +7,7 @@ const leakedAttributes = [
   "clickonspace",
   "focusable",
   "shouldregisteritem",
+  "typeaheadtext",
 ] as const;
 
 test("omits composite option props from the offscreen placeholder", () => {
@@ -14,6 +15,7 @@ test("omits composite option props from the offscreen placeholder", () => {
 
   expect(item).toHaveAttribute("data-offscreen");
   expect(item).toHaveAttribute("aria-disabled", "true");
+  expect(item).toHaveAttribute("data-typeahead-text", "Archive command");
   expect(item).not.toHaveAttribute("disabled");
 
   for (const attribute of leakedAttributes) {

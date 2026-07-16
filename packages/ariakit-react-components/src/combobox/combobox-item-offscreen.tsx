@@ -65,6 +65,7 @@ export const ComboboxItem = forwardRef(function ComboboxItem({
     blurOnHoverEnd,
     moveOnKeyPress,
     tabbable,
+    typeaheadText,
     clickOnEnter,
     clickOnSpace,
     focusable,

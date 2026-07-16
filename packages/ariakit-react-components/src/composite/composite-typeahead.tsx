@@ -75,13 +75,14 @@ function getEnabledItems(items: CompositeStoreItem[]) {
 
 function itemTextStartsWith(item: CompositeStoreItem, text: string) {
   const itemText =
-    item.element?.textContent ||
-    item.children ||
-    // The composite item object itself doesn't include a value property, but
-    // other components like Select do. Since CompositeTypeahead is a generic
-    // component that can be used with those as well, we also consider the value
-    // property as a fallback for the typeahead text content.
-    ("value" in item && (item.value as string | undefined));
+    item.typeaheadText ??
+    (item.element?.textContent ||
+      item.children ||
+      // The composite item object itself doesn't include a value property, but
+      // other components like Select do. Since CompositeTypeahead is a generic
+      // component that can be used with those as well, we also consider the
+      // value property as a fallback for the typeahead text content.
+      ("value" in item && (item.value as string | undefined)));
   if (!itemText) return false;
   return normalizeString(itemText)
     .trim()
@@ -177,7 +178,11 @@ export const useCompositeTypeahead = createHook<
     for (const element of offscreenItems) {
       if (element.hasAttribute("data-disabled")) continue;
       if ("disabled" in element && !!element.disabled) continue;
-      enabledItems.push({ id: element.id, element });
+      enabledItems.push({
+        id: element.id,
+        element,
+        typeaheadText: element.dataset.typeaheadText,
+      });
     }
     // If there are offscreen items, we need to sort the enabled items based on
     // their DOM position so offscreen elements above the viewport are correctly
