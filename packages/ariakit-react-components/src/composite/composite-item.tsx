@@ -18,6 +18,7 @@ import {
   getTextboxSelection,
   getTextboxValue,
   isButton,
+  isFocusable,
   isTextbox,
   isTextField,
   isPortalEvent,
@@ -25,6 +26,7 @@ import {
   disabledFromProps,
   removeUndefinedValues,
   isSafari,
+  warnOnce,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
@@ -300,6 +302,17 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         relatedTarget: Element | null,
         baseElement: HTMLElement,
       ) => {
+        if (!isFocusable(baseElement)) {
+          if (process.env.NODE_ENV !== "production") {
+            warnOnce(
+              "A composite widget with `virtualFocus` enabled requires a " +
+                "focusable composite element. Set the `focusable` prop to " +
+                "`true` or the `virtualFocus` option to `false`.",
+              baseElement,
+            );
+          }
+          return;
+        }
         // Safari doesn't scroll the element into view when another element is
         // immediately focused. So we have to do it manually here.
         if (isSafari() && currentTarget.hasAttribute("data-autofocus")) {

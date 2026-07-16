@@ -114,6 +114,7 @@ This package is ESM-only and exposes a single public entrypoint.
   - [`identity`](#identity)
   - [`beforePaint`](#beforepaint)
   - [`afterPaint`](#afterpaint)
+  - [`warnOnce`](#warnonce)
   - [`invariant`](#invariant)
   - [`getKeys`](#getkeys)
   - [`isFalsyBooleanCallback`](#isfalsybooleancallback)
@@ -1444,6 +1445,26 @@ function afterPaint(cb: () => void = noop): () => void;
 ```
 
 Runs after the next paint.
+
+<div align="right">
+  <a href="#api-reference">&uarr; back to top</a>
+</div>
+
+#### `warnOnce`
+
+```ts
+function warnOnce(message: string, key?: object): void;
+```
+
+Logs a warning only once for each message and key.
+
+Example:
+
+```ts
+if (process.env.NODE_ENV !== "production") {
+  warnOnce("Warning");
+}
+```
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>

@@ -636,6 +636,15 @@ export interface CompositeOptions<
    */
   focusOnMove?: boolean;
   /**
+   * Determines whether [Focusable](https://ariakit.com/components/focusable)
+   * features are active on the composite element.
+   *
+   * When the store's
+   * [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus)
+   * state is `true`, the rendered composite element must remain focusable so it
+   * can own DOM focus and expose the active item through
+   * `aria-activedescendant`.
+   *
    * @see https://ariakit.com/reference/focusable
    */
   focusable?: FocusableOptions<T>["focusable"];
