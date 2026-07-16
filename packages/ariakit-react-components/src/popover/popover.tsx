@@ -615,7 +615,7 @@ export interface PopoverOptions<
    */
   portal?: DialogOptions<T>["portal"];
   /**
-   * The distance between the popover and the anchor element.
+   * The distance, in pixels, between the popover and the anchor element.
    *
    * Live examples:
    * - [Combobox filtering](https://ariakit.com/examples/combobox-filtering)
@@ -628,8 +628,8 @@ export interface PopoverOptions<
    */
   gutter?: number;
   /**
-   * The skidding of the popover along the anchor element. Can be set to
-   * negative values to make the popover shift to the opposite side.
+   * The skidding, in pixels, of the popover along the anchor element. Can be
+   * set to negative values to make the popover shift to the opposite side.
    *
    * Live examples:
    * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
@@ -692,14 +692,14 @@ export interface PopoverOptions<
    */
   fitViewport?: boolean;
   /**
-   * The minimum padding between the arrow and the popover corner.
+   * The minimum padding, in pixels, between the arrow and the popover corner.
    * @default 4
    */
   arrowPadding?: number;
   /**
-   * The minimum padding between the popover and the viewport edge. Pass a
-   * number to use the same padding on every side, or an object to define each
-   * side separately. This will be exposed to CSS as
+   * The minimum padding, in pixels, between the popover and the viewport edge.
+   * Pass a number to use the same padding on every side, or an object to define
+   * each side separately. This will be exposed to CSS as
    * [`--popover-overflow-padding`](https://ariakit.com/guide/styling#--popover-overflow-padding).
    * When passing an object, the CSS variable is the maximum of the horizontal
    * `left` and `right` values, with omitted sides treated as `0`.
