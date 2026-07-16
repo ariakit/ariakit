@@ -1,0 +1,4 @@
+.item::before {
+  margin-inline-end: 0.25em;
+  content: attr(data-flag);
+}

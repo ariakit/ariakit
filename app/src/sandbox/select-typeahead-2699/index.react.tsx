@@ -1,4 +1,5 @@
 import * as Ariakit from "@ariakit/react";
+import "./style.css";
 
 const countries = [
   { value: "Brazil", flag: "🇧🇷" },
@@ -14,8 +15,14 @@ export default function Example() {
       <Ariakit.Select />
       <Ariakit.SelectPopover gutter={4} sameWidth>
         {countries.map((country) => (
-          <Ariakit.SelectItem key={country.value} value={country.value}>
-            <span aria-hidden>{country.flag}</span> {country.value}
+          <Ariakit.SelectItem
+            key={country.value}
+            aria-label={country.value}
+            className="item"
+            data-flag={country.flag}
+            value={country.value}
+          >
+            {country.value}
           </Ariakit.SelectItem>
         ))}
       </Ariakit.SelectPopover>
