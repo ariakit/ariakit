@@ -3,7 +3,7 @@ import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
-const moveCount = 120;
+const moveCount = 121;
 type Query = ReturnType<typeof query>;
 
 interface ToolbarCase {
@@ -87,10 +87,11 @@ async function moveAcrossItems(page: Page) {
 async function verifyMovedAcrossItems(q: Query, toolbarCase: ToolbarCase) {
   const toolbar = getToolbar(q, toolbarCase);
   await expect(toolbar).toHaveAttribute("data-move-count", String(moveCount));
-  await expect(getItem(q, toolbarCase, "Tool 1")).toBeFocused();
+  await expect(getItem(q, toolbarCase, "Tool 2")).toBeFocused();
   if (toolbarCase.hasTooltip) {
-    await expect(getTooltip(q, toolbarCase, "Tool 1")).toBeVisible();
+    await expect(getTooltip(q, toolbarCase, "Tool 2")).toBeVisible();
   }
+  await expect(q.tooltip()).toHaveCount(toolbarCase.hasTooltip ? 1 : 0);
 }
 
 // https://github.com/ariakit/ariakit/issues/4428
