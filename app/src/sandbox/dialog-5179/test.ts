@@ -1,4 +1,4 @@
-import { click, press, q } from "@ariakit/test";
+import { click, dispatch, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/5179
@@ -31,4 +31,17 @@ test("hides before an outside ancestor handles Escape", async () => {
   await press.Escape();
 
   expect(q.dialog("Outer ancestor dialog")).not.toBeInTheDocument();
+});
+
+test("hides on a non-bubbling Escape", async () => {
+  await click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toBeVisible();
+
+  await dispatch.keyDown(q.combobox("Search"), {
+    key: "Escape",
+    bubbles: false,
+    cancelable: true,
+  });
+
+  expect(q.dialog("Dialog")).not.toBeInTheDocument();
 });

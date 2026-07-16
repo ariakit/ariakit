@@ -47,6 +47,26 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
+  test("hides on a non-bubbling Escape", async ({ q }) => {
+    await q.button("Open dialog").click();
+    const input = q.combobox("Search");
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+
+    await input.evaluate((element) => {
+      const KeyboardEvent = element.ownerDocument.defaultView?.KeyboardEvent;
+      if (!KeyboardEvent) throw new Error("KeyboardEvent is not available");
+      element.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key: "Escape",
+          bubbles: false,
+          cancelable: true,
+        }),
+      );
+    });
+
+    await test.expect(q.dialog("Dialog")).toBeHidden();
+  });
+
   test("hides before an outside ancestor handles Escape", async ({
     page,
     q,
