@@ -85,6 +85,34 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(q.dialog("Outer ancestor dialog")).toBeHidden();
   });
 
+  test("hides after its own bubble handler stops Escape", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open own bubble dialog").click();
+    await test.expect(q.dialog("Own bubble dialog")).toBeVisible();
+
+    await page.keyboard.press("Escape");
+
+    await test.expect(q.listbox("Suggestions")).toBeHidden();
+    await test.expect(q.dialog("Own bubble dialog")).toBeVisible();
+
+    await page.keyboard.press("Escape");
+
+    await test.expect(q.dialog("Own bubble dialog")).toBeHidden();
+  });
+
+  test("hides after its own capture handler stops Escape", async ({ q }) => {
+    await q.button("Open own capture dialog").click();
+    const input = q.combobox("Search");
+    await test.expect(q.dialog("Own capture dialog")).toBeVisible();
+    await test.expect(input).toBeFocused();
+
+    await input.press("Escape");
+
+    await test.expect(q.dialog("Own capture dialog")).toBeHidden();
+  });
+
   test("respects a child handler delegated to document", async ({
     page,
     q,
@@ -134,6 +162,56 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await input.press("Escape");
 
     await test.expect(listbox).toBeHidden();
+    await test.expect(dialog).toBeVisible();
+
+    await input.press("Escape");
+
+    await test.expect(dialog).toBeHidden();
+  });
+
+  test("hides after its own bubble handler delegated to document", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Show document root example").click();
+    const frame = query(
+      page.frameLocator('iframe[title="Document root example"]'),
+    );
+    const openDialog = frame.button("Open document root own bubble dialog");
+    const dialog = frame.dialog("Document root own bubble dialog");
+    const dialogQuery = query(dialog);
+    const input = dialogQuery.combobox("Search");
+    const listbox = dialogQuery.listbox("Suggestions");
+
+    await openDialog.click();
+    await test.expect(input).toBeFocused();
+    await test.expect(listbox).toBeVisible();
+
+    await input.press("Escape");
+
+    await test.expect(listbox).toBeHidden();
+    await test.expect(dialog).toBeVisible();
+
+    await input.press("Escape");
+
+    await test.expect(dialog).toBeHidden();
+  });
+
+  test("hides after its own capture handler delegated to document", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Show document root example").click();
+    const frame = query(
+      page.frameLocator('iframe[title="Document root example"]'),
+    );
+    const openDialog = frame.button("Open document root own capture dialog");
+    const dialog = frame.dialog("Document root own capture dialog");
+    const dialogQuery = query(dialog);
+    const input = dialogQuery.combobox("Search");
+
+    await openDialog.click();
+    await test.expect(input).toBeFocused();
     await test.expect(dialog).toBeVisible();
 
     await input.press("Escape");

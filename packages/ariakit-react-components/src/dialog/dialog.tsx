@@ -505,14 +505,32 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   }, [hasOpened, mayAutoFocusOnHide, focusOnHide]);
 
   const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
-  const [pendingEscapeEvents] = useState(() => new WeakSet<KeyboardEvent>());
+  const [escapeEvents] = useState(
+    () => new WeakMap<KeyboardEvent, "pending" | "stoppedAtDialog">(),
+  );
 
   const onKeyDownProp = props.onKeyDown;
+  const onKeyDownCaptureProp = props.onKeyDownCapture;
 
   const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
     onKeyDownProp?.(event);
-    if (!pendingEscapeEvents.delete(event.nativeEvent)) return;
-    if (event.isPropagationStopped()) return;
+    if (escapeEvents.get(event.nativeEvent) !== "pending") return;
+    escapeEvents.delete(event.nativeEvent);
+    store.hide();
+  });
+
+  const onKeyDownCapture = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
+    onKeyDownCaptureProp?.(event);
+    if (event.key !== "Escape") return;
+    if (!event.isPropagationStopped()) return;
+    const nativeEvent = event.nativeEvent;
+    const document = event.currentTarget.ownerDocument;
+    if (nativeEvent.currentTarget === document) {
+      escapeEvents.set(nativeEvent, "stoppedAtDialog");
+      return;
+    }
+    if (escapeEvents.get(nativeEvent) !== "pending") return;
+    escapeEvents.delete(nativeEvent);
     store.hide();
   });
 
@@ -522,7 +540,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (!mounted) return;
     const onDocumentKeyDownCapture = (event: KeyboardEvent) => {
       // Clear state left by a previous stopped dispatch if the event is reused.
-      pendingEscapeEvents.delete(event);
+      const stoppedAtDialog = escapeEvents.get(event) === "stoppedAtDialog";
+      escapeEvents.delete(event);
       if (event.key !== "Escape") return;
       if (event.defaultPrevented) return;
       const dialog = ref.current;
@@ -555,14 +574,16 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       if (!hideOnEscapeProp(event)) return;
       // Propagation may already be stopped when React delegates capture events
       // to document before this listener.
-      if (propagationStopped && targetInsideDialog) return;
+      if (propagationStopped && targetInsideDialog && !stoppedAtDialog) {
+        return;
+      }
       // Inside events are committed by the dialog's React handler after its
       // descendants. Events that can't reach it retain the global behavior.
       if (event.cancelBubble || !event.bubbles || !targetInsideDialog) {
         store.hide();
         return;
       }
-      pendingEscapeEvents.add(event);
+      escapeEvents.set(event, "pending");
     };
     // Listen on the document so Escape works even when the dialog isn't
     // focused and hideOnEscape can stop the event before third-party dialogs.
@@ -579,7 +600,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     mounted,
     contentElement,
     hideOnEscapeProp,
-    pendingEscapeEvents,
+    escapeEvents,
   ]);
 
   // Resets the heading levels inside the modal dialog so they start with h1.
@@ -642,6 +663,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     id,
     ref: useMergeRefs(ref, props.ref),
     onKeyDown,
+    onKeyDownCapture,
   };
 
   props = useFocusableContainer({

@@ -46,6 +46,8 @@ interface DialogExampleProps {
   modal?: boolean;
   name?: string;
   portal?: boolean;
+  stopDialogOnEscape?: boolean;
+  stopDialogOnEscapeCapture?: boolean;
   stopOnEscape?: boolean;
   stopOnEscapeCapture?: boolean;
 }
@@ -55,25 +57,32 @@ function DialogExample({
   modal,
   name = "Dialog",
   portal,
+  stopDialogOnEscape,
+  stopDialogOnEscapeCapture,
   stopOnEscape,
   stopOnEscapeCapture,
 }: DialogExampleProps) {
+  const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key !== "Escape") return;
+    event.stopPropagation();
+  };
   const dialog = (
     <Ariakit.DialogProvider>
       <Ariakit.DialogDisclosure>
         Open {name.toLowerCase()}
       </Ariakit.DialogDisclosure>
-      <Ariakit.Dialog modal={modal} portal={portal}>
+      <Ariakit.Dialog
+        modal={modal}
+        portal={portal}
+        onKeyDown={stopDialogOnEscape ? onKeyDown : undefined}
+        onKeyDownCapture={stopDialogOnEscapeCapture ? onKeyDown : undefined}
+      >
         <Ariakit.DialogHeading>{name}</Ariakit.DialogHeading>
         <Autocomplete capture={capture} />
       </Ariakit.Dialog>
     </Ariakit.DialogProvider>
   );
   if (!stopOnEscape && !stopOnEscapeCapture) return dialog;
-  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== "Escape") return;
-    event.stopPropagation();
-  };
   return (
     <div
       onKeyDown={stopOnEscape ? onKeyDown : undefined}
@@ -81,6 +90,38 @@ function DialogExample({
     >
       {dialog}
     </div>
+  );
+}
+
+export function DocumentRootDocument() {
+  return (
+    <html>
+      <head />
+      <body>
+        <DialogExample name="Document root dialog" portal={false} />
+        <DialogExample
+          capture
+          name="Document root capture dialog"
+          portal={false}
+        />
+        <DialogExample
+          name="Document root own bubble dialog"
+          portal={false}
+          stopDialogOnEscape
+        />
+        <DialogExample
+          name="Document root own capture dialog"
+          portal={false}
+          stopDialogOnEscapeCapture
+        />
+        <DialogExample
+          modal={false}
+          name="Document root outside dialog"
+          portal={false}
+          stopOnEscapeCapture
+        />
+      </body>
+    </html>
   );
 }
 
@@ -93,22 +134,7 @@ function DocumentRootExample() {
     // Delegate React events to the document itself to reproduce the listener
     // ordering where React capture runs before the Dialog effect.
     const root = createRoot(document);
-    root.render(
-      <>
-        <DialogExample name="Document root dialog" portal={false} />
-        <DialogExample
-          capture
-          name="Document root capture dialog"
-          portal={false}
-        />
-        <DialogExample
-          modal={false}
-          name="Document root outside dialog"
-          portal={false}
-          stopOnEscapeCapture
-        />
-      </>,
-    );
+    root.render(<DocumentRootDocument />);
     return () => root.unmount();
   }, [iframe]);
 
@@ -121,6 +147,8 @@ export default function Example() {
     <>
       <DialogExample />
       <DialogExample name="Outer ancestor dialog" portal={false} stopOnEscape />
+      <DialogExample name="Own bubble dialog" stopDialogOnEscape />
+      <DialogExample name="Own capture dialog" stopDialogOnEscapeCapture />
       <button onClick={() => setShowDocumentRoot(true)}>
         Show document root example
       </button>
