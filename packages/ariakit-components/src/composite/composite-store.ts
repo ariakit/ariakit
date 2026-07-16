@@ -542,6 +542,10 @@ export interface CompositeStoreItem extends CollectionStoreItem {
    * The item children. This can be used for typeahead purposes.
    */
   children?: string;
+  /**
+   * The text used by typeahead to match this item.
+   */
+  typeaheadText?: string;
 }
 
 export interface CompositeStoreState<
