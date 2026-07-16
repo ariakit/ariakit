@@ -225,5 +225,6 @@ Continue reading our [Guide](/guide) to learn more about Ariakit:
 <div data-cards>
 
 - [](/guide/component-providers)
+- [](/guide/value-components)
 
 </div>
