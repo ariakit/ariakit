@@ -1,0 +1,54 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  align-items: flex-start;
+  padding: 1rem;
+}
+
+.root h1,
+.root h2 {
+  margin: 0;
+}
+
+.root section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.root h2 {
+  font-size: 1rem;
+}
+
+.toolbar {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.toolbar-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid hsl(204 10% 80%);
+  border-radius: 0.5rem;
+  background: white;
+  color: hsl(204 10% 10%);
+  font: inherit;
+  padding: 0.5rem 1rem;
+}
+
+.toolbar-item:focus-visible {
+  outline: 2px solid hsl(204 100% 40%);
+  outline-offset: 1px;
+}
+
+.tooltip {
+  z-index: 10;
+  border-radius: 0.375rem;
+  background: hsl(204 10% 10%);
+  color: white;
+  font: inherit;
+  font-size: 0.875rem;
+  padding: 0.375rem 0.5rem;
+}
