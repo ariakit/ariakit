@@ -59,6 +59,22 @@ test("hides before an outside ancestor handles Escape", async () => {
   expect(q.dialog("Outer ancestor dialog")).not.toBeInTheDocument();
 });
 
+test("lets an outside capture handler own Escape", async () => {
+  await click(q.button("Open outer capture dialog"));
+  const dialog = q.dialog("Outer capture dialog");
+  const input = q.within(dialog).combobox.ensure("Search");
+  const listbox = q.within(dialog).listbox("Suggestions");
+
+  expect(dialog).toBeVisible();
+  expect(input).toHaveFocus();
+  expect(listbox).toBeVisible();
+
+  await press.Escape(input);
+
+  expect(listbox).toBeVisible();
+  expect(dialog).toBeVisible();
+});
+
 test("hides after its own bubble handler stops Escape", async () => {
   await click(q.button("Open own bubble dialog"));
   expect(q.dialog("Own bubble dialog")).toBeVisible();
@@ -136,5 +152,23 @@ test("keeps global Escape outside a document-root dialog", async () => {
     await press.Escape(disclosure);
 
     expect(q.dialog("Document root outside dialog")).not.toBeInTheDocument();
+  });
+});
+
+test("lets an outside capture handler own Escape in a document root", async () => {
+  await withDocumentRoot(async (q) => {
+    await click(q.button("Open document root outside dialog"));
+    const dialog = q.dialog("Document root outside dialog");
+    const input = q.within(dialog).combobox.ensure("Search");
+    const listbox = q.within(dialog).listbox("Suggestions");
+
+    expect(dialog).toBeVisible();
+    expect(input).toHaveFocus();
+    expect(listbox).toBeVisible();
+
+    await press.Escape(input);
+
+    expect(listbox).toBeVisible();
+    expect(dialog).toBeVisible();
   });
 });

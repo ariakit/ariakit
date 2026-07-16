@@ -583,6 +583,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         store.hide();
         return;
       }
+      // If an ancestor capture handler stops propagation before the event
+      // reaches this dialog boundary, that handler owns Escape and the dialog
+      // remains open.
       escapeEvents.set(event, "pending");
     };
     // Listen on the document so Escape works even when the dialog isn't

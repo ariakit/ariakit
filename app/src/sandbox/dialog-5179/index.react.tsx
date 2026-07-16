@@ -147,6 +147,11 @@ export default function Example() {
     <>
       <DialogExample />
       <DialogExample name="Outer ancestor dialog" portal={false} stopOnEscape />
+      <DialogExample
+        name="Outer capture dialog"
+        portal={false}
+        stopOnEscapeCapture
+      />
       <DialogExample name="Own bubble dialog" stopDialogOnEscape />
       <DialogExample name="Own capture dialog" stopDialogOnEscapeCapture />
       <button onClick={() => setShowDocumentRoot(true)}>
