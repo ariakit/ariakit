@@ -121,7 +121,7 @@ export const useDisclosureContent = createHook<
 
   const ref = useRef<HTMLType>(null);
   const id = useId(props.id);
-  const [transition, setTransition] = useState<TransitionState>(null);
+  const [transitionState, setTransition] = useState<TransitionState>(null);
   const { open, mounted, animated, contentElement } = useStoreStateObject(
     store,
     {
@@ -133,6 +133,22 @@ export const useDisclosureContent = createHook<
   );
   const otherElement = useStoreState(store.disclosure, "contentElement");
   const hasClosedRef = useRef(false);
+  // Latched when animation detection turns animations off (no CSS transition
+  // or animation was found on the content element). While animations remain
+  // off, the enter state is derived directly from the open state during
+  // render, so toggling the content doesn't need an extra setTransition
+  // render pass on every show and hide. The animated state can become truthy
+  // again after the latch (e.g., through the animated store option or another
+  // component instance mounting on the same store), so the state path below
+  // must take over again in that case. See the !animated branch in the
+  // transition effect below.
+  const animationsDisabledRef = useRef(false);
+  const transition =
+    !animated && animationsDisabledRef.current
+      ? open
+        ? "enter"
+        : null
+      : transitionState;
 
   // This is a workaround to avoid the content element from being reset to null
   // on fast refresh.
@@ -158,16 +174,28 @@ export const useDisclosureContent = createHook<
 
   useSafeLayoutEffect(() => {
     if (!animated) {
-      // When animation detection has disabled animations (e.g., no CSS
-      // transition was detected on the content element), manage data-enter
-      // so wrapper elements using :has([data-enter]) work correctly even
-      // when the content element itself has no transitions.
+      // Once animation detection has disabled animations, the enter state is
+      // derived from the open state during render, so it needs no state
+      // updates here. Still reset the state on close so a stale pre-latch
+      // value can't resurface if the animated state is re-enabled later.
+      // Resetting an already null state bails out without a render, so only
+      // the first close after the latch pays for it.
+      if (animationsDisabledRef.current) {
+        if (!open) {
+          setTransition(null);
+        }
+        return;
+      }
+      // When animations are off for another reason (e.g., the initial render
+      // before detection kicks in), manage data-enter so wrapper elements
+      // using :has([data-enter]) work correctly even when the content element
+      // itself has no transitions.
       if (!open) {
         hasClosedRef.current = true;
         setTransition(null);
       } else if (hasClosedRef.current) {
-        // On reopen after animation detection disabled animations, restore
-        // data-enter so enter styles are re-applied.
+        // On reopen after animations were disabled, restore data-enter so
+        // enter styles are re-applied.
         hasClosedRef.current = false;
         setTransition("enter");
       }
@@ -241,6 +269,7 @@ export const useDisclosureContent = createHook<
     // leave animation.
     if (!timeout) {
       if (transition === "enter") {
+        animationsDisabledRef.current = true;
         store.setState("animated", false);
       }
       stopAnimation();

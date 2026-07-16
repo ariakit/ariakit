@@ -413,14 +413,31 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const mayAutoFocusOnHide = !!autoFocusOnHide;
   const autoFocusOnHideProp = useBooleanEvent(autoFocusOnHide);
 
-  // Sets a `hasOpened` flag on an effect so we only auto focus on hide if the
-  // dialog was open before.
-  const [hasOpened, setHasOpened] = useState(false);
+  // Tracks whether the dialog has been open so we only auto focus on hide if
+  // it was. This is a ref rather than state: it's only read inside effects
+  // and effect cleanups, and state updates here would add an extra render
+  // pass to every open/close cycle.
+  const hasOpenedRef = useRef(false);
+
+  // Tracks whether focus was already restored by the hide effect below, so
+  // the unmount cleanup doesn't restore it twice for the same hide.
+  const focusedOnHideRef = useRef(false);
+
+  // Arms the unmount focus-on-hide effect below only after a commit has
+  // rendered with the dialog open. Unlike the refs above, this must be state:
+  // when a dialog mounts already open, StrictMode's simulated unmount runs
+  // the cleanup right after the initial mount, when the refs are already set,
+  // which would restore focus while the dialog is still open. State lags by
+  // one commit, so the cleanup isn't armed yet at that point. It latches true
+  // once instead of flipping on every cycle, so subsequent open/close cycles
+  // add no render passes.
+  const [everOpened, setEverOpened] = useState(false);
 
   useSafeLayoutEffect(() => {
     if (!open) return;
-    setHasOpened(true);
-    return () => setHasOpened(false);
+    hasOpenedRef.current = true;
+    focusedOnHideRef.current = false;
+    setEverOpened(true);
   }, [open]);
 
   const focusOnHide = useCallback(
@@ -476,23 +493,32 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     [store, finalFocus, autoFocusOnHideProp],
   );
 
-  const focusedOnHideRef = useRef(false);
-
   // Auto focus on hide with an always rendered dialog.
   useSafeLayoutEffect(() => {
     if (open) return;
-    if (!hasOpened) return;
+    if (!hasOpenedRef.current) return;
+    // Consume the flag so re-runs from dependency changes don't restore focus
+    // twice for the same hide. It's consumed even when autoFocusOnHide is
+    // disabled, mirroring how the previous state-based flag reset on every
+    // hide.
+    hasOpenedRef.current = false;
     if (!mayAutoFocusOnHide) return;
     const dialog = ref.current;
     // We don't want to focus on hide twice if the dialog is not unmounted, so
     // we set this flag here that will be checked in the cleanup effect below.
     focusedOnHideRef.current = true;
     focusOnHide(dialog);
-  }, [open, hasOpened, domReady, mayAutoFocusOnHide, focusOnHide]);
+  }, [open, domReady, mayAutoFocusOnHide, focusOnHide]);
 
-  // Auto focus on hide with a dialog that gets unmounted when hidden.
+  // Auto focus on hide with a dialog that gets unmounted when hidden. In that
+  // case, the dialog unmounts while still open, so the effect above never
+  // sees the closed state and the opened flag is still set here. The open
+  // dependency re-arms the effect on every show so the cleanup always
+  // captures the current dialog element, which can change between cycles
+  // when props like modal or portal change.
   useEffect(() => {
-    if (!hasOpened) return;
+    if (!everOpened) return;
+    if (!open) return;
     if (!mayAutoFocusOnHide) return;
     const dialog = ref.current;
     return () => {
@@ -500,9 +526,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         focusedOnHideRef.current = false;
         return;
       }
+      if (!hasOpenedRef.current) return;
       focusOnHide(dialog);
     };
-  }, [hasOpened, mayAutoFocusOnHide, focusOnHide]);
+  }, [everOpened, open, mayAutoFocusOnHide, focusOnHide]);
 
   const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
 
