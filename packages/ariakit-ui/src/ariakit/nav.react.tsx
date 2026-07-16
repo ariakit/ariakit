@@ -12,9 +12,11 @@ import {
   navDisclosureContent,
   navDisclosureContentBody,
   navGroup,
+  navIcon,
   navLink,
   navList,
 } from "../styles/nav.ts";
+import { isCurrentPage } from "../utils/is-current-page.ts";
 import type {
   DisclosureButtonProps,
   DisclosureContentBodyProps,
@@ -27,29 +29,6 @@ import {
   DisclosureContent,
   DisclosureContentBody,
 } from "./disclosure.react.tsx";
-
-function isCurrentPage(
-  currentUrl?: string | URL,
-  href?: string | URL,
-): boolean {
-  if (!href) return false;
-  const base = new URL(currentUrl ?? "", "https://example.com");
-  let dest: URL;
-  try {
-    dest = new URL(href, base);
-  } catch {
-    return false;
-  }
-  if (dest.origin !== base.origin) return false;
-  const basePathname = base.pathname.replace(/\/$/, "");
-  const destPathname = dest.pathname.replace(/\/$/, "");
-  if (destPathname !== basePathname) return false;
-  if (dest.hash && dest.hash !== base.hash) return false;
-  base.searchParams.sort();
-  dest.searchParams.sort();
-  if (dest.search && dest.search !== base.search) return false;
-  return true;
-}
 
 export interface NavProps
   extends ak.RoleProps<"nav">, VariantProps<typeof nav> {
@@ -110,6 +89,19 @@ export interface NavGroupLabelProps extends ak.GroupLabelProps {}
 
 export function NavGroupLabel(props: NavGroupLabelProps) {
   return <ak.GroupLabel {...props} />;
+}
+
+export interface NavIconProps
+  extends ak.RoleProps<"span">, VariantProps<typeof navIcon> {}
+
+/**
+ * Renders the icon slot of a nav row, sized by the Nav icon-size variable.
+ * It keeps the line height while the sidebar is expanded so the label
+ * aligns, and squares to the icon size when the sidebar collapses.
+ */
+export function NavIcon(props: NavIconProps) {
+  const [variantProps, rest] = splitProps(props, navIcon);
+  return <ak.Role.span {...navIcon.jsx(variantProps)} {...rest} />;
 }
 
 export interface NavDisclosureProps

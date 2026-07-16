@@ -241,12 +241,13 @@ export interface TableCellProps
 }
 
 export function TableCell({ numeric, header, ...props }: TableCellProps) {
-  const contextGroup = React.useContext(TableRowGroupContext);
-  const group = contextGroup ?? "body";
+  const group = React.useContext(TableRowGroupContext);
   header = header ?? (group === "head" ? "column" : false);
-  const isColumnHeader = header === "column" || (header && group === "head");
-  const isRowHeader =
-    header === "row" || (header && !isColumnHeader && group !== "head");
+  // Only the bare `true` value derives the header kind from the group, so an
+  // explicit "row" stays a row header even inside a head group.
+  const isColumnHeader =
+    header === "column" || (header === true && group === "head");
+  const isRowHeader = header === "row" || (header === true && group !== "head");
   const Component = header ? "th" : "td";
   const [variantProps, rest] = splitProps(props, tableCell);
 

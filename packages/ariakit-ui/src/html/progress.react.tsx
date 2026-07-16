@@ -1,6 +1,6 @@
-import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import type { ComponentProps } from "react";
 import {
   progress,
   progressCircular,
@@ -9,7 +9,7 @@ import {
 } from "../styles/progress.ts";
 
 export interface ProgressProps
-  extends ak.RoleProps<"div">, Omit<VariantProps<typeof progress>, "$value"> {
+  extends ComponentProps<"div">, Omit<VariantProps<typeof progress>, "$value"> {
   /**
    * Progress between `0` and `1`. Omit it for an indeterminate progress bar
    * (no aria-valuenow).
@@ -20,7 +20,7 @@ export interface ProgressProps
 export function Progress({ value, children, ...props }: ProgressProps) {
   const [variantProps, rest] = splitProps(props, progress);
   return (
-    <ak.Role
+    <div
       role="progressbar"
       aria-valuenow={value}
       aria-valuemin={0}
@@ -30,13 +30,13 @@ export function Progress({ value, children, ...props }: ProgressProps) {
     >
       <div {...progressFill.jsx({})} />
       {children}
-    </ak.Role>
+    </div>
   );
 }
 
 export interface ProgressCircularProps
   extends
-    ak.RoleProps<"div">,
+    ComponentProps<"div">,
     Omit<VariantProps<typeof progressCircular>, "$value"> {
   /**
    * Progress between `0` and `1`. Omit it for an indeterminate progress bar
@@ -52,7 +52,7 @@ export function ProgressCircular({
 }: ProgressCircularProps) {
   const [variantProps, rest] = splitProps(props, progressCircular);
   return (
-    <ak.Role
+    <div
       role="progressbar"
       aria-valuenow={value}
       aria-valuemin={0}
@@ -62,6 +62,6 @@ export function ProgressCircular({
     >
       <div {...progressCircularFill.jsx({})} />
       {children}
-    </ak.Role>
+    </div>
   );
 }

@@ -26,7 +26,11 @@ import {
 } from "./disclosure.react.tsx";
 
 export interface ListProps
-  extends React.ComponentProps<"ol">, VariantProps<typeof list> {
+  extends
+    React.ComponentProps<"ol">,
+    // The ordered prop computes this variant along with the element, so they
+    // stay in sync.
+    Omit<VariantProps<typeof list>, "$ordered"> {
   /** Renders an ordered list (<ol>) when true; unordered (<ul>) when false. */
   ordered?: boolean;
 }
@@ -55,7 +59,9 @@ export function List({ ordered, ...props }: ListProps) {
 export interface ListItemProps
   extends
     ak.RoleProps<"li">,
-    VariantProps<typeof listItem>,
+    // The checked and progress props compute this variant along with the
+    // check child, so they stay in sync.
+    Omit<VariantProps<typeof listItem>, "$check">,
     Pick<ListItemCheckProps, "checked" | "progress"> {}
 
 export function ListItem({ checked, progress, ...props }: ListItemProps) {
@@ -73,7 +79,11 @@ export function ListItem({ checked, progress, ...props }: ListItemProps) {
 }
 
 export interface ListItemCheckProps
-  extends React.ComponentProps<"span">, VariantProps<typeof listItemCheck> {
+  extends
+    React.ComponentProps<"span">,
+    // The checked and progress props compute these variants along with the
+    // aria label and the icon or arc children, so they stay in sync.
+    Omit<VariantProps<typeof listItemCheck>, "$checked" | "$progress"> {
   /** Progress between `0` and `1` shown as a circular arc. */
   progress?: number;
   /** Whether the check is checked. Defaults to `true` if `progress` is `1`. */
@@ -138,7 +148,9 @@ export function ListDisclosure(props: ListDisclosureProps) {
 export interface ListDisclosureButtonProps
   extends
     DisclosureButtonProps,
-    VariantProps<typeof listDisclosureButton>,
+    // The checked and progress props compute this variant along with the
+    // check child, so they stay in sync.
+    Omit<VariantProps<typeof listDisclosureButton>, "$check">,
     Pick<ListItemCheckProps, "checked" | "progress"> {}
 
 export function ListDisclosureButton({
