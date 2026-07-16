@@ -34,13 +34,24 @@ function Autocomplete() {
 }
 
 export default function Example() {
+  const dialog = Ariakit.useDialogStore();
   return (
-    <Ariakit.DialogProvider>
-      <Ariakit.DialogDisclosure>Open dialog</Ariakit.DialogDisclosure>
-      <Ariakit.Dialog>
+    <>
+      <Ariakit.DialogDisclosure store={dialog}>
+        Open dialog
+      </Ariakit.DialogDisclosure>
+      <Ariakit.Dialog
+        store={dialog}
+        hideOnEscape={false}
+        onKeyDown={(event) => {
+          if (event.key !== "Escape") return;
+          // TODO: Remove when https://github.com/ariakit/ariakit/issues/5179 is fixed.
+          dialog.hide();
+        }}
+      >
         <Ariakit.DialogHeading>Dialog</Ariakit.DialogHeading>
         <Autocomplete />
       </Ariakit.Dialog>
-    </Ariakit.DialogProvider>
+    </>
   );
 }
