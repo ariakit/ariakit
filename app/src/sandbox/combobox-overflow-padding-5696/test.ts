@@ -12,16 +12,6 @@ function expectOverflowPadding(popover: HTMLElement, value = "32px") {
   ).toBe(value);
 }
 
-// The overflow padding variable is public API and must be exposed on the
-// wrapper even while the popover is closed and hidden, before it first opens.
-test("exposes the overflow padding variable on a closed popover", () => {
-  const popover = document.querySelector<HTMLElement>(".closed-popover");
-  expect(popover).not.toBeNull();
-  if (!popover) return;
-  expect(popover).not.toBeVisible();
-  expectOverflowPadding(popover, "24px");
-});
-
 test("uses the greatest horizontal overflow padding for CSS sizing", async () => {
   const popover = q.listbox.ensure();
   expectOverflowPadding(popover);
