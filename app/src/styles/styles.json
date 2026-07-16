@@ -10051,6 +10051,393 @@
         }
       },
       "variants": {}
+    },
+    {
+      "id": "prose",
+      "path": "app/src/styles/ak-prose.css",
+      "atProperties": {},
+      "utilities": {
+        "ak-code": {
+          "name": "ak-code",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-layer ak-layer-6 ak-edge-15",
+              "value": {}
+            },
+            {
+              "name": "@apply rounded px-[0.25em] py-[0.18em] font-mono text-inherit ring",
+              "value": {}
+            },
+            {
+              "name": "font-size-adjust",
+              "value": "0.48"
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-layer-6",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-15",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-separator": {
+          "name": "ak-separator",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-layer ak-edge-20",
+              "value": {}
+            },
+            {
+              "name": "@apply border-t border-dashed",
+              "value": {}
+            },
+            {
+              "name": "margin-block",
+              "value": "calc(var(--ak-prose-gap) * 0.5)"
+            },
+            {
+              "name": "+ *",
+              "value": [
+                {
+                  "name": "@apply mt-0",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-layer",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-edge-20",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-strong": {
+          "name": "ak-strong",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-ink-100 font-medium",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-ink-100",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-prose-leading-*": {
+          "name": "ak-prose-leading-*",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-prose-leading",
+              "value": "calc(1em * --value(--leading))"
+            },
+            {
+              "name": "--ak-prose-leading",
+              "value": "--spacing(--value(number))"
+            },
+            {
+              "name": "--ak-prose-leading",
+              "value": "--value([*])"
+            },
+            {
+              "name": "@apply leading-(--ak-prose-leading)",
+              "value": {}
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-prose-text-*": {
+          "name": "ak-prose-text-*",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-prose-leading",
+              "value": "calc(1em * --modifier(--leading))"
+            },
+            {
+              "name": "--ak-prose-leading",
+              "value": "--modifier([length])"
+            },
+            {
+              "name": "--ak-prose-leading",
+              "value": "--spacing(--modifier(number))"
+            },
+            {
+              "name": "font-size",
+              "value": "--value(--text, [*])"
+            },
+            {
+              "name": "@apply leading-(--ak-prose-leading)",
+              "value": {}
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-prose-gap-*": {
+          "name": "ak-prose-gap-*",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-prose-gap",
+              "value": "--spacing(--value(number))"
+            },
+            {
+              "name": "--ak-prose-gap",
+              "value": "--value(--spacing, [*])"
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-prose-content": {
+          "name": "ak-prose-content",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply gap-(--ak-prose-gap) flex flex-col",
+              "value": {}
+            }
+          ],
+          "dependencies": []
+        },
+        "ak-prose-text": {
+          "name": "ak-prose-text",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "@apply ak-dark:ak-ink-75 ak-light:ak-ink-90",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-dark",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-75",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-light",
+              "import": "@ariakit/tailwind"
+            },
+            {
+              "type": "utility",
+              "name": "ak-ink-90",
+              "import": "@ariakit/tailwind"
+            }
+          ]
+        },
+        "ak-prose": {
+          "name": "ak-prose",
+          "type": "utility",
+          "properties": [
+            {
+              "name": "--ak-prose-gap",
+              "value": "1.25em"
+            },
+            {
+              "name": "@apply ak-prose-text ak-prose-text-base/relaxed ak-prose-elements ak-prose-content",
+              "value": {}
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-prose-text",
+              "module": "prose"
+            },
+            {
+              "type": "utility",
+              "name": "ak-prose-text-*",
+              "module": "prose"
+            },
+            {
+              "type": "utility",
+              "name": "ak-prose-elements",
+              "module": "prose"
+            },
+            {
+              "type": "utility",
+              "name": "ak-prose-content",
+              "module": "prose"
+            }
+          ]
+        },
+        "ak-prose-elements": {
+          "name": "ak-prose-elements",
+          "type": "utility",
+          "properties": [
+            {
+              "name": ":where(h1, h2, h3, h4, h5)",
+              "value": [
+                {
+                  "name": "@apply ak-heading",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": ":where(p)",
+              "value": [
+                {
+                  "name": "@apply ak-prose-text",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": ":where(ul, ol)",
+              "value": [
+                {
+                  "name": "@apply ak-prose-text ak-list ak-list-leading-(--ak-prose-leading) ak-list-gap-(--ak-prose-gap)",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": ":where(li)",
+              "value": [
+                {
+                  "name": "@apply ak-list-item",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": ":where(strong)",
+              "value": [
+                {
+                  "name": "@apply ak-strong",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": ":where(code):not(:where(pre code))",
+              "value": [
+                {
+                  "name": "@apply ak-code",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": ":where(p a)",
+              "value": [
+                {
+                  "name": "@apply ak-link",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": ":where(kbd)",
+              "value": [
+                {
+                  "name": "@apply ak-kbd",
+                  "value": {}
+                }
+              ]
+            },
+            {
+              "name": ":where(hr)",
+              "value": [
+                {
+                  "name": "@apply ak-separator",
+                  "value": {}
+                }
+              ]
+            }
+          ],
+          "dependencies": [
+            {
+              "type": "utility",
+              "name": "ak-heading",
+              "module": "heading"
+            },
+            {
+              "type": "utility",
+              "name": "ak-prose-text",
+              "module": "prose"
+            },
+            {
+              "type": "utility",
+              "name": "ak-list",
+              "module": "list"
+            },
+            {
+              "type": "utility",
+              "name": "ak-list-leading-*",
+              "module": "list"
+            },
+            {
+              "type": "utility",
+              "name": "ak-list-gap-*",
+              "module": "list"
+            },
+            {
+              "type": "utility",
+              "name": "ak-list-item",
+              "module": "list"
+            },
+            {
+              "type": "utility",
+              "name": "ak-strong",
+              "module": "prose"
+            },
+            {
+              "type": "utility",
+              "name": "ak-code",
+              "module": "prose"
+            },
+            {
+              "type": "utility",
+              "name": "ak-link",
+              "module": "link"
+            },
+            {
+              "type": "utility",
+              "name": "ak-kbd",
+              "module": "kbd"
+            },
+            {
+              "type": "utility",
+              "name": "ak-separator",
+              "module": "prose"
+            }
+          ]
+        }
+      },
+      "variants": {}
     }
   ],
   "index": {
@@ -10885,6 +11272,36 @@
       },
       "ak-table-border-gap-*": {
         "module": "table"
+      },
+      "ak-code": {
+        "module": "prose"
+      },
+      "ak-separator": {
+        "module": "prose"
+      },
+      "ak-strong": {
+        "module": "prose"
+      },
+      "ak-prose-leading-*": {
+        "module": "prose"
+      },
+      "ak-prose-text-*": {
+        "module": "prose"
+      },
+      "ak-prose-gap-*": {
+        "module": "prose"
+      },
+      "ak-prose-content": {
+        "module": "prose"
+      },
+      "ak-prose-text": {
+        "module": "prose"
+      },
+      "ak-prose": {
+        "module": "prose"
+      },
+      "ak-prose-elements": {
+        "module": "prose"
       }
     },
     "variants": {
