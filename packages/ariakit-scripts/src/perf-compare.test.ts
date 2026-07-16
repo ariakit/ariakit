@@ -302,6 +302,15 @@ function readConfirmationFilesList(dir: string) {
   );
 }
 
+function readConfirmationTargets(dir: string) {
+  return JSON.parse(
+    readFileSync(
+      path.join(dir, resultsDir, "confirmation-targets.json"),
+      "utf-8",
+    ),
+  );
+}
+
 function runCompare(
   dir: string,
   args: string[] = [],
@@ -324,6 +333,19 @@ function runCompareFailure(dir: string) {
     throw new Error("Expected performance comparison to fail");
   }
   return `${result.stderr}${result.stdout}`;
+}
+
+function runNodeResultsCheck(dir: string, file: string, expectedCount: number) {
+  return spawnSync(
+    process.execPath,
+    [
+      scriptPath,
+      "perf-check-node-results",
+      path.join(dir, resultsDir, file),
+      String(expectedCount),
+    ],
+    { cwd: dir, encoding: "utf-8" },
+  );
 }
 
 afterEach(() => {
@@ -515,6 +537,208 @@ test("describes Node multi-round comparisons by round agreement", () => {
   expect(readConfirmationFilesList(dir)).toBe(
     "packages/ariakit-store/benchmark/store.bench.ts\n",
   );
+  expect(summary.confirmationTargets).toEqual([
+    {
+      baselineTestNamePattern: "^(?:set state)$",
+      benchmarkCount: 1,
+      currentTestNamePattern: "^(?:set state)$",
+      file: "packages/ariakit-store/benchmark/store.bench.ts",
+    },
+  ]);
+  expect(readConfirmationTargets(dir)).toEqual(summary.confirmationTargets);
+});
+
+test("writes focused Node confirmation targets with raw benchmark names", () => {
+  const dir = createTempDir();
+  const benchmarkFile = "packages/ariakit-store/benchmark/store.bench.ts";
+  const flaggedGroup = `${benchmarkFile} > store > special`;
+  const stableGroup = `${benchmarkFile} > collection`;
+  for (const round of [1, 2]) {
+    writeJson(
+      dir,
+      `baseline-${round}.json`,
+      createBenchmarkReport([
+        {
+          fullName: flaggedGroup,
+          benchmarks: [
+            { name: "set [state]@1.2.3", hz: 1000 },
+            { name: "other (fast)@1.0.0", hz: 1000 },
+          ],
+        },
+        {
+          fullName: stableGroup,
+          benchmarks: [{ name: "set [state]@1.2.3", hz: 1000 }],
+        },
+      ]),
+    );
+    writeJson(
+      dir,
+      `current-${round}.json`,
+      createBenchmarkReport([
+        {
+          fullName: flaggedGroup,
+          benchmarks: [
+            { name: "set [state]@2.0.0", hz: 500 },
+            { name: "other (fast)@2.0.0", hz: 500 },
+          ],
+        },
+        {
+          fullName: stableGroup,
+          benchmarks: [{ name: "set [state]@2.0.0", hz: 1000 }],
+        },
+      ]),
+    );
+  }
+
+  runCompare(dir, ["--node"]);
+  const summary = readComparisonSummary(dir);
+
+  expect(summary.confirmationTargets).toEqual([
+    {
+      baselineTestNamePattern: String.raw`^(?:store(?: > | )special(?: > | )other \(fast\)@1\.0\.0|store(?: > | )special(?: > | )set \[state\]@1\.2\.3)$`,
+      benchmarkCount: 2,
+      currentTestNamePattern: String.raw`^(?:store(?: > | )special(?: > | )other \(fast\)@2\.0\.0|store(?: > | )special(?: > | )set \[state\]@2\.0\.0)$`,
+      file: benchmarkFile,
+    },
+  ]);
+  const target = summary.confirmationTargets.at(0);
+  if (!target) throw new Error("Missing confirmation target");
+  const baselinePattern = new RegExp(target.baselineTestNamePattern);
+  const currentPattern = new RegExp(target.currentTestNamePattern);
+  expect(baselinePattern.test("store special set [state]@1.2.3")).toBe(true);
+  expect(baselinePattern.test("store > special set [state]@1.2.3")).toBe(true);
+  expect(baselinePattern.test("store special other (fast)@1.0.0")).toBe(true);
+  expect(baselinePattern.test("collection set [state]@1.2.3")).toBe(false);
+  expect(currentPattern.test("store special set [state]@2.0.0")).toBe(true);
+  expect(currentPattern.test("store special set [state]@1.2.3")).toBe(false);
+  expect(summary.rows).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({
+        label: "store > special > set [state]",
+        baselineBenchmarkPattern: String.raw`store(?: > | )special(?: > | )set \[state\]@1\.2\.3`,
+        currentBenchmarkPattern: String.raw`store(?: > | )special(?: > | )set \[state\]@2\.0\.0`,
+        significant: true,
+      }),
+      expect.objectContaining({
+        label: "collection > set [state]",
+        significant: false,
+      }),
+    ]),
+  );
+});
+
+test("groups Node confirmation targets by benchmark file", () => {
+  const dir = createTempDir();
+  const firstFile = "/repo/packages/first/benchmark/first.bench.ts";
+  const secondFile = "/repo/packages/second/benchmark/second.bench.ts";
+  const stableFile = "/repo/packages/stable/benchmark/stable.bench.ts";
+  const createReport = (changedHz: number) =>
+    createBenchmarkReportFromFiles([
+      {
+        filepath: firstFile,
+        groups: [
+          {
+            fullName: firstFile,
+            benchmarks: [{ name: "first", hz: changedHz }],
+          },
+        ],
+      },
+      {
+        filepath: secondFile,
+        groups: [
+          {
+            fullName: secondFile,
+            benchmarks: [{ name: "second", hz: changedHz }],
+          },
+        ],
+      },
+      {
+        filepath: stableFile,
+        groups: [
+          {
+            fullName: stableFile,
+            benchmarks: [{ name: "stable", hz: 1000 }],
+          },
+        ],
+      },
+    ]);
+
+  for (const round of [1, 2]) {
+    writeJson(dir, `baseline-${round}.json`, createReport(1000));
+    writeJson(dir, `current-${round}.json`, createReport(500));
+  }
+
+  runCompare(dir, ["--node"]);
+  const summary = readComparisonSummary(dir);
+
+  expect(summary.confirmationTargets).toEqual([
+    {
+      baselineTestNamePattern: "^(?:first)$",
+      benchmarkCount: 1,
+      currentTestNamePattern: "^(?:first)$",
+      file: "packages/first/benchmark/first.bench.ts",
+    },
+    {
+      baselineTestNamePattern: "^(?:second)$",
+      benchmarkCount: 1,
+      currentTestNamePattern: "^(?:second)$",
+      file: "packages/second/benchmark/second.bench.ts",
+    },
+  ]);
+});
+
+test("checks focused Node benchmark result counts", () => {
+  const dir = createTempDir();
+  writeJson(dir, "focused.json", createStoreBenchmarkReport(1000));
+
+  const success = runNodeResultsCheck(dir, "focused.json", 1);
+  expect(success.status).toBe(0);
+
+  const failure = runNodeResultsCheck(dir, "focused.json", 2);
+  expect(failure.status).toBe(1);
+  expect(`${failure.stderr}${failure.stdout}`).toContain(
+    "Expected 2 benchmark results",
+  );
+  expect(`${failure.stderr}${failure.stdout}`).toContain("found 1");
+});
+
+test("keeps stable Node benchmarks at the initial round count", () => {
+  const dir = createTempDir();
+  const createReport = (flaggedHz: number, includeStable: boolean) =>
+    createBenchmarkReport([
+      {
+        fullName: "packages/ariakit-store/benchmark/store.bench.ts",
+        benchmarks: [
+          { name: "flagged", hz: flaggedHz },
+          ...(includeStable ? [{ name: "stable", hz: 1000 }] : []),
+        ],
+      },
+    ]);
+
+  for (const round of [1, 2]) {
+    writeJson(dir, `baseline-${round}.json`, createReport(1000, true));
+    writeJson(dir, `current-${round}.json`, createReport(500, true));
+  }
+  for (const round of [3, 4, 5]) {
+    writeJson(dir, `baseline-${round}-t0.json`, createReport(1000, false));
+    writeJson(dir, `current-${round}-t0.json`, createReport(500, false));
+  }
+
+  const markdown = runCompare(dir, ["--node"]);
+  const summary = readComparisonSummary(dir);
+  const flagged = summary.rows.find(
+    (row: { label: string }) => row.label === "flagged",
+  );
+  const stable = summary.rows.find(
+    (row: { label: string }) => row.label === "stable",
+  );
+
+  expect(flagged?.pairedRoundsCount).toBe(5);
+  expect(flagged?.significant).toBe(true);
+  expect(stable?.pairedRoundsCount).toBe(2);
+  expect(stable?.significant).toBe(false);
+  expect(summary.pairedRoundsCount).toBeNull();
+  expect(markdown).toContain("mixed interleaved round counts");
 });
 
 test("does not flag noisy rounds that disagree on direction", () => {

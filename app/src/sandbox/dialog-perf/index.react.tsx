@@ -1,5 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
 import "./style.css";
 
 const items = Array.from({ length: 3000 }, (_, index) => ({
@@ -19,10 +18,10 @@ const fields = [
 ];
 
 export default function Example() {
-  const [open, setOpen] = useState(false);
+  const dialog = Ariakit.useDialogStore();
   return (
     <div className="root">
-      <Ariakit.Button className="button" onClick={() => setOpen(true)}>
+      <Ariakit.Button className="button" onClick={dialog.show}>
         Open dialog
       </Ariakit.Button>
       <ul className="grid">
@@ -36,8 +35,7 @@ export default function Example() {
       </ul>
       <Ariakit.Dialog
         className="dialog"
-        open={open}
-        onClose={() => setOpen(false)}
+        store={dialog}
         unmountOnHide
         backdrop={<div className="backdrop" />}
       >

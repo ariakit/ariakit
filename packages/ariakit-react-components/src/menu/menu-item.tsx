@@ -111,7 +111,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
       hideMenu();
     });
 
-    const contentElement = useStoreState(store, (state) =>
+    const contentElement = useStoreState(store, ["contentElement"], (state) =>
       "contentElement" in state ? state.contentElement : null,
     );
 

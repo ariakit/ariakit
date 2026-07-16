@@ -187,6 +187,29 @@ test("subscribes to selected state changes", () => {
   expect(calls).toEqual([[1, 0]]);
 });
 
+test("subscribes to NaN state keys on all listener paths", () => {
+  const getCalls = (forceSlowPath = false) => {
+    const key = Number.NaN;
+    const store = createStore({ [key]: 0 });
+    let calls = 0;
+
+    if (forceSlowPath) {
+      subscribe(store, null, () => {});
+    }
+
+    subscribe(store, [key], (state, prevState) => {
+      calls += 1;
+      expect(state[key]).toBe(1);
+      expect(prevState[key]).toBe(0);
+    });
+    store.setState(key, 1);
+    return calls;
+  };
+
+  expect(getCalls()).toBe(1);
+  expect(getCalls(true)).toBe(1);
+});
+
 test("captures selected state keys when subscribing", () => {
   const store = createStore({ count: 0, label: "a" });
   const keys: Array<"count" | "label"> = ["count"];

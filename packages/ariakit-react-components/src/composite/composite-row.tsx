@@ -55,10 +55,7 @@ export const useCompositeRow = createHook<TagName, CompositeRowOptions>(
 
     const id = useId(props.id);
 
-    const baseElement = useStoreState(
-      store,
-      (state) => state.baseElement || undefined,
-    );
+    const baseElement = useStoreState(store, "baseElement") || undefined;
 
     const providerValue = useMemo(
       () => ({ id, baseElement, ariaSetSize, ariaPosInSet }),

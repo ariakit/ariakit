@@ -1,5 +1,15 @@
 # @ariakit/components
 
+## 0.1.7
+
+- Fixed published packages omitting their build output. Thanks to [@shahednasser](https://github.com/shahednasser).
+- Updated dependencies: `@ariakit/store@0.1.6`
+
+## 0.1.6
+
+- Improved store performance across targeted benchmarks, reaching up to 49× the previous throughput.
+- Updated dependencies: `@ariakit/store@0.1.5`
+
 ## 0.1.5
 
 - Improved the performance of the composite store's [`next`](https://ariakit.com/reference/use-composite-store#next), [`previous`](https://ariakit.com/reference/use-composite-store#previous), [`up`](https://ariakit.com/reference/use-composite-store#up), and [`down`](https://ariakit.com/reference/use-composite-store#down) functions, which now scan the rendered items without copying arrays in the most common cases.

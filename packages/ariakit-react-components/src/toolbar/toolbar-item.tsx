@@ -6,6 +6,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
 import { useToolbarContext } from "./toolbar-context.tsx";
@@ -48,7 +49,7 @@ export const useToolbarItem = createHook<TagName, ToolbarItemOptions>(
  */
 export const ToolbarItem = memo(
   forwardRef(function ToolbarItem(props: ToolbarItemProps) {
-    const htmlProps = useToolbarItem(props);
+    const htmlProps = useToolbarItem(withDefaultButtonType(props));
     return createElement(TagName, htmlProps);
   }),
 );

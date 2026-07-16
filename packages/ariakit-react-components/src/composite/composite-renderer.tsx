@@ -16,6 +16,7 @@ import {
   useCollectionRenderer,
 } from "../collection/collection-renderer.tsx";
 import type { CollectionStoreItem } from "../collection/collection-store.ts";
+import type { SelectStore } from "../select/select-store.ts";
 import { useCompositeScopedContext } from "./composite-context.tsx";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 
@@ -146,12 +147,15 @@ export function useCompositeRenderer<T extends Item = any>({
 
   const orientation = useStoreState(
     store,
+    ["orientation"],
     (state) =>
       orientationProp ??
       (state?.orientation === "both" ? "vertical" : state?.orientation),
   );
 
-  const items = useStoreState(store, (state) => {
+  // SelectRenderer passes a SelectStore through the base CompositeStore type.
+  const stateStore = store as typeof store | SelectStore;
+  const items = useStoreState(stateStore, ["mounted", "items"], (state) => {
     if (!state) return props.items;
     if ("mounted" in state && !state.mounted) return 0;
     return props.items ?? (state.items as T[]);

@@ -1,5 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useBooleanEvent,
   useEvent,
   useMergeRefs,
@@ -23,6 +24,7 @@ import type {
   SelectHTMLAttributes,
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { getBasePlacement } from "../popover/__utils.ts";
@@ -173,10 +175,12 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
     setAutofill(false);
   }, [value]);
 
-  const labelId = useStoreState(store, (state) => state.labelElement?.id);
+  const labelElement = useStoreState(store, "labelElement");
+  useAttribute(labelElement, "id");
+  const labelId = labelElement?.id;
   const label = props["aria-label"];
   const labelledBy = props["aria-labelledby"] || labelId;
-  const items = useStoreState(store, (state) => {
+  const items = useStoreState(store, ["items"], (state) => {
     if (!name) return;
     return state.items;
   });
@@ -307,7 +311,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
  * ```
  */
 export const Select = forwardRef(function Select(props: SelectProps) {
-  const htmlProps = useSelect(props);
+  const htmlProps = useSelect(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

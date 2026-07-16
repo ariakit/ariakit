@@ -66,7 +66,7 @@ export const useCheckbox = createHook<TagName, CheckboxOptions>(
 
     const [_checked, setChecked] = useState(defaultChecked ?? false);
 
-    const checked = useStoreState(store, (state) => {
+    const checked = useStoreState(store, ["value"], (state) => {
       if (checkedProp !== undefined) return checkedProp;
       if (state?.value === undefined) return _checked;
       if (valueProp != null) {

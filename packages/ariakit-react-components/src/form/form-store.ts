@@ -34,7 +34,7 @@ export function useFormValue<T = any>(
   store: FormStoreHookStore,
   name: StringLike,
 ): T {
-  return useStoreState(store, () => store.getValue<T>(name));
+  return useStoreState(store, ["values"], () => store.getValue<T>(name));
 }
 
 /**

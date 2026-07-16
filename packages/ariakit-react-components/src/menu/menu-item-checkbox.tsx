@@ -99,7 +99,7 @@ export const useMenuItemCheckbox = createHook<TagName, MenuItemCheckboxOptions>(
     }, [store, name, value, checked]);
 
     const checkboxStore = useCheckboxStore({
-      value: useStoreState(store, (state) => state.values[name]),
+      value: useStoreState(store, ["values"], (state) => state.values[name]),
       setValue(internalValue) {
         store?.setValue(name, () => {
           if (checked === undefined) return internalValue;

@@ -158,6 +158,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const preserveTabOrderProp = props.preserveTabOrder;
   const preserveTabOrder = useStoreState(
     store,
+    ["mounted"],
     (state) => preserveTabOrderProp && !modal && state.mounted,
   );
   const id = useId(props.id);
@@ -633,6 +634,7 @@ export function createDialogComponent<T extends DialogOptions>(
     const store = props.store || context;
     const mounted = useStoreState(
       store,
+      ["mounted"],
       (state) => !props.unmountOnHide || state?.mounted || !!props.open,
     );
     if (!mounted) return null;

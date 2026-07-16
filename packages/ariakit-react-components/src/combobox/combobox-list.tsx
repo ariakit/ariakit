@@ -60,7 +60,7 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
-    const multiSelectable = useStoreState(store, (state) =>
+    const multiSelectable = useStoreState(store, ["selectedValue"], (state) =>
       Array.isArray(state.selectedValue),
     );
     const role = useAttribute(ref, "role", props.role);

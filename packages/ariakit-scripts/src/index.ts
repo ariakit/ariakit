@@ -83,6 +83,18 @@ program
     console.log(markdown);
   });
 
+program
+  .command("perf-check-node-results")
+  .description("Check focused Vitest benchmark results")
+  .argument("<file>", "Vitest benchmark JSON file")
+  .argument("<expected-count>", "Expected benchmark count", (value) =>
+    Number(value),
+  )
+  .action(async (file, expectedCount) => {
+    const { checkNodeBenchmarkResults } = await import("./perf-compare.ts");
+    checkNodeBenchmarkResults(file, expectedCount);
+  });
+
 try {
   await program.parseAsync();
 } catch (error) {

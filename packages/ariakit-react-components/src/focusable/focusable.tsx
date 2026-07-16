@@ -2,7 +2,7 @@ import {
   useEvent,
   useMergeRefs,
   useMetadataProps,
-  useTagName,
+  useSafeLayoutEffect,
   createElement,
   createHook,
   forwardRef,
@@ -39,6 +39,10 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 const accessibleWhenDisabledSymbol = Symbol("accessibleWhenDisabled");
 
 const isSafariBrowser = isSafari();
+
+const nativeTabbableMask = 1;
+const supportsDisabledMask = 2;
+const defaultElementCapabilities = nativeTabbableMask | supportsDisabledMask;
 
 const alwaysFocusVisibleInputTypes = [
   "text",
@@ -92,6 +96,17 @@ function supportsDisabledAttribute(tagName?: string) {
     tagName === "select" ||
     tagName === "textarea"
   );
+}
+
+function getElementCapabilities(tagName?: string) {
+  let capabilities = 0;
+  if (isNativeTabbable(tagName)) {
+    capabilities |= nativeTabbableMask;
+  }
+  if (supportsDisabledAttribute(tagName)) {
+    capabilities |= supportsDisabledMask;
+  }
+  return capabilities;
 }
 
 interface GetTabIndexParams {
@@ -228,12 +243,11 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       element?.removeAttribute("data-focus-visible");
     });
 
-    // When the focusable element is disabled, it doesn't trigger a blur event
-    // so we can't set focusVisible to false there. Instead, we have to do it
-    // here by checking the element's disabled attribute.
+    // When the focusable element is disabled, it doesn't trigger a blur event,
+    // and turning focusable off disables the blur handler below. Clear the
+    // internal focus-visible state here in both cases.
     useEffect(() => {
-      if (!focusable) return;
-      if (!trulyDisabled) return;
+      if (focusable && !trulyDisabled) return;
       cleanupFocusVisible(ref.current);
       if (focusVisible) {
         setFocusVisible(false);
@@ -390,9 +404,24 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       });
     });
 
-    const tagName = useTagName(ref);
-    const nativeTabbable = focusable && isNativeTabbable(tagName);
-    const supportsDisabled = focusable && supportsDisabledAttribute(tagName);
+    // Track only the element capabilities that affect the returned props so
+    // resolving the default native element doesn't require another render.
+    const [elementCapabilities, setElementCapabilities] = useState(
+      defaultElementCapabilities,
+    );
+    useSafeLayoutEffect(() => {
+      const element = ref.current;
+      if (!element) return;
+      const nextCapabilities = getElementCapabilities(
+        element.tagName.toLowerCase(),
+      );
+      if (nextCapabilities === defaultElementCapabilities) return;
+      setElementCapabilities(nextCapabilities);
+    }, []);
+    const nativeTabbable =
+      focusable && !!(elementCapabilities & nativeTabbableMask);
+    const supportsDisabled =
+      focusable && !!(elementCapabilities & supportsDisabledMask);
 
     // On Safari, buttons and button-like inputs don't receive focus on
     // mousedown. We detect this from the DOM element (not props) so it works

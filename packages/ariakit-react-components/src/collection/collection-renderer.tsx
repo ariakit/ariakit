@@ -449,6 +449,7 @@ export function useCollectionRenderer<T extends Item = any>({
 
   const items = useStoreState(
     store,
+    ["items"],
     (state) => itemsProp ?? (state?.items as T[]),
   );
 

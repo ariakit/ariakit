@@ -136,8 +136,10 @@ function useScheduleFocus(store: CompositeStore) {
   // Only track the active item while a focus is scheduled. Otherwise, this
   // subscription would re-render the composite component on every active item
   // change, such as when moving through items with arrow keys.
-  const activeItem = useStoreState(store, (state) =>
-    scheduled ? getEnabledItem(store, state.activeId) : null,
+  const activeItem = useStoreState(
+    store,
+    scheduled ? ["activeId", "items"] : [],
+    (state) => (scheduled ? getEnabledItem(store, state.activeId) : null),
   );
   useEffect(() => {
     const activeElement = activeItem?.element;
@@ -257,12 +259,15 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     );
 
     const virtualFocus = useStoreState(store, "virtualFocus");
-    // Only track the activeId state when virtual focus is enabled. It's used
-    // solely by the effect below, which is a no-op otherwise, so this avoids
-    // re-rendering the composite component on every active item change when
-    // moving through items with roving tabindex.
-    const activeId = useStoreState(store, (state) =>
-      state.virtualFocus ? state.activeId : null,
+    // Only track the activeId state when composite and virtual focus are
+    // enabled. It's shared by the effect below and aria-activedescendant, both
+    // of which are no-ops otherwise, so this avoids re-rendering the composite
+    // component on every active item change when moving through items with
+    // roving tabindex.
+    const activeId = useStoreState(
+      store,
+      composite && virtualFocus ? ["activeId"] : [],
+      (state) => (composite && virtualFocus ? state.activeId : null),
     );
 
     // At this point, if the activeId has changed and we still have a
@@ -497,12 +502,16 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       [store, composite, focusOnMove],
     );
 
-    const activeDescendant = useStoreState(store, (state) => {
-      if (!store) return;
-      if (!composite) return;
-      if (!state.virtualFocus) return;
-      return getEnabledItem(store, state.activeId)?.id;
-    });
+    const activeDescendant = useStoreState(
+      store,
+      composite && virtualFocus ? ["items"] : [],
+      () => {
+        if (!store) return;
+        if (!composite) return;
+        if (!virtualFocus) return;
+        return getEnabledItem(store, activeId)?.id;
+      },
+    );
 
     props = {
       "aria-activedescendant": activeDescendant,
@@ -518,7 +527,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const focusable = useStoreState(
       store,
-      (state) => composite && (state.virtualFocus || state.activeId === null),
+      composite && !virtualFocus ? ["activeId"] : [],
+      (state) => composite && (virtualFocus || state.activeId === null),
     );
 
     props = useFocusable({ focusable, ...props });
@@ -626,6 +636,15 @@ export interface CompositeOptions<
    */
   focusOnMove?: boolean;
   /**
+   * Determines whether [Focusable](https://ariakit.com/components/focusable)
+   * features are active on the composite element.
+   *
+   * When the store's
+   * [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus)
+   * state is `true`, the rendered composite element must remain focusable so it
+   * can own DOM focus and expose the active item through
+   * `aria-activedescendant`.
+   *
    * @see https://ariakit.com/reference/focusable
    */
   focusable?: FocusableOptions<T>["focusable"];

@@ -61,7 +61,7 @@ export const useFormError = createHook<TagName, FormErrorOptions>(
       component: "FormError",
     });
 
-    const children = useStoreState(form, () => {
+    const children = useStoreState(form, ["errors", "touched"], () => {
       const error = form.getError(name);
       if (error == null) return;
       if (!form.getFieldTouched(name)) return;

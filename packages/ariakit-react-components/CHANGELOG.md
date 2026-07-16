@@ -1,5 +1,102 @@
 # @ariakit/react-components
 
+## 0.3.3
+
+- Fixed published packages omitting their build output. Thanks to [@shahednasser](https://github.com/shahednasser).
+- Updated dependencies: `@ariakit/components@0.1.7`, `@ariakit/react-store@0.1.7`, `@ariakit/react-utils@0.2.2`, `@ariakit/store@0.1.6`
+
+## 0.3.2
+
+This version adds React Compiler-compatible form hooks and side-specific popover overflow padding, improves store and component performance, and refines modal scroll locking and native button markup. It also includes fixes for Korean IME focus, controlled `NaN` values, and focus-visible styling.
+
+### Modal scroll locks use `scrollbar-gutter`
+
+The [`Dialog`](https://ariakit.com/reference/dialog) component now locks page scroll in supporting browsers by setting `scrollbar-gutter: stable` and hiding overflow on the `html` element when [`preventBodyScroll`](https://ariakit.com/reference/dialog#preventbodyscroll) is enabled. This applies to [`modal`](https://ariakit.com/reference/dialog#modal) dialogs by default and to components built on [`Dialog`](https://ariakit.com/reference/dialog), including [`Popover`](https://ariakit.com/reference/popover), [`Hovercard`](https://ariakit.com/reference/hovercard), [`Tooltip`](https://ariakit.com/reference/tooltip), [`Menu`](https://ariakit.com/reference/menu), [`SelectPopover`](https://ariakit.com/reference/select-popover), and [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover).
+
+Pages that already set `scrollbar-gutter: stable` or `overflow-y: scroll` on `html` no longer shift when a modal opens, and Ariakit restores inline `html` overflow styles when it closes.
+
+Fixed headers no longer need `--scrollbar-width` in browsers that support `scrollbar-gutter`:
+
+```css
+.header {
+  position: fixed;
+  padding-inline-end: 16px;
+}
+```
+
+The `--scrollbar-width` CSS variable is now only defined in the fallback path for browsers without `scrollbar-gutter` support. If you still target those browsers, keep a length fallback when using the variable inside `calc()`:
+
+```css
+.header {
+  padding-inline-end: calc(16px + var(--scrollbar-width, 0px));
+}
+```
+
+Thanks to [@mirka](https://github.com/mirka) for reporting the issue, and [@benrodrs](https://github.com/benrodrs) for documenting a workaround that informed this solution.
+
+### Added `useFormValue`, `useFormValidate`, and `useFormSubmit`
+
+The new [`useFormValue`](https://ariakit.com/reference/use-form-value), [`useFormValidate`](https://ariakit.com/reference/use-form-validate), and [`useFormSubmit`](https://ariakit.com/reference/use-form-submit) hooks replace the matching [`useFormStore`](https://ariakit.com/reference/use-form-store) methods with top-level hook calls that are compatible with the React Compiler:
+
+```tsx
+const value = useFormValue(form, form.names.email);
+
+useFormSubmit(form, async (state) => {
+  // ...
+});
+```
+
+### Keyed object store subscriptions
+
+The `useStoreStateObject` hook now accepts selector dependency keys, so selectors skip unrelated store updates while receiving the complete store state at runtime. The key list must include every store key a selector reads, or its result may stay stale.
+
+```ts
+const values = useStoreStateObject(store, ["value"], {
+  value: "value",
+  valueLength: (state) => state.value.length,
+});
+```
+
+### Keyed store subscriptions
+
+The [`useStoreState`](https://ariakit.com/reference/use-store-state) hook now accepts selector dependency keys, so selectors skip unrelated store updates while receiving the complete store state at runtime. The key list must include every store key a selector reads, or its result may stay stale.
+
+```ts
+const isEmpty = useStoreState(store, ["value"], (state) => !state.value);
+```
+
+React components now use keyed selector subscriptions internally.
+
+### Added support for side-specific `overflowPadding`
+
+The [`overflowPadding`](https://ariakit.com/reference/popover#overflowpadding) prop now accepts a number or an object with independent `top`, `right`, `bottom`, and `left` values. This applies to [`Popover`](https://ariakit.com/reference/popover) and components built on it, including [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover), [`SelectPopover`](https://ariakit.com/reference/select-popover), `CompositeOverflow`, [`Hovercard`](https://ariakit.com/reference/hovercard), [`Menu`](https://ariakit.com/reference/menu), and [`Tooltip`](https://ariakit.com/reference/tooltip):
+
+```tsx
+<ComboboxPopover overflowPadding={{ top: 24, right: 32, left: 16 }} />
+```
+
+When [`overflowPadding`](https://ariakit.com/reference/popover#overflowpadding) is an object, the [`--popover-overflow-padding`](https://ariakit.com/guide/styling#--popover-overflow-padding) CSS variable uses the larger of the horizontal `left` and `right` values, treating omitted sides as `0`.
+
+Thanks to [@mririgoyen](https://github.com/mririgoyen) for reporting the issue, and [@georgekaran](https://github.com/georgekaran) for providing the approach that informed this solution.
+
+### Native button markup includes the final type
+
+Default native [`Button`](https://ariakit.com/reference/button) and [`Command`](https://ariakit.com/reference/command) components now include `type="button"` in their initial markup. Refs and server-rendered markup observe the final type without waiting for post-mount reconciliation, keeping hydration consistent.
+
+This also applies to [`ComboboxCancel`](https://ariakit.com/reference/combobox-cancel), [`ComboboxDisclosure`](https://ariakit.com/reference/combobox-disclosure), [`CompositeItem`](https://ariakit.com/reference/composite-item), `CompositeOverflowDisclosure`, [`DialogDisclosure`](https://ariakit.com/reference/dialog-disclosure), [`DialogDismiss`](https://ariakit.com/reference/dialog-dismiss), [`Disclosure`](https://ariakit.com/reference/disclosure), [`FormPush`](https://ariakit.com/reference/form-push), [`FormRemove`](https://ariakit.com/reference/form-remove), [`HovercardDisclosure`](https://ariakit.com/reference/hovercard-disclosure), [`HovercardDismiss`](https://ariakit.com/reference/hovercard-dismiss), [`MenuButton`](https://ariakit.com/reference/menu-button), [`MenuDismiss`](https://ariakit.com/reference/menu-dismiss), [`PopoverDisclosure`](https://ariakit.com/reference/popover-disclosure), [`PopoverDismiss`](https://ariakit.com/reference/popover-dismiss), [`Select`](https://ariakit.com/reference/select), [`SelectDismiss`](https://ariakit.com/reference/select-dismiss), [`Tab`](https://ariakit.com/reference/tab), and [`ToolbarItem`](https://ariakit.com/reference/toolbar-item) when they render their default native button.
+
+### Other updates
+
+- Improved React component mount performance by 12–21% in browser benchmarks.
+- Reduced React store subscription overhead by skipping listeners when setter callbacks are absent and reading four related [`DisclosureContent`](https://ariakit.com/reference/disclosure-content) state values through one subscription, including in [`TabPanel`](https://ariakit.com/reference/tab-panel) and [`Dialog`](https://ariakit.com/reference/dialog) components.
+- Improved store performance across targeted benchmarks, reaching up to 49× the previous throughput.
+- Deprecated the [`useValue`](https://ariakit.com/reference/use-form-store#usevalue), [`useValidate`](https://ariakit.com/reference/use-form-store#usevalidate), and [`useSubmit`](https://ariakit.com/reference/use-form-store#usesubmit) methods of [`useFormStore`](https://ariakit.com/reference/use-form-store) in favor of the new top-level form hooks.
+- Fixed [`Combobox`](https://ariakit.com/reference/combobox) with [`autoSelect`](https://ariakit.com/reference/combobox#autoselect) moving focus between Korean IME composition steps. Thanks to [@flex-kwoncheol](https://github.com/flex-kwoncheol).
+- Fixed controlled `NaN` values from unnecessarily firing setter callbacks in React stores, including [`useCheckboxStore`](https://ariakit.com/reference/use-checkbox-store) and [`useRadioStore`](https://ariakit.com/reference/use-radio-store).
+- Fixed [`Focusable`](https://ariakit.com/reference/focusable) and components built on it, such as [`Button`](https://ariakit.com/reference/button), to clear focus-visible styling when [`focusable`](https://ariakit.com/reference/focusable#focusable-1) becomes `false`.
+- Fixed store subscriptions to respond consistently to updates made with `NaN` keys.
+- Updated dependencies: `@ariakit/react-store@0.1.6`, `@ariakit/components@0.1.6`, `@ariakit/store@0.1.5`, `@ariakit/react-utils@0.2.1`
+
 ## 0.3.1
 
 ### Faster keyboard navigation on composite widgets

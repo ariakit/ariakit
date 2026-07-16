@@ -46,6 +46,7 @@ export const usePopoverDisclosureArrow = createHook<
 
   const position = useStoreState(
     store,
+    ["placement"],
     (state) => placement || state.placement,
   );
   const dir = getBasePlacement(position);

@@ -52,7 +52,7 @@ export const useToolbar = createHook<TagName, ToolbarOptions>(
       rtl,
     });
 
-    const orientation = useStoreState(store, (state) =>
+    const orientation = useStoreState(store, ["orientation"], (state) =>
       state.orientation === "both" ? undefined : state.orientation,
     );
 

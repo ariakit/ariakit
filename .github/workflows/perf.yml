@@ -771,59 +771,90 @@ jobs:
 
           run_baseline_bench_round() {
             local i="$1"
+            local suffix="$2"
+            local expected_count="$3"
+            shift 3
+            local bench_args=("$@")
+            local output_file="$GITHUB_WORKSPACE/.perf-results/baseline-$i$suffix.json"
 
             echo "::group::Round $i - baseline"
             local baseline_failed=0
             if ! (
               cd "$BASELINE_DIR" || exit 1
               pnpm exec vitest bench \
+                "${bench_args[@]}" \
                 --config vitest.bench.config.ts \
-                --outputJson "$GITHUB_WORKSPACE/.perf-results/baseline-$i.json"
+                --outputJson "$output_file"
             ); then
               echo "::warning::Baseline benchmark run failed for round $i; writing an empty baseline."
               baseline_failed=1
             fi
-            if [ "$baseline_failed" -eq 1 ] || [ ! -f ".perf-results/baseline-$i.json" ]; then
+            if [ "$baseline_failed" -eq 1 ] || [ ! -f "$output_file" ]; then
               if [ "$baseline_failed" -eq 0 ]; then
                 echo "::warning::No baseline benchmark results for round $i; writing an empty baseline."
               fi
-              printf '{"files":[]}\n' > ".perf-results/baseline-$i.json"
+              printf '{"files":[]}\n' > "$output_file"
+            fi
+            if [ "$expected_count" -gt 0 ] && ! pnpm exec ariakit perf-check-node-results "$output_file" "$expected_count"; then
+              echo "::endgroup::"
+              return 1
             fi
             echo "::endgroup::"
           }
 
           run_current_bench_round() {
             local i="$1"
+            local suffix="$2"
+            local expected_count="$3"
+            shift 3
+            local bench_args=("$@")
+            local output_file=".perf-results/current-$i$suffix.json"
 
             echo "::group::Round $i - current"
             pnpm exec vitest bench \
+              "${bench_args[@]}" \
               --config vitest.bench.config.ts \
-              --outputJson ".perf-results/current-$i.json"
-            if [ ! -f ".perf-results/current-$i.json" ]; then
-              echo "Missing current benchmark results for round $i" >&2
+              --outputJson "$output_file"
+            if [ ! -f "$output_file" ]; then
+              echo "Missing current benchmark results at $output_file" >&2
               exit 1
+            fi
+            if [ "$expected_count" -gt 0 ] && ! pnpm exec ariakit perf-check-node-results "$output_file" "$expected_count"; then
+              echo "::endgroup::"
+              return 1
             fi
             echo "::endgroup::"
           }
 
           run_bench_round() {
             local i="$1"
+            local suffix="$2"
+            local expected_count="$3"
+            local benchmark_file="$4"
+            local baseline_pattern="$5"
+            local current_pattern="$6"
+            local baseline_args=()
+            local current_args=()
+            if [ -n "$benchmark_file" ]; then
+              baseline_args=("$benchmark_file" --testNamePattern "$baseline_pattern")
+              current_args=("$benchmark_file" --testNamePattern "$current_pattern")
+            fi
 
             # Alternate sides first so same-runner drift cannot consistently
             # favor the baseline or current run across every paired round.
             if [ "$(( i % 2 ))" -eq 1 ]; then
               echo "Round $i order: baseline -> current"
-              run_baseline_bench_round "$i"
-              run_current_bench_round "$i"
+              run_baseline_bench_round "$i" "$suffix" "$expected_count" "${baseline_args[@]}"
+              run_current_bench_round "$i" "$suffix" "$expected_count" "${current_args[@]}"
             else
               echo "Round $i order: current -> baseline"
-              run_current_bench_round "$i"
-              run_baseline_bench_round "$i"
+              run_current_bench_round "$i" "$suffix" "$expected_count" "${current_args[@]}"
+              run_baseline_bench_round "$i" "$suffix" "$expected_count" "${baseline_args[@]}"
             fi
           }
 
           for i in $(seq 1 "$PERF_INITIAL_ROUNDS"); do
-            run_bench_round "$i"
+            run_bench_round "$i" "" 0 "" "" ""
           done
 
           run_node_compare() {
@@ -835,14 +866,34 @@ jobs:
 
           run_node_compare "Preliminary comparison"
 
-          # perf-compare writes the flagged benchmark files as a plain-text
-          # list, one per line, empty when the comparison is clean.
+          # perf-compare writes an empty file list when the comparison is clean
+          # and a per-file manifest of flagged benchmark names otherwise.
           if [ -s .perf-results/confirmation-files.txt ]; then
-            echo "Significant benchmark changes detected; running confirmation rounds."
+            mapfile -t confirmation_targets < <(
+              jq -r '.[] | @base64' .perf-results/confirmation-targets.json
+            )
+            if [ ${#confirmation_targets[@]} -eq 0 ]; then
+              echo "Missing Node benchmark confirmation targets" >&2
+              exit 1
+            fi
+            echo "Significant benchmark changes detected; running focused confirmation rounds."
             start_round=$((PERF_INITIAL_ROUNDS + 1))
             end_round=$((PERF_INITIAL_ROUNDS + PERF_CONFIRMATION_ROUNDS))
             for i in $(seq "$start_round" "$end_round"); do
-              run_bench_round "$i"
+              for target_index in "${!confirmation_targets[@]}"; do
+                target_json="$(printf '%s' "${confirmation_targets[$target_index]}" | base64 --decode)"
+                baseline_pattern="$(jq -r '.baselineTestNamePattern' <<< "$target_json")"
+                benchmark_count="$(jq -r '.benchmarkCount' <<< "$target_json")"
+                benchmark_file="$(jq -r '.file' <<< "$target_json")"
+                current_pattern="$(jq -r '.currentTestNamePattern' <<< "$target_json")"
+                run_bench_round \
+                  "$i" \
+                  "-t$target_index" \
+                  "$benchmark_count" \
+                  "$benchmark_file" \
+                  "$baseline_pattern" \
+                  "$current_pattern"
+              done
             done
 
             # No early stop between rounds: a mid-loop comparison requires

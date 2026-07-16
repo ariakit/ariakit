@@ -70,7 +70,7 @@ export const useFormLabel = createHook<TagName, FormLabelOptions>(
       component: "FormLabel",
     });
 
-    const field = useStoreState(form, (state) =>
+    const field = useStoreState(form, ["items"], (state) =>
       state.items.find((item) => item.type === "field" && item.name === name),
     );
     const fieldTagName = useTagName(field?.element, "input");

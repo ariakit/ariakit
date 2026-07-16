@@ -72,6 +72,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     // take a new snapshot of the tree when new items are rendered.
     const treeSnapshotKey = useStoreState(
       store.tag,
+      ["renderedItems"],
       (state) => state?.renderedItems.length,
     );
 

@@ -8,6 +8,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
 import type { PopoverAnchorOptions } from "./popover-anchor.tsx";
@@ -88,7 +89,7 @@ export const usePopoverDisclosure = createHook<
 export const PopoverDisclosure = forwardRef(function PopoverDisclosure(
   props: PopoverDisclosureProps,
 ) {
-  const htmlProps = usePopoverDisclosure(props);
+  const htmlProps = usePopoverDisclosure(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

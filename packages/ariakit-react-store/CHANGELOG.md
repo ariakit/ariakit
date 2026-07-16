@@ -1,5 +1,42 @@
 # @ariakit/react-store
 
+## 0.1.7
+
+- Fixed published packages omitting their build output. Thanks to [@shahednasser](https://github.com/shahednasser).
+- Updated dependencies: `@ariakit/react-utils@0.2.2`, `@ariakit/store@0.1.6`
+
+## 0.1.6
+
+This version adds keyed selector subscriptions to reduce updates from unrelated state changes, lowers React store subscription overhead, and fixes unnecessary controlled `NaN` callbacks and subscriptions with `NaN` keys.
+
+### Keyed object store subscriptions
+
+The `useStoreStateObject` hook now accepts selector dependency keys, so selectors skip unrelated store updates while receiving the complete store state at runtime. The key list must include every store key a selector reads, or its result may stay stale.
+
+```ts
+const values = useStoreStateObject(store, ["value"], {
+  value: "value",
+  valueLength: (state) => state.value.length,
+});
+```
+
+### Keyed store subscriptions
+
+The [`useStoreState`](https://ariakit.com/reference/use-store-state) hook now accepts selector dependency keys, so selectors skip unrelated store updates while receiving the complete store state at runtime. The key list must include every store key a selector reads, or its result may stay stale.
+
+```ts
+const isEmpty = useStoreState(store, ["value"], (state) => !state.value);
+```
+
+React components now use keyed selector subscriptions internally.
+
+### Other updates
+
+- Reduced React store subscription overhead by skipping listeners when setter callbacks are absent and reading four related [`DisclosureContent`](https://ariakit.com/reference/disclosure-content) state values through one subscription, including in [`TabPanel`](https://ariakit.com/reference/tab-panel) and [`Dialog`](https://ariakit.com/reference/dialog) components.
+- Fixed controlled `NaN` values from unnecessarily firing setter callbacks in React stores, including [`useCheckboxStore`](https://ariakit.com/reference/use-checkbox-store) and [`useRadioStore`](https://ariakit.com/reference/use-radio-store).
+- Fixed store subscriptions to respond consistently to updates made with `NaN` keys.
+- Updated dependencies: `@ariakit/store@0.1.5`, `@ariakit/react-utils@0.2.1`
+
 ## 0.1.5
 
 - Fixed [`CompositeItem`](https://ariakit.com/reference/composite-item) and components built on it, such as [`Tab`](https://ariakit.com/reference/tab) and [`SelectItem`](https://ariakit.com/reference/select-item), crashing the app with a "Maximum update depth exceeded" error when a `NaN` value was passed to the `aria-posinset` or `aria-setsize` props. The `useStoreStateObject` hook now compares snapshot values with `Object.is`, so the fix also covers any direct consumer of that hook.

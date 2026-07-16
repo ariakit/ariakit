@@ -18,6 +18,7 @@ import {
 } from "@ariakit/utils";
 import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useRef } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
@@ -130,7 +131,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       }
     });
 
-    const dir = useStoreState(store, (state) =>
+    const dir = useStoreState(store, ["placement"], (state) =>
       getBasePlacement(state.placement),
     );
 
@@ -302,8 +303,10 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
 export const MenuButton = forwardRef(function MenuButton(
   props: MenuButtonProps,
 ) {
+  // useMenuButton renders nested menu buttons as a div, so apply the default
+  // button type only after the hook has chosen the final host.
   const htmlProps = useMenuButton(props);
-  return createElement(TagName, htmlProps);
+  return createElement(TagName, withDefaultButtonType(htmlProps));
 });
 
 export interface MenuButtonOptions<T extends ElementType = TagName>

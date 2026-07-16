@@ -203,7 +203,11 @@ export const useComboboxItemValue = createHook<
   const itemContext = useContext(ComboboxItemValueContext);
   const itemValue = value ?? itemContext;
 
-  const inputValue = useStoreState(store, (state) => userValue ?? state?.value);
+  const inputValue = useStoreState(
+    store,
+    ["value"],
+    (state) => userValue ?? state?.value,
+  );
 
   const children = useMemo(() => {
     if (!itemValue) return;

@@ -383,6 +383,7 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
     // If the hovercard is modal, we should always autoFocus on show.
     const autoFocusOnShow = useStoreState(
       store,
+      ["autoFocusOnShow"],
       (state) => modal || state.autoFocusOnShow,
     );
 

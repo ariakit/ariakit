@@ -18,6 +18,7 @@ import {
   getTextboxSelection,
   getTextboxValue,
   isButton,
+  isFocusable,
   isTextbox,
   isTextField,
   isPortalEvent,
@@ -25,6 +26,7 @@ import {
   disabledFromProps,
   removeUndefinedValues,
   isSafari,
+  warnOnce,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
@@ -34,6 +36,7 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useCallback, useContext, useMemo, useRef } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { CollectionItemOptions } from "../collection/collection-item.tsx";
 import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { CommandOptions } from "../command/command.tsx";
@@ -173,7 +176,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     // render. They can't read the destructured rowId const since it's declared
     // by the same statement they're arguments to, which would hit the temporal
     // dead zone. See https://github.com/ariakit/ariakit/issues/6334
-    const getRowId = (state?: CompositeStoreState) => {
+    const getRowId = (state?: Pick<CompositeStoreState, "baseElement">) => {
       if (rowIdProp) return rowIdProp;
       if (!state) return;
       if (!row?.baseElement) return;
@@ -181,57 +184,58 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       return row.id;
     };
 
-    const {
-      rowId,
-      baseElement,
-      isActiveItem,
-      ariaSetSize,
-      ariaPosInSet,
-      isTabbable,
-    } = useStoreStateObject(store, {
-      rowId: getRowId,
-      baseElement(state) {
-        return state?.baseElement || undefined;
+    const { rowId, baseElement, ariaSetSize, ariaPosInSet } =
+      useStoreStateObject(store, ["baseElement", "renderedItems"], {
+        rowId: getRowId,
+        baseElement(state) {
+          return state?.baseElement || undefined;
+        },
+        ariaSetSize(state) {
+          if (ariaSetSizeProp != null) return ariaSetSizeProp;
+          if (!state) return;
+          if (!row?.ariaSetSize) return;
+          if (row.baseElement !== state.baseElement) return;
+          return row.ariaSetSize;
+        },
+        ariaPosInSet(state) {
+          if (ariaPosInSetProp != null) return ariaPosInSetProp;
+          if (!state) return;
+          if (!row?.ariaPosInSet) return;
+          if (row.baseElement !== state.baseElement) return;
+          const rowId = getRowId(state);
+          const itemsInRow = state.renderedItems.filter(
+            (item) => item.rowId === rowId,
+          );
+          return (
+            row.ariaPosInSet + itemsInRow.findIndex((item) => item.id === id)
+          );
+        },
+      });
+
+    const { isActiveItem, isTabbable } = useStoreStateObject(
+      store,
+      ["activeId", "renderedItems", "virtualFocus", "items"],
+      {
+        isActiveItem(state) {
+          return !!state && state.activeId === id;
+        },
+        isTabbable(state) {
+          if (!state?.renderedItems.length) return true;
+          if (state.virtualFocus) return false;
+          if (tabbable) return true;
+          if (state.activeId === null) return false;
+          // If activeId refers to an item that's disabled or not connected to the
+          // DOM, we make all items tabbable so users can tab into the composite
+          // widget. Once the activeId is valid, we restore the roving tabindex. See
+          // https://github.com/ariakit/ariakit/issues/3232
+          // https://github.com/ariakit/ariakit/issues/4129
+          const item = store?.item(state.activeId);
+          if (item?.disabled) return true;
+          if (!item?.element) return true;
+          return state.activeId === id;
+        },
       },
-      isActiveItem(state) {
-        return !!state && state.activeId === id;
-      },
-      ariaSetSize(state) {
-        if (ariaSetSizeProp != null) return ariaSetSizeProp;
-        if (!state) return;
-        if (!row?.ariaSetSize) return;
-        if (row.baseElement !== state.baseElement) return;
-        return row.ariaSetSize;
-      },
-      ariaPosInSet(state) {
-        if (ariaPosInSetProp != null) return ariaPosInSetProp;
-        if (!state) return;
-        if (!row?.ariaPosInSet) return;
-        if (row.baseElement !== state.baseElement) return;
-        const rowId = getRowId(state);
-        const itemsInRow = state.renderedItems.filter(
-          (item) => item.rowId === rowId,
-        );
-        return (
-          row.ariaPosInSet + itemsInRow.findIndex((item) => item.id === id)
-        );
-      },
-      isTabbable(state) {
-        if (!state?.renderedItems.length) return true;
-        if (state.virtualFocus) return false;
-        if (tabbable) return true;
-        if (state.activeId === null) return false;
-        // If activeId refers to an item that's disabled or not connected to the
-        // DOM, we make all items tabbable so users can tab into the composite
-        // widget. Once the activeId is valid, we restore the roving tabindex. See
-        // https://github.com/ariakit/ariakit/issues/3232
-        // https://github.com/ariakit/ariakit/issues/4129
-        const item = store?.item(state.activeId);
-        if (item?.disabled) return true;
-        if (!item?.element) return true;
-        return state.activeId === id;
-      },
-    });
+    );
 
     const getItem = useCallback<NonNullable<CollectionItemOptions["getItem"]>>(
       (item) => {
@@ -298,6 +302,17 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         relatedTarget: Element | null,
         baseElement: HTMLElement,
       ) => {
+        if (!isFocusable(baseElement)) {
+          if (process.env.NODE_ENV !== "production") {
+            warnOnce(
+              "A composite widget with `virtualFocus` enabled requires a " +
+                "focusable composite element. Set the `focusable` prop to " +
+                "`true` or the `virtualFocus` option to `false`.",
+              baseElement,
+            );
+          }
+          return;
+        }
         // Safari doesn't scroll the element into view when another element is
         // immediately focused. So we have to do it manually here.
         if (isSafari() && currentTarget.hasAttribute("data-autofocus")) {
@@ -538,7 +553,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
  */
 export const CompositeItem = memo(
   forwardRef(function CompositeItem(props: CompositeItemProps) {
-    const htmlProps = useCompositeItem(props);
+    const htmlProps = useCompositeItem(withDefaultButtonType(props));
     return createElement(TagName, htmlProps);
   }),
 );

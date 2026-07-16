@@ -80,7 +80,7 @@ export const useSelectItem = createHook<TagName, SelectItemOptions>(
     const disabled = disabledFromProps(props);
 
     const { listElement, multiSelectable, selected, autoFocus } =
-      useStoreStateObject(store, {
+      useStoreStateObject(store, ["value", "activeId", "items"], {
         listElement: "listElement",
         multiSelectable(state) {
           return Array.isArray(state.value);

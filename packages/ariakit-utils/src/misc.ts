@@ -218,6 +218,28 @@ export function afterPaint(cb: () => void = noop) {
   return () => cancelAnimationFrame(raf);
 }
 
+const defaultWarnOnceKey = {};
+const warningMessages = new WeakMap<object, Set<string>>();
+
+/**
+ * Logs a warning only once for each message and key.
+ * @example
+ * if (process.env.NODE_ENV !== "production") {
+ *   warnOnce("Warning");
+ * }
+ */
+export function warnOnce(message: string, key?: object) {
+  const warningKey = key || defaultWarnOnceKey;
+  let messages = warningMessages.get(warningKey);
+  if (!messages) {
+    messages = new Set();
+    warningMessages.set(warningKey, messages);
+  }
+  if (messages.has(message)) return;
+  messages.add(message);
+  console.warn(message);
+}
+
 /**
  * Asserts that a condition is true, otherwise throws an error.
  * @example

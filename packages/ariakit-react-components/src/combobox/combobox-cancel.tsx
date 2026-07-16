@@ -1,5 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useEvent,
   useWrapElement,
   createElement,
@@ -12,6 +13,7 @@ import type { ElementType, MouseEvent } from "react";
 import { Fragment } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
+import { withDefaultButtonType } from "../button/utils.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
@@ -71,8 +73,14 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
       store?.move(null);
     });
 
-    const comboboxId = useStoreState(store, (state) => state.baseElement?.id);
-    const empty = useStoreState(store, (state) => state.value === "");
+    const baseElement = useStoreState(store, "baseElement");
+    useAttribute(baseElement, "id");
+    const comboboxId = baseElement?.id;
+    const empty = useStoreState(
+      store,
+      ["value"],
+      (state) => state.value === "",
+    );
 
     props = useWrapElement(
       props,
@@ -121,7 +129,7 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
 export const ComboboxCancel = forwardRef(function ComboboxCancel(
   props: ComboboxCancelProps,
 ) {
-  const htmlProps = useComboboxCancel(props);
+  const htmlProps = useComboboxCancel(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

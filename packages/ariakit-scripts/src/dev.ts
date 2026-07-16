@@ -194,6 +194,8 @@ export async function dev(options: DevOptions = {}) {
       stdio: "inherit",
       env: {
         ...process.env,
+        // Prevent Astro from daemonizing when an agent is detected.
+        ASTRO_DEV_BACKGROUND: "0",
         APP_PORT: String(appPort),
         NEXTJS_PORT: String(nextjsPort),
       },

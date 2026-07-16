@@ -66,11 +66,13 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     const id = useId(props.id);
 
     const tabId = useStoreState(
-      store.panels,
+      tabIdProp ? undefined : store.panels,
+      ["items"],
       () => tabIdProp || store?.panels.item(id)?.tabId,
     );
     const open = useStoreState(
       store,
+      ["selectedId"],
       (state) => !!tabId && state.selectedId === tabId,
     );
 
@@ -80,9 +82,10 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
     // Store the scroll position for each tabId. The component may receive
     // different tab ids if it's a single tab panel with dynamic tab id and
     // content.
-    const scrollPositionRef = useRef(
-      new Map<string, { x: number; y: number }>(),
-    );
+    const scrollPositionRef = useRef<Map<
+      string,
+      { x: number; y: number }
+    > | null>(null);
 
     const getScrollElement = useEvent(() => {
       const panelElement = ref.current;
@@ -110,11 +113,16 @@ export const useTabPanel = createHook<TagName, TabPanelOptions>(
         return;
       }
       if (!tabId) return;
-      const position = scrollPositionRef.current.get(tabId);
+      let scrollPositions = scrollPositionRef.current;
+      if (!scrollPositions) {
+        scrollPositions = new Map();
+        scrollPositionRef.current = scrollPositions;
+      }
+      const position = scrollPositions.get(tabId);
       element.scroll(position?.x ?? 0, position?.y ?? 0);
       // On scroll, save the scroll position for the current tab id.
       const onScroll = () => {
-        scrollPositionRef.current.set(tabId, {
+        scrollPositions.set(tabId, {
           x: element.scrollLeft,
           y: element.scrollTop,
         });

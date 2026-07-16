@@ -1,6 +1,6 @@
 {
   "name": "@ariakit/react-components",
-  "version": "0.3.1",
+  "version": "0.3.3",
   "description": "Ariakit React components",
   "keywords": [
     "ariakit",
@@ -45,6 +45,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./button/button": "./src/button/button.tsx",
+    "./button/utils": "./src/button/utils.ts",
     "./checkbox/checkbox": "./src/checkbox/checkbox.tsx",
     "./checkbox/checkbox-check": "./src/checkbox/checkbox-check.tsx",
     "./checkbox/checkbox-checked-context": "./src/checkbox/checkbox-checked-context.tsx",

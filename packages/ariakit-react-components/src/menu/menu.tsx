@@ -91,25 +91,29 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   // re-renders only when the resolved element changes, not whenever
   // `renderedItems` gets a new array identity. Returning `undefined` means
   // auto focus on show is disabled.
-  const initialFocusElement = useStoreState(store, (state) => {
-    if (!state.autoFocusOnShow) return;
-    const isEnabled = (item: (typeof state.renderedItems)[number]) =>
-      !item.disabled && !!item.element;
-    switch (state.initialFocus) {
-      case "first":
-        return state.renderedItems.find(isEnabled)?.element || null;
-      case "last":
-        for (let i = state.renderedItems.length - 1; i >= 0; i -= 1) {
-          const item = state.renderedItems[i];
-          if (item && isEnabled(item)) {
-            return item.element;
+  const initialFocusElement = useStoreState(
+    store,
+    ["autoFocusOnShow", "initialFocus", "renderedItems", "baseElement"],
+    (state) => {
+      if (!state.autoFocusOnShow) return;
+      const isEnabled = (item: (typeof state.renderedItems)[number]) =>
+        !item.disabled && !!item.element;
+      switch (state.initialFocus) {
+        case "first":
+          return state.renderedItems.find(isEnabled)?.element || null;
+        case "last":
+          for (let i = state.renderedItems.length - 1; i >= 0; i -= 1) {
+            const item = state.renderedItems[i];
+            if (item && isEnabled(item)) {
+              return item.element;
+            }
           }
-        }
-        return null;
-      default:
-        return state.baseElement;
-    }
-  });
+          return null;
+        default:
+          return state.baseElement;
+      }
+    },
+  );
 
   // Sets the initial focus ref.
   useEffect(() => {

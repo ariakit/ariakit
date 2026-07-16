@@ -70,6 +70,11 @@ export default function Example() {
       <Form label="AriakitButton">
         <AriakitButton>AriakitButton</AriakitButton>
       </Form>
+      <Form label="AriakitButton rendered submit">
+        <AriakitButton type="button" render={<button type="submit" />}>
+          AriakitButton rendered submit
+        </AriakitButton>
+      </Form>
       <Form label="AriakitButton focusable">
         <AriakitButton accessibleWhenDisabled onClick={countClicks}>
           AriakitButton (focusable)

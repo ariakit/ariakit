@@ -67,6 +67,7 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   const ref = useRef<HTMLType>(null);
   const isChecked = useStoreState(
     store,
+    ["value"],
     (state) => checked ?? getIsChecked(value, state?.value),
   );
 

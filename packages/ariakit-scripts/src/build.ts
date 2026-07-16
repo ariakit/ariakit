@@ -293,7 +293,12 @@ function writeGitignore(rootPath: string, isSolid: boolean) {
 }
 
 function writeNpmignore(rootPath: string) {
-  const contents = ["# Automatically generated", ...npmIgnoreEntries];
+  const contents = [
+    "# Automatically generated",
+    ...npmIgnoreEntries,
+    "# Include package build output ignored at the workspace root.",
+    `!${distDir}/`,
+  ];
   writeFileSync(join(rootPath, ".npmignore"), `${contents.join("\n")}\n`);
 }
 

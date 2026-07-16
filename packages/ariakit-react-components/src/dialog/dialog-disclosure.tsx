@@ -3,6 +3,7 @@ import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { getPopupRole, invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
+import { withDefaultButtonType } from "../button/utils.ts";
 import type { DisclosureOptions } from "../disclosure/disclosure.tsx";
 import { useDisclosure } from "../disclosure/disclosure.tsx";
 import { useDialogProviderContext } from "./dialog-context.tsx";
@@ -61,7 +62,7 @@ export const useDialogDisclosure = createHook<TagName, DialogDisclosureOptions>(
 export const DialogDisclosure = forwardRef(function DialogDisclosure(
   props: DialogDisclosureProps,
 ) {
-  const htmlProps = useDialogDisclosure(props);
+  const htmlProps = useDialogDisclosure(withDefaultButtonType(props));
   return createElement(TagName, htmlProps);
 });
 

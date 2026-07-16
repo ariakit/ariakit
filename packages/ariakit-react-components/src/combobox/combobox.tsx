@@ -162,6 +162,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     // first item on every keypress.
     const autoSelect = useStoreState(
       store,
+      ["virtualFocus"],
       (state) => state.virtualFocus && autoSelectProp,
     );
 
@@ -191,23 +192,27 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       });
     }, [store]);
 
-    const inlineActiveValue = useStoreState(store, (state) => {
-      if (!inline) return;
-      if (!canInline) return;
-      // It doesn't make sense to inline the active value if it's already
-      // selected or just got deselected. Inlining the value typically implies
-      // an addition, but if the value is already selected, the action actually
-      // becomes a deletion. If the value was just deselected, pressing Enter
-      // again would reselect it, but it's not the usual path, so we also take
-      // into account the previously selected values. See tag-combobox test
-      // named "deselecting a tag should not highlight the input text if it is
-      // not the first combobox item".
-      if (state.activeValue && Array.isArray(state.selectedValue)) {
-        if (state.selectedValue.includes(state.activeValue)) return;
-        if (prevSelectedValueRef.current?.includes(state.activeValue)) return;
-      }
-      return state.activeValue;
-    });
+    const inlineActiveValue = useStoreState(
+      store,
+      ["activeValue", "selectedValue", "activeId"],
+      (state) => {
+        if (!inline) return;
+        if (!canInline) return;
+        // It doesn't make sense to inline the active value if it's already
+        // selected or just got deselected. Inlining the value typically implies
+        // an addition, but if the value is already selected, the action actually
+        // becomes a deletion. If the value was just deselected, pressing Enter
+        // again would reselect it, but it's not the usual path, so we also take
+        // into account the previously selected values. See tag-combobox test
+        // named "deselecting a tag should not highlight the input text if it is
+        // not the first combobox item".
+        if (state.activeValue && Array.isArray(state.selectedValue)) {
+          if (state.selectedValue.includes(state.activeValue)) return;
+          if (prevSelectedValueRef.current?.includes(state.activeValue)) return;
+        }
+        return state.activeValue;
+      },
+    );
 
     const items = useStoreState(store, "renderedItems");
     const open = useStoreState(store, "open");
@@ -678,6 +683,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 
     const isActiveItem = useStoreState(
       store,
+      ["activeId"],
       (state) => state.activeId === null,
     );
 

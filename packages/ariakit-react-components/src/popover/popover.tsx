@@ -42,6 +42,15 @@ interface AnchorRect {
   height?: number;
 }
 
+interface OverflowPaddingObject {
+  top?: number;
+  right?: number;
+  bottom?: number;
+  left?: number;
+}
+
+type OverflowPadding = number | OverflowPaddingObject;
+
 function createDOMRect(x = 0, y = 0, width = 0, height = 0) {
   if (typeof DOMRect === "function") {
     return new DOMRect(x, y, width, height);
@@ -93,6 +102,11 @@ function isValidPlacement(flip: string): flip is Placement {
 function roundByDPR(value: number) {
   const dpr = window.devicePixelRatio || 1;
   return Math.round(value * dpr) / dpr;
+}
+
+function getOverflowPaddingValue(padding: OverflowPadding) {
+  if (typeof padding === "number") return padding;
+  return Math.max(padding.left ?? 0, padding.right ?? 0);
 }
 
 function getOffsetMiddleware(
@@ -271,13 +285,36 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     const getAnchorRectProp = useEvent(getAnchorRect);
     const updatePositionProp = useEvent(updatePosition);
     const hasCustomUpdatePosition = !!updatePosition;
+    const overflowPaddingTop =
+      typeof overflowPadding === "number"
+        ? overflowPadding
+        : (overflowPadding.top ?? 0);
+    const overflowPaddingRight =
+      typeof overflowPadding === "number"
+        ? overflowPadding
+        : (overflowPadding.right ?? 0);
+    const overflowPaddingBottom =
+      typeof overflowPadding === "number"
+        ? overflowPadding
+        : (overflowPadding.bottom ?? 0);
+    const overflowPaddingLeft =
+      typeof overflowPadding === "number"
+        ? overflowPadding
+        : (overflowPadding.left ?? 0);
 
     useSafeLayoutEffect(() => {
       if (!popoverElement?.isConnected) return;
 
+      const positioningPadding = {
+        top: overflowPaddingTop,
+        right: overflowPaddingRight,
+        bottom: overflowPaddingBottom,
+        left: overflowPaddingLeft,
+      };
+
       popoverElement.style.setProperty(
         "--popover-overflow-padding",
-        `${overflowPadding}px`,
+        `${getOverflowPaddingValue(positioningPadding)}px`,
       );
 
       const anchor = getAnchorElement(anchorElement, getAnchorRectProp);
@@ -305,14 +342,22 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
         const middleware = [
           getOffsetMiddleware(arrow, { gutter, shift }),
-          getFlipMiddleware({ flip, overflowPadding }),
-          getShiftMiddleware({ slide, shift, overlap, overflowPadding }),
+          getFlipMiddleware({
+            flip,
+            overflowPadding: positioningPadding,
+          }),
+          getShiftMiddleware({
+            slide,
+            shift,
+            overlap,
+            overflowPadding: positioningPadding,
+          }),
           getArrowMiddleware(arrow, { arrowPadding }),
           getSizeMiddleware(
             {
               sameWidth,
               fitViewport,
-              overflowPadding,
+              overflowPadding: positioningPadding,
             },
             shouldCancelUpdate,
           ),
@@ -423,7 +468,10 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       fitViewport,
       gutter,
       arrowPadding,
-      overflowPadding,
+      overflowPaddingTop,
+      overflowPaddingRight,
+      overflowPaddingBottom,
+      overflowPaddingLeft,
       getAnchorRectProp,
       hasCustomUpdatePosition,
       updatePositionProp,
@@ -567,7 +615,7 @@ export interface PopoverOptions<
    */
   portal?: DialogOptions<T>["portal"];
   /**
-   * The distance between the popover and the anchor element.
+   * The distance, in pixels, between the popover and the anchor element.
    *
    * Live examples:
    * - [Combobox filtering](https://ariakit.com/examples/combobox-filtering)
@@ -580,8 +628,8 @@ export interface PopoverOptions<
    */
   gutter?: number;
   /**
-   * The skidding of the popover along the anchor element. Can be set to
-   * negative values to make the popover shift to the opposite side.
+   * The skidding, in pixels, of the popover along the anchor element. Can be
+   * set to negative values to make the popover shift to the opposite side.
    *
    * Live examples:
    * - [Combobox with Tabs](https://ariakit.com/examples/combobox-tabs)
@@ -644,20 +692,23 @@ export interface PopoverOptions<
    */
   fitViewport?: boolean;
   /**
-   * The minimum padding between the arrow and the popover corner.
+   * The minimum padding, in pixels, between the arrow and the popover corner.
    * @default 4
    */
   arrowPadding?: number;
   /**
-   * The minimum padding between the popover and the viewport edge. This will be
-   * exposed to CSS as
+   * The minimum padding, in pixels, between the popover and the viewport edge.
+   * Pass a number to use the same padding on every side, or an object to define
+   * each side separately. This will be exposed to CSS as
    * [`--popover-overflow-padding`](https://ariakit.com/guide/styling#--popover-overflow-padding).
+   * When passing an object, the CSS variable is the maximum of the horizontal
+   * `left` and `right` values, with omitted sides treated as `0`.
    *
    * Live examples:
    * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
    * @default 8
    */
-  overflowPadding?: number;
+  overflowPadding?: OverflowPadding;
   /**
    * Function that returns the anchor element's DOMRect. If this is explicitly
    * passed, it will override the anchor `getBoundingClientRect` method.

@@ -17,10 +17,13 @@ import type { SetState } from "@ariakit/utils";
 export function createDisclosureStore(
   props: DisclosureStoreProps = {},
 ): DisclosureStore {
-  const store = mergeStore(
-    props.store,
-    omit(props.disclosure, ["contentElement", "disclosureElement"]),
-  );
+  const store =
+    props.store || props.disclosure
+      ? mergeStore(
+          props.store,
+          omit(props.disclosure, ["contentElement", "disclosureElement"]),
+        )
+      : undefined;
 
   throwOnConflictingProps(props, store);
 
@@ -44,7 +47,10 @@ export function createDisclosureStore(
     disclosureElement: defaultValue(syncState?.disclosureElement, null),
   };
 
-  const disclosure = createStore(initialState, store);
+  // Omit an undefined parent so createStore keeps its zero-parent fast path.
+  const disclosure = store
+    ? createStore(initialState, store)
+    : createStore(initialState);
 
   setup(disclosure, () =>
     sync(disclosure, ["animated", "animating"], (state) => {

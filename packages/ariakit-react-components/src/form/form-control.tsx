@@ -75,7 +75,7 @@ function useControlState(form: FormStore, name: string) {
     let prevItems: FormStoreState["items"] | undefined;
     let prevIds: ControlItemIds = {};
 
-    return (state: FormStoreState) => {
+    return (state: Pick<FormStoreState, "items">) => {
       if (state.items !== prevItems) {
         prevItems = state.items;
         prevIds = getControlItemIds(state.items, name);
@@ -84,7 +84,7 @@ function useControlState(form: FormStore, name: string) {
     };
   }, [name]);
 
-  return useStoreStateObject(form, {
+  return useStoreStateObject(form, ["items", "errors", "touched"], {
     labelId: (state) => getItemIds(state).labelId,
     errorId: (state) => getItemIds(state).errorId,
     descriptionId: (state) => getItemIds(state).descriptionId,

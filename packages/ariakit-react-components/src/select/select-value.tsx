@@ -71,7 +71,7 @@ export function SelectValue({
   const context = useSelectContext();
   store = store || context;
 
-  const value = useStoreState(store, (state) => {
+  const value = useStoreState(store, ["value"], (state) => {
     if (!state?.value.length) return fallback;
     return state.value;
   });

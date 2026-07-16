@@ -1,9 +1,9 @@
 import { expect, test } from "vitest";
 import type { CompositeStoreItem } from "./composite-store.ts";
-import { createCompositeStore } from "./composite-store.ts";
+import { createCompositeStore, groupItemsByRows } from "./composite-store.ts";
 
 function createComposite(items: CompositeStoreItem[]) {
-  const store = createCompositeStore();
+  const store = createCompositeStore({ defaultItems: items });
   store.setState("renderedItems", items);
   return store;
 }
@@ -19,6 +19,82 @@ test("moves through enabled items in one-dimensional composites", () => {
   expect(store.previous({ activeId: "three" })).toBe("one");
   expect(store.next({ activeId: "three" })).toBeUndefined();
   expect(store.previous({ activeId: "one" })).toBeUndefined();
+});
+
+test("finds the last enabled item", () => {
+  const store = createComposite([
+    { id: "" },
+    { id: "two" },
+    { id: "three", disabled: true },
+  ]);
+
+  expect(store.last()).toBe("two");
+
+  store.setState("renderedItems", [
+    { id: "", disabled: true },
+    { id: "two", disabled: true },
+  ]);
+  expect(store.last()).toBeUndefined();
+
+  store.setState("renderedItems", [{ id: "" }]);
+  expect(store.last()).toBe("");
+});
+
+test("groups item sets around the large-path threshold", () => {
+  for (const fillerCount of [41, 42]) {
+    const items: CompositeStoreItem[] = [
+      { id: "undefined-1" },
+      { id: "empty-1", rowId: "" },
+      { id: "prototype-1", rowId: "__proto__" },
+      { id: "undefined-2" },
+      { id: "empty-2", rowId: "" },
+      { id: "prototype-2", rowId: "__proto__" },
+      ...Array.from({ length: fillerCount }, (_, index) => ({
+        id: `filler-${index}`,
+        rowId: "filler",
+      })),
+    ];
+    const rows = groupItemsByRows(items);
+
+    expect(rows).toEqual([
+      [items[0], items[3]],
+      [items[1], items[4]],
+      [items[2], items[5]],
+      items.slice(6),
+    ]);
+    expect(rows[0]?.[0]).toBe(items[0]);
+    expect(rows[1]?.[0]).toBe(items[1]);
+    expect(rows[2]?.[0]).toBe(items[2]);
+  }
+});
+
+test("groups large interleaved rows", () => {
+  const items: CompositeStoreItem[] = Array.from(
+    { length: 48 },
+    (_, index) => ({
+      id: `item-${index}`,
+      rowId: `row-${index % 2}`,
+    }),
+  );
+
+  expect(groupItemsByRows(items)).toEqual([
+    items.filter((_, index) => index % 2 === 0),
+    items.filter((_, index) => index % 2 === 1),
+  ]);
+});
+
+test("moves through rendered items with different object identities", () => {
+  const registeredItems = [{ id: "one" }, { id: "two" }];
+  const renderedItems = registeredItems.map((item) => ({ ...item }));
+  const store = createCompositeStore({ defaultItems: registeredItems });
+  store.setState("renderedItems", renderedItems);
+
+  expect(store.next({ activeId: "one" })).toBe("two");
+  expect(store.previous({ activeId: "two" })).toBe("one");
+
+  store.setState("renderedItems", registeredItems);
+  expect(store.next({ activeId: "one", renderedItems })).toBe("two");
+  expect(store.previous({ activeId: "two", renderedItems })).toBe("one");
 });
 
 test("supports the deprecated skip number overload", () => {
@@ -164,6 +240,10 @@ test("handles falsy item ids and row ids", () => {
   // An item with an empty string id must not return itself when looping.
   const single = createComposite([{ id: "" }]);
   expect(single.next({ activeId: "", focusLoop: true })).toBeUndefined();
+
+  const items = createComposite([{ id: "" }, { id: "next" }]);
+  expect(items.next({ activeId: "" })).toBe("next");
+  expect(items.previous({ activeId: "next" })).toBe("");
 
   // Empty string row ids behave like undefined row ids when moving
   // vertically.

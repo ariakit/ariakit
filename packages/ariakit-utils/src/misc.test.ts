@@ -1,10 +1,11 @@
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import {
   applyState,
   defaultValue,
   isEmpty,
   isInteger,
   shallowEqual,
+  warnOnce,
 } from "./misc.ts";
 
 test("isInteger preserves its loose numeric coercion behavior", () => {
@@ -61,4 +62,25 @@ test("defaultValue returns the first defined value", () => {
   expect(defaultValue(undefined, false, true)).toBe(false);
   expect(defaultValue(undefined, 0, 1)).toBe(0);
   expect(defaultValue(undefined, undefined)).toBeUndefined();
+});
+
+test("warnOnce logs each warning once", () => {
+  using consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  warnOnce("First warning");
+  warnOnce("First warning");
+  warnOnce("Second warning");
+  expect(consoleWarn.mock.calls).toEqual([
+    ["First warning"],
+    ["Second warning"],
+  ]);
+});
+
+test("warnOnce distinguishes keys", () => {
+  using consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  const firstKey = {};
+  const secondKey = {};
+  warnOnce("Scoped warning", firstKey);
+  warnOnce("Scoped warning", firstKey);
+  warnOnce("Scoped warning", secondKey);
+  expect(consoleWarn).toHaveBeenCalledTimes(2);
 });
