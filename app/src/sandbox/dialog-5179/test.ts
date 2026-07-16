@@ -17,3 +17,18 @@ test("lets a child handle Escape before the dialog", async () => {
 
   expect(q.dialog("Dialog")).not.toBeInTheDocument();
 });
+
+test("hides before an outside ancestor handles Escape", async () => {
+  await click(q.button("Open outer ancestor dialog"));
+  expect(q.dialog("Outer ancestor dialog")).toBeVisible();
+  expect(q.combobox("Search")).toHaveFocus();
+
+  await press.Escape();
+
+  expect(q.listbox("Suggestions")).not.toBeInTheDocument();
+  expect(q.dialog("Outer ancestor dialog")).toBeVisible();
+
+  await press.Escape();
+
+  expect(q.dialog("Outer ancestor dialog")).not.toBeInTheDocument();
+});

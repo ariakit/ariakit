@@ -1,11 +1,22 @@
 import * as Ariakit from "@ariakit/react";
+import type { KeyboardEvent } from "react";
 import { useEffect, useId, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-function Autocomplete() {
+interface AutocompleteProps {
+  capture?: boolean;
+}
+
+function Autocomplete({ capture }: AutocompleteProps) {
   const [open, setOpen] = useState(true);
   const inputId = useId();
   const listboxId = useId();
+  const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== "Escape") return;
+    if (!open) return;
+    event.stopPropagation();
+    setOpen(false);
+  };
 
   return (
     <div>
@@ -16,12 +27,8 @@ function Autocomplete() {
         aria-controls={listboxId}
         aria-expanded={open}
         aria-autocomplete="list"
-        onKeyDown={(event) => {
-          if (event.key !== "Escape") return;
-          if (!open) return;
-          event.stopPropagation();
-          setOpen(false);
-        }}
+        onKeyDown={capture ? undefined : onKeyDown}
+        onKeyDownCapture={capture ? onKeyDown : undefined}
       />
       {open && (
         <div id={listboxId} role="listbox" aria-label="Suggestions">
@@ -35,18 +42,45 @@ function Autocomplete() {
 }
 
 interface DialogExampleProps {
+  capture?: boolean;
+  modal?: boolean;
+  name?: string;
   portal?: boolean;
+  stopOnEscape?: boolean;
+  stopOnEscapeCapture?: boolean;
 }
 
-function DialogExample({ portal }: DialogExampleProps) {
-  return (
+function DialogExample({
+  capture,
+  modal,
+  name = "Dialog",
+  portal,
+  stopOnEscape,
+  stopOnEscapeCapture,
+}: DialogExampleProps) {
+  const dialog = (
     <Ariakit.DialogProvider>
-      <Ariakit.DialogDisclosure>Open dialog</Ariakit.DialogDisclosure>
-      <Ariakit.Dialog portal={portal}>
-        <Ariakit.DialogHeading>Dialog</Ariakit.DialogHeading>
-        <Autocomplete />
+      <Ariakit.DialogDisclosure>
+        Open {name.toLowerCase()}
+      </Ariakit.DialogDisclosure>
+      <Ariakit.Dialog modal={modal} portal={portal}>
+        <Ariakit.DialogHeading>{name}</Ariakit.DialogHeading>
+        <Autocomplete capture={capture} />
       </Ariakit.Dialog>
     </Ariakit.DialogProvider>
+  );
+  if (!stopOnEscape && !stopOnEscapeCapture) return dialog;
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Escape") return;
+    event.stopPropagation();
+  };
+  return (
+    <div
+      onKeyDown={stopOnEscape ? onKeyDown : undefined}
+      onKeyDownCapture={stopOnEscapeCapture ? onKeyDown : undefined}
+    >
+      {dialog}
+    </div>
   );
 }
 
@@ -56,8 +90,25 @@ function DocumentRootExample() {
   useEffect(() => {
     const document = iframe?.contentDocument;
     if (!document) return;
+    // Delegate React events to the document itself to reproduce the listener
+    // ordering where React capture runs before the Dialog effect.
     const root = createRoot(document);
-    root.render(<DialogExample portal={false} />);
+    root.render(
+      <>
+        <DialogExample name="Document root dialog" portal={false} />
+        <DialogExample
+          capture
+          name="Document root capture dialog"
+          portal={false}
+        />
+        <DialogExample
+          modal={false}
+          name="Document root outside dialog"
+          portal={false}
+          stopOnEscapeCapture
+        />
+      </>,
+    );
     return () => root.unmount();
   }, [iframe]);
 
@@ -69,6 +120,7 @@ export default function Example() {
   return (
     <>
       <DialogExample />
+      <DialogExample name="Outer ancestor dialog" portal={false} stopOnEscape />
       <button onClick={() => setShowDocumentRoot(true)}>
         Show document root example
       </button>

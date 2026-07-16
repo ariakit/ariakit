@@ -505,13 +505,22 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   }, [hasOpened, mayAutoFocusOnHide, focusOnHide]);
 
   const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
+  const [pendingEscapeEvents] = useState(() => new WeakSet<KeyboardEvent>());
+
+  const onKeyDownProp = props.onKeyDown;
+
+  const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
+    onKeyDownProp?.(event);
+    if (!pendingEscapeEvents.delete(event.nativeEvent)) return;
+    if (event.isPropagationStopped()) return;
+    store.hide();
+  });
 
   // Hide on Escape.
   useEffect(() => {
     if (!domReady) return;
     if (!mounted) return;
-    const pendingEscapeEvents = new WeakSet<KeyboardEvent>();
-    const onKeyDownCapture = (event: KeyboardEvent) => {
+    const onDocumentKeyDownCapture = (event: KeyboardEvent) => {
       // Clear state left by a previous stopped dispatch if the event is reused.
       pendingEscapeEvents.delete(event);
       if (event.key !== "Escape") return;
@@ -530,9 +539,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // This considers valid targets the elements that belong to this dialog
       // tree, including elements marked as outside by this dialog so Escape can
       // close the topmost dialog even when focus is outside.
+      const targetInsideDialog = contains(dialog, target);
       const isValidTarget = () => {
         if (isElement(target) && target.tagName === "BODY") return true;
-        if (contains(dialog, target)) return true;
+        if (targetInsideDialog) return true;
         if (!disclosureElement) return true;
         if (contains(disclosureElement, target)) return true;
         if (isElement(target) && isElementMarked(target, dialog.id)) {
@@ -541,33 +551,36 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         return false;
       };
       if (!isValidTarget()) return;
+      const propagationStopped = event.cancelBubble;
       if (!hideOnEscapeProp(event)) return;
-      // The bubble listener won't run if the hideOnEscape callback stopped
-      // propagation or the event doesn't bubble, so we hide immediately in
-      // these cases.
-      if (event.cancelBubble || !event.bubbles) {
+      // Propagation may already be stopped when React delegates capture events
+      // to document before this listener.
+      if (propagationStopped && targetInsideDialog) return;
+      // Inside events are committed by the dialog's React handler after its
+      // descendants. Events that can't reach it retain the global behavior.
+      if (event.cancelBubble || !event.bubbles || !targetInsideDialog) {
         store.hide();
         return;
       }
       pendingEscapeEvents.add(event);
     };
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (!pendingEscapeEvents.delete(event)) return;
-      // React may delegate events to document, where stopPropagation doesn't
-      // prevent later listeners on the same target.
-      if (event.cancelBubble) return;
-      store.hide();
-    };
     // Listen on the document so Escape works even when the dialog isn't
-    // focused. The capture listener lets hideOnEscape stop the event before it
-    // reaches third-party dialogs. The bubble listener lets descendants stop
-    // the event before this dialog hides.
+    // focused and hideOnEscape can stop the event before third-party dialogs.
     const win = contentElement ? getWindow(contentElement) : undefined;
-    return chain(
-      addGlobalEventListener("keydown", onKeyDownCapture, true, win),
-      addGlobalEventListener("keydown", onKeyDown, false, win),
+    return addGlobalEventListener(
+      "keydown",
+      onDocumentKeyDownCapture,
+      true,
+      win,
     );
-  }, [store, domReady, mounted, contentElement, hideOnEscapeProp]);
+  }, [
+    store,
+    domReady,
+    mounted,
+    contentElement,
+    hideOnEscapeProp,
+    pendingEscapeEvents,
+  ]);
 
   // Resets the heading levels inside the modal dialog so they start with h1.
   props = useWrapElement(
@@ -628,6 +641,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     ...props,
     id,
     ref: useMergeRefs(ref, props.ref),
+    onKeyDown,
   };
 
   props = useFocusableContainer({
