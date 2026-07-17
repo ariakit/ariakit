@@ -1,10 +1,30 @@
-import { createStore, init, sync } from "@ariakit/store";
+import {
+  createStore,
+  init,
+  mergeStore,
+  omit,
+  pick,
+  sync,
+} from "@ariakit/store";
 import { afterEach, expect, test } from "vitest";
 import { createCollectionStore } from "./collection-store.ts";
 
 afterEach(() => {
   document.body.replaceChildren();
 });
+
+function deriveItemsStore(
+  store: ReturnType<typeof createCollectionStore>,
+  kind: "collection" | "picked" | "omitted",
+) {
+  if (kind === "picked") {
+    return pick(store, ["items"]);
+  }
+  if (kind === "omitted") {
+    return omit(store, ["renderedItems"]);
+  }
+  return store;
+}
 
 test("registers, updates, and unregisters collection items", async () => {
   const store = createCollectionStore<{ id: string; value?: string }>();
@@ -345,28 +365,208 @@ test("treats registration snapshots reused by stale stores as controlled", async
   }
 });
 
-test("updates item lookups before parent store listeners", () => {
+test("treats registration snapshots reused reentrantly as controlled", async () => {
+  const parent = createCollectionStore<{ id: string }>();
+  const staleStore = createCollectionStore({ store: parent });
+  const stop = init(parent);
+  const banana = { id: "banana" };
+  const stopSync = sync(parent, ["items"], ({ items }) => {
+    if (!items.includes(banana)) return;
+    staleStore.setState("items", items);
+  });
+
+  try {
+    const unregister = parent.registerItem(banana);
+    await expect.poll(() => staleStore.getState().items).toContain(banana);
+
+    unregister();
+
+    expect(staleStore.getState().items).toContain(banana);
+    expect(staleStore.item("banana")).toBe(banana);
+  } finally {
+    stopSync();
+    stop();
+  }
+});
+
+test("treats snapshots reasserted on their originating store as controlled", async () => {
+  const store = createCollectionStore<{ id: string }>();
+  const stop = init(store);
+  const banana = { id: "banana" };
+  const orange = { id: "orange" };
+  let rewroteItems = false;
+  const stopSync = sync(store, ["items"], ({ items }) => {
+    if (rewroteItems || !items.includes(banana)) return;
+    rewroteItems = true;
+    store.setState("items", [orange]);
+    store.setState("items", items);
+  });
+
+  try {
+    const unregister = store.registerItem(banana);
+    await expect.poll(() => rewroteItems).toBe(true);
+
+    unregister();
+    await expect.poll(() => store.getState().items).toEqual([]);
+
+    expect(store.item("banana")).toBe(banana);
+  } finally {
+    stopSync();
+    stop();
+  }
+});
+
+test("treats snapshots reasserted through parent stores as controlled", async () => {
   const parent = createStore({
     items: [] as Array<{ id: string }>,
     renderedItems: [] as Array<{ id: string }>,
   });
-  let store!: ReturnType<typeof createCollectionStore>;
-  let observedIds: [string | undefined, string | undefined] | undefined;
+  const store = createCollectionStore({ store: parent });
+  const banana = { id: "banana" };
+  const orange = { id: "orange" };
+  let rewroteItems = false;
   const stopSync = sync(parent, ["items"], ({ items }) => {
-    const id = items[0]?.id;
-    if (!id) return;
-    observedIds = [store.getState().items[0]?.id, store.item(id)?.id];
+    if (rewroteItems || !items.includes(banana)) return;
+    rewroteItems = true;
+    store.setState("items", [orange]);
+    parent.setState("items", items);
   });
-  store = createCollectionStore({ store: parent });
+  const stop = init(store);
 
   try {
-    store.setState("items", (items) => [...items, { id: "apple" }]);
+    const unregister = store.registerItem(banana);
+    await expect.poll(() => rewroteItems).toBe(true);
 
-    expect(observedIds).toEqual(["apple", "apple"]);
+    unregister();
+    await expect.poll(() => store.getState().items).toEqual([]);
+
+    expect(store.item("banana")).toBe(banana);
   } finally {
+    stop();
     stopSync();
   }
 });
+
+test("treats snapshots reasserted before composed store sync as controlled", async () => {
+  const parent = createCollectionStore<{ id: string }>();
+  const store = createCollectionStore({ store: parent });
+  const stopParent = init(parent);
+  const banana = { id: "banana" };
+  let wroteWhileStale = false;
+  const stopSync = sync(parent, ["items"], ({ items }) => {
+    if (!items.includes(banana)) return;
+    wroteWhileStale = !store.getState().items.includes(banana);
+    store.setState("items", items);
+  });
+  const stopStore = init(store);
+
+  try {
+    const unregister = store.registerItem(banana);
+    await expect.poll(() => store.getState().items).toContain(banana);
+
+    expect(wroteWhileStale).toBe(true);
+
+    unregister();
+    await expect.poll(() => store.getState().items).toEqual([]);
+
+    expect(store.item("banana")).toBe(banana);
+  } finally {
+    stopStore();
+    stopSync();
+    stopParent();
+  }
+});
+
+test("does not control registration snapshots during ancestor initialization", async () => {
+  const parent = createCollectionStore<{ id: string }>();
+  const store = createCollectionStore({ store: parent });
+  const banana = { id: "banana" };
+  const unregister = parent.registerItem(banana);
+  const stop = init(store);
+
+  try {
+    await expect.poll(() => parent.getState().items).toContain(banana);
+
+    unregister();
+    await expect.poll(() => parent.getState().items).toEqual([]);
+    await expect.poll(() => store.getState().items).toEqual([]);
+
+    expect(parent.item("banana")).toBeNull();
+    expect(store.item("banana")).toBeNull();
+  } finally {
+    stop();
+  }
+});
+
+test("does not control registration snapshots across composed ancestors", async () => {
+  const root = createCollectionStore<{ id: string }>();
+  const middle = createCollectionStore({ store: root });
+  const leaf = createCollectionStore({ store: middle });
+  const stop = init(leaf);
+
+  try {
+    const unregister = leaf.registerItem({ id: "banana" });
+    await expect.poll(() => root.getState().items).toHaveLength(1);
+
+    unregister();
+    await expect.poll(() => leaf.getState().items).toEqual([]);
+
+    expect(root.item("banana")).toBeNull();
+    expect(middle.item("banana")).toBeNull();
+    expect(leaf.item("banana")).toBeNull();
+  } finally {
+    stop();
+  }
+});
+
+test("does not control registration snapshots through merged stores", async () => {
+  const root = createCollectionStore<{ id: string }>();
+  const branch = createCollectionStore({ store: root });
+  const merged = mergeStore(root, branch);
+  const child = createCollectionStore({ store: merged });
+  const stop = init(child);
+  const banana = { id: "banana" };
+
+  try {
+    const unregister = root.registerItem(banana);
+    await expect.poll(() => child.getState().items).toContain(banana);
+
+    unregister();
+
+    expect(root.item("banana")).toBeNull();
+    expect(branch.item("banana")).toBeNull();
+    expect(child.item("banana")).toBeNull();
+  } finally {
+    stop();
+  }
+});
+
+test.each(["collection", "picked", "omitted"] as const)(
+  "updates item lookups before parent listeners through %s stores",
+  (kind) => {
+    const parent = createStore({
+      items: [] as Array<{ id: string }>,
+      renderedItems: [] as Array<{ id: string }>,
+    });
+    let store!: ReturnType<typeof createCollectionStore>;
+    let observedIds: [string | undefined, string | undefined] | undefined;
+    const stopSync = sync(parent, ["items"], ({ items }) => {
+      const id = items[0]?.id;
+      if (!id) return;
+      observedIds = [store.getState().items[0]?.id, store.item(id)?.id];
+    });
+    store = createCollectionStore({ store: parent });
+    const derivedStore = deriveItemsStore(store, kind);
+
+    try {
+      derivedStore.setState("items", (items) => [...items, { id: "apple" }]);
+
+      expect(observedIds).toEqual(["apple", "apple"]);
+    } finally {
+      stopSync();
+    }
+  },
+);
 
 test("synchronizes controlled item lookups across composed stores", async () => {
   const parent = createCollectionStore<{ id: string; value?: string }>();

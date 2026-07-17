@@ -3,7 +3,7 @@ import {
   createStore,
   init,
   setup,
-  sync,
+  subscribe,
   throwOnConflictingProps,
 } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
@@ -14,7 +14,7 @@ import {
   chain,
   defaultValue,
 } from "@ariakit/utils";
-import type { BivariantCallback } from "@ariakit/utils";
+import type { BivariantCallback, SetStateAction } from "@ariakit/utils";
 
 function getCommonParent(items: CollectionStoreItem[]) {
   const firstItem = items.find((item) => !!item.element);
@@ -40,7 +40,6 @@ interface CollectionLookup<T extends CollectionStoreItem> {
   registeredItems: Map<string, T>;
   controlledItemsSource: T[];
   propagatedItems: T[];
-  syncingPrivateItems?: T[];
 }
 
 interface CollectionPrivateStore<T extends CollectionStoreItem> extends Store<{
@@ -117,6 +116,15 @@ type SetItems<T extends CollectionStoreItem> = (
   getItems: (items: T[]) => T[],
 ) => void;
 
+type InternalSetState<T extends CollectionStoreItem> = <
+  K extends keyof CollectionStoreState<T>,
+>(
+  key: K,
+  value: SetStateAction<CollectionStoreState<T>[K]>,
+  fromStores?: boolean,
+  updateOrigin?: unknown,
+) => void;
+
 /**
  * Creates a collection store.
  */
@@ -163,7 +171,9 @@ export function createCollectionStore<
   };
 
   const collection = createStore(initialState, props.store);
-  let observedItems = items;
+  const rawSetState = collection.setState.bind(
+    collection,
+  ) as InternalSetState<T>;
 
   const sortItems = (renderedItems: T[]) => {
     const sortedItems = sortBasedOnDOMPosition(renderedItems, (i) => i.element);
@@ -181,37 +191,43 @@ export function createCollectionStore<
   };
 
   const syncItemLookup = (items: T[]) => {
-    if (items === observedItems) return;
-    observedItems = items;
     // Composed stores observe the same public state array, so only the first
     // listener needs to process their shared lookup.
     if (items === collectionLookup.propagatedItems) return;
     collectionLookup.propagatedItems = items;
-    // Private registration batches already update the registered lookup.
-    if (items === collectionLookup.syncingPrivateItems) return;
     indexControlledItems(items);
   };
 
-  sync(collection, ["items"], (state) => {
+  subscribe(collection, ["items"], (state) => {
     syncItemLookup(state.items);
   });
 
-  const setState: CollectionStore<T>["setState"] = (key, value) => {
+  const setState: InternalSetState<T> = (
+    key,
+    value,
+    fromStores,
+    updateOrigin,
+  ) => {
     if (key !== "items") {
-      collection.setState(key, value);
+      rawSetState(key, value, fromStores, updateOrigin);
       return;
     }
-    collection.setState("items", (items) => {
-      const nextItems = applyState(value, items);
-      if (nextItems === items) return items;
-      observedItems = nextItems;
-      collectionLookup.propagatedItems = nextItems;
-      if (nextItems !== collectionLookup.syncingPrivateItems) {
-        indexControlledItems(nextItems);
-      }
-      return nextItems;
-    });
+    rawSetState(
+      "items",
+      (items) => {
+        const nextItems = applyState(value, items);
+        if (nextItems === items) return items;
+        collectionLookup.propagatedItems = nextItems;
+        if (updateOrigin !== collectionLookup) {
+          indexControlledItems(nextItems);
+        }
+        return nextItems;
+      },
+      fromStores,
+      updateOrigin,
+    );
   };
+  collection.setState = setState;
 
   setup(collection, () => init(privateStore));
 
@@ -220,13 +236,7 @@ export function createCollectionStore<
   // multiple items.
   setup(privateStore, () => {
     return batch(privateStore, ["items"], (state) => {
-      const syncingPrivateItems = collectionLookup.syncingPrivateItems;
-      collectionLookup.syncingPrivateItems = state.items;
-      try {
-        collection.setState("items", state.items);
-      } finally {
-        collectionLookup.syncingPrivateItems = syncingPrivateItems;
-      }
+      setState("items", state.items, false, collectionLookup);
     });
   });
 
@@ -362,7 +372,6 @@ export function createCollectionStore<
 
   return {
     ...collection,
-    setState,
 
     registerItem,
     renderItem: (item) => chain(registerItem(item), mergeRenderedItem(item)),
