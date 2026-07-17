@@ -14,9 +14,11 @@ type Value = SelectStoreValue;
  * As a value component, it doesn't render any DOM elements and therefore
  * doesn't accept HTML props. It can optionally accept a
  * [`fallback`](https://ariakit.com/reference/select-value#fallback) prop to use
- * as a default value if the store's
+ * as a default value if the store's value is an empty string or empty array.
+ *
+ * The store's
  * [`value`](https://ariakit.com/reference/use-select-store#value) is
- * `undefined`.
+ * otherwise rendered as-is.
  *
  * Additionally, it takes a
  * [`children`](https://ariakit.com/reference/select-value#children) function
@@ -94,9 +96,12 @@ export interface SelectValueProps<T extends Value = Value> {
    */
   store?: SelectStore<T>;
   /**
-   * The value to use as a default if the store's
+   * The value to use as a default if the store's value is an empty string or
+   * empty array.
+   *
+   * The store's
    * [`value`](https://ariakit.com/reference/use-select-store#value) is
-   * `undefined`.
+   * otherwise rendered as-is.
    * @default ""
    */
   fallback?: T;

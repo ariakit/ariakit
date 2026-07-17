@@ -102,5 +102,6 @@ Continue reading our [Guide](/guide) to learn more about Ariakit:
 
 - [](/guide/composition)
 - [](/guide/component-stores)
+- [](/guide/value-components)
 
 </div>
