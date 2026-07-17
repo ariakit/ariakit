@@ -47,7 +47,6 @@ interface CollectionPrivateStore<T extends CollectionStoreItem> extends Store<{
   renderedItems: T[];
 }> {
   __unstableCollectionLookup: CollectionLookup<T>;
-  __unstableCollectionStore: Store<CollectionStoreState<T>>;
 }
 
 function getPrivateStore<T extends CollectionStoreItem>(
@@ -154,9 +153,7 @@ export function createCollectionStore<
     renderedItems: defaultValue(syncState?.renderedItems, []),
   };
 
-  const syncCollectionStore =
-    syncPrivateStore?.__unstableCollectionStore ?? props.store;
-  const collection = createStore(initialState, syncCollectionStore);
+  const collection = createStore(initialState, props.store);
 
   const privateStore: CollectionPrivateStore<T> = {
     ...createStore(
@@ -164,7 +161,6 @@ export function createCollectionStore<
       syncPrivateStore,
     ),
     __unstableCollectionLookup: collectionLookup,
-    __unstableCollectionStore: collection,
   };
 
   const rawSetState = collection.setState.bind(collection);
@@ -221,6 +217,7 @@ export function createCollectionStore<
   // public store so we don't trigger multiple updates on the store when adding
   // multiple items.
   setup(privateStore, () => {
+    if (syncPrivateStore) return;
     return batch(privateStore, ["items"], (state) => {
       publishPrivateItems(state.items);
     });

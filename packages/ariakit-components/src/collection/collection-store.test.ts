@@ -1,5 +1,6 @@
 import { createStore, init, omit, pick, sync } from "@ariakit/store";
 import { afterEach, expect, test } from "vitest";
+import { createCompositeStore } from "../composite/composite-store.ts";
 import { createCollectionStore } from "./collection-store.ts";
 
 afterEach(() => {
@@ -537,6 +538,24 @@ test("preserves controlled items across composed parent registration flushes", a
 
     expect(parent.item("orange")).toBe(orange);
     expect(store.item("orange")).toBe(orange);
+  } finally {
+    stop();
+  }
+});
+
+test("synchronizes items through composite parent stores", () => {
+  const parent = createCompositeStore<{ id: string }>();
+  const store = createCollectionStore({ store: parent });
+  const stop = init(store);
+
+  try {
+    const apple = { id: "apple" };
+    store.setState("items", [apple]);
+
+    expect(parent.getState().items).toEqual([apple]);
+    expect(store.getState().items).toEqual([apple]);
+    expect(parent.item("apple")).toBe(apple);
+    expect(store.item("apple")).toBe(apple);
   } finally {
     stop();
   }
