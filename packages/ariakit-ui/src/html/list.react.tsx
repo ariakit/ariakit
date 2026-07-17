@@ -74,6 +74,8 @@ export interface ListItemCheckProps
 /**
  * Check marker showing a checked icon or a circular progress arc. Must live
  * inside a `ListItem`, which renders it when `checked` or `progress` is set.
+ * The app inlines this markup as an html string in
+ * `app/src/components/content-list-item.astro` — keep them in sync.
  */
 export function ListItemCheck({
   progress,

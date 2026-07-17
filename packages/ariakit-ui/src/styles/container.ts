@@ -62,7 +62,11 @@ export const containerSize = cv({
 export const container = cv({
   extend: [containerSize],
   class: [
-    "mx-auto w-[calc(100%-var(--_container-padding,0px)*2)]",
+    // The parens around the var() term matter: Tailwind turns the channel's
+    // _ into a space when the var() is glued to an operator inside an
+    // arbitrary value (calc(100%-var(--_x)) emits `var(-- x)`), but leaves
+    // it alone right after an opening paren.
+    "mx-auto w-[calc(100%-(var(--_container-padding,0px)*2))]",
     // The auto fallback is invalid inside min(), which correctly disables
     // max-width entirely when no $size is provided anywhere above.
     "max-w-[min(var(--_container-max-width,auto),100dvw)]",

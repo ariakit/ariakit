@@ -13,6 +13,7 @@ import {
   type ReferenceItem as ReferenceSectionItem,
 } from "#app/lib/reference.ts";
 import { getReferencePath } from "#app/lib/url.ts";
+import { container } from "@ariakit/ui/styles/container.ts";
 import type { ComponentProps } from "astro/types";
 import { getEntry } from "astro:content";
 import type { CollectionEntry } from "astro:content";
@@ -60,10 +61,12 @@ function getCodeBlockCode(example: ReferenceSectionItem["examples"][number]) {
 const ex = await getEntry("examples", "checkbox-card");
 ---
 
+{/* ContentHeading applies the heading cv itself now. Its own margins would
+    win the cascade over plain overrides, hence the importants. */}
 <ContentHeading
   as="div"
   id={!standalone ? id : undefined}
-  class="flex gap-2 items-center mb-0 mt-0 ak-heading flex-wrap"
+  class="flex gap-2 items-center mb-0! mt-0! flex-wrap"
 >
   <h5
     class:list={[
@@ -114,9 +117,10 @@ const ex = await getEntry("examples", "checkbox-card");
       className="-mb-(--ak-frame-padding) -mt-[calc(var(--ak-frame-padding)/2)] text-base"
     >
       <div
-        class:list={[
-          "grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4 ak-container @max-3xl:gap-3",
-        ]}
+        {...container.html({
+          class:
+            "grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4 @max-3xl:gap-3",
+        })}
       >
         {liveExamples.map(() => (
           <PageCardExample entry={ex!} size={size} />

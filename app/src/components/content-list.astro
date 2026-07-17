@@ -8,16 +8,42 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { containerSizeContent } from "#app/lib/container-size.ts";
+import { container } from "@ariakit/ui/styles/container.ts";
+import { list } from "@ariakit/ui/styles/list.ts";
 import type { Polymorphic } from "astro/types";
+import { clsx } from "clsx";
 
 type ListTag = "ul" | "ol";
 type Props<T extends ListTag> = Polymorphic<{ as: T }>;
 
-const { as: Tag = "ul", ...props } = Astro.props as Props<ListTag>;
+const {
+  as: Tag = "ul",
+  class: className,
+  style,
+  ...props
+} = Astro.props as Props<ListTag>;
+
+// The cv is spread on the raw tag rather than rendering the List component so
+// the element and its props passthrough stay in astro. The list spread below
+// is the element's single class/style source, so the container channel is
+// folded into it. Inside prose, the list gap and ink derive from the prose
+// channels automatically via the cv's ui-prose rules.
+// The caller style also goes through the cv chain: Astro doesn't merge
+// duplicate style attributes.
+const containerProps = container.html({
+  $size: containerSizeContent,
+  $p: "none",
+  style,
+});
 ---
 
 <Tag
-  class:list={["ak-container-size-content/0 ak-container", props.class]}
+  {...list.html({
+    $ordered: Tag === "ol",
+    class: clsx(containerProps.class, className),
+    style: containerProps.style,
+  })}
   {...props}
 >
   <slot />

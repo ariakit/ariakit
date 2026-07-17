@@ -10,6 +10,7 @@
  */
 import TimelineAnimate from "#app/components/timeline-animate.astro";
 import { trimRight } from "#app/lib/string.ts";
+import { button } from "@ariakit/ui/styles/button.ts";
 import type { ComponentProps, HTMLAttributes } from "astro/types";
 import { ReferenceLabel } from "./reference-label.react.tsx";
 import ScrollCurrentIntoView from "./scroll-current-into-view.astro";
@@ -101,10 +102,19 @@ function isCurrentPage(item: SidebarMenuItem, pathname = Astro.url.pathname) {
 
           return (
             <li class="relative">
+              {/* Links spread the button cv (the html Button renders a
+                  <button>); $lightnessOffset:false keeps idle rows flush with
+                  the surface like the legacy trailing ak-layer, and the
+                  stacked aria-[current] layer still wins over the cv's own
+                  unstacked ak-layer. */}
               <a
                 href={href}
                 aria-current={isCurrentPage(item) ? "page" : undefined}
-                class="peer ak-button justify-start font-normal whitespace-normal ak-layer aria-[current]:ak-layer-6 overflow-x-clip relative scroll-m-1"
+                {...button.html({
+                  $lightnessOffset: false,
+                  class:
+                    "peer justify-start font-normal whitespace-normal aria-[current]:ak-layer-6 overflow-x-clip scroll-m-1",
+                })}
               >
                 {referenceProps?.kind ? (
                   <ReferenceLabel {...referenceProps} set:text={label} />

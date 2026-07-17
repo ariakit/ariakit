@@ -1,3 +1,4 @@
+import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
 import { clsx } from "clsx";
 import { forwardRef, useMemo } from "react";
 import { Icon } from "#app/icons/icon.react.tsx";
@@ -68,11 +69,17 @@ export const CodeBlockEdit = forwardRef<HTMLButtonElement, CodeBlockEditProps>(
     const isDisabled = disabled || !canOpen;
 
     return (
-      <button
+      <Button
         {...props}
         ref={ref}
         type="button"
-        className={clsx("ak-button ak-button-square-10", className)}
+        // Square icon button: pin the size and drop the field padding like
+        // the legacy square button. The pinned height defeats the button's
+        // line-box centering, so center the icon explicitly. Legacy plain
+        // ak-button paints no idle layer offset.
+        $p="none"
+        $lightnessOffset={false}
+        className={clsx("size-10 items-center", className)}
         disabled={isDisabled}
         onClick={(event) => {
           props.onClick?.(event);
@@ -103,7 +110,7 @@ export const CodeBlockEdit = forwardRef<HTMLButtonElement, CodeBlockEditProps>(
             <span className="sr-only">Edit code</span>
           </>
         )}
-      </button>
+      </Button>
     );
   },
 );

@@ -8,14 +8,23 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { containerSizeContent } from "#app/lib/container-size.ts";
+import { container } from "@ariakit/ui/styles/container.ts";
 import type { HTMLAttributes } from "astro/types";
 
 interface Props extends HTMLAttributes<"hr"> {}
 
-const props = Astro.props;
+const { class: className, style, ...props } = Astro.props;
 ---
 
 <hr
-  class:list={["ak-container ak-container-size-content/0", props.class]}
+  {...container.html({
+    $size: containerSizeContent,
+    $p: "none",
+    class: className,
+    // Astro doesn't merge duplicate style attributes, so the caller style
+    // goes through the cv, which merges it.
+    style,
+  })}
   {...props}
 />

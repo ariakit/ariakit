@@ -45,6 +45,8 @@
 }
 
 @theme inline {
+  /* app/src/lib/container-size.ts mirrors this expression for container
+     $size props — keep them in sync. */
   --container-content: calc(
     100% - var(--container-sidebar) - (100% - var(--container-default))
   );

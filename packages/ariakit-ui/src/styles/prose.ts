@@ -25,7 +25,9 @@ export const prose = cv({
     // Paragraphs re-derive the prose ink so they stay readable inside
     // layered children.
     "[&_:where(p)]:ak-dark:ak-ink-75 [&_:where(p)]:ak-light:ak-ink-90",
-    // Legacy ak-strong.
+    // Legacy ak-strong. The strong and inline-code rules are copied by
+    // `app/src/lib/page-intro.ts` for prose-less description blocks — keep
+    // them in sync.
     "[&_:where(strong)]:ak-ink-100 [&_:where(strong)]:font-medium",
     // Legacy ak-code: an inline code chip, excluding code blocks. The
     // inherited color keeps the chip text on the prose ink instead of the

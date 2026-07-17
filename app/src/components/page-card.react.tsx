@@ -8,6 +8,8 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 
+import { Badge, BadgeLabel } from "@ariakit/ui/ariakit/badge.react.tsx";
+import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
 import { clsx } from "clsx";
 import * as React from "react";
 
@@ -39,33 +41,57 @@ export function PageCard({
   }[size];
 
   return (
-    <a
-      {...props}
+    <Button
+      render={
+        <a
+          {...props}
+          aria-labelledby={labelId}
+          aria-describedby={descriptionId}
+        />
+      }
+      // Card frame, like the legacy ak-frame-card/card token values.
+      $rounded="xl"
+      $p={4}
+      $gap="none"
+      $activeDepth={4}
+      // The card sits on the parent layer color, like the legacy
+      // ak-layer-lighten-0.
+      $lightnessOffset={false}
+      // The focus ring is replaced by a background state change here plus the
+      // thumbnail highlight below.
+      $focus={false}
       className={clsx(
-        "ak-button ak-command-depth-4 text-wrap ak-layer ak-layer-lighten-0 ak-command-focus:outline-0 ak-command-focus:ak-state-6 ak-frame ak-frame-card/card flex flex-col gap-2 items-stretch font-normal outline-offset-2 group/card justify-start",
+        "group/card flex-col gap-2 items-stretch justify-start text-wrap font-normal",
+        "ui-focus-visible:ak-state-6",
         className,
       )}
-      aria-labelledby={labelId}
-      aria-describedby={descriptionId}
     >
       <span className="ak-frame ak-frame-cover ak-frame-p-0">
         <span
           //@ts-expect-error
           inert="true"
           className={clsx(
-            "ak-layer ak-light:ak-layer-darken-6 ak-dark:ak-layer-darken-2 ak-frame-border ak-frame ak-frame-card/4 flex justify-center items-center-safe group-focus-visible/card:ak-layer-primary group-focus-visible/card:ak-layer-contrast overflow-hidden relative [content-visibility:auto]",
+            "ak-layer ak-light:ak-layer-darken-6 ak-dark:ak-layer-darken-2 ak-frame-border ak-frame ak-frame-card/4 flex justify-center items-center-safe group-ui-focus-visible/card:ak-layer-primary group-ui-focus-visible/card:ak-layer-contrast overflow-hidden relative [content-visibility:auto]",
             sizeClass,
           )}
         >
           {plus && (
             <span className="ak-frame ak-frame-cover ak-frame-p-1 [--padding:var(--ak-frame-padding)] contents">
-              <span className="absolute top-(--padding) end-(--padding) ak-badge-primary border border-dashed px-(--ak-frame-padding)">
-                <span>Plus</span>
-              </span>
+              <Badge
+                render={<span />}
+                $layer="brand"
+                $p={1.5}
+                $px="sm"
+                $borderType="dashed"
+                $borderWeight="medium"
+                className="absolute top-(--padding) end-(--padding)"
+              >
+                <BadgeLabel>Plus</BadgeLabel>
+              </Badge>
             </span>
           )}
           <span
-            className="group-ak-command-focus/card:ak-layer group-ak-command-focus/card:ak-layer-white -m-10 bg-transparent! grid content-center-safe group-ak-command-hover/card:scale-75 scale-70 origin-center relative transition-transform duration-600"
+            className="group-ui-focus-visible/card:ak-layer group-ui-focus-visible/card:ak-layer-white -m-10 bg-transparent! grid content-center-safe group-hover/card:scale-75 scale-70 origin-center relative transition-transform duration-600"
             dangerouslySetInnerHTML={{ __html: thumbnail || "" }}
           />
         </span>
@@ -82,6 +108,6 @@ export function PageCard({
           </span>
         ) : null}
       </span>
-    </a>
+    </Button>
   );
 }

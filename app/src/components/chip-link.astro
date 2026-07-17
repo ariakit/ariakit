@@ -8,6 +8,7 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { button, buttonLabel, buttonSlot } from "@ariakit/ui/styles/button.ts";
 import type { HTMLAttributes } from "astro/types";
 
 interface Props extends HTMLAttributes<"a"> {
@@ -17,25 +18,32 @@ interface Props extends HTMLAttributes<"a"> {
   current?: boolean;
 }
 
-const { current, ...props } = Astro.props as Props;
+const { current, class: className, style, ...props } = Astro.props as Props;
 const ariaCurrent = current ? "page" : undefined;
 ---
 
 <a
   aria-current={ariaCurrent}
-  class:list={[
-    "ak-button ak-frame ak-frame-field/1 ak-layer ak-layer-6 text-sm aria-[current]:ak-layer aria-[current]:ak-layer-100 rounded-full scroll-m-4 gap-0",
-    props.class,
-  ]}
+  {...button.html({
+    $rounded: "full",
+    $size: "sm",
+    $px: "lg",
+    class: ["aria-[current]:ak-layer-100 scroll-m-4", className],
+    // Astro doesn't merge duplicate style attributes, so the caller style
+    // goes through the cv, which does.
+    style,
+  })}
   {...props}
 >
-  <span class="px-2">
+  <span {...buttonLabel.html()}>
     <slot />
   </span>
   {
     Astro.slots.has("badge") && (
-      <span class="-ms-0.5 ak-ink-0 rounded-full ak-edge-0 ring px-1.5 ak-layer ak-layer-6 min-w-(--ak-button-leading) text-center in-aria-[current]:ak-layer in-aria-[current]:ak-layer-30">
-        <slot name="badge" />
+      <span {...buttonSlot.html({ $kind: "badge" })}>
+        <span>
+          <slot name="badge" />
+        </span>
       </span>
     )
   }

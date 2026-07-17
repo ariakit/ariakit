@@ -15,9 +15,11 @@ export const heading = cv({
     // must not push the rest of the item away.
     "[li_&]:mb-0",
     // Anchors (heading permalinks) inherit the heading look and only reveal
-    // a link underline on hover.
-    "[&_a]:font-[weight:inherit] [&_a]:text-current [&_a]:no-underline",
-    "[&_a]:hover:underline [&_a]:hover:decoration-1",
+    // a link underline on hover. The color and hover decoration take ! to
+    // beat the Link component's ui-text/ui-hover compound selectors, whose
+    // specificity outweighs any plain descendant rule written here.
+    "[&_a]:font-[weight:inherit] [&_a]:text-current! [&_a]:no-underline",
+    "[&_a]:hover:underline [&_a]:hover:decoration-1!",
     "[&_a]:hover:underline-offset-[0.25em]",
   ],
   variants: {
