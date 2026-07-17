@@ -14,7 +14,7 @@ import {
   chain,
   defaultValue,
 } from "@ariakit/utils";
-import type { BivariantCallback, SetStateAction } from "@ariakit/utils";
+import type { BivariantCallback } from "@ariakit/utils";
 
 function getCommonParent(items: CollectionStoreItem[]) {
   const firstItem = items.find((item) => !!item.element);
@@ -116,15 +116,6 @@ type SetItems<T extends CollectionStoreItem> = (
   getItems: (items: T[]) => T[],
 ) => void;
 
-type InternalSetState<T extends CollectionStoreItem> = <
-  K extends keyof CollectionStoreState<T>,
->(
-  key: K,
-  value: SetStateAction<CollectionStoreState<T>[K]>,
-  fromStores?: boolean,
-  updateOrigin?: unknown,
-) => void;
-
 /**
  * Creates a collection store.
  */
@@ -171,9 +162,7 @@ export function createCollectionStore<
   };
 
   const collection = createStore(initialState, props.store);
-  const rawSetState = collection.setState.bind(
-    collection,
-  ) as InternalSetState<T>;
+  const rawSetState = collection.setState.bind(collection);
 
   const sortItems = (renderedItems: T[]) => {
     const sortedItems = sortBasedOnDOMPosition(renderedItems, (i) => i.element);
@@ -202,32 +191,24 @@ export function createCollectionStore<
     syncItemLookup(state.items);
   });
 
-  const setState: InternalSetState<T> = (
-    key,
-    value,
-    fromStores,
-    updateOrigin,
-  ) => {
+  const setState: CollectionStore<T>["setState"] = (key, value) => {
     if (key !== "items") {
-      rawSetState(key, value, fromStores, updateOrigin);
+      rawSetState(key, value);
       return;
     }
-    rawSetState(
-      "items",
-      (items) => {
-        const nextItems = applyState(value, items);
-        if (nextItems === items) return items;
-        collectionLookup.propagatedItems = nextItems;
-        if (updateOrigin !== collectionLookup) {
-          indexControlledItems(nextItems);
-        }
-        return nextItems;
-      },
-      fromStores,
-      updateOrigin,
-    );
+    rawSetState("items", (items) => {
+      const nextItems = applyState(value, items);
+      if (nextItems === items) return items;
+      collectionLookup.propagatedItems = nextItems;
+      indexControlledItems(nextItems);
+      return nextItems;
+    });
   };
-  collection.setState = setState;
+
+  const publishPrivateItems = (items: T[]) => {
+    collectionLookup.propagatedItems = items;
+    rawSetState("items", items);
+  };
 
   setup(collection, () => init(privateStore));
 
@@ -236,7 +217,7 @@ export function createCollectionStore<
   // multiple items.
   setup(privateStore, () => {
     return batch(privateStore, ["items"], (state) => {
-      setState("items", state.items, false, collectionLookup);
+      publishPrivateItems(state.items);
     });
   });
 
@@ -373,6 +354,7 @@ export function createCollectionStore<
   return {
     ...collection,
 
+    setState,
     registerItem,
     renderItem: (item) => chain(registerItem(item), mergeRenderedItem(item)),
 

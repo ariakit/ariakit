@@ -28,15 +28,6 @@ type StoreInit = () => () => void;
 type StoreSubscribe<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 type StoreSync<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 type StoreBatch<S = State, K extends keyof S = keyof S> = Sync<S, K>;
-type InternalSetState<S> = <K extends keyof S>(
-  key: K,
-  value: SetStateAction<S[K]>,
-  fromStores?: boolean,
-  updateOrigin?: unknown,
-) => void;
-type InternalStore<S> = Omit<Store<S>, "setState"> & {
-  setState: InternalSetState<S>;
-};
 type StorePick<
   S = State,
   K extends ReadonlyArray<keyof S> = ReadonlyArray<keyof S>,
@@ -447,8 +438,9 @@ export function createStore<S extends State>(
             sync(store, [key], (state) => {
               setState(
                 key,
-                // @ts-expect-error - Parent state is partial at the type level.
                 state[key],
+                // @ts-expect-error - Not public API. This is just to prevent
+                // infinite loops.
                 true,
               );
             }),
@@ -462,8 +454,9 @@ export function createStore<S extends State>(
             if (state[key] === prevState[key]) continue;
             setState(
               key,
-              // @ts-expect-error - Parent state is partial at the type level.
               state[key],
+              // @ts-expect-error - Not public API. This is just to prevent
+              // infinite loops.
               true,
             );
           }
@@ -478,8 +471,9 @@ export function createStore<S extends State>(
         if (!liveState) continue;
         setState(
           key,
-          // @ts-expect-error - Parent state is partial at the type level.
           liveState[key],
+          // @ts-expect-error - Not public API. This is just to prevent
+          // infinite loops.
           true,
         );
       }
@@ -720,14 +714,8 @@ export function createStore<S extends State>(
   // `fromStores` marks an update that originated from an extended parent store
   // syncing its value down (set only by storeInit's sync wiring). Such updates
   // must not be fanned back out to the parents, or the two stores would keep
-  // updating each other forever. `updateOrigin` is opaque metadata forwarded
-  // only through the initial parent fan-out. Public callers always omit both.
-  const setState: InternalSetState<S> = (
-    key,
-    value,
-    fromStores = false,
-    updateOrigin?: unknown,
-  ) => {
+  // updating each other forever. Public callers always omit it.
+  const setState: Store<S>["setState"] = (key, value, fromStores = false) => {
     if (!hasOwnProperty(state, key)) return;
 
     const currentValue = state[key];
@@ -753,12 +741,7 @@ export function createStore<S extends State>(
       // entirely on the common store-without-parents path.
       if (!fromStores && stores.length) {
         for (const store of stores) {
-          const parentStore: InternalStore<Partial<S>> | undefined = store;
-          if (updateOrigin === undefined) {
-            parentStore?.setState(key, nextValue);
-          } else {
-            parentStore?.setState(key, nextValue, false, updateOrigin);
-          }
+          store?.setState?.(key, nextValue);
           // Parent fan-out can reenter this child with a newer value for the
           // same key. That nested update owns the final notification, so stop
           // replaying the stale outer value.

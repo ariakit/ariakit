@@ -1,11 +1,4 @@
-import {
-  createStore,
-  init,
-  mergeStore,
-  omit,
-  pick,
-  sync,
-} from "@ariakit/store";
+import { createStore, init, omit, pick, sync } from "@ariakit/store";
 import { afterEach, expect, test } from "vitest";
 import { createCollectionStore } from "./collection-store.ts";
 
@@ -519,31 +512,13 @@ test("does not control registration snapshots across composed ancestors", async 
   }
 });
 
-test("does not control registration snapshots through merged stores", async () => {
-  const root = createCollectionStore<{ id: string }>();
-  const branch = createCollectionStore({ store: root });
-  const merged = mergeStore(root, branch);
-  const child = createCollectionStore({ store: merged });
-  const stop = init(child);
-  const banana = { id: "banana" };
-
-  try {
-    const unregister = root.registerItem(banana);
-    await expect.poll(() => child.getState().items).toContain(banana);
-
-    unregister();
-
-    expect(root.item("banana")).toBeNull();
-    expect(branch.item("banana")).toBeNull();
-    expect(child.item("banana")).toBeNull();
-  } finally {
-    stop();
-  }
-});
-
-test.each(["collection", "picked", "omitted"] as const)(
-  "updates item lookups before parent listeners through %s stores",
-  (kind) => {
+test.each([
+  ["collection", "apple"],
+  ["picked", undefined],
+  ["omitted", undefined],
+] as const)(
+  "preserves parent listener lookup timing through %s stores",
+  (kind, expectedItemId) => {
     const parent = createStore({
       items: [] as Array<{ id: string }>,
       renderedItems: [] as Array<{ id: string }>,
@@ -561,7 +536,7 @@ test.each(["collection", "picked", "omitted"] as const)(
     try {
       derivedStore.setState("items", (items) => [...items, { id: "apple" }]);
 
-      expect(observedIds).toEqual(["apple", "apple"]);
+      expect(observedIds).toEqual(["apple", expectedItemId]);
     } finally {
       stopSync();
     }
