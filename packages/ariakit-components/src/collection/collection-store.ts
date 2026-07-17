@@ -163,8 +163,6 @@ export function createCollectionStore<
     __unstableCollectionLookup: collectionLookup,
   };
 
-  const rawSetState = collection.setState.bind(collection);
-
   const sortItems = (renderedItems: T[]) => {
     const sortedItems = sortBasedOnDOMPosition(renderedItems, (i) => i.element);
     privateStore.setState("renderedItems", sortedItems);
@@ -194,10 +192,10 @@ export function createCollectionStore<
 
   const setState: CollectionStore<T>["setState"] = (key, value) => {
     if (key !== "items") {
-      rawSetState(key, value);
+      collection.setState(key, value);
       return;
     }
-    rawSetState("items", (items) => {
+    collection.setState("items", (items) => {
       const nextItems = applyState(value, items);
       if (nextItems === items) return items;
       collectionLookup.propagatedItems = nextItems;
@@ -208,7 +206,7 @@ export function createCollectionStore<
 
   const publishPrivateItems = (items: T[]) => {
     collectionLookup.propagatedItems = items;
-    rawSetState("items", items);
+    collection.setState("items", items);
   };
 
   setup(collection, () => init(privateStore));
