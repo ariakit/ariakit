@@ -24,6 +24,9 @@ import {
   getPlusCheckoutPath,
 } from "#app/lib/url.ts";
 import "#app/styles/global.css";
+import { badge, badgeLabel, badgeSlot } from "@ariakit/ui/styles/badge.ts";
+import { button } from "@ariakit/ui/styles/button.ts";
+import { container, containerSize } from "@ariakit/ui/styles/container.ts";
 import { SignOutButton } from "@clerk/astro/components";
 import "@fontsource-variable/inter";
 import type { HTMLAttributes } from "astro/types";
@@ -74,10 +77,15 @@ const teams = await getCurrentUserTeams(Astro);
     <title>Ariakit</title>
   </head>
   <body
-    class="[--color-canvas:#F9FAFA] dark:[--color-canvas:theme(--color-gray-900)] ak-container-size-[64rem]/3 flex flex-col"
+    {...containerSize.html({
+      $size: "64rem",
+      $p: 3,
+      class:
+        "[--color-canvas:#F9FAFA] dark:[--color-canvas:theme(--color-gray-900)] flex flex-col",
+    })}
   >
     <div class="py-8 border-b ak-layer flex flex-col gap-4 ak-layer-darken-3">
-      <div class="ak-container">
+      <div {...container.html()}>
         <div class="flex items-center gap-2">
           <Logo iconOnly />
           <h1 class="text-xl font-light">
@@ -86,9 +94,11 @@ const teams = await getCurrentUserTeams(Astro);
           {
             signedIn &&
               (currentUserPlus ? (
-                <span class="ak-badge-green-500">
-                  <Icon name="check" className="ak-badge-icon" />
-                  <span>
+                <span {...badge.html({ $layer: "var(--color-green-500)" })}>
+                  <span {...badgeSlot.html()}>
+                    <Icon name="check" />
+                  </span>
+                  <span {...badgeLabel.html()}>
                     {currentUserPlus === "team" || teams.size > 0
                       ? "Team"
                       : "Personal"}
@@ -96,11 +106,21 @@ const teams = await getCurrentUserTeams(Astro);
                 </span>
               ) : (
                 <div class="flex items-center gap-2 text-sm ms-auto">
-                  <span class="ak-badge-yellow-500 text-[length:inherit]">
-                    <span>No license</span>
+                  {/* $size auto inherits the parent font size, like the
+                      legacy text-[length:inherit] override. */}
+                  <span
+                    {...badge.html({
+                      $layer: "var(--color-yellow-500)",
+                      $size: "auto",
+                    })}
+                  >
+                    <span {...badgeLabel.html()}>No license</span>
                   </span>
+                  {/* The $text prop replaces the legacy ak-text-yellow-500
+                      classes: the Link cv's compound ui-text selectors would
+                      beat plain caller classes. */}
                   <InlineLink
-                    className="ak-text ak-text-yellow-500"
+                    $text="var(--color-yellow-500)"
                     set:text="Purchase now"
                     href={getPlusCheckoutPath({ url: Astro.url })}
                   >
@@ -111,7 +131,7 @@ const teams = await getCurrentUserTeams(Astro);
           }
         </div>
       </div>
-      <div class="ak-container flex flex-col gap-2">
+      <div {...container.html({ class: "flex flex-col gap-2" })}>
         <nav class="grid md:grid-cols-[1fr_auto] gap-8 items-center">
           <div>
             <InlineLink href={redirectUrl ?? "/"} className="text-sm group"
@@ -126,9 +146,14 @@ const teams = await getCurrentUserTeams(Astro);
             signedIn && (
               <ul class="flex items-center gap-2 font-medium">
                 <li>
+                  {/* Legacy ak-button ak-layer paints no idle layer
+                      offset. */}
                   <a
                     {...getLinkProps()}
-                    class="ak-button ak-layer aria-[current]:ak-layer-6"
+                    {...button.html({
+                      $lightnessOffset: false,
+                      class: "aria-[current]:ak-layer-6",
+                    })}
                   >
                     Account
                   </a>
@@ -136,7 +161,10 @@ const teams = await getCurrentUserTeams(Astro);
                 <li>
                   <a
                     {...getLinkProps("team")}
-                    class="ak-button ak-layer aria-[current]:ak-layer-6"
+                    {...button.html({
+                      $lightnessOffset: false,
+                      class: "aria-[current]:ak-layer-6",
+                    })}
                   >
                     Team
                   </a>
@@ -145,7 +173,10 @@ const teams = await getCurrentUserTeams(Astro);
                   <a
                     {...getLinkProps("billing", Astro.url)}
                     target="_blank"
-                    class="ak-button"
+                    {...button.html({
+                      $lightnessOffset: false,
+                      class: "items-center",
+                    })}
                   >
                     Billing <Icon name="newWindow" />
                   </a>
@@ -158,7 +189,10 @@ const teams = await getCurrentUserTeams(Astro);
                       path: "login",
                     })}
                   >
-                    <button type="button" class="ak-button">
+                    <button
+                      type="button"
+                      {...button.html({ $lightnessOffset: false })}
+                    >
                       Sign out
                     </button>
                   </SignOutButton>
@@ -170,7 +204,7 @@ const teams = await getCurrentUserTeams(Astro);
       </div>
     </div>
 
-    <div class="ak-container py-12 flex-1">
+    <div {...container.html({ class: "py-12 flex-1" })}>
       <slot />
     </div>
   </body>

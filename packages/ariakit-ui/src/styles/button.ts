@@ -25,6 +25,16 @@ export const button = cv({
     "[&:where([type='submit'],form_button:only-of-type,a_&)]:not-ui-disabled:cursor-pointer",
     // Adjust the font weight based on the global contrast setting.
     "font-[calc(500+var(--contrast))]",
+    // Runtime-disabled buttons (a script toggling :disabled after render,
+    // like the admin submit buttons) gray out through the CSS-driven
+    // variant, mirroring the $disabled prop's visual classes. The prop
+    // remains the render-time source of truth: it also drops the state
+    // variants via refine, which CSS cannot. This lives on button, not
+    // control, so options keep their deliberately softer disabled look.
+    "ui-disabled:cursor-not-allowed! ui-disabled:border-transparent!",
+    "ui-disabled:ring-transparent! ui-disabled:inset-shadow-none!",
+    "ui-disabled:shadow-none! ui-disabled:bg-none! ui-disabled:ak-ink-0!",
+    "ui-disabled:*:ak-ink-0!",
   ],
   variants: {
     $kind: {

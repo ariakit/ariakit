@@ -27,6 +27,8 @@ import type { PlusCheckoutStep } from "#app/lib/schemas.ts";
 import { capitalize } from "#app/lib/string.ts";
 import { getPlusPrice, processCheckout } from "#app/lib/stripe.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "#app/lib/url.ts";
+import { badge, badgeLabel, badgeSlot } from "@ariakit/ui/styles/badge.ts";
+import { button } from "@ariakit/ui/styles/button.ts";
 import { SignUp } from "@clerk/astro/components";
 import { formatDistanceToNow } from "date-fns";
 import { z } from "zod";
@@ -192,9 +194,17 @@ async function getOfferText() {
             if (!text) return null;
             return (
               <Fragment>
-                <div class="ak-badge-yellow-500 self-start gap-1.5 text-sm">
-                  <Icon name="sale" className="ak-badge-icon animate-pulse" />
-                  <div set:html={text} />
+                <div
+                  {...badge.html({
+                    $layer: "var(--color-yellow-500)",
+                    $size: "sm",
+                    class: "self-start",
+                  })}
+                >
+                  <span {...badgeSlot.html()}>
+                    <Icon name="sale" className="animate-pulse" />
+                  </span>
+                  <div {...badgeLabel.html()} set:html={text} />
                 </div>
               </Fragment>
             );
@@ -209,29 +219,59 @@ async function getOfferText() {
                     href={price.active ? undefined : price.path}
                     aria-disabled={price.active}
                     aria-current={price.selected ? "page" : undefined}
-                    class="ak-button ak-frame ak-frame-card/card ak-layer ak-layer-darken-3 aria-disabled:ak-layer-darken-3 aria-[current]:ring aria-[current]:shadow-lg aria-[current]:ak-edge-primary aria-[current]:ak-edge-raw flex flex-col gap-2 items-start"
+                    {...button.html({
+                      // Card frame, like the legacy ak-frame-card/card
+                      // token values.
+                      $rounded: "xl",
+                      $p: 4,
+                      // The caller gap-2 below replaces the control gap.
+                      $gap: "none",
+                      // Legacy ak-button ak-layer paints no idle layer
+                      // offset; $darken 0.6 equals ak-layer-darken-3 (the
+                      // variant scale is x5/100), which legacy also had to
+                      // restate under aria-disabled.
+                      $lightnessOffset: false,
+                      $darken: 0.6,
+                      $disabled: price.active,
+                      class: [
+                        "flex-col gap-2 items-start",
+                        "aria-[current]:ring aria-[current]:shadow-lg aria-[current]:ak-edge-primary aria-[current]:ak-edge-raw",
+                      ],
+                    })}
                   >
                     <span class="flex gap-2 items-center w-full">
                       <span class="text-lg flex-1 flex items-center gap-2">
                         <span class="size-[1em] text-(--ak-edge) flex-none rounded-full border-2 border-current bg-clip-content p-0.5 in-aria-[current]:bg-current in-aria-[current]:text-primary" />
                         {capitalize(price.type)}
                         {price.active && (
-                          <span class="ak-badge-primary">
-                            <Icon name="check" className="ak-badge-icon" />
-                            <span>Purchased</span>
+                          <span {...badge.html({ $layer: "brand" })}>
+                            <span {...badgeSlot.html()}>
+                              <Icon name="check" />
+                            </span>
+                            <span {...badgeLabel.html()}>Purchased</span>
                           </span>
                         )}
                         {price.upgrade && (
-                          <div class="ak-badge-primary ak-layer-primary">
-                            <Icon name="upgrade" className="ak-badge-icon" />
-                            <span>Upgrade</span>
-                          </div>
+                          <span
+                            {...badge.html({ $layer: "brand" })}
+                          >
+                            <span {...badgeSlot.html()}>
+                              <Icon name="upgrade" />
+                            </span>
+                            <span {...badgeLabel.html()}>Upgrade</span>
+                          </span>
                         )}
                       </span>
                       {!!price.percentOff && !price.active && (
                         <>
-                          <span class="ak-badge-yellow-500">
-                            <span>Save {price.percentOff}%</span>
+                          <span
+                            {...badge.html({
+                              $layer: "var(--color-yellow-500)",
+                            })}
+                          >
+                            <span {...badgeLabel.html()}>
+                              Save {price.percentOff}%
+                            </span>
                           </span>
                           <del class="ak-ink-0 font-normal" aria-hidden="true">
                             {price.originalAmount}
@@ -302,17 +342,19 @@ async function getOfferText() {
           </div>
           <div class="flex flex-col gap-4 items-center py-8">
             <h3 class="text-lg font-medium">Access more</h3>
+            {/* The buttons' default idle offset stands in for the legacy
+                ak-layer-6. */}
             <div class="flex gap-4 items-center flex-wrap justify-center">
-              <a href="/" class="ak-button ak-layer ak-layer-6">
+              <a href="/" {...button.html({ class: "whitespace-nowrap" })}>
                 Exclusive examples
               </a>
-              <a href="/" class="ak-button ak-layer ak-layer-6">
+              <a href="/" {...button.html({ class: "whitespace-nowrap" })}>
                 All examples
               </a>
-              <a href="/" class="ak-button ak-layer ak-layer-6">
+              <a href="/" {...button.html({ class: "whitespace-nowrap" })}>
                 Ariakit Plus Styles
               </a>
-              <a href="/" class="ak-button ak-layer ak-layer-6">
+              <a href="/" {...button.html()}>
                 Account
               </a>
             </div>

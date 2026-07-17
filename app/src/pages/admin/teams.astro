@@ -11,6 +11,7 @@
 import { InlineLink } from "#app/components/inline-link.react.tsx";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { isAdmin } from "#app/lib/auth.ts";
+import { button } from "@ariakit/ui/styles/button.ts";
 import { clerkClient } from "@clerk/astro/server";
 import LayoutPagination from "./_layout-pagination.astro";
 import {
@@ -61,8 +62,10 @@ const teams = await getTeamData();
   offset={offset}
   query={query}
 >
+  {/* --_container-padding is the containerSize gutter set on the layout's
+      body, replacing the legacy --ak-container-p. */}
   <ul
-    class="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-(--ak-container-p) py-(--ak-container-p)"
+    class="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-(--_container-padding) py-(--_container-padding)"
   >
     {
       teams.data.map((team) => {
@@ -83,9 +86,13 @@ const teams = await getTeamData();
                   </div>
                 </div>
                 <div>
+                  {/* $text false disables the Link cv's own text color: its
+                      compound ui-text selectors would beat the plain
+                      ak-ink-80 override. */}
                   <InlineLink
                     newWindow
                     href={`${orgUrl}?tab=members`}
+                    $text={false}
                     className="ak-ink-80 text-sm"
                   >
                     {`${team.membersCount} members`}
@@ -95,7 +102,7 @@ const teams = await getTeamData();
                   <a
                     href={orgUrl}
                     target="_blank"
-                    class="ak-button ak-layer ak-layer-6"
+                    {...button.html({ class: "items-center" })}
                   >
                     Clerk <Icon name="newWindow" />
                   </a>

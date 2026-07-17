@@ -15,6 +15,8 @@ import { isSignedIn } from "#app/lib/auth.ts";
 import type { PlusCheckoutStep } from "#app/lib/schemas.ts";
 import { getPlusCheckoutPath } from "#app/lib/url.ts";
 import "#app/styles/global.css";
+import { button } from "@ariakit/ui/styles/button.ts";
+import { container, containerSize } from "@ariakit/ui/styles/container.ts";
 import { SignOutButton } from "@clerk/astro/components";
 import "@fontsource-variable/inter";
 
@@ -57,10 +59,15 @@ const signedIn = isSignedIn(Astro);
     <title>Ariakit</title>
   </head>
   <body
-    class="[--color-canvas:#F9FAFA] dark:[--color-canvas:theme(--color-gray-900)] ak-container-size-[56rem]/3 flex flex-col"
+    {...containerSize.html({
+      $size: "56rem",
+      $p: 3,
+      class:
+        "[--color-canvas:#F9FAFA] dark:[--color-canvas:theme(--color-gray-900)] flex flex-col",
+    })}
   >
     <div class="py-8 border-b ak-layer flex flex-col gap-4 ak-layer-darken-3">
-      <div class="ak-container">
+      <div {...container.html()}>
         <div class="flex items-center gap-2">
           <Logo iconOnly />
           <h1 class="text-xl font-light">
@@ -68,7 +75,7 @@ const signedIn = isSignedIn(Astro);
           </h1>
         </div>
       </div>
-      <div class="ak-container flex flex-col gap-2">
+      <div {...container.html({ class: "flex flex-col gap-2" })}>
         <div class="grid md:grid-cols-2 gap-8 items-center">
           <div>
             <InlineLink href={redirectUrl ?? "/"} className="text-sm group"
@@ -122,37 +129,50 @@ const signedIn = isSignedIn(Astro);
       </div>
     </div>
 
-    <div class="ak-container py-12 flex-1">
+    <div {...container.html({ class: "py-12 flex-1" })}>
       <slot />
     </div>
     <footer>
       <div
-        class="ak-container flex flex-col gap-2 text-sm border-t pt-8 pb-12 ak-layer"
+        {...container.html({
+          class: "flex flex-col gap-2 text-sm border-t pt-8 pb-12 ak-layer",
+        })}
       >
+        {/* $text false disables the Link cv's own text color: its compound
+            ui-text selectors would beat the plain ak-ink-60 overrides. */}
         <ul class="flex flex-wrap gap-4 items-center">
           <li>
-            <InlineLink href="/plus/license/" className="ak-ink-60">
+            <InlineLink
+              href="/plus/license/"
+              $text={false}
+              className="ak-ink-60"
+            >
               License agreement
             </InlineLink>
           </li>
           <li>
-            <InlineLink href="/privacy/" className="ak-ink-60">
+            <InlineLink href="/privacy/" $text={false} className="ak-ink-60">
               Privacy policy
             </InlineLink>
           </li>
           <li>
-            <InlineLink href="/terms/" className="ak-ink-60">
+            <InlineLink href="/terms/" $text={false} className="ak-ink-60">
               Terms of service
             </InlineLink>
           </li>
           <li>
-            <InlineLink href="/plus/#faq" className="ak-ink-60">
+            <InlineLink href="/plus/#faq" $text={false} className="ak-ink-60">
               FAQ
             </InlineLink>
           </li>
           {
             signedIn && (
               <li class="ms-auto">
+                {/* A button-shaped sign-out that reads like the muted footer
+                    links: the legacy combo stacked ak-link's underline and
+                    ink override on top of a plain ak-button (no idle layer
+                    offset), removing the underline once the button hover
+                    layer appears. */}
                 <SignOutButton
                   asChild
                   redirectUrl={getPlusCheckoutPath({
@@ -162,7 +182,11 @@ const signedIn = isSignedIn(Astro);
                 >
                   <button
                     type="button"
-                    class="ak-link [&&]:ak-ink-60 ak-button hover:no-underline"
+                    {...button.html({
+                      $lightnessOffset: false,
+                      class:
+                        "ak-ink-60 underline decoration-1 underline-offset-[0.25em] hover:no-underline",
+                    })}
                   >
                     Sign out
                   </button>
