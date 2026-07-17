@@ -1,23 +1,27 @@
-import * as ak from "@ariakit/react";
+import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
+import {
+  Popover,
+  PopoverArrow,
+  PopoverDescription,
+  PopoverDisclosure,
+  PopoverHeading,
+  PopoverProvider,
+} from "@ariakit/ui/ariakit/popover.react.tsx";
 
 export default function Example() {
   return (
-    <ak.PopoverProvider>
-      <ak.PopoverDisclosure className="ak-button-classic">
-        Accept invite
-      </ak.PopoverDisclosure>
-      <ak.Popover className="ak-popover data-open:ak-popover_open not-data-open:ak-popover_closed max-w-80 origin-(--popover-transform-origin) flex flex-col gap-2">
-        <ak.PopoverArrow />
-        <ak.PopoverHeading className="text-lg font-medium">
-          Team meeting
-        </ak.PopoverHeading>
-        <ak.PopoverDescription className="ak-ink-80">
+    <PopoverProvider>
+      <PopoverDisclosure $kind="bevel">Accept invite</PopoverDisclosure>
+      <Popover className="max-w-80 flex flex-col gap-2">
+        <PopoverArrow />
+        <PopoverHeading>Team meeting</PopoverHeading>
+        <PopoverDescription>
           We are going to discuss what we have achieved on the project.
-        </ak.PopoverDescription>
+        </PopoverDescription>
         <div className="ak-frame ak-frame-cover ak-frame-p-2 grid">
-          <ak.Button className="ak-button-classic">Accept</ak.Button>
+          <Button $kind="bevel">Accept</Button>
         </div>
-      </ak.Popover>
-    </ak.PopoverProvider>
+      </Popover>
+    </PopoverProvider>
   );
 }

@@ -1,12 +1,13 @@
+import { Badge, BadgeLabel } from "@ariakit/ui/ariakit/badge.react.tsx";
+import { Disclosure } from "@ariakit/ui/ariakit/disclosure.react.tsx";
+import { Link } from "@ariakit/ui/ariakit/link.react.tsx";
+import { Select, SelectItem } from "@ariakit/ui/ariakit/select.react.tsx";
+import { Table, TableCell } from "@ariakit/ui/ariakit/table.react.tsx";
+import { badgeLabel } from "@ariakit/ui/styles/badge.ts";
+import { heading } from "@ariakit/ui/styles/heading.ts";
 import { clsx } from "clsx";
 import * as icons from "lucide-react";
 import { useState } from "react";
-import { Disclosure } from "#app/examples/_lib/ariakit/disclosure.react.tsx";
-import {
-  Select,
-  SelectItem,
-} from "#app/examples/_lib/ariakit/select.react.tsx";
-import { Table, TableCell } from "#app/examples/_lib/ariakit/table.react.tsx";
 import type { Order, OrderStatus } from "#app/examples/_lib/data/orders.ts";
 import { orderStatuses, orders } from "#app/examples/_lib/data/orders.ts";
 
@@ -87,13 +88,30 @@ function OrderCard({ order }: OrderCardProps) {
       icon={statusProps.icon}
       aria-label="Order status"
       value={status}
-      displayValue={<span>{status}</span>}
+      // The label cv opts the text into the button's badge text color, which
+      // only reaches .text and svg descendants.
+      displayValue={<span {...badgeLabel.jsx({})}>{status}</span>}
       setValue={(status: OrderStatus) => setStatus(status)}
       popover={{ portal: true }}
-      className={clsx(
-        "ak-badge-(color:--status-color) ak-frame-border text-sm gap-2",
-        statusProps.className,
-      )}
+      // Legacy ak-badge-(color:--status-color) on the select button: the
+      // badge cv defaults are restated here since the select's own button
+      // base doesn't provide them.
+      $layer="var(--status-color)"
+      $mix={15}
+      $lightnessOffset={false}
+      $rounded="full"
+      $size="sm"
+      $p={1}
+      $px="lg"
+      $gap="xl"
+      $border
+      $borderWeight="adaptive"
+      $borderType="inset"
+      $text
+      $textPush={60}
+      $textWarm={20}
+      $textChroma="vivid"
+      className={clsx("font-medium", statusProps.className)}
     >
       {orderStatuses.map((status) => {
         const { className, icon } = getStatusProps(status);
@@ -128,7 +146,8 @@ function OrderCard({ order }: OrderCardProps) {
 
   const table = (
     <Table<"Item" | "Price">
-      className="ak-table-border-y ak-table-px-(--ak-disclosure-padding)"
+      $border="y"
+      $px="var(--disclosure-padding)"
       head={{ className: "ak-layer ak-layer-0" }}
       rows={[
         { group: "head", Item: "Item", Price: { numeric: true } },
@@ -173,17 +192,17 @@ function OrderCard({ order }: OrderCardProps) {
         <section className="grid gap-3 @xl:border-e ak-layer @max-xl:border-b">
           {table}
         </section>
-        <section className="grid gap-4 ak-layer ak-layer-darken-3 p-(--ak-disclosure-padding)">
+        <section className="grid gap-4 ak-layer ak-layer-darken-3 p-(--disclosure-padding)">
           <div className="grid gap-1">
             <h4 className="text-sm ak-ink-60">Customer</h4>
             <div>
               <div className="font-medium">{order.customer.name}</div>
-              <a
+              <Link
                 href={`mailto:${order.customer.email}`}
-                className="ak-link ak-ink-80"
+                className="ak-ink-80"
               >
                 {order.customer.email}
-              </a>
+              </Link>
             </div>
           </div>
           <div className="grid gap-1">
@@ -197,12 +216,9 @@ function OrderCard({ order }: OrderCardProps) {
               <h4 className="text-sm ak-ink-60">Tags</h4>
               <div className="flex flex-wrap gap-2">
                 {order.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="ak-badge ak-layer ak-layer-6 rounded-full"
-                  >
-                    {tag}
-                  </span>
+                  <Badge key={tag} render={<span />}>
+                    <BadgeLabel>{tag}</BadgeLabel>
+                  </Badge>
                 ))}
               </div>
             </div>
@@ -222,7 +238,7 @@ function OrderCard({ order }: OrderCardProps) {
 export default function Example() {
   return (
     <div className="w-180 max-w-[100cqi] grid gap-4 items-start">
-      <h2 className="ak-heading text-center">Orders</h2>
+      <h2 {...heading.jsx({ className: "text-center" })}>Orders</h2>
       {orders.slice(0, 4).map((order: Order) => (
         <OrderCard key={order.id} order={order} />
       ))}

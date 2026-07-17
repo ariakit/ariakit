@@ -2,7 +2,14 @@ import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
-} from "#app/examples/_lib/ariakit/disclosure.react.tsx";
+} from "@ariakit/ui/ariakit/disclosure.react.tsx";
+import { prose } from "@ariakit/ui/styles/prose.ts";
+
+// Legacy DisclosureContent prose: the content body doubles as a prose column
+// whose rhythm gap is capped by the frame padding.
+const proseBody = prose.jsx({
+  $gap: "min(var(--ak-frame-padding), calc(var(--spacing) * 4))",
+});
 
 export default function Example() {
   return (
@@ -12,7 +19,7 @@ export default function Example() {
         className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering"
       >
         <DisclosureButton>How do I get started?</DisclosureButton>
-        <DisclosureContent prose>
+        <DisclosureContent body={proseBody}>
           <p>
             Create an account, verify your email, and follow the setup wizard to
             create your first workspace.

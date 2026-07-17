@@ -1,4 +1,7 @@
 import * as ak from "@ariakit/react";
+import { input } from "@ariakit/ui/styles/input.ts";
+import { option } from "@ariakit/ui/styles/option.ts";
+import { popover, popoverScroll } from "@ariakit/ui/styles/popover.ts";
 import { clsx } from "clsx";
 import * as React from "react";
 
@@ -14,17 +17,29 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
         <ak.Combobox
           ref={ref}
           {...props}
-          className={clsx("ak-input w-64", props.className)}
+          {...input.jsx({
+            className: clsx("w-64", props.className),
+            style: props.style,
+          })}
         />
         <ak.ComboboxPopover
           portal
           gutter={8}
           overflowPadding={16}
-          className={clsx(
-            "ak-popover data-open:ak-popover_open not-data-open:ak-popover_closed ak-frame ak-frame-force ak-frame-container/container max-h-[min(var(--popover-available-height),20rem)] w-[calc(var(--popover-anchor-width)+var(--ak-frame-padding)*2)] overflow-clip flex flex-col origin-(--popover-transform-origin)",
-          )}
+          {...popover.jsx({
+            // Ariakit exposes the open state through the data-open attribute.
+            $state: "data",
+            // Container-sized frame, like the legacy
+            // ak-frame-container/container.
+            $rounded: "xl",
+            $p: 1,
+            className:
+              "max-h-[min(var(--popover-available-height),20rem)] w-[calc(var(--popover-anchor-width)+var(--ak-frame-padding)*2)] overflow-clip flex flex-col",
+          })}
         >
-          <div className="ak-popover-scroll scroll-pt-11">{children}</div>
+          <div {...popoverScroll.jsx({ className: "scroll-pt-11" })}>
+            {children}
+          </div>
         </ak.ComboboxPopover>
       </ak.ComboboxProvider>
     );
@@ -45,7 +60,7 @@ export const ComboboxGroup = React.forwardRef<
     <ak.ComboboxGroup
       ref={ref}
       {...props}
-      className={clsx("ak-group ak-frame ak-frame-cover", props.className)}
+      className={clsx("ak-frame ak-frame-cover", props.className)}
     >
       {label && (
         <ak.ComboboxGroupLabel
@@ -75,10 +90,16 @@ export const ComboboxItem = React.forwardRef<HTMLDivElement, ComboboxItemProps>(
         focusOnHover
         blurOnHoverEnd={false}
         {...props}
-        className={clsx(
-          "ak-option_idle active:ak-option_active data-focus-visible:ak-option_focus data-active-item:ak-option_hover",
-          props.className,
-        )}
+        {...option.jsx({
+          // The active item keeps its highlight after hover-out
+          // (blurOnHoverEnd above), so the hover offset is restated under
+          // data-active-item and the cv's own hover variant is disabled so
+          // the two never combine. ak-state-6 matches the cv's default
+          // offset step.
+          $hoverOffset: false,
+          className: clsx("data-active-item:ak-state-6", props.className),
+          style: props.style,
+        })}
       />
     );
   },
@@ -92,7 +113,14 @@ export const ComboboxEmpty = React.forwardRef<
     <div
       ref={ref}
       {...props}
-      className={clsx("ak-option_idle", props.className)}
+      {...option.jsx({
+        // Static row: keep the idle option look with the interactive states
+        // off.
+        $hoverOffset: false,
+        $active: false,
+        className: props.className,
+        style: props.style,
+      })}
     >
       {props.children ?? "No results found"}
     </div>

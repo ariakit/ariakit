@@ -1,23 +1,31 @@
-import * as icons from "lucide-react";
 import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
-} from "#app/examples/_lib/react-aria/disclosure.react.tsx";
+} from "@ariakit/ui/react-aria/disclosure.react.tsx";
+import { prose } from "@ariakit/ui/styles/prose.ts";
+import * as icons from "lucide-react";
+
+// Prose content body, with the rhythm capped at the disclosure frame padding
+// like the legacy ak-prose-gap-[min(var(--ak-frame-padding),--spacing(4))].
+const proseBody = prose.jsx({
+  $gap: "min(var(--ak-frame-padding), calc(var(--spacing) * 4))",
+});
 
 export default function Example() {
   return (
     <div className="w-100 max-w-[100cqi]">
       <Disclosure
         defaultExpanded
-        className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering ak-disclosure-icon-5"
+        $iconSize={5}
+        className="ak-frame ak-frame-card/card ak-layer ak-layer-lighten-6 ak-frame-bordering"
       >
         <DisclosureButton
-          icon={<icons.Rocket className="ak-text ak-text-primary" />}
+          icon={<icons.Rocket className="ak-text ak-text-brand" />}
         >
           How do I get started?
         </DisclosureButton>
-        <DisclosureContent prose>
+        <DisclosureContent body={proseBody}>
           <p>
             Create an account, verify your email, and follow the setup wizard to
             create your first workspace.

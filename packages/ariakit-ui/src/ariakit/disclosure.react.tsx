@@ -1,19 +1,18 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
-import { ChevronDownIcon } from "lucide-react";
 import * as React from "react";
 import { createRender } from "../react-utils/create-render.ts";
+import type { DisclosureIndicator } from "../react-utils/disclosure-indicator.react.tsx";
+import { renderIndicator } from "../react-utils/disclosure-indicator.react.tsx";
 import {
   disclosure,
   disclosureActions,
   disclosureButton,
-  disclosureChevron,
   disclosureContent,
   disclosureContentBody,
   disclosureGroup,
   disclosureIcon,
-  disclosurePlus,
 } from "../styles/disclosure.ts";
 
 export interface DisclosureProps
@@ -97,37 +96,7 @@ export interface DisclosureButtonProps
    * Selects chevron/plus indicator and placement (start, next, end). Set
    * `false` to hide.
    */
-  indicator?:
-    | "chevron-down-start"
-    | "chevron-down-next"
-    | "chevron-down-end"
-    | "chevron-right-start"
-    | "chevron-right-next"
-    | "chevron-right-end"
-    | "plus-start"
-    | "plus-next"
-    | "plus-end"
-    | false;
-}
-
-function renderIndicator(
-  indicator: Exclude<DisclosureButtonProps["indicator"], false | undefined>,
-) {
-  const className = indicator.endsWith("-end") ? "ms-auto" : undefined;
-  if (indicator.startsWith("plus")) {
-    return (
-      <span data-disclosure-indicator {...disclosurePlus.jsx({ className })} />
-    );
-  }
-  const $direction = indicator.startsWith("chevron-down") ? "down" : "right";
-  return (
-    <span
-      data-disclosure-indicator
-      {...disclosureChevron.jsx({ $direction, className })}
-    >
-      <ChevronDownIcon />
-    </span>
-  );
+  indicator?: DisclosureIndicator | false;
 }
 
 export function DisclosureButton({
@@ -144,9 +113,11 @@ export function DisclosureButton({
   const descriptionId = `${baseId}-description`;
   const actionsId = `${baseId}-actions`;
   const [variantProps, rest] = splitProps(props, disclosureButton);
-  const labelElement = rest.children ? (
-    <span id={labelId}>{rest.children}</span>
-  ) : null;
+  // A nullish check, not truthiness: falsy labels like {0} must still
+  // render, since aria-labelledby references the span when a description
+  // exists.
+  const labelElement =
+    rest.children != null ? <span id={labelId}>{rest.children}</span> : null;
   const actionsElement = actions ? (
     <div
       id={actionsId}
