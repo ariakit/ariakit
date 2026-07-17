@@ -8,6 +8,7 @@ import {
 } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import {
+  applyState,
   getDocument,
   sortBasedOnDOMPosition,
   chain,
@@ -37,7 +38,8 @@ function getCommonParent(items: CollectionStoreItem[]) {
 interface CollectionLookup<T extends CollectionStoreItem> {
   controlledItems: Map<string, T>;
   registeredItems: Map<string, T>;
-  syncedItems: T[];
+  controlledItemsSource: T[];
+  propagatedItems: T[];
   syncingPrivateItems?: T[];
 }
 
@@ -139,7 +141,8 @@ export function createCollectionStore<
     syncPrivateStore?.__unstableCollectionLookup ?? {
       controlledItems: new Map(items.map((item) => [item.id, item])),
       registeredItems: new Map(),
-      syncedItems: items,
+      controlledItemsSource: items,
+      propagatedItems: items,
     };
   const { controlledItems } = collectionLookup;
   // These arrays are replaced independently, so each needs its own cache.
@@ -160,7 +163,7 @@ export function createCollectionStore<
   };
 
   const collection = createStore(initialState, props.store);
-  let syncedItems = items;
+  let observedItems = items;
 
   const sortItems = (renderedItems: T[]) => {
     const sortedItems = sortBasedOnDOMPosition(renderedItems, (i) => i.element);
@@ -168,20 +171,47 @@ export function createCollectionStore<
     collection.setState("renderedItems", sortedItems);
   };
 
-  sync(collection, ["items"], (state) => {
-    if (state.items === syncedItems) return;
-    syncedItems = state.items;
-    // Composed stores observe the same public state array, so only the first
-    // listener needs to process their shared lookup.
-    if (state.items === collectionLookup.syncedItems) return;
-    collectionLookup.syncedItems = state.items;
-    // Private registration batches already update the registered lookup.
-    if (state.items === collectionLookup.syncingPrivateItems) return;
+  const indexControlledItems = (items: T[]) => {
+    if (items === collectionLookup.controlledItemsSource) return;
+    collectionLookup.controlledItemsSource = items;
     controlledItems.clear();
-    for (const item of state.items) {
+    for (const item of items) {
       controlledItems.set(item.id, item);
     }
+  };
+
+  const syncItemLookup = (items: T[]) => {
+    if (items === observedItems) return;
+    observedItems = items;
+    // Composed stores observe the same public state array, so only the first
+    // listener needs to process their shared lookup.
+    if (items === collectionLookup.propagatedItems) return;
+    collectionLookup.propagatedItems = items;
+    // Private registration batches already update the registered lookup.
+    if (items === collectionLookup.syncingPrivateItems) return;
+    indexControlledItems(items);
+  };
+
+  sync(collection, ["items"], (state) => {
+    syncItemLookup(state.items);
   });
+
+  const setState: CollectionStore<T>["setState"] = (key, value) => {
+    if (key !== "items") {
+      collection.setState(key, value);
+      return;
+    }
+    collection.setState("items", (items) => {
+      const nextItems = applyState(value, items);
+      if (nextItems === items) return items;
+      observedItems = nextItems;
+      collectionLookup.propagatedItems = nextItems;
+      if (nextItems !== collectionLookup.syncingPrivateItems) {
+        indexControlledItems(nextItems);
+      }
+      return nextItems;
+    });
+  };
 
   setup(collection, () => init(privateStore));
 
@@ -332,6 +362,7 @@ export function createCollectionStore<
 
   return {
     ...collection,
+    setState,
 
     registerItem,
     renderItem: (item) => chain(registerItem(item), mergeRenderedItem(item)),

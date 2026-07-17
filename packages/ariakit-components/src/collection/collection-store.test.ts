@@ -1,4 +1,4 @@
-import { init, sync } from "@ariakit/store";
+import { createStore, init, sync } from "@ariakit/store";
 import { afterEach, expect, test } from "vitest";
 import { createCollectionStore } from "./collection-store.ts";
 
@@ -320,6 +320,51 @@ test("treats reused registration snapshots as controlled updates", async () => {
     expect(store.item("banana")).toBe(registeredItems[0]);
   } finally {
     stop();
+  }
+});
+
+test("treats registration snapshots reused by stale stores as controlled", async () => {
+  const apple = { id: "apple", value: "Apple" };
+  const parent = createCollectionStore({ defaultItems: [apple] });
+  const staleStore = createCollectionStore({ store: parent });
+  const stop = init(parent);
+
+  try {
+    const banana = { id: "banana", value: "Banana" };
+    const unregister = parent.registerItem(banana);
+    await expect.poll(() => parent.getState().items).toContain(banana);
+    const registeredItems = parent.getState().items;
+
+    staleStore.setState("items", registeredItems);
+    unregister();
+
+    expect(staleStore.getState().items).toContain(banana);
+    expect(staleStore.item("banana")).toBe(banana);
+  } finally {
+    stop();
+  }
+});
+
+test("updates item lookups before parent store listeners", () => {
+  const parent = createStore({
+    items: [] as Array<{ id: string }>,
+    renderedItems: [] as Array<{ id: string }>,
+  });
+  let store!: ReturnType<typeof createCollectionStore>;
+  let observedIds: [string | undefined, string | undefined] | undefined;
+  const stopSync = sync(parent, ["items"], ({ items }) => {
+    const id = items[0]?.id;
+    if (!id) return;
+    observedIds = [store.getState().items[0]?.id, store.item(id)?.id];
+  });
+  store = createCollectionStore({ store: parent });
+
+  try {
+    store.setState("items", (items) => [...items, { id: "apple" }]);
+
+    expect(observedIds).toEqual(["apple", "apple"]);
+  } finally {
+    stopSync();
   }
 });
 
