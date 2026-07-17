@@ -165,6 +165,31 @@ test("calls a rejected hideOnEscape callback once", async () => {
   expect(q.within(dialog).button("Callback calls: 1")).toBeVisible();
 });
 
+test("calls an accepted hideOnEscape callback once", async () => {
+  const disclosure = q.button("Open accepted callback dialog");
+  await click(disclosure);
+  const dialog = q.dialog("Accepted callback dialog");
+  const button = q.within(dialog).button.ensure("Callback calls: 0");
+  expect(dialog).toBeVisible();
+
+  await press.Escape(button);
+
+  expect(dialog).not.toBeVisible();
+  await click(disclosure);
+  expect(q.within(dialog).button("Callback calls: 1")).toBeVisible();
+});
+
+test("accepts default prevention from hideOnEscape", async () => {
+  await click(q.button("Open prevented callback dialog"));
+  const dialog = q.dialog("Prevented callback dialog");
+  const button = q.within(dialog).button.ensure("Callback calls: 0");
+  expect(dialog).toBeVisible();
+
+  await press.Escape(button);
+
+  expect(dialog).not.toBeVisible();
+});
+
 test("hides when hideOnEscape stops Escape from a React portal", async () => {
   await click(q.button("Open react portal callback dialog"));
   const dialog = q.dialog("React portal callback dialog");
@@ -192,6 +217,60 @@ test("lets a child capture Escape in a document root", async () => {
     await press.Escape(input);
 
     expect(q.dialog("Document root capture dialog")).not.toBeInTheDocument();
+  });
+});
+
+test("lets a child handle Escape in a document root", async () => {
+  await withDocumentRoot(async (q) => {
+    await click(q.button("Open document root dialog"));
+    const input = q.combobox.ensure("Search");
+    expect(q.dialog("Document root dialog")).toBeVisible();
+    expect(q.listbox("Suggestions")).toBeVisible();
+
+    await press.Escape(input);
+
+    expect(q.listbox("Suggestions")).not.toBeInTheDocument();
+    expect(q.dialog("Document root dialog")).toBeVisible();
+
+    await press.Escape(input);
+
+    expect(q.dialog("Document root dialog")).not.toBeInTheDocument();
+  });
+});
+
+test("respects default prevention in a document root", async () => {
+  await withDocumentRoot(async (q) => {
+    await click(q.button("Open document root prevented dialog"));
+    const input = q.combobox.ensure("Search");
+    expect(q.dialog("Document root prevented dialog")).toBeVisible();
+    expect(q.listbox("Suggestions")).toBeVisible();
+
+    await press.Escape(input);
+
+    expect(q.listbox("Suggestions")).not.toBeInTheDocument();
+    expect(q.dialog("Document root prevented dialog")).toBeVisible();
+
+    await press.Escape(input);
+
+    expect(q.dialog("Document root prevented dialog")).not.toBeInTheDocument();
+  });
+});
+
+test("hides after its own bubble handler in a document root", async () => {
+  await withDocumentRoot(async (q) => {
+    await click(q.button("Open document root own bubble dialog"));
+    const input = q.combobox.ensure("Search");
+    expect(q.dialog("Document root own bubble dialog")).toBeVisible();
+    expect(q.listbox("Suggestions")).toBeVisible();
+
+    await press.Escape(input);
+
+    expect(q.listbox("Suggestions")).not.toBeInTheDocument();
+    expect(q.dialog("Document root own bubble dialog")).toBeVisible();
+
+    await press.Escape(input);
+
+    expect(q.dialog("Document root own bubble dialog")).not.toBeInTheDocument();
   });
 });
 
@@ -231,6 +310,18 @@ test("closes on global Escape outside a document-root dialog", async () => {
     await press.Escape(disclosure);
 
     expect(q.dialog("Document root global dialog")).not.toBeInTheDocument();
+  });
+});
+
+test("lets an ancestor capture handler own global Escape", async () => {
+  await withDocumentRoot(async (q) => {
+    const disclosure = q.button("Open document root outside dialog");
+    await click(disclosure);
+    expect(q.dialog("Document root outside dialog")).toBeVisible();
+
+    await press.Escape(disclosure);
+
+    expect(q.dialog("Document root outside dialog")).toBeVisible();
   });
 });
 

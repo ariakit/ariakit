@@ -149,6 +149,29 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(dialogQuery.button("Callback calls: 1")).toBeVisible();
   });
 
+  test("calls an accepted hideOnEscape callback once", async ({ q }) => {
+    const disclosure = q.button("Open accepted callback dialog");
+    await disclosure.click();
+    const dialog = q.dialog("Accepted callback dialog");
+    await test.expect(dialog).toBeVisible();
+
+    await query(dialog).button("Callback calls: 0").press("Escape");
+
+    await test.expect(dialog).toBeHidden();
+    await disclosure.click();
+    await test.expect(query(dialog).button("Callback calls: 1")).toBeVisible();
+  });
+
+  test("accepts default prevention from hideOnEscape", async ({ q }) => {
+    await q.button("Open prevented callback dialog").click();
+    const dialog = q.dialog("Prevented callback dialog");
+    await test.expect(dialog).toBeVisible();
+
+    await query(dialog).button("Callback calls: 0").press("Escape");
+
+    await test.expect(dialog).toBeHidden();
+  });
+
   test("hides when hideOnEscape stops Escape from a React portal", async ({
     q,
   }) => {
@@ -206,6 +229,33 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const listbox = dialogQuery.listbox("Suggestions");
 
     await openDialog.click();
+    await test.expect(input).toBeFocused();
+    await test.expect(listbox).toBeVisible();
+
+    await input.press("Escape");
+
+    await test.expect(listbox).toBeHidden();
+    await test.expect(dialog).toBeVisible();
+
+    await input.press("Escape");
+
+    await test.expect(dialog).toBeHidden();
+  });
+
+  test("respects default prevention delegated to document", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Show document root example").click();
+    const frame = query(
+      page.frameLocator('iframe[title="Document root example"]'),
+    );
+    const dialog = frame.dialog("Document root prevented dialog");
+    const dialogQuery = query(dialog);
+    const input = dialogQuery.combobox("Search");
+    const listbox = dialogQuery.listbox("Suggestions");
+
+    await frame.button("Open document root prevented dialog").click();
     await test.expect(input).toBeFocused();
     await test.expect(listbox).toBeVisible();
 

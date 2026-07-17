@@ -505,15 +505,25 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   }, [hasOpened, mayAutoFocusOnHide, focusOnHide]);
 
   const hideOnEscapeProp = useBooleanEvent(hideOnEscape);
-  const [escapeEvents] = useState(() => new WeakMap<KeyboardEvent, boolean>());
+  const [escapeEvents] = useState(
+    () =>
+      new WeakMap<
+        KeyboardEvent,
+        { accepted: boolean; defaultPrevented: boolean }
+      >(),
+  );
 
   const onKeyDownProp = props.onKeyDown;
   const onKeyDownCaptureProp = props.onKeyDownCapture;
 
   const acceptEscape = useEvent((event: KeyboardEvent) => {
-    if (escapeEvents.has(event)) return escapeEvents.get(event) === true;
     if (event.key !== "Escape") return false;
     if (!event.bubbles) return false;
+    const result = escapeEvents.get(event);
+    if (result) {
+      if (event.defaultPrevented && !result.defaultPrevented) return false;
+      return result.accepted;
+    }
     if (event.defaultPrevented) return false;
     const dialog = ref.current;
     if (!mounted) return false;
@@ -522,32 +532,37 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // This guarantees that only the topmost dialog will close on Escape.
     if (isElementMarked(dialog)) return false;
     const accepted = hideOnEscapeProp(event);
-    escapeEvents.set(event, accepted);
+    escapeEvents.set(event, {
+      accepted,
+      defaultPrevented: event.defaultPrevented,
+    });
     return accepted;
+  });
+
+  const hideOnEscapeEvent = useEvent((event: KeyboardEvent) => {
+    const accepted = acceptEscape(event);
+    escapeEvents.delete(event);
+    if (!accepted) return false;
+    store.hide();
+    return true;
   });
 
   const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
     onKeyDownProp?.(event);
     const nativeEvent = event.nativeEvent;
-    const accepted = escapeEvents.get(nativeEvent);
-    escapeEvents.delete(nativeEvent);
-    if (!accepted) return;
+    if (!hideOnEscapeEvent(nativeEvent)) return;
     event.stopPropagation();
-    store.hide();
   });
 
   const onKeyDownCapture = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
     const nativeEvent = event.nativeEvent;
     const wasPropagationStopped = nativeEvent.cancelBubble;
-    const accepted = acceptEscape(nativeEvent);
     onKeyDownCaptureProp?.(event);
-    if (!accepted) return;
     const stoppedAtDialog =
       event.isPropagationStopped() ||
       (!wasPropagationStopped && nativeEvent.cancelBubble);
     if (!stoppedAtDialog) return;
-    escapeEvents.delete(nativeEvent);
-    store.hide();
+    hideOnEscapeEvent(nativeEvent);
   });
 
   // Hide on Escape.
@@ -555,7 +570,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (!domReady) return;
     if (!mounted) return;
     const onDocumentKeyDownCapture = (event: KeyboardEvent) => {
-      // React may delegate capture events to document before this listener.
       if (event.cancelBubble) {
         escapeEvents.delete(event);
         return;
@@ -572,10 +586,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // This considers valid targets the elements that belong to this dialog
       // tree, including elements marked as outside by this dialog so Escape can
       // close the topmost dialog even when focus is outside.
-      const targetInsideDialog = contains(dialog, target);
       const isValidTarget = () => {
         if (isElement(target) && target.tagName === "BODY") return true;
-        if (targetInsideDialog) return true;
+        if (contains(dialog, target)) return true;
         if (!disclosureElement) return true;
         if (contains(disclosureElement, target)) return true;
         if (isElement(target) && isElementMarked(target, dialog.id)) {
@@ -586,28 +599,34 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       if (!isValidTarget()) return;
       if (!acceptEscape(event)) return;
       if (!event.cancelBubble) return;
-      escapeEvents.delete(event);
-      store.hide();
+      hideOnEscapeEvent(event);
     };
     const onDocumentKeyDown = (event: KeyboardEvent) => {
-      const accepted = escapeEvents.get(event);
-      escapeEvents.delete(event);
-      if (!accepted) return;
-      // A React root on document may stop propagation before this listener is
-      // called on the same node.
-      if (event.cancelBubble) return;
+      if (!escapeEvents.has(event)) return;
+      if (event.cancelBubble) {
+        escapeEvents.delete(event);
+        return;
+      }
+      if (!hideOnEscapeEvent(event)) return;
       event.stopPropagation();
-      store.hide();
     };
     // Listen on the document so Escape works even when the dialog isn't
-    // focused. When this listener runs first, hideOnEscape can also stop the
-    // event before third-party dialogs.
+    // focused. Capture preflights DOM-owned events so hideOnEscape can stop
+    // them, while the hide is committed only after descendants handle them.
     const win = contentElement ? getWindow(contentElement) : undefined;
     return chain(
       addGlobalEventListener("keydown", onDocumentKeyDownCapture, true, win),
       addGlobalEventListener("keydown", onDocumentKeyDown, false, win),
     );
-  }, [store, domReady, mounted, contentElement, acceptEscape, escapeEvents]);
+  }, [
+    store,
+    domReady,
+    mounted,
+    contentElement,
+    hideOnEscapeEvent,
+    acceptEscape,
+    escapeEvents,
+  ]);
 
   // Resets the heading levels inside the modal dialog so they start with h1.
   props = useWrapElement(

@@ -12,6 +12,7 @@ The [`Dialog`](https://ariakit.com/reference/dialog) component and components th
   <input
     onKeyDown={(event) => {
       if (event.key !== "Escape") return;
+      if (!suggestionsOpen) return;
       event.stopPropagation();
       closeSuggestions();
     }}

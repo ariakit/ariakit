@@ -86,13 +86,6 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
             style={{ zIndex: inModal ? 100 : 50 }}
             className="menu"
             hideOnHoverOutside={false}
-            hideOnEscape={(event) => {
-              // Avoid passing the Escape keydown event to the WordPress Modal.
-              // Otherwise, the WordPress Modal would close when pressing Escape
-              // on a nested menu.
-              event.stopPropagation();
-              return true;
-            }}
           >
             <MenuContext.Provider value={menu}>{children}</MenuContext.Provider>
           </Ariakit.Menu>

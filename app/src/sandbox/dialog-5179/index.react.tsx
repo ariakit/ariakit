@@ -13,16 +13,21 @@ function ReactPortal({ children }: { children: ReactNode }) {
 
 interface AutocompleteProps {
   capture?: boolean;
+  preventDefault?: boolean;
 }
 
-function Autocomplete({ capture }: AutocompleteProps) {
+function Autocomplete({ capture, preventDefault }: AutocompleteProps) {
   const [open, setOpen] = useState(true);
   const inputId = useId();
   const listboxId = useId();
   const onKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Escape") return;
     if (!open) return;
-    event.stopPropagation();
+    if (preventDefault) {
+      event.preventDefault();
+    } else {
+      event.stopPropagation();
+    }
     setOpen(false);
   };
 
@@ -55,6 +60,7 @@ interface DialogExampleProps {
   name?: string;
   portal?: boolean;
   portalChild?: "ariakit" | "react";
+  preventDefault?: boolean;
   stopDialogOnEscape?: boolean;
   stopDialogOnEscapeCapture?: boolean;
   stopOnEscape?: boolean;
@@ -67,6 +73,7 @@ function DialogExample({
   name = "Dialog",
   portal,
   portalChild,
+  preventDefault,
   stopDialogOnEscape,
   stopDialogOnEscapeCapture,
   stopOnEscape,
@@ -77,7 +84,9 @@ function DialogExample({
     if (event.key !== "Escape") return;
     event.stopPropagation();
   };
-  const autocomplete = <Autocomplete capture={capture} />;
+  const autocomplete = (
+    <Autocomplete capture={capture} preventDefault={preventDefault} />
+  );
   const dialog = (
     <Ariakit.DialogProvider open={open} setOpen={setOpen}>
       <Ariakit.DialogDisclosure>
@@ -162,14 +171,18 @@ function ThirdPartyDialogExample({ capture }: ThirdPartyDialogExampleProps) {
 }
 
 interface HideOnEscapeExampleProps {
+  accept?: boolean;
   name: string;
   portalChild?: boolean;
+  preventDefault?: boolean;
   stop?: boolean;
 }
 
 function HideOnEscapeExample({
+  accept,
   name,
   portalChild,
+  preventDefault,
   stop,
 }: HideOnEscapeExampleProps) {
   const [calls, setCalls] = useState(0);
@@ -184,9 +197,9 @@ function HideOnEscapeExample({
         hideOnInteractOutside={portalChild ? false : undefined}
         hideOnEscape={(event) => {
           setCalls((calls) => calls + 1);
-          if (!stop) return false;
-          event.stopPropagation();
-          return true;
+          if (preventDefault) event.preventDefault();
+          if (stop) event.stopPropagation();
+          return accept ?? !!stop;
         }}
       >
         <Ariakit.DialogHeading>{name}</Ariakit.DialogHeading>
@@ -206,6 +219,11 @@ export function DocumentRootDocument() {
           capture
           name="Document root capture dialog"
           portal={false}
+        />
+        <DialogExample
+          name="Document root prevented dialog"
+          portal={false}
+          preventDefault
         />
         <DialogExample
           name="Document root own bubble dialog"
@@ -279,6 +297,12 @@ export default function Example() {
       <ThirdPartyDialogExample />
       <ThirdPartyDialogExample capture />
       <HideOnEscapeExample name="Rejected callback dialog" />
+      <HideOnEscapeExample accept name="Accepted callback dialog" />
+      <HideOnEscapeExample
+        accept
+        name="Prevented callback dialog"
+        preventDefault
+      />
       <HideOnEscapeExample
         name="React portal callback dialog"
         portalChild
