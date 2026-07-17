@@ -512,6 +512,36 @@ test("does not control registration snapshots across composed ancestors", async 
   }
 });
 
+test("preserves controlled items across composed parent registration flushes", async () => {
+  const parent = createCollectionStore<{ id: string; value: string }>();
+  const store = createCollectionStore({ store: parent });
+  const stop = init(store);
+
+  try {
+    const orange = { id: "orange", value: "Orange" };
+    parent.setState("items", [orange]);
+
+    const banana = { id: "banana", value: "Banana" };
+    const unregister = parent.registerItem(banana);
+    await expect.poll(() => parent.getState().items).toContain(banana);
+
+    expect(parent.item("orange")).toBe(orange);
+    expect(store.item("orange")).toBe(orange);
+
+    unregister();
+
+    expect(parent.item("banana")).toBeNull();
+    expect(store.item("banana")).toBeNull();
+
+    await expect.poll(() => parent.getState().items).toEqual([]);
+
+    expect(parent.item("orange")).toBe(orange);
+    expect(store.item("orange")).toBe(orange);
+  } finally {
+    stop();
+  }
+});
+
 test.each([
   ["collection", "apple"],
   ["picked", undefined],
