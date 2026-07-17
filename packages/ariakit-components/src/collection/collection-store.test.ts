@@ -513,6 +513,54 @@ test("does not control registration snapshots across composed ancestors", async 
   }
 });
 
+test("preserves controlled items across staggered composed initialization", async () => {
+  const root = createCollectionStore<{ id: string; value: string }>();
+  const middle = createCollectionStore({ store: root });
+  const leaf = createCollectionStore({ store: middle });
+
+  const stopRoot = init(root);
+  const stopLeaf = init(leaf);
+  root.setState("items", [{ id: "item", value: "one" }]);
+  stopLeaf();
+
+  const stopMiddle = init(middle);
+  root.setState("items", [{ id: "item", value: "two" }]);
+  stopMiddle();
+
+  const controlledItem = { id: "item", value: "three" };
+  root.setState("items", [controlledItem]);
+  const registeredItem = { id: "registered", value: "live" };
+  const unregister = root.registerItem(registeredItem);
+  await expect.poll(() => root.getState().items).toEqual([registeredItem]);
+
+  expect(root.item("item")).toBe(controlledItem);
+  expect(middle.item("item")).toBe(controlledItem);
+  expect(leaf.item("item")).toBe(controlledItem);
+
+  const stop = init(leaf);
+
+  try {
+    expect(root.item("item")).toBe(controlledItem);
+    expect(middle.item("item")).toBe(controlledItem);
+    expect(leaf.item("item")).toBe(controlledItem);
+
+    unregister();
+
+    expect(root.item("registered")).toBeNull();
+    expect(middle.item("registered")).toBeNull();
+    expect(leaf.item("registered")).toBeNull();
+
+    await expect.poll(() => root.getState().items).toEqual([]);
+
+    expect(root.item("item")).toBe(controlledItem);
+    expect(middle.item("item")).toBe(controlledItem);
+    expect(leaf.item("item")).toBe(controlledItem);
+  } finally {
+    stop();
+    stopRoot();
+  }
+});
+
 test("preserves controlled items across composed parent registration flushes", async () => {
   const parent = createCollectionStore<{ id: string; value: string }>();
   const store = createCollectionStore({ store: parent });

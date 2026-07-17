@@ -173,14 +173,6 @@ export function createCollectionStore<
     }
   };
 
-  subscribe(collection, ["items"], ({ items }) => {
-    // Composed stores observe the same public state array, so only the first
-    // listener needs to process their shared lookup.
-    if (items === collectionLookup.propagatedItems) return;
-    collectionLookup.propagatedItems = items;
-    indexControlledItems(items);
-  });
-
   const setState: CollectionStore<T>["setState"] = (key, value) => {
     if (key !== "items") {
       collection.setState(key, value);
@@ -197,10 +189,18 @@ export function createCollectionStore<
 
   setup(collection, () => init(privateStore));
 
-  // Use the private store to register items and then batch the changes to the
-  // public store so we don't trigger multiple updates on the store when adding
-  // multiple items.
   if (!syncPrivateStore) {
+    // Returned Collection setters pre-index the shared lookup. Only the root
+    // can receive items from a parent that doesn't share the lookup.
+    subscribe(collection, ["items"], ({ items }) => {
+      if (items === collectionLookup.propagatedItems) return;
+      collectionLookup.propagatedItems = items;
+      indexControlledItems(items);
+    });
+
+    // Use the private store to register items and then batch the changes to the
+    // public store so we don't trigger multiple updates on the store when
+    // adding multiple items.
     setup(privateStore, () => {
       return batch(privateStore, ["items"], ({ items }) => {
         collectionLookup.propagatedItems = items;
