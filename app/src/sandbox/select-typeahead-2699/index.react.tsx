@@ -2,7 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import { SelectItem as OffscreenSelectItem } from "@ariakit/react-components/select/select-item-offscreen";
 import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
 import type { SelectStoreItem } from "@ariakit/react-components/select/select-store";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 const countries = [
   { value: "Brazil", flag: "🇧🇷" },
@@ -43,21 +43,6 @@ function Fixture({ label, renderer }: FixtureProps) {
     setValue,
   });
   const activeId = Ariakit.useStoreState(select, "activeId");
-  const mounted = Ariakit.useStoreState(select, "mounted");
-  const moves = Ariakit.useStoreState(select, "moves");
-  const previousMoves = useRef(moves);
-
-  // TODO: Remove this workaround once the issue is fixed.
-  // https://github.com/ariakit/ariakit/issues/6733
-  useEffect(() => {
-    if (previousMoves.current === moves) return;
-    previousMoves.current = moves;
-    if (mounted) return;
-    if (!activeId) return;
-    const item = items.find((item) => item.id === activeId);
-    if (!item || item.disabled || item.value == null) return;
-    setValue(item.value);
-  }, [activeId, items, mounted, moves]);
 
   const loadOptions = () => {
     setItems(fruits);

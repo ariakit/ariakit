@@ -3,6 +3,7 @@ import {
   createStore,
   init,
   setup,
+  sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
@@ -33,11 +34,26 @@ function getCommonParent(items: CollectionStoreItem[]) {
   return getDocument(parentElement).body;
 }
 
+interface RegisteredItem<T extends CollectionStoreItem> {
+  item: T;
+}
+
+interface CollectionLookup<T extends CollectionStoreItem> {
+  registeredItems: Map<string, RegisteredItem<T>[]>;
+  syncingPrivateItems?: T[];
+}
+
+interface CollectionPrivateStore<T extends CollectionStoreItem> extends Store<{
+  items: T[];
+  renderedItems: T[];
+}> {
+  __unstableCollectionLookup: CollectionLookup<T>;
+  __unstableControlledItems: Map<string, T>;
+}
+
 function getPrivateStore<T extends CollectionStoreItem>(
   store?: Store & {
-    __unstablePrivateStore?: Store<{
-      renderedItems: T[];
-    }>;
+    __unstablePrivateStore?: CollectionPrivateStore<T>;
   },
 ) {
   return store?.__unstablePrivateStore;
@@ -104,8 +120,11 @@ type SetItems<T extends CollectionStoreItem> = (
 
 interface MergeItemOptions<T extends CollectionStoreItem> {
   cache: ItemIdCache<T>;
+  lookup?: {
+    item: RegisteredItem<T>;
+    wasKnown: boolean;
+  };
   setItems: SetItems<T>;
-  canDeleteFromMap?: boolean;
 }
 
 /**
@@ -125,7 +144,16 @@ export function createCollectionStore<
     [],
   );
 
-  const itemsMap = new Map<string, T>(items.map((item) => [item.id, item]));
+  const syncPrivateStore = getPrivateStore<T>(props.store);
+  // Controlled items and registrations are shared by composed stores through
+  // their private stores.
+  const controlledItems =
+    syncPrivateStore?.__unstableControlledItems ??
+    new Map<string, T>(items.map((item) => [item.id, item]));
+  const collectionLookup: CollectionLookup<T> =
+    syncPrivateStore?.__unstableCollectionLookup ?? {
+      registeredItems: new Map(),
+    };
   // These arrays are replaced independently, so each needs its own cache.
   const itemIdCache: ItemIdCache<T> = {};
   const renderedItemIdCache: ItemIdCache<T> = {};
@@ -135,14 +163,17 @@ export function createCollectionStore<
     renderedItems: defaultValue(syncState?.renderedItems, []),
   };
 
-  const syncPrivateStore = getPrivateStore<T>(props.store);
-
-  const privateStore = createStore(
-    { items, renderedItems: initialState.renderedItems },
-    syncPrivateStore,
-  );
+  const privateStore: CollectionPrivateStore<T> = {
+    ...createStore(
+      { items, renderedItems: initialState.renderedItems },
+      syncPrivateStore,
+    ),
+    __unstableCollectionLookup: collectionLookup,
+    __unstableControlledItems: controlledItems,
+  };
 
   const collection = createStore(initialState, props.store);
+  let syncedItems = items;
 
   const sortItems = (renderedItems: T[]) => {
     const sortedItems = sortBasedOnDOMPosition(renderedItems, (i) => i.element);
@@ -150,14 +181,34 @@ export function createCollectionStore<
     collection.setState("renderedItems", sortedItems);
   };
 
-  setup(collection, () => init(privateStore));
+  setup(collection, () => {
+    const stopPrivateStore = init(privateStore);
+    syncedItems = collection.getState().items;
+    const stopSync = sync(collection, ["items"], (state) => {
+      if (state.items === syncedItems) return;
+      syncedItems = state.items;
+      // Private registration batches already update the registered lookup.
+      if (state.items === collectionLookup.syncingPrivateItems) return;
+      controlledItems.clear();
+      for (const item of state.items) {
+        controlledItems.set(item.id, item);
+      }
+    });
+    return chain(stopSync, stopPrivateStore);
+  });
 
   // Use the private store to register items and then batch the changes to the
   // public store so we don't trigger multiple updates on the store when adding
   // multiple items.
   setup(privateStore, () => {
     return batch(privateStore, ["items"], (state) => {
-      collection.setState("items", state.items);
+      const syncingPrivateItems = collectionLookup.syncingPrivateItems;
+      collectionLookup.syncingPrivateItems = state.items;
+      try {
+        collection.setState("items", state.items);
+      } finally {
+        collectionLookup.syncingPrivateItems = syncingPrivateItems;
+      }
     });
   });
 
@@ -206,14 +257,13 @@ export function createCollectionStore<
 
   const mergeItem = (
     item: T,
-    { cache, setItems, canDeleteFromMap = false }: MergeItemOptions<T>,
+    { cache, lookup, setItems }: MergeItemOptions<T>,
   ) => {
     let prevItem: T | undefined;
     setItems((items) => {
       const shouldUseCache =
         !!cache.ids ||
-        (items.length >= itemIdCacheThreshold &&
-          (!canDeleteFromMap || !itemsMap.has(item.id)));
+        (items.length >= itemIdCacheThreshold && !lookup?.wasKnown);
       const ids = shouldUseCache ? getCachedItemIds(items, cache) : undefined;
       const index =
         ids && !ids.has(item.id)
@@ -224,10 +274,14 @@ export function createCollectionStore<
         prevItem = items[index];
         const nextItem = { ...prevItem, ...item };
         nextItems[index] = nextItem;
-        itemsMap.set(item.id, nextItem);
+        if (lookup) {
+          lookup.item.item = nextItem;
+        }
       } else {
         nextItems.push(item);
-        itemsMap.set(item.id, item);
+        if (lookup) {
+          lookup.item.item = item;
+        }
         ids?.add(item.id);
       }
       if (
@@ -242,9 +296,6 @@ export function createCollectionStore<
       setItems((items) => {
         const ids = cache.ids ? getCachedItemIds(items, cache) : undefined;
         if (!prevItem) {
-          if (canDeleteFromMap) {
-            itemsMap.delete(item.id);
-          }
           const nextItems = items.filter(({ id }) => id !== item.id);
           ids?.delete(item.id);
           if (cache.ids) {
@@ -258,7 +309,9 @@ export function createCollectionStore<
         }
         const nextItems = items.slice();
         nextItems[index] = prevItem;
-        itemsMap.set(item.id, prevItem);
+        if (lookup) {
+          lookup.item.item = prevItem;
+        }
         if (cache.ids) {
           setCachedItemIds(nextItems, cache, ids);
         }
@@ -277,7 +330,6 @@ export function createCollectionStore<
   const itemMergeOptions: MergeItemOptions<T> = {
     cache: itemIdCache,
     setItems,
-    canDeleteFromMap: true,
   };
 
   const renderedItemMergeOptions: MergeItemOptions<T> = {
@@ -285,8 +337,28 @@ export function createCollectionStore<
     setItems: setRenderedItems,
   };
 
-  const registerItem: CollectionStore<T>["registerItem"] = (item) =>
-    mergeItem(item, itemMergeOptions);
+  const registerItem: CollectionStore<T>["registerItem"] = (item) => {
+    const registeredItems = collectionLookup.registeredItems.get(item.id);
+    const wasKnown = !!registeredItems?.length || controlledItems.has(item.id);
+    const registeredItem = { item };
+    const nextRegisteredItems = registeredItems ?? [];
+    nextRegisteredItems.push(registeredItem);
+    collectionLookup.registeredItems.set(item.id, nextRegisteredItems);
+    const unmergeItem = mergeItem(item, {
+      ...itemMergeOptions,
+      lookup: { item: registeredItem, wasKnown },
+    });
+    return () => {
+      const index = nextRegisteredItems.indexOf(registeredItem);
+      if (index !== -1) {
+        nextRegisteredItems.splice(index, 1);
+      }
+      if (!nextRegisteredItems.length) {
+        collectionLookup.registeredItems.delete(item.id);
+      }
+      unmergeItem();
+    };
+  };
 
   return {
     ...collection,
@@ -297,15 +369,9 @@ export function createCollectionStore<
 
     item: (id) => {
       if (!id) return null;
-      let item = itemsMap.get(id);
-      if (!item) {
-        const { items } = privateStore.getState();
-        item = items.find((item) => item.id === id);
-        if (item) {
-          itemsMap.set(id, item);
-        }
-      }
-      return item || null;
+      const registeredItems = collectionLookup.registeredItems.get(id);
+      const registeredItem = registeredItems?.[registeredItems.length - 1];
+      return registeredItem?.item ?? controlledItems.get(id) ?? null;
     },
 
     // @ts-expect-error Internal

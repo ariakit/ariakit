@@ -33,8 +33,10 @@ test("registers, updates, and unregisters collection items", async () => {
 
     unregister();
 
-    await expect.poll(() => store.getState().items).toEqual([]);
+    expect(store.getState().items).toEqual([{ id: "item", value: "one" }]);
     expect(store.item("item")).toBeNull();
+
+    await expect.poll(() => store.getState().items).toEqual([]);
   } finally {
     stop();
   }
@@ -189,6 +191,200 @@ test("invalidates a large cache when a synchronized store changes", async () => 
     await expect.poll(() => store.getState().items).toHaveLength(65);
   } finally {
     stop();
+    stopParent();
+  }
+});
+
+test("resolves controlled items added after initialization", () => {
+  const store = createCollectionStore<{ id: string; value?: string }>();
+  const stop = init(store);
+
+  try {
+    const apple = { id: "apple", value: "Apple" };
+    store.setState("items", [apple]);
+
+    expect(store.item("apple")).toBe(apple);
+
+    store.setState("items", []);
+
+    expect(store.item("apple")).toBeNull();
+  } finally {
+    stop();
+  }
+});
+
+test("restores a controlled twin after its item unregisters", async () => {
+  const store = createCollectionStore<{ id: string; value?: string }>();
+  const stop = init(store);
+
+  try {
+    const unregister = store.registerItem({ id: "apple", value: "mounted" });
+    await expect.poll(() => store.getState().items).toHaveLength(1);
+
+    const controlledApple = { id: "apple", value: "controlled" };
+    store.setState("items", [controlledApple]);
+
+    expect(store.item("apple")?.value).toBe("mounted");
+
+    unregister();
+
+    expect(store.item("apple")).toBe(controlledApple);
+  } finally {
+    stop();
+  }
+});
+
+test("preserves controlled items across registration flushes", async () => {
+  const store = createCollectionStore<{ id: string; value?: string }>();
+  const stop = init(store);
+
+  try {
+    const apple = { id: "apple", value: "Apple" };
+    store.setState("items", [apple]);
+
+    const unregister = store.registerItem({ id: "banana", value: "Banana" });
+    await expect.poll(() => store.getState().items[0]?.id).toBe("banana");
+
+    expect(store.item("apple")).toBe(apple);
+
+    unregister();
+    await expect.poll(() => store.getState().items).toEqual([]);
+
+    expect(store.item("apple")).toBe(apple);
+  } finally {
+    stop();
+  }
+});
+
+test("treats reused registration snapshots as controlled updates", async () => {
+  const store = createCollectionStore<{ id: string; value?: string }>();
+  const stop = init(store);
+
+  try {
+    const unregister = store.registerItem({
+      id: "banana",
+      value: "Banana",
+    });
+    await expect.poll(() => store.getState().items).toHaveLength(1);
+    const registeredItems = store.getState().items;
+
+    const orange = { id: "orange", value: "Orange" };
+    store.setState("items", [orange]);
+    store.setState("items", registeredItems);
+
+    expect(store.item("orange")).toBeNull();
+
+    unregister();
+
+    expect(store.item("banana")).toBe(registeredItems[0]);
+  } finally {
+    stop();
+  }
+});
+
+test("synchronizes controlled item lookups across composed stores", async () => {
+  const parent = createCollectionStore<{ id: string; value?: string }>();
+  const store = createCollectionStore({ store: parent });
+  const stopParent = init(parent);
+  const stop = init(store);
+
+  try {
+    const apple = { id: "apple", value: "Apple" };
+    store.setState("items", [apple]);
+
+    expect(parent.item("apple")).toBe(apple);
+    expect(store.item("apple")).toBe(apple);
+
+    const orange = { id: "orange", value: "Orange" };
+    parent.setState("items", [orange]);
+
+    expect(parent.item("apple")).toBeNull();
+    expect(store.item("apple")).toBeNull();
+    expect(parent.item("orange")).toBe(orange);
+    expect(store.item("orange")).toBe(orange);
+
+    const unregister = store.registerItem({ id: "banana", value: "Banana" });
+    await expect.poll(() => parent.item("banana")?.value).toBe("Banana");
+
+    const nestedStore = createCollectionStore({ store });
+    const stopNested = init(nestedStore);
+
+    try {
+      expect(nestedStore.item("banana")?.value).toBe("Banana");
+
+      unregister();
+
+      expect(parent.item("banana")).toBeNull();
+      expect(store.item("banana")).toBeNull();
+      expect(nestedStore.item("banana")).toBeNull();
+    } finally {
+      stopNested();
+    }
+  } finally {
+    stop();
+    stopParent();
+  }
+});
+
+test("restores composed registrations before child initialization", () => {
+  const parent = createCollectionStore<{ id: string; value?: string }>();
+  const store = createCollectionStore({ store: parent });
+  const unregisterParent = parent.registerItem({
+    id: "item",
+    value: "parent",
+  });
+  const unregisterChild = store.registerItem({
+    id: "item",
+    value: "child",
+  });
+
+  expect(parent.item("item")?.value).toBe("child");
+  expect(store.item("item")?.value).toBe("child");
+
+  unregisterChild();
+
+  expect(parent.item("item")?.value).toBe("parent");
+  expect(store.item("item")?.value).toBe("parent");
+
+  unregisterParent();
+
+  expect(parent.item("item")).toBeNull();
+  expect(store.item("item")).toBeNull();
+});
+
+test("preserves controlled items when a composed store initializes late", async () => {
+  const apple = { id: "apple", value: "Apple" };
+  const parent = createCollectionStore({ defaultItems: [apple] });
+  const store = createCollectionStore({ store: parent });
+  const stopParent = init(parent);
+
+  try {
+    const orange = { id: "orange", value: "Orange" };
+    parent.setState("items", [orange]);
+
+    const unregister = parent.registerItem({
+      id: "banana",
+      value: "Banana",
+    });
+    await expect.poll(() => parent.getState().items).toHaveLength(2);
+
+    const stop = init(store);
+
+    try {
+      unregister();
+
+      expect(parent.item("banana")).toBeNull();
+      expect(store.item("banana")).toBeNull();
+      expect(parent.item("orange")).toBe(orange);
+      expect(store.item("orange")).toBe(orange);
+      expect(parent.item("apple")).toBeNull();
+      expect(store.item("apple")).toBeNull();
+
+      await expect.poll(() => store.getState().items).toEqual([apple]);
+    } finally {
+      stop();
+    }
+  } finally {
     stopParent();
   }
 });
