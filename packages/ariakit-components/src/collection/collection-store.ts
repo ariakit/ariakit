@@ -37,6 +37,7 @@ function getCommonParent(items: CollectionStoreItem[]) {
 interface CollectionLookup<T extends CollectionStoreItem> {
   controlledItems: Map<string, T>;
   registeredItems: Map<string, T>;
+  syncedItems: T[];
   syncingPrivateItems?: T[];
 }
 
@@ -138,6 +139,7 @@ export function createCollectionStore<
     syncPrivateStore?.__unstableCollectionLookup ?? {
       controlledItems: new Map(items.map((item) => [item.id, item])),
       registeredItems: new Map(),
+      syncedItems: items,
     };
   const { controlledItems } = collectionLookup;
   // These arrays are replaced independently, so each needs its own cache.
@@ -166,21 +168,22 @@ export function createCollectionStore<
     collection.setState("renderedItems", sortedItems);
   };
 
-  setup(collection, () => {
-    const stopPrivateStore = init(privateStore);
-    syncedItems = collection.getState().items;
-    const stopSync = sync(collection, ["items"], (state) => {
-      if (state.items === syncedItems) return;
-      syncedItems = state.items;
-      // Private registration batches already update the registered lookup.
-      if (state.items === collectionLookup.syncingPrivateItems) return;
-      controlledItems.clear();
-      for (const item of state.items) {
-        controlledItems.set(item.id, item);
-      }
-    });
-    return chain(stopSync, stopPrivateStore);
+  sync(collection, ["items"], (state) => {
+    if (state.items === syncedItems) return;
+    syncedItems = state.items;
+    // Composed stores observe the same public state array, so only the first
+    // listener needs to process their shared lookup.
+    if (state.items === collectionLookup.syncedItems) return;
+    collectionLookup.syncedItems = state.items;
+    // Private registration batches already update the registered lookup.
+    if (state.items === collectionLookup.syncingPrivateItems) return;
+    controlledItems.clear();
+    for (const item of state.items) {
+      controlledItems.set(item.id, item);
+    }
   });
+
+  setup(collection, () => init(privateStore));
 
   // Use the private store to register items and then batch the changes to the
   // public store so we don't trigger multiple updates on the store when adding

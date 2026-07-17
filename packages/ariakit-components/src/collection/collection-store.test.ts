@@ -1,4 +1,4 @@
-import { init } from "@ariakit/store";
+import { init, sync } from "@ariakit/store";
 import { afterEach, expect, test } from "vitest";
 import { createCollectionStore } from "./collection-store.ts";
 
@@ -213,6 +213,47 @@ test("resolves controlled items added after initialization", () => {
   }
 });
 
+test("synchronizes controlled item lookups while stopped", () => {
+  const store = createCollectionStore<{ id: string; value?: string }>();
+  const stop = init(store);
+  const apple = { id: "apple", value: "Apple" };
+
+  store.setState("items", [apple]);
+  expect(store.item("apple")).toBe(apple);
+
+  stop();
+  store.setState("items", []);
+
+  const stopAgain = init(store);
+  try {
+    expect(store.getState().items).toEqual([]);
+    expect(store.item("apple")).toBeNull();
+  } finally {
+    stopAgain();
+  }
+});
+
+test("updates controlled item lookups before external sync listeners", () => {
+  const store = createCollectionStore<{ id: string; value?: string }>();
+  const observedItems: Array<{ id: string; value?: string } | null> = [];
+  const stopSync = sync(store, ["items"], (state) => {
+    const id = state.items[0]?.id;
+    if (!id) return;
+    observedItems.push(store.item(id));
+  });
+  const stop = init(store);
+
+  try {
+    const apple = { id: "apple", value: "Apple" };
+    store.setState("items", [apple]);
+
+    expect(observedItems).toEqual([apple]);
+  } finally {
+    stop();
+    stopSync();
+  }
+});
+
 test("restores a controlled twin after its item unregisters", async () => {
   const store = createCollectionStore<{ id: string; value?: string }>();
   const stop = init(store);
@@ -322,6 +363,52 @@ test("synchronizes controlled item lookups across composed stores", async () => 
     }
   } finally {
     stop();
+    stopParent();
+  }
+});
+
+test("indexes controlled items once across composed stores", () => {
+  const parent = createCollectionStore();
+  const stores = Array.from({ length: 10 }, () =>
+    createCollectionStore({ store: parent }),
+  );
+  const stops = [init(parent), ...stores.map(init)];
+  let idReads = 0;
+  const items = Array.from({ length: 100 }, (_, index) => ({
+    get id() {
+      idReads += 1;
+      return `item-${index + 1}`;
+    },
+  }));
+
+  try {
+    parent.setState("items", items);
+
+    expect(idReads).toBe(items.length);
+  } finally {
+    for (const stop of stops) {
+      stop();
+    }
+  }
+});
+
+test("preserves controlled lookups when composing from a stale store", () => {
+  const apple = { id: "apple", value: "Apple" };
+  const parent = createCollectionStore({ defaultItems: [apple] });
+  const staleStore = createCollectionStore({ store: parent });
+  const stopParent = init(parent);
+
+  try {
+    const orange = { id: "orange", value: "Orange" };
+    parent.setState("items", [orange]);
+
+    const store = createCollectionStore({ store: staleStore });
+
+    expect(parent.item("apple")).toBeNull();
+    expect(store.item("apple")).toBeNull();
+    expect(parent.item("orange")).toBe(orange);
+    expect(store.item("orange")).toBe(orange);
+  } finally {
     stopParent();
   }
 });

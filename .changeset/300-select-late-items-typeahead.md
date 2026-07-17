@@ -4,4 +4,4 @@
 "@ariakit/react": patch
 ---
 
-Fixed [`Select`](https://ariakit.com/reference/select) typeahead to update its value when controlled items are added after store creation while the options are unmounted. Thanks to [@Dremora](https://github.com/Dremora) and [@georgekaran](https://github.com/georgekaran).
+Fixed collection store [`item`](https://ariakit.com/reference/use-collection-store#item) lookups to resolve controlled items added after store creation when no live item is registered. This allows [`Select`](https://ariakit.com/reference/select) typeahead to update its value while options are unmounted. Thanks to [@georgekaran](https://github.com/georgekaran).
