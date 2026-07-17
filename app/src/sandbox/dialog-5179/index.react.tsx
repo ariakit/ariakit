@@ -1,7 +1,15 @@
 import * as Ariakit from "@ariakit/react";
-import type { KeyboardEvent } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 import { useEffect, useId, useState } from "react";
+import { createPortal } from "react-dom";
 import { createRoot } from "react-dom/client";
+
+function ReactPortal({ children }: { children: ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return createPortal(children, document.body);
+}
 
 interface AutocompleteProps {
   capture?: boolean;
@@ -46,6 +54,7 @@ interface DialogExampleProps {
   modal?: boolean;
   name?: string;
   portal?: boolean;
+  portalChild?: "ariakit" | "react";
   stopDialogOnEscape?: boolean;
   stopDialogOnEscapeCapture?: boolean;
   stopOnEscape?: boolean;
@@ -57,28 +66,38 @@ function DialogExample({
   modal,
   name = "Dialog",
   portal,
+  portalChild,
   stopDialogOnEscape,
   stopDialogOnEscapeCapture,
   stopOnEscape,
   stopOnEscapeCapture,
 }: DialogExampleProps) {
+  const [open, setOpen] = useState(false);
   const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key !== "Escape") return;
     event.stopPropagation();
   };
+  const autocomplete = <Autocomplete capture={capture} />;
   const dialog = (
-    <Ariakit.DialogProvider>
+    <Ariakit.DialogProvider open={open} setOpen={setOpen}>
       <Ariakit.DialogDisclosure>
         Open {name.toLowerCase()}
       </Ariakit.DialogDisclosure>
       <Ariakit.Dialog
         modal={modal}
         portal={portal}
+        hideOnInteractOutside={portalChild ? false : undefined}
         onKeyDown={stopDialogOnEscape ? onKeyDown : undefined}
         onKeyDownCapture={stopDialogOnEscapeCapture ? onKeyDown : undefined}
       >
         <Ariakit.DialogHeading>{name}</Ariakit.DialogHeading>
-        <Autocomplete capture={capture} />
+        {!open && portalChild ? null : portalChild === "ariakit" ? (
+          <Ariakit.Portal>{autocomplete}</Ariakit.Portal>
+        ) : portalChild === "react" ? (
+          <ReactPortal>{autocomplete}</ReactPortal>
+        ) : (
+          autocomplete
+        )}
       </Ariakit.Dialog>
     </Ariakit.DialogProvider>
   );
@@ -90,6 +109,90 @@ function DialogExample({
     >
       {dialog}
     </div>
+  );
+}
+
+interface ThirdPartyDialogExampleProps {
+  capture?: boolean;
+}
+
+function ThirdPartyDialogExample({ capture }: ThirdPartyDialogExampleProps) {
+  const [open, setOpen] = useState(false);
+  const name = capture ? "Capture third-party dialog" : "Third-party dialog";
+  const nestedName = capture
+    ? "Shielded Ariakit dialog"
+    : "Nested Ariakit dialog";
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Escape") return;
+    setOpen(false);
+  };
+  if (!open) {
+    return (
+      <button onClick={() => setOpen(true)}>Open {name.toLowerCase()}</button>
+    );
+  }
+  return (
+    <div
+      role="dialog"
+      aria-label={name}
+      onKeyDown={capture ? undefined : onKeyDown}
+      onKeyDownCapture={capture ? onKeyDown : undefined}
+    >
+      <Ariakit.DialogProvider>
+        <Ariakit.DialogDisclosure>
+          Open {nestedName.toLowerCase()}
+        </Ariakit.DialogDisclosure>
+        <Ariakit.Dialog
+          modal={false}
+          hideOnEscape={
+            capture
+              ? (event) => {
+                  event.stopPropagation();
+                  return true;
+                }
+              : undefined
+          }
+        >
+          <Ariakit.DialogHeading>{nestedName}</Ariakit.DialogHeading>
+          <button>Inside {nestedName.toLowerCase()}</button>
+        </Ariakit.Dialog>
+      </Ariakit.DialogProvider>
+    </div>
+  );
+}
+
+interface HideOnEscapeExampleProps {
+  name: string;
+  portalChild?: boolean;
+  stop?: boolean;
+}
+
+function HideOnEscapeExample({
+  name,
+  portalChild,
+  stop,
+}: HideOnEscapeExampleProps) {
+  const [calls, setCalls] = useState(0);
+  const content = <button>Callback calls: {calls}</button>;
+  return (
+    <Ariakit.DialogProvider>
+      <Ariakit.DialogDisclosure>
+        Open {name.toLowerCase()}
+      </Ariakit.DialogDisclosure>
+      <Ariakit.Dialog
+        modal={false}
+        hideOnInteractOutside={portalChild ? false : undefined}
+        hideOnEscape={(event) => {
+          setCalls((calls) => calls + 1);
+          if (!stop) return false;
+          event.stopPropagation();
+          return true;
+        }}
+      >
+        <Ariakit.DialogHeading>{name}</Ariakit.DialogHeading>
+        {portalChild ? <ReactPortal>{content}</ReactPortal> : content}
+      </Ariakit.Dialog>
+    </Ariakit.DialogProvider>
   );
 }
 
@@ -116,10 +219,16 @@ export function DocumentRootDocument() {
         />
         <DialogExample
           modal={false}
+          name="Document root global dialog"
+          portal={false}
+        />
+        <DialogExample
+          modal={false}
           name="Document root outside dialog"
           portal={false}
           stopOnEscapeCapture
         />
+        <HideOnEscapeExample name="Document root callback dialog" stop />
       </body>
     </html>
   );
@@ -154,6 +263,27 @@ export default function Example() {
       />
       <DialogExample name="Own bubble dialog" stopDialogOnEscape />
       <DialogExample name="Own capture dialog" stopDialogOnEscapeCapture />
+      <DialogExample modal={false} name="Outside dialog" />
+      <DialogExample
+        modal={false}
+        name="Ariakit Portal child dialog"
+        portal={false}
+        portalChild="ariakit"
+      />
+      <DialogExample
+        modal={false}
+        name="React portal child dialog"
+        portal={false}
+        portalChild="react"
+      />
+      <ThirdPartyDialogExample />
+      <ThirdPartyDialogExample capture />
+      <HideOnEscapeExample name="Rejected callback dialog" />
+      <HideOnEscapeExample
+        name="React portal callback dialog"
+        portalChild
+        stop
+      />
       <button onClick={() => setShowDocumentRoot(true)}>
         Show document root example
       </button>

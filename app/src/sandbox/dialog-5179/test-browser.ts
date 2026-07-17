@@ -18,74 +18,32 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(q.dialog("Dialog")).toBeHidden();
   });
 
-  test("clears a stopped event before it is reused", async ({ q }) => {
-    await q.button("Open dialog").click();
-    const input = q.combobox("Search");
-    const event = await input.evaluateHandle((element) => {
-      const KeyboardEvent = element.ownerDocument.defaultView?.KeyboardEvent;
-      if (!KeyboardEvent) throw new Error("KeyboardEvent is not available");
-      return new KeyboardEvent("keydown", {
-        key: "Escape",
-        bubbles: true,
-        cancelable: true,
-      });
+  for (const portal of ["Ariakit Portal", "React portal"]) {
+    test(`lets a ${portal} child handle Escape before the dialog`, async ({
+      q,
+    }) => {
+      const dialogName = `${portal} child dialog`;
+      await q.button(`Open ${dialogName.toLowerCase()}`).click();
+      const input = q.combobox("Search");
+      await test.expect(q.dialog(dialogName)).toBeVisible();
+      await test.expect(q.listbox("Suggestions")).toBeVisible();
+
+      await input.focus();
+      await test.expect(input).toBeFocused();
+      await test.expect(q.dialog(dialogName)).toBeVisible();
+
+      await input.press("Escape");
+
+      await test.expect(q.listbox("Suggestions")).toBeHidden();
+      await test.expect(q.dialog(dialogName)).toBeVisible();
+
+      await input.press("Escape");
+
+      await test.expect(q.dialog(dialogName)).toBeHidden();
     });
+  }
 
-    await input.evaluate(
-      (element, event) => element.dispatchEvent(event),
-      event,
-    );
-
-    await test.expect(q.listbox("Suggestions")).toBeHidden();
-    await test.expect(q.dialog("Dialog")).toBeVisible();
-
-    await input.evaluate((element, event) => {
-      event.preventDefault();
-      element.dispatchEvent(event);
-    }, event);
-
-    await test.expect(q.dialog("Dialog")).toBeVisible();
-  });
-
-  test("hides on a non-bubbling Escape", async ({ q }) => {
-    await q.button("Open dialog").click();
-    const input = q.combobox("Search");
-    await test.expect(q.dialog("Dialog")).toBeVisible();
-
-    await input.evaluate((element) => {
-      const KeyboardEvent = element.ownerDocument.defaultView?.KeyboardEvent;
-      if (!KeyboardEvent) throw new Error("KeyboardEvent is not available");
-      element.dispatchEvent(
-        new KeyboardEvent("keydown", {
-          key: "Escape",
-          bubbles: false,
-          cancelable: true,
-        }),
-      );
-    });
-
-    await test.expect(q.dialog("Dialog")).toBeHidden();
-  });
-
-  test("hides before an outside ancestor handles Escape", async ({
-    page,
-    q,
-  }) => {
-    await q.button("Open outer ancestor dialog").click();
-    await test.expect(q.dialog("Outer ancestor dialog")).toBeVisible();
-    await test.expect(q.combobox("Search")).toBeFocused();
-
-    await page.keyboard.press("Escape");
-
-    await test.expect(q.listbox("Suggestions")).toBeHidden();
-    await test.expect(q.dialog("Outer ancestor dialog")).toBeVisible();
-
-    await page.keyboard.press("Escape");
-
-    await test.expect(q.dialog("Outer ancestor dialog")).toBeHidden();
-  });
-
-  test("lets an outside capture handler own Escape", async ({ q }) => {
+  test("lets an ancestor capture handler own Escape", async ({ q }) => {
     await q.button("Open outer capture dialog").click();
     const dialog = q.dialog("Outer capture dialog");
     const dialogQuery = query(dialog);
@@ -99,6 +57,28 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await test.expect(dialogQuery.listbox("Suggestions")).toBeVisible();
     await test.expect(dialog).toBeVisible();
+  });
+
+  test("closes on an unclaimed Escape outside the dialog", async ({ q }) => {
+    const disclosure = q.button("Open outside dialog");
+    await disclosure.click();
+    await test.expect(q.dialog("Outside dialog")).toBeVisible();
+
+    await disclosure.focus();
+    await disclosure.press("Escape");
+
+    await test.expect(q.dialog("Outside dialog")).toBeHidden();
+  });
+
+  test("lets an ancestor capture handler own Escape outside", async ({ q }) => {
+    const disclosure = q.button("Open outer capture dialog");
+    await disclosure.click();
+    await test.expect(q.dialog("Outer capture dialog")).toBeVisible();
+
+    await disclosure.focus();
+    await disclosure.press("Escape");
+
+    await test.expect(q.dialog("Outer capture dialog")).toBeVisible();
   });
 
   test("hides after its own bubble handler stops Escape", async ({
@@ -127,6 +107,60 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await input.press("Escape");
 
     await test.expect(q.dialog("Own capture dialog")).toBeHidden();
+  });
+
+  test("stops Escape before a third-party dialog bubble handler", async ({
+    q,
+  }) => {
+    await q.button("Open third-party dialog").click();
+    await q.button("Open nested ariakit dialog").click();
+    await test.expect(q.dialog("Third-party dialog")).toBeVisible();
+    await test.expect(q.dialog("Nested Ariakit dialog")).toBeVisible();
+
+    await q.button("Inside nested ariakit dialog").press("Escape");
+
+    await test.expect(q.dialog("Nested Ariakit dialog")).toBeHidden();
+    await test.expect(q.dialog("Third-party dialog")).toBeVisible();
+  });
+
+  test("can stop Escape before a third-party dialog capture handler", async ({
+    q,
+  }) => {
+    await q.button("Open capture third-party dialog").click();
+    await q.button("Open shielded ariakit dialog").click();
+    await test.expect(q.dialog("Capture third-party dialog")).toBeVisible();
+    await test.expect(q.dialog("Shielded Ariakit dialog")).toBeVisible();
+
+    await q.button("Inside shielded ariakit dialog").press("Escape");
+
+    await test.expect(q.dialog("Shielded Ariakit dialog")).toBeHidden();
+    await test.expect(q.dialog("Capture third-party dialog")).toBeVisible();
+  });
+
+  test("calls a rejected hideOnEscape callback once", async ({ q }) => {
+    await q.button("Open rejected callback dialog").click();
+    const dialog = q.dialog("Rejected callback dialog");
+    const dialogQuery = query(dialog);
+    await test.expect(dialog).toBeVisible();
+
+    await dialogQuery.button("Callback calls: 0").press("Escape");
+
+    await test.expect(dialog).toBeVisible();
+    await test.expect(dialogQuery.button("Callback calls: 1")).toBeVisible();
+  });
+
+  test("hides when hideOnEscape stops Escape from a React portal", async ({
+    q,
+  }) => {
+    await q.button("Open react portal callback dialog").click();
+    const dialog = q.dialog("React portal callback dialog");
+    const button = q.button("Callback calls: 0");
+    await test.expect(dialog).toBeVisible();
+
+    await button.focus();
+    await button.press("Escape");
+
+    await test.expect(dialog).toBeHidden();
   });
 
   test("respects a child handler delegated to document", async ({
@@ -235,7 +269,44 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(dialog).toBeHidden();
   });
 
-  test("keeps global Escape after an outside capture handler", async ({
+  test("hides when hideOnEscape stops Escape in a document root", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Show document root example").click();
+    const frame = query(
+      page.frameLocator('iframe[title="Document root example"]'),
+    );
+    const dialog = frame.dialog("Document root callback dialog");
+    await frame.button("Open document root callback dialog").click();
+    await test.expect(dialog).toBeVisible();
+
+    await query(dialog).button("Callback calls: 0").press("Escape");
+
+    await test.expect(dialog).toBeHidden();
+  });
+
+  test("closes on global Escape outside a document-root dialog", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Show document root example").click();
+    const frame = query(
+      page.frameLocator('iframe[title="Document root example"]'),
+    );
+    const disclosure = frame.button("Open document root global dialog");
+    const dialog = frame.dialog("Document root global dialog");
+
+    await disclosure.click();
+    await test.expect(dialog).toBeVisible();
+
+    await disclosure.focus();
+    await disclosure.press("Escape");
+
+    await test.expect(dialog).toBeHidden();
+  });
+
+  test("lets an ancestor capture handler own global Escape", async ({
     page,
     q,
   }) => {
@@ -253,10 +324,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(disclosure).toBeFocused();
     await disclosure.press("Escape");
 
-    await test.expect(dialog).toBeHidden();
+    await test.expect(dialog).toBeVisible();
   });
 
-  test("lets an outside capture handler own Escape in a document root", async ({
+  test("lets an ancestor capture handler own Escape in a document root", async ({
     page,
     q,
   }) => {

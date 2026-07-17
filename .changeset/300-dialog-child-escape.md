@@ -19,6 +19,8 @@ The [`Dialog`](https://ariakit.com/reference/dialog) component and components th
 </Dialog>
 ```
 
-**Note:** If an ancestor capture handler stops an <kbd>Esc</kbd> event from inside before it reaches the enclosing component, that component now remains open.
+When the component handles an <kbd>Esc</kbd> event from its React subtree, it also stops the event at its boundary. This keeps an enclosing third-party React dialog with a bubble handler open while the Ariakit component closes.
+
+An ancestor capture handler that stops <kbd>Esc</kbd> before it reaches the component owns the event. If [`hideOnEscape`](https://ariakit.com/reference/dialog#hideonescape) runs before such a handler, it can call `event.stopPropagation()` to keep the event from reaching it.
 
 Thanks to [@boaz-wiz](https://github.com/boaz-wiz) for reporting the issue.
