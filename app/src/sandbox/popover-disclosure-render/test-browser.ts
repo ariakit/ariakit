@@ -7,8 +7,8 @@ type Query = ReturnType<typeof query>;
 withFramework(import.meta.dirname, async ({ test }) => {
   // The preserveTabOrder feature, the only consumer of the disclosure element
   // in the popover, takes effect only on non-modal portals, so disclosure
-  // element updates must not re-render a modal popover or a plain
-  // non-portaled popover.
+  // element updates must not re-render a modal popover, a plain non-portaled
+  // popover, or a portal with preserveTabOrder disabled.
   async function expectNoRenderOnDisclosureElementChange(
     page: Page,
     q: Query,
@@ -58,5 +58,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     await expectNoRenderOnDisclosureElementChange(page, q, "Plain");
+  });
+
+  test("does not re-render a portaled popover when preserveTabOrder is disabled", async ({
+    page,
+    q,
+  }) => {
+    await expectNoRenderOnDisclosureElementChange(page, q, "No tab order");
   });
 });

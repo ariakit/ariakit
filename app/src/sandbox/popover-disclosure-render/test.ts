@@ -3,8 +3,9 @@ import { expect, test } from "vitest";
 
 // The preserveTabOrder feature, the only consumer of the disclosure element
 // in the popover, takes effect only on non-modal portals, so disclosure
-// element updates must not re-render a modal popover or a plain non-portaled
-// popover. Browser duplicate in test-browser.ts.
+// element updates must not re-render a modal popover, a plain non-portaled
+// popover, or a portal with preserveTabOrder disabled. Browser duplicate in
+// test-browser.ts.
 async function expectNoRenderOnDisclosureElementChange(label: string) {
   await click(q.button(`Toggle ${label} popover`));
   expect(q.dialog()).toBeVisible();
@@ -35,4 +36,8 @@ test("does not re-render a modal popover when the disclosure element changes", a
 
 test("does not re-render a plain popover when the disclosure element changes", async () => {
   await expectNoRenderOnDisclosureElementChange("Plain");
+});
+
+test("does not re-render a portaled popover when preserveTabOrder is disabled", async () => {
+  await expectNoRenderOnDisclosureElementChange("No tab order");
 });
