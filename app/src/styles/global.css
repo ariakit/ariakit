@@ -10,7 +10,6 @@
 @import "./ariakit.css";
 
 @source "../../../packages/ariakit-ui/src/**";
-@source not "./styles.json";
 @source not "../sandbox/ariakit-tailwind*";
 
 @theme {

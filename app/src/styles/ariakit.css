@@ -8,37 +8,6 @@
  */
 @import "@ariakit/tailwind";
 
-/* Legacy imports kept enabled while the ariakit-ui migration is in progress:
-   the /compare page renders them next to the new components. They only emit
-   CSS where their classes are used. */
-@import "./ak-icon.css";
-@import "./ak-badge.css";
-@import "./ak-command.css";
-@import "./ak-aurora.css";
-@import "./ak-button.css";
-@import "./ak-checkbox.css";
-@import "./ak-kbd.css";
-@import "./ak-tab.css";
-@import "./ak-segmented.css";
-@import "./ak-link.css";
-@import "./ak-heading.css";
-@import "./ak-container.css";
-@import "./ak-input.css";
-@import "./ak-radio.css";
-@import "./ak-popover.css";
-@import "./ak-tooltip.css";
-@import "./ak-dialog.css";
-@import "./ak-option.css";
-@import "./ak-select.css";
-@import "./ak-progress.css";
-@import "./ak-disclosure.css";
-@import "./ak-list.css";
-@import "./ak-sidebar.css";
-@import "./ak-nav.css";
-@import "./ak-table.css";
-
-@import "./ak-prose.css";
-
 @theme {
   --color-canvas: oklch(99.33% 0.0011 197.14);
   /* Kept for pages inherited from main that still use the legacy `primary`

@@ -12,7 +12,6 @@ import { Icon } from "#app/icons/icon.react.tsx";
 import { getFramework } from "#app/lib/frameworks.ts";
 import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
-import type { StyleDependency } from "#app/lib/styles.ts";
 import { badge, badgeLabel } from "@ariakit/ui/styles/badge.ts";
 import { button } from "@ariakit/ui/styles/button.ts";
 import { listItem } from "@ariakit/ui/styles/list.ts";
@@ -49,8 +48,6 @@ const frameworkLookupDependencies = [
   ...frameworkDetail.dependencies.map((dependency) => `@types/${dependency}`),
 ];
 
-const frameworkStyles = new Map<string, StyleDependency>();
-
 for (const source of sources) {
   const frameworkSource = getSource(source);
   if (!frameworkSource) continue;
@@ -67,10 +64,6 @@ for (const source of sources) {
       continue;
     }
     devDependencies[key] = value;
-  }
-  for (const style of frameworkSource.styles) {
-    if ("import" in style) continue;
-    frameworkStyles.set(style.name, style);
   }
 }
 

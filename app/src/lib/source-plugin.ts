@@ -10,7 +10,7 @@
 
 import { createHash } from "node:crypto";
 import fs from "node:fs";
-import { basename, dirname, join, relative, resolve } from "node:path";
+import { basename, dirname, join, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { resolve as resolveImportMeta } from "import-meta-resolve";
 import * as prettier from "prettier";
@@ -27,10 +27,8 @@ import {
   findSiblingConventionFiles,
   isNextjsConventionFile,
 } from "./nextjs.ts";
-import { toPosixPath } from "./paths.ts";
 import type { Source, SourceFile } from "./source.ts";
-import { getImportPaths, mergeFiles, replaceImportPaths } from "./source.ts";
-import { resolveStyles } from "./styles.ts";
+import { getImportPaths, replaceImportPaths } from "./source.ts";
 
 const APP_LIB_PATH = join(import.meta.dirname, "../examples/_lib");
 const NEXTJS_LIB_PATH = join(import.meta.dirname, "../../../nextjs/components");
@@ -109,18 +107,9 @@ function getPackageName(source: string) {
 function isLibPath(path: string) {
   return (
     path.startsWith("#") ||
-    path.startsWith("app/") ||
     path.startsWith(APP_LIB_PATH) ||
     path.startsWith(NEXTJS_LIB_PATH)
   );
-}
-
-/**
- * Whether a path is inside a "*-utils" directory tree.
- */
-function isUtilsPath(filePath: string) {
-  const posix = toPosixPath(filePath);
-  return /(\/?|^)[^/]*-utils(\/|$)/.test(posix);
 }
 
 /**
@@ -283,7 +272,6 @@ async function loadSourceFileCached(
   const cached = fileProcessCache.get(cacheKey);
   if (cached) return cached;
   const fileRef: SourceFile = { id, content };
-  fileRef.styles = resolveStyles(content);
   await addFrameworkDependenciesToFile(context, id, fileRef);
   const localDeps: string[] = [];
   const imports = getImportPaths(content);
@@ -324,88 +312,6 @@ async function processFile(
 }
 
 /**
- * Builds a temporary files map where any `#` alias specifiers that resolve to
- * local files within the current graph are rewritten to relative specifiers
- * from the importer file. This allows mergeFiles() to recognize and rewrite
- * named imports that target utils members.
- */
-async function rewriteAliasesToRelativeForMerge(
-  context: SourcePluginContext,
-  files: Record<string, SourceFile>,
-) {
-  const out: Record<string, SourceFile> = {};
-  for (const [absId, file] of Object.entries(files)) {
-    const aliasPaths = Array.from(
-      getImportPaths(file.content, (p) => isLibPath(p)),
-    );
-    if (aliasPaths.length === 0) {
-      out[absId] = file;
-      continue;
-    }
-    const replacement = new Map<string, string>();
-    for (const a of aliasPaths) {
-      const resolved = await resolveImport(context, a, absId);
-      if (!resolved) continue;
-      const targetId = resolved.id;
-      // only rewrite if inside graph
-      if (!files[targetId]) continue;
-      const dir = dirname(absId);
-      let rel = toPosixPath(relative(dir, targetId));
-      if (!rel.startsWith(".")) rel = `./${rel}`;
-      replacement.set(a, rel);
-    }
-    if (replacement.size === 0) {
-      out[absId] = file;
-      continue;
-    }
-    const nextContent = replaceImportPaths(file.content, (p) => {
-      const r = replacement.get(p);
-      if (r) return r;
-      return p;
-    });
-    out[absId] = {
-      id: file.id,
-      content: nextContent,
-      styles: file.styles,
-      dependencies: file.dependencies,
-      devDependencies: file.devDependencies,
-    };
-  }
-  return out;
-}
-
-/**
- * Compute the common ancestor directory for a list of absolute file ids.
- */
-function getCommonAncestorDir(fileIds: string[]) {
-  if (fileIds.length === 0) return "/";
-  const splitDirSegments = (p: string) =>
-    toPosixPath(dirname(p)).split("/").filter(Boolean);
-  const segmentLists = fileIds.map(splitDirSegments);
-  const minLength = segmentLists.reduce(
-    (min, segs) => (segs.length < min ? segs.length : min),
-    Number.POSITIVE_INFINITY,
-  );
-  const common: string[] = [];
-  const firstSegments = segmentLists[0] || [];
-  for (let i = 0; i < minLength; i++) {
-    const segmentAtIndex = firstSegments[i];
-    if (!segmentAtIndex) break;
-    let allMatch = true;
-    for (let j = 1; j < segmentLists.length; j++) {
-      const segs = segmentLists[j];
-      if (!segs || segs[i] !== segmentAtIndex) {
-        allMatch = false;
-        break;
-      }
-    }
-    if (!allMatch) break;
-    common.push(segmentAtIndex);
-  }
-  return `/${common.join("/")}`;
-}
-
-/**
  * Build a flattened files map and ensure no duplicate basenames are produced.
  */
 async function buildFlattenedFiles(
@@ -430,18 +336,6 @@ async function buildFlattenedFiles(
 }
 
 /**
- * Move utils.ts entry to the end of the files map if present.
- */
-function moveUtilsToEnd(files: Record<string, SourceFile>) {
-  if (!("utils.ts" in files)) return files;
-  const utilsFile = files["utils.ts"];
-  if (!utilsFile) return files;
-  delete files["utils.ts"];
-  files["utils.ts"] = utilsFile;
-  return files;
-}
-
-/**
  * Compute top-level dependency maps by unioning per-file maps.
  */
 function computeTopLevelDependencies(files: Record<string, SourceFile>) {
@@ -456,14 +350,6 @@ function computeTopLevelDependencies(files: Record<string, SourceFile>) {
     }
   }
   return { deps, devDeps };
-}
-
-/**
- * Compute styles used by the source based on ak-* tokens in original sources.
- */
-function computeSourceStylesFromSources(sources: Record<string, SourceFile>) {
-  const contents = Object.values(sources).map((f) => f.content);
-  return resolveStyles(...contents);
 }
 
 /**
@@ -484,7 +370,6 @@ async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
   const generated: SourceFile = {
     id: file.id,
     content,
-    styles: file.styles,
     dependencies: file.dependencies,
     devDependencies: file.devDependencies,
   };
@@ -513,7 +398,6 @@ export function sourcePlugin(root?: string): Plugin {
         sources: {},
         dependencies: {},
         devDependencies: {},
-        styles: [],
         files: {},
       };
 
@@ -539,35 +423,9 @@ export function sourcePlugin(root?: string): Plugin {
         }
       }
 
-      // Determine utils to merge (only those actually imported / present)
-      const utilsIds = Object.keys(source.sources).filter((abs) =>
-        isUtilsPath(abs),
-      );
-
-      // Pre-resolve alias (#...) imports to relative specifiers for merge phase
-      const preMerge = await rewriteAliasesToRelativeForMerge(
-        this,
-        source.sources,
-      );
-
-      let merged: Record<string, SourceFile> = preMerge;
-      if (utilsIds.length > 0) {
-        // Compute common ancestor directory for all utils members
-        const commonDir = getCommonAncestorDir(utilsIds);
-        const target = resolve(commonDir, "utils.ts");
-
-        merged = mergeFiles(preMerge, (p) => {
-          if (isUtilsPath(p)) return target;
-          return false;
-        });
-      }
-
       // Build files by normalizing paths
       const baseDir = dirname(realId);
-      const files = await buildFlattenedFiles(baseDir, merged);
-
-      // Move merged utils.ts to the end if present
-      moveUtilsToEnd(files);
+      const files = await buildFlattenedFiles(baseDir, source.sources);
 
       // Compute top-level dependencies/devDependencies from files
       const { deps: topDeps, devDeps: topDevDeps } =
@@ -575,9 +433,6 @@ export function sourcePlugin(root?: string): Plugin {
       source.files = files;
       source.dependencies = topDeps;
       source.devDependencies = topDevDeps;
-
-      // Resolve styles used by this source based on ak-* tokens found in original sources
-      source.styles = computeSourceStylesFromSources(source.sources);
 
       return `export default ${JSON.stringify(source, null, 2)}`;
     },

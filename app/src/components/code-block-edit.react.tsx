@@ -99,7 +99,6 @@ export const CodeBlockEdit = forwardRef<HTMLButtonElement, CodeBlockEditProps>(
             ),
             dependencies: source.dependencies,
             devDependencies: source.devDependencies,
-            styles: source.styles,
             framework: stackblitzFramework,
           });
         }}
