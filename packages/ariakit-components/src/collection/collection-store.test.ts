@@ -636,12 +636,13 @@ test("synchronizes controlled item lookups across composed stores", async () => 
   }
 });
 
-test("indexes controlled items once across composed stores", () => {
+test("indexes child-controlled items once across composed stores", () => {
   const parent = createCollectionStore();
-  const stores = Array.from({ length: 10 }, () =>
+  const store = createCollectionStore({ store: parent });
+  const stores = Array.from({ length: 9 }, () =>
     createCollectionStore({ store: parent }),
   );
-  const stops = [init(parent), ...stores.map(init)];
+  const stops = [init(parent), init(store), ...stores.map(init)];
   let idReads = 0;
   const items = Array.from({ length: 100 }, (_, index) => ({
     get id() {
@@ -651,7 +652,7 @@ test("indexes controlled items once across composed stores", () => {
   }));
 
   try {
-    parent.setState("items", items);
+    store.setState("items", items);
 
     expect(idReads).toBe(items.length);
   } finally {

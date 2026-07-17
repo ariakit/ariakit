@@ -42,10 +42,9 @@ interface CollectionLookup<T extends CollectionStoreItem> {
   propagatedItems: T[];
 }
 
-interface CollectionPrivateStore<T extends CollectionStoreItem> extends Store<{
-  items: T[];
-  renderedItems: T[];
-}> {
+interface CollectionPrivateStore<T extends CollectionStoreItem> extends Store<
+  CollectionStoreState<T>
+> {
   __unstableCollectionLookup: CollectionLookup<T>;
 }
 
@@ -112,10 +111,6 @@ function setCachedItemIds<T extends CollectionStoreItem>(
   cache.ids = ids;
 }
 
-type SetItems<T extends CollectionStoreItem> = (
-  getItems: (items: T[]) => T[],
-) => void;
-
 /**
  * Creates a collection store.
  */
@@ -143,7 +138,7 @@ export function createCollectionStore<
       controlledItemsSource: items,
       propagatedItems: items,
     };
-  const { controlledItems } = collectionLookup;
+  const { controlledItems, registeredItems } = collectionLookup;
   // These arrays are replaced independently, so each needs its own cache.
   const itemIdCache: ItemIdCache<T> = {};
   const renderedItemIdCache: ItemIdCache<T> = {};
@@ -155,13 +150,13 @@ export function createCollectionStore<
 
   const collection = createStore(initialState, props.store);
 
-  const privateStore: CollectionPrivateStore<T> = {
-    ...createStore(
+  const privateStore = Object.assign(
+    createStore(
       { items, renderedItems: initialState.renderedItems },
       syncPrivateStore,
     ),
-    __unstableCollectionLookup: collectionLookup,
-  };
+    { __unstableCollectionLookup: collectionLookup },
+  );
 
   const sortItems = (renderedItems: T[]) => {
     const sortedItems = sortBasedOnDOMPosition(renderedItems, (i) => i.element);
@@ -178,16 +173,12 @@ export function createCollectionStore<
     }
   };
 
-  const syncItemLookup = (items: T[]) => {
+  subscribe(collection, ["items"], ({ items }) => {
     // Composed stores observe the same public state array, so only the first
     // listener needs to process their shared lookup.
     if (items === collectionLookup.propagatedItems) return;
     collectionLookup.propagatedItems = items;
     indexControlledItems(items);
-  };
-
-  subscribe(collection, ["items"], (state) => {
-    syncItemLookup(state.items);
   });
 
   const setState: CollectionStore<T>["setState"] = (key, value) => {
@@ -204,22 +195,19 @@ export function createCollectionStore<
     });
   };
 
-  const publishPrivateItems = (items: T[]) => {
-    collectionLookup.propagatedItems = items;
-    collection.setState("items", items);
-  };
-
   setup(collection, () => init(privateStore));
 
   // Use the private store to register items and then batch the changes to the
   // public store so we don't trigger multiple updates on the store when adding
   // multiple items.
-  setup(privateStore, () => {
-    if (syncPrivateStore) return;
-    return batch(privateStore, ["items"], (state) => {
-      publishPrivateItems(state.items);
+  if (!syncPrivateStore) {
+    setup(privateStore, () => {
+      return batch(privateStore, ["items"], ({ items }) => {
+        collectionLookup.propagatedItems = items;
+        collection.setState("items", items);
+      });
     });
-  });
+  }
 
   setup(privateStore, () => {
     return batch(privateStore, ["renderedItems"], (state) => {
@@ -264,15 +252,9 @@ export function createCollectionStore<
     });
   });
 
-  const setItems: SetItems<T> = (getItems) =>
-    privateStore.setState("items", getItems);
-
-  const setRenderedItems: SetItems<T> = (getItems) =>
-    privateStore.setState("renderedItems", getItems);
-
   const createMergeItem = (
+    key: "items" | "renderedItems",
     cache: ItemIdCache<T>,
-    setItems: SetItems<T>,
     lookup?: CollectionLookup<T>,
   ) => {
     const registeredItems = lookup?.registeredItems;
@@ -282,7 +264,7 @@ export function createCollectionStore<
       const wasKnown =
         !!previousRegisteredItem || !!controlledItems?.has(item.id);
       let prevItem: T | undefined;
-      setItems((items) => {
+      privateStore.setState(key, (items) => {
         const shouldUseCache =
           !!cache.ids || (items.length >= itemIdCacheThreshold && !wasKnown);
         const ids = shouldUseCache ? getCachedItemIds(items, cache) : undefined;
@@ -317,7 +299,7 @@ export function createCollectionStore<
             registeredItems.delete(item.id);
           }
         }
-        setItems((items) => {
+        privateStore.setState(key, (items) => {
           const ids = cache.ids ? getCachedItemIds(items, cache) : undefined;
           if (!prevItem) {
             const nextItems = items.filter(({ id }) => id !== item.id);
@@ -343,13 +325,11 @@ export function createCollectionStore<
     };
   };
 
-  const mergeItem = createMergeItem(itemIdCache, setItems, collectionLookup);
+  const registerItem = createMergeItem("items", itemIdCache, collectionLookup);
   const mergeRenderedItem = createMergeItem(
+    "renderedItems",
     renderedItemIdCache,
-    setRenderedItems,
   );
-
-  const registerItem: CollectionStore<T>["registerItem"] = mergeItem;
 
   return {
     ...collection,
@@ -360,11 +340,11 @@ export function createCollectionStore<
 
     item: (id) => {
       if (!id) return null;
-      return (
-        collectionLookup.registeredItems.get(id) ??
-        controlledItems.get(id) ??
-        null
-      );
+      // Avoid an overlay lookup when there are no live registrations.
+      if (!registeredItems.size) {
+        return controlledItems.get(id) ?? null;
+      }
+      return registeredItems.get(id) ?? controlledItems.get(id) ?? null;
     },
 
     // @ts-expect-error Internal
