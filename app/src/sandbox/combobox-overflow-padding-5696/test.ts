@@ -26,7 +26,7 @@ test("uses the greatest horizontal overflow padding for CSS sizing", async () =>
 });
 
 test("does not reposition when inline padding values are unchanged", async () => {
-  const popover = q.listbox.ensure();
+  const popover = q.listbox();
   const positionUpdates = q.status.ensure("Position updates");
   const initialPositionUpdates = positionUpdates.textContent;
   expect(Number(initialPositionUpdates)).toBeGreaterThan(0);

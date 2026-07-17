@@ -42,7 +42,7 @@ beforeEach(() => {
 });
 
 async function selectParagraphText() {
-  await select(selectionText, q.text.ensure(/Keep this/));
+  await select(selectionText, q.text(/Keep this/));
   expect(document.getSelection()?.toString()).toBe(selectionText);
 }
 
