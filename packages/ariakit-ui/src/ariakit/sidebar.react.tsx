@@ -17,6 +17,11 @@ const SidebarContext = React.createContext<SidebarContextType>(
   defaultSidebarContext,
 );
 
+// Collapsible detection must key off SidebarProvider specifically. Reading
+// the generic dialog context would flag a sidebar inside any unrelated
+// DialogProvider and hijack that dialog's store.
+const SidebarProviderContext = React.createContext(false);
+
 export interface SidebarProps
   extends
     ak.RoleProps<"div">,
@@ -35,10 +40,10 @@ export function Sidebar({
 }: SidebarProps) {
   const isMobile = useIsMobile();
   const context = React.useContext(SidebarContext);
-  const dialog = ak.useDialogContext();
+  const hasSidebarProvider = React.useContext(SidebarProviderContext);
 
   side = side ?? context.side;
-  collapsible = collapsible ?? !!dialog;
+  collapsible = collapsible ?? hasSidebarProvider;
 
   const contextValue = React.useMemo(() => ({ side }), [side]);
   const [variantProps, rest] = splitProps(props, sidebar);
@@ -66,10 +71,12 @@ export function Sidebar({
         modal={isMobile}
         hideOnEscape={isMobile}
         hideOnInteractOutside={isMobile}
-        // TODO: The unconditional open prop is controlled, so a
-        // SidebarProvider store can never hide the sidebar; revisit when a
-        // collapsible consumer migrates.
-        open
+        // Only a standalone collapsible sidebar forces itself open; with a
+        // SidebarProvider the provider store drives visibility.
+        open={hasSidebarProvider ? undefined : true}
+        // A desktop sidebar mounts open as part of the page layout; moving
+        // focus into it only makes sense for the mobile drawer.
+        autoFocusOnShow={isMobile}
         {...props}
       />
     );
@@ -86,9 +93,11 @@ export function SidebarProvider({
 }: SidebarProviderProps) {
   const contextValue = React.useMemo(() => ({ side }), [side]);
   return (
-    <SidebarContext.Provider value={contextValue}>
-      <ak.DialogProvider {...props} />
-    </SidebarContext.Provider>
+    <SidebarProviderContext.Provider value={true}>
+      <SidebarContext.Provider value={contextValue}>
+        <ak.DialogProvider {...props} />
+      </SidebarContext.Provider>
+    </SidebarProviderContext.Provider>
   );
 }
 
