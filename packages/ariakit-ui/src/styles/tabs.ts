@@ -129,7 +129,10 @@ export const tabList = cv({
   class: [
     "rounded-b-none! pb-0",
     "after:w-[calc((var(--fr)-var(--fp))*2)]",
-    "bg-transparent overflow-clip not-has-[.glider]:gap-0 not-supports-anchor:gap-0",
+    // Legacy ak-tab-list scroller: trailing tabs must stay reachable by
+    // pointer when the strip overflows on narrow viewports.
+    "overflow-x-auto overflow-y-clip overscroll-x-contain [scrollbar-width:none]",
+    "bg-transparent not-has-[.glider]:gap-0 not-supports-anchor:gap-0",
   ],
   defaultVariants: {
     $cover: true,
