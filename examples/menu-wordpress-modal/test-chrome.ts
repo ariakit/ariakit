@@ -29,6 +29,26 @@ const getMenu = (page: Page, name?: string) => getPopup(page, "menu", name);
 const getAccessibleMenu = (page: Page, name?: string) =>
   getAccessiblePopup(page, "menu", name);
 
+test("keeps the modal open when Escape closes a menu from its disclosure", async ({
+  page,
+}) => {
+  await getButton(page, "Options").click();
+  await getMenuItem(page, "Nested").click();
+  await expect(getAccessibleModal(page)).toBeVisible();
+
+  const disclosure = getButton(page, "Menu");
+  await disclosure.click();
+  await expect(getAccessibleMenu(page, "Menu")).toBeVisible();
+
+  await disclosure.focus();
+  await expect(disclosure).toBeFocused();
+  await page.keyboard.press("Escape");
+
+  await expect(getMenu(page, "Menu")).not.toBeVisible();
+  await page.waitForTimeout(300);
+  await expect(getAccessibleModal(page)).toBeVisible();
+});
+
 for (const menuitem of [
   "Nested",
   "Sibling",
