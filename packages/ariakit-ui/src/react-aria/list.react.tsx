@@ -146,7 +146,9 @@ export function ListDisclosure(props: ListDisclosureProps) {
     <Disclosure
       {...listDisclosure.jsx(variantProps)}
       {...rest}
-      button={rest.button && button}
+      // A nullish check, not truthiness: falsy labels like {0} must still
+      // render through ListDisclosureButton so its indicator defaults apply.
+      button={rest.button != null ? button : undefined}
       content={content}
     />
   );
