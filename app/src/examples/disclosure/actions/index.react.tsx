@@ -184,6 +184,10 @@ function OrderCard({ order }: OrderCardProps) {
               <div className="font-medium">{order.customer.name}</div>
               <Link
                 href={`mailto:${order.customer.email}`}
+                // Disable the text system so the muted ink applies; the
+                // link cv's default brand $text classes would win by
+                // stylesheet order regardless of the class attribute.
+                $text={false}
                 className="ak-ink-80"
               >
                 {order.customer.email}
