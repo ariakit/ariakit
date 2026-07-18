@@ -161,7 +161,6 @@ export const tabPanels = cv({
     $lightnessOffset: true,
     $p: 3,
     $cover: true,
-    $rounded: "unset",
     $border: "inherit",
   },
 });

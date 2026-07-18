@@ -9,7 +9,7 @@ export const disclosureGroup = cv({
   defaultVariants: {
     // Legacy ak-frame-none/card: square corners with card padding driving
     // the nested disclosures' cover geometry.
-    $rounded: false,
+    $rounded: "none",
     $p: 4,
   },
 });

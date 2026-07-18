@@ -82,7 +82,10 @@ export const frame = cv({
      */
     $rounded: {
       unset: "",
-      false: "ak-frame-none",
+      // A string value, not false: a "false" branch would give frame and
+      // every extender an implicit static default, which deadens downstream
+      // computed fallbacks like the glider's and the control slot's.
+      none: "ak-frame-none",
       xs: "ak-frame-xs",
       sm: "ak-frame-sm",
       md: "ak-frame-md",

@@ -82,7 +82,7 @@ export const glider = cv({
       return defaultValue ?? true;
     },
     $rounded(defaultValue, variants) {
-      if (variants.$kind === "bar") return false;
+      if (variants.$kind === "bar") return "none";
       return defaultValue ?? "full";
     },
     $p: "none",

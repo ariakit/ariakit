@@ -80,12 +80,10 @@ export const sidebarSection = cv({
   extend: [frame],
   class: "grid gap-(--sidebar-gap)",
   defaultVariants: {
-    // Sections are unpainted regions covering the sidebar frame. Cover
-    // determines the corners; without the unset the frame would also emit
-    // an inert ak-frame-none.
+    // Sections are unpainted regions covering the sidebar frame; cover
+    // determines the corners.
     $layer: false,
     $cover: true,
-    $rounded: "unset",
   },
 });
 

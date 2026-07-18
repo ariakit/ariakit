@@ -91,9 +91,6 @@ export const popoverScroll = cv({
   class: "overflow-auto overscroll-contain",
   defaultVariants: {
     $cover: true,
-    // Cover determines the corners; without this the frame would also emit
-    // an inert ak-frame-none.
-    $rounded: "unset",
     // The scroll area is a viewport into the popover surface, not a new
     // layer like the legacy ak-popover-scroll.
     $layer: false,
