@@ -81,7 +81,7 @@
     "@ariakit/test": "workspace:*",
     "@ariakit/utils": "workspace:*",
     "@changesets/apply-release-plan": "7.1.1",
-    "@changesets/cli": "2.31.0",
+    "@changesets/cli": "2.31.1",
     "@changesets/types": "6.1.0",
     "@playwright/test": "1.60.0",
     "@testing-library/jest-dom": "6.9.1",
