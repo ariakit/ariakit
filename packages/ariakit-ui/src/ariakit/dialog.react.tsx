@@ -51,7 +51,10 @@ export function Dialog(props: DialogProps) {
   return (
     <ak.Dialog
       backdrop={(rest.modal ?? true) && <div {...dialogBackdrop.jsx({})} />}
-      {...dialog.jsx({ $state: "data", ...variantProps })}
+      {...dialog.jsx({
+        ...variantProps,
+        $state: variantProps.$state ?? "data",
+      })}
       {...rest}
     />
   );

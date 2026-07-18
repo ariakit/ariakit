@@ -60,7 +60,10 @@ export function Disclosure({
     <ak.DisclosureProvider store={store}>
       <ak.Role
         data-open={isOpen || undefined}
-        {...disclosure.jsx({ $split: split, ...variantProps })}
+        {...disclosure.jsx({
+          ...variantProps,
+          $split: variantProps.$split ?? split,
+        })}
         {...rest}
       >
         {button != null ? (
@@ -147,9 +150,12 @@ export function DisclosureButton({
         aria-describedby={description ? descriptionId : undefined}
         data-open={isOpen || undefined}
         {...disclosureButton.jsx({
-          // Taller buttons press deeper, like the legacy ak-command-depth-2.
-          ...(description ? { $activeDepth: 2, $activeDepthX: 2 } : null),
           ...variantProps,
+          // Taller buttons press deeper, like the legacy ak-command-depth-2.
+          $activeDepth:
+            variantProps.$activeDepth ?? (description ? 2 : undefined),
+          $activeDepthX:
+            variantProps.$activeDepthX ?? (description ? 2 : undefined),
         })}
         {...rest}
       >
@@ -192,7 +198,10 @@ export function DisclosureContent({
   const bodyEl = createRender(DisclosureContentBody, body);
   return (
     <ak.DisclosureContent
-      {...disclosureContent.jsx({ $guide: guide, ...variantProps })}
+      {...disclosureContent.jsx({
+        ...variantProps,
+        $guide: variantProps.$guide ?? guide,
+      })}
       {...rest}
     >
       <ak.Role render={bodyEl}>{rest.children}</ak.Role>

@@ -17,7 +17,10 @@ export function Folder(props: FolderProps) {
   // box; an explicit $kind prop in variantProps still wins.
   return (
     <ak.Role.div
-      {...folder.jsx({ $kind: "folder", ...variantProps })}
+      {...folder.jsx({
+        ...variantProps,
+        $kind: variantProps.$kind ?? "folder",
+      })}
       {...rest}
     />
   );

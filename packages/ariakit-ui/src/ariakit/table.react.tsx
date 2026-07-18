@@ -259,7 +259,10 @@ export function TableRow({ group, ...props }: TableRowProps) {
   const [variantProps, rest] = splitProps(props, tableRow);
   return (
     <tr
-      {...tableRow.jsx({ $hover: group === "body", ...variantProps })}
+      {...tableRow.jsx({
+        ...variantProps,
+        $hover: variantProps.$hover ?? group === "body",
+      })}
       {...rest}
     />
   );

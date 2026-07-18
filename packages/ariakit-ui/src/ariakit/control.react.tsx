@@ -26,7 +26,10 @@ export function Control(props: ControlProps) {
     props["aria-disabled"] === true || props["aria-disabled"] === "true";
   return (
     <ak.Role.div
-      {...control.jsx({ $disabled: disabled, ...variantProps })}
+      {...control.jsx({
+        ...variantProps,
+        $disabled: variantProps.$disabled ?? disabled,
+      })}
       {...rest}
     />
   );

@@ -45,7 +45,10 @@ export function Popover(props: PopoverProps) {
   // wins, e.g. "none" for static previews.
   return (
     <ak.Popover
-      {...popover.jsx({ $state: "data", ...variantProps })}
+      {...popover.jsx({
+        ...variantProps,
+        $state: variantProps.$state ?? "data",
+      })}
       {...rest}
     />
   );

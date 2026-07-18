@@ -22,8 +22,8 @@ export function CheckboxCard(props: CheckboxCardProps) {
   return (
     <label
       {...checkboxCard.html({
-        $disabled: localProps.disabled,
         ...variantProps,
+        $disabled: variantProps.$disabled ?? localProps.disabled,
       })}
     >
       <input type="checkbox" disabled={localProps.disabled} {...rest} />

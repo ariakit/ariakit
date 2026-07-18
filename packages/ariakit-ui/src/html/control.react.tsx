@@ -25,7 +25,13 @@ export function Control(props: ControlProps) {
   const disabled =
     props["aria-disabled"] === true || props["aria-disabled"] === "true";
   return (
-    <div {...control.jsx({ $disabled: disabled, ...variantProps })} {...rest} />
+    <div
+      {...control.jsx({
+        ...variantProps,
+        $disabled: variantProps.$disabled ?? disabled,
+      })}
+      {...rest}
+    />
   );
 }
 

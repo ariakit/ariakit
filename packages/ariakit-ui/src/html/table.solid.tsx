@@ -120,7 +120,10 @@ export function TableRow(props: TableRowProps) {
   const group = () => localProps.group ?? context();
   return (
     <tr
-      {...tableRow.html({ $hover: group() === "body", ...variantProps })}
+      {...tableRow.html({
+        ...variantProps,
+        $hover: variantProps.$hover ?? group() === "body",
+      })}
       {...rest}
     />
   );

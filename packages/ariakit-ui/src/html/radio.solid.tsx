@@ -13,7 +13,12 @@ export function Radio(props: RadioProps) {
     radio.html.propKeys,
   );
   return (
-    <label {...radio.html({ $disabled: localProps.disabled, ...variantProps })}>
+    <label
+      {...radio.html({
+        ...variantProps,
+        $disabled: variantProps.$disabled ?? localProps.disabled,
+      })}
+    >
       <input type="radio" disabled={localProps.disabled} {...rest} />
       {localProps.children}
     </label>

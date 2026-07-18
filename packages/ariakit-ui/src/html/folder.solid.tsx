@@ -14,8 +14,14 @@ export interface FolderProps
 export function Folder(props: FolderProps) {
   const [variantProps, rest] = splitProps(props, folder.html.propKeys);
   // Default the kind so the component paints the folder-tab shape out of the
-  // box; an explicit $kind prop still wins because variantProps spreads last.
+  // box; an explicit $kind prop still wins.
   return (
-    <div {...folder.html({ $kind: "folder", ...variantProps })} {...rest} />
+    <div
+      {...folder.html({
+        ...variantProps,
+        $kind: variantProps.$kind ?? "folder",
+      })}
+      {...rest}
+    />
   );
 }

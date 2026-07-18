@@ -17,7 +17,12 @@ export interface CheckboxCardProps
 export function CheckboxCard({ children, ...props }: CheckboxCardProps) {
   const [variantProps, rest] = splitProps(props, checkboxCard);
   return (
-    <label {...checkboxCard.jsx({ $disabled: rest.disabled, ...variantProps })}>
+    <label
+      {...checkboxCard.jsx({
+        ...variantProps,
+        $disabled: variantProps.$disabled ?? rest.disabled,
+      })}
+    >
       <input type="checkbox" {...rest} />
       {children}
     </label>

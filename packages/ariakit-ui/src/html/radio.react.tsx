@@ -9,7 +9,12 @@ export interface RadioProps
 export function Radio({ children, ...props }: RadioProps) {
   const [variantProps, rest] = splitProps(props, radio);
   return (
-    <label {...radio.jsx({ $disabled: rest.disabled, ...variantProps })}>
+    <label
+      {...radio.jsx({
+        ...variantProps,
+        $disabled: variantProps.$disabled ?? rest.disabled,
+      })}
+    >
       <input type="radio" {...rest} />
       {children}
     </label>

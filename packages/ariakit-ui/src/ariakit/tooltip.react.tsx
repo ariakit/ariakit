@@ -34,7 +34,10 @@ export function Tooltip(props: TooltipProps) {
   // wins, e.g. "none" for static previews.
   return (
     <ak.Tooltip
-      {...tooltip.jsx({ $state: "data", ...variantProps })}
+      {...tooltip.jsx({
+        ...variantProps,
+        $state: variantProps.$state ?? "data",
+      })}
       {...rest}
     />
   );

@@ -27,7 +27,10 @@ export function Control(props: ControlProps) {
     props["aria-disabled"] === true || props["aria-disabled"] === "true";
   return (
     <div
-      {...control.html({ $disabled: disabled(), ...variantProps })}
+      {...control.html({
+        ...variantProps,
+        $disabled: variantProps.$disabled ?? disabled(),
+      })}
       {...rest}
     />
   );

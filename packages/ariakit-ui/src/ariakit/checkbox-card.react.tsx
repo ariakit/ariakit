@@ -23,7 +23,12 @@ export function CheckboxCard({ children, ...props }: CheckboxCardProps) {
   // The label is never :disabled itself, so mirror the input's disabled prop
   // as the $disabled variant for the card's own disabled visuals.
   return (
-    <label {...checkboxCard.jsx({ $disabled: rest.disabled, ...variantProps })}>
+    <label
+      {...checkboxCard.jsx({
+        ...variantProps,
+        $disabled: variantProps.$disabled ?? rest.disabled,
+      })}
+    >
       <ak.Checkbox {...rest} />
       {children}
     </label>

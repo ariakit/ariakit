@@ -51,11 +51,11 @@ export function Sidebar({
 
   props = {
     ...sidebar.jsx({
-      $collapsed: !!collapsed,
+      ...variantProps,
+      $collapsed: variantProps.$collapsed ?? !!collapsed,
       // Modal sidebars live in a portal where container units can't reach
       // the app container.
-      $fullHeight: isDialog && isMobile,
-      ...variantProps,
+      $fullHeight: variantProps.$fullHeight ?? (isDialog && isMobile),
     }),
     ...rest,
     children: (

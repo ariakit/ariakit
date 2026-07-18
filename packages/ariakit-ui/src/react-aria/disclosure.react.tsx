@@ -60,12 +60,12 @@ export function Disclosure({
   return (
     <rac.Disclosure
       {...disclosure.jsx({
-        $split: split,
+        ...variantProps,
+        $split: variantProps.$split ?? split,
         // rac publishes the expanded state through the data-expanded
         // attribute; route it into the cv's open channel so descendants
         // react to it like they do to the ariakit flavor's data-open.
         class: "data-expanded:[--disclosure-open:1]",
-        ...variantProps,
       })}
       {...rest}
     >
@@ -170,9 +170,12 @@ export function DisclosureButton({
         aria-labelledby={description ? labelId : undefined}
         aria-describedby={description ? descriptionId : undefined}
         {...disclosureButton.jsx({
-          // Taller buttons press deeper, like the legacy ak-command-depth-2.
-          ...(description ? { $activeDepth: 2, $activeDepthX: 2 } : null),
           ...variantProps,
+          // Taller buttons press deeper, like the legacy ak-command-depth-2.
+          $activeDepth:
+            variantProps.$activeDepth ?? (description ? 2 : undefined),
+          $activeDepthX:
+            variantProps.$activeDepthX ?? (description ? 2 : undefined),
         })}
         {...rest}
       >
@@ -223,7 +226,10 @@ export function DisclosureContent({
   const bodyEl = createRender(DisclosureContentBody, body, { children });
   return (
     <rac.DisclosurePanel
-      {...disclosureContent.jsx({ $guide: guide, ...variantProps })}
+      {...disclosureContent.jsx({
+        ...variantProps,
+        $guide: variantProps.$guide ?? guide,
+      })}
       {...rest}
     >
       {bodyEl}

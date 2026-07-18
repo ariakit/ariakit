@@ -37,7 +37,12 @@ export function Radio({ children, ...props }: RadioProps) {
   // wrapping label through the $disabled variant instead of the input's
   // native pseudo class.
   return (
-    <label {...radio.jsx({ $disabled: rest.disabled, ...variantProps })}>
+    <label
+      {...radio.jsx({
+        ...variantProps,
+        $disabled: variantProps.$disabled ?? rest.disabled,
+      })}
+    >
       <ak.Radio {...rest} />
       {children}
     </label>
