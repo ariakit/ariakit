@@ -9,7 +9,12 @@ export function isCurrentPage(
   href?: string | URL,
 ): boolean {
   if (!href) return false;
-  const base = new URL(currentUrl ?? "", "https://example.com");
+  if (!currentUrl) return false;
+  // The fallback base only anchors path-only current URLs. The reserved
+  // .invalid host keeps real-world absolute destinations from matching it
+  // by origin; destinations that literally target the sentinel host are
+  // not supported inputs.
+  const base = new URL(currentUrl, "https://_.invalid");
   let dest: URL;
   try {
     dest = new URL(href, base);
