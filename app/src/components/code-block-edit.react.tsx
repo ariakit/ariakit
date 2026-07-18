@@ -20,6 +20,11 @@ export function getStackblitzFramework(
   source?: Source,
 ): AppStackblitzFramework | null {
   if (!framework || !source) return null;
+  // Generated projects can't install @ariakit/ui until the package
+  // publishes (see the distribution TODO in app/src/lib/stackblitz.ts), so
+  // sources that depend on it have no viable target instead of producing a
+  // project whose install fails.
+  if (Object.hasOwn(source.dependencies, "@ariakit/ui")) return null;
   const frameworkDetail = getFramework(framework);
   const indexFile =
     "indexFile" in frameworkDetail ? frameworkDetail.indexFile : null;
