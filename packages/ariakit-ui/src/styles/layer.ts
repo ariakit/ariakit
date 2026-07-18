@@ -172,8 +172,8 @@ export const layer = cv({
       }
       return getScaledStyleClass({
         value,
-        property: "--layer-chroma",
-        class: `ak-layer-min-c-(--layer-chroma)`,
+        property: "--layer-chroma-min",
+        class: `ak-layer-min-c-(--layer-chroma-min)`,
       });
     },
     /**
@@ -198,8 +198,8 @@ export const layer = cv({
       }
       return getScaledStyleClass({
         value,
-        property: "--layer-chroma",
-        class: `ak-layer-max-c-(--layer-chroma)`,
+        property: "--layer-chroma-max",
+        class: `ak-layer-max-c-(--layer-chroma-max)`,
       });
     },
     /**
