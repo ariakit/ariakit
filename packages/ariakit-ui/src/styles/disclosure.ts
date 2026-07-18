@@ -92,6 +92,11 @@ export const disclosureButton = cv({
     // wins over the control px shorthand without changing anything until a
     // guide or icon sets the indent.
     "ps-(--disclosure-ps,var(--control-px))",
+    // With an icon, the start padding falls back to the frame padding
+    // instead of the control padding, so the content body's indent formula
+    // (icon size plus twice the padding) lines up with the label exactly
+    // like the legacy geometry.
+    "[@container_style(--disclosure-icon-size)]:ps-(--disclosure-ps,var(--disclosure-padding))",
     // The corner transition runs at half speed and waits for the content to
     // collapse before restoring the bottom corners.
     "[transition-duration:calc(var(--disclosure-duration)*0.5)]",
@@ -109,6 +114,19 @@ export const disclosureButton = cv({
     "ui-disclosure-split:ui-hover:bg-(--ak-layer)",
     "ui-disclosure-split:ui-hover:ak-state-6",
   ],
+  variants: {
+    /**
+     * Extends the control's gap values with `auto`, which follows the
+     * disclosure frame: half the padding, never tighter than the base
+     * spacing step, like the legacy ak-button gap.
+     */
+    $gap: {
+      auto: [
+        "[--gap:max(--spacing(2),var(--disclosure-padding)/2)]",
+        "gap-(--gap)",
+      ],
+    },
+  },
   defaultVariants: {
     // The button is a transparent region of the disclosure surface; hover
     // paints the root (or the button itself when split) via the classes
@@ -117,6 +135,9 @@ export const disclosureButton = cv({
     $hoverOffset: false,
     // The button padding follows the disclosure frame it covers.
     $p: "var(--disclosure-padding)",
+    // The auto gap keeps the indicator close to the label; the control's
+    // padding-derived default is nearly twice the legacy gap.
+    $gap: "auto",
     $rounded: "unset",
     $forceRounded: true,
     // Wide press target: scale less horizontally, like the legacy
