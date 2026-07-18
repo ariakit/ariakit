@@ -25,11 +25,14 @@ export const glider = cv({
         "not-[.vertical>&]:start-[calc(anchor(start)+var(--inset-padding))]",
         "not-[.vertical>&]:bottom-[anchor(--glider-group_bottom)]",
         "not-[.vertical>&]:w-[calc(anchor-size()-var(--inset-padding)*2)]",
-        "not-[.vertical>&]:h-[calc(--spacing(0.5)+--spacing(0.1)*var(--contrast))]",
+        // Raw --contrast spans 0-100, so it must be normalized before
+        // scaling the bar thickness, or high-contrast mode inflates the bar
+        // from 2px to 42px.
+        "not-[.vertical>&]:h-[calc(--spacing(0.5)+--spacing(0.1)*var(--contrast)/100)]",
         // vertical orientation
         "[.vertical>&]:end-[anchor(--glider-group_end)]",
         "[.vertical>&]:bottom-[calc(anchor(bottom)+var(--inset-padding))]",
-        "[.vertical>&]:w-[calc(--spacing(0.5)+--spacing(0.1)*var(--contrast))]",
+        "[.vertical>&]:w-[calc(--spacing(0.5)+--spacing(0.1)*var(--contrast)/100)]",
         "[.vertical>&]:h-[calc(anchor-size()-var(--inset-padding)*2)]",
       ],
     },
