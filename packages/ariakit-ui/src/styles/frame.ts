@@ -18,6 +18,13 @@ const FRAME_BORDER_COLOR_VALUES = [
 
 export type FrameBorderColorValues = (typeof FRAME_BORDER_COLOR_VALUES)[number];
 
+export type FrameBorderWeightValues =
+  | "adaptive"
+  | "light"
+  | "normal"
+  | "medium"
+  | "bold";
+
 /**
  * Checks whether a value is one of the named colors accepted by the frame's
  * `$borderColor` variant.
@@ -147,16 +154,31 @@ export const frame = cv({
      */
     $borderRaw: "ak-edge-raw",
     /**
-     * Sets the border opacity. Setting it to `adaptive` makes the border appear
-     * only in high-contrast mode.
+     * Sets the border opacity. Accepts a named weight or a numeric value
+     * (0-100). Setting it to `adaptive` makes the border appear only in
+     * high-contrast mode. A single overridable channel: instance values
+     * always replace the default instead of fighting it by stylesheet
+     * order.
      */
-    $borderWeight: {
-      unset: "",
-      adaptive: "ak-edge-0",
-      light: "ak-edge-5",
-      normal: "ak-edge-10",
-      medium: "ak-edge-20",
-      bold: "ak-edge-40",
+    $borderWeight(value?: FrameBorderWeightValues | "unset" | number) {
+      if (value == null) return;
+      if (value === "unset") return;
+      if (typeof value === "number") {
+        return getScaledStyleClass({
+          value,
+          allowZero: true,
+          property: "--border-alpha",
+          class: "ak-edge-alpha-(--border-alpha)",
+        });
+      }
+      const valueMap = {
+        adaptive: "ak-edge-0",
+        light: "ak-edge-5",
+        normal: "ak-edge-10",
+        medium: "ak-edge-20",
+        bold: "ak-edge-40",
+      } satisfies Record<FrameBorderWeightValues, string>;
+      return valueMap[value];
     },
     /**
      * Uses very dark borders on low-dark layers, typically for native-app-like

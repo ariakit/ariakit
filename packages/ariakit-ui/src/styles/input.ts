@@ -10,9 +10,6 @@ export const input = cv({
     // single edge, and it responds to focus-within because the class often
     // sits on a wrapper around the actual input.
     "ak-outline ak-outline-brand -outline-offset-1 focus-within:outline-2",
-    // Inputs want a stronger edge than the frame's named border weights
-    // provide (between medium and bold).
-    "ak-edge-30",
     // Fields sit slightly raised on light layers and slightly recessed on
     // dark ones, where hover and focus restore the base layer instead of
     // shifting it further. Plain not-hover, not the ui-hover idiom: a
@@ -39,6 +36,10 @@ export const input = cv({
     // Always a real border like the legacy ak-frame-border, so the field
     // geometry doesn't change between light and dark themes.
     $borderType: "border",
+    // Inputs want a stronger edge than the named border weights provide
+    // (between medium and bold). A variant default, not a base class, so
+    // instance weights replace it instead of losing by stylesheet order.
+    $borderWeight: 30,
   },
 });
 
