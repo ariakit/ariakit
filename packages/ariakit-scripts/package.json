@@ -13,7 +13,7 @@
     "@jridgewell/trace-mapping": "0.3.31",
     "chokidar": "5.0.0",
     "commander": "15.0.0",
-    "rolldown": "1.1.5",
+    "rolldown": "1.2.0",
     "rolldown-plugin-dts": "0.27.9",
     "ts-morph": "28.0.0",
     "typescript": "npm:@typescript/typescript6@6.0.2",
