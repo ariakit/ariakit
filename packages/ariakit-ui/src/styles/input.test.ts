@@ -19,3 +19,13 @@ test("numeric and named border weights replace the default edge", () => {
   expect(named.class).toContain("ak-edge-5");
   expect(named.class).not.toContain("ak-edge-alpha-(--border-alpha)");
 });
+
+// Regression coverage: the input once used the ui-hover channel, whose
+// nested-interactive exclusion suppressed hover feedback on wrappers whose
+// form holds the input next to a submit button.
+test("uses plain hover for the field hover feedback", () => {
+  const { class: className } = input.html({});
+  expect(className).toContain("hover:transition-[background-color]");
+  expect(className).toContain("ak-light:hover:ak-state-3");
+  expect(className).not.toContain("ui-hover:");
+});

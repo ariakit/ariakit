@@ -229,7 +229,13 @@
 @custom-variant ui-hover {
   @variant hover {
     @variant not-ui-disabled {
-      @slot;
+      /* Hovering a nested interactive element (a select inside a split
+         disclosure row, for example) must not light up the host, which
+         would falsely signal that a click activates it. Same exclusions as
+         the legacy ak-command-hover. */
+      &:not(:has(button:hover), :has(*:hover > button)) {
+        @slot;
+      }
     }
   }
 }
