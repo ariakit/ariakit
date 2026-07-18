@@ -171,8 +171,8 @@ importers:
         specifier: 3.9.5
         version: 3.9.5
       prettier-plugin-tailwindcss:
-        specifier: 0.8.0
-        version: 0.8.0(prettier@3.9.5)
+        specifier: 0.8.1
+        version: 0.8.1(prettier@3.9.5)
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -451,8 +451,8 @@ importers:
         specifier: 7.0.0
         version: 7.0.0
       prettier-plugin-tailwindcss:
-        specifier: 0.8.0
-        version: 0.8.0(prettier@3.9.5)
+        specifier: 0.8.1
+        version: 0.8.1(prettier@3.9.5)
       rimraf:
         specifier: 6.1.3
         version: 6.1.3
@@ -8704,8 +8704,8 @@ packages:
     resolution: {integrity: sha512-dM0jVuXJPsDN6DvRpea484tCUaMiXWjuCn++HGTqUWzGDjv5tZkEZldAJ/UMlqRYGFrD/etByo4/xOuC/snX2A==}
     engines: {node: '>=20'}
 
-  prettier-plugin-tailwindcss@0.8.0:
-    resolution: {integrity: sha512-V8ITGH87yuBDF6JpEZTOVlUz/saAwqb8f3HRgUj8Lh+tGCcrmorhsLpYqzygwFwK0PE2Ib6Mv3M7T/uE2tZV1g==}
+  prettier-plugin-tailwindcss@0.8.1:
+    resolution: {integrity: sha512-iaFMYqDsE4ffdDkn5qup0j5f2aCEBFZrdrZnvu9QKTlWx/iGPeQ4HHu7b7fCPMxeo9nwQBiOAh2nSypdFYWJkw==}
     engines: {node: '>=20.19'}
     peerDependencies:
       '@ianvs/prettier-plugin-sort-imports': '*'
@@ -19084,7 +19084,7 @@ snapshots:
 
   powershell-utils@0.1.0: {}
 
-  prettier-plugin-tailwindcss@0.8.0(prettier@3.9.5):
+  prettier-plugin-tailwindcss@0.8.1(prettier@3.9.5):
     dependencies:
       prettier: 3.9.5
 
