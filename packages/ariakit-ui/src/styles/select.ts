@@ -1,5 +1,6 @@
 import { cv } from "clava";
 import { button } from "./button.ts";
+import { controlLabel } from "./control.ts";
 import { option } from "./option.ts";
 import { popover } from "./popover.ts";
 
@@ -12,6 +13,18 @@ export const selectArrow = cv({
   // control doesn't set items-center, so the span would stretch and the
   // blockified svg would sit at its top.
   class: "ms-auto flex-none self-center [&>svg]:block [&>svg]:size-4",
+});
+
+// The custom icon needs the same self-center compensation as the arrow.
+export const selectIcon = cv({
+  class: "flex-none self-center [&>svg]:block [&>svg]:size-4",
+});
+
+// The label cv opts the display value into the button's $text* variants,
+// which only reach .text and svg descendants.
+export const selectValueLabel = cv({
+  extend: [controlLabel],
+  class: "flex-1 text-start",
 });
 
 export const selectPopover = cv({

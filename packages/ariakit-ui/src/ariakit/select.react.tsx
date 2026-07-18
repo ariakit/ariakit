@@ -1,15 +1,19 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import { clsx } from "clsx";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import type * as React from "react";
 import { createRender } from "../react-utils/create-render.ts";
+import { badge as badgeStyle } from "../styles/badge.ts";
 import {
   select,
   selectArrow,
+  selectIcon,
   selectItem,
   selectItemCheck,
   selectPopover,
+  selectValueLabel,
 } from "../styles/select.ts";
 
 export interface SelectProps
@@ -108,6 +112,12 @@ export interface SelectButtonProps
   chevron?: "before" | "after" | false;
   /** Custom display value element. */
   displayValue?: React.ReactNode;
+  /**
+   * Styles the button as a colored status badge, like the legacy
+   * `ak-badge-*` classes on a select button. Pass a colored `$layer` to
+   * tint it.
+   */
+  badge?: boolean;
 }
 
 /**
@@ -117,25 +127,39 @@ export function SelectButton({
   icon,
   chevron = "after",
   displayValue,
+  badge,
   ...props
 }: SelectButtonProps) {
   const [variantProps, rest] = splitProps(props, select);
+  // The badge look resolves through the badge cv so the button tracks its
+  // defaults when they are tuned; explicit variant props still win.
+  const badgeVariants = badge ? badgeStyle.getVariants(variantProps) : null;
   const arrow = chevron !== false && (
     <span {...selectArrow.jsx({})}>
       <ChevronDownIcon />
     </span>
   );
+  const iconElement = icon != null && (
+    <span {...selectIcon.jsx({})}>{icon}</span>
+  );
   return (
     <ak.Select
-      {...select.jsx({ $disabled: rest.disabled, ...variantProps })}
+      {...select.jsx({
+        ...badgeVariants,
+        ...variantProps,
+        $disabled: variantProps.$disabled ?? rest.disabled,
+        // The badge cv's own class; restated because the badge look is
+        // composed from resolved variants, which carry no classes.
+        className: clsx(badge && "font-medium", variantProps.className),
+      })}
       {...rest}
     >
       {chevron === "before" && arrow}
-      {chevron !== "before" && icon}
-      <span className="flex-1 text-start">
+      {chevron !== "before" && iconElement}
+      <span {...selectValueLabel.jsx({})}>
         {displayValue || rest.children || <SelectValue />}
       </span>
-      {chevron === "before" && icon}
+      {chevron === "before" && iconElement}
       {chevron === "after" && arrow}
     </ak.Select>
   );
@@ -155,7 +179,10 @@ export function SelectPopover(props: SelectPopoverProps) {
     <ak.SelectPopover
       gutter={8}
       shift={-3}
-      {...selectPopover.jsx({ $state: "data", ...variantProps })}
+      {...selectPopover.jsx({
+        ...variantProps,
+        $state: variantProps.$state ?? "data",
+      })}
       {...rest}
     />
   );
@@ -190,7 +217,7 @@ export function SelectItem({
     <ak.SelectItem {...selectItem.jsx(variantProps)} {...rest}>
       {checkmark === "before" && check}
       {checkmark !== "before" && icon}
-      <span className="flex-1">{rest.children || rest.value}</span>
+      <span {...selectValueLabel.jsx({})}>{rest.children || rest.value}</span>
       {checkmark === "before" && icon}
       {checkmark === "after" && check}
     </ak.SelectItem>

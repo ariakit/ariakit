@@ -3,7 +3,6 @@ import { Disclosure } from "@ariakit/ui/ariakit/disclosure.react.tsx";
 import { Link } from "@ariakit/ui/ariakit/link.react.tsx";
 import { Select, SelectItem } from "@ariakit/ui/ariakit/select.react.tsx";
 import { Table, TableCell } from "@ariakit/ui/ariakit/table.react.tsx";
-import { badgeLabel } from "@ariakit/ui/styles/badge.ts";
 import { heading } from "@ariakit/ui/styles/heading.ts";
 import { clsx } from "clsx";
 import * as icons from "lucide-react";
@@ -85,33 +84,19 @@ function OrderCard({ order }: OrderCardProps) {
 
   const actions = (
     <Select
+      badge
       icon={statusProps.icon}
       aria-label="Order status"
       value={status}
-      // The label cv opts the text into the button's badge text color, which
-      // only reaches .text and svg descendants.
-      displayValue={<span {...badgeLabel.jsx({})}>{status}</span>}
       setValue={(status: OrderStatus) => setStatus(status)}
       popover={{ portal: true }}
-      // Legacy ak-badge-(color:--status-color) on the select button: the
-      // badge cv defaults are restated here since the select's own button
-      // base doesn't provide them.
+      // Legacy ak-badge-(color:--status-color) on the select button, with
+      // the example's explicit size and gap overrides on top of the badge
+      // defaults.
       $layer="var(--status-color)"
-      $mix={15}
-      $lightnessOffset={false}
-      $rounded="full"
       $size="sm"
-      $p={1}
-      $px="lg"
       $gap="xl"
-      $border
-      $borderWeight="adaptive"
-      $borderType="inset"
-      $text
-      $textPush={60}
-      $textWarm={20}
-      $textChroma="vivid"
-      className={clsx("font-medium", statusProps.className)}
+      className={statusProps.className}
     >
       {orderStatuses.map((status) => {
         const { className, icon } = getStatusProps(status);

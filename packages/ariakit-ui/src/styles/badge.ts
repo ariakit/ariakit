@@ -12,8 +12,15 @@ export const badge = cv({
     $px: "lg",
     $gap: "lg",
     $border: true,
-    $borderWeight: "adaptive",
     $borderType: "inset",
+    $borderWeight(defaultValue, variants) {
+      if (defaultValue != null) return defaultValue;
+      // Legacy colored ak-badge-* always drew a visible tinted ring
+      // (ak-edge-20); plain badges keep the adaptive high-contrast-only
+      // hairline, which legacy plain ak-badge had no equivalent for.
+      if (typeof variants.$layer === "string") return "medium";
+      return "adaptive";
+    },
     $text: true,
     $textPush: 60,
     $textWarm: 20,
