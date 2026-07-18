@@ -17,9 +17,27 @@ import {
 
 type TableRowGroupKind = "head" | "body" | "foot";
 
+/**
+ * Collects the union of column keys across all rows, preserving the first
+ * appearance order (head rows first) so every row renders the same cells in
+ * the same positions regardless of its own key order or missing columns.
+ */
+function getColumnKeys<K extends keyof any>(rows?: TableRows<K>) {
+  const keys = new Set<string>();
+  for (const row of rows ?? []) {
+    for (const key of Object.keys(row)) {
+      if (key === "group") continue;
+      keys.add(key);
+    }
+  }
+  return [...keys];
+}
+
 export type TableRow<K extends keyof any> = {
   group?: TableRowGroupKind;
-} & Record<K, React.ReactNode | TableCellProps>;
+  // Partial: a row may omit columns (or set them to null) and still render
+  // an empty cell in the right position.
+} & Partial<Record<K, React.ReactNode | TableCellProps>>;
 
 export type TableRows<K extends keyof any> = TableRow<K>[];
 
@@ -100,6 +118,11 @@ export function Table<K extends keyof any>({
   const headRows = rows?.filter((row) => row.group === "head");
   const bodyRows = rows?.filter((row) => row.group === "body" || !row.group);
   const footRows = rows?.filter((row) => row.group === "foot");
+  const columnKeys = getColumnKeys([
+    ...(headRows ?? []),
+    ...(bodyRows ?? []),
+    ...(footRows ?? []),
+  ]);
 
   const getRowElement = (row: TableRow<K>) => {
     if (row.group === "head") return headRowEl;
@@ -107,15 +130,22 @@ export function Table<K extends keyof any>({
     return rowEl;
   };
 
+  // Rows are caller-controlled records: inherited properties are not part
+  // of the declarative contract, so a sparse row must not render a value
+  // from its prototype chain.
+  const getCell = (row: TableRow<K>, key: K) => {
+    if (!Object.hasOwn(row, key)) return undefined;
+    return row[key];
+  };
+
   const isNumericColumn = (row: TableRow<K>, key: K) => {
-    const cell = row[key];
+    const cell = getCell(row, key);
     if (!cell) return false;
     if (typeof cell !== "object") return false;
     if (React.isValidElement<TableCellProps>(cell)) {
       return Boolean(cell.props.numeric);
     }
     if (isIterable(cell)) return false;
-    if (React.isValidElement<any>(cell)) return false;
     if (!Object.hasOwn(cell, "numeric")) return false;
     return Boolean((cell as TableCellProps).numeric);
   };
@@ -124,14 +154,21 @@ export function Table<K extends keyof any>({
     const rowElement = getRowElement(row);
     return (
       <ak.Role key={index} render={rowElement}>
-        {Object.entries(row).map(([key, value]) => {
-          if (key === "group") return null;
-          if (value == null) return null;
-          const tableCellElement = createRender(TableCell, value, {
-            numeric: !!headRows?.some((row) => isNumericColumn(row, key as K)),
-            header: row.group === "head" ? "column" : false,
-            children: key,
-          } as const);
+        {columnKeys.map((key) => {
+          // Missing and null columns still emit an empty cell so every
+          // following cell stays under its header.
+          const value = getCell(row, key as K) ?? { children: null };
+          const tableCellElement = createRender<TableCellProps>(
+            TableCell,
+            value,
+            {
+              numeric: !!headRows?.some((row) =>
+                isNumericColumn(row, key as K),
+              ),
+              header: row.group === "head" ? "column" : false,
+              children: key,
+            },
+          );
           return <ak.Role key={key} render={tableCellElement} />;
         })}
       </ak.Role>
