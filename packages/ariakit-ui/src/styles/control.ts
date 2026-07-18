@@ -59,7 +59,11 @@ export const control = cv({
      */
     $disabled: [
       "disabled cursor-not-allowed!",
-      "border-transparent! ring-transparent! inset-shadow-none! shadow-none!",
+      // The border wipe reads an overridable channel: card-like extenders
+      // set --disabled-border to keep a faint edge, while buttons fall back
+      // to transparent.
+      "border-(--disabled-border,transparent)! ring-(--disabled-border,transparent)!",
+      "inset-shadow-none! shadow-none!",
       "bg-none! ak-ink-0! *:ak-ink-0!",
     ],
   },

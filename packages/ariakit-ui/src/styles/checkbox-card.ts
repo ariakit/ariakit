@@ -30,6 +30,18 @@ export const checkboxCard = cv({
     "not-ui-disabled-within:ui-checked-within:ak-layer-lighten-0",
     "[&_input]:sr-only",
   ],
+  variants: {
+    /**
+     * Extends the control's disabled wipe: a label-based bordered card must
+     * keep a faint edge like the legacy ak-checkbox-card_disabled
+     * (ak-edge-5 + ak-layer-mix-20), or it reads as a rendering glitch on
+     * light layers.
+     */
+    $disabled: [
+      "[--disabled-border:var(--ak-edge)]",
+      "ak-edge-5 ak-layer-mix-20",
+    ],
+  },
   defaultVariants: {
     $rounded: "xl",
     $p: 3,
