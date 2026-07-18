@@ -209,6 +209,8 @@ export interface DisclosureContentProps
   body?: React.ReactElement | DisclosureContentBodyProps;
   /** Applies a guide to the content. */
   guide?: boolean;
+  /** Applies prose typography and spacing to the content body. */
+  prose?: boolean;
   // Deliberately narrowed from rac's render-prop functions to plain values
   // so they can merge through the cv output.
   className?: string;
@@ -219,11 +221,12 @@ export interface DisclosureContentProps
 export function DisclosureContent({
   body,
   guide,
+  prose,
   children,
   ...props
 }: DisclosureContentProps) {
   const [variantProps, rest] = splitProps(props, disclosureContent);
-  const bodyEl = createRender(DisclosureContentBody, body, { children });
+  const bodyEl = createRender(DisclosureContentBody, body, { children, prose });
   return (
     <rac.DisclosurePanel
       {...disclosureContent.jsx({

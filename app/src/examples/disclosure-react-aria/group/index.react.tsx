@@ -6,13 +6,6 @@ import {
   DisclosureContent,
   DisclosureGroup,
 } from "@ariakit/ui/react-aria/disclosure.react.tsx";
-import { prose } from "@ariakit/ui/styles/prose.ts";
-
-// Prose content body, with the rhythm capped at the disclosure frame padding
-// like the legacy ak-prose-gap-[min(var(--ak-frame-padding),--spacing(4))].
-const proseBody = prose.jsx({
-  $gap: "min(var(--ak-frame-padding), calc(var(--spacing) * 4))",
-});
 
 export default function Example() {
   return (
@@ -23,7 +16,7 @@ export default function Example() {
           <DisclosureButton indicator="plus-end">
             How do I access Ariakit Plus after purchasing?
           </DisclosureButton>
-          <DisclosureContent body={proseBody}>
+          <DisclosureContent prose>
             <p>
               After you create your account and complete payment, you will get
               immediate access to Ariakit Plus features. Your purchase is linked
@@ -42,7 +35,7 @@ export default function Example() {
             What do &quot;lifetime access&quot; and &quot;free updates&quot;
             mean?
           </DisclosureButton>
-          <DisclosureContent body={proseBody}>
+          <DisclosureContent prose>
             <p>
               Lifetime access and free updates mean you pay once and get all
               current and future Ariakit Plus features. Think of it like buying
@@ -54,7 +47,7 @@ export default function Example() {
           <DisclosureButton indicator="plus-end">
             How does the Team license work?
           </DisclosureButton>
-          <DisclosureContent body={proseBody}>
+          <DisclosureContent prose>
             <p>
               When you purchase a team license, you can invite up to 10 people
               (including you) by entering their email addresses at checkout or
@@ -71,7 +64,7 @@ export default function Example() {
           <DisclosureButton indicator="plus-end">
             Can I upgrade to a Team license later?
           </DisclosureButton>
-          <DisclosureContent body={proseBody}>
+          <DisclosureContent prose>
             <p>
               Yes. If you purchased an individual license, you can upgrade to a
               Team license later at a discount. Go to the checkout page, sign in
@@ -90,7 +83,7 @@ export default function Example() {
           <DisclosureButton indicator="plus-end">
             Can I use Ariakit Plus for multiple projects?
           </DisclosureButton>
-          <DisclosureContent body={proseBody}>
+          <DisclosureContent prose>
             <p>
               Yes, a single Ariakit Plus license lets you build multiple
               commercial websites, as long as they are custom sites developed

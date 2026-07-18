@@ -2,6 +2,7 @@ import { cv } from "clava";
 import { button } from "./button.ts";
 import { frame } from "./frame.ts";
 import { layer } from "./layer.ts";
+import { prose } from "./prose.ts";
 
 export const disclosureGroup = cv({
   extend: [frame],
@@ -232,6 +233,16 @@ export const disclosureContent = cv({
   },
 });
 
+// The content body doubling as a prose column: the rhythm gap is capped by
+// the frame padding, a disclosure design decision (legacy DisclosureContent
+// prose), so consumers don't have to rediscover the formula.
+const disclosureProse = cv({
+  extend: [prose],
+  defaultVariants: {
+    $gap: "min(var(--ak-frame-padding), calc(var(--spacing) * 4))",
+  },
+});
+
 export const disclosureContentBody = cv({
   extend: [layer],
   class: [
@@ -247,6 +258,16 @@ export const disclosureContentBody = cv({
     "[padding-block-start:calc(var(--ak-frame-padding)*var(--disclosure-split,0))]",
     "[border-block-start-width:calc(var(--disclosure-border)*var(--disclosure-split,0))]",
   ],
+  variants: {
+    /**
+     * Applies prose typography and spacing with the frame-capped rhythm
+     * gap, like the legacy DisclosureContent prose.
+     */
+    prose(value?: boolean) {
+      if (!value) return;
+      return disclosureProse({});
+    },
+  },
 });
 
 export const disclosureActions = cv({

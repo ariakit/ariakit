@@ -10,7 +10,6 @@ import {
   DisclosureContentBody,
 } from "@ariakit/ui/ariakit/disclosure.react.tsx";
 import { createRender } from "@ariakit/ui/react-utils/create-render.ts";
-import { prose } from "@ariakit/ui/styles/prose.ts";
 import { clsx } from "clsx";
 import { createContext, useContext } from "react";
 
@@ -58,17 +57,13 @@ export interface ReasoningContentProps extends DisclosureContentProps {}
 
 export function ReasoningContent(props: ReasoningContentProps) {
   const nested = useContext(NestedReasoningContext);
-  const body = createRender(
-    DisclosureContentBody,
-    props.body,
-    // Legacy prose + ak-prose-text-sm: the body is a small-type prose column
-    // whose rhythm gap is capped by the frame padding. The /relaxed modifier
-    // keeps the prose line-height ratio like the legacy leading channel.
-    prose.jsx({
-      $gap: "min(var(--ak-frame-padding), calc(var(--spacing) * 4))",
-      className: "text-sm/relaxed",
-    }),
-  );
+  const body = createRender(DisclosureContentBody, props.body, {
+    // Legacy prose + ak-prose-text-sm: the prose prop applies the
+    // frame-capped rhythm; the /relaxed modifier keeps the prose
+    // line-height ratio like the legacy leading channel.
+    prose: true,
+    className: "text-sm/relaxed",
+  });
   return (
     <NestedReasoningContext.Provider value={true}>
       <DisclosureContent

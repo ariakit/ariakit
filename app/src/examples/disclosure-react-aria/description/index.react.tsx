@@ -5,13 +5,6 @@ import {
   DisclosureContent,
 } from "@ariakit/ui/react-aria/disclosure.react.tsx";
 import { badge, badgeLabel } from "@ariakit/ui/styles/badge.ts";
-import { prose } from "@ariakit/ui/styles/prose.ts";
-
-// Prose content body, with the rhythm capped at the disclosure frame padding
-// like the legacy ak-prose-gap-[min(var(--ak-frame-padding),--spacing(4))].
-const proseBody = prose.jsx({
-  $gap: "min(var(--ak-frame-padding), calc(var(--spacing) * 4))",
-});
 
 // The badge cvs are spread on spans rather than rendering the Badge
 // component (a div) because the description renders inside the button, where
@@ -46,7 +39,7 @@ export default function Example() {
         >
           Visa •••• •••• •••• 3421
         </DisclosureButton>
-        <DisclosureContent body={proseBody}>
+        <DisclosureContent prose>
           <div className="p-(--disclosure-padding)">
             {/* The weight and margin restate what the legacy prose heading
                 styles applied; the heading cv is skipped because its

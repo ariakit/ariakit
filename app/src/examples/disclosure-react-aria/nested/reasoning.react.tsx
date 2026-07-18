@@ -10,17 +10,15 @@ import {
   DisclosureContentBody,
 } from "@ariakit/ui/react-aria/disclosure.react.tsx";
 import { createRender } from "@ariakit/ui/react-utils/create-render.ts";
-import { prose } from "@ariakit/ui/styles/prose.ts";
 import { clsx } from "clsx";
 import { createContext, useContext } from "react";
 
-// Prose content body at the small text size, with the rhythm capped at the
-// disclosure frame padding like the legacy ak-prose-text-sm and
-// ak-prose-gap-[min(var(--ak-frame-padding),--spacing(4))] classes.
-const proseBody = prose.jsx({
-  $gap: "min(var(--ak-frame-padding), calc(var(--spacing) * 4))",
-  class: "text-sm/relaxed",
-});
+// Prose content body at the small text size, like the legacy
+// ak-prose-text-sm.
+const proseBody = {
+  prose: true,
+  className: "text-sm/relaxed",
+} as const;
 
 const NestedReasoningContext = createContext(false);
 

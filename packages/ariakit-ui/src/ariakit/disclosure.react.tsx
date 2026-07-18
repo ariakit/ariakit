@@ -187,15 +187,18 @@ export interface DisclosureContentProps
   body?: React.ReactElement | DisclosureContentBodyProps;
   /** Applies a guide to the content. */
   guide?: boolean;
+  /** Applies prose typography and spacing to the content body. */
+  prose?: boolean;
 }
 
 export function DisclosureContent({
   body,
   guide,
+  prose,
   ...props
 }: DisclosureContentProps) {
   const [variantProps, rest] = splitProps(props, disclosureContent);
-  const bodyEl = createRender(DisclosureContentBody, body);
+  const bodyEl = createRender(DisclosureContentBody, body, { prose });
   return (
     <ak.DisclosureContent
       {...disclosureContent.jsx({
