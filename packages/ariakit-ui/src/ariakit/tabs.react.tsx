@@ -1,6 +1,7 @@
 import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
+import { Fragment } from "react";
 import type { ComponentProps } from "react";
 import { createRender } from "../react-utils/create-render.ts";
 import {
@@ -39,7 +40,7 @@ export function Tabs({
       setSelectedId={setSelectedId}
       defaultSelectedId={defaultSelectedId}
     >
-      <div {...tabs.jsx(variantProps)} {...rest} />
+      <ak.Role {...tabs.jsx(variantProps)} {...rest} />
     </TabProvider>
   );
 }
@@ -78,10 +79,21 @@ export function TabList({ tabs, children, ...props }: TabListProps) {
   return (
     <ak.TabList {...tabList.jsx(variantProps)} {...rest}>
       {Array.isArray(tabs)
-        ? tabs.map((tab) => createRender(Tab, tab))
-        : Object.entries(tabs ?? {}).map(([id, tab]) =>
-            createRender(Tab, tab, { id }),
-          )}
+        ? tabs.map((tab, index) => {
+            const element = createRender(Tab, tab);
+            // A keyed element entry keeps its own key so reordering
+            // reconciles by identity; unkeyed entries fall back to their
+            // position. The prefixes keep the two key sources from
+            // colliding (an explicit key "0" vs index 0). Children.toArray
+            // would provide the same semantics, but react-dom 19 still
+            // emits a missing-key warning for its cloned entries.
+            const key =
+              element.key == null ? `index:${index}` : `key:${element.key}`;
+            return <Fragment key={key}>{element}</Fragment>;
+          })
+        : Object.entries(tabs ?? {}).map(([id, tab]) => (
+            <Fragment key={id}>{createRender(Tab, tab, { id })}</Fragment>
+          ))}
       {children}
     </ak.TabList>
   );
