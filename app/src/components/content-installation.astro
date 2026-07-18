@@ -109,7 +109,10 @@ const frameworkDependenciesHtml = Object.entries(frameworkDependencies)
     <ContentListDisclosure client:load>
       <Fragment slot="label">
         Set up Ariakit Styles{" "}
-        <span {...badge.html({})}><span {...badgeLabel.html({})}>Optional</span></span>
+        {/* inline-flex keeps the badge on the label's text line: the
+        control base is a block-level flex, which would break out of the
+        line and stretch. */}
+        <span {...badge.html({ class: "inline-flex" })}><span {...badgeLabel.html({})}>Optional</span></span>
       </Fragment>
       <ContentParagraph>
         Most Ariakit examples are written with <ContentLink href="/tailwind/"
