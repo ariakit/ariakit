@@ -1,6 +1,6 @@
 import type { VariantProps } from "clava";
 import type { ComponentProps } from "solid-js";
-import { mergeProps, splitProps } from "solid-js";
+import { Show, splitProps } from "solid-js";
 import {
   button,
   buttonContent,
@@ -19,15 +19,22 @@ export interface ButtonProps
  * @see https://ariakit.com/solid/examples/button
  */
 export function Button(props: ButtonProps) {
-  const disabled =
+  // The accessor is called inside the JSX spread so it stays reactive, and
+  // an explicit $disabled prop still wins.
+  const disabled = () =>
     props.disabled ||
     props["aria-disabled"] === true ||
     props["aria-disabled"] === "true";
-  const [variantProps, rest] = splitProps(
-    mergeProps({ $disabled: disabled } satisfies ButtonProps, props),
-    button.html.propKeys,
+  const [variantProps, rest] = splitProps(props, button.html.propKeys);
+  return (
+    <button
+      {...button.html({
+        ...variantProps,
+        $disabled: variantProps.$disabled ?? disabled(),
+      })}
+      {...rest}
+    />
   );
-  return <button {...button.html(variantProps)} {...rest} />;
 }
 
 export interface ButtonGroupProps
@@ -107,14 +114,15 @@ export interface ButtonSlotProps
  */
 export function ButtonSlot(props: ButtonSlotProps) {
   const [variantProps, rest] = splitProps(props, buttonSlot.html.propKeys);
-  const variants = buttonSlot.getVariants(variantProps);
   return (
     <span {...buttonSlot.html(variantProps)} {...rest}>
-      {variants.$kind === "badge" ? (
+      {/* getVariants runs inside the JSX so the badge check stays reactive */}
+      <Show
+        when={buttonSlot.getVariants(variantProps).$kind === "badge"}
+        fallback={rest.children}
+      >
         <span>{rest.children}</span>
-      ) : (
-        rest.children
-      )}
+      </Show>
     </span>
   );
 }
