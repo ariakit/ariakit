@@ -1,4 +1,10 @@
+import type { Locator } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
+
+async function activate(button: Locator) {
+  await button.focus();
+  await button.press("Enter");
+}
 
 withFramework(import.meta.dirname, async ({ test, query }) => {
   // https://github.com/ariakit/ariakit/issues/5179
@@ -186,6 +192,35 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(dialog).toBeHidden();
   });
 
+  for (const phase of ["capture", "bubble"] as const) {
+    test(`does not reclaim Escape stopped before React's document ${phase} listener`, async ({
+      page,
+      q,
+    }) => {
+      await q.button(`Show pre-stopped ${phase} document root example`).click();
+      const frame = query(
+        page.frameLocator(
+          `iframe[title="Pre-stopped ${phase} document root example"]`,
+        ),
+      );
+      const name = `Document root own ${phase} dialog`;
+      const dialog = frame.dialog(name);
+      const disclosure = frame.button(`Open ${name.toLowerCase()}`);
+      await activate(disclosure);
+      const input = query(dialog).combobox("Search");
+      await test.expect(dialog).toBeVisible();
+
+      if (phase === "bubble") {
+        await input.press("Escape");
+        await test.expect(frame.listbox("Suggestions")).toBeHidden();
+      }
+
+      await input.press("Escape");
+
+      await test.expect(dialog).toBeVisible();
+    });
+  }
+
   test("respects a child handler delegated to document", async ({
     page,
     q,
@@ -200,7 +235,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const input = dialogQuery.combobox("Search");
     const listbox = dialogQuery.listbox("Suggestions");
 
-    await openDialog.click();
+    await activate(openDialog);
     await test.expect(input).toBeFocused();
     await test.expect(listbox).toBeVisible();
 
@@ -228,7 +263,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const input = dialogQuery.combobox("Search");
     const listbox = dialogQuery.listbox("Suggestions");
 
-    await openDialog.click();
+    await activate(openDialog);
     await test.expect(input).toBeFocused();
     await test.expect(listbox).toBeVisible();
 
@@ -255,7 +290,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const input = dialogQuery.combobox("Search");
     const listbox = dialogQuery.listbox("Suggestions");
 
-    await frame.button("Open document root prevented dialog").click();
+    await activate(frame.button("Open document root prevented dialog"));
     await test.expect(input).toBeFocused();
     await test.expect(listbox).toBeVisible();
 
@@ -283,7 +318,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const input = dialogQuery.combobox("Search");
     const listbox = dialogQuery.listbox("Suggestions");
 
-    await openDialog.click();
+    await activate(openDialog);
     await test.expect(input).toBeFocused();
     await test.expect(listbox).toBeVisible();
 
@@ -310,7 +345,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const dialogQuery = query(dialog);
     const input = dialogQuery.combobox("Search");
 
-    await openDialog.click();
+    await activate(openDialog);
     await test.expect(input).toBeFocused();
     await test.expect(dialog).toBeVisible();
 
@@ -328,7 +363,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       page.frameLocator('iframe[title="Document root example"]'),
     );
     const dialog = frame.dialog("Document root callback dialog");
-    await frame.button("Open document root callback dialog").click();
+    await activate(frame.button("Open document root callback dialog"));
     await test.expect(dialog).toBeVisible();
 
     await query(dialog).button("Callback calls: 0").press("Escape");
@@ -347,7 +382,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const disclosure = frame.button("Open document root global dialog");
     const dialog = frame.dialog("Document root global dialog");
 
-    await disclosure.click();
+    await activate(disclosure);
     await test.expect(dialog).toBeVisible();
 
     await disclosure.focus();
@@ -367,7 +402,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const disclosure = frame.button("Open document root outside dialog");
     const dialog = frame.dialog("Document root outside dialog");
 
-    await disclosure.click();
+    await activate(disclosure);
     await test.expect(dialog).toBeVisible();
 
     await disclosure.focus();
@@ -385,7 +420,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const frame = query(
       page.frameLocator('iframe[title="Document root example"]'),
     );
-    await frame.button("Open document root outside dialog").click();
+    await activate(frame.button("Open document root outside dialog"));
 
     const dialog = frame.dialog("Document root outside dialog");
     const dialogQuery = query(dialog);

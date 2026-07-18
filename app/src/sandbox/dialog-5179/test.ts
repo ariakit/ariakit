@@ -6,6 +6,7 @@ import { DocumentRootDocument } from "./index.react.tsx";
 
 async function withDocumentRoot(
   callback: (query: ReturnType<typeof q.within>) => Promise<void>,
+  stopPropagation?: "bubble" | "capture",
 ) {
   const scope = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };
   const previousActEnvironment = scope.IS_REACT_ACT_ENVIRONMENT;
@@ -14,6 +15,14 @@ async function withDocumentRoot(
   document.body.appendChild(iframe);
   const frameDocument = iframe.contentDocument;
   if (!frameDocument) throw new Error("iframe document is not available");
+  const capture = stopPropagation === "capture";
+  const onKeyDown = (event: KeyboardEvent) => {
+    if (event.key !== "Escape") return;
+    event.stopPropagation();
+  };
+  if (stopPropagation) {
+    frameDocument.addEventListener("keydown", onKeyDown, capture);
+  }
   const root = createRoot(frameDocument);
   try {
     await act(async () => {
@@ -22,10 +31,32 @@ async function withDocumentRoot(
     await callback(q.within(frameDocument.body));
   } finally {
     await act(async () => root.unmount());
+    frameDocument.removeEventListener("keydown", onKeyDown, capture);
     iframe.remove();
     scope.IS_REACT_ACT_ENVIRONMENT = previousActEnvironment;
   }
 }
+
+test.each(["capture", "bubble"] as const)(
+  "does not reclaim Escape stopped before React's document %s listener",
+  async (phase) => {
+    await withDocumentRoot(async (q) => {
+      const name = `Document root own ${phase} dialog`;
+      await click(q.button(`Open ${name.toLowerCase()}`));
+      const input = q.combobox.ensure("Search");
+      expect(q.dialog(name)).toBeVisible();
+
+      if (phase === "bubble") {
+        await press.Escape(input);
+        expect(q.listbox("Suggestions")).not.toBeInTheDocument();
+      }
+
+      await press.Escape(input);
+
+      expect(q.dialog(name)).toBeVisible();
+    }, phase);
+  },
+);
 
 // https://github.com/ariakit/ariakit/issues/5179
 test("lets a child handle Escape before the dialog", async () => {

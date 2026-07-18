@@ -548,8 +548,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   });
 
   const onKeyDown = useEvent((event: ReactKeyboardEvent<HTMLType>) => {
-    onKeyDownProp?.(event);
     const nativeEvent = event.nativeEvent;
+    const wasPropagationStopped = nativeEvent.cancelBubble;
+    onKeyDownProp?.(event);
+    if (wasPropagationStopped) {
+      escapeEvents.delete(nativeEvent);
+      return;
+    }
     if (!hideOnEscapeEvent(nativeEvent)) return;
     event.stopPropagation();
   });
@@ -558,9 +563,12 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const nativeEvent = event.nativeEvent;
     const wasPropagationStopped = nativeEvent.cancelBubble;
     onKeyDownCaptureProp?.(event);
+    if (wasPropagationStopped) {
+      escapeEvents.delete(nativeEvent);
+      return;
+    }
     const stoppedAtDialog =
-      event.isPropagationStopped() ||
-      (!wasPropagationStopped && nativeEvent.cancelBubble);
+      event.isPropagationStopped() || nativeEvent.cancelBubble;
     if (!stoppedAtDialog) return;
     hideOnEscapeEvent(nativeEvent);
   });
@@ -570,6 +578,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (!domReady) return;
     if (!mounted) return;
     const onDocumentKeyDownCapture = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (!event.bubbles) return;
       if (event.cancelBubble) {
         escapeEvents.delete(event);
         return;

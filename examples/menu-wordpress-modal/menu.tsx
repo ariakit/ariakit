@@ -86,6 +86,20 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
             style={{ zIndex: inModal ? 100 : 50 }}
             className="menu"
             hideOnHoverOutside={false}
+            hideOnEscape={(event) => {
+              const disclosure = menu.getState().disclosureElement;
+              const nativeEvent =
+                "nativeEvent" in event ? event.nativeEvent : event;
+              if (
+                disclosure &&
+                nativeEvent.composedPath().includes(disclosure)
+              ) {
+                // The disclosure isn't in the menu's React subtree, so the
+                // menu can't stop the event at its own boundary.
+                event.stopPropagation();
+              }
+              return true;
+            }}
           >
             <MenuContext.Provider value={menu}>{children}</MenuContext.Provider>
           </Ariakit.Menu>

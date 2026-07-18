@@ -252,24 +252,44 @@ export function DocumentRootDocument() {
   );
 }
 
-function DocumentRootExample() {
+interface DocumentRootExampleProps {
+  stopPropagation?: "bubble" | "capture";
+}
+
+function DocumentRootExample({ stopPropagation }: DocumentRootExampleProps) {
   const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null);
 
   useEffect(() => {
     const document = iframe?.contentDocument;
     if (!document) return;
+    const capture = stopPropagation === "capture";
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.stopPropagation();
+    };
+    if (stopPropagation) {
+      document.addEventListener("keydown", onKeyDown, capture);
+    }
     // Delegate React events to the document itself to reproduce the listener
     // ordering where React capture runs before the Dialog effect.
     const root = createRoot(document);
     root.render(<DocumentRootDocument />);
-    return () => root.unmount();
-  }, [iframe]);
+    return () => {
+      root.unmount();
+      document.removeEventListener("keydown", onKeyDown, capture);
+    };
+  }, [iframe, stopPropagation]);
 
-  return <iframe ref={setIframe} title="Document root example" />;
+  const title = stopPropagation
+    ? `Pre-stopped ${stopPropagation} document root example`
+    : "Document root example";
+  return <iframe ref={setIframe} title={title} />;
 }
 
 export default function Example() {
-  const [showDocumentRoot, setShowDocumentRoot] = useState(false);
+  const [documentRoot, setDocumentRoot] = useState<
+    "bubble" | "capture" | "default" | null
+  >(null);
   return (
     <>
       <DialogExample />
@@ -308,10 +328,22 @@ export default function Example() {
         portalChild
         stop
       />
-      <button onClick={() => setShowDocumentRoot(true)}>
+      <button onClick={() => setDocumentRoot("default")}>
         Show document root example
       </button>
-      {showDocumentRoot && <DocumentRootExample />}
+      <button onClick={() => setDocumentRoot("capture")}>
+        Show pre-stopped capture document root example
+      </button>
+      <button onClick={() => setDocumentRoot("bubble")}>
+        Show pre-stopped bubble document root example
+      </button>
+      {documentRoot && (
+        <DocumentRootExample
+          stopPropagation={
+            documentRoot === "default" ? undefined : documentRoot
+          }
+        />
+      )}
     </>
   );
 }
