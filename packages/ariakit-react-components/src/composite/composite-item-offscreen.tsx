@@ -83,6 +83,7 @@ export function useCompositeItemOffscreen<
       "aria-disabled": disabled || undefined,
       "data-disabled": trulyDisabled || undefined,
       "data-offscreen-id": storeId,
+      "data-typeahead-text": props.typeaheadText,
     };
   }
 
@@ -112,6 +113,7 @@ export const CompositeItem = forwardRef(function CompositeItem({
     preventScrollOnKeyDown,
     moveOnKeyPress,
     tabbable,
+    typeaheadText,
     clickOnEnter,
     clickOnSpace,
     focusable,

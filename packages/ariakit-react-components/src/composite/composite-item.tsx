@@ -156,6 +156,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     moveOnKeyPress = true,
     tabbable = false,
     getItem: getItemProp,
+    typeaheadText,
     "aria-setsize": ariaSetSizeProp,
     "aria-posinset": ariaPosInSetProp,
     ...props
@@ -245,13 +246,14 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           rowId,
           disabled: trulyDisabled,
           children: item.element?.textContent,
+          typeaheadText,
         };
         if (getItemProp) {
           return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [id, rowId, trulyDisabled, getItemProp],
+      [id, rowId, trulyDisabled, typeaheadText, getItemProp],
     );
 
     const onFocusProp = props.onFocus;
@@ -649,6 +651,17 @@ export interface CompositeItemOptions<T extends ElementType = TagName>
    * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
    */
   tabbable?: boolean;
+  /**
+   * The text used by typeahead to match this item. Use this when the rendered
+   * text starts with decorative or custom content.
+   *
+   * Set this to an empty string to exclude the item from typeahead matching.
+   * @example
+   * ```jsx
+   * <CompositeItem typeaheadText="Canada">🇨🇦 Canada</CompositeItem>
+   * ```
+   */
+  typeaheadText?: string;
 }
 
 export type CompositeItemProps<T extends ElementType = TagName> = Props<

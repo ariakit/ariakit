@@ -17,7 +17,7 @@ test("shift-click exposes updated selectedOptions on change", async () => {
   `;
 
   const select = q.listbox.ensure("Fruits") as HTMLSelectElement;
-  const date = q.option.ensure("Date");
+  const date = q.option("Date");
   let changedSelection: string[] = [];
   let mouseUpSelection: string[] = [];
   select.addEventListener("mouseup", (event) => {

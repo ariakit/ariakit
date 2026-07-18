@@ -47,6 +47,7 @@ export const SelectItem = forwardRef(function SelectItem({
     preventScrollOnKeyDown,
     moveOnKeyPress,
     tabbable,
+    typeaheadText,
     clickOnEnter,
     clickOnSpace,
     focusable,

@@ -182,7 +182,7 @@ jobs:
 
       - name: Set up Node
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: package.json
 
@@ -296,7 +296,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version-file: package.json
 

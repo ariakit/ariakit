@@ -37,21 +37,21 @@ function getDefaultSelectedValues() {
 test("clicking options does not change their default selectedness", async () => {
   setupMultiSelect();
 
-  await click(q.option.ensure("Apple"));
-  await click(q.option.ensure("Cherry"), { ctrlKey: true });
-  await click(q.option.ensure("Apple"), { ctrlKey: true });
+  await click(q.option("Apple"));
+  await click(q.option("Cherry"), { ctrlKey: true });
+  await click(q.option("Apple"), { ctrlKey: true });
 
   expect(getSelectedValues()).toEqual(["Cherry"]);
   expect(getDefaultSelectedValues()).toEqual(["Banana"]);
-  expect(q.option.ensure("Apple")).not.toHaveAttribute("selected");
-  expect(q.option.ensure("Banana")).toHaveAttribute("selected");
-  expect(q.option.ensure("Cherry")).not.toHaveAttribute("selected");
+  expect(q.option("Apple")).not.toHaveAttribute("selected");
+  expect(q.option("Banana")).toHaveAttribute("selected");
+  expect(q.option("Cherry")).not.toHaveAttribute("selected");
 });
 
 test("anchorless shift-click anchors at the first selected option", async () => {
   setupMultiSelect();
 
-  await click(q.option.ensure("Cherry"), { shiftKey: true });
+  await click(q.option("Cherry"), { shiftKey: true });
 
   expect(getSelectedValues()).toEqual(["Banana", "Cherry"]);
   expect(getDefaultSelectedValues()).toEqual(["Banana"]);

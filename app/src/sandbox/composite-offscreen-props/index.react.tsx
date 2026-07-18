@@ -26,6 +26,7 @@ export default function Example() {
         preventScrollOnKeyDown={() => true}
         shouldRegisterItem
         tabbable
+        typeaheadText="Archive command"
         value="Archive"
       />
     </Ariakit.Composite>

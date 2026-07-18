@@ -24,6 +24,7 @@ import type { ElementType, HTMLAttributes } from "react";
 import { useRef, useState } from "react";
 import type { DialogOptions } from "../dialog/dialog.tsx";
 import { createDialogComponent, useDialog } from "../dialog/dialog.tsx";
+import { isHidden } from "../disclosure/disclosure-content.tsx";
 import type { Placement } from "./__utils.ts";
 import { getBasePlacement } from "./__utils.ts";
 import {
@@ -266,7 +267,16 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
     const arrowElement = useStoreState(store, "arrowElement");
     const anchorElement = useStoreState(store, "anchorElement");
-    const disclosureElement = useStoreState(store, "disclosureElement");
+    // The disclosure element is only used as the preserveTabOrder anchor,
+    // which takes effect only on portals and is disabled by the dialog for
+    // modal dialogs, so don't subscribe to it unless the feature can take
+    // effect.
+    const shouldPreserveTabOrder = preserveTabOrder && portal && !modal;
+    const disclosureElement = useStoreState(
+      store,
+      shouldPreserveTabOrder ? ["disclosureElement"] : [],
+      (state) => (shouldPreserveTabOrder ? state.disclosureElement : null),
+    );
     const popoverElement = useStoreState(store, "popoverElement");
     const contentElement = useStoreState(store, "contentElement");
     const placement = useStoreState(store, "placement");
@@ -302,6 +312,13 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         ? overflowPadding
         : (overflowPadding.left ?? 0);
 
+    // Whether the popover is unmounted (closed and not animating) while its
+    // element stays both connected to the DOM and hidden. The alwaysVisible
+    // and hidden props can keep the element visible while closed, in which
+    // case the positioning effect below must keep running.
+    const hiddenWhileUnmounted =
+      !mounted && isHidden(mounted, props.hidden, props.alwaysVisible);
+
     useSafeLayoutEffect(() => {
       if (!popoverElement?.isConnected) return;
 
@@ -312,10 +329,21 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         left: overflowPaddingLeft,
       };
 
+      // The overflow padding CSS variable is public API, so it's written even
+      // while the popover is hidden.
       popoverElement.style.setProperty(
         "--popover-overflow-padding",
         `${getOverflowPaddingValue(positioningPadding)}px`,
       );
+
+      // The popover element stays connected to the DOM when it's closed but
+      // not unmounted. The default updatePosition function bails out while
+      // unmounted, so autoUpdate would only keep ancestor scroll/resize
+      // listeners and observers running for a hidden element. Skip all of it
+      // and set everything up again once the popover is shown. Custom
+      // updatePosition callbacks still run while hidden since they may
+      // position the popover in ways that don't depend on the open state.
+      if (hiddenWhileUnmounted && !hasCustomUpdatePosition) return;
 
       const anchor = getAnchorElement(anchorElement, getAnchorRectProp);
 
@@ -458,6 +486,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       anchorElement,
       placement,
       mounted,
+      hiddenWhileUnmounted,
       domReady,
       fixed,
       flip,
