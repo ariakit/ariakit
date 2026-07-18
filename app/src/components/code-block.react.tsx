@@ -742,6 +742,11 @@ export function CodeBlockTabs({
     // The explicit hover classes below replace the offset so the two don't
     // fight over the same state utility.
     $hoverOffset: false,
+    // Reduced padding like the legacy segmented button, which multiplied
+    // the button block padding by 0.75. Both axes derive from this token,
+    // so the inline padding trims by the same 0.125em, landing nearer the
+    // legacy inline value than the button default did.
+    $p: "0.375em",
     class: clsx(
       "items-center",
       "ui-hover:ak-layer! ui-hover:ak-state-6",
@@ -885,7 +890,14 @@ export function CodeBlockTabs({
                       "[--tab-bg:var(--ak-layer-parent)]",
                     )}
                   >
-                    <TabList className={clsx(hasToolbar && "sm:ak-frame-p-1")}>
+                    <TabList
+                      // The cv's default negative margin overlays the tabs
+                      // root's border, but this list is nested inside the
+                      // fixed-height topbar, where it would leak 1px past
+                      // the strip and double the panel divider.
+                      $m="none"
+                      className={clsx(hasToolbar && "sm:ak-frame-p-1")}
+                    >
                       {tabs.map((tab) => (
                         <CodeBlockTab
                           key={tab.filename}
