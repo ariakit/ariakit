@@ -371,8 +371,22 @@ test("includes build output in published packages", async () => {
 
     const npmignore = await readFile(join(rootPath, ".npmignore"), "utf-8");
 
-    expect(npmignore).toContain(
-      "# Include package build output ignored at the workspace root.\n!dist/\n",
+    // Pinned because this file decides what ships. Any entry matching dist
+    // would publish packages whose exports point at missing files.
+    expect(npmignore).toBe(
+      [
+        "# Automatically generated",
+        "coverage",
+        "benchmark",
+        "src/test.ts",
+        "src/**/*.test.*",
+        "src/**/__tests__/**",
+        "tsconfig*.json",
+        "*.log",
+        "*.config.*",
+        "*.lock",
+        "",
+      ].join("\n"),
     );
   } finally {
     await rm(rootPath, { recursive: true, force: true });
