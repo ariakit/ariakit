@@ -630,13 +630,10 @@ test.each([
     store = createCollectionStore({ store: parent });
     const derivedStore = deriveItemsStore(store, kind);
 
-    try {
-      derivedStore.setState("items", (items) => [...items, { id: "apple" }]);
+    derivedStore.setState("items", (items) => [...items, { id: "apple" }]);
 
-      expect(observedIds).toEqual(["apple", expectedItemId]);
-    } finally {
-      stopSync();
-    }
+    expect(observedIds).toEqual(["apple", expectedItemId]);
+    stopSync();
   },
 );
 

@@ -95,9 +95,4 @@ program
     checkNodeBenchmarkResults(file, expectedCount);
   });
 
-try {
-  await program.parseAsync();
-} catch (error) {
-  console.error(error);
-  process.exitCode = 1;
-}
+await program.parseAsync();
