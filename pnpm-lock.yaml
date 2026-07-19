@@ -393,8 +393,8 @@ importers:
         specifier: 5.1.0
         version: 5.1.0
       use-local-storage-state:
-        specifier: 19.5.0
-        version: 19.5.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        specifier: 20.0.0
+        version: 20.0.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       zod:
         specifier: 4.4.3
         version: 4.4.3
@@ -10193,6 +10193,13 @@ packages:
 
   use-local-storage-state@19.5.0:
     resolution: {integrity: sha512-sUJAyFvsmqMpBhdwaRr7GTKkkoxb6PWeNVvpBDrLuwQF1PpbJRKIbOYeLLeqJI7B3wdfFlLLCBbmOdopiSTBOw==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
+
+  use-local-storage-state@20.0.0:
+    resolution: {integrity: sha512-PSaIAivHEv1+XtOr7FwyCYRx5fVf+3uW0d2rr/pbc7zWarHu7U4JQZs5KPaHxAaUVTwPYVJyL0ysdChVV0GR2Q==}
     engines: {node: '>=14'}
     peerDependencies:
       react: '>=18'
@@ -20865,7 +20872,7 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
-  use-local-storage-state@19.5.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
+  use-local-storage-state@20.0.0(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
     dependencies:
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
