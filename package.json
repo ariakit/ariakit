@@ -125,7 +125,7 @@
     "tsup": "8.5.1",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
-    "vite": "8.1.4",
+    "vite": "8.1.5",
     "vite-plugin-solid": "2.11.12",
     "vitest": "4.1.10",
     "vitest-fail-on-console": "0.10.1",
