@@ -24,23 +24,23 @@ test("hide with wheel", async ({ page }) => {
   await getMenuItem(page, "History").click();
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth,
-    wrapper!,
+    wrapper,
   );
   await page.waitForTimeout(100);
   await getMenuItem(page, "Recently closed tabs").click();
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth * 2,
-    wrapper!,
+    wrapper,
   );
   await page.mouse.wheel(-200, 0);
   await page.waitForFunction(
     (wrapper) => wrapper.scrollLeft === wrapper.clientWidth,
-    wrapper!,
+    wrapper,
   );
   await expect(getMenuItem(page, "Recently closed tabs")).toBeFocused();
   await expect(getMenu(page, "Recently closed tabs")).toBeHidden();
   await page.mouse.wheel(-200, 0);
-  await page.waitForFunction((wrapper) => wrapper.scrollLeft === 0, wrapper!);
+  await page.waitForFunction((wrapper) => wrapper.scrollLeft === 0, wrapper);
   await expect(getMenuItem(page, "History")).toBeFocused();
   await expect(getMenu(page, "History")).toBeHidden();
 });

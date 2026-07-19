@@ -78,8 +78,8 @@ importers:
         specifier: 6.1.0
         version: 6.1.0
       '@playwright/test':
-        specifier: 1.60.0
-        version: 1.60.0
+        specifier: 1.62.0-alpha-2026-07-17
+        version: 1.62.0-alpha-2026-07-17
       '@testing-library/jest-dom':
         specifier: 6.9.1
         version: 6.9.1
@@ -142,7 +142,7 @@ importers:
         version: 17.0.8
       next:
         specifier: 16.2.10
-        version: 16.2.10(@babel/core@7.29.0)(@playwright/test@1.60.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+        version: 16.2.10(@babel/core@7.29.0)(@playwright/test@1.62.0-alpha-2026-07-17)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
       node:
         specifier: runtime:24.18.0
         version: runtime:24.18.0
@@ -342,8 +342,8 @@ importers:
         specifier: 1.3.0
         version: 1.3.0
       playwright:
-        specifier: 1.60.0
-        version: 1.60.0
+        specifier: 1.62.0-alpha-2026-07-17
+        version: 1.62.0-alpha-2026-07-17
       pluralize:
         specifier: 8.0.0
         version: 8.0.0
@@ -407,10 +407,10 @@ importers:
         version: link:../packages/ariakit-test
       '@axe-core/playwright':
         specifier: 4.12.1
-        version: 4.12.1(playwright-core@1.60.0)
+        version: 4.12.1(playwright-core@1.62.0-alpha-2026-07-17)
       '@playwright/test':
-        specifier: 1.60.0
-        version: 1.60.0
+        specifier: 1.62.0-alpha-2026-07-17
+        version: 1.62.0-alpha-2026-07-17
       '@types/canvas-confetti':
         specifier: 1.9.0
         version: 1.9.0
@@ -527,8 +527,8 @@ importers:
         specifier: workspace:*
         version: link:../packages/ariakit-utils
       '@playwright/test':
-        specifier: 1.60.0
-        version: 1.60.0
+        specifier: 1.62.0-alpha-2026-07-17
+        version: 1.62.0-alpha-2026-07-17
       '@testing-library/react':
         specifier: 16.3.2
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -722,8 +722,8 @@ importers:
         version: 2.11.12(@testing-library/jest-dom@6.9.1)(solid-js@1.9.14)(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
     devDependencies:
       '@playwright/test':
-        specifier: 1.60.0
-        version: 1.60.0
+        specifier: 1.62.0-alpha-2026-07-17
+        version: 1.62.0-alpha-2026-07-17
       vitest:
         specifier: 4.1.10
         version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.10.6)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.1.4(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
@@ -813,9 +813,6 @@ importers:
       '@ariakit/utils':
         specifier: workspace:*
         version: link:../ariakit-utils
-      '@playwright/test':
-        specifier: ^1.27.0
-        version: 1.60.0
       '@testing-library/dom':
         specifier: ^8.0.0 || ^9.0.0 || ^10.0.0
         version: 10.4.1
@@ -826,6 +823,9 @@ importers:
       '@ariakit/scripts':
         specifier: workspace:*
         version: link:../ariakit-scripts
+      '@playwright/test':
+        specifier: 1.62.0-alpha-2026-07-17
+        version: 1.62.0-alpha-2026-07-17
       react:
         specifier: 19.2.7
         version: 19.2.7
@@ -3811,6 +3811,11 @@ packages:
   '@playwright/test@1.60.0':
     resolution: {integrity: sha512-O71yZIbAh/PxDMNGns37GHBIfrVkEVyn+AXyIa5dOTfb4/xNvRWV+Vv/NMbNCtODB/pO7vLlF2OTmMVLhmr7Ag==}
     engines: {node: '>=18'}
+    hasBin: true
+
+  '@playwright/test@1.62.0-alpha-2026-07-17':
+    resolution: {integrity: sha512-HURSgzjHnVgC0Z5ORKR7JnoptncZBUr+EGg2qTzjDxs2PiblJj6lf6Ey6WGHjKJWKoF47F2924YEAjW6qJcXQQ==}
+    engines: {node: '>=20'}
     hasBin: true
 
   '@poppinss/colors@4.1.6':
@@ -8694,9 +8699,19 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
+  playwright-core@1.62.0-alpha-2026-07-17:
+    resolution: {integrity: sha512-CTLP8x56gjbrq5FeEG4Uefccwn6xyEQPSivlp/fUsArOoiSMzlpE2G9/WJ+bewcz81L+Zjn6IrLVJ+Jsklq+aw==}
+    engines: {node: '>=20'}
+    hasBin: true
+
   playwright@1.60.0:
     resolution: {integrity: sha512-hheHdokM8cdqCb0lcE3s+zT4t4W+vvjpGxsZlDnikarzx8tSzMebh3UiFtgqwFwnTnjYQcsyMF8ei2mCO/tpeA==}
     engines: {node: '>=18'}
+    hasBin: true
+
+  playwright@1.62.0-alpha-2026-07-17:
+    resolution: {integrity: sha512-1fR/j3n+RzWQjpLS1TXzE50UMkdZ+LOoBdkkEOag/hMPS9ip5LzE9RW3+KPPUv9Cp0TVCVBCoWnkTYShqnO0cA==}
+    engines: {node: '>=20'}
     hasBin: true
 
   pluralize@8.0.0:
@@ -11672,10 +11687,10 @@ snapshots:
 
   '@aws/lambda-invoke-store@0.2.4': {}
 
-  '@axe-core/playwright@4.12.1(playwright-core@1.60.0)':
+  '@axe-core/playwright@4.12.1(playwright-core@1.62.0-alpha-2026-07-17)':
     dependencies:
       axe-core: 4.12.1
-      playwright-core: 1.60.0
+      playwright-core: 1.62.0-alpha-2026-07-17
 
   '@babel/code-frame@7.29.7':
     dependencies:
@@ -13763,6 +13778,11 @@ snapshots:
   '@playwright/test@1.60.0':
     dependencies:
       playwright: 1.60.0
+    optional: true
+
+  '@playwright/test@1.62.0-alpha-2026-07-17':
+    dependencies:
+      playwright: 1.62.0-alpha-2026-07-17
 
   '@poppinss/colors@4.1.6':
     dependencies:
@@ -18810,6 +18830,32 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
+  next@16.2.10(@babel/core@7.29.0)(@playwright/test@1.62.0-alpha-2026-07-17)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
+    dependencies:
+      '@next/env': 16.2.10
+      '@swc/helpers': 0.5.15
+      baseline-browser-mapping: 2.10.42
+      caniuse-lite: 1.0.30001806
+      postcss: 8.4.31
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+      styled-jsx: 5.1.6(@babel/core@7.29.0)(react@19.2.7)
+    optionalDependencies:
+      '@next/swc-darwin-arm64': 16.2.10
+      '@next/swc-darwin-x64': 16.2.10
+      '@next/swc-linux-arm64-gnu': 16.2.10
+      '@next/swc-linux-arm64-musl': 16.2.10
+      '@next/swc-linux-x64-gnu': 16.2.10
+      '@next/swc-linux-x64-musl': 16.2.10
+      '@next/swc-win32-arm64-msvc': 16.2.10
+      '@next/swc-win32-x64-msvc': 16.2.10
+      '@playwright/test': 1.62.0-alpha-2026-07-17
+      babel-plugin-react-compiler: 1.0.0
+      sharp: 0.34.5
+    transitivePeerDependencies:
+      - '@babel/core'
+      - babel-plugin-macros
+
   nlcst-to-string@4.0.0:
     dependencies:
       '@types/nlcst': 2.0.3
@@ -19150,11 +19196,21 @@ snapshots:
       mlly: 1.8.1
       pathe: 2.0.3
 
-  playwright-core@1.60.0: {}
+  playwright-core@1.60.0:
+    optional: true
+
+  playwright-core@1.62.0-alpha-2026-07-17: {}
 
   playwright@1.60.0:
     dependencies:
       playwright-core: 1.60.0
+    optionalDependencies:
+      fsevents: 2.3.2
+    optional: true
+
+  playwright@1.62.0-alpha-2026-07-17:
+    dependencies:
+      playwright-core: 1.62.0-alpha-2026-07-17
     optionalDependencies:
       fsevents: 2.3.2
 
