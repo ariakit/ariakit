@@ -8,5 +8,3 @@ tsconfig*.json
 *.log
 *.config.*
 *.lock
-# Include package build output ignored at the workspace root.
-!dist/

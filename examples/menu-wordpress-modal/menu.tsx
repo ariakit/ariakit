@@ -87,10 +87,17 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
             className="menu"
             hideOnHoverOutside={false}
             hideOnEscape={(event) => {
-              // Avoid passing the Escape keydown event to the WordPress Modal.
-              // Otherwise, the WordPress Modal would close when pressing Escape
-              // on a nested menu.
-              event.stopPropagation();
+              const disclosure = menu.getState().disclosureElement;
+              const nativeEvent =
+                "nativeEvent" in event ? event.nativeEvent : event;
+              if (
+                disclosure &&
+                nativeEvent.composedPath().includes(disclosure)
+              ) {
+                // The disclosure isn't in the menu's React subtree, so the
+                // menu can't stop the event at its own boundary.
+                event.stopPropagation();
+              }
               return true;
             }}
           >

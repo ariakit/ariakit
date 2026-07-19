@@ -81,7 +81,7 @@
     "@ariakit/test": "workspace:*",
     "@ariakit/utils": "workspace:*",
     "@changesets/apply-release-plan": "7.1.1",
-    "@changesets/cli": "2.31.0",
+    "@changesets/cli": "2.31.1",
     "@changesets/types": "6.1.0",
     "@playwright/test": "1.60.0",
     "@testing-library/jest-dom": "6.9.1",
@@ -113,7 +113,7 @@
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
     "prettier": "3.9.5",
-    "prettier-plugin-tailwindcss": "0.8.0",
+    "prettier-plugin-tailwindcss": "0.8.1",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "rimraf": "6.1.3",
@@ -129,7 +129,7 @@
     "vite-plugin-solid": "2.11.12",
     "vitest": "4.1.10",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.110.0"
+    "wrangler": "4.111.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
@@ -145,5 +145,5 @@
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@11.13.0"
+  "packageManager": "pnpm@11.14.0"
 }
