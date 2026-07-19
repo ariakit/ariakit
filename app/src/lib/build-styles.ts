@@ -945,10 +945,7 @@ async function main() {
       );
       process.exitCode = 1;
     }
-    // cleanup temp file
-    try {
-      await fs.unlink(tempOut);
-    } catch {}
+    await fs.unlink(tempOut);
     return;
   }
   console.log(`Wrote ${toPosix(out)}`);
