@@ -15,7 +15,6 @@ import type { FSWatcher } from "chokidar";
 import {
   getCommandOutput,
   normalizePath,
-  readPackageJson,
   readPackageJsonFile,
   runCommand,
 } from "./utils.ts";
@@ -278,58 +277,26 @@ async function rewriteReactDependencies(rootPath: string) {
   return updatedCount;
 }
 
-function stripLeadingSeparator(args: string[]) {
-  const [firstArg, ...restArgs] = args;
-  return firstArg === "--" ? restArgs : args;
-}
-
 function isHelpCommand(args: string[]) {
-  const [command] = stripLeadingSeparator(args);
+  const [command] = args;
   return !command || command === "--help" || command === "-h";
 }
 
 function printHelp() {
   console.error(
     [
-      "Usage: ariakit react18 <script> [args...]",
-      "       ariakit react18 -- <command> [args...]",
+      "Usage: ariakit react18 -- <command> [args...]",
       "",
-      "Run a root script or arbitrary command in an isolated React 18 workspace.",
+      "Run a command in an isolated React 18 workspace.",
     ].join("\n"),
   );
 }
 
-function getReact18Command(rootPath: string, args: string[]): React18Command {
-  const [command, ...commandArgs] = stripLeadingSeparator(args);
+export function getReact18Command(args: string[]): React18Command {
+  const [command, ...commandArgs] = args;
 
   if (!command) {
-    throw new Error("Missing command. Use `ariakit react18 <script>`.");
-  }
-
-  const packageJson = readPackageJson(rootPath);
-  // The `react18` script would recurse here. Run the underlying test script
-  // directly instead.
-  if (command === "react18") {
-    log(`Mapping ${command} to test to avoid recursion`);
-    return {
-      bin: "pnpm",
-      args: ["run", "test", ...commandArgs],
-    };
-  }
-  // The `test-react18` script delegates to `react18 test-react`. Preserve the
-  // narrowed React test suite when users invoke it through the wrapper.
-  if (command === "test-react18") {
-    log(`Mapping ${command} to test-react to avoid recursion`);
-    return {
-      bin: "pnpm",
-      args: ["run", "test-react", ...commandArgs],
-    };
-  }
-  if (packageJson.scripts?.[command]) {
-    return {
-      bin: "pnpm",
-      args: ["run", command, ...commandArgs],
-    };
+    throw new Error("Missing command. Use `ariakit react18 -- <command>`.");
   }
 
   return {
@@ -450,7 +417,7 @@ export async function react18(args: string[]) {
     { cwd: workspacePath },
   );
 
-  const command = getReact18Command(workspacePath, args);
+  const command = getReact18Command(args);
   const watcher = startWorkspaceWatcher(rootPath, workspacePath);
 
   try {

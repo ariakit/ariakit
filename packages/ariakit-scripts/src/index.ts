@@ -58,8 +58,11 @@ program
 
 program
   .command("react18")
-  .description("Run a command in an isolated React 18 workspace")
-  .argument("[command...]", "Root script or command to run")
+  .description(
+    "Run `ariakit react18 -- <command>` in an isolated React 18 workspace",
+  )
+  .usage("-- <command> [args...]")
+  .argument("[command...]", "Command and arguments following `--`")
   .allowUnknownOption()
   .helpOption(false)
   .action(react18);
