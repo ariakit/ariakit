@@ -438,7 +438,7 @@ export async function createCheckout({
 export async function getCheckout(session: Stripe.Checkout.Session | string) {
   if (!stripe) return;
   try {
-    return expand(stripe.checkout.sessions, session);
+    return await expand(stripe.checkout.sessions, session);
   } catch (error) {
     console.error(error);
     return;
