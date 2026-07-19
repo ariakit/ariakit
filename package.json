@@ -7,7 +7,6 @@
     "dev-package-json": "node scripts/build/package-json-dev.js",
     "dev": "conc -r 'pnpm:dev-package-json' 'pnpm -F website run dev'",
     "dev-lite": "cross-env DISABLE_SHIKI=true pnpm run dev",
-    "op-env": "ariakit op-env",
     "dev-app": "ariakit dev",
     "dev-app-lite": "cross-env DISABLE_SYNTAX_HIGHLIGHTING=true pnpm run dev-app",
     "build-app": "pnpm -F nextjs run build-worker && pnpm -F app run build",
