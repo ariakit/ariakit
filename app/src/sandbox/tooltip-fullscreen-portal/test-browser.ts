@@ -21,7 +21,8 @@ async function getPortalState(page: Page) {
 withFramework(import.meta.dirname, async ({ test }) => {
   // See https://github.com/ariakit/ariakit/issues/6585
   // To reproduce the React 18 StrictMode failure in a browser, serve the app
-  // with `pnpm react18 dev-app`. CI's React 18 signal comes from test.ts.
+  // with `pnpm react18 -- pnpm dev-app`. CI's React 18 signal comes from
+  // test.ts.
   test("does not leak duplicate tooltip portal containers", async ({
     page,
     q,

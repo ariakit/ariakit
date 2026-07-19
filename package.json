@@ -18,7 +18,7 @@
     "test": "vitest",
     "bench": "vitest bench --config vitest.bench.config.ts",
     "test-react": "cross-env ARIAKIT_TEST_LOADER=react vitest",
-    "test-react18": "pnpm react18 test-react",
+    "test-react18": "ariakit react18 -- pnpm test-react",
     "test-solid": "cross-env ARIAKIT_TEST_LOADER=solid vitest",
     "playwright": "playwright test",
     "test-browser": "pnpm run playwright --project=chrome --project=safari --project=firefox",
