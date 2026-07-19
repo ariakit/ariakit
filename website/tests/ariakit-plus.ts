@@ -207,13 +207,16 @@ function frameLocator(page: Page) {
 async function fillCheckout(page: Page, assertEmail?: string) {
   const frame = frameLocator(page);
   const q = query(frame);
+  const type = (name: string, value: string) =>
+    q.textbox(name).pressSequentially(value, { delay: 50 });
   if (assertEmail) {
     await expect(frame.getByText(assertEmail)).toBeVisible();
   }
-  await q.textbox("Card number").fill("4242424242424242");
-  await q.textbox("Expiration").fill("12/40");
-  await q.textbox("CVC").fill("123");
-  await q.textbox("Cardholder name").fill("John Doe");
+  // Stripe uses keyboard activity when validating its invisible challenge.
+  await type("Card number", "4242424242424242");
+  await type("Expiration", "12/40");
+  await type("CVC", "123");
+  await type("Cardholder name", "John Doe");
   await q.combobox("Country or region").selectOption("Spain");
   return frame;
 }
