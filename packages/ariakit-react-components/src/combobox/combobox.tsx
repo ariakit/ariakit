@@ -16,6 +16,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
+  disabledFromProps,
   getPopupRole,
   getScrollingElement,
   getTextboxSelection,
@@ -697,6 +698,11 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       (state) => state.activeId === null,
     );
 
+    const formDisabled = disabledFromProps({
+      disabled,
+      "aria-disabled": props["aria-disabled"],
+    });
+
     const composite = props.composite !== false;
     const baseElement = useStoreState(
       store,
@@ -719,14 +725,14 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
                 type="hidden"
                 name={name}
                 form={form}
-                disabled={disabled}
+                disabled={formDisabled}
                 value={value}
               />
             ))}
           </>
         );
       },
-      [name, form, disabled, composite, baseElement, selectedValue],
+      [name, form, formDisabled, composite, baseElement, selectedValue],
     );
 
     const htmlProps = {

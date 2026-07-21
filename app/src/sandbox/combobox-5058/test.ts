@@ -24,6 +24,14 @@ test("mirrors selected values when composite is false", () => {
   expect(input.form).toBe(form);
 });
 
+// https://github.com/ariakit/ariakit/pull/6795#discussion_r3625787623
+test("omits aria-disabled selected values", () => {
+  const form = q.form.ensure("Disabled fruits") as HTMLFormElement;
+
+  expect(q.combobox("Disabled fruits")).toBeDisabled();
+  expect(new FormData(form).getAll("disabled-fruits")).toEqual([]);
+});
+
 test("preserves the name for a single selected value", () => {
   expect(q.combobox("Single fruit")).toHaveAttribute("name", "single-fruit");
 });

@@ -63,6 +63,17 @@ export default function Example() {
         <button type="submit">Submit non-composite fruits</button>
       </form>
 
+      <form aria-label="Disabled fruits">
+        <Ariakit.ComboboxProvider defaultSelectedValue={["apple"]}>
+          <Ariakit.Combobox
+            aria-disabled
+            aria-label="Disabled fruits"
+            composite={false}
+            name="disabled-fruits"
+          />
+        </Ariakit.ComboboxProvider>
+      </form>
+
       <Ariakit.ComboboxProvider defaultSelectedValue="apple">
         <Ariakit.Combobox aria-label="Single fruit" name="single-fruit" />
       </Ariakit.ComboboxProvider>

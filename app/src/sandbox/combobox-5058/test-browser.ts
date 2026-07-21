@@ -51,6 +51,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(inputForm).toBe("non-composite-form");
   });
 
+  // https://github.com/ariakit/ariakit/pull/6795#discussion_r3625787623
+  test("omits aria-disabled selected values", async ({ q }) => {
+    const form = q.form("Disabled fruits");
+    await test.expect(q.combobox("Disabled fruits")).toBeDisabled();
+
+    const values = await form.evaluate((element) =>
+      new FormData(element as HTMLFormElement).getAll("disabled-fruits"),
+    );
+
+    test.expect(values).toEqual([]);
+  });
+
   // https://github.com/ariakit/ariakit/pull/6795#discussion_r3623937766
   test("preserves implicit submission with an explicit form", async ({ q }) => {
     const form = q.form("Non-composite fruits");
