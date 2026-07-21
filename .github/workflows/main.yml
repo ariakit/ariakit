@@ -164,7 +164,7 @@ jobs:
   test-macos:
     name: Test macOS
     needs: website
-    runs-on: macos-latest
+    runs-on: blacksmith-6vcpu-macos-latest
     permissions:
       contents: read
     # concurrency:

@@ -12,7 +12,7 @@ concurrency:
 jobs:
   generate:
     name: Generate OG images
-    runs-on: macos-latest
+    runs-on: blacksmith-6vcpu-macos-latest
     permissions:
       contents: read
     env:

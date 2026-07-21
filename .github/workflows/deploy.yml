@@ -7,7 +7,7 @@ jobs:
   deploy-production:
     name: Deploy to production
     if: ${{ github.ref == 'refs/heads/main' }}
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     environment: Production
     permissions:
       contents: read

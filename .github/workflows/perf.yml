@@ -13,7 +13,7 @@ concurrency:
 jobs:
   build:
     name: Build app
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -41,7 +41,7 @@ jobs:
 
   build-nextjs:
     name: Build Next.js app
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -64,7 +64,7 @@ jobs:
 
   chrome-baseline:
     name: Prepare Chrome baseline
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       actions: read
       contents: read
@@ -233,7 +233,7 @@ jobs:
 
   node-baseline:
     name: Prepare Node baseline
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -286,7 +286,7 @@ jobs:
 
   chrome-matrix:
     name: Prepare Chrome matrix
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     outputs:
       include: ${{ steps.matrix.outputs.include }}
     steps:
@@ -369,7 +369,7 @@ jobs:
   chrome:
     name: Chrome (${{ matrix.title }})
     needs: [build, build-nextjs, chrome-baseline, chrome-matrix]
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     strategy:
       # Let all jobs finish even if one fails, so each job's logs and uploaded
       # rounds stay available for debugging. The post job marks Chrome
@@ -707,7 +707,7 @@ jobs:
   node:
     name: Node
     needs: [node-baseline]
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       actions: read
       contents: read
@@ -931,7 +931,7 @@ jobs:
     if: >
       always() &&
       github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     permissions:
       actions: read
       contents: read
