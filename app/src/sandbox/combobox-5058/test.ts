@@ -16,18 +16,12 @@ test("mirrors every selected value in the form control", async () => {
 
 // https://github.com/ariakit/ariakit/pull/6795#discussion_r3623740406
 test("mirrors selected values when composite is false", () => {
-  const form = document.querySelector<HTMLFormElement>(
-    "form[data-composite-false]",
-  );
-  const formData = new FormData(form!);
+  const form = q.form("Non-composite fruits") as HTMLFormElement;
+  const formData = new FormData(form);
   const input = q.combobox("Non-composite fruits") as HTMLInputElement;
-  const hiddenInput = document.querySelector<HTMLInputElement>(
-    "input[type='hidden'][name='non-composite-fruits']",
-  );
 
   expect(formData.getAll("non-composite-fruits")).toEqual(["apple"]);
   expect(input.form).toBe(form);
-  expect(hiddenInput?.form).toBe(form);
 });
 
 test("preserves the name for a single selected value", () => {

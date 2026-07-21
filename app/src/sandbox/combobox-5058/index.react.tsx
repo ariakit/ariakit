@@ -54,6 +54,7 @@ export default function Example() {
 
       <form
         id="non-composite-form"
+        aria-label="Non-composite fruits"
         data-composite-false
         onSubmit={(event) => {
           event.preventDefault();

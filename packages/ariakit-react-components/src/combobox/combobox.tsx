@@ -134,6 +134,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     setValueOnClick = true,
     moveOnKeyPress = true,
     autoComplete = "list",
+    name,
+    form,
+    disabled,
     ...props
   }) {
     const context = useComboboxProviderContext();
@@ -180,7 +183,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     }, [inline]);
 
     const storeValue = useStoreState(store, "value");
-    const name = props.name;
     const selectedValue = useStoreState(store, ["selectedValue"], (state) => {
       if (!name) return;
       if (!Array.isArray(state.selectedValue)) return;
@@ -695,8 +697,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       (state) => state.activeId === null,
     );
 
-    const form = props.form;
-    const disabled = props.disabled;
     const composite = props.composite !== false;
     const baseElement = useStoreState(
       store,
@@ -729,7 +729,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       [name, form, disabled, composite, baseElement, selectedValue],
     );
 
-    props = {
+    const htmlProps = {
       role: "combobox",
       "aria-autocomplete": ariaAutoComplete,
       "aria-haspopup": getPopupRole(contentElement, "listbox"),
@@ -740,6 +740,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       ...props,
       id,
       name: multiSelectable ? undefined : name,
+      form,
+      disabled,
       ref: useMergeRefs(ref, props.ref),
       onChange,
       onCompositionStart,
@@ -748,6 +750,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       onKeyDown,
       onBlur,
     };
+    props = htmlProps;
 
     props = useComposite<TagName>({
       store,

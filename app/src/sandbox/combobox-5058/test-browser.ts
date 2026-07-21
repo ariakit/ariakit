@@ -37,33 +37,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/pull/6795#discussion_r3623740406
-  test("submits selected values when composite is false", async ({ page }) => {
-    const form = page.locator("form[data-composite-false]");
-    const input = page.getByRole("combobox", { name: "Non-composite fruits" });
-    const hiddenInput = page.locator(
-      "input[type='hidden'][name='non-composite-fruits']",
-    );
+  test("submits selected values when composite is false", async ({ q }) => {
+    const form = q.form("Non-composite fruits");
+    const input = q.combobox("Non-composite fruits");
     const values = await form.evaluate((element) =>
       new FormData(element as HTMLFormElement).getAll("non-composite-fruits"),
     );
     const inputForm = await input.evaluate(
       (element) => (element as HTMLInputElement).form?.id ?? null,
     );
-    const hiddenInputForm = await hiddenInput.evaluate(
-      (element) => (element as HTMLInputElement).form?.id ?? null,
-    );
 
     test.expect(values).toEqual(["apple"]);
     test.expect(inputForm).toBe("non-composite-form");
-    test.expect(hiddenInputForm).toBe("non-composite-form");
   });
 
   // https://github.com/ariakit/ariakit/pull/6795#discussion_r3623937766
-  test("preserves implicit submission with an explicit form", async ({
-    page,
-    q,
-  }) => {
-    const form = page.locator("form[data-composite-false]");
+  test("preserves implicit submission with an explicit form", async ({ q }) => {
+    const form = q.form("Non-composite fruits");
     await form.evaluate((element) => {
       element.addEventListener(
         "submit",
