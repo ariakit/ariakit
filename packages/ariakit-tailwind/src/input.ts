@@ -143,7 +143,14 @@ const utilities = new Set<ReturnType<typeof ak.utility>>();
  * Registers an `ak` utility and stores it for the exported input list.
  */
 function utility(...args: Parameters<typeof ak.utility>) {
-  const registeredUtility = ak.utility(...args);
+  const [name, ...children] = args;
+  // Any layer/state modifier preserves the existing global contrast bias.
+  // This flag lets bare nested ak-layer elements skip reapplying that bias.
+  const layerModifier =
+    name.startsWith("layer-") || name.startsWith("state-")
+      ? [set(vars.layerModified, 1)]
+      : [];
+  const registeredUtility = ak.utility(name, ...children, ...layerModifier);
   utilities.add(registeredUtility);
   return registeredUtility;
 }
@@ -211,6 +218,7 @@ function getRawPercentDeclarations(
 function getNegatedDeclarations(utilityRule: ReturnType<typeof utility>) {
   return utilityRule.children
     .filter((child) => child.type === "declaration")
+    .filter((child) => child.property !== vars.layerModified.ident)
     .map((child) => {
       if (child.value == null) return;
       return set(child.property, fn.neg(child.value));
@@ -555,6 +563,8 @@ const layerMathVars = {
   layerOffsetDelta: _ak.prop("lodl", { initial: 0 }),
   layerIdlePushValue: _ak.prop.zero("lipv"),
   layerIdlePushEnabled: _ak.prop.zero("lipe"),
+  layerModified: _ak.prop.zero("lm"),
+  layerContrastBiasMask: _ak.var("lcbm", 1),
   // These scratch vars only resolve the pushed lightness in ak-layer-push-*.
   // Keep them unregistered so each push utility avoids extra @property work.
   layerIdlePushBaseL: _ak.var("lipbl"),
@@ -600,6 +610,7 @@ const layerColorVars = {
   layerOffset: _ak.prop.canvas("lo"),
   layer: ak.prop.canvas("layer", { inherits: true }),
   layerParentContext: _ak.var("lpc"),
+  layerPresentContext: _ak.var("lprc"),
   layerEdgeContext: _ak.var("lec"),
   layerEdgeSourceContext: _ak.var("lesc"),
   layerParent: ak.var("layer-parent", "canvas"),
@@ -1157,6 +1168,7 @@ const layerContrastInactive = fn.sub(
 const layerIdleContrastBias = fn.mul(
   vars.layerContrastBias,
   layerContrastInactive,
+  vars.layerContrastBiasMask,
 );
 
 const layerIdle = fn.oklch(vars.layerIdleOffset, {
@@ -1340,6 +1352,14 @@ utility(
   at.variant(light, set(vars.edgePushDirection, -1)),
   at.variant(dark, set(vars.edgePushDirection, 1)),
   layerContext(({ provide, inherit }) => [
+    set(
+      vars.layerContrastBiasMask,
+      fn.max(
+        vars.layerModified,
+        fn.sub(1, inherit(vars.layerPresentContext, 0)),
+      ),
+    ),
+    set(provide(vars.layerPresentContext), 1),
     set(provide(vars.layerParentContext), vars.layer),
     set(vars.layerParent, inherit(vars.layerParentContext)),
     set(provide(vars.layerTextLContext), vars.layerTextL),
