@@ -126,7 +126,16 @@ export default defineConfig({
         {
           name: "safari",
           testMatch: testMatchersFor("safari", "browser"),
-          use: devices["Desktop Safari"],
+          use: {
+            ...devices["Desktop Safari"],
+            launchOptions: {
+              slowMo: HEADED ? 150 : undefined,
+              // Healthy macOS CI launches complete initial page setup within
+              // 24 seconds; fail a wedged WebKit process without waiting for
+              // Playwright's three-minute default.
+              timeout: CI ? 45_000 : undefined,
+            },
+          },
           retries: CI ? 3 : 1,
         },
         {
