@@ -164,7 +164,14 @@ jobs:
   test-macos:
     name: Test macOS
     needs: website
-    runs-on: blacksmith-6vcpu-macos-latest
+    # Keep this job on GitHub-hosted macOS runners. The Safari/WebKit browser
+    # suite includes timing-sensitive keyboard tests (e.g. combobox-group's
+    # "set value on tab after moving to another item", which fires two rapid
+    # ArrowDown presses against a React.useDeferredValue combobox). On the
+    # faster Blacksmith macOS hardware these keypresses race the deferred
+    # render and the test fails deterministically, so this job is intentionally
+    # left un-migrated pending a fix to the tests.
+    runs-on: macos-latest
     permissions:
       contents: read
     # concurrency:
