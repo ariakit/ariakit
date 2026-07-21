@@ -8,6 +8,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.option("Apple").click();
     await q.option("Orange").click();
     await combobox.fill("typed search");
+    await combobox.press("Escape");
     await q.button("Submit").click();
 
     await test.expect(q.status()).toHaveText('["apple","orange"]');
@@ -21,27 +22,76 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/pull/6795#discussion_r3623740406
-  test("submits selected values when composite is false", async ({ page }) => {
-    const values = await page
-      .locator("form[data-composite-false]")
-      .evaluate((form) =>
-        new FormData(form as HTMLFormElement).getAll("non-composite-fruits"),
-      );
+  test("preserves the input label metadata after hydration", async ({ q }) => {
+    await q.combobox("Favorite fruits").click();
+    await q.option("Apple").click();
 
-    test.expect(values).toEqual(["apple"]);
+    const labels = await q.combobox("Favorite fruits").evaluate((element) => {
+      const input = element as HTMLInputElement;
+      return Array.from(input.labels ?? [], (label) =>
+        label.textContent?.trim(),
+      );
+    });
+
+    test.expect(labels).toEqual(["Favorite fruits"]);
   });
 
-  // https://github.com/ariakit/ariakit/pull/6795#discussion_r3623740398
-  test("relays invalid events to the Combobox input", async ({ q }) => {
-    await q.button("Validate required fruits").click();
+  // https://github.com/ariakit/ariakit/pull/6795#discussion_r3623740406
+  test("submits selected values when composite is false", async ({ page }) => {
+    const form = page.locator("form[data-composite-false]");
+    const input = page.getByRole("combobox", { name: "Non-composite fruits" });
+    const hiddenInput = page.locator(
+      "input[type='hidden'][name='non-composite-fruits']",
+    );
+    const values = await form.evaluate((element) =>
+      new FormData(element as HTMLFormElement).getAll("non-composite-fruits"),
+    );
+    const inputForm = await input.evaluate(
+      (element) => (element as HTMLInputElement).form?.id ?? null,
+    );
+    const hiddenInputForm = await hiddenInput.evaluate(
+      (element) => (element as HTMLInputElement).form?.id ?? null,
+    );
 
-    await test.expect(q.text("Invalid target: input")).toBeVisible();
+    test.expect(values).toEqual(["apple"]);
+    test.expect(inputForm).toBe("non-composite-form");
+    test.expect(hiddenInputForm).toBe("non-composite-form");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6795#discussion_r3623937766
+  test("preserves implicit submission with an explicit form", async ({
+    page,
+    q,
+  }) => {
+    const form = page.locator("form[data-composite-false]");
+    await form.evaluate((element) => {
+      element.addEventListener(
+        "submit",
+        (event) => {
+          event.preventDefault();
+          const submitter = (event as SubmitEvent).submitter;
+          element.setAttribute(
+            "data-submitter",
+            submitter?.textContent?.trim() ?? "",
+          );
+        },
+        { once: true },
+      );
+    });
+
+    await q.combobox("Non-composite fruits").press("Enter");
+
+    await test
+      .expect(form)
+      .toHaveAttribute("data-submitter", "Submit non-composite fruits");
   });
 
   // https://github.com/ariakit/ariakit/pull/6795#discussion_r3623740415
   test("keeps selected values in sync after form reset", async ({ q }) => {
-    await q.combobox("Favorite fruits").click();
+    const combobox = q.combobox("Favorite fruits");
+    await combobox.click();
     await q.option("Apple").click();
+    await combobox.press("Escape");
     await q.button("Reset").click();
     await q.button("Submit").click();
 

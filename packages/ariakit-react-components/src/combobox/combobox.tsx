@@ -19,7 +19,6 @@ import {
   getPopupRole,
   getScrollingElement,
   getTextboxSelection,
-  fireEvent,
   setSelectionRange,
   isFocusEventOutside,
   queueBeforeEvent,
@@ -46,7 +45,6 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
 import { usePopoverAnchor } from "../popover/popover-anchor.tsx";
-import { getVisuallyHiddenStyle } from "../visually-hidden/visually-hidden.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
@@ -57,10 +55,6 @@ import type {
 const TagName = "input" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-
-function getSelectedValues(select: HTMLSelectElement) {
-  return Array.from(select.selectedOptions).map((option) => option.value);
-}
 
 function isFirstItemAutoSelected(
   items: ComboboxStoreState["items"],
@@ -702,88 +696,37 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     );
 
     const form = props.form;
-    const required = props.required;
     const disabled = props.disabled;
     const composite = props.composite !== false;
-    const label = props["aria-label"];
-    const labelledBy = props["aria-labelledby"];
     const baseElement = useStoreState(
       store,
       multiSelectable ? ["baseElement"] : [],
       (state) => (multiSelectable ? state.baseElement : null),
     );
-    const selectRef = useRef<HTMLSelectElement>(null);
-
-    useSafeLayoutEffect(() => {
-      const select = selectRef.current;
-      if (!select) return;
-      // Keep native form resets from clearing the mirrored selection while
-      // the Combobox store still holds the same values.
-      for (const option of select.options) {
-        option.defaultSelected = option.selected;
-      }
-    }, [selectedValue, baseElement, name, composite]);
-
-    const onInvalid = useEvent((event: SyntheticEvent<HTMLSelectElement>) => {
-      const element = ref.current;
-      if (!element) return;
-      event.stopPropagation();
-      const defaultAllowed = fireEvent(element, "invalid", event);
-      if (!defaultAllowed) event.preventDefault();
-    });
 
     props = useWrapElement(
       props,
       (element) => {
         if (!name) return element;
         if (!Array.isArray(selectedValue)) return element;
-        // Wait until ComboboxLabel has associated itself with the input before
-        // inserting another labelable element.
         if (composite && !baseElement) return element;
         return (
           <>
             {element}
-            <select
-              ref={selectRef}
-              style={getVisuallyHiddenStyle()}
-              tabIndex={-1}
-              aria-hidden
-              aria-label={label}
-              aria-labelledby={label != null ? undefined : labelledBy}
-              name={name}
-              form={form}
-              required={required}
-              disabled={disabled}
-              multiple
-              value={selectedValue}
-              onFocus={() => ref.current?.focus()}
-              onInvalid={onInvalid}
-              onChange={(event) => {
-                store?.setSelectedValue(getSelectedValues(event.target));
-              }}
-            >
-              {selectedValue.map((value, index) => (
-                <option key={index} value={value}>
-                  {value}
-                </option>
-              ))}
-            </select>
+            {selectedValue.map((value, index) => (
+              <input
+                key={index}
+                type="hidden"
+                name={name}
+                form={form}
+                disabled={disabled}
+                value={value}
+              />
+            ))}
           </>
         );
       },
-      [
-        store,
-        name,
-        form,
-        required,
-        disabled,
-        label,
-        labelledBy,
-        selectedValue,
-        baseElement,
-        composite,
-        onInvalid,
-      ],
+      [name, form, disabled, composite, baseElement, selectedValue],
     );
 
     props = {
@@ -796,10 +739,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       value,
       ...props,
       id,
-      "aria-required":
-        multiSelectable && required ? true : props["aria-required"],
       name: multiSelectable ? undefined : name,
-      required: multiSelectable ? undefined : required,
       ref: useMergeRefs(ref, props.ref),
       onChange,
       onCompositionStart,

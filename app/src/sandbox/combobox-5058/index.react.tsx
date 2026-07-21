@@ -9,8 +9,8 @@ const fruits = [
 ] as const;
 
 export default function Example() {
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [submittedValues, setSubmittedValues] = useState<string[] | null>(null);
-  const [invalidTarget, setInvalidTarget] = useState("none");
 
   return (
     <>
@@ -22,7 +22,8 @@ export default function Example() {
         }}
       >
         <Ariakit.ComboboxProvider
-          defaultSelectedValue={[]}
+          selectedValue={selectedValues}
+          setSelectedValue={setSelectedValues}
           resetValueOnHide={false}
         >
           <Ariakit.ComboboxLabel>Favorite fruits</Ariakit.ComboboxLabel>
@@ -42,35 +43,28 @@ export default function Example() {
         </output>
       </form>
 
-      <form data-composite-false>
-        <Ariakit.ComboboxProvider defaultSelectedValue={["apple"]}>
-          <Ariakit.Combobox
-            aria-label="Non-composite fruits"
-            composite={false}
-            name="non-composite-fruits"
-          />
-        </Ariakit.ComboboxProvider>
-      </form>
+      <Ariakit.ComboboxProvider defaultSelectedValue={["apple"]}>
+        <Ariakit.Combobox
+          aria-label="Non-composite fruits"
+          composite={false}
+          form="non-composite-form"
+          name="non-composite-fruits"
+        />
+      </Ariakit.ComboboxProvider>
 
       <form
+        id="non-composite-form"
+        data-composite-false
         onSubmit={(event) => {
           event.preventDefault();
         }}
       >
-        <Ariakit.ComboboxProvider defaultSelectedValue={[]}>
-          <Ariakit.ComboboxLabel>Required fruits</Ariakit.ComboboxLabel>
-          <Ariakit.Combobox
-            name="required-fruits"
-            required
-            onInvalid={(event) => {
-              event.preventDefault();
-              setInvalidTarget(event.currentTarget.localName);
-            }}
-          />
-        </Ariakit.ComboboxProvider>
-        <button type="submit">Validate required fruits</button>
-        <p>Invalid target: {invalidTarget}</p>
+        <button type="submit">Submit non-composite fruits</button>
       </form>
+
+      <Ariakit.ComboboxProvider defaultSelectedValue="apple">
+        <Ariakit.Combobox aria-label="Single fruit" name="single-fruit" />
+      </Ariakit.ComboboxProvider>
     </>
   );
 }
