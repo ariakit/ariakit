@@ -6,6 +6,7 @@ if (process.argv.includes("--headed")) {
 
 const CI = !!process.env.CI;
 const HEADED = process.env.PWHEADED === "true";
+const slowMo = HEADED ? 150 : undefined;
 const PERF = process.env.PERF_TEST === "true";
 const port = Number(process.env.APP_PORT) || 4321;
 const nextjsPort = Number(process.env.NEXTJS_PORT) || 3000;
@@ -66,7 +67,7 @@ export default defineConfig({
     screenshot: "only-on-failure",
     trace: "on-first-retry",
     launchOptions: {
-      slowMo: HEADED ? 150 : undefined,
+      slowMo,
     },
   },
   expect: {
@@ -129,7 +130,7 @@ export default defineConfig({
           use: {
             ...devices["Desktop Safari"],
             launchOptions: {
-              slowMo: HEADED ? 150 : undefined,
+              slowMo,
               // Healthy macOS CI launches complete initial page setup within
               // 24 seconds; fail a wedged WebKit process without waiting for
               // Playwright's three-minute default.
