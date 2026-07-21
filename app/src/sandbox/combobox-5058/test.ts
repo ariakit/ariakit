@@ -18,3 +18,20 @@ test("mirrors every selected value in the form control", async () => {
   );
   expect(selectedValues).toEqual(["apple", "orange"]);
 });
+
+// https://github.com/ariakit/ariakit/pull/6795#discussion_r3623740406
+test("mirrors selected values when composite is false", () => {
+  const form = document.querySelector<HTMLFormElement>(
+    "form[data-composite-false]",
+  );
+  const formData = new FormData(form!);
+
+  expect(formData.getAll("non-composite-fruits")).toEqual(["apple"]);
+});
+
+// https://github.com/ariakit/ariakit/pull/6795#discussion_r3623740398
+test("relays invalid events to the Combobox input", async () => {
+  await click(q.button("Validate required fruits"));
+
+  expect(q.text("Invalid target: input")).toBeInTheDocument();
+});

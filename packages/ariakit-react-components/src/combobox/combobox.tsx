@@ -19,6 +19,7 @@ import {
   getPopupRole,
   getScrollingElement,
   getTextboxSelection,
+  fireEvent,
   setSelectionRange,
   isFocusEventOutside,
   queueBeforeEvent,
@@ -703,6 +704,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const form = props.form;
     const required = props.required;
     const disabled = props.disabled;
+    const composite = props.composite !== false;
     const label = props["aria-label"];
     const labelledBy = props["aria-labelledby"];
     const baseElement = useStoreState(
@@ -710,6 +712,25 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       multiSelectable ? ["baseElement"] : [],
       (state) => (multiSelectable ? state.baseElement : null),
     );
+    const selectRef = useRef<HTMLSelectElement>(null);
+
+    useSafeLayoutEffect(() => {
+      const select = selectRef.current;
+      if (!select) return;
+      // Keep native form resets from clearing the mirrored selection while
+      // the Combobox store still holds the same values.
+      for (const option of select.options) {
+        option.defaultSelected = option.selected;
+      }
+    }, [selectedValue, baseElement, name, composite]);
+
+    const onInvalid = useEvent((event: SyntheticEvent<HTMLSelectElement>) => {
+      const element = ref.current;
+      if (!element) return;
+      event.stopPropagation();
+      const defaultAllowed = fireEvent(element, "invalid", event);
+      if (!defaultAllowed) event.preventDefault();
+    });
 
     props = useWrapElement(
       props,
@@ -718,11 +739,12 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         if (!Array.isArray(selectedValue)) return element;
         // Wait until ComboboxLabel has associated itself with the input before
         // inserting another labelable element.
-        if (!baseElement) return element;
+        if (composite && !baseElement) return element;
         return (
           <>
             {element}
             <select
+              ref={selectRef}
               style={getVisuallyHiddenStyle()}
               tabIndex={-1}
               aria-hidden
@@ -735,6 +757,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
               multiple
               value={selectedValue}
               onFocus={() => ref.current?.focus()}
+              onInvalid={onInvalid}
               onChange={(event) => {
                 store?.setSelectedValue(getSelectedValues(event.target));
               }}
@@ -758,6 +781,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         labelledBy,
         selectedValue,
         baseElement,
+        composite,
+        onInvalid,
       ],
     );
 
