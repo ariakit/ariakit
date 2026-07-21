@@ -9,7 +9,6 @@ const fruits = [
 ] as const;
 
 export default function Example() {
-  const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [submittedValues, setSubmittedValues] = useState<string[] | null>(null);
 
   return (
@@ -21,12 +20,11 @@ export default function Example() {
       }}
     >
       <Ariakit.ComboboxProvider
-        selectedValue={selectedValues}
-        setSelectedValue={setSelectedValues}
+        defaultSelectedValue={[]}
         resetValueOnHide={false}
       >
         <Ariakit.ComboboxLabel>Favorite fruits</Ariakit.ComboboxLabel>
-        <Ariakit.Combobox />
+        <Ariakit.Combobox name="fruits" />
         <Ariakit.ComboboxPopover>
           {fruits.map(([value, label]) => (
             <Ariakit.ComboboxItem key={value} value={value}>
@@ -35,24 +33,6 @@ export default function Example() {
           ))}
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
-      <select
-        hidden
-        name="fruits"
-        multiple
-        value={selectedValues}
-        onChange={(event) => {
-          setSelectedValues(
-            Array.from(
-              event.currentTarget.selectedOptions,
-              (option) => option.value,
-            ),
-          );
-        }}
-      >
-        {selectedValues.map((value, index) => (
-          <option key={index} value={value} />
-        ))}
-      </select>
       <button type="submit">Submit</button>
       <output>
         {submittedValues ? JSON.stringify(submittedValues) : null}
