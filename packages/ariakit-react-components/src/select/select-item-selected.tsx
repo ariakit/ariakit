@@ -11,7 +11,7 @@ import { SelectItemCheckedContext } from "./select-context.tsx";
  * doesn't accept HTML props.
  * @see https://ariakit.com/components/select
  * @example
- * ```jsx {5-9}
+ * ```jsx {5-7}
  * <SelectProvider>
  *   <Select />
  *   <SelectPopover>
