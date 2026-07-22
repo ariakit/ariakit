@@ -1,5 +1,5 @@
 import { click, press, q, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 
 function nextTask() {
   return new Promise<void>((resolve) => {
@@ -144,6 +144,33 @@ test("resets a combobox to its default value", async () => {
 });
 
 // https://github.com/ariakit/ariakit/issues/1861
+test("uses the store reset value when the input has a defaultValue prop", async () => {
+  const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+  await click(q.button("Show default value prop address"));
+  expect(consoleError.mock.calls.flat().join(" ")).toContain(
+    "both value and defaultValue",
+  );
+  consoleError.mockRestore();
+
+  const form = q.form.ensure("Default value prop address") as HTMLFormElement;
+  const homeTown = q.combobox.ensure("Default value prop home town");
+
+  await type("Boston", homeTown);
+  form.reset();
+
+  expect(new FormData(form).get("defaultValuePropHomeTown")).toBe("London");
+  expect(homeTown).toHaveValue("London");
+  expect(homeTown).toHaveProperty("defaultValue", "London");
+
+  await type("Madrid", homeTown);
+  form.reset();
+
+  expect(new FormData(form).get("defaultValuePropHomeTown")).toBe("London");
+  expect(homeTown).toHaveValue("London");
+  expect(homeTown).toHaveProperty("defaultValue", "London");
+});
+
+// https://github.com/ariakit/ariakit/issues/1861
 test("resets a combobox associated with an explicit form", async () => {
   const formerHomeTown = q.combobox.ensure("Former home town");
 
@@ -203,6 +230,18 @@ test("preserves a caller-controlled element value on form reset", async () => {
   await click(q.button("Reset controlled element address"));
   await nextTask();
 
+  expect(homeTown).toHaveValue("Boston");
+});
+
+// https://github.com/ariakit/ariakit/pull/6803#discussion_r3633543035
+test("preserves an equal caller-controlled render function value", async () => {
+  const form = q.form.ensure("Controlled function address") as HTMLFormElement;
+  const homeTown = q.combobox.ensure("Controlled function home town");
+
+  await type("Boston", homeTown);
+  form.reset();
+
+  expect(new FormData(form).get("controlledFunctionHomeTown")).toBe("Boston");
   expect(homeTown).toHaveValue("Boston");
 });
 
@@ -294,4 +333,32 @@ test("restores inline autocomplete when reopening", async () => {
   await click(homeTown);
 
   expect(homeTown).toHaveValue("Boston");
+});
+
+// https://github.com/ariakit/ariakit/pull/6803#discussion_r3633543035
+test.each(["Effect", "Layout effect", "Render effect"])(
+  "resets synchronously from %s",
+  async (label) => {
+    const form = q.form(label + " address");
+    const homeTown = q.combobox(label + " home town");
+
+    await type("Boston", homeTown);
+    await click(q.button(`Reset ${label.toLowerCase()} address`));
+
+    expect(form).toHaveAttribute("data-after-reset", "");
+    expect(form).toHaveAttribute("data-on-submit", "");
+    expect(homeTown).toHaveValue("");
+  },
+);
+
+// https://github.com/ariakit/ariakit/pull/6803#discussion_r3633543035
+test("resets a pass-through render with setValueOnChange disabled", async () => {
+  const form = q.form("Programmatic render effect address");
+  const homeTown = q.combobox("Programmatic render effect home town");
+
+  await click(q.button("Reset programmatic render effect address"));
+
+  expect(form).toHaveAttribute("data-after-reset", "");
+  expect(form).toHaveAttribute("data-on-submit", "");
+  expect(homeTown).toHaveValue("");
 });

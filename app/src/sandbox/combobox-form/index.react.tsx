@@ -7,7 +7,13 @@ import { TagProvider } from "@ariakit/react-components/tag/tag-provider";
 import { useTagStore } from "@ariakit/react-components/tag/tag-store";
 import { sync } from "@ariakit/store";
 import type { Dispatch, SetStateAction } from "react";
-import { useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 
 const fruits = [
@@ -16,6 +22,11 @@ const fruits = [
   ["orange", "Orange"],
   ["grape", "Grape"],
 ] as const;
+
+function getEffectHomeTown(form: HTMLFormElement) {
+  const value = new FormData(form).get("effectHomeTown");
+  return typeof value === "string" ? value : "";
+}
 
 function ResetAndReplaceAddress() {
   const store = Ariakit.useComboboxContext();
@@ -74,11 +85,90 @@ function ShadowAddress() {
   );
 }
 
+function EffectResetAddress({
+  label,
+  layout,
+  programmatic,
+  render,
+}: {
+  label: string;
+  layout?: boolean;
+  programmatic?: boolean;
+  render?: boolean;
+}) {
+  const formRef = useRef<HTMLFormElement>(null);
+  const store = Ariakit.useComboboxStore();
+  const [shouldReset, setShouldReset] = useState(false);
+  const [result, setResult] = useState<{
+    afterReset: string;
+    onSubmit: string;
+  }>();
+
+  const reset = useCallback(() => {
+    if (!shouldReset) return;
+    const form = formRef.current;
+    if (!form) return;
+    let onSubmit = "not submitted";
+    form.addEventListener(
+      "submit",
+      (event) => {
+        event.preventDefault();
+        onSubmit = getEffectHomeTown(form);
+      },
+      { once: true },
+    );
+    form.reset();
+    const afterReset = getEffectHomeTown(form);
+    form.requestSubmit();
+    setResult({ afterReset, onSubmit });
+  }, [shouldReset]);
+
+  useLayoutEffect(() => {
+    if (!layout) return;
+    reset();
+  }, [layout, reset]);
+
+  useEffect(() => {
+    if (layout) return;
+    reset();
+  }, [layout, reset]);
+
+  return (
+    <form
+      ref={formRef}
+      aria-label={`${label} address`}
+      data-after-reset={result?.afterReset}
+      data-on-submit={result?.onSubmit}
+    >
+      <Ariakit.ComboboxProvider store={store}>
+        <Ariakit.Combobox
+          aria-label={`${label} home town`}
+          name="effectHomeTown"
+          setValueOnChange={programmatic ? false : undefined}
+          render={render ? (props) => <input {...props} /> : undefined}
+        />
+      </Ariakit.ComboboxProvider>
+      <button
+        type="button"
+        onClick={() => {
+          if (programmatic) store.setValue("Boston");
+          setShouldReset(true);
+        }}
+      >
+        Reset {label.toLowerCase()} address
+      </button>
+    </form>
+  );
+}
+
 export default function Example() {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [submittedValues, setSubmittedValues] = useState<string[] | null>(null);
+  const [showDefaultValueProp, setShowDefaultValueProp] = useState(false);
   const [controlledHomeTown, setControlledHomeTown] = useState("");
   const [controlledElementHomeTown, setControlledElementHomeTown] =
+    useState("");
+  const [controlledFunctionHomeTown, setControlledFunctionHomeTown] =
     useState("");
   const [controlledStoreHomeTown, setControlledStoreHomeTown] = useState("");
   const [controlledSiblingHomeTown, setControlledSiblingHomeTown] =
@@ -93,6 +183,7 @@ export default function Example() {
     setValue: setControlledStoreHomeTown,
   });
   const controlledElementStore = Ariakit.useComboboxStore();
+  const controlledFunctionStore = Ariakit.useComboboxStore();
   const siblingSourceStore = Ariakit.useComboboxStore();
   Ariakit.useComboboxStore({
     store: siblingSourceStore,
@@ -174,6 +265,22 @@ export default function Example() {
         </button>
       </form>
 
+      <button type="button" onClick={() => setShowDefaultValueProp(true)}>
+        Show default value prop address
+      </button>
+      {showDefaultValueProp && (
+        <form aria-label="Default value prop address">
+          <Ariakit.ComboboxProvider defaultValue="London">
+            <Ariakit.Combobox
+              aria-label="Default value prop home town"
+              name="defaultValuePropHomeTown"
+              defaultValue="Paris"
+            />
+          </Ariakit.ComboboxProvider>
+          <button type="reset">Reset default value prop address</button>
+        </form>
+      )}
+
       <Ariakit.ComboboxProvider>
         <Ariakit.ComboboxLabel>Former home town</Ariakit.ComboboxLabel>
         <Ariakit.Combobox name="formerHomeTown" form="address" />
@@ -247,6 +354,30 @@ export default function Example() {
         >
           Reset and replace controlled element address
         </button>
+      </form>
+
+      <form aria-label="Controlled function address">
+        <Ariakit.ComboboxProvider store={controlledFunctionStore}>
+          <Ariakit.ComboboxLabel>
+            Controlled function home town
+          </Ariakit.ComboboxLabel>
+          <Ariakit.Combobox
+            name="controlledFunctionHomeTown"
+            setValueOnChange={() => false}
+            value={controlledFunctionHomeTown}
+            render={(props) => (
+              <textarea
+                {...props}
+                value={controlledFunctionHomeTown}
+                onChange={(event) => {
+                  setControlledFunctionHomeTown(event.target.value);
+                  controlledFunctionStore.setValue(event.target.value);
+                }}
+              />
+            )}
+          />
+        </Ariakit.ComboboxProvider>
+        <button type="reset">Reset controlled function address</button>
       </form>
 
       <form aria-label="Controlled store address">
@@ -375,6 +506,15 @@ export default function Example() {
       <Ariakit.ComboboxProvider defaultSelectedValue="apple">
         <Ariakit.Combobox aria-label="Single fruit" name="single-fruit" />
       </Ariakit.ComboboxProvider>
+
+      <EffectResetAddress label="Effect" />
+      <EffectResetAddress label="Layout effect" layout />
+      <EffectResetAddress label="Render effect" render />
+      <EffectResetAddress
+        label="Programmatic render effect"
+        programmatic
+        render
+      />
     </>
   );
 }

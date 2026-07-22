@@ -20,6 +20,7 @@ import {
   getPopupRole,
   getScrollingElement,
   getTextboxSelection,
+  hasOwnProperty,
   setSelectionRange,
   isFocusEventOutside,
   queueBeforeEvent,
@@ -41,7 +42,7 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   SyntheticEvent,
 } from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { isValidElement, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
@@ -103,6 +104,14 @@ function getDefaultAutoSelectId(items: ComboboxStoreState["items"]) {
     return item.element?.getAttribute("role") !== "tab";
   });
   return item?.id;
+}
+
+function getElementValueOwner(element: unknown) {
+  if (!element) return "ariakit";
+  if (!isValidElement<Record<string, unknown>>(element)) return "unknown";
+  if (hasOwnProperty(element.props, "value")) return "caller";
+  if (typeof element.type !== "string") return "unknown";
+  return "ariakit";
 }
 
 /**
@@ -177,8 +186,12 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     // The inline autocomplete should only happen in certain circumstances. We
     // control this state here.
     const [canInline, setCanInline] = useState(inline);
+    const valueOwner = hasOwnProperty(props, "value")
+      ? "caller"
+      : getElementValueOwner(props.render);
+    const getRenderedValue = useEvent(() => value);
 
-    useEffect(() => {
+    useSafeLayoutEffect(() => {
       const element = ref.current;
       if (!element) return;
       if (!element.form && !form) return;
@@ -201,8 +214,22 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         clearTimeout(pendingReset.timeout);
         completionTarget.removeEventListener("reset", pendingReset.onComplete);
       };
-      const resetValue = () => {
+      const resetValue = (nativeReset = false) => {
         if (isComboboxValueControlled(store)) return;
+        if (nativeReset) {
+          const elementValue = element.value;
+          const renderedValue = getRenderedValue();
+          setCanInline(false);
+          store.resetValue();
+          if (valueOwner === "caller") return;
+          if (valueOwner === "unknown" && elementValue !== renderedValue)
+            return;
+          if (element.value !== elementValue) return;
+          // The native reset action runs after this event. Set its value here
+          // so it also works when React is already flushing a lifecycle.
+          element.defaultValue = store.getState().value;
+          return;
+        }
         flushSync(() => {
           setCanInline(false);
           store.resetValue();
@@ -218,7 +245,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
           clearPendingReset(event);
           if (event.defaultPrevented) return;
           if (element.form !== ownerForm) return;
-          resetValue();
+          resetValue(true);
         };
         completionTarget.addEventListener("reset", onComplete);
         const timeout = setTimeout(() => {
@@ -242,7 +269,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
           clearPendingReset(event);
         }
       };
-    }, [form, store]);
+    }, [form, getRenderedValue, store, valueOwner]);
 
     // If the inline autocomplete is enabled in a update, we need to update the
     // canInline state to reflect this. TODO: Try derived state.
