@@ -1,0 +1,56 @@
+/* No transitions or animations: this sandbox is used by perf tests. */
+
+.root,
+.benchmark,
+.controls {
+  display: flex;
+  align-items: flex-start;
+}
+
+.root,
+.benchmark {
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.root {
+  padding: 1rem;
+}
+
+.controls {
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.button {
+  border: 1px solid hsl(204 10% 80%);
+  border-radius: 0.5rem;
+  background: white;
+  padding: 0.5rem 1rem;
+  color: hsl(204 10% 10%);
+  font: inherit;
+}
+
+.scroller {
+  width: 20rem;
+  height: 200px;
+  border: 1px solid hsl(204 10% 80%);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.renderer,
+.group,
+.item {
+  width: 100%;
+}
+
+.item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid hsl(204 10% 90%);
+  background: white;
+  padding-inline: 0.5rem;
+  color: hsl(204 10% 10%);
+}
