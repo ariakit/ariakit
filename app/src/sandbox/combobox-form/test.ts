@@ -58,7 +58,7 @@ test("resets an uncontrolled combobox with its form", async () => {
 
 // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
 test("resets the form value before reset returns", async () => {
-  const form = q.form.ensure("Address");
+  const form = q.form.ensure("Address") as HTMLFormElement;
   const homeTown = q.combobox.ensure("Home town");
 
   await type("Boston", homeTown);
@@ -69,7 +69,7 @@ test("resets the form value before reset returns", async () => {
 
 // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
 test("submits the reset value in the same task", async () => {
-  const form = q.form.ensure("Address");
+  const form = q.form.ensure("Address") as HTMLFormElement;
   const homeTown = q.combobox.ensure("Home town");
   let value: FormDataEntryValue | null = null;
   form.addEventListener(
@@ -167,7 +167,7 @@ test("preserves a controlled value on form reset", async () => {
 
 // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
 test("preserves the value when a Document listener cancels reset", async () => {
-  const form = q.form.ensure("Address");
+  const form = q.form.ensure("Address") as HTMLFormElement;
   const homeTown = q.combobox.ensure("Home town");
   document.addEventListener("reset", (event) => event.preventDefault(), {
     once: true,
@@ -182,7 +182,7 @@ test("preserves the value when a Document listener cancels reset", async () => {
 
 // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
 test("preserves the value when a Window listener cancels reset", async () => {
-  const form = q.form.ensure("Address");
+  const form = q.form.ensure("Address") as HTMLFormElement;
   const homeTown = q.combobox.ensure("Home town");
   window.addEventListener("reset", (event) => event.preventDefault(), {
     once: true,
@@ -208,7 +208,7 @@ test("preserves a caller-controlled element value on form reset", async () => {
 
 // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
 test("does not overwrite a controlled render after propagation stops", async () => {
-  const form = q.form.ensure("Controlled element address");
+  const form = q.form.ensure("Controlled element address") as HTMLFormElement;
   const homeTown = q.combobox.ensure("Controlled element home town");
   form.addEventListener("reset", (event) => event.stopPropagation(), {
     once: true,
