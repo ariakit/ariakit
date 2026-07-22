@@ -1,8 +1,8 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 const options = ["Lemon", "Lime", "Orange", "Apple", "Banana"] as const;
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFramework(import.meta.dirname, async ({ test, query }) => {
   // https://github.com/ariakit/ariakit/issues/6301
   test("sets sequential option positions across groups and leaves", async ({
     q,
@@ -33,5 +33,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const cherry = q.option("Cherry");
     await test.expect(cherry).toHaveCSS("left", "192px");
     await test.expect(cherry).toHaveCSS("top", "0px");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/3913
+  test("updates items when an initially empty scroller gains overflow", async ({
+    page,
+    q,
+  }) => {
+    const scroller = q.listbox("Async items");
+    const asyncOptions = query(scroller);
+
+    await q.button("Load async items").click();
+    await test.expect(asyncOptions.option("Async item 1")).toBeVisible();
+
+    await scroller.evaluate((element) => {
+      element.scrollTop = 2000;
+      element.dispatchEvent(new Event("scroll"));
+    });
+    await flushFrames(page);
+
+    await test.expect(q.status()).toHaveText("Scroll observed: yes");
+    await test.expect(asyncOptions.option("Async item 51")).toBeVisible();
   });
 });

@@ -2,6 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
 import type { SelectRendererItem } from "@ariakit/react-components/select/select-renderer";
 import type { SelectRendererItemObject } from "@ariakit/react-components/select/select-renderer";
+import { useState } from "react";
 import "./style.css";
 
 interface FruitItem extends SelectRendererItemObject {
@@ -35,6 +36,11 @@ const horizontalItems = [
   { id: "banana", value: "banana", label: "Banana" },
   { id: "cherry", value: "cherry", label: "Cherry" },
 ] satisfies readonly SelectRendererItem[];
+
+const asyncItems = Array.from({ length: 100 }, (_, index) => ({
+  id: `async-item-${index + 1}`,
+  value: `Async item ${index + 1}`,
+}));
 
 function GroupedRenderer() {
   const select = Ariakit.useSelectStore({ defaultItems, defaultValue: "" });
@@ -128,11 +134,42 @@ function HorizontalRenderer() {
   );
 }
 
+function AsyncRenderer() {
+  const [items, setItems] = useState<typeof asyncItems>([]);
+  const [scrollObserved, setScrollObserved] = useState(false);
+
+  return (
+    <section>
+      <button type="button" onClick={() => setItems(asyncItems)}>
+        Load async items
+      </button>
+      <p role="status">Scroll observed: {scrollObserved ? "yes" : "no"}</p>
+      <div className="async-scroller" role="listbox" aria-label="Async items">
+        <SelectRenderer
+          items={items}
+          itemSize={40}
+          renderOnScroll={() => {
+            setScrollObserved(true);
+            return true;
+          }}
+        >
+          {({ value, index, ...item }) => (
+            <div key={item.id} {...item} data-index={index} role="option">
+              {value}
+            </div>
+          )}
+        </SelectRenderer>
+      </div>
+    </section>
+  );
+}
+
 export default function Example() {
   return (
     <>
       <GroupedRenderer />
       <HorizontalRenderer />
+      <AsyncRenderer />
     </>
   );
 }

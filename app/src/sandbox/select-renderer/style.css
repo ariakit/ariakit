@@ -21,3 +21,8 @@
 .option[aria-selected="true"] {
   background: hsl(210deg 90% 96%);
 }
+
+.async-scroller {
+  height: 120px;
+  overflow-y: auto;
+}
