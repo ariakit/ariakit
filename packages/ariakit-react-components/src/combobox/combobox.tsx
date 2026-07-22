@@ -42,7 +42,14 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   SyntheticEvent,
 } from "react";
-import { isValidElement, useEffect, useMemo, useRef, useState } from "react";
+import {
+  isValidElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { flushSync } from "react-dom";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
@@ -161,6 +168,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     );
 
     const ref = useRef<HTMLType>(null);
+    const resetCleanupRef = useRef(noop);
     const [valueUpdated, forceValueUpdate] = useForceUpdate();
     const canAutoSelectRef = useRef(false);
     const composingRef = useRef(false);
@@ -191,85 +199,95 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       : getElementValueOwner(props.render);
     const getRenderedValue = useEvent(() => value);
 
-    useSafeLayoutEffect(() => {
-      const element = ref.current;
-      if (!element) return;
-      if (!element.form && !form) return;
-      const root = element.getRootNode();
-      const completionTarget =
-        root.nodeType === Node.DOCUMENT_NODE
-          ? ((root as Document).defaultView ?? root)
-          : root;
-      const pendingResets = new Map<
-        Event,
-        {
-          timeout: ReturnType<typeof setTimeout>;
-          onComplete: EventListener;
-        }
-      >();
-      const clearPendingReset = (event: Event) => {
-        const pendingReset = pendingResets.get(event);
-        if (!pendingReset) return;
-        pendingResets.delete(event);
-        clearTimeout(pendingReset.timeout);
-        completionTarget.removeEventListener("reset", pendingReset.onComplete);
-      };
-      const resetValue = (nativeReset = false) => {
-        if (isComboboxValueControlled(store)) return;
-        if (nativeReset) {
-          const elementValue = element.value;
-          const renderedValue = getRenderedValue();
-          setCanInline(false);
-          store.resetValue();
-          if (valueOwner === "caller") return;
-          if (valueOwner === "unknown" && elementValue !== renderedValue)
-            return;
-          if (element.value !== elementValue) return;
-          // The native reset action runs after this event. Set its value here
-          // so it also works when React is already flushing a lifecycle.
-          element.defaultValue = store.getState().value;
-          return;
-        }
-        flushSync(() => {
-          setCanInline(false);
-          store.resetValue();
-        });
-      };
-      const onResetCapture = (event: Event) => {
-        const ownerForm = element.form;
-        if (!ownerForm) return;
-        if (event.target !== ownerForm) return;
-        const storeValue = store.getState().value;
-        const onComplete = (currentEvent: Event) => {
-          if (currentEvent !== event) return;
-          clearPendingReset(event);
-          if (event.defaultPrevented) return;
-          if (element.form !== ownerForm) return;
-          resetValue(true);
+    const resetElementRef = useCallback(
+      (element: HTMLType | null) => {
+        resetCleanupRef.current();
+        resetCleanupRef.current = noop;
+        if (!element) return;
+        if (!element.form && !form) return;
+        const root = element.getRootNode();
+        const completionTarget =
+          root.nodeType === Node.DOCUMENT_NODE
+            ? ((root as Document).defaultView ?? root)
+            : root;
+        const pendingResets = new Map<
+          Event,
+          {
+            timeout: ReturnType<typeof setTimeout>;
+            onComplete: EventListener;
+          }
+        >();
+        const clearPendingReset = (event: Event) => {
+          const pendingReset = pendingResets.get(event);
+          if (!pendingReset) return;
+          pendingResets.delete(event);
+          clearTimeout(pendingReset.timeout);
+          completionTarget.removeEventListener(
+            "reset",
+            pendingReset.onComplete,
+          );
         };
-        completionTarget.addEventListener("reset", onComplete);
-        const timeout = setTimeout(() => {
-          clearPendingReset(event);
-          if (event.defaultPrevented) return;
-          if (element.form !== ownerForm) return;
-          if (store.getState().value !== storeValue) return;
-          resetValue();
-        });
-        pendingResets.set(event, {
-          timeout,
-          onComplete,
-        });
-      };
-      // Complete the reset after handlers on the element's root. The timeout
-      // handles events whose propagation is stopped before reaching it.
-      root.addEventListener("reset", onResetCapture, true);
-      return () => {
-        root.removeEventListener("reset", onResetCapture, true);
-        for (const event of pendingResets.keys()) {
-          clearPendingReset(event);
-        }
-      };
-    }, [form, getRenderedValue, store, valueOwner]);
+        const resetValue = (nativeReset = false) => {
+          if (isComboboxValueControlled(store)) return;
+          if (nativeReset) {
+            const elementValue = element.value;
+            const renderedValue = getRenderedValue();
+            setCanInline(false);
+            store.resetValue();
+            if (valueOwner === "caller") return;
+            if (valueOwner === "unknown" && elementValue !== renderedValue)
+              return;
+            if (element.value !== elementValue) return;
+            // The native reset action runs after this event. Set its value here
+            // so it also works when React is already flushing a lifecycle.
+            element.defaultValue = store.getState().value;
+            return;
+          }
+          flushSync(() => {
+            setCanInline(false);
+            store.resetValue();
+          });
+        };
+        const onResetCapture = (event: Event) => {
+          // Synthetic reset events don't invoke the native reset algorithm.
+          // Happy DOM doesn't implement isTrusted, so check for false directly.
+          if (Object.is(event.isTrusted, false)) return;
+          const ownerForm = element.form;
+          if (!ownerForm) return;
+          if (event.target !== ownerForm) return;
+          const storeValue = store.getState().value;
+          const onComplete = (currentEvent: Event) => {
+            if (currentEvent !== event) return;
+            clearPendingReset(event);
+            if (event.defaultPrevented) return;
+            if (element.form !== ownerForm) return;
+            resetValue(true);
+          };
+          completionTarget.addEventListener("reset", onComplete);
+          const timeout = setTimeout(() => {
+            clearPendingReset(event);
+            if (event.defaultPrevented) return;
+            if (element.form !== ownerForm) return;
+            if (store.getState().value !== storeValue) return;
+            resetValue();
+          });
+          pendingResets.set(event, {
+            timeout,
+            onComplete,
+          });
+        };
+        // Capture document resets at the Window boundary. The timeout handles
+        // events whose propagation is stopped before reaching the root.
+        completionTarget.addEventListener("reset", onResetCapture, true);
+        resetCleanupRef.current = () => {
+          completionTarget.removeEventListener("reset", onResetCapture, true);
+          for (const event of pendingResets.keys()) {
+            clearPendingReset(event);
+          }
+        };
+      },
+      [form, getRenderedValue, store, valueOwner],
+    );
 
     // If the inline autocomplete is enabled in a update, we need to update the
     // canInline state to reflect this. TODO: Try derived state.
@@ -322,6 +340,12 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 
     const items = useStoreState(store, "renderedItems");
     const open = useStoreState(store, "open");
+
+    useUpdateLayoutEffect(() => {
+      if (!inline) return;
+      if (!open) return;
+      setCanInline(true);
+    }, [inline, open]);
     const contentElement = useStoreState(store, "contentElement");
 
     // The current input value may differ from state.value when
@@ -848,7 +872,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       name: multiSelectable ? undefined : name,
       form,
       disabled,
-      ref: useMergeRefs(ref, props.ref),
+      ref: useMergeRefs(ref, resetElementRef, props.ref),
       onChange,
       onCompositionStart,
       onCompositionEnd,

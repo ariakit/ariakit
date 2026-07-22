@@ -161,6 +161,41 @@ function EffectResetAddress({
   );
 }
 
+function ReplacedAddress() {
+  const formRef = useRef<HTMLFormElement>(null);
+  const store = Ariakit.useComboboxStore();
+  const [textarea, setTextarea] = useState(false);
+  const [afterReset, setAfterReset] = useState<string>();
+
+  useLayoutEffect(() => {
+    if (!textarea) return;
+    const form = formRef.current;
+    if (!form) return;
+    form.reset();
+    const value = new FormData(form).get("replacedHomeTown");
+    setAfterReset(typeof value === "string" ? value : "");
+  }, [textarea]);
+
+  return (
+    <form
+      ref={formRef}
+      aria-label="Replaced address"
+      data-after-reset={afterReset}
+    >
+      <Ariakit.ComboboxProvider store={store}>
+        <Ariakit.ComboboxLabel>Replaced home town</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox
+          name="replacedHomeTown"
+          render={textarea ? <textarea /> : <input />}
+        />
+      </Ariakit.ComboboxProvider>
+      <button type="button" onClick={() => setTextarea(true)}>
+        Replace and reset address
+      </button>
+    </form>
+  );
+}
+
 export default function Example() {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [submittedValues, setSubmittedValues] = useState<string[] | null>(null);
@@ -184,6 +219,7 @@ export default function Example() {
   });
   const controlledElementStore = Ariakit.useComboboxStore();
   const controlledFunctionStore = Ariakit.useComboboxStore();
+  const inlineAutoSelectStore = Ariakit.useComboboxStore();
   const siblingSourceStore = Ariakit.useComboboxStore();
   Ariakit.useComboboxStore({
     store: siblingSourceStore,
@@ -453,7 +489,7 @@ export default function Example() {
             <Ariakit.ComboboxItem value="San Diego" />
           </Ariakit.ComboboxPopover>
         </Ariakit.ComboboxProvider>
-        <Ariakit.ComboboxProvider>
+        <Ariakit.ComboboxProvider store={inlineAutoSelectStore}>
           <Ariakit.ComboboxLabel>
             Inline auto select home town
           </Ariakit.ComboboxLabel>
@@ -463,6 +499,13 @@ export default function Example() {
             <Ariakit.ComboboxItem value="San Diego" />
           </Ariakit.ComboboxPopover>
         </Ariakit.ComboboxProvider>
+        <button
+          type="button"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => inlineAutoSelectStore.show()}
+        >
+          Show inline address
+        </button>
         <button
           type="button"
           onMouseDown={(event) => event.preventDefault()}
@@ -515,6 +558,7 @@ export default function Example() {
         programmatic
         render
       />
+      <ReplacedAddress />
     </>
   );
 }

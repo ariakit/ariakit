@@ -114,6 +114,61 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(homeTown).toHaveValue("");
   });
 
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3633990062
+  test("resets when Window capture stops propagation", async ({ q }) => {
+    const form = q.form("Address");
+    const name = q.textbox("Name");
+    const homeTown = q.combobox("Home town");
+    await form.evaluate(() => {
+      window.addEventListener("reset", (event) => event.stopPropagation(), {
+        capture: true,
+        once: true,
+      });
+    });
+
+    await name.fill("Chance");
+    await homeTown.fill("Boston");
+    await q.button("Reset address").click();
+    await form.evaluate(
+      () => new Promise<void>((resolve) => setTimeout(resolve)),
+    );
+
+    await test.expect(name).toHaveValue("");
+    await test.expect(homeTown).toHaveValue("");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3633612920
+  test("ignores a standalone reset event", async ({ q }) => {
+    const form = q.form("Address");
+    const name = q.textbox("Name");
+    const homeTown = q.combobox("Home town");
+
+    await name.fill("Chance");
+    await homeTown.fill("Boston");
+    const values = await form.evaluate(async (element) => {
+      const form = element as HTMLFormElement;
+      const read = () => ({
+        name: (form.elements.namedItem("name") as HTMLInputElement).value,
+        homeTown: (form.elements.namedItem("homeTown") as HTMLInputElement)
+          .value,
+        formHomeTown: new FormData(form).get("homeTown"),
+      });
+      form.dispatchEvent(
+        new Event("reset", { bubbles: true, cancelable: true }),
+      );
+      const immediate = read();
+      await new Promise((resolve) => setTimeout(resolve));
+      return { immediate, nextTask: read() };
+    });
+
+    const expected = {
+      name: "Chance",
+      homeTown: "Boston",
+      formHomeTown: "Boston",
+    };
+    test.expect(values).toEqual({ immediate: expected, nextTask: expected });
+  });
+
   // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
   test("resets the form value before reset returns", async ({ q }) => {
     const form = q.form("Address");
@@ -181,6 +236,30 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(form).toHaveAttribute("data-after-reset", "");
     await test.expect(form).toHaveAttribute("data-on-submit", "");
+    await test.expect(homeTown).toHaveValue("");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3633612921
+  test("rebinds the reset listener when render replaces the element", async ({
+    q,
+  }) => {
+    const form = q.form("Replaced address");
+    const homeTown = q.combobox("Replaced home town");
+
+    await homeTown.fill("Boston");
+    await q.button("Replace and reset address").click();
+
+    test
+      .expect(await homeTown.evaluate((element) => element.tagName))
+      .toBe("TEXTAREA");
+    await test.expect(form).toHaveAttribute("data-after-reset", "");
+    test
+      .expect(
+        await form.evaluate((element) =>
+          new FormData(element as HTMLFormElement).get("replacedHomeTown"),
+        ),
+      )
+      .toBe("");
     await test.expect(homeTown).toHaveValue("");
   });
 
@@ -305,6 +384,29 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
 
     test.expect(value).toBe("");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3633612920
+  test("ignores a standalone reset event inside a shadow root", async ({
+    q,
+  }) => {
+    const form = q.form("Shadow address");
+    const homeTown = q.combobox("Shadow home town");
+
+    await homeTown.fill("Boston");
+    const values = await form.evaluate(async (element) => {
+      const form = element as HTMLFormElement;
+      const read = () => new FormData(form).get("shadowHomeTown");
+      form.dispatchEvent(
+        new Event("reset", { bubbles: true, cancelable: true }),
+      );
+      const immediate = read();
+      await new Promise((resolve) => setTimeout(resolve));
+      return { immediate, nextTask: read() };
+    });
+
+    test.expect(values).toEqual({ immediate: "Boston", nextTask: "Boston" });
+    await test.expect(homeTown).toHaveValue("Boston");
   });
 
   // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
@@ -547,6 +649,36 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Reset inline address").click();
     await test.expect(homeTown).toHaveValue("");
     await homeTown.click();
+
+    await test.expect(homeTown).toHaveValue("Boston");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3633612916
+  test("restores inline autocomplete when reopening with the keyboard", async ({
+    q,
+  }) => {
+    const homeTown = q.combobox("Inline auto select home town");
+
+    await homeTown.click();
+    await test.expect(homeTown).toHaveValue("Boston");
+    await homeTown.press("Escape");
+    await q.button("Reset inline address").click();
+    await test.expect(homeTown).toHaveValue("");
+    await homeTown.press("ArrowDown");
+
+    await test.expect(homeTown).toHaveValue("Boston");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3633612916
+  test("restores inline autocomplete when the store reopens", async ({ q }) => {
+    const homeTown = q.combobox("Inline auto select home town");
+
+    await homeTown.click();
+    await test.expect(homeTown).toHaveValue("Boston");
+    await homeTown.press("Escape");
+    await q.button("Reset inline address").click();
+    await test.expect(homeTown).toHaveValue("");
+    await q.button("Show inline address").click();
 
     await test.expect(homeTown).toHaveValue("Boston");
   });

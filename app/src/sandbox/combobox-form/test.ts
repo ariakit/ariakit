@@ -56,6 +56,24 @@ test("resets an uncontrolled combobox with its form", async () => {
   expect(homeTown).toHaveValue("");
 });
 
+// https://github.com/ariakit/ariakit/pull/6803#discussion_r3633990062
+test("resets when Window capture stops propagation", async () => {
+  const name = q.textbox.ensure("Name");
+  const homeTown = q.combobox.ensure("Home town");
+  window.addEventListener("reset", (event) => event.stopPropagation(), {
+    capture: true,
+    once: true,
+  });
+
+  await type("Chance", name);
+  await type("Boston", homeTown);
+  await click(q.button("Reset address"));
+  await nextTask();
+
+  expect(name).toHaveValue("");
+  expect(homeTown).toHaveValue("");
+});
+
 // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
 test("resets the form value before reset returns", async () => {
   const form = q.form.ensure("Address") as HTMLFormElement;
@@ -335,6 +353,34 @@ test("restores inline autocomplete when reopening", async () => {
   expect(homeTown).toHaveValue("Boston");
 });
 
+// https://github.com/ariakit/ariakit/pull/6803#discussion_r3633612916
+test("restores inline autocomplete when reopening with the keyboard", async () => {
+  const homeTown = q.combobox.ensure("Inline auto select home town");
+
+  await click(homeTown);
+  expect(homeTown).toHaveValue("Boston");
+  await press("Escape", homeTown);
+  await click(q.button("Reset inline address"));
+  expect(homeTown).toHaveValue("");
+  await press("ArrowDown", homeTown);
+
+  expect(homeTown).toHaveValue("Boston");
+});
+
+// https://github.com/ariakit/ariakit/pull/6803#discussion_r3633612916
+test("restores inline autocomplete when the store reopens", async () => {
+  const homeTown = q.combobox.ensure("Inline auto select home town");
+
+  await click(homeTown);
+  expect(homeTown).toHaveValue("Boston");
+  await press("Escape", homeTown);
+  await click(q.button("Reset inline address"));
+  expect(homeTown).toHaveValue("");
+  await click(q.button("Show inline address"));
+
+  expect(homeTown).toHaveValue("Boston");
+});
+
 // https://github.com/ariakit/ariakit/pull/6803#discussion_r3633543035
 test.each(["Effect", "Layout effect", "Render effect"])(
   "resets synchronously from %s",
@@ -360,5 +406,20 @@ test("resets a pass-through render with setValueOnChange disabled", async () => 
 
   expect(form).toHaveAttribute("data-after-reset", "");
   expect(form).toHaveAttribute("data-on-submit", "");
+  expect(homeTown).toHaveValue("");
+});
+
+// https://github.com/ariakit/ariakit/pull/6803#discussion_r3633612921
+test("rebinds the reset listener when render replaces the element", async () => {
+  const form = q.form.ensure("Replaced address") as HTMLFormElement;
+  let homeTown = q.combobox.ensure("Replaced home town");
+
+  await type("Boston", homeTown);
+  await click(q.button("Replace and reset address"));
+  homeTown = q.combobox.ensure("Replaced home town");
+
+  expect(homeTown.tagName).toBe("TEXTAREA");
+  expect(form).toHaveAttribute("data-after-reset", "");
+  expect(new FormData(form).get("replacedHomeTown")).toBe("");
   expect(homeTown).toHaveValue("");
 });
