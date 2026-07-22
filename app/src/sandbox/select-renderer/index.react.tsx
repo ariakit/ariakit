@@ -280,6 +280,34 @@ function DirectElementRenderer() {
   );
 }
 
+function InitialRefRenderer() {
+  const scrollElementRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <section>
+      <div
+        ref={scrollElementRef}
+        className="async-scroller"
+        role="listbox"
+        aria-label="Initial ref items"
+      >
+        <SelectRenderer
+          items={asyncItems}
+          initialItems={1}
+          itemSize={40}
+          scrollElement={scrollElementRef}
+        >
+          {({ value, index, ...item }) => (
+            <div key={item.id} {...item} data-index={index} role="option">
+              {value}
+            </div>
+          )}
+        </SelectRenderer>
+      </div>
+    </section>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -288,6 +316,7 @@ export default function Example() {
       <AsyncRenderer />
       <NestedAutoRenderer />
       <DirectElementRenderer />
+      <InitialRefRenderer />
     </>
   );
 }

@@ -320,16 +320,17 @@ function useScroller(
   const scrollerRef = useRef<Element | null>(null);
   const autoResolved = useRef(false);
   const previousRendererRef = useRef(rendererRef);
+  const resolveScroller = () => {
+    const renderer = rendererRef?.current;
+    if (!renderer) return null;
+    return getScrollElement(renderer, scrollElement);
+  };
   // Explicit refs and resolvers can change without their prop identity
   // changing, so resolve them during each committed layout.
   // oxlint-disable-next-line exhaustive-deps
   useSafeLayoutEffect(() => {
     if (scrollElement === undefined) return;
-    const renderer = rendererRef?.current;
-    const nextScroller = renderer
-      ? getScrollElement(renderer, scrollElement)
-      : null;
-    scrollerRef.current = nextScroller;
+    scrollerRef.current = resolveScroller();
   });
   // Keep state synchronization and automatic ancestor detection off the
   // layout path.
@@ -350,6 +351,9 @@ function useScroller(
       }
     } else {
       autoResolved.current = false;
+      // Ancestor refs attach after descendant layout effects, so resolve the
+      // explicit target again once the entire layout phase has completed.
+      scrollerRef.current = resolveScroller();
     }
     const nextScroller = scrollerRef.current;
     if (nextScroller === scroller) return;

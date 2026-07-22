@@ -145,4 +145,22 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await test.expect(directOptions.option("Async item 51")).toBeVisible();
   });
+
+  // https://github.com/ariakit/ariakit/pull/6806#discussion_r3633901198
+  test("resolves an ancestor ref after the initial commit", async ({
+    page,
+    q,
+  }) => {
+    const scroller = q.listbox("Initial ref items");
+    const initialRefOptions = query(scroller);
+
+    await test.expect(initialRefOptions.option("Async item 1")).toBeVisible();
+    await scroller.evaluate((element) => {
+      element.scrollTop = 2000;
+      element.dispatchEvent(new Event("scroll"));
+    });
+    await flushFrames(page);
+
+    await test.expect(initialRefOptions.option("Async item 51")).toBeVisible();
+  });
 });
