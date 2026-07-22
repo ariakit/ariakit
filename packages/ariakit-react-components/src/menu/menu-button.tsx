@@ -159,10 +159,10 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
+      store?.setAnchorElement(event.currentTarget);
       onClickProp?.(event as any);
       if (event.defaultPrevented) return;
       if (!store) return;
-      store.setAnchorElement(event.currentTarget);
       const isKeyboardClick = !event.detail;
       const { open } = store.getState();
       // When the menu button is clicked, if the menu is hidden or if it's a

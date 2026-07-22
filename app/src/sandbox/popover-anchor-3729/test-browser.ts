@@ -46,7 +46,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const button = q.button("Open Menu");
     await button.click();
 
-    const menu = q.menu();
+    const menu = q.menu("Menu items");
     await test.expect(menu).toBeVisible();
     await test
       .expect(q.status("Menu current anchor"))
@@ -55,5 +55,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const buttonCenter = await getVerticalCenter(button);
     const menuCenter = await getVerticalCenter(menu);
     test.expect(Math.abs(menuCenter - buttonCenter)).toBeLessThanOrEqual(1);
+  });
+
+  test("preserves a consumer MenuButton anchor override", async ({ q }) => {
+    await q.button("Open Override Menu").click();
+
+    await test
+      .expect(q.status("Override Menu current anchor"))
+      .toHaveText("group");
   });
 });

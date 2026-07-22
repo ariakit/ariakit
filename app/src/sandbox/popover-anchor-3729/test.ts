@@ -32,3 +32,11 @@ test("preserves the MenuButton interaction anchor", async () => {
 
   expect(anchor).toHaveTextContent("menu-button");
 });
+
+test("preserves a consumer MenuButton anchor override", async () => {
+  const anchor = q.status.ensure("Override Menu current anchor");
+
+  await click(q.button("Open Override Menu"));
+
+  expect(anchor).toHaveTextContent("group");
+});

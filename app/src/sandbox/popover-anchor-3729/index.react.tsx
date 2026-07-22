@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 interface ExampleCaseProps {
   anchorFirst?: boolean;
@@ -71,9 +71,15 @@ function ExampleCase({
   return content;
 }
 
-function MenuButtonCase() {
+interface MenuButtonCaseProps {
+  customAnchor?: boolean;
+  label: string;
+}
+
+function MenuButtonCase({ customAnchor, label }: MenuButtonCaseProps) {
   const store = Ariakit.useMenuStore({ placement: "right" });
   const anchorElement = Ariakit.useStoreState(store, "anchorElement");
+  const groupRef = useRef<HTMLDivElement>(null);
 
   return (
     <div
@@ -84,16 +90,32 @@ function MenuButtonCase() {
         padding: 64,
       }}
     >
-      <Ariakit.MenuButton store={store} data-anchor="menu-button">
-        Open Menu
-      </Ariakit.MenuButton>
+      <div ref={groupRef} data-anchor="group">
+        <Ariakit.MenuButton
+          store={store}
+          data-anchor="menu-button"
+          onClick={
+            customAnchor
+              ? () => store.setAnchorElement(groupRef.current)
+              : undefined
+          }
+        >
+          Open {label}
+        </Ariakit.MenuButton>
+      </div>
       <Ariakit.PopoverAnchor store={store} data-anchor="explicit">
-        Menu anchor
+        {label} anchor
       </Ariakit.PopoverAnchor>
-      <Ariakit.Menu store={store} flip={false} slide={false} gutter={16}>
+      <Ariakit.Menu
+        store={store}
+        aria-label={`${label} items`}
+        flip={false}
+        slide={false}
+        gutter={16}
+      >
         <Ariakit.MenuItem>Menu item</Ariakit.MenuItem>
       </Ariakit.Menu>
-      <output aria-label="Menu current anchor">
+      <output aria-label={`${label} current anchor`}>
         {anchorElement?.dataset.anchor}
       </output>
     </div>
@@ -106,7 +128,8 @@ export default function Example() {
       <ExampleCase label="Disclosure first" removable />
       <ExampleCase label="Anchor first" anchorFirst />
       <ExampleCase label="Provider store" anchorFirst provider />
-      <MenuButtonCase />
+      <MenuButtonCase label="Menu" />
+      <MenuButtonCase label="Override Menu" customAnchor />
     </>
   );
 }
