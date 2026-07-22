@@ -64,7 +64,10 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/3031
-  test("keeps focus in an outside iframe after hiding", async ({ page, q }) => {
+  test("passes the native iframe focus event to the callback", async ({
+    page,
+    q,
+  }) => {
     const outsideFrame = page.locator("iframe[title='Root outside frame']");
     await q.button("Open root dialog").click();
     await test.expect(q.dialog("Root dialog")).toBeFocused();
@@ -73,6 +76,57 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await test.expect(outsideFrame).toBeFocused();
     await test.expect(q.dialog("Root dialog")).not.toBeVisible();
+    await test
+      .expect(
+        q.text(
+          "Root outside event: focus; trusted: true; " +
+            "current target: null; path: 0",
+        ),
+      )
+      .toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/3031
+  test("preserves pending iframe focus across frame refreshes", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open root dialog").click();
+    await test.expect(q.dialog("Root dialog")).toBeFocused();
+    await page.evaluate(() => {
+      const outsideFrame = document.querySelector<HTMLIFrameElement>(
+        "iframe[title='Root outside frame']",
+      );
+      const outsideWindow = outsideFrame?.contentWindow;
+      if (!outsideFrame || !outsideWindow) {
+        throw new Error("Expected iframe contentWindow");
+      }
+      outsideWindow.addEventListener(
+        "focus",
+        () => {
+          const frameDocument = outsideFrame.contentDocument;
+          if (!frameDocument) {
+            throw new Error("Expected iframe contentDocument");
+          }
+          const frame = frameDocument.createElement("iframe");
+          frame.hidden = true;
+          frameDocument.body.appendChild(frame);
+        },
+        { once: true },
+      );
+    });
+
+    await page.keyboard.press("Tab");
+
+    await test.expect(q.dialog("Root dialog")).not.toBeVisible();
+    await test
+      .expect(
+        q.text(
+          "Root outside event: focus; trusted: true; " +
+            "current target: null; path: 0",
+        ),
+      )
+      .toBeVisible();
   });
 
   // https://github.com/ariakit/ariakit/issues/3031

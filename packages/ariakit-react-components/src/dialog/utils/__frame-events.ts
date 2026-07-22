@@ -1,5 +1,9 @@
 import { isElement } from "@ariakit/utils";
 
+export interface RegisterFrameTreeListener {
+  (setup: () => () => void): () => void;
+}
+
 function getFrameWindows(scope: Window) {
   const windows: Window[] = [];
 
@@ -15,6 +19,43 @@ function getFrameWindows(scope: Window) {
 
   collect(scope);
   return windows;
+}
+
+interface AddFrameTreeEventListenerParams<K extends keyof DocumentEventMap> {
+  type: K;
+  listener: (event: DocumentEventMap[K]) => void;
+  options?: boolean | AddEventListenerOptions;
+  scope: Window;
+}
+
+export function addFrameTreeEventListener<K extends keyof DocumentEventMap>({
+  type,
+  listener,
+  options,
+  scope,
+}: AddFrameTreeEventListenerParams<K>) {
+  const cleanups: Array<() => void> = [];
+
+  for (const win of getFrameWindows(scope)) {
+    let doc: Document;
+    try {
+      doc = win.document;
+      doc.addEventListener(type, listener, options);
+    } catch {
+      continue;
+    }
+    cleanups.push(() => {
+      try {
+        doc.removeEventListener(type, listener, options);
+      } catch {}
+    });
+  }
+
+  return () => {
+    for (const cleanup of cleanups) {
+      cleanup();
+    }
+  };
 }
 
 function hasFrame(nodes: NodeList) {

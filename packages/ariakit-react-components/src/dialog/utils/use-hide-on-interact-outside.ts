@@ -1,26 +1,22 @@
 import { useStoreState } from "@ariakit/react-store";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-utils";
-import {
-  contains,
-  getDocument,
-  getWindow,
-  addGlobalEventListener,
-  isElement,
-} from "@ariakit/utils";
+import { contains, getDocument, getWindow, isElement } from "@ariakit/utils";
 import type { MutableRefObject } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { DialogStore } from "../dialog-store.ts";
 import type { DialogOptions } from "../dialog.tsx";
 import {
+  addFrameTreeEventListener,
   addGlobalWindowFocusListener,
   observeFrameTree,
 } from "./__frame-events.ts";
+import type { RegisterFrameTreeListener } from "./__frame-events.ts";
 import { isElementInside, isElementMarked } from "./mark-tree-outside.ts";
 import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.ts";
 
 interface EventOutsideOptions {
   store: DialogStore;
-  type: string;
+  type: keyof DocumentEventMap;
   listener: (event: Event) => void;
   capture?: boolean;
   // The open and contentElement states and the focusedRef are tracked once by
@@ -30,7 +26,7 @@ interface EventOutsideOptions {
   open?: boolean;
   contentElement?: HTMLElement | null;
   eventWindow?: Window;
-  frameTreeVersion: number;
+  registerFrameTreeListener: RegisterFrameTreeListener;
   focusedRef: MutableRefObject<boolean>;
   focusInCountRef: MutableRefObject<number>;
 }
@@ -179,28 +175,34 @@ function isEventOutside({
   return true;
 }
 
-function createFrameFocusEvent(frameElement: Element) {
-  const event = getDocument(frameElement).createEvent("FocusEvent");
-  event.initEvent("focusin", true, false);
-  Object.defineProperty(event, "target", {
-    configurable: true,
-    value: frameElement,
-  });
-  return event;
+interface FrameTreeRegistration {
+  setup: () => () => void;
+  cleanup: () => void;
 }
 
-function useFrameTreeVersion(open?: boolean, eventWindow?: Window) {
-  const [version, setVersion] = useState(0);
+function useFrameTreeRegistry(open?: boolean, eventWindow?: Window) {
+  const registrationsRef = useRef(new Set<FrameTreeRegistration>());
+  const registerFrameTreeListener = useEvent((setup: () => () => void) => {
+    const registration = { setup, cleanup: setup() };
+    registrationsRef.current.add(registration);
+    return () => {
+      registrationsRef.current.delete(registration);
+      registration.cleanup();
+    };
+  });
 
   useEffect(() => {
     if (!open) return;
     if (!eventWindow) return;
     return observeFrameTree(eventWindow, () => {
-      setVersion((version) => version + 1);
+      for (const registration of registrationsRef.current) {
+        registration.cleanup();
+        registration.cleanup = registration.setup();
+      }
     });
   }, [open, eventWindow]);
 
-  return version;
+  return registerFrameTreeListener;
 }
 
 function useEventOutside({
@@ -211,7 +213,7 @@ function useEventOutside({
   open,
   contentElement,
   eventWindow,
-  frameTreeVersion,
+  registerFrameTreeListener,
   focusedRef,
   focusInCountRef,
 }: EventOutsideOptions) {
@@ -219,6 +221,7 @@ function useEventOutside({
 
   useEffect(() => {
     if (!open) return;
+    if (!eventWindow) return;
     const onEvent = (event: Event) => {
       if (type === "focusin") {
         focusInCountRef.current += 1;
@@ -240,7 +243,14 @@ function useEventOutside({
       }
       callListener(event);
     };
-    return addGlobalEventListener(type, onEvent, capture, eventWindow);
+    return registerFrameTreeListener(() =>
+      addFrameTreeEventListener({
+        type,
+        listener: onEvent,
+        options: capture,
+        scope: eventWindow,
+      }),
+    );
   }, [
     open,
     capture,
@@ -249,7 +259,7 @@ function useEventOutside({
     callListener,
     contentElement,
     eventWindow,
-    frameTreeVersion,
+    registerFrameTreeListener,
     focusedRef,
     focusInCountRef,
   ]);
@@ -276,11 +286,11 @@ export function useHideOnInteractOutside(
   const eventWindow = contentElement
     ? getAncestorWindow(contentElement)
     : undefined;
-  const frameTreeVersion = useFrameTreeVersion(open, eventWindow);
+  const registerFrameTreeListener = useFrameTreeRegistry(open, eventWindow);
   const previousMouseDownRef = usePreviousMouseDownRef(
     open,
     eventWindow,
-    frameTreeVersion,
+    registerFrameTreeListener,
   );
   const focusedRef = useRef(false);
   const focusInCountRef = useRef(0);
@@ -309,9 +319,9 @@ export function useHideOnInteractOutside(
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
       if (
         interactedOutsideRef &&
-        isElement(event.target) &&
         (focusEnteredFrame ||
-          getDocument(event.target) !== getDocument(contentElement))
+          (isElement(event.target) &&
+            getDocument(event.target) !== getDocument(contentElement)))
       ) {
         interactedOutsideRef.current = true;
       }
@@ -325,7 +335,7 @@ export function useHideOnInteractOutside(
     open,
     contentElement,
     eventWindow,
-    frameTreeVersion,
+    registerFrameTreeListener,
     focusedRef,
     focusInCountRef,
   };
@@ -335,50 +345,63 @@ export function useHideOnInteractOutside(
     if (!contentElement) return;
     if (!eventWindow) return;
     const contentWindow = getWindow(contentElement);
-    return addGlobalWindowFocusListener((event, focusedWindow) => {
-      if (
-        event.target !== event.currentTarget &&
-        event.target !== focusedWindow.document
-      ) {
-        return;
-      }
-      if (focusedWindow === contentWindow) return;
-      let frameElement: Element | null;
-      try {
-        frameElement = focusedWindow.frameElement;
-      } catch {
-        return;
-      }
-      if (!frameElement) return;
-      const focusInCount = focusInCountRef.current;
-      getWindow(frameElement).queueMicrotask(() => {
-        if (!store.getState().open) return;
-        // Focusable content inside a frame dispatches a native focusin after
-        // the Window focus event. In that case, the native event wins.
-        if (focusInCount !== focusInCountRef.current) return;
-        const { contentElement, disclosureElement } = store.getState();
-        if (!contentElement) return;
-        const focusEvent = createFrameFocusEvent(frameElement);
+    const clearTimers = new Set<() => void>();
+    const unregister = registerFrameTreeListener(() =>
+      addGlobalWindowFocusListener((event, focusedWindow) => {
         if (
-          !isEventOutside({
-            event: focusEvent,
-            target: frameElement,
-            contentElement,
-            disclosureElement,
-            focused: focusedRef.current,
-          })
+          event.target !== event.currentTarget &&
+          event.target !== focusedWindow.document
         ) {
           return;
         }
-        hideOnFocusOutside(focusEvent, true);
-      });
-    }, eventWindow);
+        if (focusedWindow === contentWindow) return;
+        let frameElement: Element | null;
+        try {
+          frameElement = focusedWindow.frameElement;
+        } catch {
+          return;
+        }
+        if (!frameElement) return;
+        const focusInCount = focusInCountRef.current;
+        const timer = eventWindow.setTimeout(() => {
+          clearTimers.delete(clearTimer);
+          if (!store.getState().open) return;
+          // Focusable content inside a frame dispatches a native focusin
+          // after the Window focus event. In that case, the native event
+          // wins.
+          if (focusInCount !== focusInCountRef.current) return;
+          const { contentElement, disclosureElement } = store.getState();
+          if (!contentElement) return;
+          if (
+            !isEventOutside({
+              event,
+              target: frameElement,
+              contentElement,
+              disclosureElement,
+              focused: focusedRef.current,
+            })
+          ) {
+            return;
+          }
+          hideOnFocusOutside(event, true);
+        }, 0);
+        const clearTimer = () => eventWindow.clearTimeout(timer);
+        clearTimers.add(clearTimer);
+      }, eventWindow),
+    );
+    return () => {
+      unregister();
+      for (const clearTimer of clearTimers) {
+        clearTimer();
+      }
+      clearTimers.clear();
+    };
   }, [
     open,
     store,
     contentElement,
     eventWindow,
-    frameTreeVersion,
+    registerFrameTreeListener,
     focusedRef,
     focusInCountRef,
     hideOnFocusOutside,

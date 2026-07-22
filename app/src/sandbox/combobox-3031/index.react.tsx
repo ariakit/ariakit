@@ -8,6 +8,7 @@ const navigatedFrameContent =
   '<button type="button">Navigated outside target</button>';
 const containedFrameContent =
   '<button type="button">Late contained target</button>';
+const focusTimingFrameContent = '<input aria-label="Focus timing target" />';
 
 function NestedFrame() {
   const [iframeBody, setIframeBody] = useState<HTMLElement | null>(null);
@@ -40,10 +41,15 @@ function EmbeddedDialog() {
         modal={false}
         unmountOnHide={false}
         hideOnInteractOutside={(event) => {
-          if (event.type === "focusin") {
-            const target = event.target as Element;
+          if (event.type === "focus" || event.type === "focusin") {
+            const target = event.target;
+            if ((target as Element | null)?.nodeType !== 1) {
+              setOutsideTarget("Sibling frame");
+              return shouldHide;
+            }
+            const element = target as Element;
             setOutsideTarget(
-              target.getAttribute("title") ?? target.textContent ?? "",
+              element.getAttribute("title") ?? element.textContent ?? "",
             );
           }
           return shouldHide;
@@ -53,6 +59,29 @@ function EmbeddedDialog() {
         <NestedFrame />
       </Ariakit.Dialog>
       <output>Outside target: {outsideTarget}</output>
+    </Ariakit.DialogProvider>
+  );
+}
+
+interface FocusTimingDialogProps {
+  setOpen: (open: boolean) => void;
+}
+
+function FocusTimingDialog({ setOpen }: FocusTimingDialogProps) {
+  return (
+    <Ariakit.DialogProvider setOpen={setOpen}>
+      <Ariakit.DialogDisclosure tabIndex={-1}>
+        Open focus timing dialog
+      </Ariakit.DialogDisclosure>
+      <Ariakit.Dialog
+        aria-label="Focus timing dialog"
+        modal={false}
+        hideOnInteractOutside={(event) =>
+          (event.target as Node | null)?.nodeType !== 1
+        }
+      >
+        Focus timing dialog content
+      </Ariakit.Dialog>
     </Ariakit.DialogProvider>
   );
 }
@@ -81,6 +110,8 @@ function EmbeddedClickDialog() {
 }
 
 function RootDialog() {
+  const [outsideEvent, setOutsideEvent] = useState("");
+
   return (
     <Ariakit.DialogProvider>
       <Ariakit.DialogDisclosure tabIndex={-1}>
@@ -89,10 +120,20 @@ function RootDialog() {
       <Ariakit.Dialog
         aria-label="Root dialog"
         modal={false}
-        hideOnInteractOutside
+        hideOnInteractOutside={(event) => {
+          const nativeEvent =
+            "nativeEvent" in event ? event.nativeEvent : event;
+          setOutsideEvent(
+            `${event.type}; trusted: ${String(event.isTrusted)}; ` +
+              `current target: ${event.currentTarget ? "set" : "null"}; ` +
+              `path: ${nativeEvent.composedPath().length}`,
+          );
+          return event.isTrusted;
+        }}
       >
         Root dialog content
       </Ariakit.Dialog>
+      <output>Root outside event: {outsideEvent}</output>
     </Ariakit.DialogProvider>
   );
 }
@@ -100,11 +141,13 @@ function RootDialog() {
 interface LifecycleDialogProps {
   addOutsideFrame: () => void;
   navigateFrame: () => void;
+  navigateAndFocusFrame: () => void;
 }
 
 function LifecycleDialog({
   addOutsideFrame,
   navigateFrame,
+  navigateAndFocusFrame,
 }: LifecycleDialogProps) {
   const [showContainedFrame, setShowContainedFrame] = useState(false);
 
@@ -116,13 +159,18 @@ function LifecycleDialog({
       <Ariakit.Dialog
         aria-label="Lifecycle dialog"
         modal={false}
-        hideOnInteractOutside={(event) => event.type === "click"}
+        hideOnInteractOutside={(event) =>
+          event.type === "click" || event.type === "focusin"
+        }
       >
         <button type="button" onClick={addOutsideFrame}>
           Add outside frame
         </button>
         <button type="button" onClick={navigateFrame}>
           Navigate outside frame
+        </button>
+        <button type="button" onClick={navigateAndFocusFrame}>
+          Navigate and focus outside frame
         </button>
         <button type="button" onClick={() => setShowContainedFrame(true)}>
           Add contained frame
@@ -163,15 +211,19 @@ function MatchingDialog({ label, open, setOpen }: MatchingDialogProps) {
 interface EmbeddedContentProps {
   firstMatchingOpen: boolean;
   setFirstMatchingOpen: (open: boolean) => void;
+  setFocusTimingOpen: (open: boolean) => void;
   addOutsideFrame: () => void;
   navigateFrame: () => void;
+  navigateAndFocusFrame: () => void;
 }
 
 function EmbeddedContent({
   firstMatchingOpen,
   setFirstMatchingOpen,
+  setFocusTimingOpen,
   addOutsideFrame,
   navigateFrame,
+  navigateAndFocusFrame,
 }: EmbeddedContentProps) {
   return (
     <>
@@ -184,10 +236,12 @@ function EmbeddedContent({
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
       <EmbeddedDialog />
+      <FocusTimingDialog setOpen={setFocusTimingOpen} />
       <EmbeddedClickDialog />
       <LifecycleDialog
         addOutsideFrame={addOutsideFrame}
         navigateFrame={navigateFrame}
+        navigateAndFocusFrame={navigateAndFocusFrame}
       />
       <MatchingDialog
         label="First"
@@ -203,8 +257,10 @@ export default function Example() {
   const [siblingBody, setSiblingBody] = useState<HTMLElement | null>(null);
   const [showOutsideFrame, setShowOutsideFrame] = useState(false);
   const [frameNavigated, setFrameNavigated] = useState(false);
+  const [focusFrameNavigated, setFocusFrameNavigated] = useState(false);
   const [firstMatchingOpen, setFirstMatchingOpen] = useState(false);
   const [secondMatchingOpen, setSecondMatchingOpen] = useState(false);
+  const [focusTimingOpen, setFocusTimingOpen] = useState(false);
 
   const setIframe = useCallback((element: HTMLIFrameElement | null) => {
     setIframeBody(element?.contentDocument?.body ?? null);
@@ -221,8 +277,10 @@ export default function Example() {
             <EmbeddedContent
               firstMatchingOpen={firstMatchingOpen}
               setFirstMatchingOpen={setFirstMatchingOpen}
+              setFocusTimingOpen={setFocusTimingOpen}
               addOutsideFrame={() => setShowOutsideFrame(true)}
               navigateFrame={() => setFrameNavigated(true)}
+              navigateAndFocusFrame={() => setFocusFrameNavigated(true)}
             />,
             iframeBody,
           )
@@ -248,6 +306,11 @@ export default function Example() {
         style={{ border: "1px solid", height: 160, width: 320 }}
       />
       <iframe
+        srcDoc={focusTimingFrameContent}
+        title="Focus timing frame"
+        tabIndex={focusTimingOpen ? 0 : -1}
+      />
+      <iframe
         ref={setSiblingIframe}
         title="Sibling frame"
         // This preserves the default tab order while ensuring WebKit includes
@@ -265,6 +328,21 @@ export default function Example() {
         srcDoc={frameNavigated ? navigatedFrameContent : initialFrameContent}
         title="Navigated frame"
         tabIndex={-1}
+      />
+      <iframe
+        srcDoc={
+          focusFrameNavigated
+            ? '<input aria-label="Load focus target" />'
+            : initialFrameContent
+        }
+        title="Focus navigated frame"
+        tabIndex={-1}
+        onLoad={(event) => {
+          if (!focusFrameNavigated) return;
+          event.currentTarget.contentDocument
+            ?.querySelector<HTMLElement>("[aria-label='Load focus target']")
+            ?.focus();
+        }}
       />
       <iframe
         srcDoc={initialFrameContent}
