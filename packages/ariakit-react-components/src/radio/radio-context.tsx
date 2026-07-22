@@ -1,4 +1,5 @@
 import { createStoreContext } from "@ariakit/react-utils";
+import { createContext } from "react";
 import {
   CompositeContextProvider,
   CompositeScopedContextProvider,
@@ -32,3 +33,5 @@ export const useRadioProviderContext = ctx.useProviderContext;
 export const RadioContextProvider = ctx.ContextProvider;
 
 export const RadioScopedContextProvider = ctx.ScopedContextProvider;
+
+export const RadioGroupDisabledContext = createContext(false);
