@@ -1,8 +1,25 @@
 import * as Ariakit from "@ariakit/react";
-import { useRef } from "react";
+import { useState } from "react";
 
-export default function Example() {
-  const anchorRef = useRef<HTMLDivElement>(null);
+interface ExampleCaseProps {
+  anchorFirst?: boolean;
+  label: string;
+}
+
+function ExampleCase({ anchorFirst, label }: ExampleCaseProps) {
+  const [anchorMounted, setAnchorMounted] = useState(true);
+  const store = Ariakit.usePopoverStore({ placement: "right" });
+  const anchorElement = Ariakit.useStoreState(store, "anchorElement");
+  const disclosure = (
+    <Ariakit.PopoverDisclosure store={store} data-anchor="disclosure">
+      Open {label}
+    </Ariakit.PopoverDisclosure>
+  );
+  const anchor = anchorMounted ? (
+    <Ariakit.PopoverAnchor store={store} data-anchor="explicit">
+      {label} anchor
+    </Ariakit.PopoverAnchor>
+  ) : null;
 
   return (
     <div
@@ -13,23 +30,27 @@ export default function Example() {
         padding: 64,
       }}
     >
-      <Ariakit.PopoverProvider placement="right">
-        <Ariakit.PopoverDisclosure>Accept invite</Ariakit.PopoverDisclosure>
-        <Ariakit.PopoverAnchor ref={anchorRef}>
-          Different anchor
-        </Ariakit.PopoverAnchor>
-        <Ariakit.Popover
-          flip={false}
-          slide={false}
-          gutter={16}
-          getAnchorRect={() =>
-            anchorRef.current?.getBoundingClientRect() ?? null
-          }
-        >
-          <Ariakit.PopoverHeading>Invitation details</Ariakit.PopoverHeading>
-          <p>You have been invited to join the project.</p>
-        </Ariakit.Popover>
-      </Ariakit.PopoverProvider>
+      {anchorFirst ? anchor : disclosure}
+      {anchorFirst ? disclosure : anchor}
+      <Ariakit.Popover store={store} flip={false} slide={false} gutter={16}>
+        <Ariakit.PopoverHeading>{label} details</Ariakit.PopoverHeading>
+        <p>You have been invited to join the project.</p>
+        <Ariakit.Button onClick={() => setAnchorMounted(false)}>
+          Remove {label} anchor
+        </Ariakit.Button>
+      </Ariakit.Popover>
+      <output aria-label={`${label} current anchor`}>
+        {anchorElement?.dataset.anchor}
+      </output>
     </div>
+  );
+}
+
+export default function Example() {
+  return (
+    <>
+      <ExampleCase label="Disclosure first" />
+      <ExampleCase label="Anchor first" anchorFirst />
+    </>
   );
 }

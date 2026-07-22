@@ -1,5 +1,6 @@
 import {
   useEvent,
+  useMergeRefs,
   useWrapElement,
   createElement,
   createHook,
@@ -8,11 +9,12 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
+import { useCallback } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
+import { setPopoverDisclosureAnchor } from "./__utils.ts";
 import type { PopoverAnchorOptions } from "./popover-anchor.tsx";
-import { usePopoverAnchor } from "./popover-anchor.tsx";
 import {
   PopoverScopedContextProvider,
   usePopoverProviderContext,
@@ -49,9 +51,16 @@ export const usePopoverDisclosure = createHook<
   const onClickProp = props.onClick;
 
   const onClick = useEvent((event: MouseEvent<HTMLType>) => {
-    store?.setAnchorElement(event.currentTarget);
+    setPopoverDisclosureAnchor(store, event.currentTarget);
     onClickProp?.(event);
   });
+
+  const setAnchorElement = useCallback(
+    (element: HTMLElement | null) => {
+      setPopoverDisclosureAnchor(store, element);
+    },
+    [store],
+  );
 
   props = useWrapElement(
     props,
@@ -65,10 +74,10 @@ export const usePopoverDisclosure = createHook<
 
   props = {
     ...props,
+    ref: useMergeRefs(setAnchorElement, props.ref),
     onClick,
   };
 
-  props = usePopoverAnchor<TagName>({ store, ...props });
   props = useDialogDisclosure({ store, ...props });
 
   return props;

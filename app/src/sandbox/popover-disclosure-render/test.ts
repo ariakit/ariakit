@@ -1,11 +1,10 @@
 import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// The preserveTabOrder feature, the only consumer of the disclosure element
-// in the popover, takes effect only on non-modal portals, so disclosure
-// element updates must not re-render a modal popover, a plain non-portaled
-// popover, or a portal with preserveTabOrder disabled. Browser duplicate in
-// test-browser.ts.
+// Disclosure element updates must not re-render a popover while its
+// positioning anchor stays the same. The preserveTabOrder feature takes effect
+// only on non-modal portals, so it must not introduce a separate subscription
+// for these cases. Browser duplicate in test-browser.ts.
 test.each([
   {
     label: "Modal",

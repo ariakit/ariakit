@@ -266,11 +266,14 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     );
 
     const arrowElement = useStoreState(store, "arrowElement");
-    const anchorElement = useStoreState(store, "anchorElement");
-    // The disclosure element is only used as the preserveTabOrder anchor,
-    // which takes effect only on portals and is disabled by the dialog for
-    // modal dialogs, so don't subscribe to it unless the feature can take
-    // effect.
+    const anchorElement = useStoreState(
+      store,
+      ["anchorElement", "disclosureElement"],
+      (state) => state.anchorElement || state.disclosureElement,
+    );
+    // Subscribe to the disclosure element separately only when it can be used
+    // as the preserveTabOrder anchor. The positioning selector above also
+    // reads it as a fallback, but stays stable while anchorElement is set.
     const shouldPreserveTabOrder = preserveTabOrder && portal && !modal;
     const disclosureElement = useStoreState(
       store,
