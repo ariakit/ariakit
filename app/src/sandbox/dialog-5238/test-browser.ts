@@ -60,6 +60,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // Reproduces https://github.com/ariakit/ariakit/issues/5238
   test("keeps initially open sibling dialogs interactive in a shadow root", async ({
+    page,
     q,
   }) => {
     await q.button("Render dialogs in shadow root").click();
@@ -93,7 +94,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Eat apple").press("Enter");
     await test.expect(q.status("Apple count")).toHaveText("Apples eaten: 1");
 
-    await q.button("Close apples").press("Enter");
+    await page.getByTestId("apples-backdrop").click({
+      button: "right",
+      position: { x: 1, y: 1 },
+    });
     await test.expect(applesDialog).toHaveCount(0);
     await test
       .expect(

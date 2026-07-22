@@ -2,14 +2,10 @@ import * as Ariakit from "@ariakit/react";
 import { useCallback, useState } from "react";
 
 interface DialogsProps {
-  hideOnInteractOutside?: boolean;
   onRenderInShadowRoot?: () => void;
 }
 
-function Dialogs({
-  hideOnInteractOutside,
-  onRenderInShadowRoot,
-}: DialogsProps) {
+function Dialogs({ onRenderInShadowRoot }: DialogsProps) {
   const [orangesOpen, setOrangesOpen] = useState(true);
   const [applesOpen, setApplesOpen] = useState(true);
   const [orangesEaten, setOrangesEaten] = useState(0);
@@ -23,7 +19,6 @@ function Dialogs({
         open={orangesOpen}
         onClose={() => setOrangesOpen(false)}
         autoFocusOnShow={false}
-        hideOnInteractOutside={hideOnInteractOutside}
         unmountOnHide
         unstable_treeSnapshotKey={treeSnapshotKey}
         backdrop={<div data-testid="oranges-backdrop" />}
@@ -51,7 +46,6 @@ function Dialogs({
         aria-label="Apples"
         open={applesOpen}
         onClose={() => setApplesOpen(false)}
-        hideOnInteractOutside={hideOnInteractOutside}
         unmountOnHide
         backdrop={<div data-testid="apples-backdrop" />}
         className="fixed inset-3 m-auto flex h-fit w-72 translate-x-6 translate-y-6 flex-col items-start gap-3 rounded-lg border border-gray-300 bg-white p-4 shadow-lg"
@@ -108,7 +102,7 @@ function ShadowDialogs() {
       <div ref={setHost} data-testid="dialog-shadow-host" />
       {portalElement && (
         <Ariakit.Portal portalElement={portalElement}>
-          <Dialogs hideOnInteractOutside={false} />
+          <Dialogs />
         </Ariakit.Portal>
       )}
     </>

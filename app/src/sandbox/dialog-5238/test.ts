@@ -43,7 +43,9 @@ test("keeps initially open sibling dialogs interactive in a shadow root", async 
   await click(shadowQ.button("Eat apple"));
   expect(shadowQ.status("Apple count")).toHaveTextContent("Apples eaten: 1");
 
-  await click(shadowQ.button("Close apples"));
+  await rightClick(
+    portal?.querySelector("[data-testid=apples-backdrop]") || null,
+  );
   expect(shadowQ.dialog("Apples")).not.toBeInTheDocument();
   expect(orangesDialog.closest("[inert]")).toBeNull();
 

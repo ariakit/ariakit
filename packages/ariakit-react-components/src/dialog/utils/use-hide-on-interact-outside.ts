@@ -12,7 +12,10 @@ import { useEffect, useRef } from "react";
 import type { DialogStore } from "../dialog-store.ts";
 import type { DialogOptions } from "../dialog.tsx";
 import { isElementInside, isElementMarked } from "./mark-tree-outside.ts";
-import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.ts";
+import {
+  getEventTarget,
+  usePreviousMouseDownRef,
+} from "./use-previous-mouse-down-ref.ts";
 
 interface EventOutsideOptions {
   store: DialogStore;
@@ -29,8 +32,7 @@ interface EventOutsideOptions {
 }
 
 function isInDocument(target: Element) {
-  if (target.tagName === "HTML") return true;
-  return contains(getDocument(target).body, target);
+  return target.isConnected;
 }
 
 function isDisclosure(disclosure: Element | null, target: Element) {
@@ -73,7 +75,7 @@ function useEventOutside({
     if (!open) return;
     const onEvent = (event: Event) => {
       const { contentElement, disclosureElement } = store.getState();
-      const target = event.target;
+      const target = getEventTarget(event);
       if (!contentElement) return;
       if (!isElement(target)) return;
       // When an element is unmounted right after it receives focus, the focus
