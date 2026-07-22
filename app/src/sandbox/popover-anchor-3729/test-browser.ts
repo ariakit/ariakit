@@ -32,6 +32,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
   }
 
+  test("clears the current anchor when the explicit anchor unmounts", async ({
+    q,
+  }) => {
+    const label = "Disclosure first";
+    await q.button(`Open ${label}`).click();
+    await q.button(`Remove ${label} anchor`).click();
+
+    await test.expect(q.status(`${label} current anchor`)).toHaveText("");
+  });
+
   test("preserves the MenuButton interaction anchor", async ({ q }) => {
     const button = q.button("Open Menu");
     await button.click();

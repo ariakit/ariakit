@@ -1,12 +1,20 @@
 import * as Ariakit from "@ariakit/react";
+import { useState } from "react";
 
 interface ExampleCaseProps {
   anchorFirst?: boolean;
   label: string;
   provider?: boolean;
+  removable?: boolean;
 }
 
-function ExampleCase({ anchorFirst, label, provider }: ExampleCaseProps) {
+function ExampleCase({
+  anchorFirst,
+  label,
+  provider,
+  removable,
+}: ExampleCaseProps) {
+  const [anchorMounted, setAnchorMounted] = useState(true);
   const store = Ariakit.usePopoverStore({ placement: "right" });
   const anchorElement = Ariakit.useStoreState(store, "anchorElement");
   const disclosure = (
@@ -17,11 +25,11 @@ function ExampleCase({ anchorFirst, label, provider }: ExampleCaseProps) {
       Open {label}
     </Ariakit.PopoverDisclosure>
   );
-  const anchor = (
+  const anchor = anchorMounted ? (
     <Ariakit.PopoverAnchor store={store} data-anchor="explicit">
       {label} anchor
     </Ariakit.PopoverAnchor>
-  );
+  ) : null;
 
   const content = (
     <div
@@ -42,6 +50,11 @@ function ExampleCase({ anchorFirst, label, provider }: ExampleCaseProps) {
       >
         <Ariakit.PopoverHeading>{label} details</Ariakit.PopoverHeading>
         <p>You have been invited to join the project.</p>
+        {removable && (
+          <Ariakit.Button onClick={() => setAnchorMounted(false)}>
+            Remove {label} anchor
+          </Ariakit.Button>
+        )}
       </Ariakit.Popover>
       <output aria-label={`${label} current anchor`}>
         {anchorElement?.dataset.anchor}
@@ -90,7 +103,7 @@ function MenuButtonCase() {
 export default function Example() {
   return (
     <>
-      <ExampleCase label="Disclosure first" />
+      <ExampleCase label="Disclosure first" removable />
       <ExampleCase label="Anchor first" anchorFirst />
       <ExampleCase label="Provider store" anchorFirst provider />
       <MenuButtonCase />
