@@ -312,6 +312,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (!canTakeTreeSnapshot) return;
     const { disclosureElement } = store.getState();
     const dialog = ref.current;
+    if (!dialog) return;
     const persistentElements = getPersistentElementsProp() || [];
     const allElements = [
       dialog,
@@ -324,7 +325,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // the dialog is open (hovercards and tooltips set it to the focus
     // source), so the listeners re-check it against the current state on
     // every event instead. See https://github.com/ariakit/ariakit/issues/6344
-    const restoreInsideMarks = markTreeInside(id, allElements);
+    const restoreInsideMarks = markTreeInside(dialog, allElements);
     if (modal) {
       return chain(
         restoreInsideMarks,

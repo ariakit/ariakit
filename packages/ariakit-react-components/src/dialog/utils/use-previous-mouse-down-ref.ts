@@ -1,7 +1,11 @@
 import { addGlobalEventListener } from "@ariakit/utils";
 import { useEffect, useRef } from "react";
 
-export function usePreviousMouseDownRef(enabled?: boolean, scope?: Window) {
+export function usePreviousMouseDownRef(
+  enabled?: boolean,
+  scope?: Window,
+  frameTreeVersion?: number,
+) {
   const previousMouseDownRef = useRef<EventTarget | null>(null);
 
   useEffect(() => {
@@ -13,7 +17,7 @@ export function usePreviousMouseDownRef(enabled?: boolean, scope?: Window) {
       previousMouseDownRef.current = event.target;
     };
     return addGlobalEventListener("mousedown", onMouseDown, true, scope);
-  }, [enabled, scope]);
+  }, [enabled, scope, frameTreeVersion]);
 
   return previousMouseDownRef;
 }
