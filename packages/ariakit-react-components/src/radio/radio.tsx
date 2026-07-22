@@ -14,10 +14,13 @@ import type { Props } from "@ariakit/react-utils";
 import { disabledFromProps, removeUndefinedValues } from "@ariakit/utils";
 import type { BivariantCallback } from "@ariakit/utils";
 import type { ChangeEvent, ElementType, FocusEvent, MouseEvent } from "react";
-import { useEffect, useRef } from "react";
+import { useContext, useEffect, useRef } from "react";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
-import { useRadioContext } from "./radio-context.tsx";
+import {
+  RadioGroupDisabledContext,
+  useRadioContext,
+} from "./radio-context.tsx";
 import type { RadioStore, RadioStoreState } from "./radio-store.ts";
 
 const TagName = "input" satisfies ElementType;
@@ -61,6 +64,7 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
 }) {
   const context = useRadioContext();
   store = store || context;
+  const groupDisabled = useContext(RadioGroupDisabledContext);
 
   const id = useId(props.id);
 
@@ -91,7 +95,7 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
   const onChangeProp = props.onChange;
   const tagName = useTagName(ref, TagName);
   const nativeRadio = isNativeRadio(tagName, props.type);
-  const disabled = disabledFromProps(props);
+  const disabled = groupDisabled || disabledFromProps(props);
   // When the checked property is programmatically set on the change event, we
   // need to schedule the element's property update, so the controlled
   // isChecked state can be taken into account.
@@ -168,6 +172,7 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     type: nativeRadio ? "radio" : undefined,
     "aria-checked": isChecked,
     ...props,
+    disabled: disabled || undefined,
     id,
     ref: useMergeRefs(ref, props.ref),
     onChange,
