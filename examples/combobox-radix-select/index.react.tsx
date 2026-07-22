@@ -6,13 +6,52 @@ import {
 } from "@ariakit/react";
 import * as RadixSelect from "@radix-ui/react-select";
 import { matchSorter } from "match-sorter";
-import { startTransition, useMemo, useState } from "react";
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { CheckIcon, ChevronUpDownIcon, SearchIcon } from "./icons.tsx";
 import { languages } from "./languages.ts";
 import "./style.css";
 
-export default function Example() {
+function useRadixSelectOpenState() {
   const [open, setOpen] = useState(false);
+  const isWindowResizingRef = useRef(false);
+
+  useEffect(() => {
+    let resetTimer = 0;
+    const onResize = () => {
+      isWindowResizingRef.current = true;
+      // Browsers may run microtasks between event listeners, so clear the
+      // marker in the next task, after Radix handles this event.
+      window.clearTimeout(resetTimer);
+      resetTimer = window.setTimeout(() => {
+        isWindowResizingRef.current = false;
+      }, 0);
+    };
+    // Mark the resize before Radix handles it, but let the event reach Floating
+    // UI so the popover can reposition.
+    window.addEventListener("resize", onResize, true);
+    return () => {
+      window.removeEventListener("resize", onResize, true);
+      window.clearTimeout(resetTimer);
+    };
+  }, []);
+
+  const onOpenChange = useCallback((nextOpen: boolean) => {
+    if (!nextOpen && isWindowResizingRef.current) return;
+    setOpen(nextOpen);
+  }, []);
+
+  return { open, setOpen, onOpenChange };
+}
+
+export default function Example() {
+  const { open, setOpen, onOpenChange } = useRadixSelectOpenState();
   const [value, setValue] = useState("");
   const [searchValue, setSearchValue] = useState("");
 
@@ -34,7 +73,7 @@ export default function Example() {
       value={value}
       onValueChange={setValue}
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={onOpenChange}
     >
       <ComboboxProvider
         open={open}
