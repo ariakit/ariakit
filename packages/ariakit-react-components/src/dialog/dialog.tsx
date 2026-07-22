@@ -100,8 +100,9 @@ function getElementFromProp(
 }
 
 function getLaterOpenModalPortals(dialog: HTMLElement) {
-  const doc = getDocument(dialog);
-  const dialogs = doc.querySelectorAll<HTMLElement>(
+  if (!dialog.isConnected) return [];
+  const root = dialog.getRootNode() as Document | ShadowRoot;
+  const dialogs = root.querySelectorAll<HTMLElement>(
     "[data-dialog][data-dialog-portal][data-open]",
   );
   const portals: HTMLElement[] = [];
@@ -114,7 +115,7 @@ function getLaterOpenModalPortals(dialog: HTMLElement) {
     if (!foundDialog) continue;
     const portalId = currentDialog.getAttribute("data-dialog-portal");
     if (!portalId) continue;
-    const portal = doc.getElementById(portalId);
+    const portal = root.getElementById(portalId);
     if (!portal || !contains(portal, currentDialog)) continue;
     // Active portals belong to an established stack. DOM order is only used
     // to break ties between dialogs opening in the same layout pass.
