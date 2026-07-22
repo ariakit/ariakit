@@ -9,13 +9,21 @@ export default function Example() {
       <Ariakit.Select />
       <Ariakit.SelectPopover gutter={4} sameWidth>
         {fruits.map((fruit) => (
-          <Ariakit.SelectItem key={fruit} value={fruit}>
-            <Ariakit.SelectItemSelected>
-              {(selected) =>
-                `${fruit} (${selected ? "selected" : "not selected"})`
-              }
-            </Ariakit.SelectItemSelected>
-          </Ariakit.SelectItem>
+          <Ariakit.SelectItem
+            key={fruit}
+            value={fruit}
+            render={(props) => {
+              // TODO: Remove when https://github.com/ariakit/ariakit/issues/4567 is fixed.
+              const selected =
+                props["aria-selected"] === true ||
+                props["aria-selected"] === "true";
+              return (
+                <div {...props}>
+                  {props.children} ({selected ? "selected" : "not selected"})
+                </div>
+              );
+            }}
+          />
         ))}
       </Ariakit.SelectPopover>
     </Ariakit.SelectProvider>
