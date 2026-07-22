@@ -1,0 +1,68 @@
+/* No transitions or animations: this sandbox is used by perf tests. */
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: flex-start;
+  padding: 1rem;
+}
+
+.label {
+  font-weight: 500;
+}
+
+.button,
+.combobox,
+.popover-item {
+  border: 1px solid hsl(204 10% 80%);
+  background: white;
+  color: hsl(204 10% 10%);
+  font: inherit;
+}
+
+.button,
+.combobox {
+  width: 16rem;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.button {
+  text-align: left;
+}
+
+.combobox-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding-bottom: 0.25rem;
+  background: white;
+}
+
+.popover {
+  position: relative;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  max-height: min(var(--popover-available-height, 20rem), 20rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid hsl(204 10% 80%);
+  border-radius: 0.5rem;
+  background: white;
+  padding: 0.25rem;
+  color: hsl(204 10% 10%);
+}
+
+.popover-item {
+  min-height: 2rem;
+  border: 0;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.5rem;
+}
+
+.popover-item[data-active-item] {
+  background: hsl(204 100% 40%);
+  color: white;
+}
