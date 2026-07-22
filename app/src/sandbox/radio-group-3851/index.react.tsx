@@ -3,7 +3,11 @@ import * as Ariakit from "@ariakit/react";
 export default function Example() {
   return (
     <Ariakit.RadioProvider>
-      <Ariakit.RadioGroup aria-label="Fruits" disabled>
+      <Ariakit.RadioGroup
+        aria-label="Fruits"
+        disabled
+        render={<fieldset disabled />}
+      >
         <label>
           <Ariakit.Radio value="apple" />
           Apple
