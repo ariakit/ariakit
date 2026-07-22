@@ -78,6 +78,7 @@ type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
 const isSafariBrowser = isSafari();
+const openModalPortals = new WeakSet<HTMLElement>();
 
 function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   const activeElement = getActiveElement(dialog);
@@ -96,6 +97,31 @@ function getElementFromProp(
   if (!element) return null;
   if (focusable) return isFocusable(element) ? element : null;
   return element;
+}
+
+function getLaterOpenModalPortals(dialog: HTMLElement) {
+  const doc = getDocument(dialog);
+  const dialogs = doc.querySelectorAll<HTMLElement>(
+    "[data-dialog][data-dialog-portal][data-open]",
+  );
+  const portals: HTMLElement[] = [];
+  let foundDialog = false;
+  for (const currentDialog of dialogs) {
+    if (currentDialog === dialog) {
+      foundDialog = true;
+      continue;
+    }
+    if (!foundDialog) continue;
+    const portalId = currentDialog.getAttribute("data-dialog-portal");
+    if (!portalId) continue;
+    const portal = doc.getElementById(portalId);
+    if (!portal || !contains(portal, currentDialog)) continue;
+    // Active portals belong to an established stack. DOM order is only used
+    // to break ties between dialogs opening in the same layout pass.
+    if (openModalPortals.has(portal)) continue;
+    portals.push(portal);
+  }
+  return portals;
 }
 
 /**
@@ -131,6 +157,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   const context = useDialogProviderContext();
   const ref = useRef<HTMLType>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+  const hasDefaultModalPortal = modal && portal && !props.portalElement;
 
   const store = useDialogStore({
     store: storeProp || context,
@@ -152,7 +179,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // domReady can be also the portal node element so it's updated when the
   // portal node changes (like in between re-renders), triggering effects
   // again.
-  const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
+  const { portalRef, portalNode, domReady } = usePortalRef(
+    portal,
+    props.portalRef,
+  );
   // Sets preserveTabOrder to true only if the dialog is not a modal and is
   // open.
   const preserveTabOrderProp = props.preserveTabOrder;
@@ -289,6 +319,33 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   }, [open, mounted, domReady]);
 
   const canTakeTreeSnapshot = open && domReady;
+  const openingCohortRef = useRef<{
+    portal: HTMLElement;
+    peers: HTMLElement[];
+  }>(null);
+
+  useSafeLayoutEffect(() => {
+    if (!id || !hasDefaultModalPortal || !canTakeTreeSnapshot || !portalNode) {
+      openingCohortRef.current = null;
+      return;
+    }
+    const dialog = ref.current;
+    if (!dialog || !contains(portalNode, dialog)) {
+      openingCohortRef.current = null;
+      return;
+    }
+    // Preserve the cohort through StrictMode's effect cleanup and replay.
+    if (openingCohortRef.current?.portal !== portalNode) {
+      openingCohortRef.current = {
+        portal: portalNode,
+        peers: getLaterOpenModalPortals(dialog),
+      };
+    }
+    openModalPortals.add(portalNode);
+    return () => {
+      openModalPortals.delete(portalNode);
+    };
+  }, [id, canTakeTreeSnapshot, hasDefaultModalPortal, portalNode]);
 
   useSafeLayoutEffect(() => {
     if (!id) return;
@@ -316,6 +373,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const allElements = [
       dialog,
       ...persistentElements,
+      ...(openingCohortRef.current?.peers || []),
       ...nestedDialogs.map((dialog) => dialog.getState().contentElement),
     ];
     // Positively mark the elements the dialog knows about as "inside" so the
@@ -339,9 +397,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     id,
     store,
     canTakeTreeSnapshot,
+    modal,
+    hasDefaultModalPortal,
     getPersistentElementsProp,
     nestedDialogs,
-    modal,
     unstable_treeSnapshotKey,
   ]);
 
@@ -695,6 +754,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     "aria-labelledby": props["aria-label"] != null ? undefined : headingId,
     "aria-describedby": descriptionId,
     ...props,
+    "data-dialog-portal": hasDefaultModalPortal ? portalNode?.id : undefined,
     id,
     ref: useMergeRefs(ref, props.ref),
     onKeyDown,

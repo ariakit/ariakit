@@ -1,4 +1,4 @@
-import { click, q } from "@ariakit/test";
+import { click, q, rightClick } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // Reproduces https://github.com/ariakit/ariakit/issues/5238
@@ -8,10 +8,13 @@ test("keeps the frontmost initially open sibling dialog interactive", async () =
   expect(q.dialog.hidden("Oranges")).toBeVisible();
   expect(q.dialog("Oranges")).not.toBeInTheDocument();
   expect(q.dialog("Apples")).toBeVisible();
+
   await click(q.button("Eat apple"));
   expect(q.status("Apple count")).toHaveTextContent("Apples eaten: 1");
+  expect(q.dialog("Oranges")).not.toBeInTheDocument();
+  expect(q.dialog("Apples")).toBeVisible();
 
-  await click(q.button("Close apples"));
+  await rightClick(document.querySelector("[data-testid=apples-backdrop]"));
   expect(q.dialog("Apples")).not.toBeInTheDocument();
   expect(q.dialog("Oranges")).toBeVisible();
   await click(q.button("Eat orange"));

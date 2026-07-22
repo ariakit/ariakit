@@ -25,10 +25,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
         applesDialog.evaluate((element) => element.closest("[inert]") !== null),
       )
       .resolves.toBe(false);
+
     await q.button("Eat apple").click();
     await test.expect(q.status("Apple count")).toHaveText("Apples eaten: 1");
+    await test
+      .expect(
+        orangesDialog.evaluate(
+          (element) => element.closest("[inert]") !== null,
+        ),
+      )
+      .resolves.toBe(true);
+    await test
+      .expect(
+        applesDialog.evaluate((element) => element.closest("[inert]") !== null),
+      )
+      .resolves.toBe(false);
 
-    await q.button("Close apples").click();
+    await page.getByTestId("apples-backdrop").click({
+      button: "right",
+      position: { x: 1, y: 1 },
+    });
     await test.expect(q.dialog("Apples")).not.toBeVisible();
     await test.expect(q.dialog("Oranges")).toBeVisible();
     await test
@@ -38,7 +54,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         ),
       )
       .resolves.toBe(false);
-    await q.button("Eat orange").click();
+    await q.button("Eat orange").press("Enter");
     await test.expect(q.status("Orange count")).toHaveText("Oranges eaten: 1");
   });
 });
