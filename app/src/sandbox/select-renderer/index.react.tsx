@@ -146,6 +146,7 @@ function AsyncRenderer() {
       <p role="status">Scroll observed: {scrollObserved ? "yes" : "no"}</p>
       <div className="async-scroller" role="listbox" aria-label="Async items">
         <SelectRenderer
+          key={items.length ? "loaded" : "empty"}
           items={items}
           itemSize={40}
           renderOnScroll={() => {
