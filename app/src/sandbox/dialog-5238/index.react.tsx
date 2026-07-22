@@ -1,7 +1,8 @@
 import * as Ariakit from "@ariakit/react";
-import { useState } from "react";
+import { useId, useState } from "react";
 
 export default function Example() {
+  const applesDialogId = useId();
   const [orangesOpen, setOrangesOpen] = useState(true);
   const [applesOpen, setApplesOpen] = useState(true);
   const [orangesEaten, setOrangesEaten] = useState(0);
@@ -13,6 +14,10 @@ export default function Example() {
         open={orangesOpen}
         onClose={() => setOrangesOpen(false)}
         unmountOnHide
+        getPersistentElements={() => {
+          const applesDialog = document.getElementById(applesDialogId);
+          return applesDialog ? [applesDialog] : [];
+        }}
         className="fixed inset-3 m-auto flex h-fit w-72 flex-col items-start gap-3 rounded-lg border border-gray-300 bg-white p-4 shadow-lg"
       >
         <Ariakit.DialogHeading className="text-lg font-medium">
@@ -34,6 +39,7 @@ export default function Example() {
       </Ariakit.Dialog>
 
       <Ariakit.Dialog
+        id={applesDialogId}
         open={applesOpen}
         onClose={() => setApplesOpen(false)}
         unmountOnHide
