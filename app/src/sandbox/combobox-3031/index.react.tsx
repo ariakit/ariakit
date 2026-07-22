@@ -1,17 +1,52 @@
 import * as Ariakit from "@ariakit/react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 function EmbeddedCombobox() {
+  const store = Ariakit.useComboboxStore();
+  const open = Ariakit.useStoreState(store, "open");
+  const baseElement = Ariakit.useStoreState(store, "baseElement");
+  const focusMovedToParent = useRef(false);
+
+  useEffect(() => {
+    if (!open) return;
+    const frameWindow = baseElement?.ownerDocument.defaultView;
+    if (!frameWindow) return;
+    const parentWindow = frameWindow.parent;
+    if (parentWindow === frameWindow) return;
+    let parentDocument: Document;
+    try {
+      parentDocument = parentWindow.document;
+    } catch {
+      return;
+    }
+    const onFocusIn = () => {
+      focusMovedToParent.current = true;
+      store.hide();
+    };
+    parentDocument.addEventListener("focusin", onFocusIn, true);
+    return () => parentDocument.removeEventListener("focusin", onFocusIn, true);
+  }, [store, open, baseElement]);
+
+  const autoFocusOnHide = useCallback(() => {
+    const shouldAutoFocus = !focusMovedToParent.current;
+    focusMovedToParent.current = false;
+    return shouldAutoFocus;
+  }, []);
+
   return (
-    <Ariakit.ComboboxProvider>
-      <Ariakit.ComboboxLabel>Favorite food</Ariakit.ComboboxLabel>
-      <Ariakit.Combobox />
-      <Ariakit.ComboboxPopover aria-label="Suggestions">
-        <Ariakit.ComboboxItem value="Apple" />
-        <Ariakit.ComboboxItem value="Banana" />
+    <>
+      <Ariakit.ComboboxLabel store={store}>Favorite food</Ariakit.ComboboxLabel>
+      <Ariakit.Combobox store={store} />
+      <Ariakit.ComboboxPopover
+        store={store}
+        aria-label="Suggestions"
+        autoFocusOnHide={autoFocusOnHide}
+      >
+        <Ariakit.ComboboxItem store={store} value="Apple" />
+        <Ariakit.ComboboxItem store={store} value="Banana" />
       </Ariakit.ComboboxPopover>
-    </Ariakit.ComboboxProvider>
+    </>
   );
 }
 
