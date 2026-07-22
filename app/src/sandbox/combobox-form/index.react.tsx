@@ -11,6 +11,8 @@ const fruits = [
 export default function Example() {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [submittedValues, setSubmittedValues] = useState<string[] | null>(null);
+  // TODO: Remove after https://github.com/ariakit/ariakit/issues/1861 is fixed.
+  const [homeTown, setHomeTown] = useState("");
 
   return (
     <>
@@ -43,12 +45,12 @@ export default function Example() {
         </output>
       </form>
 
-      <form aria-label="Address">
+      <form aria-label="Address" onReset={() => setHomeTown("")}>
         <label>
           Name
           <input name="name" />
         </label>
-        <Ariakit.ComboboxProvider>
+        <Ariakit.ComboboxProvider value={homeTown} setValue={setHomeTown}>
           <Ariakit.ComboboxLabel>Home town</Ariakit.ComboboxLabel>
           <Ariakit.Combobox name="homeTown" />
           <Ariakit.ComboboxPopover>
