@@ -99,4 +99,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(q.status()).toHaveText('["apple"]');
   });
+
+  // https://github.com/ariakit/ariakit/issues/1861
+  test("resets an uncontrolled combobox with its form", async ({ q }) => {
+    const name = q.textbox("Name");
+    const homeTown = q.combobox("Home town");
+
+    await name.fill("Chance");
+    await homeTown.fill("Boston");
+    await homeTown.press("Escape");
+    await q.button("Reset address").click();
+
+    await test.expect(name).toHaveValue("");
+    await test.expect(homeTown).toHaveValue("");
+  });
 });

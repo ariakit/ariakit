@@ -43,6 +43,22 @@ export default function Example() {
         </output>
       </form>
 
+      <form aria-label="Address">
+        <label>
+          Name
+          <input name="name" />
+        </label>
+        <Ariakit.ComboboxProvider>
+          <Ariakit.ComboboxLabel>Home town</Ariakit.ComboboxLabel>
+          <Ariakit.Combobox name="homeTown" />
+          <Ariakit.ComboboxPopover>
+            <Ariakit.ComboboxItem value="Boston" />
+            <Ariakit.ComboboxItem value="San Diego" />
+          </Ariakit.ComboboxPopover>
+        </Ariakit.ComboboxProvider>
+        <button type="reset">Reset address</button>
+      </form>
+
       <Ariakit.ComboboxProvider defaultSelectedValue={["apple"]}>
         <Ariakit.Combobox
           aria-label="Non-composite fruits"

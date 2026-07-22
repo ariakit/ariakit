@@ -1,4 +1,4 @@
-import { click, q } from "@ariakit/test";
+import { click, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/5058
@@ -34,4 +34,18 @@ test("omits aria-disabled selected values", () => {
 
 test("preserves the name for a single selected value", () => {
   expect(q.combobox("Single fruit")).toHaveAttribute("name", "single-fruit");
+});
+
+// https://github.com/ariakit/ariakit/issues/1861
+test("resets an uncontrolled combobox with its form", async () => {
+  const name = q.textbox.ensure("Name");
+  const homeTown = q.combobox.ensure("Home town");
+
+  await type("Chance", name);
+  await type("Boston", homeTown);
+  await press("Escape", homeTown);
+  await click(q.button("Reset address"));
+
+  expect(name).toHaveValue("");
+  expect(homeTown).toHaveValue("");
 });
