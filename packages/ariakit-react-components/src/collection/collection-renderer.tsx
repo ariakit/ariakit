@@ -317,17 +317,26 @@ function useScroller(
   const scrollerRef = useRef<Element | null>(null);
   const autoResolved = useRef(false);
   const previousRendererRef = useRef(rendererRef);
-  const previousScrollElement = useRef(scrollElement);
+  // Explicit refs and resolvers can change without their prop identity
+  // changing, so resolve them during each committed layout.
   // oxlint-disable-next-line exhaustive-deps
   useSafeLayoutEffect(() => {
-    const previousRendererRefValue = previousRendererRef.current;
-    const previousScrollElementValue = previousScrollElement.current;
-    previousRendererRef.current = rendererRef;
-    previousScrollElement.current = scrollElement;
-    if (
-      previousRendererRefValue !== rendererRef ||
-      previousScrollElementValue !== scrollElement
-    ) {
+    if (scrollElement === undefined) return;
+    autoResolved.current = false;
+    const renderer = rendererRef?.current;
+    const nextScroller = renderer
+      ? getScrollElement(renderer, scrollElement)
+      : null;
+    scrollerRef.current = nextScroller;
+    if (nextScroller === scroller) return;
+    setScroller(nextScroller);
+  });
+  // Keep automatic ancestor detection one-shot and off the layout path.
+  // oxlint-disable-next-line exhaustive-deps
+  useEffect(() => {
+    if (scrollElement !== undefined) return;
+    if (previousRendererRef.current !== rendererRef) {
+      previousRendererRef.current = rendererRef;
       autoResolved.current = false;
     }
     const renderer = rendererRef?.current;
@@ -337,13 +346,9 @@ function useScroller(
       if (scroller) setScroller(null);
       return;
     }
-    // Ref values and resolver results can change without their prop identity
-    // changing, so explicit targets are resolved after each commit. Keep
-    // automatic detection one-shot until the renderer reference or prop
-    // changes.
-    if (scrollElement === undefined && autoResolved.current) return;
+    if (autoResolved.current) return;
     const nextScroller = getScrollElement(renderer, scrollElement);
-    if (scrollElement === undefined) autoResolved.current = true;
+    autoResolved.current = true;
     scrollerRef.current = nextScroller;
     if (nextScroller === scroller) return;
     setScroller(nextScroller);
