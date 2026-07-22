@@ -58,6 +58,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(asyncOptions.option("Async item 51")).toBeVisible();
   });
 
+  // https://github.com/ariakit/ariakit/issues/3913
   test("disables viewport updates when the scroll element is null", async ({
     page,
     q,
@@ -75,9 +76,32 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await flushFrames(page);
     await test.expect(asyncOptions.option("Async item 51")).toBeVisible();
 
-    await q.button("Disable scroll element").click();
+    await q.button("Disable scroll element and double item size").click();
     await flushFrames(page);
-    await q.button("Double item size").click();
+
+    await test.expect(asyncOptions.option("Async item 51")).toHaveCount(1);
+    await test.expect(asyncOptions.option("Async item 26")).toHaveCount(0);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/3913
+  test("disables viewport updates when a scroll element ref resolves to null", async ({
+    page,
+    q,
+  }) => {
+    const scroller = q.listbox("Async items");
+    const asyncOptions = query(scroller);
+
+    await q.button("Connect scroll element").click();
+    await flushFrames(page);
+    await q.button("Load async items").click();
+    await scroller.evaluate((element) => {
+      element.scrollTop = 2000;
+      element.dispatchEvent(new Event("scroll"));
+    });
+    await flushFrames(page);
+    await test.expect(asyncOptions.option("Async item 51")).toBeVisible();
+
+    await q.button("Disconnect scroll element and double item size").click();
     await flushFrames(page);
 
     await test.expect(asyncOptions.option("Async item 51")).toHaveCount(1);

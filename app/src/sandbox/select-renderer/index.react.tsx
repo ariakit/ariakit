@@ -154,11 +154,23 @@ function AsyncRenderer() {
       <button type="button" onClick={() => setScrollElementConnected(true)}>
         Connect scroll element
       </button>
-      <button type="button" onClick={() => setScrollElementEnabled(false)}>
-        Disable scroll element
+      <button
+        type="button"
+        onClick={() => {
+          setScrollElementEnabled(false);
+          setItemSize(80);
+        }}
+      >
+        Disable scroll element and double item size
       </button>
-      <button type="button" onClick={() => setItemSize(80)}>
-        Double item size
+      <button
+        type="button"
+        onClick={() => {
+          setScrollElementConnected(false);
+          setItemSize(80);
+        }}
+      >
+        Disconnect scroll element and double item size
       </button>
       <p role="status">Scroll observed: {scrollObserved ? "yes" : "no"}</p>
       <div

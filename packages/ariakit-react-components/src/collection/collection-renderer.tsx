@@ -5,6 +5,7 @@ import {
   useForceUpdate,
   useId,
   useMergeRefs,
+  useSafeLayoutEffect,
   useWrapElement,
   createElement,
   forwardRef,
@@ -119,11 +120,13 @@ interface CollectionRendererContextValue {
   orientation: CollectionRendererOptions["orientation"];
   overscan: CollectionRendererOptions["overscan"];
   scroller: Element | null;
+  scrollerRef: RefObject<Element | null>;
   childrenData: Map<string, Data>;
 }
 
 const CollectionRendererContext =
   createContext<CollectionRendererContextValue | null>(null);
+const nullScrollerRef: RefObject<Element | null> = { current: null };
 
 function createTask() {
   let raf = 0;
@@ -311,11 +314,12 @@ function useScroller(
   scrollElement: CollectionRendererOptions["scrollElement"],
 ) {
   const [scroller, setScroller] = useState<Element | null>(null);
+  const scrollerRef = useRef<Element | null>(null);
   const autoResolved = useRef(false);
   const previousRendererRef = useRef(rendererRef);
   const previousScrollElement = useRef(scrollElement);
   // oxlint-disable-next-line exhaustive-deps
-  useEffect(() => {
+  useSafeLayoutEffect(() => {
     const previousRendererRefValue = previousRendererRef.current;
     const previousScrollElementValue = previousScrollElement.current;
     previousRendererRef.current = rendererRef;
@@ -329,6 +333,7 @@ function useScroller(
     const renderer = rendererRef?.current;
     if (!renderer) {
       autoResolved.current = false;
+      scrollerRef.current = null;
       if (scroller) setScroller(null);
       return;
     }
@@ -339,10 +344,11 @@ function useScroller(
     if (scrollElement === undefined && autoResolved.current) return;
     const nextScroller = getScrollElement(renderer, scrollElement);
     if (scrollElement === undefined) autoResolved.current = true;
+    scrollerRef.current = nextScroller;
     if (nextScroller === scroller) return;
     setScroller(nextScroller);
   });
-  return scroller;
+  return [scroller, scrollerRef] as const;
 }
 
 function getRendererOffset(
@@ -508,6 +514,8 @@ export function useCollectionRenderer<T extends Item = any>({
   const overscan = overscanProp ?? parent?.overscan ?? 1;
   const inheritedScroller =
     scrollElementProp === undefined ? parent?.scroller : undefined;
+  const inheritedScrollerRef =
+    scrollElementProp === undefined ? parent?.scrollerRef : undefined;
 
   const ref = useRef<HTMLType>(null);
   const baseId = useId(props.id);
@@ -605,17 +613,30 @@ export function useCollectionRenderer<T extends Item = any>({
     }
   }, [elementsUpdated, itemSize, baseId, items, data, computeData]);
 
-  const ownScroller = useScroller(
+  const [ownScroller, ownScrollerRef] = useScroller(
     items && inheritedScroller === undefined ? ref : null,
     scrollElementProp,
   );
   const scroller =
-    inheritedScroller === undefined ? ownScroller : inheritedScroller;
+    scrollElementProp === null
+      ? null
+      : inheritedScroller === undefined
+        ? ownScroller
+        : inheritedScroller;
+  const scrollerRef =
+    scrollElementProp === null
+      ? nullScrollerRef
+      : inheritedScrollerRef === undefined
+        ? ownScrollerRef
+        : inheritedScrollerRef;
   const offsetsRef = useRef({ start: 0, end: 0 });
 
   const processVisibleIndices = useCallback(() => {
     const offsets = offsetsRef.current;
 
+    // Ref and resolver targets can change during commit. Skip passive work
+    // from the previous scroller until the resolved value reaches context.
+    if (scrollerRef.current !== scroller) return;
     if (!scroller) return;
     if (!items) return;
     if (!baseId) return;
@@ -660,6 +681,7 @@ export function useCollectionRenderer<T extends Item = any>({
   }, [
     elementsUpdated,
     scroller,
+    scrollerRef,
     items,
     baseId,
     data,
@@ -907,8 +929,15 @@ export function useCollectionRenderer<T extends Item = any>({
 
   const childrenData = useMemo(() => new Map<string, Data>(), []);
   const providerValue: CollectionRendererContextValue = useMemo(
-    () => ({ store, orientation, overscan, scroller, childrenData }),
-    [store, orientation, overscan, scroller, childrenData],
+    () => ({
+      store,
+      orientation,
+      overscan,
+      scroller,
+      scrollerRef,
+      childrenData,
+    }),
+    [store, orientation, overscan, scroller, scrollerRef, childrenData],
   );
 
   props = useWrapElement(
