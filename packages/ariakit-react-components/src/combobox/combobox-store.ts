@@ -20,10 +20,7 @@ import type {
 import { usePopoverStoreProps } from "../popover/popover-store.ts";
 import { useTagContext } from "../tag/tag-context.tsx";
 import type { TagStore } from "../tag/tag-store.ts";
-import {
-  markComboboxValueControlled,
-  markComboboxValueSource,
-} from "./__combobox-controlled.ts";
+import { markComboboxValueControlled } from "./__combobox-controlled.ts";
 
 export function useComboboxStoreOptions<T extends Core.ComboboxStoreOptions>(
   props: T,
@@ -43,18 +40,16 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
 ) {
   useUpdateEffect(update, [props.tag]);
 
-  const valueControlled = props.value !== undefined;
+  // Treat merged value stores as externally owned. This keeps form reset
+  // behavior limited to stores that own their value.
+  const valueControlled =
+    props.value !== undefined ||
+    props.store?.getState().value !== undefined ||
+    props.tag?.getState().value !== undefined;
   useSafeLayoutEffect(() => {
     if (!valueControlled) return;
     return markComboboxValueControlled(store);
   }, [store, valueControlled]);
-  // Source changes recreate the store in a passive effect. Keep each source
-  // connected to the store instance it was created with until then.
-  useSafeLayoutEffect(
-    () => markComboboxValueSource(store, props.store),
-    [store],
-  );
-  useSafeLayoutEffect(() => markComboboxValueSource(store, props.tag), [store]);
 
   useStoreProps(store, props, "value", "setValue");
   useStoreProps(store, props, "selectedValue", "setSelectedValue");
