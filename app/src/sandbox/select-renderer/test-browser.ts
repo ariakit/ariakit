@@ -43,6 +43,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const scroller = q.listbox("Async items");
     const asyncOptions = query(scroller);
 
+    await q.button("Connect scroll element").click();
+    await flushFrames(page);
     await q.button("Load async items").click();
     await test.expect(asyncOptions.option("Async item 1")).toBeVisible();
 
@@ -54,5 +56,31 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await test.expect(q.status()).toHaveText("Scroll observed: yes");
     await test.expect(asyncOptions.option("Async item 51")).toBeVisible();
+  });
+
+  test("disables viewport updates when the scroll element is null", async ({
+    page,
+    q,
+  }) => {
+    const scroller = q.listbox("Async items");
+    const asyncOptions = query(scroller);
+
+    await q.button("Connect scroll element").click();
+    await flushFrames(page);
+    await q.button("Load async items").click();
+    await scroller.evaluate((element) => {
+      element.scrollTop = 2000;
+      element.dispatchEvent(new Event("scroll"));
+    });
+    await flushFrames(page);
+    await test.expect(asyncOptions.option("Async item 51")).toBeVisible();
+
+    await q.button("Disable scroll element").click();
+    await flushFrames(page);
+    await q.button("Double item size").click();
+    await flushFrames(page);
+
+    await test.expect(asyncOptions.option("Async item 51")).toHaveCount(1);
+    await test.expect(asyncOptions.option("Async item 26")).toHaveCount(0);
   });
 });

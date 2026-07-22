@@ -2,7 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
 import type { SelectRendererItem } from "@ariakit/react-components/select/select-renderer";
 import type { SelectRendererItemObject } from "@ariakit/react-components/select/select-renderer";
-import { useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import "./style.css";
 
 interface FruitItem extends SelectRendererItemObject {
@@ -136,28 +136,59 @@ function HorizontalRenderer() {
 
 function AsyncRenderer() {
   const [items, setItems] = useState<typeof asyncItems>([]);
+  const [itemSize, setItemSize] = useState(40);
   const [scrollObserved, setScrollObserved] = useState(false);
+  const [scrollElementConnected, setScrollElementConnected] = useState(false);
+  const [scrollElementEnabled, setScrollElementEnabled] = useState(true);
+  const scrollElementRef = useRef<HTMLDivElement>(null);
+  const groupedItems = useMemo(
+    () => [{ id: "async-group", itemSize, items }],
+    [itemSize, items],
+  );
 
   return (
     <section>
       <button type="button" onClick={() => setItems(asyncItems)}>
         Load async items
       </button>
+      <button type="button" onClick={() => setScrollElementConnected(true)}>
+        Connect scroll element
+      </button>
+      <button type="button" onClick={() => setScrollElementEnabled(false)}>
+        Disable scroll element
+      </button>
+      <button type="button" onClick={() => setItemSize(80)}>
+        Double item size
+      </button>
       <p role="status">Scroll observed: {scrollObserved ? "yes" : "no"}</p>
-      <div className="async-scroller" role="listbox" aria-label="Async items">
+      <div
+        ref={scrollElementConnected ? scrollElementRef : null}
+        className="async-scroller"
+        role="listbox"
+        aria-label="Async items"
+      >
         <SelectRenderer
-          key={items.length ? "loaded" : "empty"}
-          items={items}
-          itemSize={40}
-          renderOnScroll={() => {
-            setScrollObserved(true);
-            return true;
-          }}
+          items={groupedItems}
+          initialItems={1}
+          scrollElement={scrollElementEnabled ? scrollElementRef : null}
         >
-          {({ value, index, ...item }) => (
-            <div key={item.id} {...item} data-index={index} role="option">
-              {value}
-            </div>
+          {({ items, ...group }) => (
+            <SelectRenderer
+              key={group.id}
+              {...group}
+              items={items}
+              role="group"
+              renderOnScroll={() => {
+                setScrollObserved(true);
+                return true;
+              }}
+            >
+              {({ value, index, ...item }) => (
+                <div key={item.id} {...item} data-index={index} role="option">
+                  {value}
+                </div>
+              )}
+            </SelectRenderer>
           )}
         </SelectRenderer>
       </div>

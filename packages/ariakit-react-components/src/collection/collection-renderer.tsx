@@ -118,6 +118,7 @@ interface CollectionRendererContextValue {
   store: CollectionRendererOptions["store"];
   orientation: CollectionRendererOptions["orientation"];
   overscan: CollectionRendererOptions["overscan"];
+  scroller: Element | null;
   childrenData: Map<string, Data>;
 }
 
@@ -293,15 +294,54 @@ function getViewport(scroller: Element) {
   return scroller;
 }
 
-function useScroller(rendererRef: RefObject<HTMLElement | null> | null) {
+function getScrollElement(
+  renderer: HTMLElement,
+  scrollElement: CollectionRendererOptions["scrollElement"],
+) {
+  if (scrollElement === undefined) return getScrollingElement(renderer);
+  if (typeof scrollElement === "function") return scrollElement(renderer);
+  if (scrollElement && "current" in scrollElement) {
+    return scrollElement.current;
+  }
+  return scrollElement;
+}
+
+function useScroller(
+  rendererRef: RefObject<HTMLElement | null> | null,
+  scrollElement: CollectionRendererOptions["scrollElement"],
+) {
   const [scroller, setScroller] = useState<Element | null>(null);
+  const autoResolved = useRef(false);
+  const previousRendererRef = useRef(rendererRef);
+  const previousScrollElement = useRef(scrollElement);
+  // oxlint-disable-next-line exhaustive-deps
   useEffect(() => {
+    const previousRendererRefValue = previousRendererRef.current;
+    const previousScrollElementValue = previousScrollElement.current;
+    previousRendererRef.current = rendererRef;
+    previousScrollElement.current = scrollElement;
+    if (
+      previousRendererRefValue !== rendererRef ||
+      previousScrollElementValue !== scrollElement
+    ) {
+      autoResolved.current = false;
+    }
     const renderer = rendererRef?.current;
-    if (!renderer) return;
-    const scroller = getScrollingElement(renderer);
-    if (!scroller) return;
-    setScroller(scroller);
-  }, [rendererRef]);
+    if (!renderer) {
+      autoResolved.current = false;
+      if (scroller) setScroller(null);
+      return;
+    }
+    // Ref values and resolver results can change without their prop identity
+    // changing, so explicit targets are resolved after each commit. Keep
+    // automatic detection one-shot until the renderer reference or prop
+    // changes.
+    if (scrollElement === undefined && autoResolved.current) return;
+    const nextScroller = getScrollElement(renderer, scrollElement);
+    if (scrollElement === undefined) autoResolved.current = true;
+    if (nextScroller === scroller) return;
+    setScroller(nextScroller);
+  });
   return scroller;
 }
 
@@ -439,6 +479,7 @@ export function useCollectionRenderer<T extends Item = any>({
   paddingStart = padding,
   paddingEnd = padding,
   persistentIndices,
+  scrollElement: scrollElementProp,
   renderOnScroll = true,
   renderOnResize = !!renderOnScroll,
   children: renderItem,
@@ -465,6 +506,8 @@ export function useCollectionRenderer<T extends Item = any>({
   const parentData = parent?.childrenData;
   const orientation = orientationProp ?? parent?.orientation ?? "vertical";
   const overscan = overscanProp ?? parent?.overscan ?? 1;
+  const inheritedScroller =
+    scrollElementProp === undefined ? parent?.scroller : undefined;
 
   const ref = useRef<HTMLType>(null);
   const baseId = useId(props.id);
@@ -562,12 +605,18 @@ export function useCollectionRenderer<T extends Item = any>({
     }
   }, [elementsUpdated, itemSize, baseId, items, data, computeData]);
 
-  const scroller = useScroller(items ? ref : null);
+  const ownScroller = useScroller(
+    items && inheritedScroller === undefined ? ref : null,
+    scrollElementProp,
+  );
+  const scroller =
+    inheritedScroller === undefined ? ownScroller : inheritedScroller;
   const offsetsRef = useRef({ start: 0, end: 0 });
 
   const processVisibleIndices = useCallback(() => {
     const offsets = offsetsRef.current;
 
+    if (!scroller) return;
     if (!items) return;
     if (!baseId) return;
     if (!offsets.end) return;
@@ -610,6 +659,7 @@ export function useCollectionRenderer<T extends Item = any>({
     // oxlint-disable-next-line exhaustive-deps
   }, [
     elementsUpdated,
+    scroller,
     items,
     baseId,
     data,
@@ -857,8 +907,8 @@ export function useCollectionRenderer<T extends Item = any>({
 
   const childrenData = useMemo(() => new Map<string, Data>(), []);
   const providerValue: CollectionRendererContextValue = useMemo(
-    () => ({ store, orientation, overscan, childrenData }),
-    [store, orientation, overscan, childrenData],
+    () => ({ store, orientation, overscan, scroller, childrenData }),
+    [store, orientation, overscan, scroller, childrenData],
   );
 
   props = useWrapElement(
@@ -949,14 +999,28 @@ export interface CollectionRendererOptions<
    */
   items?: Items<T>;
   /**
-   * Whether the items should be rendered when the closest scrollable ancestor
-   * is scrolled.
+   * The element whose viewport determines which items are rendered. By
+   * default, the closest scrolling ancestor is used.
+   *
+   * The element must be a scrolling ancestor in the same document. If a
+   * function is provided, it will be called with the renderer element as an
+   * argument. Nested renderers using the same store inherit the resolved scroll
+   * element unless they explicitly provide their own.
+   *
+   * Viewport-driven rendering is disabled while this value resolves to `null`.
+   */
+  scrollElement?:
+    | HTMLElement
+    | RefObject<HTMLElement | null>
+    | ((renderer: HTMLElement) => HTMLElement | null)
+    | null;
+  /**
+   * Whether the items should be rendered when the scroll element is scrolled.
    * @default true
    */
   renderOnScroll?: BooleanOrCallback<Event>;
   /**
-   * Whether the items should be rendered when the closest scrollable ancestor
-   * is resized.
+   * Whether the items should be rendered when the scroll element is resized.
    * @default true
    */
   renderOnResize?: BooleanOrCallback<Element>;
