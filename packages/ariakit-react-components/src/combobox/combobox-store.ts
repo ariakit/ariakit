@@ -20,7 +20,10 @@ import type {
 import { usePopoverStoreProps } from "../popover/popover-store.ts";
 import { useTagContext } from "../tag/tag-context.tsx";
 import type { TagStore } from "../tag/tag-store.ts";
-import { markComboboxValueControlled } from "./__combobox-controlled.ts";
+import {
+  markComboboxValueControlled,
+  markComboboxValueSource,
+} from "./__combobox-controlled.ts";
 
 export function useComboboxStoreOptions<T extends Core.ComboboxStoreOptions>(
   props: T,
@@ -45,6 +48,13 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
     if (!valueControlled) return;
     return markComboboxValueControlled(store);
   }, [store, valueControlled]);
+  // Source changes recreate the store in a passive effect. Keep each source
+  // connected to the store instance it was created with until then.
+  useSafeLayoutEffect(
+    () => markComboboxValueSource(store, props.store),
+    [store],
+  );
+  useSafeLayoutEffect(() => markComboboxValueSource(store, props.tag), [store]);
 
   useStoreProps(store, props, "value", "setValue");
   useStoreProps(store, props, "selectedValue", "setSelectedValue");

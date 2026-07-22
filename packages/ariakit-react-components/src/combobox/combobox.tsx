@@ -42,6 +42,7 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
@@ -182,25 +183,63 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (!element) return;
       if (!element.form && !form) return;
       const root = element.getRootNode();
-      const timeouts = new Set<ReturnType<typeof setTimeout>>();
-      const onReset = (event: Event) => {
-        if (event.target !== element.form) return;
-        const timeout = setTimeout(() => {
-          timeouts.delete(timeout);
-          if (event.defaultPrevented) return;
-          if (isComboboxValueControlled(store)) return;
+      const completionTarget =
+        root.nodeType === Node.DOCUMENT_NODE
+          ? ((root as Document).defaultView ?? root)
+          : root;
+      const pendingResets = new Map<
+        Event,
+        {
+          timeout: ReturnType<typeof setTimeout>;
+          onComplete: EventListener;
+        }
+      >();
+      const clearPendingReset = (event: Event) => {
+        const pendingReset = pendingResets.get(event);
+        if (!pendingReset) return;
+        pendingResets.delete(event);
+        clearTimeout(pendingReset.timeout);
+        completionTarget.removeEventListener("reset", pendingReset.onComplete);
+      };
+      const resetValue = () => {
+        if (isComboboxValueControlled(store)) return;
+        flushSync(() => {
           setCanInline(false);
           store.resetValue();
         });
-        timeouts.add(timeout);
       };
-      // Capture the event before propagation can be stopped, then let reset
-      // handlers prevent the default action before updating the store.
-      root.addEventListener("reset", onReset, true);
+      const onResetCapture = (event: Event) => {
+        const ownerForm = element.form;
+        if (!ownerForm) return;
+        if (event.target !== ownerForm) return;
+        const storeValue = store.getState().value;
+        const onComplete = (currentEvent: Event) => {
+          if (currentEvent !== event) return;
+          clearPendingReset(event);
+          if (event.defaultPrevented) return;
+          if (element.form !== ownerForm) return;
+          resetValue();
+        };
+        completionTarget.addEventListener("reset", onComplete);
+        const timeout = setTimeout(() => {
+          clearPendingReset(event);
+          if (event.defaultPrevented) return;
+          if (element.form !== ownerForm) return;
+          if (store.getState().value !== storeValue) return;
+          resetValue();
+        });
+        pendingResets.set(event, {
+          timeout,
+          onComplete,
+        });
+      };
+      // Complete the reset after handlers on the element's root. The timeout
+      // handles events whose propagation is stopped before reaching it.
+      root.addEventListener("reset", onResetCapture, true);
       return () => {
-        root.removeEventListener("reset", onReset, true);
-        for (const timeout of timeouts) {
-          clearTimeout(timeout);
+        root.removeEventListener("reset", onResetCapture, true);
+        for (const event of pendingResets.keys()) {
+          clearPendingReset(event);
         }
       };
     }, [form, store]);
@@ -661,7 +700,12 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         store.setValue(value);
       }
       if (showOnClickProp(event)) {
-        queueBeforeEvent(event.currentTarget, "mouseup", store.show);
+        queueBeforeEvent(event.currentTarget, "mouseup", () => {
+          if (inline && !store.getState().open) {
+            setCanInline(true);
+          }
+          store.show();
+        });
       }
     });
 

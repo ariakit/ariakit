@@ -114,6 +114,61 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(homeTown).toHaveValue("");
   });
 
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
+  test("resets the form value before reset returns", async ({ q }) => {
+    const form = q.form("Address");
+    const homeTown = q.combobox("Home town");
+
+    await homeTown.fill("Boston");
+    const value = await form.evaluate((element) => {
+      const form = element as HTMLFormElement;
+      form.reset();
+      return new FormData(form).get("homeTown");
+    });
+
+    test.expect(value).toBe("");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
+  test("submits the reset value in the same task", async ({ q }) => {
+    const form = q.form("Address");
+    const homeTown = q.combobox("Home town");
+
+    await homeTown.fill("Boston");
+    const value = await form.evaluate((element) => {
+      const form = element as HTMLFormElement;
+      return new Promise<string | null>((resolve) => {
+        form.addEventListener(
+          "submit",
+          (event) => {
+            event.preventDefault();
+            const value = new FormData(form).get("homeTown");
+            resolve(typeof value === "string" ? value : null);
+          },
+          { once: true },
+        );
+        form.reset();
+        form.requestSubmit();
+      });
+    });
+
+    test.expect(value).toBe("");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
+  test("preserves a value set after reset in the same task", async ({ q }) => {
+    const form = q.form("Address");
+    const homeTown = q.combobox("Home town");
+
+    await homeTown.fill("Boston");
+    await q.button("Reset and replace address").click();
+    await form.evaluate(
+      () => new Promise<void>((resolve) => setTimeout(resolve)),
+    );
+
+    await test.expect(homeTown).toHaveValue("Paris");
+  });
+
   // https://github.com/ariakit/ariakit/issues/1861
   test("resets when reset event propagation is stopped", async ({ q }) => {
     const form = q.form("Address");
@@ -132,6 +187,27 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(name).toHaveValue("");
     await test.expect(homeTown).toHaveValue("");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
+  test("does not overwrite a replacement after propagation stops", async ({
+    q,
+  }) => {
+    const form = q.form("Address");
+    const homeTown = q.combobox("Home town");
+    await form.evaluate((element) => {
+      element.addEventListener("reset", (event) => event.stopPropagation(), {
+        once: true,
+      });
+    });
+
+    await homeTown.fill("Boston");
+    await q.button("Reset and replace address").click();
+    await form.evaluate(
+      () => new Promise<void>((resolve) => setTimeout(resolve)),
+    );
+
+    await test.expect(homeTown).toHaveValue("Paris");
   });
 
   // https://github.com/ariakit/ariakit/issues/1861
@@ -156,8 +232,44 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(formerHomeTown).toHaveValue("");
   });
 
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
+  test("resets synchronously inside a shadow root", async ({ q }) => {
+    const form = q.form("Shadow address");
+    const homeTown = q.combobox("Shadow home town");
+
+    await homeTown.fill("Boston");
+    const value = await form.evaluate((element) => {
+      const form = element as HTMLFormElement;
+      form.reset();
+      return new FormData(form).get("shadowHomeTown");
+    });
+
+    test.expect(value).toBe("");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
+  test("preserves a canceled reset inside a shadow root", async ({ q }) => {
+    const form = q.form("Shadow address");
+    const homeTown = q.combobox("Shadow home town");
+
+    await homeTown.fill("Boston");
+    const value = await form.evaluate(async (element) => {
+      const form = element as HTMLFormElement;
+      const root = form.getRootNode();
+      root.addEventListener("reset", (event) => event.preventDefault(), {
+        once: true,
+      });
+      form.reset();
+      await new Promise((resolve) => setTimeout(resolve));
+      return new FormData(form).get("shadowHomeTown");
+    });
+
+    test.expect(value).toBe("Boston");
+  });
+
   // https://github.com/ariakit/ariakit/issues/1861
   test("preserves the value when form reset is canceled", async ({ q }) => {
+    const form = q.form("Canceled address");
     const name = q.textbox("Canceled name");
     const homeTown = q.combobox("Canceled home town");
 
@@ -165,9 +277,58 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await homeTown.fill("Boston");
     await homeTown.press("Escape");
     await q.button("Cancel address reset").click();
+    await form.evaluate(
+      () => new Promise<void>((resolve) => setTimeout(resolve)),
+    );
 
     await test.expect(name).toHaveValue("Chance");
     await test.expect(homeTown).toHaveValue("Boston");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
+  test("preserves the value when a Document listener cancels reset", async ({
+    q,
+  }) => {
+    const form = q.form("Address");
+    const name = q.textbox("Name");
+    const homeTown = q.combobox("Home town");
+
+    await name.fill("Chance");
+    await homeTown.fill("Boston");
+    const values = await form.evaluate((element) => {
+      const form = element as HTMLFormElement;
+      document.addEventListener("reset", (event) => event.preventDefault(), {
+        once: true,
+      });
+      form.reset();
+      return {
+        name: new FormData(form).get("name"),
+        homeTown: new FormData(form).get("homeTown"),
+      };
+    });
+
+    test.expect(values).toEqual({ name: "Chance", homeTown: "Boston" });
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
+  test("preserves the value when a Window listener cancels reset", async ({
+    q,
+  }) => {
+    const form = q.form("Address");
+    const homeTown = q.combobox("Home town");
+
+    await homeTown.fill("Boston");
+    const value = await form.evaluate(async (element) => {
+      const form = element as HTMLFormElement;
+      window.addEventListener("reset", (event) => event.preventDefault(), {
+        once: true,
+      });
+      form.reset();
+      await new Promise((resolve) => setTimeout(resolve));
+      return new FormData(form).get("homeTown");
+    });
+
+    test.expect(value).toBe("Boston");
   });
 
   // https://github.com/ariakit/ariakit/issues/1861
@@ -179,6 +340,107 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("Reset controlled address").click();
 
     await test.expect(homeTown).toHaveValue("Boston");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
+  test("preserves a caller-controlled element value on form reset", async ({
+    q,
+  }) => {
+    const form = q.form("Controlled element address");
+    const homeTown = q.combobox("Controlled element home town");
+
+    await homeTown.fill("Boston");
+    const value = await form.evaluate((element) => {
+      const form = element as HTMLFormElement;
+      form.reset();
+      return new FormData(form).get("controlledElementHomeTown");
+    });
+
+    test.expect(value).toBe("Boston");
+    await test.expect(homeTown).toHaveValue("Boston");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060245
+  test("does not overwrite a controlled render after propagation stops", async ({
+    q,
+  }) => {
+    const form = q.form("Controlled element address");
+    const homeTown = q.combobox("Controlled element home town");
+    await form.evaluate((element) => {
+      element.addEventListener("reset", (event) => event.stopPropagation(), {
+        once: true,
+      });
+    });
+
+    await homeTown.fill("Boston");
+    await q.button("Reset and replace controlled element address").click();
+    await form.evaluate(
+      () => new Promise<void>((resolve) => setTimeout(resolve)),
+    );
+
+    await test.expect(homeTown).toHaveValue("Boston");
+    const value = await form.evaluate((element) =>
+      new FormData(element as HTMLFormElement).get("controlledElementHomeTown"),
+    );
+    test.expect(value).toBe("Boston");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060253
+  test("preserves a value controlled by a composed store", async ({ q }) => {
+    const form = q.form("Controlled store address");
+    const homeTown = q.combobox("Controlled store home town");
+
+    await homeTown.fill("Boston");
+    await homeTown.press("Escape");
+    await q.button("Reset controlled store address").click();
+    await form.evaluate(
+      () => new Promise<void>((resolve) => setTimeout(resolve)),
+    );
+
+    await test.expect(homeTown).toHaveValue("Boston");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060253
+  test("preserves a value controlled by a sibling store", async ({ q }) => {
+    const form = q.form("Sibling controlled store address");
+    const homeTown = q.combobox("Sibling controlled store home town");
+
+    await homeTown.fill("Boston");
+    await homeTown.press("Escape");
+    await q.button("Reset sibling controlled store address").click();
+    await form.evaluate(
+      () => new Promise<void>((resolve) => setTimeout(resolve)),
+    );
+
+    await test.expect(homeTown).toHaveValue("Boston");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060253
+  test("resets a value not owned by a partially shared store", async ({
+    q,
+  }) => {
+    const homeTown = q.combobox("Partially shared home town");
+
+    await homeTown.fill("Boston");
+    await q.button("Reset partially shared address").click();
+
+    await test.expect(homeTown).toHaveValue("");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060253
+  test("preserves a value controlled by a tag store", async ({ q }) => {
+    const form = q.form("Controlled tag address");
+    const homeTown = q.combobox("Controlled tag home town");
+
+    await homeTown.fill("Boston");
+    await homeTown.press("Escape");
+    await q.button("Reset controlled tag address").click();
+    await form.evaluate(
+      () => new Promise<void>((resolve) => setTimeout(resolve)),
+    );
+
+    await test.expect(homeTown).toHaveValue("Boston");
+    await test.expect(form).toHaveAttribute("data-value-changes", "[]");
   });
 
   // https://github.com/ariakit/ariakit/issues/1861
@@ -195,5 +457,19 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
 
     await test.expect(homeTown).toHaveValue("");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6803#discussion_r3632060250
+  test("restores inline autocomplete when reopening", async ({ q }) => {
+    const homeTown = q.combobox("Inline auto select home town");
+
+    await homeTown.click();
+    await test.expect(homeTown).toHaveValue("Boston");
+    await homeTown.press("Escape");
+    await q.button("Reset inline address").click();
+    await test.expect(homeTown).toHaveValue("");
+    await homeTown.click();
+
+    await test.expect(homeTown).toHaveValue("Boston");
   });
 });

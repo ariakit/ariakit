@@ -1,6 +1,11 @@
 import * as Core from "@ariakit/components/tag/tag-store";
 import { useStore, useStoreProps } from "@ariakit/react-store";
 import type { Store } from "@ariakit/react-store";
+import { useSafeLayoutEffect } from "@ariakit/react-utils";
+import {
+  markComboboxValueControlled,
+  markComboboxValueSource,
+} from "../combobox/__combobox-controlled.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -13,6 +18,18 @@ export function useTagStoreProps<T extends Core.TagStore>(
   update: () => void,
   props: TagStoreProps,
 ) {
+  const valueControlled = props.value !== undefined;
+  useSafeLayoutEffect(() => {
+    if (!valueControlled) return;
+    return markComboboxValueControlled(store);
+  }, [store, valueControlled]);
+  // Source changes recreate the store in a passive effect. Keep the source
+  // connected to the store instance it was created with until then.
+  useSafeLayoutEffect(
+    () => markComboboxValueSource(store, props.store),
+    [store],
+  );
+
   useStoreProps(store, props, "value", "setValue");
   useStoreProps(store, props, "values", "setValues");
   return useCompositeStoreProps(store, update, props);
