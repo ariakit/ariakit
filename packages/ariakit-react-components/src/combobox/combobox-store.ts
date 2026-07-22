@@ -1,7 +1,7 @@
 import * as Core from "@ariakit/components/combobox/combobox-store";
 import { useStore, useStoreProps } from "@ariakit/react-store";
 import type { Store } from "@ariakit/react-store";
-import { useUpdateEffect } from "@ariakit/react-utils";
+import { useSafeLayoutEffect, useUpdateEffect } from "@ariakit/react-utils";
 import type { PickRequired } from "@ariakit/utils";
 import type {
   CompositeStoreFunctions,
@@ -20,6 +20,7 @@ import type {
 import { usePopoverStoreProps } from "../popover/popover-store.ts";
 import { useTagContext } from "../tag/tag-context.tsx";
 import type { TagStore } from "../tag/tag-store.ts";
+import { markComboboxValueControlled } from "./__combobox-controlled.ts";
 
 export function useComboboxStoreOptions<T extends Core.ComboboxStoreOptions>(
   props: T,
@@ -38,6 +39,12 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
   props: ComboboxStoreProps,
 ) {
   useUpdateEffect(update, [props.tag]);
+
+  const valueControlled = props.value !== undefined;
+  useSafeLayoutEffect(() => {
+    if (!valueControlled) return;
+    return markComboboxValueControlled(store);
+  }, [store, valueControlled]);
 
   useStoreProps(store, props, "value", "setValue");
   useStoreProps(store, props, "selectedValue", "setSelectedValue");

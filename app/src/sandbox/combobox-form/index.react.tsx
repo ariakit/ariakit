@@ -11,8 +11,7 @@ const fruits = [
 export default function Example() {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [submittedValues, setSubmittedValues] = useState<string[] | null>(null);
-  // TODO: Remove after https://github.com/ariakit/ariakit/issues/1861 is fixed.
-  const [homeTown, setHomeTown] = useState("");
+  const [controlledHomeTown, setControlledHomeTown] = useState("");
 
   return (
     <>
@@ -45,12 +44,12 @@ export default function Example() {
         </output>
       </form>
 
-      <form aria-label="Address" onReset={() => setHomeTown("")}>
+      <form id="address" aria-label="Address">
         <label>
           Name
           <input name="name" />
         </label>
-        <Ariakit.ComboboxProvider value={homeTown} setValue={setHomeTown}>
+        <Ariakit.ComboboxProvider>
           <Ariakit.ComboboxLabel>Home town</Ariakit.ComboboxLabel>
           <Ariakit.Combobox name="homeTown" />
           <Ariakit.ComboboxPopover>
@@ -58,7 +57,81 @@ export default function Example() {
             <Ariakit.ComboboxItem value="San Diego" />
           </Ariakit.ComboboxPopover>
         </Ariakit.ComboboxProvider>
-        <button type="reset">Reset address</button>
+        <Ariakit.ComboboxProvider defaultValue="Boston">
+          <Ariakit.ComboboxLabel>Birth place</Ariakit.ComboboxLabel>
+          <Ariakit.Combobox name="birthPlace" />
+          <Ariakit.ComboboxPopover>
+            <Ariakit.ComboboxItem value="Boston" />
+            <Ariakit.ComboboxItem value="San Diego" />
+          </Ariakit.ComboboxPopover>
+        </Ariakit.ComboboxProvider>
+        <button
+          type="button"
+          onClick={(event) => event.currentTarget.form?.reset()}
+        >
+          Reset address
+        </button>
+      </form>
+
+      <Ariakit.ComboboxProvider>
+        <Ariakit.ComboboxLabel>Former home town</Ariakit.ComboboxLabel>
+        <Ariakit.Combobox name="formerHomeTown" form="address" />
+        <Ariakit.ComboboxPopover>
+          <Ariakit.ComboboxItem value="Boston" />
+          <Ariakit.ComboboxItem value="San Diego" />
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+
+      <form
+        aria-label="Canceled address"
+        onReset={(event) => event.preventDefault()}
+      >
+        <label>
+          Canceled name
+          <input name="canceledName" />
+        </label>
+        <Ariakit.ComboboxProvider>
+          <Ariakit.ComboboxLabel>Canceled home town</Ariakit.ComboboxLabel>
+          <Ariakit.Combobox name="canceledHomeTown" />
+          <Ariakit.ComboboxPopover>
+            <Ariakit.ComboboxItem value="Boston" />
+            <Ariakit.ComboboxItem value="San Diego" />
+          </Ariakit.ComboboxPopover>
+        </Ariakit.ComboboxProvider>
+        <button type="reset">Cancel address reset</button>
+      </form>
+
+      <form aria-label="Controlled address">
+        <Ariakit.ComboboxProvider
+          value={controlledHomeTown}
+          setValue={setControlledHomeTown}
+        >
+          <Ariakit.ComboboxLabel>Controlled home town</Ariakit.ComboboxLabel>
+          <Ariakit.Combobox name="controlledHomeTown" />
+          <Ariakit.ComboboxPopover>
+            <Ariakit.ComboboxItem value="Boston" />
+            <Ariakit.ComboboxItem value="San Diego" />
+          </Ariakit.ComboboxPopover>
+        </Ariakit.ComboboxProvider>
+        <button type="reset">Reset controlled address</button>
+      </form>
+
+      <form aria-label="Inline address">
+        <Ariakit.ComboboxProvider>
+          <Ariakit.ComboboxLabel>Inline home town</Ariakit.ComboboxLabel>
+          <Ariakit.Combobox autoComplete="inline" autoSelect />
+          <Ariakit.ComboboxPopover>
+            <Ariakit.ComboboxItem value="Boston" />
+            <Ariakit.ComboboxItem value="San Diego" />
+          </Ariakit.ComboboxPopover>
+        </Ariakit.ComboboxProvider>
+        <button
+          type="button"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={(event) => event.currentTarget.form?.reset()}
+        >
+          Reset inline address
+        </button>
       </form>
 
       <Ariakit.ComboboxProvider defaultSelectedValue={["apple"]}>

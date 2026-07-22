@@ -49,3 +49,66 @@ test("resets an uncontrolled combobox with its form", async () => {
   expect(name).toHaveValue("");
   expect(homeTown).toHaveValue("");
 });
+
+// https://github.com/ariakit/ariakit/issues/1861
+test("resets when reset event propagation is stopped", async () => {
+  const form = q.form.ensure("Address");
+  const name = q.textbox.ensure("Name");
+  const homeTown = q.combobox.ensure("Home town");
+  form.addEventListener("reset", (event) => event.stopPropagation(), {
+    once: true,
+  });
+
+  await type("Chance", name);
+  await type("Boston", homeTown);
+  await press("Escape", homeTown);
+  await click(q.button("Reset address"));
+
+  expect(name).toHaveValue("");
+  expect(homeTown).toHaveValue("");
+});
+
+// https://github.com/ariakit/ariakit/issues/1861
+test("resets a combobox to its default value", async () => {
+  const birthPlace = q.combobox.ensure("Birth place");
+
+  await type("San Diego", birthPlace);
+  await press("Escape", birthPlace);
+  await click(q.button("Reset address"));
+
+  expect(birthPlace).toHaveValue("Boston");
+});
+
+// https://github.com/ariakit/ariakit/issues/1861
+test("resets a combobox associated with an explicit form", async () => {
+  const formerHomeTown = q.combobox.ensure("Former home town");
+
+  await type("Boston", formerHomeTown);
+  await press("Escape", formerHomeTown);
+  await click(q.button("Reset address"));
+
+  expect(formerHomeTown).toHaveValue("");
+});
+
+// https://github.com/ariakit/ariakit/issues/1861
+test("preserves a controlled value on form reset", async () => {
+  const homeTown = q.combobox.ensure("Controlled home town");
+
+  await type("Boston", homeTown);
+  await press("Escape", homeTown);
+  await click(q.button("Reset controlled address"));
+
+  expect(homeTown).toHaveValue("Boston");
+});
+
+// https://github.com/ariakit/ariakit/issues/1861
+test("clears inline autocomplete on form reset", async () => {
+  const homeTown = q.combobox.ensure("Inline home town");
+
+  await click(homeTown);
+  await type("B", homeTown);
+  expect(homeTown).toHaveValue("Boston");
+  await click(q.button("Reset inline address"));
+
+  expect(homeTown).toHaveValue("");
+});

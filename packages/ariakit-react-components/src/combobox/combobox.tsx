@@ -46,6 +46,7 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
 import { usePopoverAnchor } from "../popover/popover-anchor.tsx";
+import { isComboboxValueControlled } from "./__combobox-controlled.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
@@ -175,6 +176,34 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     // The inline autocomplete should only happen in certain circumstances. We
     // control this state here.
     const [canInline, setCanInline] = useState(inline);
+
+    useEffect(() => {
+      const element = ref.current;
+      if (!element) return;
+      if (!element.form && !form) return;
+      const root = element.getRootNode();
+      const timeouts = new Set<ReturnType<typeof setTimeout>>();
+      const onReset = (event: Event) => {
+        if (event.target !== element.form) return;
+        const timeout = setTimeout(() => {
+          timeouts.delete(timeout);
+          if (event.defaultPrevented) return;
+          if (isComboboxValueControlled(store)) return;
+          setCanInline(false);
+          store.resetValue();
+        });
+        timeouts.add(timeout);
+      };
+      // Capture the event before propagation can be stopped, then let reset
+      // handlers prevent the default action before updating the store.
+      root.addEventListener("reset", onReset, true);
+      return () => {
+        root.removeEventListener("reset", onReset, true);
+        for (const timeout of timeouts) {
+          clearTimeout(timeout);
+        }
+      };
+    }, [form, store]);
 
     // If the inline autocomplete is enabled in a update, we need to update the
     // canInline state to reflect this. TODO: Try derived state.
