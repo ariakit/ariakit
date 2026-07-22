@@ -91,8 +91,16 @@ export function addGlobalWindowFocusListener(
 
   for (const win of getFrameWindows(scope)) {
     const onFocus = (event: FocusEvent) => listener(event, win);
-    win.addEventListener("focus", onFocus, true);
-    cleanups.push(() => win.removeEventListener("focus", onFocus, true));
+    try {
+      win.addEventListener("focus", onFocus, true);
+    } catch {
+      continue;
+    }
+    cleanups.push(() => {
+      try {
+        win.removeEventListener("focus", onFocus, true);
+      } catch {}
+    });
   }
 
   return () => {

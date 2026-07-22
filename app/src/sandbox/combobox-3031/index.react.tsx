@@ -266,6 +266,11 @@ export default function Example() {
         title="Navigated frame"
         tabIndex={-1}
       />
+      <iframe
+        srcDoc={initialFrameContent}
+        title="Cross-origin frame"
+        tabIndex={-1}
+      />
       <button
         type="button"
         onClick={() => {

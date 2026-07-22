@@ -182,4 +182,34 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await test.expect(frame.dialog("Lifecycle dialog")).toBeVisible();
   });
+
+  // https://github.com/ariakit/ariakit/issues/3031
+  test("cleans up listeners after an iframe becomes cross-origin", async ({
+    page,
+  }) => {
+    const errors: Error[] = [];
+    page.on("pageerror", (error) => errors.push(error));
+    const frame = query(page.frameLocator("iframe[title='Embedded content']"));
+    const lateFrame = query(
+      page.frameLocator("iframe[title='Late outside frame']"),
+    );
+    await frame.button("Open lifecycle dialog").click();
+    await page
+      .locator("iframe[title='Cross-origin frame']")
+      .evaluate((element: HTMLIFrameElement) => {
+        return new Promise<void>((resolve) => {
+          element.addEventListener("load", () => resolve(), { once: true });
+          element.removeAttribute("srcdoc");
+          element.src = "data:text/html,<p>Cross-origin frame content</p>";
+        });
+      });
+
+    await frame.button("Add outside frame").click();
+    await lateFrame.button("Late outside target").click();
+
+    await test.expect(frame.dialog("Lifecycle dialog")).not.toBeVisible();
+    await test.expect
+      .poll(() => errors.map((error) => error.message))
+      .toEqual([]);
+  });
 });
