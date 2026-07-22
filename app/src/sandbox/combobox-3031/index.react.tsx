@@ -123,12 +123,22 @@ function RootDialog() {
         hideOnInteractOutside={(event) => {
           const nativeEvent =
             "nativeEvent" in event ? event.nativeEvent : event;
+          const activeElement = document.activeElement;
+          const activeWindow =
+            activeElement?.tagName === "IFRAME"
+              ? (activeElement as HTMLIFrameElement).contentWindow
+              : null;
+          const activeView = activeWindow?.document.defaultView;
+          const sameRealm = activeView
+            ? event instanceof activeView.FocusEvent
+            : false;
           setOutsideEvent(
             `${event.type}; trusted: ${String(event.isTrusted)}; ` +
               `current target: ${event.currentTarget ? "set" : "null"}; ` +
-              `path: ${nativeEvent.composedPath().length}`,
+              `path: ${nativeEvent.composedPath().length}; ` +
+              `same realm: ${String(sameRealm)}`,
           );
-          return event.isTrusted;
+          return true;
         }}
       >
         Root dialog content
@@ -144,6 +154,19 @@ function RootDialog() {
           }}
         >
           Add and focus outside frame
+        </button>
+        <button
+          type="button"
+          tabIndex={-1}
+          onClick={() => {
+            const frame = document.createElement("iframe");
+            frame.title = "Pending synchronously focused frame";
+            frame.src = "/pending-frame";
+            document.body.append(frame);
+            frame.contentWindow?.focus();
+          }}
+        >
+          Add and focus pending frame
         </button>
       </Ariakit.Dialog>
       <output>Root outside event: {outsideEvent}</output>

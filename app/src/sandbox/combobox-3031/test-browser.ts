@@ -65,6 +65,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   // https://github.com/ariakit/ariakit/issues/3031
   test("passes the native iframe focus event to the callback", async ({
+    browserName,
     page,
     q,
   }) => {
@@ -76,11 +77,12 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await test.expect(outsideFrame).toBeFocused();
     await test.expect(q.dialog("Root dialog")).not.toBeVisible();
+    const sameRealm = browserName === "firefox" ? "true" : "false";
     await test
       .expect(
         q.text(
           "Root outside event: focus; trusted: true; " +
-            "current target: null; path: 0",
+            `current target: null; path: 0; same realm: ${sameRealm}`,
         ),
       )
       .toBeVisible();
@@ -88,6 +90,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   // https://github.com/ariakit/ariakit/issues/3031
   test("preserves pending iframe focus across frame refreshes", async ({
+    browserName,
     page,
     q,
   }) => {
@@ -119,14 +122,71 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await page.keyboard.press("Tab");
 
     await test.expect(q.dialog("Root dialog")).not.toBeVisible();
+    const sameRealm = browserName === "firefox" ? "true" : "false";
     await test
       .expect(
         q.text(
           "Root outside event: focus; trusted: true; " +
-            "current target: null; path: 0",
+            `current target: null; path: 0; same realm: ${sameRealm}`,
         ),
       )
       .toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/3031
+  test("does not replay focus when only a descendant frame is new", async ({
+    page,
+  }) => {
+    let releaseResponse = () => {};
+    let markRequestStarted = () => {};
+    const requestStarted = new Promise<void>((resolve) => {
+      markRequestStarted = resolve;
+    });
+    await page.route("**/pending-descendant-frame", async (route) => {
+      markRequestStarted();
+      await new Promise<void>((resolve) => {
+        releaseResponse = resolve;
+      });
+      await route.fulfill({ body: "<p>Loaded descendant frame</p>" });
+    });
+    const frame = query(page.frameLocator("iframe[title='Embedded content']"));
+    const siblingFrame = page.locator("iframe[title='Sibling frame']");
+    try {
+      await frame.button("Open focused dialog").click();
+      await test.expect(frame.dialog("Focused dialog")).toBeFocused();
+
+      await siblingFrame.focus();
+
+      await test.expect(siblingFrame).toBeFocused();
+      await test.expect(frame.dialog("Focused dialog")).toBeVisible();
+      await test
+        .expect(frame.text("Outside target: Sibling frame"))
+        .toBeVisible();
+      await page.evaluate(() => {
+        const siblingFrame = document.querySelector<HTMLIFrameElement>(
+          "iframe[title='Sibling frame']",
+        );
+        const frameDocument = siblingFrame?.contentDocument;
+        if (!frameDocument) {
+          throw new Error("Expected iframe contentDocument");
+        }
+        const descendantFrame = frameDocument.createElement("iframe");
+        descendantFrame.hidden = true;
+        descendantFrame.src = "/pending-descendant-frame";
+        frameDocument.body.appendChild(descendantFrame);
+      });
+      await requestStarted;
+      await page.evaluate(
+        () =>
+          new Promise<void>((resolve) => {
+            requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
+          }),
+      );
+
+      await test.expect(frame.dialog("Focused dialog")).toBeVisible();
+    } finally {
+      releaseResponse();
+    }
   });
 
   // https://github.com/ariakit/ariakit/issues/3031
@@ -210,6 +270,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
   // https://github.com/ariakit/ariakit/issues/3031
   test("observes an iframe focused synchronously after insertion", async ({
+    browserName,
     page,
     q,
   }) => {
@@ -222,14 +283,63 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await test.expect(outsideFrame).toBeFocused();
     await test.expect(q.dialog("Root dialog")).not.toBeVisible();
+    const trusted = browserName === "firefox" ? "false" : "true";
+    const sameRealm = browserName === "firefox" ? "true" : "false";
     await test
       .expect(
         q.text(
-          "Root outside event: focus; trusted: true; " +
-            "current target: null; path: 0",
+          `Root outside event: focus; trusted: ${trusted}; ` +
+            `current target: null; path: 0; same realm: ${sameRealm}`,
         ),
       )
       .toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/3031
+  test("recovers focus from an iframe with a pending navigation", async ({
+    browserName,
+    page,
+    q,
+  }) => {
+    let releaseResponse = () => {};
+    let markRequestStarted = () => {};
+    const requestStarted = new Promise<void>((resolve) => {
+      markRequestStarted = resolve;
+    });
+    await page.route("**/pending-frame", async (route) => {
+      markRequestStarted();
+      await new Promise<void>((resolve) => {
+        releaseResponse = resolve;
+      });
+      await route.fulfill({
+        body: "<p>Loaded frame content</p>",
+        contentType: "text/html",
+      });
+    });
+    const outsideFrame = page.locator(
+      "iframe[title='Pending synchronously focused frame']",
+    );
+    try {
+      await q.button("Open root dialog").click();
+
+      await q.button("Add and focus pending frame").click();
+      await requestStarted;
+
+      await test.expect(outsideFrame).toBeFocused();
+      await test.expect(q.dialog("Root dialog")).not.toBeVisible();
+      const trusted = browserName === "firefox" ? "false" : "true";
+      const sameRealm = browserName === "firefox" ? "true" : "false";
+      await test
+        .expect(
+          q.text(
+            `Root outside event: focus; trusted: ${trusted}; ` +
+              `current target: null; path: 0; same realm: ${sameRealm}`,
+          ),
+        )
+        .toBeVisible();
+    } finally {
+      releaseResponse();
+    }
   });
 
   // https://github.com/ariakit/ariakit/issues/3031

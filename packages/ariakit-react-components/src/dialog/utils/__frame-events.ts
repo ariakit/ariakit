@@ -1,7 +1,10 @@
 import { isElement } from "@ariakit/utils";
 
 export interface RegisterFrameTreeListener {
-  (setup: (scope: Window) => () => void): () => void;
+  (
+    setup: (scope: Window) => () => void,
+    recoverFocus?: (scope: Window) => void,
+  ): () => void;
 }
 
 function getFrameWindows(scope: Window) {
@@ -95,7 +98,7 @@ function getFocusedFrameWindow(scope: Window) {
 
 export function observeFrameTree(
   scope: Window,
-  listener: (scope?: Window) => void,
+  listener: (scope?: Window, recoverFocus?: boolean) => void,
 ) {
   let cleanups: Array<() => void> = [];
   let disposed = false;
@@ -136,6 +139,16 @@ export function observeFrameTree(
 
     const observer = new view.MutationObserver((records) => {
       if (!hasFrameMutation(records)) return;
+      const focusedWindow = getFocusedFrameWindow(scope);
+      if (focusedWindow) {
+        let recoverFocus = false;
+        try {
+          recoverFocus = !documents.has(focusedWindow.document);
+        } catch {}
+        if (observeWindowTree(focusedWindow)) {
+          listener(focusedWindow, recoverFocus);
+        }
+      }
       queueRefresh();
     });
     const onLoad = (event: Event) => {

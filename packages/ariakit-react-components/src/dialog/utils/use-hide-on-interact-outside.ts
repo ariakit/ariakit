@@ -177,6 +177,7 @@ function isEventOutside({
 
 interface FrameTreeRegistration {
   setup: (scope: Window) => () => void;
+  recoverFocus?: (scope: Window) => void;
   cleanups: Map<Window, () => void>;
 }
 
@@ -196,10 +197,14 @@ function useFrameTreeRegistry(open?: boolean, eventWindow?: Window) {
     registration.cleanups.set(scope, registration.setup(scope));
   };
   const registerFrameTreeListener = useEvent(
-    (setup: (scope: Window) => () => void) => {
+    (
+      setup: (scope: Window) => () => void,
+      recoverFocus?: (scope: Window) => void,
+    ) => {
       if (!eventWindow) return () => {};
       const registration = {
         setup,
+        recoverFocus,
         cleanups: new Map([[eventWindow, setup(eventWindow)]]),
       };
       registrationsRef.current.add(registration);
@@ -213,10 +218,13 @@ function useFrameTreeRegistry(open?: boolean, eventWindow?: Window) {
   useEffect(() => {
     if (!open) return;
     if (!eventWindow) return;
-    return observeFrameTree(eventWindow, (scope) => {
+    return observeFrameTree(eventWindow, (scope, recoverFocus) => {
       for (const registration of registrationsRef.current) {
         if (scope) {
           setupRegistration(registration, scope);
+          if (recoverFocus) {
+            registration.recoverFocus?.(scope);
+          }
           continue;
         }
         cleanupRegistration(registration);
@@ -368,59 +376,76 @@ export function useHideOnInteractOutside(
     if (!contentElement) return;
     if (!eventWindow) return;
     const contentWindow = getWindow(contentElement);
-    const clearTimers = new Map<Window, () => void>();
-    const unregister = registerFrameTreeListener((scope) =>
-      addGlobalWindowFocusListener((event, focusedWindow) => {
+    const pendingFocus = new Map<
+      Window,
+      { clear: () => void; event: FocusEvent }
+    >();
+    const onWindowFocus = (event: FocusEvent, focusedWindow: Window) => {
+      if (
+        event.target !== event.currentTarget &&
+        event.target !== focusedWindow.document
+      ) {
+        return;
+      }
+      if (focusedWindow === contentWindow) return;
+      let frameElement: Element | null;
+      try {
+        frameElement = focusedWindow.frameElement;
+      } catch {
+        return;
+      }
+      if (!frameElement) return;
+      const pending = pendingFocus.get(focusedWindow);
+      if (pending) {
+        if (!event.isTrusted || pending.event.isTrusted) return;
+        pending.clear();
+        pendingFocus.delete(focusedWindow);
+      }
+      const focusInCount = focusInCountRef.current;
+      const timer = eventWindow.setTimeout(() => {
+        pendingFocus.delete(focusedWindow);
+        if (!store.getState().open) return;
+        // Focusable content inside a frame dispatches a native focusin
+        // after the Window focus event. In that case, the native event
+        // wins.
+        if (focusInCount !== focusInCountRef.current) return;
+        const { contentElement, disclosureElement } = store.getState();
+        if (!contentElement) return;
         if (
-          event.target !== event.currentTarget &&
-          event.target !== focusedWindow.document
+          !isEventOutside({
+            event,
+            target: frameElement,
+            contentElement,
+            disclosureElement,
+            // A synchronously inserted frame may receive Window focus
+            // before its host is included in the dialog's tree snapshot.
+            focused: false,
+          })
         ) {
           return;
         }
-        if (focusedWindow === contentWindow) return;
-        let frameElement: Element | null;
-        try {
-          frameElement = focusedWindow.frameElement;
-        } catch {
-          return;
-        }
-        if (!frameElement) return;
-        if (clearTimers.has(focusedWindow)) return;
-        const focusInCount = focusInCountRef.current;
-        const timer = eventWindow.setTimeout(() => {
-          clearTimers.delete(focusedWindow);
-          if (!store.getState().open) return;
-          // Focusable content inside a frame dispatches a native focusin
-          // after the Window focus event. In that case, the native event
-          // wins.
-          if (focusInCount !== focusInCountRef.current) return;
-          const { contentElement, disclosureElement } = store.getState();
-          if (!contentElement) return;
-          if (
-            !isEventOutside({
-              event,
-              target: frameElement,
-              contentElement,
-              disclosureElement,
-              // A synchronously inserted frame may receive Window focus
-              // before its host is included in the dialog's tree snapshot.
-              focused: false,
-            })
-          ) {
-            return;
-          }
-          hideOnFocusOutside(event, true);
-        }, 0);
-        const clearTimer = () => eventWindow.clearTimeout(timer);
-        clearTimers.set(focusedWindow, clearTimer);
-      }, scope),
+        hideOnFocusOutside(event, true);
+      }, 0);
+      const clearTimer = () => eventWindow.clearTimeout(timer);
+      pendingFocus.set(focusedWindow, { clear: clearTimer, event });
+    };
+    const unregister = registerFrameTreeListener(
+      (scope) => addGlobalWindowFocusListener(onWindowFocus, scope),
+      (focusedWindow) => {
+        // Firefox can report an already-focused frame only after its native
+        // focus event has fired. Preserve the interaction with an explicitly
+        // untrusted fallback event.
+        const view = focusedWindow.document.defaultView;
+        if (!view) return;
+        onWindowFocus(new view.FocusEvent("focus"), focusedWindow);
+      },
     );
     return () => {
       unregister();
-      for (const clearTimer of clearTimers.values()) {
-        clearTimer();
+      for (const pending of pendingFocus.values()) {
+        pending.clear();
       }
-      clearTimers.clear();
+      pendingFocus.clear();
     };
   }, [
     open,
