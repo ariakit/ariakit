@@ -18,4 +18,4 @@ const scrollElementRef = useRef<HTMLDivElement>(null);
 </div>;
 ```
 
-Nested renderers using the same store inherit the resolved scroll element unless they explicitly provide their own. Thanks to [@ItaiYosephi](https://github.com/ItaiYosephi) for reporting the issue.
+Nested renderers using the same store inherit an explicitly provided scroll element unless they provide their own. When the prop is omitted, each renderer detects its closest scrolling ancestor. Thanks to [@ItaiYosephi](https://github.com/ItaiYosephi) for reporting the issue.

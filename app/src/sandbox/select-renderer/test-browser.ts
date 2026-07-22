@@ -107,4 +107,42 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(asyncOptions.option("Async item 51")).toHaveCount(1);
     await test.expect(asyncOptions.option("Async item 26")).toHaveCount(0);
   });
+
+  // https://github.com/ariakit/ariakit/pull/6806#discussion_r3633347050
+  test("auto-detects the scroller for omitted nested renderers", async ({
+    page,
+    q,
+  }) => {
+    const scroller = q.listbox("Nested auto items");
+    const nestedOptions = query(scroller);
+
+    await test.expect(nestedOptions.option("Async item 1")).toBeVisible();
+    await scroller.evaluate((element) => {
+      element.scrollTop = 2000;
+      element.dispatchEvent(new Event("scroll"));
+    });
+    await flushFrames(page);
+
+    await test.expect(nestedOptions.option("Async item 51")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6806#discussion_r3633348139
+  test("accepts a direct scroll element with a current property", async ({
+    page,
+    q,
+  }) => {
+    const scroller = q.listbox("Direct element items");
+    const directOptions = query(scroller);
+
+    await test.expect(directOptions.option("Async item 1")).toBeVisible();
+    await q.button("Use direct scroll element").click();
+    await flushFrames(page);
+    await scroller.evaluate((element) => {
+      element.scrollTop = 2000;
+      element.dispatchEvent(new Event("scroll"));
+    });
+    await flushFrames(page);
+
+    await test.expect(directOptions.option("Async item 51")).toBeVisible();
+  });
 });

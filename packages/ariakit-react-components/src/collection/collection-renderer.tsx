@@ -15,6 +15,7 @@ import {
   getScrollingElement,
   getWindow,
   invariant,
+  isElement,
   shallowEqual,
 } from "@ariakit/utils";
 import type { AnyObject, BooleanOrCallback, EmptyObject } from "@ariakit/utils";
@@ -119,8 +120,8 @@ interface CollectionRendererContextValue {
   store: CollectionRendererOptions["store"];
   orientation: CollectionRendererOptions["orientation"];
   overscan: CollectionRendererOptions["overscan"];
-  scroller: Element | null;
-  scrollerRef: RefObject<Element | null>;
+  scroller?: Element | null;
+  scrollerRef?: RefObject<Element | null>;
   childrenData: Map<string, Data>;
 }
 
@@ -300,9 +301,11 @@ function getViewport(scroller: Element) {
 function getScrollElement(
   renderer: HTMLElement,
   scrollElement: CollectionRendererOptions["scrollElement"],
-) {
+): Element | null {
   if (scrollElement === undefined) return getScrollingElement(renderer);
   if (typeof scrollElement === "function") return scrollElement(renderer);
+  const element = scrollElement as HTMLElement | null | undefined;
+  if (isElement(element)) return element;
   if (scrollElement && "current" in scrollElement) {
     return scrollElement.current;
   }
@@ -322,34 +325,33 @@ function useScroller(
   // oxlint-disable-next-line exhaustive-deps
   useSafeLayoutEffect(() => {
     if (scrollElement === undefined) return;
-    autoResolved.current = false;
     const renderer = rendererRef?.current;
     const nextScroller = renderer
       ? getScrollElement(renderer, scrollElement)
       : null;
     scrollerRef.current = nextScroller;
-    if (nextScroller === scroller) return;
-    setScroller(nextScroller);
   });
-  // Keep automatic ancestor detection one-shot and off the layout path.
+  // Keep state synchronization and automatic ancestor detection off the
+  // layout path.
   // oxlint-disable-next-line exhaustive-deps
   useEffect(() => {
-    if (scrollElement !== undefined) return;
-    if (previousRendererRef.current !== rendererRef) {
-      previousRendererRef.current = rendererRef;
+    if (scrollElement === undefined) {
+      if (previousRendererRef.current !== rendererRef) {
+        previousRendererRef.current = rendererRef;
+        autoResolved.current = false;
+      }
+      const renderer = rendererRef?.current;
+      if (!renderer) {
+        autoResolved.current = false;
+        scrollerRef.current = null;
+      } else if (!autoResolved.current) {
+        scrollerRef.current = getScrollElement(renderer, scrollElement);
+        autoResolved.current = true;
+      }
+    } else {
       autoResolved.current = false;
     }
-    const renderer = rendererRef?.current;
-    if (!renderer) {
-      autoResolved.current = false;
-      scrollerRef.current = null;
-      if (scroller) setScroller(null);
-      return;
-    }
-    if (autoResolved.current) return;
-    const nextScroller = getScrollElement(renderer, scrollElement);
-    autoResolved.current = true;
-    scrollerRef.current = nextScroller;
+    const nextScroller = scrollerRef.current;
     if (nextScroller === scroller) return;
     setScroller(nextScroller);
   });
@@ -933,16 +935,27 @@ export function useCollectionRenderer<T extends Item = any>({
   );
 
   const childrenData = useMemo(() => new Map<string, Data>(), []);
+  const contextScroller =
+    scrollElementProp === undefined ? inheritedScroller : scroller;
+  const contextScrollerRef =
+    scrollElementProp === undefined ? inheritedScrollerRef : scrollerRef;
   const providerValue: CollectionRendererContextValue = useMemo(
     () => ({
       store,
       orientation,
       overscan,
-      scroller,
-      scrollerRef,
+      scroller: contextScroller,
+      scrollerRef: contextScrollerRef,
       childrenData,
     }),
-    [store, orientation, overscan, scroller, scrollerRef, childrenData],
+    [
+      store,
+      orientation,
+      overscan,
+      contextScroller,
+      contextScrollerRef,
+      childrenData,
+    ],
   );
 
   props = useWrapElement(
@@ -1038,8 +1051,9 @@ export interface CollectionRendererOptions<
    *
    * The element must be a scrolling ancestor in the same document. If a
    * function is provided, it will be called with the renderer element as an
-   * argument. Nested renderers using the same store inherit the resolved scroll
-   * element unless they explicitly provide their own.
+   * argument. Explicit values are inherited by nested renderers using the same
+   * store unless they provide their own. When this prop is omitted, each
+   * renderer detects its closest scrolling ancestor.
    *
    * Viewport-driven rendering is disabled while this value resolves to `null`.
    */

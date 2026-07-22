@@ -2,7 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
 import type { SelectRendererItem } from "@ariakit/react-components/select/select-renderer";
 import type { SelectRendererItemObject } from "@ariakit/react-components/select/select-renderer";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import "./style.css";
 
 interface FruitItem extends SelectRendererItemObject {
@@ -208,12 +208,86 @@ function AsyncRenderer() {
   );
 }
 
+function NestedAutoRenderer() {
+  const groupedItems = useMemo(
+    () => [{ id: "nested-auto-group", itemSize: 40, items: asyncItems }],
+    [],
+  );
+
+  return (
+    <section>
+      <SelectRenderer items={groupedItems} initialItems={1}>
+        {({ items, ...group }) => (
+          <div
+            key={group.id}
+            className="async-scroller nested-auto-scroller"
+            role="listbox"
+            aria-label="Nested auto items"
+          >
+            <SelectRenderer {...group} items={items} initialItems={1}>
+              {({ value, index, ...item }) => (
+                <div key={item.id} {...item} data-index={index} role="option">
+                  {value}
+                </div>
+              )}
+            </SelectRenderer>
+          </div>
+        )}
+      </SelectRenderer>
+    </section>
+  );
+}
+
+function DirectElementRenderer() {
+  const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(
+    null,
+  );
+  const [enabled, setEnabled] = useState(false);
+  const setScrollerRef = useCallback((element: HTMLDivElement | null) => {
+    if (!element) return;
+    Object.defineProperty(element, "current", {
+      configurable: true,
+      value: 0,
+    });
+    setScrollElement(element);
+  }, []);
+
+  return (
+    <section>
+      <button type="button" onClick={() => setEnabled(true)}>
+        Use direct scroll element
+      </button>
+      <div
+        ref={setScrollerRef}
+        className="async-scroller"
+        role="listbox"
+        aria-label="Direct element items"
+      >
+        <SelectRenderer
+          items={asyncItems}
+          initialItems={1}
+          itemSize={40}
+          scrollElement={enabled ? scrollElement : null}
+        >
+          {({ value, index, ...item }) => (
+            <div key={item.id} {...item} data-index={index} role="option">
+              {value}
+            </div>
+          )}
+        </SelectRenderer>
+      </div>
+    </section>
+  );
+}
+
 export default function Example() {
   return (
     <>
       <GroupedRenderer />
       <HorizontalRenderer />
       <AsyncRenderer />
+      <NestedAutoRenderer />
+      <DirectElementRenderer />
     </>
   );
 }

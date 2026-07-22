@@ -26,3 +26,7 @@
   height: 120px;
   overflow-y: auto;
 }
+
+.nested-auto-scroller {
+  position: relative;
+}
