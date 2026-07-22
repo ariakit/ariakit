@@ -1056,8 +1056,9 @@ export interface CollectionRendererOptions<
    * The element must be a scrolling ancestor in the same document. If a
    * function is provided, it will be called with the renderer element as an
    * argument. Explicit values are inherited by nested renderers using the same
-   * store unless they provide their own. When this prop is omitted, each
-   * renderer detects its closest scrolling ancestor.
+   * store unless they provide their own. If neither this renderer nor a
+   * same-store ancestor provides a value, the renderer detects its closest
+   * scrolling ancestor.
    *
    * Viewport-driven rendering is disabled while this value resolves to `null`.
    */
