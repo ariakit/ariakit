@@ -10,13 +10,13 @@ interface InstrumentedPopoverProps {
 }
 
 // Renders a popover through the usePopover hook so the component's own render
-// count can be tracked. Disclosure element updates must not re-render the
-// popover while its positioning anchor stays the same. The preserveTabOrder
-// feature takes effect only on non-modal portals, so it must not introduce a
-// separate subscription for a modal popover, a plain non-portaled popover, or
-// a portal with preserveTabOrder disabled. Everything the tests interact with
-// lives inside the popovers because the modal one makes the rest of the page
-// inert while open.
+// count can be tracked. The preserveTabOrder feature, the only consumer of
+// the disclosure element, takes effect only on non-modal portals, so
+// disclosure element updates must not re-render a modal popover (portaled,
+// but modal dialogs disable preserveTabOrder), a plain popover (non-modal,
+// but not portaled by default), or a portal with preserveTabOrder disabled.
+// Everything the tests interact with lives inside the popovers because the
+// modal one makes the rest of the page inert while open.
 function InstrumentedPopover({
   label,
   modal,

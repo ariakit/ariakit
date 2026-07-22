@@ -10,8 +10,8 @@ async function getVerticalCenter(locator: Locator) {
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  // https://github.com/ariakit/ariakit/issues/3729
-  for (const label of ["Disclosure first", "Anchor first"]) {
+  for (const label of ["Disclosure first", "Anchor first", "Provider store"]) {
+    // https://github.com/ariakit/ariakit/issues/3729
     test(`positions the popover next to the explicit anchor when the ${label.toLowerCase()}`, async ({
       q,
     }) => {
@@ -32,24 +32,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
   }
 
-  test("falls back to the disclosure when the explicit anchor unmounts", async ({
-    q,
-  }) => {
-    const label = "Disclosure first";
-    const disclosure = q.button(`Open ${label}`);
-    const popover = q.dialog(`${label} details`);
+  test("preserves the MenuButton interaction anchor", async ({ q }) => {
+    const button = q.button("Open Menu");
+    await button.click();
 
-    await disclosure.click();
-    await test.expect(popover).toBeVisible();
-    await q.button(`Remove ${label} anchor`).click();
-    await test.expect(q.text(`${label} anchor`)).toHaveCount(0);
+    const menu = q.menu();
+    await test.expect(menu).toBeVisible();
+    await test
+      .expect(q.status("Menu current anchor"))
+      .toHaveText("menu-button");
 
-    await test.expect
-      .poll(async () => {
-        const disclosureCenter = await getVerticalCenter(disclosure);
-        const popoverCenter = await getVerticalCenter(popover);
-        return Math.abs(popoverCenter - disclosureCenter);
-      })
-      .toBeLessThanOrEqual(1);
+    const buttonCenter = await getVerticalCenter(button);
+    const menuCenter = await getVerticalCenter(menu);
+    test.expect(Math.abs(menuCenter - buttonCenter)).toBeLessThanOrEqual(1);
   });
 });

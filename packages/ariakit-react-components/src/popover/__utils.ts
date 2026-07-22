@@ -1,27 +1,73 @@
+import { hasOwnProperty } from "@ariakit/utils";
 import type { PopoverStore, PopoverStoreState } from "./popover-store.ts";
 
-const explicitPopoverAnchors = new WeakMap<PopoverStore, HTMLElement>();
+interface ExplicitPopoverAnchorRegistry {
+  anchors: WeakMap<HTMLElement, number>;
+  current?: HTMLElement;
+}
+
+interface PopoverAnchorStore {
+  getState(): Partial<PopoverStoreState>;
+}
+
+const explicitPopoverAnchorRegistries = new WeakMap<
+  object,
+  ExplicitPopoverAnchorRegistry
+>();
+
+function getExplicitPopoverAnchorRegistry(store: object) {
+  let registry = explicitPopoverAnchorRegistries.get(store);
+  if (!registry) {
+    registry = { anchors: new WeakMap() };
+    explicitPopoverAnchorRegistries.set(store, registry);
+  }
+  return registry;
+}
+
+export function linkExplicitPopoverAnchorStore(
+  store: PopoverAnchorStore,
+  source?: PopoverAnchorStore | null,
+) {
+  if (explicitPopoverAnchorRegistries.has(store)) return;
+  // Synchronized stores may still have stale element state while refs run, so
+  // they must share explicit anchor metadata before store initialization.
+  if (!source || !hasOwnProperty(source.getState(), "anchorElement")) {
+    getExplicitPopoverAnchorRegistry(store);
+    return;
+  }
+  const registry = getExplicitPopoverAnchorRegistry(source);
+  explicitPopoverAnchorRegistries.set(store, registry);
+}
 
 export function markExplicitPopoverAnchor(
   store: PopoverStore,
   element: HTMLElement,
 ) {
-  explicitPopoverAnchors.set(store, element);
+  const registry = getExplicitPopoverAnchorRegistry(store);
+  const count = registry.anchors.get(element) || 0;
+  registry.anchors.set(element, count + 1);
+  registry.current = element;
 }
 
 export function unmarkExplicitPopoverAnchor(
   store: PopoverStore,
   element: HTMLElement,
 ) {
-  if (explicitPopoverAnchors.get(store) !== element) return;
-  explicitPopoverAnchors.delete(store);
+  const registry = getExplicitPopoverAnchorRegistry(store);
+  const count = registry.anchors.get(element);
+  if (!count) return;
+  if (count === 1) {
+    registry.anchors.delete(element);
+    if (registry.current === element) {
+      delete registry.current;
+    }
+    return;
+  }
+  registry.anchors.set(element, count - 1);
 }
 
-export function isExplicitPopoverAnchor(
-  store: PopoverStore,
-  element: HTMLElement | null | undefined,
-) {
-  return !!element && explicitPopoverAnchors.get(store) === element;
+export function getExplicitPopoverAnchor(store: PopoverStore) {
+  return getExplicitPopoverAnchorRegistry(store).current;
 }
 
 export function setPopoverDisclosureAnchor(
@@ -29,8 +75,11 @@ export function setPopoverDisclosureAnchor(
   element: HTMLElement | null,
 ) {
   if (!store) return;
-  const anchorElement = store.getState().anchorElement;
-  if (isExplicitPopoverAnchor(store, anchorElement)) return;
+  const explicitAnchor = getExplicitPopoverAnchor(store);
+  if (explicitAnchor) {
+    store.setAnchorElement(explicitAnchor);
+    return;
+  }
   store.setAnchorElement(element);
 }
 
