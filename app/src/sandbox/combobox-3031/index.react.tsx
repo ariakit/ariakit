@@ -132,6 +132,19 @@ function RootDialog() {
         }}
       >
         Root dialog content
+        <button
+          type="button"
+          tabIndex={-1}
+          onClick={() => {
+            const frame = document.createElement("iframe");
+            frame.title = "Synchronously focused frame";
+            frame.srcdoc = initialFrameContent;
+            document.body.append(frame);
+            frame.contentWindow?.focus();
+          }}
+        >
+          Add and focus outside frame
+        </button>
       </Ariakit.Dialog>
       <output>Root outside event: {outsideEvent}</output>
     </Ariakit.DialogProvider>

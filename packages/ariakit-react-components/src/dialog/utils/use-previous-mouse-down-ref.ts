@@ -19,12 +19,12 @@ export function usePreviousMouseDownRef(
     const onMouseDown = (event: MouseEvent) => {
       previousMouseDownRef.current = event.target;
     };
-    return registerFrameTreeListener(() =>
+    return registerFrameTreeListener((eventScope) =>
       addFrameTreeEventListener({
         type: "mousedown",
         listener: onMouseDown,
         options: true,
-        scope,
+        scope: eventScope,
       }),
     );
   }, [enabled, scope, registerFrameTreeListener]);

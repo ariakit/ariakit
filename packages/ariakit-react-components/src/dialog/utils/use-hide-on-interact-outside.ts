@@ -176,28 +176,51 @@ function isEventOutside({
 }
 
 interface FrameTreeRegistration {
-  setup: () => () => void;
-  cleanup: () => void;
+  setup: (scope: Window) => () => void;
+  cleanups: Map<Window, () => void>;
 }
 
 function useFrameTreeRegistry(open?: boolean, eventWindow?: Window) {
   const registrationsRef = useRef(new Set<FrameTreeRegistration>());
-  const registerFrameTreeListener = useEvent((setup: () => () => void) => {
-    const registration = { setup, cleanup: setup() };
-    registrationsRef.current.add(registration);
-    return () => {
-      registrationsRef.current.delete(registration);
-      registration.cleanup();
-    };
-  });
+  const cleanupRegistration = (registration: FrameTreeRegistration) => {
+    for (const cleanup of registration.cleanups.values()) {
+      cleanup();
+    }
+    registration.cleanups.clear();
+  };
+  const setupRegistration = (
+    registration: FrameTreeRegistration,
+    scope: Window,
+  ) => {
+    registration.cleanups.get(scope)?.();
+    registration.cleanups.set(scope, registration.setup(scope));
+  };
+  const registerFrameTreeListener = useEvent(
+    (setup: (scope: Window) => () => void) => {
+      if (!eventWindow) return () => {};
+      const registration = {
+        setup,
+        cleanups: new Map([[eventWindow, setup(eventWindow)]]),
+      };
+      registrationsRef.current.add(registration);
+      return () => {
+        registrationsRef.current.delete(registration);
+        cleanupRegistration(registration);
+      };
+    },
+  );
 
   useEffect(() => {
     if (!open) return;
     if (!eventWindow) return;
-    return observeFrameTree(eventWindow, () => {
+    return observeFrameTree(eventWindow, (scope) => {
       for (const registration of registrationsRef.current) {
-        registration.cleanup();
-        registration.cleanup = registration.setup();
+        if (scope) {
+          setupRegistration(registration, scope);
+          continue;
+        }
+        cleanupRegistration(registration);
+        setupRegistration(registration, eventWindow);
       }
     });
   }, [open, eventWindow]);
@@ -243,12 +266,12 @@ function useEventOutside({
       }
       callListener(event);
     };
-    return registerFrameTreeListener(() =>
+    return registerFrameTreeListener((scope) =>
       addFrameTreeEventListener({
         type,
         listener: onEvent,
         options: capture,
-        scope: eventWindow,
+        scope,
       }),
     );
   }, [
@@ -345,8 +368,8 @@ export function useHideOnInteractOutside(
     if (!contentElement) return;
     if (!eventWindow) return;
     const contentWindow = getWindow(contentElement);
-    const clearTimers = new Set<() => void>();
-    const unregister = registerFrameTreeListener(() =>
+    const clearTimers = new Map<Window, () => void>();
+    const unregister = registerFrameTreeListener((scope) =>
       addGlobalWindowFocusListener((event, focusedWindow) => {
         if (
           event.target !== event.currentTarget &&
@@ -362,9 +385,10 @@ export function useHideOnInteractOutside(
           return;
         }
         if (!frameElement) return;
+        if (clearTimers.has(focusedWindow)) return;
         const focusInCount = focusInCountRef.current;
         const timer = eventWindow.setTimeout(() => {
-          clearTimers.delete(clearTimer);
+          clearTimers.delete(focusedWindow);
           if (!store.getState().open) return;
           // Focusable content inside a frame dispatches a native focusin
           // after the Window focus event. In that case, the native event
@@ -378,7 +402,9 @@ export function useHideOnInteractOutside(
               target: frameElement,
               contentElement,
               disclosureElement,
-              focused: focusedRef.current,
+              // A synchronously inserted frame may receive Window focus
+              // before its host is included in the dialog's tree snapshot.
+              focused: false,
             })
           ) {
             return;
@@ -386,12 +412,12 @@ export function useHideOnInteractOutside(
           hideOnFocusOutside(event, true);
         }, 0);
         const clearTimer = () => eventWindow.clearTimeout(timer);
-        clearTimers.add(clearTimer);
-      }, eventWindow),
+        clearTimers.set(focusedWindow, clearTimer);
+      }, scope),
     );
     return () => {
       unregister();
-      for (const clearTimer of clearTimers) {
+      for (const clearTimer of clearTimers.values()) {
         clearTimer();
       }
       clearTimers.clear();

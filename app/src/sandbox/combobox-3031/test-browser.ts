@@ -209,6 +209,30 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/3031
+  test("observes an iframe focused synchronously after insertion", async ({
+    page,
+    q,
+  }) => {
+    const outsideFrame = page.locator(
+      "iframe[title='Synchronously focused frame']",
+    );
+    await q.button("Open root dialog").click();
+
+    await q.button("Add and focus outside frame").click();
+
+    await test.expect(outsideFrame).toBeFocused();
+    await test.expect(q.dialog("Root dialog")).not.toBeVisible();
+    await test
+      .expect(
+        q.text(
+          "Root outside event: focus; trusted: true; " +
+            "current target: null; path: 0",
+        ),
+      )
+      .toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/3031
   test("observes an outside iframe after it navigates", async ({ page }) => {
     const frame = query(page.frameLocator("iframe[title='Embedded content']"));
     const navigatedFrame = query(
