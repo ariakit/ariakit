@@ -38,6 +38,17 @@ test("keeps the documented behavior after the dialog has been focused", async ()
   expect(q.dialog("Dialog")).toBeVisible();
 });
 
+test("keeps persistent elements inside after replacing the dialog node", async () => {
+  await click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toHaveProperty("tagName", "DIV");
+
+  await click(q.button("Replace dialog node"));
+  expect(q.dialog("Dialog")).toHaveProperty("tagName", "SECTION");
+  await click(q.textbox("Notification field"));
+
+  expect(q.dialog("Dialog")).toBeVisible();
+});
+
 test("still closes when interacting outside before the dialog is focused", async () => {
   await click(q.button("Open dialog"));
   expect(q.dialog("Dialog")).toBeVisible();

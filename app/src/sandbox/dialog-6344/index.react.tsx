@@ -14,6 +14,7 @@ import { useRef, useState } from "react";
 // the dialog open, as documented.
 export default function Example() {
   const [open, setOpen] = useState(false);
+  const [alternate, setAlternate] = useState(false);
   const notificationsRef = useRef<HTMLDivElement>(null);
 
   return (
@@ -34,6 +35,7 @@ export default function Example() {
           const notifications = notificationsRef.current;
           return notifications ? [notifications] : [];
         }}
+        render={alternate ? <section /> : <div />}
         className="flex w-72 flex-col items-start gap-3 rounded-lg border border-gray-300 bg-white p-4 shadow-lg"
       >
         <Ariakit.DialogHeading className="text-lg font-medium">
@@ -62,6 +64,13 @@ export default function Example() {
           placeholder="Notification field"
           className="rounded border border-gray-300 px-3 py-1"
         />
+        <button
+          type="button"
+          onClick={() => setAlternate((value) => !value)}
+          className="rounded border border-gray-300 px-3 py-1"
+        >
+          Replace dialog node
+        </button>
         <button
           type="button"
           className="rounded border border-gray-300 px-3 py-1"

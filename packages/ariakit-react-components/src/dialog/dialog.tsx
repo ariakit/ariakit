@@ -311,7 +311,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (!id) return;
     if (!canTakeTreeSnapshot) return;
     const { disclosureElement } = store.getState();
-    const dialog = ref.current;
+    const dialog = contentElement;
     if (!dialog) return;
     const persistentElements = getPersistentElementsProp() || [];
     const allElements = [
@@ -340,6 +340,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     id,
     store,
     canTakeTreeSnapshot,
+    contentElement,
     getPersistentElementsProp,
     nestedDialogs,
     modal,
