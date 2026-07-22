@@ -6,26 +6,26 @@ group: Advanced
 
 <div data-description>
 
-Read and render a single value from an Ariakit provider or store without adding any element of your own.
+Read and render a single Ariakit value from a provider, store, or item context without adding any element of your own.
 
 </div>
 
 <aside data-type="note" title="Component stores">
 
-Value components are a convenience built on top of [component stores](/guide/component-stores). If you need arbitrary store fields or a computed selector, reach for [`useStoreState`](/guide/component-stores#reading-the-state) instead.
+Many value components are a convenience built on top of [component stores](/guide/component-stores). Item-scoped value components read from the closest item's context instead. If you need arbitrary store fields or a computed selector, reach for [`useStoreState`](/guide/component-stores#reading-the-state).
 
 </aside>
 
 ## Overview
 
-A value component reads one specific value from a provider or an explicit store and renders it. Unlike most Ariakit components, it:
+A value component reads one specific value from a provider, an explicit store, or the closest item context and renders it. Unlike most Ariakit components, it:
 
-- reads a single value from the nearest provider or from an explicit `store` prop
+- reads a single value from the nearest provider, an explicit `store` prop, or the closest item context
 - adds no element of its own, though it may return text or arbitrary JSX
 - exposes the value directly or through a `children` render function
 - does not accept HTML props such as `className`, `style`, or `ref`, because it has no element to receive them
 
-The stable public value components are [`SelectValue`](/reference/select-value) and [`ComboboxValue`](/reference/combobox-value), both exported from `@ariakit/react`.
+The stable public value components are [`SelectValue`](/reference/select-value), [`ComboboxValue`](/reference/combobox-value), and [`SelectItemSelected`](/reference/select-item-selected), all exported from `@ariakit/react`.
 
 This pattern is not inherently uncontrolled. Value components work with both controlled and uncontrolled providers and stores. Their main benefit is exposing state close to the JSX that needs it, without creating or passing a store solely for that purpose.
 
@@ -63,6 +63,21 @@ Pass a function as `children` to transform the value before rendering it. The fu
 ```
 
 Returning the raw value isn't always useful. For example, a multi-select renders its values with no separators between them. Use a function child whenever the value needs formatting or custom UI.
+
+## Rendering item state
+
+Item-scoped value components read state from the closest item instead of the provider or store. For example, use [`SelectItemSelected`](/reference/select-item-selected) inside a [`SelectItem`](/reference/select-item) to render custom UI based on whether that item is selected:
+
+```jsx {2-4}
+<SelectItem value="Apple">
+  <SelectItemSelected>
+    {(selected) => (selected ? <CheckIcon /> : null)}
+  </SelectItemSelected>
+  Apple
+</SelectItem>
+```
+
+The `children` function is required because a raw boolean doesn't produce visible output in React. It receives the current selected state and re-runs whenever that state changes.
 
 <aside data-type="note" title="The render prop">
 
