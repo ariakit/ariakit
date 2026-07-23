@@ -55,4 +55,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await test.expect(popoverRenders).toHaveText(previousPopoverRenders);
     });
   }
+
+  // https://github.com/ariakit/ariakit/issues/3729
+  test("re-renders when the disclosure positioning fallback changes", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Toggle Fallback popover").click();
+    await test.expect(q.dialog()).toBeVisible();
+
+    await q.button("Set Fallback disclosure element").click();
+    await flushFrames(page);
+
+    const popoverRenders = q.status("Fallback popover renders");
+    const previousPopoverRenders = await popoverRenders.textContent();
+    if (previousPopoverRenders == null) {
+      throw new Error("Popover render count was not found");
+    }
+
+    await q.button("Set Fallback disclosure element").click();
+
+    await test.expect(popoverRenders).not.toHaveText(previousPopoverRenders);
+  });
 });

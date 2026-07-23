@@ -42,3 +42,17 @@ test.each([
   );
   expect(popoverRenders.textContent).toBe(previousPopoverRenders);
 });
+
+// https://github.com/ariakit/ariakit/issues/3729
+test("re-renders when the disclosure positioning fallback changes", async () => {
+  await click(q.button("Toggle Fallback popover"));
+  expect(q.dialog()).toBeVisible();
+
+  const popoverRenders = q.status.ensure("Fallback popover renders");
+  await click(q.button("Set Fallback disclosure element"));
+  const previousPopoverRenders = popoverRenders.textContent;
+
+  await click(q.button("Set Fallback disclosure element"));
+
+  expect(popoverRenders.textContent).not.toBe(previousPopoverRenders);
+});
