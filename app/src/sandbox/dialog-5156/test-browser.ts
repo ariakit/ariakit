@@ -13,6 +13,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // Escape-to-close keydown listener).
     await q.button("Show dialog").click();
     await test.expect(q.dialog("Dialog")).toBeVisible();
+    await test.expect(q.button("OK")).toBeFocused();
 
     // Some third-party code dispatches events whose target is a non-Node
     // EventTarget (such as window or an XMLHttpRequest). Those listeners used
@@ -36,6 +37,21 @@ withFramework(import.meta.dirname, async ({ test }) => {
       // Escape would close the dialog; its listener handles the target too.
       dispatch(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     });
+    // A foreign mousedown target can remain recorded until a standalone
+    // outside click occurs without replacing it.
+    await page.evaluate(() => {
+      const event = new MouseEvent("mousedown", { bubbles: true });
+      Object.defineProperty(event, "target", {
+        configurable: true,
+        value: new EventTarget(),
+      });
+      document.dispatchEvent(event);
+    });
+    await q
+      .button("Outside target")
+      .evaluate((button) =>
+        button.dispatchEvent(new MouseEvent("click", { bubbles: true })),
+      );
 
     // The dialog stays open: a foreign event is neither an interaction inside
     // nor a deliberate interaction outside. This await also gives any page

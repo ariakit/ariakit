@@ -1,5 +1,9 @@
 # @ariakit/utils
 
+## 0.1.5
+
+- Added a `warnOnce` utility that logs each warning once per message and optional object key. Thanks to [@ItaiYosephi](https://github.com/ItaiYosephi).
+
 ## 0.1.4
 
 - Added `getItemRoleByPopupRole` to `@ariakit/utils` for resolving item roles from popup role strings.

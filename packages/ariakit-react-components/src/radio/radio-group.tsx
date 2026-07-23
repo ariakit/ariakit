@@ -6,11 +6,17 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { invariant, isFocusEventOutside } from "@ariakit/utils";
+import {
+  disabledFromProps,
+  invariant,
+  isFocusEventOutside,
+} from "@ariakit/utils";
 import type { ElementType, FocusEvent } from "react";
+import { useContext } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import {
+  RadioGroupDisabledContext,
   RadioScopedContextProvider,
   useRadioProviderContext,
 } from "./radio-context.tsx";
@@ -55,6 +61,8 @@ export const useRadioGroup = createHook<TagName, RadioGroupOptions>(
   function useRadioGroup({ store, ...props }) {
     const context = useRadioProviderContext();
     store = store || context;
+    const parentDisabled = useContext(RadioGroupDisabledContext);
+    const disabled = parentDisabled || disabledFromProps(props);
 
     invariant(
       store,
@@ -66,10 +74,12 @@ export const useRadioGroup = createHook<TagName, RadioGroupOptions>(
       props,
       (element) => (
         <RadioScopedContextProvider value={store}>
-          {element}
+          <RadioGroupDisabledContext.Provider value={disabled}>
+            {element}
+          </RadioGroupDisabledContext.Provider>
         </RadioScopedContextProvider>
       ),
-      [store],
+      [store, disabled],
     );
 
     const onBlurCaptureProp = props.onBlurCapture;
@@ -85,6 +95,7 @@ export const useRadioGroup = createHook<TagName, RadioGroupOptions>(
     props = {
       role: "radiogroup",
       ...props,
+      "aria-disabled": disabled || undefined,
       onBlurCapture,
     };
 
@@ -118,6 +129,12 @@ export const RadioGroup = forwardRef(function RadioGroup(
 export interface RadioGroupOptions<
   T extends ElementType = TagName,
 > extends CompositeOptions<T> {
+  /**
+   * Determines if the radio group and its descendant
+   * [`Radio`](https://ariakit.com/reference/radio) components are disabled.
+   * @default false
+   */
+  disabled?: boolean;
   /**
    * Object returned by the
    * [`useRadioStore`](https://ariakit.com/reference/use-radio-store) hook. If

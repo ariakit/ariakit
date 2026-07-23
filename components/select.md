@@ -49,6 +49,7 @@ useSelectContext()
         <SelectRow>
           <SelectItem>
             <SelectItemCheck />
+            <SelectItemSelected />
           </SelectItem>
           <SelectSeparator />
         </SelectRow>

@@ -6,6 +6,7 @@ if (process.argv.includes("--headed")) {
 
 const CI = !!process.env.CI;
 const HEADED = process.env.PWHEADED === "true";
+const slowMo = HEADED ? 150 : undefined;
 const PERF = process.env.PERF_TEST === "true";
 const port = Number(process.env.APP_PORT) || 4321;
 const nextjsPort = Number(process.env.NEXTJS_PORT) || 3000;
@@ -51,13 +52,13 @@ export default defineConfig({
         NEXTJS_PORT: String(nextjsPort),
       },
       reuseExistingServer: !CI,
-      stdout: CI ? "pipe" : "ignore",
+      stdout: "ignore",
       port,
     },
     {
       command: `pnpm -F nextjs exec opennextjs-cloudflare preview --port ${nextjsPort}${inspectorPortArg(nextjsInspectorPort)}`,
       reuseExistingServer: !CI,
-      stdout: CI ? "pipe" : "ignore",
+      stdout: "ignore",
       port: nextjsPort,
     },
   ],
@@ -66,7 +67,7 @@ export default defineConfig({
     screenshot: "only-on-failure",
     trace: "on-first-retry",
     launchOptions: {
-      slowMo: HEADED ? 150 : undefined,
+      slowMo,
     },
   },
   expect: {
@@ -126,7 +127,16 @@ export default defineConfig({
         {
           name: "safari",
           testMatch: testMatchersFor("safari", "browser"),
-          use: devices["Desktop Safari"],
+          use: {
+            ...devices["Desktop Safari"],
+            launchOptions: {
+              slowMo,
+              // Healthy macOS CI launches complete initial page setup within
+              // 24 seconds; fail a wedged WebKit process without waiting for
+              // Playwright's three-minute default.
+              timeout: CI ? 45_000 : undefined,
+            },
+          },
           retries: CI ? 3 : 1,
         },
         {

@@ -6,7 +6,12 @@ export type Elements = Array<Element | null>;
 export type Cleanups = Array<() => void>;
 export type Ids = Array<string | undefined>;
 
-type MarkKind = "outside" | "ancestor" | "inside";
+type MarkKind = "outside" | "ancestor";
+
+// DOM IDs are only unique within a tree, so keying by the dialog element keeps
+// same-ID dialogs in separate roots isolated. Weak collections also avoid
+// retaining or mutating nodes used only for interaction membership.
+const insideElements = new WeakMap<Element, WeakSet<Element>>();
 
 function getPropertyName(id = "", kind: MarkKind = "outside") {
   return `__ariakit-dialog-${kind}${id ? `-${id}` : ""}` as keyof Element;
@@ -26,23 +31,29 @@ export function markAncestor(element: Element, id = "") {
   );
 }
 
-// Marks elements the dialog knows about at open time (the dialog itself,
-// persistent elements, and nested dialogs), so the outside event listeners
-// can positively recognize them as "inside" regardless of whether the dialog
-// has been focused yet. See https://github.com/ariakit/ariakit/issues/6344
-export function markTreeInside(id: string, elements: Elements) {
-  return chain(
-    ...elements.map((element) => {
-      if (!element) return undefined;
-      return setProperty(element, getPropertyName(id, "inside"), true);
-    }),
-  );
+/**
+ * Marks elements the dialog knows about at open time (the dialog itself,
+ * persistent elements, and nested dialogs), so outside event listeners can
+ * recognize them as inside before the dialog has been focused.
+ * @see https://github.com/ariakit/ariakit/issues/6344
+ */
+export function markTreeInside(dialog: Element, elements: Elements) {
+  const marker = new WeakSet<Element>();
+  insideElements.set(dialog, marker);
+  for (const element of elements) {
+    if (element) marker.add(element);
+  }
+  return () => {
+    if (insideElements.get(dialog) !== marker) return;
+    insideElements.delete(dialog);
+  };
 }
 
-export function isElementInside(element: Element, id: string) {
-  const propertyName = getPropertyName(id, "inside");
+export function isElementInside(element: Element, dialog: Element) {
+  const marker = insideElements.get(dialog);
+  if (!marker) return false;
   do {
-    if (element[propertyName]) return true;
+    if (marker.has(element)) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
     // oxlint-disable-next-line no-constant-condition

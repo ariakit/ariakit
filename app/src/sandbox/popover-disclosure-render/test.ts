@@ -1,11 +1,11 @@
 import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// The preserveTabOrder feature, the only consumer of the disclosure element
-// in the popover, takes effect only on non-modal portals, so disclosure
-// element updates must not re-render a modal popover, a plain non-portaled
-// popover, or a portal with preserveTabOrder disabled. Browser duplicate in
-// test-browser.ts.
+// Each popover has an explicit anchor, so the disclosure element isn't used
+// for positioning. The preserveTabOrder feature, its remaining consumer,
+// takes effect only on non-modal portals, so disclosure element updates must
+// not re-render a modal popover, a plain non-portaled popover, or a portal with
+// preserveTabOrder disabled. Browser duplicate in test-browser.ts.
 test.each([
   {
     label: "Modal",
@@ -41,4 +41,18 @@ test.each([
     previousDisclosureElementRenders,
   );
   expect(popoverRenders.textContent).toBe(previousPopoverRenders);
+});
+
+// https://github.com/ariakit/ariakit/issues/3729
+test("re-renders when the disclosure positioning fallback changes", async () => {
+  await click(q.button("Toggle Fallback popover"));
+  expect(q.dialog()).toBeVisible();
+
+  const popoverRenders = q.status.ensure("Fallback popover renders");
+  await click(q.button("Set Fallback disclosure element"));
+  const previousPopoverRenders = popoverRenders.textContent;
+
+  await click(q.button("Set Fallback disclosure element"));
+
+  expect(popoverRenders.textContent).not.toBe(previousPopoverRenders);
 });

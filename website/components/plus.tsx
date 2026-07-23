@@ -371,9 +371,7 @@ export function PlusCheckoutFrame(props: PlusCheckoutFrameProps) {
 
     processClientSecret();
     return () => {
-      try {
-        controller.abort();
-      } catch {}
+      controller.abort();
       controller.signal.removeEventListener("abort", onAbort);
     };
   }, [userId, priceId, redirectUrl]);

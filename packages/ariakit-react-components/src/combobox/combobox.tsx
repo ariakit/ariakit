@@ -6,8 +6,10 @@ import {
   useId,
   useMergeRefs,
   useSafeLayoutEffect,
+  useTransactionState,
   useUpdateEffect,
   useUpdateLayoutEffect,
+  useWrapElement,
   createElement,
   createHook,
   forwardRef,
@@ -15,6 +17,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
+  disabledFromProps,
   getPopupRole,
   getScrollingElement,
   getTextboxSelection,
@@ -42,8 +45,6 @@ import type {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
-import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
-import { usePopoverAnchor } from "../popover/popover-anchor.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
@@ -133,6 +134,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     setValueOnClick = true,
     moveOnKeyPress = true,
     autoComplete = "list",
+    name,
+    form,
+    disabled,
     ...props
   }) {
     const context = useComboboxProviderContext();
@@ -179,6 +183,12 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     }, [inline]);
 
     const storeValue = useStoreState(store, "value");
+    const selectedValue = useStoreState(store, ["selectedValue"], (state) => {
+      if (!name) return;
+      if (!Array.isArray(state.selectedValue)) return;
+      return state.selectedValue;
+    });
+    const multiSelectable = Array.isArray(selectedValue);
 
     // Keep track of the previous selected values so we can set the
     // inlineActiveValue below only when the current activeValue isn't already
@@ -687,7 +697,47 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       (state) => state.activeId === null,
     );
 
-    props = {
+    const formDisabled = disabledFromProps({
+      disabled,
+      "aria-disabled": props["aria-disabled"],
+    });
+
+    const composite = props.composite !== false;
+    const [, setBaseElement] = useTransactionState(
+      composite ? null : store.setBaseElement,
+    );
+    const baseElement = useStoreState(
+      store,
+      multiSelectable ? ["baseElement"] : [],
+      (state) => (multiSelectable ? state.baseElement : null),
+    );
+
+    props = useWrapElement(
+      props,
+      (element) => {
+        if (!name) return element;
+        if (!Array.isArray(selectedValue)) return element;
+        if (composite && !baseElement) return element;
+        return (
+          <>
+            {element}
+            {selectedValue.map((value, index) => (
+              <input
+                key={index}
+                type="hidden"
+                name={name}
+                form={form}
+                disabled={formDisabled}
+                value={value}
+              />
+            ))}
+          </>
+        );
+      },
+      [name, form, formDisabled, composite, baseElement, selectedValue],
+    );
+
+    const htmlProps = {
       role: "combobox",
       "aria-autocomplete": ariaAutoComplete,
       "aria-haspopup": getPopupRole(contentElement, "listbox"),
@@ -697,7 +747,10 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       value,
       ...props,
       id,
-      ref: useMergeRefs(ref, props.ref),
+      name: multiSelectable ? undefined : name,
+      form,
+      disabled,
+      ref: useMergeRefs(ref, composite ? undefined : setBaseElement, props.ref),
       onChange,
       onCompositionStart,
       onCompositionEnd,
@@ -705,6 +758,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       onKeyDown,
       onBlur,
     };
+    props = htmlProps;
 
     props = useComposite<TagName>({
       store,
@@ -718,8 +772,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         return true;
       },
     });
-
-    props = usePopoverAnchor<TagName>({ store, ...props });
 
     return { autoComplete: "off", ...props };
   },
@@ -745,8 +797,9 @@ export const Combobox = forwardRef(function Combobox(props: ComboboxProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>, PopoverAnchorOptions<T> {
+export interface ComboboxOptions<
+  T extends ElementType = TagName,
+> extends CompositeOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)

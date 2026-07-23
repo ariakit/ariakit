@@ -5,6 +5,7 @@ import {
   useForceUpdate,
   useId,
   useMergeRefs,
+  useSafeLayoutEffect,
   useWrapElement,
   createElement,
   forwardRef,
@@ -14,6 +15,7 @@ import {
   getScrollingElement,
   getWindow,
   invariant,
+  isElement,
   shallowEqual,
 } from "@ariakit/utils";
 import type { AnyObject, BooleanOrCallback, EmptyObject } from "@ariakit/utils";
@@ -118,11 +120,15 @@ interface CollectionRendererContextValue {
   store: CollectionRendererOptions["store"];
   orientation: CollectionRendererOptions["orientation"];
   overscan: CollectionRendererOptions["overscan"];
+  scroller?: Element | null;
+  scrollerRef?: RefObject<Element | null>;
+  scrollerController?: ScrollerController;
   childrenData: Map<string, Data>;
 }
 
 const CollectionRendererContext =
   createContext<CollectionRendererContextValue | null>(null);
+const nullScrollerRef: RefObject<Element | null> = { current: null };
 
 function createTask() {
   let raf = 0;
@@ -293,16 +299,122 @@ function getViewport(scroller: Element) {
   return scroller;
 }
 
-function useScroller(rendererRef: RefObject<HTMLElement | null> | null) {
+function getScrollElement(
+  renderer: HTMLElement,
+  scrollElement: CollectionRendererOptions["scrollElement"],
+): Element | null {
+  if (scrollElement === undefined) {
+    return getScrollingElement(renderer);
+  }
+  if (typeof scrollElement === "function") {
+    return scrollElement(renderer);
+  }
+  const element = scrollElement as HTMLElement | null | undefined;
+  if (isElement(element)) {
+    return element;
+  }
+  if (scrollElement && "current" in scrollElement) {
+    return scrollElement.current;
+  }
+  return scrollElement;
+}
+
+function resolveNullScroller() {
+  return null;
+}
+
+interface ScrollerController {
+  revalidated: boolean;
+  resolve: () => Element | null;
+  revalidate: () => void;
+}
+
+function useScroller(
+  rendererRef: RefObject<HTMLElement | null> | null,
+  scrollElement: CollectionRendererOptions["scrollElement"],
+  inheritedController?: ScrollerController,
+) {
   const [scroller, setScroller] = useState<Element | null>(null);
-  useEffect(() => {
+  const scrollerRef = useRef<Element | null>(null);
+  const publishedScrollerRef = useRef<Element | null>(null);
+  const controllerRef = useRef<ScrollerController | null>(null);
+  const autoResolved = useRef(false);
+  const previousRendererRef = useRef(rendererRef);
+  const resolveScroller = () => {
     const renderer = rendererRef?.current;
-    if (!renderer) return;
-    const scroller = getScrollingElement(renderer);
-    if (!scroller) return;
-    setScroller(scroller);
-  }, [rendererRef]);
-  return scroller;
+    if (!renderer) return null;
+    return getScrollElement(renderer, scrollElement);
+  };
+  let controller = controllerRef.current;
+  if (!controller && scrollElement !== undefined) {
+    const nextController: ScrollerController = {
+      revalidated: false,
+      resolve: resolveNullScroller,
+      revalidate: () => {
+        if (nextController.revalidated) return;
+        nextController.revalidated = true;
+        const nextScroller = nextController.resolve();
+        scrollerRef.current = nextScroller;
+        if (nextScroller === publishedScrollerRef.current) return;
+        publishedScrollerRef.current = nextScroller;
+        setScroller(nextScroller);
+      },
+    };
+    controllerRef.current = nextController;
+    controller = nextController;
+  }
+  // Explicit refs and resolvers can change without their prop identity
+  // changing, so resolve them during each committed layout.
+  // oxlint-disable-next-line exhaustive-deps
+  useSafeLayoutEffect(() => {
+    if (inheritedController) {
+      inheritedController.revalidated = false;
+    }
+    if (scrollElement === undefined) {
+      if (controller) {
+        controller.revalidated = true;
+        controller.resolve = resolveNullScroller;
+      }
+      publishedScrollerRef.current = null;
+      controllerRef.current = null;
+      return;
+    }
+    if (!controller) return;
+    publishedScrollerRef.current = scroller;
+    controller.revalidated = false;
+    controller.resolve = resolveScroller;
+    scrollerRef.current = resolveScroller();
+  });
+  // Keep state synchronization and automatic ancestor detection off the
+  // layout path.
+  // oxlint-disable-next-line exhaustive-deps
+  useEffect(() => {
+    if (scrollElement === undefined) {
+      inheritedController?.revalidate();
+      if (previousRendererRef.current !== rendererRef) {
+        previousRendererRef.current = rendererRef;
+        autoResolved.current = false;
+      }
+      const renderer = rendererRef?.current;
+      if (!renderer) {
+        autoResolved.current = false;
+        scrollerRef.current = null;
+      } else if (!autoResolved.current) {
+        scrollerRef.current = getScrollElement(renderer, scrollElement);
+        autoResolved.current = true;
+      }
+    } else {
+      autoResolved.current = false;
+      // Ancestor refs attach after descendant layout effects, so resolve the
+      // explicit target again once the entire layout phase has completed.
+      controller?.revalidate();
+      return;
+    }
+    const nextScroller = scrollerRef.current;
+    if (nextScroller === scroller) return;
+    setScroller(nextScroller);
+  });
+  return [scroller, scrollerRef, controller] as const;
 }
 
 function getRendererOffset(
@@ -439,6 +551,7 @@ export function useCollectionRenderer<T extends Item = any>({
   paddingStart = padding,
   paddingEnd = padding,
   persistentIndices,
+  scrollElement: scrollElementProp,
   renderOnScroll = true,
   renderOnResize = !!renderOnScroll,
   children: renderItem,
@@ -465,6 +578,12 @@ export function useCollectionRenderer<T extends Item = any>({
   const parentData = parent?.childrenData;
   const orientation = orientationProp ?? parent?.orientation ?? "vertical";
   const overscan = overscanProp ?? parent?.overscan ?? 1;
+  const inheritedScroller =
+    scrollElementProp === undefined ? parent?.scroller : undefined;
+  const inheritedScrollerRef =
+    scrollElementProp === undefined ? parent?.scrollerRef : undefined;
+  const inheritedScrollerController =
+    scrollElementProp === undefined ? parent?.scrollerController : undefined;
 
   const ref = useRef<HTMLType>(null);
   const baseId = useId(props.id);
@@ -562,12 +681,39 @@ export function useCollectionRenderer<T extends Item = any>({
     }
   }, [elementsUpdated, itemSize, baseId, items, data, computeData]);
 
-  const scroller = useScroller(items ? ref : null);
+  const [ownScroller, ownScrollerRef, ownScrollerController] = useScroller(
+    items && inheritedScroller === undefined ? ref : null,
+    scrollElementProp,
+    inheritedScrollerController,
+  );
+  const scroller =
+    scrollElementProp === null
+      ? null
+      : inheritedScroller === undefined
+        ? ownScroller
+        : inheritedScroller;
+  const scrollerRef =
+    scrollElementProp === null
+      ? nullScrollerRef
+      : inheritedScrollerRef === undefined
+        ? ownScrollerRef
+        : inheritedScrollerRef;
+  const scrollerController =
+    scrollElementProp === undefined
+      ? inheritedScrollerController
+      : scrollElementProp === null
+        ? undefined
+        : (ownScrollerController ?? undefined);
   const offsetsRef = useRef({ start: 0, end: 0 });
 
   const processVisibleIndices = useCallback(() => {
     const offsets = offsetsRef.current;
 
+    // Ref and resolver targets can change during commit. Skip passive work
+    // from the previous scroller until the resolved value reaches context.
+    scrollerController?.revalidate();
+    if (scrollerRef.current !== scroller) return;
+    if (!scroller) return;
     if (!items) return;
     if (!baseId) return;
     if (!offsets.end) return;
@@ -610,6 +756,9 @@ export function useCollectionRenderer<T extends Item = any>({
     // oxlint-disable-next-line exhaustive-deps
   }, [
     elementsUpdated,
+    scroller,
+    scrollerRef,
+    scrollerController,
     items,
     baseId,
     data,
@@ -856,9 +1005,29 @@ export function useCollectionRenderer<T extends Item = any>({
   );
 
   const childrenData = useMemo(() => new Map<string, Data>(), []);
+  const contextScroller =
+    scrollElementProp === undefined ? inheritedScroller : scroller;
+  const contextScrollerRef =
+    scrollElementProp === undefined ? inheritedScrollerRef : scrollerRef;
   const providerValue: CollectionRendererContextValue = useMemo(
-    () => ({ store, orientation, overscan, childrenData }),
-    [store, orientation, overscan, childrenData],
+    () => ({
+      store,
+      orientation,
+      overscan,
+      scroller: contextScroller,
+      scrollerRef: contextScrollerRef,
+      scrollerController,
+      childrenData,
+    }),
+    [
+      store,
+      orientation,
+      overscan,
+      contextScroller,
+      contextScrollerRef,
+      scrollerController,
+      childrenData,
+    ],
   );
 
   props = useWrapElement(
@@ -949,14 +1118,30 @@ export interface CollectionRendererOptions<
    */
   items?: Items<T>;
   /**
-   * Whether the items should be rendered when the closest scrollable ancestor
-   * is scrolled.
+   * The element whose viewport determines which items are rendered. By
+   * default, the closest scrolling ancestor is used.
+   *
+   * The element must be a scrolling ancestor in the same document. If a
+   * function is provided, it will be called with the renderer element as an
+   * argument. Explicit values are inherited by nested renderers using the same
+   * store unless they provide their own. If neither this renderer nor a
+   * same-store ancestor provides a value, the renderer detects its closest
+   * scrolling ancestor.
+   *
+   * Viewport-driven rendering is disabled while this value resolves to `null`.
+   */
+  scrollElement?:
+    | HTMLElement
+    | RefObject<HTMLElement | null>
+    | ((renderer: HTMLElement) => HTMLElement | null)
+    | null;
+  /**
+   * Whether the items should be rendered when the scroll element is scrolled.
    * @default true
    */
   renderOnScroll?: BooleanOrCallback<Event>;
   /**
-   * Whether the items should be rendered when the closest scrollable ancestor
-   * is resized.
+   * Whether the items should be rendered when the scroll element is resized.
    * @default true
    */
   renderOnResize?: BooleanOrCallback<Element>;

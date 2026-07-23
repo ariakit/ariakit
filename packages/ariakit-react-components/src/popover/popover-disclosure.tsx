@@ -1,5 +1,4 @@
 import {
-  useEvent,
   useWrapElement,
   createElement,
   createHook,
@@ -7,20 +6,18 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
-import type { ElementType, MouseEvent } from "react";
+import type { ElementType } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
-import type { PopoverAnchorOptions } from "./popover-anchor.tsx";
-import { usePopoverAnchor } from "./popover-anchor.tsx";
 import {
   PopoverScopedContextProvider,
   usePopoverProviderContext,
 } from "./popover-context.tsx";
+import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
-type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `PopoverDisclosure` component.
@@ -46,13 +43,6 @@ export const usePopoverDisclosure = createHook<
       "PopoverDisclosure must receive a `store` prop or be wrapped in a PopoverProvider component.",
   );
 
-  const onClickProp = props.onClick;
-
-  const onClick = useEvent((event: MouseEvent<HTMLType>) => {
-    store?.setAnchorElement(event.currentTarget);
-    onClickProp?.(event);
-  });
-
   props = useWrapElement(
     props,
     (element) => (
@@ -63,12 +53,6 @@ export const usePopoverDisclosure = createHook<
     [store],
   );
 
-  props = {
-    ...props,
-    onClick,
-  };
-
-  props = usePopoverAnchor<TagName>({ store, ...props });
   props = useDialogDisclosure({ store, ...props });
 
   return props;
@@ -93,8 +77,18 @@ export const PopoverDisclosure = forwardRef(function PopoverDisclosure(
   return createElement(TagName, htmlProps);
 });
 
-export interface PopoverDisclosureOptions<T extends ElementType = TagName>
-  extends PopoverAnchorOptions<T>, Omit<DialogDisclosureOptions<T>, "store"> {}
+export interface PopoverDisclosureOptions<
+  T extends ElementType = TagName,
+> extends Omit<DialogDisclosureOptions<T>, "store"> {
+  /**
+   * Object returned by the
+   * [`usePopoverStore`](https://ariakit.com/reference/use-popover-store) hook.
+   * If not provided, the closest
+   * [`PopoverProvider`](https://ariakit.com/reference/popover-provider)
+   * component's context will be used.
+   */
+  store?: PopoverStore;
+}
 
 export type PopoverDisclosureProps<T extends ElementType = TagName> = Props<
   T,

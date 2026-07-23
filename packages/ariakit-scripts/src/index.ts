@@ -3,7 +3,6 @@
 import { program } from "commander";
 import { build, clean } from "./build.ts";
 import { dev } from "./dev.ts";
-import { runWithOpEnv } from "./op-env.ts";
 import { react18 } from "./react18.ts";
 
 program.name("ariakit");
@@ -40,14 +39,6 @@ program
   .action(dev);
 
 program
-  .command("op-env")
-  .description("Run a command with a 1Password Environment")
-  .argument("[command...]", "Root script or command to run")
-  .allowUnknownOption()
-  .helpOption(false)
-  .action(runWithOpEnv);
-
-program
   .command("docs")
   .description("Generate API markdown from TypeScript JSDoc")
   .option("--entry <path>", "Entry file path", "src/index.ts")
@@ -67,8 +58,11 @@ program
 
 program
   .command("react18")
-  .description("Run a command in an isolated React 18 workspace")
-  .argument("[command...]", "Root script or command to run")
+  .description(
+    "Run `ariakit react18 -- <command>` in an isolated React 18 workspace",
+  )
+  .usage("-- <command> [args...]")
+  .argument("[command...]", "Command and arguments following `--`")
   .allowUnknownOption()
   .helpOption(false)
   .action(react18);
@@ -95,9 +89,4 @@ program
     checkNodeBenchmarkResults(file, expectedCount);
   });
 
-try {
-  await program.parseAsync();
-} catch (error) {
-  console.error(error);
-  process.exitCode = 1;
-}
+await program.parseAsync();

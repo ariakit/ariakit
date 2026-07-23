@@ -20,7 +20,7 @@ import {
 } from "@ariakit/ui/styles/tabs.ts";
 import { invariant } from "@ariakit/utils";
 import { clsx } from "clsx";
-import { SplitSquareHorizontal } from "lucide-react";
+import { SquareSplitHorizontal } from "lucide-react";
 import * as React from "react";
 import useLocalStorageState from "use-local-storage-state";
 import { Icon } from "#app/icons/icon.react.tsx";
@@ -798,7 +798,7 @@ export function CodeBlockTabs({
                       wide ? "@max-lg:hidden" : "hidden",
                     )}
                   >
-                    <SplitSquareHorizontal className="size-4" />
+                    <SquareSplitHorizontal className="size-4" />
                     <span className="@max-lg:sr-only flex gap-2 items-center">
                       Code{" "}
                       <span

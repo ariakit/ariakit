@@ -1,5 +1,9 @@
 # @ariakit/test
 
+## 0.7.2
+
+- Updated dependencies: `@ariakit/utils@0.1.5`
+
 ## 0.7.1
 
 - Added `rightClick` to simulate secondary mouse clicks in tests.
