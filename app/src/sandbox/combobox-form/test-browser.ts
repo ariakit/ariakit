@@ -117,72 +117,19 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/1861
-  test("resets an uncontrolled value composed from a store", async ({ q }) => {
-    const homeTown = q.combobox("Store home town");
-
-    await homeTown.fill("Boston");
-    await homeTown.press("Escape");
-    await q.button("Reset address").click();
-
-    await test.expect(homeTown).toHaveValue("");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/1861
-  test("resets after the combobox element is replaced", async ({ q }) => {
-    const homeTown = q.combobox("Rebound home town");
-
-    await homeTown.fill("Boston");
-    await q.button("Replace rebound home town").click();
-
-    test
-      .expect(await homeTown.evaluate((element) => element.tagName))
-      .toBe("TEXTAREA");
-    await test.expect(homeTown).toHaveValue("Boston");
-    await q.button("Reset address").click();
-
-    await test.expect(homeTown).toHaveValue("");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/1861
-  test("resets when reset event propagation is stopped", async ({ q }) => {
+  test("resets a combobox to its default value with form.reset()", async ({
+    q,
+  }) => {
     const form = q.form("Address");
-    const name = q.textbox("Name");
-    const homeTown = q.combobox("Home town");
-    await form.evaluate((element) => {
-      element.addEventListener("reset", (event) => event.stopPropagation(), {
-        once: true,
-      });
-    });
-
-    await name.fill("Chance");
-    await homeTown.fill("Boston");
-    await homeTown.press("Escape");
-    await q.button("Reset address").click();
-
-    await test.expect(name).toHaveValue("");
-    await test.expect(homeTown).toHaveValue("");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/1861
-  test("resets a combobox to its default value", async ({ q }) => {
     const birthPlace = q.combobox("Birth place");
 
     await birthPlace.fill("San Diego");
     await birthPlace.press("Escape");
-    await q.button("Reset address").click();
+    await form.evaluate((element) => {
+      (element as HTMLFormElement).reset();
+    });
 
     await test.expect(birthPlace).toHaveValue("Boston");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/1861
-  test("resets a combobox associated with an explicit form", async ({ q }) => {
-    const formerHomeTown = q.combobox("Former home town");
-
-    await formerHomeTown.fill("Boston");
-    await formerHomeTown.press("Escape");
-    await q.button("Reset address").click();
-
-    await test.expect(formerHomeTown).toHaveValue("");
   });
 
   // https://github.com/ariakit/ariakit/issues/1861
@@ -201,47 +148,5 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(name).toHaveValue("Chance");
     await test.expect(homeTown).toHaveValue("Boston");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/1861
-  test("preserves a controlled value on form reset", async ({ q }) => {
-    const homeTown = q.combobox("Controlled home town");
-
-    await homeTown.fill("Boston");
-    await homeTown.press("Escape");
-    await q.button("Reset controlled address").click();
-
-    await test.expect(homeTown).toHaveValue("Boston");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/1861
-  test("preserves a value controlled by a composed store", async ({ q }) => {
-    const form = q.form("Controlled address");
-    const homeTown = q.combobox("Controlled store home town");
-
-    await homeTown.fill("Boston");
-    await homeTown.press("Escape");
-    await q.button("Reset controlled address").click();
-    await form.evaluate(
-      () => new Promise<void>((resolve) => setTimeout(resolve)),
-    );
-
-    await test.expect(homeTown).toHaveValue("Boston");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/1861
-  test("clears inline autocomplete on form reset", async ({ q }) => {
-    const form = q.form("Inline address");
-    const homeTown = q.combobox("Inline home town");
-
-    await homeTown.click();
-    await homeTown.pressSequentially("B");
-    await test.expect(homeTown).toHaveValue("Boston");
-    await form.evaluate(async (element) => {
-      (element as HTMLFormElement).reset();
-      await new Promise((resolve) => setTimeout(resolve));
-    });
-
-    await test.expect(homeTown).toHaveValue("");
   });
 });

@@ -41,12 +41,11 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   SyntheticEvent,
 } from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
 import { usePopoverAnchor } from "../popover/popover-anchor.tsx";
-import { isComboboxValueControlled } from "./__combobox-controlled.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
@@ -151,7 +150,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     );
 
     const ref = useRef<HTMLType>(null);
-    const resetCleanupRef = useRef(noop);
     const [valueUpdated, forceValueUpdate] = useForceUpdate();
     const canAutoSelectRef = useRef(false);
     const composingRef = useRef(false);
@@ -178,44 +176,17 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     // control this state here.
     const [canInline, setCanInline] = useState(inline);
 
-    const resetElementRef = useCallback(
-      (element: HTMLType | null) => {
-        resetCleanupRef.current();
-        resetCleanupRef.current = noop;
-        if (!element) return;
-        if (!element.form && !form) return;
-        const root = element.getRootNode();
-        const eventTarget =
-          root.nodeType === Node.DOCUMENT_NODE
-            ? ((root as Document).defaultView ?? root)
-            : root;
-        let active = true;
-        const onReset = (event: Event) => {
-          const ownerForm = element.form;
-          if (!ownerForm) return;
-          if (event.target !== ownerForm) return;
-          // dispatchEvent() alone isn't a portable form reset operation.
-          if (Object.is(event.isTrusted, false)) return;
-          const value = store.getState().value;
-          // Wait until propagation is complete so canceled resets are ignored.
-          setTimeout(() => {
-            if (!active) return;
-            if (event.defaultPrevented) return;
-            if (element.form !== ownerForm) return;
-            if (store.getState().value !== value) return;
-            if (isComboboxValueControlled(store)) return;
-            setCanInline(false);
-            store.resetValue();
-          });
-        };
-        eventTarget.addEventListener("reset", onReset, true);
-        resetCleanupRef.current = () => {
-          active = false;
-          eventTarget.removeEventListener("reset", onReset, true);
-        };
-      },
-      [form, store],
-    );
+    useEffect(() => {
+      const root = ref.current?.getRootNode();
+      if (!root) return;
+      const onReset = (event: Event) => {
+        if (event.defaultPrevented) return;
+        if (event.target !== ref.current?.form) return;
+        store.resetValue();
+      };
+      root.addEventListener("reset", onReset);
+      return () => root.removeEventListener("reset", onReset);
+    }, [store]);
 
     // If the inline autocomplete is enabled in a update, we need to update the
     // canInline state to reflect this. TODO: Try derived state.
@@ -268,13 +239,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 
     const items = useStoreState(store, "renderedItems");
     const open = useStoreState(store, "open");
-
-    useUpdateLayoutEffect(() => {
-      if (!inline) return;
-      if (!open) return;
-      setCanInline(true);
-    }, [inline, open]);
-
     const contentElement = useStoreState(store, "contentElement");
 
     // The current input value may differ from state.value when
@@ -796,7 +760,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       name: multiSelectable ? undefined : name,
       form,
       disabled,
-      ref: useMergeRefs(ref, resetElementRef, props.ref),
+      ref: useMergeRefs(ref, props.ref),
       onChange,
       onCompositionStart,
       onCompositionEnd,

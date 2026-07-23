@@ -11,14 +11,6 @@ const fruits = [
 export default function Example() {
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
   const [submittedValues, setSubmittedValues] = useState<string[] | null>(null);
-  const [reboundTextarea, setReboundTextarea] = useState(false);
-  const [controlledHomeTown, setControlledHomeTown] = useState("");
-  const [controlledStoreHomeTown, setControlledStoreHomeTown] = useState("");
-  const uncontrolledStore = Ariakit.useComboboxStore();
-  const controlledStore = Ariakit.useComboboxStore({
-    value: controlledStoreHomeTown,
-    setValue: setControlledStoreHomeTown,
-  });
 
   return (
     <>
@@ -72,31 +64,8 @@ export default function Example() {
             <Ariakit.ComboboxItem value="San Diego" />
           </Ariakit.ComboboxPopover>
         </Ariakit.ComboboxProvider>
-        <Ariakit.ComboboxProvider>
-          <Ariakit.ComboboxLabel>Rebound home town</Ariakit.ComboboxLabel>
-          <Ariakit.Combobox
-            name="reboundHomeTown"
-            render={reboundTextarea ? <textarea /> : <input />}
-          />
-        </Ariakit.ComboboxProvider>
-        <Ariakit.ComboboxProvider store={uncontrolledStore}>
-          <Ariakit.ComboboxLabel>Store home town</Ariakit.ComboboxLabel>
-          <Ariakit.Combobox name="storeHomeTown" />
-        </Ariakit.ComboboxProvider>
-        <button type="button" onClick={() => setReboundTextarea(true)}>
-          Replace rebound home town
-        </button>
         <button type="reset">Reset address</button>
       </form>
-
-      <Ariakit.ComboboxProvider>
-        <Ariakit.ComboboxLabel>Former home town</Ariakit.ComboboxLabel>
-        <Ariakit.Combobox name="formerHomeTown" form="address" />
-        <Ariakit.ComboboxPopover>
-          <Ariakit.ComboboxItem value="Boston" />
-          <Ariakit.ComboboxItem value="San Diego" />
-        </Ariakit.ComboboxPopover>
-      </Ariakit.ComboboxProvider>
 
       <form
         aria-label="Canceled address"
@@ -115,49 +84,6 @@ export default function Example() {
           </Ariakit.ComboboxPopover>
         </Ariakit.ComboboxProvider>
         <button type="reset">Cancel address reset</button>
-      </form>
-
-      <form aria-label="Controlled address">
-        <Ariakit.ComboboxProvider
-          value={controlledHomeTown}
-          setValue={setControlledHomeTown}
-        >
-          <Ariakit.ComboboxLabel>Controlled home town</Ariakit.ComboboxLabel>
-          <Ariakit.Combobox name="controlledHomeTown" />
-          <Ariakit.ComboboxPopover>
-            <Ariakit.ComboboxItem value="Boston" />
-            <Ariakit.ComboboxItem value="San Diego" />
-          </Ariakit.ComboboxPopover>
-        </Ariakit.ComboboxProvider>
-        <Ariakit.ComboboxProvider store={controlledStore}>
-          <Ariakit.ComboboxLabel>
-            Controlled store home town
-          </Ariakit.ComboboxLabel>
-          <Ariakit.Combobox name="controlledStoreHomeTown" />
-          <Ariakit.ComboboxPopover>
-            <Ariakit.ComboboxItem value="Boston" />
-            <Ariakit.ComboboxItem value="San Diego" />
-          </Ariakit.ComboboxPopover>
-        </Ariakit.ComboboxProvider>
-        <button type="reset">Reset controlled address</button>
-      </form>
-
-      <form aria-label="Inline address">
-        <Ariakit.ComboboxProvider>
-          <Ariakit.ComboboxLabel>Inline home town</Ariakit.ComboboxLabel>
-          <Ariakit.Combobox autoComplete="inline" autoSelect />
-          <Ariakit.ComboboxPopover>
-            <Ariakit.ComboboxItem value="Boston" />
-            <Ariakit.ComboboxItem value="San Diego" />
-          </Ariakit.ComboboxPopover>
-        </Ariakit.ComboboxProvider>
-        <button
-          type="button"
-          onMouseDown={(event) => event.preventDefault()}
-          onClick={(event) => event.currentTarget.form?.reset()}
-        >
-          Reset inline address
-        </button>
       </form>
 
       <Ariakit.ComboboxProvider defaultSelectedValue={["apple"]}>
