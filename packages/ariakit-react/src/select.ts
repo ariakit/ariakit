@@ -39,6 +39,8 @@ export type {
   SelectItemCheckProps,
 } from "@ariakit/react-components/select/select-item-check";
 export { SelectItemCheck } from "@ariakit/react-components/select/select-item-check";
+export type { SelectItemSelectedProps } from "@ariakit/react-components/select/select-item-selected";
+export { SelectItemSelected } from "@ariakit/react-components/select/select-item-selected";
 export type {
   SelectLabelOptions,
   SelectLabelProps,

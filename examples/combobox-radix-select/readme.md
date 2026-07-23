@@ -18,7 +18,9 @@ Rendering a searchable [Radix UI](https://radix-ui.com) Select component with a 
 
 <aside data-type="note" title="Note">
 
-This example is designed for those who are already using Radix UI in their projects and can't easily switch away from it. If you're starting from scratch or can update your custom select widgets to use Ariakit, we recommend checking out the [Select with Combobox](/examples/select-combobox) example instead, which uses the Ariakit [Select](/components/select) component.
+Radix UI Select [doesn't currently provide first-class Combobox support](https://github.com/radix-ui/primitives/pull/2635#issuecomment-5018225573). This example is designed for those who are already using Radix UI in their projects and can't easily switch away from it. It includes targeted integration workarounds that may need to be revisited when upgrading Radix UI.
+
+If you're starting from scratch or can update your custom select widgets to use Ariakit, we recommend checking out the [Select with Combobox](/examples/select-combobox) example instead, which uses the Ariakit [Select](/components/select) component.
 
 </aside>
 
@@ -57,9 +59,9 @@ Explore the Ariakit components used in this example:
 We can share state between Ariakit and Radix UI by passing our own `open` state to both Radix's `Root` and Ariakit's [`ComboboxProvider`](/reference/combobox-provider):
 
 ```jsx
-const [open, setOpen] = useState(false);
+const { open, setOpen, onOpenChange } = useRadixSelectOpenState();
 
-<RadixSelect.Root open={open} onOpenChange={setOpen}>
+<RadixSelect.Root open={open} onOpenChange={onOpenChange}>
   <ComboboxProvider open={open} setOpen={setOpen}>
 ```
 
@@ -70,6 +72,44 @@ You can learn more about this Ariakit feature in the guide:
 - [](/guide/component-providers)
 
 </div>
+
+## Keeping the Select open when the viewport resizes
+
+Radix Select closes its popup when the window resizes. On mobile browsers, showing the on-screen keyboard may resize the window and immediately close the popup. Since this example uses Radix's `position="popper"` mode, its Floating UI positioning already reacts to viewport changes. We can keep this controlled Select open while the resize event is being handled and let the popup reposition instead:
+
+```jsx "onOpenChange" "addEventListener"
+function useRadixSelectOpenState() {
+  const [open, setOpen] = useState(false);
+  const isWindowResizingRef = useRef(false);
+
+  useEffect(() => {
+    let resetTimer = 0;
+    const onResize = () => {
+      isWindowResizingRef.current = true;
+      window.clearTimeout(resetTimer);
+      resetTimer = window.setTimeout(() => {
+        isWindowResizingRef.current = false;
+      }, 0);
+    };
+    window.addEventListener("resize", onResize, true);
+    return () => {
+      window.removeEventListener("resize", onResize, true);
+      window.clearTimeout(resetTimer);
+    };
+  }, []);
+
+  const onOpenChange = useCallback((nextOpen) => {
+    if (!nextOpen && isWindowResizingRef.current) return;
+    setOpen(nextOpen);
+  }, []);
+
+  return { open, setOpen, onOpenChange };
+}
+```
+
+The capture listener marks the current resize before Radix handles it without stopping propagation, so Floating UI and other resize listeners still run. The timer clears the marker in the next task because browsers may run microtasks between event listeners.
+
+This intentionally keeps the popup open for every window resize, including virtual keyboards, orientation changes, and ordinary resizing. Browsers don't expose a reliable way to distinguish those causes.
 
 ## Filtering options
 

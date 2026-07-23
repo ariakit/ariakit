@@ -1,10 +1,10 @@
 import { useStoreState } from "@ariakit/react-store";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-utils";
 import {
+  addGlobalEventListener,
   contains,
   getDocument,
   getWindow,
-  addGlobalEventListener,
   isElement,
 } from "@ariakit/utils";
 import type { MutableRefObject } from "react";
@@ -12,7 +12,12 @@ import { useEffect, useRef } from "react";
 import type { DialogStore } from "../dialog-store.ts";
 import type { DialogOptions } from "../dialog.tsx";
 import { isElementInside, isElementMarked } from "./mark-tree-outside.ts";
-import { usePreviousMouseDownRef } from "./use-previous-mouse-down-ref.ts";
+import type { EventTargets } from "./use-previous-mouse-down-ref.ts";
+import {
+  getEventTargets,
+  getFrameChain,
+  usePreviousMouseDownRef,
+} from "./use-previous-mouse-down-ref.ts";
 
 interface EventOutsideOptions {
   store: DialogStore;
@@ -28,31 +33,9 @@ interface EventOutsideOptions {
   focusedRef: MutableRefObject<boolean>;
 }
 
-function getFrameChain(element: Element) {
-  const chain = [element];
-  while (true) {
-    let frameElement: Element | null;
-    try {
-      frameElement = getWindow(element).frameElement;
-    } catch {
-      return chain;
-    }
-    if (!isElement(frameElement)) return chain;
-    chain.push(frameElement);
-    element = frameElement;
-  }
-}
-
-function getFrameHostInDocument(element: Element, doc: Document) {
-  return (
-    getFrameChain(element).find((element) => getDocument(element) === doc) ??
-    null
-  );
-}
-
 function getHighestReadableWindow(element: Element) {
-  const chain = getFrameChain(element);
-  return getWindow(chain[chain.length - 1]);
+  const highestElement = getFrameChain(element).at(-1);
+  return getWindow(highestElement ?? element);
 }
 
 function isInDocument(target: Element) {
@@ -72,18 +55,6 @@ function isDisclosure(disclosure: Element | null, target: Element) {
   return false;
 }
 
-function isFrameChainInside(
-  frameChain: Element[],
-  contentElement: Element,
-  disclosureElement: Element | null,
-) {
-  return frameChain.some((target) => {
-    if (isDisclosure(disclosureElement, target)) return true;
-    if (target.hasAttribute("data-focus-trap")) return true;
-    return isElementInside(target, contentElement.id);
-  });
-}
-
 function isMouseEventOnDialog(event: Event | MouseEvent, dialog: Element) {
   if (!("clientY" in event)) return false;
   const rect = dialog.getBoundingClientRect();
@@ -93,6 +64,27 @@ function isMouseEventOnDialog(event: Event | MouseEvent, dialog: Element) {
     event.clientY <= rect.top + rect.height &&
     rect.left <= event.clientX &&
     event.clientX <= rect.left + rect.width
+  );
+}
+
+function isElementWithinDialog(
+  target: Element,
+  contentElement: Element,
+  disclosureElement: Element | null,
+) {
+  if (contains(contentElement, target)) return true;
+  if (isDisclosure(disclosureElement, target)) return true;
+  if (target.hasAttribute("data-focus-trap")) return true;
+  return isElementInside(target, contentElement);
+}
+
+function isEventInsideDialog(
+  targets: EventTargets,
+  contentElement: Element,
+  disclosureElement: Element | null,
+) {
+  return targets.elements.some((target) =>
+    isElementWithinDialog(target, contentElement, disclosureElement),
   );
 }
 
@@ -111,39 +103,35 @@ function useEventOutside({
     if (!open) return;
     const onEvent = (event: Event) => {
       const { contentElement, disclosureElement } = store.getState();
-      const eventTarget = event.target;
       if (!contentElement) return;
-      if (!isElement(eventTarget)) return;
+      const targets = getEventTargets(event, contentElement);
+      const composedTarget = targets.elements[0];
+      const target = targets.rootTarget;
+      if (!isElement(target)) return;
       // When an element is unmounted right after it receives focus, the focus
       // event is triggered after that, when the element isn't part of the
       // current document anymore. We just ignore it.
-      if (!isInDocument(eventTarget)) return;
+      if (composedTarget && !isInDocument(composedTarget)) return;
+      if (!isInDocument(target)) return;
+      // Persistent and nested elements must suppress outside listeners before
+      // the dialog has ever received focus (for example, with
+      // autoFocusOnShow={false}). Scanning the composed path extends that
+      // positive inside mark through open shadow roots.
+      if (isEventInsideDialog(targets, contentElement, disclosureElement)) {
+        return;
+      }
       const contentDocument = getDocument(contentElement);
-      const frameChain = getFrameChain(eventTarget);
-      // Check each frame host so cross-document disclosures, focus traps,
-      // persistent elements, and nested dialogs remain inside. See
-      // https://github.com/ariakit/ariakit/issues/6344
-      const isInside = isFrameChainInside(
-        frameChain,
-        contentElement,
-        disclosureElement,
-      );
-      if (isInside) return;
-      const target =
-        frameChain.find((target) => getDocument(target) === contentDocument) ??
-        null;
-      // The target belongs to a parent or sibling document. It can't be
-      // contained by the dialog, so it's outside.
-      if (!target) {
+      // A target in a parent or sibling document can't be contained by the
+      // dialog, so it's outside.
+      if (getDocument(target) !== contentDocument) {
         callListener(event);
         return;
       }
-      if (!isInDocument(target)) return;
-      // Event inside dialog
-      if (contains(contentElement, target)) return;
       // Clicked on dialog's bounding box
+      // Mouse coordinates are relative to the target's viewport, so compare
+      // them with this dialog only when both belong to the same document.
       if (
-        getDocument(eventTarget) === contentDocument &&
+        getDocument(composedTarget ?? target) === contentDocument &&
         isMouseEventOnDialog(event, contentElement)
       ) {
         return;
@@ -185,7 +173,11 @@ export function useHideOnInteractOutside(
   const eventWindow = contentElement
     ? getHighestReadableWindow(contentElement)
     : undefined;
-  const previousMouseDownRef = usePreviousMouseDownRef(open, eventWindow);
+  const previousMouseDownRef = usePreviousMouseDownRef(
+    open,
+    eventWindow,
+    contentElement,
+  );
   const focusedRef = useRef(false);
 
   // Tracks whether the content element has been focused at least once since
@@ -211,9 +203,11 @@ export function useHideOnInteractOutside(
     listener: (event) => {
       const { contentElement, disclosureElement } = store.getState();
       const previousMouseDown = previousMouseDownRef.current;
-      // Ignore clicks without a previous mousedown element. This includes
-      // dialogs opened on mousedown and synthetic events with foreign targets.
-      if (!isElement(previousMouseDown)) return;
+      // If there's no previously mousedown'd element, this probably means that
+      // the dialog opened with a mousedown event, and a subsequent click event
+      // was dispatched outside of the dialog. See form-select example. We just
+      // ignore this.
+      if (!previousMouseDown) return;
       // This prevents the dialog from closing by dragging the cursor (for
       // example, selecting some text inside the dialog and releasing the mouse
       // outside of it). See:
@@ -221,21 +215,19 @@ export function useHideOnInteractOutside(
       // - https://github.com/ariakit/ariakit/issues/2330
       if (!contentElement) return;
       if (
-        isFrameChainInside(
-          getFrameChain(previousMouseDown),
+        isEventInsideDialog(
+          previousMouseDown,
           contentElement,
           disclosureElement,
         )
       ) {
         return;
       }
-      const previousMouseDownInContentDocument = getFrameHostInDocument(
-        previousMouseDown,
-        getDocument(contentElement),
-      );
+      const previousRootTarget = previousMouseDown.rootTarget;
+      if (!isElement(previousRootTarget)) return;
       if (
-        previousMouseDownInContentDocument &&
-        !isElementMarked(previousMouseDownInContentDocument, contentElement.id)
+        getDocument(previousRootTarget) === getDocument(contentElement) &&
+        !isElementMarked(previousRootTarget, contentElement.id)
       ) {
         return;
       }
