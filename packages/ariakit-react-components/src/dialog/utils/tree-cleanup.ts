@@ -8,6 +8,9 @@ export type Ids = Array<string | undefined>;
 
 type MarkKind = "outside" | "ancestor";
 
+// DOM IDs are only unique within a tree, so keying by the dialog element keeps
+// same-ID dialogs in separate roots isolated. Weak collections also avoid
+// retaining or mutating nodes used only for interaction membership.
 const insideElements = new WeakMap<Element, WeakSet<Element>>();
 
 function getPropertyName(id = "", kind: MarkKind = "outside") {
@@ -28,10 +31,12 @@ export function markAncestor(element: Element, id = "") {
   );
 }
 
-// Marks elements the dialog knows about at open time (the dialog itself,
-// persistent elements, and nested dialogs), so the outside event listeners
-// can positively recognize them as "inside" regardless of whether the dialog
-// has been focused yet. See https://github.com/ariakit/ariakit/issues/6344
+/**
+ * Marks elements the dialog knows about at open time (the dialog itself,
+ * persistent elements, and nested dialogs), so outside event listeners can
+ * recognize them as inside before the dialog has been focused.
+ * @see https://github.com/ariakit/ariakit/issues/6344
+ */
 export function markTreeInside(dialog: Element, elements: Elements) {
   const marker = new WeakSet<Element>();
   insideElements.set(dialog, marker);

@@ -6,6 +6,10 @@ export interface EventTargets {
   rootTarget: EventTarget | null;
 }
 
+/**
+ * Returns the full composed path for positive dialog membership and a target
+ * projected into the reference element's root for outside-tree marks.
+ */
 export function getEventTargets(
   event: Event,
   referenceElement?: Element | null,
@@ -23,6 +27,10 @@ export function getEventTargets(
   };
 }
 
+/**
+ * Stores both event-target views from the latest mousedown so opening clicks
+ * and drag releases are classified from their mousedown origin.
+ */
 export function usePreviousMouseDownRef(
   enabled?: boolean,
   scope?: Window,

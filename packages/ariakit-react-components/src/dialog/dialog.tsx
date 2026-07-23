@@ -99,6 +99,11 @@ function getElementFromProp(
   return element;
 }
 
+/**
+ * Returns default modal portals that are later in the same root and still
+ * pending in the current layout pass. Portals in the established stack are
+ * excluded so this only coordinates the dialogs opening in the same cohort.
+ */
 function getLaterOpenModalPortals(dialog: HTMLElement) {
   if (!dialog.isConnected) return [];
   const root = dialog.getRootNode() as Document | ShadowRoot;
@@ -325,6 +330,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     peers: HTMLElement[];
   }>(null);
 
+  // Register this default portal before the tree-marking effect below and
+  // capture only later peers still pending in the current open cycle. Retain
+  // that cohort through snapshot refreshes and StrictMode effect replay.
   useSafeLayoutEffect(() => {
     if (!id || !hasDefaultModalPortal || !canTakeTreeSnapshot || !portalNode) {
       openingCohortRef.current = null;
@@ -335,7 +343,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       openingCohortRef.current = null;
       return;
     }
-    // Preserve the cohort through StrictMode's effect cleanup and replay.
     if (openingCohortRef.current?.portal !== portalNode) {
       openingCohortRef.current = {
         portal: portalNode,
@@ -369,7 +376,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (!id) return;
     if (!canTakeTreeSnapshot) return;
     const { disclosureElement } = store.getState();
-    const dialog = ref.current;
+    const dialog = contentElement ?? ref.current;
     if (!dialog) return;
     const persistentElements = getPersistentElementsProp() || [];
     const allElements = [
@@ -399,6 +406,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     id,
     store,
     canTakeTreeSnapshot,
+    contentElement,
     modal,
     hasDefaultModalPortal,
     getPersistentElementsProp,

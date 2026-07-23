@@ -107,8 +107,10 @@ function useEventOutside({
       // current document anymore. We just ignore it.
       if (composedTarget && !isInDocument(composedTarget)) return;
       if (!isInDocument(target)) return;
-      // Event inside dialog, disclosure, focus trap, persistent element, or
-      // nested dialog.
+      // Persistent and nested elements must suppress outside listeners before
+      // the dialog has ever received focus (for example, with
+      // autoFocusOnShow={false}). Scanning the composed path extends that
+      // positive inside mark through open shadow roots.
       if (isEventInsideDialog(targets, contentElement, disclosureElement)) {
         return;
       }

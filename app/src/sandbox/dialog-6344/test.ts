@@ -38,6 +38,17 @@ test("keeps the documented behavior after the dialog has been focused", async ()
   expect(q.dialog("Dialog")).toBeVisible();
 });
 
+// Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635586651
+test("keeps persistent elements after replacing an open dialog node", async () => {
+  await click(q.button("Open dialog"));
+  await click(q.button("Replace dialog element"));
+  expect(q.dialog.ensure("Dialog").tagName).toBe("SECTION");
+
+  await click(q.textbox("Notification field"));
+  expect(q.textbox("Notification field")).toHaveFocus();
+  expect(q.dialog("Dialog")).toBeVisible();
+});
+
 test("stays open when interacting with a persistent shadow element", async () => {
   await click(q.button("Open dialog"));
   expect(q.dialog("Dialog")).toBeVisible();

@@ -58,6 +58,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
+  // Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635586651
+  test("keeps persistent elements after replacing an open dialog node", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open dialog").click();
+    await q.button("Replace dialog element").click();
+    await test
+      .expect(q.dialog("Dialog"))
+      .toHaveJSProperty("tagName", "SECTION");
+
+    await q.textbox("Notification field").click();
+    await test.expect(q.textbox("Notification field")).toBeFocused();
+    await page.waitForTimeout(250);
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+  });
+
   test("stays open when interacting with a persistent shadow element", async ({
     page,
     q,
@@ -66,13 +83,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
 
     const persistentInput = q.textbox("Persistent shadow field");
-    // Dispatch directly on the nested shadow element. WebKit's click
-    // actionability check may otherwise treat the outer shadow host as the
-    // pointer target even though the nested input is visible.
-    await persistentInput.dispatchEvent("mousedown", mouseEventInit);
+    const box = await persistentInput.boundingBox();
+    if (!box) throw new Error("Persistent input has no box");
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
     await persistentInput.focus();
-    await persistentInput.dispatchEvent("mouseup", mouseEventInit);
-    await persistentInput.dispatchEvent("click", mouseEventInit);
+    await page.mouse.up();
     await test.expect(persistentInput).toBeFocused();
     await page.waitForTimeout(250);
     await test.expect(q.dialog("Dialog")).toBeVisible();

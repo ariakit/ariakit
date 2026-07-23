@@ -14,6 +14,7 @@ import { useCallback, useRef, useState } from "react";
 // the dialog open, as documented.
 export default function Example() {
   const [open, setOpen] = useState(false);
+  const [asSection, setAsSection] = useState(false);
   const [showShadowDialog, setShowShadowDialog] = useState(false);
   const [shadowDialogPortal, setShadowDialogPortal] =
     useState<HTMLElement | null>(null);
@@ -119,6 +120,7 @@ export default function Example() {
 
       <Ariakit.Dialog
         id="dialog"
+        render={asSection ? <section /> : undefined}
         open={open}
         onClose={() => setOpen(false)}
         modal={false}
@@ -141,6 +143,9 @@ export default function Example() {
           placeholder="Inside field"
           className="rounded border border-gray-300 px-3 py-1"
         />
+        <Ariakit.Button onClick={() => setAsSection(true)}>
+          Replace dialog element
+        </Ariakit.Button>
         <Ariakit.DialogDismiss className="rounded border border-gray-300 px-3 py-1">
           Close dialog
         </Ariakit.DialogDismiss>
