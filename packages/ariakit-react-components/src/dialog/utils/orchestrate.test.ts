@@ -229,24 +229,44 @@ test("markTreeInside marks the given elements and restores them", () => {
   const persistentChild = getElement("persistent-child");
   const outside = getElement("outside");
 
-  const restoreInsideMarks = markTreeInside("dialog", [dialog, persistent]);
+  const restoreInsideMarks = markTreeInside(dialog, [dialog, persistent]);
   const restoreMarks = markTreeOutside("dialog", [dialog, persistent]);
 
-  expect(isElementInside(dialog, "dialog")).toBe(true);
-  expect(isElementInside(persistent, "dialog")).toBe(true);
+  expect(isElementInside(dialog, dialog)).toBe(true);
+  expect(isElementInside(persistent, dialog)).toBe(true);
   // Descendants of inside elements are inside too, even when added after the
   // dialog opens.
-  expect(isElementInside(persistentChild, "dialog")).toBe(true);
-  expect(isElementInside(outside, "dialog")).toBe(false);
+  expect(isElementInside(persistentChild, dialog)).toBe(true);
+  expect(isElementInside(outside, dialog)).toBe(false);
   expect(isElementMarked(persistent, "dialog")).toBe(false);
   expect(isElementMarked(outside, "dialog")).toBe(true);
 
   restoreMarks();
   restoreInsideMarks();
 
-  expect(isElementInside(dialog, "dialog")).toBe(false);
-  expect(isElementInside(persistent, "dialog")).toBe(false);
-  expect(isElementInside(persistentChild, "dialog")).toBe(false);
+  expect(isElementInside(dialog, dialog)).toBe(false);
+  expect(isElementInside(persistent, dialog)).toBe(false);
+  expect(isElementInside(persistentChild, dialog)).toBe(false);
+});
+
+test("markTreeInside keeps same-id dialogs isolated", () => {
+  const dialogOne = document.createElement("div");
+  const dialogTwo = document.createElement("div");
+  const persistentOne = document.createElement("div");
+  const persistentTwo = document.createElement("div");
+  dialogOne.id = "dialog";
+  dialogTwo.id = "dialog";
+
+  const restoreOne = markTreeInside(dialogOne, [dialogOne, persistentOne]);
+  const restoreTwo = markTreeInside(dialogTwo, [dialogTwo, persistentTwo]);
+
+  expect(isElementInside(persistentOne, dialogOne)).toBe(true);
+  expect(isElementInside(persistentTwo, dialogOne)).toBe(false);
+  expect(isElementInside(persistentOne, dialogTwo)).toBe(false);
+  expect(isElementInside(persistentTwo, dialogTwo)).toBe(true);
+
+  restoreTwo();
+  restoreOne();
 });
 
 test("markTreeOutside restores previous marks after nested cleanup", () => {
