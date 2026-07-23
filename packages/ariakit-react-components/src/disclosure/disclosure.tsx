@@ -52,6 +52,8 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
     const disclosureElement = useStoreState(store, "disclosureElement");
     const open = useStoreState(store, "open");
 
+    // Another Disclosure may have taken over the store while this one was
+    // mounted, so only clear the state if this element still owns it.
     const setDisclosureElement = useCallback(
       (element: HTMLType | null) => {
         const previousElement = ref.current;
