@@ -8,6 +8,7 @@ export default function Example() {
       <Ariakit.Button onClick={() => setOpen(true)} className="px-2 py-1">
         Show dialog
       </Ariakit.Button>
+      <button type="button">Outside target</button>
       <Ariakit.Dialog
         open={open}
         onClose={() => setOpen(false)}
