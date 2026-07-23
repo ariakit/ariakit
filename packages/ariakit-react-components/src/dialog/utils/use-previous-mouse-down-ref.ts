@@ -1,4 +1,4 @@
-import { addGlobalEventListener, isElement } from "@ariakit/utils";
+import { addGlobalEventListener, getWindow, isElement } from "@ariakit/utils";
 import { useEffect, useRef } from "react";
 
 export interface EventTargets {
@@ -7,8 +7,28 @@ export interface EventTargets {
 }
 
 /**
- * Returns the full composed path for positive dialog membership and a target
- * projected into the reference element's root for outside-tree marks.
+ * Returns an element followed by its iframe hosts up to the highest readable
+ * document.
+ */
+export function getFrameChain(element: Element) {
+  const chain = [element];
+  while (true) {
+    let frameElement: Element | null;
+    try {
+      frameElement = getWindow(element).frameElement;
+    } catch {
+      return chain;
+    }
+    if (!isElement(frameElement)) return chain;
+    chain.push(frameElement);
+    element = frameElement;
+  }
+}
+
+/**
+ * Returns the full composed path and readable iframe host chain for positive
+ * dialog membership, plus a target projected into the reference element's
+ * root for outside-tree marks.
  */
 export function getEventTargets(
   event: Event,
@@ -17,6 +37,14 @@ export function getEventTargets(
   const elements = event.composedPath().filter(isElement);
   if (!elements.length && isElement(event.target)) {
     elements.push(event.target);
+  }
+  const composedTarget = elements[0];
+  if (composedTarget) {
+    for (const frameElement of getFrameChain(composedTarget).slice(1)) {
+      if (!elements.includes(frameElement)) {
+        elements.push(frameElement);
+      }
+    }
   }
   const root = referenceElement?.getRootNode();
   return {

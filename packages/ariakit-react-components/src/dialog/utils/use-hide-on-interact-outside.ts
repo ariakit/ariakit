@@ -1,10 +1,10 @@
 import { useStoreState } from "@ariakit/react-store";
 import { useEvent, useSafeLayoutEffect } from "@ariakit/react-utils";
 import {
+  addGlobalEventListener,
   contains,
   getDocument,
   getWindow,
-  addGlobalEventListener,
   isElement,
 } from "@ariakit/utils";
 import type { MutableRefObject } from "react";
@@ -15,6 +15,7 @@ import { isElementInside, isElementMarked } from "./mark-tree-outside.ts";
 import type { EventTargets } from "./use-previous-mouse-down-ref.ts";
 import {
   getEventTargets,
+  getFrameChain,
   usePreviousMouseDownRef,
 } from "./use-previous-mouse-down-ref.ts";
 
@@ -32,6 +33,11 @@ interface EventOutsideOptions {
   focusedRef: MutableRefObject<boolean>;
 }
 
+function getHighestReadableWindow(element: Element) {
+  const highestElement = getFrameChain(element).at(-1);
+  return getWindow(highestElement ?? element);
+}
+
 function isInDocument(target: Element) {
   return target.isConnected;
 }
@@ -41,7 +47,7 @@ function isDisclosure(disclosure: Element | null, target: Element) {
   if (contains(disclosure, target)) return true;
   const activeId = target.getAttribute("aria-activedescendant");
   if (activeId) {
-    const activeElement = getDocument(disclosure).getElementById(activeId);
+    const activeElement = getDocument(target).getElementById(activeId);
     if (activeElement) {
       return contains(disclosure, activeElement);
     }
@@ -114,8 +120,22 @@ function useEventOutside({
       if (isEventInsideDialog(targets, contentElement, disclosureElement)) {
         return;
       }
+      const contentDocument = getDocument(contentElement);
+      // A target in a parent or sibling document can't be contained by the
+      // dialog, so it's outside.
+      if (getDocument(target) !== contentDocument) {
+        callListener(event);
+        return;
+      }
       // Clicked on dialog's bounding box
-      if (isMouseEventOnDialog(event, contentElement)) return;
+      // Mouse coordinates are relative to the target's viewport, so compare
+      // them with this dialog only when both belong to the same document.
+      if (
+        getDocument(composedTarget ?? target) === contentDocument &&
+        isMouseEventOnDialog(event, contentElement)
+      ) {
+        return;
+      }
       // We need to check if the content element has been focused at least once
       // before checking if it's marked. This is so hovercards and tooltips
       // don't stay open when new nodes are added to the DOM and focused.
@@ -125,7 +145,9 @@ function useEventOutside({
       // of the content element, we call the listener.
       callListener(event);
     };
-    const win = contentElement ? getWindow(contentElement) : undefined;
+    const win = contentElement
+      ? getHighestReadableWindow(contentElement)
+      : undefined;
     return addGlobalEventListener(type, onEvent, capture, win);
   }, [open, capture, store, type, callListener, contentElement, focusedRef]);
 }
@@ -148,10 +170,12 @@ export function useHideOnInteractOutside(
 ) {
   const open = useStoreState(store, "open");
   const contentElement = useStoreState(store, "contentElement");
-  const contentWindow = contentElement ? getWindow(contentElement) : undefined;
+  const eventWindow = contentElement
+    ? getHighestReadableWindow(contentElement)
+    : undefined;
   const previousMouseDownRef = usePreviousMouseDownRef(
     open,
-    contentWindow,
+    eventWindow,
     contentElement,
   );
   const focusedRef = useRef(false);
@@ -201,7 +225,12 @@ export function useHideOnInteractOutside(
       }
       const previousRootTarget = previousMouseDown.rootTarget;
       if (!isElement(previousRootTarget)) return;
-      if (!isElementMarked(previousRootTarget, contentElement.id)) return;
+      if (
+        getDocument(previousRootTarget) === getDocument(contentElement) &&
+        !isElementMarked(previousRootTarget, contentElement.id)
+      ) {
+        return;
+      }
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
       if (interactedOutsideRef) {
         interactedOutsideRef.current = true;
@@ -219,6 +248,14 @@ export function useHideOnInteractOutside(
       // Fix for https://github.com/ariakit/ariakit/issues/619
       if (event.target === getDocument(contentElement)) return;
       if (!shouldHideOnInteractOutside(hideOnInteractOutside, event)) return;
+      const target = event.target;
+      if (
+        interactedOutsideRef &&
+        isElement(target) &&
+        getDocument(target) !== getDocument(contentElement)
+      ) {
+        interactedOutsideRef.current = true;
+      }
       store.hide();
     },
   });

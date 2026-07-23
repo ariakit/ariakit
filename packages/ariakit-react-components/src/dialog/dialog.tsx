@@ -205,9 +205,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
 
-  // Tracks whether the dialog was hidden by an outside click or context menu.
-  // When true, focusOnHide skips focus restoration to match native HTML
-  // behavior where trigger buttons don't receive focus when you click outside.
+  // Tracks whether focus restoration should be skipped after an outside
+  // interaction to match native HTML behavior.
   // Reset when the dialog opens to avoid stale flags from prevented closes
   // (e.g., onClose calling event.preventDefault), async closes with
   // animations, or when autoFocusOnHide is disabled.
@@ -494,9 +493,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   const focusOnHide = useCallback(
     (dialog: HTMLElement | null, retry = true) => {
-      // Hide was triggered by clicking or right-clicking outside the dialog.
-      // Native HTML dialogs and popovers don't restore focus to the trigger
-      // in this case, so we skip focus restoration entirely.
+      // Hide was triggered by an outside interaction that should retain focus
+      // on its target, so we skip focus restoration entirely.
       if (interactedOutsideRef.current) return;
       const { disclosureElement } = store.getState();
       // Hide was triggered by a click/focus on a tabbable element outside the
