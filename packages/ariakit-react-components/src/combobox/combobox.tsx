@@ -46,7 +46,7 @@ import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
 import { usePopoverAnchor } from "../popover/popover-anchor.tsx";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
+import { useComboboxContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
   ComboboxStoreSelectedValue,
@@ -140,7 +140,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     disabled,
     ...props
   }) {
-    const context = useComboboxProviderContext();
+    const context = useComboboxContext();
     store = store || context;
 
     invariant(
