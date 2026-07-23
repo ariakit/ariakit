@@ -1,5 +1,10 @@
 import { useStoreState } from "@ariakit/react-store";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import {
+  useSafeLayoutEffect,
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { getDocument, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
 import type { ElementType } from "react";
@@ -64,6 +69,8 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     );
 
     const baseElement = useStoreState(store, "baseElement");
+    const disclosureElement = useStoreState(store, "disclosureElement");
+    const open = useStoreState(store, "open");
     const hiddenByClickOutsideRef = useRef(false);
 
     // When new tags are rendered while the combobox popover is open, they will
@@ -87,28 +94,29 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       finalFocus: baseElement,
       preserveTabOrderAnchor: null,
       unstable_treeSnapshotKey: treeSnapshotKey,
-      unstable_defaultAnchorElement: baseElement,
-      unstable_preserveDisclosureElementOnShow: true,
+      unstable_fallbackAnchorElement: baseElement,
       ...props,
-      // When the combobox popover is modal, we make sure to include the
-      // combobox input and all the combobox controls (cancel, disclosure) in
-      // the list of persistent elements so they make part of the modal context,
-      // allowing users to tab through them.
+      // The combobox input is part of the popover context so Escape works while
+      // focus stays on it. For modal popovers, include every combobox control
+      // (cancel, disclosure) so users can tab through them as well.
       getPersistentElements() {
         const elements = props.getPersistentElements?.() || [];
-        if (!modal) return elements;
+        if (!modal) {
+          return baseElement ? [...elements, baseElement] : elements;
+        }
         if (!store) return elements;
-        const { contentElement, baseElement } = store.getState();
-        if (!baseElement) return elements;
-        const doc = getDocument(baseElement);
+        const { contentElement, baseElement: currentBaseElement } =
+          store.getState();
+        if (!currentBaseElement) return elements;
+        const doc = getDocument(currentBaseElement);
         const selectors: string[] = [];
         if (contentElement?.id) {
           selectors.push(`[aria-controls~="${contentElement.id}"]`);
         }
-        if (baseElement?.id) {
-          selectors.push(`[aria-controls~="${baseElement.id}"]`);
+        if (currentBaseElement.id) {
+          selectors.push(`[aria-controls~="${currentBaseElement.id}"]`);
         }
-        if (!selectors.length) return [...elements, baseElement];
+        if (!selectors.length) return [...elements, currentBaseElement];
         const selector = selectors.join(",");
         const controlElements = doc.querySelectorAll<HTMLElement>(selector);
         return [...elements, ...controlElements];
@@ -143,6 +151,16 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         return result;
       },
     });
+
+    // Dialog infers the disclosure from the active element when it opens. A
+    // ComboboxDisclosure focuses the input first, so restore the actual button.
+    useSafeLayoutEffect(() => {
+      if (!open) return;
+      if (!disclosureElement?.isConnected) return;
+      if (disclosureElement === baseElement) return;
+      if (store.getState().disclosureElement === disclosureElement) return;
+      store.setDisclosureElement(disclosureElement);
+    }, [store, open, disclosureElement, baseElement]);
 
     return props;
   },

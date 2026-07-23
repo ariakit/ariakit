@@ -161,7 +161,6 @@
     "./heading/utils": "./src/heading/utils.ts",
     "./hovercard/hovercard": "./src/hovercard/hovercard.tsx",
     "./hovercard/hovercard-anchor": "./src/hovercard/hovercard-anchor.tsx",
-    "./hovercard/hovercard-anchor-base": "./src/hovercard/hovercard-anchor-base.tsx",
     "./hovercard/hovercard-arrow": "./src/hovercard/hovercard-arrow.tsx",
     "./hovercard/hovercard-context": "./src/hovercard/hovercard-context.tsx",
     "./hovercard/hovercard-description": "./src/hovercard/hovercard-description.tsx",

@@ -149,6 +149,8 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   const autoFocusOnShowProp =
     autoFocusOnShow === false ? false : canAutoFocusOnShow && autoFocusOnShow;
 
+  // Hovercard restores focus to its positioning anchor by default. Menus use
+  // their disclosure as the focus target when a separate MenuAnchor exists.
   const finalFocusElement = useStoreState(
     store,
     ["disclosureElement", "anchorElement"],

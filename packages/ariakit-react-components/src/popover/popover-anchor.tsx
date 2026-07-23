@@ -6,7 +6,6 @@ import {
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
-import { useCallback, useRef } from "react";
 import { usePopoverProviderContext } from "./popover-context.tsx";
 import type { PopoverStore } from "./popover-store.ts";
 
@@ -28,24 +27,9 @@ export const usePopoverAnchor = createHook<TagName, PopoverAnchorOptions>(
   function usePopoverAnchor({ store, ...props }) {
     const context = usePopoverProviderContext();
     store = store || context;
-
-    const anchorRef = useRef<HTMLElement | null>(null);
-
-    const setAnchorElement = useCallback(
-      (element: HTMLElement | null) => {
-        const previousElement = anchorRef.current;
-        anchorRef.current = element;
-        if (!store) return;
-        const anchorElement = store.getState().anchorElement;
-        if (!element && anchorElement !== previousElement) return;
-        store.setAnchorElement(element);
-      },
-      [store],
-    );
-
     props = {
       ...props,
-      ref: useMergeRefs(setAnchorElement, props.ref),
+      ref: useMergeRefs(store?.setAnchorElement, props.ref),
     };
     return props;
   },

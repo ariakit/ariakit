@@ -4,7 +4,7 @@ import { invariant } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
-import { useHovercardAnchorBase } from "./hovercard-anchor-base.tsx";
+import { useHovercardTrigger } from "./__hovercard-trigger.tsx";
 import { useHovercardProviderContext } from "./hovercard-context.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
 
@@ -32,9 +32,10 @@ export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
       process.env.NODE_ENV !== "production" &&
         "HovercardAnchor must receive a `store` prop or be wrapped in a HovercardProvider component.",
     );
-    return useHovercardAnchorBase<TagName>({
+    return useHovercardTrigger<TagName>({
       store,
       showOnHover,
+      positioningAnchor: true,
       ...props,
     });
   },

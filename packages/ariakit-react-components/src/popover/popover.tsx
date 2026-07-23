@@ -254,7 +254,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     overflowPadding = 8,
     getAnchorRect,
     updatePosition,
-    unstable_defaultAnchorElement,
+    unstable_fallbackAnchorElement,
     ...props
   }) {
     const context = usePopoverProviderContext();
@@ -272,7 +272,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       ["anchorElement", "disclosureElement"],
       (state) =>
         state.anchorElement ||
-        unstable_defaultAnchorElement ||
+        unstable_fallbackAnchorElement ||
         state.disclosureElement,
     );
     // The disclosure element is only used as the preserveTabOrder anchor,
@@ -770,10 +770,10 @@ export interface PopoverOptions<
     updatePosition: () => Promise<void>;
   }) => void | Promise<void>;
   /**
-   * Default positioning anchor used before the disclosure element.
+   * Fallback positioning anchor used before the disclosure element.
    * @private
    */
-  unstable_defaultAnchorElement?: HTMLElement | null;
+  unstable_fallbackAnchorElement?: HTMLElement | null;
 }
 
 export type PopoverProps<T extends ElementType = TagName> = Props<

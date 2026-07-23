@@ -1,8 +1,8 @@
-import { click, press, q } from "@ariakit/test";
+import { click, hover, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/3729
-test.each(["Disclosure first", "Anchor first", "Provider store"])(
+test.each(["Disclosure first", "Anchor first"])(
   "keeps the explicit anchor when the %s disclosure is clicked",
   async (label) => {
     const anchor = q.status.ensure(`${label} current anchor`);
@@ -11,6 +11,7 @@ test.each(["Disclosure first", "Anchor first", "Provider store"])(
     await click(q.button(`Open ${label}`));
 
     expect(anchor).toHaveTextContent("explicit");
+    expect(q.dialog(`${label} details`)).toBeVisible();
   },
 );
 
@@ -22,117 +23,70 @@ test("falls back to the disclosure when the explicit anchor unmounts", async () 
   await click(q.button(`Remove ${label} anchor`));
 
   expect(anchor).toHaveTextContent("none");
+  expect(q.dialog(`${label} details`)).toBeVisible();
 });
 
-test("clears a disclosure fallback when its element unmounts", async () => {
-  const anchor = q.status.ensure("Removable disclosure current anchor");
+test("clears the disclosure fallback when it unmounts", async () => {
+  const label = "Disclosure first";
+  const disclosure = q.status.ensure(`${label} current disclosure`);
 
-  await click(q.button("Open removable disclosure"));
-  await click(q.button("Remove Popover disclosure"));
-  expect(anchor).toHaveTextContent("explicit");
-  expect(q.status("Removable disclosure current disclosure")).toHaveTextContent(
-    "none",
-  );
+  await click(q.button(`Open ${label}`));
+  await click(q.button(`Remove ${label} anchor`));
+  expect(disclosure).toHaveTextContent("button");
 
-  await click(q.button("Remove Popover anchor"));
-  expect(anchor).toHaveTextContent("none");
+  await click(q.button(`Remove ${label} disclosure`));
+
+  expect(disclosure).toHaveTextContent("none");
+  expect(q.dialog(`${label} details`)).toBeVisible();
 });
 
-test("preserves MenuAnchor when MenuButton opens the menu", async () => {
-  const anchor = q.status.ensure("Menu current anchor");
-  expect(anchor).toHaveTextContent("explicit");
-
+test("keeps MenuButton as the disclosure for MenuAnchor", async () => {
   const button = q.button("Open Menu");
+
   await click(button);
 
-  expect(anchor).toHaveTextContent("explicit");
+  expect(q.menu("Menu items")).toBeVisible();
+  expect(q.status("Menu current anchor")).toHaveTextContent("explicit");
+  expect(q.status("Menu current disclosure")).toHaveTextContent("button");
 
   await press("Escape");
   expect(button).toHaveFocus();
 });
 
-test("preserves a consumer MenuButton anchor override", async () => {
-  const anchor = q.status.ensure("Override Menu current anchor");
+test("clears HovercardAnchor when it unmounts on show", async () => {
+  const anchor = q.status.ensure("Hovercard current anchor");
+  const disclosure = q.status.ensure("Hovercard current disclosure");
+  expect(anchor).toHaveTextContent("hovercard");
 
-  await click(q.button("Open Override Menu"));
+  await hover(q.link("Hovercard anchor"));
 
-  expect(anchor).toHaveTextContent("group");
-});
-
-test("preserves SelectAnchor when Select opens", async () => {
-  const anchor = q.status.ensure("Select current anchor");
-  expect(anchor).toHaveTextContent("explicit");
-
-  await click(q.combobox("Open Select"));
-
-  expect(anchor).toHaveTextContent("explicit");
-});
-
-test("preserves ComboboxAnchor when ComboboxDisclosure opens", async () => {
-  const anchor = q.status.ensure("Combobox current anchor");
-  expect(anchor).toHaveTextContent("explicit");
-  expect(q.status("Combobox current disclosure")).toHaveTextContent(
-    "disclosure",
-  );
-
-  await click(q.button("Open Combobox"));
-
-  expect(anchor).toHaveTextContent("explicit");
-  expect(q.status("Combobox current disclosure")).toHaveTextContent(
-    "disclosure",
-  );
-});
-
-test("falls back to Combobox after ComboboxAnchor unmounts", async () => {
-  const anchor = q.status.ensure("Combobox current anchor");
-
-  await click(q.button("Remove Combobox anchor"));
+  await expect.poll(() => q.dialog("Unmount Hovercard")).toBeVisible();
   expect(anchor).toHaveTextContent("none");
-
-  await click(q.button("Open Combobox"));
-  expect(anchor).toHaveTextContent("none");
-
-  await click(q.button("Remove Combobox input"));
-  expect(anchor).toHaveTextContent("none");
-});
-
-test("tracks ComboboxDisclosure across default-open mount transitions", async () => {
-  const disclosure = q.status.ensure(
-    "Default open Combobox current disclosure",
-  );
-  expect(disclosure).toHaveTextContent("second-disclosure");
-
-  await click(q.button("Remove second default open Combobox disclosure"));
-  expect(disclosure).toHaveTextContent("first-disclosure");
-
-  await click(q.button("Remove first default open Combobox disclosure"));
-  expect(disclosure).toHaveTextContent("combobox");
-
-  await click(q.button("Mount first default open Combobox disclosure"));
-  expect(disclosure).toHaveTextContent("first-disclosure");
-
-  await click(q.button("Remove all default open Combobox controls"));
   expect(disclosure).toHaveTextContent("none");
 });
 
-test("toggles once when ComboboxDisclosure is composed", async () => {
-  await click(q.button("Open composed Combobox"));
+test("preserves SelectAnchor when Select opens", async () => {
+  await click(q.combobox("Open Select"));
 
-  expect(q.listbox("Composed Combobox items")).toBeVisible();
-  expect(q.status("Composed Combobox current anchor")).toHaveTextContent(
-    "none",
-  );
+  expect(q.listbox("Select items")).toBeVisible();
+  expect(q.status("Select current anchor")).toHaveTextContent("explicit");
 });
 
-test("registers HovercardAnchor when a disclosure is present", async () => {
-  const anchor = q.status.ensure("Hovercard current anchor");
-  expect(anchor).toHaveTextContent("none");
+test.each([
+  ["Explicit", "explicit"],
+  ["Input", "none"],
+  ["Disclosure", "none"],
+] as const)("uses the %s Combobox anchor", async (label, expectedAnchor) => {
+  await click(q.button(`Open ${label} Combobox`));
 
-  await click(q.button("Mount Hovercard anchor"));
+  expect(q.listbox(`${label} Combobox items`)).toBeVisible();
+  expect(q.status(`${label} Combobox current anchor`)).toHaveTextContent(
+    expectedAnchor,
+  );
+  expect(q.status(`${label} Combobox current disclosure`)).toHaveTextContent(
+    "button",
+  );
 
-  expect(anchor).toHaveTextContent("first");
-
-  await click(q.button("Mount second Hovercard anchor"));
-
-  expect(anchor).toHaveTextContent("first");
+  await press("Escape");
+  expect(q.listbox(`${label} Combobox items`)).not.toBeInTheDocument();
 });

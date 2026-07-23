@@ -53,15 +53,17 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 function isMovingOnHovercard(
   path: EventTarget[],
   card: HTMLElement,
-  anchors: Array<HTMLElement | null>,
+  hoverElements: Array<HTMLElement | null>,
   nested?: HTMLElement[],
 ) {
   // The hovercard element has focus so we should keep it visible.
   if (hasFocusWithin(card)) return true;
   // The mouse is moving on an element inside the hovercard.
   if (path.includes(card)) return true;
-  // The mouse is moving on an element inside an anchor element.
-  if (anchors.some((anchor) => anchor && path.includes(anchor))) return true;
+  // The mouse is moving on an element inside an anchor or disclosure element.
+  if (hoverElements.some((element) => element && path.includes(element))) {
+    return true;
+  }
   // The mouse is moving on an element inside a nested hovercard.
   if (nested?.some((card) => hasFocusWithin(card) || path.includes(card))) {
     return true;
@@ -219,9 +221,9 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
         const { anchorElement, disclosureElement, hideTimeout, timeout } =
           store.getState();
         const path = event.composedPath();
-        const anchors = [anchorElement, disclosureElement];
-        const hoveredAnchor = anchors.find(
-          (anchor) => anchor && path.includes(anchor),
+        const hoverElements = [anchorElement, disclosureElement];
+        const hoveredElement = hoverElements.find(
+          (element) => element && path.includes(element),
         );
         // Checks whether the hovercard element has focus or the mouse is moving
         // through valid hovercard elements.
@@ -229,14 +231,14 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
           isMovingOnHovercard(
             path,
             element,
-            anchors,
+            hoverElements,
             nestedHovercardsRef.current,
           )
         ) {
-          // While the mouse is moving over the anchor element while the hover
-          // card is open, keep track of the mouse position so we can use the
-          // last point before the mouse leaves the anchor element.
-          enterPointRef.current = hoveredAnchor ? getEventPoint(event) : null;
+          // While the mouse is moving over an anchor or disclosure while the
+          // hovercard is open, keep track of the mouse position so we can use
+          // the last point before the mouse leaves it.
+          enterPointRef.current = hoveredElement ? getEventPoint(event) : null;
           clearHideTimeout();
           return;
         }

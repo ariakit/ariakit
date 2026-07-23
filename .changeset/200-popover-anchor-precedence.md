@@ -3,7 +3,7 @@
 "@ariakit/react": patch
 ---
 
-Explicit popover anchors take precedence over disclosures
+`PopoverAnchor` takes precedence over disclosures
 
 Updated popover positioning to fall back to the `disclosureElement` state only when the `anchorElement` state is `null`. This fixes [`PopoverDisclosure`](https://ariakit.com/reference/popover-disclosure) so it no longer overrides a separate [`PopoverAnchor`](https://ariakit.com/reference/popover-anchor) as the popover's positioning anchor.
 
@@ -21,4 +21,4 @@ Added [`MenuAnchor`](https://ariakit.com/reference/menu-anchor), [`SelectAnchor`
 </MenuProvider>
 ```
 
-Thanks to [@bengry](https://github.com/bengry) for reporting the issue.
+Thanks to [@bengry](https://github.com/bengry) for reporting the issue and providing the reproduction and workaround.

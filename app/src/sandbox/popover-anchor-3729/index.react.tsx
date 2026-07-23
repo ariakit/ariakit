@@ -1,185 +1,157 @@
 import * as Ariakit from "@ariakit/react";
-import { useRef, useState } from "react";
+import type { ReactNode } from "react";
+import { useState } from "react";
 
-interface ExampleCaseProps {
+function CaseLayout({ children }: { children: ReactNode }) {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gap: 200,
+        justifyItems: "start",
+        padding: 64,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+interface PopoverCaseProps {
   anchorFirst?: boolean;
   label: string;
-  provider?: boolean;
   removable?: boolean;
 }
 
-function ExampleCase({
-  anchorFirst,
-  label,
-  provider,
-  removable,
-}: ExampleCaseProps) {
+function PopoverCase({ anchorFirst, label, removable }: PopoverCaseProps) {
   const [anchorMounted, setAnchorMounted] = useState(true);
+  const [disclosureMounted, setDisclosureMounted] = useState(true);
   const store = Ariakit.usePopoverStore({ placement: "right" });
   const anchorElement = Ariakit.useStoreState(store, "anchorElement");
-  const disclosure = (
-    <Ariakit.PopoverDisclosure
-      store={provider ? undefined : store}
-      data-anchor="disclosure"
-    >
+  const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
+
+  const disclosure = disclosureMounted ? (
+    <Ariakit.PopoverDisclosure store={store} data-disclosure="button">
       Open {label}
     </Ariakit.PopoverDisclosure>
-  );
+  ) : null;
+
   const anchor = anchorMounted ? (
     <Ariakit.PopoverAnchor store={store} data-anchor="explicit">
       {label} anchor
     </Ariakit.PopoverAnchor>
   ) : null;
 
-  const content = (
-    <div
-      style={{
-        display: "grid",
-        gap: 200,
-        justifyItems: "start",
-        padding: 64,
-      }}
-    >
+  return (
+    <CaseLayout>
       {anchorFirst ? anchor : disclosure}
       {anchorFirst ? disclosure : anchor}
       <Ariakit.Popover
-        store={provider ? undefined : store}
+        store={store}
+        aria-label={`${label} details`}
         flip={false}
         slide={false}
         gutter={16}
       >
-        <Ariakit.PopoverHeading>{label} details</Ariakit.PopoverHeading>
-        <p>You have been invited to join the project.</p>
+        Popover content
         {removable && (
-          <Ariakit.Button onClick={() => setAnchorMounted(false)}>
-            Remove {label} anchor
-          </Ariakit.Button>
+          <>
+            <Ariakit.Button onClick={() => setAnchorMounted(false)}>
+              Remove {label} anchor
+            </Ariakit.Button>
+            <Ariakit.Button onClick={() => setDisclosureMounted(false)}>
+              Remove {label} disclosure
+            </Ariakit.Button>
+          </>
         )}
       </Ariakit.Popover>
       <output aria-label={`${label} current anchor`}>
         {anchorElement?.dataset.anchor || "none"}
       </output>
-    </div>
+      <output aria-label={`${label} current disclosure`}>
+        {disclosureElement?.dataset.disclosure || "none"}
+      </output>
+    </CaseLayout>
   );
-
-  if (provider) {
-    return (
-      <Ariakit.PopoverProvider store={store}>{content}</Ariakit.PopoverProvider>
-    );
-  }
-
-  return content;
 }
 
-function DisclosureUnmountCase() {
-  const [anchorMounted, setAnchorMounted] = useState(true);
-  const [disclosureMounted, setDisclosureMounted] = useState(true);
-  const store = Ariakit.usePopoverStore();
+function MenuCase() {
+  const store = Ariakit.useMenuStore({ placement: "right" });
   const anchorElement = Ariakit.useStoreState(store, "anchorElement");
   const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
 
   return (
-    <div>
-      {disclosureMounted && (
-        <Ariakit.PopoverDisclosure
-          store={store}
-          data-anchor="disclosure"
-          ref={() => {}}
+    <CaseLayout>
+      <Ariakit.MenuProvider store={store}>
+        <Ariakit.MenuButton data-disclosure="button">
+          Open Menu
+        </Ariakit.MenuButton>
+        <Ariakit.MenuAnchor data-anchor="explicit">
+          Menu anchor
+        </Ariakit.MenuAnchor>
+        <Ariakit.Menu
+          aria-label="Menu items"
+          flip={false}
+          slide={false}
+          gutter={16}
         >
-          Open removable disclosure
-        </Ariakit.PopoverDisclosure>
-      )}
-      {anchorMounted && (
-        <Ariakit.PopoverAnchor store={store} data-anchor="explicit">
-          Removable disclosure anchor
-        </Ariakit.PopoverAnchor>
-      )}
-      <Ariakit.Button onClick={() => setDisclosureMounted(false)}>
-        Remove Popover disclosure
-      </Ariakit.Button>
-      <Ariakit.Button onClick={() => setAnchorMounted(false)}>
-        Remove Popover anchor
-      </Ariakit.Button>
-      <Ariakit.Popover store={store} aria-label="Removable disclosure details">
-        Popover content
-      </Ariakit.Popover>
-      <output aria-label="Removable disclosure current anchor">
+          <Ariakit.MenuItem>Menu item</Ariakit.MenuItem>
+        </Ariakit.Menu>
+      </Ariakit.MenuProvider>
+      <output aria-label="Menu current anchor">
         {anchorElement?.dataset.anchor || "none"}
       </output>
-      <output aria-label="Removable disclosure current disclosure">
+      <output aria-label="Menu current disclosure">
+        {disclosureElement?.dataset.disclosure || "none"}
+      </output>
+    </CaseLayout>
+  );
+}
+
+function HoverMenuCase() {
+  const store = Ariakit.useMenuStore({ placement: "right", timeout: 0 });
+
+  return (
+    <CaseLayout>
+      <Ariakit.MenuProvider store={store}>
+        <Ariakit.MenuButton showOnHover>Open Hover Menu</Ariakit.MenuButton>
+        <Ariakit.MenuAnchor>Hover Menu anchor</Ariakit.MenuAnchor>
+        <Ariakit.Menu aria-label="Hover Menu items" hideOnHoverOutside>
+          <Ariakit.MenuItem>Hover menu item</Ariakit.MenuItem>
+        </Ariakit.Menu>
+      </Ariakit.MenuProvider>
+    </CaseLayout>
+  );
+}
+
+function HovercardAnchorCase() {
+  const store = Ariakit.useHovercardStore({ timeout: 0 });
+  const open = Ariakit.useStoreState(store, "open");
+  const anchorElement = Ariakit.useStoreState(store, "anchorElement");
+  const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
+
+  return (
+    <CaseLayout>
+      <Ariakit.HovercardProvider store={store}>
+        {!open && (
+          <Ariakit.HovercardAnchor
+            data-anchor="hovercard"
+            href="#hovercard-anchor-3729"
+          >
+            Hovercard anchor
+          </Ariakit.HovercardAnchor>
+        )}
+        <Ariakit.Hovercard aria-label="Unmount Hovercard">
+          Hovercard content
+        </Ariakit.Hovercard>
+      </Ariakit.HovercardProvider>
+      <output aria-label="Hovercard current anchor">
+        {anchorElement?.dataset.anchor || "none"}
+      </output>
+      <output aria-label="Hovercard current disclosure">
         {disclosureElement?.dataset.anchor || "none"}
       </output>
-    </div>
-  );
-}
-
-interface MenuButtonCaseProps {
-  customAnchor?: boolean;
-  label: string;
-}
-
-function MenuButtonCase({ customAnchor, label }: MenuButtonCaseProps) {
-  const store = Ariakit.useMenuStore({ placement: "right" });
-  const anchorElement = Ariakit.useStoreState(store, "anchorElement");
-  const groupRef = useRef<HTMLDivElement>(null);
-
-  return (
-    <div
-      style={{
-        display: "grid",
-        gap: 200,
-        justifyItems: "start",
-        padding: 64,
-      }}
-    >
-      <div ref={groupRef} data-anchor="group">
-        <Ariakit.MenuButton
-          store={store}
-          data-anchor="menu-button"
-          onClick={
-            customAnchor
-              ? () => store.setAnchorElement(groupRef.current)
-              : undefined
-          }
-        >
-          Open {label}
-        </Ariakit.MenuButton>
-      </div>
-      <Ariakit.MenuAnchor store={store} data-anchor="explicit">
-        {label} anchor
-      </Ariakit.MenuAnchor>
-      <Ariakit.Menu
-        store={store}
-        aria-label={`${label} items`}
-        flip={false}
-        slide={false}
-        gutter={16}
-      >
-        <Ariakit.MenuItem>Menu item</Ariakit.MenuItem>
-      </Ariakit.Menu>
-      <output aria-label={`${label} current anchor`}>
-        {anchorElement?.dataset.anchor || "none"}
-      </output>
-    </div>
-  );
-}
-
-function HoverMenuButtonCase() {
-  const store = Ariakit.useMenuStore({
-    placement: "right",
-    timeout: 0,
-  });
-
-  return (
-    <div>
-      <Ariakit.MenuButton store={store} showOnHover>
-        Open Hover Menu
-      </Ariakit.MenuButton>
-      <Ariakit.MenuAnchor store={store}>Hover Menu anchor</Ariakit.MenuAnchor>
-      <Ariakit.Menu store={store} aria-label="Hover Menu items">
-        <Ariakit.MenuItem>Hover menu item</Ariakit.MenuItem>
-      </Ariakit.Menu>
-    </div>
+    </CaseLayout>
   );
 }
 
@@ -191,19 +163,12 @@ function SelectCase() {
   const anchorElement = Ariakit.useStoreState(store, "anchorElement");
 
   return (
-    <Ariakit.SelectProvider store={store}>
-      <div
-        style={{
-          display: "grid",
-          gap: 200,
-          justifyItems: "start",
-          padding: 64,
-        }}
-      >
+    <CaseLayout>
+      <Ariakit.SelectProvider store={store}>
         <Ariakit.SelectAnchor data-anchor="explicit">
           Select anchor
         </Ariakit.SelectAnchor>
-        <Ariakit.Select aria-label="Open Select" data-anchor="select" />
+        <Ariakit.Select aria-label="Open Select" />
         <Ariakit.SelectPopover
           aria-label="Select items"
           flip={false}
@@ -213,224 +178,73 @@ function SelectCase() {
           <Ariakit.SelectItem value="Apple" />
           <Ariakit.SelectItem value="Orange" />
         </Ariakit.SelectPopover>
-        <output aria-label="Select current anchor">
-          {anchorElement?.dataset.anchor || "none"}
-        </output>
-      </div>
-    </Ariakit.SelectProvider>
+      </Ariakit.SelectProvider>
+      <output aria-label="Select current anchor">
+        {anchorElement?.dataset.anchor || "none"}
+      </output>
+    </CaseLayout>
   );
 }
 
-function ComboboxCase() {
-  const [anchorMounted, setAnchorMounted] = useState(true);
-  const [comboboxMounted, setComboboxMounted] = useState(true);
+type ComboboxCaseType = "explicit" | "input" | "disclosure";
+
+function ComboboxCase({ type }: { type: ComboboxCaseType }) {
+  const label = `${type[0]?.toUpperCase()}${type.slice(1)}`;
   const store = Ariakit.useComboboxStore({ placement: "right" });
   const anchorElement = Ariakit.useStoreState(store, "anchorElement");
   const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
 
   return (
-    <Ariakit.ComboboxProvider store={store}>
-      <div
-        style={{
-          display: "grid",
-          gap: 200,
-          justifyItems: "start",
-          padding: 64,
-        }}
-      >
-        {anchorMounted && (
+    <CaseLayout>
+      <Ariakit.ComboboxProvider store={store}>
+        {type === "explicit" && (
           <Ariakit.ComboboxAnchor data-anchor="explicit">
-            Combobox anchor
+            {label} Combobox anchor
           </Ariakit.ComboboxAnchor>
         )}
-        <div style={{ display: "grid", gap: 100 }}>
-          {comboboxMounted && (
-            <Ariakit.Combobox aria-label="Combobox" data-anchor="combobox" />
-          )}
-          <Ariakit.ComboboxDisclosure
-            aria-label="Open Combobox"
-            data-anchor="disclosure"
+        {type !== "disclosure" && (
+          <Ariakit.Combobox
+            aria-label={`${label} Combobox input`}
+            data-anchor="input"
           />
-        </div>
-        <Ariakit.Button onClick={() => setAnchorMounted(false)}>
-          Remove Combobox anchor
-        </Ariakit.Button>
-        <Ariakit.Button onClick={() => setComboboxMounted(false)}>
-          Remove Combobox input
-        </Ariakit.Button>
+        )}
+        <Ariakit.ComboboxDisclosure
+          aria-label={`Open ${label} Combobox`}
+          data-disclosure="button"
+        />
         <Ariakit.ComboboxPopover
-          aria-label="Combobox items"
+          aria-label={`${label} Combobox items`}
           flip={false}
           slide={false}
           gutter={16}
         >
           <Ariakit.ComboboxItem value="Apple" />
-          <Ariakit.ComboboxItem value="Orange" />
         </Ariakit.ComboboxPopover>
-        <output aria-label="Combobox current anchor">
-          {anchorElement?.dataset.anchor || "none"}
-        </output>
-        <output aria-label="Combobox current disclosure">
-          {disclosureElement?.dataset.anchor || "none"}
-        </output>
-      </div>
-    </Ariakit.ComboboxProvider>
-  );
-}
-
-function DefaultOpenComboboxCase() {
-  const [comboboxMounted, setComboboxMounted] = useState(true);
-  const [firstDisclosureMounted, setFirstDisclosureMounted] = useState(true);
-  const [secondDisclosureMounted, setSecondDisclosureMounted] = useState(true);
-  const store = Ariakit.useComboboxStore({ defaultOpen: true });
-  const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
-
-  return (
-    <Ariakit.ComboboxProvider store={store}>
-      {comboboxMounted && (
-        <Ariakit.Combobox
-          aria-label="Default open Combobox"
-          data-anchor="combobox"
-        />
-      )}
-      {firstDisclosureMounted && (
-        <Ariakit.ComboboxDisclosure
-          aria-label="First default open Combobox disclosure"
-          data-anchor="first-disclosure"
-        />
-      )}
-      {secondDisclosureMounted && (
-        <Ariakit.ComboboxDisclosure
-          aria-label="Second default open Combobox disclosure"
-          data-anchor="second-disclosure"
-        />
-      )}
-      <Ariakit.Button
-        onClick={() => setFirstDisclosureMounted((mounted) => !mounted)}
-      >
-        {firstDisclosureMounted ? "Remove" : "Mount"} first default open
-        Combobox disclosure
-      </Ariakit.Button>
-      <Ariakit.Button onClick={() => setSecondDisclosureMounted(false)}>
-        Remove second default open Combobox disclosure
-      </Ariakit.Button>
-      <Ariakit.Button
-        onClick={() => {
-          setComboboxMounted(false);
-          setFirstDisclosureMounted(false);
-          setSecondDisclosureMounted(false);
-        }}
-      >
-        Remove all default open Combobox controls
-      </Ariakit.Button>
-      <Ariakit.ComboboxPopover aria-label="Default open Combobox items">
-        <Ariakit.ComboboxItem value="Apple" />
-      </Ariakit.ComboboxPopover>
-      <output aria-label="Default open Combobox current disclosure">
-        {disclosureElement?.dataset.anchor || "none"}
-      </output>
-    </Ariakit.ComboboxProvider>
-  );
-}
-
-function ComposedComboboxDisclosureCase() {
-  const store = Ariakit.useComboboxStore();
-  const anchorElement = Ariakit.useStoreState(store, "anchorElement");
-
-  return (
-    <Ariakit.ComboboxProvider store={store}>
-      <Ariakit.Combobox aria-label="Composed Combobox" data-anchor="combobox" />
-      <Ariakit.DialogDisclosure
-        store={store}
-        render={
-          <Ariakit.ComboboxDisclosure
-            store={store}
-            aria-label="Open composed Combobox"
-          />
-        }
-      />
-      <Ariakit.ComboboxPopover aria-label="Composed Combobox items">
-        <Ariakit.ComboboxItem value="Apple" />
-        <Ariakit.ComboboxItem value="Orange" />
-      </Ariakit.ComboboxPopover>
-      <output aria-label="Composed Combobox current anchor">
+      </Ariakit.ComboboxProvider>
+      <output aria-label={`${label} Combobox current anchor`}>
         {anchorElement?.dataset.anchor || "none"}
       </output>
-    </Ariakit.ComboboxProvider>
-  );
-}
-
-function HovercardCase() {
-  const [anchorMounted, setAnchorMounted] = useState(false);
-  const [secondAnchorMounted, setSecondAnchorMounted] = useState(false);
-  const store = Ariakit.useHovercardStore({ placement: "right" });
-  const anchorElement = Ariakit.useStoreState(store, "anchorElement");
-
-  return (
-    <Ariakit.HovercardProvider store={store}>
-      <div
-        style={{
-          display: "grid",
-          gap: 200,
-          justifyItems: "start",
-          padding: 64,
-        }}
-      >
-        <Ariakit.HovercardDisclosure data-anchor="disclosure">
-          Open Hovercard
-        </Ariakit.HovercardDisclosure>
-        {anchorMounted && (
-          <Ariakit.HovercardAnchor href="#hovercard" data-anchor="first">
-            Hovercard anchor
-          </Ariakit.HovercardAnchor>
-        )}
-        {secondAnchorMounted && (
-          <Ariakit.HovercardAnchor href="#hovercard" data-anchor="second">
-            Second Hovercard anchor
-          </Ariakit.HovercardAnchor>
-        )}
-        <Ariakit.Button onClick={() => setAnchorMounted(true)}>
-          Mount Hovercard anchor
-        </Ariakit.Button>
-        <Ariakit.Button
-          onClick={() => {
-            store.setDisclosureElement(store.getState().anchorElement);
-            setSecondAnchorMounted(true);
-          }}
-        >
-          Mount second Hovercard anchor
-        </Ariakit.Button>
-        <Ariakit.Hovercard
-          aria-label="Hovercard details"
-          flip={false}
-          slide={false}
-          gutter={16}
-        >
-          Hovercard content
-        </Ariakit.Hovercard>
-        <output aria-label="Hovercard current anchor">
-          {anchorElement?.dataset.anchor || "none"}
-        </output>
-      </div>
-    </Ariakit.HovercardProvider>
+      <output aria-label={`${label} Combobox current disclosure`}>
+        {disclosureElement?.dataset.disclosure ||
+          disclosureElement?.dataset.anchor ||
+          "none"}
+      </output>
+    </CaseLayout>
   );
 }
 
 export default function Example() {
   return (
-    <div style={{ display: "grid", gap: 32, width: "100%" }}>
-      <ExampleCase label="Disclosure first" removable />
-      <ExampleCase label="Anchor first" anchorFirst />
-      <ExampleCase label="Provider store" anchorFirst provider />
-      <DisclosureUnmountCase />
-      <MenuButtonCase label="Menu" />
-      <MenuButtonCase label="Override Menu" customAnchor />
-      <HoverMenuButtonCase />
+    <>
+      <PopoverCase label="Disclosure first" removable />
+      <PopoverCase label="Anchor first" anchorFirst />
+      <MenuCase />
+      <HoverMenuCase />
       <SelectCase />
-      <ComboboxCase />
-      <DefaultOpenComboboxCase />
-      <ComposedComboboxDisclosureCase />
-      <HovercardCase />
-    </div>
+      <ComboboxCase type="explicit" />
+      <ComboboxCase type="input" />
+      <ComboboxCase type="disclosure" />
+      <HovercardAnchorCase />
+    </>
   );
 }
