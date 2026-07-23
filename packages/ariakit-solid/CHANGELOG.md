@@ -1,5 +1,9 @@
 # @ariakit/solid
 
+## 0.2.5
+
+- Updated dependencies: `@ariakit/solid-components@0.1.5`
+
 ## 0.2.4
 
 - Fixed [`Group`](https://ariakit.com/reference/group) to ignore its internal [`GroupLabel`](https://ariakit.com/reference/group-label) reference when `aria-label` is passed.

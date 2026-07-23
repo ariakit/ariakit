@@ -1,5 +1,91 @@
 # @ariakit/react
 
+## 0.4.35
+
+This version adds custom typeahead labels for composite items and selected-state rendering for select items. It also improves disabled radio groups, hidden popover performance, nested <kbd>Esc</kbd> handling, dialogs across portals and shadow roots, multi-select combobox form values, typeahead with unmounted options, and composite virtual focus.
+
+### Custom typeahead text for composite items
+
+The new [`typeaheadText`](https://ariakit.com/reference/composite-item#typeaheadtext) prop lets [`CompositeItem`](https://ariakit.com/reference/composite-item) use an explicit label for typeahead matching when its rendered content starts with an emoji or other decoration.
+
+```tsx
+<SelectItem typeaheadText="Canada" value="Canada">
+  <span aria-hidden>🇨🇦</span> Canada
+</SelectItem>
+```
+
+Set [`typeaheadText`](https://ariakit.com/reference/composite-item#typeaheadtext) to an empty string to exclude an item from typeahead matching. The prop is also available on these components exported by `@ariakit/react` and built on [`CompositeItem`](https://ariakit.com/reference/composite-item): [`ComboboxItem`](https://ariakit.com/reference/combobox-item), [`FormRadio`](https://ariakit.com/reference/form-radio), [`MenuItem`](https://ariakit.com/reference/menu-item), [`MenuItemCheckbox`](https://ariakit.com/reference/menu-item-checkbox), [`MenuItemRadio`](https://ariakit.com/reference/menu-item-radio), [`Radio`](https://ariakit.com/reference/radio), [`SelectItem`](https://ariakit.com/reference/select-item), [`Tab`](https://ariakit.com/reference/tab), [`ToolbarContainer`](https://ariakit.com/reference/toolbar-container), [`ToolbarInput`](https://ariakit.com/reference/toolbar-input), and [`ToolbarItem`](https://ariakit.com/reference/toolbar-item).
+
+Thanks to [@Dremora](https://github.com/Dremora) for reporting the issue and providing the reproduction, and [@georgekaran](https://github.com/georgekaran) for the investigation and implementation work that informed this solution.
+
+### Skip position updates on hidden popovers
+
+Popovers that stay mounted while closed, such as [`Popover`](https://ariakit.com/reference/popover), [`Tooltip`](https://ariakit.com/reference/tooltip), [`Hovercard`](https://ariakit.com/reference/hovercard), [`Menu`](https://ariakit.com/reference/menu), [`SelectPopover`](https://ariakit.com/reference/select-popover), and [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover), no longer set up position auto-updates while hidden, unless a custom [`updatePosition`](https://ariakit.com/reference/popover#updateposition) callback is provided. Closed popovers no longer keep standing scroll and resize listeners and observers around, and hiding a popover skips a full positioning setup and teardown cycle. This reduces aggregate CPU and rendering work when rapidly showing and hiding popovers, such as when quickly moving across toolbar items with tooltips.
+
+Thanks to [@aledecicco](https://github.com/aledecicco) for reporting the issue.
+
+### `RadioGroup` disables descendant radios
+
+The [`RadioGroup`](https://ariakit.com/reference/radio-group) `disabled` prop now marks the group as disabled and disables descendant [`Radio`](https://ariakit.com/reference/radio) components, including radios rendered as custom elements.
+
+```tsx
+<RadioGroup disabled>
+  <Radio value="Apple" />
+  <Radio value="Orange" />
+</RadioGroup>
+```
+
+Thanks to [@kripod](https://github.com/kripod) for reporting the issue.
+
+### New `SelectItemSelected` component
+
+The new [`SelectItemSelected`](https://ariakit.com/reference/select-item-selected) value component exposes whether the closest [`SelectItem`](https://ariakit.com/reference/select-item) is selected through a required function child.
+
+```tsx
+<SelectItem value="Apple">
+  <SelectItemSelected>
+    {(selected) => (selected ? <CheckIcon /> : null)}
+  </SelectItemSelected>
+  Apple
+</SelectItem>
+```
+
+Thanks to [@jonrimmer](https://github.com/jonrimmer) for proposing the feature, and [@georgekaran](https://github.com/georgekaran) for the investigation and implementation work that informed this solution.
+
+### Handling <kbd>Esc</kbd> in nested widgets
+
+The [`Dialog`](https://ariakit.com/reference/dialog) component and components that inherit its default <kbd>Esc</kbd> handling, including [`Popover`](https://ariakit.com/reference/popover), [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover), and [`SelectPopover`](https://ariakit.com/reference/select-popover), now let descendants call `event.stopPropagation()` on <kbd>Esc</kbd> without hiding the enclosing component. This allows a nested widget to dismiss itself first.
+
+```tsx
+<Dialog>
+  <input
+    onKeyDown={(event) => {
+      if (event.key !== "Escape") return;
+      if (!suggestionsOpen) return;
+      event.stopPropagation();
+      closeSuggestions();
+    }}
+  />
+</Dialog>
+```
+
+When the component handles an <kbd>Esc</kbd> event from its React subtree, it also stops the event at its boundary. This keeps an enclosing third-party React dialog with a bubble handler open while the Ariakit component closes.
+
+When it handles <kbd>Esc</kbd> through the document fallback, such as when focus is on its disclosure, it stops the event at `document` before it reaches `window` bubble listeners.
+
+An ancestor capture handler that stops <kbd>Esc</kbd> before it reaches the component owns the event. If [`hideOnEscape`](https://ariakit.com/reference/dialog#hideonescape) runs before such a handler, it can call `event.stopPropagation()` to keep the event from reaching it.
+
+Thanks to [@boaz-wiz](https://github.com/boaz-wiz) for reporting the issue.
+
+### Other updates
+
+- Fixed multi-selectable [`Combobox`](https://ariakit.com/reference/combobox) components to submit selected values to forms when a `name` is provided. Thanks to [@cloud-walker](https://github.com/cloud-walker) and [@georgekaran](https://github.com/georgekaran).
+- Fixed [`Composite`](https://ariakit.com/reference/composite) and derived widgets such as [`SelectList`](https://ariakit.com/reference/select-list) to clear stale focus-visible state and warn in development when virtual focus is used with a non-focusable composite element. Thanks to [@ItaiYosephi](https://github.com/ItaiYosephi).
+- Fixed [`Dialog`](https://ariakit.com/reference/dialog) and components built on it, such as [`Popover`](https://ariakit.com/reference/popover) and [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover), so interacting with elements returned by [`getPersistentElements`](https://ariakit.com/reference/dialog#getpersistentelements) across open shadow roots no longer closes the component before it receives focus.
+- Fixed sibling modal [`Dialog`](https://ariakit.com/reference/dialog) components and modal components built on them, such as [`Popover`](https://ariakit.com/reference/popover) and [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover), rendered in their default portals so opening them in the same render no longer made each other inert. Thanks to [@yishayhaz](https://github.com/yishayhaz) and [@gonzoblasco](https://github.com/gonzoblasco).
+- Fixed collection store [`item`](https://ariakit.com/reference/use-collection-store#item) lookups to resolve controlled items added after store creation when no live item is registered. This allows [`Select`](https://ariakit.com/reference/select) typeahead to update its value while options are unmounted. Thanks to [@georgekaran](https://github.com/georgekaran).
+- Updated dependencies: `@ariakit/react-components@0.3.4`
+
 ## 0.4.34
 
 - Fixed published packages omitting their build output. Thanks to [@shahednasser](https://github.com/shahednasser).

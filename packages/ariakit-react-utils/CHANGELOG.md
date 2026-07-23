@@ -1,5 +1,9 @@
 # @ariakit/react-utils
 
+## 0.2.3
+
+- Updated dependencies: `@ariakit/utils@0.1.5`, `@ariakit/store@0.1.7`
+
 ## 0.2.2
 
 - Fixed published packages omitting their build output. Thanks to [@shahednasser](https://github.com/shahednasser).
