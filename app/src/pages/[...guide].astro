@@ -26,12 +26,12 @@ export const getStaticPaths = (async () => {
       getGuideDetail(entry);
     return {
       params: { guide: path },
-      props: { entry, framework, groupLabel, groupPath, type },
+      props: { entry, framework, groupLabel, groupPath, path, type },
     };
   });
 }) satisfies GetStaticPaths;
 
-const { entry, groupLabel, groupPath, framework, type } = Astro.props;
+const { entry, groupLabel, groupPath, framework, path, type } = Astro.props;
 const { Content, headings } = await render(entry);
 
 const guides = (
@@ -52,6 +52,7 @@ const title = entry.data.title;
     {framework}
     {type}
     {title}
+    pagePath={path}
     description={entry.data.description}
   />
   <ContainerLeftMenu>
