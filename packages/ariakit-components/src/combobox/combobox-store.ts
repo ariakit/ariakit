@@ -127,6 +127,8 @@ export function createComboboxStore({
       multiSelectable && !tag,
     ),
     activeValue: syncState?.activeValue,
+    labelElement: defaultValue(syncState?.labelElement, null),
+    selectElement: defaultValue(syncState?.selectElement, null),
   };
 
   const combobox = createStore(initialState, composite, popover, store);
@@ -205,6 +207,8 @@ export function createComboboxStore({
     resetValue: () => combobox.setState("value", initialState.value),
     setSelectedValue: (selectedValue) =>
       combobox.setState("selectedValue", selectedValue),
+    setLabelElement: (element) => combobox.setState("labelElement", element),
+    setSelectElement: (element) => combobox.setState("selectElement", element),
   };
 }
 
@@ -298,6 +302,14 @@ export interface ComboboxStoreState<
    * instead.
    */
   resetValueOnSelect: boolean;
+  /**
+   * The combobox label element.
+   */
+  labelElement: HTMLElement | null;
+  /**
+   * The combobox select button element.
+   */
+  selectElement: HTMLElement | null;
 }
 
 export interface ComboboxStoreFunctions<
@@ -330,6 +342,14 @@ export interface ComboboxStoreFunctions<
    * state.
    */
   setSelectedValue: SetState<ComboboxStoreState<T>["selectedValue"]>;
+  /**
+   * Sets the `labelElement` state.
+   */
+  setLabelElement: SetState<ComboboxStoreState<T>["labelElement"]>;
+  /**
+   * Sets the `selectElement` state.
+   */
+  setSelectElement: SetState<ComboboxStoreState<T>["selectElement"]>;
 }
 
 export interface ComboboxStoreOptions<
