@@ -303,10 +303,16 @@ function getScrollElement(
   renderer: HTMLElement,
   scrollElement: CollectionRendererOptions["scrollElement"],
 ): Element | null {
-  if (scrollElement === undefined) return getScrollingElement(renderer);
-  if (typeof scrollElement === "function") return scrollElement(renderer);
+  if (scrollElement === undefined) {
+    return getScrollingElement(renderer);
+  }
+  if (typeof scrollElement === "function") {
+    return scrollElement(renderer);
+  }
   const element = scrollElement as HTMLElement | null | undefined;
-  if (isElement(element)) return element;
+  if (isElement(element)) {
+    return element;
+  }
   if (scrollElement && "current" in scrollElement) {
     return scrollElement.current;
   }
