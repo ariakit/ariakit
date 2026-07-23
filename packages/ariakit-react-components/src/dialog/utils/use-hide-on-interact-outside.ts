@@ -73,6 +73,18 @@ function isDisclosure(disclosure: Element | null, target: Element) {
   return false;
 }
 
+function isFrameChainInside(
+  frameChain: Element[],
+  contentElement: Element,
+  disclosureElement: Element | null,
+) {
+  return frameChain.some((target) => {
+    if (isDisclosure(disclosureElement, target)) return true;
+    if (target.hasAttribute("data-focus-trap")) return true;
+    return isElementInside(target, contentElement.id);
+  });
+}
+
 function isMouseEventOnDialog(event: Event | MouseEvent, dialog: Element) {
   if (!("clientY" in event)) return false;
   const rect = dialog.getBoundingClientRect();
@@ -112,11 +124,11 @@ function useEventOutside({
       // Check each frame host so cross-document disclosures, focus traps,
       // persistent elements, and nested dialogs remain inside. See
       // https://github.com/ariakit/ariakit/issues/6344
-      const isInside = frameChain.some((target) => {
-        if (isDisclosure(disclosureElement, target)) return true;
-        if (target.hasAttribute("data-focus-trap")) return true;
-        return isElementInside(target, contentElement.id);
-      });
+      const isInside = isFrameChainInside(
+        frameChain,
+        contentElement,
+        disclosureElement,
+      );
       if (isInside) return;
       const target =
         frameChain.find((target) => getDocument(target) === contentDocument) ??
@@ -198,7 +210,7 @@ export function useHideOnInteractOutside(
     ...props,
     type: "click",
     listener: (event) => {
-      const { contentElement } = store.getState();
+      const { contentElement, disclosureElement } = store.getState();
       const previousMouseDown = previousMouseDownRef.current as Element | null;
       // If there's no previously mousedown'd element, this probably means that
       // the dialog opened with a mousedown event, and a subsequent click event
@@ -211,6 +223,15 @@ export function useHideOnInteractOutside(
       // - https://github.com/ariakit/ariakit/issues/1336
       // - https://github.com/ariakit/ariakit/issues/2330
       if (!contentElement) return;
+      if (
+        isFrameChainInside(
+          getFrameChain(previousMouseDown),
+          contentElement,
+          disclosureElement,
+        )
+      ) {
+        return;
+      }
       const previousMouseDownInContentDocument = getFrameHostInDocument(
         previousMouseDown,
         getDocument(contentElement),

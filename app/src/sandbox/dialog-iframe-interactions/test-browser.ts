@@ -30,6 +30,20 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(frame.dialog("Iframe popover")).not.toBeVisible();
   });
 
+  test("keeps the iframe popover open when dragging from its parent disclosure", async ({
+    page,
+    q,
+  }) => {
+    const frame = query(page.frameLocator("iframe[title='Embedded combobox']"));
+    const disclosure = q.button("Toggle iframe popover");
+    await disclosure.click();
+    await test.expect(frame.dialog("Iframe popover")).toBeVisible();
+
+    await disclosure.dragTo(q.textbox("Parent target"));
+
+    await test.expect(frame.dialog("Iframe popover")).toBeVisible();
+  });
+
   // https://github.com/ariakit/ariakit/issues/3250
   test("hides the popover when clicking an existing sibling iframe", async ({
     page,
