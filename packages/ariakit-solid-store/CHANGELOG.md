@@ -1,5 +1,9 @@
 # @ariakit/solid-store
 
+## 0.1.7
+
+- Updated dependencies: `@ariakit/store@0.1.7`
+
 ## 0.1.6
 
 - Fixed published packages omitting their build output. Thanks to [@shahednasser](https://github.com/shahednasser).
