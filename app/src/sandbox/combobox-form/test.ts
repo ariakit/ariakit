@@ -51,6 +51,17 @@ test("resets an uncontrolled combobox with a native reset button", async () => {
 });
 
 // https://github.com/ariakit/ariakit/issues/1861
+test("resets an uncontrolled value composed from a store", async () => {
+  const homeTown = q.combobox.ensure("Store home town");
+
+  await type("Boston", homeTown);
+  await press("Escape", homeTown);
+  await click(q.button("Reset address"));
+
+  expect(homeTown).toHaveValue("");
+});
+
+// https://github.com/ariakit/ariakit/issues/1861
 test("resets after the combobox element is replaced", async () => {
   let homeTown = q.combobox.ensure("Rebound home town");
 

@@ -14,6 +14,7 @@ export default function Example() {
   const [reboundTextarea, setReboundTextarea] = useState(false);
   const [controlledHomeTown, setControlledHomeTown] = useState("");
   const [controlledStoreHomeTown, setControlledStoreHomeTown] = useState("");
+  const uncontrolledStore = Ariakit.useComboboxStore();
   const controlledStore = Ariakit.useComboboxStore({
     value: controlledStoreHomeTown,
     setValue: setControlledStoreHomeTown,
@@ -77,6 +78,10 @@ export default function Example() {
             name="reboundHomeTown"
             render={reboundTextarea ? <textarea /> : <input />}
           />
+        </Ariakit.ComboboxProvider>
+        <Ariakit.ComboboxProvider store={uncontrolledStore}>
+          <Ariakit.ComboboxLabel>Store home town</Ariakit.ComboboxLabel>
+          <Ariakit.Combobox name="storeHomeTown" />
         </Ariakit.ComboboxProvider>
         <button type="button" onClick={() => setReboundTextarea(true)}>
           Replace rebound home town

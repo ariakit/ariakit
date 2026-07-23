@@ -117,6 +117,17 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/1861
+  test("resets an uncontrolled value composed from a store", async ({ q }) => {
+    const homeTown = q.combobox("Store home town");
+
+    await homeTown.fill("Boston");
+    await homeTown.press("Escape");
+    await q.button("Reset address").click();
+
+    await test.expect(homeTown).toHaveValue("");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/1861
   test("resets after the combobox element is replaced", async ({ q }) => {
     const homeTown = q.combobox("Rebound home town");
 
