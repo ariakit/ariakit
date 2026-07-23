@@ -4,7 +4,7 @@
 
 Explicit scroll elements for collection renderers
 
-Added the `scrollElement` prop to collection renderers, including `CompositeRenderer` and `SelectRenderer`. This prop can be an element, a React ref, or a function that resolves the element whose viewport controls rendering.
+Collection renderers, including `CompositeRenderer` and `SelectRenderer`, now accept a `scrollElement` prop. It accepts an element, a React ref, a resolver function, or `null` to disable viewport-driven rendering.
 
 Use this prop when the scrolling ancestor cannot be detected automatically, such as when an `overflow: auto` element does not overflow until asynchronous items are loaded:
 
