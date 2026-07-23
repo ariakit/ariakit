@@ -1,5 +1,9 @@
 # @ariakit/solid-utils
 
+## 0.1.5
+
+- Updated dependencies: `@ariakit/utils@0.1.5`
+
 ## 0.1.4
 
 - Fixed `createRef().reset()` so function initial values are restored without being invoked.
