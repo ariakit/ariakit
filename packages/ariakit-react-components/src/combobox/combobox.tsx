@@ -797,6 +797,28 @@ export const Combobox = forwardRef(function Combobox(props: ComboboxProps) {
   return createElement(TagName, htmlProps);
 });
 
+/**
+ * Alias for the [`Combobox`](https://ariakit.com/reference/combobox)
+ * component. Prefer this name when composing the input with a
+ * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) component,
+ * where the input is a filter inside the popover rather than the main
+ * combobox element.
+ * @see https://ariakit.com/components/combobox
+ * @example
+ * ```jsx {5}
+ * <ComboboxProvider>
+ *   <ComboboxSelect />
+ *   <ComboboxPopover>
+ *     <ComboboxInput />
+ *     <ComboboxList>
+ *       <ComboboxItem value="Apple" />
+ *     </ComboboxList>
+ *   </ComboboxPopover>
+ * </ComboboxProvider>
+ * ```
+ */
+export const ComboboxInput = Combobox;
+
 export interface ComboboxOptions<
   T extends ElementType = TagName,
 > extends CompositeOptions<T> {
@@ -1028,3 +1050,9 @@ export type ComboboxProps<T extends ElementType = TagName> = Props<
   T,
   ComboboxOptions<T>
 >;
+
+export type ComboboxInputOptions<T extends ElementType = TagName> =
+  ComboboxOptions<T>;
+
+export type ComboboxInputProps<T extends ElementType = TagName> =
+  ComboboxProps<T>;

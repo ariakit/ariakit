@@ -1,8 +1,13 @@
 export type {
+  ComboboxInputOptions,
+  ComboboxInputProps,
   ComboboxOptions,
   ComboboxProps,
 } from "@ariakit/react-components/combobox/combobox";
-export { Combobox } from "@ariakit/react-components/combobox/combobox";
+export {
+  Combobox,
+  ComboboxInput,
+} from "@ariakit/react-components/combobox/combobox";
 export type {
   ComboboxAnchorOptions,
   ComboboxAnchorProps,

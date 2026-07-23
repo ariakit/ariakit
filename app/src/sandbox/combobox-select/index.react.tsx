@@ -50,7 +50,7 @@ function FruitSelect({
       />
       <Ariakit.ComboboxPopover modal={modal} unmountOnHide={unmountOnHide}>
         {heading && <Ariakit.PopoverHeading>{heading}</Ariakit.PopoverHeading>}
-        <Ariakit.Combobox autoSelect placeholder={`Search ${label}`} />
+        <Ariakit.ComboboxInput autoSelect placeholder={`Search ${label}`} />
         <Ariakit.ComboboxList>
           {fruits.map((value) => (
             <Ariakit.ComboboxItem key={value} value={value} />
@@ -94,6 +94,34 @@ function ToggleFruitSelect() {
   );
 }
 
+interface PlainFruitSelectProps {
+  label: string;
+  defaultSelectedValue?: string | string[];
+  showOnKeyDown?: boolean;
+}
+
+// A standard select without a filter input: the ComboboxSelect trigger keeps
+// DOM focus and drives the listbox with virtual focus.
+function PlainFruitSelect({
+  label,
+  defaultSelectedValue,
+  showOnKeyDown,
+}: PlainFruitSelectProps) {
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue={defaultSelectedValue}>
+      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect showOnKeyDown={showOnKeyDown} />
+      <Ariakit.ComboboxPopover>
+        <Ariakit.ComboboxList>
+          {fruits.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 export default function Example() {
   const [favorite, setFavorite] = useState("None");
   const [requiredSubmitted, setRequiredSubmitted] = useState(false);
@@ -101,6 +129,12 @@ export default function Example() {
   return (
     <div>
       <button type="button">Outside action</button>
+      <PlainFruitSelect label="Plain fruit" defaultSelectedValue="Apple" />
+      <PlainFruitSelect
+        label="Closed fruit"
+        defaultSelectedValue="Apple"
+        showOnKeyDown={false}
+      />
 
       <form
         onSubmit={(event) => {

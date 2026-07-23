@@ -1,5 +1,10 @@
 import { useStoreState } from "@ariakit/react-store";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import {
+  useAttribute,
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { getDocument, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
 import type { ElementType } from "react";
@@ -65,11 +70,12 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
 
     const baseElement = useStoreState(store, "baseElement");
     const contentElement = useStoreState(store, "contentElement");
-    const selectLabelId = useStoreState(
-      store,
-      (state) => state.selectLabelElement?.id,
-    );
-    const labelId = useStoreState(store, (state) => state.labelElement?.id);
+    const selectLabelElement = useStoreState(store, "selectLabelElement");
+    const labelElement = useStoreState(store, "labelElement");
+    useAttribute(selectLabelElement, "id");
+    useAttribute(labelElement, "id");
+    const selectLabelId = selectLabelElement?.id;
+    const labelId = labelElement?.id;
     const hiddenByClickOutsideRef = useRef(false);
 
     // A filterable select renders the combobox input inside the popover, unlike

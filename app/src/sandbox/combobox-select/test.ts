@@ -1,4 +1,4 @@
-import { click, dispatch, focus, press, q } from "@ariakit/test";
+import { click, dispatch, focus, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 function getNativeSelect(label: string) {
@@ -145,4 +145,90 @@ test("reverts to plain combobox behavior when the select unmounts", async () => 
   await click(q.option("Banana"));
 
   expect(q.combobox("Search Toggle fruit")).toHaveValue("Banana");
+});
+
+test("navigates a standard (input-less) select with virtual focus", async () => {
+  const combobox = q.combobox.ensure("Plain fruit");
+  await click(combobox);
+
+  expect(q.dialog("Plain fruit")).toBeInTheDocument();
+  expect(combobox).toHaveFocus();
+  await expect.poll(q.option.lazy("Apple")).toHaveAttribute("data-active-item");
+  expect(combobox).toHaveAttribute(
+    "aria-activedescendant",
+    q.option.ensure("Apple").id,
+  );
+
+  await press.ArrowDown();
+  expect(q.option("Banana")).toHaveAttribute("data-active-item");
+  expect(combobox).toHaveAttribute(
+    "aria-activedescendant",
+    q.option.ensure("Banana").id,
+  );
+
+  await press.End();
+  expect(q.option("Orange")).toHaveAttribute("data-active-item");
+  await press.Home();
+  expect(q.option("Apple")).toHaveAttribute("data-active-item");
+
+  await press.ArrowDown();
+  await press.Enter();
+
+  expect(q.dialog("Plain fruit")).not.toBeInTheDocument();
+  expect(combobox).toHaveTextContent("Banana");
+  expect(combobox).toHaveFocus();
+  expect(combobox).not.toHaveAttribute("aria-activedescendant");
+});
+
+test("supports typeahead on a standard select while open", async () => {
+  const combobox = q.combobox.ensure("Plain fruit");
+  await click(combobox);
+  await expect.poll(q.option.lazy("Apple")).toHaveAttribute("data-active-item");
+
+  await type("o");
+  expect(q.option("Orange")).toHaveAttribute("data-active-item");
+
+  await press.Enter();
+  expect(combobox).toHaveTextContent("Orange");
+});
+
+test("moves the selection with arrow keys while closed", async () => {
+  const combobox = q.combobox.ensure("Closed fruit");
+  await click(combobox);
+  await expect.poll(q.option.lazy("Apple")).toHaveAttribute("data-active-item");
+  await press.Escape();
+  expect(q.dialog("Closed fruit")).not.toBeInTheDocument();
+
+  await press.ArrowDown();
+  expect(combobox).toHaveTextContent("Banana");
+  await press.ArrowDown();
+  expect(combobox).toHaveTextContent("Orange");
+  await press.ArrowUp();
+  expect(combobox).toHaveTextContent("Banana");
+  expect(q.dialog("Closed fruit")).not.toBeInTheDocument();
+});
+
+test("selects with typeahead while closed", async () => {
+  const combobox = q.combobox.ensure("Closed fruit");
+  await click(combobox);
+  await expect.poll(q.option.lazy("Apple")).toHaveAttribute("data-active-item");
+  await press.Escape();
+
+  await type("o");
+  expect(combobox).toHaveTextContent("Orange");
+  expect(q.dialog("Closed fruit")).not.toBeInTheDocument();
+});
+
+test("exposes aria-selected on items when a select is registered", async () => {
+  await click(q.combobox("Favorite fruit"));
+
+  expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
+  expect(q.option("Banana")).toHaveAttribute("aria-selected", "false");
+});
+
+test("omits aria-selected in a single-select without a ComboboxSelect", async () => {
+  await click(q.button("Toggle select"));
+  await click(q.combobox("Search Toggle fruit"));
+
+  expect(q.option("Apple")).not.toHaveAttribute("aria-selected");
 });

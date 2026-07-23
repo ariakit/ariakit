@@ -88,11 +88,14 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         "ComboboxItem must be wrapped in a ComboboxList or ComboboxPopover component.",
     );
 
-    const { resetValueOnSelectState, multiSelectable, selected } =
-      useStoreStateObject(store, ["selectedValue"], {
+    const { resetValueOnSelectState, multiSelectable, selectMode, selected } =
+      useStoreStateObject(store, ["selectedValue", "selectElement"], {
         resetValueOnSelectState: "resetValueOnSelect",
         multiSelectable(state) {
           return Array.isArray(state.selectedValue);
+        },
+        selectMode(state) {
+          return !!state.selectElement;
         },
         selected(state) {
           return isSelected(state.selectedValue, value);
@@ -181,7 +184,12 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       }
     });
 
-    if (multiSelectable && selected != null) {
+    // In a multi-select combobox, or when a ComboboxSelect trigger is
+    // registered (a select-like widget), the selection state must be conveyed
+    // to assistive technology. A plain single-select combobox intentionally
+    // omits aria-selected, which would conflict with how some screen readers
+    // announce the virtually focused item.
+    if ((multiSelectable || selectMode) && selected != null) {
       props = {
         "aria-selected": selected,
         ...props,

@@ -1,5 +1,6 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useBooleanEvent,
   useEvent,
   useId,
@@ -28,6 +29,8 @@ import type {
   SelectHTMLAttributes,
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
 import { PopoverScopedContextProvider } from "../popover/popover-context.tsx";
@@ -54,6 +57,35 @@ function hasSelectedValue(
   return !!value?.length;
 }
 
+// When moving through the items when the select popover is closed, we don't
+// want to move to items without value, so we filter them out here. This
+// mirrors the same helper in select.tsx.
+function nextWithValue(store: ComboboxStore, next: ComboboxStore["next"]) {
+  return () => {
+    const visitedIds = new Set<string>();
+    let nextId = next();
+    while (nextId) {
+      const nextItem = store.item(nextId);
+      if (!nextItem) return;
+      if (nextItem.value != null) {
+        return nextItem.id;
+      }
+      // Walking from the last returned id, as if the key was pressed again
+      // from there, skips items without value even across focusLoop
+      // boundaries. A repeated id means the walk cycled through every
+      // reachable item without finding one with value, so we return undefined
+      // to keep move() from changing the active item.
+      if (visitedIds.has(nextId)) return;
+      visitedIds.add(nextId);
+      nextId = next({ activeId: nextId });
+    }
+    return;
+  };
+}
+
+// Unlike scrollIntoViewIfNeeded from @ariakit/utils, this restores the window
+// scroll position afterward so revealing the item only scrolls the popover,
+// never the page, which may not have been repositioned yet at this point.
 function scrollIntoView(element: Element) {
   if (!("scrollIntoView" in element)) return;
   const win = getWindow(element);
@@ -93,6 +125,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     required,
     fallback,
     showOnKeyDown = true,
+    moveOnKeyDown = true,
     toggleOnClick,
     ...props
   }) {
@@ -166,34 +199,63 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       );
     }, [store]);
 
+    // Mirrors the select store's value-on-move behavior: while the popover is
+    // closed, moving the active item (arrow keys, typeahead) updates the
+    // selected value like a native single-select. The moves count — rather
+    // than the activeId state — is watched so programmatic setActiveId calls,
+    // like the selected item resolution above, don't change the selection.
+    useEffect(() => {
+      return sync(store, ["moves"], (state) => {
+        if (!state.moves) return;
+        const { mounted, selectedValue, activeId } = store.getState();
+        if (mounted) return;
+        if (Array.isArray(selectedValue)) return;
+        const item = store.item(activeId);
+        if (!item || item.disabled || item.value == null) return;
+        store.setSelectedValue(item.value);
+      });
+    }, [store]);
+
     const selectedValue = useStoreState(store, "selectedValue");
     const items = useStoreState(store, "items");
     const open = useStoreState(store, "open");
     const contentElement = useStoreState(store, "contentElement");
-    const labelId = useStoreState(
-      store,
-      (state) => state.selectLabelElement?.id,
+    // In a standard (input-less) select, DOM focus stays on this element while
+    // the popover is open, so it must expose the virtually focused item
+    // through aria-activedescendant, as the Combobox input does in a
+    // filterable select.
+    const activeDescendantId = useStoreState(store, (state) =>
+      state.open && !state.baseElement
+        ? (state.activeId ?? undefined)
+        : undefined,
     );
+    const selectLabelElement = useStoreState(store, "selectLabelElement");
+    useAttribute(selectLabelElement, "id");
+    const labelId = selectLabelElement?.id;
     const label = props["aria-label"];
     const labelledBy = props["aria-labelledby"] || labelId;
-    const optionMapRef = useRef(new Map<string, ComboboxSelectOption>());
+    const optionMapRef = useRef<ReadonlyMap<string, ComboboxSelectOption>>(
+      new Map(),
+    );
 
-    const { options, selectedOptions } = useMemo(() => {
-      const optionMap = optionMapRef.current;
+    const { options, selectedOptions, optionMap } = useMemo(() => {
+      // The previous map is only read here, never mutated, so a render that
+      // React discards can't corrupt it. It carries the labels of selected
+      // values whose items are currently filtered out or unmounted.
+      const previousOptionMap = optionMapRef.current;
+      const optionMap = new Map<string, ComboboxSelectOption>();
       const selectedValues = toArray(selectedValue);
       const selectedSet = new Set(selectedValues);
       const currentOptions: ComboboxSelectOption[] = [];
-      const currentValues = new Set<string>();
 
       for (const item of items) {
         const { value } = item;
         if (value == null) continue;
-        if (currentValues.has(value)) continue;
+        if (optionMap.has(value)) continue;
         if (item.disabled && !selectedSet.has(value)) continue;
 
         const option = { value, label: item.children ?? value };
 
-        currentValues.add(value);
         optionMap.set(value, option);
 
         if (!item.disabled) {
@@ -203,13 +265,8 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
 
       for (const value of selectedValues) {
         if (optionMap.has(value)) continue;
-        optionMap.set(value, { value, label: value });
-      }
-
-      for (const value of Array.from(optionMap.keys())) {
-        if (selectedSet.has(value)) continue;
-        if (currentValues.has(value)) continue;
-        optionMap.delete(value);
+        const option = previousOptionMap.get(value) ?? { value, label: value };
+        optionMap.set(value, option);
       }
 
       const selectedOptions = selectedValues.map((value) => {
@@ -224,8 +281,13 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
         options.push(option);
       }
 
-      return { options, selectedOptions };
+      return { options, selectedOptions, optionMap };
     }, [items, selectedValue]);
+
+    // Persist the resolved labels only after the render is committed.
+    useEffect(() => {
+      optionMapRef.current = optionMap;
+    }, [optionMap]);
 
     const [autofill, setAutofill] = useState(false);
     const nativeSelectChangedRef = useRef(false);
@@ -350,17 +412,70 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
 
     const onKeyDownProp = props.onKeyDown;
     const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
+    const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
     const placement = useStoreState(store, "placement");
     const dir = placement.split("-")[0] as BasePlacement;
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
+      const { open, baseElement, activeId, orientation } = store.getState();
+      // In a standard (input-less) select, this element keeps DOM focus while
+      // the popover is open, so it drives the listbox with virtual focus, as
+      // the Combobox input would in a filterable select.
+      if (open && !baseElement) {
+        const isVertical = orientation !== "horizontal";
+        const isHorizontal = orientation !== "vertical";
+        const nextKeyMap = {
+          ArrowDown: isVertical && (() => store.down() ?? store.first()),
+          ArrowUp: isVertical && (() => store.up() ?? store.last()),
+          ArrowRight: isHorizontal && (() => store.next() ?? store.first()),
+          ArrowLeft: isHorizontal && (() => store.previous() ?? store.last()),
+          Home: store.first,
+          End: store.last,
+        };
+        const getId = nextKeyMap[event.key as keyof typeof nextKeyMap];
+        if (getId) {
+          event.preventDefault();
+          const nextId = getId();
+          if (nextId) {
+            store.move(nextId);
+          }
+          return;
+        }
+        if (event.key === "Enter" || event.key === " ") {
+          const item = store.item(activeId);
+          if (item?.element) {
+            // Prevent the native button activation click, which would close
+            // the popover through the disclosure toggle behavior, and forward
+            // the activation to the active item instead.
+            event.preventDefault();
+            item.element.click();
+          }
+        }
+        return;
+      }
+      if (open) return;
       if (event.ctrlKey) return;
       if (event.shiftKey) return;
       if (event.metaKey) return;
       // Alt is intentionally allowed: pressing Alt+ArrowDown to open the
       // popover is part of the WAI-ARIA combobox keyboard interaction.
+      // moveOnKeyDown
+      const isVertical = orientation !== "horizontal";
+      const isHorizontal = orientation !== "vertical";
+      const moveKeyMap = {
+        ArrowUp: isVertical && nextWithValue(store, store.up),
+        ArrowRight: isHorizontal && nextWithValue(store, store.next),
+        ArrowDown: isVertical && nextWithValue(store, store.down),
+        ArrowLeft: isHorizontal && nextWithValue(store, store.previous),
+      };
+      const getId = moveKeyMap[event.key as keyof typeof moveKeyMap];
+      if (getId && moveOnKeyDownProp(event)) {
+        event.preventDefault();
+        store.move(getId());
+      }
+      // showOnKeyDown
       const isTopOrBottom = dir === "top" || dir === "bottom";
       const canShowKeyMap = {
         ArrowDown: isTopOrBottom,
@@ -372,6 +487,10 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       if (!canShow) return;
       if (!showOnKeyDownProp(event)) return;
       event.preventDefault();
+      // Move back to the active item read before the moveOnKeyDown block, so
+      // showing the popover with arrow keys doesn't also change the selection.
+      // This mirrors the same sequence in select.tsx.
+      store.move(activeId);
       store.setAnchorElement(event.currentTarget);
       // Schedule the show event to run after the key event has finished
       // bubbling. This is necessary to avoid the page to scroll when the
@@ -397,6 +516,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       "aria-labelledby": label != null ? undefined : labelId,
       "aria-haspopup": getPopupRole(contentElement, "listbox"),
       "aria-required": required || undefined,
+      "aria-activedescendant": activeDescendantId,
       "data-autofill": autofill || undefined,
       "data-name": name,
       children,
@@ -414,6 +534,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     // whose detachment on unmount would reset the anchor element to null
     // right after the cleanup above restored it.
     props = useDialogDisclosure({ store, toggleOnClick, ...props });
+    props = useCompositeTypeahead<TagName>({ store, ...props });
 
     return props;
   },
@@ -455,6 +576,7 @@ export const ComboboxSelect = forwardRef(function ComboboxSelect(
 export interface ComboboxSelectOptions<T extends ElementType = TagName>
   extends
     Omit<DialogDisclosureOptions<T>, "store">,
+    Omit<CompositeTypeaheadOptions<T>, "store">,
     Pick<
       SelectHTMLAttributes<HTMLSelectElement>,
       "name" | "form" | "required"
@@ -481,6 +603,16 @@ export interface ComboboxSelectOptions<T extends ElementType = TagName>
    * @default true
    */
   showOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
+  /**
+   * Determines whether pressing arrow keys will move the active item (and,
+   * for a single-select, the
+   * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
+   * state) even when the
+   * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover)
+   * component is hidden.
+   * @default true
+   */
+  moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
 }
 
 export type ComboboxSelectProps<T extends ElementType = TagName> = Props<

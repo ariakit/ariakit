@@ -28,9 +28,10 @@ async function verifyComboboxSelectOpen(q: Query) {
   await expect(q.listbox()).toBeVisible();
   await expect(getSearchInput(q)).toBeFocused();
   await expect(q.option()).toHaveCount(countryCount);
-  // A single-value ComboboxItem doesn't reflect aria-selected — that's gated
-  // behind multi-select by the multiSelectable check in combobox-item.tsx — so
-  // the selected item is identified by the auto-highlighted data-active-item.
+  await expect(q.option(defaultCountry, { exact: true })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
   await expect(q.option(defaultCountry, { exact: true })).toHaveAttribute(
     "data-active-item",
   );
@@ -90,9 +91,10 @@ async function verifyFilteredItemsRestored(q: Query) {
   await expect(getSearchInput(q)).toHaveValue("");
   await expect(getSearchInput(q)).toBeFocused();
   await expect(q.option()).toHaveCount(countryCount);
-  // The selection persists through filtering and restoring, so the trigger
-  // still displays the default country. (data-active-item tracks the highlight,
-  // which autoSelect moves to the first match while filtering.)
+  await expect(q.option(defaultCountry, { exact: true })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
   await expect(getTrigger(q)).toContainText(defaultCountry);
   await expect(q.option(lastCountry, { exact: true })).toHaveAttribute(
     "data-restore-sentinel",
