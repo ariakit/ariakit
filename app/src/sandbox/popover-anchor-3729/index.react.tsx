@@ -190,6 +190,7 @@ type ComboboxCaseType = "explicit" | "input" | "disclosure";
 
 function ComboboxCase({ type }: { type: ComboboxCaseType }) {
   const label = `${type[0]?.toUpperCase()}${type.slice(1)}`;
+  const [inputVersion, setInputVersion] = useState(0);
   const store = Ariakit.useComboboxStore({ placement: "right" });
   const anchorElement = Ariakit.useStoreState(store, "anchorElement");
   const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
@@ -204,6 +205,7 @@ function ComboboxCase({ type }: { type: ComboboxCaseType }) {
         )}
         {type !== "disclosure" && (
           <Ariakit.Combobox
+            key={inputVersion}
             aria-label={`${label} Combobox input`}
             data-anchor="input"
           />
@@ -219,6 +221,13 @@ function ComboboxCase({ type }: { type: ComboboxCaseType }) {
           gutter={16}
         >
           <Ariakit.ComboboxItem value="Apple" />
+          {type === "input" && (
+            <Ariakit.Button
+              onClick={() => setInputVersion((value) => value + 1)}
+            >
+              Replace {label} Combobox input
+            </Ariakit.Button>
+          )}
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
       <output aria-label={`${label} Combobox current anchor`}>

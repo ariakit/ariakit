@@ -90,3 +90,15 @@ test.each([
   await press("Escape");
   expect(q.listbox(`${label} Combobox items`)).not.toBeInTheDocument();
 });
+
+// https://github.com/ariakit/ariakit/issues/3729
+test("closes when the Combobox input is replaced while open", async () => {
+  await click(q.button("Open Input Combobox"));
+  await click(q.button("Replace Input Combobox input"));
+
+  const input = q.combobox.ensure("Input Combobox input");
+  input.focus();
+  await press("Escape", input);
+
+  expect(q.listbox("Input Combobox items")).not.toBeInTheDocument();
+});

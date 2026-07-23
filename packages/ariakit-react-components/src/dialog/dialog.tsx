@@ -602,7 +602,13 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         if (contains(dialog, target)) return true;
         if (!disclosureElement) return true;
         if (contains(disclosureElement, target)) return true;
+        // Persistent elements can change while the dialog is open, so read
+        // them dynamically instead of relying only on the open-time markers.
+        for (const element of getPersistentElementsProp?.() || []) {
+          if (contains(element, target)) return true;
+        }
         if (isElement(target)) {
+          // Persistent and nested elements are positively marked as inside.
           if (isElementInside(target, dialog.id)) return true;
           if (isElementMarked(target, dialog.id)) return true;
         }
@@ -638,6 +644,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     hideOnEscapeEvent,
     acceptEscape,
     escapeEvents,
+    getPersistentElementsProp,
   ]);
 
   // Resets the heading levels inside the modal dialog so they start with h1.

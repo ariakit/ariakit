@@ -135,6 +135,20 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
   }
 
+  // https://github.com/ariakit/ariakit/issues/3729
+  test("closes when the Combobox input is replaced while open", async ({
+    q,
+  }) => {
+    await q.button("Open Input Combobox").click();
+    await q.button("Replace Input Combobox input").click();
+
+    const input = q.combobox("Input Combobox input");
+    await input.focus();
+    await input.press("Escape");
+
+    await test.expect(q.listbox("Input Combobox items")).not.toBeVisible();
+  });
+
   test("clears HovercardAnchor when it unmounts on show", async ({ q }) => {
     const anchor = q.status("Hovercard current anchor");
     const disclosure = q.status("Hovercard current disclosure");

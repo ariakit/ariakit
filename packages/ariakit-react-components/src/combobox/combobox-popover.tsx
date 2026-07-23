@@ -1,4 +1,4 @@
-import { useStoreState } from "@ariakit/react-store";
+import { useStoreState, useStoreStateObject } from "@ariakit/react-store";
 import {
   useSafeLayoutEffect,
   createElement,
@@ -68,9 +68,14 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         "ComboboxPopover must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
-    const baseElement = useStoreState(store, "baseElement");
-    const disclosureElement = useStoreState(store, "disclosureElement");
-    const open = useStoreState(store, "open");
+    const { baseElement, disclosureElement, open } = useStoreStateObject(
+      store,
+      {
+        baseElement: "baseElement",
+        disclosureElement: "disclosureElement",
+        open: "open",
+      },
+    );
     const hiddenByClickOutsideRef = useRef(false);
 
     // When new tags are rendered while the combobox popover is open, they will
