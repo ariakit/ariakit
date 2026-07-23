@@ -25,7 +25,7 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
   function useHovercardTrigger({
     store,
     showOnHover = true,
-    unstable__positioningAnchor = false,
+    setAnchorElement = false,
     ...props
   }) {
     const disabled = disabledFromProps(props);
@@ -62,23 +62,21 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
       if (!isMouseMoving()) return;
       if (!showOnHoverProp(event)) return;
       const element = event.currentTarget;
-      if (unstable__positioningAnchor) {
+      if (setAnchorElement) {
         store.setAnchorElement(element);
       }
       store.setDisclosureElement(element);
       const { showTimeout, timeout } = store.getState();
       const showHovercard = () => {
         showTimeoutRef.current = 0;
-        if (triggerRef.current !== element) return;
         // Let's check again if the mouse is moving. This is to avoid showing
         // the hovercard on mobile clicks or after clicking on the anchor.
         if (!isMouseMoving()) return;
-        if (unstable__positioningAnchor) {
+        if (setAnchorElement) {
           store.setAnchorElement(element);
         }
         store.show();
         queueMicrotask(() => {
-          if (triggerRef.current !== element) return;
           // We need to set the trigger as the hovercard disclosure only when the
           // hovercard is shown so it isn't replaced by the dialog component.
           store.setDisclosureElement(element);
@@ -105,19 +103,17 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
 
     const ref = useCallback(
       (element: HTMLElement | null) => {
-        const previousElement = triggerRef.current;
         triggerRef.current = element;
-        const { anchorElement, disclosureElement } = store.getState();
-        if (!element && disclosureElement === previousElement) {
-          store.setDisclosureElement(null);
-        }
-        if (!unstable__positioningAnchor) return;
-        if (!element && anchorElement !== previousElement) return;
-        if (element && anchorElement?.isConnected) return;
-        // Preserve a connected anchor when new anchors are added to the DOM.
+        if (!setAnchorElement) return;
+        const { anchorElement } = store.getState();
+        if (anchorElement?.isConnected) return;
+        // We can set the anchor element only if it isn't already set or if it's
+        // not linked to the DOM. This helps prevent the anchor element from
+        // being reassigned to a different element when using multiple anchors
+        // and new anchors are added to the DOM.
         store.setAnchorElement(element);
       },
-      [store, unstable__positioningAnchor],
+      [store, setAnchorElement],
     );
 
     props = {
@@ -153,11 +149,5 @@ export interface HovercardTriggerOptions<
    * @default true
    */
   showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
-  /**
-   * Determines whether the trigger also owns the store's positioning anchor.
-   * `HovercardAnchor` enables this, whereas composed triggers such as
-   * `MenuButton` leave it disabled so a separate anchor takes precedence.
-   * @private
-   */
-  unstable__positioningAnchor?: boolean;
+  setAnchorElement?: boolean;
 }

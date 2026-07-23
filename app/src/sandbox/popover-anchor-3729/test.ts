@@ -1,4 +1,4 @@
-import { click, hover, press, q } from "@ariakit/test";
+import { click, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/3729
@@ -22,21 +22,7 @@ test("falls back to the disclosure when the explicit anchor unmounts", async () 
   await click(q.button(`Open ${label}`));
   await click(q.button(`Remove ${label} anchor`));
 
-  expect(anchor).toHaveTextContent("none");
-  expect(q.dialog(`${label} details`)).toBeVisible();
-});
-
-test("clears the disclosure fallback when it unmounts", async () => {
-  const label = "Disclosure first";
-  const disclosure = q.status.ensure(`${label} current disclosure`);
-
-  await click(q.button(`Open ${label}`));
-  await click(q.button(`Remove ${label} anchor`));
-  expect(disclosure).toHaveTextContent("button");
-
-  await click(q.button(`Remove ${label} disclosure`));
-
-  expect(disclosure).toHaveTextContent("none");
+  expect(anchor).toHaveTextContent("button");
   expect(q.dialog(`${label} details`)).toBeVisible();
 });
 
@@ -53,29 +39,6 @@ test("keeps MenuButton as the disclosure for MenuAnchor", async () => {
   expect(button).toHaveFocus();
 });
 
-test("clears HovercardAnchor when it unmounts on show", async () => {
-  const anchor = q.status.ensure("Hovercard current anchor");
-  const disclosure = q.status.ensure("Hovercard current disclosure");
-  expect(anchor).toHaveTextContent("hovercard");
-
-  await hover(q.link("Hovercard anchor"));
-
-  await expect.poll(() => q.dialog("Unmount Hovercard")).toBeVisible();
-  expect(anchor).toHaveTextContent("none");
-  expect(disclosure).toHaveTextContent("none");
-});
-
-// https://github.com/ariakit/ariakit/issues/3729
-test("clears a custom Hovercard trigger when it unmounts", async () => {
-  const disclosure = q.status.ensure("Custom hovercard current disclosure");
-
-  await hover(q.link("Custom hovercard trigger"));
-  expect(disclosure).toHaveTextContent("trigger");
-
-  await click(q.button("Remove custom hovercard trigger"));
-  expect(disclosure).toHaveTextContent("none");
-});
-
 test("preserves SelectAnchor when Select opens", async () => {
   await click(q.combobox("Open Select"));
 
@@ -85,8 +48,8 @@ test("preserves SelectAnchor when Select opens", async () => {
 
 test.each([
   ["Explicit", "explicit"],
-  ["Input", "none"],
-  ["Disclosure", "none"],
+  ["Input", "input"],
+  ["Disclosure", "button"],
 ] as const)("uses the %s Combobox anchor", async (label, expectedAnchor) => {
   await click(q.button(`Open ${label} Combobox`));
 
@@ -95,21 +58,9 @@ test.each([
     expectedAnchor,
   );
   expect(q.status(`${label} Combobox current disclosure`)).toHaveTextContent(
-    "button",
+    label === "Disclosure" ? "button" : "input",
   );
 
   await press("Escape");
   expect(q.listbox(`${label} Combobox items`)).not.toBeInTheDocument();
-});
-
-// https://github.com/ariakit/ariakit/issues/3729
-test("closes when the Combobox input is replaced while open", async () => {
-  await click(q.button("Open Input Combobox"));
-  await click(q.button("Replace Input Combobox input"));
-
-  const input = q.combobox.ensure("Input Combobox input");
-  input.focus();
-  await press("Escape", input);
-
-  expect(q.listbox("Input Combobox items")).not.toBeInTheDocument();
 });

@@ -86,14 +86,14 @@ To accomplish this:
    }
    ```
 
-2. When a menu controlled by multiple [`MenuButton`](/reference/menu-button) components is open, the `disclosureElement` state will indicate the button that initiated the behavior. This automatically adjusts the menu position and tab order in relation to the menu button.
+2. When a menu controlled by multiple [`MenuButton`](/reference/menu-button) components is open, the `anchorElement` state will indicate the button that initiated the behavior. This automatically adjusts the position of the [`Menu`](/reference/menu) component and the tab order in relation to the menu button.
 
-   This also means that we can use the `disclosureElement` state to determine the `open` state of the child menu:
+   This also means that we can use the `anchorElement` state to determine the `open` state of the child menu:
 
    ```js
    const open = useStoreState(
      menu,
-     (state) => state.mounted && state.disclosureElement === button,
+     (state) => state.mounted && state.anchorElement === button,
    );
    ```
 
@@ -135,12 +135,13 @@ For this navigation menu, we want to expand menus whenever the menubar items gai
 
 The reason is that it might not be clear to sighted keyboard users that the menu items can expand, or what the keyboard shortcut to do so is. We might have menubar items that are both expandable with arrow keys and link to a page when pressing <kbd>Enter</kbd>.
 
-To achieve this, we can use the [`onFocusVisible`](/reference/menu-button#onfocusvisible) prop on [`MenuButton`](/reference/menu-button) to display the menu whenever the menubar item gains keyboard focus. Given that we're manually showing a menu with multiple possible disclosure buttons, we should also set the `disclosureElement` state:
+To achieve this, we can use the [`onFocusVisible`](/reference/menu-button#onfocusvisible) prop on [`MenuButton`](/reference/menu-button) to display the menu whenever the menubar item gains keyboard focus. Given that we're manually showing a menu with multiple possible anchors and disclosure buttons, we should also set the `anchorElement` and `disclosureElement` states:
 
 ```jsx
 <MenuButton
   onFocusVisible={(event) => {
     menu.setDisclosureElement(event.currentTarget);
+    menu.setAnchorElement(event.currentTarget);
     menu.show();
   }}
 />

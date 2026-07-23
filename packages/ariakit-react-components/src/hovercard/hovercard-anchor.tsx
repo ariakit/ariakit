@@ -2,10 +2,10 @@ import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
+import type { HovercardTriggerOptions } from "./__hovercard-trigger.tsx";
+import { useHovercardTrigger } from "./__hovercard-trigger.tsx";
 import { useHovercardProviderContext } from "./hovercard-context.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
-import type { HovercardTriggerOptions } from "./hovercard-trigger.tsx";
-import { useHovercardTrigger } from "./hovercard-trigger.tsx";
 
 const TagName = "a" satisfies ElementType;
 type TagName = typeof TagName;
@@ -34,7 +34,7 @@ export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
     return useHovercardTrigger<TagName>({
       store,
       showOnHover,
-      unstable__positioningAnchor: true,
+      setAnchorElement: true,
       ...props,
     });
   },
@@ -61,10 +61,7 @@ export const HovercardAnchor = forwardRef(function HovercardAnchor(
 
 export interface HovercardAnchorOptions<
   T extends ElementType = TagName,
-> extends Omit<
-  HovercardTriggerOptions<T>,
-  "store" | "unstable__positioningAnchor"
-> {
+> extends Omit<HovercardTriggerOptions<T>, "store" | "setAnchorElement"> {
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.com/reference/use-hovercard-store)

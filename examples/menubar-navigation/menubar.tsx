@@ -87,11 +87,11 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   // Get the menu element rendered by the parent component (contentElement) and
   // use it as the portal element for this menu's contents.
   const parentMenu = Ariakit.useStoreState(menu, "contentElement");
-  // Compare the menu button element with the current disclosure element set
-  // when the menu opens to ascertain whether the menu is open.
+  // Compare the menu button element with the current anchor element set when
+  // the menu opens to ascertain whether the menu is open.
   const open = Ariakit.useStoreState(
     menu,
-    (state) => state.mounted && state.disclosureElement === menuButton,
+    (state) => state.mounted && state.anchorElement === menuButton,
   );
 
   React.useLayoutEffect(() => {
@@ -130,10 +130,11 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
         showOnHover
         render={item}
         // Always show the menu when the menu button gets keyboard focus. Also,
-        // it's necessary to define the disclosure element as this menu can
-        // have various potential disclosure elements.
+        // it's necessary to define the disclosure and anchor elements as this
+        // menu can have various potential anchor elements.
         onFocusVisible={(event) => {
           menu.setDisclosureElement(event.currentTarget);
+          menu.setAnchorElement(event.currentTarget);
           menu.show();
         }}
         // Ensure the menu is always shown, not toggled, when the menu button is

@@ -131,6 +131,23 @@ export function createComboboxStore({
 
   const combobox = createStore(initialState, composite, popover, store);
 
+  setup(combobox, () =>
+    sync(
+      combobox,
+      ["anchorElement", "baseElement", "disclosureElement"],
+      (state, prevState) => {
+        const anchor = state.anchorElement;
+        const fallback = state.baseElement || state.disclosureElement;
+        const previousFallback =
+          prevState.baseElement || prevState.disclosureElement;
+        if (anchor && anchor !== previousFallback && anchor !== fallback) {
+          return;
+        }
+        combobox.setState("anchorElement", fallback);
+      },
+    ),
+  );
+
   // Safari doesn't support aria-activedescendant on combobox elements. This is
   // particularly problematic when using touch devices as moving the VoiceOver
   // virtual cursor through the combobox items will always move the focus to the

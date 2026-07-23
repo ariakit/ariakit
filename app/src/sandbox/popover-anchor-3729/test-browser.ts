@@ -47,21 +47,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     const popover = q.dialog(`${label} details`);
     await test.expect(popover).toBeVisible();
-    await test.expect(q.status(`${label} current anchor`)).toHaveText("none");
+    await test.expect(q.status(`${label} current anchor`)).toHaveText("button");
     await expectAligned(test.expect, disclosure, popover);
-  });
-
-  test("clears PopoverDisclosure fallback when it unmounts", async ({ q }) => {
-    const label = "Disclosure first";
-    await q.button(`Open ${label}`).click();
-    await q.button(`Remove ${label} anchor`).click();
-
-    const disclosure = q.status(`${label} current disclosure`);
-    await test.expect(disclosure).toHaveText("button");
-    await q.button(`Remove ${label} disclosure`).click();
-
-    await test.expect(disclosure).toHaveText("none");
-    await test.expect(q.dialog(`${label} details`)).toBeVisible();
   });
 
   test("keeps MenuButton as the disclosure for MenuAnchor", async ({ q }) => {
@@ -115,10 +102,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await test.expect(popover).toBeVisible();
       await test
         .expect(q.status(`${type} Combobox current anchor`))
-        .toHaveText(type === "Explicit" ? "explicit" : "none");
+        .toHaveText(
+          type === "Explicit"
+            ? "explicit"
+            : type === "Input"
+              ? "input"
+              : "button",
+        );
       await test
         .expect(q.status(`${type} Combobox current disclosure`))
-        .toHaveText("button");
+        .toHaveText(type === "Disclosure" ? "button" : "input");
 
       const anchor =
         type === "Explicit"
@@ -134,41 +127,4 @@ withFramework(import.meta.dirname, async ({ test }) => {
       }
     });
   }
-
-  // https://github.com/ariakit/ariakit/issues/3729
-  test("closes when the Combobox input is replaced while open", async ({
-    q,
-  }) => {
-    await q.button("Open Input Combobox").click();
-    await q.button("Replace Input Combobox input").click();
-
-    const input = q.combobox("Input Combobox input");
-    await input.focus();
-    await input.press("Escape");
-
-    await test.expect(q.listbox("Input Combobox items")).not.toBeVisible();
-  });
-
-  test("clears HovercardAnchor when it unmounts on show", async ({ q }) => {
-    const anchor = q.status("Hovercard current anchor");
-    const disclosure = q.status("Hovercard current disclosure");
-    await test.expect(anchor).toHaveText("hovercard");
-
-    await q.link("Hovercard anchor").hover();
-
-    await test.expect(q.dialog("Unmount Hovercard")).toBeVisible();
-    await test.expect(anchor).toHaveText("none");
-    await test.expect(disclosure).toHaveText("none");
-  });
-
-  // https://github.com/ariakit/ariakit/issues/3729
-  test("clears a custom Hovercard trigger when it unmounts", async ({ q }) => {
-    const disclosure = q.status("Custom hovercard current disclosure");
-
-    await q.link("Custom hovercard trigger").hover();
-    await test.expect(disclosure).toHaveText("trigger");
-
-    await q.button("Remove custom hovercard trigger").click();
-    await test.expect(disclosure).toHaveText("none");
-  });
 });

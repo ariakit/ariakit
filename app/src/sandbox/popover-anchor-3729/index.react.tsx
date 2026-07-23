@@ -1,5 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-import { useHovercardTrigger } from "@ariakit/react-components/hovercard/hovercard-trigger";
 import type { ReactNode } from "react";
 import { useState } from "react";
 
@@ -21,21 +20,19 @@ function CaseLayout({ children }: { children: ReactNode }) {
 interface PopoverCaseProps {
   anchorFirst?: boolean;
   label: string;
-  removable?: boolean;
 }
 
-function PopoverCase({ anchorFirst, label, removable }: PopoverCaseProps) {
+function PopoverCase({ anchorFirst, label }: PopoverCaseProps) {
   const [anchorMounted, setAnchorMounted] = useState(true);
-  const [disclosureMounted, setDisclosureMounted] = useState(true);
   const store = Ariakit.usePopoverStore({ placement: "right" });
   const anchorElement = Ariakit.useStoreState(store, "anchorElement");
   const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
 
-  const disclosure = disclosureMounted ? (
+  const disclosure = (
     <Ariakit.PopoverDisclosure store={store} data-disclosure="button">
       Open {label}
     </Ariakit.PopoverDisclosure>
-  ) : null;
+  );
 
   const anchor = anchorMounted ? (
     <Ariakit.PopoverAnchor store={store} data-anchor="explicit">
@@ -55,19 +52,14 @@ function PopoverCase({ anchorFirst, label, removable }: PopoverCaseProps) {
         gutter={16}
       >
         Popover content
-        {removable && (
-          <>
-            <Ariakit.Button onClick={() => setAnchorMounted(false)}>
-              Remove {label} anchor
-            </Ariakit.Button>
-            <Ariakit.Button onClick={() => setDisclosureMounted(false)}>
-              Remove {label} disclosure
-            </Ariakit.Button>
-          </>
-        )}
+        <Ariakit.Button onClick={() => setAnchorMounted(false)}>
+          Remove {label} anchor
+        </Ariakit.Button>
       </Ariakit.Popover>
       <output aria-label={`${label} current anchor`}>
-        {anchorElement?.dataset.anchor || "none"}
+        {anchorElement?.dataset.anchor ||
+          anchorElement?.dataset.disclosure ||
+          "none"}
       </output>
       <output aria-label={`${label} current disclosure`}>
         {disclosureElement?.dataset.disclosure || "none"}
@@ -125,63 +117,6 @@ function HoverMenuCase() {
   );
 }
 
-function HovercardAnchorCase() {
-  const store = Ariakit.useHovercardStore({ timeout: 0 });
-  const open = Ariakit.useStoreState(store, "open");
-  const anchorElement = Ariakit.useStoreState(store, "anchorElement");
-  const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
-
-  return (
-    <CaseLayout>
-      <Ariakit.HovercardProvider store={store}>
-        {!open && (
-          <Ariakit.HovercardAnchor
-            data-anchor="hovercard"
-            href="#hovercard-anchor-3729"
-          >
-            Hovercard anchor
-          </Ariakit.HovercardAnchor>
-        )}
-        <Ariakit.Hovercard aria-label="Unmount Hovercard">
-          Hovercard content
-        </Ariakit.Hovercard>
-      </Ariakit.HovercardProvider>
-      <output aria-label="Hovercard current anchor">
-        {anchorElement?.dataset.anchor || "none"}
-      </output>
-      <output aria-label="Hovercard current disclosure">
-        {disclosureElement?.dataset.anchor || "none"}
-      </output>
-    </CaseLayout>
-  );
-}
-
-function HovercardTriggerCase() {
-  const [mounted, setMounted] = useState(true);
-  const store = Ariakit.useHovercardStore({ timeout: 0 });
-  const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
-  const triggerProps = useHovercardTrigger({
-    store,
-    href: "#hovercard-trigger-3729",
-  });
-
-  return (
-    <CaseLayout>
-      {mounted && (
-        <a {...triggerProps} data-disclosure="trigger">
-          Custom hovercard trigger
-        </a>
-      )}
-      <Ariakit.Button onClick={() => setMounted(false)}>
-        Remove custom hovercard trigger
-      </Ariakit.Button>
-      <output aria-label="Custom hovercard current disclosure">
-        {disclosureElement?.dataset.disclosure || "none"}
-      </output>
-    </CaseLayout>
-  );
-}
-
 function SelectCase() {
   const store = Ariakit.useSelectStore({
     defaultValue: "Apple",
@@ -217,7 +152,6 @@ type ComboboxCaseType = "explicit" | "input" | "disclosure";
 
 function ComboboxCase({ type }: { type: ComboboxCaseType }) {
   const label = `${type[0]?.toUpperCase()}${type.slice(1)}`;
-  const [inputVersion, setInputVersion] = useState(0);
   const store = Ariakit.useComboboxStore({ placement: "right" });
   const anchorElement = Ariakit.useStoreState(store, "anchorElement");
   const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
@@ -232,7 +166,6 @@ function ComboboxCase({ type }: { type: ComboboxCaseType }) {
         )}
         {type !== "disclosure" && (
           <Ariakit.Combobox
-            key={inputVersion}
             aria-label={`${label} Combobox input`}
             data-anchor="input"
           />
@@ -248,17 +181,12 @@ function ComboboxCase({ type }: { type: ComboboxCaseType }) {
           gutter={16}
         >
           <Ariakit.ComboboxItem value="Apple" />
-          {type === "input" && (
-            <Ariakit.Button
-              onClick={() => setInputVersion((value) => value + 1)}
-            >
-              Replace {label} Combobox input
-            </Ariakit.Button>
-          )}
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
       <output aria-label={`${label} Combobox current anchor`}>
-        {anchorElement?.dataset.anchor || "none"}
+        {anchorElement?.dataset.anchor ||
+          anchorElement?.dataset.disclosure ||
+          "none"}
       </output>
       <output aria-label={`${label} Combobox current disclosure`}>
         {disclosureElement?.dataset.disclosure ||
@@ -272,7 +200,7 @@ function ComboboxCase({ type }: { type: ComboboxCaseType }) {
 export default function Example() {
   return (
     <>
-      <PopoverCase label="Disclosure first" removable />
+      <PopoverCase label="Disclosure first" />
       <PopoverCase label="Anchor first" anchorFirst />
       <MenuCase />
       <HoverMenuCase />
@@ -280,8 +208,6 @@ export default function Example() {
       <ComboboxCase type="explicit" />
       <ComboboxCase type="input" />
       <ComboboxCase type="disclosure" />
-      <HovercardAnchorCase />
-      <HovercardTriggerCase />
     </>
   );
 }

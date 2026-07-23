@@ -1,5 +1,4 @@
 import {
-  useMergeRefs,
   useWrapElement,
   createElement,
   createHook,
@@ -11,7 +10,6 @@ import type { ElementType } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
-import { usePopoverDisclosureRef } from "./__utils.ts";
 import {
   PopoverScopedContextProvider,
   usePopoverProviderContext,
@@ -44,13 +42,6 @@ export const usePopoverDisclosure = createHook<
     process.env.NODE_ENV !== "production" &&
       "PopoverDisclosure must receive a `store` prop or be wrapped in a PopoverProvider component.",
   );
-
-  const setDisclosureElement = usePopoverDisclosureRef(store);
-
-  props = {
-    ...props,
-    ref: useMergeRefs(setDisclosureElement, props.ref),
-  };
 
   props = useWrapElement(
     props,

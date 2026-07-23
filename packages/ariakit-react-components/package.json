@@ -169,7 +169,6 @@
     "./hovercard/hovercard-heading": "./src/hovercard/hovercard-heading.tsx",
     "./hovercard/hovercard-provider": "./src/hovercard/hovercard-provider.tsx",
     "./hovercard/hovercard-store": "./src/hovercard/hovercard-store.ts",
-    "./hovercard/hovercard-trigger": "./src/hovercard/hovercard-trigger.tsx",
     "./hovercard/utils/debug-polygon": "./src/hovercard/utils/debug-polygon.ts",
     "./hovercard/utils/polygon": "./src/hovercard/utils/polygon.ts",
     "./menu/menu": "./src/menu/menu.tsx",
