@@ -10,8 +10,8 @@ import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
-import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
-import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
+import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
+import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
@@ -89,14 +89,19 @@ export const useComboboxDisclosure = createHook<
   });
 
   const baseElement = useStoreState(store, "baseElement");
+  const disclosureElement = useStoreState(store, "disclosureElement");
   const open = useStoreState(store, "open");
 
   // The combobox input should remain the disclosure element so focus and Escape
   // handling keep working when the popover is already open on mount.
   useSafeLayoutEffect(() => {
-    if (!baseElement) return;
-    store.setDisclosureElement(baseElement);
-  }, [store, baseElement]);
+    if (baseElement) {
+      store.setDisclosureElement(baseElement);
+      return;
+    }
+    if (disclosureElement?.isConnected) return;
+    store.setDisclosureElement(null);
+  }, [store, baseElement, disclosureElement]);
 
   props = {
     children,
@@ -108,10 +113,7 @@ export const useComboboxDisclosure = createHook<
     onClick,
   };
 
-  // We're using DialogDisclosure, and not PopoverDisclosure, because
-  // PopoverDisclosure will also update the `store.anchorRef` with the
-  // disclosure element. We need to keep the combobox input as the anchorRef.
-  props = useDialogDisclosure({ store, ...props });
+  props = usePopoverDisclosure({ store, ...props });
 
   return props;
 });
@@ -147,7 +149,7 @@ export const ComboboxDisclosure = forwardRef(function ComboboxDisclosure(
 
 export interface ComboboxDisclosureOptions<
   T extends ElementType = TagName,
-> extends DialogDisclosureOptions<T> {
+> extends PopoverDisclosureOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)

@@ -3,6 +3,7 @@ import { usePopover } from "@ariakit/react-components/popover/popover";
 import { useRef } from "react";
 
 interface InstrumentedPopoverProps {
+  anchor?: boolean;
   label: string;
   modal?: boolean;
   portal?: boolean;
@@ -10,14 +11,16 @@ interface InstrumentedPopoverProps {
 }
 
 // Renders a popover through the usePopover hook so the component's own render
-// count can be tracked. The preserveTabOrder feature, the only consumer of
-// the disclosure element, takes effect only on non-modal portals, so
-// disclosure element updates must not re-render a modal popover (portaled,
-// but modal dialogs disable preserveTabOrder), a plain popover (non-modal,
-// but not portaled by default), or a portal with preserveTabOrder disabled.
+// count can be tracked. An explicit PopoverAnchor makes the disclosure element
+// irrelevant to positioning. The preserveTabOrder feature, the remaining
+// consumer of the disclosure element, takes effect only on non-modal portals,
+// so disclosure element updates must not re-render a modal popover (portaled,
+// but modal dialogs disable preserveTabOrder), a plain popover (non-modal, but
+// not portaled by default), or a portal with preserveTabOrder disabled.
 // Everything the tests interact with lives inside the popovers because the
 // modal one makes the rest of the page inert while open.
 function InstrumentedPopover({
+  anchor = true,
   label,
   modal,
   portal,
@@ -25,6 +28,8 @@ function InstrumentedPopover({
 }: InstrumentedPopoverProps) {
   const store = Ariakit.usePopoverStore();
   const renderCount = useRef(0);
+  const firstDisclosureRef = useRef<HTMLSpanElement>(null);
+  const secondDisclosureRef = useRef<HTMLSpanElement>(null);
   renderCount.current += 1;
 
   const props = usePopover({
@@ -37,6 +42,11 @@ function InstrumentedPopover({
 
   return (
     <div>
+      <span ref={firstDisclosureRef}>{label} first fallback</span>
+      <span ref={secondDisclosureRef}>{label} second fallback</span>
+      {anchor && (
+        <Ariakit.PopoverAnchor store={store}>Anchor</Ariakit.PopoverAnchor>
+      )}
       <Ariakit.PopoverDisclosure store={store}>
         Toggle {label} popover
       </Ariakit.PopoverDisclosure>
@@ -46,14 +56,13 @@ function InstrumentedPopover({
         </output>
         <DisclosureElementRenders label={label} store={store} />
         <Ariakit.Button
-          onClick={(event) => {
-            const target = event.currentTarget;
-            // Alternate between two elements so the value changes on every
-            // click.
+          onClick={() => {
+            // Alternate between two stable outside elements so the positioning
+            // fallback changes without anchoring the popover to its own child.
             store.setDisclosureElement(
-              store.getState().disclosureElement === target
-                ? target.ownerDocument.body
-                : target,
+              store.getState().disclosureElement === firstDisclosureRef.current
+                ? secondDisclosureRef.current
+                : firstDisclosureRef.current,
             );
           }}
         >
@@ -95,6 +104,7 @@ export default function Example() {
         portal
         preserveTabOrder={false}
       />
+      <InstrumentedPopover anchor={false} label="Fallback" />
     </div>
   );
 }

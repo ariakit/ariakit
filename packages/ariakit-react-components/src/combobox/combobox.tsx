@@ -6,6 +6,7 @@ import {
   useId,
   useMergeRefs,
   useSafeLayoutEffect,
+  useTransactionState,
   useUpdateEffect,
   useUpdateLayoutEffect,
   useWrapElement,
@@ -44,8 +45,6 @@ import type {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
-import type { PopoverAnchorOptions } from "../popover/popover-anchor.tsx";
-import { usePopoverAnchor } from "../popover/popover-anchor.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type {
   ComboboxStore,
@@ -704,6 +703,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     });
 
     const composite = props.composite !== false;
+    const [, setBaseElement] = useTransactionState(
+      composite ? null : store.setBaseElement,
+    );
     const baseElement = useStoreState(
       store,
       multiSelectable ? ["baseElement"] : [],
@@ -748,7 +750,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       name: multiSelectable ? undefined : name,
       form,
       disabled,
-      ref: useMergeRefs(ref, props.ref),
+      ref: useMergeRefs(ref, composite ? undefined : setBaseElement, props.ref),
       onChange,
       onCompositionStart,
       onCompositionEnd,
@@ -770,8 +772,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         return true;
       },
     });
-
-    props = usePopoverAnchor<TagName>({ store, ...props });
 
     return { autoComplete: "off", ...props };
   },
@@ -797,8 +797,9 @@ export const Combobox = forwardRef(function Combobox(props: ComboboxProps) {
   return createElement(TagName, htmlProps);
 });
 
-export interface ComboboxOptions<T extends ElementType = TagName>
-  extends CompositeOptions<T>, PopoverAnchorOptions<T> {
+export interface ComboboxOptions<
+  T extends ElementType = TagName,
+> extends CompositeOptions<T> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)

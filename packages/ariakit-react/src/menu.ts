@@ -4,6 +4,11 @@ export type {
 } from "@ariakit/react-components/menu/menu";
 export { Menu } from "@ariakit/react-components/menu/menu";
 export type {
+  MenuAnchorOptions,
+  MenuAnchorProps,
+} from "@ariakit/react-components/menu/menu-anchor";
+export { MenuAnchor } from "@ariakit/react-components/menu/menu-anchor";
+export type {
   MenuArrowOptions,
   MenuArrowProps,
 } from "@ariakit/react-components/menu/menu-arrow";
