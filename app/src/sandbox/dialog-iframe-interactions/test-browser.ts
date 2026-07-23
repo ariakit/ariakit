@@ -64,6 +64,43 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(outsideInput).toBeFocused();
   });
 
+  // https://github.com/ariakit/ariakit/issues/3031
+  test("hides the popover when a sibling frame reuses the disclosure ID", async ({
+    page,
+  }) => {
+    const frame = query(page.frameLocator("iframe[title='Embedded combobox']"));
+    const outsideFrame = query(
+      page.frameLocator("iframe[title='Outside frame']"),
+    );
+    await frame.combobox("Favorite food").click();
+    await test.expect(frame.listbox("Suggestions")).toBeVisible();
+
+    const outsideCombobox = outsideFrame.combobox(
+      "Outside active descendant target",
+    );
+    await outsideCombobox.focus();
+
+    await test.expect(outsideCombobox).toBeFocused();
+    await test.expect(frame.listbox("Suggestions")).not.toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/3250
+  test("hides the popover when clicking a bodyless frame document", async ({
+    page,
+    q,
+  }) => {
+    const svg = page
+      .frameLocator("iframe[title='Outside SVG frame']")
+      .locator("svg");
+    await test.expect(svg).toBeVisible();
+    await q.button("Open root popover").click();
+    await test.expect(q.dialog("Root popover")).toBeVisible();
+
+    await svg.click();
+
+    await test.expect(q.dialog("Root popover")).not.toBeVisible();
+  });
+
   // https://github.com/ariakit/ariakit/issues/3250
   test("keeps the popover open when clicking an existing contained iframe", async ({
     page,

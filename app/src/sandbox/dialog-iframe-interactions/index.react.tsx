@@ -14,7 +14,7 @@ function EmbeddedCombobox() {
   return (
     <Ariakit.ComboboxProvider>
       <Ariakit.ComboboxLabel>Favorite food</Ariakit.ComboboxLabel>
-      <Ariakit.Combobox />
+      <Ariakit.Combobox id="shared-active" />
       <Ariakit.ComboboxPopover aria-label="Suggestions">
         <Ariakit.ComboboxItem value="Apple" />
         <Ariakit.ComboboxItem value="Banana" />
@@ -82,7 +82,21 @@ export default function Example() {
       ) : null}
       {outsideFrameBody
         ? createPortal(
-            <input aria-label="Outside frame target" />,
+            <>
+              <input
+                aria-activedescendant="shared-active"
+                aria-controls="outside-options"
+                aria-expanded="true"
+                aria-label="Outside active descendant target"
+                role="combobox"
+              />
+              <div id="outside-options" role="listbox">
+                <div id="shared-active" role="option">
+                  Outside option
+                </div>
+              </div>
+              <input aria-label="Outside frame target" />
+            </>,
             outsideFrameBody,
           )
         : null}
@@ -93,6 +107,7 @@ export default function Example() {
       />
       <input aria-label="Parent target" />
       <iframe ref={setOutsideFrame} title="Outside frame" tabIndex={-1} />
+      <iframe src="/icon.svg" title="Outside SVG frame" tabIndex={-1} />
       <RootPopover />
     </div>
   );

@@ -56,8 +56,7 @@ function getHighestReadableWindow(element: Element) {
 }
 
 function isInDocument(target: Element) {
-  if (target.tagName === "HTML") return true;
-  return contains(getDocument(target).body, target);
+  return target.isConnected;
 }
 
 function isDisclosure(disclosure: Element | null, target: Element) {
@@ -65,7 +64,7 @@ function isDisclosure(disclosure: Element | null, target: Element) {
   if (contains(disclosure, target)) return true;
   const activeId = target.getAttribute("aria-activedescendant");
   if (activeId) {
-    const activeElement = getDocument(disclosure).getElementById(activeId);
+    const activeElement = getDocument(target).getElementById(activeId);
     if (activeElement) {
       return contains(disclosure, activeElement);
     }
