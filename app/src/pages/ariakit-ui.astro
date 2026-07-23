@@ -1182,12 +1182,10 @@ function getExampleSource(source: string, line: number): SourceReference {
             <button
               {...button.html({
                 $kind: "bevel",
-                $aurora: "var(--color-blue-500)",
-                $auroraTo: "var(--color-fuchsia-500)",
                 class: "min-w-0 max-w-full items-center",
               })}
             >
-              Aurora bevel
+              Bevel button
               <span
                 {...buttonSlot.html({
                   $kind: "badge",
@@ -1198,7 +1196,7 @@ function getExampleSource(source: string, line: number): SourceReference {
               </span>
             </button>
           </div>
-          <code>Content · Label · Description · four Slot kinds · Aurora</code>
+          <code>Content · Label · Description · four Slot kinds · bevel</code>
         </article>
 
         <article class="gallery-sample">
@@ -1241,10 +1239,9 @@ function getExampleSource(source: string, line: number): SourceReference {
       <SourceLinks
         sources={[
           { file: "packages/ariakit-ui/src/styles/control.ts", line: 5 },
-          { file: "packages/ariakit-ui/src/styles/button.ts", line: 20 },
+          { file: "packages/ariakit-ui/src/styles/button.ts", line: 19 },
           { file: "packages/ariakit-ui/src/styles/option.ts", line: 6 },
           { file: "packages/ariakit-ui/src/styles/radio.ts", line: 4 },
-          { file: "packages/ariakit-ui/src/styles/aurora.ts", line: 3 },
           {
             file: "app/src/examples/combobox-group/combobox.react.tsx",
             line: 99,
