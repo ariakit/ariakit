@@ -32,7 +32,7 @@ export default defineConfig({
   webServer: {
     command: "pnpm start",
     reuseExistingServer: !CI,
-    stdout: CI ? "pipe" : "ignore",
+    stdout: "ignore",
     port: 3000,
   },
   expect: {
