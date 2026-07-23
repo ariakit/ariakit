@@ -125,6 +125,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   initialFocus,
   finalFocus,
   unmountOnHide,
+  unstable_preserveDisclosureElementOnShow,
   unstable_treeSnapshotKey,
   ...props
 }) {
@@ -218,6 +219,12 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // dialog is opened.
   useSafeLayoutEffect(() => {
     if (!open) return;
+    if (
+      unstable_preserveDisclosureElementOnShow &&
+      store.getState().disclosureElement?.isConnected
+    ) {
+      return;
+    }
     const dialog = ref.current;
     const activeElement = getActiveElement(dialog, true);
     if (!activeElement) return;
@@ -235,7 +242,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // The disclosure element can't be inside the dialog.
     if (dialog && contains(dialog, activeElement)) return;
     store.setDisclosureElement(activeElement);
-  }, [store, open]);
+  }, [store, open, unstable_preserveDisclosureElementOnShow]);
 
   // Sets --dialog-viewport-height CSS variable to the height of the visual
   // viewport. This allows the dialog to be positioned correctly when the
@@ -999,6 +1006,10 @@ export interface DialogOptions<T extends ElementType = TagName>
    *   will be focused again.
    */
   finalFocus?: HTMLElement | RefObject<HTMLElement | null> | null;
+  /**
+   * @private
+   */
+  unstable_preserveDisclosureElementOnShow?: boolean;
   /**
    * @private
    */

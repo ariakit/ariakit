@@ -254,6 +254,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     overflowPadding = 8,
     getAnchorRect,
     updatePosition,
+    unstable_defaultAnchorElement,
     ...props
   }) {
     const context = usePopoverProviderContext();
@@ -266,7 +267,14 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     );
 
     const arrowElement = useStoreState(store, "arrowElement");
-    const anchorElement = useStoreState(store, "anchorElement");
+    const anchorElement = useStoreState(
+      store,
+      ["anchorElement", "disclosureElement"],
+      (state) =>
+        state.anchorElement ||
+        unstable_defaultAnchorElement ||
+        state.disclosureElement,
+    );
     // The disclosure element is only used as the preserveTabOrder anchor,
     // which takes effect only on portals and is disabled by the dialog for
     // modal dialogs, so don't subscribe to it unless the feature can take
@@ -761,6 +769,11 @@ export interface PopoverOptions<
   updatePosition?: (props: {
     updatePosition: () => Promise<void>;
   }) => void | Promise<void>;
+  /**
+   * Default positioning anchor used before the disclosure element.
+   * @private
+   */
+  unstable_defaultAnchorElement?: HTMLElement | null;
 }
 
 export type PopoverProps<T extends ElementType = TagName> = Props<

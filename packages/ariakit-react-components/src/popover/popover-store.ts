@@ -8,14 +8,12 @@ import type {
   DialogStoreState,
 } from "../dialog/dialog-store.ts";
 import { useDialogStoreProps } from "../dialog/dialog-store.ts";
-import { linkExplicitPopoverAnchorStore } from "./__utils.ts";
 
 export function usePopoverStoreProps<T extends Core.PopoverStore>(
   store: T,
   update: () => void,
   props: PopoverStoreProps,
 ) {
-  linkExplicitPopoverAnchorStore(store, props.store);
   useUpdateEffect(update, [props.popover]);
   useStoreProps(store, props, "placement");
   return useDialogStoreProps(store, update, props);

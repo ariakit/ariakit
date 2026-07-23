@@ -1,29 +1,15 @@
-import {
-  useBooleanEvent,
-  useEvent,
-  useIsMouseMoving,
-  useMergeRefs,
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import {
-  addGlobalEventListener,
-  disabledFromProps,
-  invariant,
-} from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
-import { useCallback, useEffect, useRef } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
-import { useFocusable } from "../focusable/focusable.tsx";
+import { useHovercardAnchorBase } from "./hovercard-anchor-base.tsx";
 import { useHovercardProviderContext } from "./hovercard-context.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
 
 const TagName = "a" satisfies ElementType;
 type TagName = typeof TagName;
-type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `HovercardAnchor` component.
@@ -46,103 +32,11 @@ export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
       process.env.NODE_ENV !== "production" &&
         "HovercardAnchor must receive a `store` prop or be wrapped in a HovercardProvider component.",
     );
-
-    const disabled = disabledFromProps(props);
-    const showTimeoutRef = useRef(0);
-
-    // Clear the show timeout if the anchor is unmounted
-    useEffect(() => () => window.clearTimeout(showTimeoutRef.current), []);
-
-    // Clear the show timeout if the mouse leaves the anchor element. We're
-    // using the native mouseleave event instead of React's onMouseLeave so we
-    // bypass the event.stopPropagation() logic set on the Hovercard component
-    // for when the mouse is moving toward the Hovercard.
-    useEffect(() => {
-      const onMouseLeave = (event: MouseEvent) => {
-        if (!store) return;
-        const { anchorElement } = store.getState();
-        if (!anchorElement) return;
-        if (event.target !== anchorElement) return;
-        window.clearTimeout(showTimeoutRef.current);
-        showTimeoutRef.current = 0;
-      };
-      return addGlobalEventListener("mouseleave", onMouseLeave, true);
-    }, [store]);
-
-    const onMouseMoveProp = props.onMouseMove;
-    const showOnHoverProp = useBooleanEvent(showOnHover);
-    const isMouseMoving = useIsMouseMoving();
-
-    const onMouseMove = useEvent((event: ReactMouseEvent<HTMLType>) => {
-      onMouseMoveProp?.(event);
-      if (disabled) return;
-      if (!store) return;
-      if (event.defaultPrevented) return;
-      if (showTimeoutRef.current) return;
-      if (!isMouseMoving()) return;
-      if (!showOnHoverProp(event)) return;
-      const element = event.currentTarget;
-      store.setAnchorElement(element);
-      store.setDisclosureElement(element);
-      const { showTimeout, timeout } = store.getState();
-      const showHovercard = () => {
-        showTimeoutRef.current = 0;
-        // Let's check again if the mouse is moving. This is to avoid showing
-        // the hovercard on mobile clicks or after clicking on the anchor.
-        if (!isMouseMoving()) return;
-        store?.setAnchorElement(element);
-        store?.show();
-        queueMicrotask(() => {
-          // We need to set the anchor element as the hovercard disclosure
-          // element only when the hovercard is shown so it doesn't get
-          // assigned an arbitrary element by the dialog component.
-          store?.setDisclosureElement(element);
-        });
-      };
-      const timeoutMs = showTimeout ?? timeout;
-      if (timeoutMs === 0) {
-        showHovercard();
-      } else {
-        showTimeoutRef.current = window.setTimeout(showHovercard, timeoutMs);
-      }
-    });
-
-    const onClickProp = props.onClick;
-
-    const onClick = useEvent((event: ReactMouseEvent<HTMLType>) => {
-      onClickProp?.(event);
-      if (!store) return;
-      // Resets showOnHover when the anchor is clicked so the consumer (for
-      // example, TooltipAnchor) has the chance to prevent the hovercard from
-      // showing on mousemove after a click.
-      window.clearTimeout(showTimeoutRef.current);
-      showTimeoutRef.current = 0;
-    });
-
-    const ref = useCallback(
-      (element: HTMLElement | null) => {
-        if (!store) return;
-        const { anchorElement } = store.getState();
-        if (anchorElement?.isConnected) return;
-        // We can set the anchor element only if it isn't already set or if it's
-        // not linked to the DOM. This helps prevent the anchor element from
-        // being reassigned to a different element when using multiple anchors
-        // and new anchors are added to the DOM.
-        store.setAnchorElement(element);
-      },
-      [store],
-    );
-
-    props = {
+    return useHovercardAnchorBase<TagName>({
+      store,
+      showOnHover,
       ...props,
-      ref: useMergeRefs(ref, props.ref),
-      onMouseMove,
-      onClick,
-    };
-
-    props = useFocusable<TagName>(props);
-
-    return props;
+    });
   },
 );
 

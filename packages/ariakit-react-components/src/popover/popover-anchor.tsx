@@ -7,10 +7,6 @@ import {
 import type { Options, Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
 import { useCallback, useRef } from "react";
-import {
-  markExplicitPopoverAnchor,
-  unmarkExplicitPopoverAnchor,
-} from "./__utils.ts";
 import { usePopoverProviderContext } from "./popover-context.tsx";
 import type { PopoverStore } from "./popover-store.ts";
 
@@ -38,15 +34,8 @@ export const usePopoverAnchor = createHook<TagName, PopoverAnchorOptions>(
     const setAnchorElement = useCallback(
       (element: HTMLElement | null) => {
         const previousElement = anchorRef.current;
-        if (store && previousElement) {
-          unmarkExplicitPopoverAnchor(store, previousElement);
-        }
-
         anchorRef.current = element;
         if (!store) return;
-        if (element) {
-          markExplicitPopoverAnchor(store, element);
-        }
         const anchorElement = store.getState().anchorElement;
         if (!element && anchorElement !== previousElement) return;
         store.setAnchorElement(element);

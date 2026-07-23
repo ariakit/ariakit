@@ -21,8 +21,8 @@ import { useRef } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import { useHovercardAnchorBase } from "../hovercard/hovercard-anchor-base.tsx";
 import type { HovercardAnchorOptions } from "../hovercard/hovercard-anchor.tsx";
-import { useHovercardAnchor } from "../hovercard/hovercard-anchor.tsx";
 import type { BasePlacement } from "../popover/__utils.ts";
 import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
@@ -103,7 +103,6 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       const trigger = ref.current;
       if (!trigger) return;
       store?.setDisclosureElement(trigger);
-      store?.setAnchorElement(trigger);
       store?.show();
     };
 
@@ -159,7 +158,6 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
-      store?.setAnchorElement(event.currentTarget);
       onClickProp?.(event as any);
       if (event.defaultPrevented) return;
       if (!store) return;
@@ -239,8 +237,9 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       onClick,
     };
 
-    props = useHovercardAnchor<TagName>({
+    props = useHovercardAnchorBase<TagName>({
       store,
+      setAnchorElement: false,
       focusable,
       accessibleWhenDisabled,
       ...props,

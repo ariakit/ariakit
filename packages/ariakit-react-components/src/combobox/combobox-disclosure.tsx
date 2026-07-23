@@ -1,7 +1,7 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
   useEvent,
-  useSafeLayoutEffect,
+  useMergeRefs,
   createElement,
   createHook,
   forwardRef,
@@ -12,6 +12,7 @@ import type { ElementType, MouseEvent } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
+import { useComboboxElement } from "./__combobox-element.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
@@ -67,6 +68,8 @@ export const useComboboxDisclosure = createHook<
       "ComboboxDisclosure must receive a `store` prop or be wrapped in a ComboboxProvider component.",
   );
 
+  const setDisclosureElement = useComboboxElement(store, "disclosure");
+
   const onMouseDownProp = props.onMouseDown;
 
   const onMouseDown = useEvent((event: MouseEvent<HTMLType>) => {
@@ -78,25 +81,7 @@ export const useComboboxDisclosure = createHook<
     store?.move(null);
   });
 
-  const onClickProp = props.onClick;
-
-  const onClick = useEvent((event: MouseEvent<HTMLType>) => {
-    onClickProp?.(event);
-    if (event.defaultPrevented) return;
-    if (!store) return;
-    const { baseElement } = store.getState();
-    store.setDisclosureElement(baseElement);
-  });
-
-  const baseElement = useStoreState(store, "baseElement");
   const open = useStoreState(store, "open");
-
-  // The combobox input should remain the disclosure element so focus and Escape
-  // handling keep working when the popover is already open on mount.
-  useSafeLayoutEffect(() => {
-    if (!baseElement) return;
-    store.setDisclosureElement(baseElement);
-  }, [store, baseElement]);
 
   props = {
     children,
@@ -104,13 +89,10 @@ export const useComboboxDisclosure = createHook<
     "aria-label": open ? "Hide popup" : "Show popup",
     "aria-expanded": open,
     ...props,
+    ref: useMergeRefs(setDisclosureElement, props.ref),
     onMouseDown,
-    onClick,
   };
 
-  // We're using DialogDisclosure, and not PopoverDisclosure, because
-  // PopoverDisclosure will also update the `store.anchorRef` with the
-  // disclosure element. We need to keep the combobox input as the anchorRef.
   props = useDialogDisclosure({ store, ...props });
 
   return props;

@@ -87,6 +87,8 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       finalFocus: baseElement,
       preserveTabOrderAnchor: null,
       unstable_treeSnapshotKey: treeSnapshotKey,
+      unstable_defaultAnchorElement: baseElement,
+      unstable_preserveDisclosureElementOnShow: true,
       ...props,
       // When the combobox popover is modal, we make sure to include the
       // combobox input and all the combobox controls (cancel, disclosure) in

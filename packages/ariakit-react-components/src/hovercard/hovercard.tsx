@@ -53,15 +53,15 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 function isMovingOnHovercard(
   path: EventTarget[],
   card: HTMLElement,
-  anchor: HTMLElement | null,
+  anchors: Array<HTMLElement | null>,
   nested?: HTMLElement[],
 ) {
   // The hovercard element has focus so we should keep it visible.
   if (hasFocusWithin(card)) return true;
   // The mouse is moving on an element inside the hovercard.
   if (path.includes(card)) return true;
-  // The mouse is moving on an element inside the anchor element.
-  if (anchor && path.includes(anchor)) return true;
+  // The mouse is moving on an element inside an anchor element.
+  if (anchors.some((anchor) => anchor && path.includes(anchor))) return true;
   // The mouse is moving on an element inside a nested hovercard.
   if (nested?.some((card) => hasFocusWithin(card) || path.includes(card))) {
     return true;
@@ -216,24 +216,27 @@ export const useHovercard = createHook<TagName, HovercardOptions>(
       const onMouseMove = (event: MouseEvent) => {
         if (!store) return;
         if (!isMouseMoving()) return;
-        const { anchorElement, hideTimeout, timeout } = store.getState();
+        const { anchorElement, disclosureElement, hideTimeout, timeout } =
+          store.getState();
         const path = event.composedPath();
-        const anchor = anchorElement;
+        const anchors = [anchorElement, disclosureElement];
+        const hoveredAnchor = anchors.find(
+          (anchor) => anchor && path.includes(anchor),
+        );
         // Checks whether the hovercard element has focus or the mouse is moving
         // through valid hovercard elements.
         if (
           isMovingOnHovercard(
             path,
             element,
-            anchor,
+            anchors,
             nestedHovercardsRef.current,
           )
         ) {
           // While the mouse is moving over the anchor element while the hover
           // card is open, keep track of the mouse position so we can use the
           // last point before the mouse leaves the anchor element.
-          enterPointRef.current =
-            anchor && path.includes(anchor) ? getEventPoint(event) : null;
+          enterPointRef.current = hoveredAnchor ? getEventPoint(event) : null;
           clearHideTimeout();
           return;
         }
