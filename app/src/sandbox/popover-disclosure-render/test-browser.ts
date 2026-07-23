@@ -16,10 +16,11 @@ const cases = [
 ];
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  // The preserveTabOrder feature, the only consumer of the disclosure element
-  // in the popover, takes effect only on non-modal portals, so disclosure
-  // element updates must not re-render a modal popover, a plain non-portaled
-  // popover, or a portal with preserveTabOrder disabled.
+  // Each popover has an explicit anchor, so the disclosure element isn't used
+  // for positioning. The preserveTabOrder feature, its remaining consumer,
+  // takes effect only on non-modal portals, so disclosure element updates must
+  // not re-render a modal popover, a plain non-portaled popover, or a portal
+  // with preserveTabOrder disabled.
   for (const { label, name } of cases) {
     test(`does not re-render ${name}`, async ({ page, q }) => {
       await q.button(`Toggle ${label} popover`).click();
@@ -54,4 +55,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await test.expect(popoverRenders).toHaveText(previousPopoverRenders);
     });
   }
+
+  // https://github.com/ariakit/ariakit/issues/3729
+  test("re-renders when the disclosure positioning fallback changes", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Toggle Fallback popover").click();
+    await test.expect(q.dialog()).toBeVisible();
+
+    await q.button("Set Fallback disclosure element").click();
+    await flushFrames(page);
+
+    const popoverRenders = q.status("Fallback popover renders");
+    const previousPopoverRenders = await popoverRenders.textContent();
+    if (previousPopoverRenders == null) {
+      throw new Error("Popover render count was not found");
+    }
+
+    await q.button("Set Fallback disclosure element").click();
+
+    await test.expect(popoverRenders).not.toHaveText(previousPopoverRenders);
+  });
 });

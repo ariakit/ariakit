@@ -4,6 +4,11 @@ export type {
 } from "@ariakit/react-components/select/select";
 export { Select } from "@ariakit/react-components/select/select";
 export type {
+  SelectAnchorOptions,
+  SelectAnchorProps,
+} from "@ariakit/react-components/select/select-anchor";
+export { SelectAnchor } from "@ariakit/react-components/select/select-anchor";
+export type {
   SelectArrowOptions,
   SelectArrowProps,
 } from "@ariakit/react-components/select/select-arrow";

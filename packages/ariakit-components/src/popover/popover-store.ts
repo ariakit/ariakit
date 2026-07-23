@@ -2,6 +2,8 @@ import {
   createStore,
   mergeStore,
   omit,
+  setup,
+  sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
@@ -61,6 +63,21 @@ export function createPopoverStore({
     rendered: Symbol("rendered"),
   };
   const popover = createStore(initialState, dialog, store);
+  let syncedAnchorElement =
+    initialState.anchorElement === initialState.disclosureElement
+      ? initialState.anchorElement
+      : null;
+
+  setup(popover, () =>
+    sync(popover, ["anchorElement", "disclosureElement"], (state) => {
+      if (state.anchorElement && state.anchorElement !== syncedAnchorElement) {
+        syncedAnchorElement = null;
+        return;
+      }
+      syncedAnchorElement = state.disclosureElement;
+      popover.setState("anchorElement", syncedAnchorElement);
+    }),
+  );
 
   return {
     ...dialog,

@@ -4,6 +4,11 @@ export type {
 } from "@ariakit/react-components/combobox/combobox";
 export { Combobox } from "@ariakit/react-components/combobox/combobox";
 export type {
+  ComboboxAnchorOptions,
+  ComboboxAnchorProps,
+} from "@ariakit/react-components/combobox/combobox-anchor";
+export { ComboboxAnchor } from "@ariakit/react-components/combobox/combobox-anchor";
+export type {
   ComboboxCancelOptions,
   ComboboxCancelProps,
 } from "@ariakit/react-components/combobox/combobox-cancel";
