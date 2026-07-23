@@ -292,6 +292,68 @@ function DirectElementRenderer() {
   );
 }
 
+function ControllerLifetimeRenderer() {
+  const [scrollElement, setScrollElement] =
+    useState<() => HTMLElement | null>();
+  const [released, setReleased] = useState<boolean>();
+  const [revision, setRevision] = useState(0);
+  const scrollElementRef = useRef<WeakRef<HTMLElement>>(null);
+
+  useEffect(() => {
+    const element = document.createElement("div");
+    scrollElementRef.current = new WeakRef(element);
+    setScrollElement(() => () => {
+      if (element.isConnected) {
+        return element;
+      }
+      return null;
+    });
+  }, []);
+
+  const useAutomaticScrollElement = () => {
+    if (!scrollElement) return;
+    setScrollElement(undefined);
+  };
+
+  return (
+    <section>
+      <button type="button" onClick={useAutomaticScrollElement}>
+        Use automatic scroll element
+      </button>
+      <button
+        type="button"
+        onClick={() => setRevision((currentRevision) => currentRevision + 1)}
+      >
+        Rerender lifetime probe
+      </button>
+      <button
+        type="button"
+        onClick={() => setReleased(!scrollElementRef.current?.deref())}
+      >
+        Check released scroll element
+      </button>
+      <p role="status" aria-label="Controller lifetime status">
+        Explicit target ready: {scrollElement ? "yes" : "no"}; Released:{" "}
+        {released === undefined ? "unchecked" : released ? "yes" : "no"};
+        Revision: {revision}
+      </p>
+      <SelectRenderer
+        data-revision={revision}
+        items={asyncItems}
+        initialItems={1}
+        itemSize={40}
+        scrollElement={scrollElement}
+      >
+        {({ value, index, ...item }) => (
+          <div key={item.id} {...item} data-index={index} role="option">
+            {value}
+          </div>
+        )}
+      </SelectRenderer>
+    </section>
+  );
+}
+
 function InitialRefRenderer() {
   const scrollElementRef = useRef<HTMLDivElement>(null);
 
@@ -475,6 +537,7 @@ export default function Example() {
       <AsyncRenderer />
       <NestedAutoRenderer />
       <DirectElementRenderer />
+      <ControllerLifetimeRenderer />
       <InitialRefRenderer />
       <InheritedTargetRenderer />
     </>

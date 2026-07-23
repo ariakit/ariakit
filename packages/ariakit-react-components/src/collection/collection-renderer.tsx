@@ -313,6 +313,10 @@ function getScrollElement(
   return scrollElement;
 }
 
+function resolveNullScroller() {
+  return null;
+}
+
 interface ScrollerController {
   revalidated: boolean;
   resolve: () => Element | null;
@@ -339,7 +343,7 @@ function useScroller(
   if (!controller && scrollElement !== undefined) {
     const nextController: ScrollerController = {
       revalidated: false,
-      resolve: resolveScroller,
+      resolve: resolveNullScroller,
       revalidate: () => {
         if (nextController.revalidated) return;
         nextController.revalidated = true;
@@ -360,7 +364,15 @@ function useScroller(
     if (inheritedController) {
       inheritedController.revalidated = false;
     }
-    if (scrollElement === undefined) return;
+    if (scrollElement === undefined) {
+      if (controller) {
+        controller.revalidated = true;
+        controller.resolve = resolveNullScroller;
+      }
+      publishedScrollerRef.current = null;
+      controllerRef.current = null;
+      return;
+    }
     if (!controller) return;
     publishedScrollerRef.current = scroller;
     controller.revalidated = false;
