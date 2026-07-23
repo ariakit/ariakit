@@ -12,7 +12,7 @@ import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { ButtonOptions } from "../button/button.tsx";
 import { useButton } from "../button/button.tsx";
 import { withDefaultButtonType } from "../button/utils.ts";
@@ -52,6 +52,17 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
     const disclosureElement = useStoreState(store, "disclosureElement");
     const open = useStoreState(store, "open");
 
+    const setDisclosureElement = useCallback(
+      (element: HTMLType | null) => {
+        const previousElement = ref.current;
+        ref.current = element;
+        if (element) return;
+        if (store?.getState().disclosureElement !== previousElement) return;
+        store.setDisclosureElement(null);
+      },
+      [store],
+    );
+
     // Assigns the disclosure element whenever it's undefined or disconnected
     // from the DOM. If the current element is the disclosure element, it will
     // get the `aria-expanded` attribute set to `true` when the disclosure
@@ -85,7 +96,7 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
       "aria-controls": contentElement?.id,
       ...metadataProps,
       ...props,
-      ref: useMergeRefs(ref, props.ref),
+      ref: useMergeRefs(setDisclosureElement, props.ref),
       onClick,
     };
 

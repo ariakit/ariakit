@@ -24,15 +24,16 @@ interface PopoverCaseProps {
 
 function PopoverCase({ anchorFirst, label }: PopoverCaseProps) {
   const [anchorMounted, setAnchorMounted] = useState(true);
+  const [disclosureMounted, setDisclosureMounted] = useState(true);
   const store = Ariakit.usePopoverStore({ placement: "right" });
   const anchorElement = Ariakit.useStoreState(store, "anchorElement");
   const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
 
-  const disclosure = (
+  const disclosure = disclosureMounted ? (
     <Ariakit.PopoverDisclosure store={store} data-disclosure="button">
       Open {label}
     </Ariakit.PopoverDisclosure>
-  );
+  ) : null;
 
   const anchor = anchorMounted ? (
     <Ariakit.PopoverAnchor store={store} data-anchor="explicit">
@@ -55,6 +56,9 @@ function PopoverCase({ anchorFirst, label }: PopoverCaseProps) {
         <Ariakit.Button onClick={() => setAnchorMounted(false)}>
           Remove {label} anchor
         </Ariakit.Button>
+        <Ariakit.Button onClick={() => setDisclosureMounted(false)}>
+          Remove {label} disclosure
+        </Ariakit.Button>
       </Ariakit.Popover>
       <output aria-label={`${label} current anchor`}>
         {anchorElement?.dataset.anchor ||
@@ -63,6 +67,41 @@ function PopoverCase({ anchorFirst, label }: PopoverCaseProps) {
       </output>
       <output aria-label={`${label} current disclosure`}>
         {disclosureElement?.dataset.disclosure || "none"}
+      </output>
+    </CaseLayout>
+  );
+}
+
+function HovercardCase() {
+  const store = Ariakit.useHovercardStore({
+    placement: "right",
+    timeout: 0,
+  });
+  const anchorElement = Ariakit.useStoreState(store, "anchorElement");
+
+  return (
+    <CaseLayout>
+      <Ariakit.HovercardProvider store={store}>
+        <Ariakit.HovercardAnchor data-anchor="explicit">
+          Hovercard anchor
+        </Ariakit.HovercardAnchor>
+        <Ariakit.HovercardDisclosure
+          aria-label="Open Hovercard"
+          data-disclosure="button"
+        />
+        <Ariakit.Hovercard
+          aria-label="Hovercard details"
+          flip={false}
+          slide={false}
+          gutter={16}
+        >
+          Hovercard content
+        </Ariakit.Hovercard>
+      </Ariakit.HovercardProvider>
+      <output aria-label="Hovercard current anchor">
+        {anchorElement?.dataset.anchor ||
+          anchorElement?.dataset.disclosure ||
+          "none"}
       </output>
     </CaseLayout>
   );
@@ -151,6 +190,7 @@ function SelectCase() {
 type ComboboxCaseType = "explicit" | "input" | "disclosure";
 
 function ComboboxCase({ type }: { type: ComboboxCaseType }) {
+  const [inputMounted, setInputMounted] = useState(true);
   const label = `${type[0]?.toUpperCase()}${type.slice(1)}`;
   const store = Ariakit.useComboboxStore({ placement: "right" });
   const anchorElement = Ariakit.useStoreState(store, "anchorElement");
@@ -164,7 +204,7 @@ function ComboboxCase({ type }: { type: ComboboxCaseType }) {
             {label} Combobox anchor
           </Ariakit.ComboboxAnchor>
         )}
-        {type !== "disclosure" && (
+        {type !== "disclosure" && inputMounted && (
           <Ariakit.Combobox
             aria-label={`${label} Combobox input`}
             data-anchor="input"
@@ -181,6 +221,11 @@ function ComboboxCase({ type }: { type: ComboboxCaseType }) {
           gutter={16}
         >
           <Ariakit.ComboboxItem value="Apple" />
+          {type === "input" && (
+            <Ariakit.Button onClick={() => setInputMounted(false)}>
+              Remove Input Combobox input
+            </Ariakit.Button>
+          )}
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
       <output aria-label={`${label} Combobox current anchor`}>
@@ -197,6 +242,28 @@ function ComboboxCase({ type }: { type: ComboboxCaseType }) {
   );
 }
 
+function PopoverContextPlacement() {
+  const store = Ariakit.usePopoverContext();
+  return (
+    <output aria-label="Scoped Combobox context">
+      {store?.getState().placement}
+    </output>
+  );
+}
+
+function ScopedComboboxDisclosureCase() {
+  const store = Ariakit.useComboboxStore({ placement: "right" });
+
+  return (
+    <Ariakit.PopoverProvider placement="left">
+      <Ariakit.ComboboxDisclosure store={store}>
+        Scoped Combobox Disclosure
+        <PopoverContextPlacement />
+      </Ariakit.ComboboxDisclosure>
+    </Ariakit.PopoverProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -208,6 +275,8 @@ export default function Example() {
       <ComboboxCase type="explicit" />
       <ComboboxCase type="input" />
       <ComboboxCase type="disclosure" />
+      <HovercardCase />
+      <ScopedComboboxDisclosureCase />
     </>
   );
 }

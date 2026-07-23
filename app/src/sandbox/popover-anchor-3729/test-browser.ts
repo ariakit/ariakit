@@ -51,6 +51,42 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expectAligned(test.expect, disclosure, popover);
   });
 
+  test("clears the disclosure fallback when it unmounts", async ({ q }) => {
+    const label = "Disclosure first";
+    await q.button(`Open ${label}`).click();
+    await q.button(`Remove ${label} anchor`).click();
+    await q.button(`Remove ${label} disclosure`).click();
+
+    await test.expect(q.status(`${label} current anchor`)).toHaveText("none");
+    await test
+      .expect(q.status(`${label} current disclosure`))
+      .toHaveText("none");
+    await test.expect(q.dialog(`${label} details`)).toBeVisible();
+  });
+
+  test("preserves HovercardAnchor after keyboard activation", async ({ q }) => {
+    const anchor = q.text("Hovercard anchor");
+    const hovercard = q.dialog("Hovercard details");
+
+    await anchor.hover();
+    await test.expect(hovercard).toBeVisible();
+    await test
+      .expect(q.status("Hovercard current anchor"))
+      .toHaveText("explicit");
+    await expectAligned(test.expect, anchor, hovercard);
+
+    await hovercard.press("Escape");
+    const disclosure = q.button("Open Hovercard");
+    await disclosure.focus();
+    await disclosure.click();
+
+    await test.expect(hovercard).toBeVisible();
+    await test
+      .expect(q.status("Hovercard current anchor"))
+      .toHaveText("explicit");
+    await expectAligned(test.expect, anchor, hovercard);
+  });
+
   test("keeps MenuButton as the disclosure for MenuAnchor", async ({ q }) => {
     const button = q.button("Open Menu");
     await button.click();
@@ -122,9 +158,25 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await expectAligned(test.expect, anchor, popover);
 
       if (type === "Input") {
-        await q.combobox("Input Combobox input").press("Escape");
-        await test.expect(popover).not.toBeVisible();
+        await q.button("Remove Input Combobox input").click();
+        await test
+          .expect(q.status("Input Combobox current anchor"))
+          .toHaveText("button");
+        await test
+          .expect(q.status("Input Combobox current disclosure"))
+          .toHaveText("button");
+        await expectAligned(
+          test.expect,
+          q.button("Open Input Combobox"),
+          popover,
+        );
       }
     });
   }
+
+  test("provides the Combobox store to disclosure descendants", async ({
+    q,
+  }) => {
+    await test.expect(q.status("Scoped Combobox context")).toHaveText("right");
+  });
 });

@@ -130,20 +130,28 @@ export function createComboboxStore({
   };
 
   const combobox = createStore(initialState, composite, popover, store);
+  const initialFallback =
+    initialState.baseElement || initialState.disclosureElement;
+  let syncedAnchorElement =
+    initialState.anchorElement === initialFallback
+      ? initialState.anchorElement
+      : null;
 
   setup(combobox, () =>
     sync(
       combobox,
       ["anchorElement", "baseElement", "disclosureElement"],
-      (state, prevState) => {
-        const anchor = state.anchorElement;
-        const fallback = state.baseElement || state.disclosureElement;
-        const previousFallback =
-          prevState.baseElement || prevState.disclosureElement;
-        if (anchor && anchor !== previousFallback && anchor !== fallback) {
+      (state) => {
+        if (
+          state.anchorElement &&
+          state.anchorElement !== syncedAnchorElement
+        ) {
+          syncedAnchorElement = null;
           return;
         }
-        combobox.setState("anchorElement", fallback);
+        const fallback = state.baseElement || state.disclosureElement;
+        syncedAnchorElement = fallback;
+        combobox.setState("anchorElement", syncedAnchorElement);
       },
     ),
   );

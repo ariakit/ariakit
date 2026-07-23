@@ -26,6 +26,18 @@ test("falls back to the disclosure when the explicit anchor unmounts", async () 
   expect(q.dialog(`${label} details`)).toBeVisible();
 });
 
+test("clears the disclosure fallback when it unmounts", async () => {
+  const label = "Disclosure first";
+
+  await click(q.button(`Open ${label}`));
+  await click(q.button(`Remove ${label} anchor`));
+  await click(q.button(`Remove ${label} disclosure`));
+
+  expect(q.status(`${label} current anchor`)).toHaveTextContent("none");
+  expect(q.status(`${label} current disclosure`)).toHaveTextContent("none");
+  expect(q.dialog(`${label} details`)).toBeVisible();
+});
+
 test("keeps MenuButton as the disclosure for MenuAnchor", async () => {
   const button = q.button("Open Menu");
 
@@ -63,4 +75,19 @@ test.each([
 
   await press("Escape");
   expect(q.listbox(`${label} Combobox items`)).not.toBeInTheDocument();
+});
+
+test("uses ComboboxDisclosure when the combobox input unmounts", async () => {
+  await click(q.button("Open Input Combobox"));
+  await click(q.button("Remove Input Combobox input"));
+
+  expect(q.status("Input Combobox current anchor")).toHaveTextContent("button");
+  expect(q.status("Input Combobox current disclosure")).toHaveTextContent(
+    "button",
+  );
+  expect(q.listbox("Input Combobox items")).toBeVisible();
+});
+
+test("provides the Combobox store to disclosure descendants", () => {
+  expect(q.status("Scoped Combobox context")).toHaveTextContent("right");
 });

@@ -63,23 +63,20 @@ export function createPopoverStore({
     rendered: Symbol("rendered"),
   };
   const popover = createStore(initialState, dialog, store);
+  let syncedAnchorElement =
+    initialState.anchorElement === initialState.disclosureElement
+      ? initialState.anchorElement
+      : null;
 
   setup(popover, () =>
-    sync(
-      popover,
-      ["anchorElement", "disclosureElement"],
-      (state, prevState) => {
-        const anchor = state.anchorElement;
-        if (
-          anchor &&
-          anchor !== prevState.disclosureElement &&
-          anchor !== state.disclosureElement
-        ) {
-          return;
-        }
-        popover.setState("anchorElement", state.disclosureElement);
-      },
-    ),
+    sync(popover, ["anchorElement", "disclosureElement"], (state) => {
+      if (state.anchorElement && state.anchorElement !== syncedAnchorElement) {
+        syncedAnchorElement = null;
+        return;
+      }
+      syncedAnchorElement = state.disclosureElement;
+      popover.setState("anchorElement", syncedAnchorElement);
+    }),
   );
 
   return {
