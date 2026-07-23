@@ -64,7 +64,7 @@ export const useComboboxSelectLabel = createHook<
   props = {
     ...props,
     id,
-    ref: useMergeRefs(store.setLabelElement, props.ref),
+    ref: useMergeRefs(store.setSelectLabelElement, props.ref),
     onClick,
     style: {
       cursor: "default",

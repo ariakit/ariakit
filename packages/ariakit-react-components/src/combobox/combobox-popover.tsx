@@ -64,7 +64,23 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     );
 
     const baseElement = useStoreState(store, "baseElement");
+    const contentElement = useStoreState(store, "contentElement");
+    const selectLabelId = useStoreState(
+      store,
+      (state) => state.selectLabelElement?.id,
+    );
+    const labelId = useStoreState(store, (state) => state.labelElement?.id);
     const hiddenByClickOutsideRef = useRef(false);
+
+    // A filterable select renders the combobox input inside the popover, unlike
+    // a classic combobox whose input stays outside and keeps DOM focus. When the
+    // input lives inside, the popover must move focus to it on show (including
+    // programmatic shows), since nothing outside is holding focus for it.
+    const comboboxInsidePopover =
+      !!baseElement &&
+      !!contentElement &&
+      baseElement !== contentElement &&
+      contentElement.contains(baseElement);
 
     // When new tags are rendered while the combobox popover is open, they will
     // be considered nested popups, and therefore the popover won't hide when
@@ -83,7 +99,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       modal,
       alwaysVisible,
       backdrop: false,
-      autoFocusOnShow: false,
+      autoFocusOnShow: comboboxInsidePopover,
       finalFocus: baseElement,
       preserveTabOrderAnchor: null,
       unstable_treeSnapshotKey: treeSnapshotKey,
@@ -141,6 +157,17 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         return result;
       },
     });
+
+    // Fall back to the registered label when the popover isn't already named by
+    // an explicit `aria-label` or a `PopoverHeading` (which `usePopover` has
+    // resolved into `aria-labelledby` above). The select label takes precedence
+    // over the input label so a filterable select is named after its trigger.
+    if (props["aria-label"] == null && props["aria-labelledby"] == null) {
+      const fallbackLabelId = selectLabelId || labelId;
+      if (fallbackLabelId) {
+        props = { ...props, "aria-labelledby": fallbackLabelId };
+      }
+    }
 
     return props;
   },

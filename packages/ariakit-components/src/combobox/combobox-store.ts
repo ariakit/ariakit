@@ -128,6 +128,7 @@ export function createComboboxStore({
     ),
     activeValue: syncState?.activeValue,
     labelElement: defaultValue(syncState?.labelElement, null),
+    selectLabelElement: defaultValue(syncState?.selectLabelElement, null),
     selectElement: defaultValue(syncState?.selectElement, null),
   };
 
@@ -208,6 +209,8 @@ export function createComboboxStore({
     setSelectedValue: (selectedValue) =>
       combobox.setState("selectedValue", selectedValue),
     setLabelElement: (element) => combobox.setState("labelElement", element),
+    setSelectLabelElement: (element) =>
+      combobox.setState("selectLabelElement", element),
     setSelectElement: (element) => combobox.setState("selectElement", element),
   };
 }
@@ -307,6 +310,10 @@ export interface ComboboxStoreState<
    */
   labelElement: HTMLElement | null;
   /**
+   * The combobox select label element.
+   */
+  selectLabelElement: HTMLElement | null;
+  /**
    * The combobox select button element.
    */
   selectElement: HTMLElement | null;
@@ -346,6 +353,10 @@ export interface ComboboxStoreFunctions<
    * Sets the `labelElement` state.
    */
   setLabelElement: SetState<ComboboxStoreState<T>["labelElement"]>;
+  /**
+   * Sets the `selectLabelElement` state.
+   */
+  setSelectLabelElement: SetState<ComboboxStoreState<T>["selectLabelElement"]>;
   /**
    * Sets the `selectElement` state.
    */
