@@ -38,10 +38,66 @@ test("keeps the documented behavior after the dialog has been focused", async ()
   expect(q.dialog("Dialog")).toBeVisible();
 });
 
+test("stays open when interacting with a persistent shadow element", async () => {
+  await click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toBeVisible();
+
+  const host = document.querySelector<HTMLElement>("[data-testid=shadow-host]");
+  const persistentHost = host?.shadowRoot?.querySelector<HTMLElement>(
+    "[data-persistent-shadow-host]",
+  );
+  const persistentInput =
+    persistentHost?.shadowRoot?.querySelector<HTMLInputElement>(
+      "[data-persistent-shadow-field]",
+    );
+  const persistentButton =
+    persistentHost?.shadowRoot?.querySelector<HTMLButtonElement>(
+      "[data-persistent-shadow-button]",
+    );
+
+  await click(persistentInput || null);
+  expect(persistentHost?.shadowRoot?.activeElement).toBe(persistentInput);
+  expect(q.dialog("Dialog")).toBeVisible();
+
+  await click(q.textbox("Inside field"));
+  await click(persistentButton || null);
+  expect(q.textbox("Inside field")).toHaveFocus();
+  expect(q.dialog("Dialog")).toBeVisible();
+});
+
+test("ignores focus events from disconnected shadow elements", async () => {
+  await click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toBeVisible();
+
+  const host = document.querySelector<HTMLElement>("[data-testid=shadow-host]");
+  const disconnectedInput = host?.shadowRoot?.querySelector<HTMLInputElement>(
+    "[data-disconnected-shadow-field]",
+  );
+  if (!host || !disconnectedInput) {
+    throw new Error("Missing disconnected shadow field");
+  }
+  disconnectedInput.focus();
+  expect(disconnectedInput.isConnected).toBe(false);
+  expect(q.dialog("Dialog")).toBeVisible();
+});
+
 test("still closes when interacting outside before the dialog is focused", async () => {
   await click(q.button("Open dialog"));
   expect(q.dialog("Dialog")).toBeVisible();
 
   await click(q.textbox("Outside field"));
+  await expect.poll(q.dialog.hidden.lazy("Dialog")).not.toBeVisible();
+});
+
+test("closes when interacting inside an unrelated shadow root", async () => {
+  await click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toBeVisible();
+
+  await click(q.textbox("Inside field"));
+  const host = document.querySelector<HTMLElement>("[data-testid=shadow-host]");
+  const outsideShadowField = host?.shadowRoot?.querySelector<HTMLInputElement>(
+    "[data-outside-shadow-field]",
+  );
+  await click(outsideShadowField || null);
   await expect.poll(q.dialog.hidden.lazy("Dialog")).not.toBeVisible();
 });

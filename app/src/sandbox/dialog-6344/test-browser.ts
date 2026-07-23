@@ -52,6 +52,59 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
+  test("stays open when interacting with a persistent shadow element", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open dialog").click();
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+
+    const persistentInput = q.textbox("Persistent shadow field");
+    // Dispatch directly on the nested shadow element. WebKit's click
+    // actionability check may otherwise treat the outer shadow host as the
+    // pointer target even though the nested input is visible.
+    const mouseEventInit = {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    };
+    await persistentInput.dispatchEvent("mousedown", mouseEventInit);
+    await persistentInput.focus();
+    await persistentInput.dispatchEvent("mouseup", mouseEventInit);
+    await persistentInput.dispatchEvent("click", mouseEventInit);
+    await test.expect(persistentInput).toBeFocused();
+    await page.waitForTimeout(250);
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+
+    await q.textbox("Inside field").click();
+    const persistentButton = q.button("Persistent shadow button");
+    await persistentButton.dispatchEvent("mousedown", mouseEventInit);
+    await persistentButton.dispatchEvent("mouseup", mouseEventInit);
+    await persistentButton.dispatchEvent("click", mouseEventInit);
+    await test.expect(q.textbox("Inside field")).toBeFocused();
+    await page.waitForTimeout(250);
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+  });
+
+  test("ignores focus events from disconnected shadow elements", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open dialog").click();
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+
+    await page.getByTestId("shadow-host").evaluate((host) => {
+      const input = host.shadowRoot?.querySelector<HTMLInputElement>(
+        "[data-disconnected-shadow-field]",
+      );
+      if (!input) throw new Error("Missing disconnected shadow field");
+      input.focus();
+    });
+    await test.expect(q.textbox("Disconnected shadow field")).toHaveCount(0);
+    await page.waitForTimeout(250);
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+  });
+
   test("still closes when interacting outside before the dialog is focused", async ({
     q,
   }) => {
@@ -59,6 +112,17 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
 
     await q.textbox("Outside field").click();
+    await test.expect(q.dialog("Dialog")).not.toBeVisible();
+  });
+
+  test("closes when interacting inside an unrelated shadow root", async ({
+    q,
+  }) => {
+    await q.button("Open dialog").click();
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+
+    await q.textbox("Inside field").click();
+    await q.textbox("Outside shadow field").click();
     await test.expect(q.dialog("Dialog")).not.toBeVisible();
   });
 });

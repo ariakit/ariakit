@@ -1,12 +1,34 @@
 import { addGlobalEventListener, isElement } from "@ariakit/utils";
 import { useEffect, useRef } from "react";
 
-export function getEventTarget(event: Event) {
-  return event.composedPath().find(isElement) || event.target;
+export interface EventTargets {
+  elements: Element[];
+  rootTarget: EventTarget | null;
 }
 
-export function usePreviousMouseDownRef(enabled?: boolean, scope?: Window) {
-  const previousMouseDownRef = useRef<EventTarget | null>(null);
+export function getEventTargets(
+  event: Event,
+  referenceElement?: Element | null,
+): EventTargets {
+  const elements = event.composedPath().filter(isElement);
+  if (!elements.length && isElement(event.target)) {
+    elements.push(event.target);
+  }
+  const root = referenceElement?.getRootNode();
+  return {
+    elements,
+    rootTarget: root
+      ? elements.find((target) => target.getRootNode() === root) || event.target
+      : elements[0] || event.target,
+  };
+}
+
+export function usePreviousMouseDownRef(
+  enabled?: boolean,
+  scope?: Window,
+  referenceElement?: Element | null,
+) {
+  const previousMouseDownRef = useRef<EventTargets | null>(null);
 
   useEffect(() => {
     if (!enabled) {
@@ -14,10 +36,10 @@ export function usePreviousMouseDownRef(enabled?: boolean, scope?: Window) {
       return;
     }
     const onMouseDown = (event: MouseEvent) => {
-      previousMouseDownRef.current = getEventTarget(event);
+      previousMouseDownRef.current = getEventTargets(event, referenceElement);
     };
     return addGlobalEventListener("mousedown", onMouseDown, true, scope);
-  }, [enabled, scope]);
+  }, [enabled, scope, referenceElement]);
 
   return previousMouseDownRef;
 }
