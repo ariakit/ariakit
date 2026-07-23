@@ -8,8 +8,6 @@ export type Ids = Array<string | undefined>;
 
 type MarkKind = "outside" | "ancestor" | "inside";
 
-const insideElements = new WeakMap<Element, WeakMap<Element, number>>();
-
 function getPropertyName(id = "", kind: MarkKind = "outside") {
   return `__ariakit-dialog-${kind}${id ? `-${id}` : ""}` as keyof Element;
 }
@@ -32,45 +30,19 @@ export function markAncestor(element: Element, id = "") {
 // persistent elements, and nested dialogs), so the outside event listeners
 // can positively recognize them as "inside" regardless of whether the dialog
 // has been focused yet. See https://github.com/ariakit/ariakit/issues/6344
-export function markTreeInside(owner: string | Element, elements: Elements) {
-  if (typeof owner === "string") {
-    return chain(
-      ...elements.map((element) => {
-        if (!element) return undefined;
-        return setProperty(element, getPropertyName(owner, "inside"), true);
-      }),
-    );
-  }
-  let markers = insideElements.get(owner);
-  if (!markers) {
-    markers = new WeakMap();
-    insideElements.set(owner, markers);
-  }
+export function markTreeInside(id: string, elements: Elements) {
   return chain(
     ...elements.map((element) => {
       if (!element) return undefined;
-      const count = markers.get(element) ?? 0;
-      markers.set(element, count + 1);
-      return () => {
-        const count = markers.get(element) ?? 0;
-        if (count <= 1) {
-          markers.delete(element);
-        } else {
-          markers.set(element, count - 1);
-        }
-      };
+      return setProperty(element, getPropertyName(id, "inside"), true);
     }),
   );
 }
 
-export function isElementInside(element: Element, owner: string | Element) {
-  const propertyName =
-    typeof owner === "string" ? getPropertyName(owner, "inside") : undefined;
-  const markers =
-    typeof owner === "string" ? undefined : insideElements.get(owner);
+export function isElementInside(element: Element, id: string) {
+  const propertyName = getPropertyName(id, "inside");
   do {
-    if (propertyName ? element[propertyName] : markers?.has(element))
-      return true;
+    if (element[propertyName]) return true;
     if (!element.parentElement) return false;
     element = element.parentElement;
     // oxlint-disable-next-line no-constant-condition

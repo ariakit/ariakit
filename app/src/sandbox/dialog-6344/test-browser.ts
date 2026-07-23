@@ -52,23 +52,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
-  test("keeps persistent elements inside after replacing the dialog node", async ({
-    page,
-    q,
-  }) => {
-    await q.button("Open dialog").click();
-    await test.expect(q.dialog("Dialog")).toHaveJSProperty("tagName", "DIV");
-
-    await q.button("Replace dialog node").click();
-    await test
-      .expect(q.dialog("Dialog"))
-      .toHaveJSProperty("tagName", "SECTION");
-    await q.textbox("Notification field").click();
-
-    await page.waitForTimeout(250);
-    await test.expect(q.dialog("Dialog")).toBeVisible();
-  });
-
   test("still closes when interacting outside before the dialog is focused", async ({
     q,
   }) => {

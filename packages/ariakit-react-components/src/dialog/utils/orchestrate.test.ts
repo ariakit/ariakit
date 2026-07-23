@@ -249,32 +249,6 @@ test("markTreeInside marks the given elements and restores them", () => {
   expect(isElementInside(persistentChild, "dialog")).toBe(false);
 });
 
-test("markTreeInside keeps owners with matching IDs isolated", () => {
-  const firstDocument = document.implementation.createHTMLDocument();
-  const secondDocument = document.implementation.createHTMLDocument();
-  const firstDialog = firstDocument.createElement("div");
-  const secondDialog = secondDocument.createElement("div");
-  firstDialog.id = "dialog";
-  secondDialog.id = "dialog";
-  firstDocument.body.append(firstDialog);
-  secondDocument.body.append(secondDialog);
-
-  const restoreFirst = markTreeInside(firstDialog, [firstDialog]);
-  const restoreSecond = markTreeInside(secondDialog, [secondDialog]);
-
-  expect(isElementInside(firstDialog, firstDialog)).toBe(true);
-  expect(isElementInside(secondDialog, secondDialog)).toBe(true);
-  expect(isElementInside(secondDialog, firstDialog)).toBe(false);
-  expect(isElementInside(firstDialog, secondDialog)).toBe(false);
-
-  restoreFirst();
-
-  expect(isElementInside(firstDialog, firstDialog)).toBe(false);
-  expect(isElementInside(secondDialog, secondDialog)).toBe(true);
-
-  restoreSecond();
-});
-
 test("markTreeOutside restores previous marks after nested cleanup", () => {
   document.body.innerHTML = `
     <div id="root">

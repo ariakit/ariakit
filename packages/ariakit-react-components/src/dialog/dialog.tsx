@@ -169,9 +169,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   usePreventBodyScroll(contentElement, id, preventBodyScroll && !hidden);
 
-  // Tracks whether the dialog was hidden by an outside click or context menu.
-  // When true, focusOnHide skips focus restoration to match native HTML
-  // behavior where trigger buttons don't receive focus when you click outside.
+  // Tracks whether focus restoration should be skipped after an outside
+  // interaction to match native HTML behavior.
   // Reset when the dialog opens to avoid stale flags from prevented closes
   // (e.g., onClose calling event.preventDefault), async closes with
   // animations, or when autoFocusOnHide is disabled.
@@ -311,8 +310,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     if (!id) return;
     if (!canTakeTreeSnapshot) return;
     const { disclosureElement } = store.getState();
-    const dialog = contentElement;
-    if (!dialog) return;
+    const dialog = ref.current;
     const persistentElements = getPersistentElementsProp() || [];
     const allElements = [
       dialog,
@@ -325,7 +323,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     // the dialog is open (hovercards and tooltips set it to the focus
     // source), so the listeners re-check it against the current state on
     // every event instead. See https://github.com/ariakit/ariakit/issues/6344
-    const restoreInsideMarks = markTreeInside(dialog, allElements);
+    const restoreInsideMarks = markTreeInside(id, allElements);
     if (modal) {
       return chain(
         restoreInsideMarks,
@@ -340,7 +338,6 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     id,
     store,
     canTakeTreeSnapshot,
-    contentElement,
     getPersistentElementsProp,
     nestedDialogs,
     modal,
@@ -427,9 +424,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   const focusOnHide = useCallback(
     (dialog: HTMLElement | null, retry = true) => {
-      // Hide was triggered by clicking or right-clicking outside the dialog.
-      // Native HTML dialogs and popovers don't restore focus to the trigger
-      // in this case, so we skip focus restoration entirely.
+      // Hide was triggered by an outside interaction that should retain focus
+      // on its target, so we skip focus restoration entirely.
       if (interactedOutsideRef.current) return;
       const { disclosureElement } = store.getState();
       // Hide was triggered by a click/focus on a tabbable element outside the
