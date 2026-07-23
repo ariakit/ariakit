@@ -7,9 +7,6 @@
   "imports": {
     "#app/*": "./src/*"
   },
-  "exports": {
-    "./*": "./src/examples/_lib/*"
-  },
   "scripts": {
     "dev": "astro dev",
     "dev-lite": "cross-env DISABLE_REFERENCE_LINKS=true pnpm run dev",
@@ -45,8 +42,7 @@
     "test-perf": "cross-env PERF_TEST=true pnpm run test",
     "perf-compare": "ariakit perf-compare",
     "og-image-clean": "rimraf public/og-image",
-    "og-image-generate": "node src/pages/og-image/_generate-images.ts",
-    "build-styles": "node src/lib/build-styles.ts"
+    "og-image-generate": "node src/pages/og-image/_generate-images.ts"
   },
   "dependencies": {
     "@ariakit/react": "workspace:*",
@@ -57,6 +53,7 @@
     "@ariakit/solid-utils": "workspace:*",
     "@ariakit/store": "workspace:*",
     "@ariakit/tailwind": "workspace:*",
+    "@ariakit/ui": "workspace:*",
     "@ariakit/utils": "workspace:*",
     "@astrojs/check": "0.9.9",
     "@astrojs/cloudflare": "14.1.4",
@@ -66,7 +63,6 @@
     "@astrojs/solid-js": "7.0.1",
     "@clerk/astro": "3.4.19",
     "@fontsource-variable/inter": "5.3.0",
-    "@react-aria/utils": "3.34.1",
     "@shikijs/langs": "4.3.1",
     "@shikijs/themes": "4.3.1",
     "@stackblitz/sdk": "1.11.1",
@@ -92,7 +88,6 @@
     "pluralize": "8.0.0",
     "prettier": "3.9.5",
     "react": "19.2.7",
-    "react-aria-components": "1.19.0",
     "react-dom": "19.2.7",
     "read-package-up": "12.0.0",
     "rehype-autolink-headings": "7.1.0",

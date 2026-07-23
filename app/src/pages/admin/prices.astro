@@ -13,6 +13,9 @@ import SubmitButton from "#app/components/submit-button.astro";
 import { isAdmin } from "#app/lib/auth.ts";
 import { getPrices } from "#app/lib/kv.ts";
 import { getPlusPriceKey, parsePlusPriceKey } from "#app/lib/stripe.ts";
+import { button } from "@ariakit/ui/styles/button.ts";
+import { container } from "@ariakit/ui/styles/container.ts";
+import { input } from "@ariakit/ui/styles/input.ts";
 import { actions } from "astro:actions";
 import Layout from "./_layout.astro";
 import PriceCard from "./_price-card.astro";
@@ -64,7 +67,12 @@ const { currencies, countries } = getCurrencyData();
 <Layout>
   <div class="ak-layer ak-layer-darken-6 border-t min-h-[90vh]">
     <ul
-      class="ak-container grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-(--ak-container-p) py-(--ak-container-p)"
+      {...container.html({
+        // --_container-padding is the containerSize gutter set on the
+        // layout's body, replacing the legacy --ak-container-p.
+        class:
+          "grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-(--_container-padding) py-(--_container-padding)",
+      })}
     >
       {prices.map((price) => <PriceCard {...price} />)}
       <li
@@ -103,7 +111,7 @@ const { currencies, countries } = getCurrencyData();
               type="text"
               aria-label="Price"
               inputmode="decimal"
-              class="ak-input field-sizing-content"
+              {...input.html({ class: "field-sizing-content" })}
               name="amount"
               placeholder="0.00"
               required
@@ -113,9 +121,11 @@ const { currencies, countries } = getCurrencyData();
             />
           </div>
           <div class="ak-frame ak-frame-cover ak-frame-p-1 mt-auto">
-            <SubmitButton class="ak-button ak-layer ak-layer-6 w-full"
-              >Set price</SubmitButton
-            >
+            {/* The button's default idle offset stands in for the legacy
+                ak-layer-6. */}
+            <SubmitButton {...button.html({ class: "w-full" })}>
+              Set price
+            </SubmitButton>
           </div>
         </form>
       </li>

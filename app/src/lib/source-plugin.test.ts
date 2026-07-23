@@ -12,6 +12,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 import checkboxCardForm from "#app/examples/checkbox-card/form/index.react.tsx?source";
+import disclosureActions from "#app/examples/disclosure/actions/index.react.tsx?source";
 import disclosure from "#app/examples/disclosure/index.react.tsx?source";
 import { sourcePlugin } from "./source-plugin.ts";
 import type { Source } from "./source.ts";
@@ -45,8 +46,7 @@ test("disclosure dependencies", () => {
     [
       "react",
       "react-dom",
-      "@ariakit/react",
-      "clsx",
+      "@ariakit/ui",
     ]
   `);
 });
@@ -64,8 +64,6 @@ test("disclosure file names", () => {
   expect(Object.keys(disclosure.files)).toMatchInlineSnapshot(`
     [
       "index.tsx",
-      "disclosure.tsx",
-      "utils.ts",
     ]
   `);
 });
@@ -96,12 +94,33 @@ test("disclosure source names", () => {
   expect(sourceKeys).toMatchInlineSnapshot(`
     [
       "disclosure/index.react.tsx",
-      "_lib/ariakit/disclosure.react.tsx",
-      "_lib/react-utils/create-render.ts",
-      "_lib/react-utils/is-iterable.ts",
-      "_lib/react-utils/merge-props.ts",
     ]
   `);
+});
+
+test("disclosure actions source names include _lib data", () => {
+  const sourceKeys = Object.keys(disclosureActions.sources).map(
+    normalizeSourcePath,
+  );
+  expect(sourceKeys).toMatchInlineSnapshot(`
+    [
+      "disclosure/actions/index.react.tsx",
+      "_lib/data/orders.ts",
+    ]
+  `);
+});
+
+test("disclosure actions flattens _lib data files", () => {
+  expect(Object.keys(disclosureActions.files)).toMatchInlineSnapshot(`
+    [
+      "index.tsx",
+      "orders.ts",
+    ]
+  `);
+  // The #app alias import must be rewritten to the flattened sibling file.
+  expect(disclosureActions.files["index.tsx"]?.content).toContain(
+    'from "./orders.ts"',
+  );
 });
 
 test("formats rewritten imports with the app Tailwind config", () => {
@@ -115,7 +134,6 @@ test("disclosure sources", () => {
     id: normalizeSourcePath(source.id),
     dependencies: Object.keys(source.dependencies ?? {}),
     devDependencies: Object.keys(source.devDependencies ?? {}),
-    styles: source.styles?.map((style) => style.name),
   }));
   expect(sources).toMatchInlineSnapshot(`
     [
@@ -123,186 +141,13 @@ test("disclosure sources", () => {
         "dependencies": [
           "react",
           "react-dom",
+          "@ariakit/ui",
         ],
         "devDependencies": [
           "@types/react",
           "@types/react-dom",
         ],
         "id": "disclosure/index.react.tsx",
-        "styles": [],
-      },
-      {
-        "dependencies": [
-          "react",
-          "react-dom",
-          "@ariakit/react",
-          "clsx",
-        ],
-        "devDependencies": [
-          "@types/react",
-          "@types/react-dom",
-        ],
-        "id": "_lib/ariakit/disclosure.react.tsx",
-        "styles": [
-          "ak-disclosure_open",
-          "ak-disclosure",
-          "ak-disclosure-split",
-          "ak-disclosure-group",
-          "ak-disclosure-group",
-          "ak-disclosure-actions",
-          "ak-disclosure-icon",
-          "ak-disclosure-button",
-          "ak-command-depth-*",
-          "ak-disclosure-chevron-down",
-          "ak-disclosure-chevron-right",
-          "ak-disclosure-plus",
-          "ak-disclosure-content_open",
-          "ak-disclosure-content",
-          "ak-disclosure-guide",
-          "ak-disclosure-content-body",
-          "ak-prose",
-          "ak-prose-gap-*",
-          "ak-disclosure-content-base_open",
-          "ak-disclosure_idle",
-          "ak-disclosure-hover",
-          "ak-disclosure_hover",
-          "ak-layer",
-          "ak-frame",
-          "ak-frame-cover",
-          "ak-disclosure-content-base_idle",
-          "ak-state-6",
-          "ak-disclosure-button_idle",
-          "ak-disclosure-open",
-          "ak-disclosure-button_open",
-          "ak-command-hover",
-          "ak-disclosure-button_hover",
-          "ak-command-focus",
-          "ak-disclosure-button_focus",
-          "ak-command-active",
-          "ak-disclosure-button_active",
-          "ak-command-disabled",
-          "ak-disclosure-button_disabled",
-          "ak-command-depth-x-*",
-          "ak-button_idle",
-          "ak-frame-force",
-          "ak-frame-(--ak-disclosure-button-radius)/(--ak-disclosure-padding)",
-          "ak-button_focus",
-          "ak-button_active",
-          "ak-button_disabled",
-          "ak-command_idle",
-          "ak-outline",
-          "ak-outline-primary",
-          "ak-frame-field/field",
-          "ak-command_focus",
-          "ak-command_active",
-          "ak-ink-50",
-          "ak-layer-mix-20",
-          "--ak-command-depth-x",
-          "--ak-command-depth-y",
-          "ak-state-0",
-          "ak-frame-none/card",
-          "ak-disclosure-chevron-down_idle",
-          "ak-disclosure-chevron-down_open",
-          "ak-disclosure-chevron-right_idle",
-          "ak-icon-chevron",
-          "ak-icon",
-          "ak-disclosure-chevron-right_open",
-          "ak-disclosure-plus_idle",
-          "ak-disclosure-plus_open",
-          "ak-disclosure-content_idle",
-          "ak-prose-text",
-          "ak-prose-text-*",
-          "ak-prose-elements",
-          "ak-prose-content",
-          "ak-dark",
-          "ak-ink-75",
-          "ak-light",
-          "ak-ink-90",
-          "ak-heading",
-          "ak-list",
-          "ak-list-leading-*",
-          "ak-list-gap-*",
-          "ak-list-item",
-          "ak-strong",
-          "ak-code",
-          "ak-link",
-          "ak-kbd",
-          "ak-separator",
-          "ak-ink-100",
-          "ak-link_idle",
-          "ak-heading-1",
-          "ak-heading-2",
-          "ak-heading-3",
-          "ak-heading-4",
-          "ak-heading-5",
-          "ak-list-counter-reset",
-          "ak-list-item-padding-*",
-          "ak-list-ul",
-          "ak-list-ul",
-          "ak-list-ol",
-          "ak-list-ol",
-          "ak-list-blocks",
-          "ak-list-blocks",
-          "ak-list-sections",
-          "ak-list-sections",
-          "ak-list-item_base",
-          "ak-list-item-blocks",
-          "ak-list-item-blocks",
-          "ak-list-disclosure",
-          "ak-list-disclosure-button",
-          "ak-list-disclosure-content-body",
-          "ak-layer-6",
-          "ak-edge-15",
-          "ak-link_hover",
-          "ak-link_focus",
-          "ak-layer-9",
-          "ak-edge-100",
-          "ak-edge-lighten-60",
-          "ak-edge-16",
-          "ak-dark",
-          "ak-edge-20",
-          "ak-text",
-          "ak-text-primary",
-          "ak-text-20",
-          "ak-list-item-border-*",
-          "ak-frame-card/(--ak-list-item-padding)",
-          "ak-list-item-ul",
-          "ak-list-item-ol",
-          "ak-list-item-ol-marker",
-          "ak-list-item-ul-marker",
-          "ak-list-counter-increment",
-          "ak-list-item-ol-border",
-          "ak-list-counter",
-          "ak-edge-40",
-          "ak-layer-12",
-          "ak-list-counter-content",
-        ],
-      },
-      {
-        "dependencies": [
-          "react",
-        ],
-        "devDependencies": [
-          "@types/react",
-        ],
-        "id": "_lib/react-utils/create-render.ts",
-        "styles": [],
-      },
-      {
-        "dependencies": [],
-        "devDependencies": [],
-        "id": "_lib/react-utils/is-iterable.ts",
-        "styles": [],
-      },
-      {
-        "dependencies": [
-          "react",
-        ],
-        "devDependencies": [
-          "@types/react",
-        ],
-        "id": "_lib/react-utils/merge-props.ts",
-        "styles": [],
       },
     ]
   `);

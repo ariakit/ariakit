@@ -7,71 +7,66 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import * as ak from "@ariakit/react";
+import {
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from "@ariakit/ui/ariakit/tabs.react.tsx";
+import type {
+  TabListProps,
+  TabsProps,
+} from "@ariakit/ui/ariakit/tabs.react.tsx";
+import { clsx } from "clsx";
 import type { PropsWithChildren } from "react";
 
-interface TabsProps extends ak.RoleProps {
-  tabList?: ak.RoleProps["render"];
+interface PlaygroundTabsProps extends TabsProps {
+  tabListProps?: TabListProps;
 }
 
-function Tabs({ tabList, ...props }: TabsProps) {
+/**
+ * Interactive stand-in for the legacy static tab previews: the forced
+ * underscore state classes are gone, so the folder states are exercised with
+ * real tabs instead.
+ */
+function PlaygroundTabs({ tabListProps, ...props }: PlaygroundTabsProps) {
   return (
-    <ak.Role
+    <Tabs
+      $lighten={1.2}
+      $rounded="xl"
+      $p={1}
       {...props}
-      className="ak-tabs ak-layer ak-layer-lighten-6 ak-frame ak-frame-container/container ak-frame-border overflow-clip"
+      className={clsx("overflow-clip", props.className)}
     >
-      <ak.Role className="ak-tab-list" render={tabList}>
-        <div className="ak-tab-folder_idle [&&]:ak-tab-folder_selected">
-          <div>selected</div>
-        </div>
-        <div className="ak-tab-folder_idle [&&]:ak-tab-folder_hover">
-          <div>hover</div>
-        </div>
-        <div className="ak-tab-folder_idle">
-          <div>idle</div>
-        </div>
-        <div className="ak-tab-folder_idle [&&]:ak-tab-folder_focus">
-          <div>focus</div>
-        </div>
-        <div className="ak-tab-folder_idle [&&]:ak-tab-folder_selected [&]:ak-tab-folder_focus">
-          <div>selected focus</div>
-        </div>
-        <button className="ak-tab-folder" tabIndex={0}>
-          <div>default</div>
-        </button>
-        <button
-          className="ak-tab-folder"
-          role="tab"
-          aria-selected="true"
-          tabIndex={0}
-        >
-          <div>default selected</div>
-        </button>
-      </ak.Role>
-      <div className="ak-tab-panel">
-        <p className="ak-frame ak-frame-p-2">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo sed
-          illum quaerat recusandae cupiditate dolor praesentium ab corrupti
-          quidem laborum. Eveniet voluptatem velit animi vitae reiciendis
-          eligendi. Provident, est nam!
-        </p>
-      </div>
-    </ak.Role>
+      <TabList {...tabListProps}>
+        <Tab>Preview</Tab>
+        <Tab>Code</Tab>
+        <Tab>Usage</Tab>
+      </TabList>
+      <TabPanels $p={2}>
+        <TabPanel single>
+          <p>
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Illo sed
+            illum quaerat recusandae cupiditate dolor praesentium ab corrupti
+            quidem laborum. Eveniet voluptatem velit animi vitae reiciendis
+            eligendi. Provident, est nam!
+          </p>
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
   );
 }
 
 export function Playground({ children }: PropsWithChildren) {
   return (
     <div className="flex flex-col gap-4 m-2">
-      <Tabs />
-      <Tabs render={<div className="ak-frame-border-4" />} />
-      <Tabs tabList={<div className="ak-tab-list-p-1" />} />
-      <Tabs
-        render={<div className="ak-frame-border-3" />}
-        tabList={<div className="ak-tab-list-p-1" />}
-      />
-      <Tabs render={<div className="ak-edge-primary ak-edge-raw" />} />
-      <Tabs render={<div className="ak-edge-primary ak-frame-border-3" />} />
+      <PlaygroundTabs />
+      <PlaygroundTabs $border={4} />
+      <PlaygroundTabs tabListProps={{ $p: 1 }} />
+      <PlaygroundTabs $border={3} tabListProps={{ $p: 1 }} />
+      <PlaygroundTabs $borderColor="brand" $borderRaw />
+      <PlaygroundTabs $borderColor="brand" $border={3} />
       {children}
     </div>
   );

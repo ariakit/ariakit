@@ -11,6 +11,7 @@
 import { Icon } from "#app/icons/icon.react.tsx";
 import { getCurrentUserTeams, isSignedIn } from "#app/lib/auth.ts";
 import { getPlusAccountPath, getPlusCheckoutPath } from "#app/lib/url.ts";
+import { button } from "@ariakit/ui/styles/button.ts";
 import {
   OrganizationProfile,
   OrganizationSwitcher,
@@ -56,6 +57,9 @@ const { orgId } = Astro.locals.auth();
             }}
           />
           <div class="ms-auto">
+            {/* Brand-tinted button, like the legacy ak-layer-primary
+                ak-layer-mix-15; legacy ak-button ak-layer paints no idle
+                layer offset. */}
             <a
               href={getPlusCheckoutPath({
                 url: Astro.url,
@@ -63,7 +67,12 @@ const { orgId } = Astro.locals.auth();
                 type: "team",
                 redirectUrl: Astro.url,
               })}
-              class="ak-button ak-layer ak-layer-primary ak-layer-mix-15"
+              {...button.html({
+                $layer: "brand",
+                $mix: 15,
+                $lightnessOffset: false,
+                class: "items-center whitespace-nowrap",
+              })}
             >
               <span class="ak-text ak-text-primary">Get additional team license</span>
               <Icon
@@ -146,8 +155,14 @@ const { orgId } = Astro.locals.auth();
           </g>
         </svg>
         <h2 class="text-xl">You're not member of a team</h2>
+        {/* Solid brand button, like the legacy ak-layer-primary; the idle
+            offset is disabled so the layer keeps the exact brand color. */}
         <a
-          class="ak-button ak-layer-primary"
+          {...button.html({
+            $layer: "brand",
+            $lightnessOffset: false,
+            class: "items-center whitespace-nowrap",
+          })}
           href={getPlusCheckoutPath({
             url: Astro.url,
             step: "payment",

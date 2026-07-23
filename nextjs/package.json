@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@ariakit/react": "workspace:*",
+    "@ariakit/ui": "workspace:*",
     "next": "16.2.10",
     "react": "19.2.7",
     "react-dom": "19.2.7"

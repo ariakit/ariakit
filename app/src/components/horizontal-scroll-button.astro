@@ -9,6 +9,7 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import { Icon } from "#app/icons/icon.react.tsx";
+import { button } from "@ariakit/ui/styles/button.ts";
 import type { HTMLAttributes } from "astro/types";
 
 interface Props extends HTMLAttributes<"button"> {
@@ -29,8 +30,26 @@ const { direction, ...props } = Astro.props;
   {...props}
   aria-label={`Scroll ${direction}`}
 >
+  {/* The wrapper button is the interactive element, so the box's own state
+      variants are disabled and the resolved hover/active plugin classes are
+      forced under the group variants, like the legacy forced-state
+      utilities. It always lightens ($lighten 1.2 = the legacy
+      ak-layer-lighten-6) so it stays visible over the scrolled content. */}
   <div
-    class="ak-button ak-button-square size-8 rounded-full ak-layer ak-layer-lighten-6 pointer-events-auto border shadow group-hover/scroll-button:ak-button_hover group-active/scroll-button:ak-button_active"
+    {...button.html({
+      $rounded: "full",
+      $p: "none",
+      $lightnessOffset: false,
+      $lighten: 1.2,
+      $hoverOffset: false,
+      $focus: false,
+      $active: false,
+      class: [
+        "size-8 items-center pointer-events-auto border shadow",
+        "group-hover/scroll-button:ak-state-6",
+        "group-active/scroll-button:origin-bottom group-active/scroll-button:scale-x-[98%] group-active/scroll-button:scale-y-[96%]",
+      ],
+    })}
   >
     <slot>
       <Icon name={direction === "left" ? "chevronLeft" : "chevronRight"} />

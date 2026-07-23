@@ -1,0 +1,42 @@
+{
+  "name": "@ariakit/ui",
+  "version": "0.0.1",
+  "description": "Ariakit UI",
+  "private": true,
+  "license": "MIT",
+  "homepage": "https://ariakit.com",
+  "type": "module",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ariakit/ariakit.git",
+    "directory": "packages/ariakit-ui"
+  },
+  "author": {
+    "name": "Diego Haz",
+    "email": "hazdiego@gmail.com",
+    "url": "https://github.com/diegohaz"
+  },
+  "keywords": [
+    "ariakit",
+    "ui"
+  ],
+  "exports": {
+    ".": "./src/index.ts",
+    "./*": "./src/*",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@ariakit/react": "workspace:*",
+    "clava": "0.6.0",
+    "clsx": "2.1.1",
+    "lucide-react": "1.24.0",
+    "react": "19.2.7",
+    "react-aria-components": "1.19.0",
+    "react-dom": "19.2.7",
+    "solid-js": "1.9.14"
+  },
+  "devDependencies": {
+    "@ariakit/test": "workspace:*"
+  }
+}

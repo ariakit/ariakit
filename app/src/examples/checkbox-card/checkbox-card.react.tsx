@@ -1,65 +1,77 @@
 import * as Ariakit from "@ariakit/react";
+import type {
+  CheckboxCardProps as CheckboxCardBaseProps,
+  CheckboxCardCheckProps as CheckboxCardCheckBaseProps,
+  CheckboxCardContentProps as CheckboxCardContentBaseProps,
+  CheckboxCardDescriptionProps as CheckboxCardDescriptionBaseProps,
+  CheckboxCardLabelProps as CheckboxCardLabelBaseProps,
+} from "@ariakit/ui/ariakit/checkbox-card.react.tsx";
+import {
+  CheckboxCard as CheckboxCardBase,
+  CheckboxCardCheck as CheckboxCardCheckBase,
+  CheckboxCardContent as CheckboxCardContentBase,
+  CheckboxCardDescription as CheckboxCardDescriptionBase,
+  CheckboxCardLabel as CheckboxCardLabelBase,
+} from "@ariakit/ui/ariakit/checkbox-card.react.tsx";
+import { checkboxCardGrid } from "@ariakit/ui/styles/checkbox-card.ts";
 import { clsx } from "clsx";
-import type { ComponentProps, CSSProperties } from "react";
+import type { ComponentProps } from "react";
 
-type CheckboxProps = Pick<
-  Ariakit.CheckboxProps,
-  "name" | "value" | "checked" | "onChange" | "defaultChecked" | "disabled"
->;
+// Round cards are pill-shaped chips: the exact full radius (no concentric
+// adjustment) with tighter padding, like the legacy ak-checkbox-card-round
+// (ak-frame-full/2).
+const roundVariantProps = {
+  $rounded: "full",
+  $forceRounded: true,
+  $p: 2,
+} as const;
 
-export interface CheckboxCardProps
-  extends CheckboxProps, Omit<ComponentProps<"label">, keyof CheckboxProps> {
+export interface CheckboxCardProps extends CheckboxCardBaseProps {
   variant?: "default" | "vertical" | "round";
 }
 
 export function CheckboxCard({
-  children,
-  name,
-  value,
-  checked,
-  onChange,
-  defaultChecked,
-  disabled,
   variant = "default",
   ...props
 }: CheckboxCardProps) {
   return (
-    <label
+    <CheckboxCardBase
+      // By default, native checkboxes don't activate with the Enter key. But
+      // since this custom one is styled as a button, it would confuse sighted
+      // keyboard users if Enter didn't work.
+      clickOnEnter
+      // Making the checkbox focusable when disabled allows its checked state
+      // to be passed to FormData.
+      accessibleWhenDisabled
+      {...(variant === "round" ? roundVariantProps : undefined)}
       {...props}
       className={clsx(
-        "ak-checkbox-card",
-        variant === "vertical" && "ak-checkbox-card-vertical",
-        variant === "round" && "ak-checkbox-card-round",
+        // The vertical marker pairs with the group-[.vertical]/checkbox
+        // variants on the children below (the card cv already names the
+        // group/checkbox). The plain grid and justify-stretch overrides win
+        // over the cv's flex and justify-start by stylesheet order.
+        variant === "vertical" && "vertical grid justify-stretch",
         props.className,
       )}
-    >
-      <Ariakit.Checkbox
-        name={name}
-        value={value}
-        checked={checked}
-        onChange={onChange}
-        defaultChecked={defaultChecked}
-        disabled={disabled}
-        // By default, native checkboxes don't activate with the Enter key. But
-        // since this custom one is styled as a button, it would confuse sighted
-        // keyboard users if Enter didn't work.
-        clickOnEnter
-        // Making the checkbox focusable when disabled allows its checked state
-        // to be passed to FormData.
-        accessibleWhenDisabled
-      />
-      {children}
-    </label>
+    />
   );
 }
 
-export interface CheckboxCardCheckProps extends ComponentProps<"div"> {}
+export interface CheckboxCardCheckProps extends CheckboxCardCheckBaseProps {}
 
-export function CheckboxCardCheck({ ...props }: CheckboxCardCheckProps) {
+export function CheckboxCardCheck(props: CheckboxCardCheckProps) {
   return (
-    <div
+    <CheckboxCardCheckBase
       {...props}
-      className={clsx("ak-checkbox-card-check", props.className)}
+      className={clsx(
+        // In the vertical layout the check overlays the first row (shared
+        // with the image), pinned to the top end like the legacy
+        // ak-checkbox-card-check.
+        "group-[.vertical]/checkbox:justify-self-end",
+        "group-[.vertical]/checkbox:col-start-1",
+        "group-[.vertical]/checkbox:row-start-1",
+        props.className,
+      )}
     />
   );
 }
@@ -80,7 +92,7 @@ export function CheckboxCardGrid<T extends Value = Value>({
   value,
   setValue,
   defaultValue,
-  minItemWidth = "10rem",
+  minItemWidth,
   ...props
 }: CheckboxCardGridProps<T>) {
   return (
@@ -91,45 +103,57 @@ export function CheckboxCardGrid<T extends Value = Value>({
     >
       <div
         {...props}
-        style={{ "--min-w": minItemWidth, ...props.style } as CSSProperties}
-        className={clsx(
-          "ak-checkbox-card-grid ak-checkbox-card-grid-min-w-(length:--min-w)",
-          props.className,
-        )}
+        {...checkboxCardGrid.jsx({
+          $minItemSize: minItemWidth,
+          className: props.className,
+          style: props.style,
+        })}
       />
     </Ariakit.CheckboxProvider>
   );
 }
 
-export interface CheckboxCardLabelProps extends ComponentProps<"div"> {}
+export interface CheckboxCardLabelProps extends CheckboxCardLabelBaseProps {}
 
 export function CheckboxCardLabel(props: CheckboxCardLabelProps) {
   return (
-    <div
+    <CheckboxCardLabelBase
       {...props}
-      className={clsx("ak-checkbox-card-label", props.className)}
+      className={clsx(
+        // Vertical cards center the label under the image, like the legacy
+        // ak-checkbox-card-label under ak-checkbox-vertical.
+        "group-[.vertical]/checkbox:w-full",
+        "group-[.vertical]/checkbox:text-center",
+        props.className,
+      )}
     />
   );
 }
 
-export interface CheckboxCardDescriptionProps extends ComponentProps<"div"> {}
+export interface CheckboxCardDescriptionProps extends CheckboxCardDescriptionBaseProps {}
 
 export function CheckboxCardDescription(props: CheckboxCardDescriptionProps) {
   return (
-    <div
+    <CheckboxCardDescriptionBase
+      // The example descriptions wrap onto multiple lines like the legacy
+      // ak-checkbox-card-description, so the package's default truncation is
+      // turned off.
+      $truncate={false}
       {...props}
-      className={clsx("ak-checkbox-card-description", props.className)}
     />
   );
 }
 
-export interface CheckboxCardContentProps extends ComponentProps<"div"> {}
+export interface CheckboxCardContentProps extends CheckboxCardContentBaseProps {}
 
 export function CheckboxCardContent(props: CheckboxCardContentProps) {
   return (
-    <div
+    <CheckboxCardContentBase
+      // Horizontal, wrapping content like the legacy
+      // ak-checkbox-card-content, so a check placed inside the content sits
+      // next to the label instead of stacking below it.
+      $orientation="horizontal"
       {...props}
-      className={clsx("ak-checkbox-card-content", props.className)}
     />
   );
 }
@@ -140,7 +164,19 @@ export function CheckboxCardImage(props: CheckboxCardImageProps) {
   return (
     <div
       {...props}
-      className={clsx("ak-checkbox-card-image", props.className)}
+      className={clsx(
+        // The package card has no image piece, so the legacy
+        // ak-checkbox-card-image recipe is restated with plugin utilities.
+        "ak-frame ak-frame-p-2 flex h-full w-20 items-center justify-center",
+        // In the vertical layout the image becomes a centered top row shared
+        // with the check.
+        "group-[.vertical]/checkbox:w-full",
+        "group-[.vertical]/checkbox:max-w-4/5",
+        "group-[.vertical]/checkbox:justify-self-center",
+        "group-[.vertical]/checkbox:col-start-1",
+        "group-[.vertical]/checkbox:row-start-1",
+        props.className,
+      )}
     />
   );
 }

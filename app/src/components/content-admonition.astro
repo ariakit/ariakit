@@ -12,14 +12,22 @@ import { Icon } from "#app/icons/icon.react.tsx";
 import type { IconName } from "#app/icons/icon.react.tsx";
 import { AdmonitionTypeSchema } from "#app/lib/schemas.ts";
 import type { AdmonitionType } from "#app/lib/schemas.ts";
+import { container } from "@ariakit/ui/styles/container.ts";
 import type { HTMLAttributes } from "astro/types";
+import { clsx } from "clsx";
 
 interface Props extends HTMLAttributes<"blockquote"> {
   type: AdmonitionType;
   title?: string;
 }
 
-const { type: typeProp = "note", title, ...props } = Astro.props;
+const {
+  type: typeProp = "note",
+  title,
+  class: className,
+  style,
+  ...props
+} = Astro.props;
 const type = AdmonitionTypeSchema.parse(typeProp);
 
 const titles = {
@@ -55,22 +63,28 @@ const titleContent =
 
 <aside
   data-admonition={type}
-  class:list={[
-    "ak-frame ak-frame-card/card",
-    "ak-layer ak-layer-3 ak-frame-border",
-    "[--container-width:theme(--container-content)] not-in-data-content:[--container-width:theme(--container-default)]",
-    "ak-container-size-[calc(min(var(--container-width),100%)+var(--ak-frame-padding)*2)]/0 ak-container",
-    "not-in-data-content:grid not-in-data-content:@3xl:grid-cols-[1fr_var(--container-sidebar)]",
-    colorClass,
-    props.class,
-  ]}
+  {...container.html({
+    $size: "calc(min(var(--container-width), 100%) + var(--ak-frame-padding) * 2)",
+    $p: "none",
+    class: clsx(
+      "ak-frame ak-frame-card/card",
+      "ak-layer ak-layer-3 ak-frame-border",
+      "[--container-width:theme(--container-content)] not-in-data-content:[--container-width:theme(--container-default)]",
+      "not-in-data-content:grid not-in-data-content:@3xl:grid-cols-[1fr_var(--container-sidebar)]",
+      colorClass,
+      className,
+    ),
+    // Astro doesn't merge duplicate style attributes, so the caller style
+    // goes through the cv, which merges it.
+    style,
+  })}
   {...props}
 >
-  <div class="ak-prose-content ak-prose-text-base/relaxed">
+  <div class="flex flex-col gap-(--prose-gap) text-base/relaxed">
     <div class:list={["font-medium ak-text ak-text-color-(--color) flex gap-2"]}>
       <Icon
         name={icon}
-        className="ak-text ak-text-color-(--color) size-[1.25em] flex-none h-(--ak-prose-leading)"
+        className="ak-text ak-text-color-(--color) size-[1.25em] flex-none h-[1lh]"
       />
 
       {titleContent}

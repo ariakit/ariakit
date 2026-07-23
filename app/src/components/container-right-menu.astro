@@ -8,6 +8,9 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import { containerSizeContent } from "#app/lib/container-size.ts";
+import { Prose } from "@ariakit/ui/html/prose.react.tsx";
+import { container } from "@ariakit/ui/styles/container.ts";
 import type { HTMLTag, Polymorphic } from "astro/types";
 
 type Props<T extends HTMLTag> = Polymorphic<{ as: T }> & {
@@ -35,21 +38,34 @@ const {
   <slot />
   {
     Astro.slots.has("heading") && (
-      <div class="flex flex-col gap-4 my-16 ak-container-size-content/(--container-p) ak-container">
+      <div
+        {...container.html({
+          $size: containerSizeContent,
+          $p: "var(--container-p)",
+          class: "flex flex-col gap-4 my-16",
+        })}
+      >
         <slot name="heading" />
       </div>
     )
   }
   {
     Astro.slots.has("prose") && (
-      <div
-        class:list={[
-          "ak-prose ak-prose-text-base/relaxed @5xl:ak-prose-text-lg/loose",
-          "@3xl:ak-container-size-[calc(100cqi-var(--container-sidebar))]/(--container-p) ak-container",
-        ]}
+      <Prose
+        {...container.jsx({
+          class: [
+            "@5xl:text-lg/loose",
+            // The legacy size and gutter applied only from @3xl on, which
+            // the container variants cannot express through inline styles,
+            // so the container channels are written through variant classes
+            // instead. --container-p is published by container-left-menu.
+            "@3xl:[--_container-max-width:calc(100cqi-var(--container-sidebar))]",
+            "@3xl:[--_container-padding:var(--container-p)]",
+          ],
+        })}
       >
         <slot name="prose" />
-      </div>
+      </Prose>
     )
   }
   <div

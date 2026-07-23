@@ -7,13 +7,14 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
+import type { ButtonProps } from "@ariakit/ui/ariakit/button.react.tsx";
+import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
 import { clsx } from "clsx";
-import type { ComponentProps } from "react";
 import { useEffect, useState } from "react";
 import { Icon } from "../icons/icon.react.tsx";
 import { Tooltip } from "./tooltip.react.tsx";
 
-interface CopyCodeProps extends ComponentProps<"button"> {
+interface CopyCodeProps extends ButtonProps {
   text: string;
   label?: string;
   title?: string;
@@ -45,12 +46,13 @@ export function CopyCode({
       placement="left"
       className="not-data-open:transition-none"
     >
-      <button
+      <Button
         {...props}
-        className={clsx(
-          "ak-button ak-button-square ak-layer ak-layer-6 size-9 ak-frame-border",
-          props.className,
-        )}
+        // Square icon button: pin the size and drop the field padding like
+        // the legacy square button. The pinned height defeats the button's
+        // line-box centering, so center the icon explicitly.
+        $p="none"
+        className={clsx("size-9 items-center ak-frame-border", props.className)}
         onClick={async (event) => {
           props.onClick?.(event);
           if (event.defaultPrevented) return;
@@ -74,7 +76,7 @@ export function CopyCode({
           <Icon key="copy" name="copy" />
         )}
         <span className="sr-only">{label}</span>
-      </button>
+      </Button>
     </Tooltip>
   );
 }

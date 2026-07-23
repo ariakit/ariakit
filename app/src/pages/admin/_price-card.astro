@@ -20,6 +20,8 @@ import { nonNullable } from "#app/lib/object.ts";
 import { capitalize } from "#app/lib/string.ts";
 import SubmitButton from "#app/components/submit-button.astro";
 import type { PriceData } from "#app/lib/schemas.ts";
+import { button } from "@ariakit/ui/styles/button.ts";
+import { input } from "@ariakit/ui/styles/input.ts";
 import { getStripeDashboardUrl } from "./_utils.ts";
 
 interface Props {
@@ -83,7 +85,14 @@ const priceTypes = [personal, team].filter(nonNullable);
                 </td>
                 <td class="w-12">
                   <button
-                    class="ak-button ak-layer ak-layer-6 ak-button-square size-full"
+                    {...button.html({
+                      // The default idle offset stands in for the legacy
+                      // ak-layer-6; size-full replaces ak-button-square in
+                      // the fixed-width cell, with items-center restoring
+                      // the legacy icon centering.
+                      $p: "none",
+                      class: "size-full items-center",
+                    })}
                     command="show-modal"
                     commandfor={id}
                   >
@@ -110,7 +119,12 @@ const priceTypes = [personal, team].filter(nonNullable);
                         value={countryCode}
                       />
                       <div
-                        class="ak-input ak-frame ak-frame-field/1 flex items-center gap-1 justify-end-safe"
+                        {...input.html({
+                          // $p 1 matches the legacy ak-frame-field/1
+                          // padding override.
+                          $p: 1,
+                          class: "flex items-center gap-1 justify-end-safe",
+                        })}
                         onclick="this.querySelector('input').focus()"
                       >
                         <div class="size-4 flex items-center justify-end">
@@ -129,7 +143,16 @@ const priceTypes = [personal, team].filter(nonNullable);
                           autofocus
                           onfocus="this.select()"
                         />
-                        <SubmitButton class="ak-button ak-frame ak-frame-field/2 text-sm">
+                        <SubmitButton
+                          {...button.html({
+                            // Legacy plain ak-button paints no idle layer
+                            // offset; $p 2 matches the legacy
+                            // ak-frame-field/2 padding override.
+                            $p: 2,
+                            $size: "sm",
+                            $lightnessOffset: false,
+                          })}
+                        >
                           Set price
                         </SubmitButton>
                       </div>

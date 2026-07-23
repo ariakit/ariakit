@@ -7,12 +7,13 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { clsx } from "clsx";
-import type { ComponentProps, ReactNode } from "react";
+import { Link } from "@ariakit/ui/ariakit/link.react.tsx";
+import type { LinkProps } from "@ariakit/ui/ariakit/link.react.tsx";
+import type { ReactNode } from "react";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { InlineFragment } from "./inline-fragment.react.tsx";
 
-interface InlineLinkProps extends ComponentProps<"a"> {
+interface InlineLinkProps extends LinkProps {
   newWindow?: boolean;
   iconLeft?: ReactNode;
   iconRight?: ReactNode;
@@ -21,15 +22,13 @@ interface InlineLinkProps extends ComponentProps<"a"> {
 export function InlineLink({
   newWindow,
   children,
-  className,
   iconLeft,
   iconRight,
   ...props
 }: InlineLinkProps) {
   return (
-    <a
+    <Link
       {...props}
-      className={clsx("ak-link", className)}
       target={newWindow ? "_blank" : undefined}
       rel={newWindow ? "noopener noreferrer nofollow" : undefined}
     >
@@ -39,6 +38,6 @@ export function InlineLink({
       >
         {children}
       </InlineFragment>
-    </a>
+    </Link>
   );
 }

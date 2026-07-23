@@ -11,6 +11,8 @@
 import { Icon } from "#app/icons/icon.react.tsx";
 import { isAdmin } from "#app/lib/auth.ts";
 import { capitalize } from "#app/lib/string.ts";
+import { badge, badgeLabel } from "@ariakit/ui/styles/badge.ts";
+import { button } from "@ariakit/ui/styles/button.ts";
 import { clerkClient } from "@clerk/astro/server";
 import { formatDistanceToNow } from "date-fns";
 import LayoutPagination from "./_layout-pagination.astro";
@@ -64,8 +66,10 @@ const users = await getUserData();
   offset={offset}
   query={query}
 >
+  {/* --_container-padding is the containerSize gutter set on the layout's
+      body, replacing the legacy --ak-container-p. */}
   <ul
-    class="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-(--ak-container-p) py-(--ak-container-p)"
+    class="grid grid-cols-[repeat(auto-fill,minmax(20rem,1fr))] gap-(--_container-padding) py-(--_container-padding)"
   >
     {
       users.data.map((user) => (
@@ -92,8 +96,10 @@ const users = await getUserData();
                 )}
               </div>
               {user.publicMetadata.plus && (
-                <div class="ak-badge-primary ms-auto">
-                  <span>{capitalize(user.publicMetadata.plus)}</span>
+                <div {...badge.html({ $layer: "brand", class: "ms-auto" })}>
+                  <span {...badgeLabel.html()}>
+                    {capitalize(user.publicMetadata.plus)}
+                  </span>
                 </div>
               )}
             </div>
@@ -109,7 +115,7 @@ const users = await getUserData();
               <a
                 href={`${clerkInstanceUrl}/users/${user.id}`}
                 target="_blank"
-                class="ak-button ak-layer ak-layer-6"
+                {...button.html({ class: "items-center" })}
               >
                 Clerk <Icon name="newWindow" />
               </a>
@@ -117,7 +123,7 @@ const users = await getUserData();
                 <a
                   href={`${stripeDashboardUrl}/customers/${user.privateMetadata.stripeId}`}
                   target="_blank"
-                  class="ak-button ak-layer ak-layer-6"
+                  {...button.html({ class: "items-center" })}
                 >
                   Stripe <Icon name="newWindow" />
                 </a>

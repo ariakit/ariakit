@@ -2,73 +2,98 @@ import * as ak from "@ariakit/react";
 import { TagList } from "@ariakit/react-components/tag/tag-list";
 import { TagListLabel } from "@ariakit/react-components/tag/tag-list-label";
 import { TagProvider } from "@ariakit/react-components/tag/tag-provider";
+import { Button } from "@ariakit/ui/ariakit/button.react.tsx";
+import {
+  Dialog,
+  DialogDisclosure,
+  DialogDismiss,
+  DialogHeading,
+  DialogProvider,
+} from "@ariakit/ui/ariakit/dialog.react.tsx";
+import {
+  SelectButton,
+  SelectItem,
+  SelectLabel,
+  SelectPopover,
+  SelectProvider,
+} from "@ariakit/ui/ariakit/select.react.tsx";
+import {
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+} from "@ariakit/ui/ariakit/tabs.react.tsx";
+import {
+  Tooltip,
+  TooltipAnchor,
+  TooltipProvider,
+} from "@ariakit/ui/ariakit/tooltip.react.tsx";
+import { input } from "@ariakit/ui/styles/input.ts";
 
 export default function Example() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <ak.DialogProvider>
-        <ak.DialogDisclosure className="ak-button">
-          Open dialog
-        </ak.DialogDisclosure>
-        <ak.Dialog aria-label="Custom dialog label" className="ak-dialog">
-          <ak.DialogHeading className="ak-dialog-heading">
-            Dialog heading
-          </ak.DialogHeading>
+      <DialogProvider>
+        <DialogDisclosure>Open dialog</DialogDisclosure>
+        <Dialog aria-label="Custom dialog label">
+          <DialogHeading>Dialog heading</DialogHeading>
           <p>Dialog with aria-label should not have aria-labelledby.</p>
-          <ak.DialogDismiss className="ak-button">Close</ak.DialogDismiss>
-        </ak.Dialog>
-      </ak.DialogProvider>
+          <DialogDismiss>Close</DialogDismiss>
+        </Dialog>
+      </DialogProvider>
 
-      <ak.TabProvider>
-        <ak.TabList aria-label="Tabs">
-          <ak.Tab className="ak-tab">Tab 1</ak.Tab>
-          <ak.Tab className="ak-tab">Tab 2</ak.Tab>
-        </ak.TabList>
-        <ak.TabPanel aria-label="Custom panel label">
-          Tab panel with aria-label
-        </ak.TabPanel>
-        <ak.TabPanel>Tab panel 2</ak.TabPanel>
-      </ak.TabProvider>
+      <Tabs>
+        <TabList aria-label="Tabs">
+          <Tab>Tab 1</Tab>
+          <Tab>Tab 2</Tab>
+        </TabList>
+        <TabPanels>
+          <TabPanel aria-label="Custom panel label">
+            Tab panel with aria-label
+          </TabPanel>
+          <TabPanel>Tab panel 2</TabPanel>
+        </TabPanels>
+      </Tabs>
 
-      <ak.SelectProvider defaultValue="Apple">
-        <ak.SelectLabel>Fruit</ak.SelectLabel>
-        <ak.Select aria-label="Custom select label" className="ak-button" />
-        <ak.SelectPopover className="ak-popover">
+      <SelectProvider defaultValue="Apple">
+        <SelectLabel>Fruit</SelectLabel>
+        <SelectButton aria-label="Custom select label" />
+        <SelectPopover>
+          {/* The list keeps the raw Ariakit primitive: the explicit
+              SelectList with its own aria-label is what this sandbox
+              exercises, and @ariakit/ui has no wrapper for it. */}
           <ak.SelectList aria-label="Custom list label">
-            <ak.SelectItem value="Apple" className="ak-option" />
-            <ak.SelectItem value="Banana" className="ak-option" />
+            <SelectItem value="Apple" />
+            <SelectItem value="Banana" />
           </ak.SelectList>
-        </ak.SelectPopover>
-      </ak.SelectProvider>
+        </SelectPopover>
+      </SelectProvider>
 
       <ak.FormProvider>
         <ak.Form>
           <ak.FormLabel name="name">Name</ak.FormLabel>
+          {/* Keeps the FormInput primitive (the @ariakit/ui Input isn't
+              form-aware) and takes the field look from the input cv. */}
           <ak.FormInput
             name="name"
             aria-label="Custom input label"
-            className="ak-input"
+            {...input.jsx({})}
           />
         </ak.Form>
       </ak.FormProvider>
 
       <ak.Group aria-label="Custom group label">
         <ak.GroupLabel>Group heading</ak.GroupLabel>
-        <button type="button" className="ak-button">
-          Item
-        </button>
+        <Button type="button">Item</Button>
       </ak.Group>
 
-      <ak.TooltipProvider type="label">
-        <ak.TooltipAnchor
-          aria-label="Custom anchor label"
-          className="ak-button"
-          render={<button />}
-        >
+      <TooltipProvider type="label">
+        <TooltipAnchor aria-label="Custom anchor label" render={<Button />}>
           Tooltip anchor
-        </ak.TooltipAnchor>
-        <ak.Tooltip className="ak-tooltip">Tooltip label</ak.Tooltip>
-      </ak.TooltipProvider>
+        </TooltipAnchor>
+        <Tooltip>Tooltip label</Tooltip>
+      </TooltipProvider>
 
       <TagProvider>
         <TagListLabel>Tag label</TagListLabel>

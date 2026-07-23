@@ -11,6 +11,8 @@
 import SubmitButton from "#app/components/submit-button.astro";
 import { getAdminLastSync } from "#app/lib/kv.ts";
 import "#app/styles/global.css";
+import { button } from "@ariakit/ui/styles/button.ts";
+import { container, containerSize } from "@ariakit/ui/styles/container.ts";
 import "@fontsource-variable/inter";
 import { actions } from "astro:actions";
 import { formatDistanceToNow } from "date-fns";
@@ -41,9 +43,9 @@ const pages = [
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <title>Ariakit</title>
   </head>
-  <body class="ak-container-size-default/2">
+  <body {...containerSize.html({ $size: "default", $p: 2 })}>
     <div class="flex flex-col gap-4">
-      <div class="ak-container mt-10 flex flex-col gap-4">
+      <div {...container.html({ class: "mt-10 flex flex-col gap-4" })}>
         <div class="flex gap-4 items-center justify-between">
           <h1 class="text-2xl font-bold">Admin</h1>
           <form
@@ -52,7 +54,9 @@ const pages = [
             class="flex gap-2 items-center text-sm"
           >
             <span class="ak-ink-80">Last synced: {getLastSynced()}</span>
-            <SubmitButton class="ak-button-classic"> Sync </SubmitButton>
+            <SubmitButton {...button.html({ $kind: "bevel" })}>
+              Sync
+            </SubmitButton>
           </form>
         </div>
         <nav>
@@ -61,7 +65,12 @@ const pages = [
               pages.map((page) => (
                 <li>
                   <a
-                    class="ak-button font-normal ak-layer aria-[current]:ak-layer-6 aria-[current]:font-semibold"
+                    {...button.html({
+                      // Legacy ak-button ak-layer paints no idle layer offset.
+                      $lightnessOffset: false,
+                      class:
+                        "font-normal aria-[current]:ak-layer-6 aria-[current]:font-semibold",
+                    })}
                     href={page.href}
                     aria-current={getAriaCurrent(page.href)}
                   >

@@ -1,17 +1,24 @@
-import { clsx } from "clsx";
-import { createContext, useContext } from "react";
 import type {
   DisclosureButtonProps,
   DisclosureContentProps,
   DisclosureProps,
-} from "#app/examples/_lib/react-aria/disclosure.react.tsx";
+} from "@ariakit/ui/react-aria/disclosure.react.tsx";
 import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
   DisclosureContentBody,
-} from "#app/examples/_lib/react-aria/disclosure.react.tsx";
-import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
+} from "@ariakit/ui/react-aria/disclosure.react.tsx";
+import { createRender } from "@ariakit/ui/react-utils/create-render.ts";
+import { clsx } from "clsx";
+import { createContext, useContext } from "react";
+
+// Prose content body at the small text size, like the legacy
+// ak-prose-text-sm.
+const proseBody = {
+  prose: true,
+  className: "text-sm/relaxed",
+} as const;
 
 const NestedReasoningContext = createContext(false);
 
@@ -25,7 +32,7 @@ export function Reasoning(props: ReasoningProps) {
     <div
       className={clsx(
         nested &&
-          "ak-frame ak-frame-cover ak-frame-p-1 -my-[calc(var(--ak-disclosure-padding)*0.6)]",
+          "ak-frame ak-frame-cover ak-frame-p-1 -my-[calc(var(--disclosure-padding)*0.6)]",
       )}
     >
       <Disclosure
@@ -57,17 +64,17 @@ export interface ReasoningContentProps extends DisclosureContentProps {}
 
 export function ReasoningContent(props: ReasoningContentProps) {
   const nested = useContext(NestedReasoningContext);
-  const body = createRender(DisclosureContentBody, props.body, {
-    className: "ak-prose-text-sm",
-  });
+  const body = createRender(DisclosureContentBody, props.body, proseBody);
   return (
     <NestedReasoningContext.Provider value={true}>
       <DisclosureContent
-        prose
         {...props}
         body={body}
         className={clsx(
-          !nested && "data-expanded:max-h-140 overflow-y-auto",
+          // Legacy used data-expanded:, which rac panels never receive, so the
+          // cap was dead; the disclosure-open channel restores the intended
+          // behavior (the ! beats the cv's own open max-h-max).
+          !nested && "ui-disclosure-open:max-h-140! overflow-y-auto",
           props.className,
         )}
       />

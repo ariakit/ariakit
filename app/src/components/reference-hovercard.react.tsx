@@ -8,6 +8,9 @@
  * SPDX-License-Identifier: UNLICENSED
  */
 import * as ak from "@ariakit/react";
+import { Prose } from "@ariakit/ui/ariakit/prose.react.tsx";
+import { link } from "@ariakit/ui/styles/link.ts";
+import { popover } from "@ariakit/ui/styles/popover.ts";
 import { invariant } from "@ariakit/utils";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import { clsx } from "clsx";
@@ -83,13 +86,19 @@ export function ReferenceHovercardAnchor({
     >
       <ak.HovercardAnchor
         {...props}
-        style={labelColors?.style}
-        className={clsx(
-          "ak-link not-hover:decoration-dashed decoration-0 in-inert:no-underline",
-          labelColors?.className,
-          inCodeBlock && "text-inherit",
-          className,
-        )}
+        {...link.jsx({
+          // Kind-colored and code-block anchors bring their own text color,
+          // and the link cv's brand text classes would win the cascade over
+          // those plain utilities, so the text system is disabled for them.
+          $text: labelColors || inCodeBlock ? false : undefined,
+          style: labelColors?.style,
+          className: clsx(
+            "not-hover:decoration-dashed not-hover:decoration-0! in-inert:no-underline",
+            labelColors?.className,
+            inCodeBlock && "text-inherit",
+            className,
+          ),
+        })}
         showOnHover={(event) => {
           const partialPath = getPartialPathFromAnchor(event.currentTarget);
           if (!partialPath) return false;
@@ -119,6 +128,7 @@ export interface ReferenceHovercardProps extends ak.HovercardProps {
 
 export function ReferenceHovercard({
   className,
+  style,
   inHovercard,
   ...props
 }: ReferenceHovercardProps) {
@@ -172,11 +182,15 @@ export function ReferenceHovercard({
       portal
       portalElement={portalElement}
       {...props}
-      className={clsx(
-        "ak-popover ak-edge-15 data-open:ak-popover_open origin-(--popover-transform-origin) ak-frame ak-frame-force ak-frame-dialog/0",
-        inHovercard && "ak-layer-lighten-0",
-        className,
-      )}
+      {...popover.jsx({
+        $state: "data",
+        $p: "none",
+        // Nested hovercards keep the parent dialog's layer color instead of
+        // lightening again, like the legacy ak-layer-lighten-0 override.
+        $lighten: inHovercard ? 0 : undefined,
+        style,
+        className: clsx("ak-edge-15", className),
+      })}
     >
       <ak.HovercardArrow />
       <div className="ak-frame ak-frame-cover ak-frame-p-0 ak-frame-start ak-frame-end overflow-clip">
@@ -191,7 +205,7 @@ export function ReferenceHovercard({
           {data ? (
             <div dangerouslySetInnerHTML={{ __html: data }} />
           ) : (
-            <div className="ak-prose ak-frame ak-frame-p-2 animate-pulse">
+            <Prose className="ak-frame ak-frame-p-2 animate-pulse">
               <div className="ak-layer ak-layer-12 w-32 h-7 ak-frame"></div>
               <div className="flex flex-col gap-3">
                 <div className="ak-layer ak-layer-6 w-full h-4 rounded-sm"></div>
@@ -202,7 +216,7 @@ export function ReferenceHovercard({
                 <div className="ak-layer ak-layer-6 w-full h-4 rounded-sm"></div>
                 <div className="ak-layer ak-layer-6 w-1/2 h-4 rounded-sm"></div>
               </div>
-            </div>
+            </Prose>
           )}
         </div>
       </div>

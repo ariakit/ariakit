@@ -14,6 +14,10 @@ import SubmitButton from "#app/components/submit-button.astro";
 import { Icon } from "#app/icons/icon.react.tsx";
 import { isAdmin } from "#app/lib/auth.ts";
 import { getAllPromos, getBestPromo } from "#app/lib/kv.ts";
+import { badge, badgeLabel } from "@ariakit/ui/styles/badge.ts";
+import { button } from "@ariakit/ui/styles/button.ts";
+import { container } from "@ariakit/ui/styles/container.ts";
+import { input } from "@ariakit/ui/styles/input.ts";
 import { actions } from "astro:actions";
 import { formatDistanceToNow } from "date-fns";
 import Layout from "./_layout.astro";
@@ -53,7 +57,12 @@ function truncate(str: string, maxLength: number) {
 <Layout>
   <div class="ak-layer ak-layer-darken-6 border-t min-h-[90vh]">
     <ul
-      class="ak-container grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-(--ak-container-p) py-(--ak-container-p)"
+      {...container.html({
+        // --_container-padding is the containerSize gutter set on the
+        // layout's body, replacing the legacy --ak-container-p.
+        class:
+          "grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-(--_container-padding) py-(--_container-padding)",
+      })}
     >
       <li>
         <div
@@ -90,7 +99,7 @@ function truncate(str: string, maxLength: number) {
                   { label: "70%", value: "70" },
                 ]}
               />
-              <label class="ak-input">
+              <label {...input.html()}>
                 Expires in{" "}
                 <input
                   type="text"
@@ -103,7 +112,7 @@ function truncate(str: string, maxLength: number) {
                 />{" "}
                 days
               </label>
-              <label class="ak-input">
+              <label {...input.html()}>
                 Up to{" "}
                 <input
                   type="text"
@@ -116,7 +125,7 @@ function truncate(str: string, maxLength: number) {
                 />{" "}
                 redemptions
               </label>
-              <label class="ak-input overflow-hidden">
+              <label {...input.html({ class: "overflow-hidden" })}>
                 For user{" "}
                 <input
                   type="text"
@@ -128,9 +137,11 @@ function truncate(str: string, maxLength: number) {
               </label>
             </div>
             <div class="ak-frame ak-frame-cover ak-frame-p-1">
-              <SubmitButton class="ak-button w-full ak-layer ak-layer-6"
-                >Create</SubmitButton
-              >
+              {/* The button's default idle offset stands in for the legacy
+                  ak-layer-6. */}
+              <SubmitButton {...button.html({ class: "w-full" })}>
+                Create
+              </SubmitButton>
             </div>
           </form>
         </div>
@@ -142,8 +153,10 @@ function truncate(str: string, maxLength: number) {
               {promo.id == bestPromo?.id && (
                 <div class="absolute top-(--ak-frame-padding) end-(--ak-frame-padding)">
                   <div class="ak-frame ak-frame-cover ak-frame-p-1">
-                    <div class="ak-badge-green-500">
-                      <span>Best promo</span>
+                    <div
+                      {...badge.html({ $layer: "var(--color-green-500)" })}
+                    >
+                      <span {...badgeLabel.html()}>Best promo</span>
                     </div>
                   </div>
                 </div>
@@ -176,7 +189,7 @@ function truncate(str: string, maxLength: number) {
                 <a
                   href={`${getStripeDashboardUrl()}/promotion_codes/${promo.id}`}
                   target="_blank"
-                  class="ak-button ak-layer ak-layer-6"
+                  {...button.html({ class: "items-center whitespace-nowrap" })}
                 >
                   View in Stripe <Icon name="newWindow" />
                 </a>

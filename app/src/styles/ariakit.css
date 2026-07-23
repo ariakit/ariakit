@@ -8,41 +8,23 @@
  */
 @import "@ariakit/tailwind";
 
-@import "./ak-aurora.css";
-@import "./ak-icon.css";
-@import "./ak-badge.css";
-@import "./ak-command.css";
-@import "./ak-button.css";
-@import "./ak-checkbox.css";
-@import "./ak-radio.css";
-@import "./ak-option.css";
-@import "./ak-tab.css";
-@import "./ak-popover.css";
-@import "./ak-dialog.css";
-@import "./ak-disclosure.css";
-@import "./ak-nav.css";
-@import "./ak-tooltip.css";
-@import "./ak-select.css";
-@import "./ak-container.css";
-@import "./ak-input.css";
-@import "./ak-kbd.css";
-@import "./ak-link.css";
-@import "./ak-progress.css";
-@import "./ak-list.css";
-@import "./ak-heading.css";
-@import "./ak-segmented.css";
-@import "./ak-table.css";
-@import "./ak-sidebar.css";
-@import "./ak-prose.css";
-
 @theme {
-  --spacing: 0.25rem;
-  --spacing-px: 1px;
-  --radius: 0.25rem;
-
   --color-canvas: oklch(99.33% 0.0011 197.14);
+  /* Kept for pages inherited from main that still use the legacy `primary`
+     color name. Branch-owned code uses `brand` instead. */
   --color-primary: oklch(56.7% 0.154556 248.5156);
   --color-secondary: oklch(65.59% 0.2118 354.31);
+  --color-success: var(--color-green-700);
+  --color-warning: var(--color-yellow-500);
+  --color-danger: var(--color-red-600);
+
+  --font-sans:
+    "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --radius: 0.25em;
+  --spacing: 0.25em;
+  --spacing-px: 1px;
 
   --radius-container: var(--radius-xl);
   --spacing-container: --spacing(1);
@@ -65,9 +47,26 @@
   --radius-badge: var(--radius-full);
   --spacing-badge: --spacing(1.5);
 
-  --font-sans:
-    "Inter Variable", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --duration-tabs: 100ms;
+  --ease-tabs: cubic-bezier(0.2, 0.1, 0.7, 1);
+
+  --duration-overshoot: 500ms;
+  --ease-overshoot: linear(
+    0,
+    0.402 7.4%,
+    0.711 15.3%,
+    0.929 23.7%,
+    1.008 28.2%,
+    1.067 33%,
+    1.099 36.9%,
+    1.12 41%,
+    1.13 45.4%,
+    1.13 50.1%,
+    1.111 58.5%,
+    1.019 83.2%,
+    1.004 91.3%,
+    1
+  );
 }
 
 @theme inline {
@@ -88,5 +87,320 @@
     /* --color-canvas: oklch(16.52% 0.0062 285.7); */
     /* --color-canvas: theme(--color-slate-950); */
     --color-canvas: oklch(16.34% 0.0091 264.28);
+    --color-success: var(--color-green-700);
+    --color-warning: var(--color-yellow-400);
+    --color-danger: var(--color-red-400);
+  }
+}
+
+/* Registered so the @ariakit/ui progress fills can transition it: the width
+   calc and the conic sweep both read this inherited number. */
+@property --progress-value {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+/* Disclosure state channels: the root publishes open/group/split flags as
+   custom properties, and descendants react through container style queries,
+   like the legacy ak-disclosure-* variants. */
+@custom-variant ui-disclosure-open {
+  @container style(--disclosure-open: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disclosure-group {
+  @container style(--disclosure-group: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disclosure-split {
+  @container style(--disclosure-split: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disclosure-hover {
+  &:has(> :where(summary, button, [data-disclosure-button]):hover),
+  &:where(summary, button, [data-disclosure-button]):hover {
+    @slot;
+  }
+}
+
+/* Prose flag published by the prose root and read by descendant components
+   (such as lists) through container style queries. Registered before ui-list
+   so the nested-list tighten still wins over the prose rhythm, like
+   legacy. */
+@custom-variant ui-prose {
+  @container style(--prose: 1) {
+    @slot;
+  }
+}
+
+/* List state channels: the list root publishes its flags as custom
+   properties, and items, markers, and nested lists react through container
+   style queries, like the legacy ak-list-* variants. */
+@custom-variant ui-list {
+  @container style(--list: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-ol {
+  @container style(--list-ol: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-ul {
+  @container style(--list-ul: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-item-blocks {
+  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+    @slot;
+  }
+}
+
+@custom-variant ui-list-blocks {
+  &:has(:where(p, div, details, h1, h2, h3, h4)) {
+    @slot;
+  }
+  @container style(--list-blocks: 1) {
+    @slot;
+  }
+}
+
+/* Registered after ui-list-blocks so the sections gap wins when a list
+   matches both. */
+@custom-variant ui-list-sections {
+  &:has(:where(h1, h2, h3, h4)) {
+    @slot;
+  }
+}
+
+/* Sidebar collapse flag published by the sidebar root and read by
+   descendants (such as nav labels) through container style queries. */
+@custom-variant ui-sidebar-collapsed {
+  @container style(--sidebar-collapsed: 1) {
+    @slot;
+  }
+}
+
+/* Nav flag published by the nav root; stacking it lets nav rules sort
+   after the disclosure rules they override. */
+@custom-variant ui-nav {
+  @container style(--nav: 1) {
+    @slot;
+  }
+}
+
+@custom-variant ui-nav-current {
+  &:where([aria-current="true"], [aria-current="page"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disabled {
+  &:is(:disabled, [aria-disabled="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-disabled-within {
+  &:is(:disabled, [aria-disabled="true"]),
+  &:has(:is(:disabled, [aria-disabled="true"])) {
+    @slot;
+  }
+}
+
+@custom-variant ui-active {
+  &:is(:active) {
+    @variant not-ui-disabled {
+      @slot;
+    }
+  }
+}
+
+@custom-variant ui-hover {
+  @variant hover {
+    @variant not-ui-disabled {
+      /* Hovering a nested interactive element (a select inside a split
+         disclosure row, for example) must not light up the host, which
+         would falsely signal that a click activates it. Same exclusions as
+         the legacy ak-command-hover. */
+      &:not(:has(button:hover), :has(*:hover > button)) {
+        @slot;
+      }
+    }
+  }
+}
+
+@custom-variant ui-focus {
+  &:focus {
+    @slot;
+  }
+}
+
+@custom-variant ui-focus-visible {
+  &:is(:focus-visible, [data-focus-visible]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-focus-visible-within {
+  &:is(:focus-visible, [data-focus-visible]),
+  &:has(:is(:focus-visible, [data-focus-visible])) {
+    @slot;
+  }
+}
+
+@custom-variant ui-checked {
+  &:is(:checked, [aria-checked="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-checked-within {
+  &:is(:checked, [aria-checked="true"]),
+  &:has(:checked, [aria-checked="true"]) {
+    @slot;
+  }
+}
+
+@custom-variant ui-selected {
+  &:is(
+    :checked,
+    .selected,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-selected-within {
+  &:is(
+    :checked,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ),
+  &:has(
+    :checked,
+    [aria-checked="true"],
+    [aria-selected="true"],
+    [aria-current]:not([aria-current="false"])
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-hover {
+  :hover:not(:disabled, [aria-disabled="true"]) + &,
+  &:has(+ :hover:not(:disabled, [aria-disabled="true"])) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-selected {
+  :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+    + &,
+  &:has(
+    + :is(
+      :checked,
+      [aria-checked="true"],
+      [aria-selected="true"],
+      [aria-current]:not([aria-current="false"])
+    )
+  ) {
+    @slot;
+  }
+}
+
+@custom-variant ui-adjacent-focus-visible {
+  :focus-visible + &,
+  &:has(+ :focus-visible) {
+    @slot;
+  }
+}
+
+@custom-variant befter {
+  &::before,
+  &::after {
+    @slot;
+  }
+}
+
+@custom-variant supports-anchor {
+  @supports (anchor-name: --a) {
+    @slot;
+  }
+}
+
+@custom-variant supports-corner-shape {
+  @supports (corner-shape: squircle) {
+    @slot;
+  }
+}
+
+@custom-variant ui-text {
+  &.text:not(.ak-layer), & .text:not(.ak-layer), & svg {
+    @slot;
+  }
+}
+
+
+@utility ui-bevel {
+  --min-l: 0.25;
+  --max-l: 1;
+  --bg-dark-l: calc(l - 0.02 - 0.1 * c);
+  --bg-light-l: calc(l + 0.01);
+  --bg-dark: oklch(from var(--ak-layer) clamp(var(--min-l), var(--bg-dark-l), var(--max-l)) c h);
+  --bg-light: oklch(from var(--ak-layer) clamp(var(--min-l), var(--bg-light-l), var(--max-l)) c h);
+  --shadow-color: oklch(from var(--bg-dark) calc(l - 0.15) c h);
+  --shadow: 0 -0.5px 0.5px 1px var(--shadow-color);
+  --highlight: 0 2px 0.5px oklch(from var(--bg-dark) calc(l + 0.2) calc(c / 2) h);
+  --inset-shadow: var(--shadow), inset var(--highlight);
+  @apply inset-shadow-(--inset-shadow) from-(--bg-dark) to-(--bg-light) bg-linear-to-b from-50% bg-clip-padding outline-offset-1;
+  @variant ak-dark {
+    --min-l: 0.15;
+    --max-l: 0.85;
+    --bg-dark-l: l;
+    --shadow: 0 -0.5px 0.5px var(--shadow-color);
+    --highlight: 0 1.5px 0.5px oklch(from var(--bg-dark) calc(l + 0.1) c h);
+  }
+}
+
+@utility ui-bevel-button {
+  @apply ui-bevel;
+  @variant ui-hover {
+    --min-l: 0.35;
+    --max-l: 1;
+    @variant ak-dark {
+      --min-l: 0.25;
+    }
+  }
+  @variant ui-active {
+    --bg-dark-active: oklch(from var(--ak-layer) calc(l - 0.02) c h);
+    --bg-light-active: oklch(from var(--ak-layer) calc(l + 0.02) c h);
+    --shadow: 0 1px 0.5px 1px var(--shadow-color);
+    --highlight: 0 0 transparent;
+    @apply from-(--bg-dark-active) to-(--bg-light-active) from-60%;
+    @variant ak-dark {
+      --bg-dark-active: oklch(from var(--ak-layer) calc(l - 0.02) c h);
+      --bg-light-active: oklch(from var(--ak-layer) calc(l + 0.02) c h);
+      --shadow: 0 0.5px 0.5px var(--shadow-color);
+    }
   }
 }

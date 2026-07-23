@@ -1,17 +1,17 @@
-import { clsx } from "clsx";
-import { createContext, useContext } from "react";
 import type {
   DisclosureButtonProps,
   DisclosureContentProps,
   DisclosureProps,
-} from "#app/examples/_lib/ariakit/disclosure.react.tsx";
+} from "@ariakit/ui/ariakit/disclosure.react.tsx";
 import {
   Disclosure,
   DisclosureButton,
   DisclosureContent,
   DisclosureContentBody,
-} from "#app/examples/_lib/ariakit/disclosure.react.tsx";
-import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
+} from "@ariakit/ui/ariakit/disclosure.react.tsx";
+import { createRender } from "@ariakit/ui/react-utils/create-render.ts";
+import { clsx } from "clsx";
+import { createContext, useContext } from "react";
 
 const NestedReasoningContext = createContext(false);
 
@@ -25,7 +25,7 @@ export function Reasoning(props: ReasoningProps) {
     <div
       className={clsx(
         nested &&
-          "ak-frame ak-frame-cover ak-frame-p-1 -my-[calc(var(--ak-disclosure-padding)*0.6)]",
+          "ak-frame ak-frame-cover ak-frame-p-1 -my-[calc(var(--disclosure-padding)*0.6)]",
       )}
     >
       <Disclosure
@@ -58,16 +58,21 @@ export interface ReasoningContentProps extends DisclosureContentProps {}
 export function ReasoningContent(props: ReasoningContentProps) {
   const nested = useContext(NestedReasoningContext);
   const body = createRender(DisclosureContentBody, props.body, {
-    className: "ak-prose-text-sm",
+    // Legacy prose + ak-prose-text-sm: the prose prop applies the
+    // frame-capped rhythm; the /relaxed modifier keeps the prose
+    // line-height ratio like the legacy leading channel.
+    prose: true,
+    className: "text-sm/relaxed",
   });
   return (
     <NestedReasoningContext.Provider value={true}>
       <DisclosureContent
-        prose
         {...props}
         body={body}
         className={clsx(
-          !nested && "data-open:max-h-140 overflow-y-auto",
+          // The important cap beats the cv's own open max-h-max channels,
+          // which land later in the stylesheet.
+          !nested && "data-open:max-h-140! overflow-y-auto",
           props.className,
         )}
       />

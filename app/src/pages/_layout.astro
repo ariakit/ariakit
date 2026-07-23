@@ -8,12 +8,21 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { Icon } from "#app/icons/icon.react.tsx";
 import { Logo } from "#app/icons/logo.react.tsx";
 import "#app/styles/global.css";
 import "@fontsource-variable/inter";
 import { ClientRouter } from "astro:transitions";
 import Meta from "#app/components/meta.astro";
+import { Badge, BadgeLabel } from "@ariakit/ui/html/badge.react.tsx";
+import {
+  Button,
+  ButtonSlot,
+  ButtonLabel,
+} from "@ariakit/ui/html/button.react.tsx";
+import { Container } from "@ariakit/ui/html/container.react.tsx";
+import { button } from "@ariakit/ui/styles/button.ts";
+import { containerSize } from "@ariakit/ui/styles/container.ts";
+import { Icon } from "#app/icons/icon.react.tsx";
 
 export interface Props {
   title?: string;
@@ -32,19 +41,30 @@ const { title, headerBorder = false } = Astro.props;
     <ClientRouter />
   </head>
   <body
-    class="ak-container-size-default/3 overflow-x-clip [--header-height:calc(--spacing(14)+1px)] [--theme-sidebar-width:--spacing(100)]"
+    {...containerSize.html({
+      $size: "default",
+      $p: 3,
+      class:
+        "overflow-x-clip [--header-height:calc(--spacing(14)+1px)] [--theme-sidebar-width:--spacing(100)]",
+    })}
   >
     <div class="flex">
       <div class="flex flex-col flex-1 @container/main min-h-dvh">
         <header
-          class:list={[
-            "sticky ak-container-size-default top-0 z-10",
-            "ak-layer ak-light:ak-layer-lighten-6 ring",
-            headerBorder || "header-scroll-driven",
-          ]}
+          {...containerSize.html({
+            $size: "default",
+            class: [
+              "sticky top-0 z-10",
+              "ak-layer ak-light:ak-layer-lighten-6 ring",
+              headerBorder || "header-scroll-driven",
+            ],
+          })}
         >
-          <div
-            class="@max-overlap:ak-container-size-[100dvw] transition-[max-width] ak-container flex items-center gap-3 py-2"
+          {/* The stacked max-w override sorts after the container's own
+              max-width rule, replacing the legacy responsive
+              ak-container-size-[100dvw] (cv variants can't be responsive). */}
+          <Container
+            className="@max-overlap:max-w-[100dvw] transition-[max-width] flex items-center gap-3 py-2"
           >
             <div class="flex items-center gap-2"><Logo iconOnly /></div>
 
@@ -53,43 +73,65 @@ const { title, headerBorder = false } = Astro.props;
                 aria-hidden="true"
                 class="ak-layer -me-px ak-edge-20 border-s rotate-15 flex-none h-8 block @max-3xl:hidden has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:delay-[0ms,50ms]"
               ></span>
-              <button
-                class="ak-button font-normal ak-dark:ak-ink-80 @max-3xl:hidden"
+              <Button
+                className="font-normal ak-dark:ak-ink-80 @max-3xl:hidden"
+                $lightnessOffset={false}
               >
-                <Icon name="react" className="flex-none" /><span>React</span>
-              </button>
+                <ButtonSlot>
+                  <Icon name="react" />
+                </ButtonSlot>
+                <ButtonLabel>React</ButtonLabel>
+              </Button>
               <span
                 aria-hidden="true"
                 class="ak-layer -me-px ak-edge-20 border-s rotate-15 flex-none h-8 block @max-3xl:hidden [button:hover+&]:opacity-0 [button:hover+&]:rotate-0 has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:not-[button:hover+&]:delay-[0ms,50ms]"
               ></span>
-              <button
-                class="ak-button font-normal ak-dark:ak-ink-80 min-w-0 @max-3xl:hidden"
+              <Button
+                className="font-normal ak-dark:ak-ink-80 min-w-0 @max-3xl:hidden"
+                $lightnessOffset={false}
               >
-                <span class="truncate">Examples</span>
-              </button>
+                <ButtonLabel>Examples</ButtonLabel>
+              </Button>
               <span
                 aria-hidden="true"
                 class="ak-layer -me-px ak-edge-20 border-s rotate-15 flex-none h-8 block [button:hover+&]:opacity-0 [button:hover+&]:rotate-0 has-[+button:hover]:opacity-0 has-[+button:hover]:rotate-0 transition-[opacity,rotate] delay-[50ms,0ms] not-has-[+button:hover]:not-[button:hover+&]:delay-[0ms,50ms]"
               ></span>
-              <button class="ak-button min-w-0">
-                <span class="truncate">{title}</span>
+              <Button className="min-w-0" $lightnessOffset={false}>
+                <ButtonLabel>{title}</ButtonLabel>
                 <span class="ak-ink-0 font-normal">⌘K</span>
-              </button>
+              </Button>
             </div>
             <div class="flex items-center gap-2 ms-auto">
+              {/* Anchors can't use the html Button, so the cv is spread
+                  directly; $p:1 matches the legacy ak-frame-field/1 override
+                  (the field radius equals the button's own radius). */}
               <a
                 href="/plus/"
-                class="ak-button ak-frame ak-frame-field/1 hover:ak-layer hover:ak-layer-primary hover:ak-layer-mix-20"
+                {...button.html({
+                  $p: 1,
+                  $lightnessOffset: false,
+                  class:
+                    "hover:ak-layer hover:ak-layer-brand hover:ak-layer-mix-20",
+                })}
               >
-                <span
-                  class="ak-badge-primary border-dashed ak-frame-border ak-frame-field/2 text-sm"
+                <Badge
+                  $layer="brand"
+                  $size="sm"
+                  $rounded="lg"
+                  $p={2}
+                  $borderType="dashed"
+                  $borderWeight="medium"
                 >
-                  <span>Plus</span>
-                </span>
+                  <BadgeLabel>Plus</BadgeLabel>
+                </Badge>
               </a>
-              <button
+              {/* The stacked responsive overrides reproduce the legacy
+                  @max-4xl:ak-button-square-10; they sort after the control's
+                  unstacked padding and win the ties. */}
+              <Button
                 id="theme-toggle"
-                class="ak-button font-normal text-sm group/theme @max-4xl:ak-button-square-10"
+                className="font-normal text-sm group/theme @max-4xl:aspect-square @max-4xl:px-0 @max-4xl:py-0 @max-4xl:h-10"
+                $lightnessOffset={false}
               >
                 <div
                   class="flex-none ak-layer ak-layer-lighten-6 rounded-full p-1 border-white bg-clip-padding bg-conic/decreasing from-violet-500 via-lime-500 to-violet-500"
@@ -98,9 +140,9 @@ const { title, headerBorder = false } = Astro.props;
                 </div>
                 <span class="@max-4xl:sr-only">Theme</span>
                 <kbd class="ak-ink-0 font-normal @max-4xl:hidden">T</kbd>
-              </button>
+              </Button>
             </div>
-          </div>
+          </Container>
         </header>
         <main
           class="@max-5xl:[--container-sidebar:14rem] @max-7xl:[--container-sidebar:18rem] scroll-mt-(--header-height)"
@@ -109,9 +151,12 @@ const { title, headerBorder = false } = Astro.props;
           <slot />
         </main>
         <footer
-          class="ak-container-size-default ak-layer ak-layer-darken-6 mt-auto"
+          {...containerSize.html({
+            $size: "default",
+            class: "ak-layer ak-layer-darken-6 mt-auto",
+          })}
         >
-          <div class="ak-container">Footer</div>
+          <Container>Footer</Container>
         </footer>
       </div>
       <div

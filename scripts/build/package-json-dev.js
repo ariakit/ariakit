@@ -25,6 +25,7 @@ function shouldIgnoreWatchPath(path) {
 /** @param {string} path */
 async function processDevPackage(path) {
   if (path.includes("ariakit-tailwind")) return;
+  if (path.includes("ariakit-ui")) return;
   if (path.includes("ariakit-scripts")) return;
   const match = path.match(/packages\/(.*)\/src/);
   if (!match) return;
