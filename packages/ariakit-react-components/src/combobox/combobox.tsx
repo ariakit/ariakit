@@ -6,6 +6,7 @@ import {
   useId,
   useMergeRefs,
   useSafeLayoutEffect,
+  useTransactionState,
   useUpdateEffect,
   useUpdateLayoutEffect,
   useWrapElement,
@@ -702,6 +703,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     });
 
     const composite = props.composite !== false;
+    const [, setBaseElement] = useTransactionState(
+      composite ? null : store.setBaseElement,
+    );
     const baseElement = useStoreState(
       store,
       multiSelectable ? ["baseElement"] : [],
@@ -746,7 +750,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       name: multiSelectable ? undefined : name,
       form,
       disabled,
-      ref: useMergeRefs(ref, props.ref),
+      ref: useMergeRefs(ref, composite ? undefined : setBaseElement, props.ref),
       onChange,
       onCompositionStart,
       onCompositionEnd,

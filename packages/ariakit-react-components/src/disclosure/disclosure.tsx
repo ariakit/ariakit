@@ -52,13 +52,20 @@ export const useDisclosure = createHook<TagName, DisclosureOptions>(
     const disclosureElement = useStoreState(store, "disclosureElement");
     const open = useStoreState(store, "open");
 
-    // Another Disclosure may have taken over the store while this one was
-    // mounted, so only clear the state if this element still owns it.
+    // A changing consumer ref can detach and reattach the same node, so restore
+    // missing ownership synchronously. Another Disclosure may have taken over
+    // the store, so only clear the state if this element still owns it.
     const setDisclosureElement = useCallback(
       (element: HTMLType | null) => {
         const previousElement = ref.current;
         ref.current = element;
-        if (element) return;
+        if (element) {
+          const disclosureElement = store?.getState().disclosureElement;
+          if (!disclosureElement?.isConnected) {
+            store.setDisclosureElement(element);
+          }
+          return;
+        }
         if (store?.getState().disclosureElement !== previousElement) return;
         store.setDisclosureElement(null);
       },

@@ -38,6 +38,18 @@ test("clears the disclosure fallback when it unmounts", async () => {
   expect(q.dialog(`${label} details`)).toBeVisible();
 });
 
+test("restores the disclosure when a callback ref changes", async () => {
+  await click(q.button("Mount changing disclosure ref"));
+  await click(q.button("Change disclosure ref"));
+
+  expect(q.status("Changing ref current disclosure")).toHaveTextContent(
+    "button",
+  );
+
+  await click(q.button("Open changing ref"));
+  expect(q.dialog("Changing ref details")).toBeVisible();
+});
+
 test("keeps MenuButton as the disclosure for MenuAnchor", async () => {
   const button = q.button("Open Menu");
 
@@ -86,6 +98,18 @@ test("uses ComboboxDisclosure when the combobox input unmounts", async () => {
     "button",
   );
   expect(q.listbox("Input Combobox items")).toBeVisible();
+});
+
+test.each([
+  ["Non-composite input", "input"],
+  ["Non-composite explicit", "explicit"],
+] as const)("uses the %s Combobox anchor", async (label, expectedAnchor) => {
+  await click(q.button("Mount non-composite Comboboxes"));
+
+  expect(q.listbox(`${label} Combobox items`)).toBeVisible();
+  expect(q.status(`${label} Combobox current anchor`)).toHaveTextContent(
+    expectedAnchor,
+  );
 });
 
 test("provides the Combobox store to disclosure descendants", () => {

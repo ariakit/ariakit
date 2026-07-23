@@ -64,6 +64,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog(`${label} details`)).toBeVisible();
   });
 
+  test("restores the disclosure when a callback ref changes", async ({ q }) => {
+    await q.button("Mount changing disclosure ref").click();
+    await q.button("Change disclosure ref").click();
+
+    await test
+      .expect(q.status("Changing ref current disclosure"))
+      .toHaveText("button");
+
+    await q.button("Open changing ref").click();
+    await test.expect(q.dialog("Changing ref details")).toBeVisible();
+  });
+
   test("preserves HovercardAnchor after keyboard activation", async ({ q }) => {
     const anchor = q.text("Hovercard anchor");
     const hovercard = q.dialog("Hovercard details");
@@ -171,6 +183,27 @@ withFramework(import.meta.dirname, async ({ test }) => {
           popover,
         );
       }
+    });
+  }
+
+  for (const [label, expectedAnchor] of [
+    ["Non-composite input", "input"],
+    ["Non-composite explicit", "explicit"],
+  ] as const) {
+    test(`uses the ${label.toLowerCase()} Combobox anchor`, async ({ q }) => {
+      await q.button("Mount non-composite Comboboxes").click();
+
+      const input = q.combobox(`${label} Combobox input`);
+      const popover = q.listbox(`${label} Combobox items`);
+
+      await test.expect(popover).toBeVisible();
+      await test
+        .expect(q.status(`${label} Combobox current anchor`))
+        .toHaveText(expectedAnchor);
+
+      const anchor =
+        expectedAnchor === "explicit" ? q.text(`${label} anchor`) : input;
+      await expectAligned(test.expect, anchor, popover);
     });
   }
 

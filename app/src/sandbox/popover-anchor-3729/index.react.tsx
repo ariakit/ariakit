@@ -72,6 +72,50 @@ function PopoverCase({ anchorFirst, label }: PopoverCaseProps) {
   );
 }
 
+function ChangingDisclosureRefCase() {
+  const [mounted, setMounted] = useState(false);
+  const [changingRef, setChangingRef] = useState(false);
+  const store = Ariakit.usePopoverStore({ placement: "right" });
+  const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
+
+  if (!mounted) {
+    return (
+      <CaseLayout>
+        <Ariakit.Button onClick={() => setMounted(true)}>
+          Mount changing disclosure ref
+        </Ariakit.Button>
+      </CaseLayout>
+    );
+  }
+
+  return (
+    <CaseLayout>
+      <Ariakit.PopoverDisclosure
+        store={store}
+        ref={changingRef ? () => {} : undefined}
+        data-disclosure="button"
+      >
+        Open changing ref
+      </Ariakit.PopoverDisclosure>
+      <Ariakit.Button onClick={() => setChangingRef(true)}>
+        Change disclosure ref
+      </Ariakit.Button>
+      <Ariakit.Popover
+        store={store}
+        aria-label="Changing ref details"
+        flip={false}
+        slide={false}
+        gutter={16}
+      >
+        Popover content
+      </Ariakit.Popover>
+      <output aria-label="Changing ref current disclosure">
+        {disclosureElement?.dataset.disclosure || "none"}
+      </output>
+    </CaseLayout>
+  );
+}
+
 function HovercardCase() {
   const store = Ariakit.useHovercardStore({
     placement: "right",
@@ -242,6 +286,64 @@ function ComboboxCase({ type }: { type: ComboboxCaseType }) {
   );
 }
 
+function NonCompositeComboboxCase({ explicit }: { explicit?: boolean }) {
+  const label = explicit ? "Non-composite explicit" : "Non-composite input";
+  const store = Ariakit.useComboboxStore({
+    defaultOpen: true,
+    placement: "right",
+  });
+  const anchorElement = Ariakit.useStoreState(store, "anchorElement");
+
+  return (
+    <CaseLayout>
+      <Ariakit.ComboboxProvider store={store}>
+        {explicit && (
+          <Ariakit.ComboboxAnchor data-anchor="explicit">
+            {label} anchor
+          </Ariakit.ComboboxAnchor>
+        )}
+        <Ariakit.Combobox
+          composite={false}
+          aria-label={`${label} Combobox input`}
+          data-anchor="input"
+        />
+        <Ariakit.ComboboxPopover
+          aria-label={`${label} Combobox items`}
+          flip={false}
+          slide={false}
+          gutter={16}
+        >
+          <Ariakit.ComboboxItem value="Apple" />
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+      <output aria-label={`${label} Combobox current anchor`}>
+        {anchorElement?.dataset.anchor || "none"}
+      </output>
+    </CaseLayout>
+  );
+}
+
+function NonCompositeComboboxCases() {
+  const [mounted, setMounted] = useState(false);
+
+  if (!mounted) {
+    return (
+      <CaseLayout>
+        <Ariakit.Button onClick={() => setMounted(true)}>
+          Mount non-composite Comboboxes
+        </Ariakit.Button>
+      </CaseLayout>
+    );
+  }
+
+  return (
+    <>
+      <NonCompositeComboboxCase />
+      <NonCompositeComboboxCase explicit />
+    </>
+  );
+}
+
 function PopoverContextPlacement() {
   const store = Ariakit.usePopoverContext();
   return (
@@ -275,8 +377,10 @@ export default function Example() {
       <ComboboxCase type="explicit" />
       <ComboboxCase type="input" />
       <ComboboxCase type="disclosure" />
+      <NonCompositeComboboxCases />
       <HovercardCase />
       <ScopedComboboxDisclosureCase />
+      <ChangingDisclosureRefCase />
     </>
   );
 }
