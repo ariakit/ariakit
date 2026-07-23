@@ -17,11 +17,15 @@ const TagName = "a" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
+/**
+ * Returns props that add hovercard trigger behavior to an element.
+ * @see https://ariakit.com/components/hovercard
+ */
 export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
   function useHovercardTrigger({
     store,
     showOnHover = true,
-    positioningAnchor = false,
+    unstable__positioningAnchor = false,
     ...props
   }) {
     const disabled = disabledFromProps(props);
@@ -58,7 +62,7 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
       if (!isMouseMoving()) return;
       if (!showOnHoverProp(event)) return;
       const element = event.currentTarget;
-      if (positioningAnchor) {
+      if (unstable__positioningAnchor) {
         store.setAnchorElement(element);
       }
       store.setDisclosureElement(element);
@@ -69,7 +73,7 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
         // Let's check again if the mouse is moving. This is to avoid showing
         // the hovercard on mobile clicks or after clicking on the anchor.
         if (!isMouseMoving()) return;
-        if (positioningAnchor) {
+        if (unstable__positioningAnchor) {
           store.setAnchorElement(element);
         }
         store.show();
@@ -103,17 +107,17 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
       (element: HTMLElement | null) => {
         const previousElement = triggerRef.current;
         triggerRef.current = element;
-        if (!positioningAnchor) return;
         const { anchorElement, disclosureElement } = store.getState();
         if (!element && disclosureElement === previousElement) {
           store.setDisclosureElement(null);
         }
+        if (!unstable__positioningAnchor) return;
         if (!element && anchorElement !== previousElement) return;
         if (element && anchorElement?.isConnected) return;
         // Preserve a connected anchor when new anchors are added to the DOM.
         store.setAnchorElement(element);
       },
-      [store, positioningAnchor],
+      [store, unstable__positioningAnchor],
     );
 
     props = {
@@ -129,13 +133,31 @@ export const useHovercardTrigger = createHook<TagName, HovercardTriggerOptions>(
   },
 );
 
-interface HovercardTriggerOptions<
+export interface HovercardTriggerOptions<
   T extends ElementType = TagName,
 > extends FocusableOptions<T> {
+  /**
+   * Object returned by the
+   * [`useHovercardStore`](https://ariakit.com/reference/use-hovercard-store)
+   * hook.
+   */
   store: HovercardStore;
+  /**
+   * Shows the content element based on the user's _hover intent_ over the
+   * trigger element. This behavior purposely ignores mobile touch and
+   * unintentional mouse enter events, like those that happen during scrolling.
+   *
+   * Live examples:
+   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
+   * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
+   * @default true
+   */
   showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
   /**
+   * Determines whether the trigger also owns the store's positioning anchor.
+   * `HovercardAnchor` enables this, whereas composed triggers such as
+   * `MenuButton` leave it disabled so a separate anchor takes precedence.
    * @private
    */
-  positioningAnchor?: boolean;
+  unstable__positioningAnchor?: boolean;
 }

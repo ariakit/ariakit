@@ -1,4 +1,5 @@
 import * as Ariakit from "@ariakit/react";
+import { useHovercardTrigger } from "@ariakit/react-components/hovercard/hovercard-trigger";
 import type { ReactNode } from "react";
 import { useState } from "react";
 
@@ -155,6 +156,32 @@ function HovercardAnchorCase() {
   );
 }
 
+function HovercardTriggerCase() {
+  const [mounted, setMounted] = useState(true);
+  const store = Ariakit.useHovercardStore({ timeout: 0 });
+  const disclosureElement = Ariakit.useStoreState(store, "disclosureElement");
+  const triggerProps = useHovercardTrigger({
+    store,
+    href: "#hovercard-trigger-3729",
+  });
+
+  return (
+    <CaseLayout>
+      {mounted && (
+        <a {...triggerProps} data-disclosure="trigger">
+          Custom hovercard trigger
+        </a>
+      )}
+      <Ariakit.Button onClick={() => setMounted(false)}>
+        Remove custom hovercard trigger
+      </Ariakit.Button>
+      <output aria-label="Custom hovercard current disclosure">
+        {disclosureElement?.dataset.disclosure || "none"}
+      </output>
+    </CaseLayout>
+  );
+}
+
 function SelectCase() {
   const store = Ariakit.useSelectStore({
     defaultValue: "Apple",
@@ -254,6 +281,7 @@ export default function Example() {
       <ComboboxCase type="input" />
       <ComboboxCase type="disclosure" />
       <HovercardAnchorCase />
+      <HovercardTriggerCase />
     </>
   );
 }

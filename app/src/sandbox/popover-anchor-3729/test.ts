@@ -65,6 +65,17 @@ test("clears HovercardAnchor when it unmounts on show", async () => {
   expect(disclosure).toHaveTextContent("none");
 });
 
+// https://github.com/ariakit/ariakit/issues/3729
+test("clears a custom Hovercard trigger when it unmounts", async () => {
+  const disclosure = q.status.ensure("Custom hovercard current disclosure");
+
+  await hover(q.link("Custom hovercard trigger"));
+  expect(disclosure).toHaveTextContent("trigger");
+
+  await click(q.button("Remove custom hovercard trigger"));
+  expect(disclosure).toHaveTextContent("none");
+});
+
 test("preserves SelectAnchor when Select opens", async () => {
   await click(q.combobox("Open Select"));
 

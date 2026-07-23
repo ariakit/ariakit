@@ -160,4 +160,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(anchor).toHaveText("none");
     await test.expect(disclosure).toHaveText("none");
   });
+
+  // https://github.com/ariakit/ariakit/issues/3729
+  test("clears a custom Hovercard trigger when it unmounts", async ({ q }) => {
+    const disclosure = q.status("Custom hovercard current disclosure");
+
+    await q.link("Custom hovercard trigger").hover();
+    await test.expect(disclosure).toHaveText("trigger");
+
+    await q.button("Remove custom hovercard trigger").click();
+    await test.expect(disclosure).toHaveText("none");
+  });
 });

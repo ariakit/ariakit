@@ -11,7 +11,7 @@ import type { ElementType } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
-import { usePopoverDisclosureRef } from "./__popover-disclosure.ts";
+import { usePopoverDisclosureRef } from "./__utils.ts";
 import {
   PopoverScopedContextProvider,
   usePopoverProviderContext,

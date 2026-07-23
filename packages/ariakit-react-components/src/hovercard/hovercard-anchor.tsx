@@ -1,12 +1,11 @@
 import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { invariant } from "@ariakit/utils";
-import type { BooleanOrCallback } from "@ariakit/utils";
-import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
-import type { FocusableOptions } from "../focusable/focusable.tsx";
-import { useHovercardTrigger } from "./__hovercard-trigger.tsx";
+import type { ElementType } from "react";
 import { useHovercardProviderContext } from "./hovercard-context.tsx";
 import type { HovercardStore } from "./hovercard-store.ts";
+import type { HovercardTriggerOptions } from "./hovercard-trigger.tsx";
+import { useHovercardTrigger } from "./hovercard-trigger.tsx";
 
 const TagName = "a" satisfies ElementType;
 type TagName = typeof TagName;
@@ -35,7 +34,7 @@ export const useHovercardAnchor = createHook<TagName, HovercardAnchorOptions>(
     return useHovercardTrigger<TagName>({
       store,
       showOnHover,
-      positioningAnchor: true,
+      unstable__positioningAnchor: true,
       ...props,
     });
   },
@@ -62,7 +61,10 @@ export const HovercardAnchor = forwardRef(function HovercardAnchor(
 
 export interface HovercardAnchorOptions<
   T extends ElementType = TagName,
-> extends FocusableOptions<T> {
+> extends Omit<
+  HovercardTriggerOptions<T>,
+  "store" | "unstable__positioningAnchor"
+> {
   /**
    * Object returned by the
    * [`useHovercardStore`](https://ariakit.com/reference/use-hovercard-store)
@@ -71,17 +73,6 @@ export interface HovercardAnchorOptions<
    * component's context will be used.
    */
   store?: HovercardStore;
-  /**
-   * Shows the content element based on the user's _hover intent_ over the
-   * anchor element. This behavior purposely ignores mobile touch and
-   * unintentional mouse enter events, like those that happen during scrolling.
-   *
-   * Live examples:
-   * - [Navigation Menubar](https://ariakit.com/examples/menubar-navigation)
-   * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
-   * @default true
-   */
-  showOnHover?: BooleanOrCallback<ReactMouseEvent<HTMLElement>>;
 }
 
 export type HovercardAnchorProps<T extends ElementType = TagName> = Props<

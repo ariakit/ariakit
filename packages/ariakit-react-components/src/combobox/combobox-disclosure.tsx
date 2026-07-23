@@ -12,7 +12,7 @@ import type { ElementType, MouseEvent } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
-import { usePopoverDisclosureRef } from "../popover/__popover-disclosure.ts";
+import { usePopoverDisclosureRef } from "../popover/__utils.ts";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
