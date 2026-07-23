@@ -1,10 +1,11 @@
+import type { Locator, Page } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
-const mouseEventInit = {
-  bubbles: true,
-  cancelable: true,
-  composed: true,
-};
+async function moveMouseTo(page: Page, locator: Locator) {
+  const box = await locator.boundingBox();
+  if (!box) throw new Error("Element has no box");
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+}
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6344
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -83,9 +84,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
 
     const persistentInput = q.textbox("Persistent shadow field");
-    const box = await persistentInput.boundingBox();
-    if (!box) throw new Error("Persistent input has no box");
-    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await moveMouseTo(page, persistentInput);
     await page.mouse.down();
     await persistentInput.focus();
     await page.mouse.up();
@@ -95,9 +94,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await q.textbox("Inside field").click();
     const persistentButton = q.button("Persistent shadow button");
-    await persistentButton.dispatchEvent("mousedown", mouseEventInit);
-    await persistentButton.dispatchEvent("mouseup", mouseEventInit);
-    await persistentButton.dispatchEvent("click", mouseEventInit);
+    await moveMouseTo(page, persistentButton);
+    await page.mouse.down();
+    await page.mouse.up();
     await test.expect(q.textbox("Inside field")).toBeFocused();
     await page.waitForTimeout(250);
     await test.expect(q.dialog("Dialog")).toBeVisible();
@@ -166,6 +165,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
   test("stays open when dragging from persistent shadow content", async ({
+    page,
     q,
   }) => {
     await q.button("Open dialog").click();
@@ -173,9 +173,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     const persistentButton = q.button("Persistent shadow button");
     const outsideButton = q.button("Outside shadow button");
-    await persistentButton.dispatchEvent("mousedown", mouseEventInit);
-    await outsideButton.dispatchEvent("mouseup", mouseEventInit);
-    await outsideButton.dispatchEvent("click", mouseEventInit);
+    await moveMouseTo(page, persistentButton);
+    await page.mouse.down();
+    await moveMouseTo(page, outsideButton);
+    await page.mouse.up();
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 });

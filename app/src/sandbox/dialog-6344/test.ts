@@ -42,7 +42,7 @@ test("keeps the documented behavior after the dialog has been focused", async ()
 test("keeps persistent elements after replacing an open dialog node", async () => {
   await click(q.button("Open dialog"));
   await click(q.button("Replace dialog element"));
-  expect(q.dialog.ensure("Dialog").tagName).toBe("SECTION");
+  expect(q.dialog("Dialog")?.tagName).toBe("SECTION");
 
   await click(q.textbox("Notification field"));
   expect(q.textbox("Notification field")).toHaveFocus();
