@@ -1,5 +1,11 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
+const mouseEventInit = {
+  bubbles: true,
+  cancelable: true,
+  composed: true,
+};
+
 // Reproduces https://github.com/ariakit/ariakit/issues/6344
 withFramework(import.meta.dirname, async ({ test }) => {
   test("stays open when interacting with a persistent element before the dialog is focused", async ({
@@ -63,11 +69,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // Dispatch directly on the nested shadow element. WebKit's click
     // actionability check may otherwise treat the outer shadow host as the
     // pointer target even though the nested input is visible.
-    const mouseEventInit = {
-      bubbles: true,
-      cancelable: true,
-      composed: true,
-    };
     await persistentInput.dispatchEvent("mousedown", mouseEventInit);
     await persistentInput.focus();
     await persistentInput.dispatchEvent("mouseup", mouseEventInit);
@@ -124,5 +125,41 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.textbox("Inside field").click();
     await q.textbox("Outside shadow field").click();
     await test.expect(q.dialog("Dialog")).not.toBeVisible();
+  });
+
+  // Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635034591
+  test("closes when interacting with a same-id dialog in another root", async ({
+    q,
+  }) => {
+    await q.button("Show shadow dialog").click();
+    await q.button("Open dialog").click();
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+
+    await q.textbox("Shadow dialog field").click();
+    await test.expect(q.dialog("Dialog")).not.toBeVisible();
+  });
+
+  // Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
+  test("closes on a no-focus outside shadow click", async ({ q }) => {
+    await q.button("Open dialog").click();
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+
+    await q.button("Outside shadow button").click();
+    await test.expect(q.dialog("Dialog")).not.toBeVisible();
+  });
+
+  // Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
+  test("stays open when dragging from persistent shadow content", async ({
+    q,
+  }) => {
+    await q.button("Open dialog").click();
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+
+    const persistentButton = q.button("Persistent shadow button");
+    const outsideButton = q.button("Outside shadow button");
+    await persistentButton.dispatchEvent("mousedown", mouseEventInit);
+    await outsideButton.dispatchEvent("mouseup", mouseEventInit);
+    await outsideButton.dispatchEvent("click", mouseEventInit);
+    await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 });

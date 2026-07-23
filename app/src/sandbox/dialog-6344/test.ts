@@ -1,4 +1,4 @@
-import { click, q, rightClick } from "@ariakit/test";
+import { click, dispatch, mouseDown, q, rightClick } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // Reproduces https://github.com/ariakit/ariakit/issues/6344
@@ -100,4 +100,53 @@ test("closes when interacting inside an unrelated shadow root", async () => {
   );
   await click(outsideShadowField || null);
   await expect.poll(q.dialog.hidden.lazy("Dialog")).not.toBeVisible();
+});
+
+// Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635034591
+test("closes when interacting with a same-id dialog in another root", async () => {
+  await click(q.button("Show shadow dialog"));
+  await click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toBeVisible();
+
+  const shadowDialogField = document
+    .querySelector<HTMLElement>("[data-testid=shadow-host]")
+    ?.shadowRoot?.querySelector<HTMLInputElement>(
+      "[aria-label='Shadow dialog field']",
+    );
+  await click(shadowDialogField || null);
+  await expect.poll(q.dialog.hidden.lazy("Dialog")).not.toBeVisible();
+});
+
+// Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
+test("closes on a no-focus outside shadow click", async () => {
+  await click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toBeVisible();
+
+  const outsideButton = document
+    .querySelector<HTMLElement>("[data-testid=shadow-host]")
+    ?.shadowRoot?.querySelector<HTMLButtonElement>(
+      "[data-outside-shadow-button]",
+    );
+  await click(outsideButton || null);
+  await expect.poll(q.dialog.hidden.lazy("Dialog")).not.toBeVisible();
+});
+
+// Regression for https://github.com/ariakit/ariakit/pull/6810#discussion_r3635035742
+test("stays open when dragging from persistent shadow content", async () => {
+  await click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toBeVisible();
+
+  const shadowRoot = document.querySelector<HTMLElement>(
+    "[data-testid=shadow-host]",
+  )?.shadowRoot;
+  const persistentButton = shadowRoot
+    ?.querySelector<HTMLElement>("[data-persistent-shadow-host]")
+    ?.shadowRoot?.querySelector<HTMLButtonElement>("button");
+  const outsideButton = shadowRoot?.querySelector<HTMLButtonElement>(
+    "[data-outside-shadow-button]",
+  );
+  await mouseDown(persistentButton || null);
+  await dispatch.mouseUp(outsideButton || null);
+  await dispatch.click(outsideButton || null);
+  expect(q.dialog("Dialog")).toBeVisible();
 });

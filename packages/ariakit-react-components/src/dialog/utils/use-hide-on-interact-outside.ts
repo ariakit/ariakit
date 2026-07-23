@@ -69,7 +69,7 @@ function isElementWithinDialog(
   if (contains(contentElement, target)) return true;
   if (isDisclosure(disclosureElement, target)) return true;
   if (target.hasAttribute("data-focus-trap")) return true;
-  return isElementInside(target, contentElement.id);
+  return isElementInside(target, contentElement);
 }
 
 function isEventInsideDialog(

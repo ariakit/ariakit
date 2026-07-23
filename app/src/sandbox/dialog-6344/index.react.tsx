@@ -14,6 +14,9 @@ import { useCallback, useRef, useState } from "react";
 // the dialog open, as documented.
 export default function Example() {
   const [open, setOpen] = useState(false);
+  const [showShadowDialog, setShowShadowDialog] = useState(false);
+  const [shadowDialogPortal, setShadowDialogPortal] =
+    useState<HTMLElement | null>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
   const shadowPersistentRef = useRef<HTMLDivElement>(null);
   const shadowFocusCleanupRef = useRef<(() => void) | null>(null);
@@ -53,6 +56,13 @@ export default function Example() {
       outsideInput.setAttribute("aria-label", "Outside shadow field");
       outsideInput.setAttribute("placeholder", "Outside shadow field");
 
+      const outsideButton = host.ownerDocument.createElement("button");
+      outsideButton.dataset.outsideShadowButton = "";
+      outsideButton.textContent = "Outside shadow button";
+      outsideButton.addEventListener("mousedown", (event) => {
+        event.preventDefault();
+      });
+
       const disconnectedInput = host.ownerDocument.createElement("input");
       disconnectedInput.dataset.disconnectedShadowField = "";
       disconnectedInput.setAttribute("aria-label", "Disconnected shadow field");
@@ -61,9 +71,23 @@ export default function Example() {
         "Disconnected shadow field",
       );
 
-      shadowRoot.append(persistentRegion, outsideInput, disconnectedInput);
+      const dialogPortal = host.ownerDocument.createElement("div");
+      dialogPortal.dataset.shadowDialogPortal = "";
+
+      shadowRoot.append(
+        persistentRegion,
+        outsideInput,
+        outsideButton,
+        disconnectedInput,
+        dialogPortal,
+      );
     }
     shadowPersistentRef.current = persistentRegion;
+
+    const dialogPortal = shadowRoot.querySelector<HTMLElement>(
+      "[data-shadow-dialog-portal]",
+    );
+    setShadowDialogPortal(dialogPortal);
 
     const disconnectedInput = shadowRoot.querySelector<HTMLInputElement>(
       "[data-disconnected-shadow-field]",
@@ -89,7 +113,12 @@ export default function Example() {
         Open dialog
       </Ariakit.Button>
 
+      <Ariakit.Button onClick={() => setShowShadowDialog(true)}>
+        Show shadow dialog
+      </Ariakit.Button>
+
       <Ariakit.Dialog
+        id="dialog"
         open={open}
         onClose={() => setOpen(false)}
         modal={false}
@@ -147,6 +176,24 @@ export default function Example() {
       />
 
       <div ref={setShadowHost} data-testid="shadow-host" />
+
+      {shadowDialogPortal && showShadowDialog && (
+        <Ariakit.Portal portalElement={shadowDialogPortal}>
+          <Ariakit.Dialog
+            id="dialog"
+            aria-label="Shadow dialog"
+            open
+            modal={false}
+            autoFocusOnShow={false}
+            hideOnInteractOutside={false}
+          >
+            <input
+              aria-label="Shadow dialog field"
+              placeholder="Shadow dialog field"
+            />
+          </Ariakit.Dialog>
+        </Ariakit.Portal>
+      )}
     </div>
   );
 }
