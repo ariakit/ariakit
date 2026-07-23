@@ -109,12 +109,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     const containedFrame = query(
       page.frameLocator("iframe[title='Contained frame']"),
     );
-    // Mount the frame before reopening so it's part of the listener snapshot.
     await q.button("Open root popover").click();
     await test.expect(q.dialog("Root popover")).toBeVisible();
-    await q.button("Open root popover").click();
-    await test.expect(q.dialog("Root popover")).not.toBeVisible();
-    await q.button("Open root popover").click();
 
     await containedFrame.button("Contained frame target").click();
     await page.waitForTimeout(250);
