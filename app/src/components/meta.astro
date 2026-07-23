@@ -8,10 +8,10 @@
  *
  * SPDX-License-Identifier: UNLICENSED
  */
-import { getOGImageItem } from "#app/pages/og-image/api.ts";
-import type { GetOGImageItemParams } from "#app/pages/og-image/api.ts";
+import { getPageOGImagePath } from "#app/lib/og-image-path.ts";
+import type { GetPageOGImagePathParams } from "#app/lib/og-image-path.ts";
 
-interface Props extends GetOGImageItemParams {
+interface Props extends GetPageOGImagePathParams {
   title?: string;
   description?: string;
 }
@@ -22,15 +22,13 @@ const {
   id,
   type,
   framework,
+  pagePath,
   title: pageTitle = DEFAULT_TITLE,
   description = "Toolkit with accessible components, styles, and examples for your next web app. Built for React, Solid, HTML, and more.",
 } = Astro.props;
 
-const ogImageItem = await getOGImageItem({ id, type, framework });
-
-const ogImage = ogImageItem?.imagePath
-  ? new URL(ogImageItem.imagePath, Astro.site).href
-  : new URL("/og-image/default.png", Astro.site).href;
+const ogImagePath = getPageOGImagePath({ id, type, framework, pagePath });
+const ogImage = new URL(ogImagePath, Astro.site).href;
 
 const title =
   pageTitle === DEFAULT_TITLE

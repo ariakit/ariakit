@@ -12,13 +12,9 @@ import { getCollection } from "astro:content";
 import { uniq } from "#app/lib/array.ts";
 import { getGuideDetail } from "#app/lib/content.ts";
 import { getOGImageItemKey } from "#app/lib/og-image-key.ts";
-import { trim } from "#app/lib/string.ts";
+import { getOGImagePath } from "#app/lib/og-image-path.ts";
 
 const types = ["pages", "examples", "components", "styles"] as const;
-
-function getImagePath(path: string) {
-  return `/og-image/${trim(path, "/").replaceAll("/", "_")}.png`;
-}
 
 export interface OGImageItem {
   type: (typeof types)[number];
@@ -71,7 +67,7 @@ async function computeOGImageItems(): Promise<OGImageItem[]> {
     return frameworks.map((framework) => {
       return {
         path: `/${framework}${path}`,
-        imagePath: getImagePath(`${framework}${path}`),
+        imagePath: getOGImagePath(`${framework}${path}`),
         type,
         framework,
         id: entry.id,
@@ -86,7 +82,7 @@ async function computeOGImageItems(): Promise<OGImageItem[]> {
     return {
       path,
       type,
-      imagePath: getImagePath(path),
+      imagePath: getOGImagePath(path),
       title: data.title,
       framework,
       id,
@@ -101,7 +97,7 @@ async function computeOGImageItems(): Promise<OGImageItem[]> {
     const path = "/examples";
     return {
       path: `/${framework}${path}`,
-      imagePath: getImagePath(`/${framework}${path}`),
+      imagePath: getOGImagePath(`/${framework}${path}`),
       type: "examples",
       framework,
     } as const;
@@ -115,7 +111,7 @@ async function computeOGImageItems(): Promise<OGImageItem[]> {
     const path = "/components";
     return {
       path: `/${framework}${path}`,
-      imagePath: getImagePath(`/${framework}${path}`),
+      imagePath: getOGImagePath(`/${framework}${path}`),
       type: "components",
       framework,
     } as const;
@@ -124,12 +120,12 @@ async function computeOGImageItems(): Promise<OGImageItem[]> {
   const genericPages = [
     {
       path: "/",
-      imagePath: getImagePath("/default"),
+      imagePath: getOGImagePath("/default"),
       type: "pages",
     },
     {
       path: "/changelog",
-      imagePath: getImagePath("/changelog"),
+      imagePath: getOGImagePath("/changelog"),
       type: "pages",
       title: "Changelog",
     },
