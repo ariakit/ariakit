@@ -30,3 +30,9 @@
 .nested-auto-scroller {
   position: relative;
 }
+
+.inherited-target-inner {
+  height: 120px;
+  overflow: visible;
+  position: relative;
+}

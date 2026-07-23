@@ -122,6 +122,7 @@ interface CollectionRendererContextValue {
   overscan: CollectionRendererOptions["overscan"];
   scroller?: Element | null;
   scrollerRef?: RefObject<Element | null>;
+  scrollerController?: ScrollerController;
   childrenData: Map<string, Data>;
 }
 
@@ -312,12 +313,21 @@ function getScrollElement(
   return scrollElement;
 }
 
+interface ScrollerController {
+  revalidated: boolean;
+  resolve: () => Element | null;
+  revalidate: () => void;
+}
+
 function useScroller(
   rendererRef: RefObject<HTMLElement | null> | null,
   scrollElement: CollectionRendererOptions["scrollElement"],
+  inheritedController?: ScrollerController,
 ) {
   const [scroller, setScroller] = useState<Element | null>(null);
   const scrollerRef = useRef<Element | null>(null);
+  const publishedScrollerRef = useRef<Element | null>(null);
+  const controllerRef = useRef<ScrollerController | null>(null);
   const autoResolved = useRef(false);
   const previousRendererRef = useRef(rendererRef);
   const resolveScroller = () => {
@@ -325,11 +335,36 @@ function useScroller(
     if (!renderer) return null;
     return getScrollElement(renderer, scrollElement);
   };
+  let controller = controllerRef.current;
+  if (!controller && scrollElement !== undefined) {
+    const nextController: ScrollerController = {
+      revalidated: false,
+      resolve: resolveScroller,
+      revalidate: () => {
+        if (nextController.revalidated) return;
+        nextController.revalidated = true;
+        const nextScroller = nextController.resolve();
+        scrollerRef.current = nextScroller;
+        if (nextScroller === publishedScrollerRef.current) return;
+        publishedScrollerRef.current = nextScroller;
+        setScroller(nextScroller);
+      },
+    };
+    controllerRef.current = nextController;
+    controller = nextController;
+  }
   // Explicit refs and resolvers can change without their prop identity
   // changing, so resolve them during each committed layout.
   // oxlint-disable-next-line exhaustive-deps
   useSafeLayoutEffect(() => {
+    if (inheritedController) {
+      inheritedController.revalidated = false;
+    }
     if (scrollElement === undefined) return;
+    if (!controller) return;
+    publishedScrollerRef.current = scroller;
+    controller.revalidated = false;
+    controller.resolve = resolveScroller;
     scrollerRef.current = resolveScroller();
   });
   // Keep state synchronization and automatic ancestor detection off the
@@ -337,6 +372,7 @@ function useScroller(
   // oxlint-disable-next-line exhaustive-deps
   useEffect(() => {
     if (scrollElement === undefined) {
+      inheritedController?.revalidate();
       if (previousRendererRef.current !== rendererRef) {
         previousRendererRef.current = rendererRef;
         autoResolved.current = false;
@@ -353,13 +389,14 @@ function useScroller(
       autoResolved.current = false;
       // Ancestor refs attach after descendant layout effects, so resolve the
       // explicit target again once the entire layout phase has completed.
-      scrollerRef.current = resolveScroller();
+      controller?.revalidate();
+      return;
     }
     const nextScroller = scrollerRef.current;
     if (nextScroller === scroller) return;
     setScroller(nextScroller);
   });
-  return [scroller, scrollerRef] as const;
+  return [scroller, scrollerRef, controller] as const;
 }
 
 function getRendererOffset(
@@ -527,6 +564,8 @@ export function useCollectionRenderer<T extends Item = any>({
     scrollElementProp === undefined ? parent?.scroller : undefined;
   const inheritedScrollerRef =
     scrollElementProp === undefined ? parent?.scrollerRef : undefined;
+  const inheritedScrollerController =
+    scrollElementProp === undefined ? parent?.scrollerController : undefined;
 
   const ref = useRef<HTMLType>(null);
   const baseId = useId(props.id);
@@ -624,9 +663,10 @@ export function useCollectionRenderer<T extends Item = any>({
     }
   }, [elementsUpdated, itemSize, baseId, items, data, computeData]);
 
-  const [ownScroller, ownScrollerRef] = useScroller(
+  const [ownScroller, ownScrollerRef, ownScrollerController] = useScroller(
     items && inheritedScroller === undefined ? ref : null,
     scrollElementProp,
+    inheritedScrollerController,
   );
   const scroller =
     scrollElementProp === null
@@ -640,6 +680,12 @@ export function useCollectionRenderer<T extends Item = any>({
       : inheritedScrollerRef === undefined
         ? ownScrollerRef
         : inheritedScrollerRef;
+  const scrollerController =
+    scrollElementProp === undefined
+      ? inheritedScrollerController
+      : scrollElementProp === null
+        ? undefined
+        : (ownScrollerController ?? undefined);
   const offsetsRef = useRef({ start: 0, end: 0 });
 
   const processVisibleIndices = useCallback(() => {
@@ -647,6 +693,7 @@ export function useCollectionRenderer<T extends Item = any>({
 
     // Ref and resolver targets can change during commit. Skip passive work
     // from the previous scroller until the resolved value reaches context.
+    scrollerController?.revalidate();
     if (scrollerRef.current !== scroller) return;
     if (!scroller) return;
     if (!items) return;
@@ -693,6 +740,7 @@ export function useCollectionRenderer<T extends Item = any>({
     elementsUpdated,
     scroller,
     scrollerRef,
+    scrollerController,
     items,
     baseId,
     data,
@@ -950,6 +998,7 @@ export function useCollectionRenderer<T extends Item = any>({
       overscan,
       scroller: contextScroller,
       scrollerRef: contextScrollerRef,
+      scrollerController,
       childrenData,
     }),
     [
@@ -958,6 +1007,7 @@ export function useCollectionRenderer<T extends Item = any>({
       overscan,
       contextScroller,
       contextScrollerRef,
+      scrollerController,
       childrenData,
     ],
   );

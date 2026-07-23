@@ -54,7 +54,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     });
     await flushFrames(page);
 
-    await test.expect(q.status()).toHaveText("Scroll observed: yes");
+    await test
+      .expect(q.status("Async scroll status"))
+      .toHaveText("Scroll observed: yes");
     await test.expect(asyncOptions.option("Async item 51")).toBeVisible();
   });
 
@@ -162,5 +164,39 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await flushFrames(page);
 
     await test.expect(initialRefOptions.option("Async item 51")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6806#discussion_r3635028432
+  test("revalidates an inherited scroll target before passive updates", async ({
+    page,
+    q,
+  }) => {
+    const scroller = q.listbox("Inherited target items");
+    const inheritedOptions = query(scroller);
+    const mountedItems = q.status("Inherited target mounts");
+
+    await test.expect(inheritedOptions.option("Async item 1")).toBeVisible();
+    await scroller.evaluate((element) => {
+      element.scrollTop = 2000;
+      element.dispatchEvent(new Event("scroll"));
+    });
+    await flushFrames(page);
+    await test.expect(inheritedOptions.option("Async item 51")).toBeVisible();
+
+    await q.button("Clear inherited target mount log").click();
+    await test.expect(mountedItems).toHaveText("Mounted items: none");
+    await q.button("Use inner scroll element and update child class").click();
+    await flushFrames(page);
+
+    await test.expect(mountedItems).toContainText(/Async item 2(?:,|$)/);
+    await test.expect(mountedItems).not.toContainText(/Async item 49(?:,|$)/);
+
+    await q.button("Clear inherited target mount log").click();
+    await test.expect(mountedItems).toHaveText("Mounted items: none");
+    await q.button("Use outer scroll element and increase overscan").click();
+    await flushFrames(page);
+
+    await test.expect(mountedItems).toContainText(/Async item 51(?:,|$)/);
+    await test.expect(mountedItems).not.toContainText(/Async item 5(?:,|$)/);
   });
 });

@@ -2,7 +2,17 @@ import * as Ariakit from "@ariakit/react";
 import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
 import type { SelectRendererItem } from "@ariakit/react-components/select/select-renderer";
 import type { SelectRendererItemObject } from "@ariakit/react-components/select/select-renderer";
-import { useCallback, useMemo, useRef, useState } from "react";
+import type { ComponentProps, RefCallback } from "react";
+import {
+  createContext,
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import "./style.css";
 
 interface FruitItem extends SelectRendererItemObject {
@@ -172,7 +182,9 @@ function AsyncRenderer() {
       >
         Disconnect scroll element and double item size
       </button>
-      <p role="status">Scroll observed: {scrollObserved ? "yes" : "no"}</p>
+      <p role="status" aria-label="Async scroll status">
+        Scroll observed: {scrollObserved ? "yes" : "no"}
+      </p>
       <div
         ref={scrollElementConnected ? scrollElementRef : null}
         className="async-scroller"
@@ -308,6 +320,153 @@ function InitialRefRenderer() {
   );
 }
 
+interface TrackedOptionProps extends Omit<ComponentProps<"div">, "ref"> {
+  elementRef: RefCallback<HTMLElement>;
+  index: number;
+  onMount: (value: string) => void;
+  value: string;
+}
+
+function TrackedOption({
+  elementRef,
+  index,
+  onMount,
+  value,
+  ...props
+}: TrackedOptionProps) {
+  useEffect(() => {
+    onMount(value);
+  }, [onMount, value]);
+
+  return (
+    <div ref={elementRef} {...props} data-index={index} role="option">
+      {value}
+    </div>
+  );
+}
+
+const InheritedTargetChildContext = createContext({
+  overscan: 1,
+  revision: false,
+});
+const inheritedTargetItems = [
+  { id: "inherited-target-group", itemSize: 40, items: asyncItems },
+];
+
+interface InheritedTargetOwnerProps {
+  onMount: (value: string) => void;
+  resolveScroller: () => HTMLElement | null;
+}
+
+const InheritedTargetOwner = memo(function InheritedTargetOwner({
+  onMount,
+  resolveScroller,
+}: InheritedTargetOwnerProps) {
+  return (
+    <SelectRenderer
+      items={inheritedTargetItems}
+      initialItems={1}
+      scrollElement={resolveScroller}
+    >
+      {({ items, ...group }) => (
+        <InheritedTargetChildContext.Consumer key={group.id}>
+          {({ overscan, revision }) => (
+            <SelectRenderer
+              {...group}
+              items={items}
+              initialItems={1}
+              overscan={overscan}
+              className={revision ? "inherited-target-updated" : undefined}
+            >
+              {({ value, index, ref, ...item }) => (
+                <TrackedOption
+                  key={item.id}
+                  {...item}
+                  elementRef={ref}
+                  index={index}
+                  onMount={onMount}
+                  value={value}
+                />
+              )}
+            </SelectRenderer>
+          )}
+        </InheritedTargetChildContext.Consumer>
+      )}
+    </SelectRenderer>
+  );
+});
+
+function InheritedTargetRenderer() {
+  const [overscan, setOverscan] = useState(1);
+  const [revision, setRevision] = useState(false);
+  const [useInnerScroller, setUseInnerScroller] = useState(false);
+  const [mountedItems, setMountedItems] = useState<string[]>([]);
+  const outerScrollerRef = useRef<HTMLDivElement>(null);
+  const innerScrollerRef = useRef<HTMLDivElement>(null);
+  const activeScrollerRef = useRef<HTMLDivElement | null>(null);
+  const childContext = useMemo(
+    () => ({ overscan, revision }),
+    [overscan, revision],
+  );
+  const resolveScroller = useCallback(() => activeScrollerRef.current, []);
+  const recordMount = useCallback((value: string) => {
+    setMountedItems((items) => {
+      if (items.includes(value)) return items;
+      return [...items, value];
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    activeScrollerRef.current = useInnerScroller
+      ? innerScrollerRef.current
+      : outerScrollerRef.current;
+  }, [useInnerScroller]);
+
+  return (
+    <section>
+      <button type="button" onClick={() => setMountedItems([])}>
+        Clear inherited target mount log
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          setUseInnerScroller(true);
+          setRevision(true);
+        }}
+      >
+        Use inner scroll element and update child class
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          setUseInnerScroller(false);
+          setOverscan(2);
+        }}
+      >
+        Use outer scroll element and increase overscan
+      </button>
+      <p role="status" aria-label="Inherited target mounts">
+        Mounted items: {mountedItems.join(", ") || "none"}
+      </p>
+      <div
+        ref={outerScrollerRef}
+        className="async-scroller inherited-target-outer"
+        role="listbox"
+        aria-label="Inherited target items"
+      >
+        <div ref={innerScrollerRef} className="inherited-target-inner">
+          <InheritedTargetChildContext.Provider value={childContext}>
+            <InheritedTargetOwner
+              onMount={recordMount}
+              resolveScroller={resolveScroller}
+            />
+          </InheritedTargetChildContext.Provider>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -317,6 +476,7 @@ export default function Example() {
       <NestedAutoRenderer />
       <DirectElementRenderer />
       <InitialRefRenderer />
+      <InheritedTargetRenderer />
     </>
   );
 }
