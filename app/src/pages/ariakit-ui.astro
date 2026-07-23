@@ -1,0 +1,1953 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import ChipLink from "#app/components/chip-link.astro";
+import CodeBlockTabs from "#app/components/code-block-tabs.astro";
+import { PageCard } from "#app/components/page-card.react.tsx";
+import { Playground } from "#app/components/playground.react.tsx";
+import SourceLinks, {
+  type SourceReference,
+} from "#app/components/source-links.astro";
+import CheckboxCardDetailed from "#app/examples/checkbox-card/detailed/index.react.tsx";
+import CheckboxCardForm from "#app/examples/checkbox-card/form/index.react.tsx";
+import CheckboxCardGrid from "#app/examples/checkbox-card/grid/index.react.tsx";
+import CheckboxCardIndented from "#app/examples/checkbox-card/indented/index.react.tsx";
+import CheckboxCardDefault from "#app/examples/checkbox-card/index.react.tsx";
+import CheckboxCardLeadingImages from "#app/examples/checkbox-card/leading-images/index.react.tsx";
+import CheckboxCardRound from "#app/examples/checkbox-card/round/index.react.tsx";
+import CheckboxCardTopImages from "#app/examples/checkbox-card/top-images/index.react.tsx";
+import CheckboxCardTrailingImages from "#app/examples/checkbox-card/trailing-images/index.react.tsx";
+import ComboboxCustomItems from "#app/examples/combobox-group/custom-items/index.react.tsx";
+import ComboboxDefault from "#app/examples/combobox-group/index.react.tsx";
+import ComboboxStickyLabels from "#app/examples/combobox-group/sticky-group-labels/index.react.tsx";
+import DialogFramerMotion from "#app/examples/dialog-framer-motion/index.react.tsx";
+import DisclosureActions from "#app/examples/disclosure/actions/index.react.tsx";
+import DisclosureChecklist from "#app/examples/disclosure/checklist/index.react.tsx";
+import DisclosureComponent from "#app/examples/disclosure/_component/index.react.tsx";
+import DisclosureDescription from "#app/examples/disclosure/description/index.react.tsx";
+import DisclosureGroup from "#app/examples/disclosure/group/index.react.tsx";
+import DisclosureIconDescription from "#app/examples/disclosure/icon-description/index.react.tsx";
+import DisclosureIcon from "#app/examples/disclosure/icon/index.react.tsx";
+import DisclosureDefault from "#app/examples/disclosure/index.react.tsx";
+import DisclosureNavigation from "#app/examples/disclosure/navigation/index.react.tsx";
+import DisclosureNested from "#app/examples/disclosure/nested/index.react.tsx";
+import ReactAriaDisclosureChecklist from "#app/examples/disclosure-react-aria/checklist/index.react.tsx";
+import ReactAriaDisclosureDescription from "#app/examples/disclosure-react-aria/description/index.react.tsx";
+import ReactAriaDisclosureGroup from "#app/examples/disclosure-react-aria/group/index.react.tsx";
+import ReactAriaDisclosureIconDescription from "#app/examples/disclosure-react-aria/icon-description/index.react.tsx";
+import ReactAriaDisclosureIcon from "#app/examples/disclosure-react-aria/icon/index.react.tsx";
+import ReactAriaDisclosureDefault from "#app/examples/disclosure-react-aria/index.react.tsx";
+import ReactAriaDisclosureNested from "#app/examples/disclosure-react-aria/nested/index.react.tsx";
+import PopoverComponent from "#app/examples/popover/_component/index.react.tsx";
+import {
+  badge,
+  badgeLabel,
+  badgeSlot,
+} from "@ariakit/ui/styles/badge.ts";
+import {
+  button,
+  buttonContent,
+  buttonDescription,
+  buttonGlider,
+  buttonGroup,
+  buttonLabel,
+  buttonSeparator,
+  buttonSlot,
+} from "@ariakit/ui/styles/button.ts";
+import { container } from "@ariakit/ui/styles/container.ts";
+import {
+  control,
+  controlContent,
+  controlDescription,
+  controlGroup,
+  controlLabel,
+  controlSeparator,
+  controlSlot,
+} from "@ariakit/ui/styles/control.ts";
+import {
+  dialog,
+  dialogBackdrop,
+  dialogDescription,
+  dialogDismiss,
+  dialogHeading,
+} from "@ariakit/ui/styles/dialog.ts";
+import { frame } from "@ariakit/ui/styles/frame.ts";
+import {
+  glider,
+  gliderGroup,
+  gliderSeparator,
+} from "@ariakit/ui/styles/glider.ts";
+import { heading } from "@ariakit/ui/styles/heading.ts";
+import { input, inputPlaceholder } from "@ariakit/ui/styles/input.ts";
+import { kbd } from "@ariakit/ui/styles/kbd.ts";
+import { layer } from "@ariakit/ui/styles/layer.ts";
+import { link } from "@ariakit/ui/styles/link.ts";
+import { list, listItem, listItemCheck } from "@ariakit/ui/styles/list.ts";
+import { option } from "@ariakit/ui/styles/option.ts";
+import {
+  popover,
+  popoverDescription,
+  popoverDisclosure,
+  popoverHeading,
+  popoverScroll,
+} from "@ariakit/ui/styles/popover.ts";
+import {
+  progress,
+  progressCircular,
+  progressCircularFill,
+  progressFill,
+} from "@ariakit/ui/styles/progress.ts";
+import { prose } from "@ariakit/ui/styles/prose.ts";
+import {
+  radio,
+  radioDescription,
+  radioLabel,
+} from "@ariakit/ui/styles/radio.ts";
+import {
+  select,
+  selectArrow,
+  selectIcon,
+  selectItem,
+  selectItemCheck,
+  selectPopover,
+  selectValueLabel,
+} from "@ariakit/ui/styles/select.ts";
+import {
+  table,
+  tableCell,
+  tableContainer,
+  tableFoot,
+  tableHead,
+  tableRow,
+  tableRowGroup,
+  tableScroller,
+} from "@ariakit/ui/styles/table.ts";
+import {
+  tab,
+  tabGlider,
+  tabLabel,
+  tabList,
+  tabPanels,
+  tabSeparator,
+  tabSlot,
+  tabs,
+} from "@ariakit/ui/styles/tabs.ts";
+import { text } from "@ariakit/ui/styles/text.ts";
+import { tooltip } from "@ariakit/ui/styles/tooltip.ts";
+import Layout from "./_layout.astro";
+
+const buttonSamples = [
+  {
+    label: "Default",
+    detail: "$lightnessOffset={false}",
+    attrs: button.html({ $lightnessOffset: false }),
+    disabled: false,
+    sources: [
+      {
+        file: "app/src/pages/plus/account/_layout.astro",
+        line: 194,
+      },
+    ],
+  },
+  {
+    label: "Bevel",
+    detail: '$kind="bevel"',
+    attrs: button.html({ $kind: "bevel" }),
+    disabled: false,
+    sources: [{ file: "app/src/pages/playground.astro", line: 285 }],
+  },
+  {
+    label: "Brand action",
+    detail: '$layer="brand" $mix={15} $lightnessOffset={false}',
+    attrs: button.html({
+      $layer: "brand",
+      $mix: 15,
+      $lightnessOffset: false,
+      class: "items-center whitespace-nowrap",
+    }),
+    disabled: false,
+    sources: [{ file: "app/src/pages/plus/account/team.astro", line: 70 }],
+  },
+  {
+    label: "Tag chip",
+    detail: '$rounded="full" $size="xs" $p={1} $px="lg"',
+    attrs: button.html({
+      $rounded: "full",
+      $size: "xs",
+      $p: 1,
+      $px: "lg",
+      $lightnessOffset: false,
+      class: "ak-layer-6",
+    }),
+    disabled: false,
+    sources: [{ file: "app/src/lib/page-intro.ts", line: 42 }],
+  },
+  {
+    label: "Compact copy",
+    detail: '$size="sm" $p="none" $gap="none"; static states',
+    attrs: button.html({
+      $size: "sm",
+      $p: "none",
+      $gap: "none",
+      $hoverOffset: false,
+      $focus: false,
+      $active: false,
+      class: "inline-flex items-center gap-2 px-2 py-0.5 ak-frame-border",
+    }),
+    disabled: false,
+    sources: [
+      { file: "app/src/components/content-installation.astro", line: 171 },
+    ],
+  },
+  {
+    label: "Square icon",
+    detail: '$p="none"; class="size-10 items-center"',
+    attrs: button.html({
+      $p: "none",
+      $lightnessOffset: false,
+      class: "size-10 items-center",
+    }),
+    disabled: false,
+    sources: [{ file: "app/src/pages/admin/_price-card.astro", line: 88 }],
+  },
+  {
+    label: "Disabled",
+    detail: "$disabled={true}",
+    attrs: button.html({ $disabled: true, class: "items-center" }),
+    disabled: true,
+    sources: [
+      { file: "app/src/pages/admin/_layout-pagination.astro", line: 116 },
+    ],
+  },
+  {
+    label: "Card action",
+    detail:
+      '$rounded="xl" $p={4} $gap="none" $activeDepth={4} $focus={false}',
+    attrs: button.html({
+      $rounded: "xl",
+      $p: 4,
+      $gap: "none",
+      $activeDepth: 4,
+      $lightnessOffset: false,
+      $focus: false,
+      class:
+        "flex-col gap-2 items-stretch justify-start text-wrap font-normal ui-focus-visible:ak-state-6",
+    }),
+    disabled: false,
+    sources: [{ file: "app/src/components/page-card.react.tsx", line: 44 }],
+  },
+] as const;
+
+const codeViewTabProps = button.html({
+  $layer: "ghost",
+  $hoverOffset: false,
+  $p: "0.375em",
+  class: [
+    "items-center",
+    "ui-hover:ak-layer! ui-hover:ak-state-6",
+    "ui-selected:ak-layer!",
+    "not-ui-selected:ak-ink-70",
+    "ui-selected:ak-layer-lighten-12 ui-selected:ak-frame-bordering ui-selected:ak-edge-10 ui-selected:shadow-sm",
+  ],
+});
+
+const tabVariants = [
+  {
+    title: "Borderless folder tabs",
+    detail: "$border={false}; first tab selected",
+    tabsProps: { $border: false, $rounded: "xl", $p: 1 },
+    tabListProps: {},
+    tabPanelsProps: {},
+    selectedIndex: 0,
+    glider: false,
+    separators: false,
+  },
+  {
+    title: "Bordered folder tabs",
+    detail: '$border={true} $borderType="border"; middle tab selected',
+    tabsProps: {
+      $border: true,
+      $borderType: "border",
+      $rounded: "xl",
+      $p: 1,
+    },
+    tabListProps: { $p: 1 },
+    tabPanelsProps: {},
+    selectedIndex: 1,
+    glider: false,
+    separators: false,
+  },
+  {
+    title: "Brand border and square panel",
+    detail: '$border={3} $borderColor="brand" $borderRaw $roundedTop={false}',
+    tabsProps: {
+      $border: 3,
+      $borderColor: "brand",
+      $borderRaw: true,
+      $rounded: "xl",
+      $p: 1,
+    },
+    tabListProps: {},
+    tabPanelsProps: { $roundedTop: false },
+    selectedIndex: 2,
+    glider: false,
+    separators: true,
+  },
+  {
+    title: "Selected folder Glider",
+    detail: 'TabGlider $kind="folder" $state="selected"',
+    tabsProps: { $border: true, $rounded: "xl", $p: 1 },
+    tabListProps: { $p: 1 },
+    tabPanelsProps: {},
+    selectedIndex: 1,
+    glider: true,
+    separators: false,
+  },
+] as const;
+
+const gliderVariants = [
+  {
+    title: "Flat selected",
+    detail: '$kind="flat" $state="selected"',
+    groupProps: {},
+    gliderProps: { $kind: "flat", $state: "selected" },
+    selectedIndex: 0,
+  },
+  {
+    title: "Bevel selected",
+    detail: '$kind="bevel" $state="selected"',
+    groupProps: {},
+    gliderProps: { $kind: "bevel", $state: "selected" },
+    selectedIndex: 1,
+  },
+  {
+    title: "Bar selected",
+    detail: '$kind="bar" $state="selected"',
+    groupProps: {},
+    gliderProps: { $kind: "bar", $state: "selected" },
+    selectedIndex: 2,
+  },
+  {
+    title: "Hover Glider",
+    detail: '$kind="flat" $state="hover"; hover a control',
+    groupProps: {},
+    gliderProps: { $kind: "flat", $state: "hover" },
+    selectedIndex: -1,
+  },
+  {
+    title: "Focus Glider",
+    detail: '$kind="bar" $state="focus"; keyboard-focus a control',
+    groupProps: {},
+    gliderProps: { $kind: "bar", $state: "focus" },
+    selectedIndex: -1,
+  },
+  {
+    title: "Vertical bar",
+    detail: '$layout="vertical" $kind="bar"',
+    groupProps: { $layout: "vertical" },
+    gliderProps: { $kind: "bar", $state: "selected" },
+    selectedIndex: 1,
+  },
+] as const;
+
+const layerVariants = [
+  {
+    label: "Canvas",
+    detail: '$layer="canvas"',
+    attrs: layer.html({ $layer: "canvas", class: "gallery-swatch" }),
+  },
+  {
+    label: "Brand mix",
+    detail: '$layer="brand" $mix={30}',
+    attrs: layer.html({
+      $layer: "brand",
+      $mix: 30,
+      class: "gallery-swatch",
+    }),
+  },
+  {
+    label: "Success",
+    detail: '$layer="success" $lightnessOffset',
+    attrs: layer.html({
+      $layer: "success",
+      $lightnessOffset: true,
+      class: "gallery-swatch",
+    }),
+  },
+  {
+    label: "Warning",
+    detail: '$layer="warning" $chroma="vivid"',
+    attrs: layer.html({
+      $layer: "warning",
+      $chroma: "vivid",
+      class: "gallery-swatch",
+    }),
+  },
+  {
+    label: "Danger inverted",
+    detail: '$layer="danger" $invert',
+    attrs: layer.html({
+      $layer: "danger",
+      $invert: true,
+      class: "gallery-swatch",
+    }),
+  },
+  {
+    label: "Custom hue",
+    detail: "$layer=#635bff $hue={20}",
+    attrs: layer.html({
+      $layer: "#635bff",
+      $hue: 20,
+      class: "gallery-swatch",
+    }),
+  },
+] as const;
+
+const frameVariants = [
+  {
+    label: "Border",
+    detail: '$rounded="lg" $borderType="border"',
+    attrs: frame.html({
+      $frame: true,
+      $rounded: "lg",
+      $p: 3,
+      $border: true,
+      $borderType: "border",
+      class: "gallery-frame-sample",
+    }),
+  },
+  {
+    label: "Ring",
+    detail: '$rounded="xl" $borderType="ring"',
+    attrs: frame.html({
+      $frame: true,
+      $rounded: "xl",
+      $p: 3,
+      $border: 2,
+      $borderType: "ring",
+      class: "gallery-frame-sample",
+    }),
+  },
+  {
+    label: "Inset brand",
+    detail: '$borderType="inset" $borderColor="brand"',
+    attrs: frame.html({
+      $frame: true,
+      $rounded: "2xl",
+      $p: 3,
+      $border: 2,
+      $borderType: "inset",
+      $borderColor: "brand",
+      class: "gallery-frame-sample",
+    }),
+  },
+  {
+    label: "Dashed danger",
+    detail: '$borderType="dashed" $borderColor="danger"',
+    attrs: frame.html({
+      $frame: true,
+      $rounded: "xl",
+      $p: 3,
+      $border: 2,
+      $borderType: "dashed",
+      $borderColor: "danger",
+      class: "gallery-frame-sample",
+    }),
+  },
+] as const;
+
+const exampleGroups = [
+  {
+    id: "checkbox-card",
+    title: "Checkbox cards",
+    description:
+      "Every local checkbox-card composition that passes through the Ariakit wrappers and Clava recipes.",
+    items: [
+      ["Default", "checkbox-card/index.react.tsx", 9, CheckboxCardDefault],
+      ["Detailed", "checkbox-card/detailed", 29, CheckboxCardDetailed],
+      ["Form", "checkbox-card/form", 37, CheckboxCardForm],
+      ["Grid", "checkbox-card/grid", 27, CheckboxCardGrid],
+      ["Indented", "checkbox-card/indented", 30, CheckboxCardIndented],
+      [
+        "Leading images",
+        "checkbox-card/leading-images",
+        31,
+        CheckboxCardLeadingImages,
+      ],
+      ["Round", "checkbox-card/round", 27, CheckboxCardRound],
+      ["Top images", "checkbox-card/top-images", 30, CheckboxCardTopImages],
+      [
+        "Trailing images",
+        "checkbox-card/trailing-images",
+        31,
+        CheckboxCardTrailingImages,
+      ],
+    ],
+  },
+  {
+    id: "combobox",
+    title: "Combobox groups",
+    description:
+      "The input, option and popover style recipes used by the combobox-group examples.",
+    items: [
+      ["Default", "combobox-group/index.react.tsx", 32, ComboboxDefault],
+      [
+        "Custom items",
+        "combobox-group/custom-items",
+        39,
+        ComboboxCustomItems,
+      ],
+      [
+        "Sticky labels",
+        "combobox-group/sticky-group-labels",
+        39,
+        ComboboxStickyLabels,
+      ],
+    ],
+  },
+  {
+    id: "disclosure",
+    title: "Ariakit disclosures",
+    description:
+      "All disclosure, list, progress, table, select, nav and sidebar compositions using the Ariakit wrappers.",
+    items: [
+      ["Component", "disclosure/_component", 14, DisclosureComponent],
+      ["Default", "disclosure/index.react.tsx", 10, DisclosureDefault],
+      ["Actions", "disclosure/actions", 86, DisclosureActions],
+      ["Checklist", "disclosure/checklist", 89, DisclosureChecklist],
+      ["Description", "disclosure/description", 59, DisclosureDescription],
+      ["Group", "disclosure/group", 16, DisclosureGroup],
+      ["Icon", "disclosure/icon", 11, DisclosureIcon],
+      [
+        "Icon and description",
+        "disclosure/icon-description",
+        11,
+        DisclosureIconDescription,
+      ],
+      ["Navigation", "disclosure/navigation", 134, DisclosureNavigation],
+      ["Nested", "disclosure/nested", 18, DisclosureNested],
+    ],
+  },
+  {
+    id: "react-aria-disclosure",
+    title: "React Aria disclosures",
+    description:
+      "The matching React Aria wrapper surface, kept separate so wrapper-specific output remains visible.",
+    items: [
+      [
+        "Default",
+        "disclosure-react-aria/index.react.tsx",
+        10,
+        ReactAriaDisclosureDefault,
+      ],
+      [
+        "Checklist",
+        "disclosure-react-aria/checklist",
+        90,
+        ReactAriaDisclosureChecklist,
+      ],
+      [
+        "Description",
+        "disclosure-react-aria/description",
+        31,
+        ReactAriaDisclosureDescription,
+      ],
+      [
+        "Group",
+        "disclosure-react-aria/group",
+        14,
+        ReactAriaDisclosureGroup,
+      ],
+      ["Icon", "disclosure-react-aria/icon", 11, ReactAriaDisclosureIcon],
+      [
+        "Icon and description",
+        "disclosure-react-aria/icon-description",
+        11,
+        ReactAriaDisclosureIconDescription,
+      ],
+      ["Nested", "disclosure-react-aria/nested", 18, ReactAriaDisclosureNested],
+    ],
+  },
+] as const;
+
+function getExampleSource(source: string, line: number): SourceReference {
+  const file = source.endsWith(".tsx")
+    ? source
+    : `${source}/index.react.tsx`;
+  return {
+    file: `app/src/examples/${file}`,
+    line,
+    label: `${source}:${line}`,
+  };
+}
+---
+
+<Layout title="Ariakit UI gallery" headerBorder>
+  <style is:inline>
+    .gallery-example-stage {
+      container-type: inline-size;
+    }
+
+    .gallery-example[data-source="disclosure/navigation"]
+      .gallery-example-stage {
+      position: relative;
+      min-height: 40rem;
+      container-type: size;
+    }
+
+    .gallery-example[data-source="disclosure/navigation"]
+      .gallery-example-stage
+      .fixed {
+      position: absolute;
+    }
+  </style>
+  <div
+    {...container.html({
+      $size: "wider",
+      class: "flex flex-col gap-20 py-12 @container/gallery",
+    })}
+  >
+    <header class="grid gap-4 max-w-3xl">
+      <p class="text-sm font-medium ak-text ak-text-brand">Clava inventory</p>
+      <h1 {...heading.html({ $level: 1, class: "mb-0!" })}>
+        Ariakit UI usage gallery
+      </h1>
+      <p class="text-lg ak-ink-70">
+        Direct style calls, framework-wrapper output, local class overrides and
+        every example composition that resolves to <code>@ariakit/ui</code>.
+        Interactive surfaces are also rendered statically below so their styles
+        stay visible without opening them.
+      </p>
+      <nav aria-label="Gallery sections" class="flex flex-wrap gap-2">
+        <ChipLink href="#repository-compositions">Used composites</ChipLink>
+        <ChipLink href="#controls">Controls</ChipLink>
+        <ChipLink href="#tabs">Tabs</ChipLink>
+        <ChipLink href="#glider">Glider</ChipLink>
+        <ChipLink href="#building-blocks">Building blocks</ChipLink>
+        <ChipLink href="#data-display">Data display</ChipLink>
+        <ChipLink href="#content">Content</ChipLink>
+        <ChipLink href="#overlays">Overlays</ChipLink>
+        {
+          exampleGroups.map(({ id, title }) => (
+            <ChipLink href={`#${id}`}>{title}</ChipLink>
+          ))
+        }
+      </nav>
+    </header>
+
+    <section id="repository-compositions" class="gallery-section">
+      <header class="gallery-section-header">
+        <p class="gallery-eyebrow">Used in the repository</p>
+        <h2 {...heading.html({ $level: 2 })}>Shared app compositions</h2>
+        <p>
+          Distinct visual states implemented inside shared components. These
+          were obscured when the first gallery pass only rendered their larger
+          parent surfaces.
+        </p>
+      </header>
+
+      <div class="gallery-grid">
+        <article class="gallery-sample">
+          <h3>Collection count chips</h3>
+          <div class="gallery-stage flex-wrap">
+            <ChipLink href="#repository-compositions" current>
+              All
+              <span slot="badge">68</span>
+            </ChipLink>
+            <ChipLink href="#repository-compositions">
+              Dialog
+              <span slot="badge">12</span>
+            </ChipLink>
+            <ChipLink href="#repository-compositions">
+              Form
+              <span slot="badge">9</span>
+            </ChipLink>
+            <ChipLink href="#repository-compositions">
+              Disclosure
+              <span slot="badge">7</span>
+            </ChipLink>
+          </div>
+          <code>buttonLabel + buttonSlot $kind="badge" + aria-current</code>
+          <SourceLinks
+            sources={[
+              { file: "app/src/pages/[...collection].astro", line: 252 },
+              { file: "app/src/components/chip-link.astro", line: 25 },
+            ]}
+          />
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Code and preview segmented control</h3>
+          <div class="gallery-stage flex-wrap">
+            <div
+              class="flex ak-layer ak-layer-darken-3 ak-frame ak-frame-full/1 ak-frame-bordering gap-(--ak-frame-padding) overflow-clip"
+            >
+              <button aria-selected="true" {...codeViewTabProps}>
+                <span aria-hidden="true">&#9635;</span>
+                Preview
+              </button>
+              <button aria-selected="false" {...codeViewTabProps}>
+                <span aria-hidden="true">&lt;/&gt;</span>
+                Code
+              </button>
+            </div>
+            <div
+              class="flex ak-layer ak-layer-darken-3 ak-frame ak-frame-full/1 ak-frame-bordering gap-(--ak-frame-padding) overflow-clip"
+            >
+              <button aria-selected="false" {...codeViewTabProps}>
+                Preview
+              </button>
+              <button aria-selected="true" {...codeViewTabProps}>Code</button>
+            </div>
+          </div>
+          <code>ghost button base + forced selected/idle app overrides</code>
+          <SourceLinks
+            sources={[
+              { file: "app/src/components/code-block.react.tsx", line: 740 },
+              { file: "app/src/components/code-block.react.tsx", line: 789 },
+            ]}
+          />
+        </article>
+      </div>
+    </section>
+
+    <section id="controls" class="gallery-section">
+      <header class="gallery-section-header">
+        <h2 {...heading.html({ $level: 2 })}>Controls and status</h2>
+        <p>
+          Unique control props and class overrides used by layouts, admin,
+          Plus, content tools and examples.
+        </p>
+      </header>
+
+      <div class="gallery-grid gallery-grid-compact">
+        {
+          buttonSamples.map(({ label, detail, attrs, disabled, sources }) => (
+            <article class="gallery-sample gallery-control-sample">
+              <div class="gallery-stage">
+                <button {...attrs} disabled={disabled}>
+                  {label}
+                </button>
+              </div>
+              <code>{detail}</code>
+              <SourceLinks {sources} />
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="gallery-grid">
+        <article class="gallery-sample">
+          <h3>Badges</h3>
+          <div class="gallery-stage flex-wrap">
+            <span
+              {...badge.html({
+                $layer: "brand",
+                $size: "sm",
+                $rounded: "lg",
+                $p: 2,
+                $borderType: "dashed",
+                $borderWeight: "medium",
+              })}
+            >
+              <span {...badgeLabel.html()}>Plus</span>
+            </span>
+            <span {...badge.html({ $layer: "var(--color-green-500)" })}>
+              <span {...badgeSlot.html()} aria-hidden="true">✓</span>
+              <span {...badgeLabel.html()}>Purchased</span>
+            </span>
+            <span
+              {...badge.html({
+                $layer: "var(--color-yellow-500)",
+                $size: "auto",
+              })}
+            >
+              <span {...badgeLabel.html()}>No license</span>
+            </span>
+          </div>
+          <code>brand dashed · green slot · yellow auto</code>
+          <SourceLinks
+            sources={[
+              { file: "app/src/pages/_layout.astro", line: 117 },
+              { file: "app/src/pages/plus/account/_layout.astro", line: 97 },
+              {
+                file: "app/src/pages/plus/checkout/[...checkout].astro",
+                line: 198,
+              },
+            ]}
+          />
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Input frames</h3>
+          <div class="gallery-stage flex-col items-stretch">
+            <input {...input.html()} placeholder="Default input" />
+            <label
+              {...input.html({
+                $p: 1,
+                class: "flex items-center gap-1 justify-end-safe",
+              })}
+            >
+              <span class="ak-ink-60">€</span>
+              <input class="min-w-0 flex-1 outline-none" value="24" />
+            </label>
+            <div
+              {...input.html({
+                $p: 2,
+                $borderWeight: 15,
+                class: "flex h-10 gap-2 items-center text-start w-full text-sm",
+              })}
+            >
+              <span {...inputPlaceholder.html({ class: "truncate" })}>
+                Search API Reference
+              </span>
+              <kbd {...kbd.html({ class: "grid place-items-center h-full" })}>
+                K
+              </kbd>
+            </div>
+          </div>
+          <code>default · $p=1 · $p=2/$borderWeight=15 + kbd</code>
+          <SourceLinks
+            sources={[
+              { file: "app/src/pages/admin/promos.astro", line: 102 },
+              { file: "app/src/pages/admin/_price-card.astro", line: 122 },
+              { file: "app/src/pages/[...component].astro", line: 424 },
+            ]}
+          />
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Native select</h3>
+          <div class="gallery-stage flex-col items-stretch">
+            <select {...select.html()}>
+              <option {...selectItem.html()} value="react">React</option>
+              <option {...selectItem.html()} value="solid">Solid</option>
+              <option {...selectItem.html()} value="vue">Vue</option>
+            </select>
+          </div>
+          <code>select.html + selectItem.html</code>
+          <SourceLinks
+            sources={[{ file: "app/src/components/select.astro", line: 29 }]}
+          />
+        </article>
+      </div>
+
+      <article class="gallery-sample">
+        <h3>Tabs and button groups</h3>
+        <Playground />
+        <SourceLinks
+          sources={[
+            { file: "app/src/components/playground.react.tsx", line: 35 },
+          ]}
+        />
+      </article>
+    </section>
+
+    <section id="tabs" class="gallery-section">
+      <header class="gallery-section-header">
+        <p class="gallery-eyebrow">Used plus coverage-only variants</p>
+        <h2 {...heading.html({ $level: 2 })}>Tabs and tab subcomponents</h2>
+        <p>
+          Explicit selected states, border modes, panel rounding, separators,
+          slots, labels and the folder-specific tab Glider.
+        </p>
+      </header>
+
+      <div class="gallery-grid gallery-example-grid">
+        {
+          tabVariants.map((variant) => (
+            <article class="gallery-sample">
+              <header class="gallery-sample-header">
+                <h3>{variant.title}</h3>
+                <code>{variant.detail}</code>
+              </header>
+              <div {...tabs.html(variant.tabsProps)}>
+                <div {...tabList.html(variant.tabListProps)}>
+                  {["Preview", "Code", "Usage"].map((label, index) => (
+                    <Fragment>
+                      <button
+                        aria-selected={index === variant.selectedIndex}
+                        {...tab.html()}
+                      >
+                        <span {...tabLabel.html()}>{label}</span>
+                        {label === "Code" && (
+                          <span
+                            {...tabSlot.html({
+                              $kind: "badge",
+                              $layer: "brand",
+                            })}
+                          >
+                            <span>3</span>
+                          </span>
+                        )}
+                      </button>
+                      {variant.separators && index < 2 && (
+                        <div {...tabSeparator.html({ $kind: "chevron" })} />
+                      )}
+                    </Fragment>
+                  ))}
+                  {variant.glider && (
+                    <div
+                      {...tabGlider.html({
+                        $kind: "folder",
+                        $state: "selected",
+                      })}
+                    />
+                  )}
+                </div>
+                <div {...tabPanels.html(variant.tabPanelsProps)}>
+                  <div class="grid gap-2">
+                    <strong>
+                      {["Preview", "Code", "Usage"][variant.selectedIndex]}
+                    </strong>
+                    <span class="ak-ink-70 text-sm">
+                      The panel exercises TabPanels framing against the active
+                      folder geometry.
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+      <SourceLinks
+        sources={[
+          { file: "packages/ariakit-ui/src/styles/tabs.ts", line: 14 },
+          { file: "packages/ariakit-ui/src/ariakit/tabs.react.tsx", line: 62 },
+          { file: "app/src/components/playground.react.tsx", line: 35 },
+          { file: "app/src/components/code-block.react.tsx", line: 893 },
+        ]}
+      />
+    </section>
+
+    <section id="glider" class="gallery-section">
+      <header class="gallery-section-header">
+        <p class="gallery-eyebrow">Coverage-only matrix</p>
+        <h2 {...heading.html({ $level: 2 })}>Glider</h2>
+        <p>
+          Flat, bevel and bar kinds across selected, hover and focus states,
+          plus horizontal and vertical groups. Hover and keyboard-focus the
+          indicated controls to exercise their dynamic anchors.
+        </p>
+      </header>
+
+      <div class="gallery-grid">
+        {
+          gliderVariants.map((variant) => (
+            <article class="gallery-sample">
+              <header class="gallery-sample-header">
+                <h3>{variant.title}</h3>
+                <code>{variant.detail}</code>
+              </header>
+              <div
+                {...gliderGroup.html({
+                  ...variant.groupProps,
+                  $border: true,
+                  $layer: true,
+                })}
+              >
+                {["Preview", "Code", "Usage"].map((label, index) => (
+                  <Fragment>
+                    <button
+                      aria-selected={index === variant.selectedIndex}
+                      {...button.html({
+                        $lightnessOffset: false,
+                        class: "items-center",
+                      })}
+                    >
+                      {label}
+                    </button>
+                    {index < 2 && <div {...gliderSeparator.html()} />}
+                  </Fragment>
+                ))}
+                <div {...glider.html(variant.gliderProps)} />
+              </div>
+            </article>
+          ))
+        }
+      </div>
+
+      <article class="gallery-sample">
+        <h3>Button aliases for Glider primitives</h3>
+        <div
+          {...buttonGroup.html({
+            $border: true,
+            $layer: true,
+            class: "w-max max-w-full",
+          })}
+        >
+          <button aria-selected="false" {...button.html()}>Back</button>
+          <div {...buttonSeparator.html({ $kind: "slash" })} />
+          <button aria-selected="true" {...button.html()}>Forward</button>
+          <div
+            {...buttonGlider.html({ $kind: "bevel", $state: "selected" })}
+          />
+        </div>
+        <code>ButtonGroup + ButtonSeparator + ButtonGlider aliases</code>
+      </article>
+
+      <SourceLinks
+        sources={[
+          { file: "packages/ariakit-ui/src/styles/glider.ts", line: 5 },
+          {
+            file: "packages/ariakit-ui/src/ariakit/glider.react.tsx",
+            line: 15,
+          },
+          { file: "packages/ariakit-ui/src/styles/button.ts", line: 98 },
+        ]}
+      />
+    </section>
+
+    <section id="building-blocks" class="gallery-section">
+      <header class="gallery-section-header">
+        <p class="gallery-eyebrow">Coverage-only matrix</p>
+        <h2 {...heading.html({ $level: 2 })}>Layers, frames and controls</h2>
+        <p>
+          Low-level recipes that are normally inherited through higher-level
+          components, rendered directly so their channels and subcomponents
+          can be inspected in isolation.
+        </p>
+      </header>
+
+      <article class="gallery-sample">
+        <h3>Layer colors and modifiers</h3>
+        <div class="gallery-swatch-grid">
+          {
+            layerVariants.map(({ label, detail, attrs }) => (
+              <div {...attrs}>
+                <span class="text">{label}</span>
+                <code>{detail}</code>
+              </div>
+            ))
+          }
+        </div>
+        <SourceLinks
+          sources={[
+            { file: "packages/ariakit-ui/src/styles/layer.ts", line: 16 },
+          ]}
+        />
+      </article>
+
+      <article class="gallery-sample">
+        <h3>Frame borders and radii</h3>
+        <div class="gallery-grid gallery-grid-compact">
+          {
+            frameVariants.map(({ label, detail, attrs }) => (
+              <div {...attrs}>
+                <strong>{label}</strong>
+                <code>{detail}</code>
+              </div>
+            ))
+          }
+        </div>
+        <SourceLinks
+          sources={[
+            { file: "packages/ariakit-ui/src/styles/frame.ts", line: 38 },
+          ]}
+        />
+      </article>
+
+      <div class="gallery-grid">
+        <article class="gallery-sample">
+          <h3>Control anatomy</h3>
+          <div class="grid gap-3">
+            <div
+              {...control.html({
+                $layer: true,
+                $border: true,
+                $rounded: "xl",
+                $p: 3,
+                class: "justify-start",
+              })}
+            >
+              <span
+                {...controlSlot.html({
+                  $kind: "avatar",
+                  $layer: "brand",
+                  $size: "lg",
+                })}
+              >
+                DH
+              </span>
+              <span {...controlContent.html()}>
+                <span {...controlLabel.html()}>Diego Haz</span>
+                <span {...controlDescription.html()}>
+                  Label, description and avatar slot
+                </span>
+              </span>
+              <span
+                {...controlSlot.html({
+                  $kind: "badge",
+                  $layer: "success",
+                  $floating: true,
+                })}
+              >
+                <span>Pro</span>
+              </span>
+            </div>
+
+            <div
+              {...control.html({
+                $disabled: true,
+                $border: true,
+                class: "justify-start",
+              })}
+              aria-disabled="true"
+            >
+              <span {...controlSlot.html({ $kind: "icon" })}>&#9733;</span>
+              <span {...controlContent.html()}>
+                <span {...controlLabel.html()}>Disabled control</span>
+                <span {...controlDescription.html({ $lineClamp: 1 })}>
+                  Disabled channels propagate to every subcomponent.
+                </span>
+              </span>
+              <span {...controlSlot.html({ $kind: "shortcut" })}>⌘K</span>
+            </div>
+          </div>
+          <code>
+            Control + Slot(icon/avatar/badge/shortcut) + Content + Label +
+            Description
+          </code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Control groups and separators</h3>
+          <div class="grid gap-4">
+            <div
+              {...controlGroup.html({
+                $border: true,
+                $layer: true,
+                $p: "none",
+              })}
+            >
+              <div {...control.html()}>One</div>
+              <div {...controlSeparator.html({ $kind: "pipe" })} />
+              <div {...control.html()}>Two</div>
+              <div {...controlSeparator.html({ $kind: "slash" })} />
+              <div {...control.html()}>Three</div>
+            </div>
+            <div
+              {...controlGroup.html({
+                $layout: "stretch",
+                $gap: "none",
+                $border: true,
+                $layer: true,
+              })}
+            >
+              <div {...control.html()}>Start</div>
+              <div {...controlSeparator.html({ $kind: "chevron" })} />
+              <div {...control.html()}>Review</div>
+              <div {...controlSeparator.html({ $kind: "chevron" })} />
+              <div {...control.html()}>Ship</div>
+            </div>
+          </div>
+          <code>horizontal/stretch layouts · pipe/slash/chevron separators</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Button subcomponents</h3>
+          <div class="grid min-w-0 grid-cols-1 gap-3">
+            <button
+              {...button.html({
+                $rounded: "xl",
+                $p: 3,
+                class: "min-w-0 max-w-full justify-start text-start",
+              })}
+            >
+              <span
+                {...buttonSlot.html({
+                  $kind: "avatar",
+                  $layer: "secondary",
+                  $size: "lg",
+                })}
+              >
+                UI
+              </span>
+              <span {...buttonContent.html()}>
+                <span {...buttonLabel.html()}>Open Ariakit UI</span>
+                <span {...buttonDescription.html()}>
+                  ButtonContent with a secondary description
+                </span>
+              </span>
+              <span {...buttonSlot.html({ $kind: "shortcut" })}>↵</span>
+            </button>
+            <button
+              {...button.html({
+                $kind: "bevel",
+                $aurora: "var(--color-blue-500)",
+                $auroraTo: "var(--color-fuchsia-500)",
+                class: "min-w-0 max-w-full items-center",
+              })}
+            >
+              Aurora bevel
+              <span
+                {...buttonSlot.html({
+                  $kind: "badge",
+                  $layer: "brand",
+                })}
+              >
+                <span>New</span>
+              </span>
+            </button>
+          </div>
+          <code>Content · Label · Description · four Slot kinds · Aurora</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Options and radios</h3>
+          <div class="grid min-w-0 grid-cols-1 gap-2">
+            <div
+              {...option.html({
+                $hoverOffset: false,
+                class:
+                  "min-w-0 max-w-full data-active-item:ak-state-6",
+              })}
+              data-active-item
+            >
+              Active option
+            </div>
+            <div
+              {...option.html({ class: "min-w-0 max-w-full" })}
+              aria-disabled="true"
+            >
+              Disabled option
+            </div>
+            <label {...radio.html({ class: "min-w-0 max-w-full" })}>
+              <input type="radio" name="gallery-radio" checked />
+              <span {...radioLabel.html()}>Checked radio</span>
+            </label>
+            <label {...radio.html({ class: "min-w-0 max-w-full" })}>
+              <input type="radio" name="gallery-radio" />
+              <span {...buttonContent.html()}>
+                <span {...radioLabel.html()}>Radio with description</span>
+                <span {...radioDescription.html()}>
+                  The label and secondary text share button channels.
+                </span>
+              </span>
+            </label>
+          </div>
+          <code>option active/disabled · radio checked/description</code>
+        </article>
+      </div>
+
+      <SourceLinks
+        sources={[
+          { file: "packages/ariakit-ui/src/styles/control.ts", line: 5 },
+          { file: "packages/ariakit-ui/src/styles/button.ts", line: 20 },
+          { file: "packages/ariakit-ui/src/styles/option.ts", line: 6 },
+          { file: "packages/ariakit-ui/src/styles/radio.ts", line: 4 },
+          { file: "packages/ariakit-ui/src/styles/aurora.ts", line: 3 },
+          {
+            file: "app/src/examples/combobox-group/combobox.react.tsx",
+            line: 99,
+          },
+        ]}
+      />
+    </section>
+
+    <section id="data-display" class="gallery-section">
+      <header class="gallery-section-header">
+        <p class="gallery-eyebrow">Used plus coverage-only variants</p>
+        <h2 {...heading.html({ $level: 2 })}>Data and status surfaces</h2>
+        <p>
+          Progress tracks, circular fills, table anatomy, select subcomponents,
+          badge variants and the text system.
+        </p>
+      </header>
+
+      <div class="gallery-grid">
+        <article class="gallery-sample">
+          <h3>Linear and circular progress</h3>
+          <div class="grid gap-5">
+            <div class="grid gap-2">
+              <div class="flex justify-between text-sm">
+                <span>Thin</span><span>25%</span>
+              </div>
+              <div
+                {...progress.html({ $value: 0.25, $thickness: 1 })}
+                role="progressbar"
+                aria-valuenow="25"
+              >
+                <span {...progressFill.html()} />
+              </div>
+            </div>
+            <div class="grid gap-2">
+              <div class="flex justify-between text-sm">
+                <span>Default</span><span>65%</span>
+              </div>
+              <div
+                {...progress.html({ $value: 0.65 })}
+                role="progressbar"
+                aria-valuenow="65"
+              >
+                <span {...progressFill.html({ $layer: "success" })} />
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-5">
+              {
+                [0.2, 0.55, 0.9].map((value) => (
+                  <div class="size-16 shrink-0">
+                    <div
+                      {...progressCircular.html({
+                        $value: value,
+                        $thickness: value === 0.55 ? 3 : 2,
+                      })}
+                      role="progressbar"
+                      aria-valuenow={value * 100}
+                    >
+                      <span
+                        {...progressCircularFill.html({
+                          $layer: value === 0.9 ? "danger" : "brand",
+                        })}
+                      />
+                    </div>
+                  </div>
+                ))
+              }
+            </div>
+          </div>
+          <code>Progress/Fill · Circular/CircularFill · value/thickness</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Select anatomy</h3>
+          <div class="grid gap-2 max-w-80">
+            <button {...select.html()}>
+              <span {...selectIcon.html()} aria-hidden="true">&#9673;</span>
+              <span {...selectValueLabel.html()}>Honeycrisp apple</span>
+              <span {...selectArrow.html()} aria-hidden="true">⌄</span>
+            </button>
+            <div {...selectPopover.html({ $state: "none" })}>
+              <div {...selectItem.html()} role="option" aria-selected="true">
+                <span {...selectItemCheck.html()} aria-hidden="true">✓</span>
+                <span {...selectValueLabel.html()}>Honeycrisp apple</span>
+              </div>
+              <div {...selectItem.html()} role="option" aria-selected="false">
+                <span {...selectItemCheck.html()} aria-hidden="true">✓</span>
+                <span {...selectValueLabel.html()}>Cavendish banana</span>
+              </div>
+              <div {...selectItem.html({ $disabled: true })} role="option">
+                <span {...selectItemCheck.html()} aria-hidden="true">✓</span>
+                <span {...selectValueLabel.html()}>Sold out pear</span>
+              </div>
+            </div>
+          </div>
+          <code>Button/Icon/ValueLabel/Arrow + Popover/Item/ItemCheck</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Badge matrix</h3>
+          <div class="gallery-stage flex-wrap">
+            <span {...badge.html()}>
+              <span {...badgeLabel.html()}>Default</span>
+            </span>
+            <span {...badge.html({ $layer: "brand", $size: "sm" })}>
+              <span {...badgeSlot.html()} aria-hidden="true">★</span>
+              <span {...badgeLabel.html()}>Brand</span>
+            </span>
+            <span
+              {...badge.html({
+                $layer: "success",
+                $borderType: "dashed",
+                $rounded: "lg",
+              })}
+            >
+              <span {...badgeLabel.html()}>Success</span>
+            </span>
+            <span
+              {...badge.html({
+                $layer: "warning",
+                $borderType: "dotted",
+                $size: "md",
+              })}
+            >
+              <span {...badgeLabel.html()}>Warning</span>
+            </span>
+            <span
+              {...badge.html({
+                $layer: "danger",
+                $borderWeight: "bold",
+                $rounded: "md",
+              })}
+            >
+              <span {...badgeLabel.html()}>Danger</span>
+            </span>
+          </div>
+          <code>layer · size · rounded · inset/dashed/dotted · Slot/Label</code>
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Heading, text, link and kbd</h3>
+          <div class="grid gap-3">
+            <h4 {...heading.html({ $level: 1, class: "mb-0!" })}>
+              Visual level 1
+            </h4>
+            <h4 {...heading.html({ $level: 3, class: "mb-0!" })}>
+              Visual level 3
+            </h4>
+            <div class="flex flex-wrap gap-3">
+              <span {...text.html({ $text: "brand" })}>Brand text</span>
+              <span {...text.html({ $text: "success" })}>Success text</span>
+              <span {...text.html({ $text: "warning" })}>Warning text</span>
+              <span {...text.html({ $text: "danger" })}>Danger text</span>
+            </div>
+            <p>
+              <a {...link.html()} href="#data-display">Default link</a>
+              {" · "}
+              <a
+                {...link.html({ $text: "danger", $focus: 3 })}
+                href="#data-display"
+              >
+                Danger link
+              </a>
+            </p>
+            <div class="flex gap-2 items-center">
+              <kbd {...kbd.html()}>⌘</kbd><kbd {...kbd.html()}>K</kbd>
+              <span class="ak-ink-70 text-sm">Keyboard shortcut</span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <article class="gallery-sample">
+        <h3>Table anatomy</h3>
+        <div
+          {...tableContainer.html({
+            $border: true,
+            $borderGap: 1,
+            $layer: true,
+          })}
+        >
+          <div {...tableScroller.html()}>
+            <table {...table.html({ $border: "y", $p: 3 })}>
+              <thead {...tableHead.html({ $sticky: "top" })}>
+                <tr {...tableRow.html()}>
+                  <th {...tableCell.html({ $header: "column" })}>Component</th>
+                  <th {...tableCell.html({ $header: "column" })}>Status</th>
+                  <th
+                    {...tableCell.html({ $header: "column", $numeric: true })}
+                  >
+                    Variants
+                  </th>
+                </tr>
+              </thead>
+              <tbody {...tableRowGroup.html()}>
+                <tr {...tableRow.html({ $hover: true })}>
+                  <th {...tableCell.html({ $header: "row" })}>Button</th>
+                  <td {...tableCell.html()}>Covered</td>
+                  <td {...tableCell.html({ $numeric: true })}>8</td>
+                </tr>
+                <tr {...tableRow.html({ $hover: true })}>
+                  <th {...tableCell.html({ $header: "row" })}>Glider</th>
+                  <td {...tableCell.html()}>Expanded</td>
+                  <td {...tableCell.html({ $numeric: true })}>6</td>
+                </tr>
+                <tr {...tableRow.html({ $hover: true })}>
+                  <th {...tableCell.html({ $header: "row" })}>Tabs</th>
+                  <td {...tableCell.html()}>Expanded</td>
+                  <td {...tableCell.html({ $numeric: true })}>4</td>
+                </tr>
+              </tbody>
+              <tfoot {...tableFoot.html()}>
+                <tr {...tableRow.html()}>
+                  <th {...tableCell.html({ $header: "row" })} colspan="2">
+                    Visible matrices
+                  </th>
+                  <td {...tableCell.html({ $numeric: true })}>18</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <code>
+          Container/Scroller/Table · Head/Foot/RowGroup · Row/Cell · sticky,
+          hover, header, numeric
+        </code>
+      </article>
+
+      <SourceLinks
+        sources={[
+          { file: "packages/ariakit-ui/src/styles/progress.ts", line: 31 },
+          { file: "packages/ariakit-ui/src/styles/select.ts", line: 7 },
+          { file: "packages/ariakit-ui/src/styles/badge.ts", line: 5 },
+          { file: "packages/ariakit-ui/src/styles/text.ts", line: 11 },
+          { file: "packages/ariakit-ui/src/styles/table.ts", line: 71 },
+          { file: "app/src/examples/disclosure/actions/index.react.tsx", line: 133 },
+        ]}
+      />
+    </section>
+
+    <section id="content" class="gallery-section">
+      <header class="gallery-section-header">
+        <h2 {...heading.html({ $level: 2 })}>Content surfaces</h2>
+        <p>
+          Typography, links, containers, lists, code tabs and card-shaped
+          buttons as they appear in the documentation app.
+        </p>
+      </header>
+
+      <div class="gallery-grid">
+        <article class="gallery-sample">
+          <div
+            {...prose.html({
+              class: "@5xl:text-lg/loose",
+            })}
+          >
+            <h3>Prose and links</h3>
+            <p>
+              Ariakit components are unstyled by default. The
+              <a {...link.html()} href="#content"> styling layer</a> composes
+              reusable Clava recipes with local utility overrides.
+            </p>
+            <blockquote>
+              This block uses the same prose recipe as reference pages,
+              disclosures and hover cards.
+            </blockquote>
+            <pre><code>pnpm add @ariakit/ui</code></pre>
+          </div>
+          <SourceLinks
+            sources={[
+              {
+                file: "app/src/examples/disclosure/_component/index.react.tsx",
+                line: 34,
+              },
+              { file: "app/src/components/inline-link.react.tsx", line: 30 },
+            ]}
+          />
+        </article>
+
+        <article class="gallery-sample">
+          <h3>Lists and progress markers</h3>
+          <ol {...list.html({ $ordered: true })}>
+            <li {...listItem.html()}>Install the package</li>
+            <li {...listItem.html({ $check: true })}>
+              <span {...listItemCheck.html({ $checked: true })}>✓</span>
+              Configure the styles
+            </li>
+            <li {...listItem.html({ $check: true })}>
+              <span {...listItemCheck.html({ $progress: 0.65 })}>
+                <span {...progressCircularFill.html({})}></span>
+              </span>
+              Review the gallery
+            </li>
+          </ol>
+          <SourceLinks
+            sources={[
+              {
+                file: "app/src/examples/disclosure/checklist/index.react.tsx",
+                line: 89,
+              },
+              {
+                file: "app/src/examples/disclosure/checklist/index.react.tsx",
+                line: 95,
+              },
+            ]}
+          />
+        </article>
+      </div>
+
+      <div class="gallery-grid gallery-page-cards">
+        <PageCard
+          href="#content"
+          title="Component card"
+          description="Default page-card composition"
+          size="sm"
+        />
+        <PageCard
+          href="#content"
+          title="Plus component"
+          description="Brand badge and class overrides"
+          size="sm"
+          plus
+        />
+      </div>
+      <SourceLinks
+        sources={[
+          { file: "app/src/components/page-card.react.tsx", line: 44 },
+          { file: "app/src/components/page-card.react.tsx", line: 70 },
+        ]}
+      />
+
+      <article class="gallery-sample">
+        <h3>Code block tabs</h3>
+        <CodeBlockTabs
+          tabs={[
+            {
+              filename: "index.tsx",
+              filenameIcon: "react",
+              lineNumbers: true,
+              code: `import { Button } from "@ariakit/ui/ariakit/button.react";
+
+export default function Example() {
+  return <Button $kind="bevel">Open</Button>;
+}`,
+            },
+            {
+              filename: "styles.css",
+              filenameIcon: "tailwind",
+              lineNumbers: true,
+              code: `@import "tailwindcss";\n@import "@ariakit/tailwind";`,
+            },
+          ]}
+        />
+        <SourceLinks
+          sources={[
+            { file: "app/src/components/code-block-tabs.astro", line: 101 },
+            { file: "app/src/components/code-block.react.tsx", line: 658 },
+          ]}
+        />
+      </article>
+    </section>
+
+    <section id="overlays" class="gallery-section">
+      <header class="gallery-section-header">
+        <h2 {...heading.html({ $level: 2 })}>Always-visible overlays</h2>
+        <p>
+          Static versions of surfaces that are hidden on their original pages
+          until a trigger is activated.
+        </p>
+      </header>
+
+      <div class="gallery-grid">
+        <article class="gallery-sample gallery-overlay-stage">
+          <h3>Popover</h3>
+          <button
+            {...popoverDisclosure.html({ $kind: "bevel", class: "w-max" })}
+          >
+            Popover disclosure
+          </button>
+          <div
+            {...popover.html({
+              $state: "none",
+              $shadow: "md",
+              class: "relative z-0 max-w-80",
+            })}
+          >
+            <div
+              {...popoverScroll.html({
+                class: "max-h-48 flex flex-col gap-2",
+              })}
+            >
+              <h4 {...popoverHeading.html()}>Team meeting</h4>
+              <p {...popoverDescription.html()}>
+                PopoverDisclosure, Heading, Description and Scroll are shown
+                with the medium shadow variant.
+              </p>
+              <button {...button.html({ $kind: "bevel" })}>Accept</button>
+            </div>
+          </div>
+          <SourceLinks
+            sources={[
+              {
+                file: "app/src/examples/popover/_component/index.react.tsx",
+                line: 15,
+              },
+            ]}
+          />
+        </article>
+
+        <article class="gallery-sample gallery-overlay-stage">
+          <h3>Dialog</h3>
+          <div class="relative grid place-items-center min-h-64 overflow-hidden rounded-xl">
+            <div
+              {...dialogBackdrop.html({
+                class: "absolute inset-0",
+              })}
+            ></div>
+            <section
+              {...dialog.html({
+                $state: "none",
+                class:
+                  "flex flex-col items-start gap-4 max-w-100 transition-none",
+                style: {
+                  position: "relative",
+                  inset: "auto",
+                  margin: "1rem",
+                },
+              })}
+            >
+              <h4 {...dialogHeading.html()}>Success</h4>
+              <p {...dialogDescription.html()}>
+                Your payment has been successfully processed.
+              </p>
+              <button {...dialogDismiss.html({ $kind: "bevel" })}>OK</button>
+            </section>
+          </div>
+          <SourceLinks
+            sources={[
+              {
+                file: "app/src/examples/dialog-framer-motion/index.react.tsx",
+                line: 21,
+              },
+            ]}
+          />
+        </article>
+
+        <article class="gallery-sample gallery-overlay-stage">
+          <h3>Select popover</h3>
+          <div
+            {...selectPopover.html({
+              $state: "none",
+              class: "relative! inset-auto! top-auto! start-auto!",
+            })}
+          >
+            <div {...selectItem.html()} aria-selected="true">
+              <span {...selectItemCheck.html()} aria-hidden="true">✓</span>
+              <span {...selectValueLabel.html()}>Apple</span>
+            </div>
+            <div {...selectItem.html()}>
+              <span {...selectItemCheck.html()} aria-hidden="true">✓</span>
+              <span {...selectValueLabel.html()}>Banana</span>
+            </div>
+          </div>
+          <SourceLinks
+            sources={[
+              {
+                file: "app/src/sandbox/aria-labelledby-aria-label/index.react.tsx",
+                line: 62,
+              },
+            ]}
+          />
+        </article>
+
+        <article class="gallery-sample gallery-overlay-stage">
+          <h3>Tooltip</h3>
+          <div class="gallery-stage">
+            <button {...button.html()}>Anchor</button>
+            <div
+              {...tooltip.html({
+                $state: "none",
+                class: "relative z-0 max-w-80",
+              })}
+            >
+              Tooltip label
+            </div>
+          </div>
+          <SourceLinks
+            sources={[
+              {
+                file: "app/src/sandbox/aria-labelledby-aria-label/index.react.tsx",
+                line: 91,
+              },
+            ]}
+          />
+        </article>
+      </div>
+
+      <div class="gallery-grid">
+        <article class="gallery-sample">
+          <h3>Popover wrapper trigger</h3>
+          <PopoverComponent />
+          <SourceLinks
+            sources={[
+              {
+                file: "app/src/examples/popover/_component/index.react.tsx",
+                line: 13,
+              },
+            ]}
+          />
+        </article>
+        <article class="gallery-sample">
+          <h3>Motion dialog trigger</h3>
+          <DialogFramerMotion />
+          <SourceLinks
+            sources={[
+              {
+                file: "app/src/examples/dialog-framer-motion/index.react.tsx",
+                line: 21,
+              },
+            ]}
+          />
+        </article>
+      </div>
+    </section>
+
+    {
+      exampleGroups.map(({ id, title, description, items }) => (
+        <section id={id} class="gallery-section">
+          <header class="gallery-section-header">
+            <h2 {...heading.html({ $level: 2 })}>{title}</h2>
+            <p>{description}</p>
+          </header>
+          <div class="gallery-grid gallery-example-grid">
+            {items.map(([label, source, line, Component]) => (
+              <article
+                class="gallery-sample gallery-example"
+                data-source={source}
+              >
+                <header>
+                  <h3>{label}</h3>
+                  <SourceLinks sources={[getExampleSource(source, line)]} />
+                </header>
+                <div class="gallery-example-stage">
+                  <Component />
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </div>
+</Layout>
+
+<style>
+  .gallery-section {
+    display: grid;
+    gap: calc(var(--spacing) * 6);
+    scroll-margin-top: calc(var(--header-height) + var(--spacing) * 4);
+  }
+
+  .gallery-section-header {
+    display: grid;
+    gap: var(--spacing);
+    max-width: var(--container-3xl);
+  }
+
+  .gallery-section-header > :global(h2) {
+    margin-bottom: 0;
+  }
+
+  .gallery-section-header > p {
+    color: color-mix(in oklab, currentcolor 70%, transparent);
+  }
+
+  .gallery-section-header > .gallery-eyebrow {
+    color: var(--color-primary);
+    font-size: var(--text-sm);
+    font-weight: 600;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: calc(var(--spacing) * 4);
+    align-items: start;
+  }
+
+  .gallery-grid-compact {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  }
+
+  .gallery-page-cards {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  }
+
+  .gallery-sample {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: calc(var(--spacing) * 4);
+    padding: calc(var(--spacing) * 4);
+    border: 1px solid var(--ak-edge);
+    border-radius: calc(var(--spacing) * 4);
+    background: var(--ak-layer);
+    box-shadow: 0 1px 2px color-mix(in oklab, black 8%, transparent);
+  }
+
+  .gallery-sample > :where(.grid) {
+    min-width: 0;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .gallery-sample > :where(.grid) > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .gallery-sample > h3,
+  .gallery-example > header > h3,
+  .gallery-sample-header > h3 {
+    font-weight: 600;
+  }
+
+  .gallery-sample > code,
+  .gallery-example > header > code,
+  .gallery-sample-header > code {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    color: color-mix(in oklab, currentcolor 65%, transparent);
+    font-size: var(--text-xs);
+  }
+
+  .gallery-sample-header {
+    min-width: 0;
+    display: grid;
+    gap: var(--spacing);
+  }
+
+  .gallery-control-sample {
+    align-content: space-between;
+  }
+
+  .gallery-stage {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: calc(var(--spacing) * 3);
+  }
+
+  .gallery-overlay-stage {
+    min-height: 18rem;
+    align-content: start;
+  }
+
+  .gallery-example-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 30rem), 1fr));
+  }
+
+  .gallery-swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+    gap: calc(var(--spacing) * 3);
+  }
+
+  .gallery-swatch {
+    min-width: 0;
+    min-height: 8rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: space-between;
+    gap: calc(var(--spacing) * 3);
+    padding: calc(var(--spacing) * 4);
+    border: 1px solid var(--ak-edge);
+    border-radius: calc(var(--spacing) * 3);
+  }
+
+  .gallery-swatch > code,
+  .gallery-frame-sample > code {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    font-size: var(--text-xs);
+  }
+
+  .gallery-frame-sample {
+    min-height: 8rem;
+    display: grid;
+    align-content: space-between;
+    gap: calc(var(--spacing) * 3);
+  }
+
+  .gallery-example > header {
+    display: grid;
+    gap: var(--spacing);
+  }
+
+  .gallery-example-stage {
+    min-width: 0;
+    overflow: auto;
+    display: grid;
+    place-items: center;
+    padding: calc(var(--spacing) * 4);
+    border-radius: calc(var(--spacing) * 3);
+    background: color-mix(in oklab, var(--ak-layer) 96%, currentcolor 4%);
+  }
+</style>

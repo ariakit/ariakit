@@ -1,0 +1,82 @@
+---
+/**
+ * @license
+ * Copyright 2025-present Ariakit FZ-LLC. All Rights Reserved.
+ *
+ * This software is proprietary. See the license.md file in the root of this
+ * package for licensing terms.
+ *
+ * SPDX-License-Identifier: UNLICENSED
+ */
+import { basename, resolve } from "node:path";
+
+export interface SourceReference {
+  file: string;
+  line: number;
+  label?: string;
+}
+
+interface Props {
+  sources: readonly SourceReference[];
+}
+
+const { sources } = Astro.props;
+const workingDirectory = process.cwd();
+const repositoryRoot =
+  typeof import.meta.dirname === "string"
+    ? resolve(import.meta.dirname, "../../..")
+    : basename(workingDirectory) === "app"
+      ? resolve(workingDirectory, "..")
+      : workingDirectory;
+
+function getCursorUrl({ file, line }: SourceReference) {
+  return `cursor://file${resolve(repositoryRoot, file)}:${line}:1`;
+}
+---
+
+<div class="source-links" aria-label="Source usages">
+  {
+    sources.map((source) => (
+      <a
+        class="source-link"
+        href={getCursorUrl(source)}
+        title={`Open ${source.file}:${source.line} in Cursor`}
+      >
+        <span aria-hidden="true">&#8599;</span>
+        <code>{source.label ?? `${source.file}:${source.line}`}</code>
+      </a>
+    ))
+  }
+</div>
+
+<style>
+  .source-links {
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 1.5);
+  }
+
+  .source-link {
+    min-width: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing);
+    padding: calc(var(--spacing) * 1.25) calc(var(--spacing) * 2);
+    border: 1px solid var(--ak-edge);
+    border-radius: calc(var(--spacing) * 2);
+    color: color-mix(in oklab, currentcolor 70%, transparent);
+    font-size: var(--text-xs);
+    text-decoration: none;
+  }
+
+  .source-link:hover {
+    color: currentcolor;
+    background: color-mix(in oklab, currentcolor 6%, transparent);
+  }
+
+  .source-link > code {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+</style>
