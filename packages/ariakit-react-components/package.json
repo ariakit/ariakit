@@ -74,6 +74,8 @@
     "./combobox/combobox-popover": "./src/combobox/combobox-popover.tsx",
     "./combobox/combobox-provider": "./src/combobox/combobox-provider.tsx",
     "./combobox/combobox-row": "./src/combobox/combobox-row.tsx",
+    "./combobox/combobox-select": "./src/combobox/combobox-select.tsx",
+    "./combobox/combobox-select-label": "./src/combobox/combobox-select-label.tsx",
     "./combobox/combobox-separator": "./src/combobox/combobox-separator.tsx",
     "./combobox/combobox-store": "./src/combobox/combobox-store.ts",
     "./combobox/combobox-value": "./src/combobox/combobox-value.tsx",
