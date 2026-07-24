@@ -20,7 +20,7 @@ Rendering a searchable [Radix UI](https://radix-ui.com) Select component with a 
 
 Radix UI Select [doesn't currently provide first-class Combobox support](https://github.com/radix-ui/primitives/pull/2635#issuecomment-5018225573). This example is designed for those who are already using Radix UI in their projects and can't easily switch away from it. It includes targeted integration workarounds that may need to be revisited when upgrading Radix UI.
 
-If you're starting from scratch or can update your custom select widgets to use Ariakit, we recommend checking out the [searchable Combobox select](/examples/select-combobox) example instead, which uses the Ariakit [Combobox](/components/combobox) components.
+If you're starting from scratch or can update your custom select widgets to use Ariakit, we recommend checking out the [searchable Combobox Select](/examples/select-combobox) example instead, which uses the Ariakit [Combobox](/components/combobox) components.
 
 </aside>
 

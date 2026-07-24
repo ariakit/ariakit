@@ -11,16 +11,12 @@ export interface SelectProps extends Ariakit.ComboboxSelectProps {
 
 export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
   function Select({ children, value, setValue, defaultValue, ...props }, ref) {
-    const selectedValueProps =
-      value !== undefined
-        ? { selectedValue: value, setSelectedValue: setValue }
-        : {
-            defaultSelectedValue: defaultValue ?? "",
-            setSelectedValue: setValue,
-          };
-    const select = Ariakit.useComboboxStore<string>(selectedValueProps);
+    const select = Ariakit.useComboboxStore({
+      selectedValue: value,
+      setSelectedValue: setValue,
+      defaultSelectedValue: defaultValue,
+    });
     const portalRef = React.useRef<HTMLDivElement>(null);
-    const selectValue = Ariakit.useStoreState(select, "selectedValue");
 
     // Only call onBlur if the focus is leaving the whole widget.
     const onBlur = (event: React.FocusEvent<HTMLElement>) => {
@@ -41,7 +37,7 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
           onBlur={onBlur}
           className={clsx("button", props.className)}
         >
-          {selectValue || "Select an item"}
+          <Ariakit.ComboboxSelectedValue fallback="Select an item" />
           <Ariakit.ComboboxSelectArrow />
         </Ariakit.ComboboxSelect>
         <Ariakit.ComboboxPopover

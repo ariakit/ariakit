@@ -12,7 +12,7 @@ tags:
   - Abstracted examples
 ---
 
-# Combobox select with Tabs
+# Combobox Select with Tabs
 
 <div data-description>
 
@@ -57,7 +57,7 @@ We can create this searchable tabbed select widget by combining [Combobox](/comp
 </ComboboxProvider>
 ```
 
-In this example, we've abstracted the Ariakit components above into a custom `Select` component. This renders a Combobox select with an optional search field and tabs, depending on the props and children passed to it:
+In this example, we've abstracted the Ariakit components above into a custom `Select` component. This renders a Combobox Select with an optional search field and tabs, depending on the props and children passed to it:
 
 ```jsx
 <Select combobox={<input />}>
@@ -111,5 +111,6 @@ In this example, we let users add custom branches by typing into the combobox in
 - [](/examples/combobox-tabs)
 - [](/examples/form-select)
 - [](/examples/toolbar-select)
+- [](/examples/select-next-router)
 
 </div>

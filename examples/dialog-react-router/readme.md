@@ -48,6 +48,7 @@ const navigate = useNavigate();
 <div data-cards="examples">
 
 - [](/examples/tab-react-router)
+- [](/examples/select-next-router)
 - [](/examples/dialog-next-router)
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)

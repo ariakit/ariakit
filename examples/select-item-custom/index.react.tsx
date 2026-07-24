@@ -30,7 +30,7 @@ export default function Example() {
   return (
     <div className="wrapper">
       <Ariakit.ComboboxProvider
-        setSelectedValueOnMove
+        selectOnMove
         selectedValue={value}
         setSelectedValue={setValue}
       >

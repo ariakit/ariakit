@@ -1,0 +1,38 @@
+.popover {
+  max-width: 220px;
+  overflow-x: auto;
+  padding: 4px;
+}
+
+.renderer {
+  height: 36px;
+}
+
+.option {
+  box-sizing: border-box;
+  display: flex;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid hsl(210deg 8% 70%);
+  background: white;
+}
+
+.option[aria-selected="true"] {
+  background: hsl(210deg 90% 96%);
+}
+
+.async-scroller {
+  height: 120px;
+  overflow-y: auto;
+}
+
+.nested-auto-scroller {
+  position: relative;
+}
+
+.inherited-target-inner {
+  height: 120px;
+  overflow: visible;
+  position: relative;
+}

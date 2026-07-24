@@ -7,7 +7,7 @@ tags:
   - Form controls
 ---
 
-# Animated Combobox select
+# Animated Select
 
 <div data-description>
 
@@ -53,5 +53,6 @@ For more information on styling with Ariakit, refer to the [Styling](/guide/styl
 - [](/examples/dialog-animated)
 - [](/examples/combobox-animated)
 - [](/examples/toolbar-select)
+- [](/examples/select-next-router)
 
 </div>

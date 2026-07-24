@@ -5,7 +5,7 @@ tags:
   - Form controls
 ---
 
-# Combobox groups
+# Select group
 
 <div data-description>
 

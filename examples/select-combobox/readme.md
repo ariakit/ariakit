@@ -7,7 +7,7 @@ tags:
   - Form controls
 ---
 
-# Searchable Combobox select
+# Searchable Combobox Select
 
 <div data-description>
 

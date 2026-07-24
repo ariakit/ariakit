@@ -7,7 +7,7 @@ tags:
   - Abstracted examples
 ---
 
-# Form with a Combobox select
+# Form with Select
 
 <div data-description>
 

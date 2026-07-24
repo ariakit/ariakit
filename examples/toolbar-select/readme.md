@@ -5,7 +5,7 @@ tags:
   - Dropdowns
 ---
 
-# Toolbar with a Combobox select
+# Toolbar with Select
 
 <div data-description>
 

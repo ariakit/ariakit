@@ -9,11 +9,11 @@ const getList = (page: Page) => page.getByRole("listbox");
 test("show/hide with click", async ({ page }) => {
   await getSelect(page).click();
   await expect(getList(page)).toBeVisible();
-  await expect(getList(page)).toBeFocused();
+  await expect(getSelect(page)).toBeFocused();
   await page.mouse.click(10, 10);
   await expect(getList(page)).not.toBeVisible();
   await expect(getSelect(page)).not.toBeFocused();
   await getSelect(page).click({ delay: 20 });
   await expect(getList(page)).toBeVisible();
-  await expect(getList(page)).toBeFocused();
+  await expect(getSelect(page)).toBeFocused();
 });

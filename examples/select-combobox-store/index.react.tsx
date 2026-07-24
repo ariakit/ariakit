@@ -32,7 +32,7 @@ export default function Example() {
         className="popover"
       >
         <div className="combobox-wrapper">
-          <Ariakit.Combobox
+          <Ariakit.ComboboxInput
             store={combobox}
             autoSelect
             aria-label="Search fruits"

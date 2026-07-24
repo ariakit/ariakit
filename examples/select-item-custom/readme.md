@@ -5,7 +5,7 @@ tags:
   - Form controls
 ---
 
-# Combobox select with custom items
+# Select with custom items
 
 <div data-description>
 

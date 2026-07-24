@@ -69,11 +69,10 @@ test("uses component aliases as distinct reference entries", () => {
   const combobox = getReference(comboboxFilename, "Combobox");
   const comboboxInput = getReference(comboboxFilename, "ComboboxInput");
 
-  expect(combobox.description).toContain(
-    "**Aliases**: `Combobox`, `ComboboxInput`",
-  );
-  expect(comboboxInput.description).toContain(
-    "**Aliases**: `Combobox`, `ComboboxInput`",
-  );
+  const aliases =
+    "**Aliases**: [`Combobox`](https://ariakit.com/reference/combobox),\n" +
+    "[`ComboboxInput`](https://ariakit.com/reference/combobox-input)";
+  expect(combobox.description).toContain(aliases);
+  expect(comboboxInput.description).toContain(aliases);
   expect(comboboxInput.props).toEqual(combobox.props);
 });

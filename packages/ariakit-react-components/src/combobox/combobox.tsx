@@ -413,7 +413,13 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (composingRef.current) return;
       if (!canAutoSelect && (!resetValueOnSelect || userScrolledRef.current))
         return;
-      const { baseElement, contentElement, activeId } = store.getState();
+      const {
+        baseElement,
+        contentElement,
+        activeId,
+        selectElement,
+        selectedValue,
+      } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
       // The data-placing attribute is an internal state added by the Popover
       // component. We can observe it to know when the popover is done placing
@@ -425,7 +431,15 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         observer.observe(contentElement, { attributeFilter: ["data-placing"] });
         return () => observer.disconnect();
       }
-      if (autoSelect && canAutoSelect) {
+      const activeValue = store.item(activeId)?.value;
+      const activeValueSelected =
+        activeValue != null &&
+        (Array.isArray(selectedValue)
+          ? selectedValue.includes(activeValue)
+          : selectedValue === activeValue);
+      const preserveSelectedValue =
+        !!selectElement && !storeValue && activeValueSelected;
+      if (autoSelect && canAutoSelect && !preserveSelectedValue) {
         const userAutoSelectId = getAutoSelectIdProp(items);
         const autoSelectId =
           userAutoSelectId !== undefined
@@ -787,7 +801,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 );
 
 /**
- * **Aliases**: `Combobox`, `ComboboxInput`
+ * **Aliases**: [`Combobox`](https://ariakit.com/reference/combobox),
+ * [`ComboboxInput`](https://ariakit.com/reference/combobox-input)
  *
  * Renders a combobox input element that can be used to filter a list of items.
  * @see https://ariakit.com/components/combobox

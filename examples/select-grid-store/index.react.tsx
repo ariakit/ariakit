@@ -6,7 +6,7 @@ export default function Example() {
   const select = Ariakit.useComboboxStore({
     defaultSelectedValue: "Center",
     placement: "bottom",
-    setSelectedValueOnMove: true,
+    selectOnMove: true,
   });
   const value = Ariakit.useStoreState(select, "selectedValue");
 

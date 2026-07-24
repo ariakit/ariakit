@@ -16,7 +16,7 @@ test("show/hide", async ({ page }) => {
   await expect(q.listbox("Favorite fruit")).not.toBeVisible();
   await q.combobox("Favorite fruit").click();
   await expect(q.listbox("Favorite fruit")).toBeVisible();
-  await expect(q.listbox("Favorite fruit")).toBeFocused();
+  await expect(q.combobox("Favorite fruit")).toBeFocused();
   await expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
   await expect(q.option("Apple")).toHaveAttribute("data-active-item");
   const isLeaving = createTransition();
@@ -27,7 +27,7 @@ test("show/hide", async ({ page }) => {
   }
   await expect(q.listbox("Favorite fruit")).not.toBeVisible();
   await page.keyboard.press("Enter");
-  await expect(q.listbox("Favorite fruit")).toBeFocused();
+  await expect(q.combobox("Favorite fruit")).toBeFocused();
   await expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
   await expect(q.option("Apple")).toHaveAttribute("data-active-item");
   await page.keyboard.press("ArrowDown");
@@ -36,7 +36,7 @@ test("show/hide", async ({ page }) => {
   await page.keyboard.press("Enter");
   await expect(q.listbox("Favorite fruit")).not.toBeVisible();
   await page.keyboard.press("Enter");
-  await expect(q.listbox("Favorite fruit")).toBeFocused();
+  await expect(q.combobox("Favorite fruit")).toBeFocused();
   await expect(q.option("Banana")).toHaveAttribute("aria-selected", "true");
   await expect(q.option("Banana")).toHaveAttribute("data-active-item");
 });

@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { clsx } from "clsx";
-import { forwardRef, useEffect } from "react";
+import { forwardRef } from "react";
 
 export interface ComboboxProps extends Omit<Ariakit.ComboboxProps, "onChange"> {
   label?: string;
@@ -26,26 +26,14 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
       ...comboboxProps
     } = props;
 
-    const selectedValueProps =
-      values !== undefined
-        ? { selectedValue: values, setSelectedValue: onValuesChange }
-        : {
-            defaultSelectedValue: defaultValues ?? [],
-            setSelectedValue: onValuesChange,
-          };
-    const combobox = Ariakit.useComboboxStore<string[]>(selectedValueProps);
-    const selectedValue = Ariakit.useStoreState(combobox, "selectedValue");
-
-    // Reset the combobox value whenever an item is checked or unchecked.
-    useEffect(() => combobox.setValue(""), [selectedValue, combobox]);
-
     return (
-      <Ariakit.ComboboxProvider
-        store={combobox}
+      <Ariakit.ComboboxProvider<string[]>
         value={value}
         setValue={onChange}
         defaultValue={defaultValue}
-        resetValueOnHide
+        selectedValue={values}
+        setSelectedValue={onValuesChange}
+        defaultSelectedValue={defaultValues ?? []}
       >
         {label && (
           <Ariakit.ComboboxLabel className="label">

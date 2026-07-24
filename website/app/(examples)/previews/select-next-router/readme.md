@@ -1,7 +1,7 @@
 ---
 tags:
   - Plus
-  - Select
+  - Combobox
   - Dropdowns
   - Routing
   - Next.js
@@ -11,11 +11,11 @@ tags:
   - Advanced
 ---
 
-# Select with Next.js App Router
+# Combobox Select with Next.js App Router
 
 <div data-description>
 
-Controlling the value of a [Select](/components/select) component via the URL using the [Next.js App Router](https://nextjs.org/docs/app) and [`React.useOptimistic`](https://react.dev/reference/react/useOptimistic) to ensure a responsive and accessible UI.
+Controlling the selected value of a [Combobox](/components/combobox) via the URL using the [Next.js App Router](https://nextjs.org/docs/app) and [`React.useOptimistic`](https://react.dev/reference/react/useOptimistic) to ensure a responsive and accessible UI.
 
 </div>
 
@@ -27,7 +27,7 @@ Controlling the value of a [Select](/components/select) component via the URL us
 
 <div data-cards="components">
 
-- [](/components/select)
+- [](/components/combobox)
 
 </div>
 
@@ -50,15 +50,18 @@ export default function Page({ searchParams }) {
 
 ## Controlling the state via the URL and optimistic updates
 
-To control the value of the [Select](/components/select) component, we can use the [`value`](/reference/select-provider#value) and [`setValue`](/reference/select-provider#setvalue) props from the [`SelectProvider`](/reference/select-provider) component:
+To control the selected value of the Combobox Select, we can use the [`selectedValue`](/reference/combobox-provider#selectedvalue) and [`setSelectedValue`](/reference/combobox-provider#setselectedvalue) props from the [`ComboboxProvider`](/reference/combobox-provider) component:
 
 ```jsx
 const [value, setValue] = React.useState("");
 
-<SelectProvider value={value} setValue={setValue}>
+<ComboboxProvider
+  selectedValue={value}
+  setSelectedValue={setValue}
+>
 ```
 
-The [`setValue`](/reference/select-provider#setvalue) callback can be used to carry out asynchronous tasks, such as redirecting to a new URL:
+The [`setSelectedValue`](/reference/combobox-provider#setselectedvalue) callback can be used to carry out asynchronous tasks, such as redirecting to a new URL:
 
 ```jsx
 const router = useRouter();
@@ -66,9 +69,9 @@ const router = useRouter();
 const [isPending, startTransition] = React.useTransition();
 const [optimisticValue, setOptimisticValue] = React.useOptimistic(props.value);
 
-<SelectProvider
-  value={optimisticValue}
-  setValue={(value) => {
+<ComboboxProvider
+  selectedValue={optimisticValue}
+  setSelectedValue={(value) => {
     startTransition(() => {
       // Instant update
       setOptimisticValue(value);
@@ -83,14 +86,14 @@ By using [`React.useOptimistic`](https://react.dev/reference/react/useOptimistic
 
 ## Single select or multi-select
 
-The [Select](/components/select) component can function as either a single select or multi-select component. This is decided by the [`value`](/reference/select-provider#value) prop's type. For single select, the value is a string, while for multi-select, it's an array of strings. Simply setting the value as an array activates the multi-select function.
+The Combobox Select can function as either a single select or multi-select component. This is decided by the [`selectedValue`](/reference/combobox-provider#selectedvalue) prop's type. For single select, the value is a string, while for multi-select, it's an array of strings. Simply setting the value as an array activates the multi-select function.
 
-In this example, we use the [`useSelectContext`](/reference/use-select-context) hook within our custom `SelectItem` component to access the [select store](/reference/use-select-store). We then verify if the value is an array using the [`useStoreState`](/reference/use-store-state) hook:
+In this example, we use the [`useComboboxContext`](/reference/use-combobox-context) hook within our custom `SelectItem` component to access the [combobox store](/reference/use-combobox-store). We then verify if the selected value is an array using the [`useStoreState`](/reference/use-store-state) hook:
 
 ```jsx
-const select = useSelectContext();
+const select = useComboboxContext();
 const isMultiSelect = useStoreState(select, (state) =>
-  Array.isArray(state.value),
+  Array.isArray(state.selectedValue),
 );
 ```
 
@@ -98,27 +101,27 @@ To learn more, check out the [Component stores](/guide/component-stores#computed
 
 ## Rendering `SelectItem` as a Next.js `Link`
 
-Using the [`render`](/reference/select-item#render) prop, we can render the Ariakit [`SelectItem`](/reference/select-item) component as a different custom component or native element.
+Using the [`render`](/reference/combobox-item#render) prop, we can render the Ariakit [`ComboboxItem`](/reference/combobox-item) component as a different custom component or native element.
 
-We're currently updating the URL on the [`setValue`](/reference/select-provider#setvalue) callback, but we can also render the item as a Next.js `Link` component. This approach ensures users can use native link features, like opening the link in a new tab or previewing the page on mobile devices. By using the Next.js `Link` component, we also benefit from the built-in prefetching feature:
+We're currently updating the URL on the [`setSelectedValue`](/reference/combobox-provider#setselectedvalue) callback, but we can also render the item as a Next.js Link component. This approach ensures users can use native link features, like opening the link in a new tab or previewing the page on mobile devices. By using the Next.js Link component, we also benefit from the built-in prefetching feature:
 
 ```jsx
-<SelectItem render={<Link href="" />} />
+<ComboboxItem render={<Link href="" />} />
 ```
 
-As we're already updating the URL on the [`setValue`](/reference/select-provider#setvalue) callback, to avoid duplicate navigation, we can prevent the default behavior using the [`setValueOnClick`](/reference/select-item#setvalueonclick) prop:
+As we're already updating the URL on the [`setSelectedValue`](/reference/combobox-provider#setselectedvalue) callback, to avoid duplicate navigation, we can prevent the default behavior using the [`selectValueOnClick`](/reference/combobox-item#selectvalueonclick) prop:
 
 ```jsx {4}
-<SelectItem
+<ComboboxItem
   render={<Link href="" />}
-  setValueOnClick={(event) => {
+  selectValueOnClick={(event) => {
     event.preventDefault();
     return true;
   }}
 >
 ```
 
-The [`setValueOnClick`](/reference/select-item#setvalueonclick) prop will only be called when it's safe to update the [`value`](/reference/select-provider#value) state. As such, it will ignore actions like opening the link in a new tab or opening the context menu, which should not be prevented.
+The [`selectValueOnClick`](/reference/combobox-item#selectvalueonclick) prop will only be called when it's safe to update the [`selectedValue`](/reference/combobox-provider#selectedvalue) state. As such, it will ignore actions like opening the link in a new tab or opening the context menu, which should not be prevented.
 
 ## Related examples
 

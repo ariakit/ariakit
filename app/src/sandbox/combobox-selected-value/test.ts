@@ -53,18 +53,18 @@ test("restores the selected value on Escape", async () => {
   expect(q.combobox("Preview fruit")).toHaveTextContent("Apple");
 });
 
-// https://github.com/ariakit/ariakit/pull/6832
+// https://github.com/ariakit/ariakit/pull/6832#discussion_r3647555720
 test("keeps a disabled filterable select out of the tab order", async () => {
   const select = q.combobox("Disabled fruit");
   expect(select).toBeDisabled();
 
-  await focus(q.button("Before disabled select"));
+  await focus(q.textbox("Before disabled select"));
   await press.Tab();
 
-  expect(q.button("After disabled select")).toHaveFocus();
+  expect(q.textbox("After disabled select")).toHaveFocus();
 });
 
-// https://github.com/ariakit/ariakit/pull/6832
+// https://github.com/ariakit/ariakit/pull/6832#discussion_r3647555511
 test("preserves the input value when resetValueOnSelect is false", async () => {
   const input = q.combobox.ensure("Persistent fruit filter");
   await type("ap", input);
@@ -73,7 +73,7 @@ test("preserves the input value when resetValueOnSelect is false", async () => {
   expect(input).toHaveValue("ap");
 });
 
-// https://github.com/ariakit/ariakit/pull/6832
+// https://github.com/ariakit/ariakit/pull/6832#discussion_r3647556185
 test("preserves aria-selected on menu-role multi-select items", async () => {
   await click(q.combobox("Menu fruit filter"));
 

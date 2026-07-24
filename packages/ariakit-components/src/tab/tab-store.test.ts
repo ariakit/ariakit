@@ -210,6 +210,30 @@ test("syncs activeId when a restore shares a flush with a later setSelectedId", 
   }
 });
 
+test("does not inherit selectOnMove from a parent combobox", async () => {
+  const combobox = createComboboxStore();
+  const store = createTabStore({
+    composite: combobox,
+    combobox,
+    defaultItems: [{ id: "tab-1" }, { id: "tab-2" }],
+    defaultSelectedId: "tab-1",
+  });
+  const stop = init(store);
+
+  try {
+    expect(combobox.getState().selectOnMove).toBe(false);
+    expect(store.getState().selectOnMove).toBe(true);
+
+    store.move("tab-2");
+    await flushBatch();
+
+    expect(store.getState().selectedId).toBe("tab-2");
+    expect(combobox.getState().selectOnMove).toBe(false);
+  } finally {
+    stop();
+  }
+});
+
 test("does not leak a restore armed right before the store is destroyed", async () => {
   const combobox = createComboboxStore({ defaultOpen: true });
   const store = createTabStore({ combobox, defaultSelectedId: "tab-1" });

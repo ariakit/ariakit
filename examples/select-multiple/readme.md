@@ -5,7 +5,7 @@ tags:
   - Form controls
 ---
 
-# Multi-selectable Combobox
+# Multi-selectable Combobox Select
 
 <div data-description>
 

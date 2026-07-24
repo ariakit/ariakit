@@ -16,7 +16,7 @@ import "./style.css";
 
 const SelectParamContext = React.createContext<string | null>(null);
 
-export interface SelectProps extends Ariakit.SelectProps {
+export interface SelectProps extends Ariakit.ComboboxSelectProps {
   name: string;
   label?: string;
   value?: string | string[];
@@ -25,7 +25,7 @@ export interface SelectProps extends Ariakit.SelectProps {
 }
 
 export const Select = React.forwardRef<
-  ElementRef<typeof Ariakit.Select>,
+  ElementRef<typeof Ariakit.ComboboxSelect>,
   SelectProps
 >(function Select(
   { name, label, value, defaultValue, displayValue, ...props },
@@ -37,10 +37,10 @@ export const Select = React.forwardRef<
   // is complete. This is useful when the navigation is slow.
   const [optimisticValue, setOptimisticValue] = React.useOptimistic(value);
   return (
-    <Ariakit.SelectProvider
-      defaultValue={defaultValue}
-      value={optimisticValue}
-      setValue={(value) => {
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue={defaultValue}
+      selectedValue={optimisticValue}
+      setSelectedValue={(value) => {
         const url = getURLForValue(name, value);
         // We need to wrap the optimistic update and navigation in a
         // startTransition callback. The optimistic update will occur instantly,
@@ -53,9 +53,11 @@ export const Select = React.forwardRef<
       }}
     >
       {label && (
-        <Ariakit.SelectLabel className="label">{label}</Ariakit.SelectLabel>
+        <Ariakit.ComboboxSelectLabel className="label">
+          {label}
+        </Ariakit.ComboboxSelectLabel>
       )}
-      <Ariakit.Select
+      <Ariakit.ComboboxSelect
         ref={ref}
         // aria-busy will tell assistive technologies that this element is
         // currently pending an update. We also use it to style the button
@@ -65,19 +67,19 @@ export const Select = React.forwardRef<
         className={clsx("button", props.className)}
       >
         {displayValue || optimisticValue}
-        <Ariakit.SelectArrow />
-      </Ariakit.Select>
+        <Ariakit.ComboboxSelectArrow />
+      </Ariakit.ComboboxSelect>
       <SelectParamContext.Provider value={name}>
-        <Ariakit.SelectPopover sameWidth gutter={4} className="popover">
+        <Ariakit.ComboboxPopover sameWidth gutter={4} className="popover">
           {props.children}
-        </Ariakit.SelectPopover>
+        </Ariakit.ComboboxPopover>
       </SelectParamContext.Provider>
-    </Ariakit.SelectProvider>
+    </Ariakit.ComboboxProvider>
   );
 });
 
 export interface SelectItemProps
-  extends Omit<LinkProps, "href">, Ariakit.SelectItemProps<"a"> {}
+  extends Omit<LinkProps, "href">, Ariakit.ComboboxItemProps<"a"> {}
 
 export const SelectItem = React.forwardRef<
   ElementRef<typeof Link>,
@@ -85,9 +87,9 @@ export const SelectItem = React.forwardRef<
 >(function SelectItem(props, ref) {
   const searchParams = useSearchParams();
   const param = React.useContext(SelectParamContext);
-  const select = Ariakit.useSelectContext();
+  const select = Ariakit.useComboboxContext();
   const multi = Ariakit.useStoreState(select, (state) =>
-    Array.isArray(state?.value),
+    Array.isArray(state?.selectedValue),
   );
   const queryString = getQueryString(searchParams, param, props.value, multi);
   return (
@@ -96,28 +98,29 @@ export const SelectItem = React.forwardRef<
       ref={ref}
       {...props}
       render={
-        <Ariakit.SelectItem
+        <Ariakit.ComboboxItem
           className="select-item"
           // We render an anchor tag to support link features like copying the
           // URL with a right-click or opening the link in a new tab, which
           // mirrors the current state of the select. By using Next.js Link
           // instead of a regular anchor tag, we can benefit from prefetching.
           render={<Link href={queryString} />}
-          // The URL has already been updated in the `setValue` callback of the
-          // `SelectProvider` component (within the above `Select` component).
+          // The URL has already been updated in the `setSelectedValue` callback
+          // of the `ComboboxProvider` component (within the above `Select`
+          // component).
           // By invoking `event.preventDefault` here, we avoid duplicate
-          // navigation. `setValueOnClick` will only be invoked when it's safe
-          // to update the value. In other words, if the click action is meant
-          // to open the link in a new tab, download it, open the context menu,
-          // and so on, this callback won't be triggered.
-          setValueOnClick={(event) => {
+          // navigation. `selectValueOnClick` will only be invoked when it's
+          // safe to update the selected value. In other words, if the click
+          // action is meant to open the link in a new tab, download it, open
+          // the context menu, and so on, this callback won't be triggered.
+          selectValueOnClick={(event) => {
             event.preventDefault();
             return true;
           }}
         />
       }
     >
-      <Ariakit.SelectItemCheck />
+      <Ariakit.ComboboxItemCheck />
       {props.children}
     </Ariakit.Role.a>
   );

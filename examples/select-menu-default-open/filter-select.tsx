@@ -34,15 +34,10 @@ export const FilterSelect = React.forwardRef<
   ref,
 ) {
   const labelId = React.useId();
-  const selectedValueProps =
-    value !== undefined
-      ? { selectedValue: value, setSelectedValue: onChange }
-      : {
-          defaultSelectedValue: defaultValue ?? "",
-          setSelectedValue: onChange,
-        };
-  const select = Ariakit.useComboboxStore<string>({
-    ...selectedValueProps,
+  const select = Ariakit.useComboboxStore({
+    selectedValue: value,
+    setSelectedValue: onChange,
+    defaultSelectedValue: defaultValue,
     defaultOpen,
     open,
     setOpen(open) {
@@ -52,7 +47,7 @@ export const FilterSelect = React.forwardRef<
       }
     },
   });
-  const selectValue = Ariakit.useStoreState(select, "selectedValue");
+  const selectedValue = Ariakit.useStoreState(select, "selectedValue");
   return (
     <div className="filter">
       <Ariakit.ComboboxSelect
@@ -66,7 +61,7 @@ export const FilterSelect = React.forwardRef<
           <span id={labelId} aria-hidden>
             {label}:{" "}
           </span>
-          {selectValue || "Choose one"}
+          {selectedValue || "Choose one"}
         </div>
       </Ariakit.ComboboxSelect>
       <Ariakit.ComboboxPopover

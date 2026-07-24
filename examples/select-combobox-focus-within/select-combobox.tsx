@@ -36,20 +36,15 @@ export const SelectCombobox = React.forwardRef<
     },
     ref,
   ) => {
-    const selectedValueProps =
-      value !== undefined
-        ? { selectedValue: value, setSelectedValue: onChange }
-        : {
-            defaultSelectedValue: defaultValue ?? "",
-            setSelectedValue: onChange,
-          };
-    const select = Ariakit.useComboboxStore<string>({
+    const select = Ariakit.useComboboxStore({
       open,
       setOpen: onToggle,
       value: searchValue,
       setValue: onSearch,
+      selectedValue: value,
+      setSelectedValue: onChange,
+      defaultSelectedValue: defaultValue,
       resetValueOnHide: true,
-      ...selectedValueProps,
     });
 
     const [popoverFocused, setPopoverFocused] = React.useState(false);
@@ -84,7 +79,7 @@ export const SelectCombobox = React.forwardRef<
             onBlur={() => setPopoverFocused(false)}
           >
             <div className="combobox-wrapper">
-              <Ariakit.Combobox
+              <Ariakit.ComboboxInput
                 store={select}
                 autoSelect
                 placeholder={searchPlaceholder}

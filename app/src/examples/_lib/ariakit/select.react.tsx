@@ -3,12 +3,13 @@ import { clsx } from "clsx";
 import type * as React from "react";
 import { createRender } from "../react-utils/create-render.ts";
 
-export interface SelectProps<
-  T extends ak.ComboboxStoreSelectedValue = ak.ComboboxStoreSelectedValue,
-> extends Omit<SelectButtonProps, "value" | "defaultValue" | "popover"> {
-  value?: SelectProviderProps<T>["selectedValue"];
-  setValue?: SelectProviderProps<T>["setSelectedValue"];
-  defaultValue?: SelectProviderProps<T>["defaultSelectedValue"];
+export interface SelectProps extends Omit<
+  SelectButtonProps,
+  "value" | "defaultValue" | "popover"
+> {
+  value?: SelectProviderProps["selectedValue"];
+  setValue?: SelectProviderProps["setSelectedValue"];
+  defaultValue?: SelectProviderProps["defaultSelectedValue"];
   /** Items to render in the popover when not provided as children. */
   items?: SelectItemProps[];
   /** Custom label element or props to render a `SelectLabel`. */
@@ -33,9 +34,7 @@ export interface SelectProps<
  *   ]}
  * />
  */
-export function Select<
-  T extends ak.ComboboxStoreSelectedValue = ak.ComboboxStoreSelectedValue,
->({
+export function Select({
   value,
   setValue,
   defaultValue,
@@ -44,7 +43,7 @@ export function Select<
   children,
   popover,
   ...props
-}: SelectProps<T>) {
+}: SelectProps) {
   const labelEl = label != null ? createRender(SelectLabel, label) : null;
   const popoverEl = createRender(SelectPopover, popover);
   return (
@@ -65,13 +64,9 @@ export function Select<
   );
 }
 
-export interface SelectProviderProps<
-  T extends ak.ComboboxStoreSelectedValue = ak.ComboboxStoreSelectedValue,
-> extends ak.ComboboxProviderProps<T> {}
+export interface SelectProviderProps extends ak.ComboboxProviderProps {}
 
-export function SelectProvider<
-  T extends ak.ComboboxStoreSelectedValue = ak.ComboboxStoreSelectedValue,
->(props: SelectProviderProps<T>) {
+export function SelectProvider(props: SelectProviderProps) {
   return <ak.ComboboxProvider {...props} />;
 }
 

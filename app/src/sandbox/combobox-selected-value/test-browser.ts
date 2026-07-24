@@ -47,7 +47,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(select).toHaveText("Apple");
   });
 
-  // https://github.com/ariakit/ariakit/pull/6832
+  // https://github.com/ariakit/ariakit/pull/6832#discussion_r3647555720
   test("keeps a disabled filterable select out of the tab order", async ({
     page,
     q,
@@ -55,13 +55,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const select = q.combobox("Disabled fruit");
     await test.expect(select).toBeDisabled();
 
-    await q.button("Before disabled select").focus();
+    await q.textbox("Before disabled select").focus();
     await page.keyboard.press("Tab");
 
-    await test.expect(q.button("After disabled select")).toBeFocused();
+    await test.expect(q.textbox("After disabled select")).toBeFocused();
   });
 
-  // https://github.com/ariakit/ariakit/pull/6832
+  // https://github.com/ariakit/ariakit/pull/6832#discussion_r3647555511
   test("preserves the input value when resetValueOnSelect is false", async ({
     q,
   }) => {
@@ -72,7 +72,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(input).toHaveValue("ap");
   });
 
-  // https://github.com/ariakit/ariakit/pull/6832
+  // https://github.com/ariakit/ariakit/pull/6832#discussion_r3647556185
   test("preserves aria-selected on menu-role multi-select items", async ({
     q,
   }) => {

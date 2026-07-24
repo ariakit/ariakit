@@ -27,11 +27,11 @@ Fill in a React input field with autocomplete &amp; autosuggest functionalities.
 - [](/examples/combobox-group)
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-links)
-- [](/examples/select)
 - [](/examples/select-multiple)
 - [](/examples/select-animated)
 - [](/examples/select-combobox)
 - [](/examples/select-combobox-tab)
+- [](/examples/select-next-router)
 - [](/examples/select-grid)
 - [](/examples/select-group)
 - [](/examples/select-item-custom)
@@ -78,7 +78,7 @@ useComboboxContext()
 </ComboboxProvider>
 ```
 
-**Aliases**: `Combobox`, `ComboboxInput`
+**Aliases**: [`Combobox`](/reference/combobox), [`ComboboxInput`](/reference/combobox-input)
 
 ## Styling
 

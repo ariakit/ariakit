@@ -229,6 +229,36 @@ test("uses select composite defaults while a select is rendered", () => {
   stop();
 });
 
+test("uses select composite defaults for a standalone list", () => {
+  const store = createComboboxStore();
+  const stop = init(store);
+
+  store.setListElement(document.createElement("div"));
+
+  expect(store.getState().focusLoop).toBe(false);
+  expect(store.getState().focusWrap).toBe(false);
+  expect(store.getState().includesBaseElement).toBe(false);
+
+  store.setInputElement(document.createElement("input"));
+
+  expect(store.getState().focusLoop).toBe(true);
+  expect(store.getState().focusWrap).toBe(true);
+  expect(store.getState().includesBaseElement).toBe(true);
+
+  store.setInputElement(null);
+
+  expect(store.getState().focusLoop).toBe(false);
+  expect(store.getState().focusWrap).toBe(false);
+  expect(store.getState().includesBaseElement).toBe(false);
+
+  store.setListElement(null);
+
+  expect(store.getState().focusLoop).toBe(true);
+  expect(store.getState().focusWrap).toBe(true);
+  expect(store.getState().includesBaseElement).toBe(true);
+  stop();
+});
+
 test("preserves explicit composite options in select mode", () => {
   const store = createComboboxStore({
     focusLoop: true,
@@ -280,7 +310,7 @@ test("sets the selected value on open moves only when enabled", async () => {
 
   expect(store.getState().selectedValue).toBe("Apple");
 
-  store.setState("setSelectedValueOnMove", true);
+  store.setState("selectOnMove", true);
   await Promise.resolve();
 
   expect(store.getState().selectedValue).toBe("Banana");

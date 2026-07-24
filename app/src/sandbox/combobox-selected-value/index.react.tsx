@@ -38,10 +38,7 @@ function SelectedValueExample() {
 
 function MoveAndRestoreExample() {
   return (
-    <Ariakit.ComboboxProvider
-      defaultSelectedValue="Apple"
-      setSelectedValueOnMove
-    >
+    <Ariakit.ComboboxProvider defaultSelectedValue="Apple" selectOnMove>
       <Ariakit.ComboboxSelect aria-label="Preview fruit">
         <Ariakit.ComboboxSelectedValue />
       </Ariakit.ComboboxSelect>
@@ -57,7 +54,7 @@ function MoveAndRestoreExample() {
 function DisabledFilterableSelectExample() {
   return (
     <>
-      <button type="button">Before disabled select</button>
+      <input aria-label="Before disabled select" />
       <Ariakit.ComboboxProvider defaultSelectedValue="Apple">
         <Ariakit.ComboboxSelect aria-label="Disabled fruit" disabled />
         <Ariakit.ComboboxPopover unmountOnHide={false}>
@@ -67,7 +64,7 @@ function DisabledFilterableSelectExample() {
           ))}
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
-      <button type="button">After disabled select</button>
+      <input aria-label="After disabled select" />
     </>
   );
 }

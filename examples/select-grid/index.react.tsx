@@ -32,11 +32,7 @@ export default function Example() {
 
   return (
     <div className="wrapper">
-      <Ariakit.ComboboxProvider
-        store={select}
-        placement="bottom"
-        setSelectedValueOnMove
-      >
+      <Ariakit.ComboboxProvider store={select} placement="bottom" selectOnMove>
         <Ariakit.ComboboxSelectLabel>Position</Ariakit.ComboboxSelectLabel>
         <Ariakit.ComboboxSelect showOnKeyDown={false} className="button">
           <Square value={value} />

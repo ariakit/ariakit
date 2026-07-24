@@ -3,11 +3,7 @@ import "./style.css";
 
 // TODO: This is a temporary example. Replace this with a Listbox component.
 export default function Example() {
-  const combobox = Ariakit.useComboboxStore({
-    open: true,
-    focusLoop: false,
-    includesBaseElement: false,
-  });
+  const combobox = Ariakit.useComboboxStore({ open: true });
   return (
     <Ariakit.ComboboxList store={combobox} className="popover">
       <Ariakit.ComboboxItem

@@ -41,18 +41,13 @@ export function Select({
   ...props
 }: SelectProps) {
   const searchable = !!combobox || !!onSearch;
-  const selectedValueProps =
-    value !== undefined
-      ? { selectedValue: value, setSelectedValue: setValue }
-      : {
-          defaultSelectedValue: defaultValue ?? "",
-          setSelectedValue: setValue,
-        };
 
   return (
-    <Ariakit.ComboboxProvider<string>
+    <Ariakit.ComboboxProvider
       virtualFocus={searchable}
-      {...selectedValueProps}
+      selectedValue={value}
+      setSelectedValue={setValue}
+      defaultSelectedValue={defaultValue}
       resetValueOnHide={searchable}
       setValue={(value) => {
         React.startTransition(() => {
@@ -96,7 +91,7 @@ export function Select({
               </div>
             )}
             {searchable && (
-              <Ariakit.Combobox
+              <Ariakit.ComboboxInput
                 autoSelect
                 render={combobox}
                 className="ak-combobox h-10 w-full px-[13px]"

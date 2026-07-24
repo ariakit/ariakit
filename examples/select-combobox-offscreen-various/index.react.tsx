@@ -7,7 +7,13 @@ import groupBy from "lodash-es/groupBy.js";
 import kebabCase from "lodash-es/kebabCase.js";
 import { matchSorter } from "match-sorter";
 import type { ReactElement } from "react";
-import { startTransition, useMemo, useRef, useState } from "react";
+import {
+  cloneElement,
+  startTransition,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { countries } from "./countries.ts";
 import "./theme.css";
 
@@ -89,6 +95,21 @@ const offscreenProbeItems: OffscreenProbeItem[] = [
     render: <button disabled />,
   },
 ];
+
+function renderSelectComboboxProbeItem(
+  item: OffscreenProbeItem,
+): ComboboxItemRender {
+  return (props) => {
+    const buttonProps = { ...props, role: undefined };
+    if (typeof item.render === "function") {
+      return item.render(buttonProps);
+    }
+    if (item.render) {
+      return cloneElement(item.render, buttonProps);
+    }
+    return <div {...props} role={props.role ?? "option"} />;
+  };
+}
 
 interface ComboboxProps
   extends
@@ -326,7 +347,7 @@ function SelectCombobox({
             group ? "overflow-clip" : "ak-popup-scroll",
           )}
         >
-          <Ariakit.Combobox
+          <Ariakit.ComboboxInput
             autoSelect={autoSelect}
             placeholder="Search..."
             className="ak-combobox z-20 h-10 w-64 px-3"
@@ -427,7 +448,7 @@ function OffscreenPropsSelectCombobox() {
           gutter={8}
           className="ak-popup ak-popup-enter ak-elevation-1 ak-popover w-[--popover-anchor-width]"
         >
-          <Ariakit.Combobox
+          <Ariakit.ComboboxInput
             placeholder="Search..."
             className="ak-combobox z-20 h-10 w-64 px-3"
           />
@@ -443,7 +464,7 @@ function OffscreenPropsSelectCombobox() {
                 offscreenRoot={ref}
                 offscreenMode={index === 0 ? "active" : "passive"}
                 className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
-                render={item.render}
+                render={renderSelectComboboxProbeItem(item)}
               />
             ))}
           </Ariakit.ComboboxList>

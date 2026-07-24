@@ -12,20 +12,14 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
+  afterPaint,
   toArray,
-  getDocument,
   getPopupRole,
-  getScrollingElement,
   queueBeforeEvent,
   invariant,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
-import type {
-  ElementType,
-  KeyboardEvent,
-  MouseEvent,
-  SelectHTMLAttributes,
-} from "react";
+import type { ElementType, KeyboardEvent, SelectHTMLAttributes } from "react";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
@@ -76,32 +70,8 @@ function nextWithValue(store: ComboboxStore, next: ComboboxStore["next"]) {
   };
 }
 
-// Only the nearest scrollable ancestor should move. Using scrollIntoView()
-// could also scroll the page when the popover is partially offscreen.
 function scrollItemIntoView(element: HTMLElement) {
-  const scroller = getScrollingElement(element);
-  if (!scroller) return;
-  const doc = getDocument(element);
-  if (scroller === doc.scrollingElement || scroller === doc.body) return;
-
-  const elementRect = element.getBoundingClientRect();
-  const scrollerRect = scroller.getBoundingClientRect();
-  const top = elementRect.top - scrollerRect.top;
-  const bottom = elementRect.bottom - scrollerRect.bottom;
-  const left = elementRect.left - scrollerRect.left;
-  const right = elementRect.right - scrollerRect.right;
-
-  if (top < 0) {
-    scroller.scrollTop += top;
-  } else if (bottom > 0) {
-    scroller.scrollTop += bottom;
-  }
-
-  if (left < 0) {
-    scroller.scrollLeft += left;
-  } else if (right > 0) {
-    scroller.scrollLeft += right;
-  }
+  element.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
 /**
@@ -120,11 +90,39 @@ const ComboboxSelectScrollIntoView = memo(
         return store.item(state.activeId)?.element;
       },
     );
+    const contentElement = useStoreState(store, "contentElement");
 
     useSafeLayoutEffect(() => {
       if (!activeElement) return;
-      scrollItemIntoView(activeElement);
-    }, [activeElement]);
+      let cancelScroll = () => {};
+      const scroll = () => {
+        cancelScroll = afterPaint(() => {
+          // Let offscreen observers initialize before the first scroll. This
+          // may render adjacent items, so correct the position after they
+          // affect the layout.
+          cancelScroll = afterPaint(() => {
+            scrollItemIntoView(activeElement);
+            cancelScroll = afterPaint(() => {
+              scrollItemIntoView(activeElement);
+            });
+          });
+        });
+      };
+      if (!contentElement?.hasAttribute("data-placing")) {
+        scroll();
+        return cancelScroll;
+      }
+      const observer = new MutationObserver(() => {
+        if (contentElement.hasAttribute("data-placing")) return;
+        observer.disconnect();
+        scroll();
+      });
+      observer.observe(contentElement, { attributeFilter: ["data-placing"] });
+      return () => {
+        observer.disconnect();
+        cancelScroll();
+      };
+    }, [activeElement, contentElement]);
 
     return null;
   },
@@ -142,8 +140,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     required,
     showOnKeyDown = true,
     moveOnKeyDown = true,
-    toggleOnPress = true,
-    toggleOnClick = toggleOnPress,
+    toggleOnClick = true,
     focusable = true,
     ...props
   }) {
@@ -425,14 +422,6 @@ export interface ComboboxSelectOptions<T extends ElementType = TagName>
    * @default true
    */
   moveOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
-  /**
-   * Whether pressing or clicking the select toggles the popover.
-   * @default true
-   * @deprecated Use `toggleOnClick` instead.
-   */
-  toggleOnPress?: BooleanOrCallback<
-    MouseEvent<HTMLElement> | KeyboardEvent<HTMLElement>
-  >;
 }
 
 export type ComboboxSelectProps<T extends ElementType = TagName> = Props<

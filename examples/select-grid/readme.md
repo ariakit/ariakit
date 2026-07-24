@@ -5,7 +5,7 @@ tags:
   - Form controls
 ---
 
-# Combobox select grid
+# Select grid
 
 <div data-description>
 

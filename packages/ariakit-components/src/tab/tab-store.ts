@@ -84,11 +84,14 @@ export function createTabStore({
     "focusLoop",
     "focusShift",
     "focusWrap",
+    "selectOnMove",
   ] as const;
 
   const store = mergeStore(
     props.store,
-    omit(parentComposite, independentKeys),
+    // Combobox also exposes a selectOnMove state, but it controls the selected
+    // value rather than tab selection.
+    omit(parentComposite as ComboboxStore | undefined, independentKeys),
     omit(combobox, independentKeys),
   );
   const syncState = store?.getState();
