@@ -801,8 +801,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 );
 
 /**
- * **Aliases**: [`Combobox`](https://ariakit.com/reference/combobox),
- * [`ComboboxInput`](https://ariakit.com/reference/combobox-input)
+ * **Alias**: [`ComboboxInput`](https://ariakit.com/reference/combobox-input)
  *
  * Renders a combobox input element that can be used to filter a list of items.
  * @see https://ariakit.com/components/combobox

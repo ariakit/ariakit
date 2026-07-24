@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { legacyPublicSelectCases } from "./public-cases/index.ts";
+import { legacyPublicSelectCases } from "./public-cases/index.react.tsx";
 
 const cases = {
   ...legacyPublicSelectCases,

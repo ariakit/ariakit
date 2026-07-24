@@ -1,6 +1,7 @@
 import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 
+// Keep this helper loader-specific so the workerd type-check excludes it.
 export type ShowLegacyPublicCase = (caseName: string) => Promise<void>;
 
 const animatedCases = [

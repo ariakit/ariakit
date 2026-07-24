@@ -12,8 +12,7 @@ type TagName = typeof TagName;
 export const useComboboxInput = useCombobox;
 
 /**
- * **Aliases**: [`Combobox`](https://ariakit.com/reference/combobox),
- * [`ComboboxInput`](https://ariakit.com/reference/combobox-input)
+ * **Alias**: [`Combobox`](https://ariakit.com/reference/combobox)
  *
  * Renders a combobox input element that can be used to filter a list of items.
  *

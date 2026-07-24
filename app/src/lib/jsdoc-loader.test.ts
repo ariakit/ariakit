@@ -193,10 +193,10 @@ test("loads component aliases as distinct references", async () => {
   const comboboxInput = getReference(entries, "react/combobox/combobox-input");
 
   expect(combobox.description).toContain(
-    "**Aliases**: [`Combobox`](https://ariakit.com/reference/combobox),\n[`ComboboxInput`](https://ariakit.com/reference/combobox-input)",
+    "**Alias**: [`ComboboxInput`](https://ariakit.com/reference/combobox-input)",
   );
   expect(comboboxInput.description).toContain(
-    "**Aliases**: [`Combobox`](https://ariakit.com/reference/combobox),\n[`ComboboxInput`](https://ariakit.com/reference/combobox-input)",
+    "**Alias**: [`Combobox`](https://ariakit.com/reference/combobox)",
   );
   expect(comboboxInput.params[0]?.props).toEqual(combobox.params[0]?.props);
 });

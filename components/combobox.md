@@ -78,8 +78,6 @@ useComboboxContext()
 </ComboboxProvider>
 ```
 
-**Aliases**: [`Combobox`](/reference/combobox), [`ComboboxInput`](/reference/combobox-input)
-
 ## Styling
 
 ### Styling the active item

@@ -33,6 +33,7 @@ import {
   LegacyPublicToolbarSelectCase,
 } from "./compositions.tsx";
 
+// Keep this registry out of the workerd type-check because it imports React cases.
 export const legacyPublicSelectCases = {
   "public-select": LegacyPublicSelectCase,
   "public-select-multiple": LegacyPublicSelectMultipleCase,

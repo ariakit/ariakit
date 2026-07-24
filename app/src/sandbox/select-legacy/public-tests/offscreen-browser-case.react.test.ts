@@ -1,6 +1,6 @@
 import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
-import type { ShowLegacyPublicCase } from "./animated-browser-case.ts";
+import type { ShowLegacyPublicCase } from "./animated-browser-case.react.test.ts";
 
 // examples/select-combobox-offscreen-various/test-chrome.ts
 export async function checkLegacySelectComboboxOffscreenLayout(
