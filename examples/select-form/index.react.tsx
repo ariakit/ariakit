@@ -12,21 +12,23 @@ export default function Example() {
       }}
     >
       <div className="field">
-        <Ariakit.SelectProvider defaultValue="Apple">
-          <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
-          <Ariakit.Select className="button" name="select" required />
-          <Ariakit.SelectPopover
+        <Ariakit.ComboboxProvider defaultSelectedValue="Apple">
+          <Ariakit.ComboboxSelectLabel>
+            Favorite fruit
+          </Ariakit.ComboboxSelectLabel>
+          <Ariakit.ComboboxSelect className="button" name="select" required />
+          <Ariakit.ComboboxPopover
             gutter={4}
             sameWidth
             unmountOnHide
             className="popover"
           >
-            <Ariakit.SelectItem className="select-item" value="Apple" />
-            <Ariakit.SelectItem className="select-item" value="Banana" />
-            <Ariakit.SelectItem className="select-item" value="Grape" />
-            <Ariakit.SelectItem className="select-item" value="Orange" />
-          </Ariakit.SelectPopover>
-        </Ariakit.SelectProvider>
+            <Ariakit.ComboboxItem className="select-item" value="Apple" />
+            <Ariakit.ComboboxItem className="select-item" value="Banana" />
+            <Ariakit.ComboboxItem className="select-item" value="Grape" />
+            <Ariakit.ComboboxItem className="select-item" value="Orange" />
+          </Ariakit.ComboboxPopover>
+        </Ariakit.ComboboxProvider>
       </div>
       <Ariakit.Button type="submit" className="button primary">
         Submit

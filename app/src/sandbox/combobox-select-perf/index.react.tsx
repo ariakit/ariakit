@@ -17,43 +17,43 @@ export default function Example() {
   return (
     <div className="root">
       <Ariakit.ComboboxProvider
+        defaultSelectedValue={defaultCountry}
         resetValueOnHide
         setValue={(value) => {
           startTransition(() => setSearchValue(value));
         }}
       >
-        <Ariakit.SelectProvider defaultValue={defaultCountry}>
-          <Ariakit.SelectLabel className="label">Country</Ariakit.SelectLabel>
-          <Ariakit.Select className="button" />
-          <Ariakit.SelectPopover
-            className="popover"
-            gutter={4}
-            sameWidth
-            unmountOnHide
-          >
-            <div className="combobox-wrapper">
-              <Ariakit.Combobox
-                aria-label="Search countries"
-                autoSelect
-                className="combobox"
-                placeholder="Search countries"
+        <Ariakit.ComboboxSelectLabel className="label">
+          Country
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect className="button" />
+        <Ariakit.ComboboxPopover
+          className="popover"
+          gutter={4}
+          sameWidth
+          unmountOnHide
+        >
+          <div className="combobox-wrapper">
+            <Ariakit.ComboboxInput
+              aria-label="Search countries"
+              autoSelect
+              className="combobox"
+              placeholder="Search countries"
+            />
+          </div>
+          <Ariakit.ComboboxList>
+            {matches.map((country) => (
+              <Ariakit.ComboboxItem
+                key={country}
+                className="popover-item"
+                data-restore-sentinel={
+                  country === restoreSentinel ? "" : undefined
+                }
+                value={country}
               />
-            </div>
-            <Ariakit.ComboboxList>
-              {matches.map((country) => (
-                <Ariakit.SelectItem
-                  key={country}
-                  className="popover-item"
-                  data-restore-sentinel={
-                    country === restoreSentinel ? "" : undefined
-                  }
-                  value={country}
-                  render={<Ariakit.ComboboxItem />}
-                />
-              ))}
-            </Ariakit.ComboboxList>
-          </Ariakit.SelectPopover>
-        </Ariakit.SelectProvider>
+            ))}
+          </Ariakit.ComboboxList>
+        </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
     </div>
   );

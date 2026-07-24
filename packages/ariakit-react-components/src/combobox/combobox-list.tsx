@@ -1,21 +1,35 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
   useAttribute,
+  useBooleanEvent,
+  useEvent,
   useId,
   useMergeRefs,
   useSafeLayoutEffect,
+  useTransactionState,
   useWrapElement,
   createElement,
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { invariant, removeUndefinedValues } from "@ariakit/utils";
-import type { ElementType } from "react";
-import { useRef, useState } from "react";
+import { isSelfTarget, invariant, removeUndefinedValues } from "@ariakit/utils";
+import type { BooleanOrCallback } from "@ariakit/utils";
+import type { ElementType, KeyboardEvent } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCompositeProviderContext,
+  useCompositeScopedContext,
+} from "../composite/composite-context.tsx";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import { DialogHeadingContext } from "../dialog/dialog-context.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
+  ComboboxHeadingContext,
   ComboboxListRoleContext,
   ComboboxScopedContextProvider,
   useComboboxContext,
@@ -42,11 +56,22 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * ```
  */
 export const useComboboxList = createHook<TagName, ComboboxListOptions>(
-  function useComboboxList({ store, alwaysVisible, ...props }) {
+  function useComboboxList({
+    store,
+    alwaysVisible,
+    resetOnEscape = true,
+    hideOnEnter = true,
+    composite,
+    ...props
+  }) {
     const scopedContext = useComboboxScopedContext(true);
+    const scopedComposite = useCompositeScopedContext(true);
+    const compositeProvider = useCompositeProviderContext();
     const context = useComboboxContext();
     store = store || context;
     const scopedContextSameStore = !!store && store === scopedContext;
+    const inForeignScopedComposite =
+      !!scopedComposite && scopedComposite !== store && !compositeProvider;
 
     invariant(
       store,
@@ -60,9 +85,36 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
-    const multiSelectable = useStoreState(store, ["selectedValue"], (state) =>
-      Array.isArray(state.selectedValue),
-    );
+    const selectedValue = useStoreState(store, "selectedValue");
+    const multiSelectable = Array.isArray(selectedValue);
+    const [defaultSelectedValue, setDefaultSelectedValue] =
+      useState(selectedValue);
+
+    useEffect(() => {
+      if (mounted) return;
+      setDefaultSelectedValue(selectedValue);
+    }, [mounted, selectedValue]);
+
+    resetOnEscape = resetOnEscape && !multiSelectable;
+
+    const onKeyDownProp = props.onKeyDown;
+    const resetOnEscapeProp = useBooleanEvent(resetOnEscape);
+    const hideOnEnterProp = useBooleanEvent(hideOnEnter);
+
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
+      onKeyDownProp?.(event);
+      if (event.defaultPrevented) return;
+      if (event.key === "Escape" && resetOnEscapeProp(event)) {
+        store?.setSelectedValue(defaultSelectedValue);
+      }
+      if (event.key === " " || event.key === "Enter") {
+        if (isSelfTarget(event) && hideOnEnterProp(event)) {
+          event.preventDefault();
+          store?.hide();
+        }
+      }
+    });
+
     const role = useAttribute(ref, "role", props.role);
     const isCompositeRole =
       role === "listbox" || role === "tree" || role === "grid";
@@ -72,6 +124,21 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
 
     const [hasListboxInside, setHasListboxInside] = useState(false);
     const contentElement = useStoreState(store, "contentElement");
+    const parentHeadingContext = useContext(ComboboxHeadingContext);
+    const headingState = useState<string>();
+    const [headingId, setHeadingId] = parentHeadingContext || headingState;
+    const headingContext = useMemo<typeof headingState>(
+      () => [headingId, setHeadingId],
+      [headingId, setHeadingId],
+    );
+    const inputElement = useStoreState(store, "inputElement");
+    const selectElement = useStoreState(store, "selectElement");
+    composite =
+      composite ??
+      (!scopedContextSameStore &&
+        !inForeignScopedComposite &&
+        !inputElement &&
+        !selectElement);
 
     // We support nested <ComboboxList> elements (usually in the form of
     // ComboboxPopover>ComboboxList), but we can't have nested listbox roles, so
@@ -107,12 +174,16 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       props,
       (element) => (
         <ComboboxScopedContextProvider value={store}>
-          <ComboboxListRoleContext.Provider value={role}>
-            {element}
-          </ComboboxListRoleContext.Provider>
+          <ComboboxHeadingContext.Provider value={headingContext}>
+            <DialogHeadingContext.Provider value={setHeadingId}>
+              <ComboboxListRoleContext.Provider value={role}>
+                {element}
+              </ComboboxListRoleContext.Provider>
+            </DialogHeadingContext.Provider>
+          </ComboboxHeadingContext.Provider>
         </ComboboxScopedContextProvider>
       ),
-      [store, role],
+      [store, role, headingContext],
     );
 
     // When nesting ComboboxList elements, the content element should be
@@ -121,14 +192,37 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       id && (!scopedContext || !scopedContextSameStore)
         ? store.setContentElement
         : null;
+    const [, setListElement] = useTransactionState(
+      composite ? store.setListElement : null,
+    );
+
+    const labelElement = useStoreState(
+      store,
+      ["labelElement", "selectLabelElement"],
+      (state) => {
+        if (headingId) return null;
+        return state.selectLabelElement || state.labelElement;
+      },
+    );
+    useAttribute(labelElement, "id");
+    const labelId = headingId || labelElement?.id;
 
     props = {
+      "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       hidden,
       ...props,
       id,
-      ref: useMergeRefs(setContentElement, ref, props.ref),
+      ref: useMergeRefs(setContentElement, setListElement, ref, props.ref),
       style,
+      onKeyDown,
     };
+
+    props = useComposite({ store, ...props, composite });
+    props = useCompositeTypeahead({
+      store,
+      typeahead: !inputElement,
+      ...props,
+    });
 
     return removeUndefinedValues(props);
   },
@@ -159,7 +253,11 @@ export const ComboboxList = forwardRef(function ComboboxList(
 });
 
 export interface ComboboxListOptions<T extends ElementType = TagName>
-  extends Options, Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
+  extends
+    Options,
+    CompositeOptions<T>,
+    CompositeTypeaheadOptions<T>,
+    Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
@@ -168,6 +266,17 @@ export interface ComboboxListOptions<T extends ElementType = TagName>
    * component's context will be used.
    */
   store?: ComboboxStore;
+  /**
+   * Whether the selected value should be reset when Escape is pressed.
+   * @default true
+   */
+  resetOnEscape?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
+  /**
+   * Whether the popover should hide when Enter or Space is pressed on the
+   * list itself.
+   * @default true
+   */
+  hideOnEnter?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
 }
 
 export type ComboboxListProps<T extends ElementType = TagName> = Props<

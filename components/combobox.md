@@ -27,6 +27,8 @@ Fill in a React input field with autocomplete &amp; autosuggest functionalities.
 - [](/examples/combobox-group)
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-links)
+- [](/examples/select)
+- [](/examples/select-combobox)
 
 </div>
 
@@ -37,26 +39,38 @@ useComboboxStore()
 useComboboxContext()
 
 <ComboboxProvider>
-  <ComboboxLabel />
   <Combobox />
+  <ComboboxSelectLabel />
+  <ComboboxSelect>
+    <ComboboxSelectedValue />
+    <ComboboxSelectArrow />
+  </ComboboxSelect>
+  <ComboboxLabel />
   <ComboboxCancel />
   <ComboboxDisclosure />
   <ComboboxValue />
-  <ComboboxList />
   <ComboboxPopover>
-    <ComboboxGroup>
-      <ComboboxGroupLabel />
-      <ComboboxRow>
-        <ComboboxItem>
-          <ComboboxItemCheck />
-          <ComboboxItemValue />
-        </ComboboxItem>
-        <ComboboxSeparator />
-      </ComboboxRow>
-    </ComboboxGroup>
+    <ComboboxInput aria-label="Search" />
+    <ComboboxHeading />
+    <ComboboxDismiss />
+    <ComboboxList>
+      <ComboboxGroup>
+        <ComboboxGroupLabel />
+        <ComboboxRow>
+          <ComboboxItem>
+            <ComboboxItemCheck />
+            <ComboboxItemSelected />
+            <ComboboxItemValue />
+          </ComboboxItem>
+          <ComboboxSeparator />
+        </ComboboxRow>
+      </ComboboxGroup>
+    </ComboboxList>
   </ComboboxPopover>
 </ComboboxProvider>
 ```
+
+**Aliases**: `Combobox`, `ComboboxInput`
 
 ## Styling
 

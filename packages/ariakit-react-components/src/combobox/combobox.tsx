@@ -45,7 +45,10 @@ import type {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
+import {
+  useComboboxProviderContext,
+  useComboboxScopedContext,
+} from "./combobox-context.tsx";
 import type {
   ComboboxStore,
   ComboboxStoreSelectedValue,
@@ -139,8 +142,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     disabled,
     ...props
   }) {
+    const scopedContext = useComboboxScopedContext(true);
     const context = useComboboxProviderContext();
-    store = store || context;
+    store = store || context || scopedContext;
 
     invariant(
       store,
@@ -750,7 +754,12 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       name: multiSelectable ? undefined : name,
       form,
       disabled,
-      ref: useMergeRefs(ref, composite ? undefined : setBaseElement, props.ref),
+      ref: useMergeRefs(
+        ref,
+        store.setInputElement,
+        composite ? undefined : setBaseElement,
+        props.ref,
+      ),
       onChange,
       onCompositionStart,
       onCompositionEnd,
@@ -779,6 +788,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 
 /**
  * Renders a combobox input element that can be used to filter a list of items.
+ *
+ * **Aliases**: `Combobox`, `ComboboxInput`
  * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {2}

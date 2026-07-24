@@ -109,6 +109,12 @@ export function createComboboxStore({
     "",
   );
 
+  let shouldSetDefaultSelectedValue =
+    props.selectedValue === undefined &&
+    syncState?.selectedValue === undefined &&
+    tagState?.values === undefined &&
+    props.defaultSelectedValue === undefined;
+
   const multiSelectable = Array.isArray(selectedValue);
 
   const initialState: ComboboxStoreState = {
@@ -126,21 +132,110 @@ export function createComboboxStore({
       syncState?.resetValueOnHide,
       multiSelectable && !tag,
     ),
+    setSelectedValueOnMove: defaultValue(
+      props.setSelectedValueOnMove,
+      syncState?.setSelectedValueOnMove,
+      false,
+    ),
     activeValue: syncState?.activeValue,
+    inputElement: defaultValue(syncState?.inputElement, null),
+    labelElement: defaultValue(syncState?.labelElement, null),
+    listElement: defaultValue(syncState?.listElement, null),
+    selectElement: defaultValue(syncState?.selectElement, null),
+    selectLabelElement: defaultValue(syncState?.selectLabelElement, null),
   };
 
   const combobox = createStore(initialState, composite, popover, store);
+  let resolveSelectedItemOnOpen = false;
+  let selectCompositeState: Pick<
+    ComboboxStoreState,
+    "focusLoop" | "focusWrap" | "includesBaseElement"
+  > | null = null;
+  const defaultSelectFocusLoop =
+    props.focusLoop === undefined && syncState?.focusLoop === undefined;
+  const defaultSelectFocusWrap =
+    props.focusWrap === undefined && syncState?.focusWrap === undefined;
+  const defaultSelectIncludesBaseElement =
+    props.includesBaseElement === undefined &&
+    syncState?.includesBaseElement === undefined;
+  let syncedSelectElement =
+    initialState.baseElement === initialState.selectElement
+      ? initialState.selectElement
+      : null;
   const initialFallback =
-    initialState.baseElement || initialState.disclosureElement;
+    initialState.selectElement ||
+    initialState.baseElement ||
+    initialState.disclosureElement;
   let syncedAnchorElement =
     initialState.anchorElement === initialFallback
       ? initialState.anchorElement
       : null;
 
   setup(combobox, () =>
+    sync(combobox, ["baseElement", "selectElement"], (state) => {
+      if (!state.selectElement && !syncedSelectElement) return;
+      if (state.baseElement && state.baseElement === state.selectElement) {
+        syncedSelectElement = state.selectElement;
+        return;
+      }
+      if (state.baseElement && state.baseElement !== syncedSelectElement) {
+        syncedSelectElement = null;
+        return;
+      }
+      syncedSelectElement = state.selectElement;
+      combobox.setState("baseElement", syncedSelectElement);
+    }),
+  );
+
+  setup(combobox, () =>
     sync(
       combobox,
-      ["anchorElement", "baseElement", "disclosureElement"],
+      ["focusLoop", "focusWrap", "includesBaseElement", "selectElement"],
+      (state, prevState) => {
+        if (
+          state.selectElement &&
+          (!prevState.selectElement || !selectCompositeState)
+        ) {
+          selectCompositeState = {
+            focusLoop: state.focusLoop,
+            focusWrap: state.focusWrap,
+            includesBaseElement: state.includesBaseElement,
+          };
+          if (defaultSelectFocusLoop) {
+            composite.setState("focusLoop", false);
+          }
+          if (defaultSelectFocusWrap) {
+            composite.setState("focusWrap", false);
+          }
+          if (defaultSelectIncludesBaseElement) {
+            composite.setState("includesBaseElement", false);
+          }
+          return;
+        }
+        if (state.selectElement || !prevState.selectElement) return;
+        const previousState = selectCompositeState;
+        selectCompositeState = null;
+        if (!previousState) return;
+        if (defaultSelectFocusLoop && !state.focusLoop) {
+          composite.setState("focusLoop", previousState.focusLoop);
+        }
+        if (defaultSelectFocusWrap && !state.focusWrap) {
+          composite.setState("focusWrap", previousState.focusWrap);
+        }
+        if (defaultSelectIncludesBaseElement && !state.includesBaseElement) {
+          composite.setState(
+            "includesBaseElement",
+            previousState.includesBaseElement,
+          );
+        }
+      },
+    ),
+  );
+
+  setup(combobox, () =>
+    sync(
+      combobox,
+      ["anchorElement", "baseElement", "disclosureElement", "selectElement"],
       (state) => {
         if (
           state.anchorElement &&
@@ -149,9 +244,42 @@ export function createComboboxStore({
           syncedAnchorElement = null;
           return;
         }
-        const fallback = state.baseElement || state.disclosureElement;
+        const fallback =
+          state.selectElement || state.baseElement || state.disclosureElement;
         syncedAnchorElement = fallback;
         combobox.setState("anchorElement", syncedAnchorElement);
+      },
+    ),
+  );
+
+  setup(combobox, () =>
+    sync(
+      combobox,
+      [
+        "inputElement",
+        "items",
+        "listElement",
+        "selectedValue",
+        "selectElement",
+      ],
+      (state, prevState) => {
+        if (!shouldSetDefaultSelectedValue) return;
+        if (state.selectedValue !== prevState.selectedValue) {
+          shouldSetDefaultSelectedValue = false;
+          return;
+        }
+        queueMicrotask(() => {
+          if (!shouldSetDefaultSelectedValue) return;
+          const state = combobox.getState();
+          if (!state.selectElement && !state.listElement) return;
+          if (state.inputElement && !state.selectElement) return;
+          const item = state.items.find(
+            (item) => !item.disabled && item.value != null,
+          );
+          if (item?.value == null) return;
+          shouldSetDefaultSelectedValue = false;
+          combobox.setState("selectedValue", item.value);
+        });
       },
     ),
   );
@@ -194,9 +322,20 @@ export function createComboboxStore({
   // Resets the state when the combobox popover is hidden.
   setup(combobox, () =>
     sync(combobox, ["open"], (state) => {
-      if (state.open) return;
+      if (state.open) {
+        resolveSelectedItemOnOpen = true;
+        return;
+      }
+      resolveSelectedItemOnOpen = false;
       combobox.setState("activeId", activeId);
       combobox.setState("moves", 0);
+    }),
+  );
+
+  setup(combobox, () =>
+    sync(combobox, ["moves"], () => {
+      if (!combobox.getState().open) return;
+      resolveSelectedItemOnOpen = false;
     }),
   );
 
@@ -221,6 +360,51 @@ export function createComboboxStore({
     }),
   );
 
+  setup(combobox, () =>
+    sync(
+      combobox,
+      ["items", "mounted", "open", "selectedValue", "selectElement"],
+      (state) => {
+        if (!state.selectElement) return;
+        if (state.mounted && !resolveSelectedItemOnOpen) return;
+        const values = Array.isArray(state.selectedValue)
+          ? state.selectedValue
+          : [state.selectedValue];
+        const lastValue = values[values.length - 1];
+        if (lastValue == null) return;
+        const item = state.items.find(
+          (item) => !item.disabled && item.value === lastValue,
+        );
+        if (!item) return;
+        resolveSelectedItemOnOpen = false;
+        combobox.setState("activeId", item.id);
+      },
+    ),
+  );
+
+  const setSelectedValueFromActiveItem = () => {
+    const { activeId, moves } = composite.getState();
+    const { open, selectedValue, selectElement, setSelectedValueOnMove } =
+      combobox.getState();
+    if (!selectElement) return;
+    if (!setSelectedValueOnMove && open) return;
+    if (Array.isArray(selectedValue)) return;
+    if (!moves) return;
+    if (!activeId) return;
+    const item = composite.item(activeId);
+    if (!item || item.disabled || item.value == null) return;
+    combobox.setState("selectedValue", item.value);
+  };
+
+  setup(combobox, () =>
+    chain(
+      batch(composite, ["moves"], setSelectedValueFromActiveItem),
+      batch(combobox, ["setSelectedValueOnMove"], () => {
+        setSelectedValueFromActiveItem();
+      }),
+    ),
+  );
+
   return {
     ...popover,
     ...composite,
@@ -228,8 +412,16 @@ export function createComboboxStore({
     tag,
     setValue: (value) => combobox.setState("value", value),
     resetValue: () => combobox.setState("value", initialState.value),
-    setSelectedValue: (selectedValue) =>
-      combobox.setState("selectedValue", selectedValue),
+    setSelectedValue: (selectedValue) => {
+      shouldSetDefaultSelectedValue = false;
+      combobox.setState("selectedValue", selectedValue);
+    },
+    setInputElement: (element) => combobox.setState("inputElement", element),
+    setLabelElement: (element) => combobox.setState("labelElement", element),
+    setListElement: (element) => combobox.setState("listElement", element),
+    setSelectElement: (element) => combobox.setState("selectElement", element),
+    setSelectLabelElement: (element) =>
+      combobox.setState("selectLabelElement", element),
   };
 }
 
@@ -243,11 +435,11 @@ export interface ComboboxStoreState<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
 >
   extends CompositeStoreState<ComboboxStoreItem>, PopoverStoreState {
-  /** @default true */
+  /** @default true, or false when `ComboboxSelect` is rendered */
   includesBaseElement: CompositeStoreState<ComboboxStoreItem>["includesBaseElement"];
-  /** @default true */
+  /** @default true, or false when `ComboboxSelect` is rendered */
   focusLoop: CompositeStoreState<ComboboxStoreItem>["focusLoop"];
-  /** @default true */
+  /** @default true, or false when `ComboboxSelect` is rendered */
   focusWrap: CompositeStoreState<ComboboxStoreItem>["focusWrap"];
   /** @default "vertical" */
   orientation: CompositeStoreState<ComboboxStoreItem>["orientation"];
@@ -286,6 +478,16 @@ export interface ComboboxStoreState<
    */
   selectedValue: MutableValue<T>;
   /**
+   * Whether the combobox
+   * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
+   * should be set when the active item changes by moving while
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is open.
+   * The selected value is always updated when moving while the select is
+   * closed.
+   * @default false
+   */
+  setSelectedValueOnMove: boolean;
+  /**
    * Whether to reset the value when the combobox popover closes. This prop is
    * automatically set to `true` by default if the combobox supports multiple
    * selections. In other words, if the
@@ -323,6 +525,26 @@ export interface ComboboxStoreState<
    * instead.
    */
   resetValueOnSelect: boolean;
+  /**
+   * The combobox input element.
+   */
+  inputElement: HTMLElement | null;
+  /**
+   * The combobox input label element.
+   */
+  labelElement: HTMLElement | null;
+  /**
+   * The standalone combobox list element.
+   */
+  listElement: HTMLElement | null;
+  /**
+   * The combobox select element.
+   */
+  selectElement: HTMLElement | null;
+  /**
+   * The combobox select label element.
+   */
+  selectLabelElement: HTMLElement | null;
 }
 
 export interface ComboboxStoreFunctions<
@@ -355,6 +577,26 @@ export interface ComboboxStoreFunctions<
    * state.
    */
   setSelectedValue: SetState<ComboboxStoreState<T>["selectedValue"]>;
+  /**
+   * Sets the `inputElement` state.
+   */
+  setInputElement: SetState<ComboboxStoreState<T>["inputElement"]>;
+  /**
+   * Sets the `labelElement` state.
+   */
+  setLabelElement: SetState<ComboboxStoreState<T>["labelElement"]>;
+  /**
+   * Sets the `listElement` state.
+   */
+  setListElement: SetState<ComboboxStoreState<T>["listElement"]>;
+  /**
+   * Sets the `selectElement` state.
+   */
+  setSelectElement: SetState<ComboboxStoreState<T>["selectElement"]>;
+  /**
+   * Sets the `selectLabelElement` state.
+   */
+  setSelectLabelElement: SetState<ComboboxStoreState<T>["selectLabelElement"]>;
 }
 
 export interface ComboboxStoreOptions<
@@ -370,6 +612,7 @@ export interface ComboboxStoreOptions<
       | "virtualFocus"
       | "value"
       | "selectedValue"
+      | "setSelectedValueOnMove"
       | "resetValueOnHide"
       | "resetValueOnSelect"
     >,

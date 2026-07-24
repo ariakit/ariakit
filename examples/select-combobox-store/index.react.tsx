@@ -31,6 +31,7 @@ export default function Example() {
           <Ariakit.Combobox
             store={combobox}
             autoSelect
+            aria-label="Search fruits"
             placeholder="Search..."
             className="combobox"
           />

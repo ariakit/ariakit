@@ -52,6 +52,11 @@ export function createSelectStore({
       "contentElement",
       "popoverElement",
       "disclosureElement",
+      "inputElement",
+      "labelElement",
+      "listElement",
+      "selectElement",
+      "selectLabelElement",
     ]),
   );
 
@@ -183,7 +188,10 @@ export function createSelectStore({
     ...select,
     combobox,
     setValue: (value) => select.setState("value", value),
-    setLabelElement: (element) => select.setState("labelElement", element),
+    setLabelElement: (element) => {
+      select.setState("labelElement", element);
+      combobox?.setSelectLabelElement(element);
+    },
     setSelectElement: (element) => select.setState("selectElement", element),
     setListElement: (element) => select.setState("listElement", element),
   };

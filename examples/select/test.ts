@@ -16,7 +16,7 @@ test("show/hide on click", async () => {
   expect(q.listbox()).not.toBeInTheDocument();
   await click(q.combobox());
   expect(q.listbox()).toBeVisible();
-  expect(q.listbox()).toHaveFocus();
+  expect(q.combobox()).toHaveFocus();
   expect(q.option("Apple")).toHaveFocus();
   expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
   expect(q.combobox()).toHaveTextContent("Apple");
@@ -30,10 +30,9 @@ test("show/hide on enter", async () => {
   await press.Tab();
   await press.Enter();
   expect(q.listbox()).toBeVisible();
-  expect(q.listbox()).toHaveFocus();
+  expect(q.combobox()).toHaveFocus();
   expect(q.option("Apple")).toHaveFocus();
   expect(q.combobox()).toHaveTextContent("Apple");
-  await press.ShiftTab();
   await press.Enter();
   expect(q.listbox()).not.toBeInTheDocument();
   expect(q.combobox()).toHaveTextContent("Apple");
@@ -43,10 +42,9 @@ test("show/hide on space", async () => {
   await press.Tab();
   await press.Space();
   expect(q.listbox()).toBeVisible();
-  expect(q.listbox()).toHaveFocus();
+  expect(q.combobox()).toHaveFocus();
   expect(q.option("Apple")).toHaveFocus();
   expect(q.combobox()).toHaveTextContent("Apple");
-  await press.ShiftTab();
   await press.Space();
   expect(q.listbox()).not.toBeInTheDocument();
   expect(q.combobox()).toHaveTextContent("Apple");
@@ -56,14 +54,11 @@ test("show on arrow keys", async () => {
   await press.Tab();
   await press.ArrowDown();
   expect(q.listbox()).toBeVisible();
-  expect(q.listbox()).toHaveFocus();
-  expect(q.option("Apple")).toHaveFocus();
-  await press.ShiftTab();
   expect(q.combobox()).toHaveFocus();
-  expect(q.option("Apple")).not.toHaveFocus();
+  expect(q.option("Apple")).toHaveFocus();
   await press.ArrowUp();
   expect(q.listbox()).toBeVisible();
-  expect(q.listbox()).toHaveFocus();
+  expect(q.combobox()).toHaveFocus();
   expect(q.option("Apple")).toHaveFocus();
 });
 
@@ -197,7 +192,7 @@ test("hover on item", async () => {
   expect(q.option("Banana")).toHaveAttribute("aria-selected", "false");
   await hover(q.option("Grape"));
   expect(q.option("Banana")).not.toHaveFocus();
-  expect(q.listbox()).toHaveFocus();
+  expect(q.combobox()).toHaveFocus();
   expect(q.combobox()).toHaveTextContent("Apple");
   expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
 });
