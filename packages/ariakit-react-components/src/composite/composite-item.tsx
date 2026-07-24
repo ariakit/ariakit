@@ -88,7 +88,7 @@ function getItemOffset(itemElement: Element, pageUp = false) {
   return top;
 }
 
-function findNextPageItemId(
+export function findNextPageItemId(
   element: Element,
   store?: CompositeStore,
   next?: CompositeStore["next"],
@@ -173,6 +173,15 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     // consumes this prop), so the onFocus handler can read it at event time.
     const shouldRegisterItem = props.shouldRegisterItem;
 
+    // The row's captured base element works as an ownership token: the row id
+    // is only adopted when the row belongs to the same composite as the item.
+    // Both sides may hold no base element at all, such as rows controlled by
+    // an input-less ComboboxSelect, so the comparison normalizes null and
+    // undefined instead of requiring a mounted base element.
+    const rowBelongsToState = (
+      state: Pick<CompositeStoreState, "baseElement">,
+    ) => (row?.baseElement ?? null) === state.baseElement;
+
     // Sibling selectors below (ariaPosInSet) also need the row id during
     // render. They can't read the destructured rowId const since it's declared
     // by the same statement they're arguments to, which would hit the temporal
@@ -180,8 +189,8 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     const getRowId = (state?: Pick<CompositeStoreState, "baseElement">) => {
       if (rowIdProp) return rowIdProp;
       if (!state) return;
-      if (!row?.baseElement) return;
-      if (row.baseElement !== state.baseElement) return;
+      if (!row) return;
+      if (!rowBelongsToState(state)) return;
       return row.id;
     };
 
@@ -195,14 +204,14 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           if (ariaSetSizeProp != null) return ariaSetSizeProp;
           if (!state) return;
           if (!row?.ariaSetSize) return;
-          if (row.baseElement !== state.baseElement) return;
+          if (!rowBelongsToState(state)) return;
           return row.ariaSetSize;
         },
         ariaPosInSet(state) {
           if (ariaPosInSetProp != null) return ariaPosInSetProp;
           if (!state) return;
           if (!row?.ariaPosInSet) return;
-          if (row.baseElement !== state.baseElement) return;
+          if (!rowBelongsToState(state)) return;
           const rowId = getRowId(state);
           const itemsInRow = state.renderedItems.filter(
             (item) => item.rowId === rowId,

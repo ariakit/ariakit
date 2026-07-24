@@ -74,7 +74,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     setValueOnClick,
     selectValueOnClick = true,
     resetValueOnSelect,
-    focusOnHover = false,
+    focusOnHover,
     moveOnKeyPress = true,
     getItem: getItemProp,
     ...props
@@ -100,6 +100,20 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         selected(state) {
           return isSelected(state.selectedValue, value);
         },
+      });
+
+    // When a ComboboxSelect trigger is registered, hovering an item moves
+    // virtual focus to it while the popover is open, as SelectItem does. The
+    // state is read at event time so items don't re-render when the popover
+    // opens or closes. A plain combobox keeps hover and virtual focus
+    // independent so hovering doesn't disrupt keyboard navigation from the
+    // input.
+    focusOnHover =
+      focusOnHover ??
+      (() => {
+        const state = store?.getState();
+        if (!state?.selectElement) return false;
+        return state.open;
       });
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
@@ -366,7 +380,13 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    */
   resetValueOnSelect?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * @default false
+   * Determines if the item should be highlighted when hovered. It defaults to
+   * `false` in a plain combobox, so hovering doesn't disrupt keyboard
+   * navigation from the input. When a
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select)
+   * component is rendered, it defaults to `true` while the popover is open,
+   * matching the behavior of
+   * [`SelectItem`](https://ariakit.com/reference/select-item).
    */
   focusOnHover?: CompositeHoverOptions["focusOnHover"];
 }

@@ -29,10 +29,12 @@ import type {
   SelectHTMLAttributes,
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { findNextPageItemId } from "../composite/composite-item.tsx";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { DialogDisclosureOptions } from "../dialog/dialog-disclosure.tsx";
 import { useDialogDisclosure } from "../dialog/dialog-disclosure.tsx";
+import { getBasePlacement } from "../popover/__utils.ts";
 import { PopoverScopedContextProvider } from "../popover/popover-context.tsx";
 import { PopoverDisclosureArrow } from "../popover/popover-disclosure-arrow.tsx";
 import { getVisuallyHiddenStyle } from "../visually-hidden/visually-hidden.tsx";
@@ -45,7 +47,6 @@ import type {
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-type BasePlacement = "top" | "bottom" | "left" | "right";
 
 function getSelectedValues(select: HTMLSelectElement) {
   return Array.from(select.selectedOptions).map((option) => option.value);
@@ -174,10 +175,9 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
         ["open", "items", "selectedValue", "selectElement"],
         (state) => {
           if (!state.selectElement) return;
-          if (!hasSelectedValue(state.selectedValue)) return;
+          const hasValue = hasSelectedValue(state.selectedValue);
           const values = toArray(state.selectedValue);
           const value = values[values.length - 1];
-          if (value == null) return;
           if (state.open) {
             if (!resolveOnOpen) return;
             if (!state.items.length) return;
@@ -188,11 +188,26 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
             if (store.item(store.getState().activeId)) return;
           } else {
             resolveOnOpen = true;
+            // While closed, only the selected item is resolved, so the first
+            // arrow key press on an empty select still moves to (and selects)
+            // the first item, as it does with Select.
+            if (!hasValue) return;
+            if (value == null) return;
           }
-          const item = state.items.find((item) => {
-            if (item.disabled) return false;
-            return item.value === value;
-          });
+          const item =
+            hasValue && value != null
+              ? state.items.find((item) => {
+                  if (item.disabled) return false;
+                  return item.value === value;
+                })
+              : // With no selected value, the first enabled item is
+                // highlighted when an input-less popover opens, matching
+                // Select. A combobox input holds the virtual focus position
+                // instead, so nothing is highlighted for it until the user
+                // interacts.
+                store.getState().baseElement
+                ? undefined
+                : state.items.find((item) => !item.disabled);
           if (!item) return;
           store.setActiveId(item.id);
         },
@@ -414,43 +429,83 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
     const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
     const placement = useStoreState(store, "placement");
-    const dir = placement.split("-")[0] as BasePlacement;
+    const dir = getBasePlacement(placement);
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
-      const { open, baseElement, activeId, orientation } = store.getState();
+      const { open, baseElement, activeId, orientation, items } =
+        store.getState();
       // In a standard (input-less) select, this element keeps DOM focus while
       // the popover is open, so it drives the listbox with virtual focus, as
-      // the Combobox input would in a filterable select.
+      // the Combobox input would in a filterable select. The key mapping
+      // mirrors CompositeItem's, which handles these keys when the active item
+      // itself receives the keyboard events.
       if (open && !baseElement) {
+        const activeItem = store.item(activeId);
+        const isGrid = !!activeItem?.rowId;
         const isVertical = orientation !== "horizontal";
         const isHorizontal = orientation !== "vertical";
+        // A null return points to the combobox input position. There's no
+        // input to land on in an input-less select, so the same movement is
+        // resolved again without the base element stop, which yields the
+        // store's own focusLoop/focusWrap target, like a column-aware wrap on
+        // grids. Paging is the exception below: it never resolves the base
+        // position, clamping at the boundaries like a native select.
+        const nextWithoutBase = (next: ComboboxStore["next"]) => () => {
+          const nextId = next();
+          if (nextId !== null) return nextId;
+          return next({ includesBaseElement: false });
+        };
         const nextKeyMap = {
-          ArrowDown: isVertical && (() => store.down() ?? store.first()),
-          ArrowUp: isVertical && (() => store.up() ?? store.last()),
-          ArrowRight: isHorizontal && (() => store.next() ?? store.first()),
-          ArrowLeft: isHorizontal && (() => store.previous() ?? store.last()),
-          Home: store.first,
-          End: store.last,
+          ArrowUp: (isGrid || isVertical) && nextWithoutBase(store.up),
+          ArrowRight: (isGrid || isHorizontal) && nextWithoutBase(store.next),
+          ArrowDown: (isGrid || isVertical) && nextWithoutBase(store.down),
+          ArrowLeft:
+            (isGrid || isHorizontal) && nextWithoutBase(store.previous),
+          Home: () => {
+            if (!isGrid || event.ctrlKey) {
+              return store.first();
+            }
+            return store.previous({ skip: -1 });
+          },
+          End: () => {
+            if (!isGrid || event.ctrlKey) {
+              return store.last();
+            }
+            return store.next({ skip: -1 });
+          },
+          PageUp: () => {
+            const element = activeItem?.element;
+            if (!element) return store.first();
+            return findNextPageItemId(element, store, store.up, true);
+          },
+          PageDown: () => {
+            const element = activeItem?.element;
+            if (!element) return store.last();
+            return findNextPageItemId(element, store, store.down);
+          },
         };
         const getId = nextKeyMap[event.key as keyof typeof nextKeyMap];
         if (getId) {
+          // Navigation keys are always consumed while the popover is open, so
+          // the page doesn't scroll behind it even when there's no next item
+          // in that direction, as with Select and the native select element.
+          // A null or undefined id keeps the active item unchanged.
           event.preventDefault();
           const nextId = getId();
-          if (nextId) {
+          if (nextId != null) {
             store.move(nextId);
           }
           return;
         }
         if (event.key === "Enter" || event.key === " ") {
-          const item = store.item(activeId);
-          if (item?.element) {
+          if (activeItem?.element) {
             // Prevent the native button activation click, which would close
             // the popover through the disclosure toggle behavior, and forward
             // the activation to the active item instead.
             event.preventDefault();
-            item.element.click();
+            activeItem.element.click();
           }
         }
         return;
@@ -464,11 +519,16 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       // moveOnKeyDown
       const isVertical = orientation !== "horizontal";
       const isHorizontal = orientation !== "vertical";
+      const isGrid = !!items.find(
+        (item) => !item.disabled && item.value != null,
+      )?.rowId;
       const moveKeyMap = {
-        ArrowUp: isVertical && nextWithValue(store, store.up),
-        ArrowRight: isHorizontal && nextWithValue(store, store.next),
-        ArrowDown: isVertical && nextWithValue(store, store.down),
-        ArrowLeft: isHorizontal && nextWithValue(store, store.previous),
+        ArrowUp: (isGrid || isVertical) && nextWithValue(store, store.up),
+        ArrowRight:
+          (isGrid || isHorizontal) && nextWithValue(store, store.next),
+        ArrowDown: (isGrid || isVertical) && nextWithValue(store, store.down),
+        ArrowLeft:
+          (isGrid || isHorizontal) && nextWithValue(store, store.previous),
       };
       const getId = moveKeyMap[event.key as keyof typeof moveKeyMap];
       if (getId && moveOnKeyDownProp(event)) {

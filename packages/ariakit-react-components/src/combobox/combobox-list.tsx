@@ -60,6 +60,25 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
+    const [element, setElement] = useState<HTMLType | null>(null);
+    const popoverElement = useStoreState(store, "popoverElement");
+    const selectLabelElement = useStoreState(store, "selectLabelElement");
+    const labelElement = useStoreState(store, "labelElement");
+    useAttribute(selectLabelElement, "id");
+    useAttribute(labelElement, "id");
+
+    // A ComboboxList rendered as (or nested inside) a ComboboxPopover lets the
+    // popover own the accessible name, where an explicit ARIA label or a
+    // PopoverHeading may take precedence over the registered labels. Only a
+    // standalone list falls back to them here, matching SelectList.
+    const standalone =
+      !!element &&
+      element !== popoverElement &&
+      !popoverElement?.contains(element);
+    const fallbackLabelId = standalone
+      ? selectLabelElement?.id || labelElement?.id
+      : undefined;
+
     const multiSelectable = useStoreState(store, ["selectedValue"], (state) =>
       Array.isArray(state.selectedValue),
     );
@@ -122,11 +141,19 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
         ? store.setContentElement
         : null;
 
+    if (
+      fallbackLabelId &&
+      props["aria-label"] == null &&
+      props["aria-labelledby"] == null
+    ) {
+      props = { ...props, "aria-labelledby": fallbackLabelId };
+    }
+
     props = {
       hidden,
       ...props,
       id,
-      ref: useMergeRefs(setContentElement, ref, props.ref),
+      ref: useMergeRefs(setElement, setContentElement, ref, props.ref),
       style,
     };
 

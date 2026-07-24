@@ -111,16 +111,21 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       unstable_treeSnapshotKey: treeSnapshotKey,
       ...props,
       // When the combobox popover is modal, we make sure to include the
-      // combobox input and all the combobox controls (cancel, disclosure) in
-      // the list of persistent elements so they make part of the modal context,
-      // allowing users to tab through them.
+      // combobox input, the select trigger, and all the combobox controls
+      // (cancel, disclosure) in the list of persistent elements so they make
+      // part of the modal context, allowing users to tab through them. Being
+      // persistent also keeps their ancestors out of the inert tree, which the
+      // disclosure element exemption alone doesn't guarantee. This matters for
+      // an input-less ComboboxSelect, whose trigger keeps DOM focus while the
+      // popover is open.
       getPersistentElements() {
         const elements = props.getPersistentElements?.() || [];
         if (!modal) return elements;
         if (!store) return elements;
-        const { contentElement, baseElement } = store.getState();
-        if (!baseElement) return elements;
-        const doc = getDocument(baseElement);
+        const { contentElement, baseElement, selectElement } = store.getState();
+        const anchorElement = baseElement || selectElement;
+        if (!anchorElement) return elements;
+        const doc = getDocument(anchorElement);
         const selectors: string[] = [];
         if (contentElement?.id) {
           selectors.push(`[aria-controls~="${contentElement.id}"]`);
@@ -128,7 +133,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         if (baseElement?.id) {
           selectors.push(`[aria-controls~="${baseElement.id}"]`);
         }
-        if (!selectors.length) return [...elements, baseElement];
+        if (!selectors.length) return [...elements, anchorElement];
         const selector = selectors.join(",");
         const controlElements = doc.querySelectorAll<HTMLElement>(selector);
         return [...elements, ...controlElements];

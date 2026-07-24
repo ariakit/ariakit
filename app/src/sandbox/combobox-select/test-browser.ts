@@ -66,10 +66,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     if (!selectBox) return;
     if (!dialogBox) return;
 
-    // The popover must be positioned relative to the select button rather
-    // than the top-left corner of the viewport, which is where it would land
-    // if the anchor element was missing.
-    expect(dialogBox.y).toBeGreaterThan(selectBox.y);
+    // The popover must be positioned adjacent to the select button (it may
+    // flip above it near the viewport bottom) rather than at the top-left
+    // corner of the viewport, which is where it would land if the anchor
+    // element was missing.
+    expect(Math.abs(dialogBox.y - selectBox.y)).toBeLessThan(
+      selectBox.height + dialogBox.height + 16,
+    );
     expect(Math.abs(dialogBox.x - selectBox.x)).toBeLessThan(
       selectBox.width + dialogBox.width,
     );
@@ -95,6 +98,56 @@ withFramework(import.meta.dirname, async ({ test }) => {
     expect(Math.abs(dialogBox.y - inputBox.y)).toBeLessThan(
       dialogBox.height + inputBox.height + 16,
     );
+  });
+
+  test("keeps an input-less select interactive in the modal context", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox("Modal plain fruit").click();
+    await expect(q.dialog("Modal plain fruit")).toBeVisible();
+
+    await expect(q.combobox("Modal plain fruit")).toHaveJSProperty(
+      "inert",
+      false,
+    );
+    await expect(q.combobox("Modal plain fruit")).toBeFocused();
+
+    await page.keyboard.press("ArrowDown");
+    await expect(q.option("Banana")).toHaveAttribute("data-active-item");
+
+    await page.keyboard.press("Enter");
+    await expect(q.dialog("Modal plain fruit")).toBeHidden();
+    await expect(q.combobox("Modal plain fruit")).toContainText("Banana");
+    await expect(q.combobox("Modal plain fruit")).toBeFocused();
+  });
+
+  test("pages through items with PageDown and PageUp", async ({ page, q }) => {
+    await q.combobox("Many fruit").click();
+    await expect(q.option("Fruit 0")).toHaveAttribute("data-active-item");
+
+    await page.keyboard.press("PageDown");
+
+    // The scrollable popover fits a few items per page, so paging must move
+    // the active item further than a single arrow key step without leaving
+    // DOM focus on anything but the trigger.
+    const active = q.dialog("Many fruit").locator("[data-active-item]");
+    await expect(active).toHaveCount(1);
+    await expect(active).not.toHaveText("Fruit 0");
+    await expect(active).not.toHaveText("Fruit 1");
+    await expect(q.combobox("Many fruit")).toBeFocused();
+
+    await page.keyboard.press("PageUp");
+    await expect(q.option("Fruit 0")).toHaveAttribute("data-active-item");
+
+    // Paging clamps at the boundaries like a native select instead of
+    // wrapping around.
+    await page.keyboard.press("PageUp");
+    await expect(q.option("Fruit 0")).toHaveAttribute("data-active-item");
+    await page.keyboard.press("End");
+    await expect(q.option("Fruit 19")).toHaveAttribute("data-active-item");
+    await page.keyboard.press("PageDown");
+    await expect(q.option("Fruit 19")).toHaveAttribute("data-active-item");
   });
 
   test("supports required validation", async ({ page, q }) => {

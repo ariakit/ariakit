@@ -3,6 +3,13 @@ import type { ReactNode } from "react";
 import { useState } from "react";
 
 const fruits = ["Apple", "Banana", "Orange"];
+const plainFruits = ["Apple", "Banana", "Grape", "Orange"];
+const standaloneFruits = ["Pear", "Peach", "Plum"];
+const manyFruits = Array.from({ length: 20 }, (_, index) => `Fruit ${index}`);
+const gridFruits = [
+  ["Apple", "Banana", "Cherry"],
+  ["Grape", "Kiwi", "Lemon"],
+];
 
 interface FruitSelectProps {
   label: string;
@@ -97,6 +104,8 @@ function ToggleFruitSelect() {
 interface PlainFruitSelectProps {
   label: string;
   defaultSelectedValue?: string | string[];
+  focusLoop?: boolean;
+  modal?: boolean;
   showOnKeyDown?: boolean;
 }
 
@@ -105,15 +114,79 @@ interface PlainFruitSelectProps {
 function PlainFruitSelect({
   label,
   defaultSelectedValue,
+  focusLoop,
+  modal,
   showOnKeyDown,
 }: PlainFruitSelectProps) {
   return (
-    <Ariakit.ComboboxProvider defaultSelectedValue={defaultSelectedValue}>
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue={defaultSelectedValue}
+      focusLoop={focusLoop}
+    >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect showOnKeyDown={showOnKeyDown} />
-      <Ariakit.ComboboxPopover>
+      <Ariakit.ComboboxPopover modal={modal}>
         <Ariakit.ComboboxList>
-          {fruits.map((value) => (
+          {plainFruits.map((value) => (
+            <Ariakit.ComboboxItem
+              key={value}
+              value={value}
+              disabled={value === "Grape"}
+            />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
+// The trigger drives a two-dimensional grid, as in the select-grid example.
+function GridFruitSelect() {
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Apple">
+      <Ariakit.ComboboxSelectLabel>Grid fruit</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect showOnKeyDown={false} />
+      <Ariakit.ComboboxPopover role="grid">
+        {gridFruits.map((row, index) => (
+          <Ariakit.ComboboxRow key={index}>
+            {row.map((value) => (
+              <Ariakit.ComboboxItem key={value} value={value} role="gridcell" />
+            ))}
+          </Ariakit.ComboboxRow>
+        ))}
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
+// The listbox pattern: an always visible standalone ComboboxList controlled by
+// the ComboboxSelect trigger, as in the select-listbox example.
+function StandaloneFruitSelect() {
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Pear">
+      <Ariakit.ComboboxSelectLabel>
+        Standalone fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxList alwaysVisible>
+        {standaloneFruits.map((value) => (
+          <Ariakit.ComboboxItem key={value} value={value} />
+        ))}
+      </Ariakit.ComboboxList>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
+// A long scrollable list so PageUp/PageDown paging can be exercised in a real
+// browser.
+function ManyFruitSelect() {
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Fruit 0">
+      <Ariakit.ComboboxSelectLabel>Many fruit</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxPopover style={{ maxHeight: 96, overflowY: "auto" }}>
+        <Ariakit.ComboboxList>
+          {manyFruits.map((value) => (
             <Ariakit.ComboboxItem key={value} value={value} />
           ))}
         </Ariakit.ComboboxList>
@@ -135,6 +208,20 @@ export default function Example() {
         defaultSelectedValue="Apple"
         showOnKeyDown={false}
       />
+      <PlainFruitSelect
+        label="Modal plain fruit"
+        defaultSelectedValue="Apple"
+        modal
+      />
+      <PlainFruitSelect
+        label="No loop fruit"
+        defaultSelectedValue="Apple"
+        focusLoop={false}
+      />
+      <PlainFruitSelect label="Unset fruit" />
+      <GridFruitSelect />
+      <StandaloneFruitSelect />
+      <ManyFruitSelect />
 
       <form
         onSubmit={(event) => {
