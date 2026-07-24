@@ -29,24 +29,25 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
       ...comboboxProps
     } = props;
 
-    const combobox = Ariakit.useComboboxStore({
+    const selectedValueProps =
+      values !== undefined
+        ? { selectedValue: values, setSelectedValue: onValuesChange }
+        : {
+            defaultSelectedValue: defaultValues ?? [],
+            setSelectedValue: onValuesChange,
+          };
+    const combobox = Ariakit.useComboboxStore<string[]>({
       value,
       setValue: onChange,
       defaultValue,
+      ...selectedValueProps,
       resetValueOnHide: true,
     });
 
-    const select = Ariakit.useSelectStore({
-      combobox,
-      value: values,
-      setValue: onValuesChange,
-      defaultValue: defaultValues,
-    });
-
-    const selectValue = Ariakit.useStoreState(select, "value");
+    const selectedValue = Ariakit.useStoreState(combobox, "selectedValue");
 
     // Reset the combobox value whenever an item is checked or unchecked.
-    useEffect(() => combobox.setValue(""), [selectValue, combobox]);
+    useEffect(() => combobox.setValue(""), [selectedValue, combobox]);
 
     return (
       <>
@@ -66,9 +67,10 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
           sameWidth
           gutter={8}
           className="popover"
-          render={<Ariakit.SelectList store={select} />}
         >
-          {children}
+          <Ariakit.ComboboxList store={combobox}>
+            {children}
+          </Ariakit.ComboboxList>
         </Ariakit.ComboboxPopover>
       </>
     );
@@ -82,18 +84,10 @@ export interface ComboboxItemProps extends ComponentPropsWithoutRef<"div"> {
 export const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
   function ComboboxItem(props, ref) {
     return (
-      // Here we're combining both SelectItem and ComboboxItem into the same
-      // element. SelectItem adds the multi-selectable attributes to the element
-      // (for example, aria-selected).
-      <Ariakit.SelectItem
-        ref={ref}
-        className="combobox-item"
-        {...props}
-        render={<Ariakit.ComboboxItem />}
-      >
-        <Ariakit.SelectItemCheck />
+      <Ariakit.ComboboxItem ref={ref} className="combobox-item" {...props}>
+        <Ariakit.ComboboxItemCheck />
         {props.children || props.value}
-      </Ariakit.SelectItem>
+      </Ariakit.ComboboxItem>
     );
   },
 );

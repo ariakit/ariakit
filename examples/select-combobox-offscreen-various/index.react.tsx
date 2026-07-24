@@ -1,8 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import type { ComboboxItemProps } from "@ariakit/react-components/combobox/combobox-item-offscreen";
 import { ComboboxItem } from "@ariakit/react-components/combobox/combobox-item-offscreen";
-import type { SelectItemProps } from "@ariakit/react-components/select/select-item-offscreen";
-import { SelectItem } from "@ariakit/react-components/select/select-item-offscreen";
 import { clsx } from "clsx";
 import deburr from "lodash-es/deburr.js";
 import groupBy from "lodash-es/groupBy.js";
@@ -34,18 +32,12 @@ const itemsByGroup = groupItems(items);
 
 interface OffscreenProbeItem {
   value: string;
-  props?: Partial<ComboboxItemProps & SelectItemProps>;
+  props?: Partial<ComboboxItemProps>;
   render?: NonNullable<ComboboxItemProps["render"]>;
-  selectRender?: NonNullable<SelectItemProps["render"]>;
 }
 
 type ComboboxItemRender = Exclude<
   NonNullable<ComboboxItemProps["render"]>,
-  ReactElement
->;
-
-type SelectItemRender = Exclude<
-  NonNullable<SelectItemProps["render"]>,
   ReactElement
 >;
 
@@ -61,7 +53,7 @@ const offscreenProbeProps = {
   onFocusVisible: () => {},
   focusOnHover: true,
   blurOnHoverEnd: false,
-} satisfies Partial<ComboboxItemProps & SelectItemProps>;
+} satisfies Partial<ComboboxItemProps>;
 
 const renderCallbackDisabledButton: ComboboxItemRender = (props) => {
   return <button {...props} disabled />;
@@ -95,29 +87,8 @@ const offscreenProbeItems: OffscreenProbeItem[] = [
     value: "Element disabled offscreen button",
     props: { disabled: true },
     render: <button disabled />,
-    // This verifies render element props own native disabled in both fixtures.
-    selectRender: <button disabled />,
   },
 ];
-
-function renderSelectComboboxProbeItem(
-  item: OffscreenProbeItem,
-): SelectItemRender {
-  return (props) => {
-    if ("data-offscreen" in props) {
-      if (typeof item.render === "function") {
-        return item.render(props);
-      }
-      if (item.render) {
-        return <button {...props} />;
-      }
-      return <div {...props} role={props.role ?? "option"} />;
-    }
-    return (
-      <ComboboxItem {...props} value={item.value} setValueOnClick={false} />
-    );
-  };
-}
 
 interface ComboboxProps
   extends
@@ -220,9 +191,9 @@ function Combobox({
 
 interface SelectProps
   extends
-    Pick<SelectItemProps, "offscreenMode">,
-    Pick<Ariakit.SelectProviderProps, "defaultValue">,
-    Pick<Ariakit.SelectPopoverProps, "unmountOnHide"> {
+    Pick<ComboboxItemProps, "offscreenMode">,
+    Pick<Ariakit.ComboboxPopoverProps, "unmountOnHide"> {
+  defaultValue?: Ariakit.ComboboxProviderProps["defaultSelectedValue"];
   group?: boolean;
 }
 
@@ -235,14 +206,17 @@ function Select({
   const ref = useRef(null);
   return (
     <div>
-      <Ariakit.SelectProvider placement="bottom" defaultValue={defaultValue}>
-        <Ariakit.SelectLabel className="block px-3 py-2">
+      <Ariakit.ComboboxProvider
+        placement="bottom"
+        defaultSelectedValue={defaultValue}
+      >
+        <Ariakit.ComboboxSelectLabel className="block px-3 py-2">
           select {offscreenMode} {!unmountOnHide ? "mounted " : ""}
           {defaultValue !== "Select..." ? "defaultValue " : ""}
           {group ? "group " : ""}
-        </Ariakit.SelectLabel>
-        <Ariakit.Select className="ak-button ak-button-default h-10 w-64 justify-between px-3" />
-        <Ariakit.SelectPopover
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect className="ak-button ak-button-default h-10 w-64 justify-between px-3" />
+        <Ariakit.ComboboxPopover
           gutter={8}
           unmountOnHide
           className={clsx(
@@ -253,13 +227,16 @@ function Select({
           {group ? (
             <div ref={ref} className="ak-popup-cover ak-popup-scroll min-h-0">
               {itemsByGroup.map((group) => (
-                <Ariakit.SelectGroup key={group.id} className="ak-popup-cover">
-                  <Ariakit.SelectGroupLabel className="ak-popup-cover ak-popup-sticky-header">
+                <Ariakit.ComboboxGroup
+                  key={group.id}
+                  className="ak-popup-cover"
+                >
+                  <Ariakit.ComboboxGroupLabel className="ak-popup-cover ak-popup-sticky-header">
                     {group.label}
-                  </Ariakit.SelectGroupLabel>
+                  </Ariakit.ComboboxGroupLabel>
                   <div className="ak-popup-cover">
                     {group.items.map((item) => (
-                      <SelectItem
+                      <ComboboxItem
                         key={item.value}
                         value={item.value}
                         blurOnHoverEnd={false}
@@ -269,12 +246,12 @@ function Select({
                       />
                     ))}
                   </div>
-                </Ariakit.SelectGroup>
+                </Ariakit.ComboboxGroup>
               ))}
             </div>
           ) : (
             items.map((item) => (
-              <SelectItem
+              <ComboboxItem
                 key={item.value}
                 value={item.value}
                 focusOnHover
@@ -284,8 +261,8 @@ function Select({
               />
             ))
           )}
-        </Ariakit.SelectPopover>
-      </Ariakit.SelectProvider>
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
     </div>
   );
 }
@@ -293,9 +270,9 @@ function Select({
 interface SelectComboboxProps
   extends
     Pick<Ariakit.ComboboxProps, "autoSelect">,
-    Pick<SelectItemProps, "offscreenMode">,
-    Pick<Ariakit.SelectProviderProps, "defaultValue">,
-    Pick<Ariakit.SelectPopoverProps, "unmountOnHide"> {
+    Pick<ComboboxItemProps, "offscreenMode">,
+    Pick<Ariakit.ComboboxPopoverProps, "unmountOnHide"> {
+  defaultValue?: Ariakit.ComboboxProviderProps["defaultSelectedValue"];
   group?: boolean;
 }
 
@@ -323,100 +300,73 @@ function SelectCombobox({
       <Ariakit.ComboboxProvider
         placement="bottom"
         resetValueOnHide
+        defaultSelectedValue={defaultValue}
         setValue={(value) => {
           startTransition(() => {
             setSearchValue(value);
           });
         }}
       >
-        <Ariakit.SelectProvider placement="bottom" defaultValue={defaultValue}>
-          <Ariakit.SelectLabel className="block px-3 py-2">
-            searchable {offscreenMode} {!unmountOnHide ? "mounted " : ""}
-            {defaultValue !== "Select..." ? "defaultValue " : ""}
-            {autoSelect === "always"
-              ? "autoSelect always "
-              : autoSelect
-                ? "autoSelect "
-                : ""}
-            {group ? "group " : ""}
-          </Ariakit.SelectLabel>
-          <Ariakit.Select className="ak-button ak-button-default h-10 w-64 justify-between px-3" />
-          <Ariakit.SelectPopover
-            gutter={8}
-            unmountOnHide
-            className={clsx(
-              "ak-popup ak-popup-enter ak-elevation-1 ak-popover w-[--popover-anchor-width]",
-              group ? "overflow-clip" : "ak-popup-scroll",
-            )}
+        <Ariakit.ComboboxSelectLabel className="block px-3 py-2">
+          searchable {offscreenMode} {!unmountOnHide ? "mounted " : ""}
+          {defaultValue !== "Select..." ? "defaultValue " : ""}
+          {autoSelect === "always"
+            ? "autoSelect always "
+            : autoSelect
+              ? "autoSelect "
+              : ""}
+          {group ? "group " : ""}
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect className="ak-button ak-button-default h-10 w-64 justify-between px-3" />
+        <Ariakit.ComboboxPopover
+          gutter={8}
+          unmountOnHide
+          className={clsx(
+            "ak-popup ak-popup-enter ak-elevation-1 ak-popover w-[--popover-anchor-width]",
+            group ? "overflow-clip" : "ak-popup-scroll",
+          )}
+        >
+          <Ariakit.Combobox
+            autoSelect={autoSelect}
+            placeholder="Search..."
+            className="ak-combobox z-20 h-10 w-64 px-3"
+          />
+          <Ariakit.ComboboxList
+            ref={ref}
+            className="ak-popup-cover ak-popup-scroll min-h-0"
           >
-            <Ariakit.Combobox
-              autoSelect={autoSelect}
-              placeholder="Search..."
-              className="ak-combobox z-20 h-10 w-64 px-3"
-            />
-            <Ariakit.ComboboxList
-              ref={ref}
-              className="ak-popup-cover ak-popup-scroll min-h-0"
-            >
-              {groupMatches
-                ? groupMatches.map((group, i) => (
-                    <Ariakit.ComboboxGroup key={i} className="ak-popup-cover">
-                      <Ariakit.ComboboxGroupLabel className="ak-popup-cover ak-popup-sticky-header">
-                        {group.label}
-                      </Ariakit.ComboboxGroupLabel>
-                      <div className="ak-popup-cover">
-                        {group.items.map((item, j) => (
-                          <SelectItem
-                            key={j}
-                            value={item.value}
-                            blurOnHoverEnd={false}
-                            offscreenRoot={ref}
-                            offscreenMode={
-                              i + j === 0 ? "active" : offscreenMode
-                            }
-                            className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
-                            render={(props) => {
-                              if ("data-offscreen" in props) {
-                                return <div {...props} />;
-                              }
-                              return (
-                                <ComboboxItem
-                                  {...props}
-                                  value={item.value}
-                                  setValueOnClick={false}
-                                />
-                              );
-                            }}
-                          />
-                        ))}
-                      </div>
-                    </Ariakit.ComboboxGroup>
-                  ))
-                : matches.map((item, i) => (
-                    <SelectItem
-                      key={i}
-                      value={item.value}
-                      blurOnHoverEnd={false}
-                      offscreenRoot={ref}
-                      offscreenMode={i === 0 ? "active" : offscreenMode}
-                      className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
-                      render={(props) => {
-                        if ("data-offscreen" in props) {
-                          return <div {...props} />;
-                        }
-                        return (
-                          <ComboboxItem
-                            {...props}
-                            value={item.value}
-                            setValueOnClick={false}
-                          />
-                        );
-                      }}
-                    />
-                  ))}
-            </Ariakit.ComboboxList>
-          </Ariakit.SelectPopover>
-        </Ariakit.SelectProvider>
+            {groupMatches
+              ? groupMatches.map((group, i) => (
+                  <Ariakit.ComboboxGroup key={i} className="ak-popup-cover">
+                    <Ariakit.ComboboxGroupLabel className="ak-popup-cover ak-popup-sticky-header">
+                      {group.label}
+                    </Ariakit.ComboboxGroupLabel>
+                    <div className="ak-popup-cover">
+                      {group.items.map((item, j) => (
+                        <ComboboxItem
+                          key={j}
+                          value={item.value}
+                          blurOnHoverEnd={false}
+                          offscreenRoot={ref}
+                          offscreenMode={i + j === 0 ? "active" : offscreenMode}
+                          className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                        />
+                      ))}
+                    </div>
+                  </Ariakit.ComboboxGroup>
+                ))
+              : matches.map((item, i) => (
+                  <ComboboxItem
+                    key={i}
+                    value={item.value}
+                    blurOnHoverEnd={false}
+                    offscreenRoot={ref}
+                    offscreenMode={i === 0 ? "active" : offscreenMode}
+                    className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                  />
+                ))}
+          </Ariakit.ComboboxList>
+        </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
     </div>
   );
@@ -464,43 +414,40 @@ function OffscreenPropsSelectCombobox() {
   const ref = useRef(null);
   return (
     <div>
-      <Ariakit.ComboboxProvider placement="bottom" resetValueOnHide>
-        <Ariakit.SelectProvider
-          placement="bottom"
-          defaultValue="Visible option"
+      <Ariakit.ComboboxProvider
+        placement="bottom"
+        resetValueOnHide
+        defaultSelectedValue="Visible option"
+      >
+        <Ariakit.ComboboxSelectLabel className="block px-3 py-2">
+          offscreen props searchable
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect className="ak-button ak-button-default h-10 w-64 justify-between px-3" />
+        <Ariakit.ComboboxPopover
+          gutter={8}
+          className="ak-popup ak-popup-enter ak-elevation-1 ak-popover w-[--popover-anchor-width]"
         >
-          <Ariakit.SelectLabel className="block px-3 py-2">
-            offscreen props searchable
-          </Ariakit.SelectLabel>
-          <Ariakit.Select className="ak-button ak-button-default h-10 w-64 justify-between px-3" />
-          <Ariakit.SelectPopover
-            gutter={8}
-            className="ak-popup ak-popup-enter ak-elevation-1 ak-popover w-[--popover-anchor-width]"
+          <Ariakit.Combobox
+            placeholder="Search..."
+            className="ak-combobox z-20 h-10 w-64 px-3"
+          />
+          <Ariakit.ComboboxList
+            ref={ref}
+            className="ak-popup-cover ak-popup-scroll h-24 min-h-0"
           >
-            <Ariakit.Combobox
-              placeholder="Search..."
-              className="ak-combobox z-20 h-10 w-64 px-3"
-            />
-            <Ariakit.ComboboxList
-              ref={ref}
-              className="ak-popup-cover ak-popup-scroll h-24 min-h-0"
-            >
-              {offscreenProbeItems.map((item, index) => (
-                <SelectItem
-                  key={item.value}
-                  {...(item.props && { ...offscreenProbeProps, ...item.props })}
-                  value={item.value}
-                  offscreenRoot={ref}
-                  offscreenMode={index === 0 ? "active" : "passive"}
-                  className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
-                  render={
-                    item.selectRender || renderSelectComboboxProbeItem(item)
-                  }
-                />
-              ))}
-            </Ariakit.ComboboxList>
-          </Ariakit.SelectPopover>
-        </Ariakit.SelectProvider>
+            {offscreenProbeItems.map((item, index) => (
+              <ComboboxItem
+                key={item.value}
+                {...(item.props && { ...offscreenProbeProps, ...item.props })}
+                value={item.value}
+                offscreenRoot={ref}
+                offscreenMode={index === 0 ? "active" : "passive"}
+                className="ak-option block truncate [--padding-block:0.5rem] sm:[--padding-block:0.25rem]"
+                render={item.render}
+              />
+            ))}
+          </Ariakit.ComboboxList>
+        </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
     </div>
   );

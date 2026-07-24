@@ -7,17 +7,17 @@ import * as Ariakit from "@ariakit/react";
 import { clsx } from "clsx";
 import * as React from "react";
 
-export interface SelectProps extends Ariakit.SelectProps {
+export interface SelectProps extends Ariakit.ComboboxSelectProps {
   icon?: React.ReactNode;
   text?: React.ReactNode;
-  value?: Ariakit.SelectProviderProps<string>["value"];
-  setValue?: Ariakit.SelectProviderProps<string>["setValue"];
-  defaultValue?: Ariakit.SelectProviderProps<string>["defaultValue"];
+  value?: Ariakit.ComboboxProviderProps<string>["selectedValue"];
+  setValue?: Ariakit.ComboboxProviderProps<string>["setSelectedValue"];
+  defaultValue?: Ariakit.ComboboxProviderProps<string>["defaultSelectedValue"];
   tab?: Ariakit.TabProviderProps["selectedId"];
   setTab?: Ariakit.TabProviderProps["setSelectedId"];
   defaultTab?: Ariakit.TabProviderProps["defaultSelectedId"];
   selectTabOnMove?: boolean;
-  label?: string | Ariakit.SelectLabelProps["render"];
+  label?: string | Ariakit.ComboboxSelectLabelProps["render"];
   heading?: string | Ariakit.PopoverHeadingProps["render"];
   combobox?: Ariakit.ComboboxProps["render"];
   onSearch?: (value: string) => void;
@@ -41,30 +41,44 @@ export function Select({
   ...props
 }: SelectProps) {
   const searchable = !!combobox || !!onSearch;
+  const selectedValueProps =
+    value !== undefined
+      ? { selectedValue: value, setSelectedValue: setValue }
+      : {
+          defaultSelectedValue: defaultValue ?? "",
+          setSelectedValue: setValue,
+        };
 
-  const select = (
-    <Ariakit.SelectProvider
+  return (
+    <Ariakit.ComboboxProvider<string>
       virtualFocus={searchable}
-      value={value}
-      setValue={setValue}
-      defaultValue={defaultValue}
+      {...selectedValueProps}
+      resetValueOnHide={searchable}
+      setValue={(value) => {
+        React.startTransition(() => {
+          onSearch?.(value);
+        });
+      }}
     >
       {label && (
-        <Ariakit.SelectLabel
+        <Ariakit.ComboboxSelectLabel
           render={typeof label === "string" ? <div>{label}</div> : label}
         />
       )}
-      <Ariakit.Select
+      <Ariakit.ComboboxSelect
         {...props}
         className={clsx("ak-button ak-button-default", props.className)}
       >
         {icon}
-        <div className="truncate">{text || <Ariakit.SelectValue />}</div>
-        <Ariakit.SelectArrow />
-      </Ariakit.Select>
-      <Ariakit.SelectPopover
+        <div className="truncate">
+          {text || <Ariakit.ComboboxSelectedValue />}
+        </div>
+        <Ariakit.ComboboxSelectArrow />
+      </Ariakit.ComboboxSelect>
+      <Ariakit.ComboboxPopover
         gutter={5}
         shift={-4}
+        autoFocusOnShow
         unmountOnHide
         className="ak-popup ak-popup-enter ak-elevation-1 ak-popover flex flex-col overflow-clip gap-px"
       >
@@ -72,13 +86,13 @@ export function Select({
           <div className="flex flex-col gap-2">
             {heading && (
               <div className="grid grid-cols-[auto_max-content] items-center gap-2 ps-[13px]">
-                <Ariakit.SelectHeading
+                <Ariakit.ComboboxHeading
                   className="cursor-default font-medium opacity-80"
                   render={
                     typeof heading === "string" ? <div>{heading}</div> : heading
                   }
                 />
-                <Ariakit.SelectDismiss className="ak-rounded-item ak-button ak-button-secondary ak-button-flat ak-button-icon ak-button-small opacity-70" />
+                <Ariakit.ComboboxDismiss className="ak-rounded-item ak-button ak-button-secondary ak-button-flat ak-button-icon ak-button-small opacity-70" />
               </div>
             )}
             {searchable && (
@@ -98,26 +112,9 @@ export function Select({
         >
           <div className="ak-popup-cover flex flex-col">{children}</div>
         </Ariakit.TabProvider>
-      </Ariakit.SelectPopover>
-    </Ariakit.SelectProvider>
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
   );
-
-  if (searchable) {
-    return (
-      <Ariakit.ComboboxProvider
-        resetValueOnHide
-        setValue={(value) => {
-          React.startTransition(() => {
-            onSearch?.(value);
-          });
-        }}
-      >
-        {select}
-      </Ariakit.ComboboxProvider>
-    );
-  }
-
-  return select;
 }
 
 export interface SelectTabListProps extends Ariakit.TabListProps {}
@@ -169,16 +166,17 @@ export function SelectTabPanel(props: SelectTabPanelProps) {
 }
 
 export interface SelectListProps extends Omit<
-  Ariakit.SelectListProps,
+  Ariakit.ComboboxListProps,
   "store"
 > {}
 
 export function SelectList(props: SelectListProps) {
   const combobox = Ariakit.useComboboxContext();
-  const Component = combobox ? Ariakit.ComboboxList : Ariakit.SelectList;
+  const inputElement = Ariakit.useStoreState(combobox, "inputElement");
   return (
-    <Component
+    <Ariakit.ComboboxList
       {...props}
+      composite={!inputElement}
       className={clsx(
         "ak-popup-cover ak-popup-scroll outline-none",
         props.className,
@@ -187,22 +185,23 @@ export function SelectList(props: SelectListProps) {
   );
 }
 
-export interface SelectItemProps extends Ariakit.SelectItemProps {
+export interface SelectItemProps extends Ariakit.ComboboxItemProps {
   icon?: React.ReactNode;
 }
 
 export function SelectItem({
-  icon = <Ariakit.SelectItemCheck />,
+  icon = <Ariakit.ComboboxItemCheck />,
   ...props
 }: SelectItemProps) {
   const combobox = Ariakit.useComboboxContext();
-  const render = combobox ? (
-    <Ariakit.ComboboxItem render={props.render} />
-  ) : undefined;
+  const selectedValue = Ariakit.useStoreState(combobox, "selectedValue");
+  const selected = Array.isArray(selectedValue)
+    ? selectedValue.includes(props.value)
+    : selectedValue === props.value;
   return (
-    <Ariakit.SelectItem
+    <Ariakit.ComboboxItem
       {...props}
-      render={render}
+      autoFocus={props.autoFocus ?? selected}
       blurOnHoverEnd={false}
       className={clsx(
         "ak-option [--padding-block:0.5rem] sm:[--padding-block:0.25rem]",
@@ -211,7 +210,7 @@ export function SelectItem({
     >
       {icon}
       <div className="truncate">{props.children || props.value}</div>
-    </Ariakit.SelectItem>
+    </Ariakit.ComboboxItem>
   );
 }
 

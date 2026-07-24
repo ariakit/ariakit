@@ -28,7 +28,15 @@ Fill in a React input field with autocomplete &amp; autosuggest functionalities.
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-links)
 - [](/examples/select)
+- [](/examples/select-multiple)
+- [](/examples/select-animated)
 - [](/examples/select-combobox)
+- [](/examples/select-combobox-tab)
+- [](/examples/select-grid)
+- [](/examples/select-group)
+- [](/examples/select-item-custom)
+- [](/examples/form-select)
+- [](/examples/toolbar-select)
 
 </div>
 
@@ -39,18 +47,18 @@ useComboboxStore()
 useComboboxContext()
 
 <ComboboxProvider>
+  <ComboboxLabel />
   <Combobox />
   <ComboboxSelectLabel />
   <ComboboxSelect>
     <ComboboxSelectedValue />
     <ComboboxSelectArrow />
   </ComboboxSelect>
-  <ComboboxLabel />
   <ComboboxCancel />
   <ComboboxDisclosure />
   <ComboboxValue />
   <ComboboxPopover>
-    <ComboboxInput aria-label="Search" />
+    <ComboboxInput />
     <ComboboxHeading />
     <ComboboxDismiss />
     <ComboboxList>

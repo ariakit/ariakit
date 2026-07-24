@@ -25,13 +25,30 @@ A value component reads one specific value from a provider, an explicit store, o
 - exposes the value directly or through a `children` render function
 - does not accept HTML props such as `className`, `style`, or `ref`, because it has no element to receive them
 
-The stable public value components are [`SelectValue`](/reference/select-value), [`ComboboxValue`](/reference/combobox-value), [`ComboboxSelectedValue`](/reference/combobox-selected-value), [`SelectItemSelected`](/reference/select-item-selected), and [`ComboboxItemSelected`](/reference/combobox-item-selected), all exported from `@ariakit/react`.
+The stable public value components are [`ComboboxValue`](/reference/combobox-value), [`ComboboxSelectedValue`](/reference/combobox-selected-value), [`ComboboxItemSelected`](/reference/combobox-item-selected), [`SelectValue`](/reference/select-value), and [`SelectItemSelected`](/reference/select-item-selected), all exported from `@ariakit/react`.
 
 This pattern is not inherently uncontrolled. Value components work with both controlled and uncontrolled providers and stores. Their main benefit is exposing state close to the JSX that needs it, without creating or passing a store solely for that purpose.
 
 ## Rendering a value directly
 
 In its shortest form, a value component renders the current value as-is. No wrapper element is added around it, so it sits directly wherever you place it:
+
+```jsx {3}
+<ComboboxProvider defaultSelectedValue="Apple">
+  <ComboboxSelect>
+    <ComboboxSelectedValue fallback="Choose a fruit" />
+  </ComboboxSelect>
+  <ComboboxPopover>
+    <ComboboxItem value="Apple" />
+    <ComboboxItem value="Banana" />
+    <ComboboxItem value="Orange" />
+  </ComboboxPopover>
+</ComboboxProvider>
+```
+
+[`ComboboxSelectedValue`](/reference/combobox-selected-value) accepts a `fallback` prop that's used when the current selected value is an empty string or empty array.
+
+[`SelectValue`](/reference/select-value) remains available for rendering a Select store's `value` state in the same way:
 
 ```jsx {3}
 <SelectProvider defaultValue="Apple">
@@ -42,27 +59,8 @@ In its shortest form, a value component renders the current value as-is. No wrap
   <SelectPopover>
     <SelectItem value="Apple" />
     <SelectItem value="Banana" />
-    <SelectItem value="Orange" />
   </SelectPopover>
 </SelectProvider>
-```
-
-[`SelectValue`](/reference/select-value) accepts a `fallback` prop that's used when the current value is an empty string or empty array.
-
-Use [`ComboboxSelectedValue`](/reference/combobox-selected-value) with
-[`ComboboxSelect`](/reference/combobox-select) to render the Combobox store's
-`selectedValue` state in the same way:
-
-```jsx {3}
-<ComboboxProvider>
-  <ComboboxSelect>
-    <ComboboxSelectedValue fallback="Choose a fruit" />
-  </ComboboxSelect>
-  <ComboboxPopover>
-    <ComboboxItem value="Apple" />
-    <ComboboxItem value="Banana" />
-  </ComboboxPopover>
-</ComboboxProvider>
 ```
 
 ## Rendering custom JSX
@@ -82,21 +80,20 @@ Returning the raw value isn't always useful. For example, a multi-select renders
 
 ## Rendering item state
 
-Item-scoped value components read state from the closest item instead of the provider or store. For example, use [`SelectItemSelected`](/reference/select-item-selected) inside a [`SelectItem`](/reference/select-item) to render custom UI based on whether that item is selected:
+Item-scoped value components read state from the closest item instead of the provider or store. For example, use [`ComboboxItemSelected`](/reference/combobox-item-selected) inside a [`ComboboxItem`](/reference/combobox-item) to render custom UI based on whether that item is selected:
 
 ```jsx {2-4}
-<SelectItem value="Apple">
-  <SelectItemSelected>
+<ComboboxItem value="Apple">
+  <ComboboxItemSelected>
     {(selected) => (selected ? <CheckIcon /> : null)}
-  </SelectItemSelected>
+  </ComboboxItemSelected>
   Apple
-</SelectItem>
+</ComboboxItem>
 ```
 
 The `children` function is required because a raw boolean doesn't produce visible output in React. It receives the current selected state and re-runs whenever that state changes.
 
-[`ComboboxItemSelected`](/reference/combobox-item-selected) provides the same
-item-scoped state inside a [`ComboboxItem`](/reference/combobox-item).
+[`SelectItemSelected`](/reference/select-item-selected) provides the same item-scoped state inside a [`SelectItem`](/reference/select-item).
 
 <aside data-type="note" title="The render prop">
 

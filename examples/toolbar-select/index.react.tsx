@@ -24,26 +24,29 @@ export default function Example() {
         {icons.underline} Underline
       </Ariakit.ToolbarItem>
       <Ariakit.ToolbarSeparator className="separator" />
-      <Ariakit.SelectProvider value={value} setValue={setValue}>
-        <Ariakit.Select
+      <Ariakit.ComboboxProvider
+        selectedValue={value}
+        setSelectedValue={setValue}
+      >
+        <Ariakit.ComboboxSelect
           aria-label="Text alignment"
           className="button secondary"
           render={<Ariakit.ToolbarItem />}
         >
-          {selectedIcon} {value} <Ariakit.SelectArrow />
-        </Ariakit.Select>
-        <Ariakit.SelectPopover gutter={4} className="popover">
+          {selectedIcon} {value} <Ariakit.ComboboxSelectArrow />
+        </Ariakit.ComboboxSelect>
+        <Ariakit.ComboboxPopover gutter={4} className="popover">
           {options.map((option) => (
-            <Ariakit.SelectItem
+            <Ariakit.ComboboxItem
               key={option.value}
               value={option.value}
               className="select-item"
             >
               {option.icon} {option.value}
-            </Ariakit.SelectItem>
+            </Ariakit.ComboboxItem>
           ))}
-        </Ariakit.SelectPopover>
-      </Ariakit.SelectProvider>
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
     </Ariakit.Toolbar>
   );
 }

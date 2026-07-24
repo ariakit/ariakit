@@ -29,24 +29,28 @@ export default function Example() {
   const [value, setValue] = useState("john.doe@example.com");
   return (
     <div className="wrapper">
-      <Ariakit.SelectProvider setValueOnMove value={value} setValue={setValue}>
-        <Ariakit.SelectLabel>Account</Ariakit.SelectLabel>
-        <Ariakit.Select className="button">
+      <Ariakit.ComboboxProvider
+        setSelectedValueOnMove
+        selectedValue={value}
+        setSelectedValue={setValue}
+      >
+        <Ariakit.ComboboxSelectLabel>Account</Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect className="button">
           {renderValue(value)}
-          <Ariakit.SelectArrow />
-        </Ariakit.Select>
-        <Ariakit.SelectPopover gutter={4} sameWidth className="popover">
+          <Ariakit.ComboboxSelectArrow />
+        </Ariakit.ComboboxSelect>
+        <Ariakit.ComboboxPopover gutter={4} sameWidth className="popover">
           {accounts.map((email) => (
-            <Ariakit.SelectItem
+            <Ariakit.ComboboxItem
               key={email}
               value={email}
               className="select-item"
             >
               {renderValue(email)}
-            </Ariakit.SelectItem>
+            </Ariakit.ComboboxItem>
           ))}
-        </Ariakit.SelectPopover>
-      </Ariakit.SelectProvider>
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
     </div>
   );
 }

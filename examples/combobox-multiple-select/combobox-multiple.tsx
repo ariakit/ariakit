@@ -26,12 +26,18 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
       ...comboboxProps
     } = props;
 
-    const combobox = Ariakit.useComboboxStore();
-    const select = Ariakit.useSelectStore({ combobox });
-    const selectValue = Ariakit.useStoreState(select, "value");
+    const selectedValueProps =
+      values !== undefined
+        ? { selectedValue: values, setSelectedValue: onValuesChange }
+        : {
+            defaultSelectedValue: defaultValues ?? [],
+            setSelectedValue: onValuesChange,
+          };
+    const combobox = Ariakit.useComboboxStore<string[]>(selectedValueProps);
+    const selectedValue = Ariakit.useStoreState(combobox, "selectedValue");
 
     // Reset the combobox value whenever an item is checked or unchecked.
-    useEffect(() => combobox.setValue(""), [selectValue, combobox]);
+    useEffect(() => combobox.setValue(""), [selectedValue, combobox]);
 
     return (
       <Ariakit.ComboboxProvider
@@ -41,53 +47,42 @@ export const Combobox = forwardRef<HTMLInputElement, ComboboxProps>(
         defaultValue={defaultValue}
         resetValueOnHide
       >
-        <Ariakit.SelectProvider
-          store={select}
-          value={values}
-          setValue={onValuesChange}
-          defaultValue={defaultValues}
+        {label && (
+          <Ariakit.ComboboxLabel className="label">
+            {label}
+          </Ariakit.ComboboxLabel>
+        )}
+        <Ariakit.Combobox
+          ref={ref}
+          {...comboboxProps}
+          className={clsx("combobox", comboboxProps.className)}
+        />
+        <Ariakit.ComboboxPopover
+          sameWidth
+          gutter={8}
+          className="popover"
+          render={<Ariakit.ComboboxList />}
         >
-          {label && (
-            <Ariakit.ComboboxLabel className="label">
-              {label}
-            </Ariakit.ComboboxLabel>
-          )}
-          <Ariakit.Combobox
-            ref={ref}
-            {...comboboxProps}
-            className={clsx("combobox", comboboxProps.className)}
-          />
-          <Ariakit.ComboboxPopover
-            sameWidth
-            gutter={8}
-            className="popover"
-            render={<Ariakit.SelectList />}
-          >
-            {children}
-          </Ariakit.ComboboxPopover>
-        </Ariakit.SelectProvider>
+          {children}
+        </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
     );
   },
 );
 
-export interface ComboboxItemProps extends Ariakit.SelectItemProps {}
+export interface ComboboxItemProps extends Ariakit.ComboboxItemProps {}
 
 export const ComboboxItem = forwardRef<HTMLDivElement, ComboboxItemProps>(
   function ComboboxItem(props, ref) {
     return (
-      // Here we're combining both SelectItem and ComboboxItem into the same
-      // element. SelectItem adds the multi-selectable attributes to the element
-      // (for example, aria-selected).
-      <Ariakit.SelectItem
+      <Ariakit.ComboboxItem
         ref={ref}
         {...props}
         className={clsx("combobox-item", props.className)}
-        render={<Ariakit.ComboboxItem render={props.render} />}
       >
-        <Ariakit.SelectItemCheck />
+        <Ariakit.ComboboxItemCheck />
         {props.children || props.value}
-      </Ariakit.SelectItem>
+      </Ariakit.ComboboxItem>
     );
   },
 );

@@ -2,16 +2,16 @@ import * as Ariakit from "@ariakit/react";
 import * as React from "react";
 
 interface FilterSelectProps extends Omit<
-  Ariakit.SelectProps,
+  Ariakit.ComboboxSelectProps,
   "store" | "onChange" | "onToggle"
 > {
   label: string;
-  defaultValue?: Ariakit.SelectStoreProps["defaultValue"];
-  value?: Ariakit.SelectStoreProps["value"];
-  onChange?: Ariakit.SelectStoreProps["setValue"];
-  defaultOpen?: Ariakit.SelectStoreProps["defaultOpen"];
-  open?: Ariakit.SelectStoreProps["open"];
-  onToggle?: Ariakit.SelectStoreProps["setOpen"];
+  defaultValue?: Ariakit.ComboboxStoreProps<string>["defaultSelectedValue"];
+  value?: Ariakit.ComboboxStoreProps<string>["selectedValue"];
+  onChange?: Ariakit.ComboboxStoreProps<string>["setSelectedValue"];
+  defaultOpen?: Ariakit.ComboboxStoreProps["defaultOpen"];
+  open?: Ariakit.ComboboxStoreProps["open"];
+  onToggle?: Ariakit.ComboboxStoreProps["setOpen"];
   onRemove?: () => void;
 }
 
@@ -34,23 +34,28 @@ export const FilterSelect = React.forwardRef<
   ref,
 ) {
   const labelId = React.useId();
-  const select = Ariakit.useSelectStore({
-    defaultValue,
-    value,
-    setValue: onChange,
+  const selectedValueProps =
+    value !== undefined
+      ? { selectedValue: value, setSelectedValue: onChange }
+      : {
+          defaultSelectedValue: defaultValue ?? "",
+          setSelectedValue: onChange,
+        };
+  const select = Ariakit.useComboboxStore<string>({
+    ...selectedValueProps,
     defaultOpen,
     open,
     setOpen(open) {
       onToggle?.(open);
-      if (!open && !select.getState().value) {
+      if (!open && !select.getState().selectedValue) {
         onRemove?.();
       }
     },
   });
-  const selectValue = Ariakit.useStoreState(select, "value");
+  const selectValue = Ariakit.useStoreState(select, "selectedValue");
   return (
     <div className="filter">
-      <Ariakit.Select
+      <Ariakit.ComboboxSelect
         ref={ref}
         className="button select"
         {...props}
@@ -63,15 +68,17 @@ export const FilterSelect = React.forwardRef<
           </span>
           {selectValue || "Choose one"}
         </div>
-      </Ariakit.Select>
-      <Ariakit.SelectPopover
+      </Ariakit.ComboboxSelect>
+      <Ariakit.ComboboxPopover
         store={select}
         aria-labelledby={labelId}
+        composite
+        autoFocusOnShow
         gutter={4}
         className="popover"
       >
         {children}
-      </Ariakit.SelectPopover>
+      </Ariakit.ComboboxPopover>
       {onRemove && (
         <Ariakit.Button
           className="button select"
@@ -85,16 +92,16 @@ export const FilterSelect = React.forwardRef<
   );
 });
 
-interface FilterSelectItemProps extends Ariakit.SelectItemProps {}
+interface FilterSelectItemProps extends Ariakit.ComboboxItemProps {}
 
 export const FilterSelectItem = React.forwardRef<
   HTMLDivElement,
   FilterSelectItemProps
 >(function FilterSelectItem(props, ref) {
   return (
-    <Ariakit.SelectItem ref={ref} className="select-item" {...props}>
-      <Ariakit.SelectItemCheck />
+    <Ariakit.ComboboxItem ref={ref} className="select-item" {...props}>
+      <Ariakit.ComboboxItemCheck />
       {props.children ?? props.value}
-    </Ariakit.SelectItem>
+    </Ariakit.ComboboxItem>
   );
 });

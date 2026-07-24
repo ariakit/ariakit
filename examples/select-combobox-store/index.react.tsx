@@ -5,8 +5,10 @@ import list from "../select-combobox/list.ts";
 import "./style.css";
 
 export default function Example() {
-  const combobox = Ariakit.useComboboxStore({ resetValueOnHide: true });
-  const select = Ariakit.useSelectStore({ combobox, defaultValue: "Apple" });
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Apple",
+    resetValueOnHide: true,
+  });
 
   const value = Ariakit.useStoreState(combobox, "value");
   const deferredValue = useDeferredValue(value);
@@ -19,10 +21,12 @@ export default function Example() {
 
   return (
     <div className="wrapper">
-      <Ariakit.SelectLabel store={select}>Favorite fruit</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} className="button" />
-      <Ariakit.SelectPopover
-        store={select}
+      <Ariakit.ComboboxSelectLabel store={combobox}>
+        Favorite fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={combobox} className="button" />
+      <Ariakit.ComboboxPopover
+        store={combobox}
         gutter={4}
         sameWidth
         className="popover"
@@ -42,11 +46,11 @@ export default function Example() {
               key={value}
               focusOnHover
               className="select-item"
-              render={<Ariakit.SelectItem value={value} />}
+              value={value}
             />
           ))}
         </Ariakit.ComboboxList>
-      </Ariakit.SelectPopover>
+      </Ariakit.ComboboxPopover>
     </div>
   );
 }

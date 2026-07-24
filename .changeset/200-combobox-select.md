@@ -4,15 +4,16 @@
 "@ariakit/react": patch
 ---
 
-Added `ComboboxSelect` and related components
+Added Combobox select components
 
-The Combobox module now supports standard and filterable selects with a single store. `Combobox` is also exported as `ComboboxInput`, while `ComboboxSelectedValue` and `ComboboxItemSelected` expose the selected state for custom rendering:
+Added [`ComboboxSelect`](https://ariakit.com/reference/combobox-select), [`ComboboxSelectLabel`](https://ariakit.com/reference/combobox-select-label), [`ComboboxSelectArrow`](https://ariakit.com/reference/combobox-select-arrow), [`ComboboxInput`](https://ariakit.com/reference/combobox-input), [`ComboboxSelectedValue`](https://ariakit.com/reference/combobox-selected-value), [`ComboboxItemSelected`](https://ariakit.com/reference/combobox-item-selected), [`ComboboxDismiss`](https://ariakit.com/reference/combobox-dismiss), [`ComboboxHeading`](https://ariakit.com/reference/combobox-heading), and [`ComboboxRenderer`](https://ariakit.com/reference/combobox-renderer). Together, these APIs support standard and filterable selects with one Combobox store:
 
 ```tsx
 <ComboboxProvider>
   <ComboboxSelectLabel>Favorite fruit</ComboboxSelectLabel>
   <ComboboxSelect />
   <ComboboxPopover>
+    <ComboboxLabel>Search fruits</ComboboxLabel>
     <ComboboxInput />
     <ComboboxList>
       <ComboboxItem value="Apple" />

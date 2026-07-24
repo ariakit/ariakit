@@ -40,7 +40,7 @@ export const pages = {
     { label: "Dialog with Menu", path: "/examples/dialog-menu" },
     { label: "Nested Dialog", path: "/examples/dialog-nested" },
     { label: "Radix Dialog", path: "/examples/dialog-radix" },
-    { label: "Form with Select", path: "/examples/form-select" },
+    { label: "Form with a Combobox select", path: "/examples/form-select" },
     { label: "Menu with Combobox", path: "/examples/menu-combobox" },
     { label: "Menu with Motion", path: "/examples/menu-framer-motion" },
     { label: "MenuItemCheckbox", path: "/examples/menu-item-checkbox" },
@@ -50,13 +50,19 @@ export const pages = {
     { label: "Navigation Menubar", path: "/examples/menubar-navigation" },
     { label: "Lazy Popover", path: "/examples/popover-lazy" },
     { label: "Selection Popover", path: "/examples/popover-selection" },
-    { label: "Animated Select", path: "/examples/select-animated" },
-    { label: "Select with Combobox", path: "/examples/select-combobox" },
-    { label: "Select with custom items", path: "/examples/select-item-custom" },
-    { label: "Multi-Select", path: "/examples/select-multiple" },
+    { label: "Animated Combobox select", path: "/examples/select-animated" },
+    { label: "Searchable Combobox select", path: "/examples/select-combobox" },
+    {
+      label: "Combobox select with custom items",
+      path: "/examples/select-item-custom",
+    },
+    { label: "Multi-selectable Combobox", path: "/examples/select-multiple" },
     { label: "Tab with React Router", path: "/examples/tab-react-router" },
     { label: "Tab with Next.js App Router", path: "/examples/tab-next-router" },
-    { label: "Toolbar with Select", path: "/examples/toolbar-select" },
+    {
+      label: "Toolbar with a Combobox select",
+      path: "/examples/toolbar-select",
+    },
   ],
 };
 

@@ -1,7 +1,6 @@
 ---
 tags:
   - Plus
-  - Select
   - Combobox
   - Tab
   - Concurrent React
@@ -13,11 +12,11 @@ tags:
   - Abstracted examples
 ---
 
-# Select with Combobox and Tabs
+# Combobox select with Tabs
 
 <div data-description>
 
-Abstracting [Select](/components/select) to work alongside [Combobox](/components/combobox) and [Tab](/components/tab) components, presenting a searchable, tabbed dropdown.
+Abstracting [Combobox](/components/combobox) and [Tab](/components/tab) components into a searchable, tabbed select dropdown.
 
 </div>
 
@@ -29,7 +28,6 @@ Abstracting [Select](/components/select) to work alongside [Combobox](/component
 
 <div data-cards="components">
 
-- [](/components/select)
 - [](/components/combobox)
 - [](/components/tab)
 
@@ -37,30 +35,29 @@ Abstracting [Select](/components/select) to work alongside [Combobox](/component
 
 ## Component structure
 
-We can create this searchable tabbed select widget by combining [Select](/components/select), [Combobox](/components/combobox), and [Tab](/components/tab) components with the following structure:
+We can create this searchable tabbed select widget by combining [Combobox](/components/combobox) and [Tab](/components/tab) components with the following structure:
 
 ```jsx
 <ComboboxProvider>
-  <SelectProvider>
-    <Select />
-    <SelectPopover>
-      <Combobox />
-      <TabProvider>
-        <TabList>
-          <Tab />
-        </TabList>
-        <TabPanel>
-          <ComboboxList>
-            <ComboboxItem />
-          </ComboboxList>
-        </TabPanel>
-      </TabProvider>
-    </SelectPopover>
-  </SelectProvider>
+  <ComboboxSelect />
+  <ComboboxPopover>
+    <ComboboxLabel>Search branches and tags</ComboboxLabel>
+    <ComboboxInput />
+    <TabProvider>
+      <TabList>
+        <Tab />
+      </TabList>
+      <TabPanel>
+        <ComboboxList>
+          <ComboboxItem />
+        </ComboboxList>
+      </TabPanel>
+    </TabProvider>
+  </ComboboxPopover>
 </ComboboxProvider>
 ```
 
-In this example, we've abstracted the Ariakit components above into a custom `Select` component. This automatically renders a combobox and tabs, depending on the props and children passed to it:
+In this example, we've abstracted the Ariakit components above into a custom `Select` component. This renders a Combobox select with an optional search field and tabs, depending on the props and children passed to it:
 
 ```jsx
 <Select combobox={<input />}>
@@ -89,7 +86,7 @@ This means that the user must manually select a tab by pressing the <kbd>Enter</
 
 ## Adding custom items from user input
 
-In this example, we let users add custom branches by typing into the combobox input. To do this, we just render an extra [`SelectItem`](/reference/select-item) element with a custom click handler:
+In this example, we let users add custom branches by typing into the combobox input. The custom `SelectItem` component renders a [`ComboboxItem`](/reference/combobox-item) with a click handler:
 
 ```jsx
 <SelectItem
@@ -114,6 +111,5 @@ In this example, we let users add custom branches by typing into the combobox in
 - [](/examples/combobox-tabs)
 - [](/examples/form-select)
 - [](/examples/toolbar-select)
-- [](/examples/select-next-router)
 
 </div>

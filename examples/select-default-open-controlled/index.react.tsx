@@ -6,27 +6,27 @@ export default function Example() {
   const [open, setOpen] = useState(true);
   return (
     <div className="wrapper">
-      <Ariakit.SelectProvider
+      <Ariakit.ComboboxProvider
         open={open}
         setOpen={setOpen}
-        defaultValue="Apple"
+        defaultSelectedValue="Apple"
       >
-        <Ariakit.SelectLabel className="label">
+        <Ariakit.ComboboxSelectLabel className="label">
           Favorite fruit
-        </Ariakit.SelectLabel>
-        <Ariakit.Select className="button" />
-        <Ariakit.SelectPopover
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect className="button" />
+        <Ariakit.ComboboxPopover
           gutter={4}
           sameWidth
           unmountOnHide
           className="popover"
         >
-          <Ariakit.SelectItem className="select-item" value="Apple" />
-          <Ariakit.SelectItem className="select-item" value="Banana" />
-          <Ariakit.SelectItem className="select-item" value="Grape" />
-          <Ariakit.SelectItem className="select-item" value="Orange" />
-        </Ariakit.SelectPopover>
-      </Ariakit.SelectProvider>
+          <Ariakit.ComboboxItem className="select-item" value="Apple" />
+          <Ariakit.ComboboxItem className="select-item" value="Banana" />
+          <Ariakit.ComboboxItem className="select-item" value="Grape" />
+          <Ariakit.ComboboxItem className="select-item" value="Orange" />
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
     </div>
   );
 }

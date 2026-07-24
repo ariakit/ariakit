@@ -1,0 +1,14 @@
+import "./tests/select-4767.ts";
+import "./tests/select-6319.ts";
+import "./tests/select-6324.ts";
+import "./tests/select-6347.ts";
+import "./tests/select-6623.ts";
+import "./tests/select-combobox-6313.ts";
+import "./tests/select-item-4567.ts";
+import "./tests/select-renderer.ts";
+import "./tests/select-typeahead.ts";
+import "./tests/tab-select-6346.ts";
+import "./public-tests/basic.ts";
+import "./public-tests/combobox.ts";
+import "./public-tests/composite.ts";
+import "./public-tests/compositions.ts";

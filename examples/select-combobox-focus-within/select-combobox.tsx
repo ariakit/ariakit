@@ -36,24 +36,25 @@ export const SelectCombobox = React.forwardRef<
     },
     ref,
   ) => {
-    const combobox = Ariakit.useComboboxStore({
+    const selectedValueProps =
+      value !== undefined
+        ? { selectedValue: value, setSelectedValue: onChange }
+        : {
+            defaultSelectedValue: defaultValue ?? "",
+            setSelectedValue: onChange,
+          };
+    const select = Ariakit.useComboboxStore<string>({
       open,
       setOpen: onToggle,
       value: searchValue,
       setValue: onSearch,
       resetValueOnHide: true,
-    });
-
-    const select = Ariakit.useSelectStore({
-      combobox,
-      defaultValue,
-      value,
-      setValue: onChange,
+      ...selectedValueProps,
     });
 
     const [popoverFocused, setPopoverFocused] = React.useState(false);
     const showComboboxCancel = Ariakit.useStoreState(
-      combobox,
+      select,
       (state) => popoverFocused || state.value !== "",
     );
 
@@ -62,16 +63,18 @@ export const SelectCombobox = React.forwardRef<
     return (
       <>
         {label && (
-          <Ariakit.SelectLabel store={select}>{label}</Ariakit.SelectLabel>
+          <Ariakit.ComboboxSelectLabel store={select}>
+            {label}
+          </Ariakit.ComboboxSelectLabel>
         )}
-        <Ariakit.Select
+        <Ariakit.ComboboxSelect
           ref={ref}
           store={select}
           className="button"
           {...props}
         />
         {mounted && (
-          <Ariakit.SelectPopover
+          <Ariakit.ComboboxPopover
             store={select}
             portal
             gutter={4}
@@ -82,21 +85,21 @@ export const SelectCombobox = React.forwardRef<
           >
             <div className="combobox-wrapper">
               <Ariakit.Combobox
-                store={combobox}
+                store={select}
                 autoSelect
                 placeholder={searchPlaceholder}
                 className="combobox"
               />
               <Ariakit.ComboboxCancel
-                store={combobox}
+                store={select}
                 className="button secondary combobox-cancel"
                 data-visible={showComboboxCancel ? "" : undefined}
               />
             </div>
-            <Ariakit.ComboboxList store={combobox}>
+            <Ariakit.ComboboxList store={select}>
               {children}
             </Ariakit.ComboboxList>
-          </Ariakit.SelectPopover>
+          </Ariakit.ComboboxPopover>
         )}
       </>
     );
@@ -116,7 +119,7 @@ export const SelectComboboxItem = React.forwardRef<
       ref={ref}
       focusOnHover
       className="select-item"
-      render={(props) => <Ariakit.SelectItem {...props} value={value} />}
+      value={value}
       {...props}
     />
   );

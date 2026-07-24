@@ -1,6 +1,5 @@
 ---
 tags:
-  - Select
   - Combobox
   - Concurrent React
   - Search
@@ -8,11 +7,11 @@ tags:
   - Form controls
 ---
 
-# Select with Combobox
+# Searchable Combobox select
 
 <div data-description>
 
-Combining [Select](/components/select) and [Combobox](/components/combobox) to create a dropdown with a search field that can be used to filter items.
+Combining [`ComboboxSelect`](/reference/combobox-select) and [`ComboboxInput`](/reference/combobox-input) in the same [Combobox](/components/combobox) provider to create a dropdown with a search field that filters its items.
 
 </div>
 

@@ -49,7 +49,6 @@ const navigate = useNavigate();
 
 - [](/examples/tab-react-router)
 - [](/examples/dialog-next-router)
-- [](/examples/select-next-router)
 - [](/examples/dialog-menu)
 - [](/examples/dialog-nested)
 - [](/examples/dialog-hide-warning)
