@@ -41,6 +41,7 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
 
   useStoreProps(store, props, "value", "setValue");
   useStoreProps(store, props, "selectedValue", "setSelectedValue");
+  useStoreProps(store, props, "setSelectedValueOnMove");
   useStoreProps(store, props, "resetValueOnHide");
   useStoreProps(store, props, "resetValueOnSelect");
 

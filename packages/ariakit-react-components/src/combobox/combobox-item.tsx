@@ -2,6 +2,7 @@ import { useStoreStateObject } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
+  useId,
   useWrapElement,
   createElement,
   createHook,
@@ -10,6 +11,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
+  disabledFromProps,
   getItemRoleByPopupRole,
   hasFocus,
   isTextField,
@@ -56,6 +58,15 @@ export function getItemRole(popupRole?: string) {
   return getItemRoleByPopupRole(popupRole) ?? "option";
 }
 
+function supportsAriaSelected(role: string) {
+  return (
+    role === "option" ||
+    role === "treeitem" ||
+    role === "gridcell" ||
+    role === "row"
+  );
+}
+
 /**
  * Returns props to create a `ComboboxItem` component.
  * @see https://ariakit.com/components/combobox
@@ -74,8 +85,9 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     setValueOnClick,
     selectValueOnClick = true,
     resetValueOnSelect,
-    focusOnHover = false,
+    focusOnHover,
     moveOnKeyPress = true,
+    preventScrollOnKeyDown,
     getItem: getItemProp,
     ...props
   }) {
@@ -88,8 +100,29 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         "ComboboxItem must be wrapped in a ComboboxList or ComboboxPopover component.",
     );
 
-    const { resetValueOnSelectState, multiSelectable, selected } =
-      useStoreStateObject(store, ["selectedValue"], {
+    const id = useId(props.id);
+
+    const {
+      resetValueOnSelectState,
+      multiSelectable,
+      selected,
+      selectElement,
+      listElement,
+      selectedItem,
+      virtualFocus,
+      inputElement,
+    } = useStoreStateObject(
+      store,
+      [
+        "selectedValue",
+        "activeId",
+        "items",
+        "selectElement",
+        "listElement",
+        "virtualFocus",
+        "inputElement",
+      ],
+      {
         resetValueOnSelectState: "resetValueOnSelect",
         multiSelectable(state) {
           return Array.isArray(state.selectedValue);
@@ -97,27 +130,56 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         selected(state) {
           return isSelected(state.selectedValue, value);
         },
-      });
+        selectElement: "selectElement",
+        listElement: "listElement",
+        virtualFocus: "virtualFocus",
+        inputElement: "inputElement",
+        selectedItem(state) {
+          if (!state.selectElement) return false;
+          if (value == null) return false;
+          if (state.activeId !== id && store?.item(state.activeId)) {
+            return false;
+          }
+          if (Array.isArray(state.selectedValue)) {
+            return (
+              state.selectedValue[state.selectedValue.length - 1] === value
+            );
+          }
+          return state.selectedValue === value;
+        },
+      },
+    );
+
+    const selectMode = !!selectElement || (!!listElement && !inputElement);
+    const disabled = disabledFromProps(props);
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
       (item) => {
-        const nextItem = { ...item, value };
+        const nextItem = {
+          ...item,
+          value: selectMode && disabled ? undefined : value,
+        };
         if (getItemProp) {
           return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [value, getItemProp],
+      [selectMode, disabled, value, getItemProp],
     );
 
-    setValueOnClick = setValueOnClick ?? !multiSelectable;
+    setValueOnClick = setValueOnClick ?? (!selectMode && !multiSelectable);
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
+    focusOnHover = focusOnHover ?? selectMode;
+    preventScrollOnKeyDown = preventScrollOnKeyDown ?? selectMode;
+    const popupRole = useContext(ComboboxListRoleContext);
+    const role = getItemRole(popupRole);
 
     const onClickProp = props.onClick;
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
     const selectValueOnClickProp = useBooleanEvent(selectValueOnClick);
     const resetValueOnSelectProp = useBooleanEvent(
-      resetValueOnSelect ?? resetValueOnSelectState ?? multiSelectable,
+      resetValueOnSelect ??
+        (selectMode || resetValueOnSelectState || multiSelectable),
     );
     const hideOnClickProp = useBooleanEvent(hideOnClick);
 
@@ -181,7 +243,11 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       }
     });
 
-    if (multiSelectable && selected != null) {
+    if (
+      (selectMode || multiSelectable) &&
+      selected != null &&
+      supportsAriaSelected(role)
+    ) {
       props = {
         "aria-selected": selected,
         ...props,
@@ -200,15 +266,21 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       [value, selected],
     );
 
-    const popupRole = useContext(ComboboxListRoleContext);
+    const defaultAutoFocus =
+      selectMode && !virtualFocus && !inputElement ? selectedItem : undefined;
 
     props = {
-      role: getItemRole(popupRole),
+      role,
       children: value,
       ...props,
+      id,
       onClick,
       onKeyDown,
     };
+    if (props.autoFocus === undefined && defaultAutoFocus !== undefined) {
+      props.autoFocus = defaultAutoFocus;
+      props["data-autofocus"] = defaultAutoFocus || undefined;
+    }
 
     const moveOnKeyPressProp = useBooleanEvent(moveOnKeyPress);
 
@@ -216,6 +288,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       store,
       ...props,
       getItem,
+      preventScrollOnKeyDown,
       // Dispatch a custom event on the combobox input when moving to an item
       // with the keyboard so the Combobox component can enable inline
       // autocompletion.
@@ -228,7 +301,16 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       },
     });
 
-    props = useCompositeHover({ store, focusOnHover, ...props });
+    const focusOnHoverProp = useBooleanEvent(focusOnHover);
+
+    props = useCompositeHover({
+      store,
+      ...props,
+      focusOnHover(event) {
+        if (!focusOnHoverProp(event)) return false;
+        return store.getState().open;
+      },
+    });
 
     return props;
   },
@@ -324,7 +406,9 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    * [`value`](https://ariakit.com/reference/combobox-provider#value) state
    * using this item's
    * [`value`](https://ariakit.com/reference/combobox-item#value) when the item
-   * is clicked. The default is `true`, unless the combobox is
+   * is clicked. The default is `true`, unless
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
+   * rendered or the combobox is
    * [multi-selectable](https://ariakit.com/examples/combobox-multiple).
    *
    * Live examples:

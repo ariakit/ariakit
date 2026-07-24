@@ -64,7 +64,10 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     );
 
     const baseElement = useStoreState(store, "baseElement");
+    const inputElement = useStoreState(store, "inputElement");
+    const selectElement = useStoreState(store, "selectElement");
     const hiddenByClickOutsideRef = useRef(false);
+    const hasSelect = !!selectElement;
 
     // When new tags are rendered while the combobox popover is open, they will
     // be considered nested popups, and therefore the popover won't hide when
@@ -76,15 +79,24 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       (state) => state?.renderedItems.length,
     );
 
-    props = useComboboxList({ store, alwaysVisible, ...props });
+    props = useComboboxList({
+      store,
+      alwaysVisible,
+      composite: false,
+      ...props,
+    });
 
     props = usePopover({
       store,
       modal,
       alwaysVisible,
       backdrop: false,
-      autoFocusOnShow: false,
-      finalFocus: baseElement,
+      autoFocusOnShow() {
+        const state = store?.getState();
+        return !!state?.selectElement && !!state.inputElement;
+      },
+      initialFocus: hasSelect ? inputElement : undefined,
+      finalFocus: selectElement || baseElement,
       preserveTabOrderAnchor: null,
       unstable_treeSnapshotKey: treeSnapshotKey,
       ...props,
@@ -96,9 +108,21 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         const elements = props.getPersistentElements?.() || [];
         if (!modal) return elements;
         if (!store) return elements;
-        const { contentElement, baseElement } = store.getState();
-        if (!baseElement) return elements;
-        const doc = getDocument(baseElement);
+        const { baseElement, contentElement, inputElement, selectElement } =
+          store.getState();
+        const persistentElement = selectElement || inputElement || baseElement;
+        if (!persistentElement) return elements;
+        const persistentElements = new Set(elements);
+        if (baseElement) {
+          persistentElements.add(baseElement);
+        }
+        if (inputElement) {
+          persistentElements.add(inputElement);
+        }
+        if (selectElement) {
+          persistentElements.add(selectElement);
+        }
+        const doc = getDocument(persistentElement);
         const selectors: string[] = [];
         if (contentElement?.id) {
           selectors.push(`[aria-controls~="${contentElement.id}"]`);
@@ -106,10 +130,19 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         if (baseElement?.id) {
           selectors.push(`[aria-controls~="${baseElement.id}"]`);
         }
-        if (!selectors.length) return [...elements, baseElement];
+        if (inputElement?.id) {
+          selectors.push(`[aria-controls~="${inputElement.id}"]`);
+        }
+        if (selectElement?.id) {
+          selectors.push(`[aria-controls~="${selectElement.id}"]`);
+        }
+        if (!selectors.length) return [...persistentElements];
         const selector = selectors.join(",");
         const controlElements = doc.querySelectorAll<HTMLElement>(selector);
-        return [...elements, ...controlElements];
+        controlElements.forEach((element) => {
+          persistentElements.add(element);
+        });
+        return [...persistentElements];
       },
       // The combobox popover should focus on the combobox input when it hides,
       // unless the event was triggered by a click outside the popover, in which

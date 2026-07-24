@@ -1,6 +1,8 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
   useAttribute,
+  useId,
+  useMergeRefs,
   createElement,
   createHook,
   forwardRef,
@@ -37,13 +39,16 @@ export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
         "ComboboxLabel must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
-    const baseElement = useStoreState(store, "baseElement");
-    useAttribute(baseElement, "id");
-    const comboboxId = baseElement?.id;
+    const inputElement = useStoreState(store, "inputElement");
+    useAttribute(inputElement, "id");
+    const comboboxId = inputElement?.id;
+    const id = useId(props.id);
 
     props = {
       htmlFor: comboboxId,
       ...props,
+      id,
+      ref: useMergeRefs(store.setLabelElement, props.ref),
     };
 
     return removeUndefinedValues(props);

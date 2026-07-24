@@ -16,6 +16,7 @@ export default function Example() {
   return (
     <div className="wrapper">
       <Ariakit.ComboboxProvider
+        defaultSelectedValue="Apple"
         resetValueOnHide
         setValue={(value) => {
           startTransition(() => {
@@ -23,29 +24,28 @@ export default function Example() {
           });
         }}
       >
-        <Ariakit.SelectProvider defaultValue="Apple">
-          <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
-          <Ariakit.Select className="button" />
-          <Ariakit.SelectPopover gutter={4} sameWidth className="popover">
-            <div className="combobox-wrapper">
-              <Ariakit.Combobox
-                autoSelect
-                placeholder="Search..."
-                className="combobox"
+        <Ariakit.ComboboxSelectLabel>
+          Favorite fruit
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect className="button" />
+        <Ariakit.ComboboxPopover gutter={4} sameWidth className="popover">
+          <div className="combobox-wrapper">
+            <Ariakit.ComboboxInput
+              autoSelect
+              placeholder="Search..."
+              className="combobox"
+            />
+          </div>
+          <Ariakit.ComboboxList>
+            {matches.map((value) => (
+              <Ariakit.ComboboxItem
+                key={value}
+                value={value}
+                className="select-item"
               />
-            </div>
-            <Ariakit.ComboboxList>
-              {matches.map((value) => (
-                <Ariakit.SelectItem
-                  key={value}
-                  value={value}
-                  className="select-item"
-                  render={<Ariakit.ComboboxItem />}
-                />
-              ))}
-            </Ariakit.ComboboxList>
-          </Ariakit.SelectPopover>
-        </Ariakit.SelectProvider>
+            ))}
+          </Ariakit.ComboboxList>
+        </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
     </div>
   );

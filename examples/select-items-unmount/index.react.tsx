@@ -9,29 +9,32 @@ export default function Example() {
     { id: `${baseId}/banana`, value: "Banana" },
     { id: `${baseId}/grape`, value: "Grape", disabled: true },
     { id: `${baseId}/orange`, value: "Orange" },
-  ] satisfies Ariakit.SelectItemProps[];
+  ] satisfies Ariakit.ComboboxItemProps[];
   return (
     <div className="wrapper">
-      <Ariakit.SelectProvider defaultItems={items} defaultValue="Apple">
-        <Ariakit.SelectLabel className="label">
+      <Ariakit.ComboboxProvider
+        defaultItems={items}
+        defaultSelectedValue="Apple"
+      >
+        <Ariakit.ComboboxSelectLabel className="label">
           Favorite fruit
-        </Ariakit.SelectLabel>
-        <Ariakit.Select className="button" />
-        <Ariakit.SelectPopover
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect className="button" />
+        <Ariakit.ComboboxPopover
           sameWidth
           gutter={4}
           unmountOnHide
           className="popover"
         >
           {items.map((item) => (
-            <Ariakit.SelectItem
+            <Ariakit.ComboboxItem
               key={item.id}
               className="select-item"
               {...item}
             />
           ))}
-        </Ariakit.SelectPopover>
-      </Ariakit.SelectProvider>
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
     </div>
   );
 }

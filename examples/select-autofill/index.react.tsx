@@ -6,15 +6,15 @@ export default function Example() {
     <form className="wrapper">
       <label htmlFor="email">Email</label>
       <input type="email" id="email" name="email" className="input" />
-      <Ariakit.SelectProvider defaultValue="Student">
-        <Ariakit.SelectLabel>Role</Ariakit.SelectLabel>
-        <Ariakit.Select name="role" className="button" />
-        <Ariakit.SelectPopover sameWidth className="popover">
-          <Ariakit.SelectItem className="select-item" value="Student" />
-          <Ariakit.SelectItem className="select-item" value="Tutor" />
-          <Ariakit.SelectItem className="select-item" value="Parent" />
-        </Ariakit.SelectPopover>
-      </Ariakit.SelectProvider>
+      <Ariakit.ComboboxProvider defaultSelectedValue="Student">
+        <Ariakit.ComboboxSelectLabel>Role</Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect name="role" className="button" />
+        <Ariakit.ComboboxPopover sameWidth className="popover">
+          <Ariakit.ComboboxItem className="select-item" value="Student" />
+          <Ariakit.ComboboxItem className="select-item" value="Tutor" />
+          <Ariakit.ComboboxItem className="select-item" value="Parent" />
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
     </form>
   );
 }
