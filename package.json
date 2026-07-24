@@ -111,7 +111,7 @@
     "pkg-pr-new": "0.0.79",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
-    "prettier": "3.9.5",
+    "prettier": "3.9.6",
     "prettier-plugin-tailwindcss": "0.8.1",
     "react": "19.2.7",
     "react-dom": "19.2.7",
