@@ -107,7 +107,7 @@
     "open-cli": "9.0.0",
     "oxfmt": "0.59.0",
     "oxlint": "1.74.0",
-    "oxlint-tsgolint": "0.25.0",
+    "oxlint-tsgolint": "7.0.2001",
     "pkg-pr-new": "0.0.79",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
