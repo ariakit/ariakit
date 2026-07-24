@@ -255,7 +255,13 @@ export function createComboboxStore({
   setup(combobox, () =>
     sync(
       combobox,
-      ["items", "listElement", "selectedValue", "selectElement"],
+      [
+        "inputElement",
+        "items",
+        "listElement",
+        "selectedValue",
+        "selectElement",
+      ],
       (state, prevState) => {
         if (!shouldSetDefaultSelectedValue) return;
         if (state.selectedValue !== prevState.selectedValue) {
@@ -266,6 +272,7 @@ export function createComboboxStore({
           if (!shouldSetDefaultSelectedValue) return;
           const state = combobox.getState();
           if (!state.selectElement && !state.listElement) return;
+          if (state.inputElement && !state.selectElement) return;
           const item = state.items.find(
             (item) => !item.disabled && item.value != null,
           );
@@ -405,8 +412,10 @@ export function createComboboxStore({
     tag,
     setValue: (value) => combobox.setState("value", value),
     resetValue: () => combobox.setState("value", initialState.value),
-    setSelectedValue: (selectedValue) =>
-      combobox.setState("selectedValue", selectedValue),
+    setSelectedValue: (selectedValue) => {
+      shouldSetDefaultSelectedValue = false;
+      combobox.setState("selectedValue", selectedValue);
+    },
     setInputElement: (element) => combobox.setState("inputElement", element),
     setLabelElement: (element) => combobox.setState("labelElement", element),
     setListElement: (element) => combobox.setState("listElement", element),

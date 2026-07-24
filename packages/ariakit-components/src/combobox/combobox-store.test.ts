@@ -166,6 +166,33 @@ test("preserves a selected value set before the select is rendered", async () =>
   stop();
 });
 
+test("preserves an explicit empty selected value before items load", async () => {
+  const store = createComboboxStore();
+  const stop = init(store);
+
+  store.setSelectedValue("");
+  store.setSelectElement(document.createElement("button"));
+  store.setState("items", [{ id: "apple", value: "Apple" }]);
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toBe("");
+  stop();
+});
+
+test("does not select the first item when a combobox input is rendered", async () => {
+  const store = createComboboxStore({
+    defaultItems: [{ id: "apple", value: "Apple" }],
+  });
+  const stop = init(store);
+
+  store.setListElement(document.createElement("div"));
+  store.setInputElement(document.createElement("input"));
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toBe("");
+  stop();
+});
+
 test("uses select composite defaults while a select is rendered", () => {
   const store = createComboboxStore();
   const stop = init(store);
