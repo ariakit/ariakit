@@ -50,7 +50,7 @@ useComboboxContext()
   <ComboboxDisclosure />
   <ComboboxValue />
   <ComboboxPopover>
-    <ComboboxInput />
+    <ComboboxInput aria-label="Search" />
     <ComboboxHeading />
     <ComboboxDismiss />
     <ComboboxList>

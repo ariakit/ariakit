@@ -32,6 +32,7 @@ export default function Example() {
           <div className="combobox-wrapper">
             <Ariakit.ComboboxInput
               autoSelect
+              aria-label="Search fruits"
               placeholder="Search..."
               className="combobox"
             />
