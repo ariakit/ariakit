@@ -1,5 +1,9 @@
 # @ariakit/components
 
+## 0.1.9
+
+- Fixed [`PopoverDisclosure`](https://ariakit.com/reference/popover-disclosure) so it no longer overrides a separate [`PopoverAnchor`](https://ariakit.com/reference/popover-anchor) as the popover positioning anchor. Thanks to [@bengry](https://github.com/bengry).
+
 ## 0.1.8
 
 ### Custom typeahead text for composite items
