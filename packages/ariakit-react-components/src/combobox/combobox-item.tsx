@@ -1,4 +1,4 @@
-import { useStoreStateObject } from "@ariakit/react-store";
+import { useStoreState, useStoreStateObject } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
@@ -108,45 +108,35 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       selected,
       selectElement,
       listElement,
-      selectedItem,
       virtualFocus,
       inputElement,
-    } = useStoreStateObject(
+    } = useStoreStateObject(store, ["selectedValue"], {
+      resetValueOnSelectState: "resetValueOnSelect",
+      multiSelectable(state) {
+        return Array.isArray(state.selectedValue);
+      },
+      selected(state) {
+        return isSelected(state.selectedValue, value);
+      },
+      selectElement: "selectElement",
+      listElement: "listElement",
+      virtualFocus: "virtualFocus",
+      inputElement: "inputElement",
+    });
+
+    const selectedItem = useStoreState(
       store,
-      [
-        "selectedValue",
-        "activeId",
-        "items",
-        "selectElement",
-        "listElement",
-        "virtualFocus",
-        "inputElement",
-      ],
-      {
-        resetValueOnSelectState: "resetValueOnSelect",
-        multiSelectable(state) {
-          return Array.isArray(state.selectedValue);
-        },
-        selected(state) {
-          return isSelected(state.selectedValue, value);
-        },
-        selectElement: "selectElement",
-        listElement: "listElement",
-        virtualFocus: "virtualFocus",
-        inputElement: "inputElement",
-        selectedItem(state) {
-          if (!state.selectElement) return false;
-          if (value == null) return false;
-          if (state.activeId !== id && store?.item(state.activeId)) {
-            return false;
-          }
-          if (Array.isArray(state.selectedValue)) {
-            return (
-              state.selectedValue[state.selectedValue.length - 1] === value
-            );
-          }
-          return state.selectedValue === value;
-        },
+      selectElement ? ["activeId", "items", "selectedValue"] : [],
+      (state) => {
+        if (!selectElement) return false;
+        if (value == null) return false;
+        if (state.activeId !== id && store?.item(state.activeId)) {
+          return false;
+        }
+        if (Array.isArray(state.selectedValue)) {
+          return state.selectedValue[state.selectedValue.length - 1] === value;
+        }
+        return state.selectedValue === value;
       },
     );
 
@@ -442,7 +432,8 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    */
   resetValueOnSelect?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * @default false
+   * @default false, or true when the item is used with `ComboboxSelect` or in
+   * a standalone `ComboboxList`
    */
   focusOnHover?: CompositeHoverOptions["focusOnHover"];
 }
