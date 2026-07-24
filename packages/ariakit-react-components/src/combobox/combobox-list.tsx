@@ -70,6 +70,8 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     const context = useComboboxContext();
     store = store || context;
     const scopedContextSameStore = !!store && store === scopedContext;
+    // A composite widget from another store owns keyboard navigation unless
+    // this combobox comes from a provider rendered inside it.
     const inForeignScopedComposite =
       !!scopedComposite && scopedComposite !== store && !compositeProvider;
 
@@ -133,6 +135,10 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     );
     const inputElement = useStoreState(store, "inputElement");
     const selectElement = useStoreState(store, "selectElement");
+    // This list owns keyboard navigation only when it isn't nested in another
+    // list and there is no input, select, or foreign composite that owns it.
+    // Input and select elements are published after the first render, so the
+    // composite scope also prevents this list from briefly taking ownership.
     composite =
       composite ??
       (!scopedContextSameStore &&
@@ -170,6 +176,10 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       };
     }
 
+    // Heading hooks publish their id through DialogHeadingContext. Redirecting
+    // that setter here makes the heading label this list, whose props take
+    // precedence when it shares an element with ComboboxPopover.
+    // ComboboxHeadingContext also exposes the id so nested lists can inherit it.
     props = useWrapElement(
       props,
       (element) => (

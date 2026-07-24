@@ -4,6 +4,7 @@ import {
   mergeStore,
   pick,
   setup,
+  subscribe,
   sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
@@ -147,10 +148,6 @@ export function createComboboxStore({
 
   const combobox = createStore(initialState, composite, popover, store);
   let resolveSelectedItemOnOpen = false;
-  let selectCompositeState: Pick<
-    ComboboxStoreState,
-    "focusLoop" | "focusWrap" | "includesBaseElement"
-  > | null = null;
   const defaultSelectFocusLoop =
     props.focusLoop === undefined && syncState?.focusLoop === undefined;
   const defaultSelectFocusWrap =
@@ -171,6 +168,9 @@ export function createComboboxStore({
       ? initialState.anchorElement
       : null;
 
+  // Use the select as the composite base until an input or explicit base
+  // element takes ownership. The input may mount after the select, so this must
+  // stay in sync rather than being decided by the select ref alone.
   setup(combobox, () =>
     sync(combobox, ["baseElement", "selectElement"], (state) => {
       if (!state.selectElement && !syncedSelectElement) return;
@@ -187,51 +187,39 @@ export function createComboboxStore({
     }),
   );
 
+  // Match native select navigation while a select is rendered. Explicit
+  // composite options are never overridden, and listener cleanup restores the
+  // previous defaults when select mode ends or the store tears down.
   setup(combobox, () =>
-    sync(
-      combobox,
-      ["focusLoop", "focusWrap", "includesBaseElement", "selectElement"],
-      (state, prevState) => {
-        if (
-          state.selectElement &&
-          (!prevState.selectElement || !selectCompositeState)
-        ) {
-          selectCompositeState = {
-            focusLoop: state.focusLoop,
-            focusWrap: state.focusWrap,
-            includesBaseElement: state.includesBaseElement,
-          };
-          if (defaultSelectFocusLoop) {
-            composite.setState("focusLoop", false);
-          }
-          if (defaultSelectFocusWrap) {
-            composite.setState("focusWrap", false);
-          }
-          if (defaultSelectIncludesBaseElement) {
-            composite.setState("includesBaseElement", false);
-          }
-          return;
+    sync(combobox, ["selectElement"], (state) => {
+      if (!state.selectElement) return;
+      const { focusLoop, focusWrap, includesBaseElement } = combobox.getState();
+      if (defaultSelectFocusLoop) {
+        composite.setState("focusLoop", false);
+      }
+      if (defaultSelectFocusWrap) {
+        composite.setState("focusWrap", false);
+      }
+      if (defaultSelectIncludesBaseElement) {
+        composite.setState("includesBaseElement", false);
+      }
+      return () => {
+        if (defaultSelectFocusLoop) {
+          composite.setState("focusLoop", focusLoop);
         }
-        if (state.selectElement || !prevState.selectElement) return;
-        const previousState = selectCompositeState;
-        selectCompositeState = null;
-        if (!previousState) return;
-        if (defaultSelectFocusLoop && !state.focusLoop) {
-          composite.setState("focusLoop", previousState.focusLoop);
+        if (defaultSelectFocusWrap) {
+          composite.setState("focusWrap", focusWrap);
         }
-        if (defaultSelectFocusWrap && !state.focusWrap) {
-          composite.setState("focusWrap", previousState.focusWrap);
+        if (defaultSelectIncludesBaseElement) {
+          composite.setState("includesBaseElement", includesBaseElement);
         }
-        if (defaultSelectIncludesBaseElement && !state.includesBaseElement) {
-          composite.setState(
-            "includesBaseElement",
-            previousState.includesBaseElement,
-          );
-        }
-      },
-    ),
+      };
+    }),
   );
 
+  // Prefer the select as the popover anchor, then the composite base, then the
+  // disclosure. Track only the fallback assigned here so an explicit anchor
+  // keeps ownership.
   setup(combobox, () =>
     sync(
       combobox,
@@ -252,6 +240,9 @@ export function createComboboxStore({
     ),
   );
 
+  // Give select-mode and standalone-list stores the first enabled item when no
+  // value was provided. Item registration is incremental, so defer and re-read
+  // the mode after synchronous element and item updates settle.
   setup(combobox, () =>
     sync(
       combobox,
@@ -319,7 +310,9 @@ export function createComboboxStore({
     }),
   );
 
-  // Resets the state when the combobox popover is hidden.
+  // Reset the closed state and arm selected-item resolution before opening. The
+  // items may not register until the popover mounts, so the resolver below must
+  // remain armed across the open transition.
   setup(combobox, () =>
     sync(combobox, ["open"], (state) => {
       if (state.open) {
@@ -332,8 +325,10 @@ export function createComboboxStore({
     }),
   );
 
+  // Disarm selected-item resolution only after an actual move. subscribe skips
+  // the initial call so a store that starts open still resolves its selection.
   setup(combobox, () =>
-    sync(combobox, ["moves"], () => {
+    subscribe(combobox, ["moves"], () => {
       if (!combobox.getState().open) return;
       resolveSelectedItemOnOpen = false;
     }),
@@ -360,6 +355,9 @@ export function createComboboxStore({
     }),
   );
 
+  // Point the active item at the current selection while closed or on open.
+  // Stop once the user moves so later item registrations don't steal active
+  // state.
   setup(combobox, () =>
     sync(
       combobox,
@@ -382,27 +380,21 @@ export function createComboboxStore({
     ),
   );
 
-  const setSelectedValueFromActiveItem = () => {
-    const { activeId, moves } = composite.getState();
-    const { open, selectedValue, selectElement, setSelectedValueOnMove } =
-      combobox.getState();
-    if (!selectElement) return;
-    if (!setSelectedValueOnMove && open) return;
-    if (Array.isArray(selectedValue)) return;
-    if (!moves) return;
-    if (!activeId) return;
-    const item = composite.item(activeId);
-    if (!item || item.disabled || item.value == null) return;
-    combobox.setState("selectedValue", item.value);
-  };
-
+  // Commit moved items immediately while closed, matching a native select.
+  // While open, commit only when setSelectedValueOnMove is enabled.
   setup(combobox, () =>
-    chain(
-      batch(composite, ["moves"], setSelectedValueFromActiveItem),
-      batch(combobox, ["setSelectedValueOnMove"], () => {
-        setSelectedValueFromActiveItem();
-      }),
-    ),
+    batch(combobox, ["setSelectedValueOnMove", "moves"], (state) => {
+      const { activeId, open, selectedValue, selectElement } =
+        combobox.getState();
+      if (!selectElement) return;
+      if (!state.setSelectedValueOnMove && open) return;
+      if (Array.isArray(selectedValue)) return;
+      if (!state.moves) return;
+      if (!activeId) return;
+      const item = composite.item(activeId);
+      if (!item || item.disabled || item.value == null) return;
+      combobox.setState("selectedValue", item.value);
+    }),
   );
 
   return {
@@ -435,11 +427,23 @@ export interface ComboboxStoreState<
   T extends ComboboxStoreSelectedValue = ComboboxStoreSelectedValue,
 >
   extends CompositeStoreState<ComboboxStoreItem>, PopoverStoreState {
-  /** @default true, or false when `ComboboxSelect` is rendered */
+  /**
+   * @default true, or false when
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
+   * rendered
+   */
   includesBaseElement: CompositeStoreState<ComboboxStoreItem>["includesBaseElement"];
-  /** @default true, or false when `ComboboxSelect` is rendered */
+  /**
+   * @default true, or false when
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
+   * rendered
+   */
   focusLoop: CompositeStoreState<ComboboxStoreItem>["focusLoop"];
-  /** @default true, or false when `ComboboxSelect` is rendered */
+  /**
+   * @default true, or false when
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
+   * rendered
+   */
   focusWrap: CompositeStoreState<ComboboxStoreItem>["focusWrap"];
   /** @default "vertical" */
   orientation: CompositeStoreState<ComboboxStoreItem>["orientation"];

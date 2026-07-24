@@ -53,3 +53,27 @@ test("uses typed destructured props parameters as reference props", () => {
   expect(comboboxProps).toContain("children");
   expect(headingProps).toContain("level");
 });
+
+test("uses component aliases as distinct reference entries", () => {
+  const references = getReferences(comboboxFilename);
+  const comboboxReferences = references.filter(
+    (reference) => reference.name === "Combobox",
+  );
+  const comboboxInputReferences = references.filter(
+    (reference) => reference.name === "ComboboxInput",
+  );
+
+  expect(comboboxReferences).toHaveLength(1);
+  expect(comboboxInputReferences).toHaveLength(1);
+
+  const combobox = getReference(comboboxFilename, "Combobox");
+  const comboboxInput = getReference(comboboxFilename, "ComboboxInput");
+
+  expect(combobox.description).toContain(
+    "**Aliases**: `Combobox`, `ComboboxInput`",
+  );
+  expect(comboboxInput.description).toContain(
+    "**Aliases**: `Combobox`, `ComboboxInput`",
+  );
+  expect(comboboxInput.props).toEqual(combobox.props);
+});

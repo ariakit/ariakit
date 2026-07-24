@@ -58,15 +58,6 @@ export function getItemRole(popupRole?: string) {
   return getItemRoleByPopupRole(popupRole) ?? "option";
 }
 
-function supportsAriaSelected(role: string) {
-  return (
-    role === "option" ||
-    role === "treeitem" ||
-    role === "gridcell" ||
-    role === "row"
-  );
-}
-
 /**
  * Returns props to create a `ComboboxItem` component.
  * @see https://ariakit.com/components/combobox
@@ -124,6 +115,9 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       inputElement: "inputElement",
     });
 
+    // Keep this selector separate so plain ComboboxItem components don't
+    // subscribe to activeId and items and re-render on every keyboard move.
+    // The selectElement value above gates these subscriptions.
     const selectedItem = useStoreState(
       store,
       selectElement ? ["activeId", "items", "selectedValue"] : [],
@@ -168,8 +162,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
     const selectValueOnClickProp = useBooleanEvent(selectValueOnClick);
     const resetValueOnSelectProp = useBooleanEvent(
-      resetValueOnSelect ??
-        (selectMode || resetValueOnSelectState || multiSelectable),
+      resetValueOnSelect ?? (selectMode || resetValueOnSelectState),
     );
     const hideOnClickProp = useBooleanEvent(hideOnClick);
 
@@ -233,11 +226,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       }
     });
 
-    if (
-      (selectMode || multiSelectable) &&
-      selected != null &&
-      supportsAriaSelected(role)
-    ) {
+    if ((selectMode || multiSelectable) && selected != null) {
       props = {
         "aria-selected": selected,
         ...props,
@@ -432,8 +421,10 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    */
   resetValueOnSelect?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * @default false, or true when the item is used with `ComboboxSelect` or in
-   * a standalone `ComboboxList`
+   * @default false, or true when the item is used with
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) or in a
+   * standalone
+   * [`ComboboxList`](https://ariakit.com/reference/combobox-list)
    */
   focusOnHover?: CompositeHoverOptions["focusOnHover"];
 }

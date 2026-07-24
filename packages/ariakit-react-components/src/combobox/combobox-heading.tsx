@@ -1,16 +1,8 @@
-import {
-  useId,
-  useSafeLayoutEffect,
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
-import { useContext } from "react";
 import type { PopoverHeadingOptions } from "../popover/popover-heading.tsx";
 import { usePopoverHeading } from "../popover/popover-heading.tsx";
-import { ComboboxHeadingContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "h1" satisfies ElementType;
@@ -22,22 +14,7 @@ type TagName = typeof TagName;
  */
 export const useComboboxHeading = createHook<TagName, ComboboxHeadingOptions>(
   function useComboboxHeading(props) {
-    const [, setHeadingId] = useContext(ComboboxHeadingContext) || [];
-    const id = useId(props.id);
-
-    useSafeLayoutEffect(() => {
-      setHeadingId?.(id);
-      return () => setHeadingId?.(undefined);
-    }, [setHeadingId, id]);
-
-    props = {
-      ...props,
-      id,
-    };
-
-    props = usePopoverHeading(props);
-
-    return props;
+    return usePopoverHeading(props);
   },
 );
 

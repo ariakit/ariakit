@@ -136,6 +136,24 @@ test("selects the first item when a select is rendered", async () => {
   stop();
 });
 
+test("resolves the selected item when the store starts open", async () => {
+  const store = createComboboxStore({
+    defaultItems: [
+      { id: "apple", value: "Apple" },
+      { id: "banana", value: "Banana" },
+    ],
+    defaultSelectedValue: "Banana",
+    defaultOpen: true,
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  await Promise.resolve();
+
+  expect(store.getState().activeId).toBe("banana");
+  stop();
+});
+
 test("preserves an explicit empty selected value", () => {
   const store = createComboboxStore({
     defaultItems: [{ id: "apple", value: "Apple" }],

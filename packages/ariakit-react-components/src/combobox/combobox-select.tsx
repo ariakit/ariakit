@@ -51,6 +51,8 @@ function getSelectedValues(select: HTMLSelectElement) {
   return Array.from(select.selectedOptions).map((option) => option.value);
 }
 
+// When moving through the items while the select list is closed, we don't want
+// to move to items without value, so we filter them out here.
 function nextWithValue(store: ComboboxStore, next: ComboboxStore["next"]) {
   return () => {
     const visitedIds = new Set<string>();
@@ -61,6 +63,11 @@ function nextWithValue(store: ComboboxStore, next: ComboboxStore["next"]) {
       if (nextItem.value != null) {
         return nextItem.id;
       }
+      // Walking from the last returned id, as if the key was pressed again
+      // from there, skips items without value even across focusLoop
+      // boundaries. A repeated id means the walk cycled through every
+      // reachable item without finding one with value, so we return undefined
+      // to keep move() from changing the active item.
       if (visitedIds.has(nextId)) return;
       visitedIds.add(nextId);
       nextId = next({ activeId: nextId });
@@ -69,6 +76,8 @@ function nextWithValue(store: ComboboxStore, next: ComboboxStore["next"]) {
   };
 }
 
+// Only the nearest scrollable ancestor should move. Using scrollIntoView()
+// could also scroll the page when the popover is partially offscreen.
 function scrollItemIntoView(element: HTMLElement) {
   const scroller = getScrollingElement(element);
   if (!scroller) return;
@@ -95,6 +104,12 @@ function scrollItemIntoView(element: HTMLElement) {
   }
 }
 
+/**
+ * Renders nothing and keeps the active item visible while focus stays on the
+ * select or input. Composite scrolls items after move(), but the combobox store
+ * can restore `activeId` directly, and the corresponding element may render
+ * asynchronously.
+ */
 const ComboboxSelectScrollIntoView = memo(
   function ComboboxSelectScrollIntoView({ store }: { store: ComboboxStore }) {
     const activeElement = useStoreState(
@@ -129,6 +144,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     moveOnKeyDown = true,
     toggleOnPress = true,
     toggleOnClick = toggleOnPress,
+    focusable = true,
     ...props
   }) {
     const context = useComboboxProviderContext();
@@ -203,6 +219,8 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     const [autofill, setAutofill] = useState(false);
     const nativeSelectChangedRef = useRef(false);
 
+    // Resets the autofilled state when the selected value changes, but only if
+    // the change wasn't triggered by the native select element.
     useEffect(() => {
       const nativeSelectChanged = nativeSelectChangedRef.current;
       nativeSelectChangedRef.current = false;
@@ -220,10 +238,13 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       return state.items;
     });
     const values = useMemo(() => {
+      // Filter out items without value and duplicate values.
       const itemValues = items?.flatMap((item) => item.value ?? []);
       return [...new Set(itemValues)];
     }, [items]);
 
+    // Renders a native select element with the same value as the custom select
+    // so browser autofill can update the combobox store.
     props = useWrapElement(
       props,
       (element) => {
@@ -242,6 +263,9 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
               disabled={props.disabled}
               value={selectedValue}
               multiple={multiSelectable}
+              // Although visually hidden and not tabbable, this element remains
+              // focusable. Some autofill extensions move focus to the next form
+              // element, so redirect it to the custom select.
               onFocus={() => store?.getState().selectElement?.focus()}
               onChange={(event) => {
                 nativeSelectChangedRef.current = true;
@@ -307,13 +331,19 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       onKeyDown,
     };
 
-    props = usePopoverDisclosure({ store, toggleOnClick, ...props });
+    props = usePopoverDisclosure({
+      store,
+      toggleOnClick,
+      focusable,
+      ...props,
+    });
     props = useCompositeTypeahead<TagName>({ store, ...props });
     const onKeyDownCaptureProp = props.onKeyDownCapture;
     const onKeyUpCaptureProp = props.onKeyUpCapture;
     props = useComposite<TagName>({
       store,
       composite: !inputElement,
+      focusable,
       moveOnKeyPress: false,
       ...props,
     });
