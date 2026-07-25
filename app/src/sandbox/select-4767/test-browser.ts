@@ -101,4 +101,25 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(apple).not.toHaveAttribute("data-focus-visible");
     await test.expect(banana).not.toHaveAttribute("data-focus-visible");
   });
+
+  // https://github.com/ariakit/ariakit/pull/6832#discussion_r3649290438
+  test("keeps focus on the items when typing in real-focus mode", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Real focus fruit");
+    await select.click();
+
+    await page.keyboard.press("ArrowDown");
+    const banana = q.option("Banana");
+    await test.expect(banana).toBeFocused();
+
+    await page.keyboard.press("Backspace");
+    await test.expect(banana).toBeFocused();
+    await test.expect(select).not.toBeFocused();
+
+    await page.keyboard.press("o");
+    await test.expect(q.option("Orange")).toBeFocused();
+    await test.expect(select).not.toBeFocused();
+  });
 });

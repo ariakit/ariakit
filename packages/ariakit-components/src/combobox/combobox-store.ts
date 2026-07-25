@@ -470,6 +470,15 @@ export interface ComboboxStoreState<
    * Live examples:
    * - [Multi-selectable
    *   Combobox](https://ariakit.com/examples/combobox-multiple)
+   * - [Form with Select](https://ariakit.com/examples/form-select)
+   * - [Select grid](https://ariakit.com/examples/select-grid)
+   * - [Select with custom
+   *   items](https://ariakit.com/examples/select-item-custom)
+   * - [Multi-selectable Combobox
+   *   Select](https://ariakit.com/examples/select-multiple)
+   * - [Toolbar with Select](https://ariakit.com/examples/toolbar-select)
+   * - [Combobox Select with Next.js App
+   *   Router](https://ariakit.com/examples/select-next-router)
    */
   selectedValue: MutableValue<T>;
   /**
@@ -479,6 +488,11 @@ export interface ComboboxStoreState<
    * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is open.
    * The selected value is always updated when moving while the select is
    * closed.
+   *
+   * Live examples:
+   * - [Select grid](https://ariakit.com/examples/select-grid)
+   * - [Select with custom
+   *   items](https://ariakit.com/examples/select-item-custom)
    * @default false
    */
   selectOnMove: boolean;
@@ -530,6 +544,9 @@ export interface ComboboxStoreState<
   labelElement: HTMLElement | null;
   /**
    * The combobox select element.
+   *
+   * Live examples:
+   * - [Form with Select](https://ariakit.com/examples/form-select)
    */
   selectElement: HTMLElement | null;
   /**
@@ -618,6 +635,17 @@ export interface ComboboxStoreOptions<
    * state. This can be a string or an array of strings. If it's an array, the
    * combobox is considered
    * [multi-selectable](https://ariakit.com/examples/combobox-multiple).
+   *
+   * Live examples:
+   * - [Form with Select](https://ariakit.com/examples/form-select)
+   * - [Animated Select](https://ariakit.com/examples/select-animated)
+   * - [Searchable Combobox
+   *   Select](https://ariakit.com/examples/select-combobox)
+   * - [Select group](https://ariakit.com/examples/select-group)
+   * - [Combobox Select with Next.js App
+   *   Router](https://ariakit.com/examples/select-next-router)
+   * - [Combobox Select with
+   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    * @default ""
    */
   defaultSelectedValue?: ComboboxStoreState<T>["selectedValue"];

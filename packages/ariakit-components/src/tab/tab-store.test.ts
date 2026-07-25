@@ -234,6 +234,32 @@ test("does not inherit selectOnMove from a parent combobox", async () => {
   }
 });
 
+test("preserves the selected tab when a combobox value is selected", async () => {
+  const combobox = createComboboxStore();
+  const store = createTabStore({
+    composite: combobox,
+    combobox,
+    defaultSelectedId: "tab-1",
+  });
+  const stop = init(store);
+
+  try {
+    combobox.setOpen(true);
+    await flushBatch();
+
+    store.setSelectedId("tab-2");
+    combobox.setState("selectedValue", "value");
+    await flushBatch();
+
+    combobox.setOpen(false);
+    await flushBatch();
+
+    expect(store.getState().selectedId).toBe("tab-2");
+  } finally {
+    stop();
+  }
+});
+
 test("does not leak a restore armed right before the store is destroyed", async () => {
   const combobox = createComboboxStore({ defaultOpen: true });
   const store = createTabStore({ combobox, defaultSelectedId: "tab-1" });

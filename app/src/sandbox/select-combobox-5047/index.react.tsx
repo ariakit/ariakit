@@ -27,7 +27,11 @@ export default function Example() {
       <Ariakit.ComboboxSelectLabel>Favorite fruit</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect />
       <Ariakit.ComboboxPopover gutter={4} sameWidth>
-        <Ariakit.ComboboxInput autoSelect placeholder="Search..." />
+        <Ariakit.ComboboxInput
+          autoSelect
+          aria-label="Search fruits"
+          placeholder="Search..."
+        />
         <Ariakit.ComboboxList>
           {matches.map((value) => (
             <Ariakit.ComboboxItem key={value} value={value} />

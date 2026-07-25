@@ -36,7 +36,7 @@ export const SelectCombobox = React.forwardRef<
     },
     ref,
   ) => {
-    const select = Ariakit.useComboboxStore({
+    const combobox = Ariakit.useComboboxStore({
       open,
       setOpen: onToggle,
       value: searchValue,
@@ -49,28 +49,28 @@ export const SelectCombobox = React.forwardRef<
 
     const [popoverFocused, setPopoverFocused] = React.useState(false);
     const showComboboxCancel = Ariakit.useStoreState(
-      select,
+      combobox,
       (state) => popoverFocused || state.value !== "",
     );
 
-    const mounted = Ariakit.useStoreState(select, "mounted");
+    const mounted = Ariakit.useStoreState(combobox, "mounted");
 
     return (
       <>
         {label && (
-          <Ariakit.ComboboxSelectLabel store={select}>
+          <Ariakit.ComboboxSelectLabel store={combobox}>
             {label}
           </Ariakit.ComboboxSelectLabel>
         )}
         <Ariakit.ComboboxSelect
           ref={ref}
-          store={select}
+          store={combobox}
           className="button"
           {...props}
         />
         {mounted && (
           <Ariakit.ComboboxPopover
-            store={select}
+            store={combobox}
             portal
             gutter={4}
             sameWidth
@@ -80,18 +80,18 @@ export const SelectCombobox = React.forwardRef<
           >
             <div className="combobox-wrapper">
               <Ariakit.ComboboxInput
-                store={select}
+                store={combobox}
                 autoSelect
                 placeholder={searchPlaceholder}
                 className="combobox"
               />
               <Ariakit.ComboboxCancel
-                store={select}
+                store={combobox}
                 className="button secondary combobox-cancel"
                 data-visible={showComboboxCancel ? "" : undefined}
               />
             </div>
-            <Ariakit.ComboboxList store={select}>
+            <Ariakit.ComboboxList store={combobox}>
               {children}
             </Ariakit.ComboboxList>
           </Ariakit.ComboboxPopover>

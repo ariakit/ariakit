@@ -1,5 +1,5 @@
 import { click, hover, press, q, sleep, type } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 
 export function testSelect(focusTarget: "combobox" | "listbox") {
   const expectFocusTarget = () => {
@@ -9,6 +9,7 @@ export function testSelect(focusTarget: "combobox" | "listbox") {
 
   test("default value", () => {
     expect(q.combobox()).toHaveTextContent("Apple");
+    expect(q.combobox()).not.toHaveAttribute("aria-activedescendant");
   });
 
   test("click on label", async () => {
@@ -30,6 +31,7 @@ export function testSelect(focusTarget: "combobox" | "listbox") {
     expect(q.listbox()).not.toBeInTheDocument();
     expect(q.combobox()).toHaveFocus();
     expect(q.combobox()).toHaveTextContent("Apple");
+    expect(q.combobox()).not.toHaveAttribute("aria-activedescendant");
   });
 
   test("show/hide on enter", async () => {
@@ -210,5 +212,19 @@ export function testSelect(focusTarget: "combobox" | "listbox") {
     expectFocusTarget();
     expect(q.combobox()).toHaveTextContent("Apple");
     expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
+  });
+
+  test("hover on item doesn't scroll the list", async () => {
+    using scrollIntoView = vi.spyOn(HTMLElement.prototype, "scrollIntoView");
+    await click(q.combobox());
+    // The scroll that happens when the popup opens spans a few frames, so it
+    // has to settle before hovering.
+    await sleep();
+    await sleep();
+    scrollIntoView.mockClear();
+    await hover(q.option("Banana"));
+    await sleep();
+    await sleep();
+    expect(scrollIntoView).not.toHaveBeenCalled();
   });
 }

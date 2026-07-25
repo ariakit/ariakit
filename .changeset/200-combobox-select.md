@@ -4,7 +4,7 @@
 "@ariakit/react": patch
 ---
 
-Added Combobox select components
+New Combobox Select components
 
 Added [`ComboboxSelect`](https://ariakit.com/reference/combobox-select), [`ComboboxSelectLabel`](https://ariakit.com/reference/combobox-select-label), [`ComboboxSelectArrow`](https://ariakit.com/reference/combobox-select-arrow), [`ComboboxInput`](https://ariakit.com/reference/combobox-input), [`ComboboxSelectedValue`](https://ariakit.com/reference/combobox-selected-value), [`ComboboxItemSelected`](https://ariakit.com/reference/combobox-item-selected), [`ComboboxDismiss`](https://ariakit.com/reference/combobox-dismiss), and [`ComboboxHeading`](https://ariakit.com/reference/combobox-heading). Together, these APIs support standard and filterable selects with one Combobox store:
 

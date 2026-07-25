@@ -11,7 +11,10 @@ import {
 import type { Options, Props } from "@ariakit/react-utils";
 import { invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
+import {
+  useComboboxProviderContext,
+  useComboboxScopedContext,
+} from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "label" satisfies ElementType;
@@ -30,8 +33,9 @@ type TagName = typeof TagName;
  */
 export const useComboboxLabel = createHook<TagName, ComboboxLabelOptions>(
   function useComboboxLabel({ store, ...props }) {
+    const scopedContext = useComboboxScopedContext(true);
     const context = useComboboxProviderContext();
-    store = store || context;
+    store = store || context || scopedContext;
 
     invariant(
       store,

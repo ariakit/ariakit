@@ -1,9 +1,9 @@
-import { click, press, q } from "@ariakit/test";
+import { click, focus, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/2699
 test("matches custom item content and skips empty text while open", async () => {
-  await click(q.combobox(/^Country$/));
+  await click(q.combobox("Country"));
   expect(q.option("Brazil")).toHaveAttribute("data-active-item");
 
   await press("c");
@@ -14,18 +14,18 @@ test("matches custom item content and skips empty text while open", async () => 
 
 // https://github.com/ariakit/ariakit/issues/2699
 test("matches custom item content while closed", async () => {
-  const select = q.combobox.ensure(/^Country$/);
-  select.focus();
+  const select = q.combobox.ensure("Country");
+  await focus(select);
   await press("c", select);
 
-  expect(q.combobox(/^Country$/)).toHaveTextContent("Canada");
+  expect(select).toHaveTextContent("Canada");
   expect(q.listbox()).not.toBeInTheDocument();
 });
 
 // https://github.com/ariakit/ariakit/issues/2699
 test("updates custom item text", async () => {
   await click(q.button("Use country aliases"));
-  await click(q.combobox(/^Country$/));
+  await click(q.combobox("Country"));
 
   await press("d");
 
@@ -34,7 +34,7 @@ test("updates custom item text", async () => {
 
 // https://github.com/ariakit/ariakit/issues/2699
 test("matches custom content on an offscreen item", async () => {
-  await click(q.combobox(/^Virtualized country$/));
+  await click(q.combobox("Virtualized country"));
   expect(q.option("Canada")).toHaveAttribute("data-offscreen");
 
   await press("c");

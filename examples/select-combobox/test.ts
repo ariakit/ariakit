@@ -5,6 +5,10 @@ test("show/hide on click", async () => {
   expect(q.dialog()).not.toBeInTheDocument();
   await click(q.combobox("Favorite fruit"));
   expect(q.dialog()).toBeVisible();
+  expect(q.combobox("Favorite fruit")).toHaveAttribute(
+    "aria-haspopup",
+    "dialog",
+  );
   expect(q.dialog()).toHaveAccessibleName("Favorite fruit");
   expect(q.listbox()).toHaveAccessibleName("Favorite fruit");
   expect(q.combobox("Search fruits")).toHaveFocus();

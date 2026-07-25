@@ -39,26 +39,24 @@ export function useCompositeItemOffscreen<
     | SelectStore
     | undefined;
 
-  const { selectElement } = useStoreStateObject(stateStore, ["selectElement"], {
-    selectElement(state) {
-      if (!state) return;
-      if (!("selectElement" in state)) return;
-      return state.selectElement;
-    },
-  });
-
   const { storeId, active, listElement, offscreenRoot } = useStoreStateObject(
     stateStore,
-    selectElement
-      ? ["value", "activeId", "listElement", "contentElement", "selectedValue"]
-      : ["value", "activeId", "listElement", "contentElement"],
+    [
+      "value",
+      "activeId",
+      "listElement",
+      "contentElement",
+      "selectedValue",
+      "selectElement",
+    ],
     {
       storeId: "id",
       active(state) {
         if (!state) return;
         if (
-          selectElement &&
+          value != null &&
           "selectedValue" in state &&
+          state.selectElement &&
           (Array.isArray(state.selectedValue)
             ? state.selectedValue[state.selectedValue.length - 1] === value
             : state.selectedValue === value)

@@ -113,14 +113,17 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       inputElement: "inputElement",
     });
 
-    // Keep this selector separate so plain ComboboxItem components don't
+    // Only the DOM focus fallback below reads this value, so the subscription
+    // is scoped to that mode. Otherwise, plain ComboboxItem components would
     // subscribe to activeId and items and re-render on every keyboard move.
-    // The selectElement value above gates these subscriptions.
+    const autoFocusSelectedItem =
+      !!selectElement && !virtualFocus && !inputElement;
+
     const selectedItem = useStoreState(
       store,
-      selectElement ? ["activeId", "items", "selectedValue"] : [],
+      autoFocusSelectedItem ? ["activeId", "items", "selectedValue"] : [],
       (state) => {
-        if (!selectElement) return false;
+        if (!autoFocusSelectedItem) return false;
         if (value == null) return false;
         if (state.activeId !== id && store?.item(state.activeId)) {
           return false;
@@ -212,15 +215,15 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       const paste = modifier && event.key.toLowerCase() === "v";
       const deleteKey = event.key === "Backspace" || event.key === "Delete";
       if (printable || paste || deleteKey) {
+        // In select mode, the base element is the select button rather than a
+        // text field, so focusing it would move focus out of the open list.
+        if (!isTextField(baseElement)) return;
         queueMicrotask(() => baseElement.focus());
-        if (isTextField(baseElement)) {
-          // If the combobox element is a text field, we should update the
-          // store value with the current's element value. This is necessary
-          // because the value may temporarily change based on the currently
-          // selected item, but it'll be reset to the original value when the
-          // combobox input is focused.
-          store?.setValue(baseElement.value);
-        }
+        // Update the store value with the current element's value. This is
+        // necessary because the value may temporarily change based on the
+        // currently selected item, but it'll be reset to the original value
+        // when the combobox input is focused.
+        store?.setValue(baseElement.value);
       }
     });
 
@@ -243,8 +246,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       [value, selected],
     );
 
-    const defaultAutoFocus =
-      selectMode && !virtualFocus && !inputElement ? selectedItem : undefined;
+    const defaultAutoFocus = autoFocusSelectedItem ? selectedItem : undefined;
 
     props = {
       role,
@@ -409,9 +411,11 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    */
   selectValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * Whether to reset the the combobox input value when this item is selected or
-   * unselected by click. This prop is set to `true` by default if
-   * the combobox supports multiple selections. In other words, if the
+   * Whether to reset the combobox input value when this item is selected or
+   * unselected by click. This prop is set to `true` by default when
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
+   * rendered, or when the combobox supports multiple selections, that is, when
+   * the
    * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
    * or
    * [`defaultSelectedValue`](https://ariakit.com/reference/combobox-provider#defaultselectedvalue)

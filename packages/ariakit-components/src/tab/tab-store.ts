@@ -242,7 +242,15 @@ export function createTabStore({
       restoredSelectedId = selectedIdFromSelectedValue;
       tab.setState("selectedId", selectedIdFromSelectedValue);
     };
-    if (parentComposite && "setSelectElement" in parentComposite) {
+    // The combobox store is also passed as the parent composite store when tabs
+    // are rendered inside a combobox, and it exposes setSelectElement as well.
+    // Its value state is the input value rather than the selected value, so it
+    // must be handled by the combobox branch below.
+    if (
+      parentComposite &&
+      parentComposite !== combobox &&
+      "setSelectElement" in parentComposite
+    ) {
       return chain(
         sync(parentComposite, ["value"], backupSelectedId),
         sync(parentComposite, ["mounted"], restoreSelectedId),

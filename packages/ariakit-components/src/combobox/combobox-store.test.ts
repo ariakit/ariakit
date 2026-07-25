@@ -262,6 +262,24 @@ test("sets the selected value when moving while the select is closed", async () 
   stop();
 });
 
+test("does not set the selected value when moving on a multi-selectable store", async () => {
+  const store = createComboboxStore({
+    defaultItems: [
+      { id: "apple", value: "Apple" },
+      { id: "banana", value: "Banana" },
+    ],
+    defaultSelectedValue: ["Apple"],
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  store.move("banana");
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toEqual(["Apple"]);
+  stop();
+});
+
 test("sets the selected value on open moves only when enabled", async () => {
   const store = createComboboxStore({
     defaultItems: [

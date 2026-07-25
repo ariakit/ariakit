@@ -1,4 +1,4 @@
-import { click, press, q } from "@ariakit/test";
+import { click, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/4767
@@ -47,4 +47,21 @@ test("preserves select focus in real-focus mode", async () => {
   expect(orange).toHaveAttribute("data-focus-visible", "true");
   expect(apple).not.toHaveAttribute("data-focus-visible");
   expect(banana).not.toHaveAttribute("data-focus-visible");
+});
+
+// https://github.com/ariakit/ariakit/pull/6832#discussion_r3649290438
+test("keeps focus on the items when typing in real-focus mode", async () => {
+  const select = q.combobox("Real focus fruit");
+  await click(select);
+  await press.ArrowDown();
+  const banana = q.option("Banana");
+  expect(banana).toHaveFocus();
+
+  await press.Backspace();
+  expect(banana).toHaveFocus();
+  expect(select).not.toHaveFocus();
+
+  await type("o");
+  expect(q.option("Orange")).toHaveFocus();
+  expect(select).not.toHaveFocus();
 });

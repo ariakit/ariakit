@@ -26,7 +26,6 @@ export const useComboboxInput = useCombobox;
  * <ComboboxProvider>
  *   <ComboboxSelect />
  *   <ComboboxPopover>
- *     <ComboboxLabel>Search fruits</ComboboxLabel>
  *     <ComboboxInput />
  *     <ComboboxList>
  *       <ComboboxItem value="Apple" />

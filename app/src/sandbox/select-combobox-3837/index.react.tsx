@@ -56,6 +56,7 @@ export default function Example() {
           <Ariakit.ComboboxInput
             store={combobox}
             autoSelect
+            aria-label="Search countries"
             placeholder="Search..."
             className="combobox"
           />

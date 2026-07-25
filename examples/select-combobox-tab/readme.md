@@ -41,7 +41,6 @@ We can create this searchable tabbed select widget by combining [Combobox](/comp
 <ComboboxProvider>
   <ComboboxSelect />
   <ComboboxPopover>
-    <ComboboxLabel>Search branches and tags</ComboboxLabel>
     <ComboboxInput />
     <TabProvider>
       <TabList>

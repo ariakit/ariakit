@@ -164,9 +164,9 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       unstable_treeSnapshotKey: treeSnapshotKey,
       ...props,
       // When the combobox popover is modal, we make sure to include the
-      // combobox input and all the combobox controls (cancel, disclosure) in
-      // the list of persistent elements so they make part of the modal context,
-      // allowing users to tab through them.
+      // combobox input and all the combobox controls (cancel, disclosure) that
+      // are rendered outside of it in the list of persistent elements, so they
+      // make part of the modal context and users can tab through them.
       getPersistentElements() {
         const elements = props.getPersistentElements?.() || [];
         if (!modal) return elements;
@@ -176,15 +176,18 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         const persistentElement = selectElement || inputElement || baseElement;
         if (!persistentElement) return elements;
         const persistentElements = new Set(elements);
-        if (baseElement) {
-          persistentElements.add(baseElement);
-        }
-        if (inputElement) {
-          persistentElements.add(inputElement);
-        }
-        if (selectElement) {
-          persistentElements.add(selectElement);
-        }
+        // Elements inside the popup are already part of the modal context.
+        // Passing them along would make the popup an ancestor of one of its own
+        // persistent elements, which the dialog reads as a nested dialog and
+        // stops dismissing on Escape.
+        const addPersistentElement = (element: HTMLElement | null) => {
+          if (!element) return;
+          if (contentElement?.contains(element)) return;
+          persistentElements.add(element);
+        };
+        addPersistentElement(baseElement);
+        addPersistentElement(inputElement);
+        addPersistentElement(selectElement);
         const doc = getDocument(persistentElement);
         const selectors: string[] = [];
         if (contentElement?.id) {
@@ -202,9 +205,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         if (!selectors.length) return [...persistentElements];
         const selector = selectors.join(",");
         const controlElements = doc.querySelectorAll<HTMLElement>(selector);
-        controlElements.forEach((element) => {
-          persistentElements.add(element);
-        });
+        controlElements.forEach(addPersistentElement);
         return [...persistentElements];
       },
       // The popup only gets keyboard events proxied from the active item, so

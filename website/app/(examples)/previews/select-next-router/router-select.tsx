@@ -87,8 +87,8 @@ export const SelectItem = React.forwardRef<
 >(function SelectItem(props, ref) {
   const searchParams = useSearchParams();
   const param = React.useContext(SelectParamContext);
-  const select = Ariakit.useComboboxContext();
-  const multi = Ariakit.useStoreState(select, (state) =>
+  const combobox = Ariakit.useComboboxContext();
+  const multi = Ariakit.useStoreState(combobox, (state) =>
     Array.isArray(state?.selectedValue),
   );
   const queryString = getQueryString(searchParams, param, props.value, multi);

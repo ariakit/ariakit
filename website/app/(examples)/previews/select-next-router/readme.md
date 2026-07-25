@@ -91,8 +91,8 @@ The Combobox Select can function as either a single select or multi-select compo
 In this example, we use the [`useComboboxContext`](/reference/use-combobox-context) hook within our custom `SelectItem` component to access the [combobox store](/reference/use-combobox-store). We then verify if the selected value is an array using the [`useStoreState`](/reference/use-store-state) hook:
 
 ```jsx
-const select = useComboboxContext();
-const isMultiSelect = useStoreState(select, (state) =>
+const combobox = useComboboxContext();
+const isMultiSelect = useStoreState(combobox, (state) =>
   Array.isArray(state.selectedValue),
 );
 ```

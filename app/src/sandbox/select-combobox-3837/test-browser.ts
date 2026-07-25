@@ -28,7 +28,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     const selectButton = q.combobox("Country");
-    const input = q.combobox("Search...");
+    const input = q.combobox("Search countries");
     const popover = page.locator(".popover");
 
     await selectButton.click();

@@ -6,7 +6,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    await q.combobox(/^Country$/).focus();
+    await q.combobox("Country").focus();
     await page.keyboard.press("Enter");
     await test.expect(q.option("Brazil")).toHaveAttribute("data-active-item");
 
@@ -20,18 +20,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // https://github.com/ariakit/ariakit/issues/2699
   test("matches custom item content while closed", async ({ page, q }) => {
-    await q.combobox(/^Country$/).focus();
+    await q.combobox("Country").focus();
 
     await page.keyboard.press("c");
 
-    await test.expect(q.combobox(/^Country$/)).toContainText("Canada");
+    await test.expect(q.combobox("Country")).toContainText("Canada");
     await test.expect(q.listbox()).not.toBeAttached();
   });
 
   // https://github.com/ariakit/ariakit/issues/2699
   test("updates custom item text", async ({ page, q }) => {
     await q.button("Use country aliases").click();
-    await q.combobox(/^Country$/).click();
+    await q.combobox("Country").click();
 
     await page.keyboard.press("d");
 
@@ -40,7 +40,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // https://github.com/ariakit/ariakit/issues/2699
   test("matches custom content on an offscreen item", async ({ page, q }) => {
-    await q.combobox(/^Virtualized country$/).click();
+    await q.combobox("Virtualized country").click();
     await test.expect(q.option("Canada")).toHaveAttribute("data-offscreen");
 
     await page.keyboard.press("c");

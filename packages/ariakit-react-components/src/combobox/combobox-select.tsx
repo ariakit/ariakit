@@ -70,47 +70,46 @@ function nextWithValue(store: ComboboxStore, next: ComboboxStore["next"]) {
   };
 }
 
-function scrollItemIntoView(element: HTMLElement) {
-  element.scrollIntoView({ block: "nearest", inline: "nearest" });
+function scrollActiveItemIntoView(store: ComboboxStore) {
+  const { activeId } = store.getState();
+  const element = store.item(activeId)?.element;
+  element?.scrollIntoView({ block: "nearest", inline: "nearest" });
 }
 
 /**
- * Renders nothing and keeps the active item visible while focus stays on the
- * select or input. Composite scrolls items after move(), but the combobox store
- * can restore `activeId` directly, and the corresponding element may render
- * asynchronously.
+ * Renders nothing and scrolls the active item into view when the popup opens.
+ * Composite only scrolls after move(), but the store points `activeId` at the
+ * selected item without moving, and focus stays on the select, so nothing else
+ * brings that item into view. Later active item changes are left alone: moving
+ * with the keyboard is already scrolled by composite, and hovering an item must
+ * not scroll the list.
  */
 const ComboboxSelectScrollIntoView = memo(
   function ComboboxSelectScrollIntoView({ store }: { store: ComboboxStore }) {
-    const activeElement = useStoreState(
-      store,
-      ["activeId", "items", "open"],
-      (state) => {
-        if (!state.open) return null;
-        return store.item(state.activeId)?.element;
-      },
-    );
+    const open = useStoreState(store, "open");
     const contentElement = useStoreState(store, "contentElement");
 
     useSafeLayoutEffect(() => {
-      if (!activeElement) return;
+      if (!open) return;
       let cancelScroll = () => {};
+      // The active item is read on each frame because its element may only
+      // render once the popup is mounted and placed.
       const scroll = () => {
         cancelScroll = afterPaint(() => {
           // Let offscreen observers initialize before the first scroll. This
           // may render adjacent items, so correct the position after they
           // affect the layout.
           cancelScroll = afterPaint(() => {
-            scrollItemIntoView(activeElement);
+            scrollActiveItemIntoView(store);
             cancelScroll = afterPaint(() => {
-              scrollItemIntoView(activeElement);
+              scrollActiveItemIntoView(store);
             });
           });
         });
       };
       if (!contentElement?.hasAttribute("data-placing")) {
         scroll();
-        return cancelScroll;
+        return () => cancelScroll();
       }
       const observer = new MutationObserver(() => {
         if (contentElement.hasAttribute("data-placing")) return;
@@ -122,7 +121,7 @@ const ComboboxSelectScrollIntoView = memo(
         observer.disconnect();
         cancelScroll();
       };
-    }, [activeElement, contentElement]);
+    }, [store, open, contentElement]);
 
     return null;
   },
@@ -161,6 +160,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     const selectedValue = useStoreState(store, "selectedValue");
     const multiSelectable = Array.isArray(selectedValue);
     const inputElement = useStoreState(store, "inputElement");
+    const mounted = useStoreState(store, "mounted");
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
@@ -317,6 +317,9 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       </>
     );
     const contentElement = useStoreState(store, "contentElement");
+    // The popup role is resolved asynchronously by ComboboxList, so the
+    // attribute is tracked to keep aria-haspopup in sync on the first open.
+    useAttribute(contentElement, "role");
 
     props = {
       role: "combobox",
@@ -351,6 +354,12 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     const onCompositeKeyUpCapture = props.onKeyUpCapture;
     props = {
       ...props,
+      // The store points the active item at the current selection while the
+      // popup is closed, but a collapsed select must not reference an item
+      // that may not even be rendered.
+      "aria-activedescendant": mounted
+        ? props["aria-activedescendant"]
+        : undefined,
       onKeyDownCapture(event) {
         if (store.getState().open && !inputElement) {
           onCompositeKeyDownCapture?.(event);

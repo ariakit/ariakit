@@ -42,7 +42,9 @@ export default function Example() {
         />
         Show search
       </label>
-      <Ariakit.ComboboxProvider defaultSelectedValue="Banana">
+      {/* Nothing is selected by default: a stored selection resolves into the
+      active item when the popover opens, masking the mount-time focus. */}
+      <Ariakit.ComboboxProvider defaultSelectedValue="">
         <Ariakit.ComboboxSelectLabel>
           Favorite fruit
         </Ariakit.ComboboxSelectLabel>

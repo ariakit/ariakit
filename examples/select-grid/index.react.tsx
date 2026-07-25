@@ -5,7 +5,7 @@ import "./style.css";
 
 export default function Example() {
   const [value, setValue] = useState("Center");
-  const select = Ariakit.useComboboxStore({
+  const combobox = Ariakit.useComboboxStore({
     selectedValue: value,
     setSelectedValue: setValue,
   });
@@ -22,7 +22,7 @@ export default function Example() {
         // By default, hovering over an item doesn't focus it, nor does it set
         // the value. So we need to manually "move" to the item so it gets
         // focused and the value is set.
-        select.move(event.currentTarget.id);
+        combobox.move(event.currentTarget.id);
         return true;
       }}
     >
@@ -32,7 +32,11 @@ export default function Example() {
 
   return (
     <div className="wrapper">
-      <Ariakit.ComboboxProvider store={select} placement="bottom" selectOnMove>
+      <Ariakit.ComboboxProvider
+        store={combobox}
+        placement="bottom"
+        selectOnMove
+      >
         <Ariakit.ComboboxSelectLabel>Position</Ariakit.ComboboxSelectLabel>
         <Ariakit.ComboboxSelect showOnKeyDown={false} className="button">
           <Square value={value} />
