@@ -502,6 +502,81 @@ test("doesn't submit or reset a form from a click on a disabled submit/reset con
   }
 });
 
+test("reports a form or select as containing its descendants", () => {
+  if (isBrowser) return;
+  // happy-dom's HTMLFormElement/HTMLSelectElement constructors return a Proxy
+  // (so `form.username` and `select[0]` work), but inserting one into a parent
+  // re-points the children it already has at the raw target instead of the
+  // proxy. `contains` compares against the proxy, so it walks a parent chain
+  // that never matches and returns false for those descendants. jsdom and real
+  // browsers return true, per the DOM spec's inclusive-descendant definition.
+  // https://dom.spec.whatwg.org/#dom-node-contains
+  for (const [parentTag, childTag] of [
+    ["form", "fieldset"],
+    ["select", "optgroup"],
+  ] as const) {
+    const container = document.createElement("div");
+    const parent = document.createElement(parentTag);
+    const child = document.createElement(childTag);
+    const grandchild = document.createElement("input");
+    child.append(grandchild);
+    parent.append(child);
+    // Inserting into a still-detached parent is enough to trigger the
+    // divergence, so the answers must already be right here.
+    container.append(parent);
+    expect(parent.contains(child)).toBe(true);
+    expect(parent.contains(grandchild)).toBe(true);
+
+    document.body.append(container);
+    // Appended after the insertion that broke the earlier children, so nothing
+    // re-points this one and it answers correctly on its own.
+    const late = document.createElement("input");
+    parent.append(late);
+    const outside = document.createElement("input");
+    container.append(outside);
+    try {
+      expect(parent.contains(parent)).toBe(true);
+      expect(parent.contains(child)).toBe(true);
+      expect(parent.contains(grandchild)).toBe(true);
+      expect(parent.contains(late)).toBe(true);
+      // Elements outside the parent are still reported as outside.
+      expect(parent.contains(outside)).toBe(false);
+      expect(parent.contains(container)).toBe(false);
+      expect(parent.contains(null)).toBe(false);
+      // The other direction never regressed, but it must keep working.
+      expect(container.contains(parent)).toBe(true);
+      expect(container.contains(grandchild)).toBe(true);
+      // The divergence outlives the subtree's removal from the document.
+      container.remove();
+      expect(parent.contains(grandchild)).toBe(true);
+    } finally {
+      container.remove();
+    }
+  }
+});
+
+test("reports a select nested in a form as containing its own descendants", () => {
+  if (isBrowser) return;
+  // Both elements are proxied, so resolving the outer one through its children
+  // only works if the inner one resolves through its children too.
+  const form = document.createElement("form");
+  const select = document.createElement("select");
+  const optgroup = document.createElement("optgroup");
+  const option = document.createElement("option");
+  optgroup.append(option);
+  select.append(optgroup);
+  form.append(select);
+  document.body.append(form);
+  try {
+    expect(form.contains(select)).toBe(true);
+    expect(form.contains(optgroup)).toBe(true);
+    expect(form.contains(option)).toBe(true);
+    expect(select.contains(option)).toBe(true);
+  } finally {
+    form.remove();
+  }
+});
+
 test("click(label) fires the associated control's click only once", async () => {
   if (isBrowser) return;
   // `click` suppresses happy-dom's automatic label-to-control click by
