@@ -166,7 +166,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
-      const { orientation, items, activeId } = store.getState();
+      const { orientation, items, activeId, open } = store.getState();
       const isVertical = orientation !== "horizontal";
       const isHorizontal = orientation !== "vertical";
       const isGrid = !!items.find(
@@ -195,7 +195,10 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
         ArrowRight: isRight,
       };
       const canShow = canShowKeyMap[event.key as keyof typeof canShowKeyMap];
-      if (canShow && showOnKeyDownProp(event)) {
+      // While the popup is open, arrow keys only move through items. Running
+      // the show branch again would move back to the stale active item read at
+      // the start of this handler, undoing the move above.
+      if (!open && canShow && showOnKeyDownProp(event)) {
         event.preventDefault();
         store.move(activeId);
         queueBeforeEvent(event.currentTarget, "keyup", store.show);

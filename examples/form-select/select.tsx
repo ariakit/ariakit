@@ -43,7 +43,6 @@ export const Select = React.forwardRef<HTMLButtonElement, SelectProps>(
         <Ariakit.ComboboxPopover
           store={select}
           modal
-          composite
           sameWidth
           gutter={4}
           onBlur={onBlur}

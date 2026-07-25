@@ -1,9 +1,27 @@
 import { useStoreState } from "@ariakit/react-store";
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import {
+  useBooleanEvent,
+  useEvent,
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { getDocument, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
-import type { ElementType } from "react";
-import { useRef } from "react";
+import {
+  isFocusable,
+  isSelfTarget,
+  getDocument,
+  invariant,
+  isFalsyBooleanCallback,
+} from "@ariakit/utils";
+import type { BooleanOrCallback } from "@ariakit/utils";
+import type {
+  ElementType,
+  FocusEvent,
+  KeyboardEvent as ReactKeyboardEvent,
+} from "react";
+import { useEffect, useRef, useState } from "react";
+import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
@@ -13,6 +31,7 @@ import { useComboboxList } from "./combobox-list.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isController(
   target: EventTarget | Element | null,
@@ -50,7 +69,9 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     modal,
     tabIndex,
     alwaysVisible,
+    resetOnEscape,
     autoFocusOnHide = true,
+    hideOnEscape = true,
     hideOnInteractOutside = true,
     ...props
   }) {
@@ -69,6 +90,44 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     const hiddenByClickOutsideRef = useRef(false);
     const hasSelect = !!selectElement;
 
+    const mounted = useStoreState(store, "mounted");
+    const moved = useStoreState(store, ["moves"], (state) => !!state.moves);
+    const selectOnMove = useStoreState(store, "selectOnMove");
+    const selectedValue = useStoreState(store, "selectedValue");
+    const multiSelectable = Array.isArray(selectedValue);
+    const [defaultSelectedValue, setDefaultSelectedValue] =
+      useState(selectedValue);
+
+    // Keep tracking the selected value until the user moves through the items.
+    // The popover may already be shown on its first render, and the store may
+    // only settle its initial selected value afterwards, so freezing it any
+    // earlier would restore a value the user never saw.
+    useEffect(() => {
+      if (mounted && moved) return;
+      setDefaultSelectedValue(selectedValue);
+    }, [mounted, moved, selectedValue]);
+
+    // Virtual focus keeps DOM focus on the combobox input or select, so the
+    // popup itself must never hold it. Otherwise arrow keys stop working until
+    // the user tabs back out.
+    const onFocusProp = props.onFocus;
+
+    const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
+      onFocusProp?.(event);
+      if (event.defaultPrevented) return;
+      if (!isSelfTarget(event)) return;
+      const baseElement = store?.getState().baseElement;
+      if (!baseElement) return;
+      // A modal popover may render the base element inert, in which case
+      // moving focus there would fight the dialog's focus containment.
+      if (!isFocusable(baseElement)) return;
+      baseElement.focus();
+    });
+
+    // Moving through items only changes the selected value when selectOnMove is
+    // enabled, so that's the only case where there's something to restore.
+    const resetOnEscapeProp = useBooleanEvent(resetOnEscape ?? selectOnMove);
+
     // When new tags are rendered while the combobox popover is open, they will
     // be considered nested popups, and therefore the popover won't hide when
     // interacting with them. We use the treeSnapshotKey to force the popover to
@@ -82,7 +141,12 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     props = useComboboxList({
       store,
       alwaysVisible,
-      composite: false,
+      ...props,
+      onFocus,
+    });
+    props = useCompositeTypeahead({
+      store,
+      typeahead: !inputElement,
       ...props,
     });
 
@@ -91,10 +155,9 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       modal,
       alwaysVisible,
       backdrop: false,
-      autoFocusOnShow() {
-        const state = store?.getState();
-        return !!state?.selectElement && !!state.inputElement;
-      },
+      // A callback would always be truthy, defeating the dialog's early-out and
+      // forcing a tabbable scan of the whole popup on every open.
+      autoFocusOnShow: hasSelect && !!inputElement,
       initialFocus: hasSelect ? inputElement : undefined,
       finalFocus: selectElement || baseElement,
       preserveTabOrderAnchor: null,
@@ -143,6 +206,19 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
           persistentElements.add(element);
         });
         return [...persistentElements];
+      },
+      // The popup only gets keyboard events proxied from the active item, so
+      // restoring the value on a keydown there would be skipped whenever no
+      // item is active. This runs wherever focus is. The dialog memoizes it per
+      // event, so it never runs twice, but it runs while the escape key is
+      // still being preflighted: a descendant that prevents the default
+      // afterwards keeps the popover open with the value already restored.
+      hideOnEscape(event) {
+        if (isFalsyBooleanCallback(hideOnEscape, event)) return false;
+        if (!multiSelectable && resetOnEscapeProp(event)) {
+          store?.setSelectedValue(defaultSelectedValue);
+        }
+        return true;
       },
       // The combobox popover should focus on the combobox input when it hides,
       // unless the event was triggered by a click outside the popover, in which
@@ -205,7 +281,19 @@ export const ComboboxPopover = createDialogComponent(
 );
 
 export interface ComboboxPopoverOptions<T extends ElementType = TagName>
-  extends ComboboxListOptions<T>, Omit<PopoverOptions<T>, "store"> {}
+  extends ComboboxListOptions<T>, Omit<PopoverOptions<T>, "store"> {
+  /**
+   * Whether the combobox
+   * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
+   * should be restored to the value it had before the popover was shown when
+   * Escape is pressed. Defaults to the store's
+   * [`selectOnMove`](https://ariakit.com/reference/combobox-provider#selectonmove)
+   * value, since moving through items is what changes the selected value while
+   * the popover is open. This has no effect when the combobox supports multiple
+   * selections.
+   */
+  resetOnEscape?: BooleanOrCallback<KeyboardEvent | ReactKeyboardEvent>;
+}
 
 export type ComboboxPopoverProps<T extends ElementType = TagName> = Props<
   T,

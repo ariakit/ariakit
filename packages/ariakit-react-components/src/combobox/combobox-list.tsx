@@ -1,30 +1,18 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
   useAttribute,
-  useBooleanEvent,
-  useEvent,
   useId,
   useMergeRefs,
   useSafeLayoutEffect,
-  useTransactionState,
   useWrapElement,
   createElement,
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { isSelfTarget, invariant, removeUndefinedValues } from "@ariakit/utils";
-import type { BooleanOrCallback } from "@ariakit/utils";
-import type { ElementType, KeyboardEvent } from "react";
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import {
-  useCompositeProviderContext,
-  useCompositeScopedContext,
-} from "../composite/composite-context.tsx";
-import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
-import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
-import type { CompositeOptions } from "../composite/composite.tsx";
-import { useComposite } from "../composite/composite.tsx";
+import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import type { ElementType } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import { DialogHeadingContext } from "../dialog/dialog-context.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
@@ -56,24 +44,11 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * ```
  */
 export const useComboboxList = createHook<TagName, ComboboxListOptions>(
-  function useComboboxList({
-    store,
-    alwaysVisible,
-    resetOnEscape = true,
-    hideOnEnter = true,
-    composite,
-    ...props
-  }) {
+  function useComboboxList({ store, alwaysVisible, ...props }) {
     const scopedContext = useComboboxScopedContext(true);
-    const scopedComposite = useCompositeScopedContext(true);
-    const compositeProvider = useCompositeProviderContext();
     const context = useComboboxContext();
     store = store || context;
     const scopedContextSameStore = !!store && store === scopedContext;
-    // A composite widget from another store owns keyboard navigation unless
-    // this combobox comes from a provider rendered inside it.
-    const inForeignScopedComposite =
-      !!scopedComposite && scopedComposite !== store && !compositeProvider;
 
     invariant(
       store,
@@ -87,35 +62,9 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
     const style = hidden ? { ...props.style, display: "none" } : props.style;
 
-    const selectedValue = useStoreState(store, "selectedValue");
-    const multiSelectable = Array.isArray(selectedValue);
-    const [defaultSelectedValue, setDefaultSelectedValue] =
-      useState(selectedValue);
-
-    useEffect(() => {
-      if (mounted) return;
-      setDefaultSelectedValue(selectedValue);
-    }, [mounted, selectedValue]);
-
-    resetOnEscape = resetOnEscape && !multiSelectable;
-
-    const onKeyDownProp = props.onKeyDown;
-    const resetOnEscapeProp = useBooleanEvent(resetOnEscape);
-    const hideOnEnterProp = useBooleanEvent(hideOnEnter);
-
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
-      onKeyDownProp?.(event);
-      if (event.defaultPrevented) return;
-      if (event.key === "Escape" && resetOnEscapeProp(event)) {
-        store?.setSelectedValue(defaultSelectedValue);
-      }
-      if (event.key === " " || event.key === "Enter") {
-        if (isSelfTarget(event) && hideOnEnterProp(event)) {
-          event.preventDefault();
-          store?.hide();
-        }
-      }
-    });
+    const multiSelectable = useStoreState(store, ["selectedValue"], (state) =>
+      Array.isArray(state.selectedValue),
+    );
 
     const role = useAttribute(ref, "role", props.role);
     const isCompositeRole =
@@ -133,19 +82,6 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       () => [headingId, setHeadingId],
       [headingId, setHeadingId],
     );
-    const inputElement = useStoreState(store, "inputElement");
-    const selectElement = useStoreState(store, "selectElement");
-    // This list owns keyboard navigation only when it isn't nested in another
-    // list and there is no input, select, or foreign composite that owns it.
-    // Input and select elements are published after the first render, so the
-    // composite scope also prevents this list from briefly taking ownership.
-    composite =
-      composite ??
-      (!scopedContextSameStore &&
-        !inForeignScopedComposite &&
-        !inputElement &&
-        !selectElement);
-
     // We support nested <ComboboxList> elements (usually in the form of
     // ComboboxPopover>ComboboxList), but we can't have nested listbox roles, so
     // we check here if there's already a listbox element inside the current
@@ -202,10 +138,6 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       id && (!scopedContext || !scopedContextSameStore)
         ? store.setContentElement
         : null;
-    const [, setListElement] = useTransactionState(
-      composite ? store.setListElement : null,
-    );
-
     const labelElement = useStoreState(
       store,
       ["labelElement", "selectLabelElement"],
@@ -222,17 +154,9 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       hidden,
       ...props,
       id,
-      ref: useMergeRefs(setContentElement, setListElement, ref, props.ref),
+      ref: useMergeRefs(setContentElement, ref, props.ref),
       style,
-      onKeyDown,
     };
-
-    props = useComposite({ store, ...props, composite });
-    props = useCompositeTypeahead({
-      store,
-      typeahead: !inputElement,
-      ...props,
-    });
 
     return removeUndefinedValues(props);
   },
@@ -263,11 +187,7 @@ export const ComboboxList = forwardRef(function ComboboxList(
 });
 
 export interface ComboboxListOptions<T extends ElementType = TagName>
-  extends
-    Options,
-    CompositeOptions<T>,
-    CompositeTypeaheadOptions<T>,
-    Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
+  extends Options, Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
@@ -276,17 +196,6 @@ export interface ComboboxListOptions<T extends ElementType = TagName>
    * component's context will be used.
    */
   store?: ComboboxStore;
-  /**
-   * Whether the selected value should be reset when Escape is pressed.
-   * @default true
-   */
-  resetOnEscape?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
-  /**
-   * Whether the popover should hide when Enter or Space is pressed on the
-   * list itself.
-   * @default true
-   */
-  hideOnEnter?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;
 }
 
 export type ComboboxListProps<T extends ElementType = TagName> = Props<

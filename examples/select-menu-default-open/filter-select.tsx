@@ -67,7 +67,6 @@ export const FilterSelect = React.forwardRef<
       <Ariakit.ComboboxPopover
         store={select}
         aria-labelledby={labelId}
-        composite
         autoFocusOnShow
         gutter={4}
         className="popover"

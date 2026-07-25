@@ -98,7 +98,6 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       multiSelectable,
       selected,
       selectElement,
-      listElement,
       virtualFocus,
       inputElement,
     } = useStoreStateObject(store, ["selectedValue"], {
@@ -110,7 +109,6 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         return isSelected(state.selectedValue, value);
       },
       selectElement: "selectElement",
-      listElement: "listElement",
       virtualFocus: "virtualFocus",
       inputElement: "inputElement",
     });
@@ -134,7 +132,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       },
     );
 
-    const selectMode = !!selectElement || (!!listElement && !inputElement);
+    const selectMode = !!selectElement;
     const disabled = disabledFromProps(props);
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
@@ -421,10 +419,8 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    */
   resetValueOnSelect?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * @default false, or true when the item is used with
-   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) or in a
-   * standalone
-   * [`ComboboxList`](https://ariakit.com/reference/combobox-list)
+   * Defaults to `false`, or `true` when the item is used with a
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select).
    */
   focusOnHover?: CompositeHoverOptions["focusOnHover"];
 }

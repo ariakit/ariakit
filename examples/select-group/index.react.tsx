@@ -15,7 +15,7 @@ export default function Example() {
       <ComboboxProvider defaultSelectedValue="Apple">
         <ComboboxSelectLabel>Favorite food</ComboboxSelectLabel>
         <ComboboxSelect className="button" />
-        <ComboboxPopover gutter={4} sameWidth composite className="popover">
+        <ComboboxPopover gutter={4} sameWidth className="popover">
           <ComboboxGroup className="group">
             <ComboboxGroupLabel className="group-label">
               Fruits &amp; Vegetables

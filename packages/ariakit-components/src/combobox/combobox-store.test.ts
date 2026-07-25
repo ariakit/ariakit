@@ -197,13 +197,12 @@ test("preserves an explicit empty selected value before items load", async () =>
   stop();
 });
 
-test("does not select the first item when a combobox input is rendered", async () => {
+test("does not select the first item without a select element", async () => {
   const store = createComboboxStore({
     defaultItems: [{ id: "apple", value: "Apple" }],
   });
   const stop = init(store);
 
-  store.setListElement(document.createElement("div"));
   store.setInputElement(document.createElement("input"));
   await Promise.resolve();
 
@@ -222,36 +221,6 @@ test("uses select composite defaults while a select is rendered", () => {
   expect(store.getState().includesBaseElement).toBe(false);
 
   store.setSelectElement(null);
-
-  expect(store.getState().focusLoop).toBe(true);
-  expect(store.getState().focusWrap).toBe(true);
-  expect(store.getState().includesBaseElement).toBe(true);
-  stop();
-});
-
-test("uses select composite defaults for a standalone list", () => {
-  const store = createComboboxStore();
-  const stop = init(store);
-
-  store.setListElement(document.createElement("div"));
-
-  expect(store.getState().focusLoop).toBe(false);
-  expect(store.getState().focusWrap).toBe(false);
-  expect(store.getState().includesBaseElement).toBe(false);
-
-  store.setInputElement(document.createElement("input"));
-
-  expect(store.getState().focusLoop).toBe(true);
-  expect(store.getState().focusWrap).toBe(true);
-  expect(store.getState().includesBaseElement).toBe(true);
-
-  store.setInputElement(null);
-
-  expect(store.getState().focusLoop).toBe(false);
-  expect(store.getState().focusWrap).toBe(false);
-  expect(store.getState().includesBaseElement).toBe(false);
-
-  store.setListElement(null);
 
   expect(store.getState().focusLoop).toBe(true);
   expect(store.getState().focusWrap).toBe(true);

@@ -15,7 +15,7 @@ test("add filter with mouse then click outside", async () => {
   expect(q.combobox("Language:")).toBeVisible();
   expect(q.combobox("Language:")).toHaveAttribute("aria-expanded", "true");
   expect(q.listbox("Language:")).toBeInTheDocument();
-  expect(q.listbox("Language:")).toHaveFocus();
+  expect(q.combobox("Language:")).toHaveFocus();
   expect(q.combobox("Language:")).toHaveTextContent("Language: Choose one");
   await click(document.body);
   expect(q.button("Filters (0)")).toBeVisible();
@@ -34,7 +34,7 @@ test("add filter with keyboard then press tab", async () => {
   expect(q.combobox("Status:")).toBeVisible();
   expect(q.combobox("Status:")).toHaveAttribute("aria-expanded", "true");
   expect(q.listbox("Status:")).toBeInTheDocument();
-  expect(q.listbox("Status:")).toHaveFocus();
+  expect(q.combobox("Status:")).toHaveFocus();
   expect(q.combobox("Status:")).toHaveTextContent("Status: Choose one");
   await press.ShiftTab();
   await press.ShiftTab();
@@ -67,7 +67,7 @@ test("add more filters", async () => {
   expect(q.button("Filters (2)")).toBeVisible();
   expect(q.combobox("Author:")).toBeVisible();
   expect(q.listbox("Author:")).toBeInTheDocument();
-  expect(q.listbox("Author:")).toHaveFocus();
+  expect(q.combobox("Author:")).toHaveFocus();
   expect(q.combobox("Author:")).toHaveTextContent("Author: Choose one");
   await type("ja");
   expect(q.option("Jane Doe")).toHaveFocus();

@@ -54,7 +54,6 @@ export function createSelectStore({
       "disclosureElement",
       "inputElement",
       "labelElement",
-      "listElement",
       "selectElement",
       "selectLabelElement",
     ]),

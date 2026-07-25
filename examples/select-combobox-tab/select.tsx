@@ -166,12 +166,9 @@ export interface SelectListProps extends Omit<
 > {}
 
 export function SelectList(props: SelectListProps) {
-  const combobox = Ariakit.useComboboxContext();
-  const inputElement = Ariakit.useStoreState(combobox, "inputElement");
   return (
     <Ariakit.ComboboxList
       {...props}
-      composite={!inputElement}
       className={clsx(
         "ak-popup-cover ak-popup-scroll outline-none",
         props.className,

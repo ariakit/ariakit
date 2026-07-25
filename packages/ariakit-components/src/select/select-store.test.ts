@@ -25,7 +25,6 @@ test("keeps select and combobox element state separate", () => {
   expect(combobox.getState().selectLabelElement).toBe(selectLabel);
   expect(select.getState().labelElement).toBe(selectLabel);
   expect(combobox.getState().selectElement).toBeNull();
-  expect(combobox.getState().listElement).toBeNull();
   expect(select.getState().selectElement).toBe(selectElement);
   expect(select.getState().listElement).toBe(list);
   expect(combobox.getState().virtualFocus).toBe(true);

@@ -24,18 +24,6 @@ test("move through items with arrow keys", async () => {
   expect(q.option("Banana")).toHaveAttribute("aria-selected", "false");
 });
 
-test("stops at the list boundaries", async () => {
-  await press.Tab();
-  await press.End();
-  expect(q.option("Orange")).toHaveFocus();
-  await press.ArrowDown();
-  expect(q.option("Orange")).toHaveFocus();
-  await press.Home();
-  expect(q.option("Apple")).toHaveFocus();
-  await press.ArrowUp();
-  expect(q.option("Apple")).toHaveFocus();
-});
-
 test("click on item then move with arrow keys", async () => {
   await click(q.option("Apple"));
   expect(q.listbox()).toHaveFocus();

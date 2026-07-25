@@ -141,7 +141,6 @@ export function createComboboxStore({
     activeValue: syncState?.activeValue,
     inputElement: defaultValue(syncState?.inputElement, null),
     labelElement: defaultValue(syncState?.labelElement, null),
-    listElement: defaultValue(syncState?.listElement, null),
     selectElement: defaultValue(syncState?.selectElement, null),
     selectLabelElement: defaultValue(syncState?.selectLabelElement, null),
   };
@@ -187,40 +186,34 @@ export function createComboboxStore({
     }),
   );
 
-  // Match native select navigation while a select or standalone list is
-  // rendered. Explicit composite options are never overridden, and listener
-  // cleanup restores the previous defaults when this mode ends.
+  // Match native select navigation while a select is rendered. Explicit
+  // composite options are never overridden, and listener cleanup restores the
+  // previous defaults when this mode ends.
   setup(combobox, () =>
-    sync(
-      combobox,
-      ["inputElement", "listElement", "selectElement"],
-      (state) => {
-        const standaloneList = !!state.listElement && !state.inputElement;
-        if (!state.selectElement && !standaloneList) return;
-        const { focusLoop, focusWrap, includesBaseElement } =
-          combobox.getState();
+    sync(combobox, ["selectElement"], (state) => {
+      if (!state.selectElement) return;
+      const { focusLoop, focusWrap, includesBaseElement } = combobox.getState();
+      if (defaultSelectFocusLoop) {
+        composite.setState("focusLoop", false);
+      }
+      if (defaultSelectFocusWrap) {
+        composite.setState("focusWrap", false);
+      }
+      if (defaultSelectIncludesBaseElement) {
+        composite.setState("includesBaseElement", false);
+      }
+      return () => {
         if (defaultSelectFocusLoop) {
-          composite.setState("focusLoop", false);
+          composite.setState("focusLoop", focusLoop);
         }
         if (defaultSelectFocusWrap) {
-          composite.setState("focusWrap", false);
+          composite.setState("focusWrap", focusWrap);
         }
         if (defaultSelectIncludesBaseElement) {
-          composite.setState("includesBaseElement", false);
+          composite.setState("includesBaseElement", includesBaseElement);
         }
-        return () => {
-          if (defaultSelectFocusLoop) {
-            composite.setState("focusLoop", focusLoop);
-          }
-          if (defaultSelectFocusWrap) {
-            composite.setState("focusWrap", focusWrap);
-          }
-          if (defaultSelectIncludesBaseElement) {
-            composite.setState("includesBaseElement", includesBaseElement);
-          }
-        };
-      },
-    ),
+      };
+    }),
   );
 
   // Prefer the select as the popover anchor, then the composite base, then the
@@ -246,19 +239,13 @@ export function createComboboxStore({
     ),
   );
 
-  // Give select-mode and standalone-list stores the first enabled item when no
-  // value was provided. Item registration is incremental, so defer and re-read
-  // the mode after synchronous element and item updates settle.
+  // Give select-mode stores the first enabled item when no value was provided.
+  // Item registration is incremental, so defer and re-read the mode after
+  // synchronous element and item updates settle.
   setup(combobox, () =>
     sync(
       combobox,
-      [
-        "inputElement",
-        "items",
-        "listElement",
-        "selectedValue",
-        "selectElement",
-      ],
+      ["items", "selectedValue", "selectElement"],
       (state, prevState) => {
         if (!shouldSetDefaultSelectedValue) return;
         if (state.selectedValue !== prevState.selectedValue) {
@@ -268,8 +255,7 @@ export function createComboboxStore({
         queueMicrotask(() => {
           if (!shouldSetDefaultSelectedValue) return;
           const state = combobox.getState();
-          if (!state.selectElement && !state.listElement) return;
-          if (state.inputElement && !state.selectElement) return;
+          if (!state.selectElement) return;
           const item = state.items.find(
             (item) => !item.disabled && item.value != null,
           );
@@ -416,7 +402,6 @@ export function createComboboxStore({
     },
     setInputElement: (element) => combobox.setState("inputElement", element),
     setLabelElement: (element) => combobox.setState("labelElement", element),
-    setListElement: (element) => combobox.setState("listElement", element),
     setSelectElement: (element) => combobox.setState("selectElement", element),
     setSelectLabelElement: (element) =>
       combobox.setState("selectLabelElement", element),
@@ -434,27 +419,21 @@ export interface ComboboxStoreState<
 >
   extends CompositeStoreState<ComboboxStoreItem>, PopoverStoreState {
   /**
-   * @default true, or false when
-   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) or a
-   * standalone [`ComboboxList`](https://ariakit.com/reference/combobox-list)
-   * without a
-   * [`ComboboxInput`](https://ariakit.com/reference/combobox-input) is rendered
+   * Defaults to `true`, or `false` when a
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
+   * rendered.
    */
   includesBaseElement: CompositeStoreState<ComboboxStoreItem>["includesBaseElement"];
   /**
-   * @default true, or false when
-   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) or a
-   * standalone [`ComboboxList`](https://ariakit.com/reference/combobox-list)
-   * without a
-   * [`ComboboxInput`](https://ariakit.com/reference/combobox-input) is rendered
+   * Defaults to `true`, or `false` when a
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
+   * rendered.
    */
   focusLoop: CompositeStoreState<ComboboxStoreItem>["focusLoop"];
   /**
-   * @default true, or false when
-   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) or a
-   * standalone [`ComboboxList`](https://ariakit.com/reference/combobox-list)
-   * without a
-   * [`ComboboxInput`](https://ariakit.com/reference/combobox-input) is rendered
+   * Defaults to `true`, or `false` when a
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
+   * rendered.
    */
   focusWrap: CompositeStoreState<ComboboxStoreItem>["focusWrap"];
   /** @default "vertical" */
@@ -550,10 +529,6 @@ export interface ComboboxStoreState<
    */
   labelElement: HTMLElement | null;
   /**
-   * The standalone combobox list element.
-   */
-  listElement: HTMLElement | null;
-  /**
    * The combobox select element.
    */
   selectElement: HTMLElement | null;
@@ -601,10 +576,6 @@ export interface ComboboxStoreFunctions<
    * Sets the `labelElement` state.
    */
   setLabelElement: SetState<ComboboxStoreState<T>["labelElement"]>;
-  /**
-   * Sets the `listElement` state.
-   */
-  setListElement: SetState<ComboboxStoreState<T>["listElement"]>;
   /**
    * Sets the `selectElement` state.
    */

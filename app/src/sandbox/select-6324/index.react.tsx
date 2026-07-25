@@ -2,8 +2,8 @@ import * as Ariakit from "@ariakit/react";
 
 const fruits = ["Apple", "Banana", "Orange"];
 
-// The select button owns virtual focus, making focusOnMove behavior observable
-// while the active item changes.
+// The select button owns virtual focus, so it keeps DOM focus while the active
+// item changes.
 export default function Example() {
   return (
     <Ariakit.ComboboxProvider defaultSelectedValue="Apple">
@@ -14,7 +14,7 @@ export default function Example() {
         sameWidth
         style={{ background: "white", border: "1px solid gray" }}
       >
-        <Ariakit.ComboboxList focusOnMove={false}>
+        <Ariakit.ComboboxList>
           {fruits.map((fruit) => (
             <Ariakit.ComboboxItem
               key={fruit}

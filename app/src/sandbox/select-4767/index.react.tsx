@@ -1,12 +1,11 @@
 import * as Ariakit from "@ariakit/react";
 
 interface FruitSelectProps {
-  focusable?: boolean;
   label: string;
   virtualFocus?: boolean;
 }
 
-function FruitSelect({ focusable, label, virtualFocus }: FruitSelectProps) {
+function FruitSelect({ label, virtualFocus }: FruitSelectProps) {
   return (
     <Ariakit.ComboboxProvider
       defaultSelectedValue="Apple"
@@ -15,7 +14,7 @@ function FruitSelect({ focusable, label, virtualFocus }: FruitSelectProps) {
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect />
       <Ariakit.ComboboxPopover gutter={4} sameWidth>
-        <Ariakit.ComboboxList focusable={focusable}>
+        <Ariakit.ComboboxList>
           <Ariakit.ComboboxItem value="Apple" />
           <Ariakit.ComboboxItem value="Banana" />
           <Ariakit.ComboboxItem value="Orange" />
@@ -28,13 +27,8 @@ function FruitSelect({ focusable, label, virtualFocus }: FruitSelectProps) {
 export default function Example() {
   return (
     <>
-      <FruitSelect label="Favorite fruit" focusable={false} />
-      <FruitSelect label="Virtual focus fruit" />
-      <FruitSelect
-        label="Real focus fruit"
-        focusable={false}
-        virtualFocus={false}
-      />
+      <FruitSelect label="Favorite fruit" />
+      <FruitSelect label="Real focus fruit" virtualFocus={false} />
     </>
   );
 }

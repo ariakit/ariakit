@@ -73,6 +73,18 @@ test("preserves the input value when resetValueOnSelect is false", async () => {
   expect(input).toHaveValue("ap");
 });
 
+// https://github.com/ariakit/ariakit/pull/6832#discussion_r3649285821
+test("keeps the selected value on Escape without a select", async () => {
+  await click(q.combobox("Plain fruit filter"));
+  await click(q.option("Banana"));
+
+  expect(q.status("Plain fruit selection")).toHaveTextContent("Banana");
+
+  await press.Escape();
+
+  expect(q.status("Plain fruit selection")).toHaveTextContent("Banana");
+});
+
 // https://github.com/ariakit/ariakit/pull/6832#discussion_r3647556185
 test("preserves aria-selected on menu-role multi-select items", async () => {
   await click(q.combobox("Menu fruit filter"));
