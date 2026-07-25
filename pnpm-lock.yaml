@@ -411,9 +411,6 @@ importers:
       '@playwright/test':
         specifier: 1.60.0
         version: 1.60.0
-      '@testing-library/react':
-        specifier: 16.3.2
-        version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@types/canvas-confetti':
         specifier: 1.9.0
         version: 1.9.0

@@ -1,47 +1,54 @@
 import * as Ariakit from "@ariakit/react";
 
-const defaultItems = [{ id: "seeded-one" }, { id: "seeded-two" }];
+const seededItems = [{ id: "seeded-drafts" }, { id: "seeded-sent" }];
 
-// A composite store without a composite element never publishes baseElement, so
-// its items must still use roving tabindex.
-export function ContainerlessFixture() {
-  return (
-    <Ariakit.RadioProvider defaultValue="a">
-      <Ariakit.Radio value="a" />
-      <Ariakit.Radio value="b" />
-    </Ariakit.RadioProvider>
-  );
-}
-
-export function VirtualFocusFixture() {
-  return (
-    <Ariakit.CompositeProvider virtualFocus>
-      <Ariakit.Composite aria-label="Virtual focus composite">
-        <Ariakit.CompositeItem>One</Ariakit.CompositeItem>
-        <Ariakit.CompositeItem>Two</Ariakit.CompositeItem>
-      </Ariakit.Composite>
-    </Ariakit.CompositeProvider>
-  );
-}
-
-// The store is seeded with items, so store.item() resolves on the first render
-// while the rendered items are still empty.
-export function SeededFixture() {
-  return (
-    <Ariakit.CompositeProvider virtualFocus defaultItems={defaultItems}>
-      <Ariakit.Composite aria-label="Seeded composite">
-        <Ariakit.CompositeItem id="seeded-one">One</Ariakit.CompositeItem>
-        <Ariakit.CompositeItem id="seeded-two">Two</Ariakit.CompositeItem>
-      </Ariakit.Composite>
-    </Ariakit.CompositeProvider>
-  );
-}
-
-export function RovingFixture() {
+// The items are not wrapped in a composite element, so this store never
+// publishes baseElement, and its items must still use roving tabindex.
+function ContainerlessListbox() {
   return (
     <Ariakit.CompositeProvider>
-      <Ariakit.Composite aria-label="Roving composite">
-        <Ariakit.CompositeItem>One</Ariakit.CompositeItem>
+      <div role="listbox" aria-label="Containerless">
+        <Ariakit.CompositeItem role="option">Starred</Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">Snoozed</Ariakit.CompositeItem>
+      </div>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function VirtualFocusListbox() {
+  return (
+    <Ariakit.CompositeProvider virtualFocus>
+      <Ariakit.Composite role="listbox" aria-label="Virtual focus">
+        <Ariakit.CompositeItem role="option">Inbox</Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">Archive</Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+// The store is seeded with items, so its items are already known on the first
+// render while the rendered items are still empty. Tabbability must follow the
+// rendered items, not the seeded ones.
+function SeededListbox() {
+  return (
+    <Ariakit.CompositeProvider virtualFocus defaultItems={seededItems}>
+      <Ariakit.Composite role="listbox" aria-label="Seeded">
+        <Ariakit.CompositeItem id="seeded-drafts" role="option">
+          Drafts
+        </Ariakit.CompositeItem>
+        <Ariakit.CompositeItem id="seeded-sent" role="option">
+          Sent
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
+function RovingListbox() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite role="listbox" aria-label="Roving">
+        <Ariakit.CompositeItem role="option">Spam</Ariakit.CompositeItem>
       </Ariakit.Composite>
     </Ariakit.CompositeProvider>
   );
@@ -50,10 +57,10 @@ export function RovingFixture() {
 export default function Example() {
   return (
     <>
-      <ContainerlessFixture />
-      <VirtualFocusFixture />
-      <RovingFixture />
-      <SeededFixture />
+      <ContainerlessListbox />
+      <VirtualFocusListbox />
+      <SeededListbox />
+      <RovingListbox />
     </>
   );
 }
