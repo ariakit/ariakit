@@ -215,6 +215,7 @@ async function fillCheckout(page: Page, assertEmail?: string) {
   await q.textbox("CVC").fill("123");
   await q.textbox("Cardholder name").fill("John Doe");
   await q.combobox("Country or region").selectOption("Spain");
+  await q.button(/^Pay$/).scrollIntoViewIfNeeded();
   return frame;
 }
 
