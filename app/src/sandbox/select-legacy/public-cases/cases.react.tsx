@@ -33,7 +33,8 @@ import {
   LegacyPublicToolbarSelectCase,
 } from "./compositions.tsx";
 
-// Keep this registry out of the workerd type-check because it imports React cases.
+// Keep this registry in a non-index TSX module so workerd and the preview
+// generator do not treat it as their own entry point.
 export const legacyPublicSelectCases = {
   "public-select": LegacyPublicSelectCase,
   "public-select-multiple": LegacyPublicSelectMultipleCase,
