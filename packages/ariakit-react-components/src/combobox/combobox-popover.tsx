@@ -71,7 +71,6 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     alwaysVisible,
     resetOnEscape,
     autoFocusOnHide = true,
-    hideOnEscape = true,
     hideOnInteractOutside = true,
     ...props
   }) {
@@ -150,6 +149,10 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       ...props,
     });
 
+    // Captured before usePopover, which strips the dialog options it consumes
+    // out of the props object this callback would otherwise read.
+    const onEscapeHideProp = props.unstable_onEscapeHide;
+
     props = usePopover({
       store,
       modal,
@@ -208,18 +211,16 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         controlElements.forEach(addPersistentElement);
         return [...persistentElements];
       },
-      // The popup only gets keyboard events proxied from the active item, so
-      // restoring the value on a keydown there would be skipped whenever no
-      // item is active. This runs wherever focus is. The dialog memoizes it per
-      // event, so it never runs twice, but it runs while the escape key is
-      // still being preflighted: a descendant that prevents the default
-      // afterwards keeps the popover open with the value already restored.
-      hideOnEscape(event) {
-        if (isFalsyBooleanCallback(hideOnEscape, event)) return false;
-        if (!multiSelectable && resetOnEscapeProp(event)) {
-          store?.setSelectedValue(defaultSelectedValue);
-        }
-        return true;
+      // The dialog only knows whether the escape key actually closed the
+      // popover after descendants have had it, so the decision belongs here.
+      // Reading the key alone can't work: a descendant owns it by stopping its
+      // propagation, which leaves no trace on the event, and the preflight runs
+      // once per dispatch rather than once per keypress.
+      unstable_onEscapeHide(event) {
+        onEscapeHideProp?.(event);
+        if (multiSelectable) return;
+        if (!resetOnEscapeProp(event)) return;
+        store?.setSelectedValue(defaultSelectedValue);
       },
       // The combobox popover should focus on the combobox input when it hides,
       // unless the event was triggered by a click outside the popover, in which
@@ -287,7 +288,8 @@ export interface ComboboxPopoverOptions<T extends ElementType = TagName>
    * Whether the combobox
    * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
    * should be restored to the value it had before the popover was shown when
-   * Escape is pressed. Defaults to the store's
+   * Escape closes the popover. A descendant that handles Escape itself and
+   * keeps the popover open leaves the value alone. Defaults to the store's
    * [`selectOnMove`](https://ariakit.com/reference/combobox-provider#selectonmove)
    * value, since moving through items is what changes the selected value while
    * the popover is open. This has no effect when the combobox supports multiple

@@ -158,6 +158,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   finalFocus,
   unmountOnHide,
   unstable_treeSnapshotKey,
+  unstable_onEscapeHide,
   ...props
 }) {
   const context = useDialogProviderContext();
@@ -610,7 +611,17 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     const accepted = acceptEscape(event);
     escapeEvents.delete(event);
     if (!accepted) return false;
+    const wasOpen = store.getState().open;
     store.hide();
+    // A component that re-dispatches the key onto another element makes the
+    // same keypress reach this twice, with two event objects. Hiding is
+    // idempotent, but the callback can't be assumed to be, so it only runs for
+    // the dispatch that actually closed the dialog. Hiding can also be vetoed
+    // by an onClose handler, which restores the open state synchronously, so
+    // the state is compared rather than trusted.
+    if (wasOpen && !store.getState().open) {
+      unstable_onEscapeHide?.(event);
+    }
     return true;
   });
 
@@ -1071,6 +1082,15 @@ export interface DialogOptions<T extends ElementType = TagName>
    * @private
    */
   unstable_treeSnapshotKey?: string | number | boolean | null;
+  /**
+   * Called once, right after the dialog hides because of an escape key that it
+   * accepted, and not at all when hiding is vetoed by an `onClose` handler.
+   * Unlike an `open` transition, this fires only for that key, so consumers can
+   * undo something the key was previewing without having to guess whether a
+   * descendant consumed it and kept the dialog open.
+   * @private
+   */
+  unstable_onEscapeHide?: (event: KeyboardEvent) => void;
 }
 
 export type DialogProps<T extends ElementType = TagName> = Props<
