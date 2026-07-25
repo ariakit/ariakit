@@ -709,8 +709,8 @@ importers:
         specifier: 1.2.0
         version: 1.2.0
       rolldown-plugin-dts:
-        specifier: 0.27.12
-        version: 0.27.12(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28)(rolldown@1.2.0)
+        specifier: 0.27.13
+        version: 0.27.13(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28)(rolldown@1.2.0)
       ts-morph:
         specifier: 28.0.0
         version: 28.0.0
@@ -9250,8 +9250,8 @@ packages:
     engines: {node: 20 || >=22}
     hasBin: true
 
-  rolldown-plugin-dts@0.27.12:
-    resolution: {integrity: sha512-DJg5ELVEdLAVhirvtak7GS4nbNvBzLNAtYL1M8hLghDURBFKU2MwEH6ncHibYs6khq1NaRQ97iFMiHvzw+WoSw==}
+  rolldown-plugin-dts@0.27.13:
+    resolution: {integrity: sha512-DeVZJbbB0ajp5q6vABqC8ZCJzxftlxbiV60Bk96GFdQaysGVpgTTVjQu0lUt4Lb+aRCtejfOixtQKDRol7IuVQ==}
     engines: {node: ^22.18.0 || >=24.11.0}
     peerDependencies:
       '@typescript/native-preview': '*'
@@ -19800,7 +19800,7 @@ snapshots:
       glob: 13.0.6
       package-json-from-dist: 1.0.1
 
-  rolldown-plugin-dts@0.27.12(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28)(rolldown@1.2.0):
+  rolldown-plugin-dts@0.27.13(@typescript/typescript6@6.0.2)(@volar/typescript@2.4.28)(rolldown@1.2.0):
     dependencies:
       dts-resolver: 3.0.0
       get-tsconfig: 5.0.0-beta.5
