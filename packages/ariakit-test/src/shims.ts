@@ -98,6 +98,7 @@ function applyBrowserShims() {
         patchHappyDOMFormData(),
         patchHappyDOMSelectionChange(),
         patchHappyDOMAnimationFrame(),
+        patchHappyDOMProxiedContains(),
       ]
     : [];
 
@@ -293,6 +294,61 @@ function patchHappyDOMAnimationFrame() {
   return () => {
     window.requestAnimationFrame = originalRequestAnimationFrame;
     window.cancelAnimationFrame = originalCancelAnimationFrame;
+  };
+}
+
+// happy-dom's HTMLFormElement and HTMLSelectElement constructors return a Proxy
+// for their legacy member access (`form.username`, `select[0]`). Inserting one
+// into a parent re-points the children it already has at the raw target rather
+// than that proxy, while `contains()` compares against the proxy — so it walks a
+// parent chain that never matches and reports false for those descendants. jsdom
+// and real browsers return true, per the spec's inclusive-descendant definition.
+// Any insertion triggers it, including into a still-detached parent, and it
+// persists after the subtree is removed again.
+// Ariakit reads `contains` everywhere — most visibly, a modal dialog exempts
+// `getPersistentElements` from `inert` with it, so everything inside a <form>
+// looked like it was outside the dialog.
+// https://dom.spec.whatwg.org/#dom-node-contains
+// https://github.com/capricorn86/happy-dom/issues/2170
+//
+// Rather than reaching into happy-dom's internal symbols to repair the parent
+// reference, ask the children instead: their own parent chain is intact, so they
+// answer correctly. Only the two proxied element types get the override, and it
+// only does extra work once the native check has already returned false. The
+// same broken reference also breaks identity-based ancestor checks, which this
+// shim leaves alone: https://github.com/ariakit/ariakit/issues/6849
+//
+// TODO: Remove this shim once the upstream fix ships.
+// https://github.com/capricorn86/happy-dom/pull/2176
+function patchHappyDOMProxiedContains() {
+  const originalContains = window.Node.prototype.contains;
+  const restores: Array<() => void> = [];
+
+  for (const Constructor of [
+    window.HTMLFormElement,
+    window.HTMLSelectElement,
+  ]) {
+    if (!Constructor) continue;
+    Constructor.prototype.contains = function contains(otherNode) {
+      if (!otherNode) return false;
+      if (originalContains.call(this, otherNode)) return true;
+      for (const child of this.childNodes) {
+        // A child can be proxied too — a <select> inside a <form> — so go
+        // through its own `contains`, which unwraps every nested level and
+        // already reports a node as containing itself.
+        if (child.contains(otherNode)) return true;
+      }
+      return false;
+    };
+    restores.push(() => {
+      // The method is inherited from Node.prototype, so removing the override
+      // restores it rather than reassigning it.
+      Reflect.deleteProperty(Constructor.prototype, "contains");
+    });
+  }
+
+  return () => {
+    for (const restore of restores) restore();
   };
 }
 
