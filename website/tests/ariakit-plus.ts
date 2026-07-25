@@ -220,6 +220,11 @@ async function fillCheckout(page: Page, assertEmail?: string) {
   const payButton = q.button(/^Pay$/);
   await expect(payButton).toHaveClass(/SubmitButton--complete/);
   await payButton.hover();
+  await expect(async () => {
+    const boundingBox = await payButton.boundingBox();
+    await page.waitForTimeout(100);
+    expect(await payButton.boundingBox()).toEqual(boundingBox);
+  }).toPass({ timeout: 5000 });
   return frame;
 }
 
