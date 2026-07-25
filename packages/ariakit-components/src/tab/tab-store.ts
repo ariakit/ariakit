@@ -245,10 +245,16 @@ export function createTabStore({
     // The combobox store is also passed as the parent composite store when tabs
     // are rendered inside a combobox, and it exposes setSelectElement as well.
     // Its value state is the input value rather than the selected value, so it
-    // must be handled by the combobox branch below.
+    // is detected by a combobox-only method to make sure it goes through the
+    // combobox branch below even when it's only provided as the composite.
+    const isParentCombobox =
+      !!parentComposite && "setSelectedValue" in parentComposite;
+    const parentCombobox = isParentCombobox
+      ? (parentComposite as ComboboxStore)
+      : combobox;
     if (
       parentComposite &&
-      parentComposite !== combobox &&
+      !isParentCombobox &&
       "setSelectElement" in parentComposite
     ) {
       return chain(
@@ -256,10 +262,10 @@ export function createTabStore({
         sync(parentComposite, ["mounted"], restoreSelectedId),
       );
     }
-    if (!combobox) return;
+    if (!parentCombobox) return;
     return chain(
-      sync(combobox, ["selectedValue"], backupSelectedId),
-      sync(combobox, ["mounted"], restoreSelectedId),
+      sync(parentCombobox, ["selectedValue"], backupSelectedId),
+      sync(parentCombobox, ["mounted"], restoreSelectedId),
     );
   });
 

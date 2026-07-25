@@ -244,6 +244,42 @@ test("preserves explicit composite options in select mode", () => {
   stop();
 });
 
+test("preserves composite options changed while a select is rendered", () => {
+  const store = createComboboxStore();
+  const stop = init(store);
+
+  store.setState("focusLoop", false);
+  store.setState("focusWrap", false);
+  store.setState("includesBaseElement", false);
+
+  store.setSelectElement(document.createElement("button"));
+
+  store.setState("focusLoop", true);
+  store.setState("focusWrap", true);
+  store.setState("includesBaseElement", true);
+
+  store.setSelectElement(null);
+
+  expect(store.getState().focusLoop).toBe(true);
+  expect(store.getState().focusWrap).toBe(true);
+  expect(store.getState().includesBaseElement).toBe(true);
+  stop();
+});
+
+test("preserves an orientation set while a select is rendered", () => {
+  const store = createComboboxStore();
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  store.setState("focusLoop", "vertical");
+  store.setState("focusWrap", "horizontal");
+  store.setSelectElement(null);
+
+  expect(store.getState().focusLoop).toBe("vertical");
+  expect(store.getState().focusWrap).toBe("horizontal");
+  stop();
+});
+
 test("sets the selected value when moving while the select is closed", async () => {
   const store = createComboboxStore({
     defaultItems: [

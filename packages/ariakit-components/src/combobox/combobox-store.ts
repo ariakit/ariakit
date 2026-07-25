@@ -188,7 +188,10 @@ export function createComboboxStore({
 
   // Match native select navigation while a select is rendered. Explicit
   // composite options are never overridden, and listener cleanup restores the
-  // previous defaults when this mode ends.
+  // previous defaults when this mode ends. An option changed to a truthy value
+  // while this mode is active takes ownership, so only the overrides still in
+  // place are restored. Setting one back to false is indistinguishable from the
+  // override itself and is still reverted.
   setup(combobox, () =>
     sync(combobox, ["selectElement"], (state) => {
       if (!state.selectElement) return;
@@ -203,13 +206,14 @@ export function createComboboxStore({
         composite.setState("includesBaseElement", false);
       }
       return () => {
-        if (defaultSelectFocusLoop) {
+        const current = combobox.getState();
+        if (defaultSelectFocusLoop && !current.focusLoop) {
           composite.setState("focusLoop", focusLoop);
         }
-        if (defaultSelectFocusWrap) {
+        if (defaultSelectFocusWrap && !current.focusWrap) {
           composite.setState("focusWrap", focusWrap);
         }
-        if (defaultSelectIncludesBaseElement) {
+        if (defaultSelectIncludesBaseElement && !current.includesBaseElement) {
           composite.setState("includesBaseElement", includesBaseElement);
         }
       };

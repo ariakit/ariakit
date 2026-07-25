@@ -260,6 +260,34 @@ test("preserves the selected tab when a combobox value is selected", async () =>
   }
 });
 
+test("preserves the selected tab when the combobox is only passed as the parent composite", async () => {
+  const combobox = createComboboxStore();
+  const store = createTabStore({
+    composite: combobox,
+    defaultSelectedId: "tab-1",
+  });
+  const stop = init(store);
+
+  try {
+    combobox.setOpen(true);
+    await flushBatch();
+
+    combobox.setValue("a");
+    await flushBatch();
+
+    store.setSelectedId("tab-2");
+    combobox.setState("selectedValue", "value");
+    await flushBatch();
+
+    combobox.setOpen(false);
+    await flushBatch();
+
+    expect(store.getState().selectedId).toBe("tab-2");
+  } finally {
+    stop();
+  }
+});
+
 test("does not leak a restore armed right before the store is destroyed", async () => {
   const combobox = createComboboxStore({ defaultOpen: true });
   const store = createTabStore({ combobox, defaultSelectedId: "tab-1" });
