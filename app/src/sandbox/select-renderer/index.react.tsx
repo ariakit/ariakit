@@ -59,7 +59,7 @@ function GroupedRenderer() {
   });
 
   return (
-    <>
+    <section>
       <Ariakit.ComboboxSelectLabel store={select}>
         Fruit
       </Ariakit.ComboboxSelectLabel>
@@ -114,7 +114,7 @@ function GroupedRenderer() {
           }}
         </ComboboxRenderer>
       </Ariakit.ComboboxPopover>
-    </>
+    </section>
   );
 }
 
@@ -124,30 +124,34 @@ function HorizontalRenderer() {
   });
 
   return (
-    <Ariakit.ComboboxProvider store={select}>
-      <Ariakit.ComboboxSelectLabel>Favorite fruit</Ariakit.ComboboxSelectLabel>
-      <Ariakit.ComboboxSelect />
-      <Ariakit.ComboboxPopover gutter={4} className="popover">
-        <ComboboxRenderer
-          orientation="horizontal"
-          items={horizontalItems}
-          initialItems={horizontalItems.length}
-          itemSize={96}
-          className="renderer"
-        >
-          {({ value, label, ...item }) => (
-            <Ariakit.ComboboxItem
-              key={item.id}
-              value={value}
-              {...item}
-              className="option"
-            >
-              {label}
-            </Ariakit.ComboboxItem>
-          )}
-        </ComboboxRenderer>
-      </Ariakit.ComboboxPopover>
-    </Ariakit.ComboboxProvider>
+    <section>
+      <Ariakit.ComboboxProvider store={select}>
+        <Ariakit.ComboboxSelectLabel>
+          Favorite fruit
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect />
+        <Ariakit.ComboboxPopover gutter={4} className="popover">
+          <ComboboxRenderer
+            orientation="horizontal"
+            items={horizontalItems}
+            initialItems={horizontalItems.length}
+            itemSize={96}
+            className="renderer"
+          >
+            {({ value, label, ...item }) => (
+              <Ariakit.ComboboxItem
+                key={item.id}
+                value={value}
+                {...item}
+                className="option"
+              >
+                {label}
+              </Ariakit.ComboboxItem>
+            )}
+          </ComboboxRenderer>
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
   );
 }
 
