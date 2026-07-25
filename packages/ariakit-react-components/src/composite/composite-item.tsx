@@ -215,14 +215,22 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 
     const { isActiveItem, isTabbable } = useStoreStateObject(
       store,
-      ["activeId", "renderedItems", "virtualFocus", "items"],
+      ["activeId", "baseElement", "renderedItems", "virtualFocus", "items"],
       {
         isActiveItem(state) {
           return !!state && state.activeId === id;
         },
         isTabbable(state) {
-          if (!state?.renderedItems.length) return true;
+          if (!state) return true;
+          // The composite element is published in a layout effect, one commit
+          // after the items mount, while rendered items are only published on
+          // the next animation frame. Both are empty before hydration and on
+          // the first commit, which is when items must keep their native tab
+          // order. Both conditions are necessary: a composite store may never
+          // get a composite element, and its items must still roam.
+          if (!state.baseElement && !state.renderedItems.length) return true;
           if (state.virtualFocus) return false;
+          if (!state.renderedItems.length) return true;
           if (tabbable) return true;
           if (state.activeId === null) return false;
           // If activeId refers to an item that's disabled or not connected to the
