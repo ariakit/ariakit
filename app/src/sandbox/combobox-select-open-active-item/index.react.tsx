@@ -1,10 +1,18 @@
 import * as Ariakit from "@ariakit/react";
 
-const values = ["Apple", "Banana", "Grape", "Orange"];
+const fruits = ["Apple", "Banana", "Grape", "Orange"];
+const statuses = ["Draft", "Published", "Archived"];
 
-function Select({ label, unmount }: { label: string; unmount: boolean }) {
+interface SelectProps {
+  label: string;
+  values: string[];
+  defaultSelectedValue: string | string[];
+  unmount: boolean;
+}
+
+function Select({ label, values, defaultSelectedValue, unmount }: SelectProps) {
   return (
-    <Ariakit.ComboboxProvider defaultSelectedValue="Orange">
+    <Ariakit.ComboboxProvider defaultSelectedValue={defaultSelectedValue}>
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect />
       <Ariakit.ComboboxPopover unmountOnHide={unmount}>
@@ -19,8 +27,27 @@ function Select({ label, unmount }: { label: string; unmount: boolean }) {
 export default function Example() {
   return (
     <>
-      <Select label="Mounted fruit" unmount={false} />
-      <Select label="Unmounted fruit" unmount />
+      <Select
+        label="Mounted fruit"
+        values={fruits}
+        defaultSelectedValue="Orange"
+        unmount={false}
+      />
+      <Select
+        label="Unmounted fruit"
+        values={fruits}
+        defaultSelectedValue="Orange"
+        unmount
+      />
+      {/* Mirrors the multi-selectable Status select in the select-next-router
+      example: nothing is selected initially, so there's no active item to fall
+      back to when the arrow keys start moving through the open popup. */}
+      <Select
+        label="Status"
+        values={statuses}
+        defaultSelectedValue={[]}
+        unmount={false}
+      />
     </>
   );
 }

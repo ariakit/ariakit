@@ -23,4 +23,6 @@ Added [`ComboboxSelect`](https://ariakit.com/reference/combobox-select), [`Combo
 </ComboboxProvider>
 ```
 
+The Combobox store gained the [`selectOnMove`](https://ariakit.com/reference/combobox-provider#selectonmove) option, which selects the active item while moving through the list with the popup open. It also gained the `inputElement`, `labelElement`, `selectElement`, and `selectLabelElement` state, along with their respective setters.
+
 Thanks to [@georgekaran](https://github.com/georgekaran) for investigating the shared Combobox and Select behavior.

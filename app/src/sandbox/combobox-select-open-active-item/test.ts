@@ -34,3 +34,40 @@ for (const label of ["Mounted fruit", "Unmounted fruit"]) {
     });
   });
 }
+
+describe("Status", () => {
+  // https://github.com/ariakit/ariakit/pull/6832#discussion_r3648996674
+  test("ArrowDown moves through the items after clicking to open", async () => {
+    await click(q.combobox.ensure("Status"));
+    expect(activeText("Status")).toBeUndefined();
+
+    await press.ArrowDown();
+    expect(q.option("Draft")).toHaveAttribute("data-active-item");
+    expect(activeText("Status")).toBe("Draft");
+
+    await press.ArrowDown();
+    expect(q.option("Published")).toHaveAttribute("data-active-item");
+    expect(q.option("Draft")).not.toHaveAttribute("data-active-item");
+    expect(activeText("Status")).toBe("Published");
+
+    await press.Enter();
+    expect(q.option("Published")).toHaveAttribute("aria-selected", "true");
+    expect(q.combobox("Status")).toHaveTextContent("Published");
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6832#discussion_r3648996674
+  test("ArrowDown moves through the items after opening with Enter", async () => {
+    await focus(q.combobox.ensure("Status"));
+    await press.Enter();
+    expect(activeText("Status")).toBeUndefined();
+
+    await press.ArrowDown();
+    expect(activeText("Status")).toBe("Draft");
+
+    await press.ArrowDown();
+    expect(activeText("Status")).toBe("Published");
+
+    await press.ArrowUp();
+    expect(activeText("Status")).toBe("Draft");
+  });
+});
