@@ -138,8 +138,8 @@ importers:
         specifier: 9.1.7
         version: 9.1.7
       lint-staged:
-        specifier: 17.1.0
-        version: 17.1.0
+        specifier: 17.1.1
+        version: 17.1.1
       next:
         specifier: 16.2.11
         version: 16.2.11(@babel/core@7.29.0(supports-color@10.2.2))(@playwright/test@1.60.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -7611,8 +7611,8 @@ packages:
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
-  lint-staged@17.1.0:
-    resolution: {integrity: sha512-d7UQRu/9ZPgfu4+hu/k0wny5GEaIxo+2jb2LJqQDkE7cHRTm1HGqNUDq5UOwsGPpjpaNAFmgAsYo3TR+i9cSJw==}
+  lint-staged@17.1.1:
+    resolution: {integrity: sha512-FnHWpSe5cPRtrDG+soOuNdBxb4XQb2gN5EqpEWKdweyqyOfpl4QSjbrz3ilcIf0WXmkiNQGZZRQ23R5YtB3TEw==}
     engines: {node: '>=22.22.1'}
     hasBin: true
 
@@ -17783,7 +17783,7 @@ snapshots:
 
   lines-and-columns@1.2.4: {}
 
-  lint-staged@17.1.0:
+  lint-staged@17.1.1:
     dependencies:
       picomatch: 4.0.5
       string-argv: 0.3.2
