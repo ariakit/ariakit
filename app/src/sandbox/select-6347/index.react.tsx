@@ -1,5 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import { ComboboxItem } from "@ariakit/react-components/combobox/combobox-item-offscreen";
+import { ComboboxItem as OffscreenComboboxItem } from "@ariakit/react-components/combobox/combobox-item-offscreen";
+import { SelectItem as OffscreenSelectItem } from "@ariakit/react-components/select/select-item-offscreen";
 
 const fruits = [
   "Apple",
@@ -58,7 +59,7 @@ interface FixtureProps {
   label: string;
 }
 
-function Fixture({
+function ComboboxFixture({
   accessibleWhenDisabled,
   ariaDisabledFruit,
   disabledFruit,
@@ -80,7 +81,7 @@ function Fixture({
         }}
       >
         {fruits.map((fruit) => (
-          <ComboboxItem
+          <OffscreenComboboxItem
             key={fruit}
             value={fruit}
             disabled={fruit === disabledFruit}
@@ -99,21 +100,83 @@ function Fixture({
   );
 }
 
+function SelectFixture({
+  accessibleWhenDisabled,
+  ariaDisabledFruit,
+  disabledFruit,
+  fruits,
+  label,
+}: FixtureProps) {
+  return (
+    <Ariakit.SelectProvider defaultValue="Apple">
+      <Ariakit.SelectLabel>{label}</Ariakit.SelectLabel>
+      <Ariakit.Select style={{ display: "block" }} />
+      <Ariakit.SelectPopover
+        gutter={4}
+        sameWidth
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          maxHeight: 120,
+          overflow: "auto",
+        }}
+      >
+        {fruits.map((fruit) => (
+          <OffscreenSelectItem
+            key={fruit}
+            value={fruit}
+            disabled={fruit === disabledFruit}
+            {...(fruit === ariaDisabledFruit
+              ? { "aria-disabled": true }
+              : undefined)}
+            accessibleWhenDisabled={
+              fruit === disabledFruit ? accessibleWhenDisabled : undefined
+            }
+            offscreenMode="passive"
+            style={{ display: "block", padding: "4px 8px" }}
+          />
+        ))}
+      </Ariakit.SelectPopover>
+    </Ariakit.SelectProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
-      <Fixture disabledFruit={outOfStock} fruits={fruits} label="Fruit" />
-      <Fixture
+      <ComboboxFixture
+        disabledFruit={outOfStock}
+        fruits={fruits}
+        label="Fruit"
+      />
+      <ComboboxFixture
         accessibleWhenDisabled
         disabledFruit="Pawpaw"
         fruits={accessibleFruits}
         label="Accessible fruit"
       />
-      <Fixture
+      <ComboboxFixture
         ariaDisabledFruit="Papaw"
         disabledFruit=""
         fruits={ariaDisabledFruits}
         label="ARIA disabled fruit"
+      />
+      <SelectFixture
+        disabledFruit={outOfStock}
+        fruits={fruits}
+        label="Legacy Select fruit"
+      />
+      <SelectFixture
+        accessibleWhenDisabled
+        disabledFruit="Pawpaw"
+        fruits={accessibleFruits}
+        label="Legacy Select accessible fruit"
+      />
+      <SelectFixture
+        ariaDisabledFruit="Papaw"
+        disabledFruit=""
+        fruits={ariaDisabledFruits}
+        label="Legacy Select ARIA disabled fruit"
       />
     </>
   );
