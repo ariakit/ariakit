@@ -4,6 +4,7 @@ import {
   ciWorkflowNames,
   createCIPlan,
   parseChangedFiles,
+  serializeCIGatePlan,
 } from "./ci.ts";
 import type { CIGateResult } from "./ci.ts";
 
@@ -145,6 +146,20 @@ test("keeps both paths when git reports a rename", () => {
     "packages/old/src/index.ts",
     "packages/new/src/index.ts",
   ]);
+});
+
+test("serializes a compact gate plan for large changes", () => {
+  const files = Array.from({ length: 200 }, (_, index) => {
+    return `packages/ariakit-components/src/long-component-name-${index}/long-source-file-name-${index}.ts`;
+  });
+  const plan = createCIPlan(files, { baseRef: "main" });
+  const gatePlan = serializeCIGatePlan(plan);
+
+  expect(new TextEncoder().encode(gatePlan).byteLength).toBeLessThan(1024);
+  expect(JSON.parse(gatePlan)).toEqual({
+    version: 1,
+    workflows: plan.workflows,
+  });
 });
 
 test("accepts successful selected workflows and skipped unselected workflows", () => {

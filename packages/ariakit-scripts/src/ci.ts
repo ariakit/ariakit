@@ -383,6 +383,13 @@ export function assertCIGate(plan: CIGatePlan, results: CIResults) {
   }
 }
 
+export function serializeCIGatePlan(plan: CIPlan) {
+  return JSON.stringify({
+    version: plan.version,
+    workflows: plan.workflows,
+  } satisfies CIGatePlan);
+}
+
 export function runCIPlan(options: RunCIPlanOptions) {
   const files = getChangedFiles(options.base, options.head);
   const parsedLabels = parseJSON(options.labels, "CI labels");
@@ -402,7 +409,7 @@ export function runCIPlan(options: RunCIPlanOptions) {
       `${workflow}=${String(plan.workflows[workflow])}\n`,
     );
   }
-  appendFileSync(options.output, `plan=${JSON.stringify(plan)}\n`);
+  appendFileSync(options.output, `plan=${serializeCIGatePlan(plan)}\n`);
 
   console.log(`Changed files (${files.length}):`);
   for (const file of files) {
