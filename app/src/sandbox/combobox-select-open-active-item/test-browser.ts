@@ -1,6 +1,6 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFramework(import.meta.dirname, async ({ test, query }) => {
   for (const label of ["Mounted fruit", "Unmounted fruit"]) {
     test.describe(label, () => {
       test("click activates the selected item", async ({ q }) => {
@@ -100,6 +100,31 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await test.expect(select).toBeFocused();
     });
   });
+
+  for (const label of ["No-autofocus status", "Real-focus status"]) {
+    // https://github.com/ariakit/ariakit/pull/6832
+    test(`${label} moves from the focused select`, async ({ page, q }) => {
+      const select = q.combobox(label);
+      await select.click();
+
+      const listbox = q.listbox(`${label} options`);
+      await test.expect(listbox).toBeVisible();
+      await test.expect(select).toBeFocused();
+      await test
+        .expect(query(listbox).option("Draft"))
+        .toHaveAttribute("data-active-item");
+
+      await page.keyboard.press("ArrowDown");
+      await test
+        .expect(query(listbox).option("Published"))
+        .toHaveAttribute("data-active-item");
+
+      await page.keyboard.press("ArrowUp");
+      await test
+        .expect(query(listbox).option("Draft"))
+        .toHaveAttribute("data-active-item");
+    });
+  }
 
   // https://github.com/ariakit/ariakit/pull/6832
   test("honors focusOnHover on a closed always-visible list", async ({ q }) => {

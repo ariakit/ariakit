@@ -39,6 +39,31 @@ function ClosedAlwaysVisibleSelect() {
   );
 }
 
+interface FocusOwnerSelectProps {
+  label: string;
+  virtualFocus?: boolean;
+}
+
+function FocusOwnerSelect({ label, virtualFocus }: FocusOwnerSelectProps) {
+  return (
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue="Draft"
+      virtualFocus={virtualFocus}
+    >
+      <Ariakit.ComboboxSelect aria-label={label} />
+      <Ariakit.ComboboxPopover
+        aria-label={`${label} options`}
+        autoFocusOnShow={false}
+      >
+        <Ariakit.ComboboxInput aria-label={`${label} filter`} />
+        {statuses.map((value) => (
+          <Ariakit.ComboboxItem key={value} value={value} />
+        ))}
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -64,6 +89,8 @@ export default function Example() {
         unmount={false}
       />
       <ClosedAlwaysVisibleSelect />
+      <FocusOwnerSelect label="No-autofocus status" />
+      <FocusOwnerSelect label="Real-focus status" virtualFocus={false} />
     </>
   );
 }

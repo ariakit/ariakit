@@ -12,6 +12,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import {
   toArray,
+  getActiveElement,
   getPopupRole,
   queueBeforeEvent,
   invariant,
@@ -41,6 +42,10 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 function getSelectedValues(select: HTMLSelectElement) {
   return Array.from(select.selectedOptions).map((option) => option.value);
+}
+
+function ownsFocus(element: HTMLElement) {
+  return getActiveElement(element) === element;
 }
 
 // When moving through the items while the select list is closed, we don't want
@@ -304,14 +309,14 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
         ? props["aria-activedescendant"]
         : undefined,
       onKeyDownCapture(event) {
-        if (store.getState().open && !inputElement) {
+        if (store.getState().open && ownsFocus(event.currentTarget)) {
           onCompositeKeyDownCapture?.(event);
         } else {
           onKeyDownCaptureProp?.(event);
         }
       },
       onKeyUpCapture(event) {
-        if (store.getState().open && !inputElement) {
+        if (store.getState().open && ownsFocus(event.currentTarget)) {
           onCompositeKeyUpCapture?.(event);
         } else {
           onKeyUpCaptureProp?.(event);

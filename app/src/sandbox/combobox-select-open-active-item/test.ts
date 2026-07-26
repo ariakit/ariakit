@@ -72,6 +72,30 @@ describe("Status", () => {
   });
 });
 
+for (const label of ["No-autofocus status", "Real-focus status"]) {
+  // https://github.com/ariakit/ariakit/pull/6832
+  test(`${label} moves from the focused select`, async () => {
+    const select = q.combobox.ensure(label);
+    await click(select);
+    expect(select).toHaveFocus();
+
+    const listbox = q.listbox.ensure(`${label} options`);
+    expect(q.within(listbox).option("Draft")).toHaveAttribute(
+      "data-active-item",
+    );
+
+    await press.ArrowDown();
+    expect(q.within(listbox).option("Published")).toHaveAttribute(
+      "data-active-item",
+    );
+
+    await press.ArrowUp();
+    expect(q.within(listbox).option("Draft")).toHaveAttribute(
+      "data-active-item",
+    );
+  });
+}
+
 // https://github.com/ariakit/ariakit/pull/6832
 test("honors focusOnHover on a closed always-visible list", async () => {
   const item = q.option.ensure("Explicit hover second");
