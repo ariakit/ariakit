@@ -3,7 +3,7 @@ import "./style.css";
 
 export default function Example() {
   return (
-    <Ariakit.ComboboxProvider>
+    <Ariakit.ComboboxProvider virtualFocus={false}>
       <Ariakit.ComboboxLabel className="label">Email</Ariakit.ComboboxLabel>
       <Ariakit.Combobox type="email" className="combobox" />
       <Ariakit.ComboboxPopover gutter={8} sameWidth className="popover">

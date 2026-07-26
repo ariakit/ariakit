@@ -217,13 +217,15 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       if (printable || paste || deleteKey) {
         // In select mode, the base element is the select button rather than a
         // text field, so focusing it would move focus out of the open list.
-        if (!isTextField(baseElement)) return;
+        if (baseElement === selectElement) return;
         queueMicrotask(() => baseElement.focus());
-        // Update the store value with the current element's value. This is
-        // necessary because the value may temporarily change based on the
-        // currently selected item, but it'll be reset to the original value
-        // when the combobox input is focused.
-        store?.setValue(baseElement.value);
+        if (isTextField(baseElement)) {
+          // Update the store value with the current element's value. This is
+          // necessary because the value may temporarily change based on the
+          // currently selected item, but it'll be reset to the original value
+          // when the combobox input is focused.
+          store?.setValue(baseElement.value);
+        }
       }
     });
 
