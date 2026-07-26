@@ -38,11 +38,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("reopening presents a far selected item", async ({ page, q }) => {
     const select = q.combobox("Single selected fruit");
     await select.click();
-    await page.keyboard.type("water");
-    await page.keyboard.press("Enter");
-    await select.click();
+    await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
 
     const watermelon = q.option("Watermelon");
+    await page.keyboard.press("w");
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    await page.keyboard.press("Enter");
+    await test.expect(select).toHaveText("Watermelon");
+    await test.expect(q.listbox()).not.toBeVisible();
+    await select.click();
+
     await test.expect(watermelon).toHaveAttribute("data-active-item");
     await test.expect(watermelon).toBeInViewport();
     await test.expect(select).toBeFocused();

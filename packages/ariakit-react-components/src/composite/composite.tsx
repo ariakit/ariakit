@@ -17,6 +17,7 @@ import {
   flatten2DArray,
   reverseArray,
   afterPaint,
+  beforePaint,
   getActiveElement,
   isTextField,
   fireBlurEvent,
@@ -137,9 +138,10 @@ function useScheduleFocus(store: CompositeStore) {
   const [scheduled, setScheduled] = useState<"focus" | "scroll" | false>(false);
   const scrollIdRef = useRef<string | undefined>(undefined);
   const scrollBaseElementRef = useRef<HTMLElement | null>(null);
+  const scrollBeforePaintRef = useRef(false);
   const scheduleFocus = useCallback(() => setScheduled("focus"), []);
   const scheduleScroll = useCallback(
-    (baseElement: HTMLElement) => {
+    (baseElement: HTMLElement, beforeNextPaint = false) => {
       const state = store.getState();
       const selectMode = "selectElement" in state && !!state.selectElement;
       if (!selectMode) return;
@@ -150,6 +152,7 @@ function useScheduleFocus(store: CompositeStore) {
         return;
       scrollIdRef.current = activeId;
       scrollBaseElementRef.current = baseElement;
+      scrollBeforePaintRef.current = beforeNextPaint;
       setScheduled("scroll");
     },
     [store],
@@ -158,6 +161,7 @@ function useScheduleFocus(store: CompositeStore) {
     if (scrollIdRef.current === undefined) return;
     scrollIdRef.current = undefined;
     scrollBaseElementRef.current = null;
+    scrollBeforePaintRef.current = false;
     setScheduled((scheduled) => (scheduled === "scroll" ? false : scheduled));
   }, []);
   // Only track the active item while a focus is scheduled. Otherwise, this
@@ -177,10 +181,12 @@ function useScheduleFocus(store: CompositeStore) {
     if (!scheduled) return;
     if (!activeElement) return;
     const focus = scheduled === "focus";
+    const scrollBeforePaint = scrollBeforePaintRef.current;
     const present = () => {
       const scrollBaseElement = scrollBaseElementRef.current;
       scrollIdRef.current = undefined;
       scrollBaseElementRef.current = null;
+      scrollBeforePaintRef.current = false;
       setScheduled(false);
       if (!focus && (!scrollBaseElement || !hasFocus(scrollBaseElement)))
         return;
@@ -188,7 +194,16 @@ function useScheduleFocus(store: CompositeStore) {
         if (activeElement.hasAttribute("data-autofocus")) {
           withDocumentScrollPreserved(activeElement, () => {
             if (focus) {
-              focusIntoView(activeElement);
+              const state = store.getState();
+              const selectMode =
+                "selectElement" in state && !!state.selectElement;
+              const { baseElement } = state;
+              if (selectMode && baseElement) {
+                activeElement.focus({ preventScroll: true });
+                scheduleScroll(baseElement, true);
+              } else {
+                focusIntoView(activeElement);
+              }
             } else {
               activeElement.scrollIntoView({
                 block: "nearest",
@@ -201,10 +216,14 @@ function useScheduleFocus(store: CompositeStore) {
         }
       });
     };
-    if (!focus) return afterPaint(present);
+    if (!focus) {
+      // A focus handoff must scroll before the offscreen observer's next
+      // checkpoint. Direct real-focus presentation can wait until after paint.
+      return scrollBeforePaint ? beforePaint(present) : afterPaint(present);
+    }
     present();
     return undefined;
-  }, [store, activeItem, scheduled]);
+  }, [store, activeItem, scheduled, scheduleScroll]);
   return { scheduleFocus, scheduleScroll, cancelScroll };
 }
 

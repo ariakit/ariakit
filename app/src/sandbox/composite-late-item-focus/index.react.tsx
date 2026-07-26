@@ -7,6 +7,10 @@ export default function Example() {
     defaultActiveId: "late-scroll",
     virtualFocus: false,
   });
+  const autoFocusScrollStore = Ariakit.useCompositeStore({
+    defaultActiveId: "autofocus-scroll",
+    virtualFocus: true,
+  });
   const [showLateItem, setShowLateItem] = useState(false);
   const [showLateScrollItem, setShowLateScrollItem] = useState(false);
 
@@ -51,6 +55,18 @@ export default function Example() {
       <button type="button" onClick={() => setShowLateScrollItem(true)}>
         Mount late scroll item
       </button>
+      <Ariakit.Composite
+        aria-label="Autofocus scroll actions"
+        role="listbox"
+        store={autoFocusScrollStore}
+        style={{ height: 80, overflow: "auto" }}
+        tabIndex={0}
+      >
+        <div style={{ height: 200 }} />
+        <Ariakit.CompositeItem autoFocus id="autofocus-scroll" role="option">
+          Autofocus scroll item
+        </Ariakit.CompositeItem>
+      </Ariakit.Composite>
     </>
   );
 }
