@@ -147,13 +147,19 @@ export function createComboboxStore({
 
   const combobox = createStore(initialState, composite, popover, store);
   let resolveSelectedItemOnOpen = false;
-  const defaultSelectFocusLoop =
-    props.focusLoop === undefined && syncState?.focusLoop === undefined;
-  const defaultSelectFocusWrap =
-    props.focusWrap === undefined && syncState?.focusWrap === undefined;
-  const defaultSelectIncludesBaseElement =
+  const selectDefaultCompositeOptions = new Set<keyof ComboboxStoreState>();
+  if (props.focusLoop === undefined && syncState?.focusLoop === undefined) {
+    selectDefaultCompositeOptions.add("focusLoop");
+  }
+  if (props.focusWrap === undefined && syncState?.focusWrap === undefined) {
+    selectDefaultCompositeOptions.add("focusWrap");
+  }
+  if (
     props.includesBaseElement === undefined &&
-    syncState?.includesBaseElement === undefined;
+    syncState?.includesBaseElement === undefined
+  ) {
+    selectDefaultCompositeOptions.add("includesBaseElement");
+  }
   let syncedSelectElement =
     initialState.baseElement === initialState.selectElement
       ? initialState.selectElement
@@ -188,32 +194,39 @@ export function createComboboxStore({
 
   // Match native select navigation while a select is rendered. Explicit
   // composite options are never overridden, and listener cleanup restores the
-  // previous defaults when this mode ends. An option changed to a truthy value
-  // while this mode is active takes ownership, so only the overrides still in
-  // place are restored. Setting one back to false is indistinguishable from the
-  // override itself and is still reverted.
+  // previous defaults when this mode ends. The public setState below transfers
+  // ownership before forwarding consumer writes, including no-op writes.
   setup(combobox, () =>
     sync(combobox, ["selectElement"], (state) => {
       if (!state.selectElement) return;
       const { focusLoop, focusWrap, includesBaseElement } = combobox.getState();
-      if (defaultSelectFocusLoop) {
+      if (selectDefaultCompositeOptions.has("focusLoop")) {
         composite.setState("focusLoop", false);
       }
-      if (defaultSelectFocusWrap) {
+      if (selectDefaultCompositeOptions.has("focusWrap")) {
         composite.setState("focusWrap", false);
       }
-      if (defaultSelectIncludesBaseElement) {
+      if (selectDefaultCompositeOptions.has("includesBaseElement")) {
         composite.setState("includesBaseElement", false);
       }
       return () => {
         const current = combobox.getState();
-        if (defaultSelectFocusLoop && !current.focusLoop) {
+        if (
+          selectDefaultCompositeOptions.has("focusLoop") &&
+          !current.focusLoop
+        ) {
           composite.setState("focusLoop", focusLoop);
         }
-        if (defaultSelectFocusWrap && !current.focusWrap) {
+        if (
+          selectDefaultCompositeOptions.has("focusWrap") &&
+          !current.focusWrap
+        ) {
           composite.setState("focusWrap", focusWrap);
         }
-        if (defaultSelectIncludesBaseElement && !current.includesBaseElement) {
+        if (
+          selectDefaultCompositeOptions.has("includesBaseElement") &&
+          !current.includesBaseElement
+        ) {
           composite.setState("includesBaseElement", includesBaseElement);
         }
       };
@@ -394,10 +407,16 @@ export function createComboboxStore({
     }),
   );
 
+  const setState: ComboboxStore["setState"] = (key, value) => {
+    selectDefaultCompositeOptions.delete(key);
+    combobox.setState(key, value);
+  };
+
   return {
     ...popover,
     ...composite,
     ...combobox,
+    setState,
     tag,
     setValue: (value) => combobox.setState("value", value),
     resetValue: () => combobox.setState("value", initialState.value),
