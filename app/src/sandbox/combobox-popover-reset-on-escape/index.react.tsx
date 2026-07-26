@@ -55,11 +55,13 @@ function Counted({
   const [reset, setReset] = useState(0);
   const [close, setClose] = useState(0);
   const [events, setEvents] = useState<string[]>([]);
+  const hasOneShotVeto = !!(vetoOnce || vetoBeforeMove || vetoWithSelection);
+  const [vetoReady, setVetoReady] = useState(!hasOneShotVeto);
   const store = Ariakit.useComboboxStore({
     defaultSelectedValue: "Apple",
     selectOnMove: true,
   });
-  const vetoOnceRef = useRef(vetoOnce || vetoBeforeMove || vetoWithSelection);
+  const vetoOnceRef = useRef(hasOneShotVeto);
   const label = vetoWithSelection
     ? "Vetoed with selection"
     : vetoBeforeMove
@@ -77,6 +79,11 @@ function Counted({
       <div role="status" aria-label={`${label} counts`}>
         {`reset:${reset} close:${close} events:${events.join(",")}`}
       </div>
+      {hasOneShotVeto && (
+        <div role="status" aria-label={`${label} ready`}>
+          {vetoReady ? "ready" : "waiting"}
+        </div>
+      )}
       <Ariakit.ComboboxPopover
         onClose={(event) => {
           setClose((value) => value + 1);
@@ -89,6 +96,7 @@ function Counted({
             if (vetoOnceRef.current) {
               setTimeout(() => {
                 vetoOnceRef.current = false;
+                setVetoReady(true);
               });
             }
           }

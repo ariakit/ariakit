@@ -142,6 +142,7 @@ test("preserves the original baseline after a prevented close", async () => {
   await press.Escape();
   expect(q.listbox()).toBeVisible();
   expect(q.combobox("Vetoed once")).toHaveTextContent("Banana");
+  expect(q.status("Vetoed once ready")).toHaveTextContent("ready");
   await press.Escape();
   expect(q.listbox()).not.toBeInTheDocument();
   expect(q.combobox("Vetoed once")).toHaveTextContent("Apple");
@@ -151,6 +152,7 @@ test("keeps tracking the baseline after a close is prevented before moving", asy
   await click(q.combobox("Vetoed before move"));
   await press.Escape();
   expect(q.listbox()).toBeVisible();
+  expect(q.status("Vetoed before move ready")).toHaveTextContent("ready");
   await click(q.button("Set selection after veto"));
   expect(q.combobox("Vetoed before move")).toHaveTextContent("Banana");
   q.combobox.ensure("Vetoed before move").focus();
@@ -166,6 +168,7 @@ test("keeps tracking a synchronous selection update from a vetoing onClose", asy
   await press.Escape();
   expect(q.listbox()).toBeVisible();
   expect(q.combobox("Vetoed with selection")).toHaveTextContent("Banana");
+  expect(q.status("Vetoed with selection ready")).toHaveTextContent("ready");
   q.combobox.ensure("Vetoed with selection").focus();
   await press.End();
   expect(q.combobox("Vetoed with selection")).toHaveTextContent("Grape");

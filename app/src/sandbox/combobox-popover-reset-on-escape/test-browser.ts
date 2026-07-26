@@ -127,6 +127,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("Escape");
     await test.expect(q.listbox()).toBeVisible();
     await test.expect(select).toHaveText("Banana");
+    await test.expect(q.status("Vetoed once ready")).toHaveText("ready");
 
     await page.keyboard.press("Escape");
     await test.expect(q.listbox()).toBeHidden();
@@ -141,6 +142,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await select.click();
     await page.keyboard.press("Escape");
     await test.expect(q.listbox()).toBeVisible();
+    await test.expect(q.status("Vetoed before move ready")).toHaveText("ready");
     await q.button("Set selection after veto").click();
     await test.expect(select).toHaveText("Banana");
     await select.focus();
@@ -162,6 +164,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("Escape");
     await test.expect(q.listbox()).toBeVisible();
     await test.expect(select).toHaveText("Banana");
+    await test
+      .expect(q.status("Vetoed with selection ready"))
+      .toHaveText("ready");
     await select.focus();
     await page.keyboard.press("End");
     await test.expect(select).toHaveText("Grape");
