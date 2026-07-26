@@ -1,4 +1,4 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/6832#discussion_r3649285785
@@ -215,17 +215,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await select.click();
     // Opening can finish one-time focus and positioning work on the next
     // frames. Sample only after those unrelated renders have settled.
-    await page.evaluate(
-      () =>
-        new Promise<void>((resolve) => {
-          requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
-        }),
-    );
+    await flushFrames(page);
     const countBeforeChange = await renderCount.textContent();
 
-    await q.button("Set render counted selection").evaluate((element) => {
-      (element as HTMLElement).click();
-    });
+    await q.button("Set render counted selection").click();
 
     await test.expect(select).toHaveText("Banana");
     await test.expect(renderCount).toHaveText(countBeforeChange ?? "");
@@ -236,6 +229,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const select = q.combobox("Render counted");
     const target = q.button("External focus target");
     await select.click();
+    // Keep both focus changes in the same task so the queued restoration runs
+    // only after focus has already moved out of the popover.
     await target.evaluate((element) => {
       const popover = document.querySelector<HTMLElement>(
         '[role="listbox"]:not([hidden])',
