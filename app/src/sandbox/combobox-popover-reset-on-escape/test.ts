@@ -113,6 +113,16 @@ test("reports one closing Escape per keypress", async () => {
   );
 });
 
+test("reports one reset for a controlled close request", async () => {
+  await click(q.combobox("Controlled counted"));
+  await press.ArrowDown();
+  expect(q.combobox("Controlled counted")).toHaveTextContent("Banana");
+  await press.Escape();
+  expect(q.listbox()).toBeVisible();
+  expect(q.combobox("Controlled counted")).toHaveTextContent("Apple");
+  expect(q.status("Controlled counted counts")).toHaveTextContent(/^reset:1\b/);
+});
+
 test("reports nothing when a descendant keeps the popover open", async () => {
   await click(q.combobox("Counted"));
   await click(q.button("Swallows escape"));

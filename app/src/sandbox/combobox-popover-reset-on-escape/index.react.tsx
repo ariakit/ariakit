@@ -42,11 +42,13 @@ function Select({
 // the public resetOnEscape callback runs once for an accepted close, and not at
 // all when the popover stays open.
 function Counted({
+  controlled,
   vetoClose,
   vetoOnce,
   vetoBeforeMove,
   vetoWithSelection,
 }: {
+  controlled?: boolean;
   vetoClose?: boolean;
   vetoOnce?: boolean;
   vetoBeforeMove?: boolean;
@@ -57,7 +59,16 @@ function Counted({
   const [events, setEvents] = useState<string[]>([]);
   const hasOneShotVeto = !!(vetoOnce || vetoBeforeMove || vetoWithSelection);
   const [vetoReady, setVetoReady] = useState(!hasOneShotVeto);
+  const [open, setOpen] = useState(false);
   const store = Ariakit.useComboboxStore({
+    open: controlled ? open : undefined,
+    setOpen: controlled
+      ? (nextOpen) => {
+          if (nextOpen) {
+            setOpen(true);
+          }
+        }
+      : undefined,
     defaultSelectedValue: "Apple",
     selectOnMove: true,
   });
@@ -71,12 +82,13 @@ function Counted({
         : vetoClose
           ? "Vetoed"
           : "Counted";
+  const ariaLabel = controlled ? "Controlled counted" : label;
   return (
     <Ariakit.ComboboxProvider store={store}>
-      <Ariakit.ComboboxSelect aria-label={label}>
+      <Ariakit.ComboboxSelect aria-label={ariaLabel}>
         <Ariakit.ComboboxSelectedValue />
       </Ariakit.ComboboxSelect>
-      <div role="status" aria-label={`${label} counts`}>
+      <div role="status" aria-label={`${ariaLabel} counts`}>
         {`reset:${reset} close:${close} events:${events.join(",")}`}
       </div>
       {hasOneShotVeto && (
@@ -314,6 +326,7 @@ export default function Example() {
         }}
       />
       <Counted />
+      <Counted controlled />
       {/* A prevented close request keeps the popover open, so the previewed
       value should not be restored. */}
       <Counted vetoClose />
