@@ -101,6 +101,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(counts).toHaveText("reset:1 close:1 events:close,reset");
   });
 
+  test("runs reset once for a controlled close request", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Controlled counted");
+    const counts = q.status("Controlled counted counts");
+    await select.click();
+    await page.keyboard.press("ArrowDown");
+    await test.expect(select).toHaveText("Banana");
+
+    await page.keyboard.press("Escape");
+
+    await test.expect(q.listbox()).toBeVisible();
+    await test.expect(select).toHaveText("Apple");
+    await test.expect(counts).toHaveText(/^reset:1\b/);
+  });
+
   test("doesn't reset when onClose prevents the close", async ({ page, q }) => {
     const select = q.combobox("Vetoed");
     const counts = q.status("Vetoed counts");
