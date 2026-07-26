@@ -210,11 +210,21 @@ async function fillCheckout(page: Page, assertEmail?: string) {
   if (assertEmail) {
     await expect(frame.getByText(assertEmail)).toBeVisible();
   }
-  await q.textbox("Card number").fill("4242424242424242");
+  await q
+    .textbox("Card number")
+    .pressSequentially("4242424242424242", { delay: 50 });
   await q.textbox("Expiration").fill("12/40");
   await q.textbox("CVC").fill("123");
   await q.textbox("Cardholder name").fill("John Doe");
   await q.combobox("Country or region").selectOption("Spain");
+  const payButton = q.button(/^Pay$/);
+  await expect(payButton).toHaveClass(/SubmitButton--complete/);
+  await payButton.hover();
+  await expect(async () => {
+    const boundingBox = await payButton.boundingBox();
+    await page.waitForTimeout(100);
+    expect(await payButton.boundingBox()).toEqual(boundingBox);
+  }).toPass({ timeout: 5000 });
   return frame;
 }
 

@@ -16,7 +16,7 @@ interface FrameCoverMetrics {
 async function getFrameCoverMetrics(frame: Locator) {
   const cover = frame.locator(".ak-frame-cover");
   await expect(cover).toBeVisible();
-  return cover.evaluate<FrameCoverMetrics>((element) => {
+  return cover.evaluate((element): FrameCoverMetrics => {
     const frame = element.parentElement;
     if (!frame) {
       throw new Error("Frame not found");
