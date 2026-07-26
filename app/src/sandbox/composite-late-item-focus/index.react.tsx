@@ -35,7 +35,7 @@ export default function Example() {
           </>
         )}
       </Ariakit.Composite>
-      <button type="button" onClick={() => setShowLateItem(true)}>
+      <button type="button" tabIndex={0} onClick={() => setShowLateItem(true)}>
         Mount late items
       </button>
       <Ariakit.Composite
@@ -52,7 +52,11 @@ export default function Example() {
           </Ariakit.CompositeItem>
         )}
       </Ariakit.Composite>
-      <button type="button" onClick={() => setShowLateScrollItem(true)}>
+      <button
+        type="button"
+        tabIndex={0}
+        onClick={() => setShowLateScrollItem(true)}
+      >
         Mount late scroll item
       </button>
       <Ariakit.Composite

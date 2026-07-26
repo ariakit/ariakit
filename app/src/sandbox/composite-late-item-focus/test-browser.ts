@@ -9,10 +9,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.button("First").focus();
     await page.keyboard.press("ArrowDown");
     const mount = q.button("Mount late items");
-    await mount.focus();
-    await mount.evaluate((element) => {
-      if (element instanceof HTMLElement) element.click();
-    });
+    await mount.click();
 
     await test.expect(mount).toBeFocused();
     await test.expect(q.button("Late")).not.toBeFocused();
@@ -39,10 +36,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const composite = q.listbox("Scroll actions");
     await composite.focus();
     const mount = q.button("Mount late scroll item");
-    await mount.focus();
-    await mount.evaluate((element) => {
-      if (element instanceof HTMLElement) element.click();
-    });
+    await mount.click();
+    await test.expect(mount).toBeFocused();
     await test.expect(q.option("Late scroll item")).toBeVisible();
     await page.evaluate(
       () =>
