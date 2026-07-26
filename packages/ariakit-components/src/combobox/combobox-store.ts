@@ -416,6 +416,9 @@ export function createComboboxStore({
 
   const setState: ComboboxStore["setState"] = (key, value) => {
     selectDefaultOptions.delete(key);
+    if (key === "selectedValue") {
+      shouldSetDefaultSelectedValue = false;
+    }
     combobox.setState(key, value);
   };
 
@@ -427,10 +430,8 @@ export function createComboboxStore({
     tag,
     setValue: (value) => combobox.setState("value", value),
     resetValue: () => combobox.setState("value", initialState.value),
-    setSelectedValue: (selectedValue) => {
-      shouldSetDefaultSelectedValue = false;
-      combobox.setState("selectedValue", selectedValue);
-    },
+    setSelectedValue: (selectedValue) =>
+      setState("selectedValue", selectedValue),
     setInputElement: (element) => combobox.setState("inputElement", element),
     setLabelElement: (element) => combobox.setState("labelElement", element),
     setSelectElement: (element) => combobox.setState("selectElement", element),

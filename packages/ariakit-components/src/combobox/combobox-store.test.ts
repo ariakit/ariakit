@@ -234,6 +234,19 @@ test("preserves an explicit empty selected value before items load", async () =>
   stop();
 });
 
+test("preserves an empty selected value set with setState", async () => {
+  const store = createComboboxStore();
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  store.setState("selectedValue", "");
+  store.setState("items", [{ id: "apple", value: "Apple" }]);
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toBe("");
+  stop();
+});
+
 test("does not select the first item without a select element", async () => {
   const store = createComboboxStore({
     defaultItems: [{ id: "apple", value: "Apple" }],
