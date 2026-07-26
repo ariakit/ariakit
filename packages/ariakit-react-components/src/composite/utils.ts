@@ -23,8 +23,7 @@ export function withDocumentScrollPreserved(
   try {
     callback();
   } finally {
-    documentScroller.scrollLeft = left;
-    documentScroller.scrollTop = top;
+    documentScroller.scrollTo({ left, top, behavior: "instant" });
   }
 }
 
