@@ -3,7 +3,7 @@ name: app
 on:
   push:
     branches: [main]
-  pull_request:
+  workflow_call:
 
 permissions:
   contents: read
@@ -178,7 +178,7 @@ jobs:
         if: failure() && (steps.test.outcome == 'failure' || steps.test-visual.outcome == 'failure' || steps.update-screenshots.outcome == 'failure')
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ matrix.project }}-test-results
+          name: app-${{ matrix.project }}-test-results
           path: app/test-results
           retention-days: 7
 
