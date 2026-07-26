@@ -47,6 +47,72 @@ const horizontalItems = [
   { id: "cherry", value: "cherry", label: "Cherry" },
 ] satisfies readonly ComboboxRendererItem[];
 
+const duplicateValueItems = [
+  {
+    id: "duplicate-value-group",
+    value: "Group selection",
+    items: [
+      {
+        id: "duplicate-value-first-apple",
+        value: "Apple",
+        label: "First Apple",
+      },
+      {
+        id: "duplicate-value-second-apple",
+        value: "Apple",
+        label: "Second Apple",
+      },
+      {
+        id: "duplicate-value-third-apple",
+        value: "Apple",
+        label: "Third Apple",
+      },
+      {
+        id: "duplicate-value-fourth-apple",
+        value: "Apple",
+        label: "Fourth Apple",
+      },
+      {
+        id: "duplicate-value-banana",
+        value: "Banana",
+        label: "Selected Banana",
+      },
+      {
+        id: "duplicate-value-last",
+        value: "Last fruit",
+        label: "Last fruit",
+      },
+    ],
+  },
+  {
+    id: "later-duplicate-value-group",
+    items: [
+      {
+        id: "later-duplicate-value-banana",
+        value: "Banana",
+        label: "Later duplicate Banana",
+      },
+    ],
+  },
+  {
+    id: "duplicate-value-filler-group",
+    items: [
+      {
+        id: "duplicate-value-filler",
+        value: "Filler fruit",
+        label: "Filler fruit",
+      },
+    ],
+  },
+] satisfies readonly FruitItem[];
+
+const duplicateSelectedValues = [
+  "Group selection",
+  "Apple",
+  "Apple",
+  "Banana",
+] as const;
+
 const asyncItems = Array.from({ length: 100 }, (_, index) => ({
   id: `async-item-${index + 1}`,
   value: `Async item ${index + 1}`,
@@ -151,6 +217,47 @@ function HorizontalRenderer() {
           </ComboboxRenderer>
         </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+function DuplicateValueRenderer() {
+  const scrollElementRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <section>
+      <div
+        aria-label="Duplicate selected values"
+        ref={scrollElementRef}
+        role="listbox"
+        style={{ height: 40, overflowY: "auto" }}
+      >
+        <ComboboxRenderer
+          items={duplicateValueItems}
+          initialItems={1}
+          itemSize={40}
+          overscan={0}
+          scrollElement={scrollElementRef}
+          selectedValue={duplicateSelectedValues}
+        >
+          {({ items, ...group }) => (
+            <ComboboxRenderer
+              key={group.id}
+              {...group}
+              role="group"
+              items={items}
+              initialItems={1}
+              selectedValue={duplicateSelectedValues}
+            >
+              {({ label, value, ...item }) => (
+                <div key={item.id} {...item} role="option">
+                  {label ?? value}
+                </div>
+              )}
+            </ComboboxRenderer>
+          )}
+        </ComboboxRenderer>
+      </div>
     </section>
   );
 }
@@ -545,6 +652,7 @@ export default function Example() {
     <>
       <GroupedRenderer />
       <HorizontalRenderer />
+      <DuplicateValueRenderer />
       <AsyncRenderer />
       <NestedAutoRenderer />
       <DirectElementRenderer />

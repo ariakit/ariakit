@@ -45,29 +45,41 @@ function getItemObject(item: Item): ItemObject {
   return item;
 }
 
-function findIndicesByValue(
+function findIndicesByValues(
   items: readonly Item[],
-  selectedValue: ComboboxStoreSelectedValue,
+  remainingValues: Set<string>,
 ): number[] {
-  const values = toArray(selectedValue);
   const indices: number[] = [];
 
   for (const [index, item] of items.entries()) {
-    if (indices.length === values.length) break;
+    if (!remainingValues.size) break;
 
     const object = getItemObject(item);
+    let match = false;
 
-    if (object.value != null && values.includes(object.value)) {
-      indices.push(index);
-    } else if (object.items?.length) {
-      const childIndices = findIndicesByValue(object.items, selectedValue);
+    if (object.value != null && remainingValues.delete(object.value)) {
+      match = true;
+    }
+    if (object.items?.length && remainingValues.size) {
+      const childIndices = findIndicesByValues(object.items, remainingValues);
       if (childIndices.length) {
-        indices.push(index);
+        match = true;
       }
+    }
+    if (match) {
+      indices.push(index);
     }
   }
 
   return indices;
+}
+
+function findIndicesByValue(
+  items: readonly Item[],
+  selectedValue: ComboboxStoreSelectedValue,
+): number[] {
+  const remainingValues = new Set(toArray(selectedValue));
+  return findIndicesByValues(items, remainingValues);
 }
 
 function useComboboxRenderer<T extends Item = any>({

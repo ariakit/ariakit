@@ -36,6 +36,17 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(cherry).toHaveCSS("top", "0px");
   });
 
+  // https://github.com/ariakit/ariakit/pull/6832
+  test("renders every selected value when options share a value", async ({
+    q,
+  }) => {
+    const listbox = q.listbox("Duplicate selected values");
+    await test.expect(query(listbox).option("Selected Banana")).toHaveCount(1);
+    await test
+      .expect(query(listbox).option("Later duplicate Banana"))
+      .toHaveCount(0);
+  });
+
   // https://github.com/ariakit/ariakit/issues/3913
   test("updates items when an initially empty scroller gains overflow", async ({
     page,

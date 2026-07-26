@@ -26,3 +26,12 @@ test("ComboboxRenderer forwards horizontal orientation to the item layout", asyn
   // `orientation` prop fell back to vertical, offsetting by `top` instead.
   expect(q.option("Cherry")).toHaveStyle({ left: "192px", top: "0px" });
 });
+
+// https://github.com/ariakit/ariakit/pull/6832
+test("renders every selected value when options share a value", () => {
+  const listbox = q.listbox("Duplicate selected values");
+  expect(q.within(listbox).option("Selected Banana")).toBeInTheDocument();
+  expect(
+    q.within(listbox).option("Later duplicate Banana"),
+  ).not.toBeInTheDocument();
+});
