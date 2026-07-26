@@ -641,6 +641,11 @@ export interface ComboboxStoreOptions<
    * combobox is considered
    * [multi-selectable](https://ariakit.com/examples/combobox-multiple).
    *
+   * The default value is `""` for a plain combobox. When a
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
+   * rendered, the first enabled item with a defined value is selected instead.
+   * Pass `""` explicitly to prevent this automatic selection.
+   *
    * Live examples:
    * - [Form with Select](https://ariakit.com/examples/form-select)
    * - [Animated Select](https://ariakit.com/examples/select-animated)
@@ -651,7 +656,6 @@ export interface ComboboxStoreOptions<
    *   Router](https://ariakit.com/examples/select-next-router)
    * - [Combobox Select with
    *   Tabs](https://ariakit.com/examples/select-combobox-tab)
-   * @default ""
    */
   defaultSelectedValue?: ComboboxStoreState<T>["selectedValue"];
   /**

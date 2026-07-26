@@ -70,7 +70,10 @@ export interface ComboboxSelectedValueProps<T extends Value = Value> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
-   * hook.
+   * hook. If not provided, the closest
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) or
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
+   * components' context will be used.
    */
   store?: ComboboxStore<T>;
   /**

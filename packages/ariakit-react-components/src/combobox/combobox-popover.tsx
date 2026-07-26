@@ -21,6 +21,7 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
 } from "react";
 import { useEffect, useRef, useState } from "react";
+import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
@@ -275,6 +276,15 @@ export const ComboboxPopover = createDialogComponent(
 
 export interface ComboboxPopoverOptions<T extends ElementType = TagName>
   extends ComboboxListOptions<T>, Omit<PopoverOptions<T>, "store"> {
+  /**
+   * When enabled, pressing printable character keys will move focus to the next
+   * combobox item that starts with the entered characters.
+   *
+   * Defaults to `false` when a
+   * [`ComboboxInput`](https://ariakit.com/reference/combobox-input) is rendered,
+   * and `true` otherwise.
+   */
+  typeahead?: CompositeTypeaheadOptions<T>["typeahead"];
   /**
    * Whether the combobox
    * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)

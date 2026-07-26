@@ -89,7 +89,9 @@ export interface ComboboxSelectLabelOptions<
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
-   * hook.
+   * hook. If not provided, the closest
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
+   * component's context will be used.
    */
   store?: ComboboxStore;
 }
