@@ -176,6 +176,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         if (!store) return elements;
         const { baseElement, contentElement, inputElement, selectElement } =
           store.getState();
+        const controls = [baseElement, inputElement, selectElement];
         const persistentElement = selectElement || inputElement || baseElement;
         if (!persistentElement) return elements;
         const persistentElements = new Set(elements);
@@ -188,25 +189,15 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
           if (contentElement?.contains(element)) return;
           persistentElements.add(element);
         };
-        addPersistentElement(baseElement);
-        addPersistentElement(inputElement);
-        addPersistentElement(selectElement);
+        controls.forEach(addPersistentElement);
         const doc = getDocument(persistentElement);
-        const selectors: string[] = [];
-        if (contentElement?.id) {
-          selectors.push(`[aria-controls~="${contentElement.id}"]`);
+        const selectors = new Set<string>();
+        for (const element of [contentElement, ...controls]) {
+          if (!element?.id) continue;
+          selectors.add(`[aria-controls~="${element.id}"]`);
         }
-        if (baseElement?.id) {
-          selectors.push(`[aria-controls~="${baseElement.id}"]`);
-        }
-        if (inputElement?.id) {
-          selectors.push(`[aria-controls~="${inputElement.id}"]`);
-        }
-        if (selectElement?.id) {
-          selectors.push(`[aria-controls~="${selectElement.id}"]`);
-        }
-        if (!selectors.length) return [...persistentElements];
-        const selector = selectors.join(",");
+        if (!selectors.size) return [...persistentElements];
+        const selector = [...selectors].join(",");
         const controlElements = doc.querySelectorAll<HTMLElement>(selector);
         controlElements.forEach(addPersistentElement);
         return [...persistentElements];
