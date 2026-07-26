@@ -256,6 +256,7 @@ export function createComboboxStore({
           shouldSetDefaultSelectedValue = false;
           return;
         }
+        if (!state.selectElement) return;
         queueMicrotask(() => {
           if (!shouldSetDefaultSelectedValue) return;
           const state = combobox.getState();
