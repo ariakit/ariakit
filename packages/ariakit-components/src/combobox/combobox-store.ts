@@ -4,7 +4,6 @@ import {
   mergeStore,
   pick,
   setup,
-  subscribe,
   sync,
   throwOnConflictingProps,
 } from "@ariakit/store";
@@ -345,20 +344,18 @@ export function createComboboxStore({
     }),
   );
 
-  // Disarm selected-item resolution only after an actual move. subscribe skips
-  // the initial call so a store that starts open still resolves its selection.
-  setup(combobox, () =>
-    subscribe(combobox, ["moves"], () => {
-      if (!combobox.getState().open) return;
-      resolveSelectedItemOnOpen = false;
-    }),
-  );
-
   // When the activeId changes, but the moves count doesn't, we reset the
   // activeValue state. This is useful when the activeId changes because of
-  // a mouse move interaction.
+  // a mouse move interaction. Both changes also transfer active item ownership
+  // away from the selected-item resolver.
   setup(combobox, () =>
     sync(combobox, ["moves", "activeId"], (state, prevState) => {
+      if (state.moves !== prevState.moves) {
+        resolveSelectedItemOnOpen = false;
+      }
+      if (state.activeId !== prevState.activeId) {
+        resolveSelectedItemOnOpen = false;
+      }
       if (state.moves === prevState.moves) {
         combobox.setState("activeValue", undefined);
       }

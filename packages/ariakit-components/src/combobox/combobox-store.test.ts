@@ -154,6 +154,43 @@ test("resolves the selected item when the store starts open", async () => {
   stop();
 });
 
+test("resolves the selected item when it registers after opening", async () => {
+  const store = createComboboxStore({
+    defaultItems: [{ id: "apple", value: "Apple" }],
+    defaultSelectedValue: "Banana",
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  store.show();
+  store.setState("mounted", true);
+  store.registerItem({ id: "banana", value: "Banana" });
+  await Promise.resolve();
+
+  expect(store.getState().activeId).toBe("banana");
+  stop();
+});
+
+test("preserves the active item when the selection registers after hover", async () => {
+  const store = createComboboxStore({
+    defaultItems: [{ id: "apple", value: "Apple" }],
+    defaultSelectedValue: "Banana",
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  store.show();
+  store.setState("mounted", true);
+  store.setActiveId("apple");
+  expect(store.getState().moves).toBe(0);
+
+  store.registerItem({ id: "banana", value: "Banana" });
+  await Promise.resolve();
+
+  expect(store.getState().activeId).toBe("apple");
+  stop();
+});
+
 test("preserves an explicit empty selected value", () => {
   const store = createComboboxStore({
     defaultItems: [{ id: "apple", value: "Apple" }],
