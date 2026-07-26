@@ -475,8 +475,9 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       cancelScroll();
       if (event.defaultPrevented) return;
       if (!store) return;
-      const { virtualFocus, activeId } = store.getState();
+      const { virtualFocus, activeId, baseElement } = store.getState();
       if (!virtualFocus) return;
+      if (event.currentTarget !== baseElement) return;
       // When virtualFocus is set to true, we move focus from the composite
       // container (this element) to the composite item that is being selected.
       // Then we move focus back to the composite container. This is so we can

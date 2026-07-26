@@ -14,8 +14,10 @@ function FruitSelect({ filter, label, virtualFocus }: FruitSelectProps) {
     >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect />
-      <Ariakit.ComboboxPopover gutter={4} sameWidth>
-        {filter && <Ariakit.ComboboxInput aria-label={`Filter ${label}`} />}
+      <Ariakit.ComboboxPopover gutter={4} sameWidth unmountOnHide={filter}>
+        {filter && (
+          <Ariakit.ComboboxInput autoSelect aria-label={`Filter ${label}`} />
+        )}
         <Ariakit.ComboboxList>
           <Ariakit.ComboboxItem value="Apple" />
           <Ariakit.ComboboxItem value="Banana" />
