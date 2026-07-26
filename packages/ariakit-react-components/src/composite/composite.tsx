@@ -12,6 +12,7 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
+import { subscribe } from "@ariakit/store";
 import {
   flatten2DArray,
   reverseArray,
@@ -189,9 +190,41 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
     if (!focusOnMove) return;
     const { activeId } = store.getState();
     const itemElement = getEnabledItem(store, activeId)?.element;
-    if (!itemElement) return;
-    withBaseScrollPreserved(store, () => focusIntoView(itemElement));
-  }, [store, moves, focusOnMove]);
+    if (itemElement) {
+      withBaseScrollPreserved(store, () => focusIntoView(itemElement));
+      return;
+    }
+    if (activeId == null) return;
+    const ownsFocus = (element: Element | null) =>
+      !!element && (!!baseElement?.contains(element) || isItem(store, element));
+    const doc = baseElement?.ownerDocument;
+    let unsubscribe = () => {};
+    const cleanup = () => {
+      unsubscribe();
+      doc?.removeEventListener("focusin", onFocusIn, true);
+    };
+    const onFocusIn = (event: globalThis.FocusEvent) => {
+      if (ownsFocus(event.target as Element | null)) return;
+      cleanup();
+    };
+    // A programmatic move made while focus is already outside should keep its
+    // focusOnMove behavior. If focus starts inside, stop retrying once the user
+    // moves it elsewhere before the target element registers.
+    if (ownsFocus(getActiveElement(baseElement))) {
+      doc?.addEventListener("focusin", onFocusIn, true);
+    }
+    unsubscribe = subscribe(store, ["activeId", "items"], (state) => {
+      if (state.activeId !== activeId) {
+        cleanup();
+        return;
+      }
+      const itemElement = getEnabledItem(store, activeId)?.element;
+      if (!itemElement) return;
+      cleanup();
+      withBaseScrollPreserved(store, () => focusIntoView(itemElement));
+    });
+    return cleanup;
+  }, [store, moves, focusOnMove, baseElement]);
 
   // If composite.move(null) has been called, the composite container should
   // receive focus.
@@ -442,12 +475,15 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (event.defaultPrevented) return;
       if (!store) return;
       if (!isSelfTarget(event)) return;
-      const { orientation, renderedItems, activeId, rtl } = store.getState();
+      const { orientation, items, renderedItems, activeId, rtl } =
+        store.getState();
       const activeItem = getEnabledItem(store, activeId);
       if (activeItem?.element?.isConnected) return;
+      const elementlessActiveItem = activeItem && activeId != null;
+      const movementItems = elementlessActiveItem ? items : renderedItems;
       const isVertical = orientation !== "horizontal";
       const isHorizontal = orientation !== "vertical";
-      const grid = isGrid(renderedItems);
+      const grid = isGrid(movementItems);
       // If the event is coming from a text field and no item is selected,
       // horizontal keys should perform their default action on the text field
       // instead of moving focus to an item.
@@ -458,17 +494,38 @@ export const useComposite = createHook<TagName, CompositeOptions>(
         event.key === "End";
       if (isHorizontalKey && isTextField(event.currentTarget)) return;
       const up = () => {
+        if (elementlessActiveItem) {
+          return store.up({ activeId, renderedItems: movementItems });
+        }
         if (grid) {
           const item = findFirstEnabledItemInTheLastRow(renderedItems);
           return item?.id;
         }
         return store?.last();
       };
+      const right = () => {
+        if (elementlessActiveItem) {
+          return store.next({ activeId, renderedItems: movementItems });
+        }
+        return rtl ? store.last() : store.first();
+      };
+      const down = () => {
+        if (elementlessActiveItem) {
+          return store.down({ activeId, renderedItems: movementItems });
+        }
+        return store.first();
+      };
+      const left = () => {
+        if (elementlessActiveItem) {
+          return store.previous({ activeId, renderedItems: movementItems });
+        }
+        return rtl ? store.first() : store.last();
+      };
       const keyMap = {
         ArrowUp: (grid || isVertical) && up,
-        ArrowRight: (grid || isHorizontal) && (rtl ? store.last : store.first),
-        ArrowDown: (grid || isVertical) && store.first,
-        ArrowLeft: (grid || isHorizontal) && (rtl ? store.first : store.last),
+        ArrowRight: (grid || isHorizontal) && right,
+        ArrowDown: (grid || isVertical) && down,
+        ArrowLeft: (grid || isHorizontal) && left,
         Home: store.first,
         End: store.last,
         PageUp: store.first,

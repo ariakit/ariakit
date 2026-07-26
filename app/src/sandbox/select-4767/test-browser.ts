@@ -45,11 +45,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/4767
-  test("preserves select focus in real-focus mode", async ({ page, q }) => {
+  test("focuses the selected item when opening in real-focus mode", async ({
+    page,
+    q,
+  }) => {
     const select = q.combobox("Real focus fruit");
     await select.click();
     const apple = q.option("Apple");
-    await test.expect(select).toBeFocused();
+    await test.expect(apple).toBeFocused();
+    await test.expect(select).not.toBeFocused();
     await test.expect(apple).toHaveAttribute("data-active-item");
 
     await page.keyboard.press("ArrowDown");
@@ -63,6 +67,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(orange).toHaveAttribute("data-focus-visible", "true");
     await test.expect(apple).not.toHaveAttribute("data-focus-visible");
     await test.expect(banana).not.toHaveAttribute("data-focus-visible");
+  });
+
+  test("focuses the input in a filterable select", async ({ q }) => {
+    await q.combobox("Filterable fruit").click();
+
+    await test.expect(q.combobox("Filter Filterable fruit")).toBeFocused();
+    await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
   });
 
   // https://github.com/ariakit/ariakit/pull/6832#discussion_r3649290438

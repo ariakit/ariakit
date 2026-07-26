@@ -67,12 +67,10 @@ export function testSelect(focusTarget: "combobox" | "listbox") {
     expectFocusTarget();
     expect(q.option("Apple")).toHaveFocus();
     await press.ShiftTab();
+    expect(document.activeElement).toBe(q.combobox());
+    await press.Escape();
+    expect(q.listbox()).not.toBeInTheDocument();
     expect(q.combobox()).toHaveFocus();
-    if (focusTarget === "combobox") {
-      expect(q.option("Apple")).toHaveFocus();
-    } else {
-      expect(q.option("Apple")).not.toHaveFocus();
-    }
     await press.ArrowUp();
     expect(q.listbox()).toBeVisible();
     expectFocusTarget();

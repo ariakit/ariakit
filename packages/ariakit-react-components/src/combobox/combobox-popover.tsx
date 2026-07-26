@@ -8,6 +8,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
+  getActiveElement,
   isFocusable,
   isSelfTarget,
   getDocument,
@@ -89,6 +90,8 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     const selectElement = useStoreState(store, "selectElement");
     const hiddenByClickOutsideRef = useRef(false);
     const hasSelect = !!selectElement;
+    const selectOwnsFocus =
+      !!selectElement && getActiveElement(selectElement) === selectElement;
 
     const mounted = useStoreState(store, "mounted");
     const moved = useStoreState(store, ["moves"], (state) => !!state.moves);
@@ -161,7 +164,8 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       backdrop: false,
       // A callback would always be truthy, defeating the dialog's early-out and
       // forcing a tabbable scan of the whole popup on every open.
-      autoFocusOnShow: hasSelect && !!inputElement,
+      // Without an input, only take focus when the select initiated the open.
+      autoFocusOnShow: hasSelect && (!!inputElement || selectOwnsFocus),
       initialFocus: hasSelect ? inputElement : undefined,
       finalFocus: selectElement || baseElement,
       preserveTabOrderAnchor: null,

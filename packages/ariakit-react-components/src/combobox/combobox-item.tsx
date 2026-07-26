@@ -1,4 +1,4 @@
-import { useStoreState, useStoreStateObject } from "@ariakit/react-store";
+import { useStoreStateObject } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
@@ -97,8 +97,8 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       resetValueOnSelectState,
       multiSelectable,
       selected,
+      autoFocusSelected,
       selectElement,
-      virtualFocus,
       inputElement,
     } = useStoreStateObject(store, ["selectedValue"], {
       resetValueOnSelectState: "resetValueOnSelect",
@@ -108,32 +108,20 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       selected(state) {
         return isSelected(state.selectedValue, value);
       },
+      autoFocusSelected(state) {
+        if (value == null) return false;
+        if (!Array.isArray(state.selectedValue)) {
+          return state.selectedValue === value;
+        }
+        return state.selectedValue[state.selectedValue.length - 1] === value;
+      },
       selectElement: "selectElement",
-      virtualFocus: "virtualFocus",
       inputElement: "inputElement",
     });
 
-    // Only the DOM focus fallback below reads this value, so the subscription
-    // is scoped to that mode. Otherwise, plain ComboboxItem components would
-    // subscribe to activeId and items and re-render on every keyboard move.
-    const autoFocusSelectedItem =
-      !!selectElement && !virtualFocus && !inputElement;
-
-    const selectedItem = useStoreState(
-      store,
-      autoFocusSelectedItem ? ["activeId", "items", "selectedValue"] : [],
-      (state) => {
-        if (!autoFocusSelectedItem) return false;
-        if (value == null) return false;
-        if (state.activeId !== id && store?.item(state.activeId)) {
-          return false;
-        }
-        if (Array.isArray(state.selectedValue)) {
-          return state.selectedValue[state.selectedValue.length - 1] === value;
-        }
-        return state.selectedValue === value;
-      },
-    );
+    // Dialog owns initial focus when there isn't a separate input. Derive the
+    // marker from the selected value so items don't subscribe to movement.
+    const autoFocusSelectedItem = !!selectElement && !inputElement;
 
     const selectMode = !!selectElement;
     const disabled = disabledFromProps(props);
@@ -248,7 +236,9 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       [value, selected],
     );
 
-    const defaultAutoFocus = autoFocusSelectedItem ? selectedItem : undefined;
+    const defaultAutoFocus = autoFocusSelectedItem
+      ? autoFocusSelected
+      : undefined;
 
     props = {
       role,
@@ -259,7 +249,9 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       onKeyDown,
     };
     if (props.autoFocus === undefined && defaultAutoFocus !== undefined) {
-      props.autoFocus = defaultAutoFocus;
+      // Keep the marker for Dialog, but avoid a re-mounted selected item
+      // stealing focus after the initial focus effect has run.
+      props.autoFocus = false;
       props["data-autofocus"] = defaultAutoFocus || undefined;
     }
 

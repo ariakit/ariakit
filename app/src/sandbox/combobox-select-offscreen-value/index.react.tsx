@@ -41,7 +41,7 @@ const fruits = [
 ];
 
 interface FixtureProps {
-  defaultSelectedValue: string[];
+  defaultSelectedValue: string | string[];
   label: string;
 }
 
@@ -86,6 +86,7 @@ export default function Example() {
     <>
       <Fixture defaultSelectedValue={[]} label="Fruit" />
       <Fixture defaultSelectedValue={["Apple"]} label="Selected fruit" />
+      <Fixture defaultSelectedValue="Apple" label="Single selected fruit" />
     </>
   );
 }

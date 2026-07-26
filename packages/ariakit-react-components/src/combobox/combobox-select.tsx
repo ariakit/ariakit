@@ -4,7 +4,6 @@ import {
   useBooleanEvent,
   useEvent,
   useMergeRefs,
-  useSafeLayoutEffect,
   useWrapElement,
   createElement,
   createHook,
@@ -12,16 +11,14 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
-  afterPaint,
   toArray,
-  getActiveElement,
   getPopupRole,
   queueBeforeEvent,
   invariant,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent, SelectHTMLAttributes } from "react";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
@@ -70,162 +67,6 @@ function nextWithValue(store: ComboboxStore, next: ComboboxStore["next"]) {
     return;
   };
 }
-
-// Returns the active item id so a correction pass can stay on the same item,
-// whether or not it had an element to act on.
-function withActiveItem(
-  store: ComboboxStore,
-  callback: (element: HTMLElement) => void,
-) {
-  const { activeId } = store.getState();
-  const element = store.item(activeId)?.element;
-  if (element) {
-    callback(element);
-  }
-  return activeId;
-}
-
-function scrollItemIntoView(element: HTMLElement) {
-  element.scrollIntoView({ block: "nearest", inline: "nearest" });
-}
-
-// Focusing is how the legacy Select presented the selected item on open:
-// Chromium and Firefox scroll a newly focused element to the middle of its
-// scrolling element rather than to its nearest edge, and composite hands focus
-// straight back. WebKit doesn't scroll on focus, so it keeps the nearest edge.
-//
-// The round trip is only invisible when the select itself owns DOM focus and
-// is the composite element, so everything else falls back to scrolling: real
-// focus mode, where composite wouldn't hand focus back at all; a combobox with
-// an input, which becomes the composite element instead, so focusing here would
-// hand focus to the input, or strand it on the item when the input isn't
-// focusable; and any open the select didn't take focus for, such as a popup
-// that starts open or one shown from another control, where focusing would pull
-// focus away from it.
-function presentItem(store: ComboboxStore, element: HTMLElement) {
-  const { virtualFocus, inputElement, selectElement } = store.getState();
-  const selectOwnsFocus =
-    !!selectElement && getActiveElement(selectElement) === selectElement;
-  if (virtualFocus && !inputElement && selectOwnsFocus) {
-    element.focus();
-    return;
-  }
-  scrollItemIntoView(element);
-}
-
-interface SchedulePresentParams {
-  store: ComboboxStore;
-  contentElement: HTMLElement | null;
-  present: (element: HTMLElement) => void;
-  // The item the caller armed this for, when it knows it. A pointer that has
-  // moved onto another one in the meantime is then ignored.
-  targetId?: string | null;
-}
-
-/**
- * Presents the active item once the popup has been placed, then nudges it back
- * into view after the offscreen observers had a chance to render adjacent items
- * and affect the layout. Returns a cleanup that tears down whatever is still
- * scheduled.
- */
-function schedulePresent({
-  store,
-  contentElement,
-  present,
-  targetId,
-}: SchedulePresentParams) {
-  let cancel = () => {};
-  const run = () => {
-    cancel = afterPaint(() => {
-      // Let offscreen observers initialize before presenting anything, so the
-      // active item has an element by the time the pass below runs.
-      cancel = afterPaint(() => {
-        if (targetId !== undefined && store.getState().activeId !== targetId) {
-          return;
-        }
-        const presentedId = withActiveItem(store, present);
-        cancel = afterPaint(() => {
-          // A pointer moving over the list changes the active item without
-          // moving, so the correction stays on the item the first pass picked
-          // rather than dragging the list under the pointer.
-          if (store.getState().activeId !== presentedId) return;
-          // Nudging rather than presenting again: focusing twice would bounce
-          // focus a second time. This is also the only pass that runs for an
-          // item whose element didn't exist yet, which is why it settles at the
-          // nearest edge rather than in the middle.
-          withActiveItem(store, scrollItemIntoView);
-        });
-      });
-    });
-  };
-  if (!contentElement?.hasAttribute("data-placing")) {
-    run();
-    return () => cancel();
-  }
-  const observer = new MutationObserver(() => {
-    if (contentElement.hasAttribute("data-placing")) return;
-    observer.disconnect();
-    run();
-  });
-  observer.observe(contentElement, { attributeFilter: ["data-placing"] });
-  return () => {
-    observer.disconnect();
-    cancel();
-  };
-}
-
-/**
- * Renders nothing and brings the active item into view when the popup opens and
- * when moving through the items. Composite doesn't cover either case: it
- * scrolls only after move(), and only when the item already has an element,
- * which an offscreen item doesn't until it renders, while the focus it performs
- * when the composite element itself is focused prevents the scroll. Keyboard
- * opens happen to be covered anyway, because the key event proxy focuses the
- * active item without preventing it, once it has an element, but pointer and
- * programmatic opens aren't.
- * Active item changes are deliberately not tracked, so hovering an item, which
- * sets the active id without moving, doesn't scroll the list on its own.
- */
-const ComboboxSelectScrollIntoView = memo(
-  function ComboboxSelectScrollIntoView({ store }: { store: ComboboxStore }) {
-    const open = useStoreState(store, "open");
-    const moves = useStoreState(store, "moves");
-    const contentElement = useStoreState(store, "contentElement");
-
-    // Opening presents the selected item the way the legacy Select did.
-    useSafeLayoutEffect(() => {
-      if (!open) return;
-      return schedulePresent({
-        store,
-        contentElement,
-        present: (element) => presentItem(store, element),
-      });
-    }, [store, open, contentElement]);
-
-    // Moving only brings the item to the nearest edge, the way composite does.
-    // Composite already covers this, except when the item has no element yet
-    // because it renders offscreen, so the item's element is resolved when the
-    // scroll runs instead of being captured up front. Opening with a key arms
-    // both effects in the same commit, and the two chains overlap: this one is
-    // a no-op on an item the effect above has already centered, since bringing
-    // a fully visible item to the nearest edge moves nothing.
-    useSafeLayoutEffect(() => {
-      if (!open) return;
-      if (!moves) return;
-      // Moving sets the active item and the move counter together, so the
-      // target is known here even though its element may not exist yet.
-      const { activeId } = store.getState();
-      return schedulePresent({
-        store,
-        contentElement,
-        present: scrollItemIntoView,
-        targetId: activeId,
-      });
-    }, [store, open, moves, contentElement]);
-
-    return null;
-  },
-);
 
 /**
  * Returns props to create a `ComboboxSelect` component.
@@ -281,7 +122,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
           (isGrid || isHorizontal) && nextWithValue(store, store.previous),
       };
       const getId = moveKeyMap[event.key as keyof typeof moveKeyMap];
-      if (getId && moveOnKeyDownProp(event)) {
+      if (!open && getId && moveOnKeyDownProp(event)) {
         event.preventDefault();
         store.move(getId());
       }
@@ -310,7 +151,6 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       (element) => (
         <ComboboxScopedContextProvider value={store}>
           {element}
-          <ComboboxSelectScrollIntoView store={store} />
         </ComboboxScopedContextProvider>
       ),
       [store],
@@ -447,7 +287,10 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       store,
       composite: !inputElement,
       focusable,
-      moveOnKeyPress: false,
+      // The select handler owns closed navigation so it can skip value-less
+      // items. Once open, Composite owns navigation and can also finish moves
+      // whose offscreen target has no element yet.
+      moveOnKeyPress: () => store.getState().open,
       ...props,
     });
     const onCompositeKeyDownCapture = props.onKeyDownCapture;
