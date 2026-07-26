@@ -15,6 +15,7 @@ export default function Example() {
 
   return (
     <Ariakit.ComboboxProvider
+      defaultSelectedValue="Apple"
       virtualFocus={false}
       resetValueOnHide
       setValue={(value) => {
@@ -23,22 +24,20 @@ export default function Example() {
         });
       }}
     >
-      <Ariakit.SelectProvider defaultValue="Apple">
-        <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
-        <Ariakit.Select />
-        <Ariakit.SelectPopover gutter={4} sameWidth>
-          <Ariakit.Combobox autoSelect placeholder="Search..." />
-          <Ariakit.ComboboxList>
-            {matches.map((value) => (
-              <Ariakit.SelectItem
-                key={value}
-                value={value}
-                render={<Ariakit.ComboboxItem />}
-              />
-            ))}
-          </Ariakit.ComboboxList>
-        </Ariakit.SelectPopover>
-      </Ariakit.SelectProvider>
+      <Ariakit.ComboboxSelectLabel>Favorite fruit</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxPopover gutter={4} sameWidth>
+        <Ariakit.ComboboxInput
+          autoSelect
+          aria-label="Search fruits"
+          placeholder="Search..."
+        />
+        <Ariakit.ComboboxList>
+          {matches.map((value) => (
+            <Ariakit.ComboboxItem key={value} value={value} />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
   );
 }

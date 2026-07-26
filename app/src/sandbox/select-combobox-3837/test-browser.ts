@@ -22,12 +22,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // We simulate the viewport change deterministically by shrinking the popover
   // through the same `--popover-available-height` variable, then assert that
   // focus never leaves the combobox input.
+  // https://github.com/ariakit/ariakit/issues/3837
   test("resizing the popover does not bounce focus while auto-selecting", async ({
     page,
     q,
   }) => {
     const selectButton = q.combobox("Country");
-    const input = q.combobox("Search...");
+    const input = q.combobox("Search countries");
     const popover = page.locator(".popover");
 
     await selectButton.click();

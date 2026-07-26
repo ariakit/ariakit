@@ -52,6 +52,7 @@ import {
   getEnabledItem,
   isItem,
   selectTextField,
+  withDocumentScrollPreserved,
 } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -323,10 +324,26 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           }
           return;
         }
+        const fromComposite =
+          relatedTarget === baseElement || isItem(store, relatedTarget);
         // Safari doesn't scroll the element into view when another element is
         // immediately focused. So we have to do it manually here.
         if (isSafari() && currentTarget.hasAttribute("data-autofocus")) {
-          currentTarget.scrollIntoView({ block: "nearest", inline: "nearest" });
+          // Virtual focus immediately returns to an already focused composite.
+          // Keep the fallback scoped to nested scrollers in that case.
+          if (fromComposite) {
+            withDocumentScrollPreserved(currentTarget, () => {
+              currentTarget.scrollIntoView({
+                block: "nearest",
+                inline: "nearest",
+              });
+            });
+          } else {
+            currentTarget.scrollIntoView({
+              block: "nearest",
+              inline: "nearest",
+            });
+          }
         }
         hasFocusedComposite.current = true;
         // If the previously focused element is a composite or composite item
@@ -334,8 +351,6 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         // That's because this is just a transition event, the composite
         // element was likely already focused, so we're just immediately
         // returning focus to it when navigating through the items.
-        const fromComposite =
-          relatedTarget === baseElement || isItem(store, relatedTarget);
         if (fromComposite) {
           focusSilently(baseElement);
         }

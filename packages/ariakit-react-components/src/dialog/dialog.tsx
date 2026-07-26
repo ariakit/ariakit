@@ -464,6 +464,8 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // manually here.
       if (!isSafariBrowser) return;
       if (!isElementFocusable) return;
+      // A focus handler may have synchronously redirected virtual focus.
+      if (getActiveElement(element) !== element) return;
       element.scrollIntoView({ block: "nearest", inline: "nearest" });
     });
   }, [

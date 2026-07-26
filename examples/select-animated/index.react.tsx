@@ -4,24 +4,24 @@ import "./style.css";
 export default function Example() {
   return (
     <div className="wrapper">
-      <Ariakit.SelectProvider defaultValue="Apple">
-        <Ariakit.SelectLabel className="label">
+      <Ariakit.ComboboxProvider defaultSelectedValue="Apple">
+        <Ariakit.ComboboxSelectLabel className="label">
           Favorite fruit
-        </Ariakit.SelectLabel>
-        <Ariakit.Select className="button" />
-        <Ariakit.SelectPopover
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect className="button" />
+        <Ariakit.ComboboxPopover
           portal
           sameWidth
           unmountOnHide
           gutter={4}
           className="popover"
         >
-          <Ariakit.SelectItem className="select-item" value="Apple" />
-          <Ariakit.SelectItem className="select-item" value="Banana" />
-          <Ariakit.SelectItem className="select-item" value="Grape" />
-          <Ariakit.SelectItem className="select-item" value="Orange" />
-        </Ariakit.SelectPopover>
-      </Ariakit.SelectProvider>
+          <Ariakit.ComboboxItem className="select-item" value="Apple" />
+          <Ariakit.ComboboxItem className="select-item" value="Banana" />
+          <Ariakit.ComboboxItem className="select-item" value="Grape" />
+          <Ariakit.ComboboxItem className="select-item" value="Orange" />
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
     </div>
   );
 }

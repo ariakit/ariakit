@@ -16,7 +16,7 @@ test("scroll into view", async ({ page }) => {
   test.info().snapshotSuffix = "";
   const q = query(page);
   await q.button().click({ delay: 50 });
-  await expect(q.listbox()).toBeFocused();
+  await expect(q.button()).toBeFocused();
   for (let i = 0; i < 7; i++) {
     await page.keyboard.press("ArrowDown");
   }

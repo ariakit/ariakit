@@ -6,12 +6,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
-    await q.combobox("Fruit").click();
-    await test.expect(q.option("Apple")).toBeFocused();
+    const select = q.combobox("Fruit");
+    await select.click();
+    await test.expect(select).toBeFocused();
 
     await page.keyboard.press("ArrowDown");
 
     await test.expect(q.option("Banana")).toHaveAttribute("data-active-item");
-    await test.expect(q.option("Apple")).toBeFocused();
+    await test.expect(select).toBeFocused();
   });
 });

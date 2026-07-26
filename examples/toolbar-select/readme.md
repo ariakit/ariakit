@@ -1,7 +1,7 @@
 ---
 tags:
   - Toolbar
-  - Select
+  - Combobox
   - Dropdowns
 ---
 
@@ -9,7 +9,7 @@ tags:
 
 <div data-description>
 
-Rendering [Select](/components/select) as a [`ToolbarItem`](/reference/toolbar-item) inside a [Toolbar](/components/toolbar).
+Rendering [`ComboboxSelect`](/reference/combobox-select) as a [`ToolbarItem`](/reference/toolbar-item) inside a [Toolbar](/components/toolbar).
 
 </div>
 
@@ -22,16 +22,16 @@ Rendering [Select](/components/select) as a [`ToolbarItem`](/reference/toolbar-i
 <div data-cards="components">
 
 - [](/components/toolbar)
-- [](/components/select)
+- [](/components/combobox)
 
 </div>
 
-## Composing `Select` and `ToolbarItem`
+## Composing `ComboboxSelect` and `ToolbarItem`
 
-In this example, we use the [`render`](/reference/select#render) prop to combine [`Select`](/reference/select) and [`ToolbarItem`](/reference/toolbar-item) into a single element:
+In this example, we use the [`render`](/reference/combobox-select#render) prop to combine [`ComboboxSelect`](/reference/combobox-select) and [`ToolbarItem`](/reference/toolbar-item) into a single element:
 
 ```jsx
-<Select render={<ToolbarItem />}>
+<ComboboxSelect render={<ToolbarItem />}>
 ```
 
 You can learn more about this pattern on the [Composition](/guide/composition) guide.

@@ -2,6 +2,7 @@ import { useStoreStateObject } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
+  useId,
   useWrapElement,
   createElement,
   createHook,
@@ -10,6 +11,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import {
+  disabledFromProps,
   getItemRoleByPopupRole,
   hasFocus,
   isTextField,
@@ -74,8 +76,9 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     setValueOnClick,
     selectValueOnClick = true,
     resetValueOnSelect,
-    focusOnHover = false,
+    focusOnHover,
     moveOnKeyPress = true,
+    preventScrollOnKeyDown,
     getItem: getItemProp,
     ...props
   }) {
@@ -88,36 +91,64 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         "ComboboxItem must be wrapped in a ComboboxList or ComboboxPopover component.",
     );
 
-    const { resetValueOnSelectState, multiSelectable, selected } =
-      useStoreStateObject(store, ["selectedValue"], {
-        resetValueOnSelectState: "resetValueOnSelect",
-        multiSelectable(state) {
-          return Array.isArray(state.selectedValue);
-        },
-        selected(state) {
-          return isSelected(state.selectedValue, value);
-        },
-      });
+    const id = useId(props.id);
+
+    const {
+      resetValueOnSelectState,
+      multiSelectable,
+      selected,
+      autoFocusSelected,
+      selectElement,
+    } = useStoreStateObject(store, ["selectedValue"], {
+      resetValueOnSelectState: "resetValueOnSelect",
+      multiSelectable(state) {
+        return Array.isArray(state.selectedValue);
+      },
+      selected(state) {
+        return isSelected(state.selectedValue, value);
+      },
+      autoFocusSelected(state) {
+        if (value == null) return false;
+        if (!Array.isArray(state.selectedValue)) {
+          return state.selectedValue === value;
+        }
+        return state.selectedValue[state.selectedValue.length - 1] === value;
+      },
+      selectElement: "selectElement",
+    });
+
+    // The selected item marks the initial presentation target. Derive the
+    // marker from the selected value so items don't subscribe to movement.
+    const autoFocusSelectedItem = !!selectElement;
+
+    const selectMode = !!selectElement;
+    const disabled = disabledFromProps(props);
 
     const getItem = useCallback<NonNullable<CompositeItemOptions["getItem"]>>(
       (item) => {
-        const nextItem = { ...item, value };
+        const nextItem = {
+          ...item,
+          value: selectMode && disabled ? undefined : value,
+        };
         if (getItemProp) {
           return getItemProp(nextItem);
         }
         return nextItem;
       },
-      [value, getItemProp],
+      [selectMode, disabled, value, getItemProp],
     );
 
-    setValueOnClick = setValueOnClick ?? !multiSelectable;
+    setValueOnClick = setValueOnClick ?? (!selectMode && !multiSelectable);
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
+    preventScrollOnKeyDown = preventScrollOnKeyDown ?? selectMode;
+    const popupRole = useContext(ComboboxListRoleContext);
+    const role = getItemRole(popupRole);
 
     const onClickProp = props.onClick;
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
     const selectValueOnClickProp = useBooleanEvent(selectValueOnClick);
     const resetValueOnSelectProp = useBooleanEvent(
-      resetValueOnSelect ?? resetValueOnSelectState ?? multiSelectable,
+      resetValueOnSelect ?? resetValueOnSelectState,
     );
     const hideOnClickProp = useBooleanEvent(hideOnClick);
 
@@ -169,19 +200,26 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       const paste = modifier && event.key.toLowerCase() === "v";
       const deleteKey = event.key === "Backspace" || event.key === "Delete";
       if (printable || paste || deleteKey) {
-        queueMicrotask(() => baseElement.focus());
+        // In select mode, the base element is the select button rather than a
+        // text field, so focusing it would move focus out of the open list.
+        if (baseElement === selectElement) return;
         if (isTextField(baseElement)) {
-          // If the combobox element is a text field, we should update the
-          // store value with the current's element value. This is necessary
-          // because the value may temporarily change based on the currently
-          // selected item, but it'll be reset to the original value when the
-          // combobox input is focused.
+          queueMicrotask(() => baseElement.focus());
+          store?.setValue(baseElement.value);
+          return;
+        }
+        baseElement.focus();
+        if ("value" in baseElement && typeof baseElement.value === "string") {
+          // Update the store value with the current element's value. This is
+          // necessary because the value may temporarily change based on the
+          // currently selected item, but it'll be reset to the original value
+          // when the combobox input is focused.
           store?.setValue(baseElement.value);
         }
       }
     });
 
-    if (multiSelectable && selected != null) {
+    if ((selectMode || multiSelectable) && selected != null) {
       props = {
         "aria-selected": selected,
         ...props,
@@ -200,15 +238,24 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       [value, selected],
     );
 
-    const popupRole = useContext(ComboboxListRoleContext);
+    const defaultAutoFocus = autoFocusSelectedItem
+      ? autoFocusSelected
+      : undefined;
 
     props = {
-      role: getItemRole(popupRole),
+      role,
       children: value,
       ...props,
+      id,
       onClick,
       onKeyDown,
     };
+    if (props.autoFocus === undefined && defaultAutoFocus !== undefined) {
+      // Keep the marker for Dialog, but avoid a re-mounted selected item
+      // stealing focus after the initial focus effect has run.
+      props.autoFocus = false;
+      props["data-autofocus"] = defaultAutoFocus || undefined;
+    }
 
     const moveOnKeyPressProp = useBooleanEvent(moveOnKeyPress);
 
@@ -216,6 +263,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       store,
       ...props,
       getItem,
+      preventScrollOnKeyDown,
       // Dispatch a custom event on the combobox input when moving to an item
       // with the keyboard so the Combobox component can enable inline
       // autocompletion.
@@ -228,7 +276,18 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       },
     });
 
-    props = useCompositeHover({ store, focusOnHover, ...props });
+    const focusOnHoverProp = useBooleanEvent(focusOnHover ?? false);
+
+    props = useCompositeHover({
+      store,
+      ...props,
+      focusOnHover(event) {
+        if (focusOnHover !== undefined) {
+          return focusOnHoverProp(event);
+        }
+        return selectMode && store.getState().open;
+      },
+    });
 
     return props;
   },
@@ -324,7 +383,9 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    * [`value`](https://ariakit.com/reference/combobox-provider#value) state
    * using this item's
    * [`value`](https://ariakit.com/reference/combobox-item#value) when the item
-   * is clicked. The default is `true`, unless the combobox is
+   * is clicked. The default is `true`, unless
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
+   * rendered or the combobox is
    * [multi-selectable](https://ariakit.com/examples/combobox-multiple).
    *
    * Live examples:
@@ -348,9 +409,11 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    */
   selectValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * Whether to reset the the combobox input value when this item is selected or
-   * unselected by click. This prop is set to `true` by default if
-   * the combobox supports multiple selections. In other words, if the
+   * Whether to reset the combobox input value when this item is selected or
+   * unselected by click. This prop is set to `true` by default when
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
+   * rendered, or when the combobox supports multiple selections, that is, when
+   * the
    * [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue)
    * or
    * [`defaultSelectedValue`](https://ariakit.com/reference/combobox-provider#defaultselectedvalue)
@@ -358,7 +421,8 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
    */
   resetValueOnSelect?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
-   * @default false
+   * Defaults to `false`, or `true` when the item is used with a
+   * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select).
    */
   focusOnHover?: CompositeHoverOptions["focusOnHover"];
 }

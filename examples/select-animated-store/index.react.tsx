@@ -2,25 +2,29 @@ import * as Ariakit from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {
-  const select = Ariakit.useSelectStore({ defaultValue: "Apple" });
+  const select = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Apple",
+  });
   const mounted = Ariakit.useStoreState(select, "mounted");
   return (
     <div className="wrapper">
-      <Ariakit.SelectLabel store={select}>Favorite fruit</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} className="button" />
+      <Ariakit.ComboboxSelectLabel store={select}>
+        Favorite fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={select} className="button" />
       {mounted && (
-        <Ariakit.SelectPopover
+        <Ariakit.ComboboxPopover
           store={select}
           portal
           gutter={4}
           sameWidth
           className="popover"
         >
-          <Ariakit.SelectItem className="select-item" value="Apple" />
-          <Ariakit.SelectItem className="select-item" value="Banana" />
-          <Ariakit.SelectItem className="select-item" value="Grape" />
-          <Ariakit.SelectItem className="select-item" value="Orange" />
-        </Ariakit.SelectPopover>
+          <Ariakit.ComboboxItem className="select-item" value="Apple" />
+          <Ariakit.ComboboxItem className="select-item" value="Banana" />
+          <Ariakit.ComboboxItem className="select-item" value="Grape" />
+          <Ariakit.ComboboxItem className="select-item" value="Orange" />
+        </Ariakit.ComboboxPopover>
       )}
     </div>
   );

@@ -1,15 +1,15 @@
 ---
 tags:
-  - Select
+  - Combobox
   - Dropdowns
   - Form controls
 ---
 
-# Multi-Select
+# Multi-selectable Combobox Select
 
 <div data-description>
 
-Allowing the [Select](/components/select) component to select multiple values by passing an array to the [`defaultValue`](/reference/select-provider#defaultvalue) prop on the [`SelectProvider`](/reference/select-provider) component.
+Allowing the [Combobox](/components/combobox) component to select multiple values by passing an array to the [`selectedValue`](/reference/combobox-provider#selectedvalue) prop on the [`ComboboxProvider`](/reference/combobox-provider) component.
 
 </div>
 

@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
+import { ComboboxRenderer } from "@ariakit/react-components/combobox/combobox-renderer";
 import { startTransition, useEffect, useState } from "react";
 import { countries } from "./countries.ts";
 import "./style.css";
@@ -19,17 +19,12 @@ export default function Example() {
 
   const combobox = Ariakit.useComboboxStore({
     defaultItems,
+    defaultSelectedValue: "",
     resetValueOnHide: true,
     value: searchValue,
     setValue: setSearchValue,
   });
-  const select = Ariakit.useSelectStore({
-    combobox,
-    defaultItems,
-    defaultValue: "",
-  });
-
-  const selectValue = Ariakit.useStoreState(select, "value");
+  const selectedValue = Ariakit.useStoreState(combobox, "selectedValue");
 
   useEffect(() => {
     startTransition(() => {
@@ -42,42 +37,45 @@ export default function Example() {
 
   return (
     <div className="wrapper">
-      <Ariakit.SelectLabel store={select}>Country</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} className="button">
+      <Ariakit.ComboboxSelectLabel store={combobox}>
+        Country
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={combobox} className="button">
         <span className="select-value">
-          {selectValue || "Select a country"}
+          {selectedValue || "Select a country"}
         </span>
-        <Ariakit.SelectArrow />
-      </Ariakit.Select>
-      <Ariakit.SelectPopover
-        store={select}
+        <Ariakit.ComboboxSelectArrow />
+      </Ariakit.ComboboxSelect>
+      <Ariakit.ComboboxPopover
+        store={combobox}
         gutter={4}
         sameWidth
         className="popover"
       >
         <div className="combobox-wrapper">
-          <Ariakit.Combobox
+          <Ariakit.ComboboxInput
             store={combobox}
             autoSelect
+            aria-label="Search countries"
             placeholder="Search..."
             className="combobox"
           />
         </div>
         <Ariakit.ComboboxList store={combobox}>
-          <SelectRenderer store={select} items={matches} itemSize={40}>
+          <ComboboxRenderer store={combobox} items={matches} itemSize={40}>
             {({ value, ...item }) => (
               <Ariakit.ComboboxItem
                 key={item.id}
                 {...item}
                 className="select-item"
-                render={<Ariakit.SelectItem value={value} />}
+                value={value}
               >
                 <span className="select-item-value">{value}</span>
               </Ariakit.ComboboxItem>
             )}
-          </SelectRenderer>
+          </ComboboxRenderer>
         </Ariakit.ComboboxList>
-      </Ariakit.SelectPopover>
+      </Ariakit.ComboboxPopover>
     </div>
   );
 }

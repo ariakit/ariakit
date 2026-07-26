@@ -7,19 +7,23 @@ const items = [
 ];
 
 export default function Example() {
-  const select = Ariakit.useSelectStore({ defaultValue: "apple" });
+  const select = Ariakit.useComboboxStore({
+    defaultSelectedValue: "apple",
+  });
   const storeItems = Ariakit.useStoreState(select, "items");
   return (
     <div>
-      <Ariakit.SelectLabel store={select}>Favorite fruit</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} />
-      <Ariakit.SelectPopover store={select} gutter={4} sameWidth>
+      <Ariakit.ComboboxSelectLabel store={select}>
+        Favorite fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={select} />
+      <Ariakit.ComboboxPopover store={select} gutter={4} sameWidth>
         {items.map((item) => (
-          <Ariakit.SelectItem key={item.value} value={item.value}>
+          <Ariakit.ComboboxItem key={item.value} value={item.value}>
             {item.label}
-          </Ariakit.SelectItem>
+          </Ariakit.ComboboxItem>
         ))}
-      </Ariakit.SelectPopover>
+      </Ariakit.ComboboxPopover>
       <ul aria-label="Store items">
         {storeItems.map((item) => (
           <li key={item.id}>{item.children}</li>

@@ -52,6 +52,10 @@ export function createSelectStore({
       "contentElement",
       "popoverElement",
       "disclosureElement",
+      "inputElement",
+      "labelElement",
+      "selectElement",
+      "selectLabelElement",
     ]),
   );
 
@@ -183,7 +187,10 @@ export function createSelectStore({
     ...select,
     combobox,
     setValue: (value) => select.setState("value", value),
-    setLabelElement: (element) => select.setState("labelElement", element),
+    setLabelElement: (element) => {
+      select.setState("labelElement", element);
+      combobox?.setSelectLabelElement(element);
+    },
     setSelectElement: (element) => select.setState("selectElement", element),
     setListElement: (element) => select.setState("listElement", element),
   };
@@ -207,16 +214,6 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
   placement: PopoverStoreState["placement"];
   /**
    * The select value.
-   *
-   * Live examples:
-   * - [Form with Select](https://ariakit.com/examples/form-select)
-   * - [Select Grid](https://ariakit.com/examples/select-grid)
-   * - [Select with custom
-   *   items](https://ariakit.com/examples/select-item-custom)
-   * - [Multi-Select](https://ariakit.com/examples/select-multiple)
-   * - [Toolbar with Select](https://ariakit.com/examples/toolbar-select)
-   * - [Select with Next.js App
-   *   Router](https://ariakit.com/examples/select-next-router)
    */
   value: MutableValue<T>;
   /**
@@ -224,11 +221,6 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
    * [`value`](https://ariakit.com/reference/select-provider#value) should be
    * set when the active item changes by moving (which usually happens when
    * moving to an item using the keyboard).
-   *
-   * Live examples:
-   * - [Select Grid](https://ariakit.com/examples/select-grid)
-   * - [Select with custom
-   *   items](https://ariakit.com/examples/select-item-custom)
    * @default false
    */
   setValueOnMove: boolean;
@@ -238,9 +230,6 @@ export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
   labelElement: HTMLElement | null;
   /**
    * The select button element.
-   *
-   * Live examples:
-   * - [Form with Select](https://ariakit.com/examples/form-select)
    */
   selectElement: HTMLElement | null;
   /**
@@ -302,16 +291,6 @@ export interface SelectStoreOptions<
   combobox?: ComboboxStore | null;
   /**
    * The default value. If not set, the first non-disabled item will be used.
-   *
-   * Live examples:
-   * - [Form with Select](https://ariakit.com/examples/form-select)
-   * - [Animated Select](https://ariakit.com/examples/select-animated)
-   * - [Select with Combobox](https://ariakit.com/examples/select-combobox)
-   * - [SelectGroup](https://ariakit.com/examples/select-group)
-   * - [Select with Next.js App
-   *   Router](https://ariakit.com/examples/select-next-router)
-   * - [Select with Combobox and
-   *   Tabs](https://ariakit.com/examples/select-combobox-tab)
    */
   defaultValue?: SelectStoreState<T>["value"];
 }

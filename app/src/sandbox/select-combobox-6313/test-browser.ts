@@ -1,7 +1,7 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
-// See https://github.com/ariakit/ariakit/issues/6313
 withFramework(import.meta.dirname, async ({ test }) => {
+  // https://github.com/ariakit/ariakit/issues/6313
   test("keeps hoisted and provider select values in sync after init", async ({
     q,
   }) => {

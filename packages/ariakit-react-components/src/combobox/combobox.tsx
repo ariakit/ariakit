@@ -45,7 +45,10 @@ import type {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
-import { useComboboxProviderContext } from "./combobox-context.tsx";
+import {
+  useComboboxProviderContext,
+  useComboboxScopedContext,
+} from "./combobox-context.tsx";
 import type {
   ComboboxStore,
   ComboboxStoreSelectedValue,
@@ -139,8 +142,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     disabled,
     ...props
   }) {
+    const scopedContext = useComboboxScopedContext(true);
     const context = useComboboxProviderContext();
-    store = store || context;
+    store = store || context || scopedContext;
 
     invariant(
       store,
@@ -409,7 +413,13 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (composingRef.current) return;
       if (!canAutoSelect && (!resetValueOnSelect || userScrolledRef.current))
         return;
-      const { baseElement, contentElement, activeId } = store.getState();
+      const {
+        baseElement,
+        contentElement,
+        activeId,
+        selectElement,
+        selectedValue,
+      } = store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
       // The data-placing attribute is an internal state added by the Popover
       // component. We can observe it to know when the popover is done placing
@@ -421,7 +431,15 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         observer.observe(contentElement, { attributeFilter: ["data-placing"] });
         return () => observer.disconnect();
       }
-      if (autoSelect && canAutoSelect) {
+      const activeValue = store.item(activeId)?.value;
+      const activeValueSelected =
+        activeValue != null &&
+        (Array.isArray(selectedValue)
+          ? selectedValue.includes(activeValue)
+          : selectedValue === activeValue);
+      const preserveSelectedValue =
+        !!selectElement && !storeValue && activeValueSelected;
+      if (autoSelect && canAutoSelect && !preserveSelectedValue) {
         const userAutoSelectId = getAutoSelectIdProp(items);
         const autoSelectId =
           userAutoSelectId !== undefined
@@ -750,7 +768,12 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       name: multiSelectable ? undefined : name,
       form,
       disabled,
-      ref: useMergeRefs(ref, composite ? undefined : setBaseElement, props.ref),
+      ref: useMergeRefs(
+        ref,
+        store.setInputElement,
+        composite ? undefined : setBaseElement,
+        props.ref,
+      ),
       onChange,
       onCompositionStart,
       onCompositionEnd,
@@ -778,6 +801,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 );
 
 /**
+ * **Alias**: [`ComboboxInput`](https://ariakit.com/reference/combobox-input)
+ *
  * Renders a combobox input element that can be used to filter a list of items.
  * @see https://ariakit.com/components/combobox
  * @example

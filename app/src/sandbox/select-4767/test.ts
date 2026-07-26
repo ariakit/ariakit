@@ -1,73 +1,75 @@
-import { click, press, q } from "@ariakit/test";
-import { expect, test, vi } from "vitest";
-
-const virtualFocusWarning =
-  "A composite widget with `virtualFocus` enabled requires a focusable " +
-  "composite element. Set the `focusable` prop to `true` or the " +
-  "`virtualFocus` option to `false`.";
+import { click, press, q, type } from "@ariakit/test";
+import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/4767
-test("clears focus-visible when the virtual focus owner isn't focusable", async () => {
-  using consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
-  await click(q.combobox("Favorite fruit"));
+test("keeps virtual focus on the select while moving through the items", async () => {
+  const select = q.combobox("Favorite fruit");
+  await click(select);
   const apple = q.option("Apple");
-  expect(document.activeElement).toBe(apple);
+  expect(select).toHaveFocus();
+  expect(apple).toHaveFocus();
 
   await press.ArrowDown();
   const banana = q.option("Banana");
-  expect(document.activeElement).toBe(banana);
+  expect(select).toHaveFocus();
+  expect(select).toHaveAttribute("aria-activedescendant", banana?.id);
+  expect(banana).toHaveFocus();
   expect(banana).toHaveAttribute("data-focus-visible", "true");
 
   await press.ArrowDown();
-
   const orange = q.option("Orange");
-  expect(document.activeElement).toBe(orange);
+  expect(select).toHaveFocus();
+  expect(select).toHaveAttribute("aria-activedescendant", orange?.id);
+  expect(orange).toHaveFocus();
   expect(orange).toHaveAttribute("data-focus-visible", "true");
   expect(apple).not.toHaveAttribute("data-focus-visible");
   expect(banana).not.toHaveAttribute("data-focus-visible");
-  expect(consoleWarn).toHaveBeenCalledTimes(1);
-  expect(consoleWarn).toHaveBeenCalledWith(virtualFocusWarning);
 });
 
-test("preserves virtual focus with a focusable owner", async () => {
-  using consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
-  await click(q.combobox("Virtual focus fruit"));
-  const listbox = q.listbox();
-  expect(document.activeElement).toBe(listbox);
-
-  await press.ArrowDown();
-  const banana = q.option("Banana");
-  expect(document.activeElement).toBe(listbox);
-  expect(banana?.id).toBeTruthy();
-  expect(listbox?.getAttribute("aria-activedescendant")).toBe(banana?.id);
-  expect(banana).toHaveAttribute("data-focus-visible", "true");
-
-  await press.ArrowDown();
-  const orange = q.option("Orange");
-  expect(document.activeElement).toBe(listbox);
-  expect(orange?.id).toBeTruthy();
-  expect(listbox?.getAttribute("aria-activedescendant")).toBe(orange?.id);
-  expect(orange).toHaveAttribute("data-focus-visible", "true");
-  expect(banana).not.toHaveAttribute("data-focus-visible");
-  expect(consoleWarn).not.toHaveBeenCalled();
-});
-
-test("preserves real focus with a non-focusable owner", async () => {
-  using consoleWarn = vi.spyOn(console, "warn").mockImplementation(() => {});
-  await click(q.combobox("Real focus fruit"));
+// https://github.com/ariakit/ariakit/issues/4767
+test("focuses the selected item when opening in real-focus mode", async () => {
+  const select = q.combobox("Real focus fruit");
+  await click(select);
   const apple = q.option("Apple");
-  expect(document.activeElement).toBe(apple);
+  expect(apple).toHaveFocus();
+  expect(select).not.toHaveFocus();
+  expect(apple).toHaveAttribute("data-active-item");
 
   await press.ArrowDown();
   const banana = q.option("Banana");
-  expect(document.activeElement).toBe(banana);
+  expect(banana).toHaveFocus();
+  expect(banana).toHaveAttribute("data-active-item");
   expect(banana).toHaveAttribute("data-focus-visible", "true");
 
   await press.ArrowDown();
   const orange = q.option("Orange");
-  expect(document.activeElement).toBe(orange);
+  expect(orange).toHaveFocus();
+  expect(orange).toHaveAttribute("data-active-item");
   expect(orange).toHaveAttribute("data-focus-visible", "true");
   expect(apple).not.toHaveAttribute("data-focus-visible");
   expect(banana).not.toHaveAttribute("data-focus-visible");
-  expect(consoleWarn).not.toHaveBeenCalled();
+});
+
+test("focuses the input in a filterable select", async () => {
+  await click(q.combobox("Filterable fruit"));
+
+  expect(q.combobox("Filter Filterable fruit")).toHaveFocus();
+  expect(q.option("Apple")).toHaveAttribute("data-active-item");
+});
+
+// https://github.com/ariakit/ariakit/pull/6832#discussion_r3649290438
+test("keeps focus on the items when typing in real-focus mode", async () => {
+  const select = q.combobox("Real focus fruit");
+  await click(select);
+  await press.ArrowDown();
+  const banana = q.option("Banana");
+  expect(banana).toHaveFocus();
+
+  await press.Backspace();
+  expect(banana).toHaveFocus();
+  expect(select).not.toHaveFocus();
+
+  await type("o");
+  expect(q.option("Orange")).toHaveFocus();
+  expect(select).not.toHaveFocus();
 });

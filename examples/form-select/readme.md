@@ -1,7 +1,7 @@
 ---
 tags:
   - Form
-  - Select
+  - Combobox
   - Dropdowns
   - Form controls
   - Abstracted examples
@@ -11,7 +11,7 @@ tags:
 
 <div data-description>
 
-Combining [Form](/components/form) and [Select](/components/select) to create an accessible custom select widget that works with the browser's built-in validation and native form submission.
+Combining [Form](/components/form) and [Combobox](/components/combobox) to create an accessible custom select widget that works with the browser's built-in validation and native form submission.
 
 </div>
 
@@ -24,7 +24,7 @@ Combining [Form](/components/form) and [Select](/components/select) to create an
 <div data-cards="components">
 
 - [](/components/form)
-- [](/components/select)
+- [](/components/combobox)
 
 </div>
 

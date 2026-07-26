@@ -35,6 +35,26 @@ test("auto select first option", async ({ page }) => {
   await expectSelected(page, "Apple");
 });
 
+test("reopening scrolls a far selected option within the popup", async ({
+  page,
+}) => {
+  await getButton(page).click();
+  await getOption(page, "Watermelon").click();
+  await page.evaluate(() => window.scrollTo({ top: 100 }));
+
+  await getButton(page).click();
+
+  const popoverBox = await getPopover(page).boundingBox();
+  const optionBox = await getOption(page, "Watermelon").boundingBox();
+  expect(popoverBox).not.toBeNull();
+  expect(optionBox).not.toBeNull();
+  expect(optionBox?.y).toBeGreaterThanOrEqual(popoverBox?.y ?? 0);
+  expect((optionBox?.y ?? 0) + (optionBox?.height ?? 0)).toBeLessThanOrEqual(
+    (popoverBox?.y ?? 0) + (popoverBox?.height ?? 0),
+  );
+  expect(await page.evaluate(() => window.scrollY)).toBe(100);
+});
+
 for (const { key } of [{ key: "ArrowUp" }, { key: "ArrowDown" }]) {
   test(`not scroll jump using the ${key} key to open the combobox`, async ({
     page,

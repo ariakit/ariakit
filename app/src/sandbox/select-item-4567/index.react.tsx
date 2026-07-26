@@ -4,20 +4,20 @@ const fruits = ["Apple", "Banana", "Orange"];
 
 export default function Example() {
   return (
-    <Ariakit.SelectProvider defaultValue={["Apple"]}>
-      <Ariakit.SelectLabel>Favorite fruits</Ariakit.SelectLabel>
-      <Ariakit.Select />
-      <Ariakit.SelectPopover gutter={4} sameWidth>
+    <Ariakit.ComboboxProvider defaultSelectedValue={["Apple"]}>
+      <Ariakit.ComboboxSelectLabel>Favorite fruits</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxPopover gutter={4} sameWidth>
         {fruits.map((fruit) => (
-          <Ariakit.SelectItem key={fruit} value={fruit}>
-            <Ariakit.SelectItemSelected>
+          <Ariakit.ComboboxItem key={fruit} value={fruit}>
+            <Ariakit.ComboboxItemSelected>
               {(selected) =>
                 `${fruit} (${selected ? "selected" : "not selected"})`
               }
-            </Ariakit.SelectItemSelected>
-          </Ariakit.SelectItem>
+            </Ariakit.ComboboxItemSelected>
+          </Ariakit.ComboboxItem>
         ))}
-      </Ariakit.SelectPopover>
-    </Ariakit.SelectProvider>
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
   );
 }

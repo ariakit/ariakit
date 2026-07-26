@@ -52,11 +52,20 @@ export const pages = {
     { label: "Selection Popover", path: "/examples/popover-selection" },
     { label: "Animated Select", path: "/examples/select-animated" },
     { label: "Select with Combobox", path: "/examples/select-combobox" },
-    { label: "Select with custom items", path: "/examples/select-item-custom" },
-    { label: "Multi-Select", path: "/examples/select-multiple" },
+    {
+      label: "Select with custom items",
+      path: "/examples/select-item-custom",
+    },
+    {
+      label: "Multi-Select",
+      path: "/examples/select-multiple",
+    },
     { label: "Tab with React Router", path: "/examples/tab-react-router" },
     { label: "Tab with Next.js App Router", path: "/examples/tab-next-router" },
-    { label: "Toolbar with Select", path: "/examples/toolbar-select" },
+    {
+      label: "Toolbar with Select",
+      path: "/examples/toolbar-select",
+    },
   ],
 };
 

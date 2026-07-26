@@ -122,7 +122,7 @@ test("select statuses by opening link in a new tab with the keyboard", async ({
   const modifier = await getNewTabModifier(page);
 
   await q.combobox("Status").click();
-  await expect(q.listbox("Status")).toBeFocused();
+  await expect(q.combobox("Status")).toBeFocused();
 
   await page.keyboard.press("d");
   await expect(q.option("Draft")).toHaveAttribute("data-active-item");

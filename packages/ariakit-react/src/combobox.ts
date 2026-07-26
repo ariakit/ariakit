@@ -4,6 +4,11 @@ export type {
 } from "@ariakit/react-components/combobox/combobox";
 export { Combobox } from "@ariakit/react-components/combobox/combobox";
 export type {
+  ComboboxInputOptions,
+  ComboboxInputProps,
+} from "@ariakit/react-components/combobox/combobox-input";
+export { ComboboxInput } from "@ariakit/react-components/combobox/combobox-input";
+export type {
   ComboboxAnchorOptions,
   ComboboxAnchorProps,
 } from "@ariakit/react-components/combobox/combobox-anchor";
@@ -20,6 +25,11 @@ export type {
 } from "@ariakit/react-components/combobox/combobox-disclosure";
 export { ComboboxDisclosure } from "@ariakit/react-components/combobox/combobox-disclosure";
 export type {
+  ComboboxDismissOptions,
+  ComboboxDismissProps,
+} from "@ariakit/react-components/combobox/combobox-dismiss";
+export { ComboboxDismiss } from "@ariakit/react-components/combobox/combobox-dismiss";
+export type {
   ComboboxGroupOptions,
   ComboboxGroupProps,
 } from "@ariakit/react-components/combobox/combobox-group";
@@ -30,6 +40,11 @@ export type {
 } from "@ariakit/react-components/combobox/combobox-group-label";
 export { ComboboxGroupLabel } from "@ariakit/react-components/combobox/combobox-group-label";
 export type {
+  ComboboxHeadingOptions,
+  ComboboxHeadingProps,
+} from "@ariakit/react-components/combobox/combobox-heading";
+export { ComboboxHeading } from "@ariakit/react-components/combobox/combobox-heading";
+export type {
   ComboboxItemOptions,
   ComboboxItemProps,
 } from "@ariakit/react-components/combobox/combobox-item";
@@ -39,6 +54,8 @@ export type {
   ComboboxItemCheckProps,
 } from "@ariakit/react-components/combobox/combobox-item-check";
 export { ComboboxItemCheck } from "@ariakit/react-components/combobox/combobox-item-check";
+export type { ComboboxItemSelectedProps } from "@ariakit/react-components/combobox/combobox-item-selected";
+export { ComboboxItemSelected } from "@ariakit/react-components/combobox/combobox-item-selected";
 export type {
   ComboboxItemValueOptions,
   ComboboxItemValueProps,
@@ -66,6 +83,23 @@ export type {
   ComboboxRowProps,
 } from "@ariakit/react-components/combobox/combobox-row";
 export { ComboboxRow } from "@ariakit/react-components/combobox/combobox-row";
+export type {
+  ComboboxSelectOptions,
+  ComboboxSelectProps,
+} from "@ariakit/react-components/combobox/combobox-select";
+export { ComboboxSelect } from "@ariakit/react-components/combobox/combobox-select";
+export type {
+  ComboboxSelectArrowOptions,
+  ComboboxSelectArrowProps,
+} from "@ariakit/react-components/combobox/combobox-select-arrow";
+export { ComboboxSelectArrow } from "@ariakit/react-components/combobox/combobox-select-arrow";
+export type {
+  ComboboxSelectLabelOptions,
+  ComboboxSelectLabelProps,
+} from "@ariakit/react-components/combobox/combobox-select-label";
+export { ComboboxSelectLabel } from "@ariakit/react-components/combobox/combobox-select-label";
+export type { ComboboxSelectedValueProps } from "@ariakit/react-components/combobox/combobox-selected-value";
+export { ComboboxSelectedValue } from "@ariakit/react-components/combobox/combobox-selected-value";
 export type {
   ComboboxSeparatorOptions,
   ComboboxSeparatorProps,

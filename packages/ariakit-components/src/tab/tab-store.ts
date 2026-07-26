@@ -84,11 +84,14 @@ export function createTabStore({
     "focusLoop",
     "focusShift",
     "focusWrap",
+    "selectOnMove",
   ] as const;
 
   const store = mergeStore(
     props.store,
-    omit(parentComposite, independentKeys),
+    // Combobox also exposes a selectOnMove state, but it controls the selected
+    // value rather than tab selection.
+    omit(parentComposite as ComboboxStore | undefined, independentKeys),
     omit(combobox, independentKeys),
   );
   const syncState = store?.getState();
@@ -239,16 +242,30 @@ export function createTabStore({
       restoredSelectedId = selectedIdFromSelectedValue;
       tab.setState("selectedId", selectedIdFromSelectedValue);
     };
-    if (parentComposite && "setSelectElement" in parentComposite) {
+    // The combobox store is also passed as the parent composite store when tabs
+    // are rendered inside a combobox, and it exposes setSelectElement as well.
+    // Its value state is the input value rather than the selected value, so it
+    // is detected by a combobox-only method to make sure it goes through the
+    // combobox branch below even when it's only provided as the composite.
+    const isParentCombobox =
+      !!parentComposite && "setSelectedValue" in parentComposite;
+    const parentCombobox = isParentCombobox
+      ? (parentComposite as ComboboxStore)
+      : combobox;
+    if (
+      parentComposite &&
+      !isParentCombobox &&
+      "setSelectElement" in parentComposite
+    ) {
       return chain(
         sync(parentComposite, ["value"], backupSelectedId),
         sync(parentComposite, ["mounted"], restoreSelectedId),
       );
     }
-    if (!combobox) return;
+    if (!parentCombobox) return;
     return chain(
-      sync(combobox, ["selectedValue"], backupSelectedId),
-      sync(combobox, ["mounted"], restoreSelectedId),
+      sync(parentCombobox, ["selectedValue"], backupSelectedId),
+      sync(parentCombobox, ["mounted"], restoreSelectedId),
     );
   });
 

@@ -1,4 +1,5 @@
 import { createStoreContext } from "@ariakit/react-utils";
+import type { Dispatch, SetStateAction } from "react";
 import { createContext } from "react";
 import {
   CompositeContextProvider,
@@ -47,3 +48,7 @@ export const ComboboxItemValueContext = createContext<string | undefined>(
 );
 
 export const ComboboxItemCheckedContext = createContext(false);
+
+export const ComboboxHeadingContext = createContext<
+  [string | undefined, Dispatch<SetStateAction<string | undefined>>] | null
+>(null);

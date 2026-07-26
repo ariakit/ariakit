@@ -107,23 +107,12 @@ export interface SelectStoreOptions<
    * Function that will be called when the
    * [`value`](https://ariakit.com/reference/select-provider#value) state
    * changes.
-   *
-   * Live examples:
-   * - [Form with Select](https://ariakit.com/examples/form-select)
-   * - [Select Grid](https://ariakit.com/examples/select-grid)
-   * - [Select with custom
-   *   items](https://ariakit.com/examples/select-item-custom)
-   * - [Multi-Select](https://ariakit.com/examples/select-multiple)
-   * - [Toolbar with Select](https://ariakit.com/examples/toolbar-select)
-   * - [Select with Next.js App
-   *   Router](https://ariakit.com/examples/select-next-router)
    */
   setValue?: BivariantCallback<(value: SelectStoreState<T>["value"]) => void>;
   /**
    * A reference to a [combobox
    * store](https://ariakit.com/reference/use-combobox-store). It's
-   * automatically set when composing [Select with
-   * Combobox](https://ariakit.com/examples/select-combobox).
+   * automatically set when composing Select with Combobox.
    */
   combobox?: ComboboxStore | null;
 }

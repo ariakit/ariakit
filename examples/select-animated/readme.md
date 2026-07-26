@@ -1,6 +1,6 @@
 ---
 tags:
-  - Select
+  - Combobox
   - Animated
   - CSS transitions
   - Dropdowns
@@ -11,7 +11,7 @@ tags:
 
 <div data-description>
 
-Animating [Select](/components/select) using CSS transitions in React. The component waits for the transition to finish before completely hiding the popover.
+Animating a [Combobox](/components/combobox) select using CSS transitions in React. The component waits for the transition to finish before completely hiding the popover.
 
 </div>
 
@@ -23,13 +23,13 @@ Animating [Select](/components/select) using CSS transitions in React. The compo
 
 <div data-cards="components">
 
-- [](/components/select)
+- [](/components/combobox)
 
 </div>
 
 ## Styling the animation
 
-Use the `data-enter` and `data-leave` attributes to animate the [`SelectPopover`](/reference/select-popover) component using CSS transitions:
+Use the `data-enter` and `data-leave` attributes to animate the [`ComboboxPopover`](/reference/combobox-popover) component using CSS transitions:
 
 ```css
 .popover {

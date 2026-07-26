@@ -17,17 +17,6 @@ Select a value from a list of options presented in a dropdown menu, similar to t
 
 <a href="../examples/select/index.react.tsx" data-playground>Example</a>
 
-## Examples
-
-<div data-cards="examples">
-
-- [](/examples/select-animated)
-- [](/examples/select-combobox)
-- [](/examples/select-combobox-tab)
-- [](/examples/select-next-router)
-
-</div>
-
 ## API
 
 ```jsx

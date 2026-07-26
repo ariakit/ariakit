@@ -22,6 +22,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.option("Archive")).toBeFocused();
 
     await page.keyboard.press("Tab");
+    await test.expect(q.option("Primary")).toBeFocused();
+
+    await page.keyboard.press("Tab");
+    await test.expect(q.option("Social")).toBeFocused();
+
+    await page.keyboard.press("Tab");
+    await test.expect(q.option("Updates")).toBeFocused();
+
+    await page.keyboard.press("Tab");
     await test.expect(q.option("Drafts")).toBeFocused();
 
     await page.keyboard.press("Tab");

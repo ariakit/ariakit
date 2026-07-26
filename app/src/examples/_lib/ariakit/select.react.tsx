@@ -3,10 +3,13 @@ import { clsx } from "clsx";
 import type * as React from "react";
 import { createRender } from "../react-utils/create-render.ts";
 
-export interface SelectProps
-  extends
-    Omit<SelectButtonProps, "value" | "defaultValue" | "popover">,
-    Pick<SelectProviderProps, "value" | "setValue" | "defaultValue"> {
+export interface SelectProps extends Omit<
+  SelectButtonProps,
+  "value" | "defaultValue" | "popover"
+> {
+  value?: SelectProviderProps["selectedValue"];
+  setValue?: SelectProviderProps["setSelectedValue"];
+  defaultValue?: SelectProviderProps["defaultSelectedValue"];
   /** Items to render in the popover when not provided as children. */
   items?: SelectItemProps[];
   /** Custom label element or props to render a `SelectLabel`. */
@@ -45,9 +48,9 @@ export function Select({
   const popoverEl = createRender(SelectPopover, popover);
   return (
     <SelectProvider
-      value={value}
-      setValue={setValue}
-      defaultValue={defaultValue}
+      selectedValue={value}
+      setSelectedValue={setValue}
+      defaultSelectedValue={defaultValue}
     >
       {labelEl}
       <SelectButton {...props} />
@@ -61,30 +64,30 @@ export function Select({
   );
 }
 
-export interface SelectProviderProps extends ak.SelectProviderProps {}
+export interface SelectProviderProps extends ak.ComboboxProviderProps {}
 
 export function SelectProvider(props: SelectProviderProps) {
-  return <ak.SelectProvider {...props} />;
+  return <ak.ComboboxProvider {...props} />;
 }
 
-export interface SelectValueProps extends ak.SelectValueProps {}
+export interface SelectValueProps extends ak.ComboboxSelectedValueProps {}
 
 export function SelectValue(props: SelectValueProps) {
-  return <ak.SelectValue {...props} />;
+  return <ak.ComboboxSelectedValue {...props} />;
 }
 
-export interface SelectLabelProps extends ak.SelectLabelProps {}
+export interface SelectLabelProps extends ak.ComboboxSelectLabelProps {}
 
 export function SelectLabel(props: SelectLabelProps) {
   return (
-    <ak.SelectLabel
+    <ak.ComboboxSelectLabel
       {...props}
       className={clsx("ak-select-label", props.className)}
     />
   );
 }
 
-export interface SelectButtonProps extends ak.SelectProps {
+export interface SelectButtonProps extends ak.ComboboxSelectProps {
   /**
    * Custom icon element that will be rendered before or after the display value
    * depending on the `chevron` position.
@@ -103,7 +106,7 @@ export function SelectButton({
   ...props
 }: SelectButtonProps) {
   return (
-    <ak.Select
+    <ak.ComboboxSelect
       {...props}
       className={clsx(
         "ak-select",
@@ -117,15 +120,15 @@ export function SelectButton({
         {displayValue || props.children || <SelectValue />}
       </span>
       {chevron === "before" && icon}
-    </ak.Select>
+    </ak.ComboboxSelect>
   );
 }
 
-export interface SelectPopoverProps extends ak.SelectPopoverProps {}
+export interface SelectPopoverProps extends ak.ComboboxPopoverProps {}
 
 export function SelectPopover(props: SelectPopoverProps) {
   return (
-    <ak.SelectPopover
+    <ak.ComboboxPopover
       gutter={8}
       shift={-3}
       {...props}
@@ -137,7 +140,7 @@ export function SelectPopover(props: SelectPopoverProps) {
   );
 }
 
-export interface SelectItemProps extends ak.SelectItemProps {
+export interface SelectItemProps extends ak.ComboboxItemProps {
   /**
    * Custom icon element that will be rendered before or after the display value
    * depending on the `checkmark` position.
@@ -153,7 +156,7 @@ export function SelectItem({
   ...props
 }: SelectItemProps) {
   return (
-    <ak.SelectItem
+    <ak.ComboboxItem
       {...props}
       className={clsx(
         "ak-select-item data-focus-visible:ak-select-item_focus",
@@ -165,6 +168,6 @@ export function SelectItem({
       {checkmark !== "before" && icon}
       <span className="flex-1">{props.children || props.value}</span>
       {checkmark === "before" && icon}
-    </ak.SelectItem>
+    </ak.ComboboxItem>
   );
 }
