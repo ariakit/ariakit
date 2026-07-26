@@ -26,6 +26,22 @@ function VirtualFocusListbox() {
   );
 }
 
+function UnsupportedVirtualFocusListbox() {
+  return (
+    <Ariakit.CompositeProvider virtualFocus>
+      <Ariakit.Composite
+        role="listbox"
+        aria-label="Unsupported virtual focus"
+        focusable={false}
+      >
+        <Ariakit.CompositeItem role="option">Primary</Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">Social</Ariakit.CompositeItem>
+        <Ariakit.CompositeItem role="option">Updates</Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
 // The store is seeded with items, so its items are already known on the first
 // render while the rendered items are still empty. Tabbability must follow the
 // rendered items, not the seeded ones.
@@ -59,6 +75,7 @@ export default function Example() {
     <>
       <ContainerlessListbox />
       <VirtualFocusListbox />
+      <UnsupportedVirtualFocusListbox />
       <SeededListbox />
       <RovingListbox />
     </>
