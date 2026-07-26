@@ -11,4 +11,4 @@ New `resetOnEscape` prop on Combobox popovers
 <ComboboxPopover resetOnEscape={false} />
 ```
 
-It's enabled by default when [`selectOnMove`](https://ariakit.com/reference/combobox-provider#selectonmove) is enabled, which is when moving through items can change the selected value. The value is only restored when Escape closes the popover, so a descendant that handles the key itself and keeps the popover open leaves it alone.
+It's enabled by default when [`selectOnMove`](https://ariakit.com/reference/combobox-provider#selectonmove) is enabled, which is when moving through items can change the selected value. The value is restored when the popover accepts Escape and its close event isn't prevented. A descendant that handles Escape itself, or an `onClose` handler that prevents the close, preserves the previewed value.
