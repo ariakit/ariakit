@@ -47,4 +47,34 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(watermelon).toBeInViewport();
     await test.expect(select).toBeFocused();
   });
+
+  // https://github.com/ariakit/ariakit/pull/6832
+  test("presents a far selected item with real focus", async ({ page, q }) => {
+    const select = q.combobox("Filterable fruit");
+    await select.click();
+    await page.keyboard.press("Escape");
+    await page.evaluate(() => window.scrollTo({ top: 100 }));
+    await test.expect.poll(() => page.evaluate(() => window.scrollY)).toBe(100);
+
+    await select.click();
+
+    await test.expect(q.combobox("Search Filterable fruit")).toBeFocused();
+    await test.expect(q.option("Watermelon")).toBeInViewport();
+    test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6832
+  test("cancels presentation when real focus moves", async ({ page, q }) => {
+    await q.combobox("Focus moving filterable fruit").click();
+
+    await test.expect(q.option("Focus target")).toBeFocused();
+    await page.evaluate(
+      () =>
+        new Promise((resolve) => {
+          requestAnimationFrame(() => requestAnimationFrame(resolve));
+        }),
+    );
+    await test.expect(q.option("Focus target")).toBeInViewport();
+    await test.expect(q.option("Watermelon")).not.toBeInViewport();
+  });
 });

@@ -7,6 +7,28 @@ export const findFirstEnabledItem = Core.findFirstEnabledItem;
 export const groupItemsByRows = Core.groupItemsByRows;
 
 /**
+ * Runs a callback while preserving the document scroll position.
+ */
+export function withDocumentScrollPreserved(
+  element: Element,
+  callback: () => void,
+) {
+  const documentScroller = element.ownerDocument.scrollingElement;
+  if (!documentScroller) {
+    callback();
+    return;
+  }
+  const left = documentScroller.scrollLeft;
+  const top = documentScroller.scrollTop;
+  try {
+    callback();
+  } finally {
+    documentScroller.scrollLeft = left;
+    documentScroller.scrollTop = top;
+  }
+}
+
+/**
  * Returns the store item with the given id (enabled or not), or `null`.
  */
 export function getEnabledItem(store: CompositeStore, id?: string | null) {

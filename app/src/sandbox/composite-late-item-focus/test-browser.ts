@@ -33,4 +33,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.button("Late")).not.toBeFocused();
     await test.expect(q.button("Later")).toBeFocused();
   });
+
+  // https://github.com/ariakit/ariakit/pull/6832
+  test("does not present an unresolved generic item", async ({ page, q }) => {
+    const composite = q.listbox("Scroll actions");
+    await composite.focus();
+    const mount = q.button("Mount late scroll item");
+    await mount.focus();
+    await mount.evaluate((element) => {
+      if (element instanceof HTMLElement) element.click();
+    });
+    await test.expect(q.option("Late scroll item")).toBeVisible();
+    await page.evaluate(
+      () =>
+        new Promise((resolve) => {
+          requestAnimationFrame(() => requestAnimationFrame(resolve));
+        }),
+    );
+
+    test
+      .expect(await composite.evaluate((element) => element.scrollTop))
+      .toBe(0);
+  });
 });

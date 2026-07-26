@@ -1,5 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { ComboboxItem } from "@ariakit/react-components/combobox/combobox-item-offscreen";
+import { useRef } from "react";
 
 const fruits = [
   "Apple",
@@ -42,12 +43,27 @@ const fruits = [
 
 interface FixtureProps {
   defaultSelectedValue: string | string[];
+  focusTarget?: boolean;
+  input?: boolean;
   label: string;
+  moveFocusOnOpen?: boolean;
+  virtualFocus?: boolean;
 }
 
-function Fixture({ defaultSelectedValue, label }: FixtureProps) {
+function Fixture({
+  defaultSelectedValue,
+  focusTarget,
+  input,
+  label,
+  moveFocusOnOpen,
+  virtualFocus,
+}: FixtureProps) {
+  const focusTargetRef = useRef<HTMLDivElement>(null);
   return (
-    <Ariakit.ComboboxProvider defaultSelectedValue={defaultSelectedValue}>
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue={defaultSelectedValue}
+      virtualFocus={virtualFocus}
+    >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect style={{ display: "block" }} />
       <Ariakit.ComboboxPopover
@@ -60,6 +76,22 @@ function Fixture({ defaultSelectedValue, label }: FixtureProps) {
           overflow: "auto",
         }}
       >
+        {input && (
+          <Ariakit.ComboboxInput
+            aria-label={`Search ${label}`}
+            onFocus={() => {
+              if (!moveFocusOnOpen) return;
+              queueMicrotask(() => focusTargetRef.current?.focus());
+            }}
+          />
+        )}
+        {focusTarget && (
+          <Ariakit.ComboboxItem
+            ref={focusTargetRef}
+            style={{ display: "block", padding: "4px 8px" }}
+            value="Focus target"
+          />
+        )}
         {fruits.map((fruit) => (
           <ComboboxItem
             key={fruit}
@@ -87,6 +119,31 @@ export default function Example() {
       <Fixture defaultSelectedValue={[]} label="Fruit" />
       <Fixture defaultSelectedValue={["Apple"]} label="Selected fruit" />
       <Fixture defaultSelectedValue="Apple" label="Single selected fruit" />
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          input
+          label="Filterable fruit"
+          virtualFocus={false}
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          focusTarget
+          input
+          label="Focus moving filterable fruit"
+          moveFocusOnOpen
+          virtualFocus={false}
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          input
+          label="Touch filterable fruit"
+        />
+      </div>
     </>
   );
 }

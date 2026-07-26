@@ -99,7 +99,6 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       selected,
       autoFocusSelected,
       selectElement,
-      inputElement,
     } = useStoreStateObject(store, ["selectedValue"], {
       resetValueOnSelectState: "resetValueOnSelect",
       multiSelectable(state) {
@@ -116,12 +115,11 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         return state.selectedValue[state.selectedValue.length - 1] === value;
       },
       selectElement: "selectElement",
-      inputElement: "inputElement",
     });
 
-    // Dialog owns initial focus when there isn't a separate input. Derive the
+    // The selected item marks the initial presentation target. Derive the
     // marker from the selected value so items don't subscribe to movement.
-    const autoFocusSelectedItem = !!selectElement && !inputElement;
+    const autoFocusSelectedItem = !!selectElement;
 
     const selectMode = !!selectElement;
     const disabled = disabledFromProps(props);
@@ -206,8 +204,13 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         // In select mode, the base element is the select button rather than a
         // text field, so focusing it would move focus out of the open list.
         if (baseElement === selectElement) return;
-        queueMicrotask(() => baseElement.focus());
         if (isTextField(baseElement)) {
+          queueMicrotask(() => baseElement.focus());
+          store?.setValue(baseElement.value);
+          return;
+        }
+        baseElement.focus();
+        if ("value" in baseElement && typeof baseElement.value === "string") {
           // Update the store value with the current element's value. This is
           // necessary because the value may temporarily change based on the
           // currently selected item, but it'll be reset to the original value

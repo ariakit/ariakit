@@ -3,7 +3,12 @@ import { useState } from "react";
 
 export default function Example() {
   const store = Ariakit.useCompositeStore();
+  const scrollStore = Ariakit.useCompositeStore({
+    defaultActiveId: "late-scroll",
+    virtualFocus: false,
+  });
   const [showLateItem, setShowLateItem] = useState(false);
+  const [showLateScrollItem, setShowLateScrollItem] = useState(false);
 
   return (
     <>
@@ -28,6 +33,23 @@ export default function Example() {
       </Ariakit.Composite>
       <button type="button" onClick={() => setShowLateItem(true)}>
         Mount late items
+      </button>
+      <Ariakit.Composite
+        aria-label="Scroll actions"
+        role="listbox"
+        store={scrollStore}
+        style={{ height: 80, overflow: "auto" }}
+        tabIndex={0}
+      >
+        <div style={{ height: 200 }} />
+        {showLateScrollItem && (
+          <Ariakit.CompositeItem data-autofocus id="late-scroll" role="option">
+            Late scroll item
+          </Ariakit.CompositeItem>
+        )}
+      </Ariakit.Composite>
+      <button type="button" onClick={() => setShowLateScrollItem(true)}>
+        Mount late scroll item
       </button>
     </>
   );

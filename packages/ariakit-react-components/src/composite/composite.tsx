@@ -16,6 +16,7 @@ import { subscribe } from "@ariakit/store";
 import {
   flatten2DArray,
   reverseArray,
+  afterPaint,
   getActiveElement,
   isTextField,
   fireBlurEvent,
@@ -47,6 +48,7 @@ import {
   groupItemsByRows,
   isItem,
   silentlyFocused,
+  withDocumentScrollPreserved,
 } from "./utils.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -132,26 +134,78 @@ function withBaseScrollPreserved(store: CompositeStore, callback: () => void) {
 }
 
 function useScheduleFocus(store: CompositeStore) {
-  const [scheduled, setScheduled] = useState(false);
-  const schedule = useCallback(() => setScheduled(true), []);
+  const [scheduled, setScheduled] = useState<"focus" | "scroll" | false>(false);
+  const scrollIdRef = useRef<string | undefined>(undefined);
+  const scrollBaseElementRef = useRef<HTMLElement | null>(null);
+  const scheduleFocus = useCallback(() => setScheduled("focus"), []);
+  const scheduleScroll = useCallback(
+    (baseElement: HTMLElement) => {
+      const state = store.getState();
+      const selectMode = "selectElement" in state && !!state.selectElement;
+      if (!selectMode) return;
+      const { activeId } = state;
+      if (activeId == null) return;
+      const activeElement = getEnabledItem(store, activeId)?.element;
+      if (activeElement && !activeElement.hasAttribute("data-autofocus"))
+        return;
+      scrollIdRef.current = activeId;
+      scrollBaseElementRef.current = baseElement;
+      setScheduled("scroll");
+    },
+    [store],
+  );
+  const cancelScroll = useCallback(() => {
+    if (scrollIdRef.current === undefined) return;
+    scrollIdRef.current = undefined;
+    scrollBaseElementRef.current = null;
+    setScheduled((scheduled) => (scheduled === "scroll" ? false : scheduled));
+  }, []);
   // Only track the active item while a focus is scheduled. Otherwise, this
   // subscription would re-render the composite component on every active item
   // change, such as when moving through items with arrow keys.
   const activeItem = useStoreState(
     store,
     scheduled ? ["activeId", "items"] : [],
-    (state) => (scheduled ? getEnabledItem(store, state.activeId) : null),
+    (state) => {
+      if (!scheduled) return null;
+      const id = scheduled === "scroll" ? scrollIdRef.current : state.activeId;
+      return getEnabledItem(store, id);
+    },
   );
   useEffect(() => {
     const activeElement = activeItem?.element;
     if (!scheduled) return;
     if (!activeElement) return;
-    setScheduled(false);
-    withBaseScrollPreserved(store, () => {
-      activeElement.focus({ preventScroll: true });
-    });
+    const focus = scheduled === "focus";
+    const present = () => {
+      const scrollBaseElement = scrollBaseElementRef.current;
+      scrollIdRef.current = undefined;
+      scrollBaseElementRef.current = null;
+      setScheduled(false);
+      if (!focus && (!scrollBaseElement || !hasFocus(scrollBaseElement)))
+        return;
+      withBaseScrollPreserved(store, () => {
+        if (activeElement.hasAttribute("data-autofocus")) {
+          withDocumentScrollPreserved(activeElement, () => {
+            if (focus) {
+              focusIntoView(activeElement);
+            } else {
+              activeElement.scrollIntoView({
+                block: "nearest",
+                inline: "nearest",
+              });
+            }
+          });
+        } else if (focus) {
+          activeElement.focus({ preventScroll: true });
+        }
+      });
+    };
+    if (!focus) return afterPaint(present);
+    present();
+    return undefined;
   }, [store, activeItem, scheduled]);
-  return schedule;
+  return { scheduleFocus, scheduleScroll, cancelScroll };
 }
 
 interface CompositeFocusOnMoveProps {
@@ -285,7 +339,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const ref = useRef<HTMLType>(null);
     const previousElementRef = useRef<HTMLElement | null>(null);
-    const scheduleFocus = useScheduleFocus(store);
+    const { scheduleFocus, scheduleScroll, cancelScroll } =
+      useScheduleFocus(store);
 
     const [, setBaseElement] = useTransactionState(
       composite ? store.setBaseElement : null,
@@ -380,6 +435,12 @@ export const useComposite = createHook<TagName, CompositeOptions>(
           queueMicrotask(scheduleFocus);
         }
       } else if (isSelfTarget(event)) {
+        if (!isItem(store, relatedTarget)) {
+          // A real-focus composite may initially focus its base while the
+          // selected item is outside the viewport. Pin and present the item
+          // without moving DOM focus away from the base.
+          scheduleScroll(event.currentTarget);
+        }
         // When the roving tabindex composite gets intentionally focused (for
         // example, by clicking directly on it, and not on an item), we make
         // sure to set the activeId to null (which means the composite element
@@ -392,6 +453,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const onBlurCapture = useEvent((event: FocusEvent<HTMLType>) => {
       onBlurCaptureProp?.(event);
+      cancelScroll();
       if (event.defaultPrevented) return;
       if (!store) return;
       const { virtualFocus, activeId } = store.getState();
