@@ -1,75 +1,115 @@
 import { click, focus, press, q } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { describe, expect, test } from "vitest";
 
-// https://github.com/ariakit/ariakit/issues/2699
-test("matches custom item content and skips empty text while open", async () => {
-  await click(q.combobox("Country"));
-  expect(q.option("Brazil")).toHaveAttribute("data-active-item");
+interface FixtureLabels {
+  country: string;
+  fruit: string;
+  loadFruitOptions: string;
+  loadRenderedFruitOptions: string;
+  renderedFruit: string;
+  virtualizedCountry: string;
+}
 
-  await press("c");
+const fixtures: Record<"Combobox" | "Select", FixtureLabels> = {
+  Combobox: {
+    country: "Country",
+    fruit: "Fruit",
+    loadFruitOptions: "Load fruit options",
+    loadRenderedFruitOptions: "Load rendered fruit options",
+    renderedFruit: "Rendered fruit",
+    virtualizedCountry: "Virtualized country",
+  },
+  Select: {
+    country: "Legacy Select country",
+    fruit: "Legacy Select fruit",
+    loadFruitOptions: "Load legacy select fruit options",
+    loadRenderedFruitOptions: "Load legacy select rendered fruit options",
+    renderedFruit: "Legacy Select rendered fruit",
+    virtualizedCountry: "Legacy Select virtualized country",
+  },
+};
 
-  expect(q.option("Citrus")).not.toHaveAttribute("data-active-item");
-  expect(q.option("Canada")).toHaveAttribute("data-active-item");
-});
+for (const [name, labels] of Object.entries(fixtures)) {
+  describe(name, () => {
+    // https://github.com/ariakit/ariakit/issues/2699
+    test("matches custom item content and skips empty text while open", async () => {
+      await click(q.combobox(labels.country));
+      expect(q.option("Brazil")).toHaveAttribute("data-active-item");
 
-// https://github.com/ariakit/ariakit/issues/2699
-test("matches custom item content while closed", async () => {
-  const select = q.combobox.ensure("Country");
-  await focus(select);
-  await press("c", select);
+      await press("c");
 
-  expect(select).toHaveTextContent("Canada");
-  expect(q.listbox()).not.toBeInTheDocument();
-});
+      expect(q.option("Citrus")).not.toHaveAttribute("data-active-item");
+      expect(q.option("Canada")).toHaveAttribute("data-active-item");
+    });
 
-// https://github.com/ariakit/ariakit/issues/2699
-test("updates custom item text", async () => {
-  await click(q.button("Use country aliases"));
-  await click(q.combobox("Country"));
+    // https://github.com/ariakit/ariakit/issues/2699
+    test("matches custom item content while closed", async () => {
+      const select = q.combobox.ensure(labels.country);
+      await focus(select);
+      await press("c", select);
 
-  await press("d");
+      expect(select).toHaveTextContent("Canada");
+      expect(q.listbox()).not.toBeInTheDocument();
+    });
 
-  expect(q.option("Canada")).toHaveAttribute("data-active-item");
-});
+    // https://github.com/ariakit/ariakit/issues/2699
+    test("updates custom item text", async () => {
+      await click(q.button("Use country aliases"));
+      await click(q.combobox(labels.country));
 
-// https://github.com/ariakit/ariakit/issues/2699
-test("matches custom content on an offscreen item", async () => {
-  await click(q.combobox("Virtualized country"));
-  expect(q.option("Canada")).toHaveAttribute("data-offscreen");
+      await press("d");
 
-  await press("c");
+      expect(q.option("Canada")).toHaveAttribute("data-active-item");
+    });
 
-  expect(q.option("Canada")).toHaveAttribute("data-active-item");
-});
+    // https://github.com/ariakit/ariakit/issues/2699
+    test("matches custom content on an offscreen item", async () => {
+      await click(q.combobox(labels.virtualizedCountry));
+      expect(q.option("Canada")).toHaveAttribute("data-offscreen");
 
-// https://github.com/ariakit/ariakit/issues/6733
-test("typeahead updates the value for late unmounted items", async () => {
-  await click(q.button("Load fruit options"));
+      await press("c");
 
-  const select = q.combobox.ensure("Fruit");
-  expect(select).toHaveFocus();
-  expect(q.option("Apple")).not.toBeInTheDocument();
-  expect(q.status("Fruit active item")).toHaveTextContent("orange");
-  expect(select).toHaveTextContent("Orange");
+      expect(q.option("Canada")).toHaveAttribute("data-active-item");
+    });
 
-  await press("a", select);
+    // https://github.com/ariakit/ariakit/issues/6733
+    test("typeahead updates the value for late unmounted items", async () => {
+      await click(q.button(labels.loadFruitOptions));
 
-  expect(q.status("Fruit active item")).toHaveTextContent("apple");
-  expect(select).toHaveTextContent("Apple");
-});
+      const select = q.combobox.ensure(labels.fruit);
+      expect(select).toHaveFocus();
+      expect(q.option("Apple")).not.toBeInTheDocument();
+      expect(q.status(`${labels.fruit} active item`)).toHaveTextContent(
+        "orange",
+      );
+      expect(select).toHaveTextContent("Orange");
 
-// https://github.com/ariakit/ariakit/issues/6733
-test("typeahead updates the value for late ComboboxRenderer items", async () => {
-  await click(q.button("Load rendered fruit options"));
+      await press("a", select);
 
-  const select = q.combobox.ensure("Rendered fruit");
-  expect(select).toHaveFocus();
-  expect(q.option("Apple")).not.toBeInTheDocument();
-  expect(q.status("Rendered fruit active item")).toHaveTextContent("orange");
-  expect(select).toHaveTextContent("Orange");
+      expect(q.status(`${labels.fruit} active item`)).toHaveTextContent(
+        "apple",
+      );
+      expect(select).toHaveTextContent("Apple");
+    });
 
-  await press("a", select);
+    // https://github.com/ariakit/ariakit/issues/6733
+    test("typeahead updates the value for late renderer items", async () => {
+      await click(q.button(labels.loadRenderedFruitOptions));
 
-  expect(q.status("Rendered fruit active item")).toHaveTextContent("apple");
-  expect(select).toHaveTextContent("Apple");
-});
+      const select = q.combobox.ensure(labels.renderedFruit);
+      expect(select).toHaveFocus();
+      expect(q.option("Apple")).not.toBeInTheDocument();
+      expect(q.status(`${labels.renderedFruit} active item`)).toHaveTextContent(
+        "orange",
+      );
+      expect(select).toHaveTextContent("Orange");
+
+      await press("a", select);
+
+      expect(q.status(`${labels.renderedFruit} active item`)).toHaveTextContent(
+        "apple",
+      );
+      expect(select).toHaveTextContent("Apple");
+    });
+  });
+}
