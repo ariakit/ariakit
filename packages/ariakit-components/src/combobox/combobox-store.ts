@@ -147,18 +147,24 @@ export function createComboboxStore({
 
   const combobox = createStore(initialState, composite, popover, store);
   let resolveSelectedItemOnOpen = false;
-  const selectDefaultCompositeOptions = new Set<keyof ComboboxStoreState>();
+  const selectDefaultOptions = new Set<keyof ComboboxStoreState>();
   if (props.focusLoop === undefined && syncState?.focusLoop === undefined) {
-    selectDefaultCompositeOptions.add("focusLoop");
+    selectDefaultOptions.add("focusLoop");
   }
   if (props.focusWrap === undefined && syncState?.focusWrap === undefined) {
-    selectDefaultCompositeOptions.add("focusWrap");
+    selectDefaultOptions.add("focusWrap");
   }
   if (
     props.includesBaseElement === undefined &&
     syncState?.includesBaseElement === undefined
   ) {
-    selectDefaultCompositeOptions.add("includesBaseElement");
+    selectDefaultOptions.add("includesBaseElement");
+  }
+  if (
+    props.resetValueOnSelect === undefined &&
+    syncState?.resetValueOnSelect === undefined
+  ) {
+    selectDefaultOptions.add("resetValueOnSelect");
   }
   let syncedSelectElement =
     initialState.baseElement === initialState.selectElement
@@ -199,35 +205,39 @@ export function createComboboxStore({
   setup(combobox, () =>
     sync(combobox, ["selectElement"], (state) => {
       if (!state.selectElement) return;
-      const { focusLoop, focusWrap, includesBaseElement } = combobox.getState();
-      if (selectDefaultCompositeOptions.has("focusLoop")) {
+      const { focusLoop, focusWrap, includesBaseElement, resetValueOnSelect } =
+        combobox.getState();
+      if (selectDefaultOptions.has("focusLoop")) {
         composite.setState("focusLoop", false);
       }
-      if (selectDefaultCompositeOptions.has("focusWrap")) {
+      if (selectDefaultOptions.has("focusWrap")) {
         composite.setState("focusWrap", false);
       }
-      if (selectDefaultCompositeOptions.has("includesBaseElement")) {
+      if (selectDefaultOptions.has("includesBaseElement")) {
         composite.setState("includesBaseElement", false);
+      }
+      if (selectDefaultOptions.has("resetValueOnSelect")) {
+        combobox.setState("resetValueOnSelect", true);
       }
       return () => {
         const current = combobox.getState();
-        if (
-          selectDefaultCompositeOptions.has("focusLoop") &&
-          !current.focusLoop
-        ) {
+        if (selectDefaultOptions.has("focusLoop") && !current.focusLoop) {
           composite.setState("focusLoop", focusLoop);
         }
-        if (
-          selectDefaultCompositeOptions.has("focusWrap") &&
-          !current.focusWrap
-        ) {
+        if (selectDefaultOptions.has("focusWrap") && !current.focusWrap) {
           composite.setState("focusWrap", focusWrap);
         }
         if (
-          selectDefaultCompositeOptions.has("includesBaseElement") &&
+          selectDefaultOptions.has("includesBaseElement") &&
           !current.includesBaseElement
         ) {
           composite.setState("includesBaseElement", includesBaseElement);
+        }
+        if (
+          selectDefaultOptions.has("resetValueOnSelect") &&
+          current.resetValueOnSelect
+        ) {
+          combobox.setState("resetValueOnSelect", resetValueOnSelect);
         }
       };
     }),
@@ -408,7 +418,7 @@ export function createComboboxStore({
   );
 
   const setState: ComboboxStore["setState"] = (key, value) => {
-    selectDefaultCompositeOptions.delete(key);
+    selectDefaultOptions.delete(key);
     combobox.setState(key, value);
   };
 

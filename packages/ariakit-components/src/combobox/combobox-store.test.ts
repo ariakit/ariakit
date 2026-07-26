@@ -210,7 +210,7 @@ test("does not select the first item without a select element", async () => {
   stop();
 });
 
-test("uses select composite defaults while a select is rendered", () => {
+test("uses select defaults while a select is rendered", () => {
   const store = createComboboxStore();
   const stop = init(store);
 
@@ -219,20 +219,23 @@ test("uses select composite defaults while a select is rendered", () => {
   expect(store.getState().focusLoop).toBe(false);
   expect(store.getState().focusWrap).toBe(false);
   expect(store.getState().includesBaseElement).toBe(false);
+  expect(store.getState().resetValueOnSelect).toBe(true);
 
   store.setSelectElement(null);
 
   expect(store.getState().focusLoop).toBe(true);
   expect(store.getState().focusWrap).toBe(true);
   expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().resetValueOnSelect).toBe(false);
   stop();
 });
 
-test("preserves explicit composite options in select mode", () => {
+test("preserves explicit options in select mode", () => {
   const store = createComboboxStore({
     focusLoop: true,
     focusWrap: true,
     includesBaseElement: true,
+    resetValueOnSelect: false,
   });
   const stop = init(store);
 
@@ -241,6 +244,7 @@ test("preserves explicit composite options in select mode", () => {
   expect(store.getState().focusLoop).toBe(true);
   expect(store.getState().focusWrap).toBe(true);
   expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().resetValueOnSelect).toBe(false);
   stop();
 });
 
@@ -275,27 +279,32 @@ test("preserves same-value composite options set in select mode", () => {
   store.setState("focusLoop", false);
   store.setState("focusWrap", false);
   store.setState("includesBaseElement", false);
+  store.setState("resetValueOnSelect", true);
   store.setSelectElement(null);
 
   expect(store.getState().focusLoop).toBe(false);
   expect(store.getState().focusWrap).toBe(false);
   expect(store.getState().includesBaseElement).toBe(false);
+  expect(store.getState().resetValueOnSelect).toBe(true);
 
   store.setSelectElement(select);
   store.setState("focusLoop", true);
   store.setState("focusWrap", true);
   store.setState("includesBaseElement", true);
+  store.setState("resetValueOnSelect", false);
   store.setSelectElement(null);
 
   expect(store.getState().focusLoop).toBe(true);
   expect(store.getState().focusWrap).toBe(true);
   expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().resetValueOnSelect).toBe(false);
 
   store.setSelectElement(select);
 
   expect(store.getState().focusLoop).toBe(true);
   expect(store.getState().focusWrap).toBe(true);
   expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().resetValueOnSelect).toBe(false);
   stop();
 });
 

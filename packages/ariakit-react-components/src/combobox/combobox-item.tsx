@@ -140,7 +140,6 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
 
     setValueOnClick = setValueOnClick ?? (!selectMode && !multiSelectable);
     hideOnClick = hideOnClick ?? (value != null && !multiSelectable);
-    focusOnHover = focusOnHover ?? selectMode;
     preventScrollOnKeyDown = preventScrollOnKeyDown ?? selectMode;
     const popupRole = useContext(ComboboxListRoleContext);
     const role = getItemRole(popupRole);
@@ -149,7 +148,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
     const selectValueOnClickProp = useBooleanEvent(selectValueOnClick);
     const resetValueOnSelectProp = useBooleanEvent(
-      resetValueOnSelect ?? (selectMode || resetValueOnSelectState),
+      resetValueOnSelect ?? resetValueOnSelectState,
     );
     const hideOnClickProp = useBooleanEvent(hideOnClick);
 
@@ -277,14 +276,16 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       },
     });
 
-    const focusOnHoverProp = useBooleanEvent(focusOnHover);
+    const focusOnHoverProp = useBooleanEvent(focusOnHover ?? false);
 
     props = useCompositeHover({
       store,
       ...props,
       focusOnHover(event) {
-        if (!focusOnHoverProp(event)) return false;
-        return store.getState().open;
+        if (focusOnHover !== undefined) {
+          return focusOnHoverProp(event);
+        }
+        return selectMode && store.getState().open;
       },
     });
 

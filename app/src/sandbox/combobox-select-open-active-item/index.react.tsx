@@ -24,6 +24,21 @@ function Select({ label, values, defaultSelectedValue, unmount }: SelectProps) {
   );
 }
 
+function ClosedAlwaysVisibleSelect() {
+  return (
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue="Explicit hover first"
+      virtualFocus={false}
+    >
+      <Ariakit.ComboboxSelect aria-label="Always-visible hover select" />
+      <Ariakit.ComboboxList alwaysVisible aria-label="Always-visible options">
+        <Ariakit.ComboboxItem focusOnHover value="Explicit hover first" />
+        <Ariakit.ComboboxItem focusOnHover value="Explicit hover second" />
+      </Ariakit.ComboboxList>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -48,6 +63,7 @@ export default function Example() {
         defaultSelectedValue={[]}
         unmount={false}
       />
+      <ClosedAlwaysVisibleSelect />
     </>
   );
 }

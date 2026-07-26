@@ -85,6 +85,23 @@ function PersistentFilterExample() {
   );
 }
 
+function PersistentSelectFilterExample() {
+  return (
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue="Apple"
+      resetValueOnSelect={false}
+    >
+      <Ariakit.ComboboxSelect aria-label="Persistent select fruit" />
+      <Ariakit.ComboboxPopover>
+        <Ariakit.ComboboxInput aria-label="Persistent select fruit filter" />
+        {values.map((value) => (
+          <Ariakit.ComboboxItem key={value} value={value} hideOnClick={false} />
+        ))}
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 function PlainSelectionExample() {
   return (
     <Ariakit.ComboboxProvider defaultSelectedValue="Apple">
@@ -121,6 +138,7 @@ export default function Example() {
       <MoveAndRestoreExample />
       <DisabledFilterableSelectExample />
       <PersistentFilterExample />
+      <PersistentSelectFilterExample />
       <PlainSelectionExample />
       <MenuSelectionExample />
     </>

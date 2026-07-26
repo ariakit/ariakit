@@ -72,6 +72,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(input).toHaveValue("ap");
   });
 
+  // https://github.com/ariakit/ariakit/pull/6832
+  test("preserves a select input value when resetValueOnSelect is false", async ({
+    q,
+  }) => {
+    await q.combobox("Persistent select fruit").click();
+    const input = q.combobox("Persistent select fruit filter");
+    await input.fill("ap");
+    await q.option("Apple").click();
+
+    await test.expect(input).toHaveValue("ap");
+  });
+
   // https://github.com/ariakit/ariakit/pull/6832#discussion_r3647556185
   test("preserves aria-selected on menu-role multi-select items", async ({
     q,

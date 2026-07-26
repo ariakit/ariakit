@@ -73,6 +73,16 @@ test("preserves the input value when resetValueOnSelect is false", async () => {
   expect(input).toHaveValue("ap");
 });
 
+// https://github.com/ariakit/ariakit/pull/6832
+test("preserves a select input value when resetValueOnSelect is false", async () => {
+  await click(q.combobox("Persistent select fruit"));
+  const input = q.combobox.ensure("Persistent select fruit filter");
+  await type("ap", input);
+  await click(q.option("Apple"));
+
+  expect(input).toHaveValue("ap");
+});
+
 // https://github.com/ariakit/ariakit/pull/6832#discussion_r3649285821
 test("keeps the selected value on Escape without a select", async () => {
   await click(q.combobox("Plain fruit filter"));

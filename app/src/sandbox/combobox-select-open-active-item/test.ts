@@ -1,4 +1,4 @@
-import { click, focus, press, q } from "@ariakit/test";
+import { click, focus, hover, press, q } from "@ariakit/test";
 import { describe, expect, test } from "vitest";
 
 function activeText(label: string) {
@@ -70,4 +70,12 @@ describe("Status", () => {
     await press.ArrowUp();
     expect(activeText("Status")).toBe("Draft");
   });
+});
+
+// https://github.com/ariakit/ariakit/pull/6832
+test("honors focusOnHover on a closed always-visible list", async () => {
+  const item = q.option.ensure("Explicit hover second");
+  await hover(item);
+
+  expect(item).toHaveAttribute("data-active-item");
 });
