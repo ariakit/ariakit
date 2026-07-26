@@ -48,6 +48,19 @@ function ownsFocus(element: HTMLElement) {
   return getActiveElement(element) === element;
 }
 
+function isCompositeMoveKey(key: string) {
+  return (
+    key === "ArrowUp" ||
+    key === "ArrowRight" ||
+    key === "ArrowDown" ||
+    key === "ArrowLeft" ||
+    key === "Home" ||
+    key === "End" ||
+    key === "PageUp" ||
+    key === "PageDown"
+  );
+}
+
 // When moving through the items while the select list is closed, we don't want
 // to move to items without value, so we filter them out here.
 function nextWithValue(store: ComboboxStore, next: ComboboxStore["next"]) {
@@ -300,6 +313,12 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     });
     const onCompositeKeyDownCapture = props.onKeyDownCapture;
     const onCompositeKeyUpCapture = props.onKeyUpCapture;
+    const shouldProxyCompositeEvent = (event: KeyboardEvent<HTMLType>) => {
+      if (!store.getState().open) return false;
+      if (!ownsFocus(event.currentTarget)) return false;
+      if (!inputElement) return true;
+      return isCompositeMoveKey(event.key);
+    };
     props = {
       ...props,
       // The store points the active item at the current selection while the
@@ -309,14 +328,14 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
         ? props["aria-activedescendant"]
         : undefined,
       onKeyDownCapture(event) {
-        if (store.getState().open && ownsFocus(event.currentTarget)) {
+        if (shouldProxyCompositeEvent(event)) {
           onCompositeKeyDownCapture?.(event);
         } else {
           onKeyDownCaptureProp?.(event);
         }
       },
       onKeyUpCapture(event) {
-        if (store.getState().open && ownsFocus(event.currentTarget)) {
+        if (shouldProxyCompositeEvent(event)) {
           onCompositeKeyUpCapture?.(event);
         } else {
           onKeyUpCaptureProp?.(event);
