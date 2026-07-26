@@ -82,7 +82,7 @@
     "@changesets/apply-release-plan": "7.1.1",
     "@changesets/cli": "2.31.1",
     "@changesets/types": "6.1.0",
-    "@playwright/test": "1.60.0",
+    "@playwright/test": "1.62.0",
     "@testing-library/jest-dom": "7.0.0",
     "@testing-library/react": "16.3.2",
     "@types/cross-spawn": "6.0.6",
