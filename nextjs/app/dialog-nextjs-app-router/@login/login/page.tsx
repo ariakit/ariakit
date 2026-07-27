@@ -22,12 +22,12 @@ export default function Page() {
           }}
         />
       }
-      autoFocusOnHide={(element) => {
-        if (!element) {
+      autoFocusOnHide={() => {
+        requestAnimationFrame(() => {
           const selector = `[href="${pathname}"]`;
           document.querySelector<HTMLElement>(selector)?.focus();
-        }
-        return true;
+        });
+        return false;
       }}
       style={{
         inset: "50% auto auto 50%",

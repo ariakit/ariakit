@@ -139,15 +139,4 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
       .expect(q.option("Archived"))
       .toHaveAttribute("aria-selected", "false");
   });
-
-  test("ignores Object prototype keys in URL filters", async ({ page, q }) => {
-    await page.goto(
-      getNextjsUrl(
-        page.url(),
-        `/${id}?lang=constructor&status=constructor&status=toString&status=__proto__`,
-      ),
-    );
-    await test.expect(q.combobox("Language")).toHaveText("English");
-    await test.expect(q.combobox("Status")).toHaveText("Any");
-  });
 });

@@ -23,6 +23,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
         await page.keyboard.press("Escape");
         await test.expect(select).toBeFocused();
+        await test.expect(listbox).toBeVisible();
         await test.expect(listbox).toHaveCount(0);
 
         await page.keyboard.press("Enter");

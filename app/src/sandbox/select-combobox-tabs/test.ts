@@ -2,7 +2,7 @@ import { click, press, q } from "@ariakit/test";
 import { describe, expect, test } from "vitest";
 
 describe.each([
-  ["Automatic tabs", true],
+  ["Select with Combobox and Tab", true],
   ["Manual tabs", false],
 ])("%s", (label, selectOnMove) => {
   // examples/select-combobox-tab/test.ts

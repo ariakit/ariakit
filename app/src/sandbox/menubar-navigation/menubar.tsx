@@ -28,7 +28,10 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
       <Ariakit.Menubar
         ref={ref}
         {...props}
-        className={clsx("menubar", props.className)}
+        className={clsx(
+          "menubar flex w-max items-center gap-1",
+          props.className,
+        )}
       >
         <SetShiftContext.Provider value={setShift}>
           <SetPlacementContext.Provider value={setPlacement}>
@@ -46,7 +49,10 @@ export const Menubar = React.forwardRef<HTMLDivElement, MenubarProps>(
                 shift={shift}
                 tabIndex={-1}
                 unmountOnHide
-                className={clsx("menu", props.className)}
+                className={clsx(
+                  "menu relative z-50 flex min-w-48 flex-col overflow-visible p-2",
+                  props.className,
+                )}
                 // The menu position styles are applied to the menu wrapper, so
                 // we need to add a class name to the wrapper for animation.
                 wrapperProps={{ className: "menu-wrapper" }}
@@ -107,7 +113,10 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
       tabbable
       blurOnHoverEnd={false}
       {...props}
-      className={clsx("menubar-item", props.className)}
+      className={clsx(
+        "menubar-item flex items-center gap-2 whitespace-nowrap",
+        props.className,
+      )}
       render={href ? <a href={href} /> : undefined}
     >
       {label}
@@ -148,7 +157,10 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
       />
       {open && (
         // Render this menu's contents into the parent menu.
-        <Ariakit.Portal portalElement={parentMenu} className="menu-contents">
+        <Ariakit.Portal
+          portalElement={parentMenu}
+          className="menu-contents flex flex-col"
+        >
           {children}
         </Ariakit.Portal>
       )}
@@ -177,7 +189,7 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
         aria-labelledby={labelId}
         aria-describedby={props.description ? descriptionId : undefined}
         {...props}
-        className={clsx("menu-item", props.className)}
+        className={clsx("menu-item flex flex-col items-start", props.className)}
         render={props.href ? <a href={props.href} /> : undefined}
       >
         <div id={labelId} className="menu-item-label">
@@ -203,7 +215,7 @@ export const MenuGroup = React.forwardRef<HTMLDivElement, MenuGroupProps>(
       <Ariakit.MenuGroup
         ref={ref}
         {...props}
-        className={clsx("group", props.className)}
+        className={clsx("group flex flex-col", props.className)}
       >
         <Ariakit.MenuGroupLabel className="group-label">
           {label}

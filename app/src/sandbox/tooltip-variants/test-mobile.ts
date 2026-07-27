@@ -5,7 +5,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const tooltip = q.tooltip("Bold label");
     await test.expect(tooltip).not.toBeVisible();
     await q.button("Bold").tap();
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(600);
     await test.expect(tooltip).not.toBeVisible();
   });
 });

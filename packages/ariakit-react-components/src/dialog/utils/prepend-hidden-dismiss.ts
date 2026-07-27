@@ -14,7 +14,7 @@ export function prependHiddenDismiss(
   Object.assign(button.style, getVisuallyHiddenStyle());
 
   button.addEventListener("click", onClick);
-  container.insertBefore(button, container.firstChild);
+  container.prepend(button);
 
   const removeHiddenDismiss = () => {
     button.removeEventListener("click", onClick);

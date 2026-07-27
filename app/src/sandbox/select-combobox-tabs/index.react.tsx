@@ -1,16 +1,16 @@
 import * as Ariakit from "@ariakit/react";
 import { startTransition, useState } from "react";
-
-const branches = ["main", "0.10-stable", "fabric-focus-blur", "gh-pages"];
-const tags = ["v18.2.0", "v18.1.0", "v18.0.0"];
+import { branches, tags } from "./data.ts";
 
 interface TabbedSelectProps {
   label: string;
   manual?: boolean;
+  searchable?: boolean;
 }
 
-function TabbedSelect({ label, manual }: TabbedSelectProps) {
+function TabbedSelect({ label, manual, searchable }: TabbedSelectProps) {
   const [searchValue, setSearchValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState("main");
   const [tab, setTab] = useState<"branches" | "tags">("branches");
   const values = tab === "branches" ? branches : tags;
   const matches = values.filter((value) =>
@@ -18,43 +18,55 @@ function TabbedSelect({ label, manual }: TabbedSelectProps) {
   );
   return (
     <Ariakit.ComboboxProvider
-      resetValueOnHide
+      resetValueOnHide={searchable}
+      selectedValue={selectedValue}
+      setSelectedValue={setSelectedValue}
+      virtualFocus={searchable}
       setValue={(value) => {
         startTransition(() => setSearchValue(value));
       }}
     >
-      <Ariakit.SelectProvider virtualFocus defaultValue="main">
-        <Ariakit.SelectLabel>{label}</Ariakit.SelectLabel>
-        <Ariakit.Select />
-        <Ariakit.SelectPopover gutter={4} unmountOnHide>
+      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxPopover
+        gutter={4}
+        unmountOnHide
+        className="ak-popup ak-popup-enter ak-elevation-1 ak-popover z-50 flex max-h-80 flex-col overflow-clip"
+      >
+        {searchable && (
           <Ariakit.Combobox autoSelect placeholder="Find a branch or tag" />
-          <Ariakit.TabProvider
-            selectedId={tab}
-            setSelectedId={(id) => {
-              if (id === "branches" || id === "tags") {
-                setTab(id);
-              }
-            }}
-            selectOnMove={!manual}
+        )}
+        <Ariakit.TabProvider
+          selectedId={tab}
+          setSelectedId={(id) => {
+            if (id === "branches" || id === "tags") {
+              setTab(id);
+            }
+          }}
+          selectOnMove={!manual}
+        >
+          <Ariakit.TabList className="ak-tab-list ak-tab-border ak-popup-cover flex flex-none overflow-x-auto">
+            <Ariakit.Tab id="branches">Branches</Ariakit.Tab>
+            <Ariakit.Tab id="tags">Tags</Ariakit.Tab>
+          </Ariakit.TabList>
+          <Ariakit.TabPanel
+            key={tab}
+            tabId={tab}
+            className="ak-tab-panel ak-popup-layer ak-popup-cover flex min-h-0 flex-1 flex-col overflow-hidden"
           >
-            <Ariakit.TabList>
-              <Ariakit.Tab id="branches">Branches</Ariakit.Tab>
-              <Ariakit.Tab id="tags">Tags</Ariakit.Tab>
-            </Ariakit.TabList>
-            <Ariakit.TabPanel tabId={tab}>
-              <Ariakit.ComboboxList>
-                {matches.map((value) => (
-                  <Ariakit.SelectItem
-                    key={value}
-                    value={value}
-                    render={<Ariakit.ComboboxItem />}
-                  />
-                ))}
-              </Ariakit.ComboboxList>
-            </Ariakit.TabPanel>
-          </Ariakit.TabProvider>
-        </Ariakit.SelectPopover>
-      </Ariakit.SelectProvider>
+            <Ariakit.ComboboxList className="ak-popup-cover ak-popup-scroll min-h-0 flex-1 overflow-auto overscroll-contain outline-none">
+              {matches.map((value) => (
+                <Ariakit.ComboboxItem
+                  key={value}
+                  value={value}
+                  autoFocus={value === selectedValue}
+                  className="ak-option"
+                />
+              ))}
+            </Ariakit.ComboboxList>
+          </Ariakit.TabPanel>
+        </Ariakit.TabProvider>
+      </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
   );
 }
@@ -62,8 +74,9 @@ function TabbedSelect({ label, manual }: TabbedSelectProps) {
 export default function Example() {
   return (
     <main className="grid gap-8">
-      <TabbedSelect label="Automatic tabs" />
-      <TabbedSelect label="Manual tabs" manual />
+      <TabbedSelect label="Select with Tab" />
+      <TabbedSelect label="Select with Combobox and Tab" searchable />
+      <TabbedSelect label="Manual tabs" manual searchable />
     </main>
   );
 }

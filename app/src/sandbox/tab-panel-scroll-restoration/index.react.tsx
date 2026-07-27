@@ -18,7 +18,7 @@ const Scroller = forwardRef<HTMLDivElement, Ariakit.RoleProps>(
         {...props}
         className={clsx(
           props.className,
-          "ak-popup-scroll ak-popup-cover !overflow-auto h-48",
+          "ak-popup-scroll ak-popup-cover !overflow-auto h-48 min-h-0 overscroll-contain",
         )}
       />
     );
@@ -46,7 +46,10 @@ const TabList = forwardRef<HTMLDivElement, Ariakit.TabListProps>(
       <Ariakit.TabList
         ref={ref}
         {...props}
-        className={clsx(props.className, "ak-tab-list ak-popup-cover")}
+        className={clsx(
+          props.className,
+          "ak-tab-list ak-popup-cover flex flex-none overflow-x-auto",
+        )}
       />
     );
   },
@@ -72,7 +75,7 @@ const TabPanel = forwardRef<HTMLDivElement, Ariakit.TabPanelProps>(
         {...props}
         className={clsx(
           props.className,
-          "ak-tab-panel ak-popup-cover ak-popup-layer overflow-clip flex-none",
+          "ak-tab-panel ak-popup-cover ak-popup-layer overflow-clip flex-none min-h-0",
         )}
       >
         {props.children ?? <Content />}
@@ -351,12 +354,9 @@ function ChildSingleReset() {
 
 function Parent() {
   return (
-    <Container className="overflow-y-auto h-56">
+    <Container className="!overflow-y-auto h-56">
       <Ariakit.TabProvider>
-        <TabList
-          aria-label="Parent"
-          className="sticky top-[--negative-margin] z-10"
-        >
+        <TabList aria-label="Parent" className="sticky top-0 z-10">
           <Tab>Parent 1</Tab>
           <Tab>Parent 2</Tab>
         </TabList>
@@ -375,12 +375,9 @@ function Parent() {
 
 function ParentReset() {
   return (
-    <Container className="overflow-y-auto h-56">
+    <Container className="!overflow-y-auto h-56">
       <Ariakit.TabProvider>
-        <TabList
-          aria-label="ParentReset"
-          className="sticky top-[--negative-margin] z-10"
-        >
+        <TabList aria-label="ParentReset" className="sticky top-0 z-10">
           <Tab>ParentReset 1</Tab>
           <Tab>ParentReset 2</Tab>
         </TabList>
@@ -399,12 +396,9 @@ function ParentReset() {
 
 function ParentUnmount() {
   return (
-    <Container className="overflow-y-auto h-56">
+    <Container className="!overflow-y-auto h-56">
       <Ariakit.TabProvider>
-        <TabList
-          aria-label="ParentUnmount"
-          className="sticky top-[--negative-margin] z-10"
-        >
+        <TabList aria-label="ParentUnmount" className="sticky top-0 z-10">
           <Tab>ParentUnmount 1</Tab>
           <Tab>ParentUnmount 2</Tab>
         </TabList>
@@ -425,12 +419,9 @@ function ParentUnmount() {
 
 function ParentUnmountReset() {
   return (
-    <Container className="overflow-y-auto h-56">
+    <Container className="!overflow-y-auto h-56">
       <Ariakit.TabProvider>
-        <TabList
-          aria-label="ParentUnmountReset"
-          className="sticky top-[--negative-margin] z-10"
-        >
+        <TabList aria-label="ParentUnmountReset" className="sticky top-0 z-10">
           <Tab>ParentUnmountReset 1</Tab>
           <Tab>ParentUnmountReset 2</Tab>
         </TabList>
@@ -452,12 +443,9 @@ function ParentUnmountReset() {
 function ParentSingle() {
   const [tabId, setTabId] = useState<string | null | undefined>();
   return (
-    <Container className="overflow-y-auto h-56">
+    <Container className="!overflow-y-auto h-56">
       <Ariakit.TabProvider selectedId={tabId} setSelectedId={setTabId}>
-        <TabList
-          aria-label="ParentSingle"
-          className="sticky top-[--negative-margin] z-10"
-        >
+        <TabList aria-label="ParentSingle" className="sticky top-0 z-10">
           <Tab>ParentSingle 1</Tab>
           <Tab>ParentSingle 2</Tab>
         </TabList>
@@ -474,12 +462,9 @@ function ParentSingle() {
 function ParentSingleReset() {
   const [tabId, setTabId] = useState<string | null | undefined>();
   return (
-    <Container className="overflow-y-auto h-56">
+    <Container className="!overflow-y-auto h-56">
       <Ariakit.TabProvider selectedId={tabId} setSelectedId={setTabId}>
-        <TabList
-          aria-label="ParentSingleReset"
-          className="sticky top-[--negative-margin] z-10"
-        >
+        <TabList aria-label="ParentSingleReset" className="sticky top-0 z-10">
           <Tab>ParentSingleReset 1</Tab>
           <Tab>ParentSingleReset 2</Tab>
         </TabList>

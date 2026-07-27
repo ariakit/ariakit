@@ -1,6 +1,21 @@
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
 
+function getTransitionStyle(open: boolean, leave = true) {
+  return {
+    opacity: open ? 1 : 0,
+    transitionDuration: `${open || leave ? 500 : 0}ms`,
+    transitionProperty: "opacity",
+  };
+}
+
+function getAnimationStyle(open: boolean) {
+  return {
+    animationDuration: "500ms",
+    animationName: open ? "pulse" : "ping",
+  };
+}
+
 export default function Example() {
   const [transition, setTransition] = useState(false);
   const [transitionUnmount, setTransitionUnmount] = useState(false);
@@ -22,6 +37,7 @@ export default function Example() {
         open={transition}
         onClose={() => setTransition(false)}
         className="opacity-0 transition-opacity duration-500 data-enter:opacity-100"
+        style={getTransitionStyle(transition)}
       >
         <Ariakit.DialogHeading className="heading">
           Transition
@@ -42,6 +58,7 @@ export default function Example() {
         }
         onClose={() => setTransitionBackdrop(false)}
         className="opacity-0 transition-opacity duration-500 data-enter:opacity-100"
+        style={getTransitionStyle(transitionBackdrop)}
       >
         <Ariakit.DialogHeading className="heading">
           TransitionBackdrop
@@ -62,6 +79,7 @@ export default function Example() {
         <Ariakit.Dialog
           unmountOnHide
           className="opacity-0 transition-opacity duration-500 data-enter:opacity-100"
+          style={getTransitionStyle(transitionUnmount)}
         >
           <Ariakit.DialogHeading className="heading">
             TransitionUnmount
@@ -83,6 +101,7 @@ export default function Example() {
         modal={false}
         onClose={() => setTransitionNoModal(false)}
         className="opacity-0 transition-opacity duration-500 data-enter:opacity-100"
+        style={getTransitionStyle(transitionNoModal)}
       >
         <Ariakit.DialogHeading className="heading">
           TransitionNoModal
@@ -100,6 +119,7 @@ export default function Example() {
         open={transitionNoLeave}
         onClose={() => setTransitionNoLeave(false)}
         className="opacity-0 transition-opacity duration-500 data-enter:opacity-100 data-leave:duration-0"
+        style={getTransitionStyle(transitionNoLeave, false)}
       >
         <Ariakit.DialogHeading className="heading">
           TransitionNoLeave
@@ -187,6 +207,7 @@ export default function Example() {
         open={animationLeave}
         onClose={() => setAnimationLeave(false)}
         className="data-leave:animate-ping data-leave:[--animate-ping:ping_500ms_ease_1] data-open:animate-pulse data-open:[--animate-pulse:pulse_500ms_ease_1]"
+        style={getAnimationStyle(animationLeave)}
       >
         <Ariakit.DialogHeading className="heading">
           AnimationLeave
@@ -207,6 +228,7 @@ export default function Example() {
         <Ariakit.Dialog
           unmountOnHide
           className="data-leave:animate-ping data-leave:[--animate-ping:ping_500ms_ease_1] data-open:animate-pulse data-open:[--animate-pulse:pulse_500ms_ease_1]"
+          style={getAnimationStyle(animationUnmountLeave)}
         >
           <Ariakit.DialogHeading className="heading">
             AnimationUnmountLeave

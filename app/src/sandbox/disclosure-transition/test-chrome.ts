@@ -32,10 +32,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await disclosure.press("Enter");
     await test.expect(wrapper).toBeVisible();
+    await test
+      .expect(wrapper)
+      .not.toHaveCSS("grid-template-rows", expandedRows);
     await test.expect(wrapper).toHaveCSS("grid-template-rows", expandedRows);
 
     await disclosure.press("Enter");
     await test.expect(wrapper).toBeVisible();
+    await test.expect(wrapper).not.toHaveCSS("grid-template-rows", "0fr");
     await test.expect(wrapper).toHaveCSS("grid-template-rows", "0fr");
     await test.expect(wrapper).not.toBeVisible();
   });
