@@ -346,25 +346,53 @@ function patchHappyDOMProxiedParentNode() {
   if (Reflect.get(child, parentNodeSymbol) !== rawParent) return noop;
   if (Reflect.get(rawParent, proxySymbol) !== proxiedParent) return noop;
 
-  Object.defineProperty(nodePrototype, connectedToNodeSymbol, {
-    ...connectedToNodeDescriptor,
-    value: function connectedToNode(this: Node) {
-      Reflect.apply(originalConnectedToNode, this, []);
-      const proxy: unknown = Reflect.get(this, proxySymbol);
-      if (!(proxy instanceof window.Node)) return;
-      for (const child of this.childNodes) {
-        if (child.parentNode === proxy) continue;
-        Reflect.set(child, parentNodeSymbol, proxy);
+  const inheritsOriginalConnectedToNode = (prototype: object) => {
+    if (Object.hasOwn(prototype, connectedToNodeSymbol)) return false;
+    let currentPrototype: object | null = Object.getPrototypeOf(prototype);
+    while (currentPrototype) {
+      const descriptor = Object.getOwnPropertyDescriptor(
+        currentPrototype,
+        connectedToNodeSymbol,
+      );
+      if (descriptor) {
+        return descriptor.value === originalConnectedToNode;
       }
-    },
-  });
+      currentPrototype = Object.getPrototypeOf(currentPrototype);
+    }
+    return false;
+  };
+
+  const restores: Array<() => void> = [];
+
+  for (const Constructor of [
+    window.HTMLFormElement,
+    window.HTMLSelectElement,
+  ]) {
+    if (!Constructor) continue;
+    if (!inheritsOriginalConnectedToNode(Constructor.prototype)) continue;
+    Object.defineProperty(Constructor.prototype, connectedToNodeSymbol, {
+      ...connectedToNodeDescriptor,
+      value: function connectedToNode(this: Node) {
+        Reflect.apply(originalConnectedToNode, this, []);
+        const proxy: unknown = Reflect.get(this, proxySymbol);
+        if (!(proxy instanceof window.Node)) return;
+        for (const child of this.childNodes) {
+          if (child.parentNode === proxy) continue;
+          Reflect.set(child, parentNodeSymbol, proxy);
+        }
+      },
+    });
+    restores.push(() => {
+      // The hook was inherited from Node.prototype, so removing the override
+      // restores it rather than reassigning it.
+      Reflect.deleteProperty(Constructor.prototype, connectedToNodeSymbol);
+    });
+  }
 
   return () => {
-    Object.defineProperty(
-      nodePrototype,
-      connectedToNodeSymbol,
-      connectedToNodeDescriptor,
-    );
+    for (const restore of restores) {
+      restore();
+    }
   };
 }
 
