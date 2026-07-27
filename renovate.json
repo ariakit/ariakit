@@ -3,7 +3,6 @@
   "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
   "minimumReleaseAge": "3 days",
   "semanticCommits": "disabled",
-  "postUpdateOptions": ["pnpmDedupe"],
   "ignorePaths": [
     "**/node_modules/**",
     "**/bower_components/**",
@@ -145,6 +144,160 @@
       "automerge": true,
       "automergeType": "pr",
       "platformAutomerge": true
+    },
+    {
+      "description": "Select CI for reviewed root tooling updates",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["package.json"],
+      "matchPackageNames": [
+        "@testing-library/jest-dom",
+        "@testing-library/react",
+        "@types/cross-spawn",
+        "@types/fs-extra",
+        "@types/node",
+        "@types/react",
+        "@types/react-dom",
+        "@vitest/coverage-v8",
+        "happy-dom",
+        "husky",
+        "lint-staged",
+        "oxfmt",
+        "oxlint",
+        "oxlint-tsgolint",
+        "prettier",
+        "prettier-plugin-tailwindcss",
+        "stylelint",
+        "stylelint-config-standard",
+        "vitest",
+        "vitest-fail-on-console"
+      ],
+      "addLabels": ["ci:deps"]
+    },
+    {
+      "description": "Run performance CI for Vitest updates",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["package.json"],
+      "matchPackageNames": ["vitest"],
+      "addLabels": ["ci:perf"]
+    },
+    {
+      "description": "Run documentation CI for Oxfmt updates",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["package.json"],
+      "matchPackageNames": ["oxfmt"],
+      "addLabels": ["ci:docs"]
+    },
+    {
+      "description": "Keep unreviewed root dependency updates on full CI",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["package.json"],
+      "matchPackageNames": [
+        "!@testing-library/jest-dom",
+        "!@testing-library/react",
+        "!@types/cross-spawn",
+        "!@types/fs-extra",
+        "!@types/node",
+        "!@types/react",
+        "!@types/react-dom",
+        "!@vitest/coverage-v8",
+        "!happy-dom",
+        "!husky",
+        "!lint-staged",
+        "!oxfmt",
+        "!oxlint",
+        "!oxlint-tsgolint",
+        "!prettier",
+        "!prettier-plugin-tailwindcss",
+        "!stylelint",
+        "!stylelint-config-standard",
+        "!vitest",
+        "!vitest-fail-on-console"
+      ],
+      "addLabels": ["ci:full"]
+    },
+    {
+      "description": "Select Main CI for package development dependencies",
+      "matchManagers": ["npm"],
+      "matchFileNames": [
+        "packages/ariakit-components/package.json",
+        "packages/ariakit-react-components/package.json",
+        "packages/ariakit-react-store/package.json",
+        "packages/ariakit-react-utils/package.json",
+        "packages/ariakit-react/package.json",
+        "packages/ariakit-solid-components/package.json",
+        "packages/ariakit-solid-store/package.json",
+        "packages/ariakit-solid-utils/package.json",
+        "packages/ariakit-solid/package.json",
+        "packages/ariakit-store/package.json",
+        "packages/ariakit-tailwind/package.json",
+        "packages/ariakit-test/package.json",
+        "packages/ariakit-utils/package.json"
+      ],
+      "matchDepTypes": ["devDependencies"],
+      "addLabels": ["ci:deps"]
+    },
+    {
+      "description": "Select consumer CI for package runtime dependencies",
+      "matchManagers": ["npm"],
+      "matchFileNames": [
+        "packages/ariakit-components/package.json",
+        "packages/ariakit-react-components/package.json",
+        "packages/ariakit-react-store/package.json",
+        "packages/ariakit-react-utils/package.json",
+        "packages/ariakit-react/package.json",
+        "packages/ariakit-solid-components/package.json",
+        "packages/ariakit-solid-store/package.json",
+        "packages/ariakit-solid-utils/package.json",
+        "packages/ariakit-solid/package.json",
+        "packages/ariakit-store/package.json",
+        "packages/ariakit-tailwind/package.json",
+        "packages/ariakit-test/package.json",
+        "packages/ariakit-utils/package.json"
+      ],
+      "matchDepTypes": [
+        "dependencies",
+        "optionalDependencies",
+        "peerDependencies"
+      ],
+      "addLabels": [
+        "ci:deps",
+        "ci:app",
+        "ci:perf",
+        "ci:plus",
+        "ci:release-preview",
+        "ci:docs",
+        "ci:og-images"
+      ]
+    },
+    {
+      "description": "Select CI for app dependency updates",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["app/package.json"],
+      "addLabels": ["ci:deps", "ci:app", "ci:perf", "ci:og-images"]
+    },
+    {
+      "description": "Select CI for Next.js dependency updates",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["nextjs/package.json"],
+      "addLabels": ["ci:deps", "ci:app", "ci:perf"]
+    },
+    {
+      "description": "Select CI for website dependency updates",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["website/package.json", "guide/package.json"],
+      "addLabels": ["ci:deps", "ci:plus"]
+    },
+    {
+      "description": "Select Main CI for example dependency updates",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["examples/package.json"],
+      "addLabels": ["ci:deps"]
+    },
+    {
+      "description": "Select release CI for template dependency updates",
+      "matchManagers": ["npm"],
+      "matchFileNames": ["templates/react/package.json"],
+      "addLabels": ["ci:deps", "ci:release-preview"]
     },
     {
       "matchManagers": ["github-actions"],

@@ -77,6 +77,29 @@ const dependencyAndConfigNames = new Set([
   "yarn.lock",
 ]);
 
+const labeledDependencyManifests = new Set([
+  "app/package.json",
+  "examples/package.json",
+  "guide/package.json",
+  "nextjs/package.json",
+  "package.json",
+  "packages/ariakit-components/package.json",
+  "packages/ariakit-react-components/package.json",
+  "packages/ariakit-react-store/package.json",
+  "packages/ariakit-react-utils/package.json",
+  "packages/ariakit-react/package.json",
+  "packages/ariakit-solid-components/package.json",
+  "packages/ariakit-solid-store/package.json",
+  "packages/ariakit-solid-utils/package.json",
+  "packages/ariakit-solid/package.json",
+  "packages/ariakit-store/package.json",
+  "packages/ariakit-tailwind/package.json",
+  "packages/ariakit-test/package.json",
+  "packages/ariakit-utils/package.json",
+  "templates/react/package.json",
+  "website/package.json",
+]);
+
 function normalizeCIPath(file: string) {
   return file.replaceAll("\\", "/").replace(/^\.\/+/, "");
 }
@@ -120,6 +143,18 @@ function isAppRuntimePath(file: string) {
   if (!/^(?:app|nextjs)\//.test(file)) return false;
   if (isTestFile(file)) return false;
   return true;
+}
+
+function isLabeledDependencyFile(file: string) {
+  return file === "pnpm-lock.yaml" || labeledDependencyManifests.has(file);
+}
+
+function isPublishFile(file: string) {
+  return (
+    file === "pnpm-lock.yaml" ||
+    /^\.changeset\/[^/]+\.md$/i.test(file) ||
+    /^packages\/[^/]+\/(?:CHANGELOG\.md|package\.json)$/.test(file)
+  );
 }
 
 function addReason(plan: CIPlan, workflow: CIWorkflowName, reason: string) {
@@ -242,8 +277,18 @@ export function createCIPlan(
   };
 
   addReason(plan, "main", "Core and legacy browser tests run on every PR");
+  const labeledDependencyUpdate = labels.includes("ci:deps");
+  const publishUpdate = labels.includes("ci:publish");
   for (const file of files) {
+    if (publishUpdate && isPublishFile(file)) continue;
+    if (labeledDependencyUpdate && isLabeledDependencyFile(file)) continue;
     addFileReasons(plan, file);
+  }
+  if (labeledDependencyUpdate) {
+    addReason(plan, "main", "Dependency CI selected by labels");
+  }
+  if (publishUpdate) {
+    addReason(plan, "main", "Changesets publish metadata");
   }
 
   if (labels.includes("ci:full")) {
@@ -252,6 +297,7 @@ export function createCIPlan(
     }
   } else {
     for (const label of labels) {
+      if (!Object.hasOwn(workflowLabels, label)) continue;
       const workflow = workflowLabels[label];
       if (workflow) {
         addReason(plan, workflow, `Forced by ${label} label`);

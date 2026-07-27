@@ -146,6 +146,113 @@ test("supports full and workflow-specific override labels", () => {
   expect(Object.values(fullPlan.workflows).every(Boolean)).toBe(true);
 });
 
+test("uses labels to select CI for recognized dependency updates", () => {
+  const plan = createCIPlan(["package.json", "pnpm-lock.yaml"], {
+    labels: ["ci:deps", "ci:perf"],
+  });
+
+  expect(plan.workflows).toEqual({
+    main: true,
+    app: false,
+    perf: true,
+    plus: false,
+    release_preview: false,
+    docs: false,
+    build_styles: false,
+    og_images: false,
+  });
+});
+
+test("keeps labeled dependency updates fail-closed for unknown manifests", () => {
+  const plan = createCIPlan(
+    ["packages/new-package/package.json", "pnpm-lock.yaml"],
+    { labels: ["ci:deps"] },
+  );
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
+test("unions labeled dependency CI with mixed pull request changes", () => {
+  const plan = createCIPlan(
+    ["app/package.json", "app/src/components/button.tsx", "pnpm-lock.yaml"],
+    { labels: ["ci:deps"] },
+  );
+
+  expect(plan.workflows).toEqual({
+    main: true,
+    app: true,
+    perf: true,
+    plus: false,
+    release_preview: false,
+    docs: false,
+    build_styles: false,
+    og_images: true,
+  });
+});
+
+test("keeps ci:full authoritative for labeled dependency updates", () => {
+  const plan = createCIPlan(["package.json", "pnpm-lock.yaml"], {
+    labels: ["ci:deps", "ci:full"],
+  });
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
+test("runs Main only for Changesets-generated publish metadata", () => {
+  const plan = createCIPlan(
+    [
+      ".changeset/example.md",
+      "packages/ariakit-react/CHANGELOG.md",
+      "packages/ariakit-react/package.json",
+      "pnpm-lock.yaml",
+    ],
+    { labels: ["ci:publish"] },
+  );
+
+  expect(plan.workflows).toEqual({
+    main: true,
+    app: false,
+    perf: false,
+    plus: false,
+    release_preview: false,
+    docs: false,
+    build_styles: false,
+    og_images: false,
+  });
+});
+
+test("classifies unexpected files on publish pull requests normally", () => {
+  const plan = createCIPlan(
+    [
+      "packages/ariakit-react/CHANGELOG.md",
+      "packages/ariakit-react/package.json",
+      "packages/ariakit-react/src/dialog/dialog.ts",
+    ],
+    { labels: ["ci:publish"] },
+  );
+
+  expect(plan.workflows).toMatchObject({
+    main: true,
+    app: true,
+    perf: true,
+    plus: true,
+    release_preview: true,
+    docs: true,
+    build_styles: false,
+    og_images: true,
+  });
+});
+
+test("ignores labels that match inherited object properties", () => {
+  const plan = createCIPlan(["readme.md"], {
+    labels: ["toString", "constructor", "__proto__"],
+  });
+
+  expect(plan.workflows.main).toBe(true);
+  expect(plan.workflows.app).toBe(false);
+  expect(plan.workflows.perf).toBe(false);
+});
+
 test("keeps both paths when git reports a rename", () => {
   expect(
     parseChangedFiles(
