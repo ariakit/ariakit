@@ -68,29 +68,6 @@ program
   .action(react18);
 
 program
-  .command("ci-plan")
-  .description("Plan pull request CI workflows from changed files")
-  .requiredOption("--base <sha>", "Base commit SHA")
-  .requiredOption("--head <sha>", "Head commit SHA")
-  .requiredOption("--base-ref <name>", "Pull request base branch")
-  .requiredOption("--labels <json>", "Pull request label names")
-  .requiredOption("--output <path>", "GitHub Actions output file")
-  .action(async (options) => {
-    const { runCIPlan } = await import("./ci.ts");
-    runCIPlan(options);
-  });
-
-program
-  .command("ci-gate")
-  .description("Verify that planned CI workflows completed successfully")
-  .requiredOption("--plan <json>", "Serialized CI plan")
-  .requiredOption("--results <json>", "Serialized GitHub Actions job results")
-  .action(async (options) => {
-    const { runCIGate } = await import("./ci.ts");
-    runCIGate(options);
-  });
-
-program
   .command("perf-compare")
   .description("Compare performance results")
   .option("--node", "Compare Vitest benchmark results")

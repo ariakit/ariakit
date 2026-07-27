@@ -183,7 +183,8 @@ function addFileReasons(plan: CIPlan, file: string) {
 
   if (
     file.startsWith("app/public/og-image/") ||
-    (file.startsWith("app/src/") && !isTestFile(file))
+    (file.startsWith("app/src/") && !isTestFile(file)) ||
+    isPackageRuntimePath(file)
   ) {
     addReason(plan, "og_images", `OG image input: ${file}`);
     matched = true;

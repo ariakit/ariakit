@@ -69,7 +69,7 @@ test("runs app, performance, docs, release, and website checks for package code"
     release_preview: true,
     docs: true,
     build_styles: false,
-    og_images: false,
+    og_images: true,
   });
 });
 
@@ -107,6 +107,23 @@ test("runs generated asset workflows only for their inputs", () => {
   const ogPlan = createCIPlan(["app/src/pages/og-image/api.ts"]);
   expect(ogPlan.workflows.og_images).toBe(true);
   expect(ogPlan.workflows.build_styles).toBe(false);
+});
+
+test("runs OG generation for package runtime imported by the renderer", () => {
+  const plan = createCIPlan([
+    "packages/ariakit-react-components/src/popover/popover-arrow-path.ts",
+  ]);
+
+  expect(plan.workflows.og_images).toBe(true);
+});
+
+test("skips OG generation for package tests and readmes", () => {
+  for (const file of [
+    "packages/ariakit-react-components/src/popover/popover.test.ts",
+    "packages/ariakit-react-components/readme.md",
+  ]) {
+    expect(createCIPlan([file]).workflows.og_images, file).toBe(false);
+  }
 });
 
 test("runs release previews for changesets only on main pull requests", () => {
