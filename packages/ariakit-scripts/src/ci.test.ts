@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { expect, test } from "vitest";
 import {
   assertCIGate,
@@ -569,6 +571,15 @@ packages:
 
   expect(parseLockfileImporterChanges(base, head)).toEqual(["app", "website"]);
   expect(parseLockfileImporterChanges("invalid", head)).toBeUndefined();
+});
+
+test("parses the repository lockfile", () => {
+  const lockfile = readFileSync(
+    join(import.meta.dirname, "../../../pnpm-lock.yaml"),
+    "utf-8",
+  );
+
+  expect(parseLockfileImporterChanges(lockfile, lockfile)).toEqual([]);
 });
 
 test("rejects importer membership changes", () => {

@@ -501,18 +501,9 @@ function parseLockfileImporters(value: string) {
   const importers = new Map<string, string>();
   let currentImporter: string | undefined;
   let currentBlock: string[] = [];
-  let currentImporterIsEmpty = false;
-  let currentImporterHasContent = false;
-  let currentFieldNeedsContent = false;
-  let currentFieldHasContent = false;
-  const saveCurrentField = () => {
-    return !currentFieldNeedsContent || currentFieldHasContent;
-  };
   const saveCurrentImporter = () => {
     if (!currentImporter) return true;
     if (importers.has(currentImporter)) return false;
-    if (!saveCurrentField()) return false;
-    if (!currentImporterIsEmpty && !currentImporterHasContent) return false;
     importers.set(currentImporter, currentBlock.join("\n").trimEnd());
     return true;
   };
@@ -524,43 +515,19 @@ function parseLockfileImporters(value: string) {
       if (!/^[^:\s][^:]*:/.test(line)) return;
       break;
     }
-    const match = /^  ([a-zA-Z0-9._@/-]+):(.*)$/.exec(line);
+    const match = /^  ([a-zA-Z0-9._@/-]+):(?: \{\})?$/.exec(line);
     if (match) {
-      const value = match[2];
-      if (value !== "" && value !== " {}") return;
       if (!saveCurrentImporter()) return;
       currentImporter = match[1];
       currentBlock = [line];
-      currentImporterIsEmpty = value === " {}";
-      currentImporterHasContent = false;
-      currentFieldNeedsContent = false;
-      currentFieldHasContent = false;
-      continue;
-    }
-    if (!currentImporter) {
-      if (line) return;
       continue;
     }
     if (!line) {
-      currentBlock.push(line);
+      if (currentImporter) currentBlock.push(line);
       continue;
     }
-    if (currentImporterIsEmpty) return;
-    const content = /^( {4}(?: {2})*)([^#\s][^:]*):(.*)$/.exec(line);
-    if (!content) return;
-    const indentation = content[1];
-    if (!indentation) return;
-    if (indentation.length === 4) {
-      if (!saveCurrentField()) return;
-      const value = content[3];
-      if (value !== "" && value !== " {}") return;
-      currentImporterHasContent = true;
-      currentFieldNeedsContent = value === "";
-      currentFieldHasContent = false;
-    } else {
-      if (!currentImporterHasContent) return;
-      currentFieldHasContent = true;
-    }
+    if (!currentImporter) return;
+    if (!/^ {4}(?: {2})*[^#\s][^:]*:/.test(line)) return;
     currentBlock.push(line);
   }
   if (!saveCurrentImporter()) return;
