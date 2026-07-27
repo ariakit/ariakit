@@ -1,25 +1,33 @@
-import { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
-withFramework(import.meta.dirname, async ({ test }) => {
-  test("auto select first option", async ({ page }) => {
-    const q = query(page);
-    await q.button("Add block").click();
-    await expect(q.dialog("Add block")).toBeVisible();
-    await q.combobox("Search...").fill("a");
-    await expect(q.option("Audio")).toHaveAttribute("data-active-item");
-  });
+const cases = [
+  ["Provider", "Provider Add block", "Search provider blocks"],
+  ["Store", "Store Add block", "Search store blocks"],
+] as const;
+
+withFramework(import.meta.dirname, async ({ query, test }) => {
+  for (const [name, buttonLabel, searchLabel] of cases) {
+    test(`auto select first option with ${name}`, async ({ page }) => {
+      const q = query(page);
+      await q.button(buttonLabel).click();
+      await expect(q.dialog(buttonLabel)).toBeVisible();
+      await q.combobox(searchLabel).fill("a");
+      await expect(q.option("Audio")).toHaveAttribute("data-active-item");
+    });
+  }
 
   test("https://github.com/ariakit/ariakit/issues/4324", async ({ page }) => {
     const q = query(page);
-    await q.button("Add block").click();
-    await expect(q.dialog("Add block")).toBeVisible();
+    const button = q.button("Provider Add block");
+    const dialog = q.dialog("Provider Add block");
+    await button.click();
+    await expect(dialog).toBeVisible();
     await page.evaluate(() => {
       window.scrollTo(0, document.body.scrollHeight);
     });
     await page.mouse.click(10, 10);
-    await expect(q.dialog("Add block")).not.toBeVisible();
-    await expect(q.button("Add block")).not.toBeInViewport();
+    await expect(dialog).not.toBeVisible();
+    await expect(button).not.toBeInViewport();
   });
 });
