@@ -12,5 +12,7 @@ test("presents the selection when its item registers late", async () => {
   });
   const selected = q.option.ensure("Item 24");
   expect(selected).toHaveAttribute("data-active-item");
-  expect(scrollIntoView.mock.instances).toContain(selected);
+  await waitFor(() => {
+    expect(scrollIntoView.mock.instances).toContain(selected);
+  });
 });
