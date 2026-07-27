@@ -2,21 +2,18 @@ name: CI
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, edited, labeled, unlabeled]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 permissions:
   contents: read
 
 concurrency:
-  # Keep metadata-only edits from replacing pending real CI work.
-  group: ci-${{ github.ref }}-${{ github.event.action == 'edited' && github.event.changes.base == null && 'metadata' || 'work' }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   plan:
     name: Plan
-    # Base edits change the diff; title and body edits do not.
-    if: github.event.action != 'edited' || github.event.changes.base != null
     runs-on: ubuntu-latest
     outputs:
       main: ${{ steps.plan.outputs.main }}
@@ -126,9 +123,8 @@ jobs:
     secrets: inherit
 
   gate:
-    # Metadata-only runs must not shadow the real Gate result for this commit.
-    name: ${{ github.event.action == 'edited' && github.event.changes.base == null && 'Metadata / Gate' || 'Gate' }}
-    if: always() && (github.event.action != 'edited' || github.event.changes.base != null)
+    name: Gate
+    if: always()
     needs:
       - plan
       - main
@@ -163,9 +159,8 @@ jobs:
     # Preserve the current required status names until the main ruleset is
     # migrated to require Gate. Reusable jobs use prefixed check names, so
     # removing these aliases before that migration would block automerge.
-    # Metadata-only runs use distinct names to preserve the real CI results.
-    name: ${{ github.event.action == 'edited' && github.event.changes.base == null && format('Metadata / {0}', matrix.name) || matrix.name }}
-    if: always() && (github.event.action != 'edited' || github.event.changes.base != null)
+    name: ${{ matrix.name }}
+    if: always()
     needs: gate
     runs-on: ubuntu-latest
     strategy:
