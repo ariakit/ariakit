@@ -1,13 +1,13 @@
 name: perf
 
 on:
-  pull_request:
+  workflow_call:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: perf-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
       - name: Upload app artifact
         uses: actions/upload-artifact@v7
         with:
-          name: app-build
+          name: perf-app-build
           path: |
             app/dist
             app/.wrangler/deploy/config.json
@@ -57,7 +57,7 @@ jobs:
       - name: Upload Next.js artifact
         uses: actions/upload-artifact@v7
         with:
-          name: nextjs-dist
+          name: perf-nextjs-dist
           path: nextjs/.open-next
           retention-days: 7
           include-hidden-files: true
@@ -463,13 +463,13 @@ jobs:
       - name: Download app artifact
         uses: actions/download-artifact@v8
         with:
-          name: app-build
+          name: perf-app-build
           path: app
 
       - name: Download Next.js artifact
         uses: actions/download-artifact@v8
         with:
-          name: nextjs-dist
+          name: perf-nextjs-dist
           path: nextjs/.open-next
 
       - name: Run interleaved perf tests

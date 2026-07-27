@@ -1,0 +1,156 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    name: Plan
+    runs-on: ubuntu-latest
+    outputs:
+      main: ${{ steps.plan.outputs.main }}
+      app: ${{ steps.plan.outputs.app }}
+      perf: ${{ steps.plan.outputs.perf }}
+      plus: ${{ steps.plan.outputs.plus }}
+      release_preview: ${{ steps.plan.outputs.release_preview }}
+      docs: ${{ steps.plan.outputs.docs }}
+      build_styles: ${{ steps.plan.outputs.build_styles }}
+      og_images: ${{ steps.plan.outputs.og_images }}
+      plan: ${{ steps.plan.outputs.plan }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+
+      - name: Plan CI
+        id: plan
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          CI_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
+        run: node packages/ariakit-scripts/src/ci-run.ts plan
+
+  main:
+    name: Main
+    needs: plan
+    if: needs.plan.outputs.main == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/main.yml
+    secrets: inherit
+
+  app:
+    name: App
+    needs: plan
+    if: needs.plan.outputs.app == 'true'
+    permissions:
+      actions: read
+      contents: read
+      deployments: write
+      statuses: write
+    uses: ./.github/workflows/app.yml
+    secrets: inherit
+
+  perf:
+    name: Performance
+    needs: plan
+    if: needs.plan.outputs.perf == 'true'
+    permissions:
+      actions: read
+      contents: read
+    uses: ./.github/workflows/perf.yml
+    secrets: inherit
+
+  plus:
+    name: Plus
+    needs: plan
+    if: needs.plan.outputs.plus == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/plus.yml
+    secrets: inherit
+
+  release_preview:
+    name: Release preview
+    needs: plan
+    if: needs.plan.outputs.release_preview == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/release-preview.yml
+    secrets: inherit
+
+  docs:
+    name: Docs
+    needs: plan
+    if: needs.plan.outputs.docs == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/docs.yml
+    secrets: inherit
+
+  build_styles:
+    name: Build styles
+    needs: plan
+    if: needs.plan.outputs.build_styles == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/build-styles.yml
+    secrets: inherit
+
+  og_images:
+    name: OG images
+    needs: plan
+    if: needs.plan.outputs.og_images == 'true'
+    permissions:
+      contents: read
+    uses: ./.github/workflows/og-images.yml
+    secrets: inherit
+
+  gate:
+    name: Gate
+    if: always()
+    needs:
+      - plan
+      - main
+      - app
+      - perf
+      - plus
+      - release_preview
+      - docs
+      - build_styles
+      - og_images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
+
+      - name: Verify CI results
+        env:
+          CI_PLAN: ${{ needs.plan.outputs.plan }}
+          CI_RESULTS: ${{ toJSON(needs) }}
+        run: node packages/ariakit-scripts/src/ci-run.ts gate
