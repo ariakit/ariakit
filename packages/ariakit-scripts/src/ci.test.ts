@@ -3,6 +3,7 @@ import {
   assertCIGate,
   ciWorkflowNames,
   createCIPlan,
+  parseLockfileImporterChanges,
   parseChangedFiles,
   serializeCIGatePlan,
 } from "./ci.ts";
@@ -75,6 +76,7 @@ test("fails closed without dependency details and for CI infrastructure", () => 
 
 test("selects CI from reviewed root dependency updates", () => {
   const plan = createCIPlan(["package.json", "pnpm-lock.yaml"], {
+    changedLockfileImporters: ["."],
     packageJSONChanges: [
       getPackageJSONChange(
         "package.json",
@@ -115,6 +117,7 @@ test("keeps unreviewed root dependency updates on full CI", () => {
 
 test("selects CI from workspace dependency updates", () => {
   const plan = createCIPlan(["app/package.json", "pnpm-lock.yaml"], {
+    changedLockfileImporters: ["app"],
     packageJSONChanges: [
       getPackageJSONChange(
         "app/package.json",
@@ -131,6 +134,7 @@ test("selects consumer CI for public package runtime dependencies", () => {
   const plan = createCIPlan(
     ["packages/ariakit-react/package.json", "pnpm-lock.yaml"],
     {
+      changedLockfileImporters: ["packages/ariakit-react"],
       packageJSONChanges: [
         getPackageJSONChange(
           "packages/ariakit-react/package.json",
@@ -197,6 +201,7 @@ test("keeps public package development dependencies on Main CI", () => {
   const plan = createCIPlan(
     ["packages/ariakit-react/package.json", "pnpm-lock.yaml"],
     {
+      changedLockfileImporters: ["packages/ariakit-react"],
       packageJSONChanges: [
         getPackageJSONChange(
           "packages/ariakit-react/package.json",
@@ -237,6 +242,7 @@ test("unions dependency CI with ordinary file heuristics", () => {
   const plan = createCIPlan(
     ["app/package.json", "pnpm-lock.yaml", "website/src/pages/index.tsx"],
     {
+      changedLockfileImporters: ["app"],
       packageJSONChanges: [
         getPackageJSONChange(
           "app/package.json",
@@ -248,6 +254,22 @@ test("unions dependency CI with ordinary file heuristics", () => {
   );
 
   expectSelectedWorkflows(plan, ["main", "app", "perf", "plus", "og_images"]);
+});
+
+test("fails closed when the lockfile changes an unrelated importer", () => {
+  const options = {
+    packageJSONChanges: [
+      getPackageJSONChange(
+        "app/package.json",
+        { dependencies: { "@clerk/astro": "4.0.0" } },
+        { dependencies: { "@clerk/astro": "4.0.1" } },
+      ),
+    ],
+    changedLockfileImporters: ["app", "website"],
+  };
+  const plan = createCIPlan(["app/package.json", "pnpm-lock.yaml"], options);
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
 });
 
 test("falls back to full CI for package metadata changes", () => {
@@ -474,6 +496,89 @@ test("keeps both paths when git reports a rename", () => {
     "packages/old/src/index.ts",
     "packages/new/src/index.ts",
   ]);
+});
+
+test("compares exact lockfile importer blocks", () => {
+  const base = `lockfileVersion: '9.0'
+
+importers:
+
+  app:
+    dependencies:
+      astro:
+        specifier: 7.0.0
+        version: 7.0.0
+
+  website: {}
+
+packages:
+  astro@7.0.0: {}
+`;
+  const head = `lockfileVersion: '9.0'
+
+importers:
+
+  app:
+    dependencies:
+      astro:
+        specifier: 7.0.1
+        version: 7.0.1
+
+  website:
+    dependencies: {}
+
+packages:
+  astro@7.0.1: {}
+`;
+
+  expect(parseLockfileImporterChanges(base, head)).toEqual(["app", "website"]);
+  expect(parseLockfileImporterChanges("invalid", head)).toBeUndefined();
+});
+
+test("rejects importer membership changes", () => {
+  const base = `lockfileVersion: '9.0'
+
+importers:
+
+  app: {}
+
+packages: {}
+`;
+  const added = base.replace("  app: {}", "  app: {}\n\n  website: {}");
+
+  expect(parseLockfileImporterChanges(base, added)).toBeUndefined();
+  expect(parseLockfileImporterChanges(added, base)).toBeUndefined();
+});
+
+test("rejects malformed importer blocks", () => {
+  const base = `lockfileVersion: '9.0'
+
+importers:
+
+  app: {}
+
+packages: {}
+`;
+  const malformedInline = base.replace("  app: {}", "  app: []");
+  const malformedIndentation = base.replace("  app: {}", "   app: {}");
+  const malformedBlockSequence = base.replace("  app: {}", "  app:\n    []");
+  const malformedBlockScalar = base.replace("  app: {}", "  app:\n    value");
+  const commentsOnlyBlock = base.replace(
+    "  app: {}",
+    "  app:\n    # no importer data",
+  );
+
+  expect(parseLockfileImporterChanges(base, malformedInline)).toBeUndefined();
+  expect(
+    parseLockfileImporterChanges(base, malformedIndentation),
+  ).toBeUndefined();
+  expect(
+    parseLockfileImporterChanges(base, malformedBlockSequence),
+  ).toBeUndefined();
+  expect(
+    parseLockfileImporterChanges(base, malformedBlockScalar),
+  ).toBeUndefined();
+  expect(parseLockfileImporterChanges(base, commentsOnlyBlock)).toBeUndefined();
 });
 
 test("serializes a compact gate plan for large changes", () => {

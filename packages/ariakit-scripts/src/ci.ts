@@ -25,6 +25,7 @@ export interface CIPlan {
 
 export interface CreateCIPlanOptions {
   baseRef?: string;
+  changedLockfileImporters?: string[];
   packageJSONChanges?: PackageJSONChange[];
 }
 
@@ -389,11 +390,20 @@ export function createCIPlan(
   const changedPackageJSONFiles = files.filter((file) => {
     return /(?:^|\/)package\.json$/.test(file);
   });
+  const changedPackageJSONFileSet = new Set(changedPackageJSONFiles);
   const hasScopedPackageJSONChanges =
     changedPackageJSONFiles.length > 0 &&
     changedPackageJSONFiles.every((file) => {
       const change = packageJSONChanges.get(file);
       return change ? explainsLockfileChange(change) : false;
+    });
+  const changedLockfileImporters = options.changedLockfileImporters ?? [];
+  const hasScopedLockfileChanges =
+    changedLockfileImporters.length > 0 &&
+    changedLockfileImporters.every((importer) => {
+      const file =
+        importer === "." ? "package.json" : `${importer}/package.json`;
+      return changedPackageJSONFileSet.has(normalizeCIPath(file));
     });
   const workflows: Record<CIWorkflowName, boolean> = {
     main: false,
@@ -425,9 +435,15 @@ export function createCIPlan(
 
   addReason(plan, "main", "Core and legacy browser tests run on every PR");
   for (const file of files) {
-    // The manifest diff is the policy input. A lockfile-only change still
-    // falls through to full CI because no manifest explains its scope.
-    if (file === "pnpm-lock.yaml" && hasScopedPackageJSONChanges) continue;
+    // Manifest and importer diffs together establish whether the generated
+    // lockfile is fully attributable to the changed manifests.
+    if (
+      file === "pnpm-lock.yaml" &&
+      hasScopedPackageJSONChanges &&
+      hasScopedLockfileChanges
+    ) {
+      continue;
+    }
     const packageJSONChange = packageJSONChanges.get(file);
     if (packageJSONChange && addPackageJSONReasons(plan, packageJSONChange)) {
       continue;
@@ -461,17 +477,115 @@ export function getChangedFiles(base: string, head: string) {
 
 function readPackageJSON(revision: string, file: string) {
   try {
-    const value = execFileSync("git", ["show", `${revision}:${file}`], {
-      encoding: "utf-8",
-      maxBuffer: 10 * 1024 * 1024,
-      stdio: ["ignore", "pipe", "ignore"],
-    });
+    const value = readRevisionFile(revision, file);
+    if (value === undefined) return;
     const packageJSON: unknown = JSON.parse(value);
     if (!isRecord(packageJSON)) return;
     return packageJSON;
   } catch {
     return;
   }
+}
+
+function readRevisionFile(revision: string, file: string) {
+  try {
+    return execFileSync("git", ["show", `${revision}:${file}`], {
+      encoding: "utf-8",
+      maxBuffer: 10 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+  } catch {
+    return;
+  }
+}
+
+function parseLockfileImporters(value: string) {
+  const lines = value.replaceAll("\r\n", "\n").split("\n");
+  const importersIndex = lines.indexOf("importers:");
+  if (importersIndex < 0) return;
+
+  const importers = new Map<string, string>();
+  let currentImporter: string | undefined;
+  let currentBlock: string[] = [];
+  let currentImporterIsEmpty = false;
+  let currentImporterHasContent = false;
+  let currentFieldNeedsContent = false;
+  let currentFieldHasContent = false;
+  const saveCurrentField = () => {
+    return !currentFieldNeedsContent || currentFieldHasContent;
+  };
+  const saveCurrentImporter = () => {
+    if (!currentImporter) return true;
+    if (importers.has(currentImporter)) return false;
+    if (!saveCurrentField()) return false;
+    if (!currentImporterIsEmpty && !currentImporterHasContent) return false;
+    importers.set(currentImporter, currentBlock.join("\n").trimEnd());
+    return true;
+  };
+
+  for (let index = importersIndex + 1; index < lines.length; index++) {
+    const line = lines[index];
+    if (line === undefined) return;
+    if (line && !line.startsWith(" ")) {
+      if (!/^[^:\s][^:]*:/.test(line)) return;
+      break;
+    }
+    const match = /^  ([a-zA-Z0-9._@/-]+):(.*)$/.exec(line);
+    if (match) {
+      const value = match[2];
+      if (value !== "" && value !== " {}") return;
+      if (!saveCurrentImporter()) return;
+      currentImporter = match[1];
+      currentBlock = [line];
+      currentImporterIsEmpty = value === " {}";
+      currentImporterHasContent = false;
+      currentFieldNeedsContent = false;
+      currentFieldHasContent = false;
+      continue;
+    }
+    if (!currentImporter) {
+      if (line) return;
+      continue;
+    }
+    if (!line) {
+      currentBlock.push(line);
+      continue;
+    }
+    if (currentImporterIsEmpty) return;
+    const content = /^( {4}(?: {2})*)([^#\s][^:]*):(.*)$/.exec(line);
+    if (!content) return;
+    const indentation = content[1];
+    if (indentation.length === 4) {
+      if (!saveCurrentField()) return;
+      const value = content[3];
+      if (value !== "" && value !== " {}") return;
+      currentImporterHasContent = true;
+      currentFieldNeedsContent = value === "";
+      currentFieldHasContent = false;
+    } else {
+      if (!currentImporterHasContent) return;
+      currentFieldHasContent = true;
+    }
+    currentBlock.push(line);
+  }
+  if (!saveCurrentImporter()) return;
+  if (importers.size === 0) return;
+  return importers;
+}
+
+export function parseLockfileImporterChanges(base: string, head: string) {
+  const baseImporters = parseLockfileImporters(base);
+  const headImporters = parseLockfileImporters(head);
+  if (!baseImporters || !headImporters) return;
+  if (baseImporters.size !== headImporters.size) return;
+  for (const importer of baseImporters.keys()) {
+    if (!headImporters.has(importer)) return;
+  }
+  return [...baseImporters.keys()]
+    .filter((importer) => {
+      return baseImporters.get(importer) !== headImporters.get(importer);
+    })
+    .sort();
 }
 
 export function getPackageJSONChanges(
@@ -496,6 +610,21 @@ export function getPackageJSONChanges(
     });
   }
   return changes;
+}
+
+export function getLockfileImporterChanges(
+  base: string,
+  head: string,
+  files: string[],
+) {
+  if (!files.map(normalizeCIPath).includes("pnpm-lock.yaml")) return;
+  const mergeBase = execFileSync("git", ["merge-base", base, head], {
+    encoding: "utf-8",
+  }).trim();
+  const baseLockfile = readRevisionFile(mergeBase, "pnpm-lock.yaml");
+  const headLockfile = readRevisionFile(head, "pnpm-lock.yaml");
+  if (baseLockfile === undefined || headLockfile === undefined) return;
+  return parseLockfileImporterChanges(baseLockfile, headLockfile);
 }
 
 export function parseChangedFiles(output: string) {
@@ -610,6 +739,11 @@ export function runCIPlan(options: RunCIPlanOptions) {
   const files = getChangedFiles(options.base, options.head);
   const plan = createCIPlan(files, {
     baseRef: options.baseRef,
+    changedLockfileImporters: getLockfileImporterChanges(
+      options.base,
+      options.head,
+      files,
+    ),
     packageJSONChanges: getPackageJSONChanges(
       options.base,
       options.head,
