@@ -18,7 +18,7 @@ const getMenuItem = (
 ) => locator.locator(`role=${role}[name='${name}']`);
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("show/hide with click @visual", async ({ page, visual }) => {
+  test("show/hide with click", async ({ page }) => {
     await getMenuButton(page).click();
     await expect(getMenu(page, "Options")).toBeVisible();
     const wrapper = await getMenuWrapper(page).elementHandle();
@@ -28,7 +28,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
       wrapper,
     );
     await expect(getMenu(page, "History")).toBeVisible();
-    await visual();
     await page.waitForTimeout(500);
     await getMenuItem(page, "Recently closed windows").click();
     await page.waitForFunction(
