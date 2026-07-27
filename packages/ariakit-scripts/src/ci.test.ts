@@ -103,6 +103,21 @@ test("selects CI from reviewed root dependency updates", () => {
   expectSelectedWorkflows(plan, ["main", "perf", "docs"]);
 });
 
+test("runs Docs for reviewed root type dependencies", () => {
+  const plan = createCIPlan(["package.json", "pnpm-lock.yaml"], {
+    changedLockfileImporters: ["."],
+    packageJSONChanges: [
+      getPackageJSONChange(
+        "package.json",
+        { devDependencies: { "@types/react": "19.2.16" } },
+        { devDependencies: { "@types/react": "19.2.17" } },
+      ),
+    ],
+  });
+
+  expectSelectedWorkflows(plan, ["main", "docs"]);
+});
+
 test("keeps unreviewed root dependency updates on full CI", () => {
   const plan = createCIPlan(["package.json", "pnpm-lock.yaml"], {
     packageJSONChanges: [
@@ -235,22 +250,38 @@ test("keeps metadata for undeclared peers on full CI", () => {
   expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
 });
 
-test("keeps public package development dependencies on Main CI", () => {
+test("keeps other public package development dependencies on Main CI", () => {
   const plan = createCIPlan(
-    ["packages/ariakit-react/package.json", "pnpm-lock.yaml"],
+    ["packages/ariakit-react-utils/package.json", "pnpm-lock.yaml"],
     {
-      changedLockfileImporters: ["packages/ariakit-react"],
+      changedLockfileImporters: ["packages/ariakit-react-utils"],
       packageJSONChanges: [
         getPackageJSONChange(
-          "packages/ariakit-react/package.json",
-          { devDependencies: { "@types/react": "19.2.16" } },
-          { devDependencies: { "@types/react": "19.2.17" } },
+          "packages/ariakit-react-utils/package.json",
+          { devDependencies: { react: "19.2.7" } },
+          { devDependencies: { react: "19.2.8" } },
         ),
       ],
     },
   );
 
   expectSelectedWorkflows(plan, ["main"]);
+});
+
+test("runs Docs for public package type dependencies", () => {
+  const file = "packages/ariakit-react-store/package.json";
+  const plan = createCIPlan([file, "pnpm-lock.yaml"], {
+    changedLockfileImporters: ["packages/ariakit-react-store"],
+    packageJSONChanges: [
+      getPackageJSONChange(
+        file,
+        { devDependencies: { "@types/use-sync-external-store": "1.4.0" } },
+        { devDependencies: { "@types/use-sync-external-store": "1.5.0" } },
+      ),
+    ],
+  });
+
+  expectSelectedWorkflows(plan, ["main", "docs"]);
 });
 
 test("keeps private package dependency updates on full CI", () => {

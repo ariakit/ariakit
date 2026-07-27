@@ -241,6 +241,9 @@ function addPackageJSONReasons(plan: CIPlan, change: PackageJSONChange) {
   const fields = getChangedFields(change.base, change.head);
   const dependencyNames = getChangedDependencyNames(change.base, change.head);
   if (!dependencyNames) return false;
+  const hasTypeDependencyChange = dependencyNames.some((name) => {
+    return name.startsWith("@types/");
+  });
 
   if (file === "package.json") {
     if (!hasOnlyFields(fields, dependencyFieldSet)) return false;
@@ -251,7 +254,7 @@ function addPackageJSONReasons(plan: CIPlan, change: PackageJSONChange) {
     if (dependencyNames.includes("vitest")) {
       addDependencyReason(plan, "perf", file);
     }
-    if (dependencyNames.includes("oxfmt")) {
+    if (dependencyNames.includes("oxfmt") || hasTypeDependencyChange) {
       addDependencyReason(plan, "docs", file);
     }
     return true;
@@ -279,6 +282,9 @@ function addPackageJSONReasons(plan: CIPlan, change: PackageJSONChange) {
     return false;
   }
   addDependencyReason(plan, "main", file);
+  if (hasTypeDependencyChange) {
+    addDependencyReason(plan, "docs", file);
+  }
   if (fields.some((field) => runtimeDependencyFieldSet.has(field))) {
     for (const workflow of publicPackageWorkflows) {
       addDependencyReason(plan, workflow, file);
