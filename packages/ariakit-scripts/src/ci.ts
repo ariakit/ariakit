@@ -100,6 +100,22 @@ const labeledDependencyManifests = new Set([
   "website/package.json",
 ]);
 
+const publishPackageNames = new Set([
+  "ariakit-components",
+  "ariakit-react",
+  "ariakit-react-components",
+  "ariakit-react-store",
+  "ariakit-react-utils",
+  "ariakit-solid",
+  "ariakit-solid-components",
+  "ariakit-solid-store",
+  "ariakit-solid-utils",
+  "ariakit-store",
+  "ariakit-tailwind",
+  "ariakit-test",
+  "ariakit-utils",
+]);
+
 function normalizeCIPath(file: string) {
   return file.replaceAll("\\", "/").replace(/^\.\/+/, "");
 }
@@ -150,11 +166,12 @@ function isLabeledDependencyFile(file: string) {
 }
 
 function isPublishFile(file: string) {
-  return (
-    file === "pnpm-lock.yaml" ||
-    /^\.changeset\/[^/]+\.md$/i.test(file) ||
-    /^packages\/[^/]+\/(?:CHANGELOG\.md|package\.json)$/.test(file)
+  if (file === "pnpm-lock.yaml") return true;
+  if (/^\.changeset\/[^/]+\.md$/i.test(file)) return true;
+  const match = /^packages\/([^/]+)\/(?:CHANGELOG\.md|package\.json)$/.exec(
+    file,
   );
+  return !!match?.[1] && publishPackageNames.has(match[1]);
 }
 
 function addReason(plan: CIPlan, workflow: CIWorkflowName, reason: string) {

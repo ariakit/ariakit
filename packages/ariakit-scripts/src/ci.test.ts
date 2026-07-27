@@ -243,6 +243,15 @@ test("classifies unexpected files on publish pull requests normally", () => {
   });
 });
 
+test("does not suppress private package manifests on publish pull requests", () => {
+  const plan = createCIPlan(
+    ["packages/ariakit-scripts/package.json", "pnpm-lock.yaml"],
+    { labels: ["ci:publish"] },
+  );
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
 test("ignores labels that match inherited object properties", () => {
   const plan = createCIPlan(["readme.md"], {
     labels: ["toString", "constructor", "__proto__"],
