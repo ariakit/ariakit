@@ -27,7 +27,6 @@ function Fixture({ label, lateItems }: FixtureProps) {
 
   return (
     <Ariakit.ComboboxProvider
-      open={open}
       setOpen={setOpen}
       defaultSelectedValue={selectedValue}
     >

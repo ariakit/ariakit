@@ -1,4 +1,4 @@
-import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/6858
@@ -20,26 +20,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const listX = selectX;
     const listY = selectBox.y + selectBox.height + 12;
 
-    // Pointer entry only intersects the vulnerable opening window, so retry the
-    // complete interaction until hover actually retargets the active item.
-    await test
-      .expect(async () => {
-        try {
-          await page.mouse.move(selectX, selectY);
-          await page.mouse.down();
-          await page.mouse.up();
-          await page.mouse.move(listX, listY);
-          await flushFrames(page, 8);
+    // The fixed path presents the selection before pointer entry. The broken
+    // path lets this hover retarget the pending scroll, leaving it offscreen.
+    await page.mouse.move(selectX, selectY);
+    await page.mouse.down();
+    await page.mouse.up();
+    await page.mouse.move(listX, listY);
 
-          await test.expect(activeItem).toHaveCount(1);
-          test.expect(await activeItem.textContent()).not.toBe("Item 24");
-          await test.expect(selected).toBeInViewport();
-        } finally {
-          await page.keyboard.press("Escape");
-          await test.expect(listbox).not.toBeVisible();
-        }
-      })
-      .toPass({ timeout: 20_000 });
+    await test.expect(activeItem).toHaveCount(1);
+    await test.expect(activeItem).not.toHaveText("Item 24");
+    await test.expect(selected).toBeInViewport();
   });
 
   // https://github.com/ariakit/ariakit/issues/6858
