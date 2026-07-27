@@ -337,9 +337,6 @@ export interface SelectOptions<T extends ElementType = TagName>
    * [`SelectPopover`](https://ariakit.com/reference/select-popover) components
    * will appear when the user uses arrow keys while the select element is
    * in focus.
-   *
-   * Live examples:
-   * - [Select Grid](https://ariakit.com/examples/select-grid)
    * @default true
    */
   showOnKeyDown?: BooleanOrCallback<KeyboardEvent<HTMLElement>>;

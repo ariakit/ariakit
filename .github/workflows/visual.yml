@@ -107,15 +107,15 @@ jobs:
             };
             const jobs = await listWorkflowRunJobs();
             const artifacts = await listWorkflowRunArtifacts();
+            const { getVisualProject } = await import(
+              `${process.env.GITHUB_WORKSPACE}/packages/ariakit-scripts/src/ci-visual.js`
+            );
             const screenshotJobs = jobs
               .filter((job) => job.steps?.some((step) => step.name === "Upload screenshots"))
               .map((job) => {
-                const project = job.name.startsWith("Test ")
-                  ? job.name.slice(5).toLowerCase()
-                  : undefined;
                 return {
                   name: job.name,
-                  project,
+                  project: getVisualProject(job.name),
                 };
               });
             const invalidScreenshotJobs = screenshotJobs.filter((job) => !job.project);

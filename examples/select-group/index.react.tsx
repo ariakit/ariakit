@@ -1,52 +1,56 @@
 import {
-  Select,
-  SelectGroup,
-  SelectGroupLabel,
-  SelectItem,
-  SelectLabel,
-  SelectPopover,
-  SelectProvider,
+  ComboboxGroup,
+  ComboboxGroupLabel,
+  ComboboxItem,
+  ComboboxPopover,
+  ComboboxProvider,
+  ComboboxSelect,
+  ComboboxSelectLabel,
 } from "@ariakit/react";
 import "./style.css";
 
 export default function Example() {
   return (
     <div className="wrapper">
-      <SelectProvider defaultValue="Apple">
-        <SelectLabel>Favorite food</SelectLabel>
-        <Select className="button" />
-        <SelectPopover gutter={4} sameWidth className="popover">
-          <SelectGroup className="group">
-            <SelectGroupLabel className="group-label">
+      <ComboboxProvider defaultSelectedValue="Apple">
+        <ComboboxSelectLabel>Favorite food</ComboboxSelectLabel>
+        <ComboboxSelect className="button" />
+        <ComboboxPopover gutter={4} sameWidth className="popover">
+          <ComboboxGroup className="group">
+            <ComboboxGroupLabel className="group-label">
               Fruits &amp; Vegetables
-            </SelectGroupLabel>
-            <SelectItem className="select-item" value="Apple" />
-            <SelectItem className="select-item" value="Banana" />
-            <SelectItem className="select-item" value="Grape" />
-            <SelectItem className="select-item" value="Orange" />
-          </SelectGroup>
-          <SelectGroup className="group group-separator">
-            <SelectGroupLabel className="group-label">Dairy</SelectGroupLabel>
-            <SelectItem className="select-item" value="Milk" />
-            <SelectItem className="select-item" value="Cheese" />
-            <SelectItem className="select-item" value="Yogurt" />
-          </SelectGroup>
-          <SelectGroup className="group group-separator">
-            <SelectGroupLabel className="group-label">
+            </ComboboxGroupLabel>
+            <ComboboxItem className="select-item" value="Apple" />
+            <ComboboxItem className="select-item" value="Banana" />
+            <ComboboxItem className="select-item" value="Grape" />
+            <ComboboxItem className="select-item" value="Orange" />
+          </ComboboxGroup>
+          <ComboboxGroup className="group group-separator">
+            <ComboboxGroupLabel className="group-label">
+              Dairy
+            </ComboboxGroupLabel>
+            <ComboboxItem className="select-item" value="Milk" />
+            <ComboboxItem className="select-item" value="Cheese" />
+            <ComboboxItem className="select-item" value="Yogurt" />
+          </ComboboxGroup>
+          <ComboboxGroup className="group group-separator">
+            <ComboboxGroupLabel className="group-label">
               Beverages
-            </SelectGroupLabel>
-            <SelectItem className="select-item" value="Water" />
-            <SelectItem className="select-item" value="Juice" />
-            <SelectItem className="select-item" value="Soda" />
-          </SelectGroup>
-          <SelectGroup className="group group-separator">
-            <SelectGroupLabel className="group-label">Snacks</SelectGroupLabel>
-            <SelectItem className="select-item" value="Chips" />
-            <SelectItem className="select-item" value="Nuts" />
-            <SelectItem className="select-item" value="Candy" />
-          </SelectGroup>
-        </SelectPopover>
-      </SelectProvider>
+            </ComboboxGroupLabel>
+            <ComboboxItem className="select-item" value="Water" />
+            <ComboboxItem className="select-item" value="Juice" />
+            <ComboboxItem className="select-item" value="Soda" />
+          </ComboboxGroup>
+          <ComboboxGroup className="group group-separator">
+            <ComboboxGroupLabel className="group-label">
+              Snacks
+            </ComboboxGroupLabel>
+            <ComboboxItem className="select-item" value="Chips" />
+            <ComboboxItem className="select-item" value="Nuts" />
+            <ComboboxItem className="select-item" value="Candy" />
+          </ComboboxGroup>
+        </ComboboxPopover>
+      </ComboboxProvider>
     </div>
   );
 }

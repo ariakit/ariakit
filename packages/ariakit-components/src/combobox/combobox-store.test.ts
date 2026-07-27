@@ -95,3 +95,339 @@ test("updates an inherited combobox fallback", () => {
   expect(store.getState().anchorElement).toBe(nextCombobox);
   stop();
 });
+
+test("uses the select as the base and anchor fallback", () => {
+  const store = createComboboxStore();
+  const stop = init(store);
+  const select = document.createElement("button");
+  const input = document.createElement("input");
+
+  store.setSelectElement(select);
+  expect(store.getState().baseElement).toBe(select);
+  expect(store.getState().anchorElement).toBe(select);
+
+  store.setBaseElement(input);
+  expect(store.getState().baseElement).toBe(input);
+  expect(store.getState().anchorElement).toBe(select);
+
+  store.setBaseElement(null);
+  expect(store.getState().baseElement).toBe(select);
+
+  store.setSelectElement(null);
+  expect(store.getState().baseElement).toBeNull();
+  expect(store.getState().anchorElement).toBeNull();
+  stop();
+});
+
+test("selects the first item when a select is rendered", async () => {
+  const store = createComboboxStore({
+    defaultItems: [
+      { id: "disabled", value: "Disabled", disabled: true },
+      { id: "apple", value: "Apple" },
+    ],
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toBe("Apple");
+  expect(store.getState().activeId).toBe("apple");
+  stop();
+});
+
+test("resolves the selected item when the store starts open", async () => {
+  const store = createComboboxStore({
+    defaultItems: [
+      { id: "apple", value: "Apple" },
+      { id: "banana", value: "Banana" },
+    ],
+    defaultSelectedValue: "Banana",
+    defaultOpen: true,
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  await Promise.resolve();
+
+  expect(store.getState().activeId).toBe("banana");
+  stop();
+});
+
+test("resolves the selected item when it registers after opening", async () => {
+  const store = createComboboxStore({
+    defaultItems: [{ id: "apple", value: "Apple" }],
+    defaultSelectedValue: "Banana",
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  store.show();
+  store.setState("mounted", true);
+  store.registerItem({ id: "banana", value: "Banana" });
+  await Promise.resolve();
+
+  expect(store.getState().activeId).toBe("banana");
+  stop();
+});
+
+test("preserves the active item when the selection registers after hover", async () => {
+  const store = createComboboxStore({
+    defaultItems: [{ id: "apple", value: "Apple" }],
+    defaultSelectedValue: "Banana",
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  store.show();
+  store.setState("mounted", true);
+  store.setActiveId("apple");
+  expect(store.getState().moves).toBe(0);
+
+  store.registerItem({ id: "banana", value: "Banana" });
+  await Promise.resolve();
+
+  expect(store.getState().activeId).toBe("apple");
+  stop();
+});
+
+test("preserves an explicit empty selected value", () => {
+  const store = createComboboxStore({
+    defaultItems: [{ id: "apple", value: "Apple" }],
+    defaultSelectedValue: "",
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+
+  expect(store.getState().selectedValue).toBe("");
+  stop();
+});
+
+test("preserves a selected value set before the select is rendered", async () => {
+  const store = createComboboxStore({
+    defaultItems: [
+      { id: "apple", value: "Apple" },
+      { id: "banana", value: "Banana" },
+    ],
+  });
+  const stop = init(store);
+
+  store.setSelectedValue("Banana");
+  store.setSelectElement(document.createElement("button"));
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toBe("Banana");
+  stop();
+});
+
+test("preserves an explicit empty selected value before items load", async () => {
+  const store = createComboboxStore();
+  const stop = init(store);
+
+  store.setSelectedValue("");
+  store.setSelectElement(document.createElement("button"));
+  store.setState("items", [{ id: "apple", value: "Apple" }]);
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toBe("");
+  stop();
+});
+
+test("preserves an empty selected value set with setState", async () => {
+  const store = createComboboxStore();
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  store.setState("selectedValue", "");
+  store.setState("items", [{ id: "apple", value: "Apple" }]);
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toBe("");
+  stop();
+});
+
+test("does not select the first item without a select element", async () => {
+  const store = createComboboxStore({
+    defaultItems: [{ id: "apple", value: "Apple" }],
+  });
+  const stop = init(store);
+
+  store.setInputElement(document.createElement("input"));
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toBe("");
+  stop();
+});
+
+test("uses select defaults while a select is rendered", () => {
+  const store = createComboboxStore();
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+
+  expect(store.getState().focusLoop).toBe(false);
+  expect(store.getState().focusWrap).toBe(false);
+  expect(store.getState().includesBaseElement).toBe(false);
+  expect(store.getState().resetValueOnSelect).toBe(true);
+
+  store.setSelectElement(null);
+
+  expect(store.getState().focusLoop).toBe(true);
+  expect(store.getState().focusWrap).toBe(true);
+  expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().resetValueOnSelect).toBe(false);
+  stop();
+});
+
+test("preserves explicit options in select mode", () => {
+  const store = createComboboxStore({
+    focusLoop: true,
+    focusWrap: true,
+    includesBaseElement: true,
+    resetValueOnSelect: false,
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+
+  expect(store.getState().focusLoop).toBe(true);
+  expect(store.getState().focusWrap).toBe(true);
+  expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().resetValueOnSelect).toBe(false);
+  stop();
+});
+
+test("preserves composite options changed while a select is rendered", () => {
+  const store = createComboboxStore();
+  const stop = init(store);
+
+  store.setState("focusLoop", false);
+  store.setState("focusWrap", false);
+  store.setState("includesBaseElement", false);
+
+  store.setSelectElement(document.createElement("button"));
+
+  store.setState("focusLoop", true);
+  store.setState("focusWrap", true);
+  store.setState("includesBaseElement", true);
+
+  store.setSelectElement(null);
+
+  expect(store.getState().focusLoop).toBe(true);
+  expect(store.getState().focusWrap).toBe(true);
+  expect(store.getState().includesBaseElement).toBe(true);
+  stop();
+});
+
+test("preserves same-value composite options set in select mode", () => {
+  const store = createComboboxStore();
+  const stop = init(store);
+  const select = document.createElement("button");
+
+  store.setSelectElement(select);
+  store.setState("focusLoop", false);
+  store.setState("focusWrap", false);
+  store.setState("includesBaseElement", false);
+  store.setState("resetValueOnSelect", true);
+  store.setSelectElement(null);
+
+  expect(store.getState().focusLoop).toBe(false);
+  expect(store.getState().focusWrap).toBe(false);
+  expect(store.getState().includesBaseElement).toBe(false);
+  expect(store.getState().resetValueOnSelect).toBe(true);
+
+  store.setSelectElement(select);
+  store.setState("focusLoop", true);
+  store.setState("focusWrap", true);
+  store.setState("includesBaseElement", true);
+  store.setState("resetValueOnSelect", false);
+  store.setSelectElement(null);
+
+  expect(store.getState().focusLoop).toBe(true);
+  expect(store.getState().focusWrap).toBe(true);
+  expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().resetValueOnSelect).toBe(false);
+
+  store.setSelectElement(select);
+
+  expect(store.getState().focusLoop).toBe(true);
+  expect(store.getState().focusWrap).toBe(true);
+  expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().resetValueOnSelect).toBe(false);
+  stop();
+});
+
+test("preserves an orientation set while a select is rendered", () => {
+  const store = createComboboxStore();
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  store.setState("focusLoop", "vertical");
+  store.setState("focusWrap", "horizontal");
+  store.setSelectElement(null);
+
+  expect(store.getState().focusLoop).toBe("vertical");
+  expect(store.getState().focusWrap).toBe("horizontal");
+  stop();
+});
+
+test("sets the selected value when moving while the select is closed", async () => {
+  const store = createComboboxStore({
+    defaultItems: [
+      { id: "apple", value: "Apple" },
+      { id: "banana", value: "Banana" },
+    ],
+    defaultSelectedValue: "Apple",
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  store.move("banana");
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toBe("Banana");
+  stop();
+});
+
+test("does not set the selected value when moving on a multi-selectable store", async () => {
+  const store = createComboboxStore({
+    defaultItems: [
+      { id: "apple", value: "Apple" },
+      { id: "banana", value: "Banana" },
+    ],
+    defaultSelectedValue: ["Apple"],
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  store.move("banana");
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toEqual(["Apple"]);
+  stop();
+});
+
+test("sets the selected value on open moves only when enabled", async () => {
+  const store = createComboboxStore({
+    defaultItems: [
+      { id: "apple", value: "Apple" },
+      { id: "banana", value: "Banana" },
+    ],
+    defaultSelectedValue: "Apple",
+  });
+  const stop = init(store);
+
+  store.setSelectElement(document.createElement("button"));
+  store.show();
+  store.move("banana");
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toBe("Apple");
+
+  store.setState("selectOnMove", true);
+  await Promise.resolve();
+
+  expect(store.getState().selectedValue).toBe("Banana");
+  stop();
+});

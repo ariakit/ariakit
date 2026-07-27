@@ -82,7 +82,7 @@
     "@changesets/apply-release-plan": "7.1.1",
     "@changesets/cli": "2.31.1",
     "@changesets/types": "6.1.0",
-    "@playwright/test": "1.60.0",
+    "@playwright/test": "1.62.0",
     "@testing-library/jest-dom": "7.0.0",
     "@testing-library/react": "16.3.2",
     "@types/cross-spawn": "6.0.6",
@@ -90,7 +90,7 @@
     "@types/node": "24.13.3",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-react": "6.0.3",
+    "@vitejs/plugin-react": "6.0.4",
     "@vitest/coverage-v8": "4.1.10",
     "autoprefixer": "10.5.4",
     "chalk": "5.6.2",
@@ -98,23 +98,23 @@
     "concurrently": "10.0.3",
     "cross-env": "10.1.0",
     "cross-spawn": "7.0.6",
-    "fs-extra": "11.3.6",
+    "fs-extra": "11.4.0",
     "glob": "13.0.6",
-    "happy-dom": "20.11.0",
+    "happy-dom": "20.11.1",
     "husky": "9.1.7",
-    "lint-staged": "17.1.0",
-    "next": "16.2.10",
+    "lint-staged": "17.2.0",
+    "next": "16.2.11",
     "open-cli": "9.0.0",
-    "oxfmt": "0.59.0",
-    "oxlint": "1.74.0",
-    "oxlint-tsgolint": "0.25.0",
-    "pkg-pr-new": "0.0.78",
+    "oxfmt": "0.60.0",
+    "oxlint": "1.75.0",
+    "oxlint-tsgolint": "7.0.2001",
+    "pkg-pr-new": "0.0.79",
     "postcss": "8.5.8",
     "postcss-import": "16.1.1",
-    "prettier": "3.9.5",
+    "prettier": "3.9.6",
     "prettier-plugin-tailwindcss": "0.8.1",
-    "react": "19.2.7",
-    "react-dom": "19.2.7",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "rimraf": "6.1.3",
     "solid-js": "1.9.14",
     "stylelint": "17.14.1",
@@ -128,7 +128,7 @@
     "vite-plugin-solid": "2.11.13",
     "vitest": "4.1.10",
     "vitest-fail-on-console": "0.10.1",
-    "wrangler": "4.112.0"
+    "wrangler": "4.114.0"
   },
   "lint-staged": {
     "package.json": "pnpm -r run --if-present clean",
@@ -144,5 +144,5 @@
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@11.15.1"
+  "packageManager": "pnpm@11.17.0"
 }

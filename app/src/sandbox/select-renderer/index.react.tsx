@@ -1,12 +1,16 @@
 import * as Ariakit from "@ariakit/react";
+import { ComboboxRenderer } from "@ariakit/react-components/combobox/combobox-renderer";
+import type { ComboboxRendererItem } from "@ariakit/react-components/combobox/combobox-renderer";
+import type { ComboboxRendererItemObject } from "@ariakit/react-components/combobox/combobox-renderer";
+import type { ComboboxRendererProps } from "@ariakit/react-components/combobox/combobox-renderer";
 import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
-import type { SelectRendererItem } from "@ariakit/react-components/select/select-renderer";
-import type { SelectRendererItemObject } from "@ariakit/react-components/select/select-renderer";
+import { forwardRef as forwardAriakitRef } from "@ariakit/react-utils";
 import type { ComponentProps, RefCallback } from "react";
 import {
   createContext,
   memo,
   useCallback,
+  useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -15,7 +19,24 @@ import {
 } from "react";
 import "./style.css";
 
-interface FruitItem extends SelectRendererItemObject {
+const RendererModeContext = createContext(false);
+
+interface CollectionRendererProps<T extends ComboboxRendererItem> extends Omit<
+  ComboboxRendererProps<T>,
+  "selectedValue" | "store"
+> {}
+
+const CollectionRenderer = forwardAriakitRef(function CollectionRenderer<
+  T extends ComboboxRendererItem,
+>(props: CollectionRendererProps<T>) {
+  const legacy = useContext(RendererModeContext);
+  if (legacy) {
+    return <SelectRenderer<T> {...props} />;
+  }
+  return <ComboboxRenderer<T> {...props} />;
+});
+
+interface FruitItem extends ComboboxRendererItemObject {
   id: string;
   label?: string;
   items?: FruitItem[];
@@ -45,7 +66,73 @@ const horizontalItems = [
   { id: "apple", value: "apple", label: "Apple" },
   { id: "banana", value: "banana", label: "Banana" },
   { id: "cherry", value: "cherry", label: "Cherry" },
-] satisfies readonly SelectRendererItem[];
+] satisfies readonly ComboboxRendererItem[];
+
+const duplicateValueItems = [
+  {
+    id: "duplicate-value-group",
+    value: "Group selection",
+    items: [
+      {
+        id: "duplicate-value-first-apple",
+        value: "Apple",
+        label: "First Apple",
+      },
+      {
+        id: "duplicate-value-second-apple",
+        value: "Apple",
+        label: "Second Apple",
+      },
+      {
+        id: "duplicate-value-third-apple",
+        value: "Apple",
+        label: "Third Apple",
+      },
+      {
+        id: "duplicate-value-fourth-apple",
+        value: "Apple",
+        label: "Fourth Apple",
+      },
+      {
+        id: "duplicate-value-banana",
+        value: "Banana",
+        label: "Selected Banana",
+      },
+      {
+        id: "duplicate-value-last",
+        value: "Last fruit",
+        label: "Last fruit",
+      },
+    ],
+  },
+  {
+    id: "later-duplicate-value-group",
+    items: [
+      {
+        id: "later-duplicate-value-banana",
+        value: "Banana",
+        label: "Later duplicate Banana",
+      },
+    ],
+  },
+  {
+    id: "duplicate-value-filler-group",
+    items: [
+      {
+        id: "duplicate-value-filler",
+        value: "Filler fruit",
+        label: "Filler fruit",
+      },
+    ],
+  },
+] satisfies readonly FruitItem[];
+
+const duplicateSelectedValues = [
+  "Group selection",
+  "Apple",
+  "Apple",
+  "Banana",
+] as const;
 
 const asyncItems = Array.from({ length: 100 }, (_, index) => ({
   id: `async-item-${index + 1}`,
@@ -53,10 +140,76 @@ const asyncItems = Array.from({ length: 100 }, (_, index) => ({
 }));
 
 function GroupedRenderer() {
+  const select = Ariakit.useComboboxStore({
+    defaultItems,
+    defaultSelectedValue: "",
+  });
+
+  return (
+    <section>
+      <Ariakit.ComboboxSelectLabel store={select}>
+        Fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={select} />
+      <Ariakit.ComboboxPopover
+        store={select}
+        gutter={4}
+        sameWidth
+        style={{ background: "white", border: "1px solid gray" }}
+      >
+        <ComboboxRenderer
+          store={select}
+          items={items}
+          initialItems={items.length}
+          persistentIndices={[1]}
+        >
+          {(item) => {
+            if (item.items) {
+              const { label, ...groupProps } = item;
+              return (
+                <ComboboxRenderer
+                  key={groupProps.id}
+                  {...groupProps}
+                  initialItems={item.items.length}
+                  render={(props) => (
+                    <Ariakit.ComboboxGroup {...props}>
+                      <Ariakit.ComboboxGroupLabel>
+                        {label}
+                      </Ariakit.ComboboxGroupLabel>
+                      {props.children}
+                    </Ariakit.ComboboxGroup>
+                  )}
+                >
+                  {({ value, ...optionProps }) => (
+                    <Ariakit.ComboboxItem
+                      key={optionProps.id}
+                      value={value}
+                      {...optionProps}
+                    />
+                  )}
+                </ComboboxRenderer>
+              );
+            }
+            const { value, ...optionProps } = item;
+            return (
+              <Ariakit.ComboboxItem
+                key={optionProps.id}
+                value={value}
+                {...optionProps}
+              />
+            );
+          }}
+        </ComboboxRenderer>
+      </Ariakit.ComboboxPopover>
+    </section>
+  );
+}
+
+function SelectGroupedRenderer() {
   const select = Ariakit.useSelectStore({ defaultItems, defaultValue: "" });
 
   return (
-    <>
+    <section>
       <Ariakit.SelectLabel store={select}>Fruit</Ariakit.SelectLabel>
       <Ariakit.Select store={select} />
       <Ariakit.SelectPopover
@@ -109,38 +262,118 @@ function GroupedRenderer() {
           }}
         </SelectRenderer>
       </Ariakit.SelectPopover>
-    </>
+    </section>
   );
 }
 
 function HorizontalRenderer() {
+  const select = Ariakit.useComboboxStore({
+    defaultSelectedValue: "apple",
+  });
+
+  return (
+    <section>
+      <Ariakit.ComboboxProvider store={select}>
+        <Ariakit.ComboboxSelectLabel>
+          Favorite fruit
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect />
+        <Ariakit.ComboboxPopover gutter={4} className="popover">
+          <ComboboxRenderer
+            orientation="horizontal"
+            items={horizontalItems}
+            initialItems={horizontalItems.length}
+            itemSize={96}
+            className="renderer"
+          >
+            {({ value, label, ...item }) => (
+              <Ariakit.ComboboxItem
+                key={item.id}
+                value={value}
+                {...item}
+                className="option"
+              >
+                {label}
+              </Ariakit.ComboboxItem>
+            )}
+          </ComboboxRenderer>
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+    </section>
+  );
+}
+
+function SelectHorizontalRenderer() {
   const select = Ariakit.useSelectStore({ defaultValue: "apple" });
 
   return (
-    <Ariakit.SelectProvider store={select}>
-      <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
-      <Ariakit.Select />
-      <Ariakit.SelectPopover gutter={4} className="popover">
-        <SelectRenderer
-          orientation="horizontal"
-          items={horizontalItems}
-          initialItems={horizontalItems.length}
-          itemSize={96}
-          className="renderer"
+    <section>
+      <Ariakit.SelectProvider store={select}>
+        <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
+        <Ariakit.Select />
+        <Ariakit.SelectPopover gutter={4} className="popover">
+          <SelectRenderer
+            orientation="horizontal"
+            items={horizontalItems}
+            initialItems={horizontalItems.length}
+            itemSize={96}
+            className="renderer"
+          >
+            {({ value, label, ...item }) => (
+              <Ariakit.SelectItem
+                key={item.id}
+                value={value}
+                {...item}
+                className="option"
+              >
+                {label}
+              </Ariakit.SelectItem>
+            )}
+          </SelectRenderer>
+        </Ariakit.SelectPopover>
+      </Ariakit.SelectProvider>
+    </section>
+  );
+}
+
+function DuplicateValueRenderer() {
+  const scrollElementRef = useRef<HTMLDivElement>(null);
+
+  return (
+    <section>
+      <div
+        aria-label="Duplicate selected values"
+        ref={scrollElementRef}
+        role="listbox"
+        style={{ height: 40, overflowY: "auto" }}
+      >
+        <ComboboxRenderer
+          items={duplicateValueItems}
+          initialItems={1}
+          itemSize={40}
+          overscan={0}
+          scrollElement={scrollElementRef}
+          selectedValue={duplicateSelectedValues}
         >
-          {({ value, label, ...item }) => (
-            <Ariakit.SelectItem
-              key={item.id}
-              value={value}
-              {...item}
-              className="option"
+          {({ items, ...group }) => (
+            <ComboboxRenderer
+              key={group.id}
+              {...group}
+              role="group"
+              items={items}
+              initialItems={1}
+              selectedValue={duplicateSelectedValues}
             >
-              {label}
-            </Ariakit.SelectItem>
+              {({ label, value, ...item }) => (
+                <div key={item.id} {...item} role="option">
+                  {label ?? value}
+                </div>
+              )}
+            </ComboboxRenderer>
           )}
-        </SelectRenderer>
-      </Ariakit.SelectPopover>
-    </Ariakit.SelectProvider>
+        </ComboboxRenderer>
+      </div>
+    </section>
   );
 }
 
@@ -191,13 +424,13 @@ function AsyncRenderer() {
         role="listbox"
         aria-label="Async items"
       >
-        <SelectRenderer
+        <CollectionRenderer
           items={groupedItems}
           initialItems={1}
           scrollElement={scrollElementEnabled ? scrollElementRef : null}
         >
           {({ items, ...group }) => (
-            <SelectRenderer
+            <CollectionRenderer
               key={group.id}
               {...group}
               items={items}
@@ -212,9 +445,9 @@ function AsyncRenderer() {
                   {value}
                 </div>
               )}
-            </SelectRenderer>
+            </CollectionRenderer>
           )}
-        </SelectRenderer>
+        </CollectionRenderer>
       </div>
     </section>
   );
@@ -228,7 +461,7 @@ function NestedAutoRenderer() {
 
   return (
     <section>
-      <SelectRenderer items={groupedItems} initialItems={1}>
+      <CollectionRenderer items={groupedItems} initialItems={1}>
         {({ items, ...group }) => (
           <div
             key={group.id}
@@ -236,16 +469,16 @@ function NestedAutoRenderer() {
             role="listbox"
             aria-label="Nested auto items"
           >
-            <SelectRenderer {...group} items={items} initialItems={1}>
+            <CollectionRenderer {...group} items={items} initialItems={1}>
               {({ value, index, ...item }) => (
                 <div key={item.id} {...item} data-index={index} role="option">
                   {value}
                 </div>
               )}
-            </SelectRenderer>
+            </CollectionRenderer>
           </div>
         )}
-      </SelectRenderer>
+      </CollectionRenderer>
     </section>
   );
 }
@@ -275,7 +508,7 @@ function DirectElementRenderer() {
         role="listbox"
         aria-label="Direct element items"
       >
-        <SelectRenderer
+        <CollectionRenderer
           items={asyncItems}
           initialItems={1}
           itemSize={40}
@@ -286,13 +519,14 @@ function DirectElementRenderer() {
               {value}
             </div>
           )}
-        </SelectRenderer>
+        </CollectionRenderer>
       </div>
     </section>
   );
 }
 
 function ControllerLifetimeRenderer() {
+  const legacy = useContext(RendererModeContext);
   const [scrollElement, setScrollElement] =
     useState<() => HTMLElement | null>();
   const [released, setReleased] = useState<boolean>();
@@ -314,6 +548,10 @@ function ControllerLifetimeRenderer() {
     if (!scrollElement) return;
     setScrollElement(undefined);
   };
+
+  // Render the collection component directly so this weak-reference probe
+  // measures the renderer's lifetime rather than the shared wrapper's.
+  const Renderer = legacy ? SelectRenderer : ComboboxRenderer;
 
   return (
     <section>
@@ -337,7 +575,7 @@ function ControllerLifetimeRenderer() {
         {released === undefined ? "unchecked" : released ? "yes" : "no"};
         Revision: {revision}
       </p>
-      <SelectRenderer
+      <Renderer
         data-revision={revision}
         items={asyncItems}
         initialItems={1}
@@ -349,7 +587,7 @@ function ControllerLifetimeRenderer() {
             {value}
           </div>
         )}
-      </SelectRenderer>
+      </Renderer>
     </section>
   );
 }
@@ -365,7 +603,7 @@ function InitialRefRenderer() {
         role="listbox"
         aria-label="Initial ref items"
       >
-        <SelectRenderer
+        <CollectionRenderer
           items={asyncItems}
           initialItems={1}
           itemSize={40}
@@ -376,7 +614,7 @@ function InitialRefRenderer() {
               {value}
             </div>
           )}
-        </SelectRenderer>
+        </CollectionRenderer>
       </div>
     </section>
   );
@@ -425,7 +663,7 @@ const InheritedTargetOwner = memo(function InheritedTargetOwner({
   resolveScroller,
 }: InheritedTargetOwnerProps) {
   return (
-    <SelectRenderer
+    <CollectionRenderer
       items={inheritedTargetItems}
       initialItems={1}
       scrollElement={resolveScroller}
@@ -433,7 +671,7 @@ const InheritedTargetOwner = memo(function InheritedTargetOwner({
       {({ items, ...group }) => (
         <InheritedTargetChildContext.Consumer key={group.id}>
           {({ overscan, revision }) => (
-            <SelectRenderer
+            <CollectionRenderer
               {...group}
               items={items}
               initialItems={1}
@@ -450,11 +688,11 @@ const InheritedTargetOwner = memo(function InheritedTargetOwner({
                   value={value}
                 />
               )}
-            </SelectRenderer>
+            </CollectionRenderer>
           )}
         </InheritedTargetChildContext.Consumer>
       )}
-    </SelectRenderer>
+    </CollectionRenderer>
   );
 });
 
@@ -530,16 +768,26 @@ function InheritedTargetRenderer() {
 }
 
 export default function Example() {
+  const [selectRenderer, setSelectRenderer] = useState(false);
+
   return (
     <>
-      <GroupedRenderer />
-      <HorizontalRenderer />
-      <AsyncRenderer />
-      <NestedAutoRenderer />
-      <DirectElementRenderer />
-      <ControllerLifetimeRenderer />
-      <InitialRefRenderer />
-      <InheritedTargetRenderer />
+      <button type="button" onClick={() => setSelectRenderer(true)}>
+        Use SelectRenderer
+      </button>
+      <RendererModeContext.Provider value={selectRenderer}>
+        {selectRenderer ? <SelectGroupedRenderer /> : <GroupedRenderer />}
+        {selectRenderer ? <SelectHorizontalRenderer /> : <HorizontalRenderer />}
+        <DuplicateValueRenderer />
+        <AsyncRenderer />
+        <NestedAutoRenderer />
+        <DirectElementRenderer />
+        <ControllerLifetimeRenderer
+          key={selectRenderer ? "select-lifetime" : "combobox-lifetime"}
+        />
+        <InitialRefRenderer />
+        <InheritedTargetRenderer />
+      </RendererModeContext.Provider>
     </>
   );
 }

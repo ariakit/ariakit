@@ -1,6 +1,7 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  // https://github.com/ariakit/ariakit/issues/3323
   test("pressing Enter with no matching items does not submit the form", async ({
     page,
     q,
@@ -12,6 +13,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.text("Form submitted")).toBeHidden();
   });
 
+  // https://github.com/ariakit/ariakit/issues/3323
   test("pressing Shift+Enter with no matching items does not submit the form", async ({
     page,
     q,
@@ -23,6 +25,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.text("Form submitted")).toBeHidden();
   });
 
+  // https://github.com/ariakit/ariakit/issues/3323
   test("pressing Enter with a matching item selects it without submitting the form", async ({
     page,
     q,

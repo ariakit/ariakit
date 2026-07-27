@@ -1,6 +1,6 @@
 ---
 tags:
-  - Select
+  - Combobox
   - Dropdowns
   - Form controls
 ---
@@ -9,7 +9,7 @@ tags:
 
 <div data-description>
 
-Rendering [Select](/components/select) with a custom styled value and [`SelectItem`](/reference/select-item)'s children.
+Rendering a [Combobox](/components/combobox) select with a custom styled value and [`ComboboxItem`](/reference/combobox-item)'s children.
 
 </div>
 

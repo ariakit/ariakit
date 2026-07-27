@@ -1,7 +1,7 @@
 import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
-// See https://github.com/ariakit/ariakit/issues/6346
+// https://github.com/ariakit/ariakit/issues/6346
 test("activates the tab selected by setSelectedId after the popover opens", async () => {
   await click(q.combobox("Grocery"));
   expect(q.tab("Fruits")).toHaveAttribute("aria-selected", "true");
@@ -19,6 +19,7 @@ test("activates the tab selected by setSelectedId after the popover opens", asyn
   expect(q.tab("Fruits")).not.toHaveAttribute("tabindex", "-1");
 });
 
+// https://github.com/ariakit/ariakit/issues/6346
 test("activates the tab selected by setSelectedId after the popover toggles", async () => {
   await click(q.combobox("Grocery"));
   expect(q.tab("Fruits")).toHaveAttribute("aria-selected", "true");

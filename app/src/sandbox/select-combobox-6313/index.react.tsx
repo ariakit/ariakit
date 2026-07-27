@@ -4,18 +4,18 @@ import { useLayoutEffect, useMemo, useState } from "react";
 
 const list = ["Apple", "Banana", "Cherry", "Grape", "Lemon", "Orange"];
 
-// The descendant layout effect runs before SelectProvider initializes, so this
+// The descendant layout effect runs before ComboboxProvider initializes, so this
 // store-level listener exposes reentrant writes during the initial parent push.
 function ValueFollowsHighlight() {
-  const select = Ariakit.useSelectContext();
+  const combobox = Ariakit.useComboboxContext();
 
   useLayoutEffect(() => {
-    if (!select) return;
-    return sync(select, ["activeId"], (state) => {
+    if (!combobox) return;
+    return sync(combobox, ["activeId"], (state) => {
       if (!state.activeId) return;
-      select.setValue(state.activeId);
+      combobox.setSelectedValue(state.activeId);
     });
-  }, [select]);
+  }, [combobox]);
 
   return null;
 }
@@ -24,11 +24,12 @@ export default function Example() {
   const [searchValue, setSearchValue] = useState("");
   // The highlighted item should be committed during init so both stores render
   // Banana after the first paint.
-  const select = Ariakit.useSelectStore({
-    defaultValue: "Apple",
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Apple",
     defaultActiveId: "Banana",
+    setValue: setSearchValue,
   });
-  const value = Ariakit.useStoreState(select, "value");
+  const value = Ariakit.useStoreState(combobox, "selectedValue");
 
   const matches = useMemo(() => {
     const search = searchValue.toLowerCase();
@@ -37,25 +38,23 @@ export default function Example() {
 
   return (
     <>
-      <Ariakit.ComboboxProvider setValue={setSearchValue}>
-        <Ariakit.SelectProvider store={select}>
-          <ValueFollowsHighlight />
-          <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
-          <Ariakit.Select />
-          <Ariakit.SelectPopover gutter={4} sameWidth>
-            <Ariakit.Combobox placeholder="Search..." />
-            <Ariakit.ComboboxList>
-              {matches.map((item) => (
-                <Ariakit.SelectItem
-                  key={item}
-                  id={item}
-                  value={item}
-                  render={<Ariakit.ComboboxItem />}
-                />
-              ))}
-            </Ariakit.ComboboxList>
-          </Ariakit.SelectPopover>
-        </Ariakit.SelectProvider>
+      <Ariakit.ComboboxProvider store={combobox}>
+        <ValueFollowsHighlight />
+        <Ariakit.ComboboxSelectLabel>
+          Favorite fruit
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect />
+        <Ariakit.ComboboxPopover gutter={4} sameWidth>
+          <Ariakit.ComboboxInput
+            aria-label="Search fruits"
+            placeholder="Search..."
+          />
+          <Ariakit.ComboboxList>
+            {matches.map((item) => (
+              <Ariakit.ComboboxItem key={item} id={item} value={item} />
+            ))}
+          </Ariakit.ComboboxList>
+        </Ariakit.ComboboxPopover>
       </Ariakit.ComboboxProvider>
       <p>
         Committed value: <output>{value}</output>

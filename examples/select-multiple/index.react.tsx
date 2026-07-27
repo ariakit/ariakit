@@ -1,11 +1,11 @@
 import {
-  Select,
-  SelectArrow,
-  SelectItem,
-  SelectItemCheck,
-  SelectLabel,
-  SelectPopover,
-  SelectProvider,
+  ComboboxItem,
+  ComboboxItemCheck,
+  ComboboxPopover,
+  ComboboxProvider,
+  ComboboxSelect,
+  ComboboxSelectArrow,
+  ComboboxSelectLabel,
 } from "@ariakit/react";
 import { useState } from "react";
 import list from "./list.ts";
@@ -21,21 +21,21 @@ export default function Example() {
   const [value, setValue] = useState(["Apple", "Cake"]);
   return (
     <div className="wrapper">
-      <SelectProvider value={value} setValue={setValue}>
-        <SelectLabel>Favorite food</SelectLabel>
-        <Select className="button">
+      <ComboboxProvider selectedValue={value} setSelectedValue={setValue}>
+        <ComboboxSelectLabel>Favorite food</ComboboxSelectLabel>
+        <ComboboxSelect className="button">
           {renderValue(value)}
-          <SelectArrow />
-        </Select>
-        <SelectPopover gutter={4} sameWidth unmountOnHide className="popover">
+          <ComboboxSelectArrow />
+        </ComboboxSelect>
+        <ComboboxPopover gutter={4} sameWidth unmountOnHide className="popover">
           {list.map((value) => (
-            <SelectItem key={value} value={value} className="select-item">
-              <SelectItemCheck />
+            <ComboboxItem key={value} value={value} className="select-item">
+              <ComboboxItemCheck />
               {value}
-            </SelectItem>
+            </ComboboxItem>
           ))}
-        </SelectPopover>
-      </SelectProvider>
+        </ComboboxPopover>
+      </ComboboxProvider>
     </div>
   );
 }

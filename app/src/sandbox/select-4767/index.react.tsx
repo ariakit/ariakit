@@ -1,37 +1,39 @@
 import * as Ariakit from "@ariakit/react";
 
 interface FruitSelectProps {
-  focusable?: boolean;
+  filter?: boolean;
   label: string;
   virtualFocus?: boolean;
 }
 
-function FruitSelect({ focusable, label, virtualFocus }: FruitSelectProps) {
+function FruitSelect({ filter, label, virtualFocus }: FruitSelectProps) {
   return (
-    <Ariakit.SelectProvider defaultValue="Apple" virtualFocus={virtualFocus}>
-      <Ariakit.SelectLabel>{label}</Ariakit.SelectLabel>
-      <Ariakit.Select />
-      <Ariakit.SelectPopover gutter={4} sameWidth>
-        <Ariakit.SelectList focusable={focusable}>
-          <Ariakit.SelectItem value="Apple" />
-          <Ariakit.SelectItem value="Banana" />
-          <Ariakit.SelectItem value="Orange" />
-        </Ariakit.SelectList>
-      </Ariakit.SelectPopover>
-    </Ariakit.SelectProvider>
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue="Apple"
+      virtualFocus={virtualFocus}
+    >
+      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxPopover gutter={4} sameWidth unmountOnHide={filter}>
+        {filter && (
+          <Ariakit.ComboboxInput autoSelect aria-label={`Filter ${label}`} />
+        )}
+        <Ariakit.ComboboxList>
+          <Ariakit.ComboboxItem value="Apple" />
+          <Ariakit.ComboboxItem value="Banana" />
+          <Ariakit.ComboboxItem value="Orange" />
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
   );
 }
 
 export default function Example() {
   return (
     <>
-      <FruitSelect label="Favorite fruit" focusable={false} />
-      <FruitSelect label="Virtual focus fruit" />
-      <FruitSelect
-        label="Real focus fruit"
-        focusable={false}
-        virtualFocus={false}
-      />
+      <FruitSelect label="Favorite fruit" />
+      <FruitSelect label="Real focus fruit" virtualFocus={false} />
+      <FruitSelect filter label="Filterable fruit" />
     </>
   );
 }

@@ -178,3 +178,70 @@ test("prefers the nearest prop description in base hierarchies", async () => {
   expect(farthest.description).toBe("Ancestor-only fallback.");
   expect(farthest.liveExamples).toEqual(["https://example.com/farthest-only"]);
 });
+
+test("loads component aliases as distinct references", async () => {
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({
+    corePath: join(process.cwd(), "packages/ariakit-react-components"),
+    framework: "react",
+    packagePath: join(process.cwd(), "packages/ariakit-react"),
+  });
+
+  await loader.load(context);
+
+  const combobox = getReference(entries, "react/combobox/combobox");
+  const comboboxInput = getReference(entries, "react/combobox/combobox-input");
+
+  expect(combobox.description).toContain(
+    "**Alias**: [`ComboboxInput`](https://ariakit.com/reference/combobox-input)",
+  );
+  expect(comboboxInput.description).toContain(
+    "**Alias**: [`Combobox`](https://ariakit.com/reference/combobox)",
+  );
+  expect(comboboxInput.params[0]?.props).toEqual(combobox.params[0]?.props);
+});
+
+test("loads Combobox Select prop metadata", async () => {
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({
+    corePath: join(process.cwd(), "packages/ariakit-react-components"),
+    framework: "react",
+    packagePath: join(process.cwd(), "packages/ariakit-react"),
+  });
+
+  await loader.load(context);
+
+  const provider = getReference(entries, "react/combobox/combobox-provider");
+  const defaultSelectedValue = getParamProp(provider, "defaultSelectedValue");
+  expect(defaultSelectedValue.defaultValue).toBeUndefined();
+  expect(defaultSelectedValue.description).toContain(
+    "first enabled item with a defined value",
+  );
+  expect(defaultSelectedValue.description).toContain('Pass `""` explicitly');
+
+  const popover = getReference(entries, "react/combobox/combobox-popover");
+  const typeahead = getParamProp(popover, "typeahead");
+  expect(typeahead.defaultValue).toBeUndefined();
+  expect(typeahead.description).toContain("Defaults to `false`");
+  expect(typeahead.description).toContain("and `true` otherwise");
+
+  const label = getReference(entries, "react/combobox/combobox-select-label");
+  const labelStore = getParamProp(label, "store");
+  expect(labelStore.description).toContain(
+    "https://ariakit.com/reference/combobox-provider",
+  );
+
+  for (const id of [
+    "react/combobox/combobox-select-arrow",
+    "react/combobox/combobox-selected-value",
+  ]) {
+    const reference = getReference(entries, id);
+    const store = getParamProp(reference, "store");
+    expect(store.description).toContain(
+      "https://ariakit.com/reference/combobox-select",
+    );
+    expect(store.description).toContain(
+      "https://ariakit.com/reference/combobox-provider",
+    );
+  }
+});

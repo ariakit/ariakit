@@ -8,12 +8,12 @@ import { useLayoutEffect, useRef, useState } from "react";
 // listbox and mark the option as active. The explicit tabIndex makes the
 // option focusable on its very first render, which is required for the
 // mount-time focus() call to work.
-function RecommendedSelectItem(props: Ariakit.SelectItemProps) {
+function RecommendedSelectItem(props: Ariakit.ComboboxItemProps) {
   const ref = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
     ref.current?.focus();
   }, []);
-  return <Ariakit.SelectItem {...props} ref={ref} tabIndex={-1} />;
+  return <Ariakit.ComboboxItem {...props} ref={ref} tabIndex={-1} />;
 }
 
 // The app also focuses the search field on open. It's rendered after the
@@ -25,7 +25,9 @@ function AutoFocusSearchInput() {
   useLayoutEffect(() => {
     ref.current?.focus();
   }, []);
-  return <input ref={ref} type="text" aria-label="Search fruits" />;
+  return (
+    <Ariakit.ComboboxInput ref={ref} type="text" aria-label="Search fruits" />
+  );
 }
 
 export default function Example() {
@@ -40,22 +42,26 @@ export default function Example() {
         />
         Show search
       </label>
-      <Ariakit.SelectProvider defaultValue="Apple">
-        <Ariakit.SelectLabel>Favorite fruit</Ariakit.SelectLabel>
-        <Ariakit.Select />
-        <Ariakit.SelectPopover
+      {/* Nothing is selected by default: a stored selection resolves into the
+      active item when the popover opens, masking the mount-time focus. */}
+      <Ariakit.ComboboxProvider defaultSelectedValue="">
+        <Ariakit.ComboboxSelectLabel>
+          Favorite fruit
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect />
+        <Ariakit.ComboboxPopover
           gutter={4}
           sameWidth
           unmountOnHide
           autoFocusOnShow={false}
         >
-          <Ariakit.SelectItem value="Apple" />
+          <Ariakit.ComboboxItem value="Apple" />
           <RecommendedSelectItem value="Banana" />
-          <Ariakit.SelectItem value="Grape" />
-          <Ariakit.SelectItem value="Orange" />
+          <Ariakit.ComboboxItem value="Grape" />
+          <Ariakit.ComboboxItem value="Orange" />
           {showSearch && <AutoFocusSearchInput />}
-        </Ariakit.SelectPopover>
-      </Ariakit.SelectProvider>
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
     </>
   );
 }

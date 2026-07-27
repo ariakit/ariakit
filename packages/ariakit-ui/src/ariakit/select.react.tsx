@@ -16,10 +16,13 @@ import {
   selectValueLabel,
 } from "../styles/select.ts";
 
-export interface SelectProps
-  extends
-    Omit<SelectButtonProps, "value" | "defaultValue" | "popover">,
-    Pick<SelectProviderProps, "value" | "setValue" | "defaultValue"> {
+export interface SelectProps extends Omit<
+  SelectButtonProps,
+  "value" | "defaultValue" | "popover"
+> {
+  value?: SelectProviderProps["selectedValue"];
+  setValue?: SelectProviderProps["setSelectedValue"];
+  defaultValue?: SelectProviderProps["defaultSelectedValue"];
   /** Items to render in the popover when not provided as children. */
   items?: SelectItemProps[];
   /** Custom label element or props to render a `SelectLabel`. */
@@ -58,9 +61,9 @@ export function Select({
   const popoverEl = createRender(SelectPopover, popover);
   return (
     <SelectProvider
-      value={value}
-      setValue={setValue}
-      defaultValue={defaultValue}
+      selectedValue={value}
+      setSelectedValue={setValue}
+      defaultSelectedValue={defaultValue}
     >
       {labelEl}
       <SelectButton {...props} />
@@ -74,35 +77,35 @@ export function Select({
   );
 }
 
-export interface SelectProviderProps extends ak.SelectProviderProps {}
+export interface SelectProviderProps extends ak.ComboboxProviderProps {}
 
 /**
  * @see https://ariakit.com/reference/select-provider
  */
 export function SelectProvider(props: SelectProviderProps) {
-  return <ak.SelectProvider {...props} />;
+  return <ak.ComboboxProvider {...props} />;
 }
 
-export interface SelectValueProps extends ak.SelectValueProps {}
+export interface SelectValueProps extends ak.ComboboxSelectedValueProps {}
 
 /**
  * @see https://ariakit.com/reference/select-value
  */
 export function SelectValue(props: SelectValueProps) {
-  return <ak.SelectValue {...props} />;
+  return <ak.ComboboxSelectedValue {...props} />;
 }
 
-export interface SelectLabelProps extends ak.SelectLabelProps {}
+export interface SelectLabelProps extends ak.ComboboxSelectLabelProps {}
 
 /**
  * @see https://ariakit.com/reference/select-label
  */
 export function SelectLabel(props: SelectLabelProps) {
-  return <ak.SelectLabel {...props} />;
+  return <ak.ComboboxSelectLabel {...props} />;
 }
 
 export interface SelectButtonProps
-  extends ak.SelectProps, VariantProps<typeof select> {
+  extends ak.ComboboxSelectProps, VariantProps<typeof select> {
   /**
    * Custom icon element that will be rendered before or after the display
    * value depending on the `chevron` position.
@@ -143,7 +146,7 @@ export function SelectButton({
     <span {...selectIcon.jsx({})}>{icon}</span>
   );
   return (
-    <ak.Select
+    <ak.ComboboxSelect
       {...select.jsx({
         ...badgeVariants,
         ...variantProps,
@@ -161,12 +164,12 @@ export function SelectButton({
       </span>
       {chevron === "before" && iconElement}
       {chevron === "after" && arrow}
-    </ak.Select>
+    </ak.ComboboxSelect>
   );
 }
 
 export interface SelectPopoverProps
-  extends ak.SelectPopoverProps, VariantProps<typeof selectPopover> {}
+  extends ak.ComboboxPopoverProps, VariantProps<typeof selectPopover> {}
 
 /**
  * @see https://ariakit.com/reference/select-popover
@@ -176,7 +179,7 @@ export function SelectPopover(props: SelectPopoverProps) {
   // Ariakit signals the open state through data-open; an explicit $state
   // prop still wins.
   return (
-    <ak.SelectPopover
+    <ak.ComboboxPopover
       gutter={8}
       shift={-3}
       {...selectPopover.jsx({
@@ -189,7 +192,7 @@ export function SelectPopover(props: SelectPopoverProps) {
 }
 
 export interface SelectItemProps
-  extends ak.SelectItemProps, VariantProps<typeof selectItem> {
+  extends ak.ComboboxItemProps, VariantProps<typeof selectItem> {
   /**
    * Custom icon element that will be rendered before or after the display
    * value depending on the `checkmark` position.
@@ -214,12 +217,12 @@ export function SelectItem({
     </span>
   );
   return (
-    <ak.SelectItem {...selectItem.jsx(variantProps)} {...rest}>
+    <ak.ComboboxItem {...selectItem.jsx(variantProps)} {...rest}>
       {checkmark === "before" && check}
       {checkmark !== "before" && icon}
       <span {...selectValueLabel.jsx({})}>{rest.children || rest.value}</span>
       {checkmark === "before" && icon}
       {checkmark === "after" && check}
-    </ak.SelectItem>
+    </ak.ComboboxItem>
   );
 }

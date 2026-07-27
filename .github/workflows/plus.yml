@@ -3,7 +3,7 @@ name: plus
 on:
   push:
     branches: [main, next]
-  pull_request:
+  workflow_call:
 
 permissions:
   contents: read

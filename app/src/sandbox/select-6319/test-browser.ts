@@ -17,6 +17,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.option("Cherry")).toHaveAttribute("data-active-item");
   });
 
+  // https://github.com/ariakit/ariakit/issues/6319
   test("arrow keys on the closed select skip the trailing item without value", async ({
     page,
     q,
@@ -36,6 +37,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(combobox).toContainText("Green");
   });
 
+  // https://github.com/ariakit/ariakit/issues/6319
   test("arrow keys on the closed select with focusLoop wrap past the item without value", async ({
     page,
     q,

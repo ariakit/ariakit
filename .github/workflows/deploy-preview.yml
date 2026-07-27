@@ -11,7 +11,7 @@ jobs:
       name: Preview
       url: ${{ steps.preview-url.outputs.commit_url }}
     concurrency:
-      group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+      group: deploy-preview-${{ github.head_ref || github.ref_name }}
     permissions:
       actions: read
       contents: read

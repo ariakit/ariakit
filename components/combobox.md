@@ -27,6 +27,16 @@ Fill in a React input field with autocomplete &amp; autosuggest functionalities.
 - [](/examples/combobox-group)
 - [](/examples/combobox-disclosure)
 - [](/examples/combobox-links)
+- [](/examples/select-multiple)
+- [](/examples/select-animated)
+- [](/examples/select-combobox)
+- [](/examples/select-combobox-tab)
+- [](/examples/select-next-router)
+- [](/examples/select-grid)
+- [](/examples/select-group)
+- [](/examples/select-item-custom)
+- [](/examples/form-select)
+- [](/examples/toolbar-select)
 
 </div>
 
@@ -39,21 +49,32 @@ useComboboxContext()
 <ComboboxProvider>
   <ComboboxLabel />
   <Combobox />
+  <ComboboxSelectLabel />
+  <ComboboxSelect>
+    <ComboboxSelectedValue />
+    <ComboboxSelectArrow />
+  </ComboboxSelect>
   <ComboboxCancel />
   <ComboboxDisclosure />
   <ComboboxValue />
   <ComboboxList />
   <ComboboxPopover>
-    <ComboboxGroup>
-      <ComboboxGroupLabel />
-      <ComboboxRow>
-        <ComboboxItem>
-          <ComboboxItemCheck />
-          <ComboboxItemValue />
-        </ComboboxItem>
-        <ComboboxSeparator />
-      </ComboboxRow>
-    </ComboboxGroup>
+    <ComboboxInput />
+    <ComboboxHeading />
+    <ComboboxDismiss />
+    <ComboboxList>
+      <ComboboxGroup>
+        <ComboboxGroupLabel />
+        <ComboboxRow>
+          <ComboboxItem>
+            <ComboboxItemCheck />
+            <ComboboxItemSelected />
+            <ComboboxItemValue />
+          </ComboboxItem>
+          <ComboboxSeparator />
+        </ComboboxRow>
+      </ComboboxGroup>
+    </ComboboxList>
   </ComboboxPopover>
 </ComboboxProvider>
 ```

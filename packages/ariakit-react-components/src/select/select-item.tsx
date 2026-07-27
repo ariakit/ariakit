@@ -254,15 +254,6 @@ export interface SelectItemOptions<T extends ElementType = TagName>
    *   [`value`](https://ariakit.com/reference/select-provider#value) state will
    *   be set to this value when the user moves to it (which is usually the case
    *   when moving through the items using the keyboard).
-   *
-   * Live examples:
-   * - [Form with Select](https://ariakit.com/examples/form-select)
-   * - [Animated Select](https://ariakit.com/examples/select-animated)
-   * - [Select with Combobox](https://ariakit.com/examples/select-combobox)
-   * - [Select Grid](https://ariakit.com/examples/select-grid)
-   * - [SelectGroup](https://ariakit.com/examples/select-group)
-   * - [Select with custom
-   *   item](https://ariakit.com/examples/select-item-custom)
    * @example
    * ```jsx
    * <SelectItem value="Apple" />
@@ -280,10 +271,6 @@ export interface SelectItemOptions<T extends ElementType = TagName>
    * item is clicked. By default, it's `true` when the
    * [`value`](https://ariakit.com/reference/select-item#value) prop is also
    * provided.
-   *
-   * Live examples:
-   * - [Select with Next.js App
-   *   Router](https://ariakit.com/examples/select-next-router)
    */
   setValueOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
 }

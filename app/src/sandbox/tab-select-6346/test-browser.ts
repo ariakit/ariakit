@@ -1,7 +1,7 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
-// See https://github.com/ariakit/ariakit/issues/6346
 withFramework(import.meta.dirname, async ({ test }) => {
+  // https://github.com/ariakit/ariakit/issues/6346
   test("activates the tab selected by setSelectedId after the popover opens", async ({
     q,
   }) => {
@@ -25,6 +25,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.tab("Fruits")).not.toHaveAttribute("tabindex", "-1");
   });
 
+  // https://github.com/ariakit/ariakit/issues/6346
   test("activates the tab selected by setSelectedId after the popover toggles", async ({
     q,
   }) => {

@@ -3,15 +3,15 @@ import Square from "../select-grid/square.tsx";
 import "./style.css";
 
 export default function Example() {
-  const select = Ariakit.useSelectStore({
-    defaultValue: "Center",
+  const select = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Center",
     placement: "bottom",
-    setValueOnMove: true,
+    selectOnMove: true,
   });
-  const value = Ariakit.useStoreState(select, "value");
+  const value = Ariakit.useStoreState(select, "selectedValue");
 
   const renderItem = (value: string) => (
-    <Ariakit.SelectItem
+    <Ariakit.ComboboxItem
       role="gridcell"
       value={value}
       className="select-item"
@@ -27,35 +27,41 @@ export default function Example() {
       }}
     >
       <Ariakit.VisuallyHidden>{value}</Ariakit.VisuallyHidden>
-    </Ariakit.SelectItem>
+    </Ariakit.ComboboxItem>
   );
 
   return (
     <div className="wrapper">
-      <Ariakit.SelectLabel store={select}>Position</Ariakit.SelectLabel>
-      <Ariakit.Select store={select} showOnKeyDown={false} className="button">
+      <Ariakit.ComboboxSelectLabel store={select}>
+        Position
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect
+        store={select}
+        showOnKeyDown={false}
+        className="button"
+      >
         <Square value={value} />
         {value}
-        <Ariakit.SelectArrow />
-      </Ariakit.Select>
-      <Ariakit.SelectPopover store={select} role="grid" className="popover">
+        <Ariakit.ComboboxSelectArrow />
+      </Ariakit.ComboboxSelect>
+      <Ariakit.ComboboxPopover store={select} role="grid" className="popover">
         <Ariakit.PopoverArrow className="arrow" />
-        <Ariakit.SelectRow className="row">
+        <Ariakit.ComboboxRow className="row">
           {renderItem("Top Left")}
           {renderItem("Top Center")}
           {renderItem("Top Right")}
-        </Ariakit.SelectRow>
-        <Ariakit.SelectRow className="row">
+        </Ariakit.ComboboxRow>
+        <Ariakit.ComboboxRow className="row">
           {renderItem("Center Left")}
           {renderItem("Center")}
           {renderItem("Center Right")}
-        </Ariakit.SelectRow>
-        <Ariakit.SelectRow className="row">
+        </Ariakit.ComboboxRow>
+        <Ariakit.ComboboxRow className="row">
           {renderItem("Bottom Left")}
           {renderItem("Bottom Center")}
           {renderItem("Bottom Right")}
-        </Ariakit.SelectRow>
-      </Ariakit.SelectPopover>
+        </Ariakit.ComboboxRow>
+      </Ariakit.ComboboxPopover>
     </div>
   );
 }

@@ -12,10 +12,12 @@ import {
 import type { Options, Props } from "@ariakit/react-utils";
 import { invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
-import { useRef, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
+import { DialogHeadingContext } from "../dialog/dialog-context.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
+  ComboboxHeadingContext,
   ComboboxListRoleContext,
   ComboboxScopedContextProvider,
   useComboboxContext,
@@ -63,6 +65,7 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     const multiSelectable = useStoreState(store, ["selectedValue"], (state) =>
       Array.isArray(state.selectedValue),
     );
+
     const role = useAttribute(ref, "role", props.role);
     const isCompositeRole =
       role === "listbox" || role === "tree" || role === "grid";
@@ -72,7 +75,13 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
 
     const [hasListboxInside, setHasListboxInside] = useState(false);
     const contentElement = useStoreState(store, "contentElement");
-
+    const parentHeadingContext = useContext(ComboboxHeadingContext);
+    const headingState = useState<string>();
+    const [headingId, setHeadingId] = parentHeadingContext || headingState;
+    const headingContext = useMemo<typeof headingState>(
+      () => [headingId, setHeadingId],
+      [headingId, setHeadingId],
+    );
     // We support nested <ComboboxList> elements (usually in the form of
     // ComboboxPopover>ComboboxList), but we can't have nested listbox roles, so
     // we check here if there's already a listbox element inside the current
@@ -103,16 +112,24 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       };
     }
 
+    // Heading hooks publish their id through DialogHeadingContext. Redirecting
+    // that setter here makes the heading label this list, whose props take
+    // precedence when it shares an element with ComboboxPopover.
+    // ComboboxHeadingContext also exposes the id so nested lists can inherit it.
     props = useWrapElement(
       props,
       (element) => (
         <ComboboxScopedContextProvider value={store}>
-          <ComboboxListRoleContext.Provider value={role}>
-            {element}
-          </ComboboxListRoleContext.Provider>
+          <ComboboxHeadingContext.Provider value={headingContext}>
+            <DialogHeadingContext.Provider value={setHeadingId}>
+              <ComboboxListRoleContext.Provider value={role}>
+                {element}
+              </ComboboxListRoleContext.Provider>
+            </DialogHeadingContext.Provider>
+          </ComboboxHeadingContext.Provider>
         </ComboboxScopedContextProvider>
       ),
-      [store, role],
+      [store, role, headingContext],
     );
 
     // When nesting ComboboxList elements, the content element should be
@@ -121,8 +138,19 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       id && (!scopedContext || !scopedContextSameStore)
         ? store.setContentElement
         : null;
+    const labelElement = useStoreState(
+      store,
+      ["labelElement", "selectLabelElement"],
+      (state) => {
+        if (headingId) return null;
+        return state.selectLabelElement || state.labelElement;
+      },
+    );
+    useAttribute(labelElement, "id");
+    const labelId = headingId || labelElement?.id;
 
     props = {
+      "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
       hidden,
       ...props,
       id,

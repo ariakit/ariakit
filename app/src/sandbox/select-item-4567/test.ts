@@ -2,7 +2,7 @@ import { click, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/4567
-test("exposes and updates the SelectItem selected state", async () => {
+test("exposes and updates the ComboboxItem selected state", async () => {
   await click(q.combobox("Favorite fruits"));
   expect(q.option("Apple (selected)")).toBeVisible();
   expect(q.option("Banana (not selected)")).toBeVisible();

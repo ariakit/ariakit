@@ -52,6 +52,7 @@ import {
   getEnabledItem,
   isItem,
   selectTextField,
+  withDocumentScrollPreserved,
 } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -215,14 +216,22 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 
     const { isActiveItem, isTabbable } = useStoreStateObject(
       store,
-      ["activeId", "renderedItems", "virtualFocus", "items"],
+      ["activeId", "baseElement", "renderedItems", "virtualFocus", "items"],
       {
         isActiveItem(state) {
           return !!state && state.activeId === id;
         },
         isTabbable(state) {
-          if (!state?.renderedItems.length) return true;
+          if (!state) return true;
+          // The composite element is published in a layout effect, one commit
+          // after the items mount, while rendered items are only published on
+          // the next animation frame. Both are empty before hydration and on
+          // the first commit, which is when items must keep their native tab
+          // order. Both conditions are necessary: a composite store may never
+          // get a composite element, and its items must still roam.
+          if (!state.baseElement && !state.renderedItems.length) return true;
           if (state.virtualFocus) return false;
+          if (!state.renderedItems.length) return true;
           if (tabbable) return true;
           if (state.activeId === null) return false;
           // If activeId refers to an item that's disabled or not connected to the
@@ -315,10 +324,26 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           }
           return;
         }
+        const fromComposite =
+          relatedTarget === baseElement || isItem(store, relatedTarget);
         // Safari doesn't scroll the element into view when another element is
         // immediately focused. So we have to do it manually here.
         if (isSafari() && currentTarget.hasAttribute("data-autofocus")) {
-          currentTarget.scrollIntoView({ block: "nearest", inline: "nearest" });
+          // Virtual focus immediately returns to an already focused composite.
+          // Keep the fallback scoped to nested scrollers in that case.
+          if (fromComposite) {
+            withDocumentScrollPreserved(currentTarget, () => {
+              currentTarget.scrollIntoView({
+                block: "nearest",
+                inline: "nearest",
+              });
+            });
+          } else {
+            currentTarget.scrollIntoView({
+              block: "nearest",
+              inline: "nearest",
+            });
+          }
         }
         hasFocusedComposite.current = true;
         // If the previously focused element is a composite or composite item
@@ -326,8 +351,6 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         // That's because this is just a transition event, the composite
         // element was likely already focused, so we're just immediately
         // returning focus to it when navigating through the items.
-        const fromComposite =
-          relatedTarget === baseElement || isItem(store, relatedTarget);
         if (fromComposite) {
           focusSilently(baseElement);
         }

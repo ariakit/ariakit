@@ -1,15 +1,15 @@
 ---
 tags:
-  - Select
+  - Combobox
   - Dropdowns
   - Form controls
 ---
 
-# SelectGroup
+# Select group
 
 <div data-description>
 
-Separating <a href="/components/select">Select</a> items into groups using the <a href="/reference/select-group"><code>SelectGroup</code></a> and <a href="/reference/select-group-label"><code>SelectGroupLabel</code></a> components.
+Separating <a href="/components/combobox">Combobox</a> items into groups using the <a href="/reference/combobox-group"><code>ComboboxGroup</code></a> and <a href="/reference/combobox-group-label"><code>ComboboxGroupLabel</code></a> components.
 
 </div>
 

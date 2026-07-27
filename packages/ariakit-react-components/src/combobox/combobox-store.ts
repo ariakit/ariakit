@@ -2,7 +2,7 @@ import * as Core from "@ariakit/components/combobox/combobox-store";
 import { useStore, useStoreProps } from "@ariakit/react-store";
 import type { Store } from "@ariakit/react-store";
 import { useUpdateEffect } from "@ariakit/react-utils";
-import type { PickRequired } from "@ariakit/utils";
+import type { BivariantCallback, PickRequired } from "@ariakit/utils";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -41,6 +41,7 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
 
   useStoreProps(store, props, "value", "setValue");
   useStoreProps(store, props, "selectedValue", "setSelectedValue");
+  useStoreProps(store, props, "selectOnMove");
   useStoreProps(store, props, "resetValueOnHide");
   useStoreProps(store, props, "resetValueOnSelect");
 
@@ -145,7 +146,9 @@ export interface ComboboxStoreOptions<
    * - [Multi-selectable
    *   Combobox](https://ariakit.com/examples/combobox-multiple)
    */
-  setSelectedValue?: (value: ComboboxStoreState<T>["selectedValue"]) => void;
+  setSelectedValue?: BivariantCallback<
+    (value: ComboboxStoreState<T>["selectedValue"]) => void
+  >;
   /**
    * A reference to a [tag store](https://ariakit.com/apis/use-tag-store). It's
    * automatically set when rendering a combobox within a tag list.

@@ -13,74 +13,93 @@ const popoverStyle = {
 
 export default function Example() {
   const [showCustomInput, setShowCustomInput] = useState(false);
-  const fruit = Ariakit.useSelectStore({ defaultValue: "Cherry" });
-  const color = Ariakit.useSelectStore({ defaultValue: "Green" });
-  const shape = Ariakit.useSelectStore({
-    defaultValue: "Triangle",
+  const fruit = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Cherry",
+  });
+  const color = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Green",
+  });
+  const shape = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Triangle",
     focusLoop: true,
   });
   return (
     <>
       <div>
-        <Ariakit.SelectLabel store={fruit}>Favorite fruit</Ariakit.SelectLabel>
-        <Ariakit.Select store={fruit} />
-        <Ariakit.SelectPopover
+        <Ariakit.ComboboxSelectLabel store={fruit}>
+          Favorite fruit
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect store={fruit} />
+        <Ariakit.ComboboxPopover
           store={fruit}
           gutter={4}
           sameWidth
           style={popoverStyle}
         >
           {fruits.map((value) => (
-            <Ariakit.SelectItem key={value} value={value} />
+            <Ariakit.ComboboxItem key={value} value={value} />
           ))}
           {/* Action items at the end of the list, rendered as SelectItems
               without the optional value prop so they take part in keyboard
               navigation. */}
-          <Ariakit.SelectItem hideOnClick onClick={() => fruit.setValue("")}>
+          <Ariakit.ComboboxItem
+            hideOnClick
+            onClick={() => fruit.setSelectedValue("")}
+          >
             Clear selection
-          </Ariakit.SelectItem>
-          <Ariakit.SelectItem
+          </Ariakit.ComboboxItem>
+          <Ariakit.ComboboxItem
             hideOnClick
             onClick={() => setShowCustomInput(true)}
           >
             Other fruit…
-          </Ariakit.SelectItem>
-        </Ariakit.SelectPopover>
+          </Ariakit.ComboboxItem>
+        </Ariakit.ComboboxPopover>
         {showCustomInput && <input aria-label="Other fruit" />}
       </div>
       <div>
-        <Ariakit.SelectLabel store={color}>Favorite color</Ariakit.SelectLabel>
-        <Ariakit.Select store={color} showOnKeyDown={false} />
-        <Ariakit.SelectPopover
+        <Ariakit.ComboboxSelectLabel store={color}>
+          Favorite color
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect store={color} showOnKeyDown={false} />
+        <Ariakit.ComboboxPopover
           store={color}
           gutter={4}
           sameWidth
           style={popoverStyle}
         >
           {colors.map((value) => (
-            <Ariakit.SelectItem key={value} value={value} />
+            <Ariakit.ComboboxItem key={value} value={value} />
           ))}
-          <Ariakit.SelectItem hideOnClick onClick={() => color.setValue("")}>
+          <Ariakit.ComboboxItem
+            hideOnClick
+            onClick={() => color.setSelectedValue("")}
+          >
             Clear selection
-          </Ariakit.SelectItem>
-        </Ariakit.SelectPopover>
+          </Ariakit.ComboboxItem>
+        </Ariakit.ComboboxPopover>
       </div>
       <div>
-        <Ariakit.SelectLabel store={shape}>Favorite shape</Ariakit.SelectLabel>
-        <Ariakit.Select store={shape} showOnKeyDown={false} />
-        <Ariakit.SelectPopover
+        <Ariakit.ComboboxSelectLabel store={shape}>
+          Favorite shape
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect store={shape} showOnKeyDown={false} />
+        <Ariakit.ComboboxPopover
           store={shape}
           gutter={4}
           sameWidth
           style={popoverStyle}
         >
           {shapes.map((value) => (
-            <Ariakit.SelectItem key={value} value={value} />
+            <Ariakit.ComboboxItem key={value} value={value} />
           ))}
-          <Ariakit.SelectItem hideOnClick onClick={() => shape.setValue("")}>
+          <Ariakit.ComboboxItem
+            hideOnClick
+            onClick={() => shape.setSelectedValue("")}
+          >
             Clear selection
-          </Ariakit.SelectItem>
-        </Ariakit.SelectPopover>
+          </Ariakit.ComboboxItem>
+        </Ariakit.ComboboxPopover>
       </div>
     </>
   );

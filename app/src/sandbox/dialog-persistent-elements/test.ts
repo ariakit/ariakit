@@ -17,6 +17,17 @@ test("stays open when interacting with a persistent element before the dialog is
   expect(q.dialog("Dialog")).toBeVisible();
 });
 
+// https://github.com/ariakit/ariakit/issues/6849
+test("keeps descendants of a persistent form inside the dialog context", async () => {
+  await click(q.button("Open dialog"));
+  expect(q.dialog("Dialog")).toBeVisible();
+
+  await click(q.textbox("Persistent form field"));
+  expect(q.textbox("Persistent form field")).toHaveFocus();
+  expect(q.dialog("Dialog")).toBeVisible();
+});
+
+// https://github.com/ariakit/ariakit/issues/6344
 test("stays open on right-clicking a persistent element before the dialog is focused", async () => {
   await click(q.button("Open dialog"));
   expect(q.dialog("Dialog")).toBeVisible();
@@ -25,6 +36,7 @@ test("stays open on right-clicking a persistent element before the dialog is foc
   expect(q.dialog("Dialog")).toBeVisible();
 });
 
+// https://github.com/ariakit/ariakit/issues/6344
 test("keeps the documented behavior after the dialog has been focused", async () => {
   await click(q.button("Open dialog"));
   expect(q.dialog("Dialog")).toBeVisible();
