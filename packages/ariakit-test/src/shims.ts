@@ -98,7 +98,7 @@ function applyBrowserShims() {
         patchHappyDOMFormData(),
         patchHappyDOMSelectionChange(),
         patchHappyDOMAnimationFrame(),
-        patchHappyDOMProxiedContains(),
+        patchHappyDOMProxiedParentNode(),
       ]
     : [];
 
@@ -298,57 +298,73 @@ function patchHappyDOMAnimationFrame() {
 }
 
 // happy-dom's HTMLFormElement and HTMLSelectElement constructors return a Proxy
-// for their legacy member access (`form.username`, `select[0]`). Inserting one
-// into a parent re-points the children it already has at the raw target rather
-// than that proxy, while `contains()` compares against the proxy — so it walks a
-// parent chain that never matches and reports false for those descendants. jsdom
-// and real browsers return true, per the spec's inclusive-descendant definition.
-// Any insertion triggers it, including into a still-detached parent, and it
-// persists after the subtree is removed again.
-// Ariakit reads `contains` everywhere — most visibly, a modal dialog exempts
-// `getPersistentElements` from `inert` with it, so everything inside a <form>
-// looked like it was outside the dialog.
-// https://dom.spec.whatwg.org/#dom-node-contains
-// https://github.com/capricorn86/happy-dom/issues/2170
+// for legacy member access (`form.username`, `select[0]`). When one of those
+// elements is inserted with existing children, happy-dom's internal connection
+// hook re-points each child's parent at the raw target instead of the Proxy.
+// Ancestor APIs then disagree by identity: `parentNode`, `parentElement`,
+// `closest`, `contains`, `compareDocumentPosition`, and event `currentTarget`
+// can all expose or compare the wrong object.
 //
-// Rather than reaching into happy-dom's internal symbols to repair the parent
-// reference, ask the children instead: their own parent chain is intact, so they
-// answer correctly. Only the two proxied element types get the override, and it
-// only does extra work once the native check has already returned false. The
-// same broken reference also breaks identity-based ancestor checks, which this
-// shim leaves alone: https://github.com/ariakit/ariakit/issues/6849
-//
+// Patch the shared connection hook at the source. The internal symbols are
+// discovered from a detached probe and verified before use, so this becomes a
+// no-op when happy-dom fixes the parent pointer or changes those internals.
+// https://github.com/ariakit/ariakit/issues/6849
+// https://github.com/capricorn86/happy-dom/issues/2253
 // TODO: Remove this shim once the upstream fix ships.
-// https://github.com/capricorn86/happy-dom/pull/2176
-function patchHappyDOMProxiedContains() {
-  const originalContains = window.Node.prototype.contains;
-  const restores: Array<() => void> = [];
+function patchHappyDOMProxiedParentNode() {
+  const nodePrototype = window.Node.prototype;
+  const connectedToNodeSymbol = Object.getOwnPropertySymbols(
+    nodePrototype,
+  ).find((symbol) => symbol.description === "connectedToNode");
+  if (!connectedToNodeSymbol) return noop;
 
-  for (const Constructor of [
-    window.HTMLFormElement,
-    window.HTMLSelectElement,
-  ]) {
-    if (!Constructor) continue;
-    Constructor.prototype.contains = function contains(otherNode) {
-      if (!otherNode) return false;
-      if (originalContains.call(this, otherNode)) return true;
+  const connectedToNodeDescriptor = Object.getOwnPropertyDescriptor(
+    nodePrototype,
+    connectedToNodeSymbol,
+  );
+  if (!connectedToNodeDescriptor) return noop;
+  const originalConnectedToNode = connectedToNodeDescriptor.value;
+  if (typeof originalConnectedToNode !== "function") return noop;
+
+  const container = document.createElement("div");
+  const proxiedParent = document.createElement("form");
+  const child = document.createElement("div");
+  proxiedParent.append(child);
+  container.append(proxiedParent);
+
+  const rawParent = child.parentNode;
+  if (!rawParent || rawParent === proxiedParent) return noop;
+
+  const rawParentSymbols = Object.getOwnPropertySymbols(rawParent);
+  const parentNodeSymbol = rawParentSymbols.find(
+    (symbol) => symbol.description === "parentNode",
+  );
+  const proxySymbol = rawParentSymbols.find(
+    (symbol) => symbol.description === "proxy",
+  );
+  if (!parentNodeSymbol || !proxySymbol) return noop;
+  if (Reflect.get(child, parentNodeSymbol) !== rawParent) return noop;
+  if (Reflect.get(rawParent, proxySymbol) !== proxiedParent) return noop;
+
+  Object.defineProperty(nodePrototype, connectedToNodeSymbol, {
+    ...connectedToNodeDescriptor,
+    value: function connectedToNode(this: Node) {
+      Reflect.apply(originalConnectedToNode, this, []);
+      const proxy: unknown = Reflect.get(this, proxySymbol);
+      if (!(proxy instanceof window.Node)) return;
       for (const child of this.childNodes) {
-        // A child can be proxied too — a <select> inside a <form> — so go
-        // through its own `contains`, which unwraps every nested level and
-        // already reports a node as containing itself.
-        if (child.contains(otherNode)) return true;
+        if (child.parentNode === proxy) continue;
+        Reflect.set(child, parentNodeSymbol, proxy);
       }
-      return false;
-    };
-    restores.push(() => {
-      // The method is inherited from Node.prototype, so removing the override
-      // restores it rather than reassigning it.
-      Reflect.deleteProperty(Constructor.prototype, "contains");
-    });
-  }
+    },
+  });
 
   return () => {
-    for (const restore of restores) restore();
+    Object.defineProperty(
+      nodePrototype,
+      connectedToNodeSymbol,
+      connectedToNodeDescriptor,
+    );
   };
 }
 

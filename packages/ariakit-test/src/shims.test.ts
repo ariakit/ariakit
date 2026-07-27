@@ -502,7 +502,7 @@ test("doesn't submit or reset a form from a click on a disabled submit/reset con
   }
 });
 
-test("reports a form or select as containing its descendants", () => {
+test("preserves form and select proxy identity across ancestor APIs", () => {
   if (isBrowser) return;
   // happy-dom's HTMLFormElement/HTMLSelectElement constructors return a Proxy
   // (so `form.username` and `select[0]` work), but inserting one into a parent
@@ -524,8 +524,14 @@ test("reports a form or select as containing its descendants", () => {
     // Inserting into a still-detached parent is enough to trigger the
     // divergence, so the answers must already be right here.
     container.append(parent);
+    expect(child.parentNode).toBe(parent);
+    expect(child.parentElement).toBe(parent);
+    expect(grandchild.closest(parentTag)).toBe(parent);
     expect(parent.contains(child)).toBe(true);
     expect(parent.contains(grandchild)).toBe(true);
+    expect(parent.compareDocumentPosition(grandchild)).toBe(
+      Node.DOCUMENT_POSITION_CONTAINED_BY | Node.DOCUMENT_POSITION_FOLLOWING,
+    );
 
     document.body.append(container);
     // Appended after the insertion that broke the earlier children, so nothing
@@ -552,6 +558,24 @@ test("reports a form or select as containing its descendants", () => {
     } finally {
       container.remove();
     }
+  }
+});
+
+test("reports a proxied form as currentTarget while an event bubbles", () => {
+  if (isBrowser) return;
+  const form = document.createElement("form");
+  const input = document.createElement("input");
+  form.append(input);
+  document.body.append(form);
+  let currentTarget: EventTarget | null = null;
+  form.addEventListener("test", (event) => {
+    currentTarget = event.currentTarget;
+  });
+  try {
+    input.dispatchEvent(new Event("test", { bubbles: true }));
+    expect(currentTarget).toBe(form);
+  } finally {
+    form.remove();
   }
 });
 
