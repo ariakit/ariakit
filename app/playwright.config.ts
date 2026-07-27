@@ -100,9 +100,9 @@ export default defineConfig({
           // appends results for passing attempts) and results land in
           // per-worker files, so retrying in a fresh worker (new browser)
           // cannot double-count. It recovers the run when the previous
-          // worker's browser wedged mid-file. Same value as the root
-          // retries, but kept explicit: perf previously opted out and the
-          // retry safety argument lives here.
+          // worker's browser wedged mid-file. Same value as this config's
+          // default retries, but kept explicit: perf previously opted out
+          // and the retry safety argument lives here.
           retries: 1,
           // Script-profile tests do over 100s of real work on slow runners.
           // This is headroom over observed durations, not a hang allowance:
