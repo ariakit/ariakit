@@ -14,7 +14,6 @@ function runCICommand(command: string | undefined) {
       base: getEnvironmentVariable("BASE_SHA"),
       head: getEnvironmentVariable("HEAD_SHA"),
       baseRef: getEnvironmentVariable("BASE_REF"),
-      labels: getEnvironmentVariable("CI_LABELS"),
       output: getEnvironmentVariable("GITHUB_OUTPUT"),
     });
     return;
