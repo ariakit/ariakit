@@ -36,11 +36,13 @@ test("backdrop finishes its longer fade out when the panel has a shorter transit
   expect(q.button("Show fast dialog")).toHaveFocus();
   await expect.poll(() => backdrop.getAttribute("data-leave")).toBe("true");
   // Wait past the panel's 150ms transition. The backdrop must keep leaving
-  // until its own 500ms transition ends. Before the fix, the panel's shorter
+  // until its own 2s transition ends. Before the fix, the panel's shorter
   // timeout stopped the shared animation state, hiding the backdrop at 150ms.
   await sleep(250);
   expect(backdrop).toHaveAttribute("data-leave", "true");
   expect(backdrop).not.toHaveStyle("display: none");
   // After the backdrop's transition ends, it hides.
-  await expect.poll(() => backdrop.style.display).toBe("none");
+  await expect
+    .poll(() => backdrop.style.display, { timeout: 3000 })
+    .toBe("none");
 });

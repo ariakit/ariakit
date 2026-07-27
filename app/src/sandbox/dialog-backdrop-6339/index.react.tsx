@@ -2,16 +2,17 @@ import * as Ariakit from "@ariakit/react";
 
 // See https://github.com/ariakit/ariakit/issues/6339
 //
-// The backdrop has a 500ms opacity transition: it should fade in when the
-// dialog opens and fade out when it closes. There are two dialogs:
+// The backdrop has an opacity transition: it should fade in when the dialog
+// opens and fade out when it closes. There are two dialogs:
 //
 // - "Show dialog": the panel has no transition at all, so it snaps in place
 //   while the backdrop fades. Before the fix, the enter fade works, but on
 //   close the dialog hides instantly: the backdrop never receives
 //   `data-leave` and the exit fade is skipped.
-// - "Show fast dialog": the panel has a shorter 150ms transition. Before the
-//   fix, the panel's own timeout stopped the shared animation state early,
-//   hiding the backdrop at 150ms and cutting its 500ms exit fade short.
+// - "Show fast dialog": the panel has a shorter 150ms transition and the
+//   backdrop uses a 2s exit transition to leave enough timing headroom for the
+//   browser test. Before the fix, the panel's own timeout stopped the shared
+//   animation state early, hiding the backdrop at 150ms.
 //
 // The styles are inlined in a <style> tag (rather than a style.css import) on
 // purpose: CSS imports are only processed in vitest for the allowlist in the
@@ -27,6 +28,9 @@ const css = `
   }
   .backdrop[data-enter] {
     opacity: 1;
+  }
+  .backdrop-long[data-leave] {
+    transition-duration: 2s;
   }
   .dialog {
     position: fixed;
@@ -78,13 +82,13 @@ export default function Example() {
       </Ariakit.Dialog>
       <Ariakit.Dialog
         store={fastDialog}
-        backdrop={<div className="backdrop" />}
+        backdrop={<div className="backdrop backdrop-long" />}
         className="dialog dialog-fast"
       >
         <Ariakit.DialogHeading>Fast</Ariakit.DialogHeading>
         <p>
-          The panel fades in over 150ms while the backdrop fades over 500ms. On
-          close, the backdrop should finish its longer fade out.
+          The panel fades in over 150ms while the backdrop fades in over 500ms.
+          On close, the backdrop should finish its longer 2s fade out.
         </p>
         <Ariakit.DialogDismiss>Close</Ariakit.DialogDismiss>
       </Ariakit.Dialog>
