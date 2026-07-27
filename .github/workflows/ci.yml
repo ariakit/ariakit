@@ -154,39 +154,3 @@ jobs:
           CI_PLAN: ${{ needs.plan.outputs.plan }}
           CI_RESULTS: ${{ toJSON(needs) }}
         run: node packages/ariakit-scripts/src/ci-run.ts gate
-
-  required:
-    # Preserve the current required status names until the main ruleset is
-    # migrated to require Gate. Reusable jobs use prefixed check names, so
-    # removing these aliases before that migration would block automerge.
-    name: ${{ matrix.name }}
-    if: always()
-    needs: gate
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        name:
-          - Lint
-          - Type check
-          - Build packages
-          - Test
-          - Test React
-          - Test Solid
-          - Test Android
-          - Test Chrome
-          - Test Firefox
-          - Test macOS
-          - Test Safari
-          - Visual / Finalize
-          - Preview / Deploy
-          - Generate OG images
-    steps:
-      - name: Verify gate
-        env:
-          GATE_RESULT: ${{ needs.gate.result }}
-        run: |
-          if [ "$GATE_RESULT" != "success" ]; then
-            echo "CI gate result was $GATE_RESULT" >&2
-            exit 1
-          fi
