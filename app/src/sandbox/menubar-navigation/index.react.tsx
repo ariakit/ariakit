@@ -1,4 +1,4 @@
-import { Menu, Menubar, MenuGroup, MenuItem } from "./menubar.tsx";
+import { Menu, Menubar, MenuGroup, MenuItem } from "./menubar.react.tsx";
 
 export default function Example() {
   return (

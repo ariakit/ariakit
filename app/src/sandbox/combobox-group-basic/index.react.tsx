@@ -6,7 +6,7 @@ import {
   ComboboxGroup,
   ComboboxItem,
   ComboboxSeparator,
-} from "./combobox.tsx";
+} from "./combobox.react.tsx";
 import food from "./food.ts";
 
 export default function Example() {

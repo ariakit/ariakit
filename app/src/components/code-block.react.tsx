@@ -17,7 +17,7 @@ import { Icon } from "#app/icons/icon.react.tsx";
 import type { Framework } from "#app/lib/schemas.ts";
 import type { Source } from "#app/lib/source.ts";
 import { slugify } from "#app/lib/string.ts";
-import { useControllableState } from "#app/lib/use-controllable-state.ts";
+import { useControllableState } from "#app/lib/use-controllable-state.react.ts";
 import {
   CodeBlockEdit,
   getStackblitzFramework,

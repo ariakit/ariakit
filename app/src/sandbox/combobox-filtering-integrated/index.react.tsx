@@ -1,4 +1,4 @@
-import { Combobox, ComboboxEmpty, ComboboxItem } from "./combobox.tsx";
+import { Combobox, ComboboxEmpty, ComboboxItem } from "./combobox.react.tsx";
 
 export default function Example() {
   return (

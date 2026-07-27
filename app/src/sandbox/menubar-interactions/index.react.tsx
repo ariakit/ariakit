@@ -5,7 +5,7 @@ import {
   MenuItem,
   MenuProvider,
   MenuSeparator,
-} from "./menu.tsx";
+} from "./menu.react.tsx";
 
 export default function Example() {
   return (

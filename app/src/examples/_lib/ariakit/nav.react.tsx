@@ -1,7 +1,7 @@
 import * as ak from "@ariakit/react";
 import { clsx } from "clsx";
 import { useEffect } from "react";
-import { createRender } from "../react-utils/create-render.ts";
+import { createRender } from "../react-utils/create-render.react.ts";
 import type {
   DisclosureButtonProps,
   DisclosureContentBodyProps,

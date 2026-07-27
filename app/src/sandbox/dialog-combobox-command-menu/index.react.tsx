@@ -7,9 +7,14 @@ import {
   CommandMenuInput,
   CommandMenuItem,
   CommandMenuList,
-} from "./command-menu.tsx";
-import type { Command } from "./commands.tsx";
-import { allItems, applications, commands, suggestions } from "./commands.tsx";
+} from "./command-menu.react.tsx";
+import type { Command } from "./commands.react.tsx";
+import {
+  allItems,
+  applications,
+  commands,
+  suggestions,
+} from "./commands.react.tsx";
 
 function search(value: string): Record<string, Command[]> {
   if (!value) {

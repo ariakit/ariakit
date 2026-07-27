@@ -1,8 +1,8 @@
 import * as Ariakit from "@ariakit/react";
 import { useRef, useState } from "react";
-import { Dialog } from "./dialog.tsx";
-import { add, playlistAdd } from "./icons.tsx";
-import { Menu } from "./menu.tsx";
+import { Dialog } from "./dialog.react.tsx";
+import { add, playlistAdd } from "./icons.react.tsx";
+import { Menu } from "./menu.react.tsx";
 
 function useDisclosure(defaultOpen = false) {
   const [open, setOpen] = useState(defaultOpen);

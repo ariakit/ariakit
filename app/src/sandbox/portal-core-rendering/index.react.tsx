@@ -1,7 +1,7 @@
 import * as Ariakit from "@ariakit/react";
 import { lazy, Suspense, useState } from "react";
 
-const LazyButton = lazy(() => import("./lazy-button.tsx"));
+const LazyButton = lazy(() => import("./lazy-button.react.tsx"));
 
 export default function Example() {
   const [rendered, setRendered] = useState(true);

@@ -1,7 +1,7 @@
 import { Fragment, startTransition, useMemo, useState } from "react";
 import type { Action } from "./actions.ts";
 import { actions, defaultValues } from "./actions.ts";
-import { Menu, MenuGroup, MenuItem, MenuSeparator } from "./menu.tsx";
+import { Menu, MenuGroup, MenuItem, MenuSeparator } from "./menu.react.tsx";
 import { filterActions } from "./utils.ts";
 
 function renderItems(items: Action[], group?: string) {

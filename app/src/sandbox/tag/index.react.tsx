@@ -1,5 +1,5 @@
 import { useState } from "react";
-import * as Ariakit from "./ariakit-experimental.ts";
+import * as Ariakit from "./ariakit-experimental.react.ts";
 
 export default function Example() {
   const [values, setValues] = useState(["JavaScript", "React"]);

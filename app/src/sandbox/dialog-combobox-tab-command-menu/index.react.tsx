@@ -13,7 +13,7 @@ import {
   CommandMenuTab,
   CommandMenuTabList,
   CommandMenuTabPanel,
-} from "./command-menu.tsx";
+} from "./command-menu.react.tsx";
 import { flatPages, pages } from "./pages.ts";
 
 export default function Example() {

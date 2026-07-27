@@ -14,7 +14,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { CheckIcon, ChevronUpDownIcon, SearchIcon } from "./icons.tsx";
+import { CheckIcon, ChevronUpDownIcon, SearchIcon } from "./icons.react.tsx";
 import { languages } from "./languages.ts";
 
 function useRadixSelectOpenState() {

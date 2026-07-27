@@ -1,6 +1,6 @@
 import type { MotionProps, Variants } from "motion/react";
 import { useState } from "react";
-import { Menu, MenuItem } from "./menu.tsx";
+import { Menu, MenuItem } from "./menu.react.tsx";
 
 const menu = {
   closed: {

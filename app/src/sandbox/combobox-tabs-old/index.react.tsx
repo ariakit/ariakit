@@ -10,7 +10,7 @@ import {
   ComboboxProvider,
   ComboboxTab,
   ComboboxTabList,
-} from "./combobox.tsx";
+} from "./combobox.react.tsx";
 
 const categories = ["All", ...Object.keys(pages)];
 

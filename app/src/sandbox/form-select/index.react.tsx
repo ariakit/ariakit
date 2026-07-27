@@ -6,8 +6,8 @@ import {
   FormSubmit,
   useFormSubmit,
   useFormStore,
-} from "./form.tsx";
-import { SelectItem } from "./select.tsx";
+} from "./form.react.tsx";
+import { SelectItem } from "./select.react.tsx";
 
 export default function Example() {
   const form = useFormStore({ defaultValues: { name: "", fruit: "" } });

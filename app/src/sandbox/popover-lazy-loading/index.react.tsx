@@ -1,7 +1,7 @@
 import * as Ariakit from "@ariakit/react";
 import { lazy, Suspense } from "react";
 
-const LazyPopover = lazy(() => import("./lazy-popover.tsx"));
+const LazyPopover = lazy(() => import("./lazy-popover.react.tsx"));
 
 export default function Example() {
   const store = Ariakit.usePopoverStore();

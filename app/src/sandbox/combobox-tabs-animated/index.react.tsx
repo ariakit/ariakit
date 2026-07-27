@@ -9,7 +9,7 @@ import {
   ComboboxProvider,
   ComboboxTab,
   ComboboxTabList,
-} from "../combobox-tabs/combobox.tsx";
+} from "../combobox-tabs/combobox.react.tsx";
 import { flatPages, pages } from "../combobox-tabs/pages.ts";
 
 const categories = ["All", ...Object.keys(pages)];
