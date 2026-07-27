@@ -23,7 +23,7 @@ function getResults(
   return { ...results, ...overrides };
 }
 
-test("keeps core and legacy browser tests on every pull request", () => {
+test("keeps core checks on every pull request", () => {
   const plan = createCIPlan(["readme.md"]);
 
   expect(plan.workflows).toEqual({

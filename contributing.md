@@ -254,9 +254,21 @@ One of the goals of having use cases written like that is so we can write automa
 
 > We use [`@ariakit/test`](packages/ariakit-test), which is a wrapper around [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) with some additional features to ensure that events like clicks and key presses work similarly to actual user events.
 
-Let's create a test for our example:
+Let's mirror the behavior in a top-level app sandbox:
 
-`examples/my-component/test.ts`
+`app/src/sandbox/my-component/index.react.tsx`
+
+```tsx
+import { MyComponent } from "@ariakit/react-components/my-component/my-component";
+
+export default function Example() {
+  return <MyComponent>My component</MyComponent>;
+}
+```
+
+Then create an integration test next to the app-owned fixture:
+
+`app/src/sandbox/my-component/test.ts`
 
 ```tsx
 import { q } from "@ariakit/test";
@@ -512,36 +524,35 @@ Combined with the [`@ariakit/test`](packages/ariakit-test) package, this is more
 
 Let's create an end-to-end test for our example:
 
-`examples/my-component/test-chrome.ts`
+`app/src/sandbox/my-component/test-browser.ts`
 
 ```ts
-import { expect } from "@playwright/test";
-import { test } from "../test-utils.ts";
+import { withFramework } from "#app/test-utils/preview.ts";
 
-test("my component", async ({ page }) => {
-  const element = await page.getByText("My component");
-  await expect(element).toBeVisible();
+withFramework(import.meta.dirname, async ({ test }) => {
+  test("my component", async ({ q }) => {
+    await test.expect(q.text("My component")).toBeVisible();
+  });
 });
 ```
 
-Now run the following command in your terminal to see the test results (make sure to replace `my-component` with the name of your example, or omit it to run all the tests):
-
-> **Note**: The [development server](#starting-the-development-server) must be running in another terminal instance.
+Build the app, then run the Chrome project. Replace `my-component` with the name of your sandbox, or omit it to run all browser tests:
 
 ```bash
-pnpm run test-browser my-component
+pnpm run build-app-lite
+pnpm -F app run test-chrome my-component
 ```
 
 You can also run the tests in headed mode:
 
 ```bash
-pnpm run test-browser-headed my-component
+pnpm -F app run test-chrome-headed my-component
 ```
 
 Or in debug mode:
 
 ```bash
-pnpm run test-browser-debug my-component
+pnpm -F app run test --project=chrome --debug my-component
 ```
 
 <div align="right">

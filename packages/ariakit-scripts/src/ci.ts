@@ -241,7 +241,7 @@ export function createCIPlan(
     reasons,
   };
 
-  addReason(plan, "main", "Core and legacy browser tests run on every PR");
+  addReason(plan, "main", "Core checks run on every PR");
   for (const file of files) {
     addFileReasons(plan, file);
   }
