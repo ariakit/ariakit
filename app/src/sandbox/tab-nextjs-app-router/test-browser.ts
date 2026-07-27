@@ -23,12 +23,23 @@ withFramework(import.meta.dirname, async ({ id, test }) => {
     await test.expect(q.tab("Hot")).toBeFocused();
   });
 
-  test("selects route-backed tabs with the keyboard", async ({ page, q }) => {
+  test("selects route-backed tabs manually with the keyboard", async ({
+    page,
+    q,
+  }) => {
     await q.tab("Hot").press("ArrowRight");
     await test.expect(q.tab("New")).toBeFocused();
+    await test.expect(page).toHaveURL(new RegExp(`/${id}$`));
+    await test.expect(q.tabpanel("Hot")).toBeVisible();
+    await page.keyboard.press("Enter");
+    await test.expect(page).toHaveURL(new RegExp(`/${id}/new$`));
     await test.expect(q.tabpanel("New")).toBeVisible();
     await page.keyboard.press("ArrowLeft");
     await test.expect(q.tab("Hot")).toBeFocused();
+    await test.expect(page).toHaveURL(new RegExp(`/${id}/new$`));
+    await test.expect(q.tabpanel("New")).toBeVisible();
+    await page.keyboard.press("Space");
+    await test.expect(page).toHaveURL(new RegExp(`/${id}$`));
     await test.expect(q.tabpanel("Hot")).toBeVisible();
   });
 

@@ -13,7 +13,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await anchor.hover();
     await test.expect(hovercard).toBeVisible();
     await page.mouse.wheel(0, 300);
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(300);
     await test.expect(hovercard).toBeVisible();
     await page.mouse.move(0, 0);
     await test.expect(hovercard).not.toBeVisible();

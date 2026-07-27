@@ -8,6 +8,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.menu()).toBeVisible();
     await page.keyboard.press("ArrowDown");
     await test.expect(q.menuitem("Edit")).toBeFocused();
-    await page.waitForTimeout(500);
+    await test.expect(q.menuitem("Edit")).toHaveCSS("opacity", "1");
+    const menuBox = await q.menu().boundingBox();
+    const buttonBox = await q.button("Options").boundingBox();
+    if (!menuBox || !buttonBox) {
+      throw new Error("Menu geometry is missing");
+    }
+    test.expect(menuBox.y).toBeGreaterThan(buttonBox.y);
   });
 });

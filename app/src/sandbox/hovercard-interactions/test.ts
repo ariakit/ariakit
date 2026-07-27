@@ -26,7 +26,7 @@ test("stays open while focused", async () => {
   await click(q.button("Follow"));
 
   await hoverOutside();
-  await sleep(50);
+  await sleep(300);
   expect(hovercard()).toBeVisible();
 });
 
@@ -36,12 +36,15 @@ test("stays open when the pointer quickly returns", async () => {
   await expect.poll(hovercard).toBeVisible();
 
   await hoverOutside();
+  await sleep(100);
   await hover(anchor);
+  await sleep(300);
   expect(hovercard()).toBeVisible();
 
   await hoverOutside();
+  await sleep(100);
   await hover(q.button("Follow"));
-  await sleep(50);
+  await sleep(300);
   expect(hovercard()).toBeVisible();
 });
 

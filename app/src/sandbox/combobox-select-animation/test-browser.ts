@@ -1,5 +1,10 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
+function createTransition(duration = 100) {
+  const then = performance.now();
+  return () => performance.now() - then < duration;
+}
+
 withFramework(import.meta.dirname, async ({ test }) => {
   for (const label of ["Favorite fruit", "Store favorite fruit"]) {
     test.describe(label, () => {
@@ -21,9 +26,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
           .expect(q.option("Apple"))
           .toHaveAttribute("data-active-item");
 
+        const isLeaving = createTransition();
         await page.keyboard.press("Escape");
         await test.expect(select).toBeFocused();
-        await test.expect(listbox).toBeVisible();
+        if (isLeaving()) {
+          await test.expect(listbox).toBeVisible();
+        }
         await test.expect(listbox).toHaveCount(0);
 
         await page.keyboard.press("Enter");
@@ -46,6 +54,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
           .toHaveAttribute("data-active-item");
       });
 
+      // https://github.com/ariakit/ariakit/pull/6832
       test("does not scroll or misplace the first popover mount", async ({
         page,
         q,

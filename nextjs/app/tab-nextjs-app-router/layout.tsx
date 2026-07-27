@@ -11,7 +11,7 @@ export default function Layout(props: { tabs: ReactNode }) {
         or stay up to date with the{" "}
         <Link href="/tab-nextjs-app-router/new">latest posts</Link>.
       </p>
-      <Tabs>
+      <Tabs selectOnMove={false}>
         <TabList>
           <Tab href="/tab-nextjs-app-router">Hot</Tab>
           <Tab href="/tab-nextjs-app-router/new">New</Tab>
