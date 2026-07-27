@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { appendFileSync } from "node:fs";
+import { isDeepStrictEqual } from "node:util";
 
 export const ciWorkflowNames = [
   "main",
@@ -24,6 +25,13 @@ export interface CIPlan {
 
 export interface CreateCIPlanOptions {
   baseRef?: string;
+  packageJSONChanges?: PackageJSONChange[];
+}
+
+export interface PackageJSONChange {
+  file: string;
+  base: Record<string, unknown>;
+  head: Record<string, unknown>;
 }
 
 export interface RunCIPlanOptions {
@@ -62,6 +70,60 @@ const dependencyAndConfigNames = new Set([
   "wrangler.toml",
   "yarn.lock",
 ]);
+
+const dependencyFields = [
+  "dependencies",
+  "devDependencies",
+  "optionalDependencies",
+  "peerDependencies",
+] as const;
+
+const dependencyFieldSet = new Set<string>(dependencyFields);
+const publicPackageFields = new Set([...dependencyFieldSet, "version"]);
+const publicPackageWorkflows = [
+  "app",
+  "perf",
+  "plus",
+  "release_preview",
+  "docs",
+  "og_images",
+] as const satisfies readonly CIWorkflowName[];
+
+// Root tools outside this reviewed set can affect any workspace, so they
+// continue to fail closed to full CI.
+const rootMainDependencies = new Set([
+  "@testing-library/jest-dom",
+  "@testing-library/react",
+  "@types/cross-spawn",
+  "@types/fs-extra",
+  "@types/node",
+  "@types/react",
+  "@types/react-dom",
+  "@vitest/coverage-v8",
+  "happy-dom",
+  "husky",
+  "lint-staged",
+  "oxfmt",
+  "oxlint",
+  "oxlint-tsgolint",
+  "prettier",
+  "prettier-plugin-tailwindcss",
+  "stylelint",
+  "stylelint-config-standard",
+  "vitest",
+  "vitest-fail-on-console",
+]);
+
+const workspaceDependencyWorkflows = new Map<string, readonly CIWorkflowName[]>(
+  [
+    ["app/package.json", ["app", "perf", "og_images"]],
+    ["examples/package.json", []],
+    ["guide/package.json", ["plus"]],
+    ["nextjs/package.json", ["app", "perf"]],
+    ["templates/react/package.json", ["release_preview"]],
+    ["website/package.json", ["plus"]],
+  ],
+);
 
 function normalizeCIPath(file: string) {
   return file.replaceAll("\\", "/").replace(/^\.\/+/, "");
@@ -105,6 +167,128 @@ function isPackageRuntimePath(file: string) {
 function isAppRuntimePath(file: string) {
   if (!/^(?:app|nextjs)\//.test(file)) return false;
   if (isTestFile(file)) return false;
+  return true;
+}
+
+function getChangedFields(
+  base: Record<string, unknown>,
+  head: Record<string, unknown>,
+) {
+  const fields = new Set([...Object.keys(base), ...Object.keys(head)]);
+  return [...fields].filter((field) => {
+    return !isDeepStrictEqual(base[field], head[field]);
+  });
+}
+
+function getStringRecord(value: unknown) {
+  if (value === undefined) return {};
+  if (!isRecord(value)) return;
+  const record: Record<string, string> = {};
+  for (const [key, item] of Object.entries(value)) {
+    if (typeof item !== "string") return;
+    record[key] = item;
+  }
+  return record;
+}
+
+function getChangedDependencyNames(
+  base: Record<string, unknown>,
+  head: Record<string, unknown>,
+) {
+  const names = new Set<string>();
+  for (const field of dependencyFields) {
+    if (isDeepStrictEqual(base[field], head[field])) continue;
+    const baseDependencies = getStringRecord(base[field]);
+    const headDependencies = getStringRecord(head[field]);
+    if (!baseDependencies || !headDependencies) return;
+    for (const name of new Set([
+      ...Object.keys(baseDependencies),
+      ...Object.keys(headDependencies),
+    ])) {
+      if (baseDependencies[name] !== headDependencies[name]) {
+        names.add(name);
+      }
+    }
+  }
+  return [...names].sort();
+}
+
+function explainsLockfileChange(change: PackageJSONChange) {
+  const dependencyNames = getChangedDependencyNames(change.base, change.head);
+  return Boolean(dependencyNames?.length);
+}
+
+function hasRuntimeDependencyChange(
+  base: Record<string, unknown>,
+  head: Record<string, unknown>,
+) {
+  return (
+    !isDeepStrictEqual(base.dependencies, head.dependencies) ||
+    !isDeepStrictEqual(base.optionalDependencies, head.optionalDependencies) ||
+    !isDeepStrictEqual(base.peerDependencies, head.peerDependencies)
+  );
+}
+
+function hasOnlyFields(fields: string[], allowedFields: Set<string>) {
+  return fields.every((field) => allowedFields.has(field));
+}
+
+function addDependencyReason(
+  plan: CIPlan,
+  workflow: CIWorkflowName,
+  file: string,
+) {
+  addReason(plan, workflow, `Dependency metadata: ${file}`);
+}
+
+function addPackageJSONReasons(plan: CIPlan, change: PackageJSONChange) {
+  const file = normalizeCIPath(change.file);
+  const fields = getChangedFields(change.base, change.head);
+  const dependencyNames = getChangedDependencyNames(change.base, change.head);
+  if (!dependencyNames) return false;
+
+  if (file === "package.json") {
+    if (!hasOnlyFields(fields, dependencyFieldSet)) return false;
+    if (dependencyNames.some((name) => !rootMainDependencies.has(name))) {
+      return false;
+    }
+    addDependencyReason(plan, "main", file);
+    if (dependencyNames.includes("vitest")) {
+      addDependencyReason(plan, "perf", file);
+    }
+    if (dependencyNames.includes("oxfmt")) {
+      addDependencyReason(plan, "docs", file);
+    }
+    return true;
+  }
+
+  const workspaceWorkflows = workspaceDependencyWorkflows.get(file);
+  if (workspaceWorkflows) {
+    if (!hasOnlyFields(fields, dependencyFieldSet)) return false;
+    addDependencyReason(plan, "main", file);
+    for (const workflow of workspaceWorkflows) {
+      addDependencyReason(plan, workflow, file);
+    }
+    return true;
+  }
+
+  if (!/^packages\/[^/]+\/package\.json$/.test(file)) return false;
+  if (change.base.private === true || change.head.private === true)
+    return false;
+  if (!hasOnlyFields(fields, publicPackageFields)) return false;
+  if (
+    fields.includes("version") &&
+    (typeof change.base.version !== "string" ||
+      typeof change.head.version !== "string")
+  ) {
+    return false;
+  }
+  addDependencyReason(plan, "main", file);
+  if (hasRuntimeDependencyChange(change.base, change.head)) {
+    for (const workflow of publicPackageWorkflows) {
+      addDependencyReason(plan, workflow, file);
+    }
+  }
   return true;
 }
 
@@ -197,6 +381,20 @@ export function createCIPlan(
   const files = [
     ...new Set(changedFiles.map(normalizeCIPath).filter(Boolean)),
   ].sort();
+  const packageJSONChanges = new Map(
+    (options.packageJSONChanges ?? []).map((change) => {
+      return [normalizeCIPath(change.file), change] as const;
+    }),
+  );
+  const changedPackageJSONFiles = files.filter((file) => {
+    return /(?:^|\/)package\.json$/.test(file);
+  });
+  const hasScopedPackageJSONChanges =
+    changedPackageJSONFiles.length > 0 &&
+    changedPackageJSONFiles.every((file) => {
+      const change = packageJSONChanges.get(file);
+      return change ? explainsLockfileChange(change) : false;
+    });
   const workflows: Record<CIWorkflowName, boolean> = {
     main: false,
     app: false,
@@ -227,6 +425,13 @@ export function createCIPlan(
 
   addReason(plan, "main", "Core and legacy browser tests run on every PR");
   for (const file of files) {
+    // The manifest diff is the policy input. A lockfile-only change still
+    // falls through to full CI because no manifest explains its scope.
+    if (file === "pnpm-lock.yaml" && hasScopedPackageJSONChanges) continue;
+    const packageJSONChange = packageJSONChanges.get(file);
+    if (packageJSONChange && addPackageJSONReasons(plan, packageJSONChange)) {
+      continue;
+    }
     addFileReasons(plan, file);
   }
 
@@ -252,6 +457,45 @@ export function getChangedFiles(base: string, head: string) {
     { encoding: "utf-8", maxBuffer: 10 * 1024 * 1024 },
   );
   return parseChangedFiles(output);
+}
+
+function readPackageJSON(revision: string, file: string) {
+  try {
+    const value = execFileSync("git", ["show", `${revision}:${file}`], {
+      encoding: "utf-8",
+      maxBuffer: 10 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+    const packageJSON: unknown = JSON.parse(value);
+    if (!isRecord(packageJSON)) return;
+    return packageJSON;
+  } catch {
+    return;
+  }
+}
+
+export function getPackageJSONChanges(
+  base: string,
+  head: string,
+  files: string[],
+) {
+  const mergeBase = execFileSync("git", ["merge-base", base, head], {
+    encoding: "utf-8",
+  }).trim();
+  const changes: PackageJSONChange[] = [];
+  for (const changedFile of files) {
+    const file = normalizeCIPath(changedFile);
+    if (!/(?:^|\/)package\.json$/.test(file)) continue;
+    const basePackageJSON = readPackageJSON(mergeBase, file);
+    const headPackageJSON = readPackageJSON(head, file);
+    if (!basePackageJSON || !headPackageJSON) continue;
+    changes.push({
+      file,
+      base: basePackageJSON,
+      head: headPackageJSON,
+    });
+  }
+  return changes;
 }
 
 export function parseChangedFiles(output: string) {
@@ -366,6 +610,11 @@ export function runCIPlan(options: RunCIPlanOptions) {
   const files = getChangedFiles(options.base, options.head);
   const plan = createCIPlan(files, {
     baseRef: options.baseRef,
+    packageJSONChanges: getPackageJSONChanges(
+      options.base,
+      options.head,
+      files,
+    ),
   });
   for (const workflow of ciWorkflowNames) {
     appendFileSync(

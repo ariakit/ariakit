@@ -6,7 +6,7 @@ import {
   parseChangedFiles,
   serializeCIGatePlan,
 } from "./ci.ts";
-import type { CIGateResult } from "./ci.ts";
+import type { CIGateResult, CIWorkflowName, PackageJSONChange } from "./ci.ts";
 
 function getResults(
   plan: ReturnType<typeof createCIPlan>,
@@ -21,6 +21,23 @@ function getResults(
     };
   }
   return { ...results, ...overrides };
+}
+
+function getPackageJSONChange(
+  file: string,
+  base: Record<string, unknown>,
+  head: Record<string, unknown>,
+): PackageJSONChange {
+  return { file, base, head };
+}
+
+function expectSelectedWorkflows(
+  plan: ReturnType<typeof createCIPlan>,
+  workflows: CIWorkflowName[],
+) {
+  expect(
+    ciWorkflowNames.filter((workflow) => plan.workflows[workflow]),
+  ).toEqual(workflows);
 }
 
 test("keeps core and legacy browser tests on every pull request", () => {
@@ -38,7 +55,7 @@ test("keeps core and legacy browser tests on every pull request", () => {
   });
 });
 
-test("runs every workflow for dependency and CI infrastructure changes", () => {
+test("fails closed without dependency details and for CI infrastructure", () => {
   for (const file of [
     "pnpm-lock.yaml",
     "app/package.json",
@@ -54,6 +71,305 @@ test("runs every workflow for dependency and CI infrastructure changes", () => {
     const plan = createCIPlan([file]);
     expect(Object.values(plan.workflows).every(Boolean), file).toBe(true);
   }
+});
+
+test("selects CI from reviewed root dependency updates", () => {
+  const plan = createCIPlan(["package.json", "pnpm-lock.yaml"], {
+    packageJSONChanges: [
+      getPackageJSONChange(
+        "package.json",
+        {
+          devDependencies: {
+            "lint-staged": "17.1.1",
+            oxfmt: "0.59.0",
+            vitest: "4.1.9",
+          },
+        },
+        {
+          devDependencies: {
+            "lint-staged": "17.2.0",
+            oxfmt: "0.60.0",
+            vitest: "4.1.10",
+          },
+        },
+      ),
+    ],
+  });
+
+  expectSelectedWorkflows(plan, ["main", "perf", "docs"]);
+});
+
+test("keeps unreviewed root dependency updates on full CI", () => {
+  const plan = createCIPlan(["package.json", "pnpm-lock.yaml"], {
+    packageJSONChanges: [
+      getPackageJSONChange(
+        "package.json",
+        { devDependencies: { vite: "8.1.4" } },
+        { devDependencies: { vite: "8.1.5" } },
+      ),
+    ],
+  });
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
+test("selects CI from workspace dependency updates", () => {
+  const plan = createCIPlan(["app/package.json", "pnpm-lock.yaml"], {
+    packageJSONChanges: [
+      getPackageJSONChange(
+        "app/package.json",
+        { dependencies: { "@clerk/astro": "4.0.0" } },
+        { dependencies: { "@clerk/astro": "4.0.1" } },
+      ),
+    ],
+  });
+
+  expectSelectedWorkflows(plan, ["main", "app", "perf", "og_images"]);
+});
+
+test("selects consumer CI for public package runtime dependencies", () => {
+  const plan = createCIPlan(
+    ["packages/ariakit-react/package.json", "pnpm-lock.yaml"],
+    {
+      packageJSONChanges: [
+        getPackageJSONChange(
+          "packages/ariakit-react/package.json",
+          { peerDependencies: { react: ">=18" } },
+          { peerDependencies: { react: ">=19" } },
+        ),
+      ],
+    },
+  );
+
+  expectSelectedWorkflows(plan, [
+    "main",
+    "app",
+    "perf",
+    "plus",
+    "release_preview",
+    "docs",
+    "og_images",
+  ]);
+});
+
+test("keeps public peer dependency metadata changes on full CI", () => {
+  const plan = createCIPlan(
+    ["packages/ariakit-test/package.json", "pnpm-lock.yaml"],
+    {
+      packageJSONChanges: [
+        getPackageJSONChange(
+          "packages/ariakit-test/package.json",
+          {
+            peerDependencies: { react: ">=18" },
+            peerDependenciesMeta: { react: { optional: true } },
+          },
+          {
+            peerDependencies: { react: ">=18" },
+            peerDependenciesMeta: { react: { optional: false } },
+          },
+        ),
+      ],
+    },
+  );
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
+test("keeps metadata for undeclared peers on full CI", () => {
+  const file = "packages/ariakit-test/package.json";
+  const plan = createCIPlan([file, "pnpm-lock.yaml"], {
+    packageJSONChanges: [
+      getPackageJSONChange(
+        file,
+        { peerDependencies: {} },
+        {
+          peerDependencies: {},
+          peerDependenciesMeta: { ghost: { optional: true } },
+        },
+      ),
+    ],
+  });
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
+test("keeps public package development dependencies on Main CI", () => {
+  const plan = createCIPlan(
+    ["packages/ariakit-react/package.json", "pnpm-lock.yaml"],
+    {
+      packageJSONChanges: [
+        getPackageJSONChange(
+          "packages/ariakit-react/package.json",
+          { devDependencies: { "@types/react": "19.2.16" } },
+          { devDependencies: { "@types/react": "19.2.17" } },
+        ),
+      ],
+    },
+  );
+
+  expectSelectedWorkflows(plan, ["main"]);
+});
+
+test("keeps private package dependency updates on full CI", () => {
+  const plan = createCIPlan(
+    ["packages/ariakit-scripts/package.json", "pnpm-lock.yaml"],
+    {
+      packageJSONChanges: [
+        getPackageJSONChange(
+          "packages/ariakit-scripts/package.json",
+          {
+            private: true,
+            dependencies: { "rolldown-plugin-dts": "0.27.12" },
+          },
+          {
+            private: true,
+            dependencies: { "rolldown-plugin-dts": "0.27.13" },
+          },
+        ),
+      ],
+    },
+  );
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
+test("unions dependency CI with ordinary file heuristics", () => {
+  const plan = createCIPlan(
+    ["app/package.json", "pnpm-lock.yaml", "website/src/pages/index.tsx"],
+    {
+      packageJSONChanges: [
+        getPackageJSONChange(
+          "app/package.json",
+          { dependencies: { "@clerk/astro": "4.0.0" } },
+          { dependencies: { "@clerk/astro": "4.0.1" } },
+        ),
+      ],
+    },
+  );
+
+  expectSelectedWorkflows(plan, ["main", "app", "perf", "plus", "og_images"]);
+});
+
+test("falls back to full CI for package metadata changes", () => {
+  const plan = createCIPlan(["app/package.json", "pnpm-lock.yaml"], {
+    packageJSONChanges: [
+      getPackageJSONChange(
+        "app/package.json",
+        { scripts: { build: "astro build" } },
+        { scripts: { build: "astro check && astro build" } },
+      ),
+    ],
+  });
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
+test("does not scope lockfile changes without a dependency update", () => {
+  const plan = createCIPlan(["app/package.json", "pnpm-lock.yaml"], {
+    packageJSONChanges: [
+      getPackageJSONChange("app/package.json", {}, { devDependencies: {} }),
+    ],
+  });
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
+test("does not scope lockfile changes with empty peer metadata", () => {
+  const file = "packages/ariakit-test/package.json";
+  const plan = createCIPlan([file, "pnpm-lock.yaml"], {
+    packageJSONChanges: [
+      getPackageJSONChange(file, {}, { peerDependenciesMeta: {} }),
+    ],
+  });
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
+test("does not use package versions to scope lockfile changes", () => {
+  const plan = createCIPlan(
+    ["packages/ariakit-react/package.json", "pnpm-lock.yaml"],
+    {
+      packageJSONChanges: [
+        getPackageJSONChange(
+          "packages/ariakit-react/package.json",
+          { version: "0.4.35" },
+          { version: "0.4.36" },
+        ),
+      ],
+    },
+  );
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
+test("requires every changed manifest to scope the lockfile", () => {
+  const plan = createCIPlan(
+    [
+      "app/package.json",
+      "packages/ariakit-react/package.json",
+      "pnpm-lock.yaml",
+    ],
+    {
+      packageJSONChanges: [
+        getPackageJSONChange(
+          "app/package.json",
+          { dependencies: { "@clerk/astro": "4.0.0" } },
+          { dependencies: { "@clerk/astro": "4.0.1" } },
+        ),
+        getPackageJSONChange(
+          "packages/ariakit-react/package.json",
+          { version: "0.4.35" },
+          { version: "0.4.36" },
+        ),
+      ],
+    },
+  );
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
+test("rejects empty dependency metadata in grouped lockfile updates", () => {
+  const plan = createCIPlan(
+    ["app/package.json", "examples/package.json", "pnpm-lock.yaml"],
+    {
+      packageJSONChanges: [
+        getPackageJSONChange(
+          "app/package.json",
+          { dependencies: { "@clerk/astro": "4.0.0" } },
+          { dependencies: { "@clerk/astro": "4.0.1" } },
+        ),
+        getPackageJSONChange(
+          "examples/package.json",
+          {},
+          { devDependencies: {} },
+        ),
+      ],
+    },
+  );
+
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
+});
+
+test("avoids full CI for generated publish metadata", () => {
+  const plan = createCIPlan(
+    [
+      ".changeset/example.md",
+      "packages/ariakit-react/CHANGELOG.md",
+      "packages/ariakit-react/package.json",
+    ],
+    {
+      baseRef: "main",
+      packageJSONChanges: [
+        getPackageJSONChange(
+          "packages/ariakit-react/package.json",
+          { version: "0.4.35" },
+          { version: "0.4.36" },
+        ),
+      ],
+    },
+  );
+
+  expectSelectedWorkflows(plan, ["main", "release_preview"]);
 });
 
 test("runs app, performance, docs, release, and website checks for package code", () => {
