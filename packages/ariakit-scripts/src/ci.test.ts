@@ -137,13 +137,8 @@ test("runs release previews for changesets only on main pull requests", () => {
   ).toBe(false);
 });
 
-test("supports full and workflow-specific override labels", () => {
-  const perfPlan = createCIPlan(["readme.md"], { labels: ["ci:perf"] });
-  expect(perfPlan.workflows.perf).toBe(true);
-  expect(perfPlan.workflows.app).toBe(false);
-
-  const fullPlan = createCIPlan(["readme.md"], { labels: ["ci:full"] });
-  expect(Object.values(fullPlan.workflows).every(Boolean)).toBe(true);
+test("keeps labels out of CI plans", () => {
+  expect(createCIPlan(["readme.md"])).not.toHaveProperty("labels");
 });
 
 test("keeps both paths when git reports a rename", () => {

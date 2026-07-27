@@ -18,21 +18,18 @@ export interface CIPlan {
   version: 1;
   baseRef: string;
   files: string[];
-  labels: string[];
   workflows: Record<CIWorkflowName, boolean>;
   reasons: Record<CIWorkflowName, string[]>;
 }
 
 export interface CreateCIPlanOptions {
   baseRef?: string;
-  labels?: string[];
 }
 
 export interface RunCIPlanOptions {
   base: string;
   head: string;
   baseRef: string;
-  labels: string;
   output: string;
 }
 
@@ -51,17 +48,6 @@ interface CIGatePlan {
   version: 1;
   workflows: Record<CIWorkflowName, boolean>;
 }
-
-const workflowLabels: Record<string, CIWorkflowName> = {
-  "ci:app": "app",
-  "ci:build-styles": "build_styles",
-  "ci:docs": "docs",
-  "ci:main": "main",
-  "ci:og-images": "og_images",
-  "ci:perf": "perf",
-  "ci:plus": "plus",
-  "ci:release-preview": "release_preview",
-};
 
 const dependencyAndConfigNames = new Set([
   ".npmrc",
@@ -211,7 +197,6 @@ export function createCIPlan(
   const files = [
     ...new Set(changedFiles.map(normalizeCIPath).filter(Boolean)),
   ].sort();
-  const labels = [...new Set(options.labels ?? [])].sort();
   const workflows: Record<CIWorkflowName, boolean> = {
     main: false,
     app: false,
@@ -236,7 +221,6 @@ export function createCIPlan(
     version: 1,
     baseRef: options.baseRef ?? "",
     files,
-    labels,
     workflows,
     reasons,
   };
@@ -244,19 +228,6 @@ export function createCIPlan(
   addReason(plan, "main", "Core checks run on every PR");
   for (const file of files) {
     addFileReasons(plan, file);
-  }
-
-  if (labels.includes("ci:full")) {
-    for (const workflow of ciWorkflowNames) {
-      addReason(plan, workflow, "Forced by ci:full label");
-    }
-  } else {
-    for (const label of labels) {
-      const workflow = workflowLabels[label];
-      if (workflow) {
-        addReason(plan, workflow, `Forced by ${label} label`);
-      }
-    }
   }
 
   if (plan.baseRef && plan.baseRef !== "main") {
@@ -393,16 +364,8 @@ export function serializeCIGatePlan(plan: CIPlan) {
 
 export function runCIPlan(options: RunCIPlanOptions) {
   const files = getChangedFiles(options.base, options.head);
-  const parsedLabels = parseJSON(options.labels, "CI labels");
-  if (
-    !Array.isArray(parsedLabels) ||
-    !parsedLabels.every((label) => typeof label === "string")
-  ) {
-    throw new Error("CI labels must be an array of strings");
-  }
   const plan = createCIPlan(files, {
     baseRef: options.baseRef,
-    labels: parsedLabels,
   });
   for (const workflow of ciWorkflowNames) {
     appendFileSync(
