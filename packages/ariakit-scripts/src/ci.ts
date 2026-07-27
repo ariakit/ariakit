@@ -80,6 +80,11 @@ const dependencyFields = [
 ] as const;
 
 const dependencyFieldSet = new Set<string>(dependencyFields);
+const runtimeDependencyFieldSet = new Set([
+  "dependencies",
+  "optionalDependencies",
+  "peerDependencies",
+]);
 const publicPackageFields = new Set([...dependencyFieldSet, "version"]);
 const publicPackageWorkflows = [
   "app",
@@ -219,17 +224,6 @@ function explainsLockfileChange(change: PackageJSONChange) {
   return Boolean(dependencyNames?.length);
 }
 
-function hasRuntimeDependencyChange(
-  base: Record<string, unknown>,
-  head: Record<string, unknown>,
-) {
-  return (
-    !isDeepStrictEqual(base.dependencies, head.dependencies) ||
-    !isDeepStrictEqual(base.optionalDependencies, head.optionalDependencies) ||
-    !isDeepStrictEqual(base.peerDependencies, head.peerDependencies)
-  );
-}
-
 function hasOnlyFields(fields: string[], allowedFields: Set<string>) {
   return fields.every((field) => allowedFields.has(field));
 }
@@ -274,8 +268,8 @@ function addPackageJSONReasons(plan: CIPlan, change: PackageJSONChange) {
   }
 
   if (!/^packages\/[^/]+\/package\.json$/.test(file)) return false;
-  if (change.base.private === true || change.head.private === true)
-    return false;
+  if (change.base.private === true) return false;
+  if (change.head.private === true) return false;
   if (!hasOnlyFields(fields, publicPackageFields)) return false;
   if (
     fields.includes("version") &&
@@ -285,7 +279,7 @@ function addPackageJSONReasons(plan: CIPlan, change: PackageJSONChange) {
     return false;
   }
   addDependencyReason(plan, "main", file);
-  if (hasRuntimeDependencyChange(change.base, change.head)) {
+  if (fields.some((field) => runtimeDependencyFieldSet.has(field))) {
     for (const workflow of publicPackageWorkflows) {
       addDependencyReason(plan, workflow, file);
     }
@@ -555,6 +549,7 @@ function parseLockfileImporters(value: string) {
     const content = /^( {4}(?: {2})*)([^#\s][^:]*):(.*)$/.exec(line);
     if (!content) return;
     const indentation = content[1];
+    if (!indentation) return;
     if (indentation.length === 4) {
       if (!saveCurrentField()) return;
       const value = content[3];

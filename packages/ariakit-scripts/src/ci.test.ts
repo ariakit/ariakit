@@ -34,7 +34,7 @@ function getPackageJSONChange(
 
 function expectSelectedWorkflows(
   plan: ReturnType<typeof createCIPlan>,
-  workflows: CIWorkflowName[],
+  workflows: readonly CIWorkflowName[],
 ) {
   expect(
     ciWorkflowNames.filter((workflow) => plan.workflows[workflow]),
@@ -115,19 +115,55 @@ test("keeps unreviewed root dependency updates on full CI", () => {
   expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
 });
 
-test("selects CI from workspace dependency updates", () => {
-  const plan = createCIPlan(["app/package.json", "pnpm-lock.yaml"], {
-    changedLockfileImporters: ["app"],
+test.each([
+  {
+    file: "app/package.json",
+    workflows: ["main", "app", "perf", "og_images"],
+  },
+  { file: "examples/package.json", workflows: ["main"] },
+  { file: "guide/package.json", workflows: ["main", "plus"] },
+  {
+    file: "nextjs/package.json",
+    workflows: ["main", "app", "perf"],
+  },
+  {
+    file: "templates/react/package.json",
+    workflows: ["main", "release_preview"],
+  },
+  { file: "website/package.json", workflows: ["main", "plus"] },
+] satisfies Array<{ file: string; workflows: CIWorkflowName[] }>)(
+  "selects CI from $file dependency updates",
+  ({ file, workflows }) => {
+    const importer = file.replace(/\/package\.json$/, "");
+    const plan = createCIPlan([file, "pnpm-lock.yaml"], {
+      changedLockfileImporters: [importer],
+      packageJSONChanges: [
+        getPackageJSONChange(
+          file,
+          { dependencies: { dependency: "1.0.0" } },
+          { dependencies: { dependency: "1.0.1" } },
+        ),
+      ],
+    });
+
+    expectSelectedWorkflows(plan, workflows);
+  },
+);
+
+test("keeps unknown workspace dependency updates on full CI", () => {
+  const file = "foo/package.json";
+  const plan = createCIPlan([file, "pnpm-lock.yaml"], {
+    changedLockfileImporters: ["foo"],
     packageJSONChanges: [
       getPackageJSONChange(
-        "app/package.json",
-        { dependencies: { "@clerk/astro": "4.0.0" } },
-        { dependencies: { "@clerk/astro": "4.0.1" } },
+        file,
+        { dependencies: { dependency: "1.0.0" } },
+        { dependencies: { dependency: "1.0.1" } },
       ),
     ],
   });
 
-  expectSelectedWorkflows(plan, ["main", "app", "perf", "og_images"]);
+  expect(Object.values(plan.workflows).every(Boolean)).toBe(true);
 });
 
 test("selects consumer CI for public package runtime dependencies", () => {
