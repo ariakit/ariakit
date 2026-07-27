@@ -35,8 +35,10 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Set up environment
-        uses: ./.github/workflows/setup
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
 
       - name: Plan CI
         id: plan
@@ -45,13 +47,7 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BASE_REF: ${{ github.event.pull_request.base.ref }}
           CI_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
-        run: >-
-          pnpm exec ariakit ci-plan
-          --base "$BASE_SHA"
-          --head "$HEAD_SHA"
-          --base-ref "$BASE_REF"
-          --labels "$CI_LABELS"
-          --output "$GITHUB_OUTPUT"
+        run: node packages/ariakit-scripts/src/ci-run.ts plan
 
   main:
     name: Main
@@ -152,17 +148,16 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up environment
-        uses: ./.github/workflows/setup
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: package.json
 
       - name: Verify CI results
         env:
           CI_PLAN: ${{ needs.plan.outputs.plan }}
           CI_RESULTS: ${{ toJSON(needs) }}
-        run: >-
-          pnpm exec ariakit ci-gate
-          --plan "$CI_PLAN"
-          --results "$CI_RESULTS"
+        run: node packages/ariakit-scripts/src/ci-run.ts gate
 
   required:
     # Preserve the current required status names until the main ruleset is
