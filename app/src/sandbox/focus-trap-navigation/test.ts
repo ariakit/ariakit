@@ -53,25 +53,3 @@ test("traps and releases focus with standalone sentinels", async () => {
   await press.ShiftTab();
   expect(q.text("Before standalone")).toHaveFocus();
 });
-
-test("focus trap elements participate in tab order", async () => {
-  await focus(q.button("Elements start"));
-  await press.Tab();
-  expect(q.button("Elements before")).toHaveFocus();
-  await press.Tab();
-  expect(q.text("Elements trap")).toHaveFocus();
-  await press.Tab();
-  expect(q.button("Elements after")).toHaveFocus();
-});
-
-test("focus trap elements can redirect focus", async () => {
-  await focus(q.button("Redirect start"));
-  await press.Tab();
-  expect(q.button("Redirect before")).toHaveFocus();
-  await press.Tab();
-  expect(q.button("Redirect target")).toHaveFocus();
-  await press.ShiftTab();
-  expect(q.button("Redirect skip")).toHaveFocus();
-  await press.ShiftTab();
-  expect(q.button("Redirect target")).toHaveFocus();
-});

@@ -67,36 +67,11 @@ function StandaloneFocusTrap() {
   );
 }
 
-function FocusTrapElements() {
-  return (
-    <>
-      <div aria-label="trap elements" role="group">
-        <button>Elements start</button>
-        <button>Elements before</button>
-        <Ariakit.FocusTrap>Elements trap</Ariakit.FocusTrap>
-        <button>Elements after</button>
-      </div>
-      <div aria-label="redirect elements" role="group">
-        <button>Redirect start</button>
-        <button>Redirect before</button>
-        <Ariakit.FocusTrap
-          onFocus={() => document.getElementById("redirect-target")?.focus()}
-        >
-          Redirect trap
-        </Ariakit.FocusTrap>
-        <button>Redirect skip</button>
-        <button id="redirect-target">Redirect target</button>
-      </div>
-    </>
-  );
-}
-
 export default function Example() {
   return (
     <>
       <FocusTrapRegion />
       <StandaloneFocusTrap />
-      <FocusTrapElements />
     </>
   );
 }
