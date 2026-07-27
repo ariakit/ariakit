@@ -7,8 +7,8 @@ async function moveMouseTo(page: Page, locator: Locator) {
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
 }
 
-// Reproduces https://github.com/ariakit/ariakit/issues/6344
 withFramework(import.meta.dirname, async ({ test }) => {
+  // https://github.com/ariakit/ariakit/issues/6344
   test("stays open when interacting with a persistent element before the dialog is focused", async ({
     page,
     q,
@@ -30,6 +30,21 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
+  // https://github.com/ariakit/ariakit/issues/6849
+  test("keeps descendants of a persistent form inside the dialog context", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Open dialog").click();
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+
+    await q.textbox("Persistent form field").click();
+    await test.expect(q.textbox("Persistent form field")).toBeFocused();
+    await page.waitForTimeout(250);
+    await test.expect(q.dialog("Dialog")).toBeVisible();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6344
   test("stays open on right-clicking a persistent element before the dialog is focused", async ({
     page,
     q,
@@ -42,6 +57,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
+  // https://github.com/ariakit/ariakit/issues/6344
   test("keeps the documented behavior after the dialog has been focused", async ({
     page,
     q,

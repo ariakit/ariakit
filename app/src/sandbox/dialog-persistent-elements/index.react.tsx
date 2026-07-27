@@ -19,6 +19,7 @@ export default function Example() {
   const [shadowDialogPortal, setShadowDialogPortal] =
     useState<HTMLElement | null>(null);
   const notificationsRef = useRef<HTMLDivElement>(null);
+  const persistentFormRef = useRef<HTMLFormElement>(null);
   const shadowPersistentRef = useRef<HTMLDivElement>(null);
   const shadowFocusCleanupRef = useRef<(() => void) | null>(null);
   const setShadowHost = useCallback((host: HTMLDivElement | null) => {
@@ -129,6 +130,8 @@ export default function Example() {
           const persistentElements: Element[] = [];
           const notifications = notificationsRef.current;
           if (notifications) persistentElements.push(notifications);
+          const form = persistentFormRef.current;
+          if (form) persistentElements.push(form);
           const shadowPersistent = shadowPersistentRef.current;
           if (shadowPersistent) persistentElements.push(shadowPersistent);
           return persistentElements;
@@ -171,6 +174,16 @@ export default function Example() {
           Dismiss notification
         </button>
       </div>
+
+      {/* happy-dom proxies forms for named access. Their descendants must still
+          resolve to the public form through ancestor APIs. */}
+      <form ref={persistentFormRef}>
+        <input
+          aria-label="Persistent form field"
+          placeholder="Persistent form field"
+          className="rounded border border-gray-300 px-3 py-1"
+        />
+      </form>
 
       {/* A regular outside element: interacting with it must still close the
           dialog. */}
