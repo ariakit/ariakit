@@ -61,12 +61,12 @@ export default function Example() {
         <SelectButton aria-label="Custom select label" />
         <SelectPopover>
           {/* The list keeps the raw Ariakit primitive: the explicit
-              SelectList with its own aria-label is what this sandbox
+              ComboboxList with its own aria-label is what this sandbox
               exercises, and @ariakit/ui has no wrapper for it. */}
-          <ak.SelectList aria-label="Custom list label">
+          <ak.ComboboxList aria-label="Custom list label">
             <SelectItem value="Apple" />
             <SelectItem value="Banana" />
-          </ak.SelectList>
+          </ak.ComboboxList>
         </SelectPopover>
       </SelectProvider>
 

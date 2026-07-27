@@ -20,9 +20,9 @@ export interface SelectProps extends Omit<
   SelectButtonProps,
   "value" | "defaultValue" | "popover"
 > {
-  value?: SelectProviderProps["selectedValue"];
-  setValue?: SelectProviderProps["setSelectedValue"];
-  defaultValue?: SelectProviderProps["defaultSelectedValue"];
+  value?: SelectProviderProps["value"];
+  setValue?: SelectProviderProps["setValue"];
+  defaultValue?: SelectProviderProps["defaultValue"];
   /** Items to render in the popover when not provided as children. */
   items?: SelectItemProps[];
   /** Custom label element or props to render a `SelectLabel`. */
@@ -61,9 +61,9 @@ export function Select({
   const popoverEl = createRender(SelectPopover, popover);
   return (
     <SelectProvider
-      selectedValue={value}
-      setSelectedValue={setValue}
-      defaultSelectedValue={defaultValue}
+      value={value}
+      setValue={setValue}
+      defaultValue={defaultValue}
     >
       {labelEl}
       <SelectButton {...props} />
@@ -77,13 +77,37 @@ export function Select({
   );
 }
 
-export interface SelectProviderProps extends ak.ComboboxProviderProps {}
+export interface SelectProviderProps extends Omit<
+  ak.ComboboxProviderProps,
+  | "value"
+  | "setValue"
+  | "defaultValue"
+  | "selectedValue"
+  | "setSelectedValue"
+  | "defaultSelectedValue"
+> {
+  value?: ak.ComboboxProviderProps["selectedValue"];
+  setValue?: ak.ComboboxProviderProps["setSelectedValue"];
+  defaultValue?: ak.ComboboxProviderProps["defaultSelectedValue"];
+}
 
 /**
  * @see https://ariakit.com/reference/select-provider
  */
-export function SelectProvider(props: SelectProviderProps) {
-  return <ak.ComboboxProvider {...props} />;
+export function SelectProvider({
+  value,
+  setValue,
+  defaultValue,
+  ...props
+}: SelectProviderProps) {
+  return (
+    <ak.ComboboxProvider
+      selectedValue={value}
+      setSelectedValue={setValue}
+      defaultSelectedValue={defaultValue}
+      {...props}
+    />
+  );
 }
 
 export interface SelectValueProps extends ak.ComboboxSelectedValueProps {}

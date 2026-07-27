@@ -30,10 +30,10 @@
     "@ariakit/react": "workspace:*",
     "clava": "0.6.0",
     "clsx": "2.1.1",
-    "lucide-react": "1.24.0",
-    "react": "19.2.7",
+    "lucide-react": "1.26.0",
+    "react": "19.2.8",
     "react-aria-components": "1.19.0",
-    "react-dom": "19.2.7",
+    "react-dom": "19.2.8",
     "solid-js": "1.9.14"
   },
   "devDependencies": {
