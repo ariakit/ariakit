@@ -308,6 +308,11 @@ function patchHappyDOMAnimationFrame() {
 // Patch the shared connection hook at the source. The internal symbols are
 // discovered from a detached probe and verified before use, so this becomes a
 // no-op when happy-dom fixes the parent pointer or changes those internals.
+// The repair runs after happy-dom connects descendants, so a synchronous custom
+// element connectedCallback can still observe the raw target during that
+// insertion. Repairing mid-recursion would require running the hook through the
+// Proxy or replaying more of happy-dom's internals. The upstream fix handles
+// this at the source.
 // https://github.com/ariakit/ariakit/issues/6849
 // https://github.com/capricorn86/happy-dom/issues/2253
 // TODO: Remove this shim once the upstream fix ships.
