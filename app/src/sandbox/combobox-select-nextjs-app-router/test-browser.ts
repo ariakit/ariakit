@@ -59,6 +59,8 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
   });
 
   test("opens a single-value option in a new tab", async ({ page, q }) => {
+    // Opening a new tab may cold-start the preview worker under CI load.
+    test.slow();
     const language = q.combobox("Language");
     await language.click();
     await test.expect(language).toHaveAttribute("aria-expanded", "true");
@@ -69,9 +71,7 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     ]);
 
     await newPage.waitForURL(hasSearchParam("lang", "fr"));
-    await test
-      .expect(query(newPage).combobox("Language"))
-      .toHaveText("French", { timeout: 15_000 });
+    await test.expect(query(newPage).combobox("Language")).toHaveText("French");
     await test.expect(q.combobox("Language")).toHaveText("English");
   });
 
@@ -102,6 +102,8 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     page,
     q,
   }) => {
+    // Opening a new tab may cold-start the preview worker under CI load.
+    test.slow();
     const modifier = await getNewTabModifier(page);
     const status = q.combobox("Status");
     await status.click();
@@ -127,7 +129,7 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     await newPage.waitForURL(hasSearchParam("status", ["draft", "archived"]));
     await test
       .expect(query(newPage).combobox("Status"))
-      .toHaveText("2 selected", { timeout: 15_000 });
+      .toHaveText("2 selected");
   });
 
   test("hydrates language and multiple statuses from the URL", async ({
