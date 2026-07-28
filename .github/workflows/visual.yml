@@ -111,7 +111,13 @@ jobs:
               `${process.env.GITHUB_WORKSPACE}/packages/ariakit-scripts/src/ci-visual.js`
             );
             const screenshotJobs = jobs
-              .filter((job) => job.steps?.some((step) => step.name === "Upload screenshots"))
+              .filter((job) =>
+                job.steps?.some(
+                  (step) =>
+                    step.name === "Upload screenshots" &&
+                    step.conclusion !== "skipped",
+                ),
+              )
               .map((job) => {
                 return {
                   name: job.name,

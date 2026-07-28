@@ -1,0 +1,51 @@
+import type { Page } from "@playwright/test";
+import { expect } from "@playwright/test";
+import { test as appTest } from "#app/test-utils/fixtures.ts";
+import { withFramework } from "#app/test-utils/preview.ts";
+
+appTest.use({ headless: false });
+
+withFramework(import.meta.dirname, async ({ test }) => {
+  const getDialog = (page: Page) =>
+    page.getByRole("dialog", { name: "Homemade Cake" });
+
+  const getButton = (page: Page, name: string) =>
+    page.getByRole("button", { name });
+
+  const getBackdrop = (page: Page) => page.locator(".backdrop");
+
+  const getBackdropScrollTop = (page: Page) =>
+    getBackdrop(page).evaluate((node) => node.scrollTop);
+
+  const waitForBackdropScrollTop = async (page: Page, value: number) => {
+    const backdrop = await getBackdrop(page).elementHandle();
+    await page.waitForFunction(
+      ({ backdrop, value }) => backdrop?.scrollTop === value,
+      { backdrop, value },
+    );
+  };
+
+  test("show/hide", async ({ page }) => {
+    await expect(getDialog(page)).not.toBeVisible();
+    await getButton(page, "View recipe").click();
+    await expect(getDialog(page)).toBeVisible();
+    // Show scrollbar
+    await page.mouse.wheel(0, 10);
+    await waitForBackdropScrollTop(page, 10);
+    // Drag the backdrop's own scrollbar. With classic scrollbars, the backdrop
+    // stops at the scrollbar gutter the scroll lock reserves on the viewport,
+    // so its scrollbar sits at the backdrop's right edge, not the viewport's.
+    const backdropBox = (await getBackdrop(page).boundingBox())!;
+    const scrollbarX = backdropBox.x + backdropBox.width - 5;
+    await page.mouse.move(scrollbarX, 40);
+    await page.mouse.down();
+    await page.mouse.move(scrollbarX, 200);
+    await page.mouse.up();
+    const scrollTop = await getBackdropScrollTop(page);
+    expect(scrollTop).toBeGreaterThan(200);
+    await expect(getDialog(page)).toBeVisible();
+    // Hide dialog by clicking on backdrop
+    await getBackdrop(page).click({ position: { x: 10, y: 10 } });
+    await expect(getDialog(page)).not.toBeVisible();
+  });
+});

@@ -78,23 +78,24 @@ jobs:
             project: firefox
             test: xvfb-run pnpm -F app run test
             visual: xvfb-run pnpm -F app run test-visual
-          # - os: ubuntu-latest
-          #   name: Android
-          #   engine: chromium
-          #   project: android
-          #   run: xvfb-run pnpm -F app run test-visual
+          - os: ubuntu-latest
+            name: Android
+            engine: chromium
+            project: android
+            test: xvfb-run pnpm -F app run test
+            visual: ""
           - os: macos-latest
             name: Safari
             engine: webkit
             project: safari
             test: pnpm -F app run test
             visual: pnpm -F app run test-visual
-          # - os: macos-latest
-          #   name: iOS
-          #   engine: webkit
-          #   project: ios
-          #   test: pnpm -F app run test
-          #   visual: pnpm -F app run test-visual
+          - os: macos-latest
+            name: iOS
+            engine: webkit
+            project: ios
+            test: pnpm -F app run test
+            visual: ""
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -125,6 +126,7 @@ jobs:
 
       - name: Test visual
         id: test-visual
+        if: matrix.visual != ''
         # -x stops after the first failing test so we can rerun once with -u below.
         run: ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual --pass-with-no-tests -x
 
@@ -138,13 +140,13 @@ jobs:
           ${{ matrix.visual }} --project ${{ matrix.project }} --grep @visual -u
 
       - name: Remove stale screenshots
-        if: always() && steps.update-screenshots.outcome == 'success'
+        if: matrix.visual != '' && always() && steps.update-screenshots.outcome == 'success'
         # The update run only touches files that still exist, so remove any
         # older screenshots for this browser that were left behind.
         run: find app/src -path "*/__screenshots__/*-${{ matrix.project }}.png" ! -newer "${{ runner.temp }}/pre-update-marker" -delete
 
       - name: Pack screenshots
-        if: always()
+        if: matrix.visual != '' && always()
         # The follow-up job applies screenshots from artifacts instead of
         # mutating the branch directly from each matrix shard.
         run: |
@@ -166,7 +168,7 @@ jobs:
           PY
 
       - name: Upload screenshots
-        if: always()
+        if: matrix.visual != '' && always()
         uses: actions/upload-artifact@v7
         with:
           name: app-visual-${{ matrix.project }}

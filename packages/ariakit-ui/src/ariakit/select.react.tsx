@@ -4,7 +4,7 @@ import { splitProps } from "clava";
 import { clsx } from "clsx";
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
 import type * as React from "react";
-import { createRender } from "../react-utils/create-render.ts";
+import { createRender } from "../react-utils/create-render.react.ts";
 import { badge as badgeStyle } from "../styles/badge.ts";
 import {
   select,

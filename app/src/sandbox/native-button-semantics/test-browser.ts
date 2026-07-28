@@ -1,6 +1,13 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  test("focuses a plain Ariakit Button when clicked", async ({ q }) => {
+    const button = q.button("Default button");
+
+    await button.click();
+    await test.expect(button).toBeFocused();
+  });
+
   test("declares native button types before refs run", async ({ q }) => {
     await test.expect(q.tab("Default tab")).toHaveAttribute("type", "button");
     await test.expect(q.tab("Submit tab")).toHaveAttribute("type", "submit");
@@ -24,6 +31,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(q.button("Reset button"))
       .toHaveAttribute("type", "reset");
     await test.expect(q.button("Div button")).not.toHaveAttribute("type");
+    await test.expect(q.button("Div button")).toHaveAttribute("role", "button");
+    await test.expect(q.button("Div button")).toHaveAttribute("tabindex", "0");
+    await test
+      .expect(q.link("Link button"))
+      .toHaveAttribute("href", "#button-link");
     await test
       .expect(q.button("Toolbar item"))
       .toHaveAttribute("type", "button");

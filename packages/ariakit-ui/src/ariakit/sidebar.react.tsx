@@ -2,7 +2,7 @@ import * as ak from "@ariakit/react";
 import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import * as React from "react";
-import { useIsMobile } from "../react-hooks/use-is-mobile.ts";
+import { useIsMobile } from "../react-hooks/use-is-mobile.react.ts";
 import { sidebar, sidebarBody, sidebarSection } from "../styles/sidebar.ts";
 
 interface SidebarContextType {

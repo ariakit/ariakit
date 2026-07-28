@@ -35,9 +35,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.button("Show fast dialog")).toBeFocused();
     await test.expect(backdrop).toHaveAttribute("data-leave", "true");
     // Wait past the panel's 150ms transition. The backdrop must keep leaving
-    // until its own 500ms transition ends. Before the fix, the panel's shorter
-    // timeout stopped the shared animation state, hiding the backdrop at
-    // 150ms.
+    // until its own 2s transition ends. Before the fix, the panel's shorter
+    // timeout stopped the shared animation state, hiding the backdrop at 150ms.
     await page.waitForTimeout(250);
     await test.expect(backdrop).toHaveAttribute("data-leave", "true");
     await test.expect(backdrop).toBeVisible();

@@ -2,7 +2,7 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import * as React from "react";
 import * as rac from "react-aria-components";
-import { createRender } from "../react-utils/create-render.ts";
+import { createRender } from "../react-utils/create-render.react.ts";
 import type { DisclosureIndicator } from "../react-utils/disclosure-indicator.react.tsx";
 import { renderIndicator } from "../react-utils/disclosure-indicator.react.tsx";
 import {

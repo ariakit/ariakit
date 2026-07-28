@@ -57,7 +57,7 @@ afterEach(() => {
 
 test("prunes an earlier attempt's results when a retried test records", () => {
   const makeResult = (testTitle: string): PerfResult => ({
-    testFile: "src/sandbox/select-perf/perf-chrome.ts",
+    testFile: "src/sandbox/combobox-select-perf/perf-chrome.ts",
     testTitle,
     label: testTitle,
     metrics: { scripting: 1, rendering: 1, inp: 0, total: 2 },

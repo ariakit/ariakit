@@ -1,5 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { appendFileSync } from "node:fs";
+import { isDeepStrictEqual } from "node:util";
 
 export const ciWorkflowNames = [
   "main",
@@ -17,21 +18,26 @@ export interface CIPlan {
   version: 1;
   baseRef: string;
   files: string[];
-  labels: string[];
   workflows: Record<CIWorkflowName, boolean>;
   reasons: Record<CIWorkflowName, string[]>;
 }
 
 export interface CreateCIPlanOptions {
   baseRef?: string;
-  labels?: string[];
+  changedLockfileImporters?: string[];
+  packageJSONChanges?: PackageJSONChange[];
+}
+
+export interface PackageJSONChange {
+  file: string;
+  base: Record<string, unknown>;
+  head: Record<string, unknown>;
 }
 
 export interface RunCIPlanOptions {
   base: string;
   head: string;
   baseRef: string;
-  labels: string;
   output: string;
 }
 
@@ -51,16 +57,6 @@ interface CIGatePlan {
   workflows: Record<CIWorkflowName, boolean>;
 }
 
-const workflowLabels: Record<string, CIWorkflowName> = {
-  "ci:app": "app",
-  "ci:docs": "docs",
-  "ci:main": "main",
-  "ci:og-images": "og_images",
-  "ci:perf": "perf",
-  "ci:plus": "plus",
-  "ci:release-preview": "release_preview",
-};
-
 const dependencyAndConfigNames = new Set([
   ".npmrc",
   "bun.lock",
@@ -74,6 +70,65 @@ const dependencyAndConfigNames = new Set([
   "wrangler.toml",
   "yarn.lock",
 ]);
+
+const dependencyFields = [
+  "dependencies",
+  "devDependencies",
+  "optionalDependencies",
+  "peerDependencies",
+] as const;
+
+const dependencyFieldSet = new Set<string>(dependencyFields);
+const runtimeDependencyFieldSet = new Set([
+  "dependencies",
+  "optionalDependencies",
+  "peerDependencies",
+]);
+const publicPackageFields = new Set([...dependencyFieldSet, "version"]);
+const publicPackageWorkflows = [
+  "app",
+  "perf",
+  "plus",
+  "release_preview",
+  "docs",
+  "og_images",
+] as const satisfies readonly CIWorkflowName[];
+
+// Root tools outside this reviewed set can affect any workspace, so they
+// continue to fail closed to full CI.
+const rootMainDependencies = new Set([
+  "@testing-library/jest-dom",
+  "@testing-library/react",
+  "@types/cross-spawn",
+  "@types/fs-extra",
+  "@types/node",
+  "@types/react",
+  "@types/react-dom",
+  "@vitest/coverage-v8",
+  "happy-dom",
+  "husky",
+  "lint-staged",
+  "oxfmt",
+  "oxlint",
+  "oxlint-tsgolint",
+  "prettier",
+  "prettier-plugin-tailwindcss",
+  "stylelint",
+  "stylelint-config-standard",
+  "vitest",
+  "vitest-fail-on-console",
+]);
+
+const workspaceDependencyWorkflows = new Map<string, readonly CIWorkflowName[]>(
+  [
+    ["app/package.json", ["app", "perf", "og_images"]],
+    ["examples/package.json", []],
+    ["guide/package.json", ["plus"]],
+    ["nextjs/package.json", ["app", "perf"]],
+    ["templates/react/package.json", ["release_preview"]],
+    ["website/package.json", ["plus"]],
+  ],
+);
 
 function normalizeCIPath(file: string) {
   return file.replaceAll("\\", "/").replace(/^\.\/+/, "");
@@ -117,6 +172,123 @@ function isPackageRuntimePath(file: string) {
 function isAppRuntimePath(file: string) {
   if (!/^(?:app|nextjs)\//.test(file)) return false;
   if (isTestFile(file)) return false;
+  return true;
+}
+
+function getChangedFields(
+  base: Record<string, unknown>,
+  head: Record<string, unknown>,
+) {
+  const fields = new Set([...Object.keys(base), ...Object.keys(head)]);
+  return [...fields].filter((field) => {
+    return !isDeepStrictEqual(base[field], head[field]);
+  });
+}
+
+function getStringRecord(value: unknown) {
+  if (value === undefined) return {};
+  if (!isRecord(value)) return;
+  const record: Record<string, string> = {};
+  for (const [key, item] of Object.entries(value)) {
+    if (typeof item !== "string") return;
+    record[key] = item;
+  }
+  return record;
+}
+
+function getChangedDependencyNames(
+  base: Record<string, unknown>,
+  head: Record<string, unknown>,
+) {
+  const names = new Set<string>();
+  for (const field of dependencyFields) {
+    if (isDeepStrictEqual(base[field], head[field])) continue;
+    const baseDependencies = getStringRecord(base[field]);
+    const headDependencies = getStringRecord(head[field]);
+    if (!baseDependencies || !headDependencies) return;
+    for (const name of new Set([
+      ...Object.keys(baseDependencies),
+      ...Object.keys(headDependencies),
+    ])) {
+      if (baseDependencies[name] !== headDependencies[name]) {
+        names.add(name);
+      }
+    }
+  }
+  return [...names].sort();
+}
+
+function explainsLockfileChange(change: PackageJSONChange) {
+  const dependencyNames = getChangedDependencyNames(change.base, change.head);
+  return Boolean(dependencyNames?.length);
+}
+
+function hasOnlyFields(fields: string[], allowedFields: Set<string>) {
+  return fields.every((field) => allowedFields.has(field));
+}
+
+function addDependencyReason(
+  plan: CIPlan,
+  workflow: CIWorkflowName,
+  file: string,
+) {
+  addReason(plan, workflow, `Dependency metadata: ${file}`);
+}
+
+function addPackageJSONReasons(plan: CIPlan, change: PackageJSONChange) {
+  const file = normalizeCIPath(change.file);
+  const fields = getChangedFields(change.base, change.head);
+  const dependencyNames = getChangedDependencyNames(change.base, change.head);
+  if (!dependencyNames) return false;
+  const hasTypeDependencyChange = dependencyNames.some((name) => {
+    return name.startsWith("@types/");
+  });
+
+  if (file === "package.json") {
+    if (!hasOnlyFields(fields, dependencyFieldSet)) return false;
+    if (dependencyNames.some((name) => !rootMainDependencies.has(name))) {
+      return false;
+    }
+    addDependencyReason(plan, "main", file);
+    if (dependencyNames.includes("vitest")) {
+      addDependencyReason(plan, "perf", file);
+    }
+    if (dependencyNames.includes("oxfmt") || hasTypeDependencyChange) {
+      addDependencyReason(plan, "docs", file);
+    }
+    return true;
+  }
+
+  const workspaceWorkflows = workspaceDependencyWorkflows.get(file);
+  if (workspaceWorkflows) {
+    if (!hasOnlyFields(fields, dependencyFieldSet)) return false;
+    addDependencyReason(plan, "main", file);
+    for (const workflow of workspaceWorkflows) {
+      addDependencyReason(plan, workflow, file);
+    }
+    return true;
+  }
+
+  if (!/^packages\/[^/]+\/package\.json$/.test(file)) return false;
+  if (change.base.private === true) return false;
+  if (change.head.private === true) return false;
+  if (!hasOnlyFields(fields, publicPackageFields)) return false;
+  if (
+    fields.includes("version") &&
+    (typeof change.base.version !== "string" ||
+      typeof change.head.version !== "string")
+  ) {
+    return false;
+  }
+  addDependencyReason(plan, "main", file);
+  if (hasTypeDependencyChange) {
+    addDependencyReason(plan, "docs", file);
+  }
+  if (fields.some((field) => runtimeDependencyFieldSet.has(field))) {
+    for (const workflow of publicPackageWorkflows) {
+      addDependencyReason(plan, workflow, file);
+    }
+  }
   return true;
 }
 
@@ -199,7 +371,29 @@ export function createCIPlan(
   const files = [
     ...new Set(changedFiles.map(normalizeCIPath).filter(Boolean)),
   ].sort();
-  const labels = [...new Set(options.labels ?? [])].sort();
+  const packageJSONChanges = new Map(
+    (options.packageJSONChanges ?? []).map((change) => {
+      return [normalizeCIPath(change.file), change] as const;
+    }),
+  );
+  const changedPackageJSONFiles = files.filter((file) => {
+    return /(?:^|\/)package\.json$/.test(file);
+  });
+  const changedPackageJSONFileSet = new Set(changedPackageJSONFiles);
+  const hasScopedPackageJSONChanges =
+    changedPackageJSONFiles.length > 0 &&
+    changedPackageJSONFiles.every((file) => {
+      const change = packageJSONChanges.get(file);
+      return change ? explainsLockfileChange(change) : false;
+    });
+  const changedLockfileImporters = options.changedLockfileImporters ?? [];
+  const hasScopedLockfileChanges =
+    changedLockfileImporters.length > 0 &&
+    changedLockfileImporters.every((importer) => {
+      const file =
+        importer === "." ? "package.json" : `${importer}/package.json`;
+      return changedPackageJSONFileSet.has(normalizeCIPath(file));
+    });
   const workflows: Record<CIWorkflowName, boolean> = {
     main: false,
     app: false,
@@ -222,27 +416,26 @@ export function createCIPlan(
     version: 1,
     baseRef: options.baseRef ?? "",
     files,
-    labels,
     workflows,
     reasons,
   };
 
-  addReason(plan, "main", "Core and legacy browser tests run on every PR");
+  addReason(plan, "main", "Core checks run on every PR");
   for (const file of files) {
+    // Manifest and importer diffs together establish whether the generated
+    // lockfile is fully attributable to the changed manifests.
+    if (
+      file === "pnpm-lock.yaml" &&
+      hasScopedPackageJSONChanges &&
+      hasScopedLockfileChanges
+    ) {
+      continue;
+    }
+    const packageJSONChange = packageJSONChanges.get(file);
+    if (packageJSONChange && addPackageJSONReasons(plan, packageJSONChange)) {
+      continue;
+    }
     addFileReasons(plan, file);
-  }
-
-  if (labels.includes("ci:full")) {
-    for (const workflow of ciWorkflowNames) {
-      addReason(plan, workflow, "Forced by ci:full label");
-    }
-  } else {
-    for (const label of labels) {
-      const workflow = workflowLabels[label];
-      if (workflow) {
-        addReason(plan, workflow, `Forced by ${label} label`);
-      }
-    }
   }
 
   if (plan.baseRef && plan.baseRef !== "main") {
@@ -267,6 +460,126 @@ export function getChangedFiles(base: string, head: string) {
     { encoding: "utf-8", maxBuffer: 10 * 1024 * 1024 },
   );
   return parseChangedFiles(output);
+}
+
+function readPackageJSON(revision: string, file: string) {
+  try {
+    const value = readRevisionFile(revision, file);
+    if (value === undefined) return;
+    const packageJSON: unknown = JSON.parse(value);
+    if (!isRecord(packageJSON)) return;
+    return packageJSON;
+  } catch {
+    return;
+  }
+}
+
+function readRevisionFile(revision: string, file: string) {
+  try {
+    return execFileSync("git", ["show", `${revision}:${file}`], {
+      encoding: "utf-8",
+      maxBuffer: 10 * 1024 * 1024,
+      stdio: ["ignore", "pipe", "ignore"],
+    });
+  } catch {
+    return;
+  }
+}
+
+function parseLockfileImporters(value: string) {
+  const lines = value.replaceAll("\r\n", "\n").split("\n");
+  const importersIndex = lines.indexOf("importers:");
+  if (importersIndex < 0) return;
+
+  const importers = new Map<string, string>();
+  let currentImporter: string | undefined;
+  let currentBlock: string[] = [];
+  const saveCurrentImporter = () => {
+    if (!currentImporter) return true;
+    if (importers.has(currentImporter)) return false;
+    importers.set(currentImporter, currentBlock.join("\n").trimEnd());
+    return true;
+  };
+
+  for (let index = importersIndex + 1; index < lines.length; index++) {
+    const line = lines[index];
+    if (line === undefined) return;
+    if (line && !line.startsWith(" ")) {
+      if (!/^[^:\s][^:]*:/.test(line)) return;
+      break;
+    }
+    const match = /^  ([a-zA-Z0-9._@/-]+):(?: \{\})?$/.exec(line);
+    if (match) {
+      if (!saveCurrentImporter()) return;
+      currentImporter = match[1];
+      currentBlock = [line];
+      continue;
+    }
+    if (!line) {
+      if (currentImporter) currentBlock.push(line);
+      continue;
+    }
+    if (!currentImporter) return;
+    if (!/^ {4}(?: {2})*[^#\s][^:]*:/.test(line)) return;
+    currentBlock.push(line);
+  }
+  if (!saveCurrentImporter()) return;
+  if (importers.size === 0) return;
+  return importers;
+}
+
+export function parseLockfileImporterChanges(base: string, head: string) {
+  const baseImporters = parseLockfileImporters(base);
+  const headImporters = parseLockfileImporters(head);
+  if (!baseImporters || !headImporters) return;
+  if (baseImporters.size !== headImporters.size) return;
+  for (const importer of baseImporters.keys()) {
+    if (!headImporters.has(importer)) return;
+  }
+  return [...baseImporters.keys()]
+    .filter((importer) => {
+      return baseImporters.get(importer) !== headImporters.get(importer);
+    })
+    .sort();
+}
+
+export function getPackageJSONChanges(
+  base: string,
+  head: string,
+  files: string[],
+) {
+  const mergeBase = execFileSync("git", ["merge-base", base, head], {
+    encoding: "utf-8",
+  }).trim();
+  const changes: PackageJSONChange[] = [];
+  for (const changedFile of files) {
+    const file = normalizeCIPath(changedFile);
+    if (!/(?:^|\/)package\.json$/.test(file)) continue;
+    const basePackageJSON = readPackageJSON(mergeBase, file);
+    const headPackageJSON = readPackageJSON(head, file);
+    if (!basePackageJSON || !headPackageJSON) continue;
+    changes.push({
+      file,
+      base: basePackageJSON,
+      head: headPackageJSON,
+    });
+  }
+  return changes;
+}
+
+export function getLockfileImporterChanges(
+  base: string,
+  head: string,
+  files: string[],
+) {
+  if (!files.map(normalizeCIPath).includes("pnpm-lock.yaml")) return;
+  const mergeBase = execFileSync("git", ["merge-base", base, head], {
+    encoding: "utf-8",
+  }).trim();
+  const baseLockfile = readRevisionFile(mergeBase, "pnpm-lock.yaml");
+  const headLockfile = readRevisionFile(head, "pnpm-lock.yaml");
+  if (baseLockfile === undefined || headLockfile === undefined) return;
+  return parseLockfileImporterChanges(baseLockfile, headLockfile);
 }
 
 export function parseChangedFiles(output: string) {
@@ -378,16 +691,18 @@ export function serializeCIGatePlan(plan: CIPlan) {
 
 export function runCIPlan(options: RunCIPlanOptions) {
   const files = getChangedFiles(options.base, options.head);
-  const parsedLabels = parseJSON(options.labels, "CI labels");
-  if (
-    !Array.isArray(parsedLabels) ||
-    !parsedLabels.every((label) => typeof label === "string")
-  ) {
-    throw new Error("CI labels must be an array of strings");
-  }
   const plan = createCIPlan(files, {
     baseRef: options.baseRef,
-    labels: parsedLabels,
+    changedLockfileImporters: getLockfileImporterChanges(
+      options.base,
+      options.head,
+      files,
+    ),
+    packageJSONChanges: getPackageJSONChanges(
+      options.base,
+      options.head,
+      files,
+    ),
   });
   for (const workflow of ciWorkflowNames) {
     appendFileSync(

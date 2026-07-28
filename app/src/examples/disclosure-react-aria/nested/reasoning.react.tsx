@@ -9,7 +9,7 @@ import {
   DisclosureContent,
   DisclosureContentBody,
 } from "@ariakit/ui/react-aria/disclosure.react.tsx";
-import { createRender } from "@ariakit/ui/react-utils/create-render.ts";
+import { createRender } from "@ariakit/ui/react-utils/create-render.react.ts";
 import { clsx } from "clsx";
 import { createContext, useContext } from "react";
 

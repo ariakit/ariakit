@@ -6,7 +6,7 @@ import {
   LegacyPublicSelectFormDisabledCase,
   LegacyPublicSelectItemsUnmountCase,
   LegacyPublicSelectMultipleCase,
-} from "./basic.tsx";
+} from "./basic.react.tsx";
 import {
   LegacyPublicSelectComboboxCase,
   LegacyPublicSelectComboboxFocusWithinCase,
@@ -15,7 +15,7 @@ import {
   LegacyPublicSelectComboboxTabCase,
   LegacyPublicSelectComboboxTabManualCase,
   LegacyPublicSelectComboboxVirtualizedCase,
-} from "./combobox.tsx";
+} from "./combobox.react.tsx";
 import {
   LegacyPublicSelectAnimatedCase,
   LegacyPublicSelectAnimatedStoreCase,
@@ -24,14 +24,14 @@ import {
   LegacyPublicSelectGroupCase,
   LegacyPublicSelectItemCustomCase,
   LegacyPublicSelectListboxCase,
-} from "./composite.tsx";
+} from "./composite.react.tsx";
 import {
   LegacyPublicComboboxMultipleSelectCase,
   LegacyPublicComboboxMultipleStoreCase,
   LegacyPublicFormSelectCase,
   LegacyPublicSelectMenuDefaultOpenCase,
   LegacyPublicToolbarSelectCase,
-} from "./compositions.tsx";
+} from "./compositions.react.tsx";
 
 // Keep this registry in a non-index TSX module so workerd and the preview
 // generator do not treat it as their own entry point.

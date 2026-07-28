@@ -3,7 +3,7 @@ import type { VariantProps } from "clava";
 import { splitProps } from "clava";
 import type * as React from "react";
 import { useEffect } from "react";
-import { createRender } from "../react-utils/create-render.ts";
+import { createRender } from "../react-utils/create-render.react.ts";
 import {
   nav,
   navButton,

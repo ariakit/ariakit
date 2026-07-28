@@ -28,6 +28,18 @@ export default function Example() {
       <NestedHeadingLevels count={8}>
         <Ariakit.Heading>Clamped heading</Ariakit.Heading>
       </NestedHeadingLevels>
+
+      <Ariakit.HeadingLevel>
+        <Ariakit.Heading>Document heading</Ariakit.Heading>
+        <Ariakit.HeadingLevel>
+          <Ariakit.Heading>First section</Ariakit.Heading>
+          <p>First section content</p>
+        </Ariakit.HeadingLevel>
+        <Ariakit.HeadingLevel>
+          <Ariakit.Heading>Second section</Ariakit.Heading>
+          <p>Second section content</p>
+        </Ariakit.HeadingLevel>
+      </Ariakit.HeadingLevel>
     </div>
   );
 }

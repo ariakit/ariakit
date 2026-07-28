@@ -1,5 +1,10 @@
 {
   "extends": "../tsconfig.test.json",
-  "include": [".astro/content.d.ts", "**/*test.ts", "env.d.ts"],
+  "include": [
+    ".astro/content.d.ts",
+    "**/*test.ts",
+    "**/*.test-helper.ts",
+    "env.d.ts"
+  ],
   "exclude": ["dist"]
 }

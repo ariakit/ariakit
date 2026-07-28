@@ -3,6 +3,11 @@
   "compilerOptions": {
     "types": []
   },
-  "include": [".astro/content.d.ts", "env.d.ts", "**/*.react.tsx"],
+  "include": [
+    ".astro/content.d.ts",
+    "env.d.ts",
+    "**/*.react.ts",
+    "**/*.react.tsx"
+  ],
   "exclude": ["dist", "**/*react.test.tsx"]
 }

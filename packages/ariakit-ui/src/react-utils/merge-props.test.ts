@@ -1,5 +1,5 @@
 import { expect, test, vi } from "vitest";
-import { mergeProps } from "./merge-props.ts";
+import { mergeProps } from "./merge-props.react.ts";
 
 test("keeps the base className when the override is an own undefined", () => {
   const props = mergeProps({ className: "base" }, { className: undefined });

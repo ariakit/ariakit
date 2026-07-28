@@ -10,13 +10,6 @@ import type { AllowedTestLoader } from "./test-loader.ts";
 
 const rootDir = process.cwd();
 
-const includeWithStyles = [
-  /combobox-tabs-animated/,
-  /dialog-animated-various/,
-  /dialog-combobox-command-menu/,
-  /disclosure-content-animating/,
-];
-
 const testLoader = getTestLoader();
 
 const defaultTestIncludes = ["**/*test.{ts,tsx}"];
@@ -29,13 +22,12 @@ const defaultTestExcludes = [
   // so keep them out of the default (no-loader) suite explicitly.
   "**/*react.test.{ts,tsx}",
   "**/*solid.test.{ts,tsx}",
-  "examples/**/test.{ts,tsx}",
   "app/src/{examples,sandbox}/**/test.{ts,tsx}",
 ];
 
 function getFrameworkTestIncludes(loader: AllowedTestLoader) {
   const entryFiles = globSync(
-    `{examples,app/src/{examples,sandbox}}/**/index.${loader}.tsx`,
+    `app/src/{examples,sandbox}/**/index.${loader}.tsx`,
     { cwd: rootDir },
   );
   const exampleTests = entryFiles.flatMap((file) => {
@@ -89,9 +81,6 @@ export default defineConfig({
     setupFiles: [join(rootDir, "vitest.setup.ts")],
     exclude: testExcludes,
     include: testIncludes,
-    css: {
-      include: includeWithStyles,
-    },
     sequence: {
       hooks: "parallel",
     },
