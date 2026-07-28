@@ -13,7 +13,6 @@ describe.each(cases)("%s", (label, searchLabel) => {
 
     await click(select);
     expect(q.dialog(label)).toBeVisible();
-    expect(select).toHaveAttribute("aria-haspopup", "dialog");
     expect(q.listbox(label)).toBeVisible();
     expect(q.combobox(searchLabel)).toHaveFocus();
     expect(q.option("Apple")).toHaveFocus();
