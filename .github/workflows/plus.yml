@@ -43,9 +43,7 @@ jobs:
           restore-keys: nextjs-
 
       - name: Build website
-        env:
-          DISABLE_SHIKI: "true"
-        run: pnpm -F website run build
+        run: pnpm run build-website-lite
 
       - name: Test
         id: test

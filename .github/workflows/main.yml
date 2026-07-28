@@ -20,9 +20,7 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
-          filters: |
-            root
-            app...
+          filters: app...
 
       - name: Lint
         run: pnpm run lint
@@ -129,6 +127,4 @@ jobs:
           filters: website...
 
       - name: Build website
-        env:
-          DISABLE_SHIKI: "true"
-        run: pnpm -F website run build
+        run: pnpm run build-website-lite

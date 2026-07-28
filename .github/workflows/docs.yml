@@ -34,7 +34,7 @@ jobs:
           filters: ./packages/*...
 
       - name: Generate docs
-        run: pnpm -F './packages/*' run --if-present docs
+        run: pnpm run docs
 
       - name: Detect changes
         id: patch
