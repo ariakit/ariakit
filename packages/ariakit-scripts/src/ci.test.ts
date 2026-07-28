@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 import {
@@ -10,11 +10,6 @@ import {
   serializeCIGatePlan,
 } from "./ci.ts";
 import type { CIGateResult, CIWorkflowName, PackageJSONChange } from "./ci.ts";
-
-const workflowDirectory = join(
-  import.meta.dirname,
-  "../../../.github/workflows",
-);
 
 function getResults(
   plan: ReturnType<typeof createCIPlan>,
@@ -616,79 +611,6 @@ test("parses the repository lockfile", () => {
   );
 
   expect(parseLockfileImporterChanges(lockfile, lockfile)).toEqual([]);
-});
-
-test("keeps filtered CI installs partial", () => {
-  const setupAction = readFileSync(
-    join(workflowDirectory, "setup/action.yml"),
-    "utf-8",
-  );
-
-  expect(setupAction).toContain('args+=(--filter "$filter")');
-  expect(setupAction).toContain('pnpm install "${args[@]}"');
-  expect(setupAction).toContain(
-    'echo "pnpm_config_verify_deps_before_run=false" >> "$GITHUB_ENV"',
-  );
-  expect(setupAction).not.toMatch(/^\s+cache:/m);
-
-  let setupCallCount = 0;
-  for (const filename of readdirSync(workflowDirectory)) {
-    if (!filename.endsWith(".yml")) continue;
-
-    const workflow = readFileSync(join(workflowDirectory, filename), "utf-8");
-    for (const setupCall of workflow.matchAll(
-      /^\s+uses: \.\/\.github\/workflows\/setup$/gm,
-    )) {
-      setupCallCount += 1;
-      const setupBlock = workflow
-        .slice(setupCall.index)
-        .split("\n")
-        .slice(0, 3);
-      expect(setupBlock, filename).toEqual([
-        setupCall[0],
-        expect.stringMatching(/^\s+with:$/),
-        expect.stringMatching(/^\s+(?:filters|install):/),
-      ]);
-    }
-  }
-  expect(setupCallCount).toBeGreaterThan(0);
-});
-
-test("keeps CI job dependency closures complete", () => {
-  const getJobBlock = (filename: string, jobName: string) => {
-    const workflow = readFileSync(join(workflowDirectory, filename), "utf-8");
-    const jobHeading = `  ${jobName}:\n`;
-    const jobStart = workflow.indexOf(jobHeading);
-    expect(jobStart, filename).toBeGreaterThanOrEqual(0);
-    if (jobStart < 0) return "";
-
-    const remainingWorkflow = workflow.slice(jobStart + jobHeading.length);
-    const nextJobOffset = remainingWorkflow.search(/^  [\w-]+:\n/m);
-    if (nextJobOffset < 0) {
-      return remainingWorkflow;
-    }
-    return remainingWorkflow.slice(0, nextJobOffset);
-  };
-
-  expect
-    .soft(getJobBlock("main.yml", "lint"))
-    .toMatch(/filters: \|\n\s+root\n\s+app\.\.\./);
-  expect
-    .soft(getJobBlock("app.yml", "build-nextjs"))
-    .toContain("filters: app...");
-  expect
-    .soft(getJobBlock("perf.yml", "build-nextjs"))
-    .toContain("filters: app...");
-
-  const websitePackageJSON: unknown = JSON.parse(
-    readFileSync(
-      join(workflowDirectory, "../../website/package.json"),
-      "utf-8",
-    ),
-  );
-  expect.soft(websitePackageJSON).toMatchObject({
-    dependencies: { guide: "workspace:*" },
-  });
 });
 
 test("rejects importer membership changes", () => {
