@@ -100,49 +100,21 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       defaultPrevented: boolean;
       cancelBubble: boolean;
     } | null>(null);
-    const captureSelectedValueRef = useRef(false);
-    const captureSelectedValueBeforeCloseRef = useRef(false);
-    const preserveCaptureOnNextOpenRef = useRef<boolean | null>(null);
-    const selectedValueBeforeMoveRef = useRef(store.getState().selectedValue);
+    const preserveBaselineOnNextShowRef = useRef(false);
+    const selectedValueBeforeShowRef = useRef(store.getState().selectedValue);
 
-    // Keep tracking the selected value until the user moves through the items.
-    // The popover may already be shown on its first render, and the store may
-    // only settle its initial selected value afterwards, so freezing it any
-    // earlier would restore a value the user never saw. Once frozen, a moves
-    // reset from another Composite interaction must not re-arm it.
+    // Capture the value when the popover is shown. The explicit assignment also
+    // captures the current value if an already-open store replaces the store.
     useEffect(() => {
-      const initialState = store.getState();
-      captureSelectedValueRef.current =
-        initialState.open && !initialState.moves;
-      selectedValueBeforeMoveRef.current = initialState.selectedValue;
-      return sync(
-        store,
-        ["open", "moves", "selectedValue"],
-        (state, prevState) => {
-          if (!state.open) {
-            if (prevState.open) {
-              captureSelectedValueBeforeCloseRef.current =
-                captureSelectedValueRef.current;
-            }
-            captureSelectedValueRef.current = false;
-            return;
-          }
-          if (!prevState.open) {
-            const preservedCapture = preserveCaptureOnNextOpenRef.current;
-            if (preservedCapture !== null) {
-              captureSelectedValueRef.current = preservedCapture;
-              preserveCaptureOnNextOpenRef.current = null;
-            } else {
-              captureSelectedValueRef.current = true;
-            }
-          }
-          if (state.moves) {
-            captureSelectedValueRef.current = false;
-          }
-          if (!captureSelectedValueRef.current) return;
-          selectedValueBeforeMoveRef.current = state.selectedValue;
-        },
-      );
+      selectedValueBeforeShowRef.current = store.getState().selectedValue;
+      return sync(store, ["open"], (state, prevState) => {
+        if (!state.open || prevState.open) return;
+        if (preserveBaselineOnNextShowRef.current) {
+          preserveBaselineOnNextShowRef.current = false;
+          return;
+        }
+        selectedValueBeforeShowRef.current = store.getState().selectedValue;
+      });
     }, [store]);
 
     // Virtual focus keeps DOM focus on the combobox input or select, so the
@@ -219,11 +191,10 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       onCloseProp?.(event);
       if (event.defaultPrevented) {
         // Dialog restores its open state synchronously after a prevented close.
-        // Preserve the original baseline across that false-to-true rollback.
-        preserveCaptureOnNextOpenRef.current =
-          captureSelectedValueBeforeCloseRef.current;
+        // Keep the same baseline across that false-to-true rollback.
+        preserveBaselineOnNextShowRef.current = true;
         queueMicrotask(() => {
-          preserveCaptureOnNextOpenRef.current = null;
+          preserveBaselineOnNextShowRef.current = false;
         });
         return;
       }
@@ -239,7 +210,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       }
       if (Array.isArray(store.getState().selectedValue)) return;
       if (!resetOnEscapeProp(acceptedEscape.event)) return;
-      store.setSelectedValue(selectedValueBeforeMoveRef.current);
+      store.setSelectedValue(selectedValueBeforeShowRef.current);
     });
 
     props = usePopover({

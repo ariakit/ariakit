@@ -151,7 +151,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(select).toHaveText("Apple");
   });
 
-  test("keeps tracking the baseline after a close is prevented before moving", async ({
+  // https://github.com/ariakit/ariakit/issues/6852
+  test("preserves the baseline after a close is prevented before moving", async ({
     page,
     q,
   }) => {
@@ -169,10 +170,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("Escape");
 
     await test.expect(q.listbox()).toBeHidden();
-    await test.expect(select).toHaveText("Banana");
+    await test.expect(select).toHaveText("Apple");
   });
 
-  test("keeps tracking a synchronous selection update from a vetoing onClose", async ({
+  // https://github.com/ariakit/ariakit/issues/6852
+  test("preserves the baseline when a vetoing onClose changes selection", async ({
     page,
     q,
   }) => {
@@ -191,7 +193,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.press("Escape");
 
     await test.expect(q.listbox()).toBeHidden();
-    await test.expect(select).toHaveText("Banana");
+    await test.expect(select).toHaveText("Apple");
   });
 
   test("doesn't reset for a different close from a consumed Escape", async ({

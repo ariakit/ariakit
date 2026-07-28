@@ -158,7 +158,8 @@ test("preserves the original baseline after a prevented close", async () => {
   expect(q.combobox("Vetoed once")).toHaveTextContent("Apple");
 });
 
-test("keeps tracking the baseline after a close is prevented before moving", async () => {
+// https://github.com/ariakit/ariakit/issues/6852
+test("preserves the baseline after a close is prevented before moving", async () => {
   await click(q.combobox("Vetoed before move"));
   await press.Escape();
   expect(q.listbox()).toBeVisible();
@@ -170,10 +171,11 @@ test("keeps tracking the baseline after a close is prevented before moving", asy
   expect(q.combobox("Vetoed before move")).toHaveTextContent("Grape");
   await press.Escape();
   expect(q.listbox()).not.toBeInTheDocument();
-  expect(q.combobox("Vetoed before move")).toHaveTextContent("Banana");
+  expect(q.combobox("Vetoed before move")).toHaveTextContent("Apple");
 });
 
-test("keeps tracking a synchronous selection update from a vetoing onClose", async () => {
+// https://github.com/ariakit/ariakit/issues/6852
+test("preserves the baseline when a vetoing onClose changes selection", async () => {
   await click(q.combobox("Vetoed with selection"));
   await press.Escape();
   expect(q.listbox()).toBeVisible();
@@ -184,7 +186,7 @@ test("keeps tracking a synchronous selection update from a vetoing onClose", asy
   expect(q.combobox("Vetoed with selection")).toHaveTextContent("Grape");
   await press.Escape();
   expect(q.listbox()).not.toBeInTheDocument();
-  expect(q.combobox("Vetoed with selection")).toHaveTextContent("Banana");
+  expect(q.combobox("Vetoed with selection")).toHaveTextContent("Apple");
 });
 
 test("doesn't reset for a different close from a consumed Escape", async () => {
@@ -244,7 +246,8 @@ test("doesn't render the popover when the selected value changes", async () => {
   expect(renderCount).toHaveTextContent(countBeforeChange ?? "");
 });
 
-test("tracks selection changes before the first move", async () => {
+// https://github.com/ariakit/ariakit/issues/6852
+test("preserves the baseline when selection changes before the first move", async () => {
   await click(q.combobox("Render counted"));
   await click(q.button("Set render counted selection"));
   expect(q.combobox("Render counted")).toHaveTextContent("Banana");
@@ -254,10 +257,10 @@ test("tracks selection changes before the first move", async () => {
   await press.ArrowDown();
   expect(q.combobox("Render counted")).toHaveTextContent("Grape");
   await press.Escape();
-  expect(q.combobox("Render counted")).toHaveTextContent("Banana");
+  expect(q.combobox("Render counted")).toHaveTextContent("Apple");
 });
 
-test("doesn't re-arm selection capture when moves reset while open", async () => {
+test("preserves the baseline when moves reset while open", async () => {
   await click(q.combobox("Render counted"));
   await press.ArrowDown();
   expect(q.combobox("Render counted")).toHaveTextContent("Banana");
