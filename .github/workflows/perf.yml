@@ -752,7 +752,7 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
-          filters: root...
+          filters: ./packages/*...
 
       - name: Set up baseline worktree
         env:
@@ -771,7 +771,7 @@ jobs:
           # so husky's prepare step would otherwise rewrite `core.hooksPath`
           # to a relative path under a temporary worktree.
           HUSKY: 0
-        run: pnpm --filter 'root...' --fail-if-no-match install --frozen-lockfile --prefer-offline
+        run: pnpm --filter './packages/*...' --fail-if-no-match install --frozen-lockfile --prefer-offline
 
       - name: Download baseline artifacts
         uses: actions/download-artifact@v8
