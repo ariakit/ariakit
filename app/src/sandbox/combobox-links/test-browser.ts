@@ -72,7 +72,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(combobox).toHaveAttribute("aria-expanded", "true");
     await expect(q.listbox()).toBeVisible();
     const modifier = await getClickModifier(page);
+    await page.mouse.move(0, 0);
+    await expect(combobox).toBeFocused();
     await page.keyboard.press("ArrowUp");
+    await expect(q.option("Ariakit.com")).toHaveAttribute("data-active-item");
     if (browserName === "webkit") {
       // Safari doesn't support Cmd+Enter to open a link in a new tab
       // programmatically.
