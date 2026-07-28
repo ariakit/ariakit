@@ -421,8 +421,13 @@ function buildHoistedImports(
 }
 
 /**
- * Builds a replacement import statement for remaining (non-transformed)
+ * Builds a replacement import statement for remaining (untransformed)
  * specifiers. Returns empty string if no specifiers remain.
+ *
+ * The specifier list is re-emitted on one line per kind, which deliberately
+ * discards the author's original wrapping; any import-attributes clause is
+ * carried through verbatim. Restoring the original text here is not the fix
+ * for an over-width line.
  */
 function buildRemainingImport(
   remainingRuntime: string[],
@@ -473,16 +478,21 @@ function insertHoistedImports(hoisted: string, body: string): string {
  * to the top and separating runtime (`import { ... }`) and type-only
  * (`import type { ... }`) groups.
  *
- * - Applies the provided `transform` function to each original module path; if
- *   it returns a string, the corresponding specifiers are merged and hoisted.
- *   If it returns `false`, the original imports are left untouched.
- * - For mixed named imports that include both transformed and non-transformed
- *   specifiers, only the transformed specifiers are hoisted; the remaining
- *   specifiers stay in place and the original import line may be rewritten to
- *   preserve them without duplication.
- * - Deduplicates specifiers by their full text (preserving `as` aliases) and
- *   sorts both specifiers and module specifiers lexicographically within each
- *   group.
+ * - Applies the provided `transform` function to each original module path,
+ *   separately for its runtime and its type-only specifiers. When it returns a
+ *   string, the corresponding specifiers are merged and hoisted.
+ * - When `transform` returns `false`, the specifiers stay at their original
+ *   position. An untransformed `import type { ... }` declaration is left
+ *   alone, while an untransformed `import { ... }` declaration is rebuilt
+ *   from its parsed parts, so the author's wrapping of the specifier list
+ *   does not survive. That is deliberate; see `buildRemainingImport`.
+ * - When a declaration has both kinds and only one is transformed, only that
+ *   kind is hoisted; the other stays in place, and the original import line
+ *   is rewritten to preserve it without duplication.
+ * - Deduplicates hoisted specifiers by their full text (preserving `as`
+ *   aliases) and sorts both specifiers and module specifiers lexicographically
+ *   within each hoisted group. Specifiers left behind are neither sorted nor
+ *   deduplicated.
  * - Preserves overall content by removing the original named import statements
  *   and returning the full transformed content with hoisted imports. Any
  *   orphaned semicolon-only lines left by the removal are also cleaned up to
@@ -496,7 +506,8 @@ function insertHoistedImports(hoisted: string, body: string): string {
  *   split across runtime and type groups for the same module.
  *
  * @param content - The source code to transform
- * @param transform - Function returning new path or false to skip
+ * @param transform - Function returning a new path, or `false` to leave the
+ *   specifiers where they are
  */
 export function mergeImports(
   content: string,

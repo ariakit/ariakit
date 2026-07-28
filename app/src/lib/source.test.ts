@@ -687,7 +687,7 @@ test("mergeImports preserves aliases in transformed imports", () => {
   `);
 });
 
-test("mergeImports preserves aliases in untouched imports", () => {
+test("mergeImports preserves aliases in untransformed imports", () => {
   const code = [
     'import { foo as bar, type Baz as Qux } from "keep";',
     "",
@@ -711,5 +711,33 @@ test("mergeImports preserves aliases in type-only imports", () => {
     "import type { T as U } from "./x";
 
     export const z: U = 1;"
+  `);
+});
+
+test("mergeImports normalizes untransformed value imports only", () => {
+  // An untransformed value import is re-emitted on a single line, while an
+  // untransformed `import type` declaration keeps its original text. The
+  // "reformats rewritten imports" test in source-plugin.test.ts depends on
+  // this collapse pushing the disclosure import past the print width, which
+  // is the only evidence there that Prettier ran over the merged output.
+  // Preserving the author's wrapping here would make that assertion vacuous.
+  const code = [
+    "import {",
+    "  Disclosure,",
+    "  DisclosureButton,",
+    '} from "./disclosure.tsx";',
+    "import type {",
+    "  DisclosureProps,",
+    '} from "./types.ts";',
+    "",
+    "export const x: DisclosureProps = Disclosure ?? DisclosureButton;",
+  ].join("\n");
+  expect(mergeImports(code, () => false)).toMatchInlineSnapshot(`
+    "import { Disclosure, DisclosureButton } from "./disclosure.tsx";
+    import type {
+      DisclosureProps,
+    } from "./types.ts";
+
+    export const x: DisclosureProps = Disclosure ?? DisclosureButton;"
   `);
 });
