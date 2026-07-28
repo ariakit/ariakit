@@ -411,13 +411,34 @@ function MatrixCase({ matrixCase }: { matrixCase: MatrixCase }) {
 }
 
 export default function Example() {
+  const [matrixCaseLabel, setMatrixCaseLabel] = useState("");
+  const matrixCase = matrixCases.find(
+    (matrixCase) => getCaseLabel(matrixCase) === matrixCaseLabel,
+  );
   return (
     <main className="grid w-full grid-cols-[repeat(auto-fit,minmax(320px,1fr))] gap-4 p-4">
+      <label>
+        Matrix case
+        <select
+          value={matrixCaseLabel}
+          onChange={(event) => setMatrixCaseLabel(event.target.value)}
+        >
+          <option value="">Select a case</option>
+          {matrixCases.map((matrixCase) => {
+            const label = getCaseLabel(matrixCase);
+            return (
+              <option key={label} value={label}>
+                {label}
+              </option>
+            );
+          })}
+        </select>
+      </label>
       <OffscreenPropsCombobox />
       <OffscreenPropsSearchable />
-      {matrixCases.map((matrixCase) => (
-        <MatrixCase key={getCaseLabel(matrixCase)} matrixCase={matrixCase} />
-      ))}
+      {matrixCase && (
+        <MatrixCase key={matrixCaseLabel} matrixCase={matrixCase} />
+      )}
     </main>
   );
 }

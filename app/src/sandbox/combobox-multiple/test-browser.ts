@@ -17,6 +17,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     const q = query(page);
     await q.combobox().click();
+    await expect(q.combobox()).toHaveAttribute("aria-expanded", "true");
     await page.keyboard.type("pin");
     await expect(q.option("Pineapple")).toBeInViewport();
     await page.keyboard.press("ArrowDown");
@@ -35,6 +36,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("scroll after hovering over an item", async ({ page }) => {
     const q = query(page);
     await q.combobox().click();
+    await expect(q.combobox()).toHaveAttribute("aria-expanded", "true");
     await q.option("Apple").hover();
     await page.mouse.wheel(0, 200);
     await expect(q.option("Apple")).not.toBeInViewport();

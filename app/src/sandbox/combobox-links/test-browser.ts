@@ -12,7 +12,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("click on link with mouse", async ({ page }) => {
     const q = query(page);
-    await q.combobox("Links").click();
+    const combobox = q.combobox("Links");
+    await combobox.click();
+    await expect(combobox).toHaveAttribute("aria-expanded", "true");
     await expect(q.listbox()).toBeVisible();
     await q.option("Ariakit.com").click();
     await expect(page).toHaveURL(/https:\/\/ariakit\.com/);
@@ -24,7 +26,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     browserName,
   }) => {
     const q = query(page);
-    await q.combobox("Links").click();
+    const combobox = q.combobox("Links");
+    await combobox.click();
+    await expect(combobox).toHaveAttribute("aria-expanded", "true");
     await expect(q.listbox()).toBeVisible();
     await expect(q.combobox("Links")).toHaveValue("");
     if (browserName === "webkit") {
@@ -43,7 +47,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("click on link with cmd/ctrl", async ({ page, context }) => {
     const q = query(page);
-    await q.combobox("Links").click();
+    const combobox = q.combobox("Links");
+    await combobox.click();
+    await expect(combobox).toHaveAttribute("aria-expanded", "true");
     await expect(q.listbox()).toBeVisible();
     const modifier = await getClickModifier(page);
     const [newPage] = await Promise.all([
@@ -61,7 +67,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     browserName,
   }) => {
     const q = query(page);
-    await q.combobox("Links").click();
+    const combobox = q.combobox("Links");
+    await combobox.click();
+    await expect(combobox).toHaveAttribute("aria-expanded", "true");
     await expect(q.listbox()).toBeVisible();
     const modifier = await getClickModifier(page);
     await page.keyboard.press("ArrowUp");
@@ -85,7 +93,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("click on target blank link", async ({ page, context }) => {
     const q = query(page);
-    await q.combobox("Links").click();
+    const combobox = q.combobox("Links");
+    await combobox.click();
+    await expect(combobox).toHaveAttribute("aria-expanded", "true");
     await expect(q.listbox()).toBeVisible();
     await expect(q.combobox("Links")).toHaveValue("");
     const [newPage] = await Promise.all([
@@ -99,7 +109,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("https://github.com/ariakit/ariakit/issues/2056", async ({ page }) => {
     const q = query(page);
-    await q.combobox("Links").click();
+    const combobox = q.combobox("Links");
+    await combobox.click();
+    await expect(combobox).toHaveAttribute("aria-expanded", "true");
     await expect(q.listbox()).toBeVisible();
     // Hover here is important to reproduce the issue.
     await q.option("Ariakit.com").hover();

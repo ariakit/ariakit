@@ -34,7 +34,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // https://github.com/ariakit/ariakit/issues/6858
   test("presents the selection when its item registers late", async ({ q }) => {
-    await q.combobox("Late items").click();
+    const select = q.combobox("Late items");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
 
     const selected = q.option("Item 24");
     await test.expect(selected).toHaveCount(0);
