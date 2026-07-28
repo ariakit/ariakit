@@ -22,7 +22,14 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
-          filters: app...
+          # oxlint reads sources that `app...` does not install: `examples`,
+          # `templates/*`, and `@ariakit/solid-store`, the one workspace package
+          # nothing else depends on.
+          filters: |
+            app...
+            ./packages/*...
+            examples...
+            ./templates/*...
 
       - name: Lint
         run: pnpm run lint
@@ -43,10 +50,13 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
+          # `app...` does not reach `@ariakit/solid-store`, the one workspace
+          # package nothing else depends on.
           filters: |
             app...
             website...
             ./templates/*...
+            ./packages/*...
 
       - name: Type check
         run: pnpm run tsc -v
@@ -64,7 +74,7 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
-          filters: root...
+          filters: ./packages/*...
 
       - name: Build
         run: pnpm run build
@@ -75,14 +85,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # `app...` does not reach `@ariakit/solid-store`, the one workspace
+        # package nothing else depends on. `Test React 18` is exempt:
+        # `ariakit react18` reinstalls the whole workspace in a temporary
+        # checkout.
         include:
           - script: test
             filters: |
               app...
               website...
+              ./packages/*...
           - name: React
             script: test-react
-            filters: app...
+            filters: |
+              app...
+              ./packages/*...
           # Runs unsharded on happy-dom (fast). The Test step still honors a
           # `shard:` key, so split it again by re-adding `shard: "1/2"` and
           # `shard: "2/2"` entries here if it ever slows down.
@@ -91,7 +108,9 @@ jobs:
             filters: root...
           - name: Solid
             script: test-solid
-            filters: app...
+            filters: |
+              app...
+              ./packages/*...
 
     steps:
       - name: Checkout repository

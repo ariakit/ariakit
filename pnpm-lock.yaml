@@ -26,48 +26,12 @@ importers:
 
   .:
     devDependencies:
-      '@ariakit/components':
-        specifier: workspace:*
-        version: link:packages/ariakit-components
-      '@ariakit/react':
-        specifier: workspace:*
-        version: link:packages/ariakit-react
-      '@ariakit/react-components':
-        specifier: workspace:*
-        version: link:packages/ariakit-react-components
-      '@ariakit/react-store':
-        specifier: workspace:*
-        version: link:packages/ariakit-react-store
-      '@ariakit/react-utils':
-        specifier: workspace:*
-        version: link:packages/ariakit-react-utils
       '@ariakit/scripts':
         specifier: workspace:*
         version: link:packages/ariakit-scripts
-      '@ariakit/solid':
-        specifier: workspace:*
-        version: link:packages/ariakit-solid
-      '@ariakit/solid-components':
-        specifier: workspace:*
-        version: link:packages/ariakit-solid-components
-      '@ariakit/solid-store':
-        specifier: workspace:*
-        version: link:packages/ariakit-solid-store
-      '@ariakit/solid-utils':
-        specifier: workspace:*
-        version: link:packages/ariakit-solid-utils
-      '@ariakit/store':
-        specifier: workspace:*
-        version: link:packages/ariakit-store
-      '@ariakit/tailwind':
-        specifier: workspace:*
-        version: link:packages/ariakit-tailwind
       '@ariakit/test':
         specifier: workspace:*
         version: link:packages/ariakit-test
-      '@ariakit/utils':
-        specifier: workspace:*
-        version: link:packages/ariakit-utils
       '@changesets/apply-release-plan':
         specifier: 7.1.1
         version: 7.1.1(patch_hash=49623020ff4e712ea6cab5c75197912ea7bb3b8c56dbdccc8d8392671ed4aa38)

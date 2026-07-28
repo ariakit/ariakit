@@ -24,7 +24,7 @@ import type {
 } from "./perf.ts";
 import { escapeRegExp } from "./regexp.ts";
 
-const RESULTS_DIR = path.join(process.cwd(), ".perf-results");
+const DEFAULT_RESULTS_DIR = ".perf-results";
 const PROFILE_LIMIT = 10;
 const THRESHOLD_PERCENT = 10;
 const MIN_SIGNIFICANT_DELTA_MS = 5;
@@ -159,6 +159,17 @@ interface BenchmarkReportEntry {
 
 export interface PerfCompareOptions {
   node?: boolean;
+  /**
+   * Directory holding the round files and receiving the generated output.
+   * Relative paths resolve against the current working directory.
+   */
+  resultsDir?: string;
+}
+
+// An empty value falls back to the default, because `path.resolve` would
+// otherwise turn it into the working directory itself.
+function getResultsDir(options: PerfCompareOptions) {
+  return path.resolve(options.resultsDir || DEFAULT_RESULTS_DIR);
 }
 
 export interface PerfCompareRunResult {
@@ -358,9 +369,13 @@ export function checkNodeBenchmarkResults(
 // Discover round files like `baseline-1-worker0.json` and
 // `current-1-worker0.json`. If no numbered rounds are present, fall back to
 // the previous single-run files such as `baseline-worker0.json`.
-function discoverRoundFiles(prefix: string): DiscoveredRoundFile[] {
-  if (!existsSync(RESULTS_DIR)) return [];
-  const files = readdirSync(RESULTS_DIR)
+function discoverRoundFiles(
+  prefix: string,
+  options: PerfCompareOptions,
+): DiscoveredRoundFile[] {
+  const resultsDir = getResultsDir(options);
+  if (!existsSync(resultsDir)) return [];
+  const files = readdirSync(resultsDir)
     .filter((file) => file.startsWith(prefix) && file.endsWith(".json"))
     .sort();
 
@@ -374,7 +389,7 @@ function discoverRoundFiles(prefix: string): DiscoveredRoundFile[] {
     const roundIndex = Number(match[1] ?? 0);
     if (!Number.isInteger(roundIndex) || roundIndex <= 0) continue;
     numbered.push({
-      filePath: path.join(RESULTS_DIR, file),
+      filePath: path.join(resultsDir, file),
       roundIndex,
     });
   }
@@ -386,7 +401,7 @@ function discoverRoundFiles(prefix: string): DiscoveredRoundFile[] {
   }
 
   return files.map((file) => ({
-    filePath: path.join(RESULTS_DIR, file),
+    filePath: path.join(resultsDir, file),
     roundIndex: 1,
   }));
 }
@@ -396,7 +411,7 @@ function loadRounds(
   options: PerfCompareOptions,
 ): RoundPerfResult[] {
   const rounds: RoundPerfResult[] = [];
-  for (const { filePath, roundIndex } of discoverRoundFiles(prefix)) {
+  for (const { filePath, roundIndex } of discoverRoundFiles(prefix, options)) {
     const data = readJsonFile(filePath);
     if (options.node && !Array.isArray(data)) {
       for (const result of resultsFromBenchmarkReport(
@@ -1790,22 +1805,23 @@ export function runPerfCompare(
   const persistedSummary = toPersistedSummary(summary);
   const markdown = formatMarkdown(summary, options);
 
-  mkdirSync(RESULTS_DIR, { recursive: true });
+  const resultsDir = getResultsDir(options);
+  mkdirSync(resultsDir, { recursive: true });
   writeFileSync(
-    path.join(RESULTS_DIR, "comparison.json"),
+    path.join(resultsDir, "comparison.json"),
     JSON.stringify(persistedSummary, null, 2),
   );
-  writeFileSync(path.join(RESULTS_DIR, "comparison.md"), markdown);
+  writeFileSync(path.join(resultsDir, "comparison.md"), markdown);
   // The perf workflow uses the plain-text list as its confirmation gate and
   // reads the JSON targets only when the list contains a flagged test file.
   writeFileSync(
-    path.join(RESULTS_DIR, "confirmation-files.txt"),
+    path.join(resultsDir, "confirmation-files.txt"),
     persistedSummary.confirmationFiles.map((file) => `${file}\n`).join(""),
   );
   // Node runs each file separately so duplicate benchmark names in different
   // files cannot select stable cases through one global name pattern.
   writeFileSync(
-    path.join(RESULTS_DIR, "confirmation-targets.json"),
+    path.join(resultsDir, "confirmation-targets.json"),
     JSON.stringify(persistedSummary.confirmationTargets, null, 2),
   );
 

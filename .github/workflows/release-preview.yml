@@ -25,7 +25,7 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
-          filters: root...
+          filters: ./packages/*...
 
       - name: Build
         run: pnpm run build

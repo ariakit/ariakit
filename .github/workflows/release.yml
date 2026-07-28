@@ -31,7 +31,7 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
-          filters: root...
+          filters: ./packages/*...
 
       - name: Configure git
         run: |
