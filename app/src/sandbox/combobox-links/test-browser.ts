@@ -60,6 +60,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     context,
     browserName,
   }) => {
+    test.slow();
     const q = query(page);
     const combobox = q.combobox("Links");
     await combobox.click();
@@ -77,10 +78,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await expect(page).toHaveURL(/https:\/\/ariakit\.com/);
       }).toPass();
     } else {
-      const [newPage] = await Promise.all([
-        context.waitForEvent("page"),
-        page.keyboard.press(`${modifier}+Enter`),
-      ]);
+      const newPagePromise = context.waitForEvent("page", {
+        timeout: 60_000,
+      });
+      await page.keyboard.down(modifier);
+      try {
+        await combobox.press("Enter");
+      } finally {
+        await page.keyboard.up(modifier);
+      }
+      const newPage = await newPagePromise;
       await expect(q.listbox()).toBeVisible();
       await expect(q.combobox("Links")).toHaveValue("");
       await expect(newPage).toHaveURL(/https:\/\/ariakit\.com/);

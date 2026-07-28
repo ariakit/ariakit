@@ -157,13 +157,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const canAutoSelectRef = useRef(false);
     const composingRef = useRef(false);
     const compositionEndFrameRef = useRef<number | null>(null);
-    const inlineSelectionRef = useRef<{
-      inputValue: string;
-      activeValue: string;
-      valueUpdated: unknown;
-      start: number;
-      end: number;
-    } | null>(null);
 
     const cancelCompositionEndFrame = () => {
       const frame = compositionEndFrameRef.current;
@@ -278,10 +271,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     useEffect(() => {
       const element = ref.current;
       if (!element) return;
-      const onCompositeItemMove = () => {
-        inlineSelectionRef.current = null;
-        setCanInline(true);
-      };
+      const onCompositeItemMove = () => setCanInline(true);
       element.addEventListener("combobox-item-move", onCompositeItemMove);
       return () => {
         element.removeEventListener("combobox-item-move", onCompositeItemMove);
@@ -300,42 +290,19 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       );
       if (!firstItemAutoSelected) return;
       if (!hasCompletionString(storeInputValue, inlineActiveValue)) return;
-      const nextStart = storeInputValue.length;
-      const nextEnd = inlineActiveValue.length;
-      const nextSelection = {
-        inputValue: storeInputValue,
-        activeValue: inlineActiveValue,
-        valueUpdated,
-        start: nextStart,
-        end: nextEnd,
-      };
-      let canceled = false;
-      let restoreSelection = noop;
+      let cleanup = noop;
       // For some reason, this setSelectionRange may run before the value is
       // updated in the DOM. We're using a microtask to make sure it runs after
       // the value is updated so we don't lose the selection. See combobox-group
       // test-browser file.
       queueMicrotask(() => {
-        if (canceled) return;
         const element = ref.current;
         if (!element) return;
-        const prevSelection = getTextboxSelection(element);
-        const lastSelection = inlineSelectionRef.current;
-        const sameCompletion =
-          lastSelection &&
-          lastSelection.inputValue === nextSelection.inputValue &&
-          lastSelection.activeValue === nextSelection.activeValue &&
-          lastSelection.valueUpdated === nextSelection.valueUpdated;
-        if (
-          sameCompletion &&
-          (prevSelection.start !== lastSelection.start ||
-            prevSelection.end !== lastSelection.end)
-        ) {
-          return;
-        }
+        const { start: prevStart, end: prevEnd } = getTextboxSelection(element);
+        const nextStart = storeInputValue.length;
+        const nextEnd = inlineActiveValue.length;
         setSelectionRange(element, nextStart, nextEnd);
-        inlineSelectionRef.current = nextSelection;
-        restoreSelection = () => {
+        cleanup = () => {
           // This effect may run after the value is updated and the completion
           // string is highlighted, for example, when the items are updated
           // asynchronously or in a React transition in a multi-selectable
@@ -345,14 +312,10 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
           const { start, end } = getTextboxSelection(element);
           if (start !== nextStart) return;
           if (end !== nextEnd) return;
-          setSelectionRange(element, prevSelection.start, prevSelection.end);
-          inlineSelectionRef.current = null;
+          setSelectionRange(element, prevStart, prevEnd);
         };
       });
-      return () => {
-        canceled = true;
-        restoreSelection();
-      };
+      return () => cleanup();
     }, [
       valueUpdated,
       inline,
@@ -835,10 +798,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       // to an item.
       moveOnKeyPress: (event) => {
         if (isFalsyBooleanCallback(moveOnKeyPress, event)) return false;
-        if (inline) {
-          inlineSelectionRef.current = null;
-          setCanInline(true);
-        }
+        if (inline) setCanInline(true);
         return true;
       },
     });

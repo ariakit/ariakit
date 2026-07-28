@@ -70,7 +70,9 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     ]);
 
     await newPage.waitForURL(hasSearchParam("lang", "fr"));
-    await test.expect(query(newPage).combobox("Language")).toHaveText("French");
+    const newLanguage = query(newPage).combobox("Language");
+    await newLanguage.filter({ hasText: "French" }).waitFor();
+    await test.expect(newLanguage).toHaveText("French");
     await test.expect(q.combobox("Language")).toHaveText("English");
   });
 

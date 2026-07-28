@@ -82,8 +82,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await page.keyboard.type("ap");
     await expect(getCombobox(page)).toHaveValue("apple");
     expect(await getSelectionValue(page)).toBe("ple");
-    await page.keyboard.press("ArrowDown");
-    await page.keyboard.press("ArrowDown");
+    await expect(getOption(page, "Avocado")).toHaveCount(0);
+    await getCombobox(page).press("ArrowDown");
+    await expect(getOption(page, "Grape")).toHaveAttribute("data-active-item");
+    await getCombobox(page).press("ArrowDown");
+    await expect(getOption(page, "Papaya")).toHaveAttribute("data-active-item");
     await expect(getCombobox(page)).toHaveValue("Papaya");
     await page.keyboard.press("Tab");
     await expect(getCombobox(page)).not.toBeFocused();
