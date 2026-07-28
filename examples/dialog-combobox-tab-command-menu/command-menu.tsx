@@ -25,7 +25,7 @@ export interface CommandMenuProps extends Ariakit.DialogProps {
   setTab?: (id: string) => void;
   defaultTab?: Ariakit.TabProviderProps["defaultSelectedId"];
   onTabChange?: (id: string) => void;
-  onSearch?: Ariakit.ComboboxProviderProps["setValue"];
+  onSearch?: Ariakit.ComboboxProviderProps["setInputValue"];
 }
 
 export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
@@ -52,7 +52,7 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
           focusShift
           focusWrap="horizontal"
           resetValueOnHide
-          setValue={(value) => {
+          setInputValue={(value) => {
             startTransition(() => {
               onSearch?.(value);
             });

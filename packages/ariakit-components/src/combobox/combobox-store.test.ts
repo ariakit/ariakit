@@ -2,6 +2,89 @@ import { createStore, init } from "@ariakit/store";
 import { expect, test } from "vitest";
 import { createComboboxStore } from "./combobox-store.ts";
 
+test("throws on cross-alias defaults with connected stores", () => {
+  const legacySource = createStore({ value: "Apple" });
+  expect(() =>
+    createComboboxStore({
+      store: legacySource,
+      defaultInputValue: "Banana",
+    }),
+  ).toThrow("Passing a store prop in conjunction with a default state");
+
+  const source = createStore({ inputValue: "Apple" });
+  expect(() =>
+    createComboboxStore({
+      store: source,
+      defaultValue: "Banana",
+    }),
+  ).toThrow("Passing a store prop in conjunction with a default state");
+});
+
+test("supports input value aliases", () => {
+  const store = createComboboxStore({
+    inputValue: "Apple",
+    value: "Deprecated",
+  });
+  const stop = init(store);
+
+  expect(store.getState().inputValue).toBe("Apple");
+  expect(store.getState().value).toBe("Apple");
+
+  store.setInputValue("Banana");
+  expect(store.getState().inputValue).toBe("Banana");
+  expect(store.getState().value).toBe("Banana");
+
+  store.setValue("Orange");
+  expect(store.getState().inputValue).toBe("Orange");
+  expect(store.getState().value).toBe("Orange");
+
+  store.setState("inputValue", "Grape");
+  expect(store.getState().inputValue).toBe("Grape");
+  expect(store.getState().value).toBe("Grape");
+
+  store.setState("value", "Strawberry");
+  expect(store.getState().inputValue).toBe("Strawberry");
+  expect(store.getState().value).toBe("Strawberry");
+
+  store.resetInputValue();
+  expect(store.getState().inputValue).toBe("Apple");
+  expect(store.getState().value).toBe("Apple");
+
+  store.setInputValue("Watermelon");
+  store.resetValue();
+  expect(store.getState().inputValue).toBe("Apple");
+  expect(store.getState().value).toBe("Apple");
+  stop();
+});
+
+test("syncs input value aliases with connected stores", () => {
+  const legacySource = createStore({ value: "Apple" });
+  const legacyStore = createComboboxStore({ store: legacySource });
+  const stopLegacyStore = init(legacyStore);
+
+  expect(legacyStore.getState().inputValue).toBe("Apple");
+
+  legacySource.setState("value", "Banana");
+  expect(legacyStore.getState().inputValue).toBe("Banana");
+
+  legacyStore.setInputValue("Orange");
+  expect(legacySource.getState().value).toBe("Orange");
+  stopLegacyStore();
+
+  const source = createStore({ inputValue: "Grape" });
+  const store = createComboboxStore({ store: source });
+  const stopStore = init(store);
+
+  expect(store.getState().value).toBe("Grape");
+
+  source.setState("inputValue", "Strawberry");
+  expect(store.getState().value).toBe("Strawberry");
+
+  store.setValue("Watermelon");
+  expect(source.getState().inputValue).toBe("Watermelon");
+  stopStore();
+});
+
 test("syncs the combobox element with the anchor element", () => {
   const store = createComboboxStore();
   const stop = init(store);

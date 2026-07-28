@@ -19,7 +19,7 @@ export default function Example() {
 
   const combobox = Ariakit.useComboboxStore();
 
-  const searchValue = Ariakit.useStoreState(combobox, "value");
+  const searchValue = Ariakit.useStoreState(combobox, "inputValue");
   const deferredSearchValue = React.useDeferredValue(searchValue);
 
   const matches = React.useMemo(() => {
@@ -72,7 +72,7 @@ export default function Example() {
     // Sets our textarea value.
     setValue(event.target.value);
     // Sets the combobox value that will be used to search in the list.
-    combobox.setValue(searchValue);
+    combobox.setInputValue(searchValue);
   };
 
   const onItemClick = (value: string) => () => {

@@ -15,8 +15,8 @@ const ComboboxContext = React.createContext<{
 }>({});
 
 export interface ComboboxProps extends Omit<Ariakit.ComboboxProps, "onChange"> {
-  value?: Ariakit.ComboboxProviderProps["value"];
-  onChange?: Ariakit.ComboboxProviderProps["setValue"];
+  value?: Ariakit.ComboboxProviderProps["inputValue"];
+  onChange?: Ariakit.ComboboxProviderProps["setInputValue"];
   children?: React.ReactNode;
 }
 
@@ -24,8 +24,11 @@ export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   function Combobox({ value, onChange, children, ...props }, ref) {
     const [list, setList] = React.useState<string[]>([]);
 
-    const combobox = Ariakit.useComboboxStore({ value, setValue: onChange });
-    const searchValue = Ariakit.useStoreState(combobox, "value");
+    const combobox = Ariakit.useComboboxStore({
+      inputValue: value,
+      setInputValue: onChange,
+    });
+    const searchValue = Ariakit.useStoreState(combobox, "inputValue");
 
     // Use deferred value to avoid lag when typing.
     const deferredValue = React.useDeferredValue(searchValue);

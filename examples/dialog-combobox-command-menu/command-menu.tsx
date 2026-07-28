@@ -11,7 +11,7 @@ import { forwardRef, startTransition } from "react";
 export interface CommandMenuProps extends Ariakit.DialogProps {
   open?: Ariakit.DialogStoreProps["open"];
   onOpenChange?: Ariakit.DialogStoreProps["setOpen"];
-  onSearch?: Ariakit.ComboboxProviderProps["setValue"];
+  onSearch?: Ariakit.ComboboxProviderProps["setInputValue"];
 }
 
 export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
@@ -31,7 +31,7 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
           focusLoop={false}
           includesBaseElement={false}
           resetValueOnHide
-          setValue={(value) => {
+          setInputValue={(value) => {
             startTransition(() => {
               onSearch?.(value);
             });

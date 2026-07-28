@@ -181,7 +181,7 @@ function splitValue(itemValue?: string | null, userValue?: string | string[]) {
  * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx
- * const store = useComboboxStore({ value: "p" });
+ * const store = useComboboxStore({ inputValue: "p" });
  * const props = useComboboxItemValue({ store, value: "Apple" });
  * <Role {...props} />
  * // This will result in the following DOM:
@@ -205,8 +205,8 @@ export const useComboboxItemValue = createHook<
 
   const inputValue = useStoreState(
     store,
-    ["value"],
-    (state) => userValue ?? state?.value,
+    ["inputValue"],
+    (state) => userValue ?? state?.inputValue,
   );
 
   const children = useMemo(() => {
@@ -236,15 +236,15 @@ export const useComboboxItemValue = createHook<
  * [`ComboboxItem`](https://ariakit.com/reference/combobox-item) component's
  * [`value`](https://ariakit.com/reference/combobox-item#value) prop. The user
  * input value is automatically set to the combobox store's
- * [`value`](https://ariakit.com/reference/use-combobox-store#value) state. Both
- * values can be overridden by providing the
+ * [`inputValue`](https://ariakit.com/reference/use-combobox-store#inputvalue)
+ * state. Both values can be overridden by providing the
  * [`value`](https://ariakit.com/reference/combobox-item-value#value) and
  * [`userValue`](https://ariakit.com/reference/combobox-item-value#uservalue)
  * props, respectively.
  * @see https://ariakit.com/components/combobox
  * @example
  * ```jsx {5} "value"
- * <ComboboxProvider value="p">
+ * <ComboboxProvider inputValue="p">
  *   <Combobox />
  *   <ComboboxPopover>
  *     <ComboboxItem value="Apple">
@@ -293,8 +293,8 @@ export interface ComboboxItemValueOptions<
   value?: string;
   /**
    * The current user input value. If not provided, the combobox store's
-   * [`value`](https://ariakit.com/reference/use-combobox-store#value) state
-   * will be used.
+   * [`inputValue`](https://ariakit.com/reference/use-combobox-store#inputvalue)
+   * state will be used.
    *
    * This is the value used to highlight the matching portions of the item
    * value. It can be customized to highlight different portions.

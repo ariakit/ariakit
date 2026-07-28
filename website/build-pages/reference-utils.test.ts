@@ -52,7 +52,7 @@ test("uses props parameters as reference props", () => {
 test("uses typed destructured props parameters as reference props", () => {
   const comboboxProps = getReference(
     comboboxFilename,
-    "ComboboxValue",
+    "ComboboxInputValue",
   ).props.map((prop) => {
     return prop.name;
   });
@@ -96,6 +96,34 @@ test("loads Combobox Select prop metadata", () => {
       "https://ariakit.com/reference/combobox-provider",
     );
   }
+});
+
+test("loads Combobox input value metadata", () => {
+  const provider = getReference(comboboxFilename, "ComboboxProvider");
+  getProp(provider, "inputValue");
+  getProp(provider, "defaultInputValue");
+  getProp(provider, "setInputValue");
+
+  const replacements = {
+    value: "inputValue",
+    defaultValue: "defaultInputValue",
+    setValue: "setInputValue",
+  };
+
+  for (const [name, replacement] of Object.entries(replacements)) {
+    const prop = getProp(provider, name);
+    expect(prop.deprecated).toEqual(expect.stringContaining(replacement));
+  }
+
+  const inputValue = getReference(comboboxFilename, "ComboboxInputValue");
+  getProp(inputValue, "children");
+
+  const value = getReference(comboboxFilename, "ComboboxValue");
+  getProp(value, "store");
+  getProp(value, "children");
+  expect(value.deprecated).toEqual(
+    expect.stringContaining("ComboboxInputValue"),
+  );
 });
 
 test("loads Select deprecation metadata", () => {
