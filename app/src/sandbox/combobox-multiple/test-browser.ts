@@ -18,10 +18,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const q = query(page);
     await q.combobox().click();
     await expect(q.combobox()).toHaveAttribute("aria-expanded", "true");
+    await page.mouse.move(0, 0);
     await page.keyboard.type("pin");
+    await expect(q.option("Hot dog")).toHaveCount(0);
+    await expect(q.popover()).toHaveAttribute("aria-busy", "false");
     await expect(q.option("Pineapple")).toBeInViewport();
-    await page.keyboard.press("ArrowDown");
-    await page.keyboard.press("Enter");
+    await expect(q.combobox()).toBeFocused();
+    await q.combobox().press("ArrowDown");
+    await expect(q.option("Pineapple")).toHaveAttribute("data-active-item");
+    await q.combobox().press("Enter");
     await expect(q.combobox()).toHaveValue("");
     await expect(q.option("Hot dog")).not.toBeInViewport();
     await expect(q.option("Pasta")).toBeInViewport();

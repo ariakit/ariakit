@@ -126,9 +126,9 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     ]);
 
     await newPage.waitForURL(hasSearchParam("status", ["draft", "archived"]));
-    await test
-      .expect(query(newPage).combobox("Status"))
-      .toHaveText("2 selected");
+    const newStatus = query(newPage).combobox("Status");
+    await newStatus.filter({ hasText: "2 selected" }).waitFor();
+    await test.expect(newStatus).toHaveText("2 selected");
   });
 
   test("hydrates language and multiple statuses from the URL", async ({
