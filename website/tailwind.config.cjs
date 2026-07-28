@@ -1,19 +1,23 @@
 // @ts-nocheck
 const path = require("node:path");
 
+// The website renders content from workspaces outside its own directory, so
+// the scanned sources live at the repository root.
+const repoRoot = path.join(__dirname, "..");
+
 const black = "black";
 const white = "white";
 
 /** @type {import('tailwindcss/tailwind-config').TailwindConfig} */
 module.exports = {
   content: [
-    path.join(__dirname, "blog/**/*.{ts,tsx,md}"),
-    path.join(__dirname, "guide/**/*.{ts,tsx,md}"),
-    path.join(__dirname, "components/**/*.{ts,tsx,md}"),
-    path.join(__dirname, "examples/**/*.{ts,tsx,md}"),
-    path.join(__dirname, "website/app/**/*.{ts,tsx}"),
-    path.join(__dirname, "website/components/**/*.{ts,tsx}"),
-    path.join(__dirname, "website/icons/**/*.{ts,tsx}"),
+    path.join(repoRoot, "blog/**/*.{ts,tsx,md}"),
+    path.join(repoRoot, "guide/**/*.{ts,tsx,md}"),
+    path.join(repoRoot, "components/**/*.{ts,tsx,md}"),
+    path.join(repoRoot, "examples/**/*.{ts,tsx,md}"),
+    path.join(__dirname, "app/**/*.{ts,tsx}"),
+    path.join(__dirname, "components/**/*.{ts,tsx}"),
+    path.join(__dirname, "icons/**/*.{ts,tsx}"),
   ],
   darkMode: "selector",
   theme: {

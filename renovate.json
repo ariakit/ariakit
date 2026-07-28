@@ -19,11 +19,6 @@
       "enabled": false
     },
     {
-      "matchFileNames": ["package.json"],
-      "matchPackageNames": ["postcss"],
-      "enabled": false
-    },
-    {
       "matchFileNames": ["app/package.json"],
       "matchPackageNames": ["vite"],
       "allowedVersions": "/^8\\./"

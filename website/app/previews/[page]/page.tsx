@@ -24,7 +24,7 @@ export function generateStaticParams() {
   return params;
 }
 
-const tailwindConfig = resolve(process.cwd(), "../tailwind.config.cjs");
+const tailwindConfig = resolve(process.cwd(), "tailwind.config.cjs");
 
 function getPageNames(page: Page) {
   return getPageEntryFilesCached(page)
