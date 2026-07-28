@@ -1,9 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
   "installCommand": "pnpm install",
-  "buildCommand": "pnpm run build-website",
-  "devCommand": "pnpm run dev --port $PORT",
-  "outputDirectory": "website/.next",
+  "buildCommand": "pnpm run build",
+  "outputDirectory": ".next",
   "ignoreCommand": "if [ \"$VERCEL_GIT_COMMIT_REF\" == \"changeset-release/main\" ]; then exit 0; else exit 1; fi",
   "headers": [
     {
