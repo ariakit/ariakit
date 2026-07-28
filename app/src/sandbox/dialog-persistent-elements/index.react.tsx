@@ -17,6 +17,13 @@ function ComboboxPersistentElement() {
           getPersistentElements={() =>
             persistentRef.current ? [persistentRef.current] : []
           }
+          hideOnInteractOutside={(event) => {
+            const persistentElement = persistentRef.current;
+            if (!persistentElement) return true;
+            const nativeEvent =
+              "nativeEvent" in event ? event.nativeEvent : event;
+            return !nativeEvent.composedPath().includes(persistentElement);
+          }}
         >
           {comboboxValues.map((value) => (
             <Ariakit.ComboboxItem key={value} value={value} />
