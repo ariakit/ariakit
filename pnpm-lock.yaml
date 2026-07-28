@@ -470,7 +470,11 @@ importers:
         specifier: 3.0.4
         version: 3.0.4
 
-  guide: {}
+  guide:
+    dependencies:
+      react:
+        specifier: 19.2.8
+        version: 19.2.8
 
   nextjs:
     dependencies:

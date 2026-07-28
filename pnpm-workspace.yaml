@@ -39,8 +39,4 @@ peerDependencyRules:
     react: "19"
     react-dom: "19"
 
-publicHoistPattern:
-  - "*react*"
-  - "*testing-library*"
-
 saveExact: true
