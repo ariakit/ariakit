@@ -42,9 +42,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(select).toHaveText("Banana");
 
-    // Focused rather than clicked because WebKit doesn't move focus to a
-    // button on click, which would send the escape key somewhere else.
-    await q.button("Handles escape").focus();
+    const button = q.button("Handles escape");
+    await button.click();
+    await test.expect(button).toBeFocused();
     await page.keyboard.press("Escape");
 
     // The popover staying open is what proves the reset can't have committed,
@@ -64,7 +64,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(select).toHaveText("Banana");
 
-    await q.button("Stops propagation").focus();
+    const button = q.button("Stops propagation");
+    await button.click();
+    await test.expect(button).toBeFocused();
     await page.keyboard.press("Escape");
 
     // The popover staying open is what proves the reset can't have committed,
@@ -202,8 +204,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await select.click();
     await page.keyboard.press("ArrowDown");
     await test.expect(select).toHaveText("Banana");
-    // WebKit doesn't move focus to a button on click.
-    await q.button("Consumes Escape and closes").focus();
+    const button = q.button("Consumes Escape and closes");
+    await button.click();
+    await test.expect(button).toBeFocused();
 
     await page.keyboard.press("Escape");
 
