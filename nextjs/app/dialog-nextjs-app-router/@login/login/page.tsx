@@ -1,11 +1,10 @@
 "use client";
 
 import * as Ariakit from "@ariakit/react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function Page() {
   const router = useRouter();
-  const pathname = usePathname();
   const close = () => router.push("/dialog-nextjs-app-router");
 
   return (
@@ -22,13 +21,7 @@ export default function Page() {
           }}
         />
       }
-      autoFocusOnHide={() => {
-        requestAnimationFrame(() => {
-          const selector = `[href="${pathname}"]`;
-          document.querySelector<HTMLElement>(selector)?.focus();
-        });
-        return false;
-      }}
+      autoFocusOnHide={false}
       style={{
         inset: "50% auto auto 50%",
         padding: 24,

@@ -7,36 +7,33 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await disclosure.click();
     await test.expect(popover).toBeVisible();
 
-    let anchorBox = await disclosure.boundingBox();
-    let popoverBox = await popover.boundingBox();
-    test.expect(anchorBox).not.toBeNull();
-    test.expect(popoverBox).not.toBeNull();
-    if (!anchorBox) return;
-    if (!popoverBox) return;
-    test
-      .expect(popoverBox.x)
-      .toBeGreaterThanOrEqual(anchorBox.x + anchorBox.width - 1);
+    await test.expect
+      .poll(async () => {
+        const anchorBox = await disclosure.boundingBox();
+        const popoverBox = await popover.boundingBox();
+        if (!anchorBox || !popoverBox) return -Infinity;
+        return popoverBox.x - anchorBox.x - anchorBox.width + 1;
+      })
+      .toBeGreaterThanOrEqual(0);
 
     await page.setViewportSize({ width: 480, height: 1024 });
-    anchorBox = await disclosure.boundingBox();
-    popoverBox = await popover.boundingBox();
-    test.expect(anchorBox).not.toBeNull();
-    test.expect(popoverBox).not.toBeNull();
-    if (!anchorBox) return;
-    if (!popoverBox) return;
-    test
-      .expect(popoverBox.y + popoverBox.height)
-      .toBeLessThanOrEqual(anchorBox.y);
+    await test.expect
+      .poll(async () => {
+        const anchorBox = await disclosure.boundingBox();
+        const popoverBox = await popover.boundingBox();
+        if (!anchorBox || !popoverBox) return -Infinity;
+        return anchorBox.y - popoverBox.y - popoverBox.height;
+      })
+      .toBeGreaterThanOrEqual(0);
 
     await page.evaluate(() => window.scrollTo(0, 400));
-    anchorBox = await disclosure.boundingBox();
-    popoverBox = await popover.boundingBox();
-    test.expect(anchorBox).not.toBeNull();
-    test.expect(popoverBox).not.toBeNull();
-    if (!anchorBox) return;
-    if (!popoverBox) return;
-    test
-      .expect(popoverBox.y)
-      .toBeGreaterThanOrEqual(anchorBox.y + anchorBox.height);
+    await test.expect
+      .poll(async () => {
+        const anchorBox = await disclosure.boundingBox();
+        const popoverBox = await popover.boundingBox();
+        if (!anchorBox || !popoverBox) return -Infinity;
+        return popoverBox.y - anchorBox.y - anchorBox.height;
+      })
+      .toBeGreaterThanOrEqual(0);
   });
 });
