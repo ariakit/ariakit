@@ -11,7 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectSeparator` component.
- * @deprecated Use `useSelectGroup` with CSS borders instead.
+ * @deprecated Use `useComboboxGroup` with CSS borders instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -37,8 +37,9 @@ export const useSelectSeparator = createHook<TagName, SelectSeparatorOptions>(
 /**
  * Renders a divider between
  * [`SelectItem`](https://ariakit.com/reference/select-item) elements.
- * @deprecated Use [`SelectGroup`](https://ariakit.com/reference/select-group)
- * with CSS borders instead.
+ * @deprecated Use
+ * [`ComboboxGroup`](https://ariakit.com/reference/combobox-group) with CSS
+ * borders instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5}
@@ -60,6 +61,7 @@ export const SelectSeparator = forwardRef(function SelectSeparator(
   return createElement(TagName, htmlProps);
 });
 
+/** @deprecated Use `ComboboxGroupOptions` with CSS borders instead. */
 export interface SelectSeparatorOptions<
   T extends ElementType = TagName,
 > extends CompositeSeparatorOptions<T> {
@@ -74,6 +76,7 @@ export interface SelectSeparatorOptions<
   store?: SelectStore;
 }
 
+/** @deprecated Use `ComboboxGroupProps` with CSS borders instead. */
 export type SelectSeparatorProps<T extends ElementType = TagName> = Props<
   T,
   SelectSeparatorOptions<T>

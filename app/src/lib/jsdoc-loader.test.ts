@@ -245,3 +245,41 @@ test("loads Combobox Select prop metadata", async () => {
     );
   }
 });
+
+test("loads Select deprecation metadata", async () => {
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({
+    corePath: join(process.cwd(), "packages/ariakit-react-components"),
+    framework: "react",
+    packagePath: join(process.cwd(), "packages/ariakit-react"),
+  });
+
+  await loader.load(context);
+
+  const replacements = {
+    select: "ComboboxSelect",
+    "select-anchor": "ComboboxAnchor",
+    "select-arrow": "ComboboxSelectArrow",
+    "select-dismiss": "ComboboxDismiss",
+    "select-group": "ComboboxGroup",
+    "select-group-label": "ComboboxGroupLabel",
+    "select-heading": "ComboboxHeading",
+    "select-item": "ComboboxItem",
+    "select-item-check": "ComboboxItemCheck",
+    "select-item-selected": "ComboboxItemSelected",
+    "select-label": "ComboboxSelectLabel",
+    "select-list": "ComboboxList",
+    "select-popover": "ComboboxPopover",
+    "select-provider": "ComboboxProvider",
+    "select-row": "ComboboxRow",
+    "select-separator": "ComboboxGroup",
+    "select-value": "ComboboxSelectedValue",
+    "use-select-context": "useComboboxContext",
+    "use-select-store": "useComboboxStore",
+  };
+
+  for (const [slug, replacement] of Object.entries(replacements)) {
+    const reference = getReference(entries, `react/select/${slug}`);
+    expect(reference.deprecated).toEqual(expect.stringContaining(replacement));
+  }
+});

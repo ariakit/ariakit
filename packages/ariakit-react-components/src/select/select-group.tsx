@@ -10,6 +10,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectGroup` component.
+ * @deprecated Use `useComboboxGroup` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -37,6 +38,8 @@ export const useSelectGroup = createHook<TagName, SelectGroupOptions>(
  * elements. Optionally, a
  * [`SelectGroupLabel`](https://ariakit.com/reference/select-group-label) can be
  * rendered as a child to provide a label for the group.
+ * @deprecated Use
+ * [`ComboboxGroup`](https://ariakit.com/reference/combobox-group) instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4-8}
@@ -59,6 +62,7 @@ export const SelectGroup = forwardRef(function SelectGroup(
   return createElement(TagName, htmlProps);
 });
 
+/** @deprecated Use `ComboboxGroupOptions` instead. */
 export interface SelectGroupOptions<
   T extends ElementType = TagName,
 > extends CompositeGroupOptions<T> {
@@ -73,6 +77,7 @@ export interface SelectGroupOptions<
   store?: SelectStore;
 }
 
+/** @deprecated Use `ComboboxGroupProps` instead. */
 export type SelectGroupProps<T extends ElementType = TagName> = Props<
   T,
   SelectGroupOptions<T>

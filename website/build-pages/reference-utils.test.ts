@@ -12,6 +12,10 @@ const headingFilename = join(
   process.cwd(),
   "packages/ariakit-react/src/heading.ts",
 );
+const selectFilename = join(
+  process.cwd(),
+  "packages/ariakit-react/src/select.ts",
+);
 
 function getReference(filename: string, name: string) {
   const reference = getReferences(filename).find((reference) => {
@@ -91,5 +95,34 @@ test("loads Combobox Select prop metadata", () => {
     expect(store.description).toContain(
       "https://ariakit.com/reference/combobox-provider",
     );
+  }
+});
+
+test("loads Select deprecation metadata", () => {
+  const replacements = {
+    Select: "ComboboxSelect",
+    SelectAnchor: "ComboboxAnchor",
+    SelectArrow: "ComboboxSelectArrow",
+    SelectDismiss: "ComboboxDismiss",
+    SelectGroup: "ComboboxGroup",
+    SelectGroupLabel: "ComboboxGroupLabel",
+    SelectHeading: "ComboboxHeading",
+    SelectItem: "ComboboxItem",
+    SelectItemCheck: "ComboboxItemCheck",
+    SelectItemSelected: "ComboboxItemSelected",
+    SelectLabel: "ComboboxSelectLabel",
+    SelectList: "ComboboxList",
+    SelectPopover: "ComboboxPopover",
+    SelectProvider: "ComboboxProvider",
+    SelectRow: "ComboboxRow",
+    SelectSeparator: "ComboboxGroup",
+    SelectValue: "ComboboxSelectedValue",
+    useSelectContext: "useComboboxContext",
+    useSelectStore: "useComboboxStore",
+  };
+
+  for (const [name, replacement] of Object.entries(replacements)) {
+    const reference = getReference(selectFilename, name);
+    expect(reference.deprecated).toEqual(expect.stringContaining(replacement));
   }
 });

@@ -18,6 +18,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectHeading` component.
+ * @deprecated Use `useComboboxHeading` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -56,6 +57,8 @@ export const useSelectHeading = createHook<TagName, SelectHeadingOptions>(
  * [`SelectItem`](https://ariakit.com/reference/select-item) elements must be
  * rendered within a [`SelectList`](https://ariakit.com/reference/select-list)
  * instead of directly within the popover.
+ * @deprecated Use
+ * [`ComboboxHeading`](https://ariakit.com/reference/combobox-heading) instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4}
@@ -78,6 +81,7 @@ export const SelectHeading = forwardRef(function SelectHeading(
   return createElement(TagName, htmlProps);
 });
 
+/** @deprecated Use `ComboboxHeadingOptions` instead. */
 export interface SelectHeadingOptions<
   T extends ElementType = TagName,
 > extends PopoverHeadingOptions<T> {
@@ -94,6 +98,7 @@ export interface SelectHeadingOptions<
   store?: SelectStore;
 }
 
+/** @deprecated Use `ComboboxHeadingProps` instead. */
 export type SelectHeadingProps<T extends ElementType = TagName> = Props<
   T,
   SelectHeadingOptions<T>
