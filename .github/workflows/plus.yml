@@ -26,11 +26,14 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: website...
 
       - name: Install playwright
         uses: ./.github/workflows/install-playwright
         with:
           engine: chromium
+          workspace: website
 
       - name: Cache Next.js
         uses: actions/cache@v6
@@ -40,7 +43,9 @@ jobs:
           restore-keys: nextjs-
 
       - name: Build website
-        run: pnpm run build-website-lite
+        env:
+          DISABLE_SHIKI: "true"
+        run: pnpm -F website run build
 
       - name: Test
         id: test

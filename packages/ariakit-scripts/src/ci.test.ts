@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";
 import {
@@ -611,6 +611,46 @@ test("parses the repository lockfile", () => {
   );
 
   expect(parseLockfileImporterChanges(lockfile, lockfile)).toEqual([]);
+});
+
+test("keeps filtered CI installs partial", () => {
+  const workflowDirectory = join(
+    import.meta.dirname,
+    "../../../.github/workflows",
+  );
+  const setupAction = readFileSync(
+    join(workflowDirectory, "setup/action.yml"),
+    "utf-8",
+  );
+
+  expect(setupAction).toContain('args+=(--filter "$filter")');
+  expect(setupAction).toContain('pnpm install "${args[@]}"');
+  expect(setupAction).toContain(
+    'echo "pnpm_config_verify_deps_before_run=false" >> "$GITHUB_ENV"',
+  );
+  expect(setupAction).not.toMatch(/^\s+cache:/m);
+
+  let setupCallCount = 0;
+  for (const filename of readdirSync(workflowDirectory)) {
+    if (!filename.endsWith(".yml")) continue;
+
+    const workflow = readFileSync(join(workflowDirectory, filename), "utf-8");
+    for (const setupCall of workflow.matchAll(
+      /^\s+uses: \.\/\.github\/workflows\/setup$/gm,
+    )) {
+      setupCallCount += 1;
+      const setupBlock = workflow
+        .slice(setupCall.index)
+        .split("\n")
+        .slice(0, 3);
+      expect(setupBlock, filename).toEqual([
+        setupCall[0],
+        expect.stringMatching(/^\s+with:$/),
+        expect.stringMatching(/^\s+(?:filters|install):/),
+      ]);
+    }
+  }
+  expect(setupCallCount).toBeGreaterThan(0);
 });
 
 test("rejects importer membership changes", () => {

@@ -22,6 +22,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       - name: Build app
         env:
@@ -50,6 +52,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: nextjs...
 
       - name: Build Next.js app
         run: pnpm -F nextjs run build-worker
@@ -177,8 +181,6 @@ jobs:
       - name: Install pnpm
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
         uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
-        with:
-          cache: true
 
       - name: Set up Node
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
@@ -186,11 +188,22 @@ jobs:
         with:
           node-version-file: package.json
 
+      - name: Allow partial install
+        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
+        # Keep pnpm from replacing the filtered baseline install below with a
+        # full workspace install before either build command.
+        run: echo "pnpm_config_verify_deps_before_run=false" >> "$GITHUB_ENV"
+
       - name: Install dependencies
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
         env:
           HUSKY: 0
-        run: pnpm install --frozen-lockfile
+        run: >-
+          pnpm
+          --filter 'app...'
+          --filter 'nextjs...'
+          install
+          --frozen-lockfile
 
       - name: Build base app
         if: steps.baseline-rebuild.outputs.app == 'true'
@@ -241,24 +254,12 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Set up environment
-        uses: ./.github/workflows/setup
-
       - name: Set up baseline worktree
         run: |
           BASELINE_DIR="$RUNNER_TEMP/perf-node-baseline"
           echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"
           git worktree add --detach "$BASELINE_DIR" \
             ${{ github.event.pull_request.base.sha }}
-
-      - name: Install dependencies (baseline)
-        working-directory: ${{ runner.temp }}/perf-node-baseline
-        env:
-          # The baseline worktree shares `.git/config` with the main checkout,
-          # so husky's prepare step would otherwise rewrite `core.hooksPath`
-          # to a relative path under a temporary worktree.
-          HUSKY: 0
-        run: pnpm install --frozen-lockfile
 
       - name: Copy benchmark files to baseline
         run: |
@@ -416,11 +417,14 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
         with:
           engine: chromium
+          workspace: app
 
       - name: Set up baseline worktree
         env:
@@ -439,11 +443,11 @@ jobs:
           # so husky's prepare step would otherwise rewrite `core.hooksPath`
           # to a relative path under a temporary worktree.
           HUSKY: 0
-        run: pnpm install --frozen-lockfile --prefer-offline
+        run: pnpm --filter 'app...' install --frozen-lockfile --prefer-offline
 
       - name: Install Playwright (baseline)
         working-directory: ${{ runner.temp }}/perf-baseline
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm --filter app exec playwright install --with-deps chromium
 
       - name: Download baseline artifacts
         uses: actions/download-artifact@v8
@@ -733,6 +737,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: root...
 
       - name: Set up baseline worktree
         env:
@@ -751,7 +757,7 @@ jobs:
           # so husky's prepare step would otherwise rewrite `core.hooksPath`
           # to a relative path under a temporary worktree.
           HUSKY: 0
-        run: pnpm install --frozen-lockfile --prefer-offline
+        run: pnpm --filter 'root...' install --frozen-lockfile --prefer-offline
 
       - name: Download baseline artifacts
         uses: actions/download-artifact@v8
@@ -943,6 +949,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       # Download both engines' artifacts before comparing, so a Chrome-side
       # problem can never prevent the Node section from being posted.

@@ -5,6 +5,9 @@ inputs:
   engine:
     description: Engine
     required: true
+  workspace:
+    description: Workspace that declares Playwright
+    required: true
 
 runs:
   using: "composite"
@@ -23,4 +26,7 @@ runs:
     - name: Install Playwright
       if: steps.cache-playwright.outputs.cache-hit != 'true'
       shell: bash
-      run: pnpm exec playwright install --with-deps ${{ inputs.engine }}
+      env:
+        ENGINE: ${{ inputs.engine }}
+        WORKSPACE: ${{ inputs.workspace }}
+      run: pnpm --filter "$WORKSPACE" exec playwright install --with-deps "$ENGINE"
