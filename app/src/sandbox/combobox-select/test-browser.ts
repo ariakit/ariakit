@@ -11,8 +11,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test(`${label} reflects the popup role when opened`, async ({ q }) => {
       const select = q.combobox(label);
       await select.click();
-      await test.expect(q.dialog(label)).toBeVisible();
-      await test.expect(select).toHaveAttribute("aria-haspopup", "dialog");
+      // One-shot reads instead of Playwright's retrying matchers. Otherwise
+      // toHaveAttribute waits until aria-haspopup settles and can pass even
+      // when the dialog was already visible with the listbox fallback.
+      test.expect(await q.dialog(label).isVisible()).toBe(true);
+      test.expect(await select.getAttribute("aria-haspopup")).toBe("dialog");
     });
 
     test(`${label} auto-selects and restores filtered values`, async ({
