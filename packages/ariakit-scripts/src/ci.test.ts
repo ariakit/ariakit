@@ -11,6 +11,11 @@ import {
 } from "./ci.ts";
 import type { CIGateResult, CIWorkflowName, PackageJSONChange } from "./ci.ts";
 
+const workflowDirectory = join(
+  import.meta.dirname,
+  "../../../.github/workflows",
+);
+
 function getResults(
   plan: ReturnType<typeof createCIPlan>,
   overrides: Record<string, CIGateResult> = {},
@@ -614,10 +619,6 @@ test("parses the repository lockfile", () => {
 });
 
 test("keeps filtered CI installs partial", () => {
-  const workflowDirectory = join(
-    import.meta.dirname,
-    "../../../.github/workflows",
-  );
   const setupAction = readFileSync(
     join(workflowDirectory, "setup/action.yml"),
     "utf-8",
@@ -651,6 +652,43 @@ test("keeps filtered CI installs partial", () => {
     }
   }
   expect(setupCallCount).toBeGreaterThan(0);
+});
+
+test("keeps CI job dependency closures complete", () => {
+  const getJobBlock = (filename: string, jobName: string) => {
+    const workflow = readFileSync(join(workflowDirectory, filename), "utf-8");
+    const jobHeading = `  ${jobName}:\n`;
+    const jobStart = workflow.indexOf(jobHeading);
+    expect(jobStart, filename).toBeGreaterThanOrEqual(0);
+    if (jobStart < 0) return "";
+
+    const remainingWorkflow = workflow.slice(jobStart + jobHeading.length);
+    const nextJobOffset = remainingWorkflow.search(/^  [\w-]+:\n/m);
+    if (nextJobOffset < 0) {
+      return remainingWorkflow;
+    }
+    return remainingWorkflow.slice(0, nextJobOffset);
+  };
+
+  expect
+    .soft(getJobBlock("main.yml", "lint"))
+    .toMatch(/filters: \|\n\s+root\n\s+app\.\.\./);
+  expect
+    .soft(getJobBlock("app.yml", "build-nextjs"))
+    .toContain("filters: app...");
+  expect
+    .soft(getJobBlock("perf.yml", "build-nextjs"))
+    .toContain("filters: app...");
+
+  const websitePackageJSON: unknown = JSON.parse(
+    readFileSync(
+      join(workflowDirectory, "../../website/package.json"),
+      "utf-8",
+    ),
+  );
+  expect.soft(websitePackageJSON).toMatchObject({
+    dependencies: { guide: "workspace:*" },
+  });
 });
 
 test("rejects importer membership changes", () => {

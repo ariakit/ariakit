@@ -53,7 +53,7 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
-          filters: nextjs...
+          filters: app...
 
       - name: Build Next.js app
         run: pnpm -F nextjs run build-worker

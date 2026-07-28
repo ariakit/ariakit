@@ -20,7 +20,9 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
-          filters: root
+          filters: |
+            root
+            app...
 
       - name: Lint
         run: pnpm run lint
