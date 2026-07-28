@@ -86,14 +86,54 @@ describe("public-select-listbox", () => {
   });
 
   // examples/select-listbox/test.ts
-  test("supports the standalone persistent SelectList behavior", async () => {
+  test("focuses the persistent listbox", async () => {
     await focus(q.listbox());
     expect(q.listbox()).toHaveFocus();
+    expect(q.option("Apple")).not.toHaveFocus();
+  });
+
+  test("moves through items with arrow keys", async () => {
+    await focus(q.listbox());
     await press.ArrowDown();
     expect(q.option("Apple")).toHaveFocus();
+    expect(q.option("Apple")).toHaveAttribute("data-active-item");
+    expect(q.option("Apple")).toHaveAttribute("data-focus-visible");
+    expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
     await press.ArrowDown();
     expect(q.option("Banana")).toHaveFocus();
+    expect(q.option("Banana")).toHaveAttribute("data-active-item");
+    expect(q.option("Banana")).toHaveAttribute("data-focus-visible");
+    expect(q.option("Banana")).toHaveAttribute("aria-selected", "false");
+  });
+
+  test("moves with arrow keys after clicking an item", async () => {
+    await click(q.option("Apple"));
+    expect(q.listbox()).toHaveFocus();
+    expect(q.option("Apple")).toHaveFocus();
+    expect(q.option("Apple")).toHaveAttribute("data-active-item");
+    expect(q.option("Apple")).not.toHaveAttribute("data-focus-visible");
+    await press.ArrowDown();
+    expect(q.option("Banana")).toHaveFocus();
+    expect(q.option("Banana")).toHaveAttribute("data-active-item");
+    expect(q.option("Banana")).toHaveAttribute("data-focus-visible");
+  });
+
+  test("selects items with the keyboard", async () => {
+    await focus(q.listbox());
+    await press.ArrowDown();
+    await press.ArrowDown();
+    await press.ArrowDown();
     await press.Enter();
-    expect(q.option("Banana")).toHaveAttribute("aria-selected", "true");
+    expect(q.listbox()).toHaveFocus();
+    expect(q.option("Orange")).toHaveFocus();
+    expect(q.option("Orange")).toHaveAttribute("data-active-item");
+    expect(q.option("Orange")).toHaveAttribute("data-focus-visible");
+    expect(q.option("Orange")).toHaveAttribute("aria-selected", "true");
+    await press.Home();
+    await press.Space();
+    expect(q.option("Apple")).toHaveFocus();
+    expect(q.option("Apple")).toHaveAttribute("data-active-item");
+    expect(q.option("Apple")).toHaveAttribute("data-focus-visible");
+    expect(q.option("Apple")).toHaveAttribute("aria-selected", "true");
   });
 });

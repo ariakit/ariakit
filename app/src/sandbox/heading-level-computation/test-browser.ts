@@ -29,4 +29,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(heading).toHaveJSProperty("tagName", "H6");
     await test.expect(heading).not.toHaveAttribute("aria-level");
   });
+
+  test("sibling headings share their parent level", async ({ q }) => {
+    const first = q.heading("First section", { level: 2 });
+    const second = q.heading("Second section", { level: 2 });
+
+    await test.expect(first).toHaveJSProperty("tagName", "H2");
+    await test.expect(second).toHaveJSProperty("tagName", "H2");
+    await test.expect(q.text("First section content")).toBeVisible();
+    await test.expect(q.text("Second section content")).toBeVisible();
+  });
 });

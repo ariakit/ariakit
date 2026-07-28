@@ -97,9 +97,9 @@ test("disclosure source names", () => {
     [
       "disclosure/index.react.tsx",
       "_lib/ariakit/disclosure.react.tsx",
-      "_lib/react-utils/create-render.ts",
+      "_lib/react-utils/create-render.react.ts",
       "_lib/react-utils/is-iterable.ts",
-      "_lib/react-utils/merge-props.ts",
+      "_lib/react-utils/merge-props.react.ts",
     ]
   `);
 });
@@ -285,7 +285,7 @@ test("disclosure sources", () => {
         "devDependencies": [
           "@types/react",
         ],
-        "id": "_lib/react-utils/create-render.ts",
+        "id": "_lib/react-utils/create-render.react.ts",
         "styles": [],
       },
       {
@@ -301,7 +301,7 @@ test("disclosure sources", () => {
         "devDependencies": [
           "@types/react",
         ],
-        "id": "_lib/react-utils/merge-props.ts",
+        "id": "_lib/react-utils/merge-props.react.ts",
         "styles": [],
       },
     ]

@@ -1,8 +1,0 @@
-@import url("../focus-trap/style.css");
-
-.input {
-  @apply
-    p-2
-    rounded-lg
-  ;
-}

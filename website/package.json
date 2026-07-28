@@ -10,6 +10,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "playwright test",
     "lint": "next lint"
   },
   "dependencies": {
@@ -91,7 +92,7 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@ariakit/test": "workspace:*",
+    "@playwright/test": "1.62.0",
     "@types/babel__core": "7.20.5",
     "@types/cross-spawn": "6.0.6",
     "@types/fs-extra": "11.0.4",

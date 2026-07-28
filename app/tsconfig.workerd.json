@@ -1,5 +1,15 @@
 {
   "extends": "../tsconfig.node.json",
   "include": [".astro/types.d.ts", "**/*.ts", "**/*.astro"],
-  "exclude": ["**/*test.ts", "dist"]
+  "exclude": [
+    "playwright.config.ts",
+    "src/test-utils",
+    "src/tests",
+    "**/*test.ts",
+    "**/*.test-helper.ts",
+    "**/test-*.ts",
+    "**/perf-*.ts",
+    "**/*.react.ts",
+    "dist"
+  ]
 }

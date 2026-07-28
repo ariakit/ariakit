@@ -88,6 +88,9 @@ export function TypeFixture({
           Reset button
         </Ariakit.Button>
         <Ariakit.Button render={<div />}>Div button</Ariakit.Button>
+        <Ariakit.Button render={<a href="#button-link" />}>
+          Link button
+        </Ariakit.Button>
         <Ariakit.Toolbar>
           <Ariakit.ToolbarItem ref={toolbarItemRef}>
             Toolbar item

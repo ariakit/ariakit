@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.node.json",
+  "include": [
+    "playwright.config.ts",
+    "src/test-utils/**/*.ts",
+    "src/tests/**/*.ts",
+    "**/test-*.ts",
+    "**/perf-*.ts"
+  ],
+  "exclude": ["dist"]
+}

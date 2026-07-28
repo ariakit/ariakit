@@ -1,7 +1,7 @@
 import * as ak from "@ariakit/react";
 import { clsx } from "clsx";
 import type * as React from "react";
-import { createRender } from "#app/examples/_lib/react-utils/create-render.ts";
+import { createRender } from "#app/examples/_lib/react-utils/create-render.react.ts";
 import type {
   DisclosureButtonProps,
   DisclosureContentProps,
