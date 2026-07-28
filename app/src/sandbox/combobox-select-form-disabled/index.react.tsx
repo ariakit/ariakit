@@ -2,6 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
 
 export default function Example() {
+  const accessibleDisabled = true;
   const [renderedDisabled, setRenderedDisabled] = useState(false);
   const [submittedNames, setSubmittedNames] = useState<string[] | null>(null);
 
@@ -44,8 +45,8 @@ export default function Example() {
         <Ariakit.SelectProvider defaultValue="Apple">
           <Ariakit.SelectLabel>Select accessible</Ariakit.SelectLabel>
           <Ariakit.Select
-            name="select-accessible"
-            disabled
+            name={accessibleDisabled ? undefined : "select-accessible"}
+            disabled={accessibleDisabled}
             accessibleWhenDisabled
           />
         </Ariakit.SelectProvider>
@@ -55,8 +56,8 @@ export default function Example() {
             Combobox accessible
           </Ariakit.ComboboxSelectLabel>
           <Ariakit.ComboboxSelect
-            name="combobox-accessible"
-            disabled
+            name={accessibleDisabled ? undefined : "combobox-accessible"}
+            disabled={accessibleDisabled}
             accessibleWhenDisabled
           />
         </Ariakit.ComboboxProvider>
@@ -64,7 +65,7 @@ export default function Example() {
         <Ariakit.SelectProvider defaultValue="Apple">
           <Ariakit.SelectLabel>Select rendered</Ariakit.SelectLabel>
           <Ariakit.Select
-            name="select-rendered"
+            name={renderedDisabled ? undefined : "select-rendered"}
             disabled={renderedDisabled}
             render={<div />}
           />
@@ -75,7 +76,7 @@ export default function Example() {
             Combobox rendered
           </Ariakit.ComboboxSelectLabel>
           <Ariakit.ComboboxSelect
-            name="combobox-rendered"
+            name={renderedDisabled ? undefined : "combobox-rendered"}
             disabled={renderedDisabled}
             render={<div />}
           />
