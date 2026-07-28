@@ -6,6 +6,7 @@ import {
   LegacyPublicSelectFormDisabledCase,
   LegacyPublicSelectItemsUnmountCase,
   LegacyPublicSelectMultipleCase,
+  LegacyPublicSelectValuelessItemsCase,
 } from "./basic.react.tsx";
 import {
   LegacyPublicSelectComboboxCase,
@@ -43,6 +44,7 @@ export const legacyPublicSelectCases = {
   "public-select-form-disabled": LegacyPublicSelectFormDisabledCase,
   "public-select-items-unmount": LegacyPublicSelectItemsUnmountCase,
   "public-select-default-open-controlled": LegacyPublicSelectDefaultOpenCase,
+  "public-select-valueless-items": LegacyPublicSelectValuelessItemsCase,
   "public-select-animated": LegacyPublicSelectAnimatedCase,
   "public-select-animated-store": LegacyPublicSelectAnimatedStoreCase,
   "public-select-grid": LegacyPublicSelectGridCase,
