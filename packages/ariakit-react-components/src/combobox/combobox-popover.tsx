@@ -372,8 +372,10 @@ export interface ComboboxPopoverOptions<T extends ElementType = TagName>
    * should be restored to the value it had before the first item movement when
    * the popover accepts Escape and the cancelable close event isn't prevented.
    * Selection changes made before any item movement become part of the value
-   * Escape restores. A descendant that handles Escape itself leaves the value
-   * alone. Defaults to the store's
+   * Escape restores.
+   *
+   * A descendant that handles Escape itself leaves the value alone. Defaults
+   * to the store's
    * [`selectOnMove`](https://ariakit.com/reference/combobox-provider#selectonmove)
    * value, since moving through items is what changes the selected value while
    * the popover is open. This has no effect when the combobox supports multiple
