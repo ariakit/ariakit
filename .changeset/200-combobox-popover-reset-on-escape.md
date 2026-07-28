@@ -5,7 +5,7 @@
 
 New `resetOnEscape` prop on Combobox popovers
 
-[`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) now supports a [`resetOnEscape`](https://ariakit.com/reference/combobox-popover#resetonescape) prop that restores the value the combobox had before the popover was shown:
+[`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) now supports a [`resetOnEscape`](https://ariakit.com/reference/combobox-popover#resetonescape) prop that restores the value the combobox had before the first item movement. Selection changes made before any item movement become part of the value Escape restores:
 
 ```tsx
 <ComboboxPopover resetOnEscape={false} />
