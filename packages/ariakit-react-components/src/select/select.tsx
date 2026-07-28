@@ -103,6 +103,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
   );
 
   const onKeyDownProp = props.onKeyDown;
+  const disabledProp = props.disabled;
   const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
   const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
   const placement = useStoreState(store, "placement");
@@ -209,7 +210,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
             name={name}
             form={form}
             required={required}
-            disabled={props.disabled}
+            disabled={disabledProp}
             value={value}
             multiple={multiSelectable}
             // Even though this element is visually hidden and is not
@@ -257,7 +258,7 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
       value,
       multiSelectable,
       values,
-      props.disabled,
+      disabledProp,
     ],
   );
 

@@ -112,6 +112,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     );
 
     const onKeyDownProp = props.onKeyDown;
+    const disabledProp = props.disabled;
     const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
     const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
     const placement = useStoreState(store, "placement");
@@ -218,7 +219,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
               name={name}
               form={form}
               required={required}
-              disabled={props.disabled}
+              disabled={disabledProp}
               value={selectedValue}
               multiple={multiSelectable}
               // Although visually hidden and not tabbable, this element remains
@@ -264,7 +265,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
         selectedValue,
         multiSelectable,
         values,
-        props.disabled,
+        disabledProp,
       ],
     );
 
