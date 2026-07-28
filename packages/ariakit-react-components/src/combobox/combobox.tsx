@@ -237,7 +237,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     // the active item value or a combination of the input value and the active
     // item value if it's the first item and it's been auto selected. This will
     // only affect the element's value, not the combobox state.
-    const value = useMemo(() => {
+    const inputValue = useMemo(() => {
       if (!inline) return storeInputValue;
       if (!canInline) return storeInputValue;
       const firstItemAutoSelected = isFirstItemAutoSelected(
@@ -527,7 +527,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       );
       const onBlur = (event: FocusEvent) => {
         if (elements.every((el) => isFocusEventOutside(event, el))) {
-          store?.setInputValue(value);
+          store?.setInputValue(inputValue);
         }
       };
       for (const element of elements) {
@@ -538,7 +538,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
           element.removeEventListener("focusout", onBlur);
         }
       };
-    }, [inline, contentElement, store, value]);
+    }, [inline, contentElement, store, inputValue]);
 
     const canShow = (event: SyntheticEvent) => {
       const currentTarget = event.currentTarget as HTMLType;
@@ -653,7 +653,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         store.setActiveId(null);
       }
       if (setValueOnClickProp(event)) {
-        store.setInputValue(value);
+        store.setInputValue(inputValue);
       }
       if (showOnClickProp(event)) {
         queueBeforeEvent(event.currentTarget, "mouseup", store.show);
@@ -769,7 +769,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       "aria-expanded": open,
       "aria-controls": contentElement?.id,
       "data-active-item": isActiveItem || undefined,
-      value,
+      value: inputValue,
       ...props,
       id,
       name: multiSelectable ? undefined : name,
