@@ -11,8 +11,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test(`${label} reflects the popup role when opened`, async ({ q }) => {
       const select = q.combobox(label);
       await select.click();
-      test.expect(await q.dialog(label).isVisible()).toBe(true);
-      test.expect(await select.getAttribute("aria-haspopup")).toBe("dialog");
+      await test.expect(q.dialog(label)).toBeVisible();
+      await test.expect(select).toHaveAttribute("aria-haspopup", "dialog");
     });
 
     test(`${label} auto-selects and restores filtered values`, async ({
