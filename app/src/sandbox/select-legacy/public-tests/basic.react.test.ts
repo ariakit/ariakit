@@ -1,4 +1,4 @@
-import { click, dispatch, focus, q } from "@ariakit/test";
+import { click, dispatch, focus, press, q } from "@ariakit/test";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 
 describe("public-select", () => {
@@ -119,5 +119,42 @@ describe("public-select-default-open-controlled", () => {
     expect(q.listbox()).not.toBeInTheDocument();
     await click(select);
     expect(q.listbox()).toBeVisible();
+  });
+});
+
+describe("public-select-valueless-items", () => {
+  beforeEach(async () => {
+    await click(q.button("Show public-select-valueless-items"));
+  });
+
+  // The page-freeze variant (two trailing items without value) is covered only
+  // by the browser test: on the buggy code, the keydown handler loops forever
+  // synchronously, which would hang the happy-dom worker instead of failing.
+  // https://github.com/ariakit/ariakit/issues/6319
+  test("arrow keys on the closed select skip the trailing item without value", async () => {
+    const select = q.combobox("Valueless favorite color");
+    await click(select);
+    expect(q.option("Green")).toBeVisible();
+    await press.Escape();
+    expect(select).toHaveFocus();
+    expect(select).toHaveTextContent("Green");
+    await press.ArrowDown();
+    expect(select).toHaveTextContent("Blue");
+    await press.ArrowDown();
+    expect(select).toHaveTextContent("Blue");
+    await press.ArrowUp();
+    expect(select).toHaveTextContent("Green");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6319
+  test("arrow keys on the closed select with focusLoop wrap past the item without value", async () => {
+    const select = q.combobox("Valueless favorite shape");
+    await click(select);
+    expect(q.option("Triangle")).toBeVisible();
+    await press.Escape();
+    expect(select).toHaveFocus();
+    expect(select).toHaveTextContent("Triangle");
+    await press.ArrowDown();
+    expect(select).toHaveTextContent("Square");
   });
 });
