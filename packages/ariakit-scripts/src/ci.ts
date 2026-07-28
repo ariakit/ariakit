@@ -99,7 +99,6 @@ const publicPackageWorkflows = [
 // continue to fail closed to full CI.
 const rootMainDependencies = new Set([
   "@testing-library/jest-dom",
-  "@testing-library/react",
   "@types/cross-spawn",
   "@types/fs-extra",
   "@types/node",
@@ -112,8 +111,6 @@ const rootMainDependencies = new Set([
   "oxfmt",
   "oxlint",
   "oxlint-tsgolint",
-  "prettier",
-  "prettier-plugin-tailwindcss",
   "stylelint",
   "stylelint-config-standard",
   "vitest",
