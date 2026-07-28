@@ -194,6 +194,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
 
     const hideOnEscapeProp = useBooleanEvent(props.hideOnEscape ?? true);
     const onCloseProp = props.onClose;
+    const getPersistentElementsProp = props.getPersistentElements;
 
     const hideOnEscape = useEvent((event: KeyboardEvent) => {
       const accepted = hideOnEscapeProp(event);
@@ -263,7 +264,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       // are rendered outside of it in the list of persistent elements, so they
       // make part of the modal context and users can tab through them.
       getPersistentElements() {
-        const elements = props.getPersistentElements?.() || [];
+        const elements = getPersistentElementsProp?.() || [];
         if (!modal) return elements;
         if (!store) return elements;
         const { baseElement, contentElement, inputElement, selectElement } =

@@ -1,6 +1,16 @@
 import { click, dispatch, mouseDown, q, rightClick } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+// https://github.com/ariakit/ariakit/issues/6863
+test("keeps a ComboboxPopover open when interacting with a persistent element", async () => {
+  await click(q.combobox("Fruit"));
+  expect(q.option("Apple")).toBeVisible();
+
+  await click(q.button("Persistent combobox action"));
+  expect(q.status()).toHaveTextContent("Combobox actions: 1");
+  expect(q.option("Apple")).toBeVisible();
+});
+
 // Reproduces https://github.com/ariakit/ariakit/issues/6344
 test("stays open when interacting with a persistent element before the dialog is focused", async () => {
   await click(q.button("Open dialog"));
