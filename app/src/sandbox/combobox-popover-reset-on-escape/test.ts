@@ -281,6 +281,18 @@ test("captures the baseline when an already-open store replaces the store", asyn
   expect(q.combobox("Store replacement")).toHaveTextContent("Banana");
 });
 
+// https://github.com/ariakit/ariakit/issues/6852
+test("restores after a click without a preceding move", async () => {
+  const select = q.combobox.ensure("Direct click");
+  await click(select);
+  await dispatch.click(q.option("Banana"));
+  expect(select).toHaveTextContent("Banana");
+  select.focus();
+  await press.Escape();
+  expect(q.listbox()).not.toBeInTheDocument();
+  expect(select).toHaveTextContent("Apple");
+});
+
 // https://github.com/ariakit/ariakit/pull/6832#discussion_r3650306657
 test("doesn't steal focus after focus leaves the popover", async () => {
   await click(q.combobox("Render counted"));

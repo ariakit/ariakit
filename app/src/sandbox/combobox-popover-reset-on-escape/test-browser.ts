@@ -246,6 +246,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(renderCount).toHaveText(countBeforeChange ?? "");
   });
 
+  // https://github.com/ariakit/ariakit/issues/6852
+  test("restores after a click without a preceding move", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Direct click");
+    await select.click();
+    await q.option("Banana").dispatchEvent("click");
+    await test.expect(select).toHaveText("Banana");
+    await select.focus();
+
+    await page.keyboard.press("Escape");
+
+    await test.expect(q.listbox()).toBeHidden();
+    await test.expect(select).toHaveText("Apple");
+  });
+
   // https://github.com/ariakit/ariakit/pull/6832#discussion_r3650306657
   test("doesn't steal focus after focus leaves the popover", async ({ q }) => {
     const select = q.combobox("Render counted");

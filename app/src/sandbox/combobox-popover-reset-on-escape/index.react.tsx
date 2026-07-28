@@ -295,6 +295,21 @@ function StoreReplacement() {
   );
 }
 
+function DirectClick() {
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Apple" selectOnMove={false}>
+      <Ariakit.ComboboxSelect aria-label="Direct click">
+        <Ariakit.ComboboxSelectedValue />
+      </Ariakit.ComboboxSelect>
+      <Ariakit.ComboboxPopover resetOnEscape>
+        {values.map((value) => (
+          <Ariakit.ComboboxItem key={value} value={value} hideOnClick={false} />
+        ))}
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
@@ -337,6 +352,7 @@ export default function Example() {
       <ControlledOpen />
       <RenderCounted />
       <StoreReplacement />
+      <DirectClick />
       <button type="button">External focus target</button>
       <Select label="Descendant" unmount={false}>
         {/* The dialog leaves the popover open when a descendant consumes the
