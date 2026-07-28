@@ -5,23 +5,37 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import * as React from "react";
 
+type TabHref = "/tab-nextjs-app-router" | "/tab-nextjs-app-router/new";
+
 export function Tabs(props: Ariakit.TabProviderProps) {
   const router = useRouter();
   const selectedId = usePathname();
+  const [manual, setManual] = React.useState(false);
   return (
-    <Ariakit.TabProvider
-      id="tab-nextjs-app-router-tabs"
-      selectedId={selectedId}
-      setSelectedId={(id) => {
-        if (id === "/tab-nextjs-app-router") {
-          router.push("/tab-nextjs-app-router");
-        }
-        if (id === "/tab-nextjs-app-router/new") {
-          router.push("/tab-nextjs-app-router/new");
-        }
-      }}
-      {...props}
-    />
+    <>
+      <label>
+        <input
+          type="checkbox"
+          checked={manual}
+          onChange={(event) => setManual(event.target.checked)}
+        />{" "}
+        Manual activation
+      </label>
+      <Ariakit.TabProvider
+        id="tab-nextjs-app-router-tabs"
+        selectOnMove={!manual}
+        selectedId={selectedId}
+        setSelectedId={(id) => {
+          if (id === "/tab-nextjs-app-router") {
+            router.push(id);
+          }
+          if (id === "/tab-nextjs-app-router/new") {
+            router.push(id);
+          }
+        }}
+        {...props}
+      />
+    </>
   );
 }
 
@@ -35,7 +49,7 @@ interface TabProps extends Omit<
   React.ComponentPropsWithoutRef<typeof Link>,
   "href"
 > {
-  href: "/tab-nextjs-app-router" | "/tab-nextjs-app-router/new";
+  href: TabHref;
 }
 
 export const Tab = React.forwardRef<HTMLAnchorElement, TabProps>(
