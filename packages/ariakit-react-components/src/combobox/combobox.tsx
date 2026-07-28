@@ -231,6 +231,13 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const items = useStoreState(store, "renderedItems");
     const open = useStoreState(store, "open");
     const contentElement = useStoreState(store, "contentElement");
+    // Depend on this boolean in the highlighting effect so equivalent item
+    // updates don't re-highlight a user-adjusted caret.
+    const firstItemAutoSelected = isFirstItemAutoSelected(
+      items,
+      inlineActiveValue,
+      autoSelect,
+    );
 
     // The current input value may differ from state.inputValue when
     // autoComplete is either "both" or "inline", in which case it will be
@@ -240,11 +247,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const inputValue = useMemo(() => {
       if (!inline) return storeInputValue;
       if (!canInline) return storeInputValue;
-      const firstItemAutoSelected = isFirstItemAutoSelected(
-        items,
-        inlineActiveValue,
-        autoSelect,
-      );
       if (firstItemAutoSelected) {
         // If the first item is auto selected, we should append the completion
         // string to the end of the value. This will be highlited in the effect
@@ -259,9 +261,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     }, [
       inline,
       canInline,
-      items,
+      firstItemAutoSelected,
       inlineActiveValue,
-      autoSelect,
       storeInputValue,
     ]);
 
@@ -283,11 +284,6 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (!inline) return;
       if (!canInline) return;
       if (!inlineActiveValue) return;
-      const firstItemAutoSelected = isFirstItemAutoSelected(
-        items,
-        inlineActiveValue,
-        autoSelect,
-      );
       if (!firstItemAutoSelected) return;
       if (!hasCompletionString(storeInputValue, inlineActiveValue)) return;
       let cleanup = noop;
@@ -321,8 +317,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       inline,
       canInline,
       inlineActiveValue,
-      items,
-      autoSelect,
+      firstItemAutoSelected,
       storeInputValue,
     ]);
 
