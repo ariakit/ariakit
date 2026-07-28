@@ -1,5 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-import type { KeyboardEvent } from "react";
 import { useEffect, useMemo, useState } from "react";
 
 const recipes = ["Apple", "Grape", "Orange", "Strawberry", "Watermelon"];
@@ -21,22 +20,13 @@ function DelayedResults() {
     );
   }, [query]);
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key !== "ArrowLeft") return;
-    setInputValue(event.currentTarget.value);
-  };
-
   return (
     <Ariakit.ComboboxProvider
       inputValue={inputValue}
       setInputValue={setInputValue}
     >
       <Ariakit.ComboboxLabel>Recipe</Ariakit.ComboboxLabel>
-      <Ariakit.Combobox
-        autoComplete="both"
-        autoSelect
-        onKeyDown={handleKeyDown}
-      />
+      <Ariakit.Combobox autoComplete="both" autoSelect />
       <div role="status">
         {pending ? "Updating results…" : "Results updated"}
       </div>
