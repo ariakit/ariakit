@@ -9,7 +9,6 @@ import {
   getPageEntryFiles,
   getPageEntryFilesCached,
 } from "./get-page-entry-files.js";
-import { getPageExternalDeps } from "./get-page-external-deps.js";
 import { getPageName } from "./get-page-name.js";
 import { getPageSections } from "./get-page-sections.js";
 import { getPageSourceFiles } from "./get-page-source-files.js";
@@ -67,23 +66,6 @@ function writeFiles(buildDir, pages) {
       references: getReferences(file),
     })),
   );
-
-  // deps.ts
-  /** @type {Record<string, string>} */
-  let deps = {};
-
-  for (const file of entryFiles) {
-    const fileDeps = getPageExternalDeps(file);
-    deps = { ...deps, ...fileDeps };
-  }
-
-  const depsFile = join(buildDir, "deps.ts");
-
-  const depsContents = `export default {\n${Object.keys(deps)
-    .map((key) => `  "${key}": () => import("${key}") as unknown`)
-    .join(",\n")}\n};\n`;
-
-  writeFileIfNeeded(depsFile, depsContents);
 
   // examples.js
   const sourceFilesWithoutAppDir = Object.values(sourceFiles)
