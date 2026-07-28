@@ -163,24 +163,22 @@ function getPrettierParserFromFilename(
 }
 
 /**
- * Format code with Prettier respecting local configuration
+ * Format code with Prettier defaults
+ *
+ * No Prettier config is resolved on purpose. The repository has none, so a
+ * lookup could only pick one up from outside the checkout and make the source
+ * we publish depend on the machine building it. Defaults keep the output
+ * identical everywhere, and class names stay in the order the example wrote
+ * them.
  */
-async function formatWithPrettier(
-  code: string,
-  filePath: string,
-  filenameForParser: string,
-) {
+async function formatWithPrettier(code: string, filenameForParser: string) {
   const parser = getPrettierParserFromFilename(filenameForParser);
   if (!parser) return code;
   try {
-    const resolvedConfig = (await prettier.resolveConfig(filePath)) ?? {};
-    return await prettier.format(code, {
-      ...resolvedConfig,
-      filepath: filePath,
-      parser,
-    });
+    return await prettier.format(code, { parser });
   } catch {
-    // Fail silently: if Prettier isn't available or config fails, return unformatted code
+    // Fail silently: a formatting error should not take down the page build,
+    // and unformatted source still renders correctly.
     return code;
   }
 }
@@ -479,7 +477,7 @@ async function generateFlattenedFileCached(baseDir: string, file: SourceFile) {
     normalizeImportPath(path),
   );
   if (content !== file.content) {
-    content = await formatWithPrettier(content, file.id, basename(filename));
+    content = await formatWithPrettier(content, basename(filename));
   }
   const generated: SourceFile = {
     id: file.id,
