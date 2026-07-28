@@ -51,6 +51,7 @@
   "dependencies": {
     "@ariakit/react": "workspace:*",
     "@ariakit/react-components": "workspace:*",
+    "@ariakit/react-store": "workspace:*",
     "@ariakit/react-utils": "workspace:*",
     "@ariakit/solid": "workspace:*",
     "@ariakit/solid-components": "workspace:*",
