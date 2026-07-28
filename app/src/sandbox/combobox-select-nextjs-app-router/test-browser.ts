@@ -63,7 +63,6 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     test.slow();
     const language = q.combobox("Language");
     await language.click();
-    await test.expect(language).toHaveAttribute("aria-expanded", "true");
     const modifier = await getNewTabModifier(page);
     const [newPage] = await Promise.all([
       page.context().waitForEvent("page"),

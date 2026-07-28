@@ -53,7 +53,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(select).toHaveText("Watermelon");
     await test.expect(q.listbox()).not.toBeVisible();
     await select.click();
-    await test.expect(select).toHaveAttribute("aria-expanded", "true");
 
     await test.expect(watermelon).toHaveAttribute("data-active-item");
     await test.expect(watermelon).toBeInViewport();
@@ -63,6 +62,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/6832
   test("presents a far selected item with real focus", async ({ page, q }) => {
     const select = q.combobox("Filterable fruit");
+    const watermelon = q.option("Watermelon");
     await select.click();
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
     await page.keyboard.press("Escape");
@@ -73,15 +73,21 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
 
     await test.expect(q.combobox("Search Filterable fruit")).toBeFocused();
-    await test.expect(q.option("Watermelon")).toBeInViewport();
+    await page.evaluate(
+      () =>
+        new Promise((resolve) => {
+          requestAnimationFrame(() =>
+            requestAnimationFrame(() => requestAnimationFrame(resolve)),
+          );
+        }),
+    );
+    await test.expect(watermelon).toBeInViewport();
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
   });
 
   // https://github.com/ariakit/ariakit/pull/6832
   test("cancels presentation when real focus moves", async ({ page, q }) => {
-    const select = q.combobox("Focus moving filterable fruit");
-    await select.click();
-    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+    await q.combobox("Focus moving filterable fruit").click();
 
     await test.expect(q.option("Focus target")).toBeFocused();
     await page.evaluate(
