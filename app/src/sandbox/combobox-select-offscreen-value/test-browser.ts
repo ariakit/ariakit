@@ -1,10 +1,12 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test("keeps value-less offscreen items offscreen with no selected value", async ({
     q,
   }) => {
-    await q.combobox("Fruit").click();
+    const select = q.combobox("Fruit");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
 
     await test.expect(q.option("No fruit")).toHaveAttribute("data-offscreen");
   });
@@ -12,7 +14,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("mounts the offscreen item matching the selected value", async ({
     q,
   }) => {
-    await q.combobox("Selected fruit").click();
+    const select = q.combobox("Selected fruit");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
 
     await test.expect(q.option("Apple")).not.toHaveAttribute("data-offscreen");
     await test
@@ -27,6 +31,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   }) => {
     const select = q.combobox("Selected fruit");
     await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
     await page.keyboard.type("ly");
 
     const lychee = q.option("Lychee");
@@ -38,6 +43,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("reopening presents a far selected item", async ({ page, q }) => {
     const select = q.combobox("Single selected fruit");
     await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
     await test.expect(q.option("Apple")).toHaveAttribute("data-active-item");
 
     const watermelon = q.option("Watermelon");
@@ -56,15 +62,21 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/6832
   test("presents a far selected item with real focus", async ({ page, q }) => {
     const select = q.combobox("Filterable fruit");
+    const watermelon = q.option("Watermelon");
     await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
     await page.keyboard.press("Escape");
     await page.evaluate(() => window.scrollTo({ top: 100 }));
     await test.expect.poll(() => page.evaluate(() => window.scrollY)).toBe(100);
 
     await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
 
     await test.expect(q.combobox("Search Filterable fruit")).toBeFocused();
-    await test.expect(q.option("Watermelon")).toBeInViewport();
+    // Three frames cross Composite's after-paint presentation callback plus
+    // WebKit's scroll step before checking the viewport.
+    await flushFrames(page, 3);
+    await test.expect(watermelon).toBeInViewport();
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
   });
 
@@ -73,12 +85,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.combobox("Focus moving filterable fruit").click();
 
     await test.expect(q.option("Focus target")).toBeFocused();
-    await page.evaluate(
-      () =>
-        new Promise((resolve) => {
-          requestAnimationFrame(() => requestAnimationFrame(resolve));
-        }),
-    );
+    await flushFrames(page);
     await test.expect(q.option("Focus target")).toBeInViewport();
     await test.expect(q.option("Watermelon")).not.toBeInViewport();
   });

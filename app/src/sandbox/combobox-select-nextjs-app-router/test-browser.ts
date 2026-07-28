@@ -59,7 +59,10 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
   });
 
   test("opens a single-value option in a new tab", async ({ page, q }) => {
-    await q.combobox("Language").click();
+    // Opening a new tab may cold-start the preview worker under CI load.
+    test.slow();
+    const language = q.combobox("Language");
+    await language.click();
     const modifier = await getNewTabModifier(page);
     const [newPage] = await Promise.all([
       page.context().waitForEvent("page"),
@@ -67,7 +70,9 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     ]);
 
     await newPage.waitForURL(hasSearchParam("lang", "fr"));
-    await test.expect(query(newPage).combobox("Language")).toHaveText("French");
+    const newLanguage = query(newPage).combobox("Language");
+    await newLanguage.filter({ hasText: "French" }).waitFor();
+    await test.expect(newLanguage).toHaveText("French");
     await test.expect(q.combobox("Language")).toHaveText("English");
   });
 
@@ -98,13 +103,22 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     page,
     q,
   }) => {
+    // Opening a new tab may cold-start the preview worker under CI load.
+    test.slow();
     const modifier = await getNewTabModifier(page);
-    await q.combobox("Status").click();
+    const status = q.combobox("Status");
+    await status.click();
+    await test.expect(status).toHaveAttribute("aria-expanded", "true");
+    await page.mouse.move(0, 0);
     await page.keyboard.press("d");
     await page.keyboard.press("Enter");
     await page.waitForURL(hasSearchParam("status", "draft"));
+    await test.expect(status).toHaveText("Draft");
+    await test.expect(status).toHaveAttribute("aria-expanded", "true");
+    await test.expect(status).toBeFocused();
     await page.keyboard.press("PageDown");
     await test.expect(q.option("Archived")).toHaveAttribute("data-active-item");
+    await test.expect(status).toBeFocused();
 
     const [newPage] = await Promise.all([
       page.context().waitForEvent("page"),
@@ -114,9 +128,9 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     ]);
 
     await newPage.waitForURL(hasSearchParam("status", ["draft", "archived"]));
-    await test
-      .expect(query(newPage).combobox("Status"))
-      .toHaveText("2 selected");
+    const newStatus = query(newPage).combobox("Status");
+    await newStatus.filter({ hasText: "2 selected" }).waitFor();
+    await test.expect(newStatus).toHaveText("2 selected");
   });
 
   test("hydrates language and multiple statuses from the URL", async ({

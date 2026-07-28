@@ -60,11 +60,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
     context,
     browserName,
   }) => {
+    // Chrome and Firefox can take a while to materialize the modifier+Enter
+    // tab under CI load.
+    test.slow();
     const q = query(page);
-    await q.combobox("Links").click();
+    const combobox = q.combobox("Links");
+    await combobox.click();
     await expect(q.listbox()).toBeVisible();
     const modifier = await getClickModifier(page);
+    await page.mouse.move(0, 0);
+    await expect(combobox).toBeFocused();
     await page.keyboard.press("ArrowUp");
+    await expect(q.option("Ariakit.com")).toHaveAttribute("data-active-item");
     if (browserName === "webkit") {
       // Safari doesn't support Cmd+Enter to open a link in a new tab
       // programmatically.
@@ -73,10 +80,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await expect(page).toHaveURL(/https:\/\/ariakit\.com/);
       }).toPass();
     } else {
-      const [newPage] = await Promise.all([
-        context.waitForEvent("page"),
-        page.keyboard.press(`${modifier}+Enter`),
-      ]);
+      // Keep the page-event deadline inside the 90-second slow-test budget so
+      // a missing tab names the event instead of timing out the whole test.
+      const newPagePromise = context.waitForEvent("page", {
+        timeout: 60_000,
+      });
+      await page.keyboard.down(modifier);
+      try {
+        await combobox.press("Enter");
+      } finally {
+        await page.keyboard.up(modifier);
+      }
+      const newPage = await newPagePromise;
       await expect(q.listbox()).toBeVisible();
       await expect(q.combobox("Links")).toHaveValue("");
       await expect(newPage).toHaveURL(/https:\/\/ariakit\.com/);

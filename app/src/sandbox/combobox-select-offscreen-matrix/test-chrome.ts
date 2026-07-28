@@ -18,6 +18,10 @@ async function getValue(combobox: Locator) {
   return (await combobox.textContent()) || (await combobox.inputValue());
 }
 
+async function renderMatrixCase(page: Page, label: string) {
+  await page.getByRole("combobox", { name: "Matrix case" }).selectOption(label);
+}
+
 const leakedAttributes = [
   "accessiblewhendisabled",
   "autofocus",
@@ -156,15 +160,19 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const label = getCaseLabel(matrixCase);
     test(`defaultValue: ${label}`, async ({ page, q }) => {
       await disableAnimations(page);
+      await renderMatrixCase(page, label);
       const searchable = matrixCase.type === "searchable";
       const autoSelect = !!matrixCase.autoSelect;
       const combobox = q.combobox(label);
       await combobox.click();
+      await expect(combobox).toHaveAttribute("aria-expanded", "true");
+      await page.mouse.move(0, 0);
 
       const defaultOption = q.option("Dominica");
       const previousOption = q.option("Djibouti");
       const typeaheadOption = q.option("Jamaica");
       const search = q.combobox("Search...");
+      const keyboardTarget = searchable ? search : combobox;
 
       await test.step("initial focus is on the default value", async () => {
         await expect(defaultOption).toBeInViewport();
@@ -174,6 +182,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
       await test.step("move with keyboard", async () => {
         await expect(previousOption).not.toHaveAttribute("data-offscreen");
+        await expect(keyboardTarget).toBeFocused();
         await page.keyboard.press("ArrowUp");
         await expect(defaultOption).not.toHaveAttribute("data-active-item");
         await expect(defaultOption).toHaveAttribute("aria-selected", "true");
@@ -183,6 +192,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("typeahead", async () => {
+        await expect(keyboardTarget).toBeFocused();
         await page.keyboard.press("j");
         await expect(typeaheadOption).toHaveAttribute("aria-selected", "false");
         await expect(typeaheadOption).toBeInViewport();
@@ -196,6 +206,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("select the option", async () => {
+        await expect(keyboardTarget).toBeFocused();
         await page.keyboard.press("Enter");
         await expect(combobox).toHaveText("Jamaica");
         await expect(q.listbox()).not.toBeVisible();
@@ -207,8 +218,13 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const label = getCaseLabel(matrixCase);
     test(`autoSelect: ${label}`, async ({ page, q }) => {
       await disableAnimations(page);
+      await renderMatrixCase(page, label);
+      const searchable = matrixCase.type === "searchable";
       const combobox = q.combobox(label);
       await combobox.click();
+      await expect(combobox).toHaveAttribute("aria-expanded", "true");
+      await page.mouse.move(0, 0);
+      const keyboardTarget = searchable ? q.combobox("Search...") : combobox;
 
       const firstOption = q.option("Afghanistan");
       const typeaheadOption = q.option("Jamaica");
@@ -221,7 +237,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("typeahead", async () => {
+        await expect(keyboardTarget).toBeFocused();
         await page.keyboard.press("j");
+        await expect(firstOption).toHaveCount(0);
         await expect(typeaheadOption).toBeInViewport();
         await expect(typeaheadOption).toHaveAttribute("data-active-item");
         await expect(typeaheadOption).toHaveAttribute("data-focus-visible");
@@ -233,6 +251,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
       await test.step("move with keyboard", async () => {
         await expect(nextOption).not.toHaveAttribute("data-offscreen");
+        await expect(keyboardTarget).toBeFocused();
         await page.keyboard.press("ArrowDown");
         await expect(nextOption).toBeInViewport();
         await expect(nextOption).toHaveAttribute("data-active-item");
@@ -241,6 +260,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("select the option", async () => {
+        await expect(keyboardTarget).toBeFocused();
         await page.keyboard.press("Enter");
         expect(await getValue(combobox)).toBe("Japan");
         await expect(q.listbox()).not.toBeVisible();
@@ -252,8 +272,13 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const label = getCaseLabel(matrixCase);
     test(`autoSelect always: ${label}`, async ({ page, q }) => {
       await disableAnimations(page);
+      await renderMatrixCase(page, label);
+      const searchable = matrixCase.type === "searchable";
       const combobox = q.combobox(label);
       await combobox.click();
+      await expect(combobox).toHaveAttribute("aria-expanded", "true");
+      await page.mouse.move(0, 0);
+      const keyboardTarget = searchable ? q.combobox("Search...") : combobox;
 
       const firstOption = q.option("Afghanistan");
       const typeaheadOption = q.option("Jamaica");
@@ -265,7 +290,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("typeahead", async () => {
+        await expect(keyboardTarget).toBeFocused();
         await page.keyboard.press("j");
+        await expect(firstOption).toHaveCount(0);
         await expect(typeaheadOption).toBeInViewport();
         await expect(typeaheadOption).toHaveAttribute("data-active-item");
         await expect(typeaheadOption).toHaveAttribute("data-focus-visible");
@@ -276,6 +303,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("select the option", async () => {
+        await expect(keyboardTarget).toBeFocused();
         await page.keyboard.press("Enter");
         expect(await getValue(combobox)).toBe("Jamaica");
         await expect(q.listbox()).not.toBeVisible();
@@ -287,11 +315,17 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     const label = getCaseLabel(matrixCase);
     test(`no autoSelect: ${label}`, async ({ page, q }) => {
       await disableAnimations(page);
+      await renderMatrixCase(page, label);
       const combobox = q.combobox(label);
       await combobox.click();
+      await expect(combobox).toHaveAttribute("aria-expanded", "true");
+      await page.mouse.move(0, 0);
 
       const selectOnly = matrixCase.type === "select";
+      const keyboardTarget =
+        matrixCase.type === "searchable" ? q.combobox("Search...") : combobox;
       const firstOption = q.option("Afghanistan");
+      const filteredOption = q.option("Albania");
       const typeaheadOption = q.option("Gabon");
 
       await test.step("no initial focus", async () => {
@@ -301,6 +335,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("scroll with page down", async () => {
+        await expect(keyboardTarget).toBeFocused();
         await expect(async () => {
           await page.keyboard.press("PageDown");
           await expect(firstOption).not.toBeInViewport();
@@ -308,7 +343,11 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("typeahead", async () => {
+        await expect(keyboardTarget).toBeFocused();
         await page.keyboard.press("g");
+        if (!selectOnly) {
+          await expect(filteredOption).toHaveCount(0);
+        }
         await expect(typeaheadOption).toBeInViewport();
         if (!selectOnly) {
           await expect(typeaheadOption).not.toHaveAttribute("data-active-item");
@@ -322,6 +361,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("select the option", async () => {
+        await expect(keyboardTarget).toBeFocused();
         await page.keyboard.press("Enter");
         expect(await getValue(combobox)).not.toMatch(/(g|Select\.\.\.)/);
         await expect(q.listbox()).not.toBeVisible();
