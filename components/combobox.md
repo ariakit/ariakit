@@ -56,7 +56,7 @@ useComboboxContext()
   </ComboboxSelect>
   <ComboboxCancel />
   <ComboboxDisclosure />
-  <ComboboxValue />
+  <ComboboxInputValue />
   <ComboboxList />
   <ComboboxPopover>
     <ComboboxInput />

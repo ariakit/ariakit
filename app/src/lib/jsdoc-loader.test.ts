@@ -246,6 +246,47 @@ test("loads Combobox Select prop metadata", async () => {
   }
 });
 
+test("loads Combobox input value metadata", async () => {
+  const { context, entries } = getLoaderContext();
+  const loader = jsdoc({
+    corePath: join(process.cwd(), "packages/ariakit-react-components"),
+    framework: "react",
+    packagePath: join(process.cwd(), "packages/ariakit-react"),
+  });
+
+  await loader.load(context);
+
+  const provider = getReference(entries, "react/combobox/combobox-provider");
+  getParamProp(provider, "inputValue");
+  getParamProp(provider, "defaultInputValue");
+  getParamProp(provider, "setInputValue");
+
+  const replacements = {
+    value: "inputValue",
+    defaultValue: "defaultInputValue",
+    setValue: "setInputValue",
+  };
+
+  for (const [name, replacement] of Object.entries(replacements)) {
+    const prop = getParamProp(provider, name);
+    expect(prop.deprecated).toEqual(expect.stringContaining(replacement));
+  }
+
+  const inputValue = getReference(
+    entries,
+    "react/combobox/combobox-input-value",
+  );
+  getParamProp(inputValue, "children");
+
+  const value = getReference(entries, "react/combobox/combobox-value");
+  getParamProp(value, "store");
+  getParamProp(value, "children");
+  expect(value.description).toContain("Renders the current");
+  expect(value.deprecated).toEqual(
+    expect.stringContaining("ComboboxInputValue"),
+  );
+});
+
 test("loads Select deprecation metadata", async () => {
   const { context, entries } = getLoaderContext();
   const loader = jsdoc({

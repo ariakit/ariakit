@@ -69,6 +69,7 @@
     "./combobox/combobox-group-label": "./src/combobox/combobox-group-label.tsx",
     "./combobox/combobox-heading": "./src/combobox/combobox-heading.tsx",
     "./combobox/combobox-input": "./src/combobox/combobox-input.tsx",
+    "./combobox/combobox-input-value": "./src/combobox/combobox-input-value.tsx",
     "./combobox/combobox-item": "./src/combobox/combobox-item.tsx",
     "./combobox/combobox-item-check": "./src/combobox/combobox-item-check.tsx",
     "./combobox/combobox-item-offscreen": "./src/combobox/combobox-item-offscreen.tsx",

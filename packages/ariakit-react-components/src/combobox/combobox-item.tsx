@@ -160,7 +160,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       if (value != null) {
         if (selectValueOnClickProp(event)) {
           if (resetValueOnSelectProp(event)) {
-            store?.resetValue();
+            store?.resetInputValue();
           }
           store?.setSelectedValue((prevValue) => {
             if (!Array.isArray(prevValue)) return value;
@@ -171,7 +171,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
           });
         }
         if (setValueOnClickProp(event)) {
-          store?.setValue(value);
+          store?.setInputValue(value);
         }
       }
       if (hideOnClickProp(event)) {
@@ -205,7 +205,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         if (baseElement === selectElement) return;
         if (isTextField(baseElement)) {
           queueMicrotask(() => baseElement.focus());
-          store?.setValue(baseElement.value);
+          store?.setInputValue(baseElement.value);
           return;
         }
         baseElement.focus();
@@ -214,7 +214,7 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
           // necessary because the value may temporarily change based on the
           // currently selected item, but it'll be reset to the original value
           // when the combobox input is focused.
-          store?.setValue(baseElement.value);
+          store?.setInputValue(baseElement.value);
         }
       }
     });
@@ -380,8 +380,8 @@ export interface ComboboxItemOptions<T extends ElementType = TagName>
   hideOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;
   /**
    * Whether to set the combobox
-   * [`value`](https://ariakit.com/reference/combobox-provider#value) state
-   * using this item's
+   * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
+   * state using this item's
    * [`value`](https://ariakit.com/reference/combobox-item#value) when the item
    * is clicked. The default is `true`, unless
    * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is

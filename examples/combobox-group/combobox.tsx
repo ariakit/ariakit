@@ -10,7 +10,7 @@ export interface ComboboxProps extends Omit<Ariakit.ComboboxProps, "onChange"> {
 export const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   function Combobox({ value, onChange, children, ...props }, ref) {
     return (
-      <Ariakit.ComboboxProvider value={value} setValue={onChange}>
+      <Ariakit.ComboboxProvider inputValue={value} setInputValue={onChange}>
         <Ariakit.Combobox
           ref={ref}
           {...props}

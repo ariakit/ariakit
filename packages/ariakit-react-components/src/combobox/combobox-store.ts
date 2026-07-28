@@ -39,7 +39,11 @@ export function useComboboxStoreProps<T extends Core.ComboboxStore>(
 ) {
   useUpdateEffect(update, [props.tag]);
 
-  useStoreProps(store, props, "value", "setValue");
+  const inputValueProps = {
+    inputValue: props.inputValue ?? props.value,
+    setInputValue: props.setInputValue ?? props.setValue,
+  };
+  useStoreProps(store, inputValueProps, "inputValue", "setInputValue");
   useStoreProps(store, props, "selectedValue", "setSelectedValue");
   useStoreProps(store, props, "selectOnMove");
   useStoreProps(store, props, "resetValueOnHide");
@@ -122,8 +126,8 @@ export interface ComboboxStoreOptions<
     PopoverStoreOptions {
   /**
    * A callback that gets called when the
-   * [`value`](https://ariakit.com/reference/combobox-provider#value) state
-   * changes.
+   * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
+   * state changes.
    *
    * Live examples:
    * - [Combobox with integrated
@@ -134,6 +138,15 @@ export interface ComboboxStoreOptions<
    *   Combobox](https://ariakit.com/examples/combobox-multiple)
    * - [Menu with Combobox](https://ariakit.com/examples/menu-combobox)
    * - [Select with Combobox](https://ariakit.com/examples/select-combobox)
+   */
+  setInputValue?: (value: ComboboxStoreState<T>["inputValue"]) => void;
+  /**
+   * A callback that gets called when the
+   * [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue)
+   * state changes.
+   * @deprecated Use
+   * [`setInputValue`](https://ariakit.com/reference/combobox-provider#setinputvalue)
+   * instead.
    */
   setValue?: (value: ComboboxStoreState<T>["value"]) => void;
   /**

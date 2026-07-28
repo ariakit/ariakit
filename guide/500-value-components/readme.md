@@ -25,7 +25,7 @@ A value component reads one specific value from a provider, an explicit store, o
 - exposes the value directly or through a `children` render function
 - does not accept HTML props such as `className`, `style`, or `ref`, because it has no element to receive them
 
-The stable public value components are [`ComboboxValue`](/reference/combobox-value), [`ComboboxSelectedValue`](/reference/combobox-selected-value), and [`ComboboxItemSelected`](/reference/combobox-item-selected), all exported from `@ariakit/react`.
+The stable public value components are [`ComboboxInputValue`](/reference/combobox-input-value), [`ComboboxSelectedValue`](/reference/combobox-selected-value), and [`ComboboxItemSelected`](/reference/combobox-item-selected), all exported from `@ariakit/react`.
 
 This pattern is not inherently uncontrolled. Value components work with both controlled and uncontrolled providers and stores. Their main benefit is exposing state close to the JSX that needs it, without creating or passing a store solely for that purpose.
 
@@ -55,9 +55,9 @@ Pass a function as `children` to transform the value before rendering it. The fu
 ```jsx {3-5}
 <ComboboxProvider>
   <Combobox />
-  <ComboboxValue>
+  <ComboboxInputValue>
     {(value) => <output>Current value: {value || "empty"}</output>}
-  </ComboboxValue>
+  </ComboboxInputValue>
 </ComboboxProvider>
 ```
 
