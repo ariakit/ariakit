@@ -448,7 +448,20 @@ jobs:
 
       - name: Install Playwright (baseline)
         working-directory: ${{ runner.temp }}/perf-baseline
-        run: pnpm --filter app exec playwright install --with-deps chromium
+        # No `--with-deps` here. The runner image already provides every library
+        # Chromium needs, and the current-branch step above skips its own
+        # `--with-deps` whenever the browser cache hits, so the rest of CI
+        # already launches browsers without it. The only packages it added were
+        # ~21 MB of optional fonts, re-fetched from the Ubuntu mirror on every
+        # job; when that mirror degrades the step has stalled for ~10 minutes.
+        # Dropping them keeps baseline and current on the same fonts, because
+        # both sides run on this runner after this step.
+        #
+        # The install stays unconditional so a baseline pinned to a different
+        # Playwright version still downloads its own browser build. It is a
+        # no-op when the version matches the current branch, since both
+        # checkouts share `~/.cache/ms-playwright` through `$HOME`.
+        run: pnpm --filter app exec playwright install chromium
 
       - name: Download baseline artifacts
         uses: actions/download-artifact@v8

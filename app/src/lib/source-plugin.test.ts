@@ -104,9 +104,18 @@ test("disclosure source names", () => {
   `);
 });
 
-test("formats rewritten imports with the app Tailwind config", () => {
+test("reformats rewritten imports", () => {
+  // Merging the utils files re-emits every import as a single line, which puts
+  // this one past the print width, so the wrapping below only exists if
+  // Prettier ran over the merged result.
+  expect(disclosure.files["index.tsx"]?.content).toContain(
+    'import {\n  Disclosure,\n  DisclosureButton,\n  DisclosureContent,\n} from "./disclosure.tsx";',
+  );
+});
+
+test("keeps class names in source order", () => {
   expect(checkboxCardForm.files["index.tsx"]?.content).toContain(
-    'className="ak-frame flex w-120 max-w-[100cqi] flex-col gap-6 ak-layer ak-frame-card/8 ak-layer-lighten-6 ak-dark:ak-frame-border ak-light:ring"',
+    'className="w-120 max-w-[100cqi] flex flex-col gap-6 ak-frame ak-frame-card/8 ak-layer ak-layer-lighten-6 ak-light:ring ak-dark:ak-frame-border"',
   );
 });
 
