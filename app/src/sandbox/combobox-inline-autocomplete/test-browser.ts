@@ -9,8 +9,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await combobox.click();
     await combobox.pressSequentially("ap");
-    await test.expect(q.status()).toHaveText("Updating results…");
+    await test.expect(combobox).toHaveValue("apple");
     await combobox.press("ArrowLeft");
+    // Keep results pending until after the caret moves. Otherwise, the final
+    // assertion could pass without exercising the highlighting effect.
     await test.expect(q.status()).toHaveText("Updating results…");
     await test.expect(q.status()).toHaveText("Results updated");
     await combobox.pressSequentially("pp");
