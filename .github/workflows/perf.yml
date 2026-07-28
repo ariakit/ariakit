@@ -964,7 +964,7 @@ jobs:
       - name: Set up environment
         uses: ./.github/workflows/setup
         with:
-          filters: app...
+          filters: ./packages/ariakit-scripts...
 
       # Download both engines' artifacts before comparing, so a Chrome-side
       # problem can never prevent the Node section from being posted.
@@ -1135,15 +1135,19 @@ jobs:
             write_chrome_inconclusive "no Chrome job rounds found."
             exit 0
           fi
-          rm -rf app/.perf-results
-          mkdir -p app/.perf-results
-          cp "${rounds[@]}" app/.perf-results/
-          if ! pnpm -F app run perf-compare; then
+          # Stage the rounds outside the workspace and point the comparison at
+          # that directory, so this job only needs `@ariakit/scripts` instead
+          # of the whole `app` dependency graph.
+          compare_dir="$RUNNER_TEMP/perf-chrome-compare"
+          rm -rf "$compare_dir"
+          mkdir -p "$compare_dir"
+          cp "${rounds[@]}" "$compare_dir/"
+          if ! pnpm exec ariakit perf-compare --results-dir "$compare_dir"; then
             write_chrome_inconclusive "comparison failed."
             exit 0
           fi
           mkdir -p "$output_dir"
-          cp app/.perf-results/comparison.md "$output_dir/"
+          cp "$compare_dir/comparison.md" "$output_dir/"
           printf 'Chrome\n' > "$output_dir/title.txt"
 
       - name: Create GitHub App token

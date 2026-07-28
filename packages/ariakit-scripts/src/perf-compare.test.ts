@@ -1,5 +1,6 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import {
+  existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -236,10 +237,13 @@ function createStoreBenchmarkReport(hz?: number, mean?: number) {
   ]);
 }
 
-function writeJson(dir: string, file: string, data: unknown) {
-  const outputDir = path.join(dir, resultsDir);
+function writeJsonInto(outputDir: string, file: string, data: unknown) {
   mkdirSync(outputDir, { recursive: true });
   writeFileSync(path.join(outputDir, file), JSON.stringify(data), "utf-8");
+}
+
+function writeJson(dir: string, file: string, data: unknown) {
+  writeJsonInto(path.join(dir, resultsDir), file, data);
 }
 
 function writeRound(
@@ -311,7 +315,7 @@ function readConfirmationTargets(dir: string) {
   );
 }
 
-function runCompare(
+function execCompare(
   dir: string,
   args: string[] = [],
   env: NodeJS.ProcessEnv = {},
@@ -321,6 +325,14 @@ function runCompare(
     encoding: "utf-8",
     env: { ...process.env, ...env },
   });
+}
+
+function runCompare(
+  dir: string,
+  args: string[] = [],
+  env: NodeJS.ProcessEnv = {},
+) {
+  execCompare(dir, args, env);
   return readFileSync(path.join(dir, resultsDir, "comparison.md"), "utf-8");
 }
 
@@ -363,6 +375,53 @@ test("keeps single-run comparison behavior", () => {
 
   expect(markdown).toContain("100ms → 120ms (+20%) :warning:");
   expect(markdown).not.toContain("Aggregated across");
+});
+
+test("resolves a relative results directory against the current directory", () => {
+  const dir = createTempDir();
+  const relativeDir = "chrome-rounds";
+  const outputDir = path.join(dir, relativeDir);
+  writeJsonInto(outputDir, "baseline-worker0.json", [createResult(100)]);
+  writeJsonInto(outputDir, "current-worker0.json", [createResult(120)]);
+
+  execCompare(dir, ["--results-dir", relativeDir]);
+
+  const markdown = readFileSync(path.join(outputDir, "comparison.md"), "utf-8");
+  expect(markdown).toContain("100ms → 120ms (+20%) :warning:");
+  expect(existsSync(path.join(dir, resultsDir))).toBe(false);
+});
+
+test("reads and writes an absolute results directory outside the current directory", () => {
+  const workingDir = createTempDir();
+  const outputDir = path.join(createTempDir(), "chrome-rounds");
+  // Numbered, job-indexed names are what the perf workflow stages into the
+  // directory it passes, so this covers the round-file branch the relative
+  // test above does not reach.
+  writeJsonInto(outputDir, "baseline-1-j1-worker0.json", [createResult(100)]);
+  writeJsonInto(outputDir, "current-1-j1-worker0.json", [createResult(120)]);
+
+  execCompare(workingDir, ["--results-dir", outputDir]);
+
+  const markdown = readFileSync(path.join(outputDir, "comparison.md"), "utf-8");
+  expect(markdown).toContain("100ms → 120ms (+20%) :warning:");
+  // The workflow reads every generated file from the directory it passed in,
+  // so the whole output set must follow the rounds instead of the cwd.
+  expect(existsSync(path.join(outputDir, "comparison.json"))).toBe(true);
+  expect(existsSync(path.join(outputDir, "confirmation-files.txt"))).toBe(true);
+  expect(existsSync(path.join(outputDir, "confirmation-targets.json"))).toBe(
+    true,
+  );
+  expect(existsSync(path.join(workingDir, resultsDir))).toBe(false);
+});
+
+test("falls back to the default results directory when the flag is empty", () => {
+  const dir = createTempDir();
+  writeJson(dir, "baseline-worker0.json", [createResult(100)]);
+  writeJson(dir, "current-worker0.json", [createResult(120)]);
+
+  const markdown = runCompare(dir, ["--results-dir", ""]);
+
+  expect(markdown).toContain("100ms → 120ms (+20%) :warning:");
 });
 
 test("pairs legacy generated labels with normalized labels", () => {

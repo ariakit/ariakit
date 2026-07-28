@@ -71,9 +71,16 @@ program
   .command("perf-compare")
   .description("Compare performance results")
   .option("--node", "Compare Vitest benchmark results")
+  .option(
+    "--results-dir <path>",
+    "Directory holding the result files; relative paths resolve against the current directory (default: .perf-results)",
+  )
   .action(async (options) => {
     const { runPerfCompare } = await import("./perf-compare.ts");
-    const { markdown } = runPerfCompare({ node: options.node });
+    const { markdown } = runPerfCompare({
+      node: options.node,
+      resultsDir: options.resultsDir,
+    });
     console.log(markdown);
   });
 
