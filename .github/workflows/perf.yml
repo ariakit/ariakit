@@ -202,6 +202,7 @@ jobs:
           pnpm
           --filter 'app...'
           --filter 'nextjs...'
+          --fail-if-no-match
           install
           --frozen-lockfile
 
@@ -443,7 +444,7 @@ jobs:
           # so husky's prepare step would otherwise rewrite `core.hooksPath`
           # to a relative path under a temporary worktree.
           HUSKY: 0
-        run: pnpm --filter 'app...' install --frozen-lockfile --prefer-offline
+        run: pnpm --filter 'app...' --fail-if-no-match install --frozen-lockfile --prefer-offline
 
       - name: Install Playwright (baseline)
         working-directory: ${{ runner.temp }}/perf-baseline
@@ -757,7 +758,7 @@ jobs:
           # so husky's prepare step would otherwise rewrite `core.hooksPath`
           # to a relative path under a temporary worktree.
           HUSKY: 0
-        run: pnpm --filter 'root...' install --frozen-lockfile --prefer-offline
+        run: pnpm --filter 'root...' --fail-if-no-match install --frozen-lockfile --prefer-offline
 
       - name: Download baseline artifacts
         uses: actions/download-artifact@v8
