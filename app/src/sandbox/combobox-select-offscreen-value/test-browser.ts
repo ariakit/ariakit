@@ -1,4 +1,4 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test("keeps value-less offscreen items offscreen with no selected value", async ({
@@ -73,14 +73,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
 
     await test.expect(q.combobox("Search Filterable fruit")).toBeFocused();
-    await page.evaluate(
-      () =>
-        new Promise((resolve) => {
-          requestAnimationFrame(() =>
-            requestAnimationFrame(() => requestAnimationFrame(resolve)),
-          );
-        }),
-    );
+    // Three frames cross Composite's after-paint presentation callback plus
+    // WebKit's scroll step before checking the viewport.
+    await flushFrames(page, 3);
     await test.expect(watermelon).toBeInViewport();
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
   });
@@ -90,12 +85,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.combobox("Focus moving filterable fruit").click();
 
     await test.expect(q.option("Focus target")).toBeFocused();
-    await page.evaluate(
-      () =>
-        new Promise((resolve) => {
-          requestAnimationFrame(() => requestAnimationFrame(resolve));
-        }),
-    );
+    await flushFrames(page);
     await test.expect(q.option("Focus target")).toBeInViewport();
     await test.expect(q.option("Watermelon")).not.toBeInViewport();
   });
