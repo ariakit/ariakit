@@ -26,7 +26,8 @@
     "docs": "ariakit docs --write"
   },
   "devDependencies": {
-    "@ariakit/scripts": "workspace:*"
+    "@ariakit/scripts": "workspace:*",
+    "vitest": "4.1.10"
   },
   "exports": {
     ".": "./src/index.ts",

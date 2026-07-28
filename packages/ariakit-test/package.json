@@ -35,7 +35,8 @@
     "@playwright/test": "1.62.0",
     "@testing-library/react": "16.3.2",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "vitest": "4.1.10"
   },
   "peerDependencies": {
     "@playwright/test": "^1.27.0",
