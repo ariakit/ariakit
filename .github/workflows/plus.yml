@@ -26,11 +26,14 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: website...
 
       - name: Install playwright
         uses: ./.github/workflows/install-playwright
         with:
           engine: chromium
+          workspace: website
 
       - name: Cache Next.js
         uses: actions/cache@v6

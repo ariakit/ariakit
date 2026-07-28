@@ -75,6 +75,10 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: |
+            app...
+            nextjs...
 
       - name: Download Next.js app artifact
         id: download-nextjs-artifact

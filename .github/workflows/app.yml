@@ -18,6 +18,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       - name: Build app
         env:
@@ -43,6 +45,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       - name: Type check Next.js app
         run: pnpm -F nextjs run tsc
@@ -102,11 +106,14 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
         with:
           engine: ${{ matrix.engine }}
+          workspace: app
 
       - name: Download app artifact
         uses: actions/download-artifact@v8

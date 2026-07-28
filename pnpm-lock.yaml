@@ -998,6 +998,9 @@ importers:
       gray-matter:
         specifier: 4.0.3
         version: 4.0.3
+      guide:
+        specifier: workspace:*
+        version: link:../guide
       hast-util-to-string:
         specifier: 2.0.0
         version: 2.0.0

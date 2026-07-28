@@ -19,6 +19,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: app...
 
       - name: Lint
         run: pnpm run lint
@@ -36,6 +38,11 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: |
+            app...
+            website...
+            ./templates/*...
 
       - name: Type check
         run: pnpm run tsc -v
@@ -50,6 +57,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: root...
 
       - name: Build
         run: pnpm run build
@@ -62,15 +71,21 @@ jobs:
       matrix:
         include:
           - script: test
+            filters: |
+              app...
+              website...
           - name: React
             script: test-react
+            filters: app...
           # Runs unsharded on happy-dom (fast). The Test step still honors a
           # `shard:` key, so split it again by re-adding `shard: "1/2"` and
           # `shard: "2/2"` entries here if it ever slows down.
           - name: React 18
             script: test-react18
+            filters: root...
           - name: Solid
             script: test-solid
+            filters: app...
 
     steps:
       - name: Checkout repository
@@ -78,6 +93,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: ${{ matrix.filters }}
 
       - name: Test
         env:
@@ -100,6 +117,8 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
+        with:
+          filters: website...
 
       - name: Build website
         run: pnpm run build-website-lite
