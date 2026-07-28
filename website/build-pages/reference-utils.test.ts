@@ -121,6 +121,7 @@ test("loads Combobox input value metadata", () => {
   const value = getReference(comboboxFilename, "ComboboxValue");
   getProp(value, "store");
   getProp(value, "children");
+  expect(value.description).toContain("Renders the current");
   expect(value.deprecated).toEqual(
     expect.stringContaining("ComboboxInputValue"),
   );

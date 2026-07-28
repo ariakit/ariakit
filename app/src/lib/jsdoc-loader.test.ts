@@ -281,6 +281,7 @@ test("loads Combobox input value metadata", async () => {
   const value = getReference(entries, "react/combobox/combobox-value");
   getParamProp(value, "store");
   getParamProp(value, "children");
+  expect(value.description).toContain("Renders the current");
   expect(value.deprecated).toEqual(
     expect.stringContaining("ComboboxInputValue"),
   );
