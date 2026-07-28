@@ -40,6 +40,22 @@ test("accessible disabled selects do not submit values", async () => {
 });
 
 // https://github.com/ariakit/ariakit/issues/6892
+test("aria-disabled selects do not submit values", async () => {
+  expect(q.combobox("Select aria disabled")).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  expect(q.combobox("Combobox aria disabled")).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+
+  await click(q.button("Submit transformed selects"));
+
+  expect(q.status()).toHaveTextContent(/^select-rendered, combobox-rendered$/);
+});
+
+// https://github.com/ariakit/ariakit/issues/6892
 test("rendered disabled selects do not submit values", async () => {
   await click(q.checkbox("Disable rendered selects"));
 

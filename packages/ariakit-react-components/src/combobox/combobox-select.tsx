@@ -12,6 +12,7 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import {
   toArray,
+  disabledFromProps,
   getActiveElement,
   getPopupRole,
   queueBeforeEvent,
@@ -112,7 +113,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     );
 
     const onKeyDownProp = props.onKeyDown;
-    const disabledProp = props.disabled;
+    const disabledProp = disabledFromProps(props);
     const showOnKeyDownProp = useBooleanEvent(showOnKeyDown);
     const moveOnKeyDownProp = useBooleanEvent(moveOnKeyDown);
     const placement = useStoreState(store, "placement");

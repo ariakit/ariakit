@@ -62,6 +62,18 @@ export default function Example() {
         </Ariakit.ComboboxProvider>
 
         <Ariakit.SelectProvider defaultValue="Apple">
+          <Ariakit.SelectLabel>Select aria disabled</Ariakit.SelectLabel>
+          <Ariakit.Select name="select-aria" aria-disabled />
+        </Ariakit.SelectProvider>
+
+        <Ariakit.ComboboxProvider defaultSelectedValue="Apple">
+          <Ariakit.ComboboxSelectLabel>
+            Combobox aria disabled
+          </Ariakit.ComboboxSelectLabel>
+          <Ariakit.ComboboxSelect name="combobox-aria" aria-disabled />
+        </Ariakit.ComboboxProvider>
+
+        <Ariakit.SelectProvider defaultValue="Apple">
           <Ariakit.SelectLabel>Select rendered</Ariakit.SelectLabel>
           <Ariakit.Select
             name="select-rendered"
