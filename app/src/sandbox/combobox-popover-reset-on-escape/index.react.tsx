@@ -296,14 +296,28 @@ function StoreReplacement() {
 }
 
 function DirectClick() {
+  const store = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Apple",
+    selectOnMove: false,
+  });
+
   return (
-    <Ariakit.ComboboxProvider defaultSelectedValue="Apple" selectOnMove={false}>
+    <Ariakit.ComboboxProvider store={store}>
       <Ariakit.ComboboxSelect aria-label="Direct click">
         <Ariakit.ComboboxSelectedValue />
       </Ariakit.ComboboxSelect>
       <Ariakit.ComboboxPopover resetOnEscape>
         {values.map((value) => (
-          <Ariakit.ComboboxItem key={value} value={value} hideOnClick={false} />
+          <Ariakit.ComboboxItem
+            key={value}
+            value={value}
+            hideOnClick={false}
+            onClick={(event) => {
+              // TODO: Remove when https://github.com/ariakit/ariakit/issues/6852
+              // is fixed.
+              store.move(event.currentTarget.id);
+            }}
+          />
         ))}
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
