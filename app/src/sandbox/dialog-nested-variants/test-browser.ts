@@ -1,6 +1,12 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
+import { test } from "#app/test-utils/fixtures.ts";
 import { withFramework } from "#app/test-utils/preview.ts";
+
+// This 29-test matrix uses the same options and navigates back to the preview
+// before every test. Reuse one context per worker so WebKit doesn't keep
+// opening contexts against the same long-lived browser process.
+test.use({ reuseContext: true });
 
 withFramework(import.meta.dirname, async ({ test }) => {
   function query(locator: Page | Locator) {
