@@ -10,6 +10,7 @@ import * as Base from "./select-item.tsx";
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
+/** @deprecated Use `useComboboxItemOffscreen` instead. */
 export function useSelectItemOffscreen<
   T extends ElementType,
   // oxlint-disable-next-line no-unnecessary-type-parameters
@@ -20,6 +21,7 @@ export function useSelectItemOffscreen<
   return useCompositeItemOffscreen({ store, value, ...props });
 }
 
+/** @deprecated Use `ComboboxItem` from the offscreen module instead. */
 export const SelectItem = forwardRef(function SelectItem({
   offscreenMode,
   offscreenRoot,
@@ -62,9 +64,11 @@ export const SelectItem = forwardRef(function SelectItem({
   return <Component {...htmlProps} />;
 });
 
+/** @deprecated Use `ComboboxItemOptions` from the offscreen module instead. */
 export interface SelectItemOptions<T extends ElementType = TagName>
   extends Base.SelectItemOptions<T>, Omit<CompositeItemOptions<T>, "store"> {}
 
+/** @deprecated Use `ComboboxItemProps` from the offscreen module instead. */
 export type SelectItemProps<T extends ElementType = TagName> = Props<
   T,
   SelectItemOptions<T>

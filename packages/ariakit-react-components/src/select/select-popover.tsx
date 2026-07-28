@@ -13,6 +13,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectPopover` component.
+ * @deprecated Use `useComboboxPopover` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -38,6 +39,8 @@ export const useSelectPopover = createHook<TagName, SelectPopoverOptions>(
  * Renders a select popover. The `role` attribute is set to `listbox` by
  * default, but can be overriden by any other valid select popup role
  * (`listbox`, `menu`, `tree`, `grid` or `dialog`).
+ * @deprecated Use
+ * [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {3-6}
@@ -58,9 +61,11 @@ export const SelectPopover = createDialogComponent(
   useSelectProviderContext,
 );
 
+/** @deprecated Use `ComboboxPopoverOptions` instead. */
 export interface SelectPopoverOptions<T extends ElementType = TagName>
   extends SelectListOptions<T>, Omit<PopoverOptions<T>, "store"> {}
 
+/** @deprecated Use `ComboboxPopoverProps` instead. */
 export type SelectPopoverProps<T extends ElementType = TagName> = Props<
   T,
   SelectPopoverOptions<T>

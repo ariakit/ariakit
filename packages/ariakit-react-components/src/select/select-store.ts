@@ -21,6 +21,7 @@ import type {
 } from "../popover/popover-store.ts";
 import { usePopoverStoreProps } from "../popover/popover-store.ts";
 
+/** @deprecated Use `useComboboxStoreOptions` instead. */
 export function useSelectStoreOptions<T extends Core.SelectStoreOptions>(
   props: T,
 ) {
@@ -32,6 +33,7 @@ export function useSelectStoreOptions<T extends Core.SelectStoreOptions>(
   return useCompositeStoreOptions(props);
 }
 
+/** @deprecated Use `useComboboxStoreProps` instead. */
 export function useSelectStoreProps<T extends Core.SelectStore>(
   store: T,
   update: () => void,
@@ -53,6 +55,9 @@ export function useSelectStoreProps<T extends Core.SelectStore>(
 /**
  * Creates a select store to control the state of
  * [Select](https://ariakit.com/components/select) components.
+ * @deprecated Use
+ * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
+ * instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -69,6 +74,7 @@ export function useSelectStore<T extends SelectStoreValue = SelectStoreValue>(
   props: PickRequired<SelectStoreProps<T>, "value" | "defaultValue">,
 ): SelectStore<T>;
 
+/** @deprecated Use `useComboboxStore` instead. */
 export function useSelectStore(props?: SelectStoreProps): SelectStore;
 
 export function useSelectStore(props: SelectStoreProps = {}): SelectStore {
@@ -77,16 +83,20 @@ export function useSelectStore(props: SelectStoreProps = {}): SelectStore {
   return useSelectStoreProps(store, update, props);
 }
 
+/** @deprecated Use `ComboboxStoreSelectedValue` instead. */
 export type SelectStoreValue = Core.SelectStoreValue;
 
+/** @deprecated Use `ComboboxStoreItem` instead. */
 export interface SelectStoreItem extends Core.SelectStoreItem {}
 
+/** @deprecated Use `ComboboxStoreState` instead. */
 export interface SelectStoreState<T extends SelectStoreValue = SelectStoreValue>
   extends
     Core.SelectStoreState<T>,
     CompositeStoreState<SelectStoreItem>,
     PopoverStoreState {}
 
+/** @deprecated Use `ComboboxStoreFunctions` instead. */
 export interface SelectStoreFunctions<
   T extends SelectStoreValue = SelectStoreValue,
 >
@@ -96,6 +106,7 @@ export interface SelectStoreFunctions<
     CompositeStoreFunctions<SelectStoreItem>,
     PopoverStoreFunctions {}
 
+/** @deprecated Use `ComboboxStoreOptions` instead. */
 export interface SelectStoreOptions<
   T extends SelectStoreValue = SelectStoreValue,
 >
@@ -117,11 +128,13 @@ export interface SelectStoreOptions<
   combobox?: ComboboxStore | null;
 }
 
+/** @deprecated Use `ComboboxStoreProps` instead. */
 export interface SelectStoreProps<T extends SelectStoreValue = SelectStoreValue>
   extends
     SelectStoreOptions<T>,
     Omit<Core.SelectStoreProps<T>, "combobox" | "disclosure"> {}
 
+/** @deprecated Use `ComboboxStore` instead. */
 export interface SelectStore<T extends SelectStoreValue = SelectStoreValue>
   extends
     SelectStoreFunctions<T>,

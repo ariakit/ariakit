@@ -12,6 +12,7 @@ type TagName = typeof TagName;
  * Returns props to create a `SelectGroupLabel` component. This hook must be
  * used in a component that's wrapped with `SelectGroup` so the
  * `aria-labelledby` prop is properly set on the select group element.
+ * @deprecated Use `useComboboxGroupLabel` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -31,6 +32,9 @@ export const useSelectGroupLabel = createHook<TagName, SelectGroupLabelOptions>(
  * Renders a label in a select group. This component must be wrapped with
  * [`SelectGroup`](https://ariakit.com/reference/select-group) so the
  * `aria-labelledby` prop is properly set on the select group element.
+ * @deprecated Use
+ * [`ComboboxGroupLabel`](https://ariakit.com/reference/combobox-group-label)
+ * instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5,10}
@@ -58,6 +62,7 @@ export const SelectGroupLabel = forwardRef(function SelectGroupLabel(
   return createElement(TagName, htmlProps);
 });
 
+/** @deprecated Use `ComboboxGroupLabelOptions` instead. */
 export interface SelectGroupLabelOptions<
   T extends ElementType = TagName,
 > extends CompositeGroupLabelOptions<T> {
@@ -72,6 +77,7 @@ export interface SelectGroupLabelOptions<
   store?: SelectStore;
 }
 
+/** @deprecated Use `ComboboxGroupLabelProps` instead. */
 export type SelectGroupLabelProps<T extends ElementType = TagName> = Props<
   T,
   SelectGroupLabelOptions<T>

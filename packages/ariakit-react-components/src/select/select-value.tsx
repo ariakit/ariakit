@@ -24,6 +24,9 @@ type Value = SelectStoreValue;
  * [`children`](https://ariakit.com/reference/select-value#children) function
  * that gets called with the current value as an argument. This is handy for
  * rendering the value in a custom way.
+ * @deprecated Use
+ * [`ComboboxSelectedValue`](https://ariakit.com/reference/combobox-selected-value)
+ * instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {3}
@@ -63,6 +66,7 @@ export function SelectValue<T extends Value = Value>(
   props: PickRequired<SelectValueProps<T>, "fallback">,
 ): T;
 
+/** @deprecated Use `ComboboxSelectedValue` instead. */
 export function SelectValue(props?: SelectValueProps): Value;
 
 export function SelectValue({
@@ -85,6 +89,7 @@ export function SelectValue({
   return value;
 }
 
+/** @deprecated Use `ComboboxSelectedValueProps` instead. */
 export interface SelectValueProps<T extends Value = Value> {
   /**
    * Object returned by the

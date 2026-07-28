@@ -11,6 +11,7 @@ type TagName = typeof TagName;
 
 /**
  * Returns props to create a `SelectArrow` component.
+ * @deprecated Use `useComboboxSelectArrow` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -39,6 +40,9 @@ export const useSelectArrow = createHook<TagName, SelectArrowOptions>(
  * Renders an arrow pointing to the select popover position. It's usually
  * rendered inside the [`Select`](https://ariakit.com/reference/select)
  * component.
+ * @deprecated Use
+ * [`ComboboxSelectArrow`](https://ariakit.com/reference/combobox-select-arrow)
+ * instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {4}
@@ -61,6 +65,7 @@ export const SelectArrow = forwardRef(function SelectArrow(
   return createElement(TagName, htmlProps);
 });
 
+/** @deprecated Use `ComboboxSelectArrowOptions` instead. */
 export interface SelectArrowOptions<
   T extends ElementType = TagName,
 > extends PopoverDisclosureArrowOptions<T> {
@@ -74,6 +79,7 @@ export interface SelectArrowOptions<
   store?: SelectStore;
 }
 
+/** @deprecated Use `ComboboxSelectArrowProps` instead. */
 export type SelectArrowProps<T extends ElementType = TagName> = Props<
   T,
   SelectArrowOptions<T>

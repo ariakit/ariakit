@@ -14,6 +14,7 @@ type TagName = typeof TagName;
  * Returns props to create a `SelectItemCheck` component. This hook must be used
  * in a component that's wrapped with `SelectItem` or the `checked` prop must be
  * explicitly passed to the component.
+ * @deprecated Use `useComboboxItemCheck` instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx
@@ -39,6 +40,9 @@ export const useSelectItemCheck = createHook<TagName, SelectItemCheckOptions>(
  * [`SelectItem`](https://ariakit.com/reference/select-item) component, the
  * [`checked`](https://ariakit.com/reference/select-item-check#checked) prop is
  * automatically derived from the context.
+ * @deprecated Use
+ * [`ComboboxItemCheck`](https://ariakit.com/reference/combobox-item-check)
+ * instead.
  * @see https://ariakit.com/components/select
  * @example
  * ```jsx {5,9}
@@ -64,6 +68,7 @@ export const SelectItemCheck = forwardRef(function SelectItemCheck(
   return createElement(TagName, htmlProps);
 });
 
+/** @deprecated Use `ComboboxItemCheckOptions` instead. */
 export interface SelectItemCheckOptions<
   T extends ElementType = TagName,
 > extends CheckboxCheckOptions<T> {
@@ -80,6 +85,7 @@ export interface SelectItemCheckOptions<
   store?: SelectStore;
 }
 
+/** @deprecated Use `ComboboxItemCheckProps` instead. */
 export type SelectItemCheckProps<T extends ElementType = TagName> = Props<
   T,
   SelectItemCheckOptions<T>

@@ -25,7 +25,7 @@ A value component reads one specific value from a provider, an explicit store, o
 - exposes the value directly or through a `children` render function
 - does not accept HTML props such as `className`, `style`, or `ref`, because it has no element to receive them
 
-The stable public value components are [`ComboboxValue`](/reference/combobox-value), [`ComboboxSelectedValue`](/reference/combobox-selected-value), [`ComboboxItemSelected`](/reference/combobox-item-selected), [`SelectValue`](/reference/select-value), and [`SelectItemSelected`](/reference/select-item-selected), all exported from `@ariakit/react`.
+The stable public value components are [`ComboboxValue`](/reference/combobox-value), [`ComboboxSelectedValue`](/reference/combobox-selected-value), and [`ComboboxItemSelected`](/reference/combobox-item-selected), all exported from `@ariakit/react`.
 
 This pattern is not inherently uncontrolled. Value components work with both controlled and uncontrolled providers and stores. Their main benefit is exposing state close to the JSX that needs it, without creating or passing a store solely for that purpose.
 
@@ -47,21 +47,6 @@ In its shortest form, a value component renders the current value as-is. No wrap
 ```
 
 [`ComboboxSelectedValue`](/reference/combobox-selected-value) accepts a `fallback` prop that's used when the current selected value is an empty string or empty array.
-
-[`SelectValue`](/reference/select-value) remains available for rendering a Select store's `value` state in the same way:
-
-```jsx {3}
-<SelectProvider defaultValue="Apple">
-  <Select>
-    <SelectValue fallback="Choose a fruit" />
-    <SelectArrow />
-  </Select>
-  <SelectPopover>
-    <SelectItem value="Apple" />
-    <SelectItem value="Banana" />
-  </SelectPopover>
-</SelectProvider>
-```
 
 ## Rendering custom JSX
 
@@ -92,8 +77,6 @@ Item-scoped value components read state from the closest item instead of the pro
 ```
 
 The `children` function is required because a raw boolean doesn't produce visible output in React. It receives the current selected state and re-runs whenever that state changes.
-
-[`SelectItemSelected`](/reference/select-item-selected) provides the same item-scoped state inside a [`SelectItem`](/reference/select-item).
 
 <aside data-type="note" title="The render prop">
 
