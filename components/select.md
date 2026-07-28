@@ -9,39 +9,15 @@ tags:
 
 <div data-description>
 
-The Select components are deprecated. Use [Combobox](/components/combobox) with [`ComboboxSelect`](/reference/combobox-select) to select a value from a list of options.
+Select a value from a list of options presented in a dropdown menu, similar to the native HTML select element. This component is based on the [WAI-ARIA Combobox Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/).
 
 </div>
 
 <div data-tags></div>
 
-<aside data-type="warn" title="Deprecated">
+<a href="../examples/select/index.react.tsx" data-playground>Example</a>
 
-The Select APIs remain available for compatibility, but they will be removed in a future release. Use [`ComboboxProvider`](/reference/combobox-provider), [`ComboboxSelect`](/reference/combobox-select), and the corresponding Combobox components for new code. The replacement supports both standard and filterable selects through one store.
-
-</aside>
-
-<a href="../examples/select-combobox/index.react.tsx" data-playground>ComboboxSelect example</a>
-
-## Migration
-
-Replace Select components with their Combobox counterparts:
-
-```jsx
-<ComboboxProvider>
-  <ComboboxSelectLabel>Favorite fruit</ComboboxSelectLabel>
-  <ComboboxSelect>
-    <ComboboxSelectedValue />
-    <ComboboxSelectArrow />
-  </ComboboxSelect>
-  <ComboboxPopover>
-    <ComboboxItem value="Apple" />
-    <ComboboxItem value="Banana" />
-  </ComboboxPopover>
-</ComboboxProvider>
-```
-
-## Deprecated API
+## API
 
 ```jsx
 useSelectStore()
