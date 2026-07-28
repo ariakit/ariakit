@@ -11,7 +11,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(removeButton).toBeVisible();
     await test.expect(removeButton).not.toHaveAttribute("aria-hidden", "true");
     await test.expect(removeButton).not.toHaveAttribute("aria-label");
-    // Safari does not always tab-focus native buttons on macOS runners.
+    // Focus explicitly so this assertion does not depend on platform click
+    // focus behavior.
     await removeButton.focus();
     await test.expect(removeButton).toBeFocused();
     const tagRemove = page
