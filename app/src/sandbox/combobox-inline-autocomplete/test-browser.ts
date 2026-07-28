@@ -11,6 +11,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await combobox.pressSequentially("ap");
     await test.expect(q.status()).toHaveText("Updating results…");
     await combobox.press("ArrowLeft");
+    await test.expect(q.status()).toHaveText("Updating results…");
     await test.expect(q.status()).toHaveText("Results updated");
     await combobox.pressSequentially("pp");
     await test.expect(combobox).toHaveValue("apppple");

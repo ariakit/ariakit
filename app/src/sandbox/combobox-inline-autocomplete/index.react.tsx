@@ -9,7 +9,7 @@ function DelayedResults() {
   const pending = inputValue !== query;
 
   useEffect(() => {
-    const timeout = window.setTimeout(() => setQuery(inputValue), 1000);
+    const timeout = window.setTimeout(() => setQuery(inputValue), 2000);
     return () => window.clearTimeout(timeout);
   }, [inputValue]);
 
