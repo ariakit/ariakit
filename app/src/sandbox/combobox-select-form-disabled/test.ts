@@ -4,14 +4,14 @@ import { expect, test, vi } from "vitest";
 const spyOnAlert = () => vi.spyOn(window, "alert").mockImplementation(() => {});
 
 test("disabled select is visually and semantically disabled", () => {
-  const button = q.combobox();
+  const button = q.combobox("Favorite fruit");
   expect(button).toBeDisabled();
   expect(button).toHaveAttribute("aria-disabled", "true");
   expect(button).toHaveStyle("pointer-events: none");
 });
 
 test("disabled select cannot be opened with click", async () => {
-  await click(q.combobox());
+  await click(q.combobox("Favorite fruit"));
   expect(q.listbox()).not.toBeInTheDocument();
 });
 
@@ -30,4 +30,29 @@ test("disabled select does not submit value", async () => {
   await press.Tab();
   await press.Enter();
   expect(alert).toHaveBeenCalledWith(null);
+});
+
+// https://github.com/ariakit/ariakit/issues/6892
+test("accessible disabled selects do not submit values", async () => {
+  await click(q.button("Submit transformed selects"));
+
+  expect(q.status()).toHaveTextContent(/^select-rendered, combobox-rendered$/);
+});
+
+// https://github.com/ariakit/ariakit/issues/6892
+test("rendered disabled selects do not submit values", async () => {
+  await click(q.checkbox("Disable rendered selects"));
+
+  expect(q.combobox("Select rendered")).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+  expect(q.combobox("Combobox rendered")).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+
+  await click(q.button("Submit transformed selects"));
+
+  expect(q.status()).toHaveTextContent("No values submitted");
 });
