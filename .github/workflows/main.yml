@@ -21,15 +21,6 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
-        with:
-          # oxlint reads sources that `app...` does not install: `examples`,
-          # `templates/*`, and `@ariakit/solid-store`, the one workspace package
-          # nothing else depends on.
-          filters: |
-            app...
-            ./packages/*...
-            examples...
-            ./templates/*...
 
       - name: Lint
         run: pnpm run lint
@@ -49,14 +40,6 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
-        with:
-          # `app...` does not reach `@ariakit/solid-store`, the one workspace
-          # package nothing else depends on.
-          filters: |
-            app...
-            website...
-            ./templates/*...
-            ./packages/*...
 
       - name: Type check
         run: pnpm run tsc -v
