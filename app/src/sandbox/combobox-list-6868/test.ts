@@ -1,9 +1,9 @@
-import { click, press, q } from "@ariakit/test";
+import { click, focus, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/6868
 test("tabs to a non-scrollable list with real focus", async () => {
-  await click(q.combobox.ensure("Real focus fruit"));
+  await click(q.combobox("Real focus fruit"));
   expect(q.combobox("Search Real focus fruit")).toHaveFocus();
 
   await press.Tab();
@@ -18,10 +18,23 @@ test("tabs to a non-scrollable list with real focus", async () => {
 
   await press.ArrowDown();
   expect(q.within(list).option("Apple")).toHaveFocus();
+  expect(q.status("Real focus fruit selected value")).toHaveTextContent(
+    "Apple",
+  );
+
+  list.focus();
+  await press.ArrowDown();
+  expect(q.within(list).option("Banana")).toHaveFocus();
+  expect(q.status("Real focus fruit selected value")).toHaveTextContent(
+    "Banana",
+  );
 
   list.focus();
   await press.ArrowUp();
-  expect(q.within(list).option("Orange")).toHaveFocus();
+  expect(q.within(list).option("Apple")).toHaveFocus();
+  expect(q.status("Real focus fruit selected value")).toHaveTextContent(
+    "Apple",
+  );
 
   list.focus();
   await press.Home();
@@ -41,8 +54,8 @@ test("tabs to a non-scrollable list with real focus", async () => {
 });
 
 test("tabs to a non-scrollable list with virtual focus", async () => {
-  await click(q.combobox.ensure("Virtual focus fruit"));
-  const input = q.combobox.ensure("Search Virtual focus fruit");
+  await click(q.combobox("Virtual focus fruit"));
+  const input = q.combobox("Search Virtual focus fruit");
   expect(input).toHaveFocus();
 
   await press.Tab();
@@ -55,16 +68,45 @@ test("tabs to a non-scrollable list with virtual focus", async () => {
     "combobox",
   );
 
-  const apple = q.within(list).option.ensure("Apple");
+  const orange = q.within(list).option("Orange");
 
   await press.ArrowDown();
   expect(input).toHaveFocus();
-  expect(apple).toHaveAttribute("data-focus-visible", "true");
+  expect(orange).toHaveAttribute("data-focus-visible", "true");
+  expect(q.status("Virtual focus fruit selected value")).toHaveTextContent(
+    "Orange",
+  );
 
   list.focus();
-  const orange = q.within(list).option.ensure("Orange");
+  const banana = q.within(list).option("Banana");
 
   await press.ArrowUp();
   expect(input).toHaveFocus();
-  expect(orange).toHaveAttribute("data-focus-visible", "true");
+  expect(banana).toHaveAttribute("data-focus-visible", "true");
+  expect(q.status("Virtual focus fruit selected value")).toHaveTextContent(
+    "Banana",
+  );
+});
+
+test("moves spatially from a focused RTL grid", async () => {
+  await click(q.combobox("Grid fruit"));
+  const grid = q.grid("Grid fruit");
+  await focus(q.gridcell("Top Center"));
+
+  await focus(grid);
+  await press.ArrowDown();
+  expect(q.gridcell("Bottom Center")).toHaveFocus();
+
+  await focus(grid);
+  await press.ArrowUp();
+  expect(q.gridcell("Top Center")).toHaveFocus();
+
+  await focus(grid);
+  await press.ArrowRight();
+  expect(q.gridcell("Top Left")).toHaveFocus();
+
+  await focus(q.gridcell("Top Center"));
+  await focus(grid);
+  await press.ArrowLeft();
+  expect(q.gridcell("Top Right")).toHaveFocus();
 });

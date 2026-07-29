@@ -1,4 +1,4 @@
-import { click, hover, press, q, type } from "@ariakit/test";
+import { click, focus, hover, press, q, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("open/hide menu", async () => {
@@ -96,6 +96,9 @@ test("tab in/out search menu", async () => {
   expect(q.dialog("Turn into page in")).not.toBeInTheDocument();
   await press.ShiftTab();
   expect(q.combobox("Search actions...")).toHaveFocus();
+  await focus(actionsList);
+  await press.ArrowDown();
+  expect(q.option("Copy link to block")).toHaveFocus();
 });
 
 test("set block type", async () => {

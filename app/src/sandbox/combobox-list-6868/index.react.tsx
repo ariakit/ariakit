@@ -15,10 +15,19 @@ function BaseElementStatus({ label }: Pick<FruitSelectProps, "label">) {
   );
 }
 
+function SelectedValueStatus({ label }: Pick<FruitSelectProps, "label">) {
+  const store = Ariakit.useComboboxContext();
+  const selectedValue = store?.useState("selectedValue");
+  return (
+    <output aria-label={`${label} selected value`}>{selectedValue}</output>
+  );
+}
+
 function FruitSelect({ label, virtualFocus }: FruitSelectProps) {
   return (
     <Ariakit.ComboboxProvider
-      defaultSelectedValue="Apple"
+      defaultSelectedValue="Banana"
+      selectOnMove
       virtualFocus={virtualFocus}
     >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
@@ -35,6 +44,35 @@ function FruitSelect({ label, virtualFocus }: FruitSelectProps) {
         </Ariakit.ComboboxList>
       </Ariakit.ComboboxPopover>
       <BaseElementStatus label={label} />
+      <SelectedValueStatus label={label} />
+    </Ariakit.ComboboxProvider>
+  );
+}
+
+function GridFruitSelect() {
+  return (
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue="Top Center"
+      rtl
+      virtualFocus={false}
+    >
+      <Ariakit.ComboboxSelectLabel>Grid fruit</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxPopover gutter={4}>
+        <Ariakit.ComboboxInput aria-label="Search Grid fruit" />
+        <Ariakit.ComboboxList role="grid" aria-label="Grid fruit" dir="rtl">
+          <Ariakit.ComboboxRow>
+            <Ariakit.ComboboxItem role="gridcell" value="Top Left" />
+            <Ariakit.ComboboxItem role="gridcell" value="Top Center" />
+            <Ariakit.ComboboxItem role="gridcell" value="Top Right" />
+          </Ariakit.ComboboxRow>
+          <Ariakit.ComboboxRow>
+            <Ariakit.ComboboxItem role="gridcell" value="Bottom Left" />
+            <Ariakit.ComboboxItem role="gridcell" value="Bottom Center" />
+            <Ariakit.ComboboxItem role="gridcell" value="Bottom Right" />
+          </Ariakit.ComboboxRow>
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
   );
 }
@@ -44,6 +82,7 @@ export default function Example() {
     <>
       <FruitSelect label="Virtual focus fruit" />
       <FruitSelect label="Real focus fruit" virtualFocus={false} />
+      <GridFruitSelect />
       <button type="button">After selects</button>
     </>
   );

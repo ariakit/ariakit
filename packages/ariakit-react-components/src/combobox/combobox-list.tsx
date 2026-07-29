@@ -12,7 +12,6 @@ import { useFocusable } from "../focusable/focusable.tsx";
 import type { ComboboxContentOptions } from "./combobox-content.tsx";
 import { useComboboxContent } from "./combobox-content.tsx";
 import { useComboboxContext } from "./combobox-context.tsx";
-import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -46,16 +45,15 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       if (event.defaultPrevented) return;
       if (!store) return;
       if (!isSelfTarget(event)) return;
-      const { orientation, items, rtl } = store.getState();
+      const { orientation, items } = store.getState();
       const isGrid = items.some((item) => !!item.rowId);
       const isVertical = orientation !== "horizontal";
       const isHorizontal = orientation !== "vertical";
       const keyMap = {
-        ArrowUp: (isGrid || isVertical) && store.last,
-        ArrowRight:
-          (isGrid || isHorizontal) && (rtl ? store.last : store.first),
-        ArrowDown: (isGrid || isVertical) && store.first,
-        ArrowLeft: (isGrid || isHorizontal) && (rtl ? store.first : store.last),
+        ArrowUp: (isGrid || isVertical) && store.up,
+        ArrowRight: (isGrid || isHorizontal) && store.next,
+        ArrowDown: (isGrid || isVertical) && store.down,
+        ArrowLeft: (isGrid || isHorizontal) && store.previous,
         Home: store.first,
         End: store.last,
         PageUp: store.first,
@@ -65,14 +63,13 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       if (!action) return;
       const id = action();
       if (id === undefined) return;
-      const element = store.item(id)?.element;
-      if (!element) return;
       event.preventDefault();
-      element.focus();
+      store.move(id);
     });
 
+    props = { ...props, onKeyDown };
     props = useComboboxContent({ store, ...props });
-    props = useFocusable({ ...props, onKeyDown });
+    props = useFocusable(props);
     return props;
   },
 );
@@ -102,18 +99,7 @@ export const ComboboxList = forwardRef(function ComboboxList(
 });
 
 export interface ComboboxListOptions<T extends ElementType = TagName>
-  extends
-    FocusableOptions<T>,
-    Pick<ComboboxContentOptions<T>, "alwaysVisible"> {
-  /**
-   * Object returned by the
-   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
-   * hook. If not provided, the closest
-   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
-   * component's context will be used.
-   */
-  store?: ComboboxStore;
-}
+  extends FocusableOptions<T>, ComboboxContentOptions<T> {}
 
 export type ComboboxListProps<T extends ElementType = TagName> = Props<
   T,
