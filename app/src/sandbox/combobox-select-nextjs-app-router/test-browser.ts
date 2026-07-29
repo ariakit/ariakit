@@ -1,8 +1,4 @@
-import {
-  pressWithNewTabModifier,
-  withModifier,
-  withFramework,
-} from "#app/test-utils/preview.ts";
+import { withFramework } from "#app/test-utils/preview.ts";
 
 function hasSearchParam(name: string, value: string | string[]) {
   return (url: URL) => {
@@ -61,17 +57,10 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     test.slow();
     const language = q.combobox("Language");
     await language.click();
-    const newPage = await withModifier({
-      modifier: "ControlOrMeta",
-      page,
-      action: async () => {
-        const [newPage] = await Promise.all([
-          page.context().waitForEvent("page"),
-          q.option("French").click(),
-        ]);
-        return newPage;
-      },
-    });
+    const [newPage] = await Promise.all([
+      page.context().waitForEvent("page"),
+      q.option("French").click({ modifiers: ["ControlOrMeta"] }),
+    ]);
 
     await newPage.waitForURL(hasSearchParam("lang", "fr"));
     const newLanguage = query(newPage).combobox("Language");
@@ -126,15 +115,12 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
 
     // Keep the page-event deadline inside the 90-second slow-test budget so
     // a missing tab names the event instead of timing out the whole test.
-    const newPagePromise = page.context().waitForEvent("page", {
-      timeout: 60_000,
-    });
-    if (browserName === "webkit") {
-      await q.option("Archived").click({ modifiers: ["ControlOrMeta"] });
-    } else {
-      await pressWithNewTabModifier(status, "Enter");
-    }
-    const newPage = await newPagePromise;
+    const [newPage] = await Promise.all([
+      page.context().waitForEvent("page", { timeout: 60_000 }),
+      browserName === "webkit"
+        ? q.option("Archived").click({ modifiers: ["ControlOrMeta"] })
+        : status.press("ControlOrMeta+Enter"),
+    ]);
 
     await newPage.waitForURL(hasSearchParam("status", ["draft", "archived"]));
     const newStatus = query(newPage).combobox("Status");

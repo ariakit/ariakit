@@ -1,7 +1,7 @@
 import { relative, resolve } from "node:path";
 import { query } from "@ariakit/test/playwright";
 import { errors } from "@playwright/test";
-import type { Locator, Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import { isInDirectory, toPosixPath } from "#app/lib/paths.ts";
 import { previewConfig } from "#app/lib/preview-config.ts";
 import {
@@ -48,44 +48,6 @@ export function flushFrames(page: Page, frames = 2) {
       }),
     frames,
   );
-}
-
-interface WithModifierParams<Result> {
-  action: () => Promise<Result>;
-  modifier: string;
-  page: Page;
-}
-
-/**
- * Runs an action while a modifier is held, and releases the modifier even when
- * the action fails. Unlike per-action pointer modifiers, this can keep the key
- * down until related browser work, such as opening a new page, has settled.
- */
-export async function withModifier<Result>({
-  action,
-  modifier,
-  page,
-}: WithModifierParams<Result>) {
-  await page.keyboard.down(modifier);
-  try {
-    return await action();
-  } finally {
-    await page.keyboard.up(modifier);
-  }
-}
-
-/**
- * Presses a key on a locator while the new-tab modifier is held, and releases
- * it even when the press fails. `ControlOrMeta` resolves to Meta on macOS and
- * Control elsewhere.
- */
-export async function pressWithNewTabModifier(target: Locator, key: string) {
-  const page = target.page();
-  return withModifier({
-    action: () => target.press(key),
-    modifier: "ControlOrMeta",
-    page,
-  });
 }
 
 const SRC_DIR = resolve(import.meta.dirname, "..");

@@ -1,11 +1,7 @@
 import type { Page } from "@ariakit/test/playwright";
 import { expect, query } from "@ariakit/test/playwright";
 import type { BrowserContext, Locator } from "@playwright/test";
-import {
-  pressWithNewTabModifier,
-  withModifier,
-  withFramework,
-} from "#app/test-utils/preview.ts";
+import { withFramework } from "#app/test-utils/preview.ts";
 
 interface ExpectNewPageParams {
   action: () => Promise<void>;
@@ -83,15 +79,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await expect(q.listbox()).toBeVisible();
     const option = q.option("Ariakit.com");
     const url = await prepareNavigation(page, option, "https://ariakit.com");
-    await withModifier({
-      modifier: "ControlOrMeta",
-      page,
-      action: () =>
-        expectNewPage({
-          context,
-          url,
-          action: () => option.click(),
-        }),
+    await expectNewPage({
+      context,
+      url,
+      action: () => option.click({ modifiers: ["ControlOrMeta"] }),
     });
     await expect(q.listbox()).toBeVisible();
     await expect(q.combobox("Links")).toHaveValue("");
@@ -129,7 +120,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         context,
         timeout: 60_000,
         url,
-        action: () => pressWithNewTabModifier(combobox, "Enter"),
+        action: () => combobox.press("ControlOrMeta+Enter"),
       });
       await expect(q.listbox()).toBeVisible();
       await expect(q.combobox("Links")).toHaveValue("");
