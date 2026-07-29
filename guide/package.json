@@ -5,5 +5,8 @@
   "type": "module",
   "exports": {
     "./*": "./*"
+  },
+  "dependencies": {
+    "react": "19.2.8"
   }
 }
