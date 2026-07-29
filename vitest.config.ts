@@ -7,23 +7,18 @@ import { sourcePlugin } from "./app/src/lib/source-plugin.ts";
 
 const rootDir = process.cwd();
 
-const coreTestIncludes = ["**/*test.{ts,tsx}"];
+const testIncludes = ["**/*test.{ts,tsx}"];
 
-const nodeTestIncludes = ["packages/ariakit-scripts/src/**/*test.{ts,tsx}"];
-
-const coreTestExcludes = [
-  ...nodeTestIncludes,
-  "packages/ariakit-react*/src/**/*test.{ts,tsx}",
-  "packages/ariakit-solid*/src/**/*test.{ts,tsx}",
-  // Framework-specific tests run in the react and solid projects. Their names
-  // also match the generic *test.* include above, so keep them out of the core
-  // project explicitly.
-  "**/*react.test.{ts,tsx}",
-  "**/*solid.test.{ts,tsx}",
-  "app/src/{examples,sandbox}/**/test.{ts,tsx}",
+const domTestIncludes = [
+  "app/src/lib/stackblitz.test.{ts,tsx}",
+  "packages/ariakit-components/src/{collection,combobox,form,popover,select,tab}/**/*test.{ts,tsx}",
+  "packages/ariakit-test/src/**/*test.{ts,tsx}",
+  "packages/ariakit-utils/src/{dom,events,focus}.test.{ts,tsx}",
 ];
 
-type Framework = "react" | "solid";
+const frameworks = ["react", "solid"] as const;
+
+type Framework = (typeof frameworks)[number];
 
 function getFrameworkTestIncludes(framework: Framework) {
   const entryFiles = globSync(
@@ -44,13 +39,21 @@ function getFrameworkTestIncludes(framework: Framework) {
   ];
 }
 
-const testExcludes = [...configDefaults.exclude, ".claude/**"];
+const frameworkTestExcludes = frameworks.flatMap((framework) => [
+  `packages/ariakit-${framework}*/src/**/*test.{ts,tsx}`,
+  `**/*${framework}.test.{ts,tsx}`,
+]);
 
-const sourcePluginInstance = sourcePlugin(join(rootDir, "app/src/examples/"));
+const nodeTestExcludes = [
+  ...domTestIncludes,
+  ...frameworkTestExcludes,
+  "app/src/{examples,sandbox}/**/test.{ts,tsx}",
+];
+
+const testExcludes = [...configDefaults.exclude, ".claude/**"];
 
 export default defineConfig({
   root: rootDir,
-  plugins: [sourcePluginInstance],
   test: {
     watch: false,
     testTimeout: 10_000,
@@ -71,19 +74,21 @@ export default defineConfig({
     projects: [
       {
         extends: true,
+        plugins: [sourcePlugin(join(rootDir, "app/src/examples/"))],
         test: {
           name: "node",
           environment: "node",
-          include: nodeTestIncludes,
+          exclude: nodeTestExcludes,
+          include: testIncludes,
         },
       },
       {
         extends: true,
         test: {
-          name: "core",
+          name: "dom",
           environment: "happy-dom",
-          exclude: coreTestExcludes,
-          include: coreTestIncludes,
+          exclude: frameworkTestExcludes,
+          include: domTestIncludes,
         },
       },
       {
