@@ -793,7 +793,7 @@ jobs:
             echo "::error::No projects matched filter: $filter"
             exit 1
           fi
-          pnpm --filter "$filter" install --frozen-lockfile --no-runtime --prefer-offline
+          pnpm --filter "$filter" --filter root install --frozen-lockfile --no-runtime --prefer-offline
 
       - name: Download baseline artifacts
         uses: actions/download-artifact@v8
