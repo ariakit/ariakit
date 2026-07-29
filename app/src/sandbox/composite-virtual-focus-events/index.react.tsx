@@ -44,6 +44,13 @@ export default function Example() {
           <Ariakit.CompositeItem id="item-3" {...eventProps}>
             item-3
           </Ariakit.CompositeItem>
+          <Ariakit.CompositeItem
+            id="item-unregistered"
+            shouldRegisterItem={false}
+            {...eventProps}
+          >
+            unregistered item
+          </Ariakit.CompositeItem>
         </Ariakit.Composite>
       </Ariakit.CompositeProvider>
       <button type="button">External button</button>

@@ -39,3 +39,18 @@ test("dispatches virtual focus events in order", async () => {
     "event: focus | currentTarget: toolbar | target: item-2 | relatedTarget: toolbar",
   ]);
 });
+
+test("dispatches blur on an unregistered item", async () => {
+  await press.Tab();
+  await click(q.button("unregistered item"));
+  await click(q.button("External button"));
+
+  expect(
+    events().filter((event) =>
+      event.includes("currentTarget: item-unregistered"),
+    ),
+  ).toEqual([
+    "event: focus | currentTarget: item-unregistered | target: item-unregistered | relatedTarget: toolbar",
+    "event: blur | currentTarget: item-unregistered | target: item-unregistered | relatedTarget: toolbar",
+  ]);
+});

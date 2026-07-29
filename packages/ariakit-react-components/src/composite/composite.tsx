@@ -427,7 +427,13 @@ export const useComposite = createHook<TagName, CompositeOptions>(
         // We keep track of the previous active item element so we can manually
         // fire a blur event on it later when the focus is moved to another item
         // on the onBlurCapture event below.
-        previousElementRef.current = previousActiveElement;
+        const { activeId } = store.getState();
+        const previousActiveElementIsItem =
+          isItem(store, previousActiveElement) ||
+          previousActiveElement?.id === activeId;
+        previousElementRef.current = previousActiveElementIsItem
+          ? previousActiveElement
+          : null;
       }
     });
 

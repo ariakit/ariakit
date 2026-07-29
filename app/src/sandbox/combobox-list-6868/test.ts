@@ -37,6 +37,8 @@ test("tabs to a non-scrollable list with virtual focus", async () => {
   expect(q.status("Virtual focus fruit base element")).toHaveTextContent(
     "combobox",
   );
+  const onListBlur = vi.fn();
+  list.addEventListener("blur", onListBlur);
 
   const apple = q.within(list).option.ensure("Apple");
   const onAppleFocus = vi.fn();
@@ -46,6 +48,7 @@ test("tabs to a non-scrollable list with virtual focus", async () => {
   expect(input).toHaveFocus();
   expect(apple).toHaveAttribute("data-focus-visible", "true");
   expect(onAppleFocus).toHaveBeenCalledTimes(1);
+  expect(onListBlur).toHaveBeenCalledTimes(1);
 
   const banana = q.within(list).option.ensure("Banana");
   const onBananaFocus = vi.fn();
