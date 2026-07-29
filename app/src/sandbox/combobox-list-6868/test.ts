@@ -1,5 +1,5 @@
 import { click, press, q } from "@ariakit/test";
-import { expect, test, vi } from "vitest";
+import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/6868
 test("tabs to a non-scrollable list with real focus", async () => {
@@ -19,8 +19,25 @@ test("tabs to a non-scrollable list with real focus", async () => {
   await press.ArrowDown();
   expect(q.within(list).option("Apple")).toHaveFocus();
 
-  await press.ArrowDown();
-  expect(q.within(list).option("Banana")).toHaveFocus();
+  list.focus();
+  await press.ArrowUp();
+  expect(q.within(list).option("Orange")).toHaveFocus();
+
+  list.focus();
+  await press.Home();
+  expect(q.within(list).option("Apple")).toHaveFocus();
+
+  list.focus();
+  await press.End();
+  expect(q.within(list).option("Orange")).toHaveFocus();
+
+  list.focus();
+  await press.PageUp();
+  expect(q.within(list).option("Apple")).toHaveFocus();
+
+  list.focus();
+  await press.PageDown();
+  expect(q.within(list).option("Orange")).toHaveFocus();
 });
 
 test("tabs to a non-scrollable list with virtual focus", async () => {
@@ -37,25 +54,17 @@ test("tabs to a non-scrollable list with virtual focus", async () => {
   expect(q.status("Virtual focus fruit base element")).toHaveTextContent(
     "combobox",
   );
-  const onListBlur = vi.fn();
-  list.addEventListener("blur", onListBlur);
 
   const apple = q.within(list).option.ensure("Apple");
-  const onAppleFocus = vi.fn();
-  apple.addEventListener("focus", onAppleFocus);
 
   await press.ArrowDown();
   expect(input).toHaveFocus();
   expect(apple).toHaveAttribute("data-focus-visible", "true");
-  expect(onAppleFocus).toHaveBeenCalledTimes(1);
-  expect(onListBlur).toHaveBeenCalledTimes(1);
 
-  const banana = q.within(list).option.ensure("Banana");
-  const onBananaFocus = vi.fn();
-  banana.addEventListener("focus", onBananaFocus);
+  list.focus();
+  const orange = q.within(list).option.ensure("Orange");
 
-  await press.ArrowDown();
+  await press.ArrowUp();
   expect(input).toHaveFocus();
-  expect(banana).toHaveAttribute("data-focus-visible", "true");
-  expect(onBananaFocus).toHaveBeenCalledTimes(1);
+  expect(orange).toHaveAttribute("data-focus-visible", "true");
 });

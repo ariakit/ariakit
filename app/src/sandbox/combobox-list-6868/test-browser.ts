@@ -34,9 +34,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .expect(list.getByRole("option", { name: "Apple" }))
       .toBeFocused();
 
-    await page.keyboard.press("ArrowDown");
+    await list.focus();
+    await page.keyboard.press("ArrowUp");
     await test
-      .expect(list.getByRole("option", { name: "Banana" }))
+      .expect(list.getByRole("option", { name: "Orange" }))
+      .toBeFocused();
+
+    await list.focus();
+    await page.keyboard.press("Home");
+    await test
+      .expect(list.getByRole("option", { name: "Apple" }))
+      .toBeFocused();
+
+    await list.focus();
+    await page.keyboard.press("End");
+    await test
+      .expect(list.getByRole("option", { name: "Orange" }))
       .toBeFocused();
   });
 
@@ -66,9 +79,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(input).toBeFocused();
     await test.expect(apple).toHaveAttribute("data-focus-visible", "true");
 
-    await page.keyboard.press("ArrowDown");
-    const banana = list.getByRole("option", { name: "Banana" });
+    await list.focus();
+    await page.keyboard.press("ArrowUp");
+    const orange = list.getByRole("option", { name: "Orange" });
     await test.expect(input).toBeFocused();
-    await test.expect(banana).toHaveAttribute("data-focus-visible", "true");
+    await test.expect(orange).toHaveAttribute("data-focus-visible", "true");
   });
 });

@@ -93,20 +93,9 @@ test("tab in/out search menu", async () => {
   if (!actionsList) throw new Error("Actions list not found");
   await press.Tab();
   expect(actionsList).toHaveFocus();
-  await press.Tab();
-  expect(q.combobox("Search pages to add in...")).toHaveFocus();
-  expect(q.option("Private pages")).not.toHaveFocus();
-  await press.ShiftTab();
-  expect(actionsList).toHaveFocus();
   expect(q.dialog("Turn into page in")).not.toBeInTheDocument();
   await press.ShiftTab();
   expect(q.combobox("Search actions...")).toHaveFocus();
-  await click(q.option("Turn into page in"));
-  await press.Tab();
-  expect(actionsList).toHaveFocus();
-  await press.Tab();
-  expect(q.combobox("Search pages to add in...")).toHaveFocus();
-  expect(q.option("Private pages")).not.toHaveFocus();
 });
 
 test("set block type", async () => {

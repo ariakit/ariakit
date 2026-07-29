@@ -45,7 +45,6 @@ import {
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 import {
   findFirstEnabledItem,
-  focusSilently,
   getEnabledItem,
   groupItemsByRows,
   isItem,
@@ -346,7 +345,6 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     composite = true,
     focusOnMove = composite,
     moveOnKeyPress = true,
-    unstable_registerBaseElement = true,
     ...props
   }) {
     const context = useCompositeProviderContext();
@@ -364,7 +362,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       useScheduleFocus(store);
 
     const [, setBaseElement] = useTransactionState(
-      composite && unstable_registerBaseElement ? store.setBaseElement : null,
+      composite ? store.setBaseElement : null,
     );
 
     const virtualFocus = useStoreState(store, "virtualFocus");
@@ -427,13 +425,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
         // We keep track of the previous active item element so we can manually
         // fire a blur event on it later when the focus is moved to another item
         // on the onBlurCapture event below.
-        const { activeId } = store.getState();
-        const previousActiveElementIsItem =
-          isItem(store, previousActiveElement) ||
-          previousActiveElement?.id === activeId;
-        previousElementRef.current = previousActiveElementIsItem
-          ? previousActiveElement
-          : null;
+        previousElementRef.current = previousActiveElement;
       }
     });
 
@@ -446,7 +438,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (!store) return;
       const { relatedTarget } = event;
       const { virtualFocus } = store.getState();
-      if (virtualFocus && unstable_registerBaseElement) {
+      if (virtualFocus) {
         // This means that the composite element has been focused while the
         // composite item has not. For example, by clicking on the composite
         // element without touching any item, or by tabbing into the composite
@@ -462,16 +454,16 @@ export const useComposite = createHook<TagName, CompositeOptions>(
           queueMicrotask(scheduleFocus);
         }
       } else if (isSelfTarget(event)) {
-        if (!virtualFocus && !isItem(store, relatedTarget)) {
+        if (!isItem(store, relatedTarget)) {
           // A real-focus composite may initially focus its base while the
           // selected item is outside the viewport. Pin and present the item
           // without moving DOM focus away from the base.
           scheduleScroll(event.currentTarget);
         }
-        // When the roving tabindex composite or a secondary composite container
-        // gets intentionally focused (for example, by clicking directly on it,
-        // and not on an item), we make sure to set the activeId to null (which
-        // means the composite element itself has focus).
+        // When the roving tabindex composite gets intentionally focused (for
+        // example, by clicking directly on it, and not on an item), we make
+        // sure to set the activeId to null (which means the composite element
+        // itself has focus).
         store.setActiveId(null);
       }
     });
@@ -565,15 +557,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (event.defaultPrevented) return;
       if (!store) return;
       if (!isSelfTarget(event)) return;
-      const {
-        orientation,
-        items,
-        renderedItems,
-        activeId,
-        rtl,
-        virtualFocus,
-        baseElement,
-      } = store.getState();
+      const { orientation, items, renderedItems, activeId, rtl } =
+        store.getState();
       const activeItem = getEnabledItem(store, activeId);
       if (activeItem?.element?.isConnected) return;
       const elementlessActiveItem = activeItem && activeId != null;
@@ -634,16 +619,6 @@ export const useComposite = createHook<TagName, CompositeOptions>(
         if (id !== undefined) {
           if (!moveOnKeyPressProp(event)) return;
           event.preventDefault();
-          // Transfer focus from a secondary container to the registered base
-          // before moving so the item's virtual-focus redirect is silent.
-          if (
-            composite &&
-            virtualFocus &&
-            !unstable_registerBaseElement &&
-            baseElement
-          ) {
-            focusSilently(baseElement);
-          }
           store.move(id);
         }
       }
@@ -755,19 +730,6 @@ export interface CompositeOptions<
    * @default true
    */
   composite?: boolean;
-  /**
-   * Determines whether the composite element should be registered as the
-   * store's base element.
-   *
-   * Set this to `false` on a secondary composite container that shares a store
-   * without replacing its primary base element, such as a
-   * [`ComboboxList`](https://ariakit.com/reference/combobox-list) whose
-   * combobox control owns the base element. With virtual focus, focusing the
-   * secondary container resets the active item instead of redirecting focus to
-   * it.
-   * @default true
-   */
-  unstable_registerBaseElement?: boolean;
   /**
    * Determines whether the composite widget should move focus to an item when
    * arrow keys are pressed, given that the composite element is focused and

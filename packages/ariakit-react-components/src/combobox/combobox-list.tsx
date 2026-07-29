@@ -1,8 +1,14 @@
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import {
+  useEvent,
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import type { ElementType } from "react";
-import type { CompositeOptions } from "../composite/composite.tsx";
-import { useComposite } from "../composite/composite.tsx";
+import { isSelfTarget } from "@ariakit/utils";
+import type { ElementType, KeyboardEvent } from "react";
+import type { FocusableOptions } from "../focusable/focusable.tsx";
+import { useFocusable } from "../focusable/focusable.tsx";
 import type { ComboboxContentOptions } from "./combobox-content.tsx";
 import { useComboboxContent } from "./combobox-content.tsx";
 import { useComboboxContext } from "./combobox-context.tsx";
@@ -10,6 +16,7 @@ import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
+type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `ComboboxList` component.
@@ -26,18 +33,46 @@ type TagName = typeof TagName;
  * ```
  */
 export const useComboboxList = createHook<TagName, ComboboxListOptions>(
-  function useComboboxList({ store, composite, ...props }) {
+  function useComboboxList({ store, ...props }) {
     const context = useComboboxContext();
     store = store || context;
-    props = useComboboxContent({ store, ...props });
-    props = useComposite({
-      store,
-      composite,
-      ...props,
-      // The combobox control owns the store-wide focus-on-move responder.
-      focusOnMove: false,
-      unstable_registerBaseElement: false,
+
+    const onKeyDownProp = props.onKeyDown;
+
+    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
+      onKeyDownProp?.(event);
+      // https://github.com/ariakit/ariakit/issues/4388
+      if (event.nativeEvent.isComposing) return;
+      if (event.defaultPrevented) return;
+      if (!store) return;
+      if (!isSelfTarget(event)) return;
+      const { orientation, items, rtl } = store.getState();
+      const isGrid = items.some((item) => !!item.rowId);
+      const isVertical = orientation !== "horizontal";
+      const isHorizontal = orientation !== "vertical";
+      const keyMap = {
+        ArrowUp: (isGrid || isVertical) && store.last,
+        ArrowRight:
+          (isGrid || isHorizontal) && (rtl ? store.last : store.first),
+        ArrowDown: (isGrid || isVertical) && store.first,
+        ArrowLeft: (isGrid || isHorizontal) && (rtl ? store.first : store.last),
+        Home: store.first,
+        End: store.last,
+        PageUp: store.first,
+        PageDown: store.last,
+      };
+      const action = keyMap[event.key as keyof typeof keyMap];
+      if (!action) return;
+      const id = action();
+      if (id === undefined) return;
+      const element = store.item(id)?.element;
+      if (!element) return;
+      event.preventDefault();
+      element.focus();
     });
+
+    props = useComboboxContent({ store, ...props });
+    props = useFocusable({ ...props, onKeyDown });
     return props;
   },
 );
@@ -68,7 +103,7 @@ export const ComboboxList = forwardRef(function ComboboxList(
 
 export interface ComboboxListOptions<T extends ElementType = TagName>
   extends
-    Omit<CompositeOptions<T>, "focusOnMove" | "unstable_registerBaseElement">,
+    FocusableOptions<T>,
     Pick<ComboboxContentOptions<T>, "alwaysVisible"> {
   /**
    * Object returned by the
