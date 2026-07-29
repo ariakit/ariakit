@@ -28,9 +28,9 @@ import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
+import type { ComboboxContentOptions } from "./combobox-content.tsx";
+import { useComboboxContent } from "./combobox-content.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
-import type { ComboboxListOptions } from "./combobox-list.tsx";
-import { useComboboxList } from "./combobox-list.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -180,7 +180,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       (state) => state?.renderedItems.length,
     );
 
-    props = useComboboxList({
+    props = useComboboxContent({
       store,
       alwaysVisible,
       ...props,
@@ -356,7 +356,7 @@ export const ComboboxPopover = createDialogComponent(
 );
 
 export interface ComboboxPopoverOptions<T extends ElementType = TagName>
-  extends ComboboxListOptions<T>, Omit<PopoverOptions<T>, "store"> {
+  extends ComboboxContentOptions<T>, Omit<PopoverOptions<T>, "store"> {
   /**
    * When enabled, pressing printable character keys will move focus to the next
    * combobox item that starts with the entered characters.

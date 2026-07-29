@@ -1,56 +1,48 @@
 import * as Ariakit from "@ariakit/react";
 
-function BaseElementStatus() {
+interface FruitSelectProps {
+  label: string;
+  virtualFocus?: boolean;
+}
+
+function BaseElementStatus({ label }: Pick<FruitSelectProps, "label">) {
   const store = Ariakit.useComboboxContext();
   const baseElement = store?.useState("baseElement");
   return (
-    <output aria-label="Composite base element">
+    <output aria-label={`${label} base element`}>
       {baseElement?.getAttribute("role")}
     </output>
   );
 }
 
-function WorkaroundComboboxList() {
-  const store = Ariakit.useComboboxContext();
+function FruitSelect({ label, virtualFocus }: FruitSelectProps) {
   return (
-    <Ariakit.ComboboxList
-      // TODO: Remove after https://github.com/ariakit/ariakit/issues/6868
-      tabIndex={0}
-      onKeyDown={(event) => {
-        if (event.currentTarget !== event.target) return;
-        if (event.key !== "ArrowDown") return;
-        const firstId = store?.first();
-        if (firstId === undefined) return;
-        event.preventDefault();
-        store.move(firstId);
-      }}
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue="Apple"
+      virtualFocus={virtualFocus}
     >
-      <Ariakit.ComboboxItem value="Apple" />
-      <Ariakit.ComboboxItem value="Banana" />
-      <Ariakit.ComboboxItem value="Orange" />
-    </Ariakit.ComboboxList>
+      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxPopover gutter={4}>
+        <Ariakit.ComboboxInput aria-label={`Search ${label}`} />
+        <button type="button">Review {label} options</button>
+        <Ariakit.ComboboxList>
+          <Ariakit.ComboboxItem value="Apple" />
+          <Ariakit.ComboboxItem value="Banana" />
+          <Ariakit.ComboboxItem value="Orange" />
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxPopover>
+      <BaseElementStatus label={label} />
+    </Ariakit.ComboboxProvider>
   );
 }
 
 export default function Example() {
   return (
     <>
-      <Ariakit.ComboboxProvider
-        defaultSelectedValue="Apple"
-        virtualFocus={false}
-      >
-        <Ariakit.ComboboxSelectLabel>
-          Favorite fruit
-        </Ariakit.ComboboxSelectLabel>
-        <Ariakit.ComboboxSelect />
-        <Ariakit.ComboboxPopover gutter={4}>
-          <Ariakit.ComboboxInput aria-label="Search fruits" />
-          <button type="button">Review options</button>
-          <WorkaroundComboboxList />
-        </Ariakit.ComboboxPopover>
-        <BaseElementStatus />
-      </Ariakit.ComboboxProvider>
-      <button type="button">After select</button>
+      <FruitSelect label="Virtual focus fruit" />
+      <FruitSelect label="Real focus fruit" virtualFocus={false} />
+      <button type="button">After selects</button>
     </>
   );
 }

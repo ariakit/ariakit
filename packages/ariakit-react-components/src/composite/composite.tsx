@@ -345,6 +345,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     composite = true,
     focusOnMove = composite,
     moveOnKeyPress = true,
+    unstable_registerBaseElement = true,
     ...props
   }) {
     const context = useCompositeProviderContext();
@@ -362,7 +363,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       useScheduleFocus(store);
 
     const [, setBaseElement] = useTransactionState(
-      composite ? store.setBaseElement : null,
+      composite && unstable_registerBaseElement ? store.setBaseElement : null,
     );
 
     const virtualFocus = useStoreState(store, "virtualFocus");
@@ -438,7 +439,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (!store) return;
       const { relatedTarget } = event;
       const { virtualFocus } = store.getState();
-      if (virtualFocus) {
+      if (virtualFocus && unstable_registerBaseElement) {
         // This means that the composite element has been focused while the
         // composite item has not. For example, by clicking on the composite
         // element without touching any item, or by tabbing into the composite
@@ -454,16 +455,16 @@ export const useComposite = createHook<TagName, CompositeOptions>(
           queueMicrotask(scheduleFocus);
         }
       } else if (isSelfTarget(event)) {
-        if (!isItem(store, relatedTarget)) {
+        if (!virtualFocus && !isItem(store, relatedTarget)) {
           // A real-focus composite may initially focus its base while the
           // selected item is outside the viewport. Pin and present the item
           // without moving DOM focus away from the base.
           scheduleScroll(event.currentTarget);
         }
-        // When the roving tabindex composite gets intentionally focused (for
-        // example, by clicking directly on it, and not on an item), we make
-        // sure to set the activeId to null (which means the composite element
-        // itself has focus).
+        // When the roving tabindex composite or a secondary composite container
+        // gets intentionally focused (for example, by clicking directly on it,
+        // and not on an item), we make sure to set the activeId to null (which
+        // means the composite element itself has focus).
         store.setActiveId(null);
       }
     });
@@ -730,6 +731,12 @@ export interface CompositeOptions<
    * @default true
    */
   composite?: boolean;
+  /**
+   * Determines whether the composite element should be registered as the
+   * store's base element.
+   * @default true
+   */
+  unstable_registerBaseElement?: boolean;
   /**
    * Determines whether the composite widget should move focus to an item when
    * arrow keys are pressed, given that the composite element is focused and

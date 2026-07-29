@@ -1,33 +1,15 @@
-import { useStoreState } from "@ariakit/react-store";
-import {
-  useAttribute,
-  useId,
-  useMergeRefs,
-  useSafeLayoutEffect,
-  useWrapElement,
-  createElement,
-  createHook,
-  forwardRef,
-} from "@ariakit/react-utils";
-import type { Options, Props } from "@ariakit/react-utils";
-import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
-import { useContext, useMemo, useRef, useState } from "react";
-import { DialogHeadingContext } from "../dialog/dialog-context.tsx";
-import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
-import { isHidden } from "../disclosure/disclosure-content.tsx";
-import {
-  ComboboxHeadingContext,
-  ComboboxListRoleContext,
-  ComboboxScopedContextProvider,
-  useComboboxContext,
-  useComboboxScopedContext,
-} from "./combobox-context.tsx";
+import type { CompositeOptions } from "../composite/composite.tsx";
+import { useComposite } from "../composite/composite.tsx";
+import type { ComboboxContentOptions } from "./combobox-content.tsx";
+import { useComboboxContent } from "./combobox-content.tsx";
+import { useComboboxContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
-type HTMLType = HTMLElementTagNameMap[TagName];
 
 /**
  * Returns props to create a `ComboboxList` component.
@@ -44,121 +26,17 @@ type HTMLType = HTMLElementTagNameMap[TagName];
  * ```
  */
 export const useComboboxList = createHook<TagName, ComboboxListOptions>(
-  function useComboboxList({ store, alwaysVisible, ...props }) {
-    const scopedContext = useComboboxScopedContext(true);
+  function useComboboxList({ store, composite, ...props }) {
     const context = useComboboxContext();
     store = store || context;
-    const scopedContextSameStore = !!store && store === scopedContext;
-
-    invariant(
+    props = useComboboxContent({ store, ...props });
+    props = useComposite({
       store,
-      process.env.NODE_ENV !== "production" &&
-        "ComboboxList must receive a `store` prop or be wrapped in a ComboboxProvider component.",
-    );
-
-    const ref = useRef<HTMLType>(null);
-    const id = useId(props.id);
-    const mounted = useStoreState(store, "mounted");
-    const hidden = isHidden(mounted, props.hidden, alwaysVisible);
-    const style = hidden ? { ...props.style, display: "none" } : props.style;
-
-    const multiSelectable = useStoreState(store, ["selectedValue"], (state) =>
-      Array.isArray(state.selectedValue),
-    );
-
-    const role = useAttribute(ref, "role", props.role);
-    const isCompositeRole =
-      role === "listbox" || role === "tree" || role === "grid";
-    const ariaMultiSelectable = isCompositeRole
-      ? multiSelectable || undefined
-      : undefined;
-
-    const [hasListboxInside, setHasListboxInside] = useState(false);
-    const contentElement = useStoreState(store, "contentElement");
-    const parentHeadingContext = useContext(ComboboxHeadingContext);
-    const headingState = useState<string>();
-    const [headingId, setHeadingId] = parentHeadingContext || headingState;
-    const headingContext = useMemo<typeof headingState>(
-      () => [headingId, setHeadingId],
-      [headingId, setHeadingId],
-    );
-    // We support nested <ComboboxList> elements (usually in the form of
-    // ComboboxPopover>ComboboxList), but we can't have nested listbox roles, so
-    // we check here if there's already a listbox element inside the current
-    // element.
-    useSafeLayoutEffect(() => {
-      if (!mounted) return;
-      const element = ref.current;
-      if (!element) return;
-      if (contentElement !== element) return;
-      const callback = () => {
-        setHasListboxInside(!!element.querySelector("[role='listbox']"));
-      };
-      const observer = new MutationObserver(callback);
-      observer.observe(element, {
-        subtree: true,
-        childList: true,
-        attributeFilter: ["role"],
-      });
-      callback();
-      return () => observer.disconnect();
-    }, [mounted, contentElement]);
-
-    if (!hasListboxInside) {
-      props = {
-        role: "listbox",
-        "aria-multiselectable": ariaMultiSelectable,
-        ...props,
-      };
-    }
-
-    // Heading hooks publish their id through DialogHeadingContext. Redirecting
-    // that setter here makes the heading label this list, whose props take
-    // precedence when it shares an element with ComboboxPopover.
-    // ComboboxHeadingContext also exposes the id so nested lists can inherit it.
-    props = useWrapElement(
-      props,
-      (element) => (
-        <ComboboxScopedContextProvider value={store}>
-          <ComboboxHeadingContext.Provider value={headingContext}>
-            <DialogHeadingContext.Provider value={setHeadingId}>
-              <ComboboxListRoleContext.Provider value={role}>
-                {element}
-              </ComboboxListRoleContext.Provider>
-            </DialogHeadingContext.Provider>
-          </ComboboxHeadingContext.Provider>
-        </ComboboxScopedContextProvider>
-      ),
-      [store, role, headingContext],
-    );
-
-    // When nesting ComboboxList elements, the content element should be
-    // assigned to the topmost ComboboxList element.
-    const setContentElement =
-      id && (!scopedContext || !scopedContextSameStore)
-        ? store.setContentElement
-        : null;
-    const labelElement = useStoreState(
-      store,
-      ["labelElement", "selectLabelElement"],
-      (state) => {
-        if (headingId) return null;
-        return state.selectLabelElement || state.labelElement;
-      },
-    );
-    useAttribute(labelElement, "id");
-    const labelId = headingId || labelElement?.id;
-
-    props = {
-      "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
-      hidden,
+      composite,
       ...props,
-      id,
-      ref: useMergeRefs(setContentElement, ref, props.ref),
-      style,
-    };
-
-    return removeUndefinedValues(props);
+      unstable_registerBaseElement: false,
+    });
+    return props;
   },
 );
 
@@ -187,7 +65,9 @@ export const ComboboxList = forwardRef(function ComboboxList(
 });
 
 export interface ComboboxListOptions<T extends ElementType = TagName>
-  extends Options, Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
+  extends
+    CompositeOptions<T>,
+    Pick<ComboboxContentOptions<T>, "alwaysVisible"> {
   /**
    * Object returned by the
    * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
