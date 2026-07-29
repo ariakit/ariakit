@@ -110,22 +110,30 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     await status.click();
     await test.expect(status).toHaveAttribute("aria-expanded", "true");
     await page.mouse.move(0, 0);
-    await page.keyboard.press("d");
-    await page.keyboard.press("Enter");
+    await status.press("d");
+    await status.press("Enter");
     await page.waitForURL(hasSearchParam("status", "draft"));
     await test.expect(status).toHaveText("Draft");
     await test.expect(status).toHaveAttribute("aria-expanded", "true");
     await test.expect(status).toBeFocused();
-    await page.keyboard.press("PageDown");
+    await status.press("PageDown");
     await test.expect(q.option("Archived")).toHaveAttribute("data-active-item");
     await test.expect(status).toBeFocused();
 
-    const [newPage] = await Promise.all([
-      page.context().waitForEvent("page"),
-      browserName === "webkit"
-        ? q.option("Archived").click({ modifiers: [modifier] })
-        : page.keyboard.press(`${modifier}+Enter`),
-    ]);
+    const newPagePromise = page.context().waitForEvent("page", {
+      timeout: 60_000,
+    });
+    if (browserName === "webkit") {
+      await q.option("Archived").click({ modifiers: [modifier] });
+    } else {
+      await page.keyboard.down(modifier);
+      try {
+        await status.press("Enter");
+      } finally {
+        await page.keyboard.up(modifier);
+      }
+    }
+    const newPage = await newPagePromise;
 
     await newPage.waitForURL(hasSearchParam("status", ["draft", "archived"]));
     const newStatus = query(newPage).combobox("Status");

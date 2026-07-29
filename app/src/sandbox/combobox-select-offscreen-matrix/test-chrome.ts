@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 import { getCaseLabel, matrixCases } from "./config.react.ts";
 
 function disableAnimations(page: Page) {
@@ -20,6 +20,16 @@ async function getValue(combobox: Locator) {
 
 async function renderMatrixCase(page: Page, label: string) {
   await page.getByRole("combobox", { name: "Matrix case" }).selectOption(label);
+}
+
+async function waitForItemRegistration(page: Page, item: Locator) {
+  await expect(item).not.toHaveAttribute("data-offscreen", {
+    timeout: 15_000,
+  });
+  // Offscreen items register in an effect. The collection publishes those
+  // registrations on the following animation frame, so wait through both
+  // render checkpoints.
+  await flushFrames(page);
 }
 
 const leakedAttributes = [
@@ -181,9 +191,10 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("move with keyboard", async () => {
-        await expect(previousOption).not.toHaveAttribute("data-offscreen");
+        await waitForItemRegistration(page, previousOption);
+        await expect(defaultOption).toHaveAttribute("data-active-item");
         await expect(keyboardTarget).toBeFocused();
-        await page.keyboard.press("ArrowUp");
+        await keyboardTarget.press("ArrowUp");
         await expect(defaultOption).not.toHaveAttribute("data-active-item");
         await expect(defaultOption).toHaveAttribute("aria-selected", "true");
         await expect(previousOption).toHaveAttribute("data-active-item");
@@ -193,13 +204,14 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
       await test.step("typeahead", async () => {
         await expect(keyboardTarget).toBeFocused();
-        await page.keyboard.press("j");
+        await keyboardTarget.press("j");
         await expect(typeaheadOption).toHaveAttribute("aria-selected", "false");
         await expect(typeaheadOption).toBeInViewport();
         if (searchable && !autoSelect) {
           await expect(typeaheadOption).not.toHaveAttribute("data-active-item");
           await expect(search).toHaveAttribute("data-active-item");
-          await page.keyboard.press("ArrowDown");
+          await waitForItemRegistration(page, typeaheadOption);
+          await keyboardTarget.press("ArrowDown");
         }
         await expect(typeaheadOption).toHaveAttribute("data-active-item");
         await expect(typeaheadOption).toHaveAttribute("data-focus-visible");
@@ -207,7 +219,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
       await test.step("select the option", async () => {
         await expect(keyboardTarget).toBeFocused();
-        await page.keyboard.press("Enter");
+        await keyboardTarget.press("Enter");
         await expect(combobox).toHaveText("Jamaica");
         await expect(q.listbox()).not.toBeVisible();
       });
@@ -238,7 +250,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
       await test.step("typeahead", async () => {
         await expect(keyboardTarget).toBeFocused();
-        await page.keyboard.press("j");
+        await keyboardTarget.press("j");
         await expect(firstOption).toHaveCount(0);
         await expect(typeaheadOption).toBeInViewport();
         await expect(typeaheadOption).toHaveAttribute("data-active-item");
@@ -250,9 +262,10 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("move with keyboard", async () => {
-        await expect(nextOption).not.toHaveAttribute("data-offscreen");
+        await waitForItemRegistration(page, nextOption);
+        await expect(typeaheadOption).toHaveAttribute("data-active-item");
         await expect(keyboardTarget).toBeFocused();
-        await page.keyboard.press("ArrowDown");
+        await keyboardTarget.press("ArrowDown");
         await expect(nextOption).toBeInViewport();
         await expect(nextOption).toHaveAttribute("data-active-item");
         await expect(nextOption).toHaveAttribute("data-focus-visible");
@@ -261,7 +274,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
       await test.step("select the option", async () => {
         await expect(keyboardTarget).toBeFocused();
-        await page.keyboard.press("Enter");
+        await keyboardTarget.press("Enter");
         expect(await getValue(combobox)).toBe("Japan");
         await expect(q.listbox()).not.toBeVisible();
       });
@@ -291,7 +304,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
       await test.step("typeahead", async () => {
         await expect(keyboardTarget).toBeFocused();
-        await page.keyboard.press("j");
+        await keyboardTarget.press("j");
         await expect(firstOption).toHaveCount(0);
         await expect(typeaheadOption).toBeInViewport();
         await expect(typeaheadOption).toHaveAttribute("data-active-item");
@@ -304,7 +317,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
       await test.step("select the option", async () => {
         await expect(keyboardTarget).toBeFocused();
-        await page.keyboard.press("Enter");
+        await keyboardTarget.press("Enter");
         expect(await getValue(combobox)).toBe("Jamaica");
         await expect(q.listbox()).not.toBeVisible();
       });
@@ -337,21 +350,22 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       await test.step("scroll with page down", async () => {
         await expect(keyboardTarget).toBeFocused();
         await expect(async () => {
-          await page.keyboard.press("PageDown");
+          await keyboardTarget.press("PageDown");
           await expect(firstOption).not.toBeInViewport();
         }).toPass();
       });
 
       await test.step("typeahead", async () => {
         await expect(keyboardTarget).toBeFocused();
-        await page.keyboard.press("g");
+        await keyboardTarget.press("g");
         if (!selectOnly) {
           await expect(filteredOption).toHaveCount(0);
         }
         await expect(typeaheadOption).toBeInViewport();
         if (!selectOnly) {
           await expect(typeaheadOption).not.toHaveAttribute("data-active-item");
-          await page.keyboard.press("ArrowDown");
+          await waitForItemRegistration(page, typeaheadOption);
+          await keyboardTarget.press("ArrowDown");
         }
         await expect(typeaheadOption).toHaveAttribute("data-active-item");
         await expect(typeaheadOption).not.toHaveAttribute(
@@ -362,7 +376,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
 
       await test.step("select the option", async () => {
         await expect(keyboardTarget).toBeFocused();
-        await page.keyboard.press("Enter");
+        await keyboardTarget.press("Enter");
         expect(await getValue(combobox)).not.toMatch(/(g|Select\.\.\.)/);
         await expect(q.listbox()).not.toBeVisible();
       });
