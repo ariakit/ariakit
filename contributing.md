@@ -281,7 +281,7 @@ test("my component", () => {
 Now run the following command in your terminal to watch the test results:
 
 ```bash
-pnpm test-react watch my-component
+pnpm test watch my-component
 ```
 
 <div align="right">

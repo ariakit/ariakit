@@ -15,7 +15,7 @@ const coreTestExcludes = [
   ...nodeTestIncludes,
   "packages/ariakit-react*/src/**/*test.{ts,tsx}",
   "packages/ariakit-solid*/src/**/*test.{ts,tsx}",
-  // Framework-specific tests run via test-react and test-solid. Their names
+  // Framework-specific tests run in the react and solid projects. Their names
   // also match the generic *test.* include above, so keep them out of the core
   // project explicitly.
   "**/*react.test.{ts,tsx}",
