@@ -23,9 +23,7 @@ async function renderMatrixCase(page: Page, label: string) {
 }
 
 async function waitForItemRegistration(page: Page, item: Locator) {
-  await expect(item).not.toHaveAttribute("data-offscreen", {
-    timeout: 15_000,
-  });
+  await expect(item).not.toHaveAttribute("data-offscreen");
   // Offscreen items register in an effect. The collection publishes those
   // registrations on the following animation frame, so wait through both
   // render checkpoints.
