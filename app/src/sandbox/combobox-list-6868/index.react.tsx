@@ -34,7 +34,9 @@ function FruitSelect({ label, virtualFocus }: FruitSelectProps) {
       <Ariakit.ComboboxSelect />
       <Ariakit.ComboboxPopover gutter={4}>
         <Ariakit.ComboboxInput aria-label={`Search ${label}`} />
-        <button type="button">Review {label} options</button>
+        <button type="button" tabIndex={0}>
+          Review {label} options
+        </button>
         <Ariakit.ComboboxList>
           <Ariakit.ComboboxItem disabled value="Apricot" />
           <Ariakit.ComboboxItem value="Apple" />

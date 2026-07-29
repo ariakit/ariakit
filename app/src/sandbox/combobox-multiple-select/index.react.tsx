@@ -28,7 +28,9 @@ export default function Example() {
         ))}
         {!matches.length && <div className="no-results">No results found</div>}
       </Combobox>
-      <button type="button">After combobox</button>
+      <button type="button" tabIndex={0}>
+        After combobox
+      </button>
     </>
   );
 }
