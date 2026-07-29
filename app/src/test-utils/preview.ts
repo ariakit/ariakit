@@ -50,20 +50,6 @@ export function flushFrames(page: Page, frames = 2) {
   );
 }
 
-/** Returns the platform modifier that opens links in a new tab. */
-export function getNewTabModifier(page: Page) {
-  return page.evaluate(() =>
-    navigator.platform.startsWith("Mac") ? "Meta" : "Control",
-  );
-}
-
-interface PressWithModifierParams {
-  key: string;
-  modifier: string;
-  page: Page;
-  target: Locator;
-}
-
 interface WithModifierParams<Result> {
   action: () => Promise<Result>;
   modifier: string;
@@ -89,18 +75,15 @@ export async function withModifier<Result>({
 }
 
 /**
- * Presses a key on a locator while a modifier is held, and releases the
- * modifier even when the press fails.
+ * Presses a key on a locator while the new-tab modifier is held, and releases
+ * it even when the press fails. `ControlOrMeta` resolves to Meta on macOS and
+ * Control elsewhere.
  */
-export async function pressWithModifier({
-  key,
-  modifier,
-  page,
-  target,
-}: PressWithModifierParams) {
+export async function pressWithNewTabModifier(target: Locator, key: string) {
+  const page = target.page();
   return withModifier({
     action: () => target.press(key),
-    modifier,
+    modifier: "ControlOrMeta",
     page,
   });
 }

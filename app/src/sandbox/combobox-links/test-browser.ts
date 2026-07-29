@@ -2,8 +2,7 @@ import type { Page } from "@ariakit/test/playwright";
 import { expect, query } from "@ariakit/test/playwright";
 import type { BrowserContext, Locator } from "@playwright/test";
 import {
-  getNewTabModifier,
-  pressWithModifier,
+  pressWithNewTabModifier,
   withModifier,
   withFramework,
 } from "#app/test-utils/preview.ts";
@@ -82,11 +81,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const q = query(page);
     await q.combobox("Links").click();
     await expect(q.listbox()).toBeVisible();
-    const modifier = await getNewTabModifier(page);
     const option = q.option("Ariakit.com");
     const url = await prepareNavigation(page, option, "https://ariakit.com");
     await withModifier({
-      modifier,
+      modifier: "ControlOrMeta",
       page,
       action: () =>
         expectNewPage({
@@ -111,7 +109,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const combobox = q.combobox("Links");
     await combobox.click();
     await expect(q.listbox()).toBeVisible();
-    const modifier = await getNewTabModifier(page);
     await page.mouse.move(0, 0);
     await expect(combobox).toBeFocused();
     await page.keyboard.press("ArrowUp");
@@ -122,7 +119,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
       // Safari doesn't support Cmd+Enter to open a link in a new tab
       // programmatically.
       await expect(async () => {
-        await page.keyboard.press(`${modifier}+Enter`);
+        await page.keyboard.press("ControlOrMeta+Enter");
         await expect(page).toHaveURL(url);
       }).toPass();
     } else {
@@ -132,13 +129,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
         context,
         timeout: 60_000,
         url,
-        action: () =>
-          pressWithModifier({
-            key: "Enter",
-            modifier,
-            page,
-            target: combobox,
-          }),
+        action: () => pressWithNewTabModifier(combobox, "Enter"),
       });
       await expect(q.listbox()).toBeVisible();
       await expect(q.combobox("Links")).toHaveValue("");

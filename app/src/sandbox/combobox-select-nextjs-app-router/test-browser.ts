@@ -1,6 +1,5 @@
 import {
-  getNewTabModifier,
-  pressWithModifier,
+  pressWithNewTabModifier,
   withModifier,
   withFramework,
 } from "#app/test-utils/preview.ts";
@@ -62,9 +61,8 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     test.slow();
     const language = q.combobox("Language");
     await language.click();
-    const modifier = await getNewTabModifier(page);
     const newPage = await withModifier({
-      modifier,
+      modifier: "ControlOrMeta",
       page,
       action: async () => {
         const [newPage] = await Promise.all([
@@ -111,7 +109,6 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
   }) => {
     // Opening a new tab may cold-start the preview worker under CI load.
     test.slow();
-    const modifier = await getNewTabModifier(page);
     const status = q.combobox("Status");
     await status.click();
     await test.expect(status).toHaveAttribute("aria-expanded", "true");
@@ -133,14 +130,9 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
       timeout: 60_000,
     });
     if (browserName === "webkit") {
-      await q.option("Archived").click({ modifiers: [modifier] });
+      await q.option("Archived").click({ modifiers: ["ControlOrMeta"] });
     } else {
-      await pressWithModifier({
-        key: "Enter",
-        modifier,
-        page,
-        target: status,
-      });
+      await pressWithNewTabModifier(status, "Enter");
     }
     const newPage = await newPagePromise;
 
