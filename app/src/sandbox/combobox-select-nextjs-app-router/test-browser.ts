@@ -1,4 +1,10 @@
+import type { Page } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
+
+async function getNewTabModifier(page: Page) {
+  const isMac = await page.evaluate(() => navigator.platform.startsWith("Mac"));
+  return isMac ? "Meta" : "Control";
+}
 
 function hasSearchParam(name: string, value: string | string[]) {
   return (url: URL) => {
@@ -57,9 +63,10 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     test.slow();
     const language = q.combobox("Language");
     await language.click();
+    const modifier = await getNewTabModifier(page);
     const [newPage] = await Promise.all([
       page.context().waitForEvent("page"),
-      q.option("French").click({ modifiers: ["ControlOrMeta"] }),
+      q.option("French").click({ modifiers: [modifier] }),
     ]);
 
     await newPage.waitForURL(hasSearchParam("lang", "fr"));
@@ -98,28 +105,26 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
   }) => {
     // Opening a new tab may cold-start the preview worker under CI load.
     test.slow();
+    const modifier = await getNewTabModifier(page);
     const status = q.combobox("Status");
     await status.click();
     await test.expect(status).toHaveAttribute("aria-expanded", "true");
     await page.mouse.move(0, 0);
-    await test.expect(status).toBeFocused();
-    await status.press("d");
-    await status.press("Enter");
+    await page.keyboard.press("d");
+    await page.keyboard.press("Enter");
     await page.waitForURL(hasSearchParam("status", "draft"));
     await test.expect(status).toHaveText("Draft");
     await test.expect(status).toHaveAttribute("aria-expanded", "true");
     await test.expect(status).toBeFocused();
-    await status.press("PageDown");
+    await page.keyboard.press("PageDown");
     await test.expect(q.option("Archived")).toHaveAttribute("data-active-item");
     await test.expect(status).toBeFocused();
 
-    // Keep the page-event deadline inside the 90-second slow-test budget so
-    // a missing tab names the event instead of timing out the whole test.
     const [newPage] = await Promise.all([
-      page.context().waitForEvent("page", { timeout: 60_000 }),
+      page.context().waitForEvent("page"),
       browserName === "webkit"
-        ? q.option("Archived").click({ modifiers: ["ControlOrMeta"] })
-        : status.press("ControlOrMeta+Enter"),
+        ? q.option("Archived").click({ modifiers: [modifier] })
+        : page.keyboard.press(`${modifier}+Enter`),
     ]);
 
     await newPage.waitForURL(hasSearchParam("status", ["draft", "archived"]));

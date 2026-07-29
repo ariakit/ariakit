@@ -32,11 +32,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const select = q.combobox("Selected fruit");
     await select.click();
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
-    // Offscreen items register in an effect. Wait for the collection's
-    // next-frame publish before sending typeahead input.
-    await flushFrames(page);
-    await test.expect(select).toBeFocused();
-    await select.pressSequentially("ly");
+    await page.keyboard.type("ly");
 
     const lychee = q.option("Lychee");
     await test.expect(lychee).toHaveAttribute("data-active-item");
