@@ -74,11 +74,6 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
-        with:
-          filters: |
-            app...
-            website...
-            ./packages/*...
 
       - name: Test
         run: pnpm test
@@ -95,8 +90,6 @@ jobs:
 
       - name: Set up environment
         uses: ./.github/workflows/setup
-        with:
-          filters: root...
 
       - name: Test
         run: pnpm test-react18
