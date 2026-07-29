@@ -73,20 +73,20 @@ jobs:
       actions: read
       contents: read
     steps:
-      # Keep the current setup action at the workspace root while the source
-      # used to build the baseline lives in its own checkout below.
-      - name: Checkout workflow repository
-        uses: actions/checkout@v7
-        with:
-          persist-credentials: false
-          sparse-checkout: .github/workflows/setup
-
       - name: Checkout baseline repository
         uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.base.sha }}
-          path: .perf-baseline
           persist-credentials: false
+
+      # Keep the current setup action in a separate checkout while the
+      # workspace root contains the source used to build the baseline.
+      - name: Checkout workflow repository
+        uses: actions/checkout@v7
+        with:
+          path: .perf-workflow
+          persist-credentials: false
+          sparse-checkout: .github/workflows/setup
 
       - name: Find base app artifact
         id: find-base-artifact
@@ -128,7 +128,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: app-build
-          path: .perf-baseline/app
+          path: app
           github-token: ${{ github.token }}
           run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
@@ -139,7 +139,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: nextjs-dist
-          path: .perf-baseline/nextjs/.open-next
+          path: nextjs/.open-next
           github-token: ${{ github.token }}
           run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
@@ -148,10 +148,10 @@ jobs:
         if: steps.base-artifact.outcome == 'success'
         run: |
           shopt -s nullglob
-          maps=(.perf-baseline/app/dist/client/_astro/*.js.map)
+          maps=(app/dist/client/_astro/*.js.map)
           if [ ${#maps[@]} -gt 0 ]; then
             echo "missing=false" >> "$GITHUB_OUTPUT"
-          elif grep -q "PERF_SOURCE_MAP" .perf-baseline/app/astro.config.ts; then
+          elif grep -q "PERF_SOURCE_MAP" app/astro.config.ts; then
             # app.yml artifacts intentionally omit source maps so ordinary app
             # artifacts stay smaller. Perf rebuilds only the base app artifact
             # when source maps are needed for readable script profiles.
@@ -180,25 +180,23 @@ jobs:
         if: steps.baseline-rebuild.outputs.app == 'true'
         run: |
           rm -rf \
-            .perf-baseline/app/dist \
-            .perf-baseline/app/.wrangler
+            app/dist \
+            app/.wrangler
 
       - name: Clean base Next.js artifact
         if: steps.baseline-rebuild.outputs.nextjs == 'true'
-        run: rm -rf .perf-baseline/nextjs/.open-next
+        run: rm -rf nextjs/.open-next
 
       - name: Set up baseline environment
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
-        uses: ./.github/workflows/setup
+        uses: ./.perf-workflow/.github/workflows/setup
         env:
           HUSKY: 0
         with:
           filters: app...
-          working-directory: .perf-baseline
 
       - name: Build base app
         if: steps.baseline-rebuild.outputs.app == 'true'
-        working-directory: .perf-baseline
         env:
           CLOUDFLARE_ENV: preview
           PERF_SOURCE_MAP: true
@@ -206,11 +204,9 @@ jobs:
 
       - name: Build base Next.js app
         if: steps.baseline-rebuild.outputs.nextjs == 'true'
-        working-directory: .perf-baseline
         run: pnpm -F nextjs run build-worker
 
       - name: Check baseline artifacts
-        working-directory: .perf-baseline
         run: |
           for path in \
             app/dist \
@@ -226,7 +222,7 @@ jobs:
       - name: Pack baseline artifacts
         run: |
           tar -czf "$RUNNER_TEMP/perf-chrome-baseline-build.tar.gz" \
-            -C .perf-baseline \
+            -C . \
             app/dist \
             app/.wrangler/deploy/config.json \
             nextjs/.open-next
