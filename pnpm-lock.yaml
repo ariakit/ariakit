@@ -475,6 +475,10 @@ importers:
       react:
         specifier: 19.2.8
         version: 19.2.8
+    devDependencies:
+      '@types/react':
+        specifier: 19.2.17
+        version: 19.2.17
 
   nextjs:
     dependencies:
