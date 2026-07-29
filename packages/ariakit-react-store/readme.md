@@ -79,35 +79,13 @@ type SelectorState<T, K extends PropertyKey> = T extends CoreStore
   : never;
 
 function useStoreState<T extends CoreStore>(store: T): StoreState<T>;
-function useStoreState<T extends CoreStore>(
-  store: StateStore<T>,
-): StoreState<T> | undefined;
-function useStoreState<T extends CoreStore, K extends StateKey<T>>(
-  store: T,
-  key: K,
-): StoreState<T>[K];
-function useStoreState<T extends CoreStore, K extends StateKey<T>>(
-  store: StateStore<T>,
-  key: K,
-): StoreState<T>[K] | undefined;
-function useStoreState<T extends CoreStore, V>(
-  store: T,
-  selector: (state: StoreState<T>) => V,
-): V;
-function useStoreState<T extends CoreStore, V>(
-  store: StateStore<T>,
-  selector: (state?: StoreState<T>) => V,
-): V;
-function useStoreState<T extends CoreStore, K extends SelectorStateKey<T>, V>(
-  store: T,
-  keys: readonly K[],
-  selector: (state: SelectorState<T, K>) => V,
-): V;
-function useStoreState<T extends CoreStore, K extends SelectorStateKey<T>, V>(
-  store: StateStore<T>,
-  keys: readonly K[],
-  selector: (state?: SelectorState<T, K>) => V,
-): V;
+function useStoreState<T extends CoreStore>(store: StateStore<T>): StoreState<T> | undefined;
+function useStoreState<T extends CoreStore, K extends StateKey<T>>(store: T, key: K): StoreState<T>[K];
+function useStoreState<T extends CoreStore, K extends StateKey<T>>(store: StateStore<T>, key: K): StoreState<T>[K] | undefined;
+function useStoreState<T extends CoreStore, V>(store: T, selector: (state: StoreState<T>) => V): V;
+function useStoreState<T extends CoreStore, V>(store: StateStore<T>, selector: (state?: StoreState<T>) => V): V;
+function useStoreState<T extends CoreStore, K extends SelectorStateKey<T>, V>(store: T, keys: readonly K[], selector: (state: SelectorState<T, K>) => V): V;
+function useStoreState<T extends CoreStore, K extends SelectorStateKey<T>, V>(store: StateStore<T>, keys: readonly K[], selector: (state?: SelectorState<T, K>) => V): V;
 ```
 
 Receives an Ariakit store object (which can be `null` or `undefined`) and returns the current state. If a key is provided as the second argument, it returns the value of that key. If a selector function is provided, the state is passed to it, and its return value is used. Selector calls can pass the state keys they read as the second argument to skip unrelated store updates. This list must include every store key the selector reads, or the returned snapshot may stay stale. An empty list means store updates will never notify the selector.
@@ -117,7 +95,6 @@ The component using this hook will re-render when the returned value changes.
 Example:
 
 Accessing the whole combobox state:
-
 ```js
 const combobox = Ariakit.useComboboxStore();
 const state = Ariakit.useStoreState(combobox);
@@ -126,7 +103,6 @@ const state = Ariakit.useStoreState(combobox);
 Example:
 
 Accessing a specific value from the combobox state:
-
 ```js
 const combobox = Ariakit.useComboboxStore();
 const value = Ariakit.useStoreState(combobox, "value");
@@ -135,7 +111,6 @@ const value = Ariakit.useStoreState(combobox, "value");
 Example:
 
 Accessing a value using a selector function:
-
 ```js
 const combobox = Ariakit.useComboboxStore();
 const value = Ariakit.useStoreState(combobox, (state) => state.value);
@@ -144,7 +119,6 @@ const value = Ariakit.useStoreState(combobox, (state) => state.value);
 Example:
 
 Subscribing only to the state keys read by a selector:
-
 ```js
 const tab = Ariakit.useTabStore();
 const selected = Ariakit.useStoreState(
@@ -158,7 +132,6 @@ Example:
 
 Accessing the state of a store that may be `null` or `undefined` (for
 example, using a context):
-
 ```js
 const combobox = Ariakit.useComboboxContext();
 const value = Ariakit.useStoreState(combobox, "value");
@@ -200,32 +173,10 @@ type StoreStateObjectResult<
       : never;
 };
 
-function useStoreStateObject<
-  T extends CoreStore,
-  O extends StoreStateObject<T, StoreState<T>>,
->(store: T, object: O): StoreStateObjectResult<T, StoreState<T>, O>;
-function useStoreStateObject<
-  T extends StateStore,
-  O extends StoreStateObject<T, StoreState<T> | undefined>,
->(store: T, object: O): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
-function useStoreStateObject<
-  T extends CoreStore,
-  K extends SelectorStateKey<T>,
-  O extends StoreStateObject<T, SelectorState<T, K>>,
->(
-  store: T,
-  keys: readonly K[],
-  object: O,
-): StoreStateObjectResult<T, StoreState<T>, O>;
-function useStoreStateObject<
-  T extends CoreStore,
-  K extends SelectorStateKey<T>,
-  O extends StoreStateObject<T, SelectorState<T, K> | undefined>,
->(
-  store: StateStore<T>,
-  keys: readonly K[],
-  object: O,
-): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
+function useStoreStateObject<T extends CoreStore, O extends StoreStateObject<T, StoreState<T>>>(store: T, object: O): StoreStateObjectResult<T, StoreState<T>, O>;
+function useStoreStateObject<T extends StateStore, O extends StoreStateObject<T, StoreState<T> | undefined>>(store: T, object: O): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
+function useStoreStateObject<T extends CoreStore, K extends SelectorStateKey<T>, O extends StoreStateObject<T, SelectorState<T, K>>>(store: T, keys: readonly K[], object: O): StoreStateObjectResult<T, StoreState<T>, O>;
+function useStoreStateObject<T extends CoreStore, K extends SelectorStateKey<T>, O extends StoreStateObject<T, SelectorState<T, K> | undefined>>(store: StateStore<T>, keys: readonly K[], object: O): StoreStateObjectResult<T, StoreState<T> | undefined, O>;
 ```
 
 Receives an Ariakit store object (which can be `null` or `undefined`) and returns the current state. Unlike `useStoreState`, this hook receives an object with keys that map to store keys or selector functions. Store keys in the object are always subscribed to. When selector dependency keys are passed as the second argument, they must include every store key read by every selector, or the returned snapshot may stay stale. An empty list means only direct store keys in the object will notify the selectors.
@@ -233,12 +184,15 @@ Receives an Ariakit store object (which can be `null` or `undefined`) and return
 Example:
 
 Reading direct and derived values with selector dependencies:
-
 ```js
-const values = useStoreStateObject(store, ["value"], {
-  value: "value",
-  valueLength: (state) => state.value.length,
-});
+const values = useStoreStateObject(
+  store,
+  ["value"],
+  {
+    value: "value",
+    valueLength: (state) => state.value.length,
+  },
+);
 ```
 
 <div align="right">
@@ -248,12 +202,7 @@ const values = useStoreStateObject(store, ["value"], {
 ### `useStoreProps`
 
 ```ts
-function useStoreProps<
-  S extends State,
-  P extends Partial<S>,
-  K extends keyof S,
-  SK extends keyof PickByValue<P, SetState<P[K]>>,
->(store: CoreStore<S>, props: P, key: K, setKey?: SK): void;
+function useStoreProps<S extends State, P extends Partial<S>, K extends keyof S, SK extends keyof PickByValue<P, SetState<P[K]>>>(store: CoreStore<S>, props: P, key: K, setKey?: SK): void;
 ```
 
 Synchronizes the store with the props, including parent store props.
@@ -265,10 +214,7 @@ Synchronizes the store with the props, including parent store props.
 ### `useStore`
 
 ```ts
-function useStore<T extends CoreStore, P>(
-  createStore: (props: P) => T,
-  props: P,
-): readonly [T & { useState: UseState<StoreState<T>> }, () => void];
+function useStore<T extends CoreStore, P>(createStore: (props: P) => T, props: P): readonly [any, () => void];
 ```
 
 Creates a React store from a core store object and returns a tuple with the store and a function to update the store.

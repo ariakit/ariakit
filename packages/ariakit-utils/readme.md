@@ -172,11 +172,7 @@ toArray(["a"]); // ["a"]
 #### `addItemToArray`
 
 ```ts
-function addItemToArray<T extends any[]>(
-  array: T,
-  item: T[number],
-  index = -1,
-): T;
+function addItemToArray<T extends any[]>(array: T, item: T[number], index = -1): T;
 ```
 
 Immutably adds an item to an array.
@@ -282,10 +278,7 @@ Returns `element.ownerDocument.defaultView || window`.
 #### `getActiveElement`
 
 ```ts
-function getActiveElement(
-  node?: Node | null,
-  activeDescendant = false,
-): HTMLElement | null;
+function getActiveElement(node?: Node | null, activeDescendant = false): HTMLElement | null;
 ```
 
 Returns `element.ownerDocument.activeElement`.
@@ -305,7 +298,10 @@ Similar to `Element.prototype.contains`, but a little bit faster when `element` 
 Example:
 
 ```ts
-contains(document.getElementById("parent"), document.getElementById("child"));
+contains(
+  document.getElementById("parent"),
+  document.getElementById("child")
+);
 ```
 
 <div align="right">
@@ -407,9 +403,7 @@ Checks if the element is visible or not.
 #### `isTextField`
 
 ```ts
-function isTextField(
-  element: Element,
-): element is HTMLInputElement | HTMLTextAreaElement;
+function isTextField(element: Element): element is HTMLInputElement | HTMLTextAreaElement;
 ```
 
 Check whether the given element is a text field, where text field is defined by the ability to select within the input.
@@ -454,10 +448,7 @@ Returns the value of the text field or content editable element as a string.
 #### `getTextboxSelection`
 
 ```ts
-function getTextboxSelection(element: HTMLElement): {
-  start: number;
-  end: number;
-};
+function getTextboxSelection(element: HTMLElement): { start: number; end: number; };
 ```
 
 Returns the start and end offsets of the selection in the element.
@@ -469,10 +460,7 @@ Returns the start and end offsets of the selection in the element.
 #### `getPopupRole`
 
 ```ts
-function getPopupRole(
-  element?: Element | null,
-  fallback?: AriaHasPopup,
-): AriaHasPopup;
+function getPopupRole(element?: Element | null, fallback?: AriaHasPopup): AriaHasPopup;
 ```
 
 Returns the popup role from the element's role attribute, if it has one.
@@ -496,10 +484,7 @@ Returns the item role based on the popup role.
 #### `getPopupItemRole`
 
 ```ts
-function getPopupItemRole(
-  element?: Element | null,
-  fallback?: AriaRole,
-): string | undefined;
+function getPopupItemRole(element?: Element | null, fallback?: AriaRole): string | undefined;
 ```
 
 Returns the item role attribute based on the popup's role.
@@ -511,10 +496,7 @@ Returns the item role attribute based on the popup's role.
 #### `scrollIntoViewIfNeeded`
 
 ```ts
-function scrollIntoViewIfNeeded(
-  element: Element,
-  arg?: boolean | ScrollIntoViewOptions,
-): void;
+function scrollIntoViewIfNeeded(element: Element, arg?: boolean | ScrollIntoViewOptions): void;
 ```
 
 Calls `element.scrollIntoView()` if the element is hidden or partly hidden in the viewport.
@@ -526,9 +508,7 @@ Calls `element.scrollIntoView()` if the element is hidden or partly hidden in th
 #### `getScrollingElement`
 
 ```ts
-function getScrollingElement(
-  element?: Element | null,
-): HTMLElement | Element | null;
+function getScrollingElement(element?: Element | null): HTMLElement | Element | null;
 ```
 
 Returns the scrolling container element of a given element.
@@ -552,10 +532,7 @@ Determines whether an element is hidden or partially hidden in the viewport.
 #### `setSelectionRange`
 
 ```ts
-function setSelectionRange(
-  element: HTMLInputElement | HTMLTextAreaElement,
-  ...args: Parameters<typeof HTMLInputElement.prototype.setSelectionRange>
-): void;
+function setSelectionRange(element: HTMLInputElement | HTMLTextAreaElement, ...args: Parameters<typeof HTMLInputElement.prototype.setSelectionRange>): void;
 ```
 
 SelectionRange only works on a few types of input. Calling `setSelectionRange` on an unsupported input type may throw an error on certain browsers. To avoid it, we check if its type supports SelectionRange first. It will be a noop to non-supported types until we find a workaround.
@@ -569,10 +546,7 @@ See: https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelect
 #### `sortBasedOnDOMPosition`
 
 ```ts
-function sortBasedOnDOMPosition<T>(
-  items: T[],
-  getElement: (item: T) => Element | null | undefined,
-): T[];
+function sortBasedOnDOMPosition<T>(items: T[], getElement: (item: T) => Element | null | undefined): T[];
 ```
 
 Sort the items based on their DOM position.
@@ -612,9 +586,7 @@ Returns `true` if `event.target` and `event.currentTarget` are the same.
 #### `isOpeningInNewTab`
 
 ```ts
-function isOpeningInNewTab(
-  event: Pick<MouseEvent, "currentTarget" | "metaKey" | "ctrlKey">,
-): boolean;
+function isOpeningInNewTab(event: Pick<MouseEvent, "currentTarget" | "metaKey" | "ctrlKey">): boolean;
 ```
 
 Checks whether the user event is triggering a page navigation in a new tab.
@@ -626,9 +598,7 @@ Checks whether the user event is triggering a page navigation in a new tab.
 #### `isDownloading`
 
 ```ts
-function isDownloading(
-  event: Pick<MouseEvent, "altKey" | "currentTarget">,
-): boolean;
+function isDownloading(event: Pick<MouseEvent, "altKey" | "currentTarget">): boolean;
 ```
 
 Checks whether the user event is triggering a download.
@@ -640,11 +610,7 @@ Checks whether the user event is triggering a download.
 #### `fireEvent`
 
 ```ts
-function fireEvent(
-  element: Element,
-  type: string,
-  eventInit?: EventInit,
-): boolean;
+function fireEvent(element: Element, type: string, eventInit?: EventInit): boolean;
 ```
 
 Creates and dispatches an event.
@@ -701,11 +667,7 @@ fireFocusEvent(document.getElementById("id"));
 #### `fireKeyboardEvent`
 
 ```ts
-function fireKeyboardEvent(
-  element: Element,
-  type: string,
-  eventInit?: KeyboardEventInit,
-): boolean;
+function fireKeyboardEvent(element: Element, type: string, eventInit?: KeyboardEventInit): boolean;
 ```
 
 Creates and dispatches a keyboard event.
@@ -726,10 +688,7 @@ fireKeyboardEvent(document.getElementById("id"), "keydown", {
 #### `fireClickEvent`
 
 ```ts
-function fireClickEvent(
-  element: Element,
-  eventInit?: PointerEventInit,
-): boolean;
+function fireClickEvent(element: Element, eventInit?: PointerEventInit): boolean;
 ```
 
 Creates and dispatches a click event.
@@ -747,10 +706,7 @@ fireClickEvent(document.getElementById("id"));
 #### `isFocusEventOutside`
 
 ```ts
-function isFocusEventOutside(
-  event: Pick<FocusEvent, "currentTarget" | "relatedTarget">,
-  container?: Element | null,
-): boolean;
+function isFocusEventOutside(event: Pick<FocusEvent, "currentTarget" | "relatedTarget">, container?: Element | null): boolean;
 ```
 
 Checks whether the focus/blur event is happening from/to outside of the container element.
@@ -773,9 +729,7 @@ element.addEventListener("blur", (event) => {
 #### `getInputType`
 
 ```ts
-function getInputType(
-  event: Event | { nativeEvent: Event },
-): string | undefined;
+function getInputType(event: Event | { nativeEvent: Event }): string | undefined;
 ```
 
 Returns the `inputType` property of the event, if available.
@@ -799,12 +753,7 @@ Checks whether the event is an input event.
 #### `queueBeforeEvent`
 
 ```ts
-function queueBeforeEvent(
-  element: Element,
-  type: string,
-  callback: () => void,
-  timeout?: number,
-): () => void;
+function queueBeforeEvent(element: Element, type: string, callback: () => void, timeout?: number): () => void;
 ```
 
 Runs a callback on the next animation frame, but before a certain event.
@@ -816,18 +765,8 @@ Runs a callback on the next animation frame, but before a certain event.
 #### `addGlobalEventListener`
 
 ```ts
-function addGlobalEventListener<K extends keyof DocumentEventMap>(
-  type: K,
-  listener: (event: DocumentEventMap[K]) => any,
-  options?: boolean | AddEventListenerOptions,
-  scope?: Window,
-): () => void;
-function addGlobalEventListener(
-  type: string,
-  listener: EventListenerOrEventListenerObject,
-  options?: boolean | AddEventListenerOptions,
-  scope?: Window,
-): () => void;
+function addGlobalEventListener<K extends keyof DocumentEventMap>(type: K, listener: (event: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions, scope?: Window): () => void;
+function addGlobalEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions, scope?: Window): () => void;
 ```
 
 Adds a global event listener, including on child frames.
@@ -864,9 +803,7 @@ isFocusable(document.querySelector("input:disabled")); // false
 #### `isTabbable`
 
 ```ts
-function isTabbable(
-  element: Element | HTMLElement | HTMLInputElement,
-): element is HTMLElement;
+function isTabbable(element: Element | HTMLElement | HTMLInputElement): element is HTMLElement;
 ```
 
 Checks whether `element` is tabbable or not.
@@ -887,10 +824,7 @@ isTabbable(document.querySelector("input:disabled")); // false
 #### `getAllFocusableIn`
 
 ```ts
-function getAllFocusableIn(
-  container: HTMLElement,
-  includeContainer?: boolean,
-): HTMLElement[];
+function getAllFocusableIn(container: HTMLElement, includeContainer?: boolean): HTMLElement[];
 ```
 
 Returns all the focusable elements in `container`.
@@ -914,10 +848,7 @@ Returns all the focusable elements in the document.
 #### `getFirstFocusableIn`
 
 ```ts
-function getFirstFocusableIn(
-  container: HTMLElement,
-  includeContainer?: boolean,
-): HTMLElement | null;
+function getFirstFocusableIn(container: HTMLElement, includeContainer?: boolean): HTMLElement | null;
 ```
 
 Returns the first focusable element in `container`.
@@ -941,11 +872,7 @@ Returns the first focusable element in the document.
 #### `getAllTabbableIn`
 
 ```ts
-function getAllTabbableIn(
-  container: HTMLElement,
-  includeContainer?: boolean,
-  fallbackToFocusable?: boolean,
-): HTMLElement[];
+function getAllTabbableIn(container: HTMLElement, includeContainer?: boolean, fallbackToFocusable?: boolean): HTMLElement[];
 ```
 
 Returns all the tabbable elements in `container`, including the container itself.
@@ -969,11 +896,7 @@ Returns all the tabbable elements in the document.
 #### `getFirstTabbableIn`
 
 ```ts
-function getFirstTabbableIn(
-  container: HTMLElement,
-  includeContainer?: boolean,
-  fallbackToFocusable?: boolean,
-): HTMLElement | null;
+function getFirstTabbableIn(container: HTMLElement, includeContainer?: boolean, fallbackToFocusable?: boolean): HTMLElement | null;
 ```
 
 Returns the first tabbable element in `container`, including the container itself if it's tabbable.
@@ -997,11 +920,7 @@ Returns the first tabbable element in the document.
 #### `getLastTabbableIn`
 
 ```ts
-function getLastTabbableIn(
-  container: HTMLElement,
-  includeContainer?: boolean,
-  fallbackToFocusable?: boolean,
-): HTMLElement | null;
+function getLastTabbableIn(container: HTMLElement, includeContainer?: boolean, fallbackToFocusable?: boolean): HTMLElement | null;
 ```
 
 Returns the last tabbable element in `container`, including the container itself if it's tabbable.
@@ -1025,12 +944,7 @@ Returns the last tabbable element in the document.
 #### `getNextTabbableIn`
 
 ```ts
-function getNextTabbableIn(
-  container: HTMLElement,
-  includeContainer?: boolean,
-  fallbackToFirst?: boolean,
-  fallbackToFocusable?: boolean,
-): HTMLElement | null;
+function getNextTabbableIn(container: HTMLElement, includeContainer?: boolean, fallbackToFirst?: boolean, fallbackToFocusable?: boolean): HTMLElement | null;
 ```
 
 Returns the next tabbable element in `container`.
@@ -1042,10 +956,7 @@ Returns the next tabbable element in `container`.
 #### `getNextTabbable`
 
 ```ts
-function getNextTabbable(
-  fallbackToFirst?: boolean,
-  fallbackToFocusable?: boolean,
-): HTMLElement | null;
+function getNextTabbable(fallbackToFirst?: boolean, fallbackToFocusable?: boolean): HTMLElement | null;
 ```
 
 Returns the next tabbable element in the document.
@@ -1057,12 +968,7 @@ Returns the next tabbable element in the document.
 #### `getPreviousTabbableIn`
 
 ```ts
-function getPreviousTabbableIn(
-  container: HTMLElement,
-  includeContainer?: boolean,
-  fallbackToLast?: boolean,
-  fallbackToFocusable?: boolean,
-): HTMLElement | null;
+function getPreviousTabbableIn(container: HTMLElement, includeContainer?: boolean, fallbackToLast?: boolean, fallbackToFocusable?: boolean): HTMLElement | null;
 ```
 
 Returns the previous tabbable element in `container`.
@@ -1074,10 +980,7 @@ Returns the previous tabbable element in `container`.
 #### `getPreviousTabbable`
 
 ```ts
-function getPreviousTabbable(
-  fallbackToLast?: boolean,
-  fallbackToFocusable?: boolean,
-): HTMLElement | null;
+function getPreviousTabbable(fallbackToLast?: boolean, fallbackToFocusable?: boolean): HTMLElement | null;
 ```
 
 Returns the previous tabbable element in the document.
@@ -1161,10 +1064,7 @@ Disable focus on `element`.
 #### `disableFocusIn`
 
 ```ts
-function disableFocusIn(
-  container: HTMLElement,
-  includeContainer?: boolean,
-): void;
+function disableFocusIn(container: HTMLElement, includeContainer?: boolean): void;
 ```
 
 Makes elements inside container not tabbable.
@@ -1188,10 +1088,7 @@ Restores tabbable elements inside container that were affected by disableFocusIn
 #### `focusIntoView`
 
 ```ts
-function focusIntoView(
-  element: HTMLElement,
-  options?: ScrollIntoViewOptions,
-): void;
+function focusIntoView(element: HTMLElement, options?: ScrollIntoViewOptions): void;
 ```
 
 Focus on element and scroll into view.
@@ -1240,10 +1137,7 @@ shallowEqual({ a: "a" }, { a: "a", b: "b" }); // false
 #### `applyState`
 
 ```ts
-function applyState<T>(
-  argument: SetStateAction<T>,
-  currentValue: T | (() => T),
-): T;
+function applyState<T>(argument: SetStateAction<T>, currentValue: T | (() => T)): T;
 ```
 
 Receives a `setState` argument and calls it with `currentValue` if it's a function. Otherwise return the argument as the new value.
@@ -1320,10 +1214,7 @@ isInteger("1.5"); // false
 #### `hasOwnProperty`
 
 ```ts
-function hasOwnProperty<T extends AnyObject>(
-  object: T,
-  prop: keyof any,
-): prop is keyof T;
+function hasOwnProperty<T extends AnyObject>(object: T, prop: keyof any): prop is keyof T;
 ```
 
 Checks whether `prop` is an own property of `obj` or not.
@@ -1335,9 +1226,7 @@ Checks whether `prop` is an own property of `obj` or not.
 #### `chain`
 
 ```ts
-function chain<T>(
-  ...fns: T[]
-): (...args: T extends AnyFunction ? Parameters<T> : never) => void;
+function chain<T>(...fns: T[]): (...args: T extends AnyFunction ? Parameters<T> : never) => void;
 ```
 
 Receives functions as arguments and returns a new function that calls all.
@@ -1349,9 +1238,7 @@ Receives functions as arguments and returns a new function that calls all.
 #### `cx`
 
 ```ts
-function cx(
-  ...args: Array<string | null | false | 0 | undefined>
-): string | undefined;
+function cx(...args: Array<string | null | false | 0 | undefined>): string | undefined;
 ```
 
 Returns a string with the truthy values of `args` separated by space.
@@ -1375,10 +1262,7 @@ Removes diacritics from a string.
 #### `omit`
 
 ```ts
-function omit<T extends AnyObject, K extends keyof T>(
-  object: T,
-  keys: ReadonlyArray<K> | K[],
-): Omit<T, K>;
+function omit<T extends AnyObject, K extends keyof T>(object: T, keys: ReadonlyArray<K> | K[]): Omit<T, K>;
 ```
 
 Omits specific keys from an object.
@@ -1396,10 +1280,7 @@ omit({ a: "a", b: "b" }, ["a"]); // { b: "b" }
 #### `pick`
 
 ```ts
-function pick<T extends AnyObject, K extends keyof T>(
-  object: T,
-  paths: ReadonlyArray<K> | K[],
-): Pick<T, K>;
+function pick<T extends AnyObject, K extends keyof T>(object: T, paths: ReadonlyArray<K> | K[]): Pick<T, K>;
 ```
 
 Picks specific keys from an object.
@@ -1473,10 +1354,7 @@ if (process.env.NODE_ENV !== "production") {
 #### `invariant`
 
 ```ts
-function invariant(
-  condition: any,
-  message?: string | boolean,
-): asserts condition;
+function invariant(condition: any, message?: string | boolean): asserts condition;
 ```
 
 Asserts that a condition is true, otherwise throws an error.
@@ -1486,7 +1364,7 @@ Example:
 ```ts
 invariant(
   condition,
-  process.env.NODE_ENV !== "production" && "Invariant failed",
+  process.env.NODE_ENV !== "production" && "Invariant failed"
 );
 ```
 
@@ -1509,10 +1387,7 @@ Similar to `Object.keys` but returns a type-safe array of keys.
 #### `isFalsyBooleanCallback`
 
 ```ts
-function isFalsyBooleanCallback<T extends unknown[]>(
-  booleanOrCallback?: boolean | ((...args: T) => boolean),
-  ...args: T
-): boolean;
+function isFalsyBooleanCallback<T extends unknown[]>(booleanOrCallback?: boolean | ((...args: T) => boolean), ...args: T): boolean;
 ```
 
 Checks whether a boolean event prop (e.g., hideOnInteractOutside) was intentionally set to false, either with a boolean value or a callback that returns false.
@@ -1726,7 +1601,9 @@ The type of the `setState` function in `[state, setState] = useState()`.
 #### `BooleanOrCallback`
 
 ```ts
-type BooleanOrCallback<T> = boolean | BivariantCallback<(arg: T) => boolean>;
+type BooleanOrCallback<T> =
+  | boolean
+  | BivariantCallback<(arg: T) => boolean>;
 ```
 
 A boolean value or a callback that returns a boolean value.
@@ -1738,7 +1615,9 @@ A boolean value or a callback that returns a boolean value.
 #### `StringWithValue`
 
 ```ts
-type StringWithValue<T extends string> = T | (string & Record<never, never>);
+type StringWithValue<T extends string> =
+  | T
+  | (string & Record<never, never>);
 ```
 
 A string that will provide autocomplete for specific strings.
@@ -1780,13 +1659,11 @@ ToPrimitive<1>;
 
 ```ts
 type PickByValue<T, Value> = {
-  [
-    K in keyof T as [Value] extends [T[K]]
-      ? T[K] extends Value | undefined
-        ? K
-        : never
+  [K in keyof T as [Value] extends [T[K]]
+    ? T[K] extends Value | undefined
+      ? K
       : never
-  ]: T[K];
+    : never]: T[K];
 };
 ```
 
@@ -1871,13 +1748,7 @@ Undo and redo manager utilities.
 ```ts
 type Callback = void | (() => Callback | Promise<Callback>);
 
-const UndoManager: {
-  canUndo: () => boolean;
-  canRedo: () => boolean;
-  undo: () => Promise<void>;
-  redo: () => Promise<void>;
-  execute: (callback: Callback, group?: string) => Promise<void>;
-};
+const UndoManager: { canUndo: () => boolean; canRedo: () => boolean; undo: () => Promise<void>; redo: () => Promise<void>; execute: (callback: Callback, group?: string) => Promise<void>; };
 ```
 
 Shared undo manager instance.
@@ -1895,13 +1766,9 @@ interface CreateUndoManagerOptions {
   limit?: number;
 }
 
-function createUndoManager({ limit = 100 }: CreateUndoManagerOptions = {}): {
-  canUndo: () => boolean;
-  canRedo: () => boolean;
-  undo: () => Promise<void>;
-  redo: () => Promise<void>;
-  execute: (callback: Callback, group?: string) => Promise<void>;
-};
+function createUndoManager({
+  limit = 100,
+}: CreateUndoManagerOptions = {}): { canUndo: () => boolean; canRedo: () => boolean; undo: () => Promise<void>; redo: () => Promise<void>; execute: (callback: Callback, group?: string) => Promise<void>; };
 ```
 
 Creates an undo manager with undo and redo stacks.

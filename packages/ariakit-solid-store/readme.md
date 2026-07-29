@@ -49,10 +49,7 @@ This package is ESM-only and exposes a single public entrypoint.
 ### `createStore`
 
 ```ts
-function createStore<S extends State>(
-  initialState: S,
-  ...stores: Array<Store<Partial<S>> | undefined>
-): Store<S>;
+function createStore<S extends State>(initialState: S, ...stores: Array<Store<Partial<S>> | undefined>): Store<S>;
 ```
 
 Creates a store.
@@ -66,10 +63,7 @@ Creates a store.
 ```ts
 type StoreSetup = (callback: () => void | (() => void)) => () => void;
 
-function setup<T extends Store>(
-  store?: T | null,
-  ...args: Parameters<StoreSetup>
-): T extends Store ? ReturnType<StoreSetup> : void;
+function setup<T extends Store>(store?: T | null, ...args: Parameters<StoreSetup>): T extends Store ? ReturnType<StoreSetup> : void;
 ```
 
 Register a callback function that's called when the store is initialized.
@@ -83,10 +77,7 @@ Register a callback function that's called when the store is initialized.
 ```ts
 type StoreInit = () => () => void;
 
-function init<T extends Store>(
-  store?: T | null,
-  ...args: Parameters<StoreInit>
-): T extends Store ? ReturnType<StoreInit> : void;
+function init<T extends Store>(store?: T | null, ...args: Parameters<StoreInit>): T extends Store ? ReturnType<StoreInit> : void;
 ```
 
 Function that should be called when the store is initialized.
@@ -107,10 +98,7 @@ type Sync<S, K extends keyof S> = (
 
 type StoreSubscribe<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 
-function subscribe<T extends Store, K extends keyof StoreState<T>>(
-  store?: T | null,
-  ...args: Parameters<StoreSubscribe<StoreState<T>, K>>
-): T extends Store ? ReturnType<StoreSubscribe<StoreState<T>, K>> : void;
+function subscribe<T extends Store, K extends keyof StoreState<T>>(store?: T | null, ...args: Parameters<StoreSubscribe<StoreState<T>, K>>): T extends Store ? ReturnType<StoreSubscribe<StoreState<T>, K>> : void;
 ```
 
 Registers a listener function that's called after state changes in the store.
@@ -131,10 +119,7 @@ type Sync<S, K extends keyof S> = (
 
 type StoreSync<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 
-function sync<T extends Store, K extends keyof StoreState<T>>(
-  store?: T | null,
-  ...args: Parameters<StoreSync<StoreState<T>, K>>
-): T extends Store ? ReturnType<StoreSync<StoreState<T>, K>> : void;
+function sync<T extends Store, K extends keyof StoreState<T>>(store?: T | null, ...args: Parameters<StoreSync<StoreState<T>, K>>): T extends Store ? ReturnType<StoreSync<StoreState<T>, K>> : void;
 ```
 
 Registers a listener function that's called immediately and synchronously whenever the store state changes.
@@ -155,10 +140,7 @@ type Sync<S, K extends keyof S> = (
 
 type StoreBatch<S = State, K extends keyof S = keyof S> = Sync<S, K>;
 
-function batch<T extends Store, K extends keyof StoreState<T>>(
-  store?: T | null,
-  ...args: Parameters<StoreBatch<StoreState<T>, K>>
-): T extends Store ? ReturnType<StoreBatch<StoreState<T>, K>> : void;
+function batch<T extends Store, K extends keyof StoreState<T>>(store?: T | null, ...args: Parameters<StoreBatch<StoreState<T>, K>>): T extends Store ? ReturnType<StoreBatch<StoreState<T>, K>> : void;
 ```
 
 Registers a listener function that's called immediately and after a batch of state changes in the store.
@@ -175,10 +157,7 @@ type StoreOmit<
   K extends ReadonlyArray<keyof S> = ReadonlyArray<keyof S>,
 > = (keys: K) => Store<Omit<S, K[number]>>;
 
-function omit<T extends Store, K extends ReadonlyArray<keyof StoreState<T>>>(
-  store?: T | null,
-  ...args: Parameters<StoreOmit<StoreState<T>, K>>
-): T extends Store ? ReturnType<StoreOmit<StoreState<T>, K>> : void;
+function omit<T extends Store, K extends ReadonlyArray<keyof StoreState<T>>>(store?: T | null, ...args: Parameters<StoreOmit<StoreState<T>, K>>): T extends Store ? ReturnType<StoreOmit<StoreState<T>, K>> : void;
 ```
 
 Creates a new store with a subset of the current store state and keeps them in sync.
@@ -195,10 +174,7 @@ type StorePick<
   K extends ReadonlyArray<keyof S> = ReadonlyArray<keyof S>,
 > = (keys: K) => Store<Pick<S, K[number]>>;
 
-function pick<T extends Store, K extends ReadonlyArray<keyof StoreState<T>>>(
-  store?: T | null,
-  ...args: Parameters<StorePick<StoreState<T>, K>>
-): T extends Store ? ReturnType<StorePick<StoreState<T>, K>> : void;
+function pick<T extends Store, K extends ReadonlyArray<keyof StoreState<T>>>(store?: T | null, ...args: Parameters<StorePick<StoreState<T>, K>>): T extends Store ? ReturnType<StorePick<StoreState<T>, K>> : void;
 ```
 
 Creates a new store with a subset of the current store state and keeps them in sync.
@@ -210,9 +186,7 @@ Creates a new store with a subset of the current store state and keeps them in s
 ### `mergeStore`
 
 ```ts
-function mergeStore<S extends State>(
-  ...stores: Array<Store<S> | undefined>
-): Store<S>;
+function mergeStore<S extends State>(...stores: Array<Store<S> | undefined>): Store<S>;
 ```
 
 Merges multiple stores into a single store.
@@ -248,7 +222,9 @@ Store state type.
 ### `StoreOptions`
 
 ```ts
-type StoreOptions<S extends State, K extends keyof S> = Partial<Pick<S, K>>;
+type StoreOptions<S extends State, K extends keyof S> = Partial<
+  Pick<S, K>
+>;
 ```
 
 Initial state that can be passed to a store creator function.

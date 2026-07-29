@@ -74,11 +74,7 @@ await blur();
 ### `click`
 
 ```ts
-function click(
-  element: Element | null,
-  options?: PointerEventInit,
-  tap = false,
-): Promise<void>;
+function click(element: Element | null, options?: PointerEventInit, tap = false): Promise<void>;
 ```
 
 Clicks on an element, simulating the sequence of events a real mouse click produces — hovering the target, then `pointerdown`, `mousedown`, `focus`, `pointerup`, `mouseup`, and `click`.
@@ -152,10 +148,7 @@ expect(q.textbox()).toHaveFocus();
 ### `hover`
 
 ```ts
-function hover(
-  element: Element | null,
-  options?: PointerEventInit,
-): Promise<void>;
+function hover(element: Element | null, options?: PointerEventInit): Promise<void>;
 ```
 
 Moves the pointer over an element, simulating a real user hovering it. Fires the relevant `pointer`/`mouse` enter, over, and move events, and dispatches the matching leave events on the previously hovered element.
@@ -176,10 +169,7 @@ expect(q.menu()).toBeVisible();
 ### `mouseDown`
 
 ```ts
-function mouseDown(
-  element: Element | null,
-  options?: PointerEventInit,
-): Promise<void>;
+function mouseDown(element: Element | null, options?: PointerEventInit): Promise<void>;
 ```
 
 Presses the primary pointer button down on an element, firing `pointerdown` and `mousedown` and moving focus the way a browser would. Disabled elements still receive `pointerdown` but not `mousedown`, and focus falls back to the closest focusable ancestor when the target itself isn't focusable.
@@ -201,10 +191,7 @@ await mouseUp(q.button("Resize"));
 ### `mouseUp`
 
 ```ts
-function mouseUp(
-  element: Element | null,
-  options?: PointerEventInit,
-): Promise<void>;
+function mouseUp(element: Element | null, options?: PointerEventInit): Promise<void>;
 ```
 
 Releases the primary pointer button on an element, firing `pointerup` and `mouseup`. Disabled elements still receive `pointerup` but not `mouseup`.
@@ -225,11 +212,7 @@ await mouseUp(q.button("Resize"));
 ### `press`
 
 ```ts
-function press(
-  key: string,
-  element?: Element | null,
-  options: KeyboardEventInit = {},
-): Promise<void>;
+function press(key: string, element?: Element | null, options: KeyboardEventInit = {}): Promise<void>;
 ```
 
 Presses a key on an element, simulating a real user keyboard interaction. Fires `keydown` and `keyup` and applies the browser's default behavior for that key — moving focus with `Tab`, activating buttons and submitting forms with `Enter`, clicking buttons, checkboxes, and radios with `Space`, moving the caret with the arrow and `Home`/`End` keys, and typing printable characters into text fields.
@@ -328,10 +311,7 @@ expect(dialog()).toBeVisible();
 ### `rightClick`
 
 ```ts
-function rightClick(
-  element: Element | null,
-  options?: PointerEventInit,
-): Promise<void>;
+function rightClick(element: Element | null, options?: PointerEventInit): Promise<void>;
 ```
 
 Right-clicks on an element, simulating the sequence of events a real secondary mouse click produces — hovering the target, then right-button `pointerdown`, `mousedown`, `focus`, `contextmenu`, `pointerup`, `mouseup`, and `auxclick`.
@@ -351,11 +331,7 @@ await rightClick(q.text("Open menu"));
 ### `select`
 
 ```ts
-function select(
-  text: string,
-  element: Element | null = document.body,
-  options?: PointerEventInit,
-): Promise<void>;
+function select(text: string, element: Element | null = document.body, options?: PointerEventInit): Promise<void>;
 ```
 
 Selects a range of text within an element, simulating a real user dragging across it. Hovers and presses on the element, finds the given `text` in its descendant text nodes, sets the document selection to cover it, then releases.
@@ -398,10 +374,7 @@ expect(q.dialog()).toBeVisible();
 ### `tap`
 
 ```ts
-function tap(
-  element: Element | null,
-  options?: PointerEventInit,
-): Promise<void>;
+function tap(element: Element | null, options?: PointerEventInit): Promise<void>;
 ```
 
 Clicks on an element without the brief delay that `click` waits between pressing and releasing, reproducing the timing of a quick tap. It fires the same pointer, mouse, and click events as `click`. Pass `options` to set event properties such as modifier keys.
@@ -419,11 +392,7 @@ await tap(q.button("Submit"));
 ### `type`
 
 ```ts
-function type(
-  text: string,
-  element?: (DirtiableElement & HTMLElement) | null,
-  options: InputEventInit | KeyboardEventInit = {},
-): Promise<void>;
+function type(text: string, element?: (DirtiableElement & HTMLElement) | null, options: InputEventInit | KeyboardEventInit = {}): Promise<void>;
 ```
 
 Types text into an element, simulating a real user pressing each key. Focuses the element, then for each character fires `keydown`, updates the value and caret position of text fields through an `input` event (preceded by `keypress` when inserting a printable character), and fires `keyup`.
@@ -445,10 +414,7 @@ await type("\b");
 ### `waitFor`
 
 ```ts
-function waitFor<T>(
-  callback: () => T,
-  options?: DOMTestingLibrary.waitForOptions,
-): Promise<T>;
+function waitFor<T>(callback: () => T, options?: DOMTestingLibrary.waitForOptions): Promise<T>;
 ```
 
 Re-runs a callback until it stops throwing or the timeout is reached, re-exporting Testing Library's `waitFor` with this package's async batching applied. Use it to wait for an assertion to pass after an asynchronous update. Pass `options` to configure the `timeout`, `interval`, and other behavior.
@@ -500,13 +466,7 @@ await render(<App />, options);
 ### `render`
 
 ```ts
-function render(
-  ui: ReactNode,
-  options?: RenderOptions,
-): Promise<{
-  unmount: () => void;
-  rerender: (newUi: ReactNode) => Promise<void>;
-}>;
+function render(ui: ReactNode, options?: RenderOptions): Promise<{ unmount: () => void; rerender: (newUi: ReactNode) => Promise<void>; }>;
 ```
 
 Renders a React element into the document for testing, waiting for effects and the next frame to flush before resolving.
