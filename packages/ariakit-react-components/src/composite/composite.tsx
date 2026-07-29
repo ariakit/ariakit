@@ -45,6 +45,7 @@ import {
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 import {
   findFirstEnabledItem,
+  focusSilently,
   getEnabledItem,
   groupItemsByRows,
   isItem,
@@ -558,8 +559,15 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       if (event.defaultPrevented) return;
       if (!store) return;
       if (!isSelfTarget(event)) return;
-      const { orientation, items, renderedItems, activeId, rtl } =
-        store.getState();
+      const {
+        orientation,
+        items,
+        renderedItems,
+        activeId,
+        rtl,
+        virtualFocus,
+        baseElement,
+      } = store.getState();
       const activeItem = getEnabledItem(store, activeId);
       if (activeItem?.element?.isConnected) return;
       const elementlessActiveItem = activeItem && activeId != null;
@@ -620,6 +628,16 @@ export const useComposite = createHook<TagName, CompositeOptions>(
         if (id !== undefined) {
           if (!moveOnKeyPressProp(event)) return;
           event.preventDefault();
+          // Transfer focus from a secondary container to the registered base
+          // before moving so the item's virtual-focus redirect is silent.
+          if (
+            composite &&
+            virtualFocus &&
+            !unstable_registerBaseElement &&
+            baseElement
+          ) {
+            focusSilently(baseElement);
+          }
           store.move(id);
         }
       }
@@ -734,6 +752,13 @@ export interface CompositeOptions<
   /**
    * Determines whether the composite element should be registered as the
    * store's base element.
+   *
+   * Set this to `false` on a secondary composite container that shares a store
+   * without replacing its primary base element, such as a
+   * [`ComboboxList`](https://ariakit.com/reference/combobox-list) whose
+   * combobox control owns the base element. With virtual focus, focusing the
+   * secondary container resets the active item instead of redirecting focus to
+   * it.
    * @default true
    */
   unstable_registerBaseElement?: boolean;

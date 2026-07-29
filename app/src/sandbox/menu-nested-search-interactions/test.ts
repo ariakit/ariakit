@@ -87,7 +87,10 @@ test("open/hide with search submenu", async () => {
 test("tab in/out search menu", async () => {
   await click(q.button("Actions"));
   await click(q.option("Turn into page in"));
-  const actionsList = q.option("Turn into page in").closest("[role=listbox]");
+  const actionsList = q.option
+    .ensure("Turn into page in")
+    .closest("[role=listbox]");
+  if (!actionsList) throw new Error("Actions list not found");
   await press.Tab();
   expect(actionsList).toHaveFocus();
   await press.Tab();

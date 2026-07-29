@@ -34,6 +34,8 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       store,
       composite,
       ...props,
+      // The combobox control owns the store-wide focus-on-move responder.
+      focusOnMove: false,
       unstable_registerBaseElement: false,
     });
     return props;
@@ -66,7 +68,7 @@ export const ComboboxList = forwardRef(function ComboboxList(
 
 export interface ComboboxListOptions<T extends ElementType = TagName>
   extends
-    CompositeOptions<T>,
+    Omit<CompositeOptions<T>, "focusOnMove" | "unstable_registerBaseElement">,
     Pick<ComboboxContentOptions<T>, "alwaysVisible"> {
   /**
    * Object returned by the

@@ -1,19 +1,29 @@
+import type { Page } from "@ariakit/test/playwright";
 import { withFramework } from "#app/test-utils/preview.ts";
+
+function pressTab(page: Page, browserName: string) {
+  const key = browserName === "webkit" ? "Alt+Tab" : "Tab";
+  return page.keyboard.press(key);
+}
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/6868
-  test("tabs to a non-scrollable list with real focus", async ({ page, q }) => {
+  test("tabs to a non-scrollable list with real focus", async ({
+    page,
+    q,
+    browserName,
+  }) => {
     await q.combobox("Real focus fruit").click();
     const input = q.combobox("Search Real focus fruit");
     const list = q.listbox("Real focus fruit");
     await test.expect(input).toBeFocused();
 
-    await page.keyboard.press("Tab");
+    await pressTab(page, browserName);
     await test
       .expect(q.button("Review Real focus fruit options"))
       .toBeFocused();
 
-    await page.keyboard.press("Tab");
+    await pressTab(page, browserName);
     await test.expect(list).toBeFocused();
     await test
       .expect(q.status("Real focus fruit base element"))
@@ -33,18 +43,19 @@ withFramework(import.meta.dirname, async ({ test }) => {
   test("tabs to a non-scrollable list with virtual focus", async ({
     page,
     q,
+    browserName,
   }) => {
     await q.combobox("Virtual focus fruit").click();
     const input = q.combobox("Search Virtual focus fruit");
     const list = q.listbox("Virtual focus fruit");
     await test.expect(input).toBeFocused();
 
-    await page.keyboard.press("Tab");
+    await pressTab(page, browserName);
     await test
       .expect(q.button("Review Virtual focus fruit options"))
       .toBeFocused();
 
-    await page.keyboard.press("Tab");
+    await pressTab(page, browserName);
     await test.expect(list).toBeFocused();
     await test
       .expect(q.status("Virtual focus fruit base element"))
