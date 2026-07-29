@@ -1,6 +1,6 @@
 import type { Locator, Page } from "@playwright/test";
 import { expect } from "@playwright/test";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 import { getCaseLabel, matrixCases } from "./config.react.ts";
 
 function disableAnimations(page: Page) {
@@ -20,6 +20,14 @@ async function getValue(combobox: Locator) {
 
 async function renderMatrixCase(page: Page, label: string) {
   await page.getByRole("combobox", { name: "Matrix case" }).selectOption(label);
+}
+
+async function waitForItemRegistration(page: Page, item: Locator) {
+  await expect(item).not.toHaveAttribute("data-offscreen");
+  // Offscreen items register in an effect. The collection publishes those
+  // registrations on the following animation frame, so wait through both
+  // render checkpoints.
+  await flushFrames(page);
 }
 
 const leakedAttributes = [
@@ -181,7 +189,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("move with keyboard", async () => {
-        await expect(previousOption).not.toHaveAttribute("data-offscreen");
+        await waitForItemRegistration(page, previousOption);
         await expect(keyboardTarget).toBeFocused();
         await page.keyboard.press("ArrowUp");
         await expect(defaultOption).not.toHaveAttribute("data-active-item");
@@ -199,6 +207,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         if (searchable && !autoSelect) {
           await expect(typeaheadOption).not.toHaveAttribute("data-active-item");
           await expect(search).toHaveAttribute("data-active-item");
+          await waitForItemRegistration(page, typeaheadOption);
           await page.keyboard.press("ArrowDown");
         }
         await expect(typeaheadOption).toHaveAttribute("data-active-item");
@@ -250,7 +259,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       });
 
       await test.step("move with keyboard", async () => {
-        await expect(nextOption).not.toHaveAttribute("data-offscreen");
+        await waitForItemRegistration(page, nextOption);
         await expect(keyboardTarget).toBeFocused();
         await page.keyboard.press("ArrowDown");
         await expect(nextOption).toBeInViewport();
@@ -351,6 +360,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
         await expect(typeaheadOption).toBeInViewport();
         if (!selectOnly) {
           await expect(typeaheadOption).not.toHaveAttribute("data-active-item");
+          await waitForItemRegistration(page, typeaheadOption);
           await page.keyboard.press("ArrowDown");
         }
         await expect(typeaheadOption).toHaveAttribute("data-active-item");
