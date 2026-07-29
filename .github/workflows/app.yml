@@ -156,10 +156,14 @@ jobs:
         if: matrix.visual != '' && always() && steps.update-screenshots.outcome == 'success'
         # The update run only touches files that still exist, so remove any
         # older screenshots for this browser that were left behind.
-        run: find app/src -path "*/__screenshots__/*-${{ matrix.project }}.png" ! -newer "${{ runner.temp }}/pre-update-marker" -delete
+        run: find app/src -path "*/__screenshots__/*-${{ matrix.project }}.webp" ! -newer "${{ runner.temp }}/pre-update-marker" -delete
 
       - name: Pack screenshots
-        if: matrix.visual != '' && always()
+        if: >
+          matrix.visual != '' &&
+          always() &&
+          (steps.test-visual.outcome == 'success' ||
+          steps.update-screenshots.outcome == 'success')
         # The follow-up job applies screenshots from artifacts instead of
         # mutating the branch directly from each matrix shard.
         run: |
@@ -172,7 +176,7 @@ jobs:
           project = "${{ matrix.project }}"
           root = Path("app/src")
           archive_path = Path("${{ runner.temp }}/artifacts") / f"app-visual-{project}.tar.gz"
-          screenshots = sorted(root.glob(f"**/__screenshots__/*-{project}.png"))
+          screenshots = sorted(root.glob(f"**/__screenshots__/*-{project}.webp"))
           if not screenshots:
               sys.exit(0)
           with tarfile.open(archive_path, "w:gz") as tar:
