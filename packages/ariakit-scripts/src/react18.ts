@@ -185,6 +185,44 @@ async function syncWorkspace(rootPath: string, workspacePath: string) {
   }
 }
 
+/**
+ * Installs the React 18 dependency graph in the temporary workspace.
+ *
+ * The workspace outlives a single run, so its `node_modules` can be recorded
+ * under workspace settings that no longer match the `pnpm-workspace.yaml` this
+ * run just synced. pnpm already detects that and recovers by purging and
+ * reinstalling the modules directory, but it asks before doing so and aborts
+ * outright when there is no TTY. Answering up front keeps pnpm's own check as
+ * the authority on when the recorded settings went stale, and the workspace is
+ * disposable either way.
+ *
+ * pnpm ignores unknown settings silently, so revisit the setting name whenever
+ * the pinned pnpm version changes.
+ */
+async function installDependencies(workspacePath: string) {
+  try {
+    await runChecked(
+      "pnpm",
+      [
+        "install",
+        "--no-frozen-lockfile",
+        "--prefer-offline",
+        "--config.confirm-modules-purge=false",
+      ],
+      { cwd: workspacePath },
+    );
+  } catch (error) {
+    throw new Error(
+      [
+        `Failed to install the React 18 dependency graph in ${workspacePath}.`,
+        "That workspace is reused between runs. Remove it to start from scratch:",
+        `  rm -rf "${workspacePath}"`,
+      ].join("\n"),
+      { cause: error },
+    );
+  }
+}
+
 async function getPackageJsonPaths(rootPath: string, directoryPath = rootPath) {
   const paths: string[] = [];
   const entries = await readdir(directoryPath, { withFileTypes: true });
@@ -411,11 +449,7 @@ export async function react18(args: string[]) {
   log(`Rewrote React dependencies in ${updatedCount} package.json files`);
 
   log("Installing React 18 dependency graph");
-  await runChecked(
-    "pnpm",
-    ["install", "--no-frozen-lockfile", "--prefer-offline"],
-    { cwd: workspacePath },
-  );
+  await installDependencies(workspacePath);
 
   const command = getReact18Command(args);
   const watcher = startWorkspaceWatcher(rootPath, workspacePath);
