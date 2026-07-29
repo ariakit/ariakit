@@ -42,6 +42,7 @@ runs:
         FILTERS: ${{ inputs.filters }}
       run: |
         args=(--frozen-lockfile --no-runtime)
+        has_filter=false
         while IFS= read -r filter; do
           if [ -n "$filter" ]; then
             if [ -z "$(pnpm --filter "$filter" list --depth=-1 --parseable)" ]; then
@@ -49,8 +50,13 @@ runs:
               exit 1
             fi
             args+=(--filter "$filter")
+            has_filter=true
           fi
         done <<< "$FILTERS"
+        # pnpm v12 no longer links the root tools during filtered installs.
+        if [ "$has_filter" = true ]; then
+          args+=(--filter root)
+        fi
         if ! pnpm install "${args[@]}"; then
           echo "::warning::pnpm install failed; retrying once"
           pnpm install "${args[@]}"
