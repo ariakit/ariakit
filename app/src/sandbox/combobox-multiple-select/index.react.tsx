@@ -14,18 +14,21 @@ export default function Example() {
   );
 
   return (
-    <Combobox
-      label="Your favorite food"
-      placeholder="e.g., Apple, Burger"
-      value={value}
-      onChange={setValue}
-      values={values}
-      onValuesChange={setValues}
-    >
-      {matches.map((value) => (
-        <ComboboxItem key={value} value={value} />
-      ))}
-      {!matches.length && <div className="no-results">No results found</div>}
-    </Combobox>
+    <>
+      <Combobox
+        label="Your favorite food"
+        placeholder="e.g., Apple, Burger"
+        value={value}
+        onChange={setValue}
+        values={values}
+        onValuesChange={setValues}
+      >
+        {matches.map((value) => (
+          <ComboboxItem key={value} value={value} />
+        ))}
+        {!matches.length && <div className="no-results">No results found</div>}
+      </Combobox>
+      <button type="button">After combobox</button>
+    </>
   );
 }
