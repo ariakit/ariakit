@@ -1,6 +1,5 @@
 import "@testing-library/jest-dom/vitest";
 import * as matchers from "@testing-library/jest-dom/matchers";
-import { createElement, Suspense as ReactSuspense } from "react";
 import { expect, beforeEach } from "vitest";
 import failOnConsole from "vitest-fail-on-console";
 import { getTestLoader, isAllowedTestLoader } from "./test-loader.ts";
@@ -48,11 +47,12 @@ async function tryImport(path: string) {
 
 async function loadReact(dir: string) {
   const { render } = await import("@ariakit/test/react");
+  const { createElement, Suspense } = await import("react");
   const { component, failedImport } = await tryImport(
     `./${dir}/index.react.tsx`,
   );
   if (failedImport) return false;
-  const element = createElement(ReactSuspense, {
+  const element = createElement(Suspense, {
     fallback: null,
     // oxlint-disable-next-line react/no-children-prop -- createElement requires children prop
     children: createElement(component),
