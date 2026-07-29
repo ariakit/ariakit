@@ -181,6 +181,8 @@ jobs:
       - name: Install pnpm
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
         uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+        with:
+          standalone: true
 
       - name: Set up Node
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
