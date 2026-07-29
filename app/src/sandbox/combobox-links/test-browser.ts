@@ -4,6 +4,7 @@ import type { BrowserContext, Locator } from "@playwright/test";
 import {
   getNewTabModifier,
   pressWithModifier,
+  withModifier,
   withFramework,
 } from "#app/test-utils/preview.ts";
 
@@ -84,10 +85,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const modifier = await getNewTabModifier(page);
     const option = q.option("Ariakit.com");
     const url = await prepareNavigation(page, option, "https://ariakit.com");
-    await expectNewPage({
-      context,
-      url,
-      action: () => option.click({ modifiers: [modifier] }),
+    await withModifier({
+      modifier,
+      page,
+      action: () =>
+        expectNewPage({
+          context,
+          url,
+          action: () => option.click(),
+        }),
     });
     await expect(q.listbox()).toBeVisible();
     await expect(q.combobox("Links")).toHaveValue("");

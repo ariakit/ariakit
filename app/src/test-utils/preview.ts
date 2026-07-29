@@ -64,6 +64,30 @@ interface PressWithModifierParams {
   target: Locator;
 }
 
+interface WithModifierParams<Result> {
+  action: () => Promise<Result>;
+  modifier: string;
+  page: Page;
+}
+
+/**
+ * Runs an action while a modifier is held, and releases the modifier even when
+ * the action fails. Unlike per-action pointer modifiers, this can keep the key
+ * down until related browser work, such as opening a new page, has settled.
+ */
+export async function withModifier<Result>({
+  action,
+  modifier,
+  page,
+}: WithModifierParams<Result>) {
+  await page.keyboard.down(modifier);
+  try {
+    return await action();
+  } finally {
+    await page.keyboard.up(modifier);
+  }
+}
+
 /**
  * Presses a key on a locator while a modifier is held, and releases the
  * modifier even when the press fails.
@@ -74,12 +98,11 @@ export async function pressWithModifier({
   page,
   target,
 }: PressWithModifierParams) {
-  await page.keyboard.down(modifier);
-  try {
-    await target.press(key);
-  } finally {
-    await page.keyboard.up(modifier);
-  }
+  return withModifier({
+    action: () => target.press(key),
+    modifier,
+    page,
+  });
 }
 
 const SRC_DIR = resolve(import.meta.dirname, "..");

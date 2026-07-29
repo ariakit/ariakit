@@ -1,6 +1,7 @@
 import {
   getNewTabModifier,
   pressWithModifier,
+  withModifier,
   withFramework,
 } from "#app/test-utils/preview.ts";
 
@@ -62,10 +63,17 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     const language = q.combobox("Language");
     await language.click();
     const modifier = await getNewTabModifier(page);
-    const [newPage] = await Promise.all([
-      page.context().waitForEvent("page"),
-      q.option("French").click({ modifiers: [modifier] }),
-    ]);
+    const newPage = await withModifier({
+      modifier,
+      page,
+      action: async () => {
+        const [newPage] = await Promise.all([
+          page.context().waitForEvent("page"),
+          q.option("French").click(),
+        ]);
+        return newPage;
+      },
+    });
 
     await newPage.waitForURL(hasSearchParam("lang", "fr"));
     const newLanguage = query(newPage).combobox("Language");
