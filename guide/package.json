@@ -8,5 +8,8 @@
   },
   "dependencies": {
     "react": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.17"
   }
 }
