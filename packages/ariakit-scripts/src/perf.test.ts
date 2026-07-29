@@ -1,5 +1,3 @@
-// @vitest-environment node
-
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
@@ -36,6 +34,9 @@ const originalValues = new Map(
   envNames.map((name) => [name, process.env[name]]),
 );
 
+// Importing `@playwright/test` under Happy DOM requests its default origin
+// (http://localhost:3000) and emits an unhandled connection error before any
+// test runs. Vitest still reports success, so keep this guard executable.
 test("runs without DOM shims", () => {
   expect(globalThis.document).toBeUndefined();
 });
