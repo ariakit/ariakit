@@ -63,7 +63,9 @@ Helpers for ids and tag names.
 #### `createId`
 
 ```ts
-function createId(defaultId?: MaybeAccessor<string | undefined>): Accessor<string>;
+function createId(
+  defaultId?: MaybeAccessor<string | undefined>,
+): Accessor<string>;
 ```
 
 Generates a unique ID.
@@ -75,7 +77,10 @@ Generates a unique ID.
 #### `extractTagName`
 
 ```ts
-function extractTagName(element?: MaybeAccessor<HTMLElement | undefined>, fallback?: ValidComponent): () => any;
+function extractTagName(
+  element?: MaybeAccessor<HTMLElement | undefined>,
+  fallback?: ValidComponent,
+): () => any;
 ```
 
 Returns the tag name by parsing an element.
@@ -168,7 +173,10 @@ type ExtractPropsWithDefaultsReturn<P, D extends Partial<P>> = [
 #### `extractPropsWithDefaults`
 
 ```ts
-function extractPropsWithDefaults<P extends AnyObject, const D extends Partial<P>>(props: P, defaults: D): ExtractPropsWithDefaultsReturn<P, D>;
+function extractPropsWithDefaults<
+  P extends AnyObject,
+  const D extends Partial<P>,
+>(props: P, defaults: D): ExtractPropsWithDefaultsReturn<P, D>;
 ```
 
 Extracts props from a props object and applies defaults to them. The return value is a tuple of the extracted props and the rest of the props.
@@ -178,10 +186,9 @@ To extract a prop without a default, set it to `undefined`.
 Example:
 
 ```ts
-const [extractedProps, restProps] = extractPropsWithDefaults(
-  props,
-  { orientation: "horizontal" },
-);
+const [extractedProps, restProps] = extractPropsWithDefaults(props, {
+  orientation: "horizontal",
+});
 ```
 
 <div align="right">
@@ -190,7 +197,7 @@ const [extractedProps, restProps] = extractPropsWithDefaults(
 
 #### `RefStore`
 
-```ts
+````ts
 type RefStore<T> = {
   /**
    * The current value of the ref. It is a non-reactive getter, wrapped with
@@ -210,7 +217,7 @@ type RefStore<T> = {
    */
   reset: () => void;
 };
-```
+````
 
 A ref object that contains the value getter (`value`) and setter (`set`) as properties for convenience. It also has a `reset` method that can be used to set the value to the initial value that was passed, which is `undefined` by default. The `current` getter can be used to obtain the value without tracking it reactively.
 
@@ -247,7 +254,7 @@ const ref = createRef();
 createEffect(() => {
   console.log(ref.value);
 });
-<button ref={ref.set}>Button</button>
+<button ref={ref.set}>Button</button>;
 ```
 
 <div align="right">
@@ -257,7 +264,11 @@ createEffect(() => {
 #### `mergeProps`
 
 ```ts
-function mergeProps<T extends JSX.HTMLAttributes<any>>(base: T, overrides: T, skipProps?: Array<keyof T>): T;
+function mergeProps<T extends JSX.HTMLAttributes<any>>(
+  base: T,
+  overrides: T,
+  skipProps?: Array<keyof T>,
+): T;
 ```
 
 Merges two sets of props.
@@ -273,7 +284,10 @@ Helpers for creating and composing Ariakit Solid components.
 #### `createInstance`
 
 ```ts
-function createInstance(Component: ValidComponent, props: Props<ValidComponent, Options>): import("solid-js").JSX.Element;
+function createInstance(
+  Component: ValidComponent,
+  props: Props<ValidComponent, Options>,
+): import("solid-js").JSX.Element;
 ```
 
 Creates a Solid component instance that supports the `render` and `wrapInstance` props.
@@ -285,7 +299,10 @@ Creates a Solid component instance that supports the `render` and `wrapInstance`
 #### `wrapInstance`
 
 ```ts
-function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(props: P & { wrapInstance?: WrapInstance }, element: WrapInstanceValue): Q;
+function wrapInstance<P, Q = P & { wrapInstance: WrapInstance }>(
+  props: P & { wrapInstance?: WrapInstance },
+  element: WrapInstanceValue,
+): Q;
 ```
 
 Returns props with an additional `wrapInstance` prop.
@@ -297,7 +314,10 @@ Returns props with an additional `wrapInstance` prop.
 #### `createHook`
 
 ```ts
-function createHook<T extends ValidComponent, P extends AnyObject = EmptyObject>(useProps: (props: Props<T, P>) => HTMLProps<T, P>): Hook<T, P>;
+function createHook<
+  T extends ValidComponent,
+  P extends AnyObject = EmptyObject,
+>(useProps: (props: Props<T, P>) => HTMLProps<T, P>): Hook<T, P>;
 ```
 
 Creates a component hook that accepts props and returns props so they can be passed to a Solid component.
@@ -309,10 +329,18 @@ Creates a component hook that accepts props and returns props so they can be pas
 #### `withOptions`
 
 ```ts
-function withOptions<T extends ValidComponent, P extends AnyObject, const D extends Partial<ComputedP>, ComputedP extends Props<T, P>>(defaults: D, useProps: (
+function withOptions<
+  T extends ValidComponent,
+  P extends AnyObject,
+  const D extends Partial<ComputedP>,
+  ComputedP extends Props<T, P>,
+>(
+  defaults: D,
+  useProps: (
     props: ExtractPropsWithDefaultsRestProps<ComputedP, D>,
     options: ExtractPropsWithDefaultsExtractedProps<ComputedP, D>,
-  ) => HTMLProps<T, P>): (props: ComputedP) => HTMLProps<T, P>;
+  ) => HTMLProps<T, P>,
+): (props: ComputedP) => HTMLProps<T, P>;
 ```
 
 Splits "option props" from the rest in a component hook. Must be called inside `createHook`.
@@ -428,10 +456,8 @@ type ButtonHTMLProps = HTMLProps<"button", { custom?: boolean }>;
 #### `Props`
 
 ```ts
-type Props<
-  T extends ValidComponent,
-  P extends AnyObject = EmptyObject,
-> = P & HTMLProps<T, P>;
+type Props<T extends ValidComponent, P extends AnyObject = EmptyObject> = P &
+  HTMLProps<T, P>;
 ```
 
 Props based on the element type, including custom props.
@@ -443,10 +469,9 @@ Props based on the element type, including custom props.
 #### `Hook`
 
 ```ts
-type Hook<
-  T extends ValidComponent,
-  P extends AnyObject = EmptyObject,
-> = <ElementType extends ValidComponent = T>(
+type Hook<T extends ValidComponent, P extends AnyObject = EmptyObject> = <
+  ElementType extends ValidComponent = T,
+>(
   props?: Props<ElementType, P>,
 ) => HTMLProps<ElementType, P>;
 ```

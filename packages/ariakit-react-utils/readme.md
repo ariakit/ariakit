@@ -75,7 +75,7 @@ React hooks for refs, events, ids, effects, and element metadata.
 #### `useSafeLayoutEffect`
 
 ```ts
-const useSafeLayoutEffect: any;
+const useSafeLayoutEffect: typeof React.useLayoutEffect;
 ```
 
 `React.useLayoutEffect` that fallbacks to `React.useEffect` on server side.
@@ -87,7 +87,7 @@ const useSafeLayoutEffect: any;
 #### `useInitialValue`
 
 ```ts
-function useInitialValue<T>(value: T | (() => T)): any;
+function useInitialValue<T>(value: T | (() => T)): T;
 ```
 
 Returns a value that never changes even if the argument is updated.
@@ -107,7 +107,7 @@ function Component({ prop }) {
 #### `useLiveRef`
 
 ```ts
-function useLiveRef<T>(value: T): any;
+function useLiveRef<T>(value: T): RefObject<T>;
 ```
 
 Creates a `React.RefObject` that is constantly updated with the incoming value.
@@ -148,7 +148,9 @@ function Component(props) {
 #### `useTransactionState`
 
 ```ts
-function useTransactionState<T>(callback?: ((state: SetStateAction<T | null>) => void) | null): readonly [any, any];
+function useTransactionState<T>(
+  callback?: ((state: SetStateAction<T | null>) => void) | null,
+): readonly [T | null, React.Dispatch<SetStateAction<T | null>>];
 ```
 
 Creates a React state that calls a callback function whenever the state changes and rolls back to the previous state on cleanup.
@@ -160,7 +162,9 @@ Creates a React state that calls a callback function whenever the state changes 
 #### `useMergeRefs`
 
 ```ts
-function useMergeRefs(...refs: Array<Ref<any> | undefined>): any;
+function useMergeRefs(
+  ...refs: Array<Ref<any> | undefined>
+): ((value: unknown) => (() => void) | undefined) | undefined;
 ```
 
 Merges React Refs into a single memoized function ref so you can pass it to an element.
@@ -205,7 +209,10 @@ Uses React's useDeferredValue if available.
 #### `useTagName`
 
 ```ts
-function useTagName(refOrElement?: RefObject<HTMLElement | null> | HTMLElement | null, type?: string | ComponentType): any;
+function useTagName(
+  refOrElement?: RefObject<HTMLElement | null> | HTMLElement | null,
+  type?: string | ComponentType,
+): string | undefined;
 ```
 
 Returns the tag name by parsing an element ref.
@@ -227,7 +234,11 @@ function Component(props) {
 #### `useAttribute`
 
 ```ts
-function useAttribute(refOrElement: RefObject<HTMLElement | null> | HTMLElement | null, attributeName: string, defaultValue?: string): any;
+function useAttribute(
+  refOrElement: RefObject<HTMLElement | null> | HTMLElement | null,
+  attributeName: string,
+  defaultValue?: string,
+): string | undefined;
 ```
 
 Returns the attribute value of an element.
@@ -261,7 +272,10 @@ A `React.useEffect` that will not run on the first render.
 #### `useUpdateLayoutEffect`
 
 ```ts
-function useUpdateLayoutEffect(effect: EffectCallback, deps?: DependencyList): void;
+function useUpdateLayoutEffect(
+  effect: EffectCallback,
+  deps?: DependencyList,
+): void;
 ```
 
 A `React.useLayoutEffect` that will not run on the first render.
@@ -273,7 +287,7 @@ A `React.useLayoutEffect` that will not run on the first render.
 #### `useForceUpdate`
 
 ```ts
-function useForceUpdate(): any;
+function useForceUpdate(): [never[], React.ActionDispatch<[]>];
 ```
 
 A React hook similar to `useState` and `useReducer`, but with the only purpose of re-rendering the component.
@@ -285,7 +299,9 @@ A React hook similar to `useState` and `useReducer`, but with the only purpose o
 #### `useBooleanEvent`
 
 ```ts
-function useBooleanEvent<T extends unknown[]>(booleanOrCallback: boolean | ((...args: T) => boolean)): (...args: T) => boolean;
+function useBooleanEvent<T extends unknown[]>(
+  booleanOrCallback: boolean | ((...args: T) => boolean),
+): (...args: T) => boolean;
 ```
 
 Returns an event callback similar to `useEvent`, but this also accepts a boolean value, which will be turned into a function.
@@ -297,7 +313,11 @@ Returns an event callback similar to `useEvent`, but this also accepts a boolean
 #### `useWrapElement`
 
 ```ts
-function useWrapElement<P>(props: P & { wrapElement?: WrapElement }, callback: WrapElement, deps: DependencyList = []): P & { wrapElement: WrapElement };
+function useWrapElement<P>(
+  props: P & { wrapElement?: WrapElement },
+  callback: WrapElement,
+  deps: DependencyList = [],
+): P & { wrapElement: WrapElement };
 ```
 
 Returns props with an additional `wrapElement` prop.
@@ -309,9 +329,15 @@ Returns props with an additional `wrapElement` prop.
 #### `usePortalRef`
 
 ```ts
-function usePortalRef(portalProp = false, portalRefProp?:
-    | RefCallback<HTMLElement>
-    | MutableRefObject<HTMLElement | null>): { portalRef: any; portalNode: any; domReady: any; };
+function usePortalRef(
+  portalProp = false,
+  portalRefProp?:
+    RefCallback<HTMLElement> | MutableRefObject<HTMLElement | null>,
+): {
+  portalRef: ((value: unknown) => (() => void) | undefined) | undefined;
+  portalNode: HTMLElement | null;
+  domReady: true | HTMLElement | null;
+};
 ```
 
 Merges the portalRef prop and returns a `domReady` to be used in the components that use Portal underneath.
@@ -323,7 +349,14 @@ Merges the portalRef prop and returns a `domReady` to be used in the components 
 #### `useMetadataProps`
 
 ```ts
-function useMetadataProps<T, K extends keyof any>(props: { onLoadedMetadataCapture?: AnyFunction & { [key in K]?: T } }, key: K, value: T): readonly [(AnyFunction & { [key in K]?: T | undefined; })[K] | undefined, { readonly onLoadedMetadataCapture: any; }];
+function useMetadataProps<T, K extends keyof any>(
+  props: { onLoadedMetadataCapture?: AnyFunction & { [key in K]?: T } },
+  key: K,
+  value: T,
+): readonly [
+  (AnyFunction & { [key in K]?: T | undefined })[K] | undefined,
+  { readonly onLoadedMetadataCapture: any },
+];
 ```
 
 A hook that passes metadata props around without leaking them to the DOM.
@@ -351,7 +384,10 @@ Helpers for working with refs, elements, and props.
 #### `setRef`
 
 ```ts
-function setRef<T>(ref: RefCallback<T> | MutableRefObject<T> | null | undefined, value: T): void | (() => void);
+function setRef<T>(
+  ref: RefCallback<T> | MutableRefObject<T> | null | undefined,
+  value: T,
+): void | (() => void);
 ```
 
 Sets both a function and object React ref.
@@ -365,7 +401,9 @@ Returns a callback ref cleanup function when one is provided.
 #### `isValidElementWithRef`
 
 ```ts
-function isValidElementWithRef<P extends { ref?: Ref<any> }>(element: unknown): element is ReactElement<P> & { ref?: Ref<any> };
+function isValidElementWithRef<P extends { ref?: Ref<any> }>(
+  element: unknown,
+): element is ReactElement<P> & { ref?: Ref<any> };
 ```
 
 Checks if an element is a valid React element with a ref.
@@ -377,7 +415,7 @@ Checks if an element is a valid React element with a ref.
 #### `getRefProperty`
 
 ```ts
-function getRefProperty(element: unknown): any;
+function getRefProperty(element: unknown): Ref<any> | undefined;
 ```
 
 Gets the ref property from a React element.
@@ -417,10 +455,13 @@ The same as `React.forwardRef` but passes the `ref` as a prop and returns a comp
 #### `memo`
 
 ```ts
-function memo<T extends React.FC<any>>(Component: T, propsAreEqual?: (
+function memo<T extends React.FC<any>>(
+  Component: T,
+  propsAreEqual?: (
     prevProps: Readonly<React.ComponentPropsWithoutRef<T>>,
     nextProps: Readonly<React.ComponentPropsWithoutRef<T>>,
-  ) => boolean): T;
+  ) => boolean,
+): T;
 ```
 
 The same as `React.memo` but returns a component with the same generic type.
@@ -432,7 +473,10 @@ The same as `React.memo` but returns a component with the same generic type.
 #### `createElement`
 
 ```ts
-function createElement(Type: React.ElementType, props: Props<React.ElementType, Options>): React.ReactElement;
+function createElement(
+  Type: React.ElementType,
+  props: Props<React.ElementType, Options>,
+): React.ReactElement<unknown, string | React.JSXElementConstructor<any>>;
 ```
 
 Creates a React element that supports the `render` and `wrapElement` props.
@@ -444,7 +488,10 @@ Creates a React element that supports the `render` and `wrapElement` props.
 #### `createHook`
 
 ```ts
-function createHook<T extends React.ElementType, P extends AnyObject = EmptyObject>(useProps: (props: Props<T, P>) => HTMLProps<T, P>): Hook<T, P>;
+function createHook<
+  T extends React.ElementType,
+  P extends AnyObject = EmptyObject,
+>(useProps: (props: Props<T, P>) => HTMLProps<T, P>): Hook<T, P>;
 ```
 
 Creates a component hook that accepts props and returns props so they can be passed to a React element.
@@ -461,7 +508,22 @@ type StoreProvider<T extends Store> = React.ComponentType<{
   children?: React.ReactNode;
 }>;
 
-function createStoreContext<T extends Store>(providers: StoreProvider<T>[] = [], scopedProviders: StoreProvider<T>[] = []): { context: any; scopedContext: any; useContext: () => any; useScopedContext: (onlyScoped?: boolean) => any; useProviderContext: () => any; ContextProvider: (props: React.ComponentPropsWithoutRef<any>) => React.ComponentType<{ value: T | undefined; children?: React.ReactNode; }>; ScopedContextProvider: (props: React.ComponentPropsWithoutRef<any>) => any; };
+function createStoreContext<T extends Store>(
+  providers: StoreProvider<T>[] = [],
+  scopedProviders: StoreProvider<T>[] = [],
+): {
+  context: React.Context<T | undefined>;
+  scopedContext: React.Context<T | undefined>;
+  useContext: () => T | undefined;
+  useScopedContext: (onlyScoped?: boolean) => T | undefined;
+  useProviderContext: () => T | undefined;
+  ContextProvider: (
+    props: React.ComponentPropsWithoutRef<React.Provider<T | undefined>>,
+  ) => React.JSX.Element;
+  ScopedContextProvider: (
+    props: React.ComponentPropsWithoutRef<React.Provider<T | undefined>>,
+  ) => React.JSX.Element;
+};
 ```
 
 Creates an Ariakit store context with hooks and provider components.
@@ -477,9 +539,9 @@ Shared types for Ariakit React components.
 #### `RenderProp`
 
 ```ts
-type RenderProp<
-  P = React.HTMLAttributes<any> & { ref?: React.Ref<any> },
-> = (props: P) => React.ReactNode;
+type RenderProp<P = React.HTMLAttributes<any> & { ref?: React.Ref<any> }> = (
+  props: P,
+) => React.ReactNode;
 ```
 
 Render prop type.
@@ -562,10 +624,8 @@ type ButtonHTMLProps = HTMLProps<"button", { custom?: boolean }>;
 #### `Props`
 
 ```ts
-type Props<
-  T extends React.ElementType,
-  P extends AnyObject = EmptyObject,
-> = P & HTMLProps<T, P>;
+type Props<T extends React.ElementType, P extends AnyObject = EmptyObject> = P &
+  HTMLProps<T, P>;
 ```
 
 Props based on the element type, including custom props.
@@ -577,10 +637,9 @@ Props based on the element type, including custom props.
 #### `Hook`
 
 ```ts
-type Hook<
-  T extends React.ElementType,
-  P extends AnyObject = EmptyObject,
-> = <ElementType extends React.ElementType = T>(
+type Hook<T extends React.ElementType, P extends AnyObject = EmptyObject> = <
+  ElementType extends React.ElementType = T,
+>(
   props?: Props<ElementType, P>,
 ) => HTMLProps<ElementType, P>;
 ```
