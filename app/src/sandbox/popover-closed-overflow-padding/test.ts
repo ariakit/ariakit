@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 
 // The overflow padding variable is public API and must be exposed on the
 // wrapper even while the popover is closed and hidden, before it first opens.
-// Browser duplicate in test-browser.ts.
+// Browser duplicate in test-chrome-firefox.ts.
 test("exposes the overflow padding variable on a closed popover", () => {
   expect(q.button("Closed popover")).toBeVisible();
   const popover = document.querySelector<HTMLElement>(".closed-popover");

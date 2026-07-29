@@ -5,7 +5,7 @@ import { expect, test } from "vitest";
 // for positioning. The preserveTabOrder feature, its remaining consumer,
 // takes effect only on non-modal portals, so disclosure element updates must
 // not re-render a modal popover, a plain non-portaled popover, or a portal with
-// preserveTabOrder disabled. Browser duplicate in test-browser.ts.
+// preserveTabOrder disabled. Browser duplicate in test-chrome-firefox.ts.
 test.each([
   {
     label: "Modal",
