@@ -1,7 +1,11 @@
 import type { Page } from "@ariakit/test/playwright";
 import { expect, query } from "@ariakit/test/playwright";
 import type { BrowserContext, Locator } from "@playwright/test";
-import { withFramework } from "#app/test-utils/preview.ts";
+import {
+  getNewTabModifier,
+  pressWithModifier,
+  withFramework,
+} from "#app/test-utils/preview.ts";
 
 interface ExpectNewPageParams {
   action: () => Promise<void>;
@@ -38,13 +42,6 @@ async function expectNewPage({
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  const getClickModifier = async (page: Page) => {
-    const isMac = await page.evaluate(() =>
-      navigator.platform.startsWith("Mac"),
-    );
-    return isMac ? "Meta" : "Control";
-  };
-
   test("click on link with mouse", async ({ page }) => {
     const q = query(page);
     await q.combobox("Links").click();
@@ -84,7 +81,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const q = query(page);
     await q.combobox("Links").click();
     await expect(q.listbox()).toBeVisible();
-    const modifier = await getClickModifier(page);
+    const modifier = await getNewTabModifier(page);
     const option = q.option("Ariakit.com");
     const url = await prepareNavigation(page, option, "https://ariakit.com");
     await expectNewPage({
@@ -108,7 +105,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const combobox = q.combobox("Links");
     await combobox.click();
     await expect(q.listbox()).toBeVisible();
-    const modifier = await getClickModifier(page);
+    const modifier = await getNewTabModifier(page);
     await page.mouse.move(0, 0);
     await expect(combobox).toBeFocused();
     await page.keyboard.press("ArrowUp");
@@ -123,18 +120,19 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await expect(page).toHaveURL(url);
       }).toPass();
     } else {
+      // Keep the page-event deadline inside the 90-second slow-test budget so
+      // a missing tab names the event instead of timing out the whole test.
       await expectNewPage({
         context,
         timeout: 60_000,
         url,
-        action: async () => {
-          await page.keyboard.down(modifier);
-          try {
-            await combobox.press("Enter");
-          } finally {
-            await page.keyboard.up(modifier);
-          }
-        },
+        action: () =>
+          pressWithModifier({
+            key: "Enter",
+            modifier,
+            page,
+            target: combobox,
+          }),
       });
       await expect(q.listbox()).toBeVisible();
       await expect(q.combobox("Links")).toHaveValue("");

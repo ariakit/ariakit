@@ -1,7 +1,7 @@
 import { relative, resolve } from "node:path";
 import { query } from "@ariakit/test/playwright";
 import { errors } from "@playwright/test";
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { isInDirectory, toPosixPath } from "#app/lib/paths.ts";
 import { previewConfig } from "#app/lib/preview-config.ts";
 import {
@@ -48,6 +48,38 @@ export function flushFrames(page: Page, frames = 2) {
       }),
     frames,
   );
+}
+
+/** Returns the platform modifier that opens links in a new tab. */
+export function getNewTabModifier(page: Page) {
+  return page.evaluate(() =>
+    navigator.platform.startsWith("Mac") ? "Meta" : "Control",
+  );
+}
+
+interface PressWithModifierParams {
+  key: string;
+  modifier: string;
+  page: Page;
+  target: Locator;
+}
+
+/**
+ * Presses a key on a locator while a modifier is held, and releases the
+ * modifier even when the press fails.
+ */
+export async function pressWithModifier({
+  key,
+  modifier,
+  page,
+  target,
+}: PressWithModifierParams) {
+  await page.keyboard.down(modifier);
+  try {
+    await target.press(key);
+  } finally {
+    await page.keyboard.up(modifier);
+  }
 }
 
 const SRC_DIR = resolve(import.meta.dirname, "..");

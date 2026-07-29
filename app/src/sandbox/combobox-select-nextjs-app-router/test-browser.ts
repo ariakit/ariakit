@@ -1,10 +1,8 @@
-import type { Page } from "@playwright/test";
-import { withFramework } from "#app/test-utils/preview.ts";
-
-async function getNewTabModifier(page: Page) {
-  const isMac = await page.evaluate(() => navigator.platform.startsWith("Mac"));
-  return isMac ? "Meta" : "Control";
-}
+import {
+  getNewTabModifier,
+  pressWithModifier,
+  withFramework,
+} from "#app/test-utils/preview.ts";
 
 function hasSearchParam(name: string, value: string | string[]) {
   return (url: URL) => {
@@ -110,6 +108,7 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     await status.click();
     await test.expect(status).toHaveAttribute("aria-expanded", "true");
     await page.mouse.move(0, 0);
+    await test.expect(status).toBeFocused();
     await status.press("d");
     await status.press("Enter");
     await page.waitForURL(hasSearchParam("status", "draft"));
@@ -120,18 +119,20 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     await test.expect(q.option("Archived")).toHaveAttribute("data-active-item");
     await test.expect(status).toBeFocused();
 
+    // Keep the page-event deadline inside the 90-second slow-test budget so
+    // a missing tab names the event instead of timing out the whole test.
     const newPagePromise = page.context().waitForEvent("page", {
       timeout: 60_000,
     });
     if (browserName === "webkit") {
       await q.option("Archived").click({ modifiers: [modifier] });
     } else {
-      await page.keyboard.down(modifier);
-      try {
-        await status.press("Enter");
-      } finally {
-        await page.keyboard.up(modifier);
-      }
+      await pressWithModifier({
+        key: "Enter",
+        modifier,
+        page,
+        target: status,
+      });
     }
     const newPage = await newPagePromise;
 
