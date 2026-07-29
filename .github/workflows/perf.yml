@@ -79,6 +79,15 @@ jobs:
           ref: ${{ github.event.pull_request.base.sha }}
           persist-credentials: false
 
+      # Keep the current setup action in a separate checkout while the
+      # workspace root contains the source used to build the baseline.
+      - name: Checkout workflow repository
+        uses: actions/checkout@v7
+        with:
+          path: .perf-workflow
+          persist-credentials: false
+          sparse-checkout: .github/workflows/setup
+
       - name: Find base app artifact
         id: find-base-artifact
         continue-on-error: true
@@ -178,35 +187,13 @@ jobs:
         if: steps.baseline-rebuild.outputs.nextjs == 'true'
         run: rm -rf nextjs/.open-next
 
-      - name: Install pnpm
+      - name: Set up baseline environment
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
-
-      - name: Set up Node
-        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: package.json
-
-      - name: Allow partial install
-        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
-        # Keep pnpm from replacing the filtered baseline install below with a
-        # full workspace install before either build command.
-        run: echo "pnpm_config_verify_deps_before_run=false" >> "$GITHUB_ENV"
-
-      - name: Install dependencies
-        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
+        uses: ./.perf-workflow/.github/workflows/setup
         env:
           HUSKY: 0
-        # `app...` already selects `nextjs` through `app`'s `workspace:*`
-        # devDependency, so a separate `nextjs...` filter is redundant.
-        run: >-
-          pnpm
-          --filter 'app...'
-          --fail-if-no-match
-          install
-          --frozen-lockfile
-          --no-runtime
+        with:
+          filters: app...
 
       - name: Build base app
         if: steps.baseline-rebuild.outputs.app == 'true'
