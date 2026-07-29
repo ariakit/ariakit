@@ -9,16 +9,14 @@ const rootDir = process.cwd();
 
 const testIncludes = ["**/*test.{ts,tsx}"];
 
-const domTestIncludes = [
-  "app/src/lib/stackblitz.test.{ts,tsx}",
-  "packages/ariakit-components/src/{collection,combobox,form,popover,select,tab}/**/*test.{ts,tsx}",
-  "packages/ariakit-test/src/**/*test.{ts,tsx}",
-  "packages/ariakit-utils/src/{dom,events,focus}.test.{ts,tsx}",
-];
-
 const frameworks = ["react", "solid"] as const;
 
 type Framework = (typeof frameworks)[number];
+
+const nonDomPackages = [
+  "scripts",
+  ...frameworks.map((framework) => `${framework}*`),
+];
 
 function getFrameworkTestIncludes(framework: Framework) {
   const entryFiles = globSync(
@@ -29,26 +27,45 @@ function getFrameworkTestIncludes(framework: Framework) {
     const dir = dirname(file);
     return [`${dir}/test.{ts,tsx}`, `${dir}/${framework}.test.{ts,tsx}`];
   });
-  // The first glob covers the framework packages, whose tests are all
-  // framework-specific. The second picks up framework-marked test files in
-  // any other package, like ariakit-test.
+  // The first glob covers framework packages except explicit DOM overrides.
+  // The second picks up framework-marked test files in any other package,
+  // like ariakit-test.
   return [
-    `packages/ariakit-${framework}*/src/**/*test.{ts,tsx}`,
+    `packages/ariakit-${framework}*/src/**/{test,!(*.dom).test}.{ts,tsx}`,
     `packages/*/src/**/*${framework}.test.{ts,tsx}`,
     ...exampleTests,
   ];
 }
 
-const frameworkTestExcludes = frameworks.flatMap((framework) => [
-  `packages/ariakit-${framework}*/src/**/*test.{ts,tsx}`,
-  `**/*${framework}.test.{ts,tsx}`,
-]);
+const domTestOverrides = ["**/*.dom.test.{ts,tsx}"];
 
-const nodeTestExcludes = [
-  ...domTestIncludes,
-  ...frameworkTestExcludes,
-  "app/src/{examples,sandbox}/**/test.{ts,tsx}",
-];
+const projectTestClaims = {
+  dom: [
+    ...domTestOverrides,
+    `packages/ariakit-!(${nonDomPackages.join("|")})/src/**/*test.{ts,tsx}`,
+  ],
+  react: getFrameworkTestIncludes("react"),
+  solid: getFrameworkTestIncludes("solid"),
+};
+
+type TestProject = "node" | keyof typeof projectTestClaims;
+
+function getProjectTestExcludes(project: TestProject) {
+  if (project === "node") {
+    return Object.values(projectTestClaims).flat();
+  }
+  if (project === "dom") {
+    return frameworks.flatMap((framework) => projectTestClaims[framework]);
+  }
+  return domTestOverrides;
+}
+
+export function getProjectTestPatterns(project: TestProject) {
+  const include =
+    project === "node" ? testIncludes : projectTestClaims[project];
+  const exclude = getProjectTestExcludes(project);
+  return { exclude, include };
+}
 
 const testExcludes = [...configDefaults.exclude, ".claude/**"];
 
@@ -78,8 +95,7 @@ export default defineConfig({
         test: {
           name: "node",
           environment: "node",
-          exclude: nodeTestExcludes,
-          include: testIncludes,
+          ...getProjectTestPatterns("node"),
         },
       },
       {
@@ -87,8 +103,7 @@ export default defineConfig({
         test: {
           name: "dom",
           environment: "happy-dom",
-          exclude: frameworkTestExcludes,
-          include: domTestIncludes,
+          ...getProjectTestPatterns("dom"),
         },
       },
       {
@@ -97,7 +112,7 @@ export default defineConfig({
         test: {
           name: "react",
           environment: "happy-dom",
-          include: getFrameworkTestIncludes("react"),
+          ...getProjectTestPatterns("react"),
           setupFiles: [join(rootDir, "vitest.setup.react.ts")],
         },
       },
@@ -107,7 +122,7 @@ export default defineConfig({
         test: {
           name: "solid",
           environment: "happy-dom",
-          include: getFrameworkTestIncludes("solid"),
+          ...getProjectTestPatterns("solid"),
           setupFiles: [join(rootDir, "vitest.setup.solid.ts")],
         },
       },
