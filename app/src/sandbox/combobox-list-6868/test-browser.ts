@@ -22,5 +22,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await page.keyboard.press("ArrowDown");
     await test.expect(q.option("Apple")).toBeFocused();
+
+    await page.keyboard.press("ArrowDown");
+    await test.expect(q.option("Banana")).toBeFocused();
   });
 });

@@ -15,4 +15,7 @@ test("tabs to a non-scrollable list and moves focus with ArrowDown", async () =>
 
   await press.ArrowDown();
   expect(q.option("Apple")).toHaveFocus();
+
+  await press.ArrowDown();
+  expect(q.option("Banana")).toHaveFocus();
 });
