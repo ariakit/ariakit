@@ -60,7 +60,7 @@ function getProjectTestExcludes(project: TestProject) {
   return domTestOverrides;
 }
 
-export function getProjectTestPatterns(project: TestProject) {
+function getProjectTestPatterns(project: TestProject) {
   const include =
     project === "node" ? testIncludes : projectTestClaims[project];
   const exclude = getProjectTestExcludes(project);
