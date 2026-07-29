@@ -6,6 +6,21 @@ async function getNewTabModifier(page: Page) {
   return isMac ? "Meta" : "Control";
 }
 
+/**
+ * Runs an action that opens a new tab and foregrounds the new page so Chrome
+ * doesn't defer Next.js hydration.
+ */
+async function openNewTab(page: Page, action: () => Promise<void>) {
+  // Keep the page-event deadline inside the 90-second slow-test budget so a
+  // missing tab is reported directly instead of timing out the whole test.
+  const [newPage] = await Promise.all([
+    page.context().waitForEvent("page", { timeout: 60_000 }),
+    action(),
+  ]);
+  await newPage.bringToFront();
+  return newPage;
+}
+
 function hasSearchParam(name: string, value: string | string[]) {
   return (url: URL) => {
     const values = Array.isArray(value) ? value : [value];
@@ -64,10 +79,9 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     const language = q.combobox("Language");
     await language.click();
     const modifier = await getNewTabModifier(page);
-    const [newPage] = await Promise.all([
-      page.context().waitForEvent("page"),
+    const newPage = await openNewTab(page, () =>
       q.option("French").click({ modifiers: [modifier] }),
-    ]);
+    );
 
     await newPage.waitForURL(hasSearchParam("lang", "fr"));
     const newLanguage = query(newPage).combobox("Language");
@@ -120,12 +134,18 @@ withFramework(import.meta.dirname, async ({ id, query, test }) => {
     await test.expect(q.option("Archived")).toHaveAttribute("data-active-item");
     await test.expect(status).toBeFocused();
 
-    const [newPage] = await Promise.all([
-      page.context().waitForEvent("page"),
-      browserName === "webkit"
-        ? q.option("Archived").click({ modifiers: [modifier] })
-        : page.keyboard.press(`${modifier}+Enter`),
-    ]);
+    const newPage = await openNewTab(page, async () => {
+      if (browserName === "webkit") {
+        await q.option("Archived").click({ modifiers: [modifier] });
+      } else {
+        await page.keyboard.down(modifier);
+        try {
+          await status.press("Enter");
+        } finally {
+          await page.keyboard.up(modifier);
+        }
+      }
+    });
 
     await newPage.waitForURL(hasSearchParam("status", ["draft", "archived"]));
     const newStatus = query(newPage).combobox("Status");
