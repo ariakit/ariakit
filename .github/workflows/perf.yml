@@ -198,10 +198,11 @@ jobs:
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
         env:
           HUSKY: 0
+        # `app...` already selects `nextjs` through `app`'s `workspace:*`
+        # devDependency, so a separate `nextjs...` filter is redundant.
         run: >-
           pnpm
           --filter 'app...'
-          --filter 'nextjs...'
           --fail-if-no-match
           install
           --frozen-lockfile
