@@ -15,7 +15,13 @@ runs:
     - name: Install pnpm
       uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
       with:
+        version: 12.0.0-alpha.21
+        package_json_file: pnpm-workspace.yaml
         standalone: true
+
+    - name: Keep pnpm version
+      shell: bash
+      run: echo "pnpm_config_manage_package_manager_versions=false" >> "$GITHUB_ENV"
 
     - name: Set up Node
       uses: actions/setup-node@v7
@@ -38,10 +44,14 @@ runs:
         args=(--frozen-lockfile --no-runtime)
         while IFS= read -r filter; do
           if [ -n "$filter" ]; then
+            if [ -z "$(pnpm --filter "$filter" list --depth=-1 --parseable)" ]; then
+              echo "::error::No projects matched filter: $filter"
+              exit 1
+            fi
             args+=(--filter "$filter")
           fi
         done <<< "$FILTERS"
-        if ! pnpm install --fail-if-no-match "${args[@]}"; then
+        if ! pnpm install "${args[@]}"; then
           echo "::warning::pnpm install failed; retrying once"
-          pnpm install --fail-if-no-match "${args[@]}"
+          pnpm install "${args[@]}"
         fi

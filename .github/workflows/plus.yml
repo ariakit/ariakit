@@ -49,7 +49,7 @@ jobs:
 
       - name: Test
         id: test
-        run: xvfb-run pnpm -F website test --workers=1 --headed
+        run: xvfb-run pnpm -F website run test --workers=1 --headed
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'

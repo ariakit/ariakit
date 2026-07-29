@@ -182,7 +182,13 @@ jobs:
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
         uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
         with:
+          version: 12.0.0-alpha.21
+          package_json_file: pnpm-workspace.yaml
           standalone: true
+
+      - name: Keep pnpm version
+        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
+        run: echo "pnpm_config_manage_package_manager_versions=false" >> "$GITHUB_ENV"
 
       - name: Set up Node
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
@@ -202,13 +208,13 @@ jobs:
           HUSKY: 0
         # `app...` already selects `nextjs` through `app`'s `workspace:*`
         # devDependency, so a separate `nextjs...` filter is redundant.
-        run: >-
-          pnpm
-          --filter 'app...'
-          --fail-if-no-match
-          install
-          --frozen-lockfile
-          --no-runtime
+        run: |
+          filter='app...'
+          if [ -z "$(pnpm --filter "$filter" list --depth=-1 --parseable)" ]; then
+            echo "::error::No projects matched filter: $filter"
+            exit 1
+          fi
+          pnpm --filter "$filter" install --frozen-lockfile --no-runtime
 
       - name: Build base app
         if: steps.baseline-rebuild.outputs.app == 'true'
@@ -448,7 +454,13 @@ jobs:
           # so husky's prepare step would otherwise rewrite `core.hooksPath`
           # to a relative path under a temporary worktree.
           HUSKY: 0
-        run: pnpm --filter 'app...' --fail-if-no-match install --frozen-lockfile --no-runtime --prefer-offline
+        run: |
+          filter='app...'
+          if [ -z "$(pnpm --filter "$filter" list --depth=-1 --parseable)" ]; then
+            echo "::error::No projects matched filter: $filter"
+            exit 1
+          fi
+          pnpm --filter "$filter" install --frozen-lockfile --no-runtime --prefer-offline
 
       - name: Install Playwright (baseline)
         working-directory: ${{ runner.temp }}/perf-baseline
@@ -775,7 +787,13 @@ jobs:
           # so husky's prepare step would otherwise rewrite `core.hooksPath`
           # to a relative path under a temporary worktree.
           HUSKY: 0
-        run: pnpm --filter './packages/*...' --fail-if-no-match install --frozen-lockfile --no-runtime --prefer-offline
+        run: |
+          filter='./packages/*...'
+          if [ -z "$(pnpm --filter "$filter" list --depth=-1 --parseable)" ]; then
+            echo "::error::No projects matched filter: $filter"
+            exit 1
+          fi
+          pnpm --filter "$filter" install --frozen-lockfile --no-runtime --prefer-offline
 
       - name: Download baseline artifacts
         uses: actions/download-artifact@v8

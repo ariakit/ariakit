@@ -112,9 +112,9 @@ jobs:
           TEST_SHARD: ${{ matrix.shard }}
         run: |
           if [ -n "$TEST_SHARD" ]; then
-            pnpm "$TEST_SCRIPT" --shard "$TEST_SHARD"
+            pnpm run "$TEST_SCRIPT" --shard "$TEST_SHARD"
           else
-            pnpm "$TEST_SCRIPT"
+            pnpm run "$TEST_SCRIPT"
           fi
 
   website:
