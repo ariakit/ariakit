@@ -120,7 +120,14 @@ withFramework(import.meta.dirname, async ({ test }) => {
         context,
         timeout: 60_000,
         url,
-        action: () => combobox.press("ControlOrMeta+Enter"),
+        action: async () => {
+          await page.keyboard.down("ControlOrMeta");
+          try {
+            await combobox.press("Enter");
+          } finally {
+            await page.keyboard.up("ControlOrMeta");
+          }
+        },
       });
       await expect(q.listbox()).toBeVisible();
       await expect(q.combobox("Links")).toHaveValue("");
