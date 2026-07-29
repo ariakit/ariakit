@@ -39,8 +39,4 @@ runs:
             args+=(--filter "$filter")
           fi
         done <<< "$FILTERS"
-        if [ "${#args[@]}" -eq 1 ]; then
-          echo "::error::setup requires 'filters', or install: \"false\" to skip installing" >&2
-          exit 1
-        fi
         pnpm install --fail-if-no-match "${args[@]}"
