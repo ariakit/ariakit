@@ -7,23 +7,16 @@ import { sourcePlugin } from "./app/src/lib/source-plugin.ts";
 
 const rootDir = process.cwd();
 
-const coreTestIncludes = ["**/*test.{ts,tsx}"];
+const testIncludes = ["**/*test.{ts,tsx}"];
 
-const nodeTestIncludes = ["packages/ariakit-scripts/src/**/*test.{ts,tsx}"];
+const frameworks = ["react", "solid"] as const;
 
-const coreTestExcludes = [
-  ...nodeTestIncludes,
-  "packages/ariakit-react*/src/**/*test.{ts,tsx}",
-  "packages/ariakit-solid*/src/**/*test.{ts,tsx}",
-  // Framework-specific tests run in the react and solid projects. Their names
-  // also match the generic *test.* include above, so keep them out of the core
-  // project explicitly.
-  "**/*react.test.{ts,tsx}",
-  "**/*solid.test.{ts,tsx}",
-  "app/src/{examples,sandbox}/**/test.{ts,tsx}",
+type Framework = (typeof frameworks)[number];
+
+const nonDomPackages = [
+  "scripts",
+  ...frameworks.map((framework) => `${framework}*`),
 ];
-
-type Framework = "react" | "solid";
 
 function getFrameworkTestIncludes(framework: Framework) {
   const entryFiles = globSync(
@@ -34,23 +27,50 @@ function getFrameworkTestIncludes(framework: Framework) {
     const dir = dirname(file);
     return [`${dir}/test.{ts,tsx}`, `${dir}/${framework}.test.{ts,tsx}`];
   });
-  // The first glob covers the framework packages, whose tests are all
-  // framework-specific. The second picks up framework-marked test files in
-  // any other package, like ariakit-test.
+  // The first glob covers framework packages except explicit DOM overrides.
+  // The second picks up framework-marked test files in any other package,
+  // like ariakit-test.
   return [
-    `packages/ariakit-${framework}*/src/**/*test.{ts,tsx}`,
+    `packages/ariakit-${framework}*/src/**/{test,!(*.dom).test}.{ts,tsx}`,
     `packages/*/src/**/*${framework}.test.{ts,tsx}`,
     ...exampleTests,
   ];
 }
 
-const testExcludes = [...configDefaults.exclude, ".claude/**"];
+const domTestOverrides = ["**/*.dom.test.{ts,tsx}"];
 
-const sourcePluginInstance = sourcePlugin(join(rootDir, "app/src/examples/"));
+const projectTestClaims = {
+  dom: [
+    ...domTestOverrides,
+    `packages/ariakit-!(${nonDomPackages.join("|")})/src/**/*test.{ts,tsx}`,
+  ],
+  react: getFrameworkTestIncludes("react"),
+  solid: getFrameworkTestIncludes("solid"),
+};
+
+type TestProject = "node" | keyof typeof projectTestClaims;
+
+function getProjectTestExcludes(project: TestProject) {
+  if (project === "node") {
+    return Object.values(projectTestClaims).flat();
+  }
+  if (project === "dom") {
+    return frameworks.flatMap((framework) => projectTestClaims[framework]);
+  }
+  return domTestOverrides;
+}
+
+function getProjectTestPatterns(project: TestProject) {
+  const include =
+    project === "node" ? testIncludes : projectTestClaims[project];
+  const exclude = getProjectTestExcludes(project);
+  return { exclude, include };
+}
+
+const testExcludes = [...configDefaults.exclude, ".claude/**"];
 
 export default defineConfig({
   root: rootDir,
-  plugins: [sourcePluginInstance],
   test: {
     watch: false,
     testTimeout: 10_000,
@@ -71,19 +91,19 @@ export default defineConfig({
     projects: [
       {
         extends: true,
+        plugins: [sourcePlugin(join(rootDir, "app/src/examples/"))],
         test: {
           name: "node",
           environment: "node",
-          include: nodeTestIncludes,
+          ...getProjectTestPatterns("node"),
         },
       },
       {
         extends: true,
         test: {
-          name: "core",
+          name: "dom",
           environment: "happy-dom",
-          exclude: coreTestExcludes,
-          include: coreTestIncludes,
+          ...getProjectTestPatterns("dom"),
         },
       },
       {
@@ -92,7 +112,7 @@ export default defineConfig({
         test: {
           name: "react",
           environment: "happy-dom",
-          include: getFrameworkTestIncludes("react"),
+          ...getProjectTestPatterns("react"),
           setupFiles: [join(rootDir, "vitest.setup.react.ts")],
         },
       },
@@ -102,7 +122,7 @@ export default defineConfig({
         test: {
           name: "solid",
           environment: "happy-dom",
-          include: getFrameworkTestIncludes("solid"),
+          ...getProjectTestPatterns("solid"),
           setupFiles: [join(rootDir, "vitest.setup.solid.ts")],
         },
       },
