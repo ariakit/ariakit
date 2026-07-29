@@ -73,10 +73,19 @@ jobs:
       actions: read
       contents: read
     steps:
+      # Keep the current setup action at the workspace root while the source
+      # used to build the baseline lives in its own checkout below.
+      - name: Checkout workflow repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+          sparse-checkout: .github/workflows/setup
+
       - name: Checkout baseline repository
         uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.base.sha }}
+          path: .perf-baseline
           persist-credentials: false
 
       - name: Find base app artifact
@@ -119,7 +128,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: app-build
-          path: app
+          path: .perf-baseline/app
           github-token: ${{ github.token }}
           run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
@@ -130,7 +139,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           name: nextjs-dist
-          path: nextjs/.open-next
+          path: .perf-baseline/nextjs/.open-next
           github-token: ${{ github.token }}
           run-id: ${{ steps.find-base-artifact.outputs.run-id }}
 
@@ -139,10 +148,10 @@ jobs:
         if: steps.base-artifact.outcome == 'success'
         run: |
           shopt -s nullglob
-          maps=(app/dist/client/_astro/*.js.map)
+          maps=(.perf-baseline/app/dist/client/_astro/*.js.map)
           if [ ${#maps[@]} -gt 0 ]; then
             echo "missing=false" >> "$GITHUB_OUTPUT"
-          elif grep -q "PERF_SOURCE_MAP" app/astro.config.ts; then
+          elif grep -q "PERF_SOURCE_MAP" .perf-baseline/app/astro.config.ts; then
             # app.yml artifacts intentionally omit source maps so ordinary app
             # artifacts stay smaller. Perf rebuilds only the base app artifact
             # when source maps are needed for readable script profiles.
@@ -171,45 +180,26 @@ jobs:
         if: steps.baseline-rebuild.outputs.app == 'true'
         run: |
           rm -rf \
-            app/dist \
-            app/.wrangler
+            .perf-baseline/app/dist \
+            .perf-baseline/app/.wrangler
 
       - name: Clean base Next.js artifact
         if: steps.baseline-rebuild.outputs.nextjs == 'true'
-        run: rm -rf nextjs/.open-next
+        run: rm -rf .perf-baseline/nextjs/.open-next
 
-      - name: Install pnpm
+      - name: Set up baseline environment
         if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
-        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
-
-      - name: Set up Node
-        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: package.json
-
-      - name: Allow partial install
-        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
-        # Keep pnpm from replacing the filtered baseline install below with a
-        # full workspace install before either build command.
-        run: echo "pnpm_config_verify_deps_before_run=false" >> "$GITHUB_ENV"
-
-      - name: Install dependencies
-        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
+        uses: ./.github/workflows/setup
         env:
           HUSKY: 0
-        # `app...` already selects `nextjs` through `app`'s `workspace:*`
-        # devDependency, so a separate `nextjs...` filter is redundant.
-        run: >-
-          pnpm
-          --filter 'app...'
-          --fail-if-no-match
-          install
-          --frozen-lockfile
-          --no-runtime
+        with:
+          filters: app...
+          package-json-file: .perf-baseline/package.json
+          working-directory: .perf-baseline
 
       - name: Build base app
         if: steps.baseline-rebuild.outputs.app == 'true'
+        working-directory: .perf-baseline
         env:
           CLOUDFLARE_ENV: preview
           PERF_SOURCE_MAP: true
@@ -217,9 +207,11 @@ jobs:
 
       - name: Build base Next.js app
         if: steps.baseline-rebuild.outputs.nextjs == 'true'
+        working-directory: .perf-baseline
         run: pnpm -F nextjs run build-worker
 
       - name: Check baseline artifacts
+        working-directory: .perf-baseline
         run: |
           for path in \
             app/dist \
@@ -235,7 +227,7 @@ jobs:
       - name: Pack baseline artifacts
         run: |
           tar -czf "$RUNNER_TEMP/perf-chrome-baseline-build.tar.gz" \
-            -C . \
+            -C .perf-baseline \
             app/dist \
             app/.wrangler/deploy/config.json \
             nextjs/.open-next

@@ -8,17 +8,25 @@ inputs:
   install:
     description: Whether to install dependencies
     default: "true"
+  package-json-file:
+    description: Package manifest used to select pnpm and Node.js versions
+    default: package.json
+  working-directory:
+    description: Directory where dependencies are installed
+    default: "."
 
 runs:
   using: "composite"
   steps:
     - name: Install pnpm
       uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6
+      with:
+        package_json_file: ${{ inputs.package-json-file }}
 
     - name: Set up Node
       uses: actions/setup-node@v7
       with:
-        node-version-file: package.json
+        node-version-file: ${{ inputs.package-json-file }}
 
     - name: Allow partial install
       if: inputs.filters != '' || inputs.install != 'true'
@@ -30,6 +38,7 @@ runs:
     - name: Install dependencies
       if: inputs.install == 'true'
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
       env:
         FILTERS: ${{ inputs.filters }}
       run: |
