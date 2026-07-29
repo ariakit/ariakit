@@ -2,7 +2,6 @@
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "react",
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "paths": {
@@ -11,8 +10,7 @@
       "react/*": ["./node_modules/@types/react/*"],
       "react-dom/*": ["./node_modules/@types/react-dom/*"]
     },
-    "plugins": [{ "name": "next" }],
-    "types": []
+    "plugins": [{ "name": "next" }]
   },
   "include": [
     "next-env.d.ts",
