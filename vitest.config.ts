@@ -55,19 +55,25 @@ export default defineConfig({
     watch: false,
     testTimeout: 10_000,
     setupFiles: [join(rootDir, "vitest.setup.ts")],
+    exclude: testExcludes,
     sequence: {
       hooks: "parallel",
     },
     coverage: {
       include: ["packages"],
     },
+    // The DOM projects run on happy-dom because it is ~2x faster than jsdom
+    // for the @ariakit/test simulation layer. The shims in @ariakit/test
+    // normalize its spec divergences, including React 18 event priority (see
+    // packages/ariakit-test/src/shims.ts and the window.event shim in
+    // dispatch.ts). Individual tests can still opt into another installed
+    // environment with a `// @vitest-environment <name>` file comment.
     projects: [
       {
         extends: true,
         test: {
           name: "node",
           environment: "node",
-          exclude: testExcludes,
           include: nodeTestIncludes,
         },
       },
@@ -76,7 +82,7 @@ export default defineConfig({
         test: {
           name: "core",
           environment: "happy-dom",
-          exclude: [...testExcludes, ...coreTestExcludes],
+          exclude: coreTestExcludes,
           include: coreTestIncludes,
         },
       },
@@ -86,12 +92,8 @@ export default defineConfig({
         test: {
           name: "react",
           environment: "happy-dom",
-          exclude: testExcludes,
           include: getFrameworkTestIncludes("react"),
-          setupFiles: [
-            join(rootDir, "vitest.setup.ts"),
-            join(rootDir, "vitest.react.setup.ts"),
-          ],
+          setupFiles: [join(rootDir, "vitest.setup.react.ts")],
         },
       },
       {
@@ -100,12 +102,8 @@ export default defineConfig({
         test: {
           name: "solid",
           environment: "happy-dom",
-          exclude: testExcludes,
           include: getFrameworkTestIncludes("solid"),
-          setupFiles: [
-            join(rootDir, "vitest.setup.ts"),
-            join(rootDir, "vitest.solid.setup.ts"),
-          ],
+          setupFiles: [join(rootDir, "vitest.setup.solid.ts")],
         },
       },
     ],

@@ -2,19 +2,17 @@ import { beforeEach } from "vitest";
 
 type Framework = "react" | "solid";
 
-async function tryImport(path: string) {
-  return import(path)
-    .then(({ default: component }) => ({ component, failedImport: false }))
-    .catch(() => ({ component: undefined, failedImport: true }));
+// Keep the path opaque so Vite's dynamic import vars transform does not
+// rewrite nested example paths into an unsupported one-level glob.
+async function importDefault(path: string) {
+  const { default: component } = await import(path);
+  return component;
 }
 
 async function loadReact(dir: string) {
   const { render } = await import("@ariakit/test/react");
   const { createElement, Suspense } = await import("react");
-  const { component, failedImport } = await tryImport(
-    `./${dir}/index.react.tsx`,
-  );
-  if (failedImport) return false;
+  const component = await importDefault(`./${dir}/index.react.tsx`);
   const element = createElement(Suspense, {
     fallback: null,
     // oxlint-disable-next-line react/no-children-prop -- createElement requires children prop
@@ -26,10 +24,7 @@ async function loadReact(dir: string) {
 
 async function loadSolid(dir: string) {
   const { createComponent, render, Suspense } = await import("solid-js/web");
-  const { component, failedImport } = await tryImport(
-    `./${dir}/index.solid.tsx`,
-  );
-  if (failedImport) return false;
+  const component = await importDefault(`./${dir}/index.solid.tsx`);
   const div = document.createElement("div");
   document.body.appendChild(div);
   const dispose = render(
@@ -51,10 +46,7 @@ async function loadSolid(dir: string) {
 const LOADERS = {
   react: loadReact,
   solid: loadSolid,
-} satisfies Record<
-  Framework,
-  (dir: string) => Promise<void | (() => void) | false>
->;
+} satisfies Record<Framework, (dir: string) => Promise<() => void>>;
 
 /*
 
@@ -100,8 +92,6 @@ export function setupFrameworkTests(framework: Framework) {
       skip();
       return;
     }
-    const result = await LOADERS[framework](dir);
-    if (result === false) skip();
-    return result;
+    return LOADERS[framework](dir);
   });
 }

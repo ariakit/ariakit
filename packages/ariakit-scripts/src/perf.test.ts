@@ -34,6 +34,8 @@ const originalValues = new Map(
   envNames.map((name) => [name, process.env[name]]),
 );
 
+// Happy DOM makes Playwright source-map loading crash a child process while
+// this parent suite still passes, so retain an executable environment guard.
 test("runs without DOM shims", () => {
   expect(globalThis.document).toBeUndefined();
 });
