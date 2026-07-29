@@ -194,7 +194,6 @@ jobs:
           HUSKY: 0
         with:
           filters: app...
-          package-json-file: .perf-baseline/package.json
           working-directory: .perf-baseline
 
       - name: Build base app
