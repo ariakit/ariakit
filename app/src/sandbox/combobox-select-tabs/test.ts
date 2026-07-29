@@ -53,6 +53,9 @@ describe.each(cases)("%s", (label, searchable, manual) => {
     await press.ArrowRight();
     expect(q.tab("Tags")).toHaveFocus();
     await press.Tab();
+    expect(q.listbox()).toHaveFocus();
+    expect(q.dialog()).toBeInTheDocument();
+    await press.Tab();
     expect(q.dialog()).not.toBeInTheDocument();
 
     target.remove();

@@ -87,13 +87,20 @@ test("open/hide with search submenu", async () => {
 test("tab in/out search menu", async () => {
   await click(q.button("Actions"));
   await click(q.option("Turn into page in"));
+  const actionsList = q.option("Turn into page in").closest("[role=listbox]");
+  await press.Tab();
+  expect(actionsList).toHaveFocus();
   await press.Tab();
   expect(q.combobox("Search pages to add in...")).toHaveFocus();
   expect(q.option("Private pages")).not.toHaveFocus();
   await press.ShiftTab();
-  expect(q.option("Turn into page in")).toHaveFocus();
+  expect(actionsList).toHaveFocus();
+  expect(q.dialog("Turn into page in")).not.toBeInTheDocument();
+  await press.ShiftTab();
   expect(q.combobox("Search actions...")).toHaveFocus();
-  expect(q.dialog("Turn into page in")).toBeVisible();
+  await click(q.option("Turn into page in"));
+  await press.Tab();
+  expect(actionsList).toHaveFocus();
   await press.Tab();
   expect(q.combobox("Search pages to add in...")).toHaveFocus();
   expect(q.option("Private pages")).not.toHaveFocus();
