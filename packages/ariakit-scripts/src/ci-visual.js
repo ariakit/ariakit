@@ -1,8 +1,7 @@
 /**
- * @param {string} jobName
+ * @param {string} stepName
  */
-export function getVisualProject(jobName) {
-  const localName = jobName.split(" / ").at(-1);
-  if (!localName?.startsWith("Test ")) return;
-  return localName.slice(5).toLowerCase();
+export function getVisualProject(stepName) {
+  const match = stepName.match(/^Upload screenshots \(([^)]+)\)$/);
+  return match?.[1]?.toLowerCase();
 }

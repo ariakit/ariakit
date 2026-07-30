@@ -7,7 +7,7 @@ on:
         description: Original event name from the caller workflow
         required: true
         type: string
-      test-result:
+      visual-result:
         description: Result of the caller's visual test matrix
         required: true
         type: string
@@ -55,9 +55,9 @@ jobs:
 
       - name: Check for complete screenshot artifacts
         id: check-artifacts
-        if: steps.gate.outputs.is_latest == 'true' && inputs.test-result == 'failure'
-        # Only update committed screenshots when every browser shard that
-        # uploads screenshots has produced its artifact for this run.
+        if: steps.gate.outputs.is_latest == 'true' && inputs.visual-result == 'failure'
+        # Only update committed screenshots when every visual project has
+        # produced its artifact for this run.
         uses: actions/github-script@v9
         with:
           script: |
@@ -110,24 +110,27 @@ jobs:
             const { getVisualProject } = await import(
               `${process.env.GITHUB_WORKSPACE}/packages/ariakit-scripts/src/ci-visual.js`
             );
-            const screenshotJobs = jobs
-              .filter((job) =>
-                job.steps?.some(
-                  (step) =>
-                    step.name === "Upload screenshots" &&
-                    step.conclusion !== "skipped",
-                ),
-              )
-              .map((job) => {
-                return {
-                  name: job.name,
-                  project: getVisualProject(job.name),
-                };
-              });
-            const invalidScreenshotJobs = screenshotJobs.filter((job) => !job.project);
-            const expectedScreenshotArtifacts = screenshotJobs
-              .filter((job) => job.project)
-              .map((job) => job.project)
+            const screenshotSteps = jobs.flatMap((job) => {
+              return (job.steps ?? [])
+                .filter((step) =>
+                  step.name.startsWith("Upload screenshots ("),
+                )
+                .map((step) => {
+                  return {
+                    name: `${job.name} / ${step.name}`,
+                    project: getVisualProject(step.name),
+                    conclusion: step.conclusion,
+                  };
+                });
+            });
+            // Valid project steps still count when skipped so an interrupted
+            // visual shard cannot make its screenshot artifact optional.
+            const invalidScreenshotSteps = screenshotSteps.filter(
+              (step) => !step.project && step.conclusion !== "skipped",
+            );
+            const expectedScreenshotArtifacts = screenshotSteps
+              .filter((step) => step.project)
+              .map((step) => step.project)
               .map((project) => `app-visual-${project}`);
             const screenshotArtifacts = artifacts
               .map((artifact) => artifact.name)
@@ -136,12 +139,12 @@ jobs:
               (artifact) => !screenshotArtifacts.includes(artifact),
             );
             const hasCompleteScreenshots =
-              invalidScreenshotJobs.length === 0 &&
+              invalidScreenshotSteps.length === 0 &&
               expectedScreenshotArtifacts.length > 0 &&
               missingScreenshotArtifacts.length === 0;
-            if (invalidScreenshotJobs.length > 0) {
+            if (invalidScreenshotSteps.length > 0) {
               console.log(
-                `Unexpected screenshot job names: ${invalidScreenshotJobs.map((job) => job.name).join(", ")}`,
+                `Unexpected screenshot step names: ${invalidScreenshotSteps.map((step) => step.name).join(", ")}`,
               );
             }
             console.log(
