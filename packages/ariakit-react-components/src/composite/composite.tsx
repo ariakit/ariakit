@@ -19,6 +19,7 @@ import {
   afterPaint,
   beforePaint,
   getActiveElement,
+  getScrollingElement,
   isTextField,
   fireBlurEvent,
   fireKeyboardEvent,
@@ -134,6 +135,46 @@ function withBaseScrollPreserved(store: CompositeStore, callback: () => void) {
   baseElement.scrollTop = savedScrollTop;
 }
 
+function getOffset(element: HTMLElement, horizontal = false) {
+  let offset = 0;
+  let current: HTMLElement | null = element;
+  while (current) {
+    offset += horizontal ? current.offsetLeft : current.offsetTop;
+    current = current.offsetParent as HTMLElement | null;
+    if (current) {
+      offset += horizontal ? current.clientLeft : current.clientTop;
+    }
+  }
+  return offset;
+}
+
+function scrollInlineIntoView(element: HTMLElement, scroller: HTMLElement) {
+  const scrollerRect = scroller.getBoundingClientRect();
+  const elementRect = element.getBoundingClientRect();
+  const scale = scrollerRect.width / scroller.offsetWidth;
+  if (!scale) return;
+  const start = scrollerRect.left + scroller.clientLeft * scale;
+  const end = start + scroller.clientWidth * scale;
+  const before = elementRect.left < start;
+  const after = elementRect.right > end;
+  if (before === after) return;
+  const delta = before ? elementRect.left - start : elementRect.right - end;
+  scroller.scrollLeft += delta / scale;
+}
+
+function centerIntoView(element: HTMLElement) {
+  const scroller = getScrollingElement(element);
+  if (!scroller) return;
+  const HTMLElementClass = element.ownerDocument.defaultView?.HTMLElement;
+  if (!HTMLElementClass) return;
+  if (!(scroller instanceof HTMLElementClass)) return;
+  scrollInlineIntoView(element, scroller);
+  const elementCenter = getOffset(element) + element.offsetHeight / 2;
+  const scrollerCenter =
+    getOffset(scroller) + scroller.clientTop + scroller.clientHeight / 2;
+  scroller.scrollTop = elementCenter - scrollerCenter;
+}
+
 function useScheduleFocus(store: CompositeStore) {
   const [scheduled, setScheduled] = useState<"focus" | "scroll" | false>(false);
   const scrollIdRef = useRef<string | undefined>(undefined);
@@ -205,10 +246,7 @@ function useScheduleFocus(store: CompositeStore) {
                 focusIntoView(activeElement);
               }
             } else {
-              activeElement.scrollIntoView({
-                block: "nearest",
-                inline: "nearest",
-              });
+              centerIntoView(activeElement);
             }
           });
         } else if (focus) {

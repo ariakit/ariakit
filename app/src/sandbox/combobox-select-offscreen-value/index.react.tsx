@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { ComboboxItem } from "@ariakit/react-components/combobox/combobox-item-offscreen";
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 
 const fruits = [
   "Apple",
@@ -47,6 +47,7 @@ interface FixtureProps {
   input?: boolean;
   label: string;
   moveFocusOnOpen?: boolean;
+  scaled?: boolean;
   selectOnMove?: boolean;
   virtualFocus?: boolean;
 }
@@ -57,64 +58,31 @@ function Fixture({
   input,
   label,
   moveFocusOnOpen,
+  scaled,
   selectOnMove,
   virtualFocus,
 }: FixtureProps) {
-  const combobox = Ariakit.useComboboxStore({
-    defaultSelectedValue,
-    selectOnMove,
-    virtualFocus,
-  });
-  const open = Ariakit.useStoreState(combobox, "open");
-  const selectedValue = Ariakit.useStoreState(combobox, "selectedValue");
-  const presentationValue = Array.isArray(selectedValue)
-    ? selectedValue.at(-1)
-    : selectedValue;
-  const popoverRef = useRef<HTMLDivElement>(null);
   const focusTargetRef = useRef<HTMLDivElement>(null);
-
-  const centerSelectedItem = useCallback(
-    (item: HTMLElement | null) => {
-      if (!open) return;
-      if (!item) return;
-      // The selected offscreen item can mount after the popup. Wait for both
-      // to settle. This workaround assumes the popover owns the scroll viewport.
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          const state = combobox.getState();
-          if (!state.open) return;
-          if (state.moves) return;
-          if (!item.isConnected) return;
-          const focusOwner = state.inputElement || state.selectElement;
-          if (!focusOwner) return;
-          if (focusOwner.ownerDocument.activeElement !== focusOwner) return;
-          const scroller = popoverRef.current;
-          if (!scroller) return;
-          const popupRect = scroller.getBoundingClientRect();
-          const itemRect = item.getBoundingClientRect();
-          scroller.scrollTop +=
-            itemRect.top +
-            itemRect.height / 2 -
-            (popupRect.top + popupRect.height / 2);
-        });
-      });
-    },
-    [combobox, open],
-  );
-
   return (
-    <Ariakit.ComboboxProvider store={combobox}>
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue={defaultSelectedValue}
+      selectOnMove={selectOnMove}
+      virtualFocus={virtualFocus}
+    >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect style={{ display: "block" }} />
       <Ariakit.ComboboxPopover
-        ref={popoverRef}
         gutter={4}
         sameWidth
         style={{
           background: "white",
           border: "1px solid gray",
+          borderBottomWidth: scaled ? 7 : undefined,
+          borderTopWidth: scaled ? 3 : undefined,
           maxHeight: 120,
           overflow: "auto",
+          transform: scaled ? "scale(0.95)" : undefined,
+          transformOrigin: scaled ? "top left" : undefined,
         }}
       >
         {input && (
@@ -133,23 +101,38 @@ function Fixture({
             value="Focus target"
           />
         )}
-        {fruits.map((fruit) => (
-          <ComboboxItem
-            key={fruit}
-            ref={fruit === presentationValue ? centerSelectedItem : undefined}
-            value={fruit}
-            offscreenMode="passive"
-            style={{ display: "block", padding: "4px 8px" }}
-          />
-        ))}
+        {fruits.map((fruit) =>
+          scaled ? (
+            <Ariakit.ComboboxItem
+              key={fruit}
+              value={fruit}
+              style={{ display: "block", padding: "4px 8px" }}
+            />
+          ) : (
+            <ComboboxItem
+              key={fruit}
+              value={fruit}
+              offscreenMode="passive"
+              style={{ display: "block", padding: "4px 8px" }}
+            />
+          ),
+        )}
         {/* An item rendered without a value, at the end of the list so it's
         always out of view. */}
-        <ComboboxItem
-          offscreenMode="passive"
-          style={{ display: "block", padding: "4px 8px" }}
-        >
-          {`No ${label.toLowerCase()}`}
-        </ComboboxItem>
+        {scaled ? (
+          <Ariakit.ComboboxItem
+            style={{ display: "block", padding: "4px 8px" }}
+          >
+            {`No ${label.toLowerCase()}`}
+          </Ariakit.ComboboxItem>
+        ) : (
+          <ComboboxItem
+            offscreenMode="passive"
+            style={{ display: "block", padding: "4px 8px" }}
+          >
+            {`No ${label.toLowerCase()}`}
+          </ComboboxItem>
+        )}
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
   );
@@ -193,6 +176,15 @@ export default function Example() {
           label="Virtual focus fruit"
           selectOnMove
           virtualFocus
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          input
+          label="Scaled filterable fruit"
+          scaled
+          virtualFocus={false}
         />
       </div>
     </>

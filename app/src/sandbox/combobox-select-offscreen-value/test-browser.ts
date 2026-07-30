@@ -136,6 +136,32 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBe(scrollTop);
   });
 
+  // https://github.com/ariakit/ariakit/issues/6838
+  test("centers inside a transformed client scrollport", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Scaled filterable fruit");
+    const watermelon = q.option("Watermelon");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+    await flushFrames(page, 3);
+
+    const centerOffset = await watermelon.evaluate((element) => {
+      const listbox = element.closest<HTMLElement>("[role=listbox]");
+      if (!listbox) return Infinity;
+      const listboxRect = listbox.getBoundingClientRect();
+      const itemRect = element.getBoundingClientRect();
+      const scaleY = listboxRect.height / listbox.offsetHeight;
+      const listboxCenter =
+        listboxRect.top +
+        (listbox.clientTop + listbox.clientHeight / 2) * scaleY;
+      const itemCenter = itemRect.top + itemRect.height / 2;
+      return itemCenter - listboxCenter;
+    });
+    test.expect(Math.abs(centerOffset)).toBeLessThanOrEqual(1);
+  });
+
   // https://github.com/ariakit/ariakit/pull/6832
   test("cancels presentation when real focus moves", async ({ page, q }) => {
     await q.combobox("Focus moving filterable fruit").click();
