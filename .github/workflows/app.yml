@@ -270,8 +270,8 @@ jobs:
     # This job intentionally assumes PRs come from branches on this repository.
     # Fork-safe write-back logic was removed with the member-only PR model.
     name: Update screenshots
-    needs: visual
-    if: always() && needs.visual.result != 'cancelled'
+    needs: [test, visual]
+    if: always() && needs.test.result != 'cancelled' && needs.visual.result != 'cancelled'
     permissions:
       actions: read
       contents: read
