@@ -1,6 +1,6 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
-withFramework(import.meta.dirname, async ({ test, query }) => {
+withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/issues/6868
   test("skips a scrollable list by default", async ({ page, q }) => {
     await q.combobox("Default fruit").click();
@@ -32,18 +32,18 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(q.button("After Default fruit options")).toBeFocused();
   });
 
-  // https://github.com/ariakit/ariakit/issues/6868
-  test("supports opting into the tab order", async ({ page, q }) => {
-    await q.combobox("Opt-in fruit").click();
-    const input = q.combobox("Search Opt-in fruit");
-    const list = q.listbox("Opt-in fruit options");
+  // https://github.com/ariakit/ariakit/pull/6968#discussion_r3682117297
+  test("ignores an authored tabIndex", async ({ page, q }) => {
+    await q.combobox("Authored tab index fruit").click();
+    const input = q.combobox("Search Authored tab index fruit");
+    const list = q.listbox("Authored tab index fruit options");
     await test.expect(input).toBeFocused();
-    await test.expect(list).toHaveAttribute("tabindex", "0");
 
     await page.keyboard.press("Tab");
     await test
-      .expect(query(list).option("Apple"))
-      .toHaveAttribute("data-focus-visible", "true");
+      .expect(q.button("After Authored tab index fruit options"))
+      .toBeFocused();
+    await test.expect(list).toHaveAttribute("tabindex", "-1");
   });
 
   test("moves focus from a standalone list to the combobox", async ({ q }) => {

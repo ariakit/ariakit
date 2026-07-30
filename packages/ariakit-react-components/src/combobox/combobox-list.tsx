@@ -185,8 +185,9 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       onFocus,
       ref: useMergeRefs(setContentElement, ref, props.ref),
       style,
-      // Prevent browsers from making scrollable listboxes implicit Tab stops.
-      tabIndex: props.tabIndex ?? -1,
+      // Keep DOM focus on the combobox control. Making the list a Tab stop
+      // would cause its focus redirect to restart sequential navigation.
+      tabIndex: -1,
     };
 
     return removeUndefinedValues(props);

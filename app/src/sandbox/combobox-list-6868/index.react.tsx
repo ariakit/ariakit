@@ -53,7 +53,7 @@ export default function Example() {
   return (
     <>
       <FruitSelect label="Default fruit" />
-      <FruitSelect label="Opt-in fruit" listTabIndex={0} />
+      <FruitSelect label="Authored tab index fruit" listTabIndex={0} />
       <StandaloneFruitList />
     </>
   );

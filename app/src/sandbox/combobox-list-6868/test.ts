@@ -28,18 +28,15 @@ test("skips an empty list by default", async () => {
   expect(q.button("After Default fruit options")).toHaveFocus();
 });
 
-// https://github.com/ariakit/ariakit/issues/6868
-test("supports opting into the tab order", async () => {
-  await click(q.combobox("Opt-in fruit"));
-  expect(q.combobox("Search Opt-in fruit")).toHaveFocus();
-  const list = q.listbox.ensure("Opt-in fruit options");
-  expect(list).toHaveAttribute("tabindex", "0");
+// https://github.com/ariakit/ariakit/pull/6968#discussion_r3682117297
+test("ignores an authored tabIndex", async () => {
+  await click(q.combobox("Authored tab index fruit"));
+  expect(q.combobox("Search Authored tab index fruit")).toHaveFocus();
+  const list = q.listbox.ensure("Authored tab index fruit options");
 
   await press.Tab();
-  expect(q.within(list).option("Apple")).toHaveAttribute(
-    "data-focus-visible",
-    "true",
-  );
+  expect(q.button("After Authored tab index fruit options")).toHaveFocus();
+  expect(list).toHaveAttribute("tabindex", "-1");
 });
 
 test("moves focus from a standalone list to the combobox", async () => {
