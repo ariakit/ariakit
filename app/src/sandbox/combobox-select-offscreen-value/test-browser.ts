@@ -60,7 +60,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/pull/6832
-  test("presents a far selected item with real focus", async ({ page, q }) => {
+  // https://github.com/ariakit/ariakit/issues/6838
+  test("centers a far selected item with real focus", async ({ page, q }) => {
     const select = q.combobox("Filterable fruit");
     const watermelon = q.option("Watermelon");
     await select.click();
@@ -77,6 +78,35 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // WebKit's scroll step before checking the viewport.
     await flushFrames(page, 3);
     await test.expect(watermelon).toBeInViewport();
+
+    const centerOffset = await watermelon.evaluate((element) => {
+      const listbox = element.closest("[role=listbox]");
+      if (!listbox) return Infinity;
+      const listboxRect = listbox.getBoundingClientRect();
+      const itemRect = element.getBoundingClientRect();
+      const listboxCenter = listboxRect.top + listboxRect.height / 2;
+      const itemCenter = itemRect.top + itemRect.height / 2;
+      return itemCenter - listboxCenter;
+    });
+    test.expect(Math.abs(centerOffset)).toBeLessThanOrEqual(1);
+    test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
+
+    const scrollTop = await watermelon.evaluate(
+      (element) => element.closest<HTMLElement>("[role=listbox]")?.scrollTop,
+    );
+    await page.keyboard.press("ArrowUp");
+    const strawberry = q.option("Strawberry");
+    await test.expect(strawberry).toHaveAttribute("data-active-item");
+    await test.expect(strawberry).toBeFocused();
+    await flushFrames(page, 3);
+    test
+      .expect(
+        await strawberry.evaluate(
+          (element) =>
+            element.closest<HTMLElement>("[role=listbox]")?.scrollTop,
+        ),
+      )
+      .toBe(scrollTop);
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
   });
 
