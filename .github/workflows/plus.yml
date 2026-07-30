@@ -34,7 +34,7 @@ jobs:
       - name: Install playwright
         uses: ./.github/workflows/install-playwright
         with:
-          engine: chromium
+          engines: chromium
           workspace: website
 
       - name: Cache Next.js

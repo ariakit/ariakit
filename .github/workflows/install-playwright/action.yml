@@ -2,8 +2,8 @@ name: install-playwright
 description: Install Playwright
 
 inputs:
-  engine:
-    description: Engine
+  engines:
+    description: Space-separated engines
     required: true
   workspace:
     description: Workspace that declares Playwright
@@ -12,21 +12,33 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Normalize Playwright engines
+      id: engines
+      shell: bash
+      env:
+        ENGINES: ${{ inputs.engines }}
+      run: |
+        read -r -a engines <<< "$ENGINES"
+        IFS=-
+        printf 'cache-key=%s\n' "${engines[*]}" >> "$GITHUB_OUTPUT"
+
     - name: Cache Playwright
       id: cache-playwright
       uses: actions/cache@v6
       with:
         path: |
           ${{ runner.os == 'macOS' && '~/Library/Caches/ms-playwright' || runner.os == 'Windows' && '~\\AppData\\Local\\ms-playwright' || '~/.cache/ms-playwright' }}
-        key: playwright-${{ runner.os }}-${{ inputs.engine }}-${{ hashFiles('pnpm-lock.yaml') }}
+        key: playwright-${{ runner.os }}-${{ steps.engines.outputs.cache-key }}-${{ hashFiles('pnpm-lock.yaml') }}
         restore-keys: |
-          playwright-${{ runner.os }}-${{ inputs.engine }}-
+          playwright-${{ runner.os }}-${{ steps.engines.outputs.cache-key }}-
           playwright-${{ runner.os }}-
 
     - name: Install Playwright
       if: steps.cache-playwright.outputs.cache-hit != 'true'
       shell: bash
       env:
-        ENGINE: ${{ inputs.engine }}
+        ENGINES: ${{ inputs.engines }}
         WORKSPACE: ${{ inputs.workspace }}
-      run: pnpm --filter "$WORKSPACE" exec playwright install --with-deps "$ENGINE"
+      run: |
+        read -r -a engines <<< "$ENGINES"
+        pnpm --filter "$WORKSPACE" exec playwright install --with-deps "${engines[@]}"
