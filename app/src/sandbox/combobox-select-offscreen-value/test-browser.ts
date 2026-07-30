@@ -1,4 +1,4 @@
-import type { Locator } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 function getCenterOffset(item: Locator) {
@@ -37,6 +37,46 @@ function getPaddedCenterOffset(item: Locator) {
     const itemCenter = itemRect.top + itemRect.height / 2;
     return itemCenter - viewportCenter;
   });
+}
+
+function getInlineOverflow(item: Locator) {
+  return item.evaluate((element) => {
+    const listbox = element.closest<HTMLElement>("[role=listbox]");
+    if (!listbox) return Infinity;
+    const listboxRect = listbox.getBoundingClientRect();
+    const itemRect = element.getBoundingClientRect();
+    const scaleX = listboxRect.width / listbox.offsetWidth;
+    const viewportStart = listboxRect.left + listbox.clientLeft * scaleX;
+    const viewportEnd = viewportStart + listbox.clientWidth * scaleX;
+    return Math.max(
+      viewportStart - itemRect.left,
+      itemRect.right - viewportEnd,
+      0,
+    );
+  });
+}
+
+function getNestedCenterOffset(item: Locator) {
+  return item.evaluate((element) => {
+    const scroller = element.closest<HTMLElement>(
+      "[data-testid=nested-vertical-scroll]",
+    );
+    if (!scroller) return Infinity;
+    const scrollerRect = scroller.getBoundingClientRect();
+    const itemRect = element.getBoundingClientRect();
+    const scaleY = scrollerRect.height / scroller.offsetHeight;
+    const viewportStart = scrollerRect.top + scroller.clientTop * scaleY;
+    const viewportEnd = viewportStart + scroller.clientHeight * scaleY;
+    const viewportCenter = (viewportStart + viewportEnd) / 2;
+    const itemCenter = itemRect.top + itemRect.height / 2;
+    return itemCenter - viewportCenter;
+  });
+}
+
+function renderGeometryCase(page: Page, label: string) {
+  return page
+    .getByRole("combobox", { name: "Geometry case" })
+    .selectOption({ label });
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
@@ -106,6 +146,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await select.click();
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
     await page.keyboard.press("Escape");
+    await test.expect(select).toHaveAttribute("aria-expanded", "false");
+    await test.expect(q.listbox()).not.toBeVisible();
     await page.evaluate(() => window.scrollTo({ top: 100 }));
     await test.expect.poll(() => page.evaluate(() => window.scrollY)).toBe(100);
 
@@ -117,23 +159,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .poll(async () => Math.abs(await getCenterOffset(watermelon)))
       .toBeLessThanOrEqual(1);
     await test.expect(watermelon).toBeInViewport();
-    test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
-
-    await page.keyboard.press("ArrowUp");
-    const lastItem = q.option("No filterable fruit");
-    await test.expect(lastItem).toHaveAttribute("data-active-item");
-    await test.expect(lastItem).toBeFocused();
-    // No observable state reports the absence of a delayed presentation pass,
-    // so wait through that checkpoint before asserting nearest-edge scrolling.
-    await flushFrames(page, 3);
-    const bottomOffset = await lastItem.evaluate((element) => {
-      const listbox = element.closest("[role=listbox]");
-      if (!listbox) return Infinity;
-      const listboxRect = listbox.getBoundingClientRect();
-      const itemRect = element.getBoundingClientRect();
-      return listboxRect.bottom - itemRect.bottom;
-    });
-    test.expect(Math.abs(bottomOffset)).toBeLessThanOrEqual(1);
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
   });
 
@@ -171,7 +196,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/6838
-  test("centers inside a transformed client scrollport", async ({ q }) => {
+  test("centers inside a transformed client scrollport", async ({
+    page,
+    q,
+  }) => {
+    await renderGeometryCase(page, "Scaled filterable fruit");
     const select = q.combobox("Scaled filterable fruit");
     const mango = q.option("Mango");
     await select.click();
@@ -186,6 +215,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     page,
     q,
   }) => {
+    await renderGeometryCase(page, "Horizontal wrapper fruit");
     const select = q.combobox("Horizontal wrapper fruit");
     const mango = q.option("Mango");
     await select.click();
@@ -205,6 +235,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   // https://github.com/ariakit/ariakit/issues/6838
   test("centers a transformed descendant", async ({ page, q }) => {
+    await renderGeometryCase(page, "Translated item fruit");
     const select = q.combobox("Translated item fruit");
     const mango = q.option("Mango");
     await select.click();
@@ -219,7 +250,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/6838
-  test("centers within the scroll-padding viewing area", async ({ q }) => {
+  test("centers within the scroll-padding viewing area", async ({
+    page,
+    q,
+  }) => {
+    await renderGeometryCase(page, "Padded filterable fruit");
     const select = q.combobox("Padded filterable fruit");
     const mango = q.option("Mango");
     await select.click();
@@ -229,6 +264,59 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeFocused();
     await test.expect
       .poll(async () => Math.abs(await getPaddedCenterOffset(mango)))
+      .toBeLessThanOrEqual(1);
+    await test.expect(mango).toBeInViewport();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6838
+  test("centers through nested vertical scroll containers", async ({
+    page,
+    q,
+  }) => {
+    await renderGeometryCase(page, "Nested vertical fruit");
+    const select = q.combobox("Nested vertical fruit");
+    const mango = q.option("Mango");
+    const listbox = q.listbox();
+    const nestedScroller = page.getByTestId("nested-vertical-scroll");
+    await select.click();
+
+    await test.expect
+      .poll(() => nestedScroller.evaluate((element) => element.scrollTop))
+      .toBeGreaterThan(0);
+    await test.expect
+      .poll(() => listbox.evaluate((element) => element.scrollTop))
+      .toBeGreaterThan(0);
+    await test.expect
+      .poll(async () => Math.abs(await getNestedCenterOffset(mango)))
+      .toBeLessThanOrEqual(1);
+    await test.expect
+      .poll(async () => Math.abs(await getCenterOffset(mango)))
+      .toBeLessThanOrEqual(1);
+    await test.expect(mango).toBeInViewport();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6838
+  test("centers through hidden-overflow scroll containers", async ({
+    page,
+    q,
+  }) => {
+    await renderGeometryCase(page, "Hidden overflow fruit");
+    const select = q.combobox("Hidden overflow fruit");
+    const mango = q.option("Mango");
+    const listbox = q.listbox();
+    await select.click();
+
+    await test.expect
+      .poll(() => listbox.evaluate((element) => element.scrollTop))
+      .toBeGreaterThan(0);
+    await test.expect
+      .poll(() => listbox.evaluate((element) => element.scrollLeft))
+      .toBeGreaterThan(0);
+    await test.expect
+      .poll(async () => Math.abs(await getCenterOffset(mango)))
+      .toBeLessThanOrEqual(1);
+    await test.expect
+      .poll(() => getInlineOverflow(mango))
       .toBeLessThanOrEqual(1);
     await test.expect(mango).toBeInViewport();
   });

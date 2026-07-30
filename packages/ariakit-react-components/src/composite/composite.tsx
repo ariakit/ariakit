@@ -49,6 +49,7 @@ import {
   groupItemsByRows,
   isItem,
   silentlyFocused,
+  withDocumentScrollPreserved,
 } from "./utils.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -192,6 +193,15 @@ function useScheduleFocus(
       withBaseScrollPreserved(store, () => {
         if (!focus) {
           scrollIntoView(activeElement);
+          return;
+        }
+        if (
+          !canScrollIntoView &&
+          activeElement.hasAttribute("data-autofocus")
+        ) {
+          withDocumentScrollPreserved(activeElement, () => {
+            focusIntoView(activeElement);
+          });
           return;
         }
         activeElement.focus({ preventScroll: true });

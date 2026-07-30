@@ -52,6 +52,28 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/pull/6832
+  test("presents a rendered generic autofocus item", async ({ q }) => {
+    const composite = q.listbox("Autofocus scroll actions");
+    await q.button("Mount late items").focus();
+    await composite.evaluate((element) => {
+      element.scrollTop = 0;
+    });
+    test
+      .expect(await composite.evaluate((element) => element.scrollTop))
+      .toBe(0);
+
+    await composite.focus();
+
+    await test
+      .expect(q.option("Autofocus scroll item"))
+      .toHaveAttribute("data-active-item");
+    await test.expect
+      .poll(() => composite.evaluate((element) => element.scrollTop))
+      .toBeGreaterThan(0);
+    await test.expect(composite).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6832
   test("presents a rendered generic item with an explicit callback", async ({
     q,
   }) => {

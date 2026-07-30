@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { ComboboxItem } from "@ariakit/react-components/combobox/combobox-item-offscreen";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 const fruits = [
   "Apple",
@@ -122,7 +122,9 @@ function Fixture({
 }
 
 type GeometryLayout =
+  | "hidden-overflow"
   | "horizontal-wrapper"
+  | "nested-vertical"
   | "padded"
   | "scaled"
   | "translated-item";
@@ -132,8 +134,18 @@ interface GeometryFixtureProps {
   layout: GeometryLayout;
 }
 
+const geometryLabels = {
+  "hidden-overflow": "Hidden overflow fruit",
+  "horizontal-wrapper": "Horizontal wrapper fruit",
+  "nested-vertical": "Nested vertical fruit",
+  padded: "Padded filterable fruit",
+  scaled: "Scaled filterable fruit",
+  "translated-item": "Translated item fruit",
+} satisfies Record<GeometryLayout, string>;
+
 function GeometryFixture({ label, layout }: GeometryFixtureProps) {
   const padded = layout === "padded";
+  const hiddenOverflow = layout === "hidden-overflow";
   const items = fruits.map((fruit) => {
     if (layout === "translated-item" && fruit === "Mango") {
       return (
@@ -170,7 +182,8 @@ function GeometryFixture({ label, layout }: GeometryFixtureProps) {
           borderBottomWidth: layout === "scaled" ? 7 : undefined,
           borderTopWidth: layout === "scaled" ? 3 : undefined,
           maxHeight: 120,
-          overflow: "auto",
+          minWidth: hiddenOverflow ? 160 : undefined,
+          overflow: hiddenOverflow ? "hidden" : "auto",
           overflowAnchor: layout === "translated-item" ? "none" : undefined,
           scrollPaddingBottom: padded ? 8 : undefined,
           scrollPaddingTop: padded ? 48 : undefined,
@@ -195,11 +208,48 @@ function GeometryFixture({ label, layout }: GeometryFixtureProps) {
           <div data-testid="horizontal-wrapper" style={{ overflowX: "auto" }}>
             <div style={{ width: 1000 }}>{items}</div>
           </div>
+        ) : layout === "nested-vertical" ? (
+          <>
+            <div style={{ height: 160 }} />
+            <div
+              data-testid="nested-vertical-scroll"
+              style={{ height: 80, overflowY: "auto" }}
+            >
+              {items}
+            </div>
+            <div style={{ height: 160 }} />
+          </>
+        ) : hiddenOverflow ? (
+          <div style={{ marginLeft: 320, width: 120 }}>{items}</div>
         ) : (
           items
         )}
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
+  );
+}
+
+function GeometryCases() {
+  const [layout, setLayout] = useState<GeometryLayout>("scaled");
+  return (
+    <>
+      <label>
+        Geometry case
+        <select
+          value={layout}
+          onChange={(event) =>
+            setLayout(event.currentTarget.value as GeometryLayout)
+          }
+        >
+          {Object.entries(geometryLabels).map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <GeometryFixture label={geometryLabels[layout]} layout={layout} />
+    </>
   );
 }
 
@@ -244,22 +294,7 @@ export default function Example() {
         />
       </div>
       <div style={{ marginTop: 200 }}>
-        <GeometryFixture label="Scaled filterable fruit" layout="scaled" />
-      </div>
-      <div style={{ marginTop: 200 }}>
-        <GeometryFixture
-          label="Horizontal wrapper fruit"
-          layout="horizontal-wrapper"
-        />
-      </div>
-      <div style={{ marginTop: 200 }}>
-        <GeometryFixture
-          label="Translated item fruit"
-          layout="translated-item"
-        />
-      </div>
-      <div style={{ marginTop: 200 }}>
-        <GeometryFixture label="Padded filterable fruit" layout="padded" />
+        <GeometryCases />
       </div>
     </>
   );

@@ -1,27 +1,8 @@
 import { withDocumentScrollPreserved } from "../composite/utils.ts";
 import type { ComboboxStore } from "./combobox-store.ts";
 
-function getVerticalScrollingElement(element: HTMLElement) {
-  const window = element.ownerDocument.defaultView;
-  const HTMLElementClass = window?.HTMLElement;
-  if (!window || !HTMLElementClass) return null;
-  let current = element.parentElement;
-  while (current) {
-    const { overflowY } = window.getComputedStyle(current);
-    const scrollable = overflowY === "auto" || overflowY === "scroll";
-    if (
-      scrollable &&
-      current.clientHeight &&
-      current.scrollHeight > current.clientHeight
-    ) {
-      return current;
-    }
-    current = current.parentElement;
-  }
-  const documentScroller =
-    element.ownerDocument.scrollingElement || element.ownerDocument.body;
-  if (!(documentScroller instanceof HTMLElementClass)) return null;
-  return documentScroller;
+function isScrollableOverflow(overflow: string) {
+  return overflow === "auto" || overflow === "hidden" || overflow === "scroll";
 }
 
 function getPixelValue(value: string, base: number) {
@@ -37,10 +18,8 @@ function scrollInlineIntoView(element: HTMLElement) {
   let current = element.parentElement;
   while (current) {
     const style = window.getComputedStyle(current);
-    const scrollable =
-      style.overflowX === "auto" || style.overflowX === "scroll";
     if (
-      scrollable &&
+      isScrollableOverflow(style.overflowX) &&
       current.clientWidth &&
       current.scrollWidth > current.clientWidth
     ) {
@@ -95,11 +74,11 @@ function scrollInlineIntoView(element: HTMLElement) {
   }
 }
 
-function centerIntoView(element: HTMLElement) {
-  const scroller = getVerticalScrollingElement(element);
-  if (!scroller) return;
-  const window = element.ownerDocument.defaultView;
-  if (!window) return;
+function centerBlockIntoView(
+  element: HTMLElement,
+  scroller: HTMLElement,
+  window: Window,
+) {
   const scrollerRect = scroller.getBoundingClientRect();
   const scaleY = scrollerRect.height / scroller.offsetHeight;
   if (!scaleY) return;
@@ -132,6 +111,23 @@ function centerIntoView(element: HTMLElement) {
   const delta =
     (elementStart + elementEnd - viewportStart - viewportEnd) / 2 / scaleY;
   scroller.scrollTop += delta;
+}
+
+function centerIntoView(element: HTMLElement) {
+  const window = element.ownerDocument.defaultView;
+  if (!window) return;
+  let current = element.parentElement;
+  while (current) {
+    const style = window.getComputedStyle(current);
+    if (
+      isScrollableOverflow(style.overflowY) &&
+      current.clientHeight &&
+      current.scrollHeight > current.clientHeight
+    ) {
+      centerBlockIntoView(element, current, window);
+    }
+    current = current.parentElement;
+  }
   scrollInlineIntoView(element);
 }
 
