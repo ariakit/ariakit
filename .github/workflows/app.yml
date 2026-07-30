@@ -205,8 +205,9 @@ jobs:
 
       - name: Remove stale screenshots
         if: always() && steps.update-screenshots.outcome == 'success'
-        # The update run only touches files that still exist, so remove any
-        # older screenshots for these browsers that were left behind.
+        # The update run re-stamps every screenshot still asserted through
+        # visual() in app/src/test-utils/visual.ts, so remove any older
+        # screenshots for these browsers that were left behind.
         run: |
           for project in $VISUAL_PROJECTS; do
             find app/src -path "*/__screenshots__/*-${project}.webp" ! -newer "${{ runner.temp }}/pre-update-marker" -delete
