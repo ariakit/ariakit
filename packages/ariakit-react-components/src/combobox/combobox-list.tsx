@@ -1,78 +1,33 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
   useAttribute,
-  useEvent,
+  useId,
   useMergeRefs,
   useSafeLayoutEffect,
+  useWrapElement,
   createElement,
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
-import type { Props } from "@ariakit/react-utils";
+import type { Options, Props } from "@ariakit/react-utils";
+import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import type { ElementType } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
+import { DialogHeadingContext } from "../dialog/dialog-context.tsx";
+import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
+import { isHidden } from "../disclosure/disclosure-content.tsx";
 import {
-  flatten2DArray,
-  reverseArray,
-  hasFocusWithin,
-  isSelfTarget,
-} from "@ariakit/utils";
-import type { ElementType, KeyboardEvent } from "react";
-import { useState } from "react";
-import { findFirstEnabledItem, groupItemsByRows } from "../composite/utils.ts";
-import type { FocusableOptions } from "../focusable/focusable.tsx";
-import { useFocusable } from "../focusable/focusable.tsx";
-import type { ComboboxContentOptions } from "./combobox-content.tsx";
-import { useComboboxContent } from "./combobox-content.tsx";
-import { useComboboxContext } from "./combobox-context.tsx";
-import type { ComboboxStoreItem } from "./combobox-store.ts";
+  ComboboxHeadingContext,
+  ComboboxListRoleContext,
+  ComboboxScopedContextProvider,
+  useComboboxContext,
+  useComboboxScopedContext,
+} from "./combobox-context.tsx";
+import type { ComboboxStore } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
-
-function findFirstEnabledItemInTheLastRow(items: ComboboxStoreItem[]) {
-  return findFirstEnabledItem(
-    flatten2DArray(reverseArray(groupItemsByRows(items))),
-  );
-}
-
-// The list's tabIndex depends on whether the content contains focus, so we need
-// to update it on native focus transitions.
-function useElementFocusWithin(
-  element?: HTMLElement | null,
-  activeDescendant?: string,
-) {
-  const [focusWithin, setFocusWithin] = useState(false);
-
-  useSafeLayoutEffect(() => {
-    if (!element) {
-      setFocusWithin(false);
-      return;
-    }
-    let canceled = false;
-    const update = () => {
-      if (canceled) return;
-      setFocusWithin(hasFocusWithin(element));
-    };
-    const onFocusIn = () => setFocusWithin(true);
-    const onFocusOut = () => {
-      // Virtual-focus handoffs may dispatch focusout with no related target.
-      // Recompute after the focus sequence instead of treating that as leaving.
-      queueMicrotask(update);
-    };
-    // Virtual focus can move without a DOM focus event, so this also runs when
-    // aria-activedescendant changes.
-    queueMicrotask(update);
-    element.addEventListener("focusin", onFocusIn);
-    element.addEventListener("focusout", onFocusOut);
-    return () => {
-      canceled = true;
-      element.removeEventListener("focusin", onFocusIn);
-      element.removeEventListener("focusout", onFocusOut);
-    };
-  }, [element, activeDescendant]);
-
-  return focusWithin;
-}
 
 /**
  * Returns props to create a `ComboboxList` component.
@@ -89,98 +44,122 @@ function useElementFocusWithin(
  * ```
  */
 export const useComboboxList = createHook<TagName, ComboboxListOptions>(
-  function useComboboxList({ store, ...props }) {
+  function useComboboxList({ store, alwaysVisible, ...props }) {
+    const scopedContext = useComboboxScopedContext(true);
     const context = useComboboxContext();
     store = store || context;
+    const scopedContextSameStore = !!store && store === scopedContext;
 
-    const virtualFocus = useStoreState(store, "virtualFocus");
-    const baseElement = useStoreState(store, "baseElement");
+    invariant(
+      store,
+      process.env.NODE_ENV !== "production" &&
+        "ComboboxList must receive a `store` prop or be wrapped in a ComboboxProvider component.",
+    );
+
+    const ref = useRef<HTMLType>(null);
+    const id = useId(props.id);
+    const mounted = useStoreState(store, "mounted");
+    const hidden = isHidden(mounted, props.hidden, alwaysVisible);
+    const style = hidden ? { ...props.style, display: "none" } : props.style;
+
+    const multiSelectable = useStoreState(store, ["selectedValue"], (state) =>
+      Array.isArray(state.selectedValue),
+    );
+
+    const role = useAttribute(ref, "role", props.role);
+    const isCompositeRole =
+      role === "listbox" || role === "tree" || role === "grid";
+    const ariaMultiSelectable = isCompositeRole
+      ? multiSelectable || undefined
+      : undefined;
+
+    const [hasListboxInside, setHasListboxInside] = useState(false);
     const contentElement = useStoreState(store, "contentElement");
-    const [listElement, setListElement] = useState<HTMLType | null>(null);
-    const activeDescendant = useAttribute(
-      baseElement || null,
-      "aria-activedescendant",
+    const parentHeadingContext = useContext(ComboboxHeadingContext);
+    const headingState = useState<string>();
+    const [headingId, setHeadingId] = parentHeadingContext || headingState;
+    const headingContext = useMemo<typeof headingState>(
+      () => [headingId, setHeadingId],
+      [headingId, setHeadingId],
     );
-    const contentFocusWithin = useElementFocusWithin(
-      contentElement,
-      activeDescendant,
-    );
-    const listFocusWithin = useElementFocusWithin(
-      listElement,
-      activeDescendant,
-    );
-
-    const onKeyDownProp = props.onKeyDown;
-
-    const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
-      onKeyDownProp?.(event);
-      // https://github.com/ariakit/ariakit/issues/4388
-      if (event.nativeEvent.isComposing) return;
-      if (event.defaultPrevented) return;
-      if (!store) return;
-      if (!isSelfTarget(event)) return;
-      const { orientation, renderedItems, activeId } = store.getState();
-      // A store may back multiple mounted lists. Restricting movement to this
-      // list prevents an active item in another, possibly hidden, list from
-      // becoming the next focus target.
-      const movementItems = renderedItems.filter(
-        (item) => item.element && event.currentTarget.contains(item.element),
-      );
-      const localActiveId = movementItems.some((item) => item.id === activeId)
-        ? activeId
-        : null;
-      const moveOptions = {
-        activeId: localActiveId,
-        renderedItems: movementItems,
+    // We support nested <ComboboxList> elements (usually in the form of
+    // ComboboxPopover>ComboboxList), but we can't have nested listbox roles, so
+    // we check here if there's already a listbox element inside the current
+    // element.
+    useSafeLayoutEffect(() => {
+      if (!mounted) return;
+      const element = ref.current;
+      if (!element) return;
+      if (contentElement !== element) return;
+      const callback = () => {
+        setHasListboxInside(!!element.querySelector("[role='listbox']"));
       };
-      const isGrid = movementItems.some((item) => !!item.rowId);
-      const isVertical = orientation !== "horizontal";
-      const isHorizontal = orientation !== "vertical";
-      const first = () => findFirstEnabledItem(movementItems)?.id;
-      const last = () => findFirstEnabledItem(reverseArray(movementItems))?.id;
-      const up = () => {
-        if (isGrid && localActiveId === null) {
-          // Match Composite's initial grid entry at the first enabled cell in
-          // the last row instead of the last cell in the flattened collection.
-          return findFirstEnabledItemInTheLastRow(movementItems)?.id;
-        }
-        return store.up(moveOptions);
-      };
-      const keyMap = {
-        ArrowUp: (isGrid || isVertical) && up,
-        ArrowRight: (isGrid || isHorizontal) && (() => store.next(moveOptions)),
-        ArrowDown: (isGrid || isVertical) && (() => store.down(moveOptions)),
-        ArrowLeft:
-          (isGrid || isHorizontal) && (() => store.previous(moveOptions)),
-        Home: first,
-        End: last,
-        PageUp: first,
-        PageDown: last,
-      };
-      const action = keyMap[event.key as keyof typeof keyMap];
-      if (!action) return;
-      const id = action();
-      if (id === undefined) return;
-      event.preventDefault();
-      store.move(id);
-    });
+      const observer = new MutationObserver(callback);
+      observer.observe(element, {
+        subtree: true,
+        childList: true,
+        attributeFilter: ["role"],
+      });
+      callback();
+      return () => observer.disconnect();
+    }, [mounted, contentElement]);
 
-    // aria-activedescendant may put virtual focus within either this list or a
-    // sibling composite. Only the former should keep the list out of Tab order.
-    let tabIndex = props.tabIndex;
-    if (tabIndex == null && props.focusable !== false) {
-      tabIndex =
-        virtualFocus && contentFocusWithin && !listFocusWithin ? 0 : -1;
+    if (!hasListboxInside) {
+      props = {
+        role: "listbox",
+        "aria-multiselectable": ariaMultiSelectable,
+        ...props,
+      };
     }
+
+    // Heading hooks publish their id through DialogHeadingContext. Redirecting
+    // that setter here makes the heading label this list, whose props take
+    // precedence when it shares an element with ComboboxPopover.
+    // ComboboxHeadingContext also exposes the id so nested lists can inherit it.
+    props = useWrapElement(
+      props,
+      (element) => (
+        <ComboboxScopedContextProvider value={store}>
+          <ComboboxHeadingContext.Provider value={headingContext}>
+            <DialogHeadingContext.Provider value={setHeadingId}>
+              <ComboboxListRoleContext.Provider value={role}>
+                {element}
+              </ComboboxListRoleContext.Provider>
+            </DialogHeadingContext.Provider>
+          </ComboboxHeadingContext.Provider>
+        </ComboboxScopedContextProvider>
+      ),
+      [store, role, headingContext],
+    );
+
+    // When nesting ComboboxList elements, the content element should be
+    // assigned to the topmost ComboboxList element.
+    const setContentElement =
+      id && (!scopedContext || !scopedContextSameStore)
+        ? store.setContentElement
+        : null;
+    const labelElement = useStoreState(
+      store,
+      ["labelElement", "selectLabelElement"],
+      (state) => {
+        if (headingId) return null;
+        return state.selectLabelElement || state.labelElement;
+      },
+    );
+    useAttribute(labelElement, "id");
+    const labelId = headingId || labelElement?.id;
+
     props = {
+      "aria-labelledby": props["aria-label"] != null ? undefined : labelId,
+      hidden,
       ...props,
-      ref: useMergeRefs(setListElement, props.ref),
-      tabIndex,
-      onKeyDown,
+      id,
+      ref: useMergeRefs(setContentElement, ref, props.ref),
+      style,
+      tabIndex: props.tabIndex ?? -1,
     };
-    props = useComboboxContent({ store, ...props });
-    props = useFocusable(props);
-    return props;
+
+    return removeUndefinedValues(props);
   },
 );
 
@@ -209,7 +188,16 @@ export const ComboboxList = forwardRef(function ComboboxList(
 });
 
 export interface ComboboxListOptions<T extends ElementType = TagName>
-  extends FocusableOptions<T>, ComboboxContentOptions<T> {}
+  extends Options, Pick<DisclosureContentOptions<T>, "alwaysVisible"> {
+  /**
+   * Object returned by the
+   * [`useComboboxStore`](https://ariakit.com/reference/use-combobox-store)
+   * hook. If not provided, the closest
+   * [`ComboboxProvider`](https://ariakit.com/reference/combobox-provider)
+   * component's context will be used.
+   */
+  store?: ComboboxStore;
+}
 
 export type ComboboxListProps<T extends ElementType = TagName> = Props<
   T,

@@ -4,22 +4,6 @@ const cases = ["Select with Tab", "Select with Combobox and Tab"];
 
 withFramework(import.meta.dirname, async ({ test }) => {
   for (const label of cases) {
-    test(`${label} tabs to the list after focusing a tab`, async ({
-      page,
-      q,
-    }) => {
-      await q.combobox(label).click();
-      await page.keyboard.press("ArrowRight");
-      const list = q.listbox();
-      await test.expect(q.tab("Tags")).toHaveAttribute("data-focus-visible");
-      await test.expect(list).toHaveAttribute("tabindex", "0");
-
-      await page.keyboard.press("Tab");
-      await test.expect(list).toBeFocused();
-      await page.keyboard.press("Tab");
-      await test.expect(q.dialog()).not.toBeVisible();
-    });
-
     test(`${label} restores the selected option after switching tabs`, async ({
       page,
       q,

@@ -37,9 +37,6 @@ test("shows and hides the cancel button with popover focus", async () => {
   await press.Tab();
   expect(cancel).toHaveFocus();
   await press.Tab();
-  expect(q.listbox()).toHaveFocus();
-  expect(q.dialog()).toBeInTheDocument();
-  await press.Tab();
   expect(q.dialog()).not.toBeInTheDocument();
 });
 
@@ -55,9 +52,6 @@ test("tracks focus within the select composition", async () => {
   expect(group).toHaveClass("focus-within");
   await press.Enter();
   await press.Tab();
-  await press.Tab();
-  expect(q.listbox()).toHaveFocus();
-  expect(group).toHaveClass("focus-within");
   await press.Tab();
   expect(group).not.toHaveClass("focus-within");
 });

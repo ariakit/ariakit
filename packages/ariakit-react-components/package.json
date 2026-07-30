@@ -63,7 +63,6 @@
     "./combobox/combobox": "./src/combobox/combobox.tsx",
     "./combobox/combobox-anchor": "./src/combobox/combobox-anchor.tsx",
     "./combobox/combobox-cancel": "./src/combobox/combobox-cancel.tsx",
-    "./combobox/combobox-content": "./src/combobox/combobox-content.tsx",
     "./combobox/combobox-context": "./src/combobox/combobox-context.tsx",
     "./combobox/combobox-disclosure": "./src/combobox/combobox-disclosure.tsx",
     "./combobox/combobox-dismiss": "./src/combobox/combobox-dismiss.tsx",

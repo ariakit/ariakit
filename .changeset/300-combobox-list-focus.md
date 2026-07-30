@@ -3,4 +3,4 @@
 "@ariakit/react": patch
 ---
 
-Made [`ComboboxList`](https://ariakit.com/reference/combobox-list) focusable when using virtual focus so keyboard users can Tab to it from within the combobox popover and continue navigating from the active item.
+Fixed [`ComboboxList`](https://ariakit.com/reference/combobox-list) to render with `tabIndex={-1}` by default, preventing scrollable listboxes from becoming unintended Tab stops in Chromium and Firefox. An explicit `tabIndex` prop continues to override the default.
