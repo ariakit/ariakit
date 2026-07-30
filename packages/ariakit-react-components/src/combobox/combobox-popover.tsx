@@ -10,18 +10,12 @@ import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import {
   getActiveElement,
-  isFocusable,
-  isSelfTarget,
   getDocument,
   invariant,
   isFalsyBooleanCallback,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
-import type {
-  ElementType,
-  FocusEvent,
-  KeyboardEvent as ReactKeyboardEvent,
-} from "react";
+import type { ElementType, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useEffect, useRef } from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
@@ -34,7 +28,6 @@ import { useComboboxList } from "./combobox-list.tsx";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
-type HTMLType = HTMLElementTagNameMap[TagName];
 
 function isController(
   target: EventTarget | Element | null,
@@ -145,27 +138,6 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       );
     }, [store]);
 
-    // Virtual focus keeps DOM focus on the combobox input or select, so the
-    // popup itself must never hold it. Otherwise arrow keys stop working until
-    // the user tabs back out.
-    const onFocusProp = props.onFocus;
-
-    const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
-      onFocusProp?.(event);
-      if (event.defaultPrevented) return;
-      if (!isSelfTarget(event)) return;
-      const baseElement = store?.getState().baseElement;
-      if (!baseElement) return;
-      // A modal popover may render the base element inert, in which case
-      // moving focus there would fight the dialog's focus containment.
-      if (!isFocusable(baseElement)) return;
-      const popover = event.currentTarget;
-      queueMicrotask(() => {
-        if (getDocument(popover).activeElement !== popover) return;
-        baseElement.focus();
-      });
-    });
-
     // Moving through items only changes the selected value when selectOnMove is
     // enabled, so that's the only case where there's something to restore.
     const resetOnEscapeProp = useBooleanEvent(resetOnEscape ?? selectOnMove);
@@ -184,7 +156,6 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       store,
       alwaysVisible,
       ...props,
-      onFocus,
     });
     props = useCompositeTypeahead({
       store,

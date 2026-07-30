@@ -1,3 +1,4 @@
+import { Button } from "@ariakit/react";
 import { matchSorter } from "match-sorter";
 import { useDeferredValue, useMemo, useState } from "react";
 import list from "../combobox-multiple/list.ts";
@@ -28,9 +29,7 @@ export default function Example() {
         ))}
         {!matches.length && <div className="no-results">No results found</div>}
       </Combobox>
-      <button type="button" tabIndex={0}>
-        After combobox
-      </button>
+      <Button>After combobox</Button>
     </>
   );
 }

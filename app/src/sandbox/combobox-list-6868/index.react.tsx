@@ -36,11 +36,25 @@ function FruitSelect({ label, listTabIndex }: FruitSelectProps) {
   );
 }
 
+function StandaloneFruitList() {
+  return (
+    <Ariakit.ComboboxProvider>
+      <Ariakit.Combobox aria-label="Standalone fruit" />
+      <Ariakit.ComboboxList alwaysVisible aria-label="Standalone fruit options">
+        {fruits.map((fruit) => (
+          <Ariakit.ComboboxItem key={fruit} value={fruit} />
+        ))}
+      </Ariakit.ComboboxList>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
       <FruitSelect label="Default fruit" />
       <FruitSelect label="Opt-in fruit" listTabIndex={0} />
+      <StandaloneFruitList />
     </>
   );
 }

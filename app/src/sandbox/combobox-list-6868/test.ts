@@ -12,7 +12,7 @@ test("skips the list by default", async () => {
   expect(q.button("After Default fruit options")).toHaveFocus();
 
   await focus(list);
-  expect(list).toHaveFocus();
+  expect(list).not.toHaveFocus();
 });
 
 // https://github.com/ariakit/ariakit/issues/6868
@@ -36,5 +36,16 @@ test("supports opting into the tab order", async () => {
   expect(list).toHaveAttribute("tabindex", "0");
 
   await press.Tab();
-  expect(list).toHaveFocus();
+  expect(q.within(list).option("Apple")).toHaveAttribute(
+    "data-focus-visible",
+    "true",
+  );
+});
+
+test("moves focus from a standalone list to the combobox", async () => {
+  const combobox = q.combobox.ensure("Standalone fruit");
+  const list = q.listbox.ensure("Standalone fruit options");
+
+  await click(list);
+  expect(combobox).toHaveFocus();
 });

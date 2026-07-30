@@ -1,6 +1,6 @@
 import { withFramework } from "#app/test-utils/preview.ts";
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFramework(import.meta.dirname, async ({ test, query }) => {
   // https://github.com/ariakit/ariakit/issues/6868
   test("skips a scrollable list by default", async ({ page, q }) => {
     await q.combobox("Default fruit").click();
@@ -16,7 +16,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.button("After Default fruit options")).toBeFocused();
 
     await list.focus();
-    await test.expect(list).toBeFocused();
+    await test.expect(list).not.toBeFocused();
   });
 
   // https://github.com/ariakit/ariakit/issues/6868
@@ -41,6 +41,16 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(list).toHaveAttribute("tabindex", "0");
 
     await page.keyboard.press("Tab");
-    await test.expect(list).toBeFocused();
+    await test
+      .expect(query(list).option("Apple"))
+      .toHaveAttribute("data-focus-visible", "true");
+  });
+
+  test("moves focus from a standalone list to the combobox", async ({ q }) => {
+    const combobox = q.combobox("Standalone fruit");
+    const list = q.listbox("Standalone fruit options");
+
+    await list.click();
+    await test.expect(combobox).toBeFocused();
   });
 });
