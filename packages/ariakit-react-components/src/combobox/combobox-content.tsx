@@ -82,6 +82,7 @@ export const useComboboxContent = createHook<TagName, ComboboxContentOptions>(
       () => [headingId, setHeadingId],
       [headingId, setHeadingId],
     );
+
     // We support nested <ComboboxContent> elements (usually in the form of
     // ComboboxPopover>ComboboxList), but we can't have nested listbox roles, so
     // we check here if there's already a listbox element inside the current

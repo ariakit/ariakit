@@ -30,7 +30,7 @@ export default function Example() {
               <Ariakit.Tab id="tab-vegetables">Vegetables</Ariakit.Tab>
             </Ariakit.TabList>
             <Ariakit.TabPanel tabId="tab-fruits">
-              <Ariakit.ComboboxList>
+              <Ariakit.ComboboxList aria-label="Fruits">
                 <Ariakit.ComboboxItem value="Apple" />
                 <Ariakit.ComboboxItem value="Banana" />
               </Ariakit.ComboboxList>
@@ -39,7 +39,7 @@ export default function Example() {
               </BrowseTabButton>
             </Ariakit.TabPanel>
             <Ariakit.TabPanel tabId="tab-vegetables">
-              <Ariakit.ComboboxList>
+              <Ariakit.ComboboxList aria-label="Vegetables">
                 <Ariakit.ComboboxItem value="Carrot" />
                 <Ariakit.ComboboxItem value="Potato" />
               </Ariakit.ComboboxList>

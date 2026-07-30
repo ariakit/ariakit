@@ -1,4 +1,4 @@
-import { click, q } from "@ariakit/test";
+import { click, focus, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/6346
@@ -44,4 +44,16 @@ test("activates the tab selected by setSelectedId after the popover toggles", as
   expect(q.tab("Fruits")).toHaveAttribute("aria-selected", "true");
   expect(q.tab("Fruits")).toHaveAttribute("data-active-item");
   expect(q.tab("Fruits")).not.toHaveAttribute("tabindex", "-1");
+});
+
+test("scopes keyboard navigation to the focused list", async () => {
+  await click(q.combobox("Grocery"));
+  expect(q.option("Apple")).toHaveAttribute("data-active-item");
+
+  await click(q.button("Browse vegetables"));
+  const list = q.listbox("Vegetables");
+  await focus(list);
+  await press.ArrowDown();
+
+  expect(q.option("Carrot")).toHaveFocus();
 });

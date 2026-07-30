@@ -32,7 +32,7 @@ function FruitSelect({ label, virtualFocus }: FruitSelectProps) {
     >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect />
-      <Ariakit.ComboboxPopover gutter={4}>
+      <Ariakit.ComboboxPopover gutter={4} autoFocusOnHide={false}>
         <Ariakit.ComboboxInput aria-label={`Search ${label}`} />
         <button type="button" tabIndex={0}>
           Review {label} options
@@ -44,6 +44,9 @@ function FruitSelect({ label, virtualFocus }: FruitSelectProps) {
           <Ariakit.ComboboxItem value="Orange" />
           <Ariakit.ComboboxItem disabled value="Pear" />
         </Ariakit.ComboboxList>
+        <button type="button" tabIndex={0}>
+          After {label} options
+        </button>
       </Ariakit.ComboboxPopover>
       <BaseElementStatus label={label} />
       <SelectedValueStatus label={label} />
@@ -54,7 +57,8 @@ function FruitSelect({ label, virtualFocus }: FruitSelectProps) {
 function GridFruitSelect() {
   return (
     <Ariakit.ComboboxProvider
-      defaultSelectedValue="Top Center"
+      defaultActiveId={null}
+      defaultSelectedValue=""
       rtl
       virtualFocus={false}
     >
@@ -79,12 +83,31 @@ function GridFruitSelect() {
   );
 }
 
+function ExternalBaseFruitSelect() {
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Banana" virtualFocus>
+      <Ariakit.ComboboxSelect aria-label="External base fruit" />
+      <Ariakit.ComboboxPopover autoFocusOnHide={false} gutter={4}>
+        <Ariakit.ComboboxList aria-label="External base fruit options">
+          <Ariakit.ComboboxItem value="Apple" />
+          <Ariakit.ComboboxItem value="Banana" />
+          <Ariakit.ComboboxItem value="Orange" />
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxPopover>
+      <button type="button" tabIndex={0}>
+        After external base fruit
+      </button>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 export default function Example() {
   return (
     <>
       <FruitSelect label="Virtual focus fruit" />
       <FruitSelect label="Real focus fruit" virtualFocus={false} />
       <GridFruitSelect />
+      <ExternalBaseFruitSelect />
       <button type="button">After selects</button>
     </>
   );
