@@ -8,6 +8,9 @@ test("gets the runner platform from screenshot upload steps", () => {
   expect(getVisualPlatform("Upload screenshots (macos-latest)")).toBe(
     "macos-latest",
   );
+  expect(getVisualPlatform("Upload screenshots (macOS-latest)")).toBe(
+    "macOS-latest",
+  );
 });
 
 test("ignores unrelated workflow steps", () => {
