@@ -24,33 +24,33 @@ test("skips a non-scrollable list with real focus", async () => {
     "Apple",
   );
 
-  list.focus();
+  await focus(list);
   await press.ArrowDown();
   expect(q.within(list).option("Banana")).toHaveFocus();
   expect(q.status("Real focus fruit selected value")).toHaveTextContent(
     "Banana",
   );
 
-  list.focus();
+  await focus(list);
   await press.ArrowUp();
   expect(q.within(list).option("Apple")).toHaveFocus();
   expect(q.status("Real focus fruit selected value")).toHaveTextContent(
     "Apple",
   );
 
-  list.focus();
+  await focus(list);
   await press.Home();
   expect(q.within(list).option("Apple")).toHaveFocus();
 
-  list.focus();
+  await focus(list);
   await press.End();
   expect(q.within(list).option("Orange")).toHaveFocus();
 
-  list.focus();
+  await focus(list);
   await press.PageUp();
   expect(q.within(list).option("Apple")).toHaveFocus();
 
-  list.focus();
+  await focus(list);
   await press.PageDown();
   expect(q.within(list).option("Orange")).toHaveFocus();
 });
@@ -81,7 +81,7 @@ test("tabs to a non-scrollable list with virtual focus", async () => {
     "Orange",
   );
 
-  list.focus();
+  await focus(list);
   const banana = q.within(list).option("Banana");
 
   await press.ArrowUp();
