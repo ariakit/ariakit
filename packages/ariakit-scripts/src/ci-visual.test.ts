@@ -15,4 +15,5 @@ test("gets the runner platform from screenshot upload steps", () => {
 
 test("ignores unrelated workflow steps", () => {
   expect(getVisualPlatform("Upload test results to GitHub")).toBeUndefined();
+  expect(getVisualPlatform("Upload screenshots ()")).toBeUndefined();
 });
