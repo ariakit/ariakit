@@ -52,6 +52,7 @@ describe.each(cases)("%s", (label, searchable, manual) => {
     await click(q.combobox(label));
     await press.ArrowRight();
     expect(q.tab("Tags")).toHaveFocus();
+    expect(q.listbox()).toHaveAttribute("tabindex", "0");
     await press.Tab();
     expect(q.listbox()).toHaveFocus();
     expect(q.dialog()).toBeInTheDocument();

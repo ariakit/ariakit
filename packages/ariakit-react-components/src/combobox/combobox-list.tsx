@@ -1,6 +1,8 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
+  useAttribute,
   useEvent,
+  useMergeRefs,
   useSafeLayoutEffect,
   createElement,
   createHook,
@@ -10,7 +12,7 @@ import type { Props } from "@ariakit/react-utils";
 import {
   flatten2DArray,
   reverseArray,
-  isFocusEventOutside,
+  hasFocusWithin,
   isSelfTarget,
 } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
@@ -21,7 +23,6 @@ import { useFocusable } from "../focusable/focusable.tsx";
 import type { ComboboxContentOptions } from "./combobox-content.tsx";
 import { useComboboxContent } from "./combobox-content.tsx";
 import { useComboboxContext } from "./combobox-context.tsx";
-import { hasNativeFocusWithin } from "./combobox-list-utils.ts";
 import type { ComboboxStoreItem } from "./combobox-store.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -34,9 +35,12 @@ function findFirstEnabledItemInTheLastRow(items: ComboboxStoreItem[]) {
   );
 }
 
-// The list's tabIndex depends on whether the popover or the virtual-focus base
-// contains focus, so we need to update it on native focus transitions.
-function useElementFocusWithin(element?: HTMLElement | null) {
+// The list's tabIndex depends on whether the content contains focus, so we need
+// to update it on native focus transitions.
+function useElementFocusWithin(
+  element?: HTMLElement | null,
+  activeDescendant?: string,
+) {
   const [focusWithin, setFocusWithin] = useState(false);
 
   useSafeLayoutEffect(() => {
@@ -44,21 +48,28 @@ function useElementFocusWithin(element?: HTMLElement | null) {
       setFocusWithin(false);
       return;
     }
-    const onFocusIn = () => setFocusWithin(true);
-    const onFocusOut = (event: FocusEvent) => {
-      if (!isFocusEventOutside(event, element)) return;
-      setFocusWithin(false);
+    let canceled = false;
+    const update = () => {
+      if (canceled) return;
+      setFocusWithin(hasFocusWithin(element));
     };
-    // aria-activedescendant represents virtual focus and must not make the
-    // content a tab stop when native focus is still on an external base.
-    setFocusWithin(hasNativeFocusWithin(element));
+    const onFocusIn = () => setFocusWithin(true);
+    const onFocusOut = () => {
+      // Virtual-focus handoffs may dispatch focusout with no related target.
+      // Recompute after the focus sequence instead of treating that as leaving.
+      queueMicrotask(update);
+    };
+    // Virtual focus can move without a DOM focus event, so this also runs when
+    // aria-activedescendant changes.
+    queueMicrotask(update);
     element.addEventListener("focusin", onFocusIn);
     element.addEventListener("focusout", onFocusOut);
     return () => {
+      canceled = true;
       element.removeEventListener("focusin", onFocusIn);
       element.removeEventListener("focusout", onFocusOut);
     };
-  }, [element]);
+  }, [element, activeDescendant]);
 
   return focusWithin;
 }
@@ -85,8 +96,19 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     const virtualFocus = useStoreState(store, "virtualFocus");
     const baseElement = useStoreState(store, "baseElement");
     const contentElement = useStoreState(store, "contentElement");
-    const baseFocusWithin = useElementFocusWithin(baseElement);
-    const contentFocusWithin = useElementFocusWithin(contentElement);
+    const [listElement, setListElement] = useState<HTMLType | null>(null);
+    const activeDescendant = useAttribute(
+      baseElement || null,
+      "aria-activedescendant",
+    );
+    const contentFocusWithin = useElementFocusWithin(
+      contentElement,
+      activeDescendant,
+    );
+    const listFocusWithin = useElementFocusWithin(
+      listElement,
+      activeDescendant,
+    );
 
     const onKeyDownProp = props.onKeyDown;
 
@@ -143,10 +165,17 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       store.move(id);
     });
 
+    // aria-activedescendant may put virtual focus within either this list or a
+    // sibling composite. Only the former should keep the list out of Tab order.
     const tabIndex =
       props.tabIndex ??
-      (virtualFocus && contentFocusWithin && !baseFocusWithin ? 0 : -1);
-    props = { ...props, tabIndex, onKeyDown };
+      (virtualFocus && contentFocusWithin && !listFocusWithin ? 0 : -1);
+    props = {
+      ...props,
+      ref: useMergeRefs(setListElement, props.ref),
+      tabIndex,
+      onKeyDown,
+    };
     props = useComboboxContent({ store, ...props });
     props = useFocusable(props);
     return props;
