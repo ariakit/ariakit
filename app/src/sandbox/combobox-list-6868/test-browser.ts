@@ -97,6 +97,27 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(hiddenList).toHaveAttribute("tabindex", "-1");
   });
 
+  test("keeps the list unfocusable when focusable is false", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox("Unfocusable list fruit").click();
+    const input = q.combobox("Search Unfocusable list fruit");
+    const list = q.listbox("Unfocusable list fruit");
+    await test.expect(input).toBeFocused();
+    await test.expect(list).not.toHaveAttribute("tabindex");
+
+    await page.keyboard.press("Tab");
+    await test
+      .expect(q.button("Review Unfocusable list fruit options"))
+      .toBeFocused();
+
+    await page.keyboard.press("Tab");
+    await test
+      .expect(q.button("After Unfocusable list fruit options"))
+      .toBeFocused();
+  });
+
   test("keeps the list out of the tab order after leaving an external base", async ({
     page,
     q,

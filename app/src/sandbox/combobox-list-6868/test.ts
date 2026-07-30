@@ -96,6 +96,19 @@ test("tabs to a non-scrollable list with virtual focus", async () => {
   expect(list).toHaveAttribute("tabindex", "-1");
 });
 
+test("keeps the list unfocusable when focusable is false", async () => {
+  await click(q.combobox("Unfocusable list fruit"));
+  expect(q.combobox("Search Unfocusable list fruit")).toHaveFocus();
+  const list = q.listbox.ensure("Unfocusable list fruit");
+  expect(list).not.toHaveAttribute("tabindex");
+
+  await press.Tab();
+  expect(q.button("Review Unfocusable list fruit options")).toHaveFocus();
+
+  await press.Tab();
+  expect(q.button("After Unfocusable list fruit options")).toHaveFocus();
+});
+
 test("keeps the list out of the tab order after leaving an external base", async () => {
   const select = q.combobox("External base fruit");
   await click(select);

@@ -1,6 +1,7 @@
 import * as Ariakit from "@ariakit/react";
 
 interface FruitSelectProps {
+  focusable?: boolean;
   label: string;
   virtualFocus?: boolean;
 }
@@ -23,7 +24,7 @@ function SelectedValueStatus({ label }: Pick<FruitSelectProps, "label">) {
   );
 }
 
-function FruitSelect({ label, virtualFocus }: FruitSelectProps) {
+function FruitSelect({ focusable, label, virtualFocus }: FruitSelectProps) {
   return (
     <Ariakit.ComboboxProvider
       defaultSelectedValue="Banana"
@@ -37,7 +38,7 @@ function FruitSelect({ label, virtualFocus }: FruitSelectProps) {
         <button type="button" tabIndex={0}>
           Review {label} options
         </button>
-        <Ariakit.ComboboxList>
+        <Ariakit.ComboboxList focusable={focusable}>
           <Ariakit.ComboboxItem disabled value="Apricot" />
           <Ariakit.ComboboxItem value="Apple" />
           <Ariakit.ComboboxItem value="Banana" />
@@ -106,6 +107,7 @@ export default function Example() {
     <>
       <FruitSelect label="Virtual focus fruit" />
       <FruitSelect label="Real focus fruit" virtualFocus={false} />
+      <FruitSelect label="Unfocusable list fruit" focusable={false} />
       <GridFruitSelect />
       <ExternalBaseFruitSelect />
       <button type="button">After selects</button>

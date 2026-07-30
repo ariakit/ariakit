@@ -167,9 +167,11 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
 
     // aria-activedescendant may put virtual focus within either this list or a
     // sibling composite. Only the former should keep the list out of Tab order.
-    const tabIndex =
-      props.tabIndex ??
-      (virtualFocus && contentFocusWithin && !listFocusWithin ? 0 : -1);
+    let tabIndex = props.tabIndex;
+    if (tabIndex == null && props.focusable !== false) {
+      tabIndex =
+        virtualFocus && contentFocusWithin && !listFocusWithin ? 0 : -1;
+    }
     props = {
       ...props,
       ref: useMergeRefs(setListElement, props.ref),
