@@ -116,7 +116,12 @@ export default defineConfig({
         {
           name: "chrome",
           testMatch: testMatchersFor("chrome", "browser"),
-          use: devices["Desktop Chrome"],
+          use: {
+            ...devices["Desktop Chrome"],
+            // Headless Shell can complete a browser-created new-tab navigation
+            // without Playwright initializing its Page.
+            channel: "chromium",
+          },
         },
         {
           name: "firefox",
