@@ -116,7 +116,7 @@ function getFileSnapshotName(params: {
   const baseName = slugify(parts.join("-"));
   const count = getSnapshotCount(testInfo, baseName);
   const countSuffix = count > 0 ? `-${count}` : "";
-  return `${baseName}${countSuffix}-${testInfo.project.name}.png`;
+  return `${baseName}${countSuffix}-${testInfo.project.name}.webp`;
 }
 
 function touchScreenshot(testInfo: TestInfo, fileName: string) {
