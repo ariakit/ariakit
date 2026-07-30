@@ -107,6 +107,35 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
   });
 
+  // https://github.com/ariakit/ariakit/issues/6838
+  test("keeps nearest-edge scrolling after virtual focus movement", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Virtual focus fruit");
+    const watermelon = q.option("Watermelon");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+    await flushFrames(page, 3);
+
+    const scrollTop = await watermelon.evaluate(
+      (element) => element.closest<HTMLElement>("[role=listbox]")?.scrollTop,
+    );
+    await page.keyboard.press("ArrowUp");
+    const strawberry = q.option("Strawberry");
+    await test.expect(strawberry).toHaveAttribute("data-active-item");
+    await test.expect(q.combobox("Search Virtual focus fruit")).toBeFocused();
+    await flushFrames(page, 3);
+    test
+      .expect(
+        await strawberry.evaluate(
+          (element) =>
+            element.closest<HTMLElement>("[role=listbox]")?.scrollTop,
+        ),
+      )
+      .toBe(scrollTop);
+  });
+
   // https://github.com/ariakit/ariakit/pull/6832
   test("cancels presentation when real focus moves", async ({ page, q }) => {
     await q.combobox("Focus moving filterable fruit").click();
