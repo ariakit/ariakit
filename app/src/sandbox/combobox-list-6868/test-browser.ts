@@ -56,10 +56,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   }) => {
     await q.combobox("Virtual focus fruit").click();
     const input = q.combobox("Search Virtual focus fruit");
-    const list = q.listbox("Virtual focus fruit");
-    const listId = await list.getAttribute("id");
-    if (!listId) throw new Error("ComboboxList id not found");
-    const hiddenList = page.locator(`#${listId}`);
+    const list = q.listbox("Virtual focus fruit", { includeHidden: true });
     await test.expect(input).toBeFocused();
     await test.expect(list).toHaveAttribute("tabindex", "-1");
 
@@ -94,7 +91,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
     await q.button("After Virtual focus fruit options").focus();
     await q.button("After selects").focus();
-    await test.expect(hiddenList).toHaveAttribute("tabindex", "-1");
+    await test.expect(list).toHaveAttribute("tabindex", "-1");
   });
 
   test("keeps the list unfocusable when focusable is false", async ({
@@ -119,15 +116,13 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   });
 
   test("keeps the list out of the tab order after leaving an external base", async ({
-    page,
     q,
   }) => {
     const select = q.combobox("External base fruit");
     await select.click();
-    const list = q.listbox("External base fruit options");
-    const listId = await list.getAttribute("id");
-    if (!listId) throw new Error("ComboboxList id not found");
-    const hiddenList = page.locator(`#${listId}`);
+    const list = q.listbox("External base fruit options", {
+      includeHidden: true,
+    });
     const banana = query(list).option("Banana");
     const bananaId = await banana.getAttribute("id");
     if (!bananaId) throw new Error("ComboboxItem id not found");
@@ -138,7 +133,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     await test.expect(list).toHaveAttribute("tabindex", "-1");
 
     await q.button("After external base fruit").focus();
-    await test.expect(hiddenList).toHaveAttribute("tabindex", "-1");
+    await test.expect(list).toHaveAttribute("tabindex", "-1");
   });
 
   test("moves spatially from a focused RTL grid", async ({ page, q }) => {
