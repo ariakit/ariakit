@@ -42,6 +42,14 @@ export default defineConfig({
   },
   projects: [
     {
+      name: "mobile",
+      testMatch: /header/,
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 360, height: 800 },
+      },
+    },
+    {
       name: "plus",
       testMatch: /ariakit-plus/,
       retries: CI ? 3 : 1,
