@@ -3,6 +3,4 @@
 "@ariakit/react": patch
 ---
 
-Fixed [`ComboboxList`](https://ariakit.com/reference/combobox-list) to render with `tabIndex={-1}`, preventing scrollable listboxes from becoming unintended Tab stops in Chromium and Firefox.
-
-When the list itself receives focus, focus now moves back to the combobox control. This behavior was previously limited to [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover).
+Fixed [`ComboboxList`](https://ariakit.com/reference/combobox-list) to render with `tabIndex={-1}` and move focus back to the combobox control when the list receives focus, preventing unintended Tab stops and focus loops.
