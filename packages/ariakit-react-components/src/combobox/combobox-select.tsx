@@ -29,6 +29,7 @@ import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import { getVisuallyHiddenStyle } from "../visually-hidden/visually-hidden.tsx";
+import { scrollSelectedItemIntoView } from "./__utils.ts";
 import {
   ComboboxScopedContextProvider,
   useComboboxProviderContext,
@@ -122,6 +123,9 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     const multiSelectable = Array.isArray(selectedValue);
     const inputElement = useStoreState(store, "inputElement");
     const mounted = useStoreState(store, "mounted");
+    const scrollIntoView = useEvent((element: HTMLElement) => {
+      scrollSelectedItemIntoView(store, element);
+    });
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
@@ -307,6 +311,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       store,
       composite: !inputElement,
       focusable,
+      unstable_scrollIntoView: scrollIntoView,
       // The select handler owns closed navigation so it can skip value-less
       // items. Once open, Composite owns navigation and can also finish moves
       // whose offscreen target has no element yet.

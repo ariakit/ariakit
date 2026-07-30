@@ -1,14 +1,18 @@
 import * as Ariakit from "@ariakit/react";
 import { useState } from "react";
 
+function scrollItemIntoView(element: HTMLElement) {
+  element.scrollIntoView({ block: "nearest", inline: "nearest" });
+}
+
 export default function Example() {
   const store = Ariakit.useCompositeStore();
   const scrollStore = Ariakit.useCompositeStore({
     defaultActiveId: "late-scroll",
     virtualFocus: false,
   });
-  const autoFocusScrollStore = Ariakit.useCompositeStore({
-    defaultActiveId: "autofocus-scroll",
+  const scrollIntoViewStore = Ariakit.useCompositeStore({
+    defaultActiveId: "scroll-into-view",
     virtualFocus: true,
   });
   const [showLateItem, setShowLateItem] = useState(false);
@@ -60,15 +64,16 @@ export default function Example() {
         Mount late scroll item
       </button>
       <Ariakit.Composite
-        aria-label="Autofocus scroll actions"
+        aria-label="Explicit scroll actions"
         role="listbox"
-        store={autoFocusScrollStore}
+        store={scrollIntoViewStore}
         style={{ height: 80, overflow: "auto" }}
         tabIndex={0}
+        unstable_scrollIntoView={scrollItemIntoView}
       >
         <div style={{ height: 200 }} />
-        <Ariakit.CompositeItem autoFocus id="autofocus-scroll" role="option">
-          Autofocus scroll item
+        <Ariakit.CompositeItem id="scroll-into-view" role="option">
+          Scroll into view item
         </Ariakit.CompositeItem>
       </Ariakit.Composite>
     </>

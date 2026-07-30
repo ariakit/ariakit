@@ -19,7 +19,6 @@ import {
   afterPaint,
   beforePaint,
   getActiveElement,
-  getScrollingElement,
   isTextField,
   fireBlurEvent,
   fireKeyboardEvent,
@@ -50,7 +49,6 @@ import {
   groupItemsByRows,
   isItem,
   silentlyFocused,
-  withDocumentScrollPreserved,
 } from "./utils.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -135,68 +133,28 @@ function withBaseScrollPreserved(store: CompositeStore, callback: () => void) {
   baseElement.scrollTop = savedScrollTop;
 }
 
-function getOffset(element: HTMLElement, horizontal = false) {
-  let offset = 0;
-  let current: HTMLElement | null = element;
-  while (current) {
-    offset += horizontal ? current.offsetLeft : current.offsetTop;
-    current = current.offsetParent as HTMLElement | null;
-    if (current) {
-      offset += horizontal ? current.clientLeft : current.clientTop;
-    }
-  }
-  return offset;
-}
-
-function scrollInlineIntoView(element: HTMLElement, scroller: HTMLElement) {
-  const scrollerRect = scroller.getBoundingClientRect();
-  const elementRect = element.getBoundingClientRect();
-  const scale = scrollerRect.width / scroller.offsetWidth;
-  if (!scale) return;
-  const start = scrollerRect.left + scroller.clientLeft * scale;
-  const end = start + scroller.clientWidth * scale;
-  const before = elementRect.left < start;
-  const after = elementRect.right > end;
-  if (before === after) return;
-  const delta = before ? elementRect.left - start : elementRect.right - end;
-  scroller.scrollLeft += delta / scale;
-}
-
-function centerIntoView(element: HTMLElement) {
-  const scroller = getScrollingElement(element);
-  if (!scroller) return;
-  const HTMLElementClass = element.ownerDocument.defaultView?.HTMLElement;
-  if (!HTMLElementClass) return;
-  if (!(scroller instanceof HTMLElementClass)) return;
-  scrollInlineIntoView(element, scroller);
-  const elementCenter = getOffset(element) + element.offsetHeight / 2;
-  const scrollerCenter =
-    getOffset(scroller) + scroller.clientTop + scroller.clientHeight / 2;
-  scroller.scrollTop = elementCenter - scrollerCenter;
-}
-
-function useScheduleFocus(store: CompositeStore) {
+function useScheduleFocus(
+  store: CompositeStore,
+  unstableScrollIntoView?: (element: HTMLElement) => void,
+) {
   const [scheduled, setScheduled] = useState<"focus" | "scroll" | false>(false);
   const scrollIdRef = useRef<string | undefined>(undefined);
   const scrollBaseElementRef = useRef<HTMLElement | null>(null);
   const scrollBeforePaintRef = useRef(false);
+  const scrollIntoView = useEvent(unstableScrollIntoView);
+  const canScrollIntoView = unstableScrollIntoView != null;
   const scheduleFocus = useCallback(() => setScheduled("focus"), []);
   const scheduleScroll = useCallback(
     (baseElement: HTMLElement, beforeNextPaint = false) => {
-      const state = store.getState();
-      const selectMode = "selectElement" in state && !!state.selectElement;
-      if (!selectMode) return;
-      const { activeId } = state;
+      if (!canScrollIntoView) return;
+      const { activeId } = store.getState();
       if (activeId == null) return;
-      const activeElement = getEnabledItem(store, activeId)?.element;
-      if (activeElement && !activeElement.hasAttribute("data-autofocus"))
-        return;
       scrollIdRef.current = activeId;
       scrollBaseElementRef.current = baseElement;
       scrollBeforePaintRef.current = beforeNextPaint;
       setScheduled("scroll");
     },
-    [store],
+    [store, canScrollIntoView],
   );
   const cancelScroll = useCallback(() => {
     if (scrollIdRef.current === undefined) return;
@@ -232,25 +190,14 @@ function useScheduleFocus(store: CompositeStore) {
       if (!focus && (!scrollBaseElement || !hasFocus(scrollBaseElement)))
         return;
       withBaseScrollPreserved(store, () => {
-        if (activeElement.hasAttribute("data-autofocus")) {
-          withDocumentScrollPreserved(activeElement, () => {
-            if (focus) {
-              const state = store.getState();
-              const selectMode =
-                "selectElement" in state && !!state.selectElement;
-              const { baseElement } = state;
-              if (selectMode && baseElement) {
-                activeElement.focus({ preventScroll: true });
-                scheduleScroll(baseElement, true);
-              } else {
-                focusIntoView(activeElement);
-              }
-            } else {
-              centerIntoView(activeElement);
-            }
-          });
-        } else if (focus) {
-          activeElement.focus({ preventScroll: true });
+        if (!focus) {
+          scrollIntoView(activeElement);
+          return;
+        }
+        activeElement.focus({ preventScroll: true });
+        const { baseElement } = store.getState();
+        if (canScrollIntoView && baseElement) {
+          scheduleScroll(baseElement, true);
         }
       });
     };
@@ -261,7 +208,14 @@ function useScheduleFocus(store: CompositeStore) {
     }
     present();
     return undefined;
-  }, [store, activeItem, scheduled, scheduleScroll]);
+  }, [
+    store,
+    activeItem,
+    scheduled,
+    scheduleScroll,
+    scrollIntoView,
+    canScrollIntoView,
+  ]);
   return { scheduleFocus, scheduleScroll, cancelScroll };
 }
 
@@ -383,6 +337,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     composite = true,
     focusOnMove = composite,
     moveOnKeyPress = true,
+    unstable_scrollIntoView,
     ...props
   }) {
     const context = useCompositeProviderContext();
@@ -396,8 +351,10 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const ref = useRef<HTMLType>(null);
     const previousElementRef = useRef<HTMLElement | null>(null);
-    const { scheduleFocus, scheduleScroll, cancelScroll } =
-      useScheduleFocus(store);
+    const { scheduleFocus, scheduleScroll, cancelScroll } = useScheduleFocus(
+      store,
+      unstable_scrollIntoView,
+    );
 
     const [, setBaseElement] = useTransactionState(
       composite ? store.setBaseElement : null,
@@ -812,6 +769,8 @@ export interface CompositeOptions<
    * @default true
    */
   focusOnMove?: boolean;
+  /** @private */
+  unstable_scrollIntoView?: (element: HTMLElement) => void;
   /**
    * Determines whether [Focusable](https://ariakit.com/components/focusable)
    * features are active on the composite element.

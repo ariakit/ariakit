@@ -52,8 +52,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/pull/6832
-  test("presents a rendered generic autofocus item", async ({ q }) => {
-    const composite = q.listbox("Autofocus scroll actions");
+  test("presents a rendered generic item with an explicit callback", async ({
+    q,
+  }) => {
+    const composite = q.listbox("Explicit scroll actions");
     await q.button("Mount late items").focus();
     await composite.evaluate((element) => {
       element.scrollTop = 0;
@@ -65,7 +67,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await composite.focus();
 
     await test
-      .expect(q.option("Autofocus scroll item"))
+      .expect(q.option("Scroll into view item"))
       .toHaveAttribute("data-active-item");
     await test.expect
       .poll(() => composite.evaluate((element) => element.scrollTop))
