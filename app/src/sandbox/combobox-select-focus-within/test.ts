@@ -35,6 +35,7 @@ test("shows and hides the cancel button with popover focus", async () => {
   expect(cancel).toHaveAttribute("data-visible");
 
   await press.Tab();
+  expect(cancel).toHaveFocus();
   await press.Tab();
   expect(q.dialog()).not.toBeInTheDocument();
 });

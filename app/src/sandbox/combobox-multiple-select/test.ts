@@ -12,3 +12,12 @@ test("click on listbox then move through items with keyboard", async () => {
   expect(q.option("Apple")).toHaveFocus();
   expect(q.combobox()).toHaveFocus();
 });
+
+test("tabs past a popover rendered as a list", async () => {
+  await click(q.combobox());
+  expect(q.listbox()).toBeVisible();
+  expect(q.listbox()).toHaveAttribute("tabindex", "-1");
+
+  await press.Tab();
+  expect(q.button("After combobox")).toHaveFocus();
+});
