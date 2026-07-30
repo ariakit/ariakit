@@ -30,7 +30,7 @@ function FruitSelect({ label, listTabIndex }: FruitSelectProps) {
           ))}
           {!matches.length && <div role="status">No results</div>}
         </Ariakit.ComboboxList>
-        <button type="button">After {label} options</button>
+        <Ariakit.Button>After {label} options</Ariakit.Button>
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
   );

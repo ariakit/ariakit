@@ -156,6 +156,7 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       id,
       ref: useMergeRefs(setContentElement, ref, props.ref),
       style,
+      // Prevent browsers from making scrollable listboxes implicit Tab stops.
       tabIndex: props.tabIndex ?? -1,
     };
 
