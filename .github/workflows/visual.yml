@@ -119,15 +119,14 @@ jobs:
                   return {
                     name: `${job.name} / ${step.name}`,
                     platform: getVisualPlatform(step.name),
-                    conclusion: step.conclusion,
                   };
                 });
             });
-            // Valid platform steps still count when skipped so an interrupted
-            // visual shard cannot make its screenshot artifact optional.
             const invalidScreenshotSteps = screenshotSteps.filter(
-              (step) => !step.platform && step.conclusion !== "skipped",
+              (step) => !step.platform,
             );
+            // Steps count regardless of their conclusion so an interrupted
+            // visual shard cannot make its screenshot artifact optional.
             const expectedScreenshotArtifacts = screenshotSteps
               .filter((step) => step.platform)
               .map((step) => step.platform)
