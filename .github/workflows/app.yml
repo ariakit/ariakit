@@ -67,7 +67,7 @@ jobs:
           include-hidden-files: true
 
   test:
-    name: Test ${{ matrix.name }}
+    name: Test ${{ matrix.name }}${{ matrix.shard && format(' ({0})', join(matrix.shard, '/')) || '' }}
     needs: [build, build-nextjs]
     runs-on: ${{ matrix.os }}
     strategy:
@@ -94,6 +94,13 @@ jobs:
             engine: webkit
             project: safari
             test: pnpm -F app run test
+            shard: [1, 2]
+          - os: macos-latest
+            name: Safari
+            engine: webkit
+            project: safari
+            test: pnpm -F app run test
+            shard: [2, 2]
           - os: macos-latest
             name: iOS
             engine: webkit
@@ -130,13 +137,13 @@ jobs:
 
       - name: Test
         id: test
-        run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual
+        run: ${{ matrix.test }} --project ${{ matrix.project }} --pass-with-no-tests --grep-invert @visual ${{ matrix.shard && format('--shard={0}', join(matrix.shard, '/')) || '' }}
 
       - name: Upload test results to GitHub
         if: failure() && steps.test.outcome == 'failure'
         uses: actions/upload-artifact@v7
         with:
-          name: app-${{ matrix.project }}-test-results
+          name: app-${{ matrix.project }}${{ matrix.shard && format('-{0}', join(matrix.shard, '-')) || '' }}-test-results
           path: app/test-results
           retention-days: 7
 
