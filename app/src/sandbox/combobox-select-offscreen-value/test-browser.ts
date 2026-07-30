@@ -1,4 +1,43 @@
+import type { Locator } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+
+function getCenterOffset(item: Locator) {
+  return item.evaluate((element) => {
+    const listbox = element.closest<HTMLElement>("[role=listbox]");
+    if (!listbox) return Infinity;
+    const listboxRect = listbox.getBoundingClientRect();
+    const itemRect = element.getBoundingClientRect();
+    const scaleY = listboxRect.height / listbox.offsetHeight;
+    const viewportStart = listboxRect.top + listbox.clientTop * scaleY;
+    const viewportEnd = viewportStart + listbox.clientHeight * scaleY;
+    const viewportCenter = (viewportStart + viewportEnd) / 2;
+    const itemCenter = itemRect.top + itemRect.height / 2;
+    return itemCenter - viewportCenter;
+  });
+}
+
+function getPaddedCenterOffset(item: Locator) {
+  return item.evaluate((element) => {
+    const listbox = element.closest<HTMLElement>("[role=listbox]");
+    if (!listbox) return Infinity;
+    const listboxRect = listbox.getBoundingClientRect();
+    const itemRect = element.getBoundingClientRect();
+    const style = getComputedStyle(listbox);
+    const scaleY = listboxRect.height / listbox.offsetHeight;
+    const viewportStart =
+      listboxRect.top +
+      (listbox.clientTop + parseFloat(style.scrollPaddingTop)) * scaleY;
+    const viewportEnd =
+      listboxRect.top +
+      (listbox.clientTop +
+        listbox.clientHeight -
+        parseFloat(style.scrollPaddingBottom)) *
+        scaleY;
+    const viewportCenter = (viewportStart + viewportEnd) / 2;
+    const itemCenter = itemRect.top + itemRect.height / 2;
+    return itemCenter - viewportCenter;
+  });
+}
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test("keeps value-less offscreen items offscreen with no selected value", async ({
@@ -74,27 +113,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
 
     await test.expect(q.combobox("Search Filterable fruit")).toBeFocused();
-    // Three frames cross Composite's after-paint presentation callback plus
-    // WebKit's scroll step before checking the viewport.
-    await flushFrames(page, 3);
+    await test.expect
+      .poll(async () => Math.abs(await getCenterOffset(watermelon)))
+      .toBeLessThanOrEqual(1);
     await test.expect(watermelon).toBeInViewport();
-
-    const centerOffset = await watermelon.evaluate((element) => {
-      const listbox = element.closest("[role=listbox]");
-      if (!listbox) return Infinity;
-      const listboxRect = listbox.getBoundingClientRect();
-      const itemRect = element.getBoundingClientRect();
-      const listboxCenter = listboxRect.top + listboxRect.height / 2;
-      const itemCenter = itemRect.top + itemRect.height / 2;
-      return itemCenter - listboxCenter;
-    });
-    test.expect(Math.abs(centerOffset)).toBeLessThanOrEqual(1);
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
 
     await page.keyboard.press("ArrowUp");
     const lastItem = q.option("No filterable fruit");
     await test.expect(lastItem).toHaveAttribute("data-active-item");
     await test.expect(lastItem).toBeFocused();
+    // No observable state reports the absence of a delayed presentation pass,
+    // so wait through that checkpoint before asserting nearest-edge scrolling.
     await flushFrames(page, 3);
     const bottomOffset = await lastItem.evaluate((element) => {
       const listbox = element.closest("[role=listbox]");
@@ -116,7 +146,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const watermelon = q.option("Watermelon");
     await select.click();
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
-    await flushFrames(page, 3);
+    await test.expect
+      .poll(async () => Math.abs(await getCenterOffset(watermelon)))
+      .toBeLessThanOrEqual(1);
 
     const scrollTop = await watermelon.evaluate(
       (element) => element.closest<HTMLElement>("[role=listbox]")?.scrollTop,
@@ -125,6 +157,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const strawberry = q.option("Strawberry");
     await test.expect(strawberry).toHaveAttribute("data-active-item");
     await test.expect(q.combobox("Search Virtual focus fruit")).toBeFocused();
+    // The active and focused states settle before a stale presentation pass
+    // would run, so wait through that checkpoint before comparing scrollTop.
     await flushFrames(page, 3);
     test
       .expect(
@@ -137,29 +171,66 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/6838
-  test("centers inside a transformed client scrollport", async ({
+  test("centers inside a transformed client scrollport", async ({ q }) => {
+    const select = q.combobox("Scaled filterable fruit");
+    const mango = q.option("Mango");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+    await test.expect
+      .poll(async () => Math.abs(await getCenterOffset(mango)))
+      .toBeLessThanOrEqual(1);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6838
+  test("centers through a horizontal-only overflow ancestor", async ({
     page,
     q,
   }) => {
-    const select = q.combobox("Scaled filterable fruit");
-    const watermelon = q.option("Watermelon");
+    const select = q.combobox("Horizontal wrapper fruit");
+    const mango = q.option("Mango");
     await select.click();
-    await test.expect(select).toHaveAttribute("aria-expanded", "true");
-    await flushFrames(page, 3);
 
-    const centerOffset = await watermelon.evaluate((element) => {
-      const listbox = element.closest<HTMLElement>("[role=listbox]");
-      if (!listbox) return Infinity;
-      const listboxRect = listbox.getBoundingClientRect();
-      const itemRect = element.getBoundingClientRect();
-      const scaleY = listboxRect.height / listbox.offsetHeight;
-      const listboxCenter =
-        listboxRect.top +
-        (listbox.clientTop + listbox.clientHeight / 2) * scaleY;
-      const itemCenter = itemRect.top + itemRect.height / 2;
-      return itemCenter - listboxCenter;
-    });
-    test.expect(Math.abs(centerOffset)).toBeLessThanOrEqual(1);
+    await test.expect
+      .poll(() =>
+        page
+          .getByTestId("horizontal-wrapper")
+          .evaluate((element) => element.scrollWidth > element.clientWidth),
+      )
+      .toBe(true);
+    await test.expect
+      .poll(async () => Math.abs(await getCenterOffset(mango)))
+      .toBeLessThanOrEqual(1);
+    await test.expect(mango).toBeInViewport();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6838
+  test("centers a transformed descendant", async ({ page, q }) => {
+    const select = q.combobox("Translated item fruit");
+    const mango = q.option("Mango");
+    await select.click();
+
+    await test
+      .expect(page.getByTestId("translated-item-wrapper"))
+      .toHaveCSS("transform", "matrix(1, 0, 0, 1, 0, 100)");
+    await test.expect
+      .poll(async () => Math.abs(await getCenterOffset(mango)))
+      .toBeLessThanOrEqual(1);
+    await test.expect(mango).toBeInViewport();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6838
+  test("centers within the scroll-padding viewing area", async ({ q }) => {
+    const select = q.combobox("Padded filterable fruit");
+    const mango = q.option("Mango");
+    await select.click();
+
+    await test
+      .expect(q.combobox("Search Padded filterable fruit"))
+      .toBeFocused();
+    await test.expect
+      .poll(async () => Math.abs(await getPaddedCenterOffset(mango)))
+      .toBeLessThanOrEqual(1);
+    await test.expect(mango).toBeInViewport();
   });
 
   // https://github.com/ariakit/ariakit/pull/6832
@@ -167,6 +238,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await q.combobox("Focus moving filterable fruit").click();
 
     await test.expect(q.option("Focus target")).toBeFocused();
+    // Focus has moved before the pending presentation callback can run. There
+    // is no positive state for its cancellation, so wait through its checkpoint.
     await flushFrames(page);
     await test.expect(q.option("Focus target")).toBeInViewport();
     await test.expect(q.option("Watermelon")).not.toBeInViewport();

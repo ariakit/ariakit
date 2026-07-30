@@ -1,4 +1,17 @@
-import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import type { Locator } from "@playwright/test";
+import { withFramework } from "#app/test-utils/preview.ts";
+
+function getCenterOffset(item: Locator) {
+  return item.evaluate((element) => {
+    const listbox = element.closest("[role=listbox]");
+    if (!listbox) return Infinity;
+    const listboxRect = listbox.getBoundingClientRect();
+    const itemRect = element.getBoundingClientRect();
+    const listboxCenter = listboxRect.top + listboxRect.height / 2;
+    const itemCenter = itemRect.top + itemRect.height / 2;
+    return itemCenter - listboxCenter;
+  });
+}
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/6832
@@ -18,19 +31,11 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test
       .expect(q.combobox("Search Touch filterable fruit"))
       .toBeFocused();
-    await flushFrames(page, 3);
     const watermelon = q.option("Watermelon");
+    await test.expect
+      .poll(async () => Math.abs(await getCenterOffset(watermelon)))
+      .toBeLessThanOrEqual(1);
     await test.expect(watermelon).toBeInViewport();
-    const centerOffset = await watermelon.evaluate((element) => {
-      const listbox = element.closest("[role=listbox]");
-      if (!listbox) return Infinity;
-      const listboxRect = listbox.getBoundingClientRect();
-      const itemRect = element.getBoundingClientRect();
-      const listboxCenter = listboxRect.top + listboxRect.height / 2;
-      const itemCenter = itemRect.top + itemRect.height / 2;
-      return itemCenter - listboxCenter;
-    });
-    test.expect(Math.abs(centerOffset)).toBeLessThanOrEqual(1);
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
   });
 });

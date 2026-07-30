@@ -47,7 +47,6 @@ interface FixtureProps {
   input?: boolean;
   label: string;
   moveFocusOnOpen?: boolean;
-  scaled?: boolean;
   selectOnMove?: boolean;
   virtualFocus?: boolean;
 }
@@ -58,11 +57,30 @@ function Fixture({
   input,
   label,
   moveFocusOnOpen,
-  scaled,
   selectOnMove,
   virtualFocus,
 }: FixtureProps) {
   const focusTargetRef = useRef<HTMLDivElement>(null);
+  const items = (
+    <>
+      {fruits.map((fruit) => (
+        <ComboboxItem
+          key={fruit}
+          value={fruit}
+          offscreenMode="passive"
+          style={{ display: "block", padding: "4px 8px" }}
+        />
+      ))}
+      {/* An item rendered without a value, at the end of the list so it's
+      always out of view. */}
+      <ComboboxItem
+        offscreenMode="passive"
+        style={{ display: "block", padding: "4px 8px" }}
+      >
+        {`No ${label.toLowerCase()}`}
+      </ComboboxItem>
+    </>
+  );
   return (
     <Ariakit.ComboboxProvider
       defaultSelectedValue={defaultSelectedValue}
@@ -77,12 +95,8 @@ function Fixture({
         style={{
           background: "white",
           border: "1px solid gray",
-          borderBottomWidth: scaled ? 7 : undefined,
-          borderTopWidth: scaled ? 3 : undefined,
           maxHeight: 120,
           overflow: "auto",
-          transform: scaled ? "scale(0.95)" : undefined,
-          transformOrigin: scaled ? "top left" : undefined,
         }}
       >
         {input && (
@@ -101,37 +115,88 @@ function Fixture({
             value="Focus target"
           />
         )}
-        {fruits.map((fruit) =>
-          scaled ? (
-            <Ariakit.ComboboxItem
-              key={fruit}
-              value={fruit}
-              style={{ display: "block", padding: "4px 8px" }}
-            />
-          ) : (
-            <ComboboxItem
-              key={fruit}
-              value={fruit}
-              offscreenMode="passive"
-              style={{ display: "block", padding: "4px 8px" }}
-            />
-          ),
-        )}
-        {/* An item rendered without a value, at the end of the list so it's
-        always out of view. */}
-        {scaled ? (
+        {items}
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
+type GeometryLayout =
+  | "horizontal-wrapper"
+  | "padded"
+  | "scaled"
+  | "translated-item";
+
+interface GeometryFixtureProps {
+  label: string;
+  layout: GeometryLayout;
+}
+
+function GeometryFixture({ label, layout }: GeometryFixtureProps) {
+  const padded = layout === "padded";
+  const items = fruits.map((fruit) => {
+    if (layout === "translated-item" && fruit === "Mango") {
+      return (
+        <div
+          key={fruit}
+          data-testid="translated-item-wrapper"
+          style={{ transform: "translateY(100px)" }}
+        >
           <Ariakit.ComboboxItem
+            value={fruit}
             style={{ display: "block", padding: "4px 8px" }}
-          >
-            {`No ${label.toLowerCase()}`}
-          </Ariakit.ComboboxItem>
+          />
+        </div>
+      );
+    }
+    return (
+      <Ariakit.ComboboxItem
+        key={fruit}
+        value={fruit}
+        style={{ display: "block", padding: "4px 8px" }}
+      />
+    );
+  });
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Mango" virtualFocus={false}>
+      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect style={{ display: "block" }} />
+      <Ariakit.ComboboxPopover
+        gutter={4}
+        sameWidth
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          borderBottomWidth: layout === "scaled" ? 7 : undefined,
+          borderTopWidth: layout === "scaled" ? 3 : undefined,
+          maxHeight: 120,
+          overflow: "auto",
+          overflowAnchor: layout === "translated-item" ? "none" : undefined,
+          scrollPaddingBottom: padded ? 8 : undefined,
+          scrollPaddingTop: padded ? 48 : undefined,
+          transform: layout === "scaled" ? "scale(0.95)" : undefined,
+          transformOrigin: layout === "scaled" ? "top left" : undefined,
+        }}
+      >
+        <Ariakit.ComboboxInput
+          aria-label={`Search ${label}`}
+          style={
+            padded
+              ? {
+                  background: "white",
+                  position: "sticky",
+                  top: 0,
+                  zIndex: 1,
+                }
+              : undefined
+          }
+        />
+        {layout === "horizontal-wrapper" ? (
+          <div data-testid="horizontal-wrapper" style={{ overflowX: "auto" }}>
+            <div style={{ width: 1000 }}>{items}</div>
+          </div>
         ) : (
-          <ComboboxItem
-            offscreenMode="passive"
-            style={{ display: "block", padding: "4px 8px" }}
-          >
-            {`No ${label.toLowerCase()}`}
-          </ComboboxItem>
+          items
         )}
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
@@ -179,13 +244,22 @@ export default function Example() {
         />
       </div>
       <div style={{ marginTop: 200 }}>
-        <Fixture
-          defaultSelectedValue="Watermelon"
-          input
-          label="Scaled filterable fruit"
-          scaled
-          virtualFocus={false}
+        <GeometryFixture label="Scaled filterable fruit" layout="scaled" />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <GeometryFixture
+          label="Horizontal wrapper fruit"
+          layout="horizontal-wrapper"
         />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <GeometryFixture
+          label="Translated item fruit"
+          layout="translated-item"
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <GeometryFixture label="Padded filterable fruit" layout="padded" />
       </div>
     </>
   );
