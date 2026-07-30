@@ -91,22 +91,19 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(Math.abs(centerOffset)).toBeLessThanOrEqual(1);
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
 
-    const scrollTop = await watermelon.evaluate(
-      (element) => element.closest<HTMLElement>("[role=listbox]")?.scrollTop,
-    );
     await page.keyboard.press("ArrowUp");
-    const strawberry = q.option("Strawberry");
-    await test.expect(strawberry).toHaveAttribute("data-active-item");
-    await test.expect(strawberry).toBeFocused();
+    const lastItem = q.option("No filterable fruit");
+    await test.expect(lastItem).toHaveAttribute("data-active-item");
+    await test.expect(lastItem).toBeFocused();
     await flushFrames(page, 3);
-    test
-      .expect(
-        await strawberry.evaluate(
-          (element) =>
-            element.closest<HTMLElement>("[role=listbox]")?.scrollTop,
-        ),
-      )
-      .toBe(scrollTop);
+    const bottomOffset = await lastItem.evaluate((element) => {
+      const listbox = element.closest("[role=listbox]");
+      if (!listbox) return Infinity;
+      const listboxRect = listbox.getBoundingClientRect();
+      const itemRect = element.getBoundingClientRect();
+      return listboxRect.bottom - itemRect.bottom;
+    });
+    test.expect(Math.abs(bottomOffset)).toBeLessThanOrEqual(1);
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
   });
 
