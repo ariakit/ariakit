@@ -56,7 +56,7 @@ jobs:
       - name: Check for complete screenshot artifacts
         id: check-artifacts
         if: steps.gate.outputs.is_latest == 'true' && inputs.visual-result == 'failure'
-        # Only update committed screenshots when every visual project has
+        # Only update committed screenshots when every visual runner has
         # produced its artifact for this run.
         uses: actions/github-script@v9
         with:
@@ -107,7 +107,7 @@ jobs:
             };
             const jobs = await listWorkflowRunJobs();
             const artifacts = await listWorkflowRunArtifacts();
-            const { getVisualProject } = await import(
+            const { getVisualPlatform } = await import(
               `${process.env.GITHUB_WORKSPACE}/packages/ariakit-scripts/src/ci-visual.js`
             );
             const screenshotSteps = jobs.flatMap((job) => {
@@ -118,20 +118,20 @@ jobs:
                 .map((step) => {
                   return {
                     name: `${job.name} / ${step.name}`,
-                    project: getVisualProject(step.name),
+                    platform: getVisualPlatform(step.name),
                     conclusion: step.conclusion,
                   };
                 });
             });
-            // Valid project steps still count when skipped so an interrupted
+            // Valid platform steps still count when skipped so an interrupted
             // visual shard cannot make its screenshot artifact optional.
             const invalidScreenshotSteps = screenshotSteps.filter(
-              (step) => !step.project && step.conclusion !== "skipped",
+              (step) => !step.platform && step.conclusion !== "skipped",
             );
             const expectedScreenshotArtifacts = screenshotSteps
-              .filter((step) => step.project)
-              .map((step) => step.project)
-              .map((project) => `app-visual-${project}`);
+              .filter((step) => step.platform)
+              .map((step) => step.platform)
+              .map((platform) => `app-visual-${platform}`);
             const screenshotArtifacts = artifacts
               .map((artifact) => artifact.name)
               .filter((artifact) => artifact.startsWith("app-visual-"));

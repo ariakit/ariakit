@@ -113,7 +113,7 @@ jobs:
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
         with:
-          engine: ${{ matrix.engine }}
+          engines: ${{ matrix.engine }}
           workspace: app
 
       - name: Download app artifact
@@ -150,22 +150,14 @@ jobs:
         include:
           - os: ubuntu-latest
             name: Visual
-            engine: chromium
-            secondary_engine: firefox
-            project: chrome
-            secondary_project: firefox
+            engines: chromium firefox
             projects: chrome firefox
             test: xvfb-run pnpm -F app run test-visual
-            results: visual
           - os: macos-latest
             name: Visual (Safari)
-            engine: webkit
-            secondary_engine: ""
-            project: safari
-            secondary_project: ""
+            engines: webkit
             projects: safari
             test: pnpm -F app run test-visual
-            results: visual-safari
     env:
       VISUAL_PROJECTS: ${{ matrix.projects }}
     steps:
@@ -182,14 +174,7 @@ jobs:
       - name: Install Playwright
         uses: ./.github/workflows/install-playwright
         with:
-          engine: ${{ matrix.engine }}
-          workspace: app
-
-      - name: Install secondary Playwright engine
-        if: matrix.secondary_engine != ''
-        uses: ./.github/workflows/install-playwright
-        with:
-          engine: ${{ matrix.secondary_engine }}
+          engines: ${{ matrix.engines }}
           workspace: app
 
       - name: Download app artifact
@@ -233,10 +218,11 @@ jobs:
         # older screenshots for these browsers that were left behind.
         run: |
           for project in $VISUAL_PROJECTS; do
-            find app/src -path "*/__screenshots__/*-${project}.png" ! -newer "${{ runner.temp }}/pre-update-marker" -delete
+            find app/src -path "*/__screenshots__/*-${project}.webp" ! -newer "${{ runner.temp }}/pre-update-marker" -delete
           done
 
       - name: Pack screenshots
+        id: pack-screenshots
         if: >
           always() &&
           (steps.test-visual.outcome == 'success' ||
@@ -245,37 +231,30 @@ jobs:
         # mutating the branch directly from each matrix shard.
         run: |
           mkdir -p "${{ runner.temp }}/artifacts"
-          python <<'PY'
+          python3 <<'PY'
+          import os
           import tarfile
           from pathlib import Path
 
-          projects = "${{ matrix.projects }}".split()
+          projects = os.environ["VISUAL_PROJECTS"].split()
           root = Path("app/src")
+          artifacts = Path(os.environ["RUNNER_TEMP"]) / "artifacts"
           for project in projects:
-              archive_path = Path("${{ runner.temp }}/artifacts") / f"app-visual-{project}.tar.gz"
-              screenshots = sorted(root.glob(f"**/__screenshots__/*-{project}.png"))
+              archive_path = artifacts / f"app-visual-{project}.tar.gz"
+              screenshots = sorted(root.glob(f"**/__screenshots__/*-{project}.webp"))
               if not screenshots:
-                  continue
+                  raise RuntimeError(f"No screenshots found for {project}")
               with tarfile.open(archive_path, "w:gz") as tar:
                   for screenshot in screenshots:
                       tar.add(screenshot, arcname=screenshot.as_posix())
           PY
 
-      - name: Upload screenshots (${{ matrix.project }})
-        if: always()
+      - name: Upload screenshots (${{ matrix.os }})
+        if: always() && steps.pack-screenshots.outcome == 'success'
         uses: actions/upload-artifact@v7
         with:
-          name: app-visual-${{ matrix.project }}
-          path: ${{ runner.temp }}/artifacts/app-visual-${{ matrix.project }}.tar.gz
-          if-no-files-found: ignore
-          retention-days: 1
-
-      - name: Upload screenshots (${{ matrix.secondary_project }})
-        if: always() && matrix.secondary_project != ''
-        uses: actions/upload-artifact@v7
-        with:
-          name: app-visual-${{ matrix.secondary_project }}
-          path: ${{ runner.temp }}/artifacts/app-visual-${{ matrix.secondary_project }}.tar.gz
+          name: app-visual-${{ matrix.os }}
+          path: ${{ runner.temp }}/artifacts/app-visual-*.tar.gz
           if-no-files-found: ignore
           retention-days: 1
 
@@ -283,7 +262,7 @@ jobs:
         if: failure() && (steps.test-visual.outcome == 'failure' || steps.update-screenshots.outcome == 'failure')
         uses: actions/upload-artifact@v7
         with:
-          name: app-${{ matrix.results }}-test-results
+          name: app-test-results-${{ matrix.os }}
           path: app/test-results
           retention-days: 7
 
@@ -291,8 +270,8 @@ jobs:
     # This job intentionally assumes PRs come from branches on this repository.
     # Fork-safe write-back logic was removed with the member-only PR model.
     name: Update screenshots
-    needs: [test, visual]
-    if: always() && needs.test.result != 'cancelled' && needs.visual.result != 'cancelled'
+    needs: visual
+    if: always() && needs.visual.result != 'cancelled'
     permissions:
       actions: read
       contents: read
