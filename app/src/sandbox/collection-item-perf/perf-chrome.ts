@@ -27,11 +27,113 @@ function getItem(page: Page, itemNumber: number) {
   return page.locator(`[data-item="Item ${itemNumber}"]`);
 }
 
+async function getPassiveItemDiagnostics(page: Page) {
+  return getItem(page, 1).evaluate(async (element) => {
+    const root = element.parentElement;
+    if (!root) throw new Error("Expected Item 1 to have a parent element");
+
+    const serializeRect = (rect: DOMRect) => ({
+      top: rect.top,
+      right: rect.right,
+      bottom: rect.bottom,
+      left: rect.left,
+      width: rect.width,
+      height: rect.height,
+    });
+
+    const intersection = await new Promise((resolve) => {
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          clearTimeout(timeoutId);
+          observer.disconnect();
+          resolve(
+            entry
+              ? {
+                  received: true,
+                  isIntersecting: entry.isIntersecting,
+                  intersectionRatio: entry.intersectionRatio,
+                  boundingClientRect: serializeRect(entry.boundingClientRect),
+                  intersectionRect: serializeRect(entry.intersectionRect),
+                  rootBounds: entry.rootBounds
+                    ? serializeRect(entry.rootBounds)
+                    : null,
+                }
+              : { received: true, entry: null },
+          );
+        },
+        { root, rootMargin: "40%" },
+      );
+      const timeoutId = window.setTimeout(() => {
+        observer.disconnect();
+        resolve({ received: false });
+      }, 1000);
+      observer.observe(element);
+    });
+
+    const idleCallback = await new Promise((resolve) => {
+      const startedAt = performance.now();
+      const timeoutId = window.setTimeout(() => {
+        window.cancelIdleCallback(callbackId);
+        resolve({ fired: false });
+      }, 1000);
+      const callbackId = window.requestIdleCallback(
+        (deadline) => {
+          clearTimeout(timeoutId);
+          resolve({
+            fired: true,
+            elapsed: performance.now() - startedAt,
+            didTimeout: deadline.didTimeout,
+            timeRemaining: deadline.timeRemaining(),
+          });
+        },
+        { timeout: 500 },
+      );
+    });
+
+    const itemStyle = getComputedStyle(element);
+    const rootStyle = getComputedStyle(root);
+    return {
+      componentOffscreen: element.hasAttribute("data-offscreen"),
+      connected: element.isConnected,
+      rootContainsItem: root.contains(element),
+      itemRect: serializeRect(element.getBoundingClientRect()),
+      rootRect: serializeRect(root.getBoundingClientRect()),
+      itemStyle: {
+        display: itemStyle.display,
+        visibility: itemStyle.visibility,
+      },
+      rootStyle: {
+        display: rootStyle.display,
+        overflowY: rootStyle.overflowY,
+      },
+      rootScrollTop: root.scrollTop,
+      rootClientHeight: root.clientHeight,
+      rootScrollHeight: root.scrollHeight,
+      viewport: {
+        width: document.documentElement.clientWidth,
+        height: document.documentElement.clientHeight,
+      },
+      intersection,
+      idleCallback,
+    };
+  });
+}
+
 async function waitForCollectionMounted(page: Page) {
   await getItem(page, itemCount).waitFor({ state: "attached" });
   if (offscreen) {
     await page.locator("[data-offscreen]").first().waitFor();
-    await page.locator('[data-item="Item 1"]:not([data-offscreen])').waitFor();
+    try {
+      await page
+        .locator('[data-item="Item 1"]:not([data-offscreen])')
+        .waitFor({ timeout: 5000 });
+    } catch (error) {
+      const diagnostics = await getPassiveItemDiagnostics(page);
+      throw new Error(
+        `Passive Item 1 did not materialize: ${JSON.stringify(diagnostics)}`,
+        { cause: error },
+      );
+    }
   }
 }
 
