@@ -1,8 +1,50 @@
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 const cases = ["Select with Tab", "Select with Combobox and Tab"];
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  test("reopens the searchable select without writing the document scroll position", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Select with Combobox and Tab");
+    const dialog = q.dialog();
+
+    await select.click();
+    await test.expect(dialog).toBeVisible();
+    await page.mouse.click(1, 1);
+    await test.expect(dialog).toHaveCount(0);
+
+    await page.evaluate(() => {
+      const scroller = document.scrollingElement;
+      if (!scroller) throw new Error("Document scrolling element is missing");
+      const scrollTo = scroller.scrollTo.bind(scroller);
+      document.documentElement.dataset.documentScrollCalls = "0";
+      Object.defineProperty(scroller, "scrollTo", {
+        configurable: true,
+        value: (...args: unknown[]) => {
+          const { dataset } = document.documentElement;
+          const calls = Number(dataset.documentScrollCalls);
+          dataset.documentScrollCalls = String(calls + 1);
+          Reflect.apply(scrollTo, undefined, args);
+        },
+      });
+    });
+
+    await select.click();
+    await test.expect(dialog).toBeVisible();
+    await test.expect(q.option("main")).toBeInViewport();
+    await flushFrames(page, 3);
+
+    test
+      .expect(
+        await page.evaluate(
+          () => document.documentElement.dataset.documentScrollCalls,
+        ),
+      )
+      .toBe("0");
+  });
+
   for (const label of cases) {
     test(`${label} restores the selected option after switching tabs`, async ({
       page,

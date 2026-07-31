@@ -192,25 +192,25 @@ function useScheduleFocus(store: CompositeStore) {
         return;
       withBaseScrollPreserved(store, () => {
         if (activeElement.hasAttribute("data-autofocus")) {
-          withDocumentScrollPreserved(activeElement, () => {
-            if (focus) {
-              const state = store.getState();
-              const selectMode =
-                "selectElement" in state && !!state.selectElement;
-              const { baseElement } = state;
-              if (selectMode && baseElement) {
-                activeElement.focus({ preventScroll: true });
-                scheduleScroll(baseElement, true);
-              } else {
-                focusIntoView(activeElement);
-              }
+          if (focus) {
+            const state = store.getState();
+            const selectMode =
+              "selectElement" in state && !!state.selectElement;
+            const { baseElement } = state;
+            if (selectMode && baseElement) {
+              activeElement.focus({ preventScroll: true });
+              scheduleScroll(baseElement, true);
             } else {
-              activeElement.scrollIntoView({
-                block: "nearest",
-                inline: "nearest",
+              withDocumentScrollPreserved(activeElement, () => {
+                focusIntoView(activeElement);
               });
             }
-          });
+          } else {
+            activeElement.scrollIntoView({
+              block: "nearest",
+              inline: "nearest",
+            });
+          }
         } else if (focus) {
           activeElement.focus({ preventScroll: true });
         }
