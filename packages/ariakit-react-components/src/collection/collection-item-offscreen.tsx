@@ -41,11 +41,13 @@ export function useCollectionItemOffscreen<
   const [_active, setActive] = useState(offscreenMode === "active");
   const active = _active || offscreenMode === "active";
 
+  const elementRef = useRef<HTMLType | null>(null);
   const observerRef = useRef<IntersectionObserver | null>(null);
   const idleCallbackIdRef = useRef(0);
 
   const ref = useCallback<RefCallback<HTMLType>>(
     (element) => {
+      elementRef.current = element;
       if (!element || offscreenMode === "active") {
         cancelIdleCallback(idleCallbackIdRef.current);
         observerRef.current?.disconnect();
@@ -86,8 +88,10 @@ export function useCollectionItemOffscreen<
         observerRef.current = new IntersectionObserver(
           ([entry]) => {
             cancelIdleCallback(idleCallbackIdRef.current);
+            const target = entry?.target;
             const isIntersecting = !!entry?.isIntersecting;
             idleCallbackIdRef.current = requestIdleCallback(() => {
+              if (elementRef.current !== target) return;
               if (!isIntersecting && offscreenMode === "lazy") return;
               setActive(isIntersecting);
             });
