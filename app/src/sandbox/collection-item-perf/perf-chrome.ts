@@ -23,8 +23,12 @@ function getScroller(q: Query) {
   return q.list("Collection items");
 }
 
-async function waitForCollectionMounted(page: Page, q: Query) {
-  await q.listitem(`Item ${itemCount}`).waitFor({ state: "attached" });
+function getItem(page: Page, itemNumber: number) {
+  return page.locator(`[data-item="Item ${itemNumber}"]`);
+}
+
+async function waitForCollectionMounted(page: Page) {
+  await getItem(page, itemCount).waitFor({ state: "attached" });
   if (offscreen) {
     await page.locator("[data-offscreen]").first().waitFor();
     await page.locator('[data-item="Item 1"]:not([data-offscreen])').waitFor();
@@ -33,21 +37,21 @@ async function waitForCollectionMounted(page: Page, q: Query) {
 
 async function mountCollection(page: Page, q: Query) {
   await q.button("Mount collection").click();
-  await waitForCollectionMounted(page, q);
+  await waitForCollectionMounted(page);
 }
 
-async function verifyCollectionMounted(q: Query) {
-  await expect(q.listitem()).toHaveCount(itemCount);
+async function verifyCollectionMounted(page: Page, q: Query) {
+  await expect(page.locator("[data-item]")).toHaveCount(itemCount);
   await expect(q.status("Item variant")).toHaveText(itemVariant);
 }
 
-async function unmountCollection(q: Query) {
+async function unmountCollection(page: Page, q: Query) {
   await q.button("Unmount collection").click();
-  await q.listitem().first().waitFor({ state: "detached" });
+  await page.locator("[data-item]").first().waitFor({ state: "detached" });
 }
 
-async function verifyCollectionUnmounted(q: Query) {
-  await expect(q.listitem()).toHaveCount(0);
+async function verifyCollectionUnmounted(page: Page) {
+  await expect(page.locator("[data-item]")).toHaveCount(0);
 }
 
 async function scrollCollection(page: Page, q: Query) {
@@ -66,10 +70,8 @@ async function scrollCollection(page: Page, q: Query) {
   }
 }
 
-async function verifyCollectionScrolled(q: Query) {
-  await expect(q.listitem(`Item ${itemCount}`)).not.toHaveAttribute(
-    "data-offscreen",
-  );
+async function verifyCollectionScrolled(page: Page, q: Query) {
+  await expect(getItem(page, itemCount)).not.toHaveAttribute("data-offscreen");
   await expect
     .poll(() => getScroller(q).evaluate((element) => element.scrollTop))
     .toBeGreaterThan(0);
@@ -85,21 +87,21 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
   test("mount collection", async ({ perf }) => {
     await perf.measure(({ page, q }) => mountCollection(page, q), {
-      verify: ({ q }) => verifyCollectionMounted(q),
+      verify: ({ page, q }) => verifyCollectionMounted(page, q),
     });
   });
 
   test("unmount collection", async ({ perf }) => {
-    await perf.measure(({ q }) => unmountCollection(q), {
+    await perf.measure(({ page, q }) => unmountCollection(page, q), {
       setup: ({ page, q }) => mountCollection(page, q),
-      verify: ({ q }) => verifyCollectionUnmounted(q),
+      verify: ({ page }) => verifyCollectionUnmounted(page),
     });
   });
 
   test("scroll collection", async ({ perf }) => {
     await perf.measure(({ page, q }) => scrollCollection(page, q), {
       setup: ({ page, q }) => mountCollection(page, q),
-      verify: ({ q }) => verifyCollectionScrolled(q),
+      verify: ({ page, q }) => verifyCollectionScrolled(page, q),
     });
   });
 });

@@ -1,7 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { CompositeItem as OffscreenCompositeItem } from "@ariakit/react-components/composite/composite-item-offscreen";
-import type { RefObject } from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./style.css";
 
 const itemCount = 1000;
@@ -13,10 +12,13 @@ const items = Array.from(
 interface CompositeItemProps {
   item: string;
   offscreen: boolean;
-  offscreenRoot: RefObject<HTMLDivElement | null>;
 }
 
-function CompositeItem({ item, offscreen, offscreenRoot }: CompositeItemProps) {
+function getOffscreenRoot(element: HTMLElement) {
+  return element.parentElement;
+}
+
+function CompositeItem({ item, offscreen }: CompositeItemProps) {
   const props = {
     className: "item",
     "data-item": item,
@@ -29,7 +31,7 @@ function CompositeItem({ item, offscreen, offscreenRoot }: CompositeItemProps) {
       <OffscreenCompositeItem
         {...props}
         offscreenMode="passive"
-        offscreenRoot={offscreenRoot}
+        offscreenRoot={getOffscreenRoot}
       />
     );
   }
@@ -37,22 +39,15 @@ function CompositeItem({ item, offscreen, offscreenRoot }: CompositeItemProps) {
 }
 
 function CompositeFixture({ offscreen }: { offscreen: boolean }) {
-  const scrollerRef = useRef<HTMLDivElement>(null);
   return (
     <Ariakit.CompositeProvider orientation="vertical">
       <Ariakit.Composite
-        ref={scrollerRef}
         aria-label="Composite items"
         className="scroller"
         role="toolbar"
       >
         {items.map((item) => (
-          <CompositeItem
-            key={item}
-            item={item}
-            offscreen={offscreen}
-            offscreenRoot={scrollerRef}
-          />
+          <CompositeItem key={item} item={item} offscreen={offscreen} />
         ))}
       </Ariakit.Composite>
     </Ariakit.CompositeProvider>
