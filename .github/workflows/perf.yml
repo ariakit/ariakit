@@ -41,240 +41,6 @@ jobs:
           retention-days: 7
           include-hidden-files: true
 
-  build-nextjs:
-    name: Build Next.js app
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-        with:
-          persist-credentials: false
-
-      - name: Set up environment
-        uses: ./.github/workflows/setup
-        with:
-          filters: app...
-
-      - name: Build Next.js app
-        run: pnpm -F nextjs run build-worker
-
-      - name: Upload Next.js artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: perf-nextjs-dist
-          path: nextjs/.open-next
-          retention-days: 7
-          include-hidden-files: true
-
-  chrome-baseline:
-    name: Prepare Chrome baseline
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-    steps:
-      - name: Checkout baseline repository
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ github.event.pull_request.base.sha }}
-          persist-credentials: false
-
-      # Keep the current setup action in a separate checkout while the
-      # workspace root contains the source used to build the baseline.
-      - name: Checkout workflow repository
-        uses: actions/checkout@v7
-        with:
-          path: .perf-workflow
-          persist-credentials: false
-          sparse-checkout: .github/workflows/setup
-
-      - name: Find base app artifact
-        id: find-base-artifact
-        continue-on-error: true
-        uses: actions/github-script@v9
-        env:
-          BRANCH_REF: ${{ github.event.pull_request.base.ref }}
-        with:
-          script: |
-            const baseSha = '${{ github.event.pull_request.base.sha }}';
-            const branchRef = process.env.BRANCH_REF;
-            const runs = await github.rest.actions.listWorkflowRuns({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'app.yml',
-              branch: branchRef,
-              head_sha: baseSha,
-              // Only push runs build exactly at head_sha. Pull request runs
-              // check out the merge ref, so their artifacts are not a build
-              // of base.sha and would corrupt stacked PR baselines.
-              event: 'push',
-              status: 'success',
-              per_page: 1,
-            });
-            const run = runs.data.workflow_runs[0];
-            if (!run) {
-              core.notice(
-                `No successful push app.yml run found for base SHA ${baseSha}. ` +
-                  'Building base artifacts in this job.',
-              );
-              return;
-            }
-            core.setOutput('run-id', String(run.id));
-
-      - name: Download base app artifact
-        id: base-artifact
-        if: steps.find-base-artifact.outputs.run-id != ''
-        continue-on-error: true
-        uses: actions/download-artifact@v8
-        with:
-          name: app-build
-          path: app
-          github-token: ${{ github.token }}
-          run-id: ${{ steps.find-base-artifact.outputs.run-id }}
-
-      - name: Download base Next.js artifact
-        id: base-nextjs-artifact
-        if: steps.find-base-artifact.outputs.run-id != ''
-        continue-on-error: true
-        uses: actions/download-artifact@v8
-        with:
-          name: nextjs-dist
-          path: nextjs/.open-next
-          github-token: ${{ github.token }}
-          run-id: ${{ steps.find-base-artifact.outputs.run-id }}
-
-      - name: Check base app source maps
-        id: base-source-maps
-        if: steps.base-artifact.outcome == 'success'
-        run: |
-          shopt -s nullglob
-          maps=(app/dist/client/_astro/*.js.map)
-          if [ ${#maps[@]} -gt 0 ]; then
-            echo "missing=false" >> "$GITHUB_OUTPUT"
-          elif grep -q "PERF_SOURCE_MAP" app/astro.config.ts; then
-            # app.yml artifacts intentionally omit source maps so ordinary app
-            # artifacts stay smaller. Perf rebuilds only the base app artifact
-            # when source maps are needed for readable script profiles.
-            echo "::notice::Base app artifact has no client source maps. Building the base app artifact in this job."
-            echo "missing=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "::notice::Base app artifact has no client source maps, and this base commit cannot enable them yet."
-            echo "missing=false" >> "$GITHUB_OUTPUT"
-          fi
-
-      - name: Set baseline rebuild flags
-        id: baseline-rebuild
-        run: |
-          rebuild_app=false
-          rebuild_nextjs=false
-          if [ "${{ steps.base-artifact.outcome }}" != "success" ] || [ "${{ steps.base-source-maps.outputs.missing }}" = "true" ]; then
-            rebuild_app=true
-          fi
-          if [ "${{ steps.base-nextjs-artifact.outcome }}" != "success" ]; then
-            rebuild_nextjs=true
-          fi
-          echo "app=$rebuild_app" >> "$GITHUB_OUTPUT"
-          echo "nextjs=$rebuild_nextjs" >> "$GITHUB_OUTPUT"
-
-      - name: Clean base app artifact
-        if: steps.baseline-rebuild.outputs.app == 'true'
-        run: |
-          rm -rf \
-            app/dist \
-            app/.wrangler
-
-      - name: Clean base Next.js artifact
-        if: steps.baseline-rebuild.outputs.nextjs == 'true'
-        run: rm -rf nextjs/.open-next
-
-      - name: Set up baseline environment
-        if: steps.baseline-rebuild.outputs.app == 'true' || steps.baseline-rebuild.outputs.nextjs == 'true'
-        uses: ./.perf-workflow/.github/workflows/setup
-        env:
-          HUSKY: 0
-        with:
-          filters: app...
-
-      - name: Build base app
-        if: steps.baseline-rebuild.outputs.app == 'true'
-        env:
-          CLOUDFLARE_ENV: preview
-          PERF_SOURCE_MAP: true
-        run: pnpm -F app run build
-
-      - name: Build base Next.js app
-        if: steps.baseline-rebuild.outputs.nextjs == 'true'
-        run: pnpm -F nextjs run build-worker
-
-      - name: Check baseline artifacts
-        run: |
-          for path in \
-            app/dist \
-            app/.wrangler/deploy/config.json \
-            nextjs/.open-next
-          do
-            if [ ! -e "$path" ]; then
-              echo "Missing baseline path: $path" >&2
-              exit 1
-            fi
-          done
-
-      - name: Pack baseline artifacts
-        run: |
-          tar -czf "$RUNNER_TEMP/perf-chrome-baseline-build.tar.gz" \
-            -C . \
-            app/dist \
-            app/.wrangler/deploy/config.json \
-            nextjs/.open-next
-
-      - name: Upload baseline artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: perf-chrome-baseline-build
-          path: ${{ runner.temp }}/perf-chrome-baseline-build.tar.gz
-          retention-days: 7
-
-  node-baseline:
-    name: Prepare Node baseline
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-
-      - name: Set up baseline worktree
-        run: |
-          BASELINE_DIR="$RUNNER_TEMP/perf-node-baseline"
-          echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"
-          git worktree add --detach "$BASELINE_DIR" \
-            ${{ github.event.pull_request.base.sha }}
-
-      - name: Copy benchmark files to baseline
-        run: |
-          cp vitest.bench.config.ts "$BASELINE_DIR/vitest.bench.config.ts"
-          shopt -s nullglob
-          for file in packages/*/benchmark/*.bench.ts; do
-            mkdir -p "$BASELINE_DIR/$(dirname "$file")"
-            cp "$file" "$BASELINE_DIR/$file"
-          done
-
-      - name: Pack baseline artifacts
-        run: |
-          cd "$BASELINE_DIR"
-          tar -czf "$RUNNER_TEMP/perf-node-baseline-build.tar.gz" \
-            packages/*/package.json \
-            vitest.bench.config.ts \
-            packages/*/benchmark
-
-      - name: Upload baseline artifacts
-        uses: actions/upload-artifact@v7
-        with:
-          name: perf-node-baseline-build
-          path: ${{ runner.temp }}/perf-node-baseline-build.tar.gz
-          retention-days: 7
-
   chrome-matrix:
     name: Prepare Chrome matrix
     runs-on: ubuntu-latest
@@ -294,10 +60,13 @@ jobs:
       - name: Create Chrome perf matrix
         id: matrix
         run: |
-          # Keep this find pattern a superset of the perf `testMatch` in
-          # app/playwright.config.ts; a file it misses would never get a job.
+          # This draft PR intentionally runs only the item comparison fixtures.
           perf_files="$(
-            cd app && find src -type f \
+            cd app && find \
+              src/sandbox/collection-item-perf \
+              src/sandbox/combobox-item-perf \
+              src/sandbox/composite-item-perf \
+              -type f \
               \( -path '*perf*-chrome.ts' -o -path '*perf*-chrome.tsx' \) \
               | sort
           )"
@@ -359,7 +128,7 @@ jobs:
 
   chrome:
     name: Chrome (${{ matrix.title }})
-    needs: [build, build-nextjs, chrome-baseline, chrome-matrix]
+    needs: [build, chrome-matrix]
     runs-on: ubuntu-latest
     strategy:
       # Let all jobs finish even if one fails, so each job's logs and uploaded
@@ -416,56 +185,8 @@ jobs:
           engines: chromium
           workspace: app
 
-      - name: Set up baseline worktree
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-        run: |
-          BASELINE_DIR="$RUNNER_TEMP/perf-baseline"
-          echo "BASELINE_DIR=$BASELINE_DIR" >> "$GITHUB_ENV"
-          git fetch --depth=1 origin "$BASE_SHA" || git fetch origin "$BASE_REF"
-          git worktree add --detach "$BASELINE_DIR" "$BASE_SHA"
-
-      - name: Install dependencies (baseline)
-        working-directory: ${{ runner.temp }}/perf-baseline
-        env:
-          # The baseline worktree shares `.git/config` with the main checkout,
-          # so husky's prepare step would otherwise rewrite `core.hooksPath`
-          # to a relative path under a temporary worktree.
-          HUSKY: 0
-        run: pnpm --filter 'app...' --fail-if-no-match install --frozen-lockfile --no-runtime --prefer-offline
-
-      - name: Install Playwright (baseline)
-        working-directory: ${{ runner.temp }}/perf-baseline
-        # No `--with-deps` here. The runner image already provides every library
-        # Chromium needs, and the current-branch step above skips its own
-        # `--with-deps` whenever the browser cache hits, so the rest of CI
-        # already launches browsers without it. The only packages it added were
-        # ~21 MB of optional fonts, re-fetched from the Ubuntu mirror on every
-        # job; when that mirror degrades the step has stalled for ~10 minutes.
-        # Dropping them keeps baseline and current on the same fonts, because
-        # both sides run on this runner after this step.
-        #
-        # The install stays unconditional so a baseline pinned to a different
-        # Playwright version still downloads its own browser build. It is a
-        # no-op when the version matches the current branch, since both
-        # checkouts share `~/.cache/ms-playwright` through `$HOME`.
-        run: pnpm --filter app exec playwright install chromium
-
-      - name: Download baseline artifacts
-        uses: actions/download-artifact@v8
-        with:
-          name: perf-chrome-baseline-build
-          path: ${{ runner.temp }}/perf-chrome-baseline-build
-
-      - name: Extract baseline artifacts
-        run: |
-          tar -xzf \
-            "${{ runner.temp }}/perf-chrome-baseline-build/perf-chrome-baseline-build.tar.gz" \
-            -C "$BASELINE_DIR"
-
       - name: Clean current app artifacts
-        run: rm -rf app/dist app/.wrangler nextjs/.open-next
+        run: rm -rf app/dist app/.wrangler
 
       - name: Download app artifact
         uses: actions/download-artifact@v8
@@ -473,15 +194,9 @@ jobs:
           name: perf-app-build
           path: app
 
-      - name: Download Next.js artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: perf-nextjs-dist
-          path: nextjs/.open-next
-
       - name: Run interleaved perf tests
         run: |
-          rm -rf app/.perf-results "$BASELINE_DIR/app/.perf-results"
+          rm -rf app/.perf-results
           mkdir -p app/.perf-results
           shopt -s nullglob
           ROUND_FILES=()
@@ -522,28 +237,19 @@ jobs:
 
           echo "Chrome perf file: ${PERF_FILE:-<none>}"
 
-          # Pass the per-test timeout on the CLI (it takes precedence over the
-          # config file) so the baseline worktree, which runs the base
-          # branch's Playwright config, gets the same headroom as the current
-          # side: script-profile tests can legitimately exceed the old 120s
-          # config default on slow runners. Playwright test retries are NOT
-          # passed here on purpose: the base worktree may predate the
-          # retry-safety guards (pass-only result recording and stale-attempt
-          # pruning), and a failed baseline invocation is retried whole below
-          # with its partial results removed.
+          # Pass the per-test timeout on the CLI so each 1,000-item fixture has
+          # the same headroom on both sides of the comparison.
           PLAYWRIGHT_TEST_TIMEOUT=180000
 
           baseline_perf_attempt() {
             local i="$1"
             shift
-            (
-              cd "$BASELINE_DIR" || exit 1
-              PERF_RESULTS_FILE=baseline-$i-j$PERF_JOB_INDEX.json \
-              PERF_ITERATIONS="$PERF_ITERATIONS" \
-              PERF_WARMUP="$PERF_WARMUP" \
-              xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests \
-                --timeout="$PLAYWRIGHT_TEST_TIMEOUT" "$@"
-            )
+            PERF_ITEM_VARIANT=base \
+            PERF_RESULTS_FILE=baseline-$i-j$PERF_JOB_INDEX.json \
+            PERF_ITERATIONS="$PERF_ITERATIONS" \
+            PERF_WARMUP="$PERF_WARMUP" \
+            xvfb-run -a pnpm -F app run test-perf --pass-with-no-tests \
+              --timeout="$PLAYWRIGHT_TEST_TIMEOUT" "$@"
           }
 
           run_baseline_perf_round() {
@@ -560,7 +266,7 @@ jobs:
             # double-count.
             if ! baseline_perf_attempt "$i" "${perf_files[@]}"; then
               echo "::warning::Baseline perf run failed for round $i; retrying once."
-              rm -f "$BASELINE_DIR"/app/.perf-results/baseline-"$i"*.json
+              rm -f app/.perf-results/baseline-"$i"*.json
               if ! baseline_perf_attempt "$i" "${perf_files[@]}"; then
                 # The post job discards every job's rounds when any job fails,
                 # so fail fast instead of benchmarking output that is
@@ -570,27 +276,23 @@ jobs:
                 exit 1
               fi
             fi
-            local baseline_files=("$BASELINE_DIR"/app/.perf-results/baseline-"$i"*.json)
+            local baseline_files=(app/.perf-results/baseline-"$i"*.json)
             if [ ${#baseline_files[@]} -eq 0 ]; then
-              # A clean run with no matching tests (new or renamed perf files
-              # absent from the base worktree) stays comparable so
-              # perf-compare can report them as new tests with no baseline.
-              echo "::warning::No baseline perf results for round $i; writing an empty baseline."
-              local empty_baseline_file=app/.perf-results/baseline-"$i"-j"$PERF_JOB_INDEX"-worker0.json
-              printf '[]\n' > "$empty_baseline_file"
-              add_round_file "$empty_baseline_file"
-            else
-              for file in "${baseline_files[@]}"; do
-                cp "$file" app/.perf-results/
-                add_round_file "$file"
-              done
+              echo "Missing baseline perf results for round $i" >&2
+              manifest_status=failed
+              manifest_message="No baseline perf results for round $i."
+              exit 1
             fi
+            for file in "${baseline_files[@]}"; do
+              add_round_file "$file"
+            done
             echo "::endgroup::"
           }
 
           current_perf_attempt() {
             local i="$1"
             shift
+            PERF_ITEM_VARIANT=offscreen \
             PERF_RESULTS_FILE=current-$i-j$PERF_JOB_INDEX.json \
             PERF_ITERATIONS="$PERF_ITERATIONS" \
             PERF_WARMUP="$PERF_WARMUP" \
@@ -713,7 +415,7 @@ jobs:
 
   node:
     name: Node
-    needs: [node-baseline]
+    if: ${{ false }}
     runs-on: ubuntu-latest
     permissions:
       actions: read

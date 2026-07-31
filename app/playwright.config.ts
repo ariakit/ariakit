@@ -34,6 +34,25 @@ function testMatchersFor(...kinds: string[]): RegExp[] {
   ]);
 }
 
+const appWebServer = {
+  command: `pnpm run preview-lite --port ${port}`,
+  env: {
+    APP_INSPECTOR_PORT: String(inspectorPort),
+    CLOUDFLARE_INCLUDE_PROCESS_ENV: "true",
+    NEXTJS_PORT: String(nextjsPort),
+  },
+  reuseExistingServer: !CI,
+  stdout: "ignore" as const,
+  port,
+};
+
+const nextjsWebServer = {
+  command: `pnpm -F nextjs exec opennextjs-cloudflare preview --port ${nextjsPort}${inspectorPortArg(nextjsInspectorPort)}`,
+  reuseExistingServer: !CI,
+  stdout: "ignore" as const,
+  port: nextjsPort,
+};
+
 export default defineConfig({
   fullyParallel: !HEADED && !PERF,
   workers: HEADED || PERF ? 1 : CI ? "100%" : "80%",
@@ -43,25 +62,7 @@ export default defineConfig({
   retries: 1,
   testDir: "src",
   snapshotPathTemplate: "{testDir}/{testFileDir}/__snapshots__/{arg}{ext}",
-  webServer: [
-    {
-      command: `pnpm run preview-lite --port ${port}`,
-      env: {
-        APP_INSPECTOR_PORT: String(inspectorPort),
-        CLOUDFLARE_INCLUDE_PROCESS_ENV: "true",
-        NEXTJS_PORT: String(nextjsPort),
-      },
-      reuseExistingServer: !CI,
-      stdout: "ignore",
-      port,
-    },
-    {
-      command: `pnpm -F nextjs exec opennextjs-cloudflare preview --port ${nextjsPort}${inspectorPortArg(nextjsInspectorPort)}`,
-      reuseExistingServer: !CI,
-      stdout: "ignore",
-      port: nextjsPort,
-    },
-  ],
+  webServer: PERF ? [appWebServer] : [appWebServer, nextjsWebServer],
   use: {
     baseURL: `http://localhost:${port}`,
     screenshot: "only-on-failure",

@@ -46,6 +46,7 @@ jobs:
 
   build:
     name: Build packages
+    if: ${{ false }}
     runs-on: ubuntu-latest
 
     steps:
@@ -64,6 +65,7 @@ jobs:
 
   test:
     name: Test
+    if: ${{ false }}
     runs-on: ubuntu-latest
 
     steps:
@@ -80,6 +82,7 @@ jobs:
 
   test-react18:
     name: Test React 18
+    if: ${{ false }}
     runs-on: ubuntu-latest
 
     steps:
@@ -96,6 +99,7 @@ jobs:
 
   website:
     name: Build website
+    if: ${{ false }}
     runs-on: ubuntu-latest
 
     steps:

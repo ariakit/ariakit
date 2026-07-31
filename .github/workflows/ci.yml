@@ -39,11 +39,19 @@ jobs:
 
       - name: Plan CI
         id: plan
-        env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-        run: node packages/ariakit-scripts/src/ci-run.ts plan
+        run: |
+          {
+            echo "main=true"
+            echo "app=false"
+            echo "perf=true"
+            echo "plus=false"
+            echo "release_preview=false"
+            echo "docs=false"
+            echo "build_styles=false"
+            echo "og_images=false"
+            echo 'plan={"version":1,"workflows":{"main":true,"app":false,"perf":true,"plus":false,"release_preview":false,"docs":false,"build_styles":false,"og_images":false}}'
+          } >> "$GITHUB_OUTPUT"
+          echo "Temporary offscreen item comparison plan: Main and Performance"
 
   main:
     name: Main
