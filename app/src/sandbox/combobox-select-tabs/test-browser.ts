@@ -19,6 +19,35 @@ withFramework(import.meta.dirname, async ({ test }) => {
       const style = document.createElement("style");
       style.textContent = "html { scroll-behavior: smooth !important }";
       document.head.append(style);
+      const documentScroller = document.scrollingElement;
+      if (documentScroller) {
+        document.documentElement.dataset.documentNoopScrollWrites = "0";
+        documentScroller.scrollTo = new Proxy(
+          documentScroller.scrollTo.bind(documentScroller),
+          {
+            apply(target, thisArg, args) {
+              const [first, second] = args;
+              const options =
+                typeof first === "number"
+                  ? { left: first, top: second }
+                  : (first ?? {});
+              const left = options.left ?? documentScroller.scrollLeft;
+              const top = options.top ?? documentScroller.scrollTop;
+              if (
+                documentScroller.scrollLeft === left &&
+                documentScroller.scrollTop === top
+              ) {
+                const value =
+                  document.documentElement.dataset.documentNoopScrollWrites ??
+                  "0";
+                document.documentElement.dataset.documentNoopScrollWrites =
+                  String(Number(value) + 1);
+              }
+              return Reflect.apply(target, thisArg, args);
+            },
+          },
+        );
+      }
       window.addEventListener("scroll", () => {
         if (window.scrollY === scrollY) return;
         document.documentElement.dataset.scrollMoved = "true";
@@ -35,6 +64,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await page.evaluate(() => document.documentElement.dataset.scrollMoved),
       )
       .toBeUndefined();
+    test
+      .expect(
+        await page.evaluate(
+          () => document.documentElement.dataset.documentNoopScrollWrites,
+        ),
+      )
+      .toBe("0");
 
     await page.mouse.click(1, 1);
     await test.expect(dialog).toHaveCount(0);
@@ -49,6 +85,13 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await page.evaluate(() => document.documentElement.dataset.scrollMoved),
       )
       .toBeUndefined();
+    test
+      .expect(
+        await page.evaluate(
+          () => document.documentElement.dataset.documentNoopScrollWrites,
+        ),
+      )
+      .toBe("0");
   });
 
   for (const label of cases) {

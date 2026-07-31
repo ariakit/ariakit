@@ -20,14 +20,15 @@ export function withDocumentScrollPreserved(
   }
   const left = documentScroller.scrollLeft;
   const top = documentScroller.scrollTop;
-  const style = (documentScroller as HTMLElement).style;
+  const documentElement = element.ownerDocument.documentElement;
+  const style = documentElement.style;
   const scrollBehaviorProperty = "scroll-behavior";
   const inlineScrollBehavior = style.getPropertyValue(scrollBehaviorProperty);
   const inlineScrollBehaviorPriority = style.getPropertyPriority(
     scrollBehaviorProperty,
   );
   const smooth =
-    getWindow(documentScroller).getComputedStyle(documentScroller)
+    getWindow(documentElement).getComputedStyle(documentElement)
       .scrollBehavior === "smooth";
   if (smooth) {
     style.setProperty(scrollBehaviorProperty, "auto", "important");
