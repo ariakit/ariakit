@@ -39,4 +39,22 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await test.expect(lastOption).toBeInViewport();
     });
   }
+
+  // https://github.com/ariakit/ariakit/pull/6976
+  test("opens the searchable select with an autofocused item without scrolling the page", async ({
+    page,
+    q,
+  }) => {
+    await page.evaluate(() => {
+      document.body.style.paddingTop = "400px";
+      window.scrollTo({ top: 300 });
+    });
+    await q.combobox("Select with Combobox and manual Tab").click();
+    await test.expect(q.combobox("Find a branch or tag")).toBeFocused();
+    await test.expect(q.option("main")).toBeInViewport();
+    // Read the scroll position once instead of retrying. A retrying assertion
+    // would also pass on an implementation that scrolls the page and then
+    // scrolls it back.
+    test.expect(await page.evaluate(() => window.scrollY)).toBe(300);
+  });
 });

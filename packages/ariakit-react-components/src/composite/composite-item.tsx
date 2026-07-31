@@ -324,28 +324,24 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
           }
           return;
         }
-        const fromComposite =
-          relatedTarget === baseElement || isItem(store, relatedTarget);
+        // The composite may live in a popup that hasn't been positioned yet, so
+        // neither this fallback nor the focus redirect below may scroll the
+        // document, otherwise the page would jump.
+        //
         // Safari doesn't scroll the element into view when another element is
-        // immediately focused. So we have to do it manually here.
+        // immediately focused. So we have to do it manually here. Restoring the
+        // document scroll afterwards leaves only nested scrollers moved.
         if (isSafari() && currentTarget.hasAttribute("data-autofocus")) {
-          // Virtual focus immediately returns to an already focused composite.
-          // Keep the fallback scoped to nested scrollers in that case.
-          if (fromComposite) {
-            withDocumentScrollPreserved(currentTarget, () => {
-              currentTarget.scrollIntoView({
-                block: "nearest",
-                inline: "nearest",
-              });
-            });
-          } else {
+          withDocumentScrollPreserved(currentTarget, () => {
             currentTarget.scrollIntoView({
               block: "nearest",
               inline: "nearest",
             });
-          }
+          });
         }
         hasFocusedComposite.current = true;
+        const fromComposite =
+          relatedTarget === baseElement || isItem(store, relatedTarget);
         // If the previously focused element is a composite or composite item
         // component, we'll transfer focus silently to the composite element.
         // That's because this is just a transition event, the composite
@@ -357,9 +353,10 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 
         // Otherwise, the composite element is likely not focused, so we need
         // this focus event to propagate so consumers can use the onFocus prop
-        // on <Composite>.
+        // on <Composite>. Propagation is controlled by the silent focus flag,
+        // not by the scroll option.
         else {
-          baseElement.focus();
+          baseElement.focus({ preventScroll: true });
         }
       };
 
