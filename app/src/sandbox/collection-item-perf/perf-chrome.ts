@@ -57,6 +57,7 @@ async function startPassiveItemTransitionLog(page: Page) {
     const ids = new WeakMap<Element, number>();
     const observed = new WeakSet<Element>();
     let nextId = 1;
+    let lastSnapshotKey = "";
 
     const getId = (element: Element) => {
       const existing = ids.get(element);
@@ -84,18 +85,25 @@ async function startPassiveItemTransitionLog(page: Page) {
         '[data-item="Item 1"]',
       );
       if (!element) {
+        if (lastSnapshotKey === "missing") return;
+        lastSnapshotKey = "missing";
         record({ kind: "snapshot", reason });
         return;
       }
       const id = getId(element);
-      record({
-        kind: "snapshot",
-        id,
-        reason,
-        offscreen: element.hasAttribute("data-offscreen"),
-        connected: element.isConnected,
-        rect: serializeRect(element.getBoundingClientRect()),
-      });
+      const offscreen = element.hasAttribute("data-offscreen");
+      const snapshotKey = `${id}:${offscreen}:${element.isConnected}`;
+      if (snapshotKey !== lastSnapshotKey) {
+        lastSnapshotKey = snapshotKey;
+        record({
+          kind: "snapshot",
+          id,
+          reason,
+          offscreen,
+          connected: element.isConnected,
+          rect: serializeRect(element.getBoundingClientRect()),
+        });
+      }
       if (observed.has(element)) return;
       observed.add(element);
       const root = element.parentElement;
@@ -138,11 +146,13 @@ async function startPassiveItemTransitionLog(page: Page) {
 }
 
 async function getPassiveItemDiagnostics(page: Page) {
-  return getItem(page, 1).evaluate(async (element) => {
+  return page.evaluate(async () => {
     interface DiagnosticWindow extends Window {
       __passiveItemTransitions?: unknown[];
     }
 
+    const element = document.querySelector<HTMLElement>('[data-item="Item 1"]');
+    if (!element) throw new Error("Expected Item 1 to be mounted");
     const root = element.parentElement;
     if (!root) throw new Error("Expected Item 1 to have a parent element");
 
