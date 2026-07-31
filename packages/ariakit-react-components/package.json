@@ -60,7 +60,6 @@
     "./collection/collection-provider": "./src/collection/collection-provider.tsx",
     "./collection/collection-renderer": "./src/collection/collection-renderer.tsx",
     "./collection/collection-store": "./src/collection/collection-store.ts",
-    "./combobox/center-into-view": "./src/combobox/center-into-view.ts",
     "./combobox/combobox": "./src/combobox/combobox.tsx",
     "./combobox/combobox-anchor": "./src/combobox/combobox-anchor.tsx",
     "./combobox/combobox-cancel": "./src/combobox/combobox-cancel.tsx",

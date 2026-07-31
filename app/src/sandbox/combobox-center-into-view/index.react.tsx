@@ -1,6 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { centerIntoView } from "@ariakit/react-components/combobox/center-into-view";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 
@@ -206,74 +205,8 @@ function ScrollablePanelFixture() {
   );
 }
 
-function ShadowPanelFixture() {
-  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
-  const boundaryRef = useRef<HTMLDivElement>(null);
-  const targetRef = useRef<HTMLDivElement>(null);
-  const setHost = useCallback((host: HTMLDivElement | null) => {
-    if (!host) {
-      setPortalElement(null);
-      return;
-    }
-    const shadowRoot = host.shadowRoot || host.attachShadow({ mode: "open" });
-    const existingScroller = shadowRoot.querySelector<HTMLElement>(
-      "[data-testid=combobox-select-shadow-scroller]",
-    );
-    if (existingScroller) {
-      setPortalElement(host);
-      return;
-    }
-    const scroller = host.ownerDocument.createElement("div");
-    scroller.dataset.testid = "combobox-select-shadow-scroller";
-    scroller.style.height = "120px";
-    scroller.style.overflow = "auto";
-    const before = host.ownerDocument.createElement("div");
-    before.style.height = "200px";
-    const slot = host.ownerDocument.createElement("slot");
-    const after = host.ownerDocument.createElement("div");
-    after.style.height = "200px";
-    scroller.append(before, slot, after);
-    shadowRoot.append(scroller);
-    setPortalElement(host);
-  }, []);
-  return (
-    <ScrollablePanel testId="combobox-select-shadow-panel">
-      <button
-        type="button"
-        onClick={() => {
-          const boundary = boundaryRef.current;
-          const target = targetRef.current;
-          if (!boundary || !target) return;
-          centerIntoView(target, boundary);
-        }}
-      >
-        Center shadow item
-      </button>
-      <div ref={setHost} />
-      {portalElement
-        ? createPortal(
-            <div
-              ref={boundaryRef}
-              data-scroll-boundary
-              style={{ maxHeight: 120, overflow: "auto" }}
-            >
-              <div style={{ height: 400 }} />
-              <div ref={targetRef} data-testid="shadow-scroll-target">
-                Shadow Mango
-              </div>
-              <div style={{ height: 400 }} />
-            </div>,
-            portalElement,
-          )
-        : null}
-    </ScrollablePanel>
-  );
-}
-
 function IframePanelFixture() {
   const [frameBody, setFrameBody] = useState<HTMLElement | null>(null);
-  const boundaryRef = useRef<HTMLDivElement>(null);
-  const targetRef = useRef<HTMLDivElement>(null);
   const setFrame = useCallback((frame: HTMLIFrameElement | null) => {
     const body = frame?.contentDocument?.body;
     if (!body) {
@@ -285,17 +218,6 @@ function IframePanelFixture() {
   }, []);
   return (
     <ScrollablePanel testId="combobox-select-iframe-panel">
-      <button
-        type="button"
-        onClick={() => {
-          const boundary = boundaryRef.current;
-          const target = targetRef.current;
-          if (!boundary || !target) return;
-          centerIntoView(target, boundary);
-        }}
-      >
-        Center iframe item
-      </button>
       <iframe
         ref={setFrame}
         title="Combobox select frame"
@@ -303,16 +225,8 @@ function IframePanelFixture() {
       />
       {frameBody
         ? createPortal(
-            <div
-              ref={boundaryRef}
-              data-scroll-boundary
-              style={{ maxHeight: 120, overflow: "auto" }}
-            >
-              <div style={{ height: 400 }} />
-              <div ref={targetRef} data-testid="iframe-scroll-target">
-                Iframe Mango
-              </div>
-              <div style={{ height: 400 }} />
+            <div style={{ minHeight: 220 }}>
+              <GeometryFixture label="Iframe fruit" layout="scaled" />
             </div>,
             frameBody,
           )
@@ -376,50 +290,17 @@ function SlottedComboboxFixture() {
   );
 }
 
-function UnrelatedBoundaryFixture() {
-  const boundaryRef = useRef<HTMLDivElement>(null);
-  const targetRef = useRef<HTMLDivElement>(null);
-  return (
-    <>
-      <button
-        type="button"
-        onClick={() => {
-          const boundary = boundaryRef.current;
-          const target = targetRef.current;
-          if (!boundary || !target) return;
-          centerIntoView(target, boundary);
-        }}
-      >
-        Center with unrelated boundary
-      </button>
-      <div ref={boundaryRef} data-testid="unrelated-scroll-boundary" />
-      <div
-        data-testid="unrelated-boundary-scroller"
-        style={{ height: 120, overflow: "auto" }}
-      >
-        <div style={{ height: 400 }} />
-        <div ref={targetRef}>Unrelated Mango</div>
-        <div style={{ height: 400 }} />
-      </div>
-    </>
-  );
-}
-
 export default function Example() {
   return (
     <>
       <ScrollablePanelFixture />
       <div style={{ marginTop: 200 }}>
-        <ShadowPanelFixture />
-      </div>
-      <div style={{ marginTop: 200 }}>
         <IframePanelFixture />
       </div>
       <div style={{ marginTop: 200 }}>
-        <SlottedComboboxFixture />
-      </div>
-      <div style={{ marginTop: 200 }}>
-        <UnrelatedBoundaryFixture />
+        <ScrollablePanel testId="combobox-select-shadow-panel">
+          <SlottedComboboxFixture />
+        </ScrollablePanel>
       </div>
       <div style={{ marginTop: 200 }}>
         <GeometryCases />
