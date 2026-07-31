@@ -60,11 +60,18 @@ async function setupCompositeMovement(page: Page, q: Query) {
 
 async function moveAcrossItems(page: Page) {
   for (let i = 0; i < moveCount; i += 1) {
+    const itemNumber = i + 2;
+    await page
+      .locator(`[data-item="Item ${itemNumber}"]:not([data-offscreen])`)
+      .waitFor();
     await page.keyboard.press("ArrowDown");
+    await page.waitForFunction((expectedItemNumber) => {
+      return (
+        document.activeElement?.getAttribute("data-item") ===
+        `Item ${expectedItemNumber}`
+      );
+    }, itemNumber);
   }
-  await page.waitForFunction((itemNumber) => {
-    return document.activeElement?.textContent === `Item ${itemNumber}`;
-  }, moveCount + 1);
 }
 
 async function verifyMovedAcrossItems(q: Query) {

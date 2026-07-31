@@ -70,11 +70,13 @@ async function setupComboboxMovement(page: Page, q: Query) {
 
 async function moveAcrossItems(page: Page) {
   for (let i = 0; i < moveCount; i += 1) {
+    const itemName = getItemName(i + 2);
+    await page
+      .locator(`[data-item="${itemName}"]:not([data-offscreen])`)
+      .waitFor();
     await page.keyboard.press("ArrowDown");
+    await page.locator(`[data-active-item][data-item="${itemName}"]`).waitFor();
   }
-  await page
-    .locator(`[data-active-item][data-item="${getItemName(moveCount + 1)}"]`)
-    .waitFor({ state: "attached" });
 }
 
 async function verifyMovedAcrossItems(q: Query) {
