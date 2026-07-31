@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { ComboboxItem } from "@ariakit/react-components/combobox/combobox-item-offscreen";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 const fruits = [
   "Apple",
@@ -121,138 +121,6 @@ function Fixture({
   );
 }
 
-type GeometryLayout =
-  | "hidden-overflow"
-  | "horizontal-wrapper"
-  | "nested-vertical"
-  | "padded"
-  | "scaled"
-  | "translated-item";
-
-interface GeometryFixtureProps {
-  label: string;
-  layout: GeometryLayout;
-}
-
-const geometryLabels = {
-  "hidden-overflow": "Hidden overflow fruit",
-  "horizontal-wrapper": "Horizontal wrapper fruit",
-  "nested-vertical": "Nested vertical fruit",
-  padded: "Padded filterable fruit",
-  scaled: "Scaled filterable fruit",
-  "translated-item": "Translated item fruit",
-} satisfies Record<GeometryLayout, string>;
-
-function GeometryFixture({ label, layout }: GeometryFixtureProps) {
-  const padded = layout === "padded";
-  const hiddenOverflow = layout === "hidden-overflow";
-  const items = fruits.map((fruit) => {
-    if (layout === "translated-item" && fruit === "Mango") {
-      return (
-        <div
-          key={fruit}
-          data-testid="translated-item-wrapper"
-          style={{ transform: "translateY(100px)" }}
-        >
-          <Ariakit.ComboboxItem
-            value={fruit}
-            style={{ display: "block", padding: "4px 8px" }}
-          />
-        </div>
-      );
-    }
-    return (
-      <Ariakit.ComboboxItem
-        key={fruit}
-        value={fruit}
-        style={{ display: "block", padding: "4px 8px" }}
-      />
-    );
-  });
-  return (
-    <Ariakit.ComboboxProvider defaultSelectedValue="Mango" virtualFocus={false}>
-      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
-      <Ariakit.ComboboxSelect style={{ display: "block" }} />
-      <Ariakit.ComboboxPopover
-        gutter={4}
-        sameWidth
-        style={{
-          background: "white",
-          border: "1px solid gray",
-          borderBottomWidth: layout === "scaled" ? 7 : undefined,
-          borderTopWidth: layout === "scaled" ? 3 : undefined,
-          maxHeight: 120,
-          minWidth: hiddenOverflow ? 160 : undefined,
-          overflow: hiddenOverflow ? "hidden" : "auto",
-          overflowAnchor: layout === "translated-item" ? "none" : undefined,
-          scrollPaddingBottom: padded ? 8 : undefined,
-          scrollPaddingTop: padded ? 48 : undefined,
-          transform: layout === "scaled" ? "scale(0.95)" : undefined,
-          transformOrigin: layout === "scaled" ? "top left" : undefined,
-        }}
-      >
-        <Ariakit.ComboboxInput
-          aria-label={`Search ${label}`}
-          style={
-            padded
-              ? {
-                  background: "white",
-                  position: "sticky",
-                  top: 0,
-                  zIndex: 1,
-                }
-              : undefined
-          }
-        />
-        {layout === "horizontal-wrapper" ? (
-          <div data-testid="horizontal-wrapper" style={{ overflowX: "auto" }}>
-            <div style={{ width: 1000 }}>{items}</div>
-          </div>
-        ) : layout === "nested-vertical" ? (
-          <>
-            <div style={{ height: 160 }} />
-            <div
-              data-testid="nested-vertical-scroll"
-              style={{ height: 80, overflowY: "auto" }}
-            >
-              {items}
-            </div>
-            <div style={{ height: 160 }} />
-          </>
-        ) : hiddenOverflow ? (
-          <div style={{ marginLeft: 320, width: 120 }}>{items}</div>
-        ) : (
-          items
-        )}
-      </Ariakit.ComboboxPopover>
-    </Ariakit.ComboboxProvider>
-  );
-}
-
-function GeometryCases() {
-  const [layout, setLayout] = useState<GeometryLayout>("scaled");
-  return (
-    <>
-      <label>
-        Geometry case
-        <select
-          value={layout}
-          onChange={(event) =>
-            setLayout(event.currentTarget.value as GeometryLayout)
-          }
-        >
-          {Object.entries(geometryLabels).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-      </label>
-      <GeometryFixture label={geometryLabels[layout]} layout={layout} />
-    </>
-  );
-}
-
 export default function Example() {
   return (
     <>
@@ -292,9 +160,6 @@ export default function Example() {
           selectOnMove
           virtualFocus
         />
-      </div>
-      <div style={{ marginTop: 200 }}>
-        <GeometryCases />
       </div>
     </>
   );
