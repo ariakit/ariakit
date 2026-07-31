@@ -134,28 +134,28 @@ function withBaseScrollPreserved(store: CompositeStore, callback: () => void) {
   baseElement.scrollTop = savedScrollTop;
 }
 
-function useScheduleFocus(store: CompositeStore) {
+function useScheduleFocus(
+  store: CompositeStore,
+  unstableScrollIntoView?: (element: HTMLElement) => void,
+) {
   const [scheduled, setScheduled] = useState<"focus" | "scroll" | false>(false);
   const scrollIdRef = useRef<string | undefined>(undefined);
   const scrollBaseElementRef = useRef<HTMLElement | null>(null);
   const scrollBeforePaintRef = useRef(false);
+  const scrollIntoView = useEvent(unstableScrollIntoView);
+  const canScrollIntoView = unstableScrollIntoView != null;
   const scheduleFocus = useCallback(() => setScheduled("focus"), []);
   const scheduleScroll = useCallback(
     (baseElement: HTMLElement, beforeNextPaint = false) => {
-      const state = store.getState();
-      const selectMode = "selectElement" in state && !!state.selectElement;
-      if (!selectMode) return;
-      const { activeId } = state;
+      if (!canScrollIntoView) return;
+      const { activeId } = store.getState();
       if (activeId == null) return;
-      const activeElement = getEnabledItem(store, activeId)?.element;
-      if (activeElement && !activeElement.hasAttribute("data-autofocus"))
-        return;
       scrollIdRef.current = activeId;
       scrollBaseElementRef.current = baseElement;
       scrollBeforePaintRef.current = beforeNextPaint;
       setScheduled("scroll");
     },
-    [store],
+    [store, canScrollIntoView],
   );
   const cancelScroll = useCallback(() => {
     if (scrollIdRef.current === undefined) return;
@@ -191,28 +191,23 @@ function useScheduleFocus(store: CompositeStore) {
       if (!focus && (!scrollBaseElement || !hasFocus(scrollBaseElement)))
         return;
       withBaseScrollPreserved(store, () => {
-        if (activeElement.hasAttribute("data-autofocus")) {
+        if (!focus) {
+          scrollIntoView(activeElement);
+          return;
+        }
+        if (
+          !canScrollIntoView &&
+          activeElement.hasAttribute("data-autofocus")
+        ) {
           withDocumentScrollPreserved(activeElement, () => {
-            if (focus) {
-              const state = store.getState();
-              const selectMode =
-                "selectElement" in state && !!state.selectElement;
-              const { baseElement } = state;
-              if (selectMode && baseElement) {
-                activeElement.focus({ preventScroll: true });
-                scheduleScroll(baseElement, true);
-              } else {
-                focusIntoView(activeElement);
-              }
-            } else {
-              activeElement.scrollIntoView({
-                block: "nearest",
-                inline: "nearest",
-              });
-            }
+            focusIntoView(activeElement);
           });
-        } else if (focus) {
-          activeElement.focus({ preventScroll: true });
+          return;
+        }
+        activeElement.focus({ preventScroll: true });
+        const { baseElement } = store.getState();
+        if (canScrollIntoView && baseElement) {
+          scheduleScroll(baseElement, true);
         }
       });
     };
@@ -223,7 +218,14 @@ function useScheduleFocus(store: CompositeStore) {
     }
     present();
     return undefined;
-  }, [store, activeItem, scheduled, scheduleScroll]);
+  }, [
+    store,
+    activeItem,
+    scheduled,
+    scheduleScroll,
+    scrollIntoView,
+    canScrollIntoView,
+  ]);
   return { scheduleFocus, scheduleScroll, cancelScroll };
 }
 
@@ -345,6 +347,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     composite = true,
     focusOnMove = composite,
     moveOnKeyPress = true,
+    unstable_scrollIntoView,
     ...props
   }) {
     const context = useCompositeProviderContext();
@@ -358,8 +361,10 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const ref = useRef<HTMLType>(null);
     const previousElementRef = useRef<HTMLElement | null>(null);
-    const { scheduleFocus, scheduleScroll, cancelScroll } =
-      useScheduleFocus(store);
+    const { scheduleFocus, scheduleScroll, cancelScroll } = useScheduleFocus(
+      store,
+      unstable_scrollIntoView,
+    );
 
     const [, setBaseElement] = useTransactionState(
       composite ? store.setBaseElement : null,
@@ -774,6 +779,16 @@ export interface CompositeOptions<
    * @default true
    */
   focusOnMove?: boolean;
+  /**
+   * Defines custom scrolling for scheduled active item presentation.
+   *
+   * Providing this callback replaces the built-in autofocus scrolling path and
+   * enables scheduled scroll handoffs. It receives the active item on a
+   * presentation pass rather than on every move. When the pass also moves
+   * focus, the item is focused with `preventScroll` before this callback runs.
+   * @private
+   */
+  unstable_scrollIntoView?: (element: HTMLElement) => void;
   /**
    * Determines whether [Focusable](https://ariakit.com/components/focusable)
    * features are active on the composite element.

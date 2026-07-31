@@ -45,6 +45,7 @@ import type {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
+import { scrollSelectedItemIntoView } from "./__utils.ts";
 import {
   useComboboxProviderContext,
   useComboboxScopedContext,
@@ -231,6 +232,10 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const items = useStoreState(store, "renderedItems");
     const open = useStoreState(store, "open");
     const contentElement = useStoreState(store, "contentElement");
+    const selectElement = useStoreState(store, "selectElement");
+    const scrollIntoView = useEvent((element: HTMLElement) => {
+      scrollSelectedItemIntoView(store, element);
+    });
     // Depend on this boolean in the highlighting effect so equivalent item
     // updates don't re-highlight a user-adjusted caret.
     const firstItemAutoSelected = isFirstItemAutoSelected(
@@ -788,6 +793,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     props = useComposite<TagName>({
       store,
       focusable,
+      unstable_scrollIntoView: selectElement ? scrollIntoView : undefined,
       ...props,
       // Enable inline autocomplete when the user moves from the combobox input
       // to an item.

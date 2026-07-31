@@ -47,6 +47,7 @@ interface FixtureProps {
   input?: boolean;
   label: string;
   moveFocusOnOpen?: boolean;
+  selectOnMove?: boolean;
   virtualFocus?: boolean;
 }
 
@@ -56,12 +57,34 @@ function Fixture({
   input,
   label,
   moveFocusOnOpen,
+  selectOnMove,
   virtualFocus,
 }: FixtureProps) {
   const focusTargetRef = useRef<HTMLDivElement>(null);
+  const items = (
+    <>
+      {fruits.map((fruit) => (
+        <ComboboxItem
+          key={fruit}
+          value={fruit}
+          offscreenMode="passive"
+          style={{ display: "block", padding: "4px 8px" }}
+        />
+      ))}
+      {/* An item rendered without a value, at the end of the list so it's
+      always out of view. */}
+      <ComboboxItem
+        offscreenMode="passive"
+        style={{ display: "block", padding: "4px 8px" }}
+      >
+        {`No ${label.toLowerCase()}`}
+      </ComboboxItem>
+    </>
+  );
   return (
     <Ariakit.ComboboxProvider
       defaultSelectedValue={defaultSelectedValue}
+      selectOnMove={selectOnMove}
       virtualFocus={virtualFocus}
     >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
@@ -92,22 +115,7 @@ function Fixture({
             value="Focus target"
           />
         )}
-        {fruits.map((fruit) => (
-          <ComboboxItem
-            key={fruit}
-            value={fruit}
-            offscreenMode="passive"
-            style={{ display: "block", padding: "4px 8px" }}
-          />
-        ))}
-        {/* An item rendered without a value, at the end of the list so it's
-        always out of view. */}
-        <ComboboxItem
-          offscreenMode="passive"
-          style={{ display: "block", padding: "4px 8px" }}
-        >
-          {`No ${label.toLowerCase()}`}
-        </ComboboxItem>
+        {items}
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
   );
@@ -142,6 +150,15 @@ export default function Example() {
           defaultSelectedValue="Watermelon"
           input
           label="Touch filterable fruit"
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          input
+          label="Virtual focus fruit"
+          selectOnMove
+          virtualFocus
         />
       </div>
     </>
