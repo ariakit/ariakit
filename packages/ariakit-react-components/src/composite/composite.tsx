@@ -779,7 +779,15 @@ export interface CompositeOptions<
    * @default true
    */
   focusOnMove?: boolean;
-  /** @private */
+  /**
+   * Defines custom scrolling for scheduled active item presentation.
+   *
+   * Providing this callback replaces the built-in autofocus scrolling path and
+   * enables scheduled scroll handoffs. It receives the active item on a
+   * presentation pass rather than on every move. When the pass also moves
+   * focus, the item is focused with `preventScroll` before this callback runs.
+   * @private
+   */
   unstable_scrollIntoView?: (element: HTMLElement) => void;
   /**
    * Determines whether [Focusable](https://ariakit.com/components/focusable)
