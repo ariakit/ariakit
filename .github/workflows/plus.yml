@@ -37,13 +37,6 @@ jobs:
           engines: chromium
           workspace: website
 
-      - name: Cache Next.js
-        uses: actions/cache@v6
-        with:
-          path: website/.next
-          key: nextjs-${{ github.run_id }}
-          restore-keys: nextjs-
-
       - name: Build website
         run: pnpm run build-website-lite
 
