@@ -1,5 +1,5 @@
 import * as Core from "@ariakit/components/composite/composite-store";
-import { getDocument, isTextField } from "@ariakit/utils";
+import { getDocument, getWindow, isTextField } from "@ariakit/utils";
 import type { CompositeStore } from "./composite-store.ts";
 
 export const flipItems = Core.flipItems;
@@ -20,10 +20,41 @@ export function withDocumentScrollPreserved(
   }
   const left = documentScroller.scrollLeft;
   const top = documentScroller.scrollTop;
+  const style = (documentScroller as HTMLElement).style;
+  const scrollBehaviorProperty = "scroll-behavior";
+  const inlineScrollBehavior = style.getPropertyValue(scrollBehaviorProperty);
+  const inlineScrollBehaviorPriority = style.getPropertyPriority(
+    scrollBehaviorProperty,
+  );
+  const smooth =
+    getWindow(documentScroller).getComputedStyle(documentScroller)
+      .scrollBehavior === "smooth";
+  if (smooth) {
+    style.setProperty(scrollBehaviorProperty, "auto", "important");
+  }
   try {
     callback();
   } finally {
-    documentScroller.scrollTo({ left, top, behavior: "instant" });
+    try {
+      if (
+        documentScroller.scrollLeft !== left ||
+        documentScroller.scrollTop !== top
+      ) {
+        documentScroller.scrollTo({ left, top, behavior: "instant" });
+      }
+    } finally {
+      if (smooth) {
+        if (inlineScrollBehavior) {
+          style.setProperty(
+            scrollBehaviorProperty,
+            inlineScrollBehavior,
+            inlineScrollBehaviorPriority,
+          );
+        } else {
+          style.removeProperty(scrollBehaviorProperty);
+        }
+      }
+    }
   }
 }
 

@@ -3,46 +3,52 @@ import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 const cases = ["Select with Tab", "Select with Combobox and Tab"];
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("reopens the searchable select without writing the document scroll position", async ({
+  test("opens and reopens the searchable select without scrolling the page", async ({
     page,
     q,
   }) => {
-    const select = q.combobox("Select with Combobox and Tab");
+    await page.setViewportSize({ width: 800, height: 400 });
+
+    const select = q.combobox("Select with Combobox and manual Tab");
     const dialog = q.dialog();
 
-    await select.click();
-    await test.expect(dialog).toBeVisible();
-    await page.mouse.click(1, 1);
-    await test.expect(dialog).toHaveCount(0);
-
-    await page.evaluate(() => {
-      const scroller = document.scrollingElement;
-      if (!scroller) throw new Error("Document scrolling element is missing");
-      const scrollTo = scroller.scrollTo.bind(scroller);
-      document.documentElement.dataset.documentScrollCalls = "0";
-      Object.defineProperty(scroller, "scrollTo", {
-        configurable: true,
-        value: (...args: unknown[]) => {
-          const { dataset } = document.documentElement;
-          const calls = Number(dataset.documentScrollCalls);
-          dataset.documentScrollCalls = String(calls + 1);
-          Reflect.apply(scrollTo, undefined, args);
-        },
+    await select.scrollIntoViewIfNeeded();
+    const scrollY = await page.evaluate(() => window.scrollY);
+    test.expect(scrollY).toBeGreaterThan(0);
+    await page.evaluate((scrollY) => {
+      const style = document.createElement("style");
+      style.textContent = "html { scroll-behavior: smooth !important }";
+      document.head.append(style);
+      window.addEventListener("scroll", () => {
+        if (window.scrollY === scrollY) return;
+        document.documentElement.dataset.scrollMoved = "true";
       });
-    });
+    }, scrollY);
 
     await select.click();
     await test.expect(dialog).toBeVisible();
     await test.expect(q.option("main")).toBeInViewport();
-    await flushFrames(page, 3);
-
+    await flushFrames(page);
+    test.expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
     test
       .expect(
-        await page.evaluate(
-          () => document.documentElement.dataset.documentScrollCalls,
-        ),
+        await page.evaluate(() => document.documentElement.dataset.scrollMoved),
       )
-      .toBe("0");
+      .toBeUndefined();
+
+    await page.mouse.click(1, 1);
+    await test.expect(dialog).toHaveCount(0);
+
+    await select.click();
+    await test.expect(dialog).toBeVisible();
+    await test.expect(q.option("main")).toBeInViewport();
+    await flushFrames(page);
+    test.expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
+    test
+      .expect(
+        await page.evaluate(() => document.documentElement.dataset.scrollMoved),
+      )
+      .toBeUndefined();
   });
 
   for (const label of cases) {

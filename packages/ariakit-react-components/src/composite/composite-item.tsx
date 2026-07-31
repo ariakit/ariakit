@@ -359,7 +359,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         // this focus event to propagate so consumers can use the onFocus prop
         // on <Composite>.
         else {
-          baseElement.focus();
+          baseElement.focus({ preventScroll: true });
         }
       };
 
