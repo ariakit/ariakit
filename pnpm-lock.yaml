@@ -190,7 +190,7 @@ importers:
         version: 0.9.10(@typescript/typescript6@6.0.2)(prettier@3.9.6)
       '@astrojs/cloudflare':
         specifier: 14.1.6
-        version: 14.1.6(@types/node@24.13.3)(astro@7.1.5(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(rollup@4.59.0)(terser@5.46.0)(yaml@2.9.0))(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(workerd@1.20260722.1)(wrangler@4.114.0)(yaml@2.9.0)
+        version: 14.1.6(@types/node@24.13.3)(astro@7.1.5(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(rollup@4.59.0)(terser@5.46.0)(yaml@2.9.0))(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(workerd@1.20260722.1)(wrangler@4.115.0)(yaml@2.9.0)
       '@astrojs/markdown-remark':
         specifier: 7.2.2
         version: 7.2.2(supports-color@10.2.2)
@@ -409,8 +409,8 @@ importers:
         specifier: 4.1.10
         version: 4.1.10(@types/node@24.13.3)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.1)(jsdom@29.1.1(@noble/hashes@1.8.0))(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))
       wrangler:
-        specifier: 4.114.0
-        version: 4.114.0
+        specifier: 4.115.0
+        version: 4.115.0
 
   examples:
     dependencies:
@@ -497,7 +497,7 @@ importers:
     devDependencies:
       '@opennextjs/cloudflare':
         specifier: 1.20.2
-        version: 1.20.2(encoding@0.1.13)(next@16.2.12(@babel/core@7.29.0(supports-color@10.2.2))(@playwright/test@1.62.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.2.2)(wrangler@4.114.0)
+        version: 1.20.2(encoding@0.1.13)(next@16.2.12(@babel/core@7.29.0(supports-color@10.2.2))(@playwright/test@1.62.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.2.2)(wrangler@4.115.0)
       '@tailwindcss/postcss':
         specifier: 4.3.3
         version: 4.3.3
@@ -523,8 +523,8 @@ importers:
         specifier: npm:typescript@7.0.2
         version: typescript@7.0.2
       wrangler:
-        specifier: 4.114.0
-        version: 4.114.0
+        specifier: 4.115.0
+        version: 4.115.0
 
   packages/ariakit-components:
     dependencies:
@@ -8176,8 +8176,8 @@ packages:
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  miniflare@4.20260722.0:
-    resolution: {integrity: sha512-LW6ABMhCx/yIEFBLC/DO4yAhdm2T/G7jp7pr5T2kj895+CCIaHZqpMXdW9O6YE48LcYcCJChwWc8aEs1vpbTXw==}
+  miniflare@4.20260722.1:
+    resolution: {integrity: sha512-FJIg4omaCb2wwSyOeRosEdmVRi3JzGAOOH3pa3twmmtvWECl6BVZMIDwJbjByLKRyU+mrfk0M/n3oSiojFZvSA==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
@@ -10538,8 +10538,8 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  wrangler@4.114.0:
-    resolution: {integrity: sha512-M65P25t5UHA1TIJfgZXDcj+YzVobgKdRguM2QPz0xnxLFuOcuE3ErgllDht0iaho7MS4o0g/Bb4YK2+GT+bibg==}
+  wrangler@4.115.0:
+    resolution: {integrity: sha512-+upG2VW66M1sjb43yzgUZ6Ss8iYpJ6+7F3U4GF8TY5EYd+08sYdS54d24AEwCnhuef3J9KlSPusqiqR9WYy1UA==}
     engines: {node: '>=22.0.0'}
     hasBin: true
     peerDependencies:
@@ -10749,15 +10749,15 @@ snapshots:
       - prettier
       - prettier-plugin-astro
 
-  '@astrojs/cloudflare@14.1.6(@types/node@24.13.3)(astro@7.1.5(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(rollup@4.59.0)(terser@5.46.0)(yaml@2.9.0))(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(workerd@1.20260722.1)(wrangler@4.114.0)(yaml@2.9.0)':
+  '@astrojs/cloudflare@14.1.6(@types/node@24.13.3)(astro@7.1.5(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(rollup@4.59.0)(terser@5.46.0)(yaml@2.9.0))(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(workerd@1.20260722.1)(wrangler@4.115.0)(yaml@2.9.0)':
     dependencies:
       '@astrojs/internal-helpers': 0.10.2
       '@astrojs/underscore-redirects': 1.0.3
-      '@cloudflare/vite-plugin': 1.39.0(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(workerd@1.20260722.1)(wrangler@4.114.0)
+      '@cloudflare/vite-plugin': 1.39.0(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(workerd@1.20260722.1)(wrangler@4.115.0)
       astro: 7.1.5(@astrojs/markdown-remark@7.2.2(supports-color@10.2.2))(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@24.13.3)(aws4fetch@1.0.20)(jiti@2.7.0)(rollup@4.59.0)(terser@5.46.0)(yaml@2.9.0)
       piccolore: 0.1.3
       vite: 8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)
-      wrangler: 4.114.0
+      wrangler: 4.115.0
     transitivePeerDependencies:
       - '@types/node'
       - '@vitejs/devtools'
@@ -12787,13 +12787,13 @@ snapshots:
     optionalDependencies:
       workerd: 1.20260722.1
 
-  '@cloudflare/vite-plugin@1.39.0(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(workerd@1.20260722.1)(wrangler@4.114.0)':
+  '@cloudflare/vite-plugin@1.39.0(vite@8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0))(workerd@1.20260722.1)(wrangler@4.115.0)':
     dependencies:
       '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260722.1)
       miniflare: 4.20260526.0
       unenv: 2.0.0-rc.24
       vite: 8.1.5(@types/node@24.13.3)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.46.0)(yaml@2.9.0)
-      wrangler: 4.114.0
+      wrangler: 4.115.0
       ws: 8.20.1
     transitivePeerDependencies:
       - bufferutil
@@ -13725,7 +13725,7 @@ snapshots:
       - aws-crt
       - supports-color
 
-  '@opennextjs/cloudflare@1.20.2(encoding@0.1.13)(next@16.2.12(@babel/core@7.29.0(supports-color@10.2.2))(@playwright/test@1.62.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.2.2)(wrangler@4.114.0)':
+  '@opennextjs/cloudflare@1.20.2(encoding@0.1.13)(next@16.2.12(@babel/core@7.29.0(supports-color@10.2.2))(@playwright/test@1.62.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(supports-color@10.2.2)(wrangler@4.115.0)':
     dependencies:
       '@ast-grep/napi': 0.40.5
       '@dotenvx/dotenvx': 1.31.0
@@ -13737,7 +13737,7 @@ snapshots:
       glob: 12.0.0
       next: 16.2.12(@babel/core@7.29.0(supports-color@10.2.2))(@playwright/test@1.62.0)(babel-plugin-macros@3.1.0)(babel-plugin-react-compiler@1.0.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       ts-tqdm: 0.8.6
-      wrangler: 4.114.0
+      wrangler: 4.115.0
       yargs: 18.0.0
     transitivePeerDependencies:
       - aws-crt
@@ -18772,7 +18772,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  miniflare@4.20260722.0:
+  miniflare@4.20260722.1:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.35.2
@@ -21443,13 +21443,13 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20260722.1
       '@cloudflare/workerd-windows-64': 1.20260722.1
 
-  wrangler@4.114.0:
+  wrangler@4.115.0:
     dependencies:
       '@cloudflare/kv-asset-handler': 0.5.0
       '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260722.1)
       blake3-wasm: 2.1.5
       esbuild: 0.28.1
-      miniflare: 4.20260722.0
+      miniflare: 4.20260722.1
       path-to-regexp: 6.3.0
       unenv: 2.0.0-rc.24
       workerd: 1.20260722.1
