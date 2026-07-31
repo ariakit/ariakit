@@ -27,8 +27,122 @@ function getItem(page: Page, itemNumber: number) {
   return page.locator(`[data-item="Item ${itemNumber}"]`);
 }
 
+async function startPassiveItemTransitionLog(page: Page) {
+  await page.evaluate(() => {
+    interface Transition {
+      kind: "intersection" | "snapshot";
+      id?: number;
+      reason?: string;
+      offscreen?: boolean;
+      connected?: boolean;
+      isIntersecting?: boolean;
+      intersectionRatio?: number;
+      rect?: {
+        top: number;
+        bottom: number;
+        width: number;
+        height: number;
+      };
+    }
+
+    interface DiagnosticWindow extends Window {
+      __passiveItemMutationObserver?: MutationObserver;
+      __passiveItemObservers?: IntersectionObserver[];
+      __passiveItemTransitions?: Transition[];
+    }
+
+    const diagnosticWindow = window as DiagnosticWindow;
+    const transitions: Transition[] = [];
+    const observers: IntersectionObserver[] = [];
+    const ids = new WeakMap<Element, number>();
+    const observed = new WeakSet<Element>();
+    let nextId = 1;
+
+    const getId = (element: Element) => {
+      const existing = ids.get(element);
+      if (existing) return existing;
+      const id = nextId;
+      nextId += 1;
+      ids.set(element, id);
+      return id;
+    };
+
+    const serializeRect = (rect: DOMRectReadOnly) => ({
+      top: rect.top,
+      bottom: rect.bottom,
+      width: rect.width,
+      height: rect.height,
+    });
+
+    const record = (transition: Transition) => {
+      if (transitions.length >= 100) return;
+      transitions.push(transition);
+    };
+
+    const snapshot = (reason: string) => {
+      const element = document.querySelector<HTMLElement>(
+        '[data-item="Item 1"]',
+      );
+      if (!element) {
+        record({ kind: "snapshot", reason });
+        return;
+      }
+      const id = getId(element);
+      record({
+        kind: "snapshot",
+        id,
+        reason,
+        offscreen: element.hasAttribute("data-offscreen"),
+        connected: element.isConnected,
+        rect: serializeRect(element.getBoundingClientRect()),
+      });
+      if (observed.has(element)) return;
+      observed.add(element);
+      const root = element.parentElement;
+      if (!root) return;
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry) return;
+          record({
+            kind: "intersection",
+            id,
+            connected: entry.target.isConnected,
+            isIntersecting: entry.isIntersecting,
+            intersectionRatio: entry.intersectionRatio,
+            rect: serializeRect(entry.boundingClientRect),
+          });
+        },
+        { root, rootMargin: "40%" },
+      );
+      observers.push(observer);
+      observer.observe(element);
+    };
+
+    const mutations = new MutationObserver((records) => {
+      const reason = records
+        .map((record) => record.attributeName || record.type)
+        .join(",");
+      snapshot(reason);
+    });
+    mutations.observe(document.body, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ["data-offscreen"],
+    });
+    diagnosticWindow.__passiveItemMutationObserver = mutations;
+    diagnosticWindow.__passiveItemObservers = observers;
+    diagnosticWindow.__passiveItemTransitions = transitions;
+    snapshot("start");
+  });
+}
+
 async function getPassiveItemDiagnostics(page: Page) {
   return getItem(page, 1).evaluate(async (element) => {
+    interface DiagnosticWindow extends Window {
+      __passiveItemTransitions?: unknown[];
+    }
+
     const root = element.parentElement;
     if (!root) throw new Error("Expected Item 1 to have a parent element");
 
@@ -115,6 +229,7 @@ async function getPassiveItemDiagnostics(page: Page) {
       },
       intersection,
       idleCallback,
+      transitions: (window as DiagnosticWindow).__passiveItemTransitions,
     };
   });
 }
@@ -138,6 +253,7 @@ async function waitForCollectionMounted(page: Page) {
 }
 
 async function mountCollection(page: Page, q: Query) {
+  if (offscreen) await startPassiveItemTransitionLog(page);
   await q.button("Mount collection").click();
   await waitForCollectionMounted(page);
 }
