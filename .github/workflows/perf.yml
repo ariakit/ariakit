@@ -60,12 +60,12 @@ jobs:
       - name: Create Chrome perf matrix
         id: matrix
         run: |
-          # Temporarily isolate Collection while diagnosing passive item
-          # materialization. The full item comparison matrix will be restored
-          # after the shared offscreen primitive is fixed.
+          # Limit this temporary comparison to the three item fixtures.
           perf_files="$(
             cd app && find \
               src/sandbox/collection-item-perf \
+              src/sandbox/combobox-item-perf \
+              src/sandbox/composite-item-perf \
               -type f \
               \( -path '*perf*-chrome.ts' -o -path '*perf*-chrome.tsx' \) \
               | sort

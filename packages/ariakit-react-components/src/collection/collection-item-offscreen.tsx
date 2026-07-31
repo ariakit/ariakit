@@ -17,7 +17,7 @@ type HTMLType = HTMLElementTagNameMap[TagName];
 
 function requestIdleCallback(callback: () => void) {
   if (typeof window.requestIdleCallback === "function") {
-    return window.requestIdleCallback(callback);
+    return window.requestIdleCallback(callback, { timeout: 500 });
   }
   callback();
   return 0;
