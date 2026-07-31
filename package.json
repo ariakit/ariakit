@@ -74,7 +74,7 @@
     "oxfmt": "0.61.0",
     "oxlint": "1.76.0",
     "oxlint-tsgolint": "7.0.2001",
-    "pkg-pr-new": "0.0.80",
+    "pkg-pr-new": "0.0.82",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "rimraf": "6.1.3",

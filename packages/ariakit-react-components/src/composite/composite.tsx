@@ -204,9 +204,21 @@ function useScheduleFocus(
           });
           return;
         }
-        activeElement.focus({ preventScroll: true });
+        const focusActiveItem = () => {
+          activeElement.focus({ preventScroll: true });
+        };
+        if (!canScrollIntoView) {
+          focusActiveItem();
+          return;
+        }
+        // The consumer owns presentation scrolling on this path, so the
+        // document must not move on the composite's behalf. Focusing the item
+        // synchronously redirects focus to the composite element, and the
+        // browser scrolls to wherever that element currently is, which may be
+        // a popup's pre-placement origin. Nested scrollers keep moving.
+        withDocumentScrollPreserved(activeElement, focusActiveItem);
         const { baseElement } = store.getState();
-        if (canScrollIntoView && baseElement) {
+        if (baseElement) {
           scheduleScroll(baseElement, true);
         }
       });
@@ -785,7 +797,9 @@ export interface CompositeOptions<
    * Providing this callback replaces the built-in autofocus scrolling path and
    * enables scheduled scroll handoffs. It receives the active item on a
    * presentation pass rather than on every move. When the pass also moves
-   * focus, the item is focused with `preventScroll` before this callback runs.
+   * focus, the item is focused with `preventScroll` before this callback runs,
+   * and the document scroll is restored around that focus, so this callback is
+   * responsible for any document-level scrolling the presentation needs.
    * @private
    */
   unstable_scrollIntoView?: (element: HTMLElement) => void;
