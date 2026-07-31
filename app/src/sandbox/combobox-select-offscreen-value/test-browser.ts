@@ -16,6 +16,18 @@ function getCenterOffset(item: Locator) {
   });
 }
 
+function getTopOffset(item: Locator) {
+  return item.evaluate((element) => {
+    const listbox = element.closest<HTMLElement>("[role=listbox]");
+    if (!listbox) return Infinity;
+    const listboxRect = listbox.getBoundingClientRect();
+    const itemRect = element.getBoundingClientRect();
+    const scaleY = listboxRect.height / listbox.offsetHeight;
+    const viewportStart = listboxRect.top + listbox.clientTop * scaleY;
+    return itemRect.top - viewportStart;
+  });
+}
+
 withFramework(import.meta.dirname, async ({ test }) => {
   test("keeps value-less offscreen items offscreen with no selected value", async ({
     q,
@@ -97,6 +109,37 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeLessThanOrEqual(1);
     await test.expect(watermelon).toBeInViewport();
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6838
+  test("keeps nearest-edge scrolling after real focus movement", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Filterable fruit");
+    const watermelon = q.option("Watermelon");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+    await page.keyboard.press("Escape");
+    await test.expect(select).toHaveAttribute("aria-expanded", "false");
+
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+    await test.expect
+      .poll(async () => Math.abs(await getCenterOffset(watermelon)))
+      .toBeLessThanOrEqual(1);
+    await test.expect(q.combobox("Search Filterable fruit")).toBeFocused();
+    const quince = q.option("Quince");
+    await test.expect(quince).not.toHaveAttribute("data-offscreen");
+    // Passive items register in an effect and publish on a later frame.
+    await flushFrames(page);
+
+    await page.keyboard.press("ArrowDown");
+    await test.expect(quince).toHaveAttribute("data-active-item");
+    await test.expect(quince).toBeFocused();
+    await test.expect
+      .poll(async () => Math.abs(await getTopOffset(quince)))
+      .toBeLessThanOrEqual(1);
   });
 
   // https://github.com/ariakit/ariakit/issues/6838
