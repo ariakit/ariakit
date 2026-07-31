@@ -1,6 +1,7 @@
 import * as Ariakit from "@ariakit/react";
 import { CompositeItem as OffscreenCompositeItem } from "@ariakit/react-components/composite/composite-item-offscreen";
-import { useEffect, useState } from "react";
+import type { RefObject } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./style.css";
 
 const itemCount = 1000;
@@ -12,13 +13,10 @@ const items = Array.from(
 interface CompositeItemProps {
   item: string;
   offscreen: boolean;
+  offscreenRoot: RefObject<HTMLDivElement | null>;
 }
 
-function getOffscreenRoot(element: HTMLElement) {
-  return element.parentElement;
-}
-
-function CompositeItem({ item, offscreen }: CompositeItemProps) {
+function CompositeItem({ item, offscreen, offscreenRoot }: CompositeItemProps) {
   const props = {
     className: "item",
     "data-item": item,
@@ -31,24 +29,38 @@ function CompositeItem({ item, offscreen }: CompositeItemProps) {
       <OffscreenCompositeItem
         {...props}
         offscreenMode="passive"
-        offscreenRoot={getOffscreenRoot}
+        offscreenRoot={offscreenRoot}
       />
     );
   }
   return <Ariakit.CompositeItem {...props} />;
 }
 
-function CompositeFixture({ offscreen }: { offscreen: boolean }) {
+interface CompositeFixtureProps {
+  mounted: boolean;
+  offscreen: boolean;
+}
+
+function CompositeFixture({ mounted, offscreen }: CompositeFixtureProps) {
+  const offscreenRoot = useRef<HTMLDivElement>(null);
   return (
     <Ariakit.CompositeProvider orientation="vertical">
       <Ariakit.Composite
         aria-label="Composite items"
         className="scroller"
+        ref={offscreenRoot}
         role="toolbar"
       >
-        {items.map((item) => (
-          <CompositeItem key={item} item={item} offscreen={offscreen} />
-        ))}
+        {mounted
+          ? items.map((item) => (
+              <CompositeItem
+                key={item}
+                item={item}
+                offscreen={offscreen}
+                offscreenRoot={offscreenRoot}
+              />
+            ))
+          : null}
       </Ariakit.Composite>
     </Ariakit.CompositeProvider>
   );
@@ -74,7 +86,7 @@ export default function Example() {
       >
         {mounted ? "Unmount composite" : "Mount composite"}
       </Ariakit.Button>
-      {mounted ? <CompositeFixture offscreen={offscreen} /> : null}
+      <CompositeFixture mounted={mounted} offscreen={offscreen} />
     </main>
   );
 }

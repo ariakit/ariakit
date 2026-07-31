@@ -1,6 +1,7 @@
 import * as Ariakit from "@ariakit/react";
 import { CollectionItem as OffscreenCollectionItem } from "@ariakit/react-components/collection/collection-item-offscreen";
-import { useEffect, useState } from "react";
+import type { RefObject } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./style.css";
 
 const itemCount = 1000;
@@ -12,13 +13,14 @@ const items = Array.from(
 interface CollectionItemProps {
   item: string;
   offscreen: boolean;
+  offscreenRoot: RefObject<HTMLDivElement | null>;
 }
 
-function getOffscreenRoot(element: HTMLElement) {
-  return element.parentElement;
-}
-
-function CollectionItem({ item, offscreen }: CollectionItemProps) {
+function CollectionItem({
+  item,
+  offscreen,
+  offscreenRoot,
+}: CollectionItemProps) {
   const props = {
     className: "item",
     "data-item": item,
@@ -30,23 +32,37 @@ function CollectionItem({ item, offscreen }: CollectionItemProps) {
       <OffscreenCollectionItem
         {...props}
         offscreenMode="passive"
-        offscreenRoot={getOffscreenRoot}
+        offscreenRoot={offscreenRoot}
       />
     );
   }
   return <Ariakit.CollectionItem {...props} />;
 }
 
-function CollectionFixture({ offscreen }: { offscreen: boolean }) {
+interface CollectionFixtureProps {
+  mounted: boolean;
+  offscreen: boolean;
+}
+
+function CollectionFixture({ mounted, offscreen }: CollectionFixtureProps) {
+  const offscreenRoot = useRef<HTMLDivElement>(null);
   return (
     <Ariakit.Collection
       aria-label="Collection items"
       className="scroller"
+      ref={offscreenRoot}
       role="list"
     >
-      {items.map((item) => (
-        <CollectionItem key={item} item={item} offscreen={offscreen} />
-      ))}
+      {mounted
+        ? items.map((item) => (
+            <CollectionItem
+              key={item}
+              item={item}
+              offscreen={offscreen}
+              offscreenRoot={offscreenRoot}
+            />
+          ))
+        : null}
     </Ariakit.Collection>
   );
 }
@@ -71,7 +87,7 @@ export default function Example() {
       >
         {mounted ? "Unmount collection" : "Mount collection"}
       </Ariakit.Button>
-      {mounted ? <CollectionFixture offscreen={offscreen} /> : null}
+      <CollectionFixture mounted={mounted} offscreen={offscreen} />
     </main>
   );
 }
