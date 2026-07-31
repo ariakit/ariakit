@@ -8,8 +8,13 @@ interface ScrollPosition {
 }
 
 function getParentElement(element: Element) {
+  // Use light-DOM ancestry for slotted boundaries. Their shadow-side scroll
+  // containers also move during the surrounding open/focus sequence, so this
+  // presentation pass cannot keep those positions stable.
   if (element.parentElement) return element.parentElement;
   const root = element.getRootNode();
+  // Node.DOCUMENT_FRAGMENT_NODE === 11. Avoid the global Node and ShadowRoot
+  // constructors so this works for elements from another realm.
   if (root.nodeType === 11) {
     const host = (root as ShadowRoot).host;
     if (host) return host;
