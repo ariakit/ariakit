@@ -27,7 +27,6 @@ import type { BasePlacement } from "../popover/__utils.ts";
 import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
-import { Role } from "../role/role.tsx";
 import {
   MenuContextProvider,
   useMenuProviderContext,
@@ -35,7 +34,7 @@ import {
 import type { MenuStore, MenuStoreState } from "./menu-store.ts";
 
 const TagName = "button" satisfies ElementType;
-type TagName = typeof TagName | "div";
+type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
 
 function getInitialFocus(event: KeyboardEvent, dir: BasePlacement) {
@@ -109,7 +108,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     const onFocusProp = props.onFocus;
 
     const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
-      onFocusProp?.(event as any);
+      onFocusProp?.(event);
       if (isDisabled(event.currentTarget)) return;
       if (event.defaultPrevented) return;
       // Reset the autoFocusOnShow state so we can focus the menu button while
@@ -137,7 +136,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     const onKeyDownProp = props.onKeyDown;
 
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
-      onKeyDownProp?.(event as any);
+      onKeyDownProp?.(event);
       if (isDisabled(event.currentTarget)) return;
       if (event.defaultPrevented) return;
       const initialFocus = getInitialFocus(event, dir);
@@ -158,7 +157,7 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
     const onClickProp = props.onClick;
 
     const onClick = useEvent((event: MouseEvent<HTMLType>) => {
-      onClickProp?.(event as any);
+      onClickProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
       const isKeyboardClick = !event.detail;
@@ -187,17 +186,6 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
       ),
       [store],
     );
-
-    if (hasParentMenu) {
-      // On Safari, VO+Space triggers a click twice on native button elements
-      // with role menuitem (https://bugs.webkit.org/show_bug.cgi?id=228318).
-      // So, if the menu button is rendered within a menu, we need to render it
-      // as another element.
-      props = {
-        ...props,
-        render: <Role.div render={props.render} />,
-      };
-    }
 
     // We'll use this id to render the aria-labelledby attribute on the menu.
     const id = useId(props.id);
@@ -302,8 +290,6 @@ export const useMenuButton = createHook<TagName, MenuButtonOptions>(
 export const MenuButton = forwardRef(function MenuButton(
   props: MenuButtonProps,
 ) {
-  // useMenuButton renders nested menu buttons as a div, so apply the default
-  // button type only after the hook has chosen the final host.
   const htmlProps = useMenuButton(props);
   return createElement(TagName, withDefaultButtonType(htmlProps));
 });

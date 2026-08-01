@@ -3,6 +3,12 @@ import { expect } from "@playwright/test";
 import { withFramework } from "#app/test-utils/preview.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  test("renders submenu triggers as native buttons", async ({ page }) => {
+    const q = query(page);
+    await q.menuitem("File").click();
+    await expect(q.menuitem("Share")).toHaveJSProperty("tagName", "BUTTON");
+  });
+
   test("re-open submenu and shift-tab back to the parent menu", async ({
     page,
   }) => {

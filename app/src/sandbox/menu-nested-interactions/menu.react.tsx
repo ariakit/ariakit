@@ -16,11 +16,13 @@ export const MenuItem = React.forwardRef<HTMLDivElement, MenuItemProps>(
   },
 );
 
-export interface MenuProps extends Ariakit.MenuButtonProps<"div"> {
+export interface MenuProps extends Ariakit.MenuButtonProps {
   label: React.ReactNode;
 }
 
-export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
+type MenuElement = HTMLButtonElement;
+
+export const Menu = React.forwardRef<MenuElement, MenuProps>(function Menu(
   { label, children, ...props },
   ref,
 ) {

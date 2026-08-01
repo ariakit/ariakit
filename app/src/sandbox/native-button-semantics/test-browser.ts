@@ -59,8 +59,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.button("Disabled button")).toBeDisabled();
 
     const nestedMenuButton = q.menuitem("Nested menu");
-    await test.expect(nestedMenuButton).toHaveJSProperty("tagName", "DIV");
-    await test.expect(nestedMenuButton).not.toHaveAttribute("type");
+    await test.expect(nestedMenuButton).toHaveJSProperty("tagName", "BUTTON");
+    await test.expect(nestedMenuButton).toHaveAttribute("type", "button");
   });
 
   test("updates custom focusability", async ({ q }) => {

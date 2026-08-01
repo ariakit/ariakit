@@ -2,7 +2,6 @@ import * as Ariakit from "@ariakit/react";
 import * as React from "react";
 import { flushSync } from "react-dom";
 
-interface MenuButtonProps extends React.ComponentPropsWithRef<"div"> {}
 interface MenuContextProps {
   getWrapper: () => HTMLElement | null;
   getMenu: () => HTMLElement | null;
@@ -11,12 +10,14 @@ interface MenuContextProps {
 
 const MenuContext = React.createContext<MenuContextProps | null>(null);
 
-export interface MenuProps extends React.ComponentPropsWithoutRef<"div"> {
+export interface MenuProps extends React.ComponentPropsWithoutRef<"button"> {
   label: React.ReactNode;
   disabled?: boolean;
 }
 
-export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
+type MenuElement = HTMLButtonElement;
+
+export const Menu = React.forwardRef<MenuElement, MenuProps>(function Menu(
   { label, children, ...props },
   ref,
 ) {
@@ -84,13 +85,13 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
     return () => parentWrapper.removeEventListener("scroll", onScroll);
   }, [parent, menu]);
 
-  const renderMenuButton = (menuButtonProps: MenuButtonProps) => (
+  const menuButton = (
     <Ariakit.MenuButton
+      ref={ref}
       store={menu}
       showOnHover={false}
       className="button"
       render={<button />}
-      {...menuButtonProps}
     >
       <span className="label">{label}</span>
       <Ariakit.MenuButtonArrow />
@@ -119,15 +120,13 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
         // MenuItem components into a single component, so it works as a
         // submenu button.
         <Ariakit.MenuItem
-          ref={ref}
           focusOnHover={false}
           className="w-full rounded p-2 text-left"
-          {...props}
-          render={renderMenuButton}
+          render={React.cloneElement(menuButton, props)}
         />
       ) : (
         // Otherwise, we just render the menu button.
-        renderMenuButton({ ref, ...props })
+        React.cloneElement(menuButton, props)
       )}
       <Ariakit.Menu
         store={menu}

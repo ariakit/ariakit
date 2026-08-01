@@ -20,8 +20,8 @@ function expectSharedButtonTypes(query: ReturnType<typeof q.within>) {
   expect(query.button("Toolbar item")).toHaveAttribute("type", "button");
   expect(query.button("Root menu")).toHaveAttribute("type", "button");
   const nestedMenuButton = query.menuitem("Nested menu");
-  expect(nestedMenuButton).toHaveProperty("tagName", "DIV");
-  expect(nestedMenuButton).not.toHaveAttribute("type");
+  expect(nestedMenuButton).toHaveProperty("tagName", "BUTTON");
+  expect(nestedMenuButton).toHaveAttribute("type", "button");
 }
 
 function expectServerButtonTypes(query: ReturnType<typeof q.within>) {

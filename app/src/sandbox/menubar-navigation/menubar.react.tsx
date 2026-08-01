@@ -78,7 +78,7 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   { shift = 0, placement = "bottom", label, href, children, ...props },
   ref,
 ) {
-  const [menuButton, setMenuButton] = React.useState<HTMLDivElement | null>(
+  const [menuButton, setMenuButton] = React.useState<HTMLButtonElement | null>(
     null,
   );
 

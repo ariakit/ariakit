@@ -1,6 +1,11 @@
 import { click, hover, press, q, sleep, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
+test("renders submenu triggers as native buttons", async () => {
+  await click(q.menuitem("File"));
+  expect(q.menuitem.ensure("Share").tagName).toBe("BUTTON");
+});
+
 test("show/hide on click", async () => {
   expect(q.menu("File")).not.toBeInTheDocument();
   await click(q.menuitem("File"));

@@ -9,7 +9,7 @@ import * as React from "react";
 
 const SearchableContext = React.createContext(false);
 
-export interface MenuProps extends Ariakit.MenuButtonProps<"div"> {
+export interface MenuProps extends Ariakit.MenuButtonProps {
   label?: React.ReactNode;
   values?: Ariakit.MenuProviderProps["values"];
   onValuesChange?: Ariakit.MenuProviderProps["setValues"];
@@ -19,7 +19,9 @@ export interface MenuProps extends Ariakit.MenuButtonProps<"div"> {
   trigger?: Ariakit.MenuButtonProps["render"];
 }
 
-export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
+type MenuElement = HTMLButtonElement;
+
+export const Menu = React.forwardRef<MenuElement, MenuProps>(function Menu(
   {
     label,
     children,
