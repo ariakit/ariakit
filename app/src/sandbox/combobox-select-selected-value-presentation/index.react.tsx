@@ -46,7 +46,7 @@ interface FixtureProps {
   input?: boolean;
   label: string;
   moveFocusOnOpen?: boolean;
-  selectOnMove?: boolean;
+  unmountOnHide?: boolean;
   virtualFocus?: boolean;
 }
 
@@ -56,35 +56,19 @@ function Fixture({
   input,
   label,
   moveFocusOnOpen,
-  selectOnMove,
+  unmountOnHide,
   virtualFocus,
 }: FixtureProps) {
   const focusTargetRef = useRef<HTMLDivElement>(null);
-  const items = (
-    <>
-      {fruits.map((fruit) => (
-        <Ariakit.ComboboxItem
-          key={fruit}
-          value={fruit}
-          style={{ display: "block", padding: "4px 8px" }}
-        />
-      ))}
-      {/* An item rendered without a value, at the end of the list so it's
-      always out of view. */}
-      <Ariakit.ComboboxItem style={{ display: "block", padding: "4px 8px" }}>
-        {`No ${label.toLowerCase()}`}
-      </Ariakit.ComboboxItem>
-    </>
-  );
   return (
     <Ariakit.ComboboxProvider
       defaultSelectedValue={defaultSelectedValue}
-      selectOnMove={selectOnMove}
       virtualFocus={virtualFocus}
     >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect style={{ display: "block" }} />
       <Ariakit.ComboboxPopover
+        unmountOnHide={unmountOnHide}
         gutter={4}
         sameWidth
         style={{
@@ -110,7 +94,18 @@ function Fixture({
             value="Focus target"
           />
         )}
-        {items}
+        {fruits.map((fruit) => (
+          <Ariakit.ComboboxItem
+            key={fruit}
+            value={fruit}
+            style={{ display: "block", padding: "4px 8px" }}
+          />
+        ))}
+        {/* An item rendered without a value, at the end of the list so it's
+        always out of view. */}
+        <Ariakit.ComboboxItem style={{ display: "block", padding: "4px 8px" }}>
+          {`No ${label.toLowerCase()}`}
+        </Ariakit.ComboboxItem>
       </Ariakit.ComboboxPopover>
     </Ariakit.ComboboxProvider>
   );
@@ -140,19 +135,23 @@ export default function Example() {
         />
       </div>
       <div style={{ marginTop: 200 }}>
+        {/* The popup unmounts while hidden, so the select element is briefly
+        the composite again on each open. */}
         <Fixture
           defaultSelectedValue="Watermelon"
+          focusTarget
           input
-          label="Touch filterable fruit"
+          label="Focus moving unmounted fruit"
+          moveFocusOnOpen
+          unmountOnHide
+          virtualFocus={false}
         />
       </div>
       <div style={{ marginTop: 200 }}>
         <Fixture
           defaultSelectedValue="Watermelon"
           input
-          label="Virtual focus fruit"
-          selectOnMove
-          virtualFocus
+          label="Touch filterable fruit"
         />
       </div>
     </>
