@@ -224,8 +224,9 @@ function useScheduleFocus(
       });
     };
     if (!focus) {
-      // A focus handoff must scroll before the offscreen observer's next
-      // checkpoint. Direct real-focus presentation can wait until after paint.
+      // A focus handoff must scroll before the next paint so the item is
+      // already in place. Direct real-focus presentation can wait until after
+      // paint.
       return scrollBeforePaint ? beforePaint(present) : afterPaint(present);
     }
     present();

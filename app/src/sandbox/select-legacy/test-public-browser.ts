@@ -28,33 +28,8 @@ async function checkLegacyAnimatedSelects(
   }
 }
 
-// examples/select-combobox-offscreen-various/test-chrome.ts
-async function checkLegacySelectComboboxOffscreenLayout(
-  page: Page,
-  showCase: ShowLegacyPublicCase,
-) {
-  await showCase("public-select-combobox-offscreen");
-  await page
-    .getByRole("combobox", { name: "Offscreen searchable legacy country" })
-    .click();
-
-  const selectedItem = page.getByRole("option", {
-    name: "Dominica",
-    exact: true,
-  });
-  await expect(selectedItem).toBeInViewport();
-  await expect(selectedItem).toHaveAttribute("aria-selected", "true");
-
-  const passiveItem = page.locator("[data-offscreen]").first();
-  await expect(passiveItem).toHaveAttribute("data-offscreen");
-  await expect(passiveItem).not.toHaveAttribute("offscreenmode");
-  await expect(passiveItem).not.toHaveAttribute("offscreenroot");
-}
-
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("preserves animated and offscreen legacy Select behavior", async ({
-    page,
-  }) => {
+  test("preserves animated legacy Select behavior", async ({ page }) => {
     const showCase = async (caseName: string) => {
       await page
         .getByRole("button", { name: `Show ${caseName}`, exact: true })
@@ -62,7 +37,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     };
 
     await checkLegacyAnimatedSelects(page, showCase);
-    await checkLegacySelectComboboxOffscreenLayout(page, showCase);
   });
 
   // https://github.com/ariakit/ariakit/issues/6319

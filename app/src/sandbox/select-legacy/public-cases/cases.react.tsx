@@ -11,7 +11,6 @@ import {
 import {
   LegacyPublicSelectComboboxCase,
   LegacyPublicSelectComboboxFocusWithinCase,
-  LegacyPublicSelectComboboxOffscreenCase,
   LegacyPublicSelectComboboxStoreCase,
   LegacyPublicSelectComboboxTabCase,
   LegacyPublicSelectComboboxTabManualCase,
@@ -60,7 +59,6 @@ export const legacyPublicSelectCases = {
   "public-select-combobox-tab-manual": LegacyPublicSelectComboboxTabManualCase,
   "public-select-combobox-focus-within":
     LegacyPublicSelectComboboxFocusWithinCase,
-  "public-select-combobox-offscreen": LegacyPublicSelectComboboxOffscreenCase,
   "public-select-menu-default-open": LegacyPublicSelectMenuDefaultOpenCase,
   "public-toolbar-select": LegacyPublicToolbarSelectCase,
   "public-form-select": LegacyPublicFormSelectCase,

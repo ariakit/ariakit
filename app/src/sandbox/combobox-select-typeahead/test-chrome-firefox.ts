@@ -6,7 +6,6 @@ interface FixtureLabels {
   loadFruitOptions: string;
   loadRenderedFruitOptions: string;
   renderedFruit: string;
-  virtualizedCountry: string;
 }
 
 const fixtures: Record<"Combobox" | "Select", FixtureLabels> = {
@@ -16,7 +15,6 @@ const fixtures: Record<"Combobox" | "Select", FixtureLabels> = {
     loadFruitOptions: "Load fruit options",
     loadRenderedFruitOptions: "Load rendered fruit options",
     renderedFruit: "Rendered fruit",
-    virtualizedCountry: "Virtualized country",
   },
   Select: {
     country: "Legacy Select country",
@@ -24,7 +22,6 @@ const fixtures: Record<"Combobox" | "Select", FixtureLabels> = {
     loadFruitOptions: "Load legacy select fruit options",
     loadRenderedFruitOptions: "Load legacy select rendered fruit options",
     renderedFruit: "Legacy Select rendered fruit",
-    virtualizedCountry: "Legacy Select virtualized country",
   },
 };
 
@@ -68,21 +65,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
         await q.combobox(labels.country).click();
 
         await page.keyboard.press("d");
-
-        await test
-          .expect(q.option("Canada"))
-          .toHaveAttribute("data-active-item");
-      });
-
-      // https://github.com/ariakit/ariakit/issues/2699
-      test("matches custom content on an offscreen item", async ({
-        page,
-        q,
-      }) => {
-        await q.combobox(labels.virtualizedCountry).click();
-        await test.expect(q.option("Canada")).toHaveAttribute("data-offscreen");
-
-        await page.keyboard.press("c");
 
         await test
           .expect(q.option("Canada"))
