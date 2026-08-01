@@ -186,4 +186,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.option("Focus target")).toBeInViewport();
     await test.expect(q.option("Watermelon")).not.toBeInViewport();
   });
+
+  // Locks in the same invariant for a popup that remounts on every open, where
+  // the select element is briefly the composite again. This is invariant
+  // coverage rather than a regression test: it also passes without the
+  // presentation-cycle handling added in
+  // https://github.com/ariakit/ariakit/pull/6976
+  test("cancels presentation when real focus moves in an unmounted popup", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox("Focus moving unmounted fruit").click();
+
+    await test.expect(q.option("Focus target")).toBeFocused();
+    // Focus has moved before the pending presentation callback can run. There
+    // is no positive state for its cancellation, so wait through its checkpoint.
+    await flushFrames(page);
+    await test.expect(q.option("Focus target")).toBeInViewport();
+    await test.expect(q.option("Watermelon")).not.toBeInViewport();
+  });
 });

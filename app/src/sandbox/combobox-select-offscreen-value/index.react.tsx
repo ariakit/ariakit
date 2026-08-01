@@ -48,6 +48,7 @@ interface FixtureProps {
   label: string;
   moveFocusOnOpen?: boolean;
   selectOnMove?: boolean;
+  unmountOnHide?: boolean;
   virtualFocus?: boolean;
 }
 
@@ -58,6 +59,7 @@ function Fixture({
   label,
   moveFocusOnOpen,
   selectOnMove,
+  unmountOnHide,
   virtualFocus,
 }: FixtureProps) {
   const focusTargetRef = useRef<HTMLDivElement>(null);
@@ -90,6 +92,7 @@ function Fixture({
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect style={{ display: "block" }} />
       <Ariakit.ComboboxPopover
+        unmountOnHide={unmountOnHide}
         gutter={4}
         sameWidth
         style={{
@@ -142,6 +145,19 @@ export default function Example() {
           input
           label="Focus moving filterable fruit"
           moveFocusOnOpen
+          virtualFocus={false}
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        {/* The popup unmounts while hidden, so the select element is briefly
+        the composite again on each open. */}
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          focusTarget
+          input
+          label="Focus moving unmounted fruit"
+          moveFocusOnOpen
+          unmountOnHide
           virtualFocus={false}
         />
       </div>

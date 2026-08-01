@@ -94,7 +94,16 @@ function renderGeometryCase(page: Page, label: string) {
     .selectOption({ label });
 }
 
-withFramework(import.meta.dirname, async ({ test }) => {
+function getScrollTop(listbox: Locator) {
+  return listbox.evaluate((element) => element.scrollTop);
+}
+
+const reopenActions = [
+  ["on reopen", (_page: Page, select: Locator) => select.click()],
+  ["on keyboard open", (page: Page) => page.keyboard.press("ArrowDown")],
+] as const;
+
+withFramework(import.meta.dirname, async ({ test, query }) => {
   // https://github.com/ariakit/ariakit/issues/6838
   test("preserves an ancestor panel scroll position on open", async ({
     page,
@@ -312,4 +321,63 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeLessThanOrEqual(1);
     await test.expect(mango).toBeInViewport();
   });
+
+  for (const label of [
+    "Persistent select-only fruit",
+    "Unmounted select-only fruit",
+    "Real focus select-only fruit",
+  ]) {
+    test.describe(label, () => {
+      // https://github.com/ariakit/ariakit/pull/6976
+      test("centers a selected item that starts in view", async ({ q }) => {
+        const select = q.combobox(label);
+        const listbox = q.listbox(`${label} options`);
+        const cherry = query(listbox).option("Cherry");
+
+        await select.click();
+
+        await test.expect(select).toHaveAttribute("aria-expanded", "true");
+        await test.expect.poll(() => getScrollTop(listbox)).toBeGreaterThan(0);
+        await test.expect
+          .poll(async () => Math.abs(await getCenterOffset(cherry)))
+          .toBeLessThanOrEqual(1);
+      });
+
+      // Reopening keeps focus on the select, so opening is the only signal
+      // that the selection should be presented again.
+      for (const [name, reopen] of reopenActions) {
+        // https://github.com/ariakit/ariakit/pull/6976
+        test(`centers a selected item that starts in view ${name}`, async ({
+          page,
+          q,
+        }) => {
+          const select = q.combobox(label);
+          const listbox = q.listbox(`${label} options`);
+          const cherry = query(listbox).option("Cherry");
+          await select.click();
+          await test.expect(select).toHaveAttribute("aria-expanded", "true");
+          // The opening pass runs on a later frame, so wait for it before
+          // resetting the scroll position it would otherwise race.
+          await test.expect
+            .poll(() => getScrollTop(listbox))
+            .toBeGreaterThan(0);
+          await listbox.evaluate((element) => element.scrollTo({ top: 0 }));
+          await test.expect.poll(() => getScrollTop(listbox)).toBe(0);
+          await page.keyboard.press("Escape");
+          await test.expect(select).toHaveAttribute("aria-expanded", "false");
+          await test.expect(select).toBeFocused();
+
+          await reopen(page, select);
+
+          await test.expect(select).toHaveAttribute("aria-expanded", "true");
+          await test.expect
+            .poll(() => getScrollTop(listbox))
+            .toBeGreaterThan(0);
+          await test.expect
+            .poll(async () => Math.abs(await getCenterOffset(cherry)))
+            .toBeLessThanOrEqual(1);
+        });
+      }
+    });
+  }
 });

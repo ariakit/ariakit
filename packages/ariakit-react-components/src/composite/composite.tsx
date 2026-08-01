@@ -134,11 +134,17 @@ function withBaseScrollPreserved(store: CompositeStore, callback: () => void) {
   baseElement.scrollTop = savedScrollTop;
 }
 
+// A scheduled presentation pass for the active item. `focus` moves focus into
+// the item and hands off to a scroll pass, `present` skips the focus move, and
+// `scroll` runs the consumer's scrolling for the pinned item.
+type ScheduledPass = "focus" | "present" | "scroll" | false;
+
 function useScheduleFocus(
   store: CompositeStore,
   unstableScrollIntoView?: (element: HTMLElement) => void,
+  presentActiveItem?: boolean,
 ) {
-  const [scheduled, setScheduled] = useState<"focus" | "scroll" | false>(false);
+  const [scheduled, setScheduled] = useState<ScheduledPass>(false);
   const scrollIdRef = useRef<string | undefined>(undefined);
   const scrollBaseElementRef = useRef<HTMLElement | null>(null);
   const scrollBeforePaintRef = useRef(false);
@@ -146,7 +152,9 @@ function useScheduleFocus(
   const canScrollIntoView = unstableScrollIntoView != null;
   const scheduleFocus = useCallback(() => setScheduled("focus"), []);
   const scheduleScroll = useCallback(
-    (baseElement: HTMLElement, beforeNextPaint = false) => {
+    // A null base element pins the scroll unconditionally. Otherwise the pass
+    // is abandoned when that element no longer owns focus.
+    (baseElement: HTMLElement | null, beforeNextPaint = false) => {
       if (!canScrollIntoView) return;
       const { activeId } = store.getState();
       if (activeId == null) return;
@@ -164,6 +172,22 @@ function useScheduleFocus(
     scrollBeforePaintRef.current = false;
     setScheduled((scheduled) => (scheduled === "scroll" ? false : scheduled));
   }, []);
+  // A popup can open while its composite element is already focused, in which
+  // case no focus event would start a presentation pass. Start one when the
+  // popup signals a new presentation cycle instead. A scroll pass pinned while
+  // the popup was still closed is stale by now, but a pending focus pass still
+  // owns the focus move, so it keeps its turn.
+  useEffect(() => {
+    if (canScrollIntoView && presentActiveItem) {
+      setScheduled((scheduled) =>
+        scheduled === "focus" ? scheduled : "present",
+      );
+      return;
+    }
+    // The presentation cycle ended before the pass ran, so drop it instead of
+    // presenting into a popup that is no longer this composite's to present.
+    setScheduled((scheduled) => (scheduled === "present" ? false : scheduled));
+  }, [canScrollIntoView, presentActiveItem]);
   // Only track the active item while a focus is scheduled. Otherwise, this
   // subscription would re-render the composite component on every active item
   // change, such as when moving through items with arrow keys.
@@ -180,18 +204,32 @@ function useScheduleFocus(
     const activeElement = activeItem?.element;
     if (!scheduled) return;
     if (!activeElement) return;
-    const focus = scheduled === "focus";
+    // The popup started this pass on its own, so present the selection without
+    // pulling focus into the list. Any element pinned while the popup was
+    // closed is replaced by this handoff.
+    if (scheduled === "present") {
+      setScheduled(false);
+      scheduleScroll(null, true);
+      return undefined;
+    }
+    const scrolling = scheduled === "scroll";
     const scrollBeforePaint = scrollBeforePaintRef.current;
-    const present = () => {
+    const runPass = () => {
+      const scrollId = scrollIdRef.current;
       const scrollBaseElement = scrollBaseElementRef.current;
       scrollIdRef.current = undefined;
       scrollBaseElementRef.current = null;
       scrollBeforePaintRef.current = false;
       setScheduled(false);
-      if (!focus && (!scrollBaseElement || !hasFocus(scrollBaseElement)))
-        return;
+      if (scrolling) {
+        // A cancelled pass clears the pinned id. This runs when the frame
+        // callback beats the effect cleanup that would have cancelled it.
+        if (scrollId === undefined) return;
+        // A pass pinned to a base element is abandoned once it loses focus.
+        if (scrollBaseElement && !hasFocus(scrollBaseElement)) return;
+      }
       withBaseScrollPreserved(store, () => {
-        if (!focus) {
+        if (scrolling) {
           scrollIntoView(activeElement);
           return;
         }
@@ -223,12 +261,12 @@ function useScheduleFocus(
         }
       });
     };
-    if (!focus) {
+    if (scrolling) {
       // A focus handoff must scroll before the offscreen observer's next
       // checkpoint. Direct real-focus presentation can wait until after paint.
-      return scrollBeforePaint ? beforePaint(present) : afterPaint(present);
+      return scrollBeforePaint ? beforePaint(runPass) : afterPaint(runPass);
     }
-    present();
+    runPass();
     return undefined;
   }, [
     store,
@@ -360,6 +398,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     focusOnMove = composite,
     moveOnKeyPress = true,
     unstable_scrollIntoView,
+    unstable_presentActiveItem,
     ...props
   }) {
     const context = useCompositeProviderContext();
@@ -376,6 +415,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     const { scheduleFocus, scheduleScroll, cancelScroll } = useScheduleFocus(
       store,
       unstable_scrollIntoView,
+      composite && unstable_presentActiveItem,
     );
 
     const [, setBaseElement] = useTransactionState(
@@ -489,7 +529,13 @@ export const useComposite = createHook<TagName, CompositeOptions>(
 
     const onBlurCapture = useEvent((event: FocusEvent<HTMLType>) => {
       onBlurCaptureProp?.(event);
-      cancelScroll();
+      // A scheduled presentation pass targets an item in this composite, and
+      // presenting it moves focus through that item before virtual focus
+      // returns to this element. Only abandon the pass once focus lands
+      // somewhere else.
+      if (!store || !isItem(store, event.relatedTarget)) {
+        cancelScroll();
+      }
       if (event.defaultPrevented) return;
       if (!store) return;
       const { virtualFocus, activeId, baseElement } = store.getState();
@@ -803,6 +849,22 @@ export interface CompositeOptions<
    * @private
    */
   unstable_scrollIntoView?: (element: HTMLElement) => void;
+  /**
+   * Schedules a presentation pass for the active item while this option is
+   * `true`, starting one as soon as it becomes `true`.
+   *
+   * A popup can open while its composite element is already focused, in which
+   * case no focus event would start the pass. This option lets the popup signal
+   * the start of a presentation cycle instead. The pass doesn't move focus, and
+   * it runs whether or not this composite owns focus. It only takes effect
+   * along with the `unstable_scrollIntoView` option and the
+   * [`composite`](https://ariakit.com/reference/composite#composite-1) option.
+   *
+   * The pass is best-effort within the cycle: if no active item resolves an
+   * element before the cycle ends, it's dropped rather than retried later.
+   * @private
+   */
+  unstable_presentActiveItem?: boolean;
   /**
    * Determines whether [Focusable](https://ariakit.com/components/focusable)
    * features are active on the composite element.

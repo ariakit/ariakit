@@ -123,6 +123,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
     const multiSelectable = Array.isArray(selectedValue);
     const inputElement = useStoreState(store, "inputElement");
     const mounted = useStoreState(store, "mounted");
+    const open = useStoreState(store, "open");
     const scrollIntoView = useEvent((element: HTMLElement) => {
       scrollSelectedItemIntoView(store, element);
     });
@@ -312,6 +313,10 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       composite: !inputElement,
       focusable,
       unstable_scrollIntoView: scrollIntoView,
+      // Without an input, this element usually still owns focus when the popup
+      // opens, so opening is the only signal that the selection should be
+      // presented again.
+      unstable_presentActiveItem: open,
       // The select handler owns closed navigation so it can skip value-less
       // items. Once open, Composite owns navigation and can also finish moves
       // whose offscreen target has no element yet.

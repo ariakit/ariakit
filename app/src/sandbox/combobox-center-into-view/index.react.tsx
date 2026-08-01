@@ -174,6 +174,56 @@ function GeometryCases() {
   );
 }
 
+interface SelectOnlyFixtureProps {
+  label: string;
+  unmountOnHide?: boolean;
+  virtualFocus?: boolean;
+}
+
+// A ComboboxSelect with no ComboboxInput. The selected item starts inside the
+// scrollport but below its center, so opening has to scroll down to center it
+// and a visibility-conditional pass would leave it where it is.
+function SelectOnlyFixture({
+  label,
+  unmountOnHide,
+  virtualFocus,
+}: SelectOnlyFixtureProps) {
+  return (
+    <Ariakit.ComboboxProvider
+      defaultSelectedValue="Cherry"
+      virtualFocus={virtualFocus}
+    >
+      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect style={{ display: "block" }} />
+      <Ariakit.ComboboxPopover
+        unmountOnHide={unmountOnHide}
+        gutter={4}
+        sameWidth
+        aria-label={`${label} options`}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          maxHeight: 120,
+          overflow: "auto",
+        }}
+      >
+        {fruits.map((fruit) => (
+          <Ariakit.ComboboxItem
+            key={fruit}
+            value={fruit}
+            style={{
+              boxSizing: "border-box",
+              display: "block",
+              height: 24,
+              padding: "4px 8px",
+            }}
+          />
+        ))}
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
 interface ScrollablePanelProps {
   children: ReactNode;
   testId: string;
@@ -304,6 +354,18 @@ export default function Example() {
       </div>
       <div style={{ marginTop: 200 }}>
         <GeometryCases />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <SelectOnlyFixture label="Persistent select-only fruit" />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <SelectOnlyFixture label="Unmounted select-only fruit" unmountOnHide />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <SelectOnlyFixture
+          label="Real focus select-only fruit"
+          virtualFocus={false}
+        />
       </div>
     </>
   );
