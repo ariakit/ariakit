@@ -1,8 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import { ComboboxItem as OffscreenComboboxItem } from "@ariakit/react-components/combobox/combobox-item-offscreen";
-import { SelectItem as OffscreenSelectItem } from "@ariakit/react-components/select/select-item-offscreen";
 import { SelectRenderer } from "@ariakit/react-components/select/select-renderer";
-import { startTransition, useMemo, useRef, useState } from "react";
+import { startTransition, useMemo, useState } from "react";
 
 const searchableFoods = [
   "Apple",
@@ -303,56 +301,5 @@ export function LegacyPublicSelectComboboxFocusWithinCase() {
         </Ariakit.ComboboxList>
       </Ariakit.SelectPopover>
     </div>
-  );
-}
-
-export function LegacyPublicSelectComboboxOffscreenCase() {
-  const listRef = useRef<HTMLDivElement>(null);
-  const [searchValue, setSearchValue] = useState("");
-  const matches = getMatches(searchValue, countries);
-  return (
-    <Ariakit.ComboboxProvider
-      placement="bottom"
-      resetValueOnHide
-      setValue={setSearchValue}
-    >
-      <Ariakit.SelectProvider placement="bottom" defaultValue="Dominica">
-        <Ariakit.SelectLabel>
-          Offscreen searchable legacy country
-        </Ariakit.SelectLabel>
-        <Ariakit.Select />
-        <Ariakit.SelectPopover gutter={8}>
-          <Ariakit.Combobox
-            autoSelect
-            placeholder="Search offscreen countries"
-          />
-          <Ariakit.ComboboxList
-            ref={listRef}
-            style={{ maxHeight: 96, overflow: "auto" }}
-          >
-            {matches.map((value, index) => (
-              <OffscreenSelectItem
-                key={value}
-                value={value}
-                offscreenRoot={listRef}
-                offscreenMode={index === 0 ? "active" : "passive"}
-                render={(props) => {
-                  if ("data-offscreen" in props) {
-                    return <div {...props} />;
-                  }
-                  return (
-                    <OffscreenComboboxItem
-                      {...props}
-                      value={value}
-                      setValueOnClick={false}
-                    />
-                  );
-                }}
-              />
-            ))}
-          </Ariakit.ComboboxList>
-        </Ariakit.SelectPopover>
-      </Ariakit.SelectProvider>
-    </Ariakit.ComboboxProvider>
   );
 }

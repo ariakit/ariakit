@@ -156,8 +156,8 @@ function useScheduleFocus(
   const canScrollIntoView = unstableScrollIntoView != null;
   const scheduleFocus = useCallback(() => setScheduled("focus"), []);
   const scheduleScroll = useCallback(
-    // A null base element pins the scroll unconditionally. Otherwise the pass
-    // is abandoned when that element no longer owns focus.
+    // A null base element leaves the pass unpinned. It has no element to lose
+    // focus, so it's abandoned when the presentation cycle ends instead.
     (baseElement: HTMLElement | null, beforeNextPaint = false) => {
       if (!canScrollIntoView) return;
       const { activeId } = store.getState();
@@ -272,8 +272,9 @@ function useScheduleFocus(
       });
     };
     if (scrolling) {
-      // A focus handoff must scroll before the offscreen observer's next
-      // checkpoint. Direct real-focus presentation can wait until after paint.
+      // Both handoffs, a focus pass's and a presentation cycle's, must scroll
+      // before the next paint so the item is already in place. Direct
+      // real-focus presentation can wait until after paint.
       return scrollBeforePaint ? beforePaint(runPass) : afterPaint(runPass);
     }
     runPass();

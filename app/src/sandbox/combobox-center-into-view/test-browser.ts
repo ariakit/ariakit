@@ -329,6 +329,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   ]) {
     test.describe(label, () => {
       // https://github.com/ariakit/ariakit/pull/6976
+      // https://github.com/ariakit/ariakit/pull/6994
       test("centers a selected item that starts in view", async ({ q }) => {
         const select = q.combobox(label);
         const listbox = q.listbox(`${label} options`);
@@ -347,6 +348,7 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       // that the selection should be presented again.
       for (const [name, reopen] of reopenActions) {
         // https://github.com/ariakit/ariakit/pull/6976
+        // https://github.com/ariakit/ariakit/pull/6994
         test(`centers a selected item that starts in view ${name}`, async ({
           page,
           q,

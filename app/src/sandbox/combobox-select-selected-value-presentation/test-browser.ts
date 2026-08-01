@@ -29,34 +29,8 @@ function getTopOffset(item: Locator) {
 }
 
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("keeps value-less offscreen items offscreen with no selected value", async ({
-    q,
-  }) => {
-    const select = q.combobox("Fruit");
-    await select.click();
-    await test.expect(select).toHaveAttribute("aria-expanded", "true");
-
-    await test.expect(q.option("No fruit")).toHaveAttribute("data-offscreen");
-  });
-
-  test("mounts the offscreen item matching the selected value", async ({
-    q,
-  }) => {
-    const select = q.combobox("Selected fruit");
-    await select.click();
-    await test.expect(select).toHaveAttribute("aria-expanded", "true");
-
-    await test.expect(q.option("Apple")).not.toHaveAttribute("data-offscreen");
-    await test
-      .expect(q.option("No selected fruit"))
-      .toHaveAttribute("data-offscreen");
-  });
-
   // https://github.com/ariakit/ariakit/pull/6832
-  test("focuses an item that renders after typeahead movement", async ({
-    page,
-    q,
-  }) => {
+  test("focuses a far item reached through typeahead", async ({ page, q }) => {
     const select = q.combobox("Selected fruit");
     await select.click();
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
@@ -129,16 +103,17 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .poll(async () => Math.abs(await getCenterOffset(watermelon)))
       .toBeLessThanOrEqual(1);
     await test.expect(q.combobox("Search Filterable fruit")).toBeFocused();
-    const quince = q.option("Quince");
-    await test.expect(quince).not.toHaveAttribute("data-offscreen");
-    // Passive items register in an effect and publish on a later frame.
+    const firstItem = q.option("Apple");
+    // Items register in an effect and publish on a later frame.
     await flushFrames(page);
 
+    // Moving to the first item scrolls it flush to the nearest edge, just below
+    // the search input. Re-centering it would scroll all the way to the top.
     await page.keyboard.press("ArrowDown");
-    await test.expect(quince).toHaveAttribute("data-active-item");
-    await test.expect(quince).toBeFocused();
+    await test.expect(firstItem).toHaveAttribute("data-active-item");
+    await test.expect(firstItem).toBeFocused();
     await test.expect
-      .poll(async () => Math.abs(await getTopOffset(quince)))
+      .poll(async () => Math.abs(await getTopOffset(firstItem)))
       .toBeLessThanOrEqual(1);
   });
 
@@ -191,7 +166,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   // the select element is briefly the composite again. This is invariant
   // coverage rather than a regression test: it also passes without the
   // presentation-cycle handling added in
-  // https://github.com/ariakit/ariakit/pull/6976
+  // https://github.com/ariakit/ariakit/pull/6994
   test("cancels presentation when real focus moves in an unmounted popup", async ({
     page,
     q,

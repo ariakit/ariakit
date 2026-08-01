@@ -93,17 +93,3 @@ describe("public-select-combobox-focus-within", () => {
     expect(q.combobox("Search focus-within foods")).toHaveValue("");
   });
 });
-
-describe("public-select-combobox-offscreen", () => {
-  beforeEach(async () => {
-    await click(q.button("Show public-select-combobox-offscreen"));
-  });
-
-  // examples/select-combobox-offscreen-various/test-chrome.ts
-  test("preserves the selected value in the offscreen item composition", async () => {
-    const select = q.combobox("Offscreen searchable legacy country");
-    expect(select).toHaveTextContent("Dominica");
-    await click(select);
-    expect(q.option("Dominica")).toHaveAttribute("aria-selected", "true");
-  });
-});
