@@ -96,19 +96,32 @@ jobs:
           for (const title of titles) {
             titleCounts.set(title, (titleCounts.get(title) ?? 0) + 1);
           }
-          const include = files.map((file, index) => {
-            const title = titles[index];
+          // Each fixture is benchmarked once per offscreen mode. The baseline
+          // side of every job renders ordinary items, so each job compares
+          // ordinary items against exactly one mode on one runner, and the
+          // aggregated report carries one row per fixture, interaction, and
+          // mode.
+          const modes = ["passive", "lazy"];
+          const include = files.flatMap((file, fileIndex) => {
+            const title = titles[fileIndex];
             const uniqueTitle = titleCounts.get(title) === 1;
-            return {
-              index: index + 1,
+            const fileTitle = uniqueTitle
+              ? title
+              : `${title}-${path.basename(file, path.extname(file))}`;
+            return modes.map((mode, modeIndex) => ({
+              index: fileIndex * modes.length + modeIndex + 1,
               file,
-              title: uniqueTitle
-                ? title
-                : `${title}-${path.basename(file, path.extname(file))}`,
-            };
+              mode,
+              title: `${fileTitle}-${mode}`,
+            }));
           });
           if (include.length === 0) {
-            include.push({ index: 1, file: "", title: "no-perf-files" });
+            include.push({
+              index: 1,
+              file: "",
+              mode: modes[0],
+              title: "no-perf-files",
+            });
           }
           console.log(JSON.stringify(include));
           NODE
@@ -168,6 +181,11 @@ jobs:
       PERF_FILE: ${{ matrix.file }}
       PERF_JOB_INDEX: ${{ matrix.index }}
       PERF_JOB_TITLE: ${{ matrix.title }}
+      # The offscreen mode under comparison. It is identical on both sides of
+      # the pair so baseline and current rows still pair up, while it also
+      # qualifies the test titles so the passive and lazy jobs report separate
+      # rows instead of overwriting each other.
+      PERF_ITEM_MODE: ${{ matrix.mode }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7

@@ -1,7 +1,9 @@
 import * as Ariakit from "@ariakit/react";
 import { ComboboxItem as OffscreenComboboxItem } from "@ariakit/react-components/combobox/combobox-item-offscreen";
 import type { RefObject } from "react";
-import { startTransition, useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useMemo, useRef, useState } from "react";
+import type { ItemVariant } from "#app/sandbox/_lib/item-variant.ts";
+import { useItemVariant } from "#app/sandbox/_lib/item-variant.ts";
 import "./style.css";
 
 const itemCount = 1000;
@@ -11,37 +13,32 @@ const items = Array.from({ length: itemCount }, (_, index) => {
 
 interface ComboboxItemProps {
   item: string;
-  offscreen: boolean;
+  variant: ItemVariant;
   offscreenRoot: RefObject<HTMLDivElement | null>;
 }
 
-function ComboboxItem({ item, offscreen, offscreenRoot }: ComboboxItemProps) {
+function ComboboxItem({ item, variant, offscreenRoot }: ComboboxItemProps) {
   const props = {
     className: "item",
     "data-item": item,
     value: item,
   } as const;
-  if (offscreen) {
-    return (
-      <OffscreenComboboxItem
-        {...props}
-        offscreenMode="passive"
-        offscreenRoot={offscreenRoot}
-      />
-    );
+  if (variant === "base") {
+    return <Ariakit.ComboboxItem {...props} />;
   }
-  return <Ariakit.ComboboxItem {...props} />;
+  return (
+    <OffscreenComboboxItem
+      {...props}
+      offscreenMode={variant}
+      offscreenRoot={offscreenRoot}
+    />
+  );
 }
 
 export default function Example() {
   const [searchValue, setSearchValue] = useState("");
-  const [offscreen, setOffscreen] = useState(false);
+  const variant = useItemVariant();
   const popoverRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setOffscreen(params.get("item") === "offscreen");
-  }, []);
 
   const matches = useMemo(() => {
     const query = searchValue.toLowerCase();
@@ -50,9 +47,7 @@ export default function Example() {
 
   return (
     <main className="root">
-      <output aria-label="Item variant">
-        {offscreen ? "offscreen" : "base"}
-      </output>
+      <output aria-label="Item variant">{variant}</output>
       <Ariakit.ComboboxProvider
         setValue={(value) => {
           startTransition(() => setSearchValue(value));
@@ -74,7 +69,7 @@ export default function Example() {
               <ComboboxItem
                 key={item}
                 item={item}
-                offscreen={offscreen}
+                variant={variant}
                 offscreenRoot={popoverRef}
               />
             ))}

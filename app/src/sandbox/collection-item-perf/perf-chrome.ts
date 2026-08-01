@@ -2,20 +2,16 @@ import type { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import {
-  flushFrames,
-  gotoAndSettle,
-  withFramework,
-} from "#app/test-utils/preview.ts";
+  getItemName,
+  itemParam,
+  itemTestTitle,
+  scrollThroughItems,
+  verifyScrolledThroughItems,
+  waitForVisibleItems,
+} from "#app/test-utils/offscreen-item-perf.ts";
+import { gotoAndSettle, withFramework } from "#app/test-utils/preview.ts";
 
 const itemCount = 1000;
-const itemSize = 32;
-const scrollItemNumbers = [200, 400, 600, 800, 1000];
-const itemVariant = process.env.PERF_ITEM_VARIANT ?? "base";
-const offscreen = itemVariant === "offscreen";
-
-if (itemVariant !== "base" && itemVariant !== "offscreen") {
-  throw new Error(`Invalid PERF_ITEM_VARIANT: ${itemVariant}`);
-}
 
 type Query = ReturnType<typeof query>;
 
@@ -23,26 +19,17 @@ function getScroller(q: Query) {
   return q.list("Collection items");
 }
 
-function getItem(page: Page, itemNumber: number) {
-  return page.locator(`[data-item="Item ${itemNumber}"]`);
-}
-
-async function waitForCollectionMounted(page: Page) {
-  await getItem(page, itemCount).waitFor({ state: "attached" });
-  if (offscreen) {
-    await page.locator("[data-offscreen]").first().waitFor();
-    await page.locator('[data-item="Item 1"]:not([data-offscreen])').waitFor();
-  }
-}
-
 async function mountCollection(page: Page, q: Query) {
   await q.button("Mount collection").click();
-  await waitForCollectionMounted(page);
+  await page
+    .locator(`[data-item="${getItemName(itemCount)}"]`)
+    .waitFor({ state: "attached" });
+  await waitForVisibleItems(page, getItemName);
 }
 
 async function verifyCollectionMounted(page: Page, q: Query) {
   await expect(page.locator("[data-item]")).toHaveCount(itemCount);
-  await expect(q.status("Item variant")).toHaveText(itemVariant);
+  await expect(q.status("Item variant")).toHaveText(itemParam);
 }
 
 async function unmountCollection(page: Page, q: Query) {
@@ -54,54 +41,42 @@ async function verifyCollectionUnmounted(page: Page) {
   await expect(page.locator("[data-item]")).toHaveCount(0);
 }
 
-async function scrollCollection(page: Page, q: Query) {
-  const scroller = getScroller(q);
-  for (const itemNumber of scrollItemNumbers) {
-    await scroller.evaluate(
-      (element, scrollTop) => {
-        element.scrollTo({ top: scrollTop });
-      },
-      (itemNumber - 1) * itemSize,
-    );
-    await flushFrames(page);
-    await page
-      .locator(`[data-item="Item ${itemNumber}"]:not([data-offscreen])`)
-      .waitFor({ state: "attached" });
-  }
-}
-
-async function verifyCollectionScrolled(page: Page, q: Query) {
-  await expect(getItem(page, itemCount)).not.toHaveAttribute("data-offscreen");
-  await expect
-    .poll(() => getScroller(q).evaluate((element) => element.scrollTop))
-    .toBeGreaterThan(0);
-}
-
 withFramework(import.meta.dirname, async ({ test }) => {
   test.beforeEach(async ({ page, q }) => {
     const url = new URL(page.url());
-    url.searchParams.set("item", itemVariant);
+    url.searchParams.set("item", itemParam);
     await gotoAndSettle(page, url.href);
-    await expect(q.status("Item variant")).toHaveText(itemVariant);
+    await expect(q.status("Item variant")).toHaveText(itemParam);
   });
 
-  test("mount collection", async ({ perf }) => {
+  test(itemTestTitle("mount collection"), async ({ perf }) => {
     await perf.measure(({ page, q }) => mountCollection(page, q), {
       verify: ({ page, q }) => verifyCollectionMounted(page, q),
     });
   });
 
-  test("unmount collection", async ({ perf }) => {
+  test(itemTestTitle("unmount collection"), async ({ perf }) => {
     await perf.measure(({ page, q }) => unmountCollection(page, q), {
       setup: ({ page, q }) => mountCollection(page, q),
       verify: ({ page }) => verifyCollectionUnmounted(page),
     });
   });
 
-  test("scroll collection", async ({ perf }) => {
-    await perf.measure(({ page, q }) => scrollCollection(page, q), {
-      setup: ({ page, q }) => mountCollection(page, q),
-      verify: ({ page, q }) => verifyCollectionScrolled(page, q),
-    });
+  test(itemTestTitle("scroll collection"), async ({ perf }) => {
+    await perf.measure(
+      ({ page, q }) =>
+        scrollThroughItems({ page, scroller: getScroller(q), getItemName }),
+      {
+        setup: ({ page, q }) => mountCollection(page, q),
+        verify: async ({ page, q }) => {
+          await verifyScrolledThroughItems({
+            page,
+            scroller: getScroller(q),
+            getItemName,
+          });
+          await expect(q.status("Item variant")).toHaveText(itemParam);
+        },
+      },
+    );
   });
 });

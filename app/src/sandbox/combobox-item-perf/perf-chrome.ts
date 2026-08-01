@@ -2,23 +2,19 @@ import type { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import {
-  flushFrames,
-  gotoAndSettle,
-  withFramework,
-} from "#app/test-utils/preview.ts";
+  itemParam,
+  itemTestTitle,
+  materializedItem,
+  scrollThroughItems,
+  verifyScrolledThroughItems,
+  waitForVisibleItems,
+} from "#app/test-utils/offscreen-item-perf.ts";
+import { gotoAndSettle, withFramework } from "#app/test-utils/preview.ts";
 
 const itemCount = 1000;
-const itemSize = 32;
 const moveCount = 100;
 const restoreQuery = "Item 099";
 const restoredItem = "Item 1000";
-const scrollItemNumbers = [200, 400, 600, 800, 1000];
-const itemVariant = process.env.PERF_ITEM_VARIANT ?? "base";
-const offscreen = itemVariant === "offscreen";
-
-if (itemVariant !== "base" && itemVariant !== "offscreen") {
-  throw new Error(`Invalid PERF_ITEM_VARIANT: ${itemVariant}`);
-}
 
 type Query = ReturnType<typeof query>;
 
@@ -38,18 +34,13 @@ async function openCombobox(page: Page, q: Query) {
   await getInput(q).click();
   await q.listbox().waitFor({ state: "visible" });
   await q.option(restoredItem).waitFor({ state: "attached" });
-  if (offscreen) {
-    await page.locator("[data-offscreen]").first().waitFor();
-    await page
-      .locator(`[data-item="${getItemName(1)}"]:not([data-offscreen])`)
-      .waitFor();
-  }
+  await waitForVisibleItems(page, getItemName);
 }
 
 async function verifyComboboxOpen(q: Query) {
   await expect(q.option()).toHaveCount(itemCount);
   await expect(q.listbox()).toBeVisible();
-  await expect(q.status("Item variant")).toHaveText(itemVariant);
+  await expect(q.status("Item variant")).toHaveText(itemParam);
 }
 
 async function closeCombobox(page: Page, q: Query) {
@@ -69,11 +60,14 @@ async function setupComboboxMovement(page: Page, q: Query) {
 }
 
 async function moveAcrossItems(page: Page) {
-  for (let i = 0; i < moveCount; i += 1) {
-    const itemName = getItemName(i + 2);
-    await page
-      .locator(`[data-item="${itemName}"]:not([data-offscreen])`)
-      .waitFor();
+  for (let index = 0; index < moveCount; index += 1) {
+    const itemName = getItemName(index + 2);
+    // Offscreen items only accept a move once they are real items: a press
+    // that arrives while the next item is still a placeholder moves nowhere
+    // and is dropped. Waiting here keeps every press effective on both sides
+    // so the measurement compares the same 100 moves rather than a different
+    // number of them.
+    await materializedItem(page, itemName).waitFor();
     await page.keyboard.press("ArrowDown");
     await page.locator(`[data-active-item][data-item="${itemName}"]`).waitFor();
   }
@@ -84,29 +78,6 @@ async function verifyMovedAcrossItems(q: Query) {
     "data-active-item",
   );
   await expect(getInput(q)).toBeFocused();
-}
-
-async function scrollCombobox(page: Page) {
-  const popover = getPopover(page);
-  for (const itemNumber of scrollItemNumbers) {
-    await popover.evaluate(
-      (element, scrollTop) => {
-        element.scrollTo({ top: scrollTop });
-      },
-      (itemNumber - 1) * itemSize,
-    );
-    await flushFrames(page);
-    await page
-      .locator(`[data-item="${getItemName(itemNumber)}"]:not([data-offscreen])`)
-      .waitFor({ state: "attached" });
-  }
-}
-
-async function verifyComboboxScrolled(page: Page, q: Query) {
-  await expect(q.option(restoredItem)).not.toHaveAttribute("data-offscreen");
-  await expect
-    .poll(() => getPopover(page).evaluate((element) => element.scrollTop))
-    .toBeGreaterThan(0);
 }
 
 async function setupFilteredItems(page: Page, q: Query) {
@@ -122,12 +93,7 @@ async function setupFilteredItems(page: Page, q: Query) {
 async function restoreFilteredItems(page: Page, q: Query) {
   await page.keyboard.press("Backspace");
   await q.option(restoredItem).waitFor({ state: "attached" });
-  if (offscreen) {
-    await page.locator("[data-offscreen]").first().waitFor();
-    await page
-      .locator(`[data-item="${getItemName(1)}"]:not([data-offscreen])`)
-      .waitFor();
-  }
+  await waitForVisibleItems(page, getItemName);
 }
 
 async function verifyFilteredItemsRestored(q: Query) {
@@ -139,39 +105,54 @@ async function verifyFilteredItemsRestored(q: Query) {
 withFramework(import.meta.dirname, async ({ test }) => {
   test.beforeEach(async ({ page, q }) => {
     const url = new URL(page.url());
-    url.searchParams.set("item", itemVariant);
+    url.searchParams.set("item", itemParam);
     await gotoAndSettle(page, url.href);
-    await expect(q.status("Item variant")).toHaveText(itemVariant);
+    await expect(q.status("Item variant")).toHaveText(itemParam);
   });
 
-  test("open combobox", async ({ perf }) => {
+  test(itemTestTitle("open combobox"), async ({ perf }) => {
     await perf.measure(({ page, q }) => openCombobox(page, q), {
       verify: ({ q }) => verifyComboboxOpen(q),
     });
   });
 
-  test("close combobox", async ({ perf }) => {
+  test(itemTestTitle("close combobox"), async ({ perf }) => {
     await perf.measure(({ page, q }) => closeCombobox(page, q), {
       setup: ({ page, q }) => openCombobox(page, q),
       verify: ({ q }) => verifyComboboxClosed(q),
     });
   });
 
-  test("move across items", async ({ perf }) => {
+  test(itemTestTitle("move across items"), async ({ perf }) => {
     await perf.measure(({ page }) => moveAcrossItems(page), {
       setup: ({ page, q }) => setupComboboxMovement(page, q),
       verify: ({ q }) => verifyMovedAcrossItems(q),
     });
   });
 
-  test("scroll combobox", async ({ perf }) => {
-    await perf.measure(({ page }) => scrollCombobox(page), {
-      setup: ({ page, q }) => openCombobox(page, q),
-      verify: ({ page, q }) => verifyComboboxScrolled(page, q),
-    });
+  test(itemTestTitle("scroll combobox"), async ({ perf }) => {
+    await perf.measure(
+      ({ page }) =>
+        scrollThroughItems({
+          page,
+          scroller: getPopover(page),
+          getItemName,
+        }),
+      {
+        setup: ({ page, q }) => openCombobox(page, q),
+        verify: async ({ page, q }) => {
+          await verifyScrolledThroughItems({
+            page,
+            scroller: getPopover(page),
+            getItemName,
+          });
+          await expect(q.status("Item variant")).toHaveText(itemParam);
+        },
+      },
+    );
   });
 
-  test("restore filtered items", async ({ perf }) => {
+  test(itemTestTitle("restore filtered items"), async ({ perf }) => {
     await perf.measure(({ page, q }) => restoreFilteredItems(page, q), {
       setup: ({ page, q }) => setupFilteredItems(page, q),
       verify: ({ q }) => verifyFilteredItemsRestored(q),
