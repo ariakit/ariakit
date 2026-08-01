@@ -233,10 +233,19 @@ function useScheduleFocus(
         // A pass pinned to a base element is abandoned once it loses focus.
         if (scrollBaseElement && !hasFocus(scrollBaseElement)) return;
         // An unpinned pass is a presentation cycle's own handoff, and has no
-        // base element to lose focus, so it's abandoned when that cycle ends
-        // instead. Otherwise it would still scroll a popup that has since
-        // closed, which stays on screen while it animates out.
-        if (!scrollBaseElement && !presentingRef.current) return;
+        // base element to lose focus, so it's abandoned on two other signals
+        // instead. One is the cycle ending, since it would otherwise still
+        // scroll a popup that has since closed, which stays on screen while it
+        // animates out. The other is the active item moving on, since the pass
+        // presents the item that was active when it was scheduled, and
+        // presenting that one now would scroll away from wherever the move
+        // just went. Hovering an item counts as such a move, which is
+        // deliberate: scrolling the list out from under the pointer that is
+        // already on an item is worse than leaving the selection uncentered.
+        if (!scrollBaseElement) {
+          if (!presentingRef.current) return;
+          if (store.getState().activeId !== scrollId) return;
+        }
       }
       withBaseScrollPreserved(store, () => {
         if (scrolling) {
@@ -871,8 +880,9 @@ export interface CompositeOptions<
    * along with the `unstable_scrollIntoView` option and the
    * [`composite`](https://ariakit.com/reference/composite#composite-1) option.
    *
-   * The pass is best-effort within the cycle: if no active item resolves an
-   * element before the cycle ends, it's dropped rather than retried later.
+   * The pass is best-effort within the cycle: it's dropped rather than retried
+   * later if no active item resolves an element before the cycle ends, or if
+   * the active item changes before it runs.
    * @private
    */
   unstable_presentActiveItem?: boolean;

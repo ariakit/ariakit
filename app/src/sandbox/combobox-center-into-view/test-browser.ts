@@ -429,6 +429,48 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
   }
 
   // https://github.com/ariakit/ariakit/pull/6994
+  test("lets navigation win over an opening pass that is still pending", async ({
+    page,
+    q,
+  }) => {
+    const label = "Persistent select-only fruit";
+    const select = q.combobox(label);
+    const listbox = q.listbox(`${label} options`);
+    const watermelon = query(listbox).option("Watermelon");
+
+    // Moving to the last item while the opening pass is still waiting on its
+    // frame. The pass presents the selected item, so if it survives the move
+    // it scrolls right back off the item the move just went to. The move is
+    // retried every frame until it takes, which lands it on the first frame
+    // the popup can be navigated at all, and that is inside the window. Asking
+    // for a specific frame instead is not reliable, because how many frames
+    // the popup takes to become navigable varies.
+    await select.focus();
+    await select.evaluate((element: HTMLElement, name: string) => {
+      const activeItem = () =>
+        document.querySelector(
+          `[role=listbox][aria-label="${name} options"] [data-active-item]`,
+        );
+      element.click();
+      const move = () => {
+        if (activeItem()?.textContent === "Watermelon") return;
+        element.dispatchEvent(
+          new KeyboardEvent("keydown", { key: "End", bubbles: true }),
+        );
+        requestAnimationFrame(move);
+      };
+      requestAnimationFrame(move);
+    }, label);
+
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    // There is no positive state for the abandoned pass, so wait through the
+    // frame it would have run in.
+    await flushFrames(page);
+    await test.expect(watermelon).toBeInViewport();
+  });
+
+  // https://github.com/ariakit/ariakit/pull/6994
   test("leaves a closing popup alone when the opening pass is still pending", async ({
     page,
     q,
@@ -458,7 +500,9 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
     });
 
     // The popup stays on screen through its exit transition, so a pass that
-    // outlived the cycle would visibly scroll it.
+    // outlived the cycle would visibly scroll it. Closing also moves the
+    // active item away from the selection, so this covers the two ways such a
+    // pass is abandoned together rather than one at a time.
     await test.expect(select).toHaveAttribute("aria-expanded", "false");
     await test.expect(listbox).toBeVisible();
     await test.expect(listbox).toHaveAttribute("data-leave");
