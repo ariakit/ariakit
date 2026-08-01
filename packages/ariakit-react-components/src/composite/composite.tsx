@@ -148,6 +148,10 @@ function useScheduleFocus(
   const scrollIdRef = useRef<string | undefined>(undefined);
   const scrollBaseElementRef = useRef<HTMLElement | null>(null);
   const scrollBeforePaintRef = useRef(false);
+  // Whether a presentation cycle is currently running. This is read a frame
+  // later, when the pass it started actually runs, rather than when it was
+  // scheduled.
+  const presentingRef = useRef(false);
   const scrollIntoView = useEvent(unstableScrollIntoView);
   const canScrollIntoView = unstableScrollIntoView != null;
   const scheduleFocus = useCallback(() => setScheduled("focus"), []);
@@ -178,7 +182,8 @@ function useScheduleFocus(
   // the popup was still closed is stale by now, but a pending focus pass still
   // owns the focus move, so it keeps its turn.
   useEffect(() => {
-    if (canScrollIntoView && presentActiveItem) {
+    presentingRef.current = canScrollIntoView && !!presentActiveItem;
+    if (presentingRef.current) {
       setScheduled((scheduled) =>
         scheduled === "focus" ? scheduled : "present",
       );
@@ -227,6 +232,11 @@ function useScheduleFocus(
         if (scrollId === undefined) return;
         // A pass pinned to a base element is abandoned once it loses focus.
         if (scrollBaseElement && !hasFocus(scrollBaseElement)) return;
+        // An unpinned pass is a presentation cycle's own handoff, and has no
+        // base element to lose focus, so it's abandoned when that cycle ends
+        // instead. Otherwise it would still scroll a popup that has since
+        // closed, which stays on screen while it animates out.
+        if (!scrollBaseElement && !presentingRef.current) return;
       }
       withBaseScrollPreserved(store, () => {
         if (scrolling) {

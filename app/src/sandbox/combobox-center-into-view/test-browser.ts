@@ -1,5 +1,5 @@
 import type { Locator, Page } from "@playwright/test";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 
 function getCenterOffset(item: Locator) {
   return item.evaluate((element) => {
@@ -380,4 +380,44 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
       }
     });
   }
+
+  // https://github.com/ariakit/ariakit/pull/6994
+  test("leaves a closing popup alone when the opening pass is still pending", async ({
+    page,
+    q,
+  }) => {
+    const label = "Leaving select-only fruit";
+    const select = q.combobox(label);
+    const listbox = q.listbox(`${label} options`);
+
+    // The opening pass runs in an animation frame, so closing the popup within
+    // that frame is the only way to reach it after the cycle ends. A frame
+    // callback registered alongside the click runs before the one the pass
+    // registers from a later effect, which orders the two reliably without
+    // depending on a timer. No user interaction is this fast, so there is no
+    // way to express this through the rendered experience.
+    //
+    // Focusing first is load-bearing: clicking an unfocused select fires a
+    // focus event, and the pass that starts from it moves focus and pins its
+    // scroll to the select, which is a different path from the one under test.
+    await select.focus();
+    await select.evaluate((element: HTMLElement) => {
+      element.click();
+      requestAnimationFrame(() => {
+        element.dispatchEvent(
+          new KeyboardEvent("keydown", { key: "Escape", bubbles: true }),
+        );
+      });
+    });
+
+    // The popup stays on screen through its exit transition, so a pass that
+    // outlived the cycle would visibly scroll it.
+    await test.expect(select).toHaveAttribute("aria-expanded", "false");
+    await test.expect(listbox).toBeVisible();
+    await test.expect(listbox).toHaveAttribute("data-leave");
+    // There is no positive state for the abandoned pass, so wait through the
+    // frame it would have run in.
+    await flushFrames(page);
+    test.expect(await getScrollTop(listbox)).toBe(0);
+  });
 });

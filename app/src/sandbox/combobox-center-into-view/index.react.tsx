@@ -174,8 +174,25 @@ function GeometryCases() {
   );
 }
 
+// A slow exit transition keeps the popup on screen while it closes, so a
+// presentation pass that outlives its cycle scrolls something the user can
+// still see. The transition is declared unconditionally rather than only under
+// `[data-leave]` because Ariakit reads the computed transition duration while
+// the popup is still entering to decide how long to keep it mounted. Opacity
+// only drops on leave, so the popup stays fully visible until then, including
+// when it closes before `data-enter` is applied on a later frame.
+const css = `
+  .leaving-popover {
+    transition: opacity 600ms linear;
+  }
+  .leaving-popover[data-leave] {
+    opacity: 0;
+  }
+`;
+
 interface SelectOnlyFixtureProps {
   label: string;
+  leaveTransition?: boolean;
   unmountOnHide?: boolean;
   virtualFocus?: boolean;
 }
@@ -185,6 +202,7 @@ interface SelectOnlyFixtureProps {
 // and a visibility-conditional pass would leave it where it is.
 function SelectOnlyFixture({
   label,
+  leaveTransition,
   unmountOnHide,
   virtualFocus,
 }: SelectOnlyFixtureProps) {
@@ -196,6 +214,7 @@ function SelectOnlyFixture({
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect style={{ display: "block" }} />
       <Ariakit.ComboboxPopover
+        className={leaveTransition ? "leaving-popover" : undefined}
         unmountOnHide={unmountOnHide}
         gutter={4}
         sameWidth
@@ -343,6 +362,7 @@ function SlottedComboboxFixture() {
 export default function Example() {
   return (
     <>
+      <style>{css}</style>
       <ScrollablePanelFixture />
       <div style={{ marginTop: 200 }}>
         <IframePanelFixture />
@@ -366,6 +386,9 @@ export default function Example() {
           label="Real focus select-only fruit"
           virtualFocus={false}
         />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <SelectOnlyFixture label="Leaving select-only fruit" leaveTransition />
       </div>
     </>
   );
