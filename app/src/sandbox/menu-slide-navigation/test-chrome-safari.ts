@@ -18,6 +18,27 @@ const getMenuItem = (
 ) => locator.locator(`role=${role}[name='${name}']`);
 
 withFramework(import.meta.dirname, async ({ test }) => {
+  test("forwards nested trigger ids and refs", async ({ page }) => {
+    await getMenuButton(page).click();
+    const bookmarksButton = getMenuItem(page, "Bookmarks");
+    await expect(bookmarksButton).toHaveAttribute(
+      "data-ref-id",
+      "bookmarks-menu-button",
+    );
+    await expect(bookmarksButton).toHaveAttribute(
+      "id",
+      "bookmarks-menu-button",
+    );
+  });
+
+  test("runs consumer events before menu item behavior", async ({ page }) => {
+    await getMenuButton(page).click();
+    const bookmarksButton = getMenuItem(page, "Bookmarks");
+    await bookmarksButton.focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(bookmarksButton).toBeFocused();
+  });
+
   test("show/hide with click", async ({ page }) => {
     await getMenuButton(page).click();
     await expect(getMenu(page, "Options")).toBeVisible();

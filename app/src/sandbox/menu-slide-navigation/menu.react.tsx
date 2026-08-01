@@ -2,6 +2,7 @@ import * as Ariakit from "@ariakit/react";
 import * as React from "react";
 import { flushSync } from "react-dom";
 
+interface MenuButtonProps extends React.ComponentPropsWithRef<"button"> {}
 interface MenuContextProps {
   getWrapper: () => HTMLElement | null;
   getMenu: () => HTMLElement | null;
@@ -82,12 +83,13 @@ export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
       return () => parentWrapper.removeEventListener("scroll", onScroll);
     }, [parent, menu]);
 
-    const menuButton = (
+    const renderMenuButton = (menuButtonProps?: MenuButtonProps) => (
       <Ariakit.MenuButton
         ref={ref}
         store={menu}
         showOnHover={false}
         className="button"
+        {...(menuButtonProps ?? props)}
         render={<button />}
       >
         <span className="label">{label}</span>
@@ -117,13 +119,16 @@ export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
           // MenuItem components into a single component, so it works as a
           // submenu button.
           <Ariakit.MenuItem
+            id={props.id}
+            disabled={props.disabled}
+            aria-disabled={props["aria-disabled"]}
             focusOnHover={false}
             className="w-full rounded p-2 text-left"
-            render={React.cloneElement(menuButton, props)}
+            render={renderMenuButton(props)}
           />
         ) : (
           // Otherwise, we just render the menu button.
-          React.cloneElement(menuButton, props)
+          renderMenuButton()
         )}
         <Ariakit.Menu
           store={menu}

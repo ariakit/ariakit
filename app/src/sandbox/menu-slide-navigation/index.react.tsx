@@ -1,12 +1,25 @@
+import { useState } from "react";
 import { Menu, MenuGroup, MenuItem, MenuSeparator } from "./menu.react.tsx";
 
 export default function Example() {
+  const [bookmarksButton, setBookmarksButton] =
+    useState<HTMLButtonElement | null>(null);
   return (
     <Menu label="Options">
       <MenuItem label="New Tab" />
       <MenuItem label="New Window" />
       <MenuSeparator />
-      <Menu label="Bookmarks">
+      <Menu
+        ref={setBookmarksButton}
+        id="bookmarks-menu-button"
+        data-ref-id={bookmarksButton?.id}
+        label="Bookmarks"
+        onKeyDown={(event) => {
+          if (event.key === "ArrowDown") {
+            event.preventDefault();
+          }
+        }}
+      >
         <MenuItem label="Bookmark current tab" />
         <MenuItem label="Search bookmarks" />
         <MenuItem label="Show bookmarks toolbar" />
