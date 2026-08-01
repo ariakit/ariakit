@@ -1,5 +1,9 @@
 import type { Locator, Page } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import {
+  getPageScrolls,
+  recordPageScrolls,
+} from "./page-scroll.test-helper.ts";
 
 function getCenterOffset(item: Locator) {
   return item.evaluate((element) => {
@@ -380,6 +384,47 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
             .toBeLessThanOrEqual(1);
         });
       }
+    });
+  }
+
+  // The popup that unmounts while hidden is left out: it has no popup to
+  // present into until the open itself, so its selected item is still off
+  // screen when Safari's `redirectFocusToBaseElement` fallback reaches it,
+  // which scrolls the document for its own reasons before restoring it. The
+  // other two browsers cover that fixture in `test-chrome-firefox.ts`.
+  for (const label of [
+    "Persistent select-only fruit",
+    "Real focus select-only fruit",
+  ]) {
+    // https://github.com/ariakit/ariakit/pull/6994
+    test(`centers without scrolling the page (${label})`, async ({
+      page,
+      q,
+    }) => {
+      const select = q.combobox(label);
+      const listbox = q.listbox(`${label} options`);
+      const cherry = query(listbox).option("Cherry");
+
+      await page.evaluate(() => window.scrollTo({ top: 200 }));
+      await test.expect
+        .poll(() => page.evaluate(() => window.scrollY))
+        .toBe(200);
+      // Hovering first so the click doesn't have to scroll the select into
+      // view, which would land inside the recording below.
+      await select.hover();
+      // Centering the item used to center it in the page too, then scroll the
+      // page back before the next paint. That is invisible, but the page still
+      // scrolls, which is enough to reveal an overlay scrollbar.
+      await recordPageScrolls(page);
+
+      await select.click();
+
+      await test.expect(select).toHaveAttribute("aria-expanded", "true");
+      await test.expect
+        .poll(async () => Math.abs(await getCenterOffset(cherry)))
+        .toBeLessThanOrEqual(1);
+      test.expect(await getPageScrolls(page)).toEqual([]);
+      test.expect(await page.evaluate(() => window.scrollY)).toBe(200);
     });
   }
 
