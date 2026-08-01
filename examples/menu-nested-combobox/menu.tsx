@@ -19,85 +19,85 @@ export interface MenuProps extends Ariakit.MenuButtonProps {
   trigger?: Ariakit.MenuButtonProps["render"];
 }
 
-type MenuElement = HTMLButtonElement;
+export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
+  function Menu(
+    {
+      label,
+      children,
+      values,
+      onValuesChange,
+      searchValue,
+      onSearch,
+      combobox,
+      trigger,
+      ...props
+    },
+    ref,
+  ) {
+    const parent = Ariakit.useMenuContext();
+    const searchable = searchValue != null || !!onSearch || !!combobox;
 
-export const Menu = React.forwardRef<MenuElement, MenuProps>(function Menu(
-  {
-    label,
-    children,
-    values,
-    onValuesChange,
-    searchValue,
-    onSearch,
-    combobox,
-    trigger,
-    ...props
-  },
-  ref,
-) {
-  const parent = Ariakit.useMenuContext();
-  const searchable = searchValue != null || !!onSearch || !!combobox;
-
-  const element = (
-    <Ariakit.MenuProvider
-      showTimeout={100}
-      placement={parent ? "right" : "left"}
-      values={values}
-      setValues={onValuesChange}
-    >
-      <Ariakit.MenuButton
-        ref={ref}
-        {...props}
-        className={clsx(!parent && "button", props.className)}
-        render={parent ? <MenuItem render={trigger} /> : trigger}
+    const element = (
+      <Ariakit.MenuProvider
+        showTimeout={100}
+        placement={parent ? "right" : "left"}
+        values={values}
+        setValues={onValuesChange}
       >
-        <span className="label">{label}</span>
-        <Ariakit.MenuButtonArrow className="button-arrow" />
-      </Ariakit.MenuButton>
-      <Ariakit.Menu
-        portal
-        overlap
-        unmountOnHide
-        gutter={parent ? -4 : 4}
-        className={clsx("menu", searchable && "search-menu")}
-      >
-        <SearchableContext.Provider value={searchable}>
-          {searchable ? (
-            <React.Fragment>
-              <div className="combobox-wrapper">
-                <Ariakit.Combobox
-                  autoSelect
-                  render={combobox}
-                  className="combobox"
-                />
-              </div>
-              <Ariakit.ComboboxList className="combobox-list">
-                {children}
-              </Ariakit.ComboboxList>
-            </React.Fragment>
-          ) : (
-            children
-          )}
-        </SearchableContext.Provider>
-      </Ariakit.Menu>
-    </Ariakit.MenuProvider>
-  );
-
-  if (searchable) {
-    return (
-      <Ariakit.ComboboxProvider
-        resetValueOnHide
-        includesBaseElement={false}
-        value={searchValue}
-        setValue={onSearch}
-      >
-        {element}
-      </Ariakit.ComboboxProvider>
+        <Ariakit.MenuButton
+          ref={ref}
+          {...props}
+          className={clsx(!parent && "button", props.className)}
+          render={parent ? <MenuItem render={trigger} /> : trigger}
+        >
+          <span className="label">{label}</span>
+          <Ariakit.MenuButtonArrow className="button-arrow" />
+        </Ariakit.MenuButton>
+        <Ariakit.Menu
+          portal
+          overlap
+          unmountOnHide
+          gutter={parent ? -4 : 4}
+          className={clsx("menu", searchable && "search-menu")}
+        >
+          <SearchableContext.Provider value={searchable}>
+            {searchable ? (
+              <React.Fragment>
+                <div className="combobox-wrapper">
+                  <Ariakit.Combobox
+                    autoSelect
+                    render={combobox}
+                    className="combobox"
+                  />
+                </div>
+                <Ariakit.ComboboxList className="combobox-list">
+                  {children}
+                </Ariakit.ComboboxList>
+              </React.Fragment>
+            ) : (
+              children
+            )}
+          </SearchableContext.Provider>
+        </Ariakit.Menu>
+      </Ariakit.MenuProvider>
     );
-  }
 
-  return element;
-});
+    if (searchable) {
+      return (
+        <Ariakit.ComboboxProvider
+          resetValueOnHide
+          includesBaseElement={false}
+          value={searchValue}
+          setValue={onSearch}
+        >
+          {element}
+        </Ariakit.ComboboxProvider>
+      );
+    }
+
+    return element;
+  },
+);
 
 export interface MenuSeparatorProps extends Ariakit.MenuSeparatorProps {}
 

@@ -15,64 +15,64 @@ export interface MenuProps extends Ariakit.MenuButtonProps {
   exit?: MotionProps["exit"];
 }
 
-type MenuElement = HTMLButtonElement;
-
-export const Menu = React.forwardRef<MenuElement, MenuProps>(function Menu(
-  {
-    open,
-    setOpen,
-    label,
-    children,
-    animate,
-    transition,
-    variants,
-    initial,
-    exit,
-    ...props
+export const Menu = React.forwardRef<HTMLButtonElement, MenuProps>(
+  function Menu(
+    {
+      open,
+      setOpen,
+      label,
+      children,
+      animate,
+      transition,
+      variants,
+      initial,
+      exit,
+      ...props
+    },
+    ref,
+  ) {
+    const menu = Ariakit.useMenuStore({ open, setOpen });
+    const currentPlacement = Ariakit.useStoreState(menu, "currentPlacement");
+    const mounted = Ariakit.useStoreState(menu, "mounted");
+    return (
+      <MotionConfig reducedMotion="user">
+        <Ariakit.MenuButton
+          store={menu}
+          ref={ref}
+          {...props}
+          className={clsx("button", props.className)}
+        >
+          {label}
+          <Ariakit.MenuButtonArrow />
+        </Ariakit.MenuButton>
+        <AnimatePresence>
+          {mounted && (
+            <Ariakit.Menu
+              store={menu}
+              alwaysVisible
+              className="menu"
+              // We'll use this data attribute to style the transform-origin
+              // property based on the menu's placement. See style.css.
+              data-placement={currentPlacement}
+              render={
+                <motion.div
+                  initial={initial}
+                  exit={exit}
+                  animate={animate}
+                  variants={variants}
+                  transition={transition}
+                />
+              }
+            >
+              <Ariakit.MenuArrow className="menu-arrow" />
+              {children}
+            </Ariakit.Menu>
+          )}
+        </AnimatePresence>
+      </MotionConfig>
+    );
   },
-  ref,
-) {
-  const menu = Ariakit.useMenuStore({ open, setOpen });
-  const currentPlacement = Ariakit.useStoreState(menu, "currentPlacement");
-  const mounted = Ariakit.useStoreState(menu, "mounted");
-  return (
-    <MotionConfig reducedMotion="user">
-      <Ariakit.MenuButton
-        store={menu}
-        ref={ref}
-        {...props}
-        className={clsx("button", props.className)}
-      >
-        {label}
-        <Ariakit.MenuButtonArrow />
-      </Ariakit.MenuButton>
-      <AnimatePresence>
-        {mounted && (
-          <Ariakit.Menu
-            store={menu}
-            alwaysVisible
-            className="menu"
-            // We'll use this data attribute to style the transform-origin
-            // property based on the menu's placement. See style.css.
-            data-placement={currentPlacement}
-            render={
-              <motion.div
-                initial={initial}
-                exit={exit}
-                animate={animate}
-                variants={variants}
-                transition={transition}
-              />
-            }
-          >
-            <Ariakit.MenuArrow className="menu-arrow" />
-            {children}
-          </Ariakit.Menu>
-        )}
-      </AnimatePresence>
-    </MotionConfig>
-  );
-});
+);
 
 export interface MenuItemProps extends React.ComponentPropsWithoutRef<
   typeof MotionMenuItem
