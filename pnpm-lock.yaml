@@ -167,6 +167,9 @@ importers:
       '@ariakit/react-utils':
         specifier: workspace:*
         version: link:../packages/ariakit-react-utils
+      '@ariakit/react-v0.4.14':
+        specifier: npm:@ariakit/react@0.4.14
+        version: '@ariakit/react@0.4.14(react-dom@19.2.8(react@19.2.8))(react@19.2.8)'
       '@ariakit/solid':
         specifier: workspace:*
         version: link:../packages/ariakit-solid
@@ -1143,6 +1146,21 @@ packages:
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
     engines: {node: '>=10'}
+
+  '@ariakit/core@0.4.13':
+    resolution: {integrity: sha512-XwHm1OAKZhHkT5z3pSzeRyjUxW2VtPesMP0wa7fiVRXmibRJnJIxffGLZmUy4CHbOtQ46nlT3AlP5hXNQrS0Ow==}
+
+  '@ariakit/react-core@0.4.14':
+    resolution: {integrity: sha512-vRdl3k7Q7Z3oHNbv8Afz3lbvmpqhKlHW22REFIdA/UE7/YsbD3dhMVncGsmsCHSA06PXF3esk7wP0QkZymO1CQ==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@ariakit/react@0.4.14':
+    resolution: {integrity: sha512-UfUf54idAiUvkrnqmr55birSMiJ2+xHWviaKHXX9kdFHV27xL2O2ulNEXvk79wnjrgOlBXOvWe16FrY1VR5Vcw==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^17.0.0 || ^18.0.0 || ^19.0.0
 
   '@asamuzakjp/css-color@5.1.11':
     resolution: {integrity: sha512-KVw6qIiCTUQhByfTd78h2yD1/00waTmm9uy/R7Ck/ctUyAPj+AEDLkQIdJW0T8+qGgj3j5bpNKK7Q3G+LedJWg==}
@@ -10674,6 +10692,22 @@ snapshots:
   '@adobe/css-tools@4.4.4': {}
 
   '@alloc/quick-lru@5.2.0': {}
+
+  '@ariakit/core@0.4.13': {}
+
+  '@ariakit/react-core@0.4.14(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@ariakit/core': 0.4.13
+      '@floating-ui/dom': 1.8.0
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
+      use-sync-external-store: 1.6.0(react@19.2.8)
+
+  '@ariakit/react@0.4.14(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
+    dependencies:
+      '@ariakit/react-core': 0.4.14(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      react: 19.2.8
+      react-dom: 19.2.8(react@19.2.8)
 
   '@asamuzakjp/css-color@5.1.11':
     dependencies:

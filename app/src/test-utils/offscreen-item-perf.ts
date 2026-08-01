@@ -1,21 +1,38 @@
 import { expect } from "@playwright/test";
 import type { Locator, Page } from "@playwright/test";
+// Type-only, so the fixture module and its React import are erased here rather
+// than pulled into the Playwright process. Sharing the union keeps the search
+// param values this file writes in lockstep with the ones the page accepts.
+import type { ItemVariant } from "#app/sandbox/_lib/item-variant.ts";
 import { flushFrames } from "./preview.ts";
 
-/**
- * Which side of the paired comparison this run records. Both sides run the
- * same revision: the baseline renders ordinary Ariakit items and the current
- * side renders offscreen items, so the pair isolates the offscreen items
- * themselves instead of comparing two revisions.
- */
-type ComparisonSide = "base" | "offscreen";
+/** Which side of the paired comparison this run records. */
+type ComparisonSide = "baseline" | "current";
 
 /**
- * Which offscreen mode the comparison is about. It stays identical on both
- * sides of a pair so baseline and current rows still pair up, while the
- * passive and lazy comparisons remain separate rows in the aggregated report.
+ * Which paired comparison this job runs. It stays identical on both sides of a
+ * pair so baseline and current rows still pair up, and it qualifies the test
+ * titles so each comparison keeps its own rows in the aggregated report.
  */
-type OffscreenMode = "passive" | "lazy";
+type Comparison = "passive" | "lazy" | "version";
+
+/**
+ * What each side of each comparison renders.
+ *
+ * The offscreen comparisons hold the revision fixed and vary only the item, so
+ * they isolate the offscreen items themselves. The version comparison holds the
+ * item kind fixed at ordinary items and varies the Ariakit version instead, so
+ * it measures how much the ordinary items improved since the offscreen feature
+ * shipped in 0.4.14.
+ */
+const comparisonVariants: Record<
+  Comparison,
+  Record<ComparisonSide, ItemVariant>
+> = {
+  passive: { baseline: "base", current: "passive" },
+  lazy: { baseline: "base", current: "lazy" },
+  version: { baseline: "legacy", current: "base" },
+};
 
 function readVariable<T extends string>(
   name: string,
@@ -33,24 +50,30 @@ function readVariable<T extends string>(
   return match;
 }
 
-const side = readVariable<ComparisonSide>("PERF_ITEM_VARIANT", "base", [
-  "base",
-  "offscreen",
+const side = readVariable<ComparisonSide>("PERF_ITEM_SIDE", "baseline", [
+  "baseline",
+  "current",
 ]);
 
-const mode = readVariable<OffscreenMode>("PERF_ITEM_MODE", "passive", [
+const comparison = readVariable<Comparison>("PERF_ITEM_COMPARISON", "passive", [
   "passive",
   "lazy",
+  "version",
 ]);
 
-const offscreen = side === "offscreen";
+/** Value the fixture page reads from its `item` search param. */
+export const itemParam = comparisonVariants[comparison][side];
+
+/** Whether the variant this run renders defers item rendering. */
+const offscreen = itemParam === "passive" || itemParam === "lazy";
 
 /**
- * Value the fixture page reads from its `item` search param. The baseline
- * renders ordinary items; the current side renders offscreen items in the mode
- * under comparison.
+ * Whether this comparison exercises offscreen items at all. The version
+ * comparison renders ordinary items on both sides, so scrolling costs both
+ * sides nothing and a scroll row there would measure harness overhead rather
+ * than product work.
  */
-export const itemParam = offscreen ? mode : "base";
+export const comparesOffscreenItems = comparison !== "version";
 
 /**
  * Item height in the fixture stylesheets. Scroll positions are derived from it,
@@ -65,12 +88,11 @@ const itemsPerScreen = 10;
 const scrollScreens = 20;
 
 /**
- * Qualifies a test title with the mode under comparison so the passive and
- * lazy jobs contribute separate rows to the aggregated report instead of
- * overwriting each other.
+ * Qualifies a test title with the comparison so each job contributes its own
+ * rows to the aggregated report instead of overwriting the other jobs.
  */
 export function itemTestTitle(title: string) {
-  return `${title} (${mode})`;
+  return `${title} (${comparison})`;
 }
 
 /** Maps a 1-based item number to that item's `data-item` value. */

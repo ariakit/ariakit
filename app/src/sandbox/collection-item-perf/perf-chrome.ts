@@ -2,6 +2,7 @@ import type { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import {
+  comparesOffscreenItems,
   getItemName,
   itemParam,
   itemTestTitle,
@@ -62,21 +63,25 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
   });
 
-  test(itemTestTitle("scroll collection"), async ({ perf }) => {
-    await perf.measure(
-      ({ page, q }) =>
-        scrollThroughItems({ page, scroller: getScroller(q), getItemName }),
-      {
-        setup: ({ page, q }) => mountCollection(page, q),
-        verify: async ({ page, q }) => {
-          await verifyScrolledThroughItems({
-            page,
-            scroller: getScroller(q),
-            getItemName,
-          });
-          await expect(q.status("Item variant")).toHaveText(itemParam);
+  // Only offscreen items do work while scrolling, so this stays out of the
+  // version comparison, where both sides would measure harness overhead.
+  if (comparesOffscreenItems) {
+    test(itemTestTitle("scroll collection"), async ({ perf }) => {
+      await perf.measure(
+        ({ page, q }) =>
+          scrollThroughItems({ page, scroller: getScroller(q), getItemName }),
+        {
+          setup: ({ page, q }) => mountCollection(page, q),
+          verify: async ({ page, q }) => {
+            await verifyScrolledThroughItems({
+              page,
+              scroller: getScroller(q),
+              getItemName,
+            });
+            await expect(q.status("Item variant")).toHaveText(itemParam);
+          },
         },
-      },
-    );
-  });
+      );
+    });
+  }
 });

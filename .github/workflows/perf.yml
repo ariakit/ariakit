@@ -96,30 +96,32 @@ jobs:
           for (const title of titles) {
             titleCounts.set(title, (titleCounts.get(title) ?? 0) + 1);
           }
-          // Each fixture is benchmarked once per offscreen mode. The baseline
-          // side of every job renders ordinary items, so each job compares
-          // ordinary items against exactly one mode on one runner, and the
-          // aggregated report carries one row per fixture, interaction, and
-          // mode.
-          const modes = ["passive", "lazy"];
+          // Each fixture is benchmarked once per comparison, each on its own
+          // runner with its own baseline. `passive` and `lazy` hold the
+          // revision fixed and compare ordinary items against offscreen items;
+          // `version` holds ordinary items fixed and compares the published
+          // 0.4.14 release, which introduced the offscreen feature, against
+          // this revision. The aggregated report carries one row per fixture,
+          // interaction, and comparison.
+          const comparisons = ["passive", "lazy", "version"];
           const include = files.flatMap((file, fileIndex) => {
             const title = titles[fileIndex];
             const uniqueTitle = titleCounts.get(title) === 1;
             const fileTitle = uniqueTitle
               ? title
               : `${title}-${path.basename(file, path.extname(file))}`;
-            return modes.map((mode, modeIndex) => ({
-              index: fileIndex * modes.length + modeIndex + 1,
+            return comparisons.map((comparison, comparisonIndex) => ({
+              index: fileIndex * comparisons.length + comparisonIndex + 1,
               file,
-              mode,
-              title: `${fileTitle}-${mode}`,
+              comparison,
+              title: `${fileTitle}-${comparison}`,
             }));
           });
           if (include.length === 0) {
             include.push({
               index: 1,
               file: "",
-              mode: modes[0],
+              comparison: comparisons[0],
               title: "no-perf-files",
             });
           }
@@ -181,11 +183,11 @@ jobs:
       PERF_FILE: ${{ matrix.file }}
       PERF_JOB_INDEX: ${{ matrix.index }}
       PERF_JOB_TITLE: ${{ matrix.title }}
-      # The offscreen mode under comparison. It is identical on both sides of
-      # the pair so baseline and current rows still pair up, while it also
-      # qualifies the test titles so the passive and lazy jobs report separate
-      # rows instead of overwriting each other.
-      PERF_ITEM_MODE: ${{ matrix.mode }}
+      # The comparison this job runs. It is identical on both sides of the pair
+      # so baseline and current rows still pair up, and it decides what each
+      # side renders as well as qualifying the test titles, so every comparison
+      # reports its own rows instead of overwriting the others.
+      PERF_ITEM_COMPARISON: ${{ matrix.comparison }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -262,7 +264,7 @@ jobs:
           baseline_perf_attempt() {
             local i="$1"
             shift
-            PERF_ITEM_VARIANT=base \
+            PERF_ITEM_SIDE=baseline \
             PERF_RESULTS_FILE=baseline-$i-j$PERF_JOB_INDEX.json \
             PERF_ITERATIONS="$PERF_ITERATIONS" \
             PERF_WARMUP="$PERF_WARMUP" \
@@ -310,7 +312,7 @@ jobs:
           current_perf_attempt() {
             local i="$1"
             shift
-            PERF_ITEM_VARIANT=offscreen \
+            PERF_ITEM_SIDE=current \
             PERF_RESULTS_FILE=current-$i-j$PERF_JOB_INDEX.json \
             PERF_ITERATIONS="$PERF_ITERATIONS" \
             PERF_WARMUP="$PERF_WARMUP" \

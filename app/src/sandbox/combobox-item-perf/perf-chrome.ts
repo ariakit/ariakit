@@ -2,6 +2,7 @@ import type { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import {
+  comparesOffscreenItems,
   itemParam,
   itemTestTitle,
   materializedItem,
@@ -130,27 +131,31 @@ withFramework(import.meta.dirname, async ({ test }) => {
     });
   });
 
-  test(itemTestTitle("scroll combobox"), async ({ perf }) => {
-    await perf.measure(
-      ({ page }) =>
-        scrollThroughItems({
-          page,
-          scroller: getPopover(page),
-          getItemName,
-        }),
-      {
-        setup: ({ page, q }) => openCombobox(page, q),
-        verify: async ({ page, q }) => {
-          await verifyScrolledThroughItems({
+  // Only offscreen items do work while scrolling, so this stays out of the
+  // version comparison, where both sides would measure harness overhead.
+  if (comparesOffscreenItems) {
+    test(itemTestTitle("scroll combobox"), async ({ perf }) => {
+      await perf.measure(
+        ({ page }) =>
+          scrollThroughItems({
             page,
             scroller: getPopover(page),
             getItemName,
-          });
-          await expect(q.status("Item variant")).toHaveText(itemParam);
+          }),
+        {
+          setup: ({ page, q }) => openCombobox(page, q),
+          verify: async ({ page, q }) => {
+            await verifyScrolledThroughItems({
+              page,
+              scroller: getPopover(page),
+              getItemName,
+            });
+            await expect(q.status("Item variant")).toHaveText(itemParam);
+          },
         },
-      },
-    );
-  });
+      );
+    });
+  }
 
   test(itemTestTitle("restore filtered items"), async ({ perf }) => {
     await perf.measure(({ page, q }) => restoreFilteredItems(page, q), {

@@ -53,6 +53,7 @@
     "@ariakit/react-components": "workspace:*",
     "@ariakit/react-store": "workspace:*",
     "@ariakit/react-utils": "workspace:*",
+    "@ariakit/react-v0.4.14": "npm:@ariakit/react@0.4.14",
     "@ariakit/solid": "workspace:*",
     "@ariakit/solid-components": "workspace:*",
     "@ariakit/solid-utils": "workspace:*",
