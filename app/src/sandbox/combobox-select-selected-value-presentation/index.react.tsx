@@ -1,5 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-import { ComboboxItem } from "@ariakit/react-components/combobox/combobox-item-offscreen";
 import { useRef } from "react";
 
 const fruits = [
@@ -64,21 +63,17 @@ function Fixture({
   const items = (
     <>
       {fruits.map((fruit) => (
-        <ComboboxItem
+        <Ariakit.ComboboxItem
           key={fruit}
           value={fruit}
-          offscreenMode="passive"
           style={{ display: "block", padding: "4px 8px" }}
         />
       ))}
       {/* An item rendered without a value, at the end of the list so it's
       always out of view. */}
-      <ComboboxItem
-        offscreenMode="passive"
-        style={{ display: "block", padding: "4px 8px" }}
-      >
+      <Ariakit.ComboboxItem style={{ display: "block", padding: "4px 8px" }}>
         {`No ${label.toLowerCase()}`}
-      </ComboboxItem>
+      </Ariakit.ComboboxItem>
     </>
   );
   return (
@@ -124,7 +119,6 @@ function Fixture({
 export default function Example() {
   return (
     <>
-      <Fixture defaultSelectedValue={[]} label="Fruit" />
       <Fixture defaultSelectedValue={["Apple"]} label="Selected fruit" />
       <Fixture defaultSelectedValue="Apple" label="Single selected fruit" />
       <div style={{ marginTop: 200 }}>

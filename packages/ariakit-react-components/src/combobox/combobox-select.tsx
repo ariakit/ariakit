@@ -314,7 +314,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       unstable_scrollIntoView: scrollIntoView,
       // The select handler owns closed navigation so it can skip value-less
       // items. Once open, Composite owns navigation and can also finish moves
-      // whose offscreen target has no element yet.
+      // whose target has no element yet.
       moveOnKeyPress: () => store.getState().open,
       ...props,
     });

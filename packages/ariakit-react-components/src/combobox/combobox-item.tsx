@@ -54,7 +54,7 @@ function isSelected(
 /**
  * Returns the role for a combobox item based on the popup role.
  */
-export function getItemRole(popupRole?: string) {
+function getItemRole(popupRole?: string) {
   return getItemRoleByPopupRole(popupRole) ?? "option";
 }
 
