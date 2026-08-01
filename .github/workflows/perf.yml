@@ -96,34 +96,19 @@ jobs:
           for (const title of titles) {
             titleCounts.set(title, (titleCounts.get(title) ?? 0) + 1);
           }
-          // Each fixture is benchmarked once per comparison, each on its own
-          // runner with its own baseline. `passive` and `lazy` hold the
-          // revision fixed and compare ordinary items against offscreen items;
-          // `version` holds ordinary items fixed and compares the published
-          // 0.4.14 release, which introduced the offscreen feature, against
-          // this revision. The aggregated report carries one row per fixture,
-          // interaction, and comparison.
-          const comparisons = ["passive", "lazy", "version"];
-          const include = files.flatMap((file, fileIndex) => {
-            const title = titles[fileIndex];
+          const include = files.map((file, index) => {
+            const title = titles[index];
             const uniqueTitle = titleCounts.get(title) === 1;
-            const fileTitle = uniqueTitle
-              ? title
-              : `${title}-${path.basename(file, path.extname(file))}`;
-            return comparisons.map((comparison, comparisonIndex) => ({
-              index: fileIndex * comparisons.length + comparisonIndex + 1,
+            return {
+              index: index + 1,
               file,
-              comparison,
-              title: `${fileTitle}-${comparison}`,
-            }));
+              title: uniqueTitle
+                ? title
+                : `${title}-${path.basename(file, path.extname(file))}`,
+            };
           });
           if (include.length === 0) {
-            include.push({
-              index: 1,
-              file: "",
-              comparison: comparisons[0],
-              title: "no-perf-files",
-            });
+            include.push({ index: 1, file: "", title: "no-perf-files" });
           }
           console.log(JSON.stringify(include));
           NODE
@@ -183,11 +168,6 @@ jobs:
       PERF_FILE: ${{ matrix.file }}
       PERF_JOB_INDEX: ${{ matrix.index }}
       PERF_JOB_TITLE: ${{ matrix.title }}
-      # The comparison this job runs. It is identical on both sides of the pair
-      # so baseline and current rows still pair up, and it decides what each
-      # side renders as well as qualifying the test titles, so every comparison
-      # reports its own rows instead of overwriting the others.
-      PERF_ITEM_COMPARISON: ${{ matrix.comparison }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
