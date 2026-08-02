@@ -250,6 +250,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect
       .poll(async () => Math.abs(await getCenterOffset(watermelon)))
       .toBeLessThanOrEqual(1);
+    // The centered item confirms that presentation finished, but the absence
+    // of a document scroll event has no positive state to await. Cross the
+    // browser's remaining scroll checkpoints before asserting no side effect.
     await flushFrames(page, 3);
     test.expect(await getDocumentScrollEvents(page)).toEqual([]);
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);

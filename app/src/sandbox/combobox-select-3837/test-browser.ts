@@ -74,11 +74,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
       el.style.setProperty("--popover-available-height", "120px");
     });
 
-    // Wait until the popover has actually shrunk, then let the virtualizer and
-    // any focus side effects settle across a few frames.
+    // Wait until the popover and its virtualized window have actually shrunk.
     await test.expect
       .poll(() => popover.evaluate((el) => el.clientHeight))
       .toBeLessThan(heightBefore);
+    await test.expect
+      .poll(() => q.option().count())
+      .toBeLessThan(renderedBefore);
+    // Focus staying on the input is an absence of side effects, so cross the
+    // remaining focus checkpoint before asserting that nothing moved.
     await flushFrames(page, 5);
 
     // The auto-selected item is still active, but focus must have stayed on the

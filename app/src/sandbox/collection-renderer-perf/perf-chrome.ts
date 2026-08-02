@@ -1,7 +1,6 @@
 import type { query } from "@ariakit/test/playwright";
 import { expect } from "@playwright/test";
-import type { Page } from "@playwright/test";
-import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import { withFramework } from "#app/test-utils/preview.ts";
 
 const groupCount = 200;
 const itemsPerGroup = 50;
@@ -23,18 +22,16 @@ async function verifyRendererMounted(q: Query) {
   await expect(q.listitem("Item 10")).toBeVisible();
 }
 
-async function mountRenderer(page: Page, q: Query) {
+async function mountRenderer(q: Query) {
   await q.button("Mount nested renderers").click();
   await verifyRendererMounted(q);
-  await flushFrames(page);
 }
 
-async function rerenderNestedRenderers(page: Page, q: Query) {
+async function rerenderNestedRenderers(q: Query) {
   const updateButton = q.button("Rerender nested renderers");
   for (let index = 0; index < updateCount; index += 1) {
     await updateButton.click();
   }
-  await flushFrames(page);
   await expect(q.status("Updates")).toHaveText(String(updateCount));
   await expect(q.listitem("Item 10")).toHaveAttribute(
     "data-update",
@@ -50,12 +47,11 @@ async function verifyNestedRenderersUpdated(q: Query) {
   );
 }
 
-async function toggleRendererItems(page: Page, q: Query) {
+async function toggleRendererItems(q: Query) {
   const toggleButton = q.button("Toggle renderer items");
   for (let index = 0; index < toggleCount; index += 1) {
     const itemsVisible = index % 2 === 1;
     await toggleButton.click();
-    await flushFrames(page);
     await expect(q.status("Items visible")).toHaveText(
       itemsVisible ? "yes" : "no",
     );
@@ -68,14 +64,13 @@ async function verifyRendererItemsVisible(q: Query) {
   await expect(q.listitem("Item 10")).toBeVisible();
 }
 
-async function scrollNestedRenderers(page: Page, q: Query) {
+async function scrollNestedRenderers(q: Query) {
   const scroller = q.region("Renderer viewport");
   for (const groupIndex of scrollGroupIndices) {
     await scroller.evaluate((element, scrollTop) => {
       element.scrollTop = scrollTop;
       element.dispatchEvent(new Event("scroll"));
     }, groupIndex * groupSize);
-    await flushFrames(page);
     await expect(q.listitem(getGroupFirstItemLabel(groupIndex))).toBeVisible();
   }
 }
@@ -90,14 +85,14 @@ async function verifyRendererScrolled(q: Query) {
 
 withFramework(import.meta.dirname, async ({ test }) => {
   test("mount nested renderers", async ({ perf }) => {
-    await perf.measure(({ page, q }) => mountRenderer(page, q), {
+    await perf.measure(({ q }) => mountRenderer(q), {
       verify: ({ q }) => verifyRendererMounted(q),
     });
   });
 
   test("rerender nested renderers", async ({ perf }) => {
-    await perf.measure(({ page, q }) => rerenderNestedRenderers(page, q), {
-      setup: ({ page, q }) => mountRenderer(page, q),
+    await perf.measure(({ q }) => rerenderNestedRenderers(q), {
+      setup: ({ q }) => mountRenderer(q),
       scriptProfile: true,
       profileLimit: 20,
       verify: ({ q }) => verifyNestedRenderersUpdated(q),
@@ -105,15 +100,15 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   test("toggle renderer items", async ({ perf }) => {
-    await perf.measure(({ page, q }) => toggleRendererItems(page, q), {
-      setup: ({ page, q }) => mountRenderer(page, q),
+    await perf.measure(({ q }) => toggleRendererItems(q), {
+      setup: ({ q }) => mountRenderer(q),
       verify: ({ q }) => verifyRendererItemsVisible(q),
     });
   });
 
   test("scroll nested renderers", async ({ perf }) => {
-    await perf.measure(({ page, q }) => scrollNestedRenderers(page, q), {
-      setup: ({ page, q }) => mountRenderer(page, q),
+    await perf.measure(({ q }) => scrollNestedRenderers(q), {
+      setup: ({ q }) => mountRenderer(q),
       verify: ({ q }) => verifyRendererScrolled(q),
     });
   });

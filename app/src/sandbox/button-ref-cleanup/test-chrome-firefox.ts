@@ -20,6 +20,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.text("Button object ref detached: yes")).toBeVisible();
     await page.keyboard.press("b");
     await page.keyboard.press("b");
+    // Cleanup removes the shortcut, so the key presses produce no positive
+    // state to await. Cross its update checkpoint before asserting no change.
     await flushFrames(page);
     await test.expect(q.text("Button shortcut count: 2")).toBeVisible();
     await test.expect(q.text("Button shortcut count: 3")).toBeHidden();
@@ -40,6 +42,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.text("Portal cleanup connected: yes")).toBeVisible();
     await page.keyboard.press("p");
     await page.keyboard.press("p");
+    // Cleanup removes the shortcut, so the key presses produce no positive
+    // state to await. Cross its update checkpoint before asserting no change.
     await flushFrames(page);
     await test.expect(q.text("Portal shortcut count: 2")).toBeVisible();
     await test.expect(q.text("Portal shortcut count: 3")).toBeHidden();
@@ -57,6 +61,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.text("Connected portal root")).toBeVisible();
     await page.keyboard.press("c");
     await page.keyboard.press("c");
+    // Cleanup removes the shortcut, so the key presses produce no positive
+    // state to await. Cross its update checkpoint before asserting no change.
     await flushFrames(page);
     await test
       .expect(q.text("Connected portal shortcut count: 2"))
