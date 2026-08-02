@@ -106,6 +106,7 @@ export function presentItem({
   let focused = false;
   let done = false;
   let wasMounted = false;
+  let wasOpen = false;
   const owner = requireFocus
     ? getActiveElement(store.getState().compositeElement)
     : null;
@@ -131,11 +132,22 @@ export function presentItem({
    */
   const abandonedByState = (state: ReturnType<typeof store.getState>) => {
     // The popup opened and closed again. Closing content is never presented
-    // into.
+    // into. Both are latched so that "never opened" stays distinguishable from
+    // "was open, now closing": a popup that is permanently closed, such as an
+    // `alwaysVisible` menu, still presents its items.
     if ("mounted" in state) {
       if (state.mounted) {
         wasMounted = true;
       } else if (wasMounted) {
+        return true;
+      }
+    }
+    // `mounted` stays true for the whole exit transition of an animated popup,
+    // so it can't see a close on its own.
+    if ("open" in state) {
+      if (state.open) {
+        wasOpen = true;
+      } else if (wasOpen) {
         return true;
       }
     }
@@ -205,9 +217,13 @@ export function presentItem({
   // store type doesn't declare. Naming them keeps the store's keyed listener
   // fast path, which an all-keys subscription would disable for every update
   // while a presentation is pending.
-  const keys = ["activeId", "items", "mounted", "unstable_placing"] as Array<
-    keyof CompositeStoreState
-  >;
+  const keys = [
+    "activeId",
+    "items",
+    "mounted",
+    "open",
+    "unstable_placing",
+  ] as Array<keyof CompositeStoreState>;
   unsubscribe = subscribe(store, keys, present);
   present();
   return cancel;

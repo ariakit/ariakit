@@ -16,24 +16,30 @@ const actions = [
 
 const lastAction = "Rename";
 
+interface HeldMenuProps {
+  label: string;
+  /**
+   * Keeps the popup mounted through an exit transition after it closes, which
+   * is the window in which `mounted` alone cannot tell that it is going away.
+   */
+  animated?: boolean;
+}
+
 /**
  * A menu that stays in its positioning window for as long as the test needs.
  *
  * The `updatePosition` prop is awaited before the popover marks itself
  * positioned, so returning a promise that only settles on demand holds the
  * popup at its pre-placement origin. That's the window in which a presentation
- * request parks, which is the state this fixture exists to reach. The release
- * button is a manual escape hatch for opening this sandbox in a browser; the
- * test never needs it, because hiding the menu clears the placing state on its
- * own.
+ * request parks, which is the state this fixture exists to reach.
  *
  * Everything is driven from buttons outside the menu on purpose. The
  * presentation that `move` schedules only skips its focus-ownership check when
  * focus starts outside the composite, and that is the arrangement where the
- * popup closing is the only thing left that can abandon it.
+ * popup going away is the only thing left that can abandon it.
  */
-export default function Example() {
-  const menu = Ariakit.useMenuStore();
+function HeldMenu({ label, animated }: HeldMenuProps) {
+  const menu = Ariakit.useMenuStore({ animated: animated ? 250 : undefined });
   const releaseRef = useRef<(() => void) | null>(null);
 
   const updatePosition = () =>
@@ -42,12 +48,9 @@ export default function Example() {
     });
 
   return (
-    <main style={{ display: "grid", gap: 8, justifyItems: "start" }}>
-      {/* Puts the controls below the fold so the page is scrolled while the
-      menu opens, which is the only way a page jump is observable. */}
-      <div style={{ height: 900 }} />
+    <>
       <button type="button" tabIndex={0} onClick={menu.show}>
-        Show menu
+        Show {label}
       </button>
       <button
         type="button"
@@ -61,10 +64,10 @@ export default function Example() {
           }
         }}
       >
-        Move to last action
+        Move to last {label} action
       </button>
       <button type="button" tabIndex={0} onClick={menu.hide}>
-        Hide menu
+        Hide {label}
       </button>
       <button
         type="button"
@@ -74,13 +77,13 @@ export default function Example() {
           releaseRef.current = null;
         }}
       >
-        Finish positioning
+        Finish {label} positioning
       </button>
       {/* hideOnInteractOutside is off so the buttons above can drive the menu
       without closing it. */}
       <Ariakit.Menu
         store={menu}
-        aria-label="Actions"
+        aria-label={label}
         updatePosition={updatePosition}
         hideOnInteractOutside={false}
         portal={false}
@@ -92,6 +95,18 @@ export default function Example() {
           </Ariakit.MenuItem>
         ))}
       </Ariakit.Menu>
+    </>
+  );
+}
+
+export default function Example() {
+  return (
+    <main style={{ display: "grid", gap: 8, justifyItems: "start" }}>
+      {/* Puts the controls below the fold so the page is scrolled while the
+      menus open, which is the only way a page jump is observable. */}
+      <div style={{ height: 900 }} />
+      <HeldMenu label="Actions" />
+      <HeldMenu label="Animated actions" animated />
       <div style={{ height: 900 }} />
     </main>
   );
