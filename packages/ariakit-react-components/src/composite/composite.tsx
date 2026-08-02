@@ -122,10 +122,20 @@ function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
  * for a new presentation, such as hover, leaves the pending one alone.
  */
 function usePresentItem(store: CompositeStore) {
-  const cancelRef = useRef<(() => void) | null>(null);
+  const cancelRef = useRef<{
+    store: CompositeStore;
+    cancel: () => void;
+  } | null>(null);
   const mountedRef = useRef(true);
-  const cancel = useCallback(() => {
-    cancelRef.current?.();
+  // Passing a store cancels the pending request only when it belongs to that
+  // store. Requests can be created from event handlers between a store swap's
+  // render and its passive effects, so the one sitting here isn't necessarily
+  // the one the cleanup generation below owns.
+  const cancel = useCallback((ownerStore?: CompositeStore) => {
+    const pending = cancelRef.current;
+    if (!pending) return;
+    if (ownerStore && pending.store !== ownerStore) return;
+    pending.cancel();
     cancelRef.current = null;
   }, []);
   const present = useCallback(
@@ -137,19 +147,20 @@ function usePresentItem(store: CompositeStore) {
       if (!mountedRef.current) return noop;
       cancel();
       const cancelCurrent = presentItem({ store, ...params });
-      cancelRef.current = cancelCurrent;
+      cancelRef.current = { store, cancel: cancelCurrent };
       return cancelCurrent;
     },
     [store, cancel],
   );
   // `store` is a dependency so a swap releases the request held against the
-  // previous store. React runs the teardown and the setup in the same commit,
-  // so the mounted flag stays correct across it.
+  // previous store, and the cleanup names that store so it can't take a
+  // request created against the new one instead. React runs the teardown and
+  // the setup in the same commit, so the mounted flag stays correct across it.
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
-      cancel();
+      cancel(store);
     };
   }, [cancel, store]);
   return present;
