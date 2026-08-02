@@ -43,6 +43,7 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { scheduleCompositePresentation } from "../composite/composite-presentation.ts";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import {
@@ -415,24 +416,9 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (composingRef.current) return;
       if (!canAutoSelect && (!resetValueOnSelect || userScrolledRef.current))
         return;
-      const {
-        baseElement,
-        contentElement,
-        activeId,
-        selectElement,
-        selectedValue,
-      } = store.getState();
+      const { baseElement, activeId, selectElement, selectedValue } =
+        store.getState();
       if (baseElement && !hasFocus(baseElement)) return;
-      // The data-placing attribute is an internal state added by the Popover
-      // component. We can observe it to know when the popover is done placing
-      // itself. This is to prevent the focus from moving to the first item
-      // while the popover is still calculating its position, which could cause
-      // a scroll jump. See combobox-group test-browser file.
-      if (contentElement?.hasAttribute("data-placing")) {
-        const observer = new MutationObserver(forceValueUpdate);
-        observer.observe(contentElement, { attributeFilter: ["data-placing"] });
-        return () => observer.disconnect();
-      }
       const activeValue = store.item(activeId)?.value;
       const activeValueSelected =
         activeValue != null &&
@@ -487,17 +473,29 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
         // and the combobox value is reset, which might move the active item
         // offscreen. Otherwise, if no item is selected, reset to the first
         // item, such as when `autoSelect` is false.
-        const element = store.item(activeId || store.first())?.element;
-        if (element && "scrollIntoView" in element) {
-          isAutoScrollingRef.current = true;
-          element.scrollIntoView({ block: "nearest", inline: "nearest" });
-          // Clear after the browser dispatches the scroll event. Scroll
-          // events fire during the "scroll steps" of the rendering update,
-          // which run before requestAnimationFrame callbacks.
-          requestAnimationFrame(() => {
-            isAutoScrollingRef.current = false;
-          });
-        }
+        const targetId = activeId || store.first();
+        if (!targetId) return;
+        const cancel = scheduleCompositePresentation(store, {
+          target: "active",
+          targetId,
+          focus: false,
+          scroll: "nearest",
+          beforeScroll: () => {
+            isAutoScrollingRef.current = true;
+          },
+          onPresented: () => {
+            // Clear after the browser dispatches the scroll event. Scroll
+            // events fire during the "scroll steps" of the rendering update,
+            // which run before requestAnimationFrame callbacks.
+            requestAnimationFrame(() => {
+              isAutoScrollingRef.current = false;
+            });
+          },
+        });
+        return () => {
+          cancel();
+          isAutoScrollingRef.current = false;
+        };
       }
       return;
     }, [

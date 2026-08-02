@@ -1,4 +1,31 @@
+import type { Locator } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+
+const observedScrollEvents = "data-observed-scroll-events";
+
+function observeOwnedScroll(item: Locator) {
+  return item.evaluate((element, eventsAttribute) => {
+    const scrollport = element.closest<HTMLElement>("[role=listbox]");
+    if (!scrollport) throw new Error("Missing owned scrollport");
+    scrollport.setAttribute(eventsAttribute, "0");
+    scrollport.addEventListener("scroll", () => {
+      const count = Number(scrollport.getAttribute(eventsAttribute));
+      scrollport.setAttribute(eventsAttribute, String(count + 1));
+    });
+    return scrollport.scrollTop;
+  }, observedScrollEvents);
+}
+
+function getOwnedScrollState(item: Locator) {
+  return item.evaluate((element, eventsAttribute) => {
+    const scrollport = element.closest<HTMLElement>("[role=listbox]");
+    if (!scrollport) throw new Error("Missing owned scrollport");
+    return {
+      events: Number(scrollport.getAttribute(eventsAttribute)),
+      top: scrollport.scrollTop,
+    };
+  }, observedScrollEvents);
+}
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/6985
@@ -34,10 +61,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // moves to present the selected item.
     await test.expect(selected).toBeInViewport();
 
-    // Read the scroll position once instead of retrying. The fix restores the
-    // document scroll synchronously, before paint, so the page never moves for
-    // the user. A retrying assertion would also accept a correction that lands
-    // later, which is visible as a jump.
+    // Read the scroll position once instead of retrying. The coordinated focus
+    // call prevents native scrolling, so the page never moves in the first
+    // place. A retrying assertion would also accept a visible jump corrected
+    // later.
     test.expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
   });
 
@@ -125,6 +152,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const search = q.combobox("Search delayed branches", {
       includeHidden: true,
     });
+    const selected = q.option("fabric-focus-blur");
     const leave = q.button("Leave and release positioning");
 
     await select.click();
@@ -132,6 +160,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.text("Positioning: yes")).toBeVisible();
     await test.expect(select).toBeFocused();
     await test.expect(search).not.toBeFocused();
+    const initialScrollTop = await observeOwnedScroll(selected);
+    test.expect(initialScrollTop).toBe(0);
 
     await leave.click();
 
@@ -139,5 +169,88 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await flushFrames(page, 3);
     await test.expect(leave).toBeFocused();
     await test.expect(search).not.toBeFocused();
+    test.expect(await getOwnedScrollState(selected)).toEqual({
+      events: 0,
+      top: initialScrollTop,
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6986
+  test("does not override focus moved inside a positioning popup", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Delayed branch");
+    const search = q.combobox("Search delayed branches", {
+      includeHidden: true,
+    });
+    const selected = q.option("fabric-focus-blur");
+    const keepFocus = q.button("Keep focus and release positioning");
+
+    await select.click();
+
+    await test.expect(q.text("Positioning: yes")).toBeVisible();
+    await test.expect(select).toBeFocused();
+    const initialScrollTop = await observeOwnedScroll(selected);
+    test.expect(initialScrollTop).toBe(0);
+
+    await keepFocus.click();
+
+    await test.expect(q.text("Positioning: no")).toBeVisible();
+    await flushFrames(page, 3);
+    await test.expect(keepFocus).toBeFocused();
+    await test.expect(search).not.toBeFocused();
+    test.expect(await getOwnedScrollState(selected)).toEqual({
+      events: 0,
+      top: initialScrollTop,
+    });
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6986
+  test("lets an inline composite present into the document", async ({
+    page,
+    q,
+  }) => {
+    const first = q.button("Inline first");
+    const last = q.button("Inline last");
+    await first.scrollIntoViewIfNeeded();
+    await first.focus();
+    await test.expect(first).toBeFocused();
+
+    const initial = await page.evaluate(() => {
+      const events: string[] = [];
+      document.addEventListener(
+        "scroll",
+        (event) => {
+          if (
+            event.target === document ||
+            event.target === document.scrollingElement
+          ) {
+            events.push("document");
+          }
+        },
+        true,
+      );
+      Object.assign(window, { inlineCompositeScrollEvents: events });
+      return window.scrollY;
+    });
+
+    await page.keyboard.press("ArrowDown");
+
+    await test.expect(last).toHaveAttribute("data-active-item");
+    await test.expect(last).toBeFocused();
+    await test.expect
+      .poll(() => page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(initial);
+    await flushFrames(page, 3);
+    const events = await page.evaluate(
+      () =>
+        (
+          window as typeof window & {
+            inlineCompositeScrollEvents?: string[];
+          }
+        ).inlineCompositeScrollEvents,
+    );
+    test.expect(events).not.toEqual([]);
   });
 });

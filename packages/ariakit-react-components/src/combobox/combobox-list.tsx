@@ -12,7 +12,6 @@ import {
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
 import {
-  getDocument,
   invariant,
   isFocusable,
   isSelfTarget,
@@ -23,6 +22,12 @@ import { useContext, useMemo, useRef, useState } from "react";
 import { DialogHeadingContext } from "../dialog/dialog-context.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
+import {
+  FocusPresentationScrollportProvider,
+  focusWithoutScrolling,
+  getFocusActiveElement,
+  useFocusPresentationScrollport,
+} from "../focusable/focus-presentation.tsx";
 import {
   ComboboxHeadingContext,
   ComboboxListRoleContext,
@@ -79,12 +84,13 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       if (!isFocusable(baseElement)) return;
       const list = event.currentTarget;
       queueMicrotask(() => {
-        if (getDocument(list).activeElement !== list) return;
-        baseElement.focus();
+        if (getFocusActiveElement(list) !== list) return;
+        focusWithoutScrolling(baseElement);
       });
     });
 
     const ref = useRef<HTMLType>(null);
+    const presentationScrollport = useFocusPresentationScrollport(ref, true);
     const id = useId(props.id);
     const mounted = useStoreState(store, "mounted");
     const hidden = isHidden(mounted, props.hidden, alwaysVisible);
@@ -147,17 +153,21 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <ComboboxScopedContextProvider value={store}>
-          <ComboboxHeadingContext.Provider value={headingContext}>
-            <DialogHeadingContext.Provider value={setHeadingId}>
-              <ComboboxListRoleContext.Provider value={role}>
-                {element}
-              </ComboboxListRoleContext.Provider>
-            </DialogHeadingContext.Provider>
-          </ComboboxHeadingContext.Provider>
-        </ComboboxScopedContextProvider>
+        <FocusPresentationScrollportProvider
+          scrollport={presentationScrollport}
+        >
+          <ComboboxScopedContextProvider value={store}>
+            <ComboboxHeadingContext.Provider value={headingContext}>
+              <DialogHeadingContext.Provider value={setHeadingId}>
+                <ComboboxListRoleContext.Provider value={role}>
+                  {element}
+                </ComboboxListRoleContext.Provider>
+              </DialogHeadingContext.Provider>
+            </ComboboxHeadingContext.Provider>
+          </ComboboxScopedContextProvider>
+        </FocusPresentationScrollportProvider>
       ),
-      [store, role, headingContext],
+      [store, role, headingContext, presentationScrollport],
     );
 
     // When nesting ComboboxList elements, the content element should be

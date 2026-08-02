@@ -1,6 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useRef } from "react";
-import { useCompositeFocusWorkaround } from "../combobox-select-open-page-scroll/composite-focus-workaround.react.ts";
+import { useRef, useState } from "react";
 
 const fruits = [
   "Apple",
@@ -41,59 +40,136 @@ const fruits = [
   "Watermelon",
 ];
 
+const defaultOpenFruits = fruits.map((fruit) => `Default ${fruit}`);
+const legacyFruits = fruits.map((fruit) => `Legacy ${fruit}`);
+
 interface FixtureProps {
+  autoFocusOnShow?: boolean;
+  defaultOpen?: boolean;
   defaultSelectedValue: string | string[];
-  focusPresentationWorkaround?: boolean;
   focusTarget?: boolean;
   input?: boolean;
+  items?: readonly string[];
   label: string;
+  lateItems?: boolean;
   moveFocusOnOpen?: boolean;
+  selectOnMove?: boolean;
   unmountOnHide?: boolean;
   virtualFocus?: boolean;
 }
 
 function Fixture({
+  autoFocusOnShow,
+  defaultOpen,
   defaultSelectedValue,
-  focusPresentationWorkaround,
   focusTarget,
   input,
+  items = fruits,
   label,
+  lateItems,
   moveFocusOnOpen,
+  selectOnMove,
   unmountOnHide,
   virtualFocus,
 }: FixtureProps) {
   const focusTargetRef = useRef<HTMLDivElement>(null);
-  const focusWorkaround = useCompositeFocusWorkaround({
-    popoverIsScrollport: true,
-  });
+  const [showLateItems, setShowLateItems] = useState(!lateItems);
+  const renderedItems = showLateItems ? items : items.slice(0, 3);
   return (
-    <Ariakit.ComboboxProvider
-      defaultSelectedValue={defaultSelectedValue}
-      virtualFocus={virtualFocus}
-    >
-      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
-      <Ariakit.ComboboxSelect
-        ref={
-          focusPresentationWorkaround ? focusWorkaround.selectRef : undefined
-        }
-        style={{ display: "block" }}
-      />
-      <Ariakit.ComboboxPopover
-        ref={
-          focusPresentationWorkaround ? focusWorkaround.popoverRef : undefined
-        }
-        autoFocusOnShow={
-          focusPresentationWorkaround
-            ? focusWorkaround.autoFocusOnShow
-            : undefined
-        }
-        unmountOnHide={unmountOnHide}
+    <div>
+      <Ariakit.ComboboxProvider
+        defaultOpen={defaultOpen}
+        defaultSelectedValue={defaultSelectedValue}
+        selectOnMove={selectOnMove}
+        virtualFocus={virtualFocus}
+      >
+        <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect style={{ display: "block" }} />
+        <Ariakit.ComboboxPopover
+          {...(autoFocusOnShow === undefined ? {} : { autoFocusOnShow })}
+          unmountOnHide={unmountOnHide}
+          gutter={4}
+          sameWidth
+          style={{
+            background: "white",
+            border: "1px solid gray",
+            maxHeight: 120,
+            overflow: "auto",
+          }}
+        >
+          {input && (
+            <Ariakit.ComboboxInput
+              aria-label={`Search ${label}`}
+              onFocus={() => {
+                if (!moveFocusOnOpen) return;
+                queueMicrotask(() => focusTargetRef.current?.focus());
+              }}
+            />
+          )}
+          {focusTarget && (
+            <Ariakit.ComboboxItem
+              ref={focusTargetRef}
+              style={{ display: "block", padding: "4px 8px" }}
+              value="Focus target"
+            />
+          )}
+          {renderedItems.map((fruit) => (
+            <Ariakit.ComboboxItem
+              key={fruit}
+              value={fruit}
+              style={{ display: "block", padding: "4px 8px" }}
+            />
+          ))}
+          {/* An item rendered without a value, at the end of the list so it's
+          always out of view. */}
+          <Ariakit.ComboboxItem
+            style={{ display: "block", padding: "4px 8px" }}
+          >
+            {`No ${label.toLowerCase()}`}
+          </Ariakit.ComboboxItem>
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+      {lateItems && !showLateItems && (
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => setShowLateItems(true)}
+        >
+          Register {label} items
+        </button>
+      )}
+    </div>
+  );
+}
+
+function DefaultOpenFixture() {
+  const [mounted, setMounted] = useState(false);
+  return (
+    <div>
+      <button type="button" tabIndex={0} onClick={() => setMounted(true)}>
+        Mount default-open fruit picker
+      </button>
+      {mounted && (
+        <Fixture
+          autoFocusOnShow={false}
+          defaultOpen
+          defaultSelectedValue="Default Watermelon"
+          items={defaultOpenFruits}
+          label="Default-open fruit"
+          virtualFocus
+        />
+      )}
+    </div>
+  );
+}
+
+function LegacySelectFixture() {
+  return (
+    <Ariakit.SelectProvider defaultValue="Legacy Watermelon">
+      <Ariakit.SelectLabel>Legacy fruit</Ariakit.SelectLabel>
+      <Ariakit.Select style={{ display: "block" }} />
+      <Ariakit.SelectPopover
         gutter={4}
-        onFocusCapture={
-          focusPresentationWorkaround
-            ? focusWorkaround.onFocusCapture
-            : undefined
-        }
         sameWidth
         style={{
           background: "white",
@@ -102,54 +178,35 @@ function Fixture({
           overflow: "auto",
         }}
       >
-        {input && (
-          <Ariakit.ComboboxInput
-            aria-label={`Search ${label}`}
-            onFocus={() => {
-              if (!moveFocusOnOpen) return;
-              queueMicrotask(() => focusTargetRef.current?.focus());
-            }}
-          />
-        )}
-        {focusTarget && (
-          <Ariakit.ComboboxItem
-            ref={focusTargetRef}
-            style={{ display: "block", padding: "4px 8px" }}
-            value="Focus target"
-          />
-        )}
-        {fruits.map((fruit) => (
-          <Ariakit.ComboboxItem
+        {legacyFruits.map((fruit) => (
+          <Ariakit.SelectItem
             key={fruit}
             value={fruit}
             style={{ display: "block", padding: "4px 8px" }}
           />
         ))}
-        {/* An item rendered without a value, at the end of the list so it's
-        always out of view. */}
-        <Ariakit.ComboboxItem style={{ display: "block", padding: "4px 8px" }}>
-          {`No ${label.toLowerCase()}`}
-        </Ariakit.ComboboxItem>
-      </Ariakit.ComboboxPopover>
-    </Ariakit.ComboboxProvider>
+        <div aria-hidden style={{ minHeight: 80 }} />
+      </Ariakit.SelectPopover>
+    </Ariakit.SelectProvider>
   );
 }
 
 export default function Example() {
   return (
     <>
-      <Fixture defaultSelectedValue={["Apple"]} label="Selected fruit" />
+      <Fixture
+        defaultSelectedValue={["Apple", "Watermelon"]}
+        label="Selected fruit"
+        selectOnMove
+        virtualFocus
+      />
       <Fixture defaultSelectedValue="Apple" label="Single selected fruit" />
       <div
         data-testid="centered-fruit-scroll-container"
         style={{ height: 240, overflow: "auto" }}
       >
         <div style={{ height: 160 }} />
-        <Fixture
-          defaultSelectedValue="Cherry"
-          focusPresentationWorkaround
-          label="Centered fruit"
-        />
+        <Fixture defaultSelectedValue="Cherry" label="Centered fruit" />
         <div style={{ height: 320 }} />
       </div>
       <div style={{ marginTop: 200 }}>
@@ -157,7 +214,24 @@ export default function Example() {
           defaultSelectedValue="Watermelon"
           input
           label="Filterable fruit"
+          unmountOnHide
           virtualFocus={false}
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          label="Real-focus unmounted fruit"
+          unmountOnHide
+          virtualFocus={false}
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          label="Late selected fruit"
+          lateItems
+          virtualFocus
         />
       </div>
       <div style={{ marginTop: 200 }}>
@@ -189,6 +263,21 @@ export default function Example() {
           input
           label="Touch filterable fruit"
         />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          input
+          label="Virtual focus fruit"
+          selectOnMove
+          virtualFocus
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <DefaultOpenFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <LegacySelectFixture />
       </div>
     </>
   );

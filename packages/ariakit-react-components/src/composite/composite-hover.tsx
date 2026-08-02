@@ -21,6 +21,7 @@ import {
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
 import { useCallback } from "react";
+import { focusWithoutScrolling } from "../focusable/focus-presentation.tsx";
 import { useCompositeScopedContext } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 
@@ -95,7 +96,7 @@ export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
       if (!hasFocusWithin(event.currentTarget)) {
         const baseElement = store?.getState().baseElement;
         if (baseElement && !hasFocus(baseElement)) {
-          baseElement.focus();
+          focusWithoutScrolling(baseElement);
         }
       }
       store?.setActiveId(event.currentTarget.id);
@@ -114,7 +115,8 @@ export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
       if (!blurOnHoverEndProp(event)) return;
       store?.setActiveId(null);
       // Move focus to the composite element.
-      store?.getState().baseElement?.focus();
+      const baseElement = store?.getState().baseElement;
+      if (baseElement) focusWithoutScrolling(baseElement);
     });
 
     const ref = useCallback((element: ElementWithSymbol | null) => {

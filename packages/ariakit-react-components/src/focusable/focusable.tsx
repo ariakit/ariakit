@@ -1,5 +1,6 @@
 import {
   useEvent,
+  useLiveRef,
   useMergeRefs,
   useMetadataProps,
   useSafeLayoutEffect,
@@ -30,6 +31,11 @@ import type {
   SyntheticEvent,
 } from "react";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  getFocusActiveElement,
+  scheduleFocusPresentation,
+  useFocusPresentationTarget,
+} from "./focus-presentation.tsx";
 import { FocusableContext } from "./focusable-context.tsx";
 
 const TagName = "div" satisfies ElementType;
@@ -214,6 +220,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     ...props
   }) {
     const ref = useRef<HTMLType>(null);
+    const presentationTargetRef = useFocusPresentationTarget();
     const [parentAccessibleWhenDisabled, metadataProps] = useMetadataProps(
       props,
       accessibleWhenDisabledSymbol,
@@ -380,6 +387,11 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     });
 
     const autoFocusOnShow = useContext(FocusableContext);
+    const canAutoFocusRef = useLiveRef(
+      focusable && !!autoFocus && autoFocusOnShow,
+    );
+    const autoFocusTokenRef = useRef<object | null>(null);
+    const cancelAutoFocusRef = useRef<() => void>(() => {});
 
     // The native autoFocus prop is problematic in many ways. For example, when
     // an element has the native autofocus attribute, the focus event will be
@@ -391,16 +403,42 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
     // matters. See
     // https://x.com/diegohaz/status/1408180632933388289
     const autoFocusRef = useEvent((element: HTMLElement | null) => {
+      cancelAutoFocusRef.current();
+      cancelAutoFocusRef.current = () => {};
+      const token = {};
+      autoFocusTokenRef.current = token;
       if (!focusable) return;
       if (!autoFocus) return;
       if (!element) return;
       if (!autoFocusOnShow) return;
+      const initialActiveElement = getFocusActiveElement(element);
       // We have to queue focus so other effects and refs can be applied first.
       // See select-animated example.
       queueMicrotask(() => {
+        if (autoFocusTokenRef.current !== token) return;
+        if (!canAutoFocusRef.current) return;
         if (hasFocus(element)) return;
         if (!isFocusable(element)) return;
-        element.focus();
+        let presenting = false;
+        cancelAutoFocusRef.current = scheduleFocusPresentation({
+          getTarget: () => (element.isConnected ? element : null),
+          subscribe: (retry) => {
+            const doc = element.ownerDocument;
+            doc.addEventListener("focusin", retry, true);
+            return () => doc.removeEventListener("focusin", retry, true);
+          },
+          focus: true,
+          scroll: "nearest",
+          isValid: () => {
+            if (presenting) return true;
+            if (!canAutoFocusRef.current) return false;
+            if (!isFocusable(element)) return false;
+            return getFocusActiveElement(element) === initialActiveElement;
+          },
+          beforeFocus: () => {
+            presenting = true;
+          },
+        });
       });
     });
 
@@ -455,7 +493,7 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       "aria-disabled": disabled || undefined,
       ...props,
       ...metadataProps,
-      ref: useMergeRefs(ref, autoFocusRef, props.ref),
+      ref: useMergeRefs(ref, presentationTargetRef, autoFocusRef, props.ref),
       style,
       tabIndex: getTabIndex({
         focusable,

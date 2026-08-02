@@ -27,6 +27,7 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
+import { focusWithoutScrolling } from "../focusable/focus-presentation.tsx";
 import {
   ComboboxItemCheckedContext,
   ComboboxItemValueContext,
@@ -204,11 +205,11 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
         // text field, so focusing it would move focus out of the open list.
         if (baseElement === selectElement) return;
         if (isTextField(baseElement)) {
-          queueMicrotask(() => baseElement.focus());
+          queueMicrotask(() => focusWithoutScrolling(baseElement));
           store?.setInputValue(baseElement.value);
           return;
         }
-        baseElement.focus();
+        focusWithoutScrolling(baseElement);
         if ("value" in baseElement && typeof baseElement.value === "string") {
           // Update the store value with the current element's value. This is
           // necessary because the value may temporarily change based on the

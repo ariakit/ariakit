@@ -10,6 +10,7 @@ import {
 import type { Options, Props } from "@ariakit/react-utils";
 import { invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
+import { focusWithoutScrolling } from "../focusable/focus-presentation.tsx";
 import { useSelectProviderContext } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
 
@@ -55,7 +56,7 @@ export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
       // click event).
       queueMicrotask(() => {
         const select = store?.getState().selectElement;
-        select?.focus();
+        if (select) focusWithoutScrolling(select);
       });
     });
 

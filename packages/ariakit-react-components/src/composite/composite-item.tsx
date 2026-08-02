@@ -13,7 +13,6 @@ import {
 import type { Props } from "@ariakit/react-utils";
 import { subscribe } from "@ariakit/store";
 import {
-  getActiveElement,
   getScrollingElement,
   getTextboxSelection,
   getTextboxValue,
@@ -25,7 +24,6 @@ import {
   isSelfTarget,
   disabledFromProps,
   removeUndefinedValues,
-  isSafari,
   warnOnce,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
@@ -42,18 +40,16 @@ import { useCollectionItem } from "../collection/collection-item.tsx";
 import type { CommandOptions } from "../command/command.tsx";
 import { useCommand } from "../command/command.tsx";
 import {
+  getFocusActiveElement,
+  scheduleFocusPresentation,
+} from "../focusable/focus-presentation.tsx";
+import {
   CompositeItemContext,
   CompositeRowContext,
   useCompositeScopedContext,
 } from "./composite-context.tsx";
 import type { CompositeStore, CompositeStoreState } from "./composite-store.ts";
-import {
-  focusSilently,
-  getEnabledItem,
-  isItem,
-  selectTextField,
-  withDocumentScrollPreserved,
-} from "./utils.ts";
+import { getEnabledItem, isItem, selectTextField } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
 type TagName = typeof TagName;
@@ -267,16 +263,11 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 
     const onFocusProp = props.onFocus;
     const hasFocusedComposite = useRef(false);
-    // Holds the unsubscribe function of a pending focus redirect scheduled in
-    // the onFocus handler below when the base element isn't available yet. We
-    // don't cancel it on unmount: the subscription is created by a focus
-    // event, not an effect, so an unmount cleanup would permanently cancel it
-    // during strict mode's simulated unmount. The listener is self-cleaning
-    // instead: it unsubscribes on the next store update once this item no
-    // longer has DOM focus. That also covers unmounted items, since
-    // unmounting an item that registers itself in the store produces an
-    // update by unregistering it, even when the base element never arrives.
-    // Redirects are only scheduled for such items.
+    // Holds a pending focus redirect created by the event below. This isn't
+    // canceled by an effect cleanup because React StrictMode replays effects
+    // while preserving the focused DOM node. The coordinator instead observes
+    // the store, focus ownership, target ownership, and popup lifecycle until
+    // the redirect either runs or becomes invalid.
     const cancelScheduledFocusRedirectRef = useRef<(() => void) | null>(null);
 
     const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
@@ -308,70 +299,6 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       // and the composite item is not a text field or contenteditable element.
       if (isEditableElement(event.currentTarget)) return;
 
-      const redirectFocusToBaseElement = (
-        currentTarget: HTMLType,
-        relatedTarget: Element | null,
-        baseElement: HTMLElement,
-      ) => {
-        if (!isFocusable(baseElement)) {
-          if (process.env.NODE_ENV !== "production") {
-            warnOnce(
-              "A composite widget with `virtualFocus` enabled requires a " +
-                "focusable composite element. Set the `focusable` prop to " +
-                "`true` or the `virtualFocus` option to `false`.",
-              baseElement,
-            );
-          }
-          return;
-        }
-        const fromComposite =
-          relatedTarget === baseElement || isItem(store, relatedTarget);
-        // Safari doesn't scroll the element into view when another element is
-        // immediately focused. So we have to do it manually here.
-        if (isSafari() && currentTarget.hasAttribute("data-autofocus")) {
-          // Virtual focus immediately returns to an already focused composite.
-          // Keep the fallback scoped to nested scrollers in that case.
-          if (fromComposite) {
-            withDocumentScrollPreserved(currentTarget, () => {
-              currentTarget.scrollIntoView({
-                block: "nearest",
-                inline: "nearest",
-              });
-            });
-          } else {
-            currentTarget.scrollIntoView({
-              block: "nearest",
-              inline: "nearest",
-            });
-          }
-        }
-        hasFocusedComposite.current = true;
-        // If the previously focused element is a composite or composite item
-        // component, we'll transfer focus silently to the composite element.
-        // That's because this is just a transition event, the composite
-        // element was likely already focused, so we're just immediately
-        // returning focus to it when navigating through the items.
-        if (fromComposite) {
-          focusSilently(baseElement);
-        }
-
-        // Otherwise, the composite element is likely not focused, so we need
-        // this focus event to propagate so consumers can use the onFocus prop
-        // on <Composite>.
-        else {
-          baseElement.focus();
-        }
-      };
-
-      if (baseElement?.isConnected) {
-        redirectFocusToBaseElement(
-          event.currentTarget,
-          event.relatedTarget,
-          baseElement,
-        );
-        return;
-      }
-
       // The base element isn't available at this point: it's stored in a
       // later commit than the one that mounts it, so focusing an item during
       // the mount commit lands here before the store has it. It may also be
@@ -382,38 +309,62 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       // this item still has DOM focus.
       // See https://github.com/ariakit/ariakit/issues/6623
 
-      // Items that opt out of registering themselves in the store never
-      // produce the unregister store update that the scheduled redirect below
-      // relies on to self-clean, so they keep the previous behavior of
-      // dropping the redirect.
-      if (shouldRegisterItem === false) return;
       const { currentTarget, relatedTarget } = event;
       const cancelScheduledFocusRedirect = () => {
         cancelScheduledFocusRedirectRef.current?.();
         cancelScheduledFocusRedirectRef.current = null;
       };
       cancelScheduledFocusRedirect();
-      // Subscribe to every store update, not just baseElement changes, so the
-      // pending redirect is also discarded when the item unmounts without a
-      // base element ever arriving.
-      cancelScheduledFocusRedirectRef.current = subscribe(store, null, () => {
-        // The redirect is no longer relevant if the item lost DOM focus in
-        // the meantime, including when it was unmounted.
-        if (getActiveElement(currentTarget) !== currentTarget) {
-          cancelScheduledFocusRedirect();
-          return;
-        }
-        const state = store.getState();
-        const nextBaseElement = state.baseElement;
-        // Keep waiting until a connected base element is stored.
-        if (!nextBaseElement?.isConnected) return;
-        cancelScheduledFocusRedirect();
-        if (!state.virtualFocus) return;
-        redirectFocusToBaseElement(
-          currentTarget,
-          relatedTarget,
-          nextBaseElement,
-        );
+
+      // Items that opt out of registering themselves in the store can't wait
+      // for a base element that hasn't been published yet. They retain the
+      // immediate redirect behavior when one is already available.
+      if (shouldRegisterItem === false && !baseElement?.isConnected) return;
+
+      const doc = currentTarget.ownerDocument;
+      cancelScheduledFocusRedirectRef.current = scheduleFocusPresentation({
+        getTarget: () => {
+          const element = store.getState().baseElement;
+          return element?.isConnected ? element : null;
+        },
+        getScopeTarget: () =>
+          currentTarget.isConnected ? currentTarget : null,
+        subscribe: (retry) => {
+          const unsubscribe = subscribe(store, null, retry);
+          doc.addEventListener("focusin", retry, true);
+          return () => {
+            unsubscribe();
+            doc.removeEventListener("focusin", retry, true);
+          };
+        },
+        isValid: () => {
+          const state = store.getState();
+          if (!state.virtualFocus) return false;
+          if (state.activeId !== id) return false;
+          if (getFocusActiveElement(currentTarget) !== currentTarget) {
+            return false;
+          }
+          const element = state.baseElement;
+          if (!element || isFocusable(element)) return true;
+          if (process.env.NODE_ENV !== "production") {
+            warnOnce(
+              "A composite widget with `virtualFocus` enabled requires a " +
+                "focusable composite element. Set the `focusable` prop to " +
+                "`true` or the `virtualFocus` option to `false`.",
+              element,
+            );
+          }
+          return false;
+        },
+        focus: (target) =>
+          relatedTarget === target || isItem(store, relatedTarget)
+            ? "silent"
+            : true,
+        beforeFocus: () => {
+          // Mark this before focus so the item's synchronous blur handler can
+          // recognize the intermediate virtual-focus handoff.
+          hasFocusedComposite.current = true;
+        },
       });
     });
 

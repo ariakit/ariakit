@@ -1,15 +1,17 @@
 import { click, q, sleep } from "@ariakit/test";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/6623
 test("redirects focus to the select when an option is focused on mount", async () => {
   const select = q.combobox("Favorite fruit");
+  const focus = vi.spyOn(select!, "focus");
   await click(select);
   await expect.poll(q.listbox.lazy()).toBeVisible();
   expect(select).toHaveFocus();
   // The custom toHaveFocus matcher (vitest.setup.ts) follows the select's
   // aria-activedescendant to the virtually focused option.
   expect(q.option("Banana")).toHaveFocus();
+  expect(focus).toHaveBeenCalledWith({ preventScroll: true });
 });
 
 // https://github.com/ariakit/ariakit/issues/6623

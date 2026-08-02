@@ -7,27 +7,6 @@ export const findFirstEnabledItem = Core.findFirstEnabledItem;
 export const groupItemsByRows = Core.groupItemsByRows;
 
 /**
- * Runs a callback while preserving the document scroll position.
- */
-export function withDocumentScrollPreserved(
-  element: Element,
-  callback: () => void,
-) {
-  const documentScroller = element.ownerDocument.scrollingElement;
-  if (!documentScroller) {
-    callback();
-    return;
-  }
-  const left = documentScroller.scrollLeft;
-  const top = documentScroller.scrollTop;
-  try {
-    callback();
-  } finally {
-    documentScroller.scrollTo({ left, top, behavior: "instant" });
-  }
-}
-
-/**
  * Returns the store item with the given id (enabled or not), or `null`.
  */
 export function getEnabledItem(store: CompositeStore, id?: string | null) {
@@ -51,28 +30,6 @@ export function selectTextField(element: HTMLElement, collapseToEnd = false) {
       selection?.collapseToEnd();
     }
   }
-}
-
-const FOCUS_SILENTLY = Symbol("FOCUS_SILENTLY");
-type FocusSilentlyElement = HTMLElement & { [FOCUS_SILENTLY]?: boolean };
-
-/**
- * Focus an element with a flag. The `silentlyFocused` function needs to be
- * called later to check if the focus was silenced and to reset this state.
- */
-export function focusSilently(element: FocusSilentlyElement) {
-  element[FOCUS_SILENTLY] = true;
-  element.focus({ preventScroll: true });
-}
-
-/**
- * Checks whether the element has been focused with the `focusSilently` function
- * and resets the state.
- */
-export function silentlyFocused(element: FocusSilentlyElement) {
-  const isSilentlyFocused = element[FOCUS_SILENTLY];
-  delete element[FOCUS_SILENTLY];
-  return isSilentlyFocused;
 }
 
 /**

@@ -13,7 +13,6 @@ import type { Props } from "@ariakit/react-utils";
 import {
   toArray,
   disabledFromProps,
-  getActiveElement,
   getPopupRole,
   queueBeforeEvent,
   invariant,
@@ -25,6 +24,10 @@ import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { useComposite } from "../composite/composite.tsx";
+import {
+  focusWithoutScrolling,
+  getFocusActiveElement,
+} from "../focusable/focus-presentation.tsx";
 import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
@@ -46,7 +49,7 @@ function getSelectedValues(select: HTMLSelectElement) {
 }
 
 function ownsFocus(element: HTMLElement) {
-  return getActiveElement(element) === element;
+  return getFocusActiveElement(element) === element;
 }
 
 function isCompositeMoveKey(key: string) {
@@ -226,7 +229,10 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
               // Although visually hidden and not tabbable, this element remains
               // focusable. Some autofill extensions move focus to the next form
               // element, so redirect it to the custom select.
-              onFocus={() => store?.getState().selectElement?.focus()}
+              onFocus={() => {
+                const select = store?.getState().selectElement;
+                if (select) focusWithoutScrolling(select);
+              }}
               onChange={(event) => {
                 nativeSelectChangedRef.current = true;
                 setAutofill(true);

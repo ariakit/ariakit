@@ -15,13 +15,24 @@ import type { Props } from "@ariakit/react-utils";
 import { isSelfTarget, invariant } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent } from "react";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
 import type { DisclosureContentOptions } from "../disclosure/disclosure-content.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
+import {
+  FocusPresentationScrollportProvider,
+  useFocusPresentationScrollport,
+} from "../focusable/focus-presentation.tsx";
 import {
   SelectHeadingContext,
   SelectScopedContextProvider,
@@ -110,6 +121,8 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
       () => [headingId, setHeadingId],
       [headingId, setHeadingId],
     );
+    const ref = useRef<HTMLType>(null);
+    const presentationScrollport = useFocusPresentationScrollport(ref, true);
 
     const [childStore, setChildStore] = useState<SelectStore | null>(null);
     const setStore = useContext(SelectListContext);
@@ -123,15 +136,19 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
     props = useWrapElement(
       props,
       (element) => (
-        <SelectScopedContextProvider value={store}>
-          <SelectListContext.Provider value={setChildStore}>
-            <SelectHeadingContext.Provider value={headingContextValue}>
-              {element}
-            </SelectHeadingContext.Provider>
-          </SelectListContext.Provider>
-        </SelectScopedContextProvider>
+        <FocusPresentationScrollportProvider
+          scrollport={presentationScrollport}
+        >
+          <SelectScopedContextProvider value={store}>
+            <SelectListContext.Provider value={setChildStore}>
+              <SelectHeadingContext.Provider value={headingContextValue}>
+                {element}
+              </SelectHeadingContext.Provider>
+            </SelectListContext.Provider>
+          </SelectScopedContextProvider>
+        </FocusPresentationScrollportProvider>
       ),
-      [store, headingContextValue],
+      [store, headingContextValue, presentationScrollport],
     );
 
     const hasCombobox = !!store.combobox;
@@ -163,7 +180,7 @@ export const useSelectList = createHook<TagName, SelectListOptions>(
       hidden,
       ...props,
       id,
-      ref: useMergeRefs(setElement, props.ref),
+      ref: useMergeRefs(setElement, ref, props.ref),
       style,
       onKeyDown,
     };

@@ -10,6 +10,7 @@ import {
 import type { Options, Props } from "@ariakit/react-utils";
 import { invariant, removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
+import { focusWithoutScrolling } from "../focusable/focus-presentation.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxStore } from "./combobox-store.ts";
 
@@ -41,7 +42,8 @@ export const useComboboxSelectLabel = createHook<
     onClickProp?.(event);
     if (event.defaultPrevented) return;
     queueMicrotask(() => {
-      store?.getState().selectElement?.focus();
+      const select = store?.getState().selectElement;
+      if (select) focusWithoutScrolling(select);
     });
   });
 

@@ -2,29 +2,27 @@ import { useStoreState } from "@ariakit/react-store";
 import {
   useBooleanEvent,
   useEvent,
+  useMergeRefs,
   createElement,
   createHook,
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
-import {
-  getActiveElement,
-  getDocument,
-  invariant,
-  isFalsyBooleanCallback,
-} from "@ariakit/utils";
+import { getDocument, invariant, isFalsyBooleanCallback } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useEffect, useRef } from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
 import { createDialogComponent } from "../dialog/dialog.tsx";
+import { getFocusActiveElement } from "../focusable/focus-presentation.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
 import { useComboboxProviderContext } from "./combobox-context.tsx";
 import type { ComboboxListOptions } from "./combobox-list.tsx";
 import { useComboboxList } from "./combobox-list.tsx";
+import { useComboboxPopoverPresentation } from "./combobox-popover-presentation.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
@@ -79,13 +77,15 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         "ComboboxPopover must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
+    const openingPresentationRef = useComboboxPopoverPresentation(store);
+
     const baseElement = useStoreState(store, "baseElement");
     const inputElement = useStoreState(store, "inputElement");
     const selectElement = useStoreState(store, "selectElement");
     const hiddenByClickOutsideRef = useRef(false);
     const hasSelect = !!selectElement;
     const selectOwnsFocus =
-      !!selectElement && getActiveElement(selectElement) === selectElement;
+      !!selectElement && getFocusActiveElement(selectElement) === selectElement;
 
     const selectOnMove = useStoreState(store, "selectOnMove");
     const acceptedEscapeRef = useRef<{
@@ -162,6 +162,10 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       typeahead: !inputElement,
       ...props,
     });
+    props = {
+      ...props,
+      ref: useMergeRefs(openingPresentationRef, props.ref),
+    };
 
     const hideOnEscapeProp = useBooleanEvent(props.hideOnEscape ?? true);
     const onCloseProp = props.onClose;

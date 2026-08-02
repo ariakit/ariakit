@@ -6,10 +6,31 @@ withFramework(import.meta.dirname, async ({ test }) => {
     q,
   }) => {
     const select = q.combobox("Favorite fruit");
+    await select.evaluate((element) => {
+      if (!(element instanceof HTMLElement)) return;
+      const focusCalls: Array<FocusOptions | undefined> = [];
+      Object.assign(element, { focusCalls });
+      element.focus = (options) => {
+        focusCalls.push(options);
+        HTMLElement.prototype.focus.call(element, options);
+      };
+    });
     await select.click();
     await test.expect(q.listbox()).toBeVisible();
     await test.expect(select).toBeFocused();
     await test.expect(q.option("Banana")).toHaveAttribute("data-active-item");
+    test
+      .expect(
+        await select.evaluate(
+          (element) =>
+            (
+              element as HTMLElement & {
+                focusCalls?: Array<FocusOptions | undefined>;
+              }
+            ).focusCalls,
+        ),
+      )
+      .toContainEqual({ preventScroll: true });
   });
 
   // https://github.com/ariakit/ariakit/issues/6623

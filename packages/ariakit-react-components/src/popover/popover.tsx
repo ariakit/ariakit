@@ -1,6 +1,7 @@
 import { useStoreState } from "@ariakit/react-store";
 import {
   useEvent,
+  useMergeRefs,
   usePortalRef,
   useSafeLayoutEffect,
   useWrapElement,
@@ -25,6 +26,12 @@ import { useRef, useState } from "react";
 import type { DialogOptions } from "../dialog/dialog.tsx";
 import { createDialogComponent, useDialog } from "../dialog/dialog.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
+import {
+  FocusPresentationProvider,
+  createFocusPresentationScope,
+  useFocusPresentationScrollport,
+  useFocusPresentationTarget,
+} from "../focusable/focus-presentation.tsx";
 import type { Placement } from "./__utils.ts";
 import { getBasePlacement } from "./__utils.ts";
 import {
@@ -279,16 +286,37 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     );
     const popoverElement = useStoreState(store, "popoverElement");
     const contentElement = useStoreState(store, "contentElement");
+    const open = useStoreState(store, "open");
     const placement = useStoreState(store, "placement");
     const mounted = useStoreState(store, "mounted");
     const rendered = useStoreState(store, "rendered");
 
     const defaultArrowElementRef = useRef<HTMLElement | null>(null);
 
-    // We have to wait for the popover to be positioned for the first time
-    // before we can move focus, otherwise there may be scroll jumps. See
-    // popover-standalone example test-browser file.
+    // Mirror scoped readiness in the existing data-placing marker. Focus and
+    // active-item presentation consume the imperative scope below directly.
     const [positioned, setPositioned] = useState(false);
+    const [presentationScope] = useState(() =>
+      createFocusPresentationScope(store.getState().open),
+    );
+    const contentElementRef = useRef<HTMLElement | null>(null);
+    const presentationScrollport =
+      useFocusPresentationScrollport(contentElementRef);
+    const presentationTargetRef = useFocusPresentationTarget(
+      presentationScope,
+      presentationScrollport,
+    );
+    const setPresentationOwner = useEvent((element: HTMLElement | null) => {
+      presentationScope.setOwner(element);
+    });
+    const popoverElementRef = useMergeRefs(
+      store.setPopoverElement,
+      setPresentationOwner,
+    );
+
+    useSafeLayoutEffect(() => {
+      presentationScope.setOpen(open);
+    }, [presentationScope, open]);
 
     const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
 
@@ -350,16 +378,19 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       // Each effect run owns this flag. Cleanup marks stale runs so in-flight
       // async positioning work can skip state and style writes.
       let canceled = false;
+      const positioning = presentationScope.beginPositioning();
 
-      const shouldCancelUpdate = () => {
+      const shouldCancelEffect = () => {
         if (canceled) return true;
         if (!popoverElement.isConnected) return true;
         return false;
       };
 
-      const updatePosition = async () => {
-        if (shouldCancelUpdate()) return;
-        if (!mounted) return;
+      const updatePosition = async (
+        shouldCancelUpdate: () => boolean,
+      ): Promise<boolean> => {
+        if (shouldCancelUpdate()) return false;
+        if (!mounted) return false;
 
         if (!arrowElement) {
           defaultArrowElementRef.current =
@@ -400,10 +431,9 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
         // autoUpdate cleanup doesn't abort an in-flight computePosition call.
         // Check again before writing state or styles from an obsolete run.
-        if (shouldCancelUpdate()) return;
+        if (shouldCancelUpdate()) return false;
 
         store?.setState("currentPlacement", pos.placement);
-        setPositioned(true);
 
         const x = roundByDPR(pos.x);
         const y = roundByDPR(pos.y);
@@ -451,20 +481,30 @@ export const usePopover = createHook<TagName, PopoverOptions>(
             [side]: "100%",
           });
         }
+        return true;
       };
 
       const update = async () => {
-        if (shouldCancelUpdate()) return;
+        if (shouldCancelEffect()) return;
+        const presentationUpdate = positioning.beginUpdate();
+        const shouldCancelUpdate = () =>
+          shouldCancelEffect() || !presentationUpdate.isCurrent();
 
         if (hasCustomUpdatePosition) {
-          await updatePositionProp({ updatePosition });
+          await updatePositionProp({
+            updatePosition: async () => {
+              await updatePosition(shouldCancelUpdate);
+            },
+          });
           // User callbacks may keep awaiting after updatePosition has run, so
           // make sure this effect is still current before marking it ready.
           if (shouldCancelUpdate()) return;
-          setPositioned(true);
         } else {
-          await updatePosition();
+          const updated = await updatePosition(shouldCancelUpdate);
+          if (!updated) return;
         }
+        setPositioned(true);
+        presentationUpdate.ready();
       };
 
       // https://floating-ui.com/docs/autoUpdate
@@ -476,6 +516,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       return () => {
         canceled = true;
         setPositioned(false);
+        positioning.dispose();
         cancelAutoUpdate();
       };
     }, [
@@ -486,6 +527,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       anchorElement,
       placement,
       mounted,
+      open,
       hiddenWhileUnmounted,
       domReady,
       fixed,
@@ -504,6 +546,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       getAnchorRectProp,
       hasCustomUpdatePosition,
       updatePositionProp,
+      presentationScope,
     ]);
 
     // Makes sure the wrapper element that's passed to floating UI has the same
@@ -544,31 +587,36 @@ export const usePopover = createHook<TagName, PopoverOptions>(
             width: "max-content",
             ...wrapperProps?.style,
           }}
-          ref={store?.setPopoverElement}
+          ref={popoverElementRef}
         >
           {element}
         </div>
       ),
-      [store, position, wrapperProps],
+      [position, wrapperProps, popoverElementRef],
     );
 
     props = useWrapElement(
       props,
       (element) => (
-        <PopoverScopedContextProvider value={store}>
-          {element}
-        </PopoverScopedContextProvider>
+        <FocusPresentationProvider
+          scope={presentationScope}
+          scrollport={presentationScrollport}
+        >
+          <PopoverScopedContextProvider value={store}>
+            {element}
+          </PopoverScopedContextProvider>
+        </FocusPresentationProvider>
       ),
-      [store],
+      [store, presentationScope, presentationScrollport],
     );
 
     props = {
-      // data-placing is not part of the public API. We're setting this here so
-      // we can wait for the popover to be positioned before other components
-      // move focus into it. For example, this attribute is observed by the
-      // Combobox component with the autoSelect behavior.
+      // data-placing is not part of the public API. Keep it as a useful DOM
+      // state marker, while focus and scrolling coordinate through the scoped
+      // lifecycle above so they don't have to infer ownership from ancestry.
       "data-placing": !positioned || undefined,
       ...props,
+      ref: useMergeRefs(contentElementRef, presentationTargetRef, props.ref),
       style: {
         position: "relative",
         ...props.style,
@@ -581,7 +629,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       portal,
       preserveTabOrder,
       preserveTabOrderAnchor: disclosureElement || anchorElement,
-      autoFocusOnShow: positioned && autoFocusOnShow,
+      autoFocusOnShow,
       ...props,
       portalRef,
     });

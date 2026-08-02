@@ -20,6 +20,7 @@ import {
 } from "@ariakit/utils";
 import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
+import { focusWithoutScrolling } from "../focusable/focus-presentation.tsx";
 import { useCompositeScopedContext } from "./composite-context.tsx";
 import type { CompositeStore } from "./composite-store.ts";
 import { selectTextField } from "./utils.ts";
@@ -73,7 +74,7 @@ export const useCompositeContainer = createHook<
     }
     isOpenRef.current = true;
     queueMicrotask(() => {
-      tabbable.focus();
+      focusWithoutScrolling(tabbable);
       if (isTextField(tabbable) || tabbable.isContentEditable) {
         selectTextField(tabbable, collapseToEnd);
       }
@@ -199,7 +200,7 @@ export const useCompositeContainer = createHook<
           };
           const onInput = () => {
             cleanup();
-            queueMicrotask(() => container.focus());
+            queueMicrotask(() => focusWithoutScrolling(container));
           };
           container.addEventListener("input", onInput, { once: true });
           container.addEventListener("keyup", cleanup, { once: true });
@@ -211,7 +212,7 @@ export const useCompositeContainer = createHook<
     // Escape on tabbable element inside container: move focus back to the
     // container.
     else if (event.key === "Escape") {
-      queueMicrotask(() => container.focus());
+      queueMicrotask(() => focusWithoutScrolling(container));
     }
 
     // Enter on tabbable element inside container: move focus back to the
@@ -223,7 +224,7 @@ export const useCompositeContainer = createHook<
         target.tagName === "TEXTAREA";
       if (isInput || target.isContentEditable) {
         event.preventDefault();
-        queueMicrotask(() => container.focus());
+        queueMicrotask(() => focusWithoutScrolling(container));
       }
     }
   });

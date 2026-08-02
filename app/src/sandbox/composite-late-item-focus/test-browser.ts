@@ -72,4 +72,33 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeGreaterThan(0);
     await test.expect(composite).toBeFocused();
   });
+
+  // https://github.com/ariakit/ariakit/issues/6986
+  test("presents a late virtual-focus item without losing base focus", async ({
+    q,
+  }) => {
+    const composite = q.listbox("Late virtual scroll actions");
+    await composite.focus();
+    await composite.evaluate((element) => {
+      element.scrollTop = 0;
+    });
+
+    await q.button("Mount late virtual scroll item").evaluate((element) => {
+      if (element instanceof HTMLElement) element.click();
+    });
+
+    await test
+      .expect(q.option("Late virtual scroll item"))
+      .toHaveAttribute("data-active-item");
+    await test.expect(composite).toBeFocused();
+    await test.expect
+      .poll(() => composite.evaluate((element) => element.scrollTop))
+      .toBeGreaterThan(0);
+    await test
+      .expect(composite)
+      .toHaveAttribute(
+        "aria-activedescendant",
+        (await q.option("Late virtual scroll item").getAttribute("id"))!,
+      );
+  });
 });

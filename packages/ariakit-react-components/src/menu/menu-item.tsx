@@ -23,6 +23,7 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
+import { focusWithoutScrolling } from "../focusable/focus-presentation.tsx";
 import { useMenubarScopedContext } from "../menubar/menubar-context.tsx";
 import type { MenubarStore } from "../menubar/menubar-store.ts";
 import {
@@ -159,7 +160,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
         // the cursor back to the menu button.
         if (isWithinMenu) {
           if (event.currentTarget.hasAttribute("aria-expanded")) {
-            event.currentTarget.focus();
+            focusWithoutScrolling(event.currentTarget);
           }
           return true;
         }
@@ -167,7 +168,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
         // the menu item if focus is somewhere on the widget. Without this, the
         // open menus in the menu bar wouldn't close.
         if (menuHasFocus(baseElement, items, event.currentTarget)) {
-          event.currentTarget.focus();
+          focusWithoutScrolling(event.currentTarget);
           return true;
         }
         return false;

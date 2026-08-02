@@ -28,6 +28,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { withDefaultButtonType } from "../button/utils.ts";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import { focusWithoutScrolling } from "../focusable/focus-presentation.tsx";
 import { getBasePlacement } from "../popover/__utils.ts";
 import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx";
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
@@ -219,7 +220,10 @@ export const useSelect = createHook<TagName, SelectOptions>(function useSelect({
             // 1password will move focus to the next form element on autofill.
             // In this case, we want to move focus to our custom select
             // element.
-            onFocus={() => store?.getState().selectElement?.focus()}
+            onFocus={() => {
+              const select = store?.getState().selectElement;
+              if (select) focusWithoutScrolling(select);
+            }}
             onChange={(event) => {
               nativeSelectChangedRef.current = true;
               setAutofill(true);

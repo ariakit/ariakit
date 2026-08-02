@@ -1,6 +1,12 @@
-import { createElement, createHook, forwardRef } from "@ariakit/react-utils";
+import {
+  useMergeRefs,
+  createElement,
+  createHook,
+  forwardRef,
+} from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
+import { useSelectPopoverPresentation } from "../combobox/combobox-popover-presentation.ts";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
@@ -29,7 +35,12 @@ export const useSelectPopover = createHook<TagName, SelectPopoverOptions>(
   function useSelectPopover({ store, alwaysVisible, ...props }) {
     const context = useSelectProviderContext();
     store = store || context;
+    const openingPresentationRef = useSelectPopoverPresentation(store);
     props = useSelectList({ store, alwaysVisible, ...props });
+    props = {
+      ...props,
+      ref: useMergeRefs(openingPresentationRef, props.ref),
+    };
     props = usePopover({ store, alwaysVisible, ...props });
     return props;
   },

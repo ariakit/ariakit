@@ -12,7 +12,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { sync } from "@ariakit/store";
+import { subscribe, sync } from "@ariakit/store";
 import {
   chain,
   contains,
@@ -42,6 +42,10 @@ import {
   isHidden,
   useDisclosureContent,
 } from "../disclosure/disclosure-content.tsx";
+import {
+  getFocusActiveElement,
+  scheduleFocusPresentation,
+} from "../focusable/focus-presentation.tsx";
 import { useFocusableContainer } from "../focusable/focusable-container.tsx";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
@@ -420,6 +424,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // jumps. See select-animated browser tests.
   const [autoFocusEnabled, setAutoFocusEnabled] = useState(false);
 
+  useEffect(() => {
+    if (open) return;
+    setAutoFocusEnabled(false);
+  }, [open]);
+
   // Auto focus on show.
   useEffect(() => {
     if (!open) return;
@@ -452,21 +461,41 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       contentElement;
     const isElementFocusable = isFocusable(element);
     if (!autoFocusOnShowProp(isElementFocusable ? element : null)) return;
-    setAutoFocusEnabled(true);
-    queueMicrotask(() => {
-      // If the dialog was closed between scheduling and executing this
-      // microtask, skip the focus call. Otherwise, focusing a now-hidden
-      // element could steal focus from the disclosure that focusOnHide already
-      // restored.
-      if (!store.getState().open) return;
-      element.focus();
-      // Safari doesn't scroll to the element on focus, so we have to do it
-      // manually here.
-      if (!isSafariBrowser) return;
-      if (!isElementFocusable) return;
-      // A focus handler may have synchronously redirected virtual focus.
-      if (getActiveElement(element) !== element) return;
-      element.scrollIntoView({ block: "nearest", inline: "nearest" });
+    const initialActiveElement = getFocusActiveElement(contentElement);
+    let presenting = false;
+    return scheduleFocusPresentation({
+      getTarget: () => element,
+      getScopeTarget: () => ref.current,
+      subscribe(retry) {
+        const doc = getDocument(contentElement);
+        doc.addEventListener("focusin", retry, true);
+        return chain(subscribe(store, ["open", "contentElement"], retry), () =>
+          doc.removeEventListener("focusin", retry, true),
+        );
+      },
+      isValid() {
+        const state = store.getState();
+        if (!state.open) return false;
+        if (state.contentElement !== contentElement) return false;
+        if (presenting) return true;
+        const activeElement = getFocusActiveElement(contentElement);
+        if (activeElement === initialActiveElement) return true;
+        if (activeElement === element) return true;
+        if (activeElement?.tagName === "BODY") return true;
+        // A synchronous virtual-focus handoff is validated by the shared focus
+        // transaction after this request starts. Any focus change before then,
+        // including one to another element in the dialog, owns the next action
+        // and cancels this pending autofocus request.
+        return false;
+      },
+      focus: true,
+      scroll: "nearest",
+      beforeFocus() {
+        presenting = true;
+      },
+      onPresented() {
+        setAutoFocusEnabled(true);
+      },
     });
   }, [
     open,
@@ -773,7 +802,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   props = useFocusableContainer({
     ...props,
-    autoFocusOnShow: autoFocusEnabled,
+    autoFocusOnShow: open && autoFocusEnabled,
   });
   props = useDisclosureContent({
     store,
