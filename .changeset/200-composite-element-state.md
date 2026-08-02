@@ -6,7 +6,7 @@
 
 Composite element state
 
-Composite stores now expose the [`compositeElement`](https://ariakit.com/reference/use-composite-store#compositeelement) state and [`setCompositeElement`](https://ariakit.com/reference/use-composite-store#setcompositeelement) method. The new [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder) option controls whether arrow key navigation can move focus to the composite element:
+Composite stores now expose the [`compositeElement`](https://ariakit.com/reference/use-composite-store) state and [`setCompositeElement`](https://ariakit.com/reference/use-composite-store#setcompositeelement) method. The new [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder) option controls whether arrow key navigation can move focus to the composite element:
 
 ```tsx
 <CompositeProvider compositeElementInFocusOrder>

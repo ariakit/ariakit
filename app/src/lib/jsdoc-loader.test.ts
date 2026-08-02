@@ -145,12 +145,16 @@ function getReference(
   return entry.data;
 }
 
-function getParamProp(reference: Reference, name: string) {
+function getParamProps(reference: Reference) {
   const param = reference.params[0];
   if (!param?.props) {
     throw new Error(`Missing props for reference: ${reference.name}`);
   }
-  const prop = param.props.find((prop) => prop.name === name);
+  return param.props;
+}
+
+function getParamProp(reference: Reference, name: string) {
+  const prop = getParamProps(reference).find((prop) => prop.name === name);
   if (!prop) {
     throw new Error(`Missing prop: ${name}`);
   }
@@ -320,6 +324,14 @@ test("loads Composite element alias metadata", async () => {
   );
 
   const store = getReference(entries, "react/composite/use-composite-store");
+  for (const reference of [provider, store]) {
+    const names = getParamProps(reference).map((prop) => prop.name);
+    const compositeElementIndex = names.indexOf("compositeElementInFocusOrder");
+    const includesBaseElementIndex = names.indexOf("includesBaseElement");
+    expect(compositeElementIndex).toBeGreaterThanOrEqual(0);
+    expect(includesBaseElementIndex).toBeGreaterThan(compositeElementIndex);
+  }
+
   const stateReplacements = {
     baseElement: "compositeElement",
     includesBaseElement: "compositeElementInFocusOrder",

@@ -26,4 +26,18 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .poll(() => page.evaluate(() => window.scrollY))
       .toBeGreaterThan(scrollY);
   });
+
+  test("updates focus order through the deprecated prop", async ({
+    page,
+    q,
+  }) => {
+    const checkbox = q.checkbox("Include composite element in focus order");
+    await checkbox.click();
+    await test.expect(checkbox).toBeChecked();
+
+    await q.button("Legacy two").focus();
+    await page.keyboard.press("ArrowRight");
+
+    await test.expect(q.toolbar("Legacy focus order")).toBeFocused();
+  });
 });

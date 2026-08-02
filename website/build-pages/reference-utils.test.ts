@@ -147,6 +147,14 @@ test("loads Composite element alias metadata", () => {
   );
 
   const store = getReference(compositeFilename, "useCompositeStore");
+  for (const reference of [provider, store]) {
+    const names = reference.props.map((prop) => prop.name);
+    const compositeElementIndex = names.indexOf("compositeElementInFocusOrder");
+    const includesBaseElementIndex = names.indexOf("includesBaseElement");
+    expect(compositeElementIndex).toBeGreaterThanOrEqual(0);
+    expect(includesBaseElementIndex).toBeGreaterThan(compositeElementIndex);
+  }
+
   const setBaseElement = getReturnProp(store, "setBaseElement");
   expect(setBaseElement.deprecated).toEqual(
     expect.stringContaining("setCompositeElement"),

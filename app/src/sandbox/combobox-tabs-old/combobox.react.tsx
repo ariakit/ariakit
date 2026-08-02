@@ -39,7 +39,7 @@ export function ComboboxProvider({
       }}
     >
       <Ariakit.TabProvider
-        compositeElementInFocusOrder={false}
+        includesBaseElement={false}
         activeId={activeId}
         setActiveId={setActiveId}
         selectedId={tabId}

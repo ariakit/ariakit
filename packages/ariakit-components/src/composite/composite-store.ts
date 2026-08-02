@@ -323,28 +323,45 @@ export function createCompositeStore<
 
   const composite = createStore(initialState, collection, props.store);
 
-  setup(composite, () =>
-    chain(
+  let syncedCompositeElement = compositeElement;
+  let syncedCompositeElementInFocusOrder = compositeElementInFocusOrder;
+
+  setup(composite, () => {
+    const state = composite.getState();
+    if (state.baseElement !== syncedCompositeElement) {
+      composite.setState("compositeElement", state.baseElement);
+    }
+    if (state.includesBaseElement !== syncedCompositeElementInFocusOrder) {
+      composite.setState(
+        "compositeElementInFocusOrder",
+        state.includesBaseElement,
+      );
+    }
+    return chain(
       sync(composite, ["compositeElement"], (state) => {
+        syncedCompositeElement = state.compositeElement;
         composite.setState("baseElement", state.compositeElement);
       }),
       sync(composite, ["baseElement"], (state) => {
+        syncedCompositeElement = state.baseElement;
         composite.setState("compositeElement", state.baseElement);
       }),
       sync(composite, ["compositeElementInFocusOrder"], (state) => {
+        syncedCompositeElementInFocusOrder = state.compositeElementInFocusOrder;
         composite.setState(
           "includesBaseElement",
           state.compositeElementInFocusOrder,
         );
       }),
       sync(composite, ["includesBaseElement"], (state) => {
+        syncedCompositeElementInFocusOrder = state.includesBaseElement;
         composite.setState(
           "compositeElementInFocusOrder",
           state.includesBaseElement,
         );
       }),
-    ),
-  );
+    );
+  });
 
   // When the activeId is undefined, we need to find the first enabled item and
   // set it as the activeId.
@@ -927,16 +944,9 @@ export interface CompositeStoreOptions<
       | "focusWrap"
       | "focusShift"
       | "compositeElementInFocusOrder"
+      | "includesBaseElement"
       | "activeId"
     > {
-  /**
-   * Whether the composite element is in the arrow-key focus order.
-   *
-   * @deprecated Use
-   * [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder)
-   * instead.
-   */
-  includesBaseElement?: CompositeStoreState<T>["includesBaseElement"];
   /**
    * The composite item id that should be active by default when the composite
    * widget is rendered. If `null`, the composite element itself will have focus
