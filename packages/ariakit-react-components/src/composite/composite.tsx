@@ -23,7 +23,6 @@ import {
   hasFocus,
   invariant,
   isFocusable,
-  noop,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
@@ -123,47 +122,31 @@ function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
  * for a new presentation, such as hover, leaves the pending one alone.
  */
 function usePresentItem(store: CompositeStore) {
-  const cancelRef = useRef<{
-    store: CompositeStore;
-    cancel: () => void;
-  } | null>(null);
-  const mountedRef = useRef(true);
-  // Passing a store cancels the pending request only when it belongs to that
-  // store. Requests can be created from event handlers between a store swap's
-  // render and its passive effects, so the one sitting here isn't necessarily
-  // the one the cleanup generation below owns.
-  const cancel = useCallback((ownerStore?: CompositeStore) => {
-    const pending = cancelRef.current;
-    if (!pending) return;
-    if (ownerStore && pending.store !== ownerStore) return;
-    pending.cancel();
+  const cancelRef = useRef<(() => void) | null>(null);
+  const cancel = useCallback(() => {
+    cancelRef.current?.();
     cancelRef.current = null;
   }, []);
   const present = useCallback(
     (params: Omit<PresentItemParams, "store">) => {
-      // Requests can be queued from an event handler rather than an effect, so
-      // one can arrive after this component is gone. Subscribing then would
-      // outlive the cleanup that's supposed to cancel it, on a store that
-      // usually belongs to an ancestor and keeps living.
-      if (!mountedRef.current) return noop;
       cancel();
       const cancelCurrent = presentItem({ store, ...params });
-      cancelRef.current = { store, cancel: cancelCurrent };
+      cancelRef.current = cancelCurrent;
       return cancelCurrent;
     },
     [store, cancel],
   );
-  // `store` is a dependency so a swap releases the request held against the
-  // previous store, and the cleanup names that store so it can't take a
-  // request created against the new one instead. React runs the teardown and
-  // the setup in the same commit, so the mounted flag stays correct across it.
-  useEffect(() => {
-    mountedRef.current = true;
-    return () => {
-      mountedRef.current = false;
-      cancel(store);
-    };
-  }, [cancel, store]);
+  // Deliberately not scoped to the store, and deliberately without a mounted
+  // flag. The effect-driven request is created by a child of this component,
+  // and React runs a child's passive setup before its parent's, so anything
+  // reset here is still reset when the child asks again: a remount would drop
+  // that request rather than protect it.
+  // A request that has already resolved its item terminates on its own when
+  // that item leaves the DOM. One queued from an event handler after this
+  // cleanup never resolves an item, so it can still outlive the component;
+  // giving the request a single owner is tracked in
+  // https://github.com/ariakit/ariakit/issues/7024.
+  useEffect(() => cancel, [cancel]);
   return present;
 }
 

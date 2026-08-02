@@ -63,8 +63,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     const scroll = await recordScrollEvents(page);
     await q.button("Hide Animated actions").click();
     // Still mounted, because the exit transition is running. This is the state
-    // the guard exists for, so pin it before releasing positioning.
+    // the guard exists for, and if the transition ended first the pre-existing
+    // mounted latch would abandon the request instead, so pin both halves.
     await test.expect(menu).toBeVisible();
+    await test.expect(menu).toHaveAttribute("data-leave");
 
     // Completing positioning now is what wakes a surviving request, and it has
     // a placed popup to scroll to, so nothing else would stop it.

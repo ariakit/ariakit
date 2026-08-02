@@ -8,13 +8,6 @@ const items = Array.from({ length: itemCount }, (_, index) => index + 1);
 const itemStyle = { display: "block", padding: "12px 8px" };
 
 /**
- * A composite that isn't inside a popup, so it has nothing to be positioned
- * relative to and no scrollport of its own. Its initially active item is marked
- * as the presentation target with `autoFocus`, the way `SelectItem` and
- * `ComboboxItem` mark the selected one, and it sits below the fold. Bringing it
- * into view is only possible by moving the page.
- */
-/**
  * A composite that can't take focus at all. `move(null)` still targets the
  * composite element, but focusing it is a no-op, so nothing about the request
  * justifies moving the page to it.
@@ -54,6 +47,13 @@ function UnfocusableComposite() {
   );
 }
 
+/**
+ * A composite that isn't inside a popup, so it has nothing to be positioned
+ * relative to and no scrollport of its own. Its initially active item is marked
+ * as the presentation target with `autoFocus`, the way `SelectItem` and
+ * `ComboboxItem` mark the selected one, and it sits below the fold. Bringing it
+ * into view is only possible by moving the page.
+ */
 export default function Example() {
   return (
     <main style={{ display: "grid", gap: 16, justifyItems: "start" }}>

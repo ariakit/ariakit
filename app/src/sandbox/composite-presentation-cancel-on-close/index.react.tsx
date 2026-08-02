@@ -39,7 +39,12 @@ interface HeldMenuProps {
  * popup going away is the only thing left that can abandon it.
  */
 function HeldMenu({ label, animated }: HeldMenuProps) {
-  const menu = Ariakit.useMenuStore({ animated: animated ? 250 : undefined });
+  // Long enough that the exit transition cannot end while the test is still
+  // driving it, so "still mounted while closing" stays a state rather than a
+  // race the guard could stop being measured by.
+  const menu = Ariakit.useMenuStore({
+    animated: animated ? 10_000 : undefined,
+  });
   const releaseRef = useRef<(() => void) | null>(null);
 
   const updatePosition = () =>
