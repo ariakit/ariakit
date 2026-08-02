@@ -1,5 +1,10 @@
 # @ariakit/test
 
+## 0.7.3
+
+- Fixed `contains` reporting `false` for descendants of a `<form>` or `<select>` element when tests run on happy-dom, which made elements nested in a form look like they were outside an open modal dialog.
+- Fixed happy-dom exposing raw targets instead of the public `<form>` and `<select>` proxies during ancestor traversal, which broke identity checks in tests using `parentNode`, `parentElement`, `closest`, `compareDocumentPosition`, or bubbled event `currentTarget`.
+
 ## 0.7.2
 
 - Updated dependencies: `@ariakit/utils@0.1.5`
