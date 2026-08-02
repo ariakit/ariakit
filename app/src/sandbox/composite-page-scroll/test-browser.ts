@@ -1,5 +1,6 @@
 import type { Locator } from "@playwright/test";
-import { withFramework } from "#app/test-utils/preview.ts";
+import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import { recordScrollEvents } from "#app/test-utils/scroll.ts";
 
 /**
  * Focuses without letting the browser scroll the element into view, so the only
@@ -59,5 +60,31 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(first).toHaveAttribute("data-active-item");
     await test.expect(first).toBeInViewport();
+  });
+
+  // `move(null)` targets the composite element, but an unfocusable one never
+  // receives focus, so scrolling to it moves the page for nothing. That is the
+  // movement this change replaces rather than emulates.
+  test("does not scroll to a composite that cannot take focus", async ({
+    page,
+    q,
+  }) => {
+    const trigger = q.button("Move to unfocusable composite");
+    // The neighbouring composite presents its marked item on mount, which
+    // leaves the page scrolled. Reset first so this test measures only its own
+    // interaction.
+    await page.evaluate(() => window.scrollTo({ top: 0 }));
+    await test.expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+    // The trigger sits above the fold and the composite well below it, so the
+    // harness never has to scroll to click, and any movement is the library's.
+    await test.expect(trigger).toBeInViewport({ ratio: 1 });
+    await test.expect(q.listbox("Unfocusable actions")).not.toBeInViewport();
+    const scroll = await recordScrollEvents(page);
+
+    await trigger.click();
+
+    await flushFrames(page);
+    test.expect(await page.evaluate(() => window.scrollY)).toBe(0);
+    test.expect(await scroll.events()).not.toContain("document");
   });
 });

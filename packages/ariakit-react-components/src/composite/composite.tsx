@@ -22,6 +22,7 @@ import {
   isSelfTarget,
   hasFocus,
   invariant,
+  isFocusable,
   noop,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
@@ -237,8 +238,16 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
     }
     if (!hasFocus(compositeElement)) {
       // Scroll before focusing, so a focus handler that presents something
-      // else scrolls last and wins.
-      compositeElement.scrollIntoView({ block: "nearest", inline: "nearest" });
+      // else scrolls last and wins. Only for a target that can actually take
+      // focus: the focus call below is a no-op for an unfocusable composite,
+      // and moving the page to an element that never receives focus is the
+      // movement this is meant to replace, not emulate.
+      if (isFocusable(compositeElement)) {
+        compositeElement.scrollIntoView({
+          block: "nearest",
+          inline: "nearest",
+        });
+      }
       compositeElement.focus({ preventScroll: true });
     }
   }, [store, moves, compositeElement]);
