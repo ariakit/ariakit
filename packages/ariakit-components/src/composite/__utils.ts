@@ -45,6 +45,6 @@ export function createCompositeStoreSetters<S extends CompositeStoreState>(
   return {
     setState,
     setCompositeElement: (element) => setState("compositeElement", element),
-    setBaseElement: (element) => setState("compositeElement", element),
+    setBaseElement: (element) => setState("baseElement", element),
   };
 }
