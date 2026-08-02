@@ -116,6 +116,14 @@ export default function Example() {
     <>
       <Fixture defaultSelectedValue={["Apple"]} label="Selected fruit" />
       <Fixture defaultSelectedValue="Apple" label="Single selected fruit" />
+      <div
+        data-testid="centered-fruit-scroll-container"
+        style={{ height: 240, overflow: "auto" }}
+      >
+        <div style={{ height: 160 }} />
+        <Fixture defaultSelectedValue="Cherry" label="Centered fruit" />
+        <div style={{ height: 320 }} />
+      </div>
       <div style={{ marginTop: 200 }}>
         <Fixture
           defaultSelectedValue="Watermelon"

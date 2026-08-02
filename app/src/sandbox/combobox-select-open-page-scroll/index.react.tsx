@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import type { CSSProperties } from "react";
-import { useState } from "react";
+import type { ComponentProps, CSSProperties } from "react";
+import { useCallback, useRef, useState } from "react";
 
 const branches = [
   "main",
@@ -42,7 +42,15 @@ const popoverStyle = {
  * - `unmountOnHide`, so that element only mounts as the popup opens. Without
  *   it the popup is already positioned by then and the bug doesn't reproduce.
  */
-function BranchSelect() {
+interface BranchSelectProps {
+  label?: string;
+  searchLabel?: string;
+}
+
+function BranchSelect({
+  label = "Branch",
+  searchLabel = "Search branches",
+}: BranchSelectProps = {}) {
   const [searchValue, setSearchValue] = useState("");
   const matches = branches.filter((branch) =>
     branch.toLowerCase().includes(searchValue.toLowerCase()),
@@ -54,7 +62,7 @@ function BranchSelect() {
       defaultSelectedValue={selectedBranch}
       setValue={setSearchValue}
     >
-      <Ariakit.ComboboxSelectLabel>Branch</Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect style={{ display: "block", width: 260 }} />
       <Ariakit.ComboboxPopover
         gutter={4}
@@ -63,7 +71,7 @@ function BranchSelect() {
         style={popoverStyle}
       >
         <Ariakit.Combobox
-          aria-label="Search branches"
+          aria-label={searchLabel}
           placeholder="Find a branch"
           style={{ margin: 8 }}
         />
@@ -83,6 +91,83 @@ function BranchSelect() {
   );
 }
 
+type ComboboxPopoverProps = ComponentProps<typeof Ariakit.ComboboxPopover>;
+type UpdatePosition = NonNullable<ComboboxPopoverProps["updatePosition"]>;
+
+function DelayedBranchSelect() {
+  const [positioning, setPositioning] = useState(false);
+  const delayPositioningRef = useRef(true);
+  const positioningPromiseRef = useRef<Promise<void> | null>(null);
+  const releasePositioningRef = useRef<() => void>(() => {});
+
+  const updatePosition = useCallback<UpdatePosition>(
+    async ({ updatePosition }) => {
+      if (delayPositioningRef.current) {
+        setPositioning(true);
+        positioningPromiseRef.current ??= new Promise<void>((resolve) => {
+          releasePositioningRef.current = () => {
+            delayPositioningRef.current = false;
+            positioningPromiseRef.current = null;
+            resolve();
+          };
+        });
+        await positioningPromiseRef.current;
+      }
+      await updatePosition();
+      setPositioning(false);
+    },
+    [],
+  );
+
+  return (
+    <div style={{ display: "grid", gap: 8, justifyItems: "start" }}>
+      <Ariakit.ComboboxProvider
+        virtualFocus
+        resetValueOnHide
+        defaultSelectedValue={selectedBranch}
+      >
+        <Ariakit.ComboboxSelectLabel>
+          Delayed branch
+        </Ariakit.ComboboxSelectLabel>
+        <Ariakit.ComboboxSelect style={{ display: "block", width: 260 }} />
+        <Ariakit.ComboboxPopover
+          gutter={4}
+          hideOnInteractOutside={false}
+          sameWidth
+          unmountOnHide
+          updatePosition={updatePosition}
+          style={popoverStyle}
+        >
+          <Ariakit.Combobox
+            aria-label="Search delayed branches"
+            placeholder="Find a branch"
+            style={{ margin: 8 }}
+          />
+          <Ariakit.ComboboxList
+            style={{ flex: 1, minHeight: 0, overflow: "auto" }}
+          >
+            {branches.map((branch) => (
+              <Ariakit.ComboboxItem
+                key={branch}
+                value={branch}
+                style={{ display: "block", padding: "4px 8px" }}
+              />
+            ))}
+          </Ariakit.ComboboxList>
+        </Ariakit.ComboboxPopover>
+      </Ariakit.ComboboxProvider>
+      <div>Positioning: {positioning ? "yes" : "no"}</div>
+      <button
+        type="button"
+        tabIndex={0}
+        onClick={() => releasePositioningRef.current()}
+      >
+        Leave and release positioning
+      </button>
+    </div>
+  );
+}
+
 export default function Example() {
   return (
     <main style={{ display: "grid", gap: 16, justifyItems: "start" }}>
@@ -90,6 +175,23 @@ export default function Example() {
       which is the only way a page jump is observable. */}
       <div style={{ height: 900 }} />
       <BranchSelect />
+      <div
+        data-testid="branch-scroll-container"
+        style={{
+          border: "1px solid gray",
+          height: 240,
+          overflow: "auto",
+          width: 320,
+        }}
+      >
+        <div style={{ height: 400 }} />
+        <BranchSelect
+          label="Nested branch"
+          searchLabel="Search nested branches"
+        />
+        <div style={{ height: 400 }} />
+      </div>
+      <DelayedBranchSelect />
       <div style={{ height: 900 }} />
     </main>
   );

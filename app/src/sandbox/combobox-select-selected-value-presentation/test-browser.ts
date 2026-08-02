@@ -1,4 +1,17 @@
+import type { Locator } from "@playwright/test";
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+
+function getCenterOffset(item: Locator) {
+  return item.evaluate((element) => {
+    const listbox = element.closest<HTMLElement>("[role=listbox]");
+    if (!listbox) return Infinity;
+    const listboxRect = listbox.getBoundingClientRect();
+    const itemRect = element.getBoundingClientRect();
+    const viewportCenter = listboxRect.top + listbox.clientHeight / 2;
+    const itemCenter = itemRect.top + itemRect.height / 2;
+    return itemCenter - viewportCenter;
+  });
+}
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/6832
@@ -31,6 +44,81 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(watermelon).toHaveAttribute("data-active-item");
     await test.expect(watermelon).toBeInViewport();
     await test.expect(select).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6986
+  test("centers the selected item inside its popup scrollport", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Centered fruit");
+    const cherry = q.option("Cherry");
+    const outer = page.getByTestId("centered-fruit-scroll-container");
+
+    await select.scrollIntoViewIfNeeded();
+    await outer.evaluate((element) => {
+      element.scrollTop = 120;
+    });
+    await test.expect
+      .poll(() => outer.evaluate((element) => element.scrollTop))
+      .toBe(120);
+    await select.hover();
+
+    const initial = await page.evaluate(() => {
+      const outer = document.querySelector<HTMLElement>(
+        "[data-testid=centered-fruit-scroll-container]",
+      );
+      if (!outer) throw new Error("Missing outer scroll container");
+      const events: string[] = [];
+      document.addEventListener(
+        "scroll",
+        (event) => {
+          if (
+            event.target === document ||
+            event.target === document.scrollingElement
+          ) {
+            events.push("document");
+          }
+          if (event.target === outer) {
+            events.push("outer");
+          }
+        },
+        true,
+      );
+      Object.assign(window, { compositeFocusScrollEvents: events });
+      return { outer: outer.scrollTop, page: window.scrollY };
+    });
+
+    await select.click();
+
+    const listbox = q.listbox("Centered fruit");
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+    await test.expect
+      .poll(() => listbox.evaluate((element) => element.scrollTop))
+      .toBeGreaterThan(0);
+    await test.expect
+      .poll(async () => Math.abs(await getCenterOffset(cherry)))
+      .toBeLessThanOrEqual(1);
+    await flushFrames(page, 3);
+
+    const result = await page.evaluate(() => {
+      const outer = document.querySelector<HTMLElement>(
+        "[data-testid=centered-fruit-scroll-container]",
+      );
+      if (!outer) throw new Error("Missing outer scroll container");
+      return {
+        events: (
+          window as typeof window & {
+            compositeFocusScrollEvents?: string[];
+          }
+        ).compositeFocusScrollEvents,
+        outer: outer.scrollTop,
+        page: window.scrollY,
+      };
+    });
+    test.expect(result.events).toEqual([]);
+    test.expect(result.outer).toBe(initial.outer);
+    test.expect(result.page).toBe(initial.page);
   });
 
   // https://github.com/ariakit/ariakit/pull/6832
