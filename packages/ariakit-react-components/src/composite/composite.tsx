@@ -163,15 +163,15 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   present,
 }: CompositeFocusOnMoveProps) {
   const moves = useStoreState(store, "moves");
-  // The base element is also tracked so the move-to-container effect below can
-  // run once it becomes available. It's published to the store through a ref
-  // callback and a transaction effect on the parent composite component, which
-  // run after this child component's effects. Without this dependency, the
-  // effect could read a not-yet-published base element and never retry, for
-  // example when the `composite` prop switches from `false` to `true` after a
-  // `move(null)` call. The base element rarely changes, so this doesn't add
-  // renders while navigating.
-  const baseElement = useStoreState(store, "baseElement");
+  // The composite element is also tracked so the move-to-container effect
+  // below can run once it becomes available. It's published to the store
+  // through a ref callback and a transaction effect on the parent composite
+  // component, which run after this child component's effects. Without this
+  // dependency, the effect could read a not-yet-published composite element
+  // and never retry, for example when the `composite` prop switches from
+  // `false` to `true` after a `move(null)` call. The composite element rarely
+  // changes, so this doesn't add renders while navigating.
+  const compositeElement = useStoreState(store, "compositeElement");
 
   // Present the active item.
   useEffect(() => {
@@ -187,35 +187,34 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
       requireFocus: ownsFocus(store),
       focus: true,
     });
-  }, [store, moves, focusOnMove, baseElement, present]);
+  }, [store, moves, focusOnMove, compositeElement, present]);
 
   // If composite.move(null) has been called, the composite container should
   // receive focus.
   useSafeLayoutEffect(() => {
     if (!moves) return;
-    if (!baseElement) return;
+    if (!compositeElement) return;
     const { activeId } = store.getState();
     const isSelfActive = activeId === null;
     if (!isSelfActive) return;
     const previousElement = previousElementRef.current;
     // We have to clean up the previous element ref so an additional blur
     // event is not fired on it, for example, when looping through items while
-    // includesBaseElement is true.
+    // compositeElementInFocusOrder is true.
     previousElementRef.current = null;
     if (previousElement) {
       // We fire a blur event on the previous active item before moving focus
       // to the composite element so the events are dispatched in the right
       // order (blur, then focus).
-      fireBlurEvent(previousElement, { relatedTarget: baseElement });
+      fireBlurEvent(previousElement, { relatedTarget: compositeElement });
     }
-    if (!hasFocus(baseElement)) {
+    if (!hasFocus(compositeElement)) {
       // Scroll before focusing, so a focus handler that presents something
-      // else still wins. That's the order the browser's own focus scroll
-      // would have had.
-      baseElement.scrollIntoView({ block: "nearest", inline: "nearest" });
-      baseElement.focus({ preventScroll: true });
+      // else scrolls last and wins.
+      compositeElement.scrollIntoView({ block: "nearest", inline: "nearest" });
+      compositeElement.focus({ preventScroll: true });
     }
-  }, [store, moves, baseElement]);
+  }, [store, moves, compositeElement]);
 
   return null;
 });
@@ -254,8 +253,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     const previousElementRef = useRef<HTMLElement | null>(null);
     const present = usePresentItem(store);
 
-    const [, setBaseElement] = useTransactionState(
-      composite ? store.setBaseElement : null,
+    const [, setCompositeElement] = useTransactionState(
+      composite ? store.setCompositeElement : null,
     );
 
     const virtualFocus = useStoreState(store, "virtualFocus");
@@ -350,9 +349,10 @@ export const useComposite = createHook<TagName, CompositeOptions>(
         }
       } else if (isSelfTarget(event)) {
         if (!isItem(store, relatedTarget)) {
-          // A real-focus composite may initially focus its base while the item
-          // marked as its presentation target is outside the viewport. Bring
-          // that item into view without moving DOM focus away from the base.
+          // A real-focus composite may initially focus the composite element
+          // while the item marked as its presentation target is outside the
+          // viewport. Bring that item into view without moving DOM focus away
+          // from the composite element.
           // The id is pinned because the active item is cleared right below.
           const { activeId } = store.getState();
           if (activeId != null) {
@@ -373,9 +373,9 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       onBlurCaptureProp?.(event);
       if (event.defaultPrevented) return;
       if (!store) return;
-      const { virtualFocus, activeId, baseElement } = store.getState();
+      const { virtualFocus, activeId, compositeElement } = store.getState();
       if (!virtualFocus) return;
-      if (event.currentTarget !== baseElement) return;
+      if (event.currentTarget !== compositeElement) return;
       // When virtualFocus is set to true, we move focus from the composite
       // container (this element) to the composite item that is being selected.
       // Then we move focus back to the composite container. This is so we can
@@ -554,7 +554,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     props = {
       "aria-activedescendant": activeDescendant,
       ...props,
-      ref: useMergeRefs(ref, setBaseElement, props.ref),
+      ref: useMergeRefs(ref, setCompositeElement, props.ref),
       onKeyDownCapture,
       onKeyUpCapture,
       onFocusCapture,

@@ -39,7 +39,7 @@ export function createPopoverStore({
       "popoverElement",
       "disclosureElement",
       // Two popovers sharing a store are still positioned independently.
-      "placing",
+      "unstable_placing",
     ]),
   );
 
@@ -63,7 +63,7 @@ export function createPopoverStore({
     popoverElement: defaultValue(syncState?.popoverElement, null),
     arrowElement: defaultValue(syncState?.arrowElement, null),
     rendered: Symbol("rendered"),
-    placing: false,
+    unstable_placing: false,
   };
   const popover = createStore(initialState, dialog, store);
   let syncedAnchorElement =
@@ -151,7 +151,7 @@ export interface PopoverStoreState extends DialogStoreState {
    * pre-placement origin and drag the page along with it.
    * @private
    */
-  placing: boolean;
+  unstable_placing: boolean;
 }
 
 export interface PopoverStoreFunctions extends DialogStoreFunctions {

@@ -463,8 +463,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // when a focus handler immediately moves focus elsewhere, which is what
       // virtual focus does. Scroll explicitly instead, so every engine behaves
       // the same whether or not focus stayed put. It happens before the focus
-      // so that a focus handler presenting something else still wins, which is
-      // the order the browser's own scroll would have had.
+      // so a focus handler that presents something else scrolls last and wins.
       if (isElementFocusable) {
         element.scrollIntoView({ block: "nearest", inline: "nearest" });
       }

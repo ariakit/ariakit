@@ -279,7 +279,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       (state) => (shouldPreserveTabOrder ? state.disclosureElement : null),
     );
     const popoverElement = useStoreState(store, "popoverElement");
-    const placing = useStoreState(store, "placing");
+    const placing = useStoreState(store, "unstable_placing");
     const contentElement = useStoreState(store, "contentElement");
     const placement = useStoreState(store, "placement");
     const mounted = useStoreState(store, "mounted");
@@ -420,7 +420,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         // The popover is placed once its position has been written, not when
         // computePosition resolves, so anything waiting to move focus or scroll
         // into it never acts on the pre-placement origin.
-        store?.setState("placing", false);
+        store?.setState("unstable_placing", false);
 
         // https://floating-ui.com/docs/arrow#usage
         if (arrow && pos.middlewareData.arrow) {
@@ -469,7 +469,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           // make sure this effect is still current before marking it ready.
           if (shouldCancelUpdate()) return;
           setPositioned(true);
-          store?.setState("placing", false);
+          store?.setState("unstable_placing", false);
         } else {
           await updatePosition();
         }
@@ -549,7 +549,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     useSafeLayoutEffect(() => {
       if (!store) return;
       return sync(store, ["mounted"], (state) => {
-        store.setState("placing", state.mounted);
+        store.setState("unstable_placing", state.mounted);
       });
     }, [store]);
 

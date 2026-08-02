@@ -20,17 +20,20 @@ export const groupItemsByRows = Core.groupItemsByRows;
  * Only applies to text field composite elements, to avoid undoing an
  * intentional scroll on scrollable containers.
  */
-function withBaseScrollPreserved(store: CompositeStore, callback: () => void) {
-  const { virtualFocus, baseElement } = store.getState();
-  if (!virtualFocus || !baseElement || !isTextField(baseElement)) {
+function withCompositeScrollPreserved(
+  store: CompositeStore,
+  callback: () => void,
+) {
+  const { virtualFocus, compositeElement } = store.getState();
+  if (!virtualFocus || !compositeElement || !isTextField(compositeElement)) {
     callback();
     return;
   }
-  const savedScrollLeft = baseElement.scrollLeft;
-  const savedScrollTop = baseElement.scrollTop;
+  const savedScrollLeft = compositeElement.scrollLeft;
+  const savedScrollTop = compositeElement.scrollTop;
   callback();
-  baseElement.scrollLeft = savedScrollLeft;
-  baseElement.scrollTop = savedScrollTop;
+  compositeElement.scrollLeft = savedScrollLeft;
+  compositeElement.scrollTop = savedScrollTop;
 }
 
 /**
@@ -50,10 +53,10 @@ function getPopupElement(store: CompositeStore) {
  * itself, on one of its items, or anywhere in its popup.
  */
 export function ownsFocus(store: CompositeStore) {
-  const { baseElement } = store.getState();
-  const activeElement = getActiveElement(baseElement);
+  const { compositeElement } = store.getState();
+  const activeElement = getActiveElement(compositeElement);
   if (!activeElement) return false;
-  if (baseElement?.contains(activeElement)) return true;
+  if (compositeElement?.contains(activeElement)) return true;
   if (isItem(store, activeElement)) return true;
   // Items are only recognizable once they register, which is a commit after
   // they mount, and the composite element can sit outside the popup, so
@@ -104,7 +107,7 @@ export function presentItem({
   let done = false;
   let wasMounted = false;
   const owner = requireFocus
-    ? getActiveElement(store.getState().baseElement)
+    ? getActiveElement(store.getState().compositeElement)
     : null;
   const stillOwnsFocus = (target: HTMLElement) => {
     if (!owner) return true;
@@ -174,7 +177,7 @@ export function presentItem({
     if (focus && !focused) {
       focused = true;
       const itemElement = element;
-      withBaseScrollPreserved(store, () => {
+      withCompositeScrollPreserved(store, () => {
         itemElement.focus({ preventScroll: true });
       });
       // Focus handlers run synchronously and can reach back into the store, so
@@ -194,15 +197,15 @@ export function presentItem({
     // or one that hasn't been positioned yet, would be scrolled to no visible
     // effect or to the wrong place.
     if (!isVisible(element)) return;
-    if ("placing" in state && state.placing) return;
+    if ("unstable_placing" in state && state.unstable_placing) return;
     cancel();
     element.scrollIntoView({ block: "nearest", inline: "nearest" });
   };
-  // `mounted` and `placing` live on the merged popup store, which the composite
+  // `mounted` and `unstable_placing` live on the merged popup store, which the
   // store type doesn't declare. Naming them keeps the store's keyed listener
   // fast path, which an all-keys subscription would disable for every update
   // while a presentation is pending.
-  const keys = ["activeId", "items", "mounted", "placing"] as Array<
+  const keys = ["activeId", "items", "mounted", "unstable_placing"] as Array<
     keyof CompositeStoreState
   >;
   unsubscribe = subscribe(store, keys, present);

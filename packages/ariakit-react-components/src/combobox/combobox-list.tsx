@@ -72,15 +72,15 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       onFocusProp?.(event);
       if (event.defaultPrevented) return;
       if (!isSelfTarget(event)) return;
-      const baseElement = store.getState().baseElement;
-      if (!baseElement) return;
-      // A modal popover may render the base element inert, in which case
+      const compositeElement = store.getState().compositeElement;
+      if (!compositeElement) return;
+      // A modal popover may render the composite element inert, in which case
       // moving focus there would fight the dialog's focus containment.
-      if (!isFocusable(baseElement)) return;
+      if (!isFocusable(compositeElement)) return;
       const list = event.currentTarget;
       queueMicrotask(() => {
         if (getDocument(list).activeElement !== list) return;
-        baseElement.focus();
+        compositeElement.focus();
       });
     });
 

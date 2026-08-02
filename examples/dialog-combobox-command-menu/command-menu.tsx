@@ -29,7 +29,7 @@ export const CommandMenu = forwardRef<HTMLDivElement, CommandMenuProps>(
         <Ariakit.ComboboxProvider
           disclosure={dialog}
           focusLoop={false}
-          includesBaseElement={false}
+          compositeElementInFocusOrder={false}
           resetValueOnHide
           setInputValue={(value) => {
             startTransition(() => {

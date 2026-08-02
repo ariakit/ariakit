@@ -184,9 +184,9 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     const onKeyDown = useEvent((event: KeyboardEvent<HTMLType>) => {
       onKeyDownProp?.(event);
       if (event.defaultPrevented) return;
-      const baseElement = store?.getState().baseElement;
-      if (!baseElement) return;
-      if (hasFocus(baseElement)) return;
+      const compositeElement = store?.getState().compositeElement;
+      if (!compositeElement) return;
+      if (hasFocus(compositeElement)) return;
       // When the combobox is not working with virtual focus, the items will
       // receive DOM focus. Therefore, pressing printable keys will not fill
       // the text field. So we need to programmatically focus on the text
@@ -200,21 +200,25 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       const paste = modifier && event.key.toLowerCase() === "v";
       const deleteKey = event.key === "Backspace" || event.key === "Delete";
       if (printable || paste || deleteKey) {
-        // In select mode, the base element is the select button rather than a
-        // text field, so focusing it would move focus out of the open list.
-        if (baseElement === selectElement) return;
-        if (isTextField(baseElement)) {
-          queueMicrotask(() => baseElement.focus());
-          store?.setInputValue(baseElement.value);
+        // In select mode, the composite element is the select button rather
+        // than a text field, so focusing it would move focus out of the open
+        // list.
+        if (compositeElement === selectElement) return;
+        if (isTextField(compositeElement)) {
+          queueMicrotask(() => compositeElement.focus());
+          store?.setInputValue(compositeElement.value);
           return;
         }
-        baseElement.focus();
-        if ("value" in baseElement && typeof baseElement.value === "string") {
+        compositeElement.focus();
+        if (
+          "value" in compositeElement &&
+          typeof compositeElement.value === "string"
+        ) {
           // Update the store value with the current element's value. This is
           // necessary because the value may temporarily change based on the
           // currently selected item, but it'll be reset to the original value
           // when the combobox input is focused.
-          store?.setInputValue(baseElement.value);
+          store?.setInputValue(compositeElement.value);
         }
       }
     });
@@ -270,8 +274,8 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
       moveOnKeyPress: (event) => {
         if (!moveOnKeyPressProp(event)) return false;
         const moveEvent = new Event("combobox-item-move");
-        const baseElement = store?.getState().baseElement;
-        baseElement?.dispatchEvent(moveEvent);
+        const compositeElement = store?.getState().compositeElement;
+        compositeElement?.dispatchEvent(moveEvent);
         return true;
       },
     });

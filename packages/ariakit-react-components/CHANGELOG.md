@@ -1,5 +1,94 @@
 # @ariakit/react-components
 
+## 0.4.0
+
+### Removed the experimental offscreen item modules
+
+**BREAKING** if you're importing from `@ariakit/react-components/collection/collection-item-offscreen`, `@ariakit/react-components/composite/composite-item-offscreen`, `@ariakit/react-components/combobox/combobox-item-offscreen`, or `@ariakit/react-components/select/select-item-offscreen`, or if you're importing the `getItemRole` helper from `@ariakit/react-components/combobox/combobox-item`.
+
+These experimental modules rendered lightweight placeholders for items outside the scrolling viewport, controlled by the `offscreenMode` and `offscreenRoot` props. They have been removed along with the `data-offscreen`, `data-offscreen-id`, and `data-typeahead-text` attributes they produced, so typeahead no longer collects candidates from those placeholders.
+
+The `getItemRole` helper, which was only exported for these modules, is no longer exported from `@ariakit/react-components/combobox/combobox-item`.
+
+Use the regular [`CollectionItem`](https://ariakit.com/reference/collection-item), [`CompositeItem`](https://ariakit.com/reference/composite-item), [`ComboboxItem`](https://ariakit.com/reference/combobox-item), and [`SelectItem`](https://ariakit.com/reference/select-item) components instead. For long lists, render items through `CollectionRenderer`, `CompositeRenderer`, `ComboboxRenderer`, or `SelectRenderer` to virtualize them.
+
+Before:
+
+```tsx
+import { ComboboxItem } from "@ariakit/react-components/combobox/combobox-item-offscreen";
+
+<ComboboxItem value={value} offscreenMode="passive" offscreenRoot={listRef} />;
+```
+
+After:
+
+```tsx
+import { ComboboxItem } from "@ariakit/react-components/combobox/combobox-item";
+
+<ComboboxItem value={value} />;
+```
+
+### New Combobox Select components
+
+Added [`ComboboxSelect`](https://ariakit.com/reference/combobox-select), [`ComboboxSelectLabel`](https://ariakit.com/reference/combobox-select-label), [`ComboboxSelectArrow`](https://ariakit.com/reference/combobox-select-arrow), [`ComboboxInput`](https://ariakit.com/reference/combobox-input), [`ComboboxSelectedValue`](https://ariakit.com/reference/combobox-selected-value), [`ComboboxItemSelected`](https://ariakit.com/reference/combobox-item-selected), [`ComboboxDismiss`](https://ariakit.com/reference/combobox-dismiss), and [`ComboboxHeading`](https://ariakit.com/reference/combobox-heading). Together, these APIs let standard and filterable selects use one Combobox store:
+
+```tsx
+<ComboboxProvider>
+  <ComboboxSelectLabel>Favorite fruit</ComboboxSelectLabel>
+  <ComboboxSelect />
+  <ComboboxPopover>
+    <ComboboxLabel>Search fruits</ComboboxLabel>
+    <ComboboxInput />
+    <ComboboxList>
+      <ComboboxItem value="Apple" />
+      <ComboboxItem value="Banana" />
+    </ComboboxList>
+  </ComboboxPopover>
+</ComboboxProvider>
+```
+
+For filterable selects, the Combobox store now distinguishes the text in the input from its [`selectedValue`](https://ariakit.com/reference/combobox-provider#selectedvalue) state. Use [`inputValue`](https://ariakit.com/reference/combobox-provider#inputvalue), [`defaultInputValue`](https://ariakit.com/reference/combobox-provider#defaultinputvalue), and [`setInputValue`](https://ariakit.com/reference/combobox-provider#setinputvalue) to control this text, [`resetInputValue`](https://ariakit.com/reference/use-combobox-store#resetinputvalue) to restore its initial value, and [`ComboboxInputValue`](https://ariakit.com/reference/combobox-input-value) to read it from the component tree.
+
+The Combobox store also gained the [`selectOnMove`](https://ariakit.com/reference/combobox-provider#selectonmove) option, which selects the active item while moving through the list with the popover open. It now exposes the `inputElement`, `labelElement`, `selectElement`, and `selectLabelElement` state, along with their respective setters.
+
+To make keyboard selection previews easy to cancel, [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) now supports a [`resetOnEscape`](https://ariakit.com/reference/combobox-popover#resetonescape) prop. It defaults to [`selectOnMove`](https://ariakit.com/reference/combobox-provider#selectonmove) and restores the selected value captured before the first item movement when the popover accepts Escape and its cancelable close event isn't prevented. Selection changes made before any item movement become part of the value Escape restores.
+
+Filterable selects built with these APIs are also more efficient. In a 243-option benchmark, restoring the full list after clearing the filter with one Combobox store reduced scripting time by 50% and total time by 43% compared with separate Select and Combobox stores.
+
+Thanks to [@lessp](https://github.com/lessp) for reporting the performance issue, [@patrikholcak](https://github.com/patrikholcak) for investigating it, and [@georgekaran](https://github.com/georgekaran) for providing the workaround and investigating the shared Combobox and Select behavior.
+
+### Added `MenuAnchor`, `SelectAnchor`, and `ComboboxAnchor`
+
+Added [`MenuAnchor`](https://ariakit.com/reference/menu-anchor), [`SelectAnchor`](https://ariakit.com/reference/select-anchor), and [`ComboboxAnchor`](https://ariakit.com/reference/combobox-anchor) components. These components take precedence over their respective disclosure or combobox elements:
+
+```tsx
+<MenuProvider>
+  <MenuButton>Actions</MenuButton>
+  <MenuAnchor>Position the menu here</MenuAnchor>
+  <Menu>Menu items</Menu>
+</MenuProvider>
+```
+
+### Close popups across existing same-origin iframe boundaries
+
+The [`Dialog`](https://ariakit.com/reference/dialog), [`Popover`](https://ariakit.com/reference/popover), [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover), [`Hovercard`](https://ariakit.com/reference/hovercard), [`Menu`](https://ariakit.com/reference/menu), [`SelectPopover`](https://ariakit.com/reference/select-popover), and [`Tooltip`](https://ariakit.com/reference/tooltip) components now close when focus moves from an embedded same-origin popup to an ancestor document or a pointer interaction occurs in an existing sibling frame. Focus stays on the outside target, interactions in contained frames stay inside, and true browser or application window blur remains ignored.
+
+Thanks to [@emillaine](https://github.com/emillaine) for reporting the issue, [@ciampo](https://github.com/ciampo) for proposing the pointer behavior, and [@donaldpipowitch](https://github.com/donaldpipowitch) for providing the iframe click reproduction.
+
+### Other updates
+
+- Added the `ComboboxRenderer` component for virtualizing Combobox items.
+- Fixed [`Combobox`](https://ariakit.com/reference/combobox) inline autocomplete to preserve a user-adjusted caret when asynchronously rendered results update.
+- Fixed [`ComboboxList`](https://ariakit.com/reference/combobox-list) and [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) so they use the closest [`ComboboxHeading`](https://ariakit.com/reference/combobox-heading), [`ComboboxSelectLabel`](https://ariakit.com/reference/combobox-select-label), or [`ComboboxLabel`](https://ariakit.com/reference/combobox-label) as their accessible name unless they are explicitly named. Thanks to [@georgekaran](https://github.com/georgekaran).
+- Fixed [`ComboboxList`](https://ariakit.com/reference/combobox-list) to render with `tabIndex={-1}` and move focus back to the combobox control when the list receives focus, preventing unintended Tab stops and focus loops.
+- Fixed clicking the empty space of a [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) moving focus into the popover and leaving arrow keys unable to move through the items.
+- Fixed a [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) with [`modal`](https://ariakit.com/reference/combobox-popover#modal) enabled not closing when pressing Escape while it renders a [`ComboboxInput`](https://ariakit.com/reference/combobox-input) or [`Combobox`](https://ariakit.com/reference/combobox) element inside it.
+- Fixed [`ComboboxPopover`](https://ariakit.com/reference/combobox-popover) to honor consumer-provided [`getPersistentElements`](https://ariakit.com/reference/dialog#getpersistentelements) callbacks, so interacting with the returned elements no longer dismisses a non-modal popover. Thanks to [@georgekaran](https://github.com/georgekaran).
+- Fixed [`CompositeItem`](https://ariakit.com/reference/composite-item), and components based on it such as [`ComboboxItem`](https://ariakit.com/reference/combobox-item) and [`SelectItem`](https://ariakit.com/reference/select-item), briefly rendering as tabbable while a composite widget with [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus) enabled mounts.
+- Fixed disabled [`Select`](https://ariakit.com/reference/select) and [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) controls so their values are omitted from form submission when [`accessibleWhenDisabled`](https://ariakit.com/reference/focusable#accessiblewhendisabled) is used or the visible control is rendered with an element that doesn't support the native `disabled` attribute. Thanks to [@georgekaran](https://github.com/georgekaran).
+- Fixed [`PopoverDisclosure`](https://ariakit.com/reference/popover-disclosure) so it no longer overrides a separate [`PopoverAnchor`](https://ariakit.com/reference/popover-anchor) as the popover positioning anchor. Thanks to [@bengry](https://github.com/bengry).
+- Updated dependencies: `@ariakit/components@0.1.9`
+
 ## 0.3.4
 
 This version adds explicit scroll element control for collection renderers, custom typeahead labels for composite items, and selected-state rendering for select items. It also improves disabled radio groups, hidden popover performance, nested <kbd>Esc</kbd> handling, dialogs across portals and shadow roots, multi-select combobox form values, typeahead with unmounted options, and composite virtual focus.

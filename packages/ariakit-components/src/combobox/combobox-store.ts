@@ -73,8 +73,10 @@ export function createComboboxStore({
   const composite = createCompositeStore({
     ...props,
     activeId,
-    includesBaseElement: defaultValue(
+    compositeElementInFocusOrder: defaultValue(
+      props.compositeElementInFocusOrder,
       props.includesBaseElement,
+      syncState?.compositeElementInFocusOrder,
       syncState?.includesBaseElement,
       true,
     ),
@@ -174,10 +176,12 @@ export function createComboboxStore({
     selectDefaultOptions.add("focusWrap");
   }
   if (
+    props.compositeElementInFocusOrder === undefined &&
     props.includesBaseElement === undefined &&
+    syncState?.compositeElementInFocusOrder === undefined &&
     syncState?.includesBaseElement === undefined
   ) {
-    selectDefaultOptions.add("includesBaseElement");
+    selectDefaultOptions.add("compositeElementInFocusOrder");
   }
   if (
     props.resetValueOnSelect === undefined &&
@@ -186,34 +190,40 @@ export function createComboboxStore({
     selectDefaultOptions.add("resetValueOnSelect");
   }
   let syncedSelectElement =
-    initialState.baseElement === initialState.selectElement
+    initialState.compositeElement === initialState.selectElement
       ? initialState.selectElement
       : null;
   const initialFallback =
     initialState.selectElement ||
-    initialState.baseElement ||
+    initialState.compositeElement ||
     initialState.disclosureElement;
   let syncedAnchorElement =
     initialState.anchorElement === initialFallback
       ? initialState.anchorElement
       : null;
 
-  // Use the select as the composite base until an input or explicit base
-  // element takes ownership. The input may mount after the select, so this must
-  // stay in sync rather than being decided by the select ref alone.
+  // Use the select as the composite element until an input or explicit
+  // composite element takes ownership. The input may mount after the select,
+  // so this must stay in sync rather than being decided by the select ref alone.
   setup(combobox, () =>
-    sync(combobox, ["baseElement", "selectElement"], (state) => {
+    sync(combobox, ["compositeElement", "selectElement"], (state) => {
       if (!state.selectElement && !syncedSelectElement) return;
-      if (state.baseElement && state.baseElement === state.selectElement) {
+      if (
+        state.compositeElement &&
+        state.compositeElement === state.selectElement
+      ) {
         syncedSelectElement = state.selectElement;
         return;
       }
-      if (state.baseElement && state.baseElement !== syncedSelectElement) {
+      if (
+        state.compositeElement &&
+        state.compositeElement !== syncedSelectElement
+      ) {
         syncedSelectElement = null;
         return;
       }
       syncedSelectElement = state.selectElement;
-      combobox.setState("baseElement", syncedSelectElement);
+      combobox.setState("compositeElement", syncedSelectElement);
     }),
   );
 
@@ -224,16 +234,20 @@ export function createComboboxStore({
   setup(combobox, () =>
     sync(combobox, ["selectElement"], (state) => {
       if (!state.selectElement) return;
-      const { focusLoop, focusWrap, includesBaseElement, resetValueOnSelect } =
-        combobox.getState();
+      const {
+        focusLoop,
+        focusWrap,
+        compositeElementInFocusOrder,
+        resetValueOnSelect,
+      } = combobox.getState();
       if (selectDefaultOptions.has("focusLoop")) {
         composite.setState("focusLoop", false);
       }
       if (selectDefaultOptions.has("focusWrap")) {
         composite.setState("focusWrap", false);
       }
-      if (selectDefaultOptions.has("includesBaseElement")) {
-        composite.setState("includesBaseElement", false);
+      if (selectDefaultOptions.has("compositeElementInFocusOrder")) {
+        composite.setState("compositeElementInFocusOrder", false);
       }
       if (selectDefaultOptions.has("resetValueOnSelect")) {
         combobox.setState("resetValueOnSelect", true);
@@ -247,10 +261,13 @@ export function createComboboxStore({
           composite.setState("focusWrap", focusWrap);
         }
         if (
-          selectDefaultOptions.has("includesBaseElement") &&
-          !current.includesBaseElement
+          selectDefaultOptions.has("compositeElementInFocusOrder") &&
+          !current.compositeElementInFocusOrder
         ) {
-          composite.setState("includesBaseElement", includesBaseElement);
+          composite.setState(
+            "compositeElementInFocusOrder",
+            compositeElementInFocusOrder,
+          );
         }
         if (
           selectDefaultOptions.has("resetValueOnSelect") &&
@@ -262,13 +279,18 @@ export function createComboboxStore({
     }),
   );
 
-  // Prefer the select as the popover anchor, then the composite base, then the
-  // disclosure. Track only the fallback assigned here so an explicit anchor
-  // keeps ownership.
+  // Prefer the select as the popover anchor, then the composite element, then
+  // the disclosure. Track only the fallback assigned here so an explicit
+  // anchor keeps ownership.
   setup(combobox, () =>
     sync(
       combobox,
-      ["anchorElement", "baseElement", "disclosureElement", "selectElement"],
+      [
+        "anchorElement",
+        "compositeElement",
+        "disclosureElement",
+        "selectElement",
+      ],
       (state) => {
         if (
           state.anchorElement &&
@@ -278,7 +300,9 @@ export function createComboboxStore({
           return;
         }
         const fallback =
-          state.selectElement || state.baseElement || state.disclosureElement;
+          state.selectElement ||
+          state.compositeElement ||
+          state.disclosureElement;
         syncedAnchorElement = fallback;
         combobox.setState("anchorElement", syncedAnchorElement);
       },
@@ -436,22 +460,15 @@ export function createComboboxStore({
 
   const setInputValue: ComboboxStore["setInputValue"] = (value) => {
     combobox.setState("inputValue", value);
-    combobox.setState("value", combobox.getState().inputValue);
   };
 
   const resetInputValue = () => setInputValue(initialState.inputValue);
 
   const setState: ComboboxStore["setState"] = (key, value) => {
-    if (key === "inputValue" || key === "value") {
-      combobox.setState(key, value);
-      if (key === "inputValue") {
-        combobox.setState("value", combobox.getState().inputValue);
-      } else {
-        combobox.setState("inputValue", combobox.getState().value);
-      }
-      return;
-    }
     selectDefaultOptions.delete(key);
+    if (key === "includesBaseElement") {
+      selectDefaultOptions.delete("compositeElementInFocusOrder");
+    }
     if (key === "selectedValue") {
       shouldSetDefaultSelectedValue = false;
     }
@@ -492,6 +509,12 @@ export interface ComboboxStoreState<
    * Defaults to `true`, or `false` when a
    * [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) is
    * rendered.
+   */
+  compositeElementInFocusOrder: CompositeStoreState<ComboboxStoreItem>["compositeElementInFocusOrder"];
+  /**
+   * @deprecated Use
+   * [`compositeElementInFocusOrder`](https://ariakit.com/reference/combobox-provider#compositeelementinfocusorder)
+   * instead.
    */
   includesBaseElement: CompositeStoreState<ComboboxStoreItem>["includesBaseElement"];
   /**
@@ -705,7 +728,7 @@ export interface ComboboxStoreOptions<
   extends
     StoreOptions<
       ComboboxStoreState<T>,
-      | "includesBaseElement"
+      | "compositeElementInFocusOrder"
       | "focusLoop"
       | "focusWrap"
       | "orientation"

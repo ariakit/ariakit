@@ -23,6 +23,7 @@ interface BenchmarkState {
   animating: boolean;
   anchorElement: unknown;
   arrowElement: unknown;
+  compositeElement: unknown;
   baseElement: unknown;
   busy: boolean;
   contentElement: unknown;
@@ -62,6 +63,7 @@ const initialState: BenchmarkState = {
   animating: false,
   anchorElement: null,
   arrowElement: null,
+  compositeElement: null,
   baseElement: null,
   busy: false,
   contentElement: null,
@@ -143,6 +145,7 @@ function createMergedStoreChain(count = 0) {
     omit(popoverStore, [
       "arrowElement",
       "anchorElement",
+      "compositeElement",
       "baseElement",
       "contentElement",
       "disclosureElement",

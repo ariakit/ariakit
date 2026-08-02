@@ -73,9 +73,9 @@ export const useComboboxCancel = createHook<TagName, ComboboxCancelOptions>(
       store?.setInputValue("");
     });
 
-    const baseElement = useStoreState(store, "baseElement");
-    useAttribute(baseElement, "id");
-    const comboboxId = baseElement?.id;
+    const compositeElement = useStoreState(store, "compositeElement");
+    useAttribute(compositeElement, "id");
+    const comboboxId = compositeElement?.id;
     const empty = useStoreState(
       store,
       ["inputValue"],

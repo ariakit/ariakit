@@ -51,7 +51,7 @@ function movingToAnotherItem(event: ReactMouseEvent<HTMLElement>) {
 /**
  * Returns props to create a `CompositeHover` component. The composite item that
  * receives these props will get focused on mouse move and lose focus to the
- * composite base element on mouse leave. This should be combined with the
+ * composite element on mouse leave. This should be combined with the
  * `CompositeItem` component, the `useCompositeItem` hook or any component/hook
  * that uses them underneath.
  * @see https://ariakit.com/components/composite
@@ -93,11 +93,11 @@ export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
       // the active id because the composite element will automatically set the
       // active id to null when it receives focus.
       if (!hasFocusWithin(event.currentTarget)) {
-        const baseElement = store?.getState().baseElement;
-        if (baseElement && !hasFocus(baseElement)) {
+        const compositeElement = store?.getState().compositeElement;
+        if (compositeElement && !hasFocus(compositeElement)) {
           // Hovering an item is not a request to move the page; the pointer is
           // already on what the user cares about.
-          baseElement.focus({ preventScroll: true });
+          compositeElement.focus({ preventScroll: true });
         }
       }
       store?.setActiveId(event.currentTarget.id);
@@ -116,7 +116,7 @@ export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
       if (!blurOnHoverEndProp(event)) return;
       store?.setActiveId(null);
       // Move focus to the composite element.
-      store?.getState().baseElement?.focus({ preventScroll: true });
+      store?.getState().compositeElement?.focus({ preventScroll: true });
     });
 
     const ref = useCallback((element: ElementWithSymbol | null) => {
@@ -137,7 +137,7 @@ export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
 
 /**
  * Renders an element in a composite widget that receives focus on mouse move
- * and loses focus to the composite base element on mouse leave.
+ * and loses focus to the composite element on mouse leave.
  *
  * This should be combined with the
  * [`CompositeItem`](https://ariakit.com/reference/composite-item) component.

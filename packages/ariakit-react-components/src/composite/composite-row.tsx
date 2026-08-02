@@ -55,11 +55,12 @@ export const useCompositeRow = createHook<TagName, CompositeRowOptions>(
 
     const id = useId(props.id);
 
-    const baseElement = useStoreState(store, "baseElement") || undefined;
+    const compositeElement =
+      useStoreState(store, "compositeElement") || undefined;
 
     const providerValue = useMemo(
-      () => ({ id, baseElement, ariaSetSize, ariaPosInSet }),
-      [id, baseElement, ariaSetSize, ariaPosInSet],
+      () => ({ id, compositeElement, ariaSetSize, ariaPosInSet }),
+      [id, compositeElement, ariaSetSize, ariaPosInSet],
     );
 
     props = useWrapElement(
