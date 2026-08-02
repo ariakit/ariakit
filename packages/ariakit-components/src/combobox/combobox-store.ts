@@ -460,21 +460,11 @@ export function createComboboxStore({
 
   const setInputValue: ComboboxStore["setInputValue"] = (value) => {
     combobox.setState("inputValue", value);
-    combobox.setState("value", combobox.getState().inputValue);
   };
 
   const resetInputValue = () => setInputValue(initialState.inputValue);
 
   const setState: ComboboxStore["setState"] = (key, value) => {
-    if (key === "inputValue" || key === "value") {
-      combobox.setState(key, value);
-      if (key === "inputValue") {
-        combobox.setState("value", combobox.getState().inputValue);
-      } else {
-        combobox.setState("inputValue", combobox.getState().value);
-      }
-      return;
-    }
     selectDefaultOptions.delete(key);
     if (key === "includesBaseElement") {
       selectDefaultOptions.delete("compositeElementInFocusOrder");

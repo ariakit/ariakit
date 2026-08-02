@@ -152,6 +152,7 @@ test("supports the deprecated focus order option", () => {
 
 test("syncs deprecated composite element state", () => {
   const store = createCompositeStore();
+  const stopStore = init(store);
   const compositeElement = document.createElement("div");
   const nextCompositeElement = document.createElement("div");
 
@@ -166,10 +167,24 @@ test("syncs deprecated composite element state", () => {
   store.setBaseElement(null);
   expect(store.getState().compositeElement).toBeNull();
   expect(store.getState().baseElement).toBeNull();
+  stopStore();
+});
+
+test("preserves a base element set before initialization", () => {
+  const store = createCompositeStore();
+  const compositeElement = document.createElement("div");
+
+  store.setBaseElement(compositeElement);
+  const stopStore = init(store);
+
+  expect(store.getState().compositeElement).toBe(compositeElement);
+  expect(store.getState().baseElement).toBe(compositeElement);
+  stopStore();
 });
 
 test("syncs deprecated composite focus order state", () => {
   const store = createCompositeStore();
+  const stopStore = init(store);
 
   store.setState("compositeElementInFocusOrder", true);
   expect(store.getState().compositeElementInFocusOrder).toBe(true);
@@ -178,6 +193,7 @@ test("syncs deprecated composite focus order state", () => {
   store.setState("includesBaseElement", false);
   expect(store.getState().compositeElementInFocusOrder).toBe(false);
   expect(store.getState().includesBaseElement).toBe(false);
+  stopStore();
 });
 
 test("syncs deprecated aliases with connected stores", () => {
