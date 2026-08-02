@@ -69,6 +69,22 @@ function FocusShiftGrid({
   );
 }
 
+/**
+ * Items far enough apart that reaching one with the keyboard can only be seen
+ * by the page scrolling to reveal it.
+ */
+function DistantComposite() {
+  return (
+    <Ariakit.CompositeProvider>
+      <Ariakit.Composite aria-label="Distant fruits">
+        <Ariakit.CompositeItem>Near fruit</Ariakit.CompositeItem>
+        <div style={{ height: 900 }} />
+        <Ariakit.CompositeItem>Distant fruit</Ariakit.CompositeItem>
+      </Ariakit.Composite>
+    </Ariakit.CompositeProvider>
+  );
+}
+
 export default function Example() {
   return (
     <main>
@@ -76,6 +92,9 @@ export default function Example() {
       <BasicComposite />
       <FocusShiftGrid prefix="0" />
       <FocusShiftGrid prefix="1" focusShift />
+      {/* Kept last so the first tab stop on the page stays in the basic
+      composite, which the existing navigation tests rely on. */}
+      <DistantComposite />
     </main>
   );
 }
