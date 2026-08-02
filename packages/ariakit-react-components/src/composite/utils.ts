@@ -1,30 +1,232 @@
 import * as Core from "@ariakit/components/composite/composite-store";
-import { getDocument, isTextField } from "@ariakit/utils";
-import type { CompositeStore } from "./composite-store.ts";
+import { subscribe } from "@ariakit/store";
+import {
+  getActiveElement,
+  getDocument,
+  isTextField,
+  isVisible,
+} from "@ariakit/utils";
+import type { CompositeStore, CompositeStoreState } from "./composite-store.ts";
 
 export const flipItems = Core.flipItems;
 export const findFirstEnabledItem = Core.findFirstEnabledItem;
 export const groupItemsByRows = Core.groupItemsByRows;
 
 /**
- * Runs a callback while preserving the document scroll position.
+ * Runs a callback while preserving the composite element's own scroll position.
+ *
+ * When virtual focus briefly moves DOM focus from a text input to an item and
+ * back, browsers reset the input's internal scroll position (e.g. scrollLeft).
+ * Only applies to text field composite elements, to avoid undoing an
+ * intentional scroll on scrollable containers.
  */
-export function withDocumentScrollPreserved(
-  element: Element,
+function withCompositeScrollPreserved(
+  store: CompositeStore,
   callback: () => void,
 ) {
-  const documentScroller = element.ownerDocument.scrollingElement;
-  if (!documentScroller) {
+  const { virtualFocus, compositeElement } = store.getState();
+  if (!virtualFocus || !compositeElement || !isTextField(compositeElement)) {
     callback();
     return;
   }
-  const left = documentScroller.scrollLeft;
-  const top = documentScroller.scrollTop;
-  try {
-    callback();
-  } finally {
-    documentScroller.scrollTo({ left, top, behavior: "instant" });
-  }
+  const savedScrollLeft = compositeElement.scrollLeft;
+  const savedScrollTop = compositeElement.scrollTop;
+  callback();
+  compositeElement.scrollLeft = savedScrollLeft;
+  compositeElement.scrollTop = savedScrollTop;
+}
+
+/**
+ * The popup the composite's items live in, when the composite store is also a
+ * popup store, as it is for combobox, select and menu.
+ */
+function getPopupElement(store: CompositeStore) {
+  const state = store.getState();
+  if (!("contentElement" in state)) return null;
+  // Narrowing through `in` widens this to `unknown`, but every store that has
+  // the key holds an element or null in it.
+  return state.contentElement as HTMLElement | null;
+}
+
+/**
+ * Whether DOM focus is currently inside the composite: on the composite element
+ * itself, on one of its items, or anywhere in its popup.
+ */
+export function ownsFocus(store: CompositeStore) {
+  const { compositeElement } = store.getState();
+  const activeElement = getActiveElement(compositeElement);
+  if (!activeElement) return false;
+  if (compositeElement?.contains(activeElement)) return true;
+  if (isItem(store, activeElement)) return true;
+  // Items are only recognizable once they register, which is a commit after
+  // they mount, and the composite element can sit outside the popup, so
+  // neither check above covers an option that has just focused itself.
+  return !!getPopupElement(store)?.contains(activeElement);
+}
+
+export interface PresentItemParams {
+  store: CompositeStore;
+  /**
+   * The item to present. Defaults to whichever item is active when the
+   * presentation runs, which lets an item that hasn't registered yet resolve
+   * later. When given, moving to a different item abandons the presentation,
+   * because the user has moved on.
+   */
+  id?: string | null;
+  /** Whether to move DOM focus to the item. */
+  focus?: boolean;
+  /**
+   * Whether to bring the item into view only when it is marked as a
+   * presentation target. Focus, when requested, still moves either way.
+   */
+  markedOnly?: boolean;
+  /** Whether to abandon the presentation if the composite loses DOM focus. */
+  requireFocus?: boolean;
+}
+
+/**
+ * Presents a composite item: moves DOM focus to it without letting the browser
+ * scroll, then brings it into view once its popup, if it's in one, has been
+ * positioned. Returns a function that abandons a presentation that hasn't run
+ * yet.
+ *
+ * Focus and scroll are separated on purpose. Moving focus is bookkeeping and
+ * must never move anything, so it can happen right away; bringing the item into
+ * view is the only part that can move the page, so it's the only part that has
+ * to wait for the popup to be placed.
+ */
+export function presentItem({
+  store,
+  id,
+  focus,
+  markedOnly,
+  requireFocus,
+}: PresentItemParams) {
+  let element: HTMLElement | null = null;
+  let focused = false;
+  let done = false;
+  let wasMounted = false;
+  let wasOpen = false;
+  const owner = requireFocus
+    ? getActiveElement(store.getState().compositeElement)
+    : null;
+  const stillOwnsFocus = (target: HTMLElement) => {
+    if (!owner) return true;
+    const activeElement = getActiveElement(owner);
+    // Whoever asked for this still has focus.
+    if (activeElement === owner) return true;
+    // A presentation that only scrolls has no reason to see focus move, so
+    // anything else taking it abandons the presentation. One that moves focus
+    // does: it hands focus to the item and the item hands it back, and the
+    // composite element it comes back to isn't always the one that asked,
+    // because that element can change identity while a popup opens.
+    if (!focus) return false;
+    if (activeElement === target) return true;
+    return ownsFocus(store);
+  };
+  /**
+   * Whether the request has stopped being relevant, judged from state alone.
+   * Runs on every pass, including the ones that are still waiting for the item
+   * to render, so a popup that opens and closes again while an item never
+   * arrives doesn't leave the request behind.
+   */
+  const abandonedByState = (state: ReturnType<typeof store.getState>) => {
+    // The popup opened and closed again. Closing content is never presented
+    // into. Both are latched so that "never opened" stays distinguishable from
+    // "was open, now closing": a popup that is permanently closed, such as an
+    // `alwaysVisible` menu, still presents its items.
+    if ("mounted" in state) {
+      if (state.mounted) {
+        wasMounted = true;
+      } else if (wasMounted) {
+        return true;
+      }
+    }
+    // `mounted` stays true for the whole exit transition of an animated popup,
+    // so it can't see a close on its own.
+    if ("open" in state) {
+      if (state.open) {
+        wasOpen = true;
+      } else if (wasOpen) {
+        return true;
+      }
+    }
+    // The user moved on. Clearing the active item doesn't count: the composite
+    // does that itself when its element takes focus, while the item it was
+    // showing is still the one worth presenting.
+    return id != null && state.activeId != null && state.activeId !== id;
+  };
+
+  /**
+   * The same question for the resolved item. Kept separate because it can only
+   * be answered once the item exists: before that there is nothing to compare
+   * focus against, and an option that has just focused itself isn't even
+   * recognizable as an item yet.
+   */
+  const abandonedByItem = (target: HTMLElement) => {
+    if (!target.isConnected) return true;
+    return !stillOwnsFocus(target);
+  };
+  let unsubscribe: (() => void) | undefined;
+  const cancel = () => {
+    done = true;
+    unsubscribe?.();
+  };
+  const present = () => {
+    if (done) return;
+    const state = store.getState();
+    if (abandonedByState(state)) return cancel();
+    if (!element) {
+      const item = getEnabledItem(
+        store,
+        id === undefined ? state.activeId : id,
+      );
+      // The item may not have rendered yet, so keep waiting for it.
+      if (!item?.element?.isConnected) return;
+      element = item.element;
+    }
+    if (abandonedByItem(element)) return cancel();
+    if (focus && !focused) {
+      focused = true;
+      const itemElement = element;
+      withCompositeScrollPreserved(store, () => {
+        itemElement.focus({ preventScroll: true });
+      });
+      // Focus handlers run synchronously and can reach back into the store, so
+      // a nested pass may have given up in the meantime.
+      if (done) return;
+    }
+    // Everything above moves nothing beyond DOM focus, so it runs as soon as
+    // it can. Everything below moves the page.
+    //
+    // Arriving at the composite is not by itself a request to move anything:
+    // the item under a resting pointer, or the one a stale active id points at,
+    // should be focused but stay where it is. Only an item the widget marked as
+    // its presentation target is worth bringing into view. This deliberately
+    // isn't an abandon reason, so that the focus above still happens.
+    if (markedOnly && !element.hasAttribute("data-autofocus")) return cancel();
+    // The item can't be shown yet: a popup that is still hidden while closed,
+    // or one that hasn't been positioned yet, would be scrolled to no visible
+    // effect or to the wrong place.
+    if (!isVisible(element)) return;
+    if ("unstable_placing" in state && state.unstable_placing) return;
+    cancel();
+    element.scrollIntoView({ block: "nearest", inline: "nearest" });
+  };
+  // `mounted` and `unstable_placing` live on the merged popup store, which the
+  // store type doesn't declare. Naming them keeps the store's keyed listener
+  // fast path, which an all-keys subscription would disable for every update
+  // while a presentation is pending.
+  const keys = [
+    "activeId",
+    "items",
+    "mounted",
+    "open",
+    "unstable_placing",
+  ] as Array<keyof CompositeStoreState>;
+  unsubscribe = subscribe(store, keys, present);
+  present();
+  return cancel;
 }
 
 /**

@@ -9,6 +9,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
+import { sync } from "@ariakit/store";
 import { invariant } from "@ariakit/utils";
 import {
   arrow,
@@ -35,6 +36,14 @@ import type { PopoverStore } from "./popover-store.ts";
 
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
+
+/**
+ * How many mounted popovers are currently asserting `unstable_placing` on each
+ * store. The state belongs to the store, so a StrictMode pair, a remount, a
+ * keyed replacement and a store swap are all answered by the same question:
+ * does anyone still own it once the deferred reset runs?
+ */
+const placingWriters = new WeakMap<PopoverStore, number>();
 
 interface AnchorRect {
   x?: number;
@@ -278,6 +287,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       (state) => (shouldPreserveTabOrder ? state.disclosureElement : null),
     );
     const popoverElement = useStoreState(store, "popoverElement");
+    const placing = useStoreState(store, "unstable_placing");
     const contentElement = useStoreState(store, "contentElement");
     const placement = useStoreState(store, "placement");
     const mounted = useStoreState(store, "mounted");
@@ -415,6 +425,11 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           transform: `translate3d(${x}px,${y}px,0)`,
         });
 
+        // The popover is placed once its position has been written, not when
+        // computePosition resolves, so anything waiting to move focus or scroll
+        // into it never acts on the pre-placement origin.
+        store?.setState("unstable_placing", false);
+
         // https://floating-ui.com/docs/arrow#usage
         if (arrow && pos.middlewareData.arrow) {
           const { x: arrowX, y: arrowY } = pos.middlewareData.arrow;
@@ -462,6 +477,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           // make sure this effect is still current before marking it ready.
           if (shouldCancelUpdate()) return;
           setPositioned(true);
+          store?.setState("unstable_placing", false);
         } else {
           await updatePosition();
         }
@@ -526,6 +542,53 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       return () => cancelAnimationFrame(raf);
     }, [mounted, domReady, popoverElement, contentElement]);
 
+    // Showing a popover makes it unplaced by definition, and that has to land
+    // before anything can read it. A layout effect can't publish it, because
+    // effects run children before parents, so the popover's own descendants
+    // would observe the previous value. Subscribing to the store instead means
+    // the transition is seen synchronously, wherever it comes from. Only a
+    // mounted Popover asserts this, so a popup with nothing to position, such
+    // as a combobox inside a plain dialog, is never left waiting.
+    // This state must never outlive its writer: it's asserted here and cleared
+    // by the positioning effect, both owned by this component, while the store
+    // it lives on can be owned by an ancestor. A Popover that unmounts, or that
+    // is pointed at another store, while its popup is mounted and not yet
+    // placed would otherwise leave "placing" set with nobody left to clear it,
+    // and everything waiting on it waits forever.
+    // Resetting straight from the teardown isn't enough either. Under React
+    // StrictMode effects are set up, torn down and set up again, and a reset
+    // would publish "placed" in between, which descendants remounting in that
+    // window would believe. Teardown and setup run in the same commit, so the
+    // reset is deferred by a microtask and skipped if anyone is still writing
+    // by the time it runs.
+    // Ownership is counted per store rather than per component, because the
+    // state is the store's. Tracking it on the instance gets both directions
+    // wrong: a keyed replacement can't cancel the outgoing instance's reset,
+    // and an instance whose `store` prop changes would cancel the reset queued
+    // for the store it just left, stranding that one forever.
+    useSafeLayoutEffect(() => {
+      if (!store) return;
+      const currentStore = store;
+      placingWriters.set(
+        currentStore,
+        (placingWriters.get(currentStore) ?? 0) + 1,
+      );
+      const desync = sync(currentStore, ["mounted"], (state) => {
+        currentStore.setState("unstable_placing", state.mounted);
+      });
+      return () => {
+        desync();
+        placingWriters.set(
+          currentStore,
+          (placingWriters.get(currentStore) ?? 1) - 1,
+        );
+        queueMicrotask(() => {
+          if (placingWriters.get(currentStore)) return;
+          currentStore.setState("unstable_placing", false);
+        });
+      };
+    }, [store]);
+
     const position = fixed ? "fixed" : "absolute";
 
     // Wrap our element in a div that will be used to position the popover.
@@ -563,11 +626,9 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     );
 
     props = {
-      // data-placing is not part of the public API. We're setting this here so
-      // we can wait for the popover to be positioned before other components
-      // move focus into it. For example, this attribute is observed by the
-      // Combobox component with the autoSelect behavior.
-      "data-placing": !positioned || undefined,
+      // data-placing is not part of the public API. It mirrors the store state
+      // of the same name so the two can't disagree.
+      "data-placing": placing || undefined,
       ...props,
       style: {
         position: "relative",
