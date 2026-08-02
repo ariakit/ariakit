@@ -1,6 +1,11 @@
 import { createStore, setup, sync } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
-import { flatten2DArray, reverseArray, defaultValue } from "@ariakit/utils";
+import {
+  chain,
+  defaultValue,
+  flatten2DArray,
+  reverseArray,
+} from "@ariakit/utils";
 import type { SetState } from "@ariakit/utils";
 import type {
   CollectionStoreFunctions,
@@ -9,6 +14,7 @@ import type {
   CollectionStoreState,
 } from "../collection/collection-store.ts";
 import { createCollectionStore } from "../collection/collection-store.ts";
+import { createCompositeStoreSetters } from "./__utils.ts";
 
 type Orientation = "horizontal" | "vertical" | "both";
 type CompositeStoreDirection = "next" | "previous" | "up" | "down";
@@ -19,6 +25,7 @@ interface NextOptions extends Pick<
   | "focusShift"
   | "focusLoop"
   | "focusWrap"
+  | "compositeElementInFocusOrder"
   | "includesBaseElement"
   | "renderedItems"
   | "rtl"
@@ -275,18 +282,30 @@ export function createCompositeStore<
     props.defaultActiveId,
   );
 
+  const compositeElement = defaultValue(
+    syncState?.compositeElement,
+    syncState?.baseElement,
+    null,
+  );
+
+  const compositeElementInFocusOrder = defaultValue(
+    props.compositeElementInFocusOrder,
+    props.includesBaseElement,
+    syncState?.compositeElementInFocusOrder,
+    syncState?.includesBaseElement,
+    activeId === null,
+  );
+
   const initialState: CompositeStoreState<T> = {
     ...collection.getState(),
     id:
       defaultValue(props.id, syncState?.id) ??
       `id-${Math.random().toString(36).slice(2, 8)}`,
     activeId,
-    baseElement: defaultValue(syncState?.baseElement, null),
-    includesBaseElement: defaultValue(
-      props.includesBaseElement,
-      syncState?.includesBaseElement,
-      activeId === null,
-    ),
+    compositeElement,
+    baseElement: compositeElement,
+    compositeElementInFocusOrder,
+    includesBaseElement: compositeElementInFocusOrder,
     moves: defaultValue(syncState?.moves, 0),
     orientation: defaultValue(
       props.orientation,
@@ -305,6 +324,30 @@ export function createCompositeStore<
   };
 
   const composite = createStore(initialState, collection, props.store);
+  const setters = createCompositeStoreSetters(composite);
+
+  setup(composite, () =>
+    chain(
+      sync(composite, ["compositeElement"], (state) => {
+        composite.setState("baseElement", state.compositeElement);
+      }),
+      sync(composite, ["baseElement"], (state) => {
+        composite.setState("compositeElement", state.baseElement);
+      }),
+      sync(composite, ["compositeElementInFocusOrder"], (state) => {
+        composite.setState(
+          "includesBaseElement",
+          state.compositeElementInFocusOrder,
+        );
+      }),
+      sync(composite, ["includesBaseElement"], (state) => {
+        composite.setState(
+          "compositeElementInFocusOrder",
+          state.includesBaseElement,
+        );
+      }),
+    ),
+  );
 
   // When the activeId is undefined, we need to find the first enabled item and
   // set it as the activeId.
@@ -322,13 +365,17 @@ export function createCompositeStore<
     options: NextOptions = {},
   ): string | null | undefined => {
     const defaultState = composite.getState();
+    const compositeElementInFocusOrder = defaultValue(
+      options.compositeElementInFocusOrder,
+      options.includesBaseElement,
+      defaultState.compositeElementInFocusOrder,
+    );
     const {
       skip = 0,
       activeId = defaultState.activeId,
       focusShift = defaultState.focusShift,
       focusLoop = defaultState.focusLoop,
       focusWrap = defaultState.focusWrap,
-      includesBaseElement = defaultState.includesBaseElement,
       renderedItems = defaultState.renderedItems,
       rtl = defaultState.rtl,
     } = options;
@@ -347,7 +394,12 @@ export function createCompositeStore<
     // composites, without wrapping, shifting, or skipping. The generic logic
     // below copies the rendered items array multiple times, which is wasteful
     // when this function runs on every keyboard navigation event.
-    if (!skip && !focusWrap && !includesBaseElement && activeId != null) {
+    if (
+      !skip &&
+      !focusWrap &&
+      !compositeElementInFocusOrder &&
+      activeId != null
+    ) {
       const canFastScan = !isVerticalDirection
         ? true
         : !canShift && !renderedItems.some((item) => item.rowId != null);
@@ -452,9 +504,11 @@ export function createCompositeStore<
     // one-dimensional composites that don't loop, pressing right or down keys
     // also doesn't focus on the composite container element.
     const hasNullItem = isNextDirection
-      ? (!isGrid || isVerticalDirection) && canLoop && includesBaseElement
+      ? (!isGrid || isVerticalDirection) &&
+        canLoop &&
+        compositeElementInFocusOrder
       : isVerticalDirection
-        ? includesBaseElement
+        ? compositeElementInFocusOrder
         : false;
 
     if (canLoop) {
@@ -503,8 +557,7 @@ export function createCompositeStore<
   return {
     ...collection,
     ...composite,
-
-    setBaseElement: (element) => composite.setState("baseElement", element),
+    ...setters,
     setActiveId: (id) => composite.setState("activeId", id),
 
     move: (id) => {
@@ -564,6 +617,12 @@ export interface CompositeStoreState<
    * Live examples:
    * - [Sliding Menu](https://ariakit.com/examples/menu-slide)
    */
+  compositeElement: HTMLElement | null;
+  /**
+   * The composite element itself.
+   *
+   * @deprecated Use `compositeElement` instead.
+   */
   baseElement: HTMLElement | null;
   /**
    * If enabled, the composite element will act as an
@@ -619,7 +678,7 @@ export interface CompositeStoreState<
    *   [`orientation`](https://ariakit.com/reference/composite-provider#orientation)
    *   is `vertical` or not set.
    * - If
-   *   [`includesBaseElement`](https://ariakit.com/reference/composite-provider#includesbaseelement)
+   *   [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder)
    *   is set to `true` (or
    *   [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    *   is initially set to `null`), the composite element will be focused in
@@ -637,7 +696,7 @@ export interface CompositeStoreState<
    * - `vertical` loops only from the last column item to the first item in the
    *   column row.
    * - If
-   *   [`includesBaseElement`](https://ariakit.com/reference/composite-provider#includesbaseelement)
+   *   [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder)
    *   is set to `true` (or
    *   [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
    *   is initially set to `null`), vertical loop will have no effect as moving
@@ -695,7 +754,7 @@ export interface CompositeStoreState<
    */
   moves: number;
   /**
-   * Indicates if the composite base element (the one with a [composite
+   * Indicates if the composite element (the one with a [composite
    * role](https://w3c.github.io/aria/#composite)) should be part of the focus
    * order when navigating with arrow keys. In other words, moving to the
    * previous element when the first item is in focus will focus on the
@@ -708,18 +767,26 @@ export interface CompositeStoreState<
    * - [Command Menu](https://ariakit.com/examples/dialog-combobox-command-menu)
    * @default false
    */
+  compositeElementInFocusOrder: boolean;
+  /**
+   * Whether the composite element is in the arrow-key focus order.
+   *
+   * @deprecated Use
+   * [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder)
+   * instead.
+   */
   includesBaseElement: boolean;
   /**
    * The current active item `id`. The active item is the element within the
    * composite widget that has either DOM or virtual focus (in case
    * [`virtualFocus`](https://ariakit.com/reference/composite-provider#virtualfocus)
    * is enabled).
-   * - `null` represents the base composite element (the one with a [composite
+   * - `null` represents the composite element (the one with a [composite
    *   role](https://w3c.github.io/aria/#composite)). Users will be able to
    *   navigate out of it using arrow keys.
    * - If `activeId` is initially set to `null`, the
-   *   [`includesBaseElement`](https://ariakit.com/reference/composite-provider#includesbaseelement)
-   *   prop will also default to `true`, which means the base composite element
+   *   [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder)
+   *   prop will also default to `true`, which means the composite element
    *   itself will have focus and users will be able to navigate to it using
    *   arrow keys.
    *
@@ -733,7 +800,15 @@ export interface CompositeStoreFunctions<
   T extends CompositeStoreItem = CompositeStoreItem,
 > extends CollectionStoreFunctions<T> {
   /**
-   * Sets the `baseElement` state.
+   * Sets the `compositeElement` state.
+   */
+  setCompositeElement: SetState<CompositeStoreState<T>["compositeElement"]>;
+  /**
+   * Sets the composite element state.
+   *
+   * @deprecated Use
+   * [`setCompositeElement`](https://ariakit.com/reference/use-composite-store#setcompositeelement)
+   * instead.
    */
   setBaseElement: SetState<CompositeStoreState<T>["baseElement"]>;
   /**
@@ -851,9 +926,17 @@ export interface CompositeStoreOptions<
       | "focusLoop"
       | "focusWrap"
       | "focusShift"
-      | "includesBaseElement"
+      | "compositeElementInFocusOrder"
       | "activeId"
     > {
+  /**
+   * Whether the composite element is in the arrow-key focus order.
+   *
+   * @deprecated Use
+   * [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder)
+   * instead.
+   */
+  includesBaseElement?: CompositeStoreState<T>["includesBaseElement"];
   /**
    * The composite item id that should be active by default when the composite
    * widget is rendered. If `null`, the composite element itself will have focus

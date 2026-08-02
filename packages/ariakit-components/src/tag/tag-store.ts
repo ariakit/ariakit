@@ -2,6 +2,7 @@ import { createStore, setup, sync } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { applyState, defaultValue, UndoManager } from "@ariakit/utils";
 import type { SetState } from "@ariakit/utils";
+import { createCompositeStoreSetters } from "../composite/__utils.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreItem,
@@ -31,6 +32,7 @@ export function createTagStore(props: TagStoreProps = {}): TagStore {
   };
 
   const tag = createStore(initialState, composite, props.store);
+  const compositeSetters = createCompositeStoreSetters(tag);
 
   // Set the input element as the default active element, that is, the element
   // that will receive focus when the composite widget is focused.
@@ -64,6 +66,7 @@ export function createTagStore(props: TagStoreProps = {}): TagStore {
   return {
     ...composite,
     ...tag,
+    ...compositeSetters,
     setInputElement: (inputElement) =>
       tag.setState("inputElement", inputElement),
 

@@ -416,13 +416,13 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (!canAutoSelect && (!resetValueOnSelect || userScrolledRef.current))
         return;
       const {
-        baseElement,
+        compositeElement,
         contentElement,
         activeId,
         selectElement,
         selectedValue,
       } = store.getState();
-      if (baseElement && !hasFocus(baseElement)) return;
+      if (compositeElement && !hasFocus(compositeElement)) return;
       // The data-placing attribute is an internal state added by the Popover
       // component. We can observe it to know when the popover is done placing
       // itself. This is to prevent the focus from moving to the first item
@@ -633,7 +633,8 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
 
     const onMouseDownProp = props.onMouseDown;
     const blurActiveItemOnClickProp = useBooleanEvent(
-      blurActiveItemOnClick ?? (() => store.getState().includesBaseElement),
+      blurActiveItemOnClick ??
+        (() => store.getState().compositeElementInFocusOrder),
     );
     const setValueOnClickProp = useBooleanEvent(setValueOnClick);
     const showOnClickProp = useBooleanEvent(showOnClick ?? canShow);
@@ -723,13 +724,13 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     });
 
     const composite = props.composite !== false;
-    const [, setBaseElement] = useTransactionState(
-      composite ? null : store.setBaseElement,
+    const [, setCompositeElement] = useTransactionState(
+      composite ? null : store.setCompositeElement,
     );
-    const baseElement = useStoreState(
+    const compositeElement = useStoreState(
       store,
-      multiSelectable ? ["baseElement"] : [],
-      (state) => (multiSelectable ? state.baseElement : null),
+      multiSelectable ? ["compositeElement"] : [],
+      (state) => (multiSelectable ? state.compositeElement : null),
     );
 
     props = useWrapElement(
@@ -737,7 +738,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       (element) => {
         if (!name) return element;
         if (!Array.isArray(selectedValue)) return element;
-        if (composite && !baseElement) return element;
+        if (composite && !compositeElement) return element;
         return (
           <>
             {element}
@@ -754,7 +755,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
           </>
         );
       },
-      [name, form, formDisabled, composite, baseElement, selectedValue],
+      [name, form, formDisabled, composite, compositeElement, selectedValue],
     );
 
     const htmlProps = {
@@ -773,7 +774,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       ref: useMergeRefs(
         ref,
         store.setInputElement,
-        composite ? undefined : setBaseElement,
+        composite ? undefined : setCompositeElement,
         props.ref,
       ),
       onChange,
@@ -934,7 +935,7 @@ export interface ComboboxOptions<
    * Determines if the highlighted item should lose focus when the user clicks
    * on the combobox input element. By default, this prop's value is set
    * according to the
-   * [`includesBaseElement`](https://ariakit.com/reference/combobox-provider#includesbaseelement)
+   * [`compositeElementInFocusOrder`](https://ariakit.com/reference/combobox-provider#compositeelementinfocusorder)
    * value.
    */
   blurActiveItemOnClick?: BooleanOrCallback<MouseEvent<HTMLElement>>;

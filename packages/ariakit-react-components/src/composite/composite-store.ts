@@ -24,7 +24,11 @@ export function useCompositeStoreProps<T extends Core.CompositeStore>(
 ) {
   store = useCollectionStoreProps(store, update, props);
   useStoreProps(store, props, "activeId", "setActiveId");
-  useStoreProps(store, props, "includesBaseElement");
+  const focusOrderProps = {
+    compositeElementInFocusOrder:
+      props.compositeElementInFocusOrder ?? props.includesBaseElement,
+  };
+  useStoreProps(store, focusOrderProps, "compositeElementInFocusOrder");
   useStoreProps(store, props, "virtualFocus");
   useStoreProps(store, props, "orientation");
   useStoreProps(store, props, "rtl");
@@ -71,17 +75,49 @@ export interface CompositeStoreItem extends Core.CompositeStoreItem {}
 export interface CompositeStoreState<
   T extends CompositeStoreItem = CompositeStoreItem,
 >
-  extends Core.CompositeStoreState<T>, CollectionStoreState<T> {}
+  extends Core.CompositeStoreState<T>, CollectionStoreState<T> {
+  /**
+   * The composite element itself.
+   *
+   * @deprecated Use `compositeElement` instead.
+   */
+  baseElement: Core.CompositeStoreState<T>["baseElement"];
+  /**
+   * Whether the composite element is in the arrow-key focus order.
+   *
+   * @deprecated Use
+   * [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder)
+   * instead.
+   */
+  includesBaseElement: Core.CompositeStoreState<T>["includesBaseElement"];
+}
 
 export interface CompositeStoreFunctions<
   T extends CompositeStoreItem = CompositeStoreItem,
 >
-  extends Core.CompositeStoreFunctions<T>, CollectionStoreFunctions<T> {}
+  extends Core.CompositeStoreFunctions<T>, CollectionStoreFunctions<T> {
+  /**
+   * Sets the composite element state.
+   *
+   * @deprecated Use
+   * [`setCompositeElement`](https://ariakit.com/reference/use-composite-store#setcompositeelement)
+   * instead.
+   */
+  setBaseElement: Core.CompositeStoreFunctions<T>["setBaseElement"];
+}
 
 export interface CompositeStoreOptions<
   T extends CompositeStoreItem = CompositeStoreItem,
 >
   extends Core.CompositeStoreOptions<T>, CollectionStoreOptions<T> {
+  /**
+   * Whether the composite element is in the arrow-key focus order.
+   *
+   * @deprecated Use
+   * [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder)
+   * instead.
+   */
+  includesBaseElement?: Core.CompositeStoreOptions<T>["includesBaseElement"];
   /**
    * A callback that gets called when the
    * [`activeId`](https://ariakit.com/reference/composite-provider#activeid)
@@ -93,7 +129,16 @@ export interface CompositeStoreOptions<
 export interface CompositeStoreProps<
   T extends CompositeStoreItem = CompositeStoreItem,
 >
-  extends CompositeStoreOptions<T>, Core.CompositeStoreProps<T> {}
+  extends CompositeStoreOptions<T>, Core.CompositeStoreProps<T> {
+  /**
+   * Whether the composite element is in the arrow-key focus order.
+   *
+   * @deprecated Use
+   * [`compositeElementInFocusOrder`](https://ariakit.com/reference/composite-provider#compositeelementinfocusorder)
+   * instead.
+   */
+  includesBaseElement?: Core.CompositeStoreProps<T>["includesBaseElement"];
+}
 
 export interface CompositeStore<
   T extends CompositeStoreItem = CompositeStoreItem,

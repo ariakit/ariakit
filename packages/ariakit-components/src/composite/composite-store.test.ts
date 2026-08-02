@@ -1,5 +1,12 @@
+import { createStore, init } from "@ariakit/store";
 import { expect, test } from "vitest";
-import type { CompositeStoreItem } from "./composite-store.ts";
+import { createComboboxStore } from "../combobox/combobox-store.ts";
+import { createMenuStore } from "../menu/menu-store.ts";
+import { createRadioStore } from "../radio/radio-store.ts";
+import { createSelectStore } from "../select/select-store.ts";
+import { createTabStore } from "../tab/tab-store.ts";
+import { createTagStore } from "../tag/tag-store.ts";
+import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
 import { createCompositeStore, groupItemsByRows } from "./composite-store.ts";
 
 function createComposite(items: CompositeStoreItem[]) {
@@ -121,7 +128,7 @@ test("supports the deprecated skip number overload", () => {
   expect(store.up(1)).toBe("a1");
 });
 
-test("loops through items and the base element", () => {
+test("loops through items and the composite element", () => {
   const store = createComposite([{ id: "one" }, { id: "two" }]);
 
   expect(store.next({ activeId: "two", focusLoop: true })).toBe("one");
@@ -130,10 +137,142 @@ test("loops through items and the base element", () => {
     store.next({
       activeId: "two",
       focusLoop: true,
-      includesBaseElement: true,
+      compositeElementInFocusOrder: true,
     }),
   ).toBeNull();
   expect(store.next({ activeId: null })).toBe("one");
+});
+
+test("supports the deprecated focus order option", () => {
+  const store = createComposite([{ id: "one" }, { id: "two" }]);
+
+  expect(
+    store.next({
+      activeId: "two",
+      focusLoop: true,
+      includesBaseElement: true,
+    }),
+  ).toBeNull();
+});
+
+test("syncs deprecated composite element state", () => {
+  const store = createCompositeStore();
+  const compositeElement = document.createElement("div");
+  const nextCompositeElement = document.createElement("div");
+
+  store.setCompositeElement(compositeElement);
+  expect(store.getState().compositeElement).toBe(compositeElement);
+  expect(store.getState().baseElement).toBe(compositeElement);
+
+  store.setState("baseElement", nextCompositeElement);
+  expect(store.getState().compositeElement).toBe(nextCompositeElement);
+  expect(store.getState().baseElement).toBe(nextCompositeElement);
+
+  store.setBaseElement(null);
+  expect(store.getState().compositeElement).toBeNull();
+  expect(store.getState().baseElement).toBeNull();
+});
+
+test("syncs deprecated composite focus order state", () => {
+  const store = createCompositeStore();
+
+  store.setState("compositeElementInFocusOrder", true);
+  expect(store.getState().compositeElementInFocusOrder).toBe(true);
+  expect(store.getState().includesBaseElement).toBe(true);
+
+  store.setState("includesBaseElement", false);
+  expect(store.getState().compositeElementInFocusOrder).toBe(false);
+  expect(store.getState().includesBaseElement).toBe(false);
+});
+
+test("syncs deprecated aliases with connected stores", () => {
+  const compositeElement = document.createElement("div");
+  const nextCompositeElement = document.createElement("div");
+  const legacySource = createStore({
+    baseElement: compositeElement,
+    includesBaseElement: true,
+  });
+  const legacyStore = createCompositeStore({ store: legacySource });
+  const stopLegacyStore = init(legacyStore);
+
+  expect(legacyStore.getState().compositeElement).toBe(compositeElement);
+  expect(legacyStore.getState().compositeElementInFocusOrder).toBe(true);
+
+  legacySource.setState("baseElement", nextCompositeElement);
+  legacySource.setState("includesBaseElement", false);
+  expect(legacyStore.getState().compositeElement).toBe(nextCompositeElement);
+  expect(legacyStore.getState().compositeElementInFocusOrder).toBe(false);
+
+  legacyStore.setCompositeElement(compositeElement);
+  legacyStore.setState("compositeElementInFocusOrder", true);
+  expect(legacySource.getState().baseElement).toBe(compositeElement);
+  expect(legacySource.getState().includesBaseElement).toBe(true);
+  stopLegacyStore();
+
+  const source = createStore({
+    compositeElement,
+    compositeElementInFocusOrder: true,
+  });
+  const store = createCompositeStore({ store: source });
+  const stopStore = init(store);
+
+  expect(store.getState().baseElement).toBe(compositeElement);
+  expect(store.getState().includesBaseElement).toBe(true);
+
+  source.setState("compositeElement", nextCompositeElement);
+  source.setState("compositeElementInFocusOrder", false);
+  expect(store.getState().baseElement).toBe(nextCompositeElement);
+  expect(store.getState().includesBaseElement).toBe(false);
+
+  store.setBaseElement(compositeElement);
+  store.setState("includesBaseElement", true);
+  expect(source.getState().compositeElement).toBe(compositeElement);
+  expect(source.getState().compositeElementInFocusOrder).toBe(true);
+  stopStore();
+});
+
+const derivedCompositeStores: Array<[string, () => CompositeStore]> = [
+  ["combobox", () => createComboboxStore()],
+  ["menu", () => createMenuStore()],
+  ["radio", () => createRadioStore()],
+  ["select", () => createSelectStore()],
+  ["tab", () => createTabStore()],
+  ["tag", () => createTagStore()],
+];
+
+test.each(derivedCompositeStores)(
+  "syncs deprecated aliases on uninitialized %s stores",
+  (_, createStore) => {
+    const store = createStore();
+    const compositeElement = document.createElement("div");
+    const nextCompositeElement = document.createElement("div");
+
+    store.setCompositeElement(compositeElement);
+    expect(store.getState().compositeElement).toBe(compositeElement);
+    expect(store.getState().baseElement).toBe(compositeElement);
+
+    store.setState("baseElement", nextCompositeElement);
+    expect(store.getState().compositeElement).toBe(nextCompositeElement);
+    expect(store.getState().baseElement).toBe(nextCompositeElement);
+
+    store.setState("compositeElementInFocusOrder", true);
+    expect(store.getState().compositeElementInFocusOrder).toBe(true);
+    expect(store.getState().includesBaseElement).toBe(true);
+
+    store.setState("includesBaseElement", false);
+    expect(store.getState().compositeElementInFocusOrder).toBe(false);
+    expect(store.getState().includesBaseElement).toBe(false);
+  },
+);
+
+test("prefers new composite focus order option", () => {
+  const store = createCompositeStore({
+    compositeElementInFocusOrder: false,
+    includesBaseElement: true,
+  });
+
+  expect(store.getState().compositeElementInFocusOrder).toBe(false);
+  expect(store.getState().includesBaseElement).toBe(false);
 });
 
 test("inverts horizontal navigation in RTL", () => {

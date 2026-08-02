@@ -84,24 +84,24 @@ export const useComboboxDisclosure = createHook<
     onClickProp?.(event);
     if (event.defaultPrevented) return;
     if (!store) return;
-    const { baseElement } = store.getState();
-    store.setDisclosureElement(baseElement);
+    const { compositeElement } = store.getState();
+    store.setDisclosureElement(compositeElement);
   });
 
-  const baseElement = useStoreState(store, "baseElement");
+  const compositeElement = useStoreState(store, "compositeElement");
   const disclosureElement = useStoreState(store, "disclosureElement");
   const open = useStoreState(store, "open");
 
   // The combobox input should remain the disclosure element so focus and Escape
   // handling keep working when the popover is already open on mount.
   useSafeLayoutEffect(() => {
-    if (baseElement) {
-      store.setDisclosureElement(baseElement);
+    if (compositeElement) {
+      store.setDisclosureElement(compositeElement);
       return;
     }
     if (disclosureElement?.isConnected) return;
     store.setDisclosureElement(null);
-  }, [store, baseElement, disclosureElement]);
+  }, [store, compositeElement, disclosureElement]);
 
   props = {
     children,

@@ -119,29 +119,32 @@ function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
 // When virtual focus briefly moves DOM focus from a text input to an
 // item and back, browsers reset the input's internal scroll position
 // (e.g., scrollLeft). This helper preserves and restores scroll across
-// such focus transitions. Only applies to text field base elements to
+// such focus transitions. Only applies to text field composite elements to
 // avoid undoing intentional scrollIntoView on scrollable containers.
-function withBaseScrollPreserved(store: CompositeStore, callback: () => void) {
-  const { virtualFocus, baseElement } = store.getState();
-  if (!virtualFocus || !baseElement || !isTextField(baseElement)) {
+function withCompositeScrollPreserved(
+  store: CompositeStore,
+  callback: () => void,
+) {
+  const { virtualFocus, compositeElement } = store.getState();
+  if (!virtualFocus || !compositeElement || !isTextField(compositeElement)) {
     callback();
     return;
   }
-  const savedScrollLeft = baseElement.scrollLeft;
-  const savedScrollTop = baseElement.scrollTop;
+  const savedScrollLeft = compositeElement.scrollLeft;
+  const savedScrollTop = compositeElement.scrollTop;
   callback();
-  baseElement.scrollLeft = savedScrollLeft;
-  baseElement.scrollTop = savedScrollTop;
+  compositeElement.scrollLeft = savedScrollLeft;
+  compositeElement.scrollTop = savedScrollTop;
 }
 
 function useScheduleFocus(store: CompositeStore) {
   const [scheduled, setScheduled] = useState<"focus" | "scroll" | false>(false);
   const scrollIdRef = useRef<string | undefined>(undefined);
-  const scrollBaseElementRef = useRef<HTMLElement | null>(null);
+  const scrollCompositeElementRef = useRef<HTMLElement | null>(null);
   const scrollBeforePaintRef = useRef(false);
   const scheduleFocus = useCallback(() => setScheduled("focus"), []);
   const scheduleScroll = useCallback(
-    (baseElement: HTMLElement, beforeNextPaint = false) => {
+    (compositeElement: HTMLElement, beforeNextPaint = false) => {
       const state = store.getState();
       const selectMode = "selectElement" in state && !!state.selectElement;
       if (!selectMode) return;
@@ -151,7 +154,7 @@ function useScheduleFocus(store: CompositeStore) {
       if (activeElement && !activeElement.hasAttribute("data-autofocus"))
         return;
       scrollIdRef.current = activeId;
-      scrollBaseElementRef.current = baseElement;
+      scrollCompositeElementRef.current = compositeElement;
       scrollBeforePaintRef.current = beforeNextPaint;
       setScheduled("scroll");
     },
@@ -160,7 +163,7 @@ function useScheduleFocus(store: CompositeStore) {
   const cancelScroll = useCallback(() => {
     if (scrollIdRef.current === undefined) return;
     scrollIdRef.current = undefined;
-    scrollBaseElementRef.current = null;
+    scrollCompositeElementRef.current = null;
     scrollBeforePaintRef.current = false;
     setScheduled((scheduled) => (scheduled === "scroll" ? false : scheduled));
   }, []);
@@ -183,24 +186,28 @@ function useScheduleFocus(store: CompositeStore) {
     const focus = scheduled === "focus";
     const scrollBeforePaint = scrollBeforePaintRef.current;
     const present = () => {
-      const scrollBaseElement = scrollBaseElementRef.current;
+      const scrollCompositeElement = scrollCompositeElementRef.current;
       scrollIdRef.current = undefined;
-      scrollBaseElementRef.current = null;
+      scrollCompositeElementRef.current = null;
       scrollBeforePaintRef.current = false;
       setScheduled(false);
-      if (!focus && (!scrollBaseElement || !hasFocus(scrollBaseElement)))
+      if (
+        !focus &&
+        (!scrollCompositeElement || !hasFocus(scrollCompositeElement))
+      ) {
         return;
-      withBaseScrollPreserved(store, () => {
+      }
+      withCompositeScrollPreserved(store, () => {
         if (activeElement.hasAttribute("data-autofocus")) {
           withDocumentScrollPreserved(activeElement, () => {
             if (focus) {
               const state = store.getState();
               const selectMode =
                 "selectElement" in state && !!state.selectElement;
-              const { baseElement } = state;
-              if (selectMode && baseElement) {
+              const { compositeElement } = state;
+              if (selectMode && compositeElement) {
                 activeElement.focus({ preventScroll: true });
-                scheduleScroll(baseElement, true);
+                scheduleScroll(compositeElement, true);
               } else {
                 focusIntoView(activeElement);
               }
@@ -248,15 +255,15 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   previousElementRef,
 }: CompositeFocusOnMoveProps) {
   const moves = useStoreState(store, "moves");
-  // The base element is also tracked so the move-to-container effect below can
-  // run once it becomes available. It's published to the store through a ref
-  // callback and a transaction effect on the parent composite component, which
-  // run after this child component's effects. Without this dependency, the
-  // effect could read a not-yet-published base element and never retry, for
-  // example when the `composite` prop switches from `false` to `true` after a
-  // `move(null)` call. The base element rarely changes, so this doesn't add
-  // renders while navigating.
-  const baseElement = useStoreState(store, "baseElement");
+  // The composite element is also tracked so the move-to-container effect
+  // below can run once it becomes available. It's published to the store
+  // through a ref callback and a transaction effect on the parent composite
+  // component, which run after this child component's effects. Without this
+  // dependency, the effect could read a not-yet-published composite element
+  // and never retry, for example when the `composite` prop switches from
+  // `false` to `true` after a `move(null)` call. The composite element rarely
+  // changes, so this doesn't add renders while navigating.
+  const compositeElement = useStoreState(store, "compositeElement");
 
   // Focus on the active item element.
   useEffect(() => {
@@ -265,13 +272,14 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
     const { activeId } = store.getState();
     const itemElement = getEnabledItem(store, activeId)?.element;
     if (itemElement) {
-      withBaseScrollPreserved(store, () => focusIntoView(itemElement));
+      withCompositeScrollPreserved(store, () => focusIntoView(itemElement));
       return;
     }
     if (activeId == null) return;
     const ownsFocus = (element: Element | null) =>
-      !!element && (!!baseElement?.contains(element) || isItem(store, element));
-    const doc = baseElement?.ownerDocument;
+      !!element &&
+      (!!compositeElement?.contains(element) || isItem(store, element));
+    const doc = compositeElement?.ownerDocument;
     let unsubscribe = () => {};
     const cleanup = () => {
       unsubscribe();
@@ -284,7 +292,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
     // A programmatic move made while focus is already outside should keep its
     // focusOnMove behavior. If focus starts inside, stop retrying once the user
     // moves it elsewhere before the target element registers.
-    if (ownsFocus(getActiveElement(baseElement))) {
+    if (ownsFocus(getActiveElement(compositeElement))) {
       doc?.addEventListener("focusin", onFocusIn, true);
     }
     unsubscribe = subscribe(store, ["activeId", "items"], (state) => {
@@ -295,34 +303,34 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
       const itemElement = getEnabledItem(store, activeId)?.element;
       if (!itemElement) return;
       cleanup();
-      withBaseScrollPreserved(store, () => focusIntoView(itemElement));
+      withCompositeScrollPreserved(store, () => focusIntoView(itemElement));
     });
     return cleanup;
-  }, [store, moves, focusOnMove, baseElement]);
+  }, [store, moves, focusOnMove, compositeElement]);
 
   // If composite.move(null) has been called, the composite container should
   // receive focus.
   useSafeLayoutEffect(() => {
     if (!moves) return;
-    if (!baseElement) return;
+    if (!compositeElement) return;
     const { activeId } = store.getState();
     const isSelfActive = activeId === null;
     if (!isSelfActive) return;
     const previousElement = previousElementRef.current;
     // We have to clean up the previous element ref so an additional blur
     // event is not fired on it, for example, when looping through items while
-    // includesBaseElement is true.
+    // compositeElementInFocusOrder is true.
     previousElementRef.current = null;
     if (previousElement) {
       // We fire a blur event on the previous active item before moving focus
       // to the composite element so the events are dispatched in the right
       // order (blur, then focus).
-      fireBlurEvent(previousElement, { relatedTarget: baseElement });
+      fireBlurEvent(previousElement, { relatedTarget: compositeElement });
     }
-    if (!hasFocus(baseElement)) {
-      baseElement.focus();
+    if (!hasFocus(compositeElement)) {
+      compositeElement.focus();
     }
-  }, [store, moves, baseElement]);
+  }, [store, moves, compositeElement]);
 
   return null;
 });
@@ -362,8 +370,8 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     const { scheduleFocus, scheduleScroll, cancelScroll } =
       useScheduleFocus(store);
 
-    const [, setBaseElement] = useTransactionState(
-      composite ? store.setBaseElement : null,
+    const [, setCompositeElement] = useTransactionState(
+      composite ? store.setCompositeElement : null,
     );
 
     const virtualFocus = useStoreState(store, "virtualFocus");
@@ -476,9 +484,9 @@ export const useComposite = createHook<TagName, CompositeOptions>(
       cancelScroll();
       if (event.defaultPrevented) return;
       if (!store) return;
-      const { virtualFocus, activeId, baseElement } = store.getState();
+      const { virtualFocus, activeId, compositeElement } = store.getState();
       if (!virtualFocus) return;
-      if (event.currentTarget !== baseElement) return;
+      if (event.currentTarget !== compositeElement) return;
       // When virtualFocus is set to true, we move focus from the composite
       // container (this element) to the composite item that is being selected.
       // Then we move focus back to the composite container. This is so we can
@@ -656,7 +664,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     props = {
       "aria-activedescendant": activeDescendant,
       ...props,
-      ref: useMergeRefs(ref, setBaseElement, props.ref),
+      ref: useMergeRefs(ref, setCompositeElement, props.ref),
       onKeyDownCapture,
       onKeyUpCapture,
       onFocusCapture,

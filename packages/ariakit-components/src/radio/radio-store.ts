@@ -2,6 +2,7 @@ import { createStore } from "@ariakit/store";
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { defaultValue } from "@ariakit/utils";
 import type { SetState } from "@ariakit/utils";
+import { createCompositeStoreSetters } from "../composite/__utils.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -31,10 +32,12 @@ export function createRadioStore(props: RadioStoreProps = {}): RadioStore {
   };
 
   const radio = createStore(initialState, composite, props.store);
+  const compositeSetters = createCompositeStoreSetters(radio);
 
   return {
     ...composite,
     ...radio,
+    ...compositeSetters,
     setValue: (value) => radio.setState("value", value),
   };
 }

@@ -97,20 +97,20 @@ test("syncs the combobox element with the anchor element", () => {
   store.setDisclosureElement(disclosure);
   expect(store.getState().anchorElement).toBe(disclosure);
 
-  store.setBaseElement(combobox);
+  store.setCompositeElement(combobox);
   expect(store.getState().anchorElement).toBe(combobox);
 
   store.setDisclosureElement(nextDisclosure);
   expect(store.getState().anchorElement).toBe(combobox);
 
   store.setAnchorElement(anchor);
-  store.setBaseElement(nextCombobox);
+  store.setCompositeElement(nextCombobox);
   expect(store.getState().anchorElement).toBe(anchor);
 
   store.setAnchorElement(null);
   expect(store.getState().anchorElement).toBe(nextCombobox);
 
-  store.setBaseElement(null);
+  store.setCompositeElement(null);
   expect(store.getState().anchorElement).toBe(nextDisclosure);
   stop();
 });
@@ -136,9 +136,9 @@ test("preserves an explicit anchor matching a previous fallback", () => {
   const nextCombobox = document.createElement("input");
   const anchor = document.createElement("div");
 
-  store.setBaseElement(combobox);
+  store.setCompositeElement(combobox);
   store.setAnchorElement(anchor);
-  store.setBaseElement(nextCombobox);
+  store.setCompositeElement(nextCombobox);
   store.setAnchorElement(combobox);
 
   expect(store.getState().anchorElement).toBe(combobox);
@@ -151,11 +151,11 @@ test("updates the combobox fallback when reinitialized", () => {
   const nextCombobox = document.createElement("input");
   const stop = init(store);
 
-  store.setBaseElement(firstCombobox);
+  store.setCompositeElement(firstCombobox);
   expect(store.getState().anchorElement).toBe(firstCombobox);
   stop();
 
-  store.setBaseElement(nextCombobox);
+  store.setCompositeElement(nextCombobox);
   expect(store.getState().anchorElement).toBe(firstCombobox);
 
   const nextStop = init(store);
@@ -163,7 +163,7 @@ test("updates the combobox fallback when reinitialized", () => {
   nextStop();
 });
 
-test("updates an inherited combobox fallback", () => {
+test("supports an inherited deprecated base element", () => {
   const combobox = document.createElement("input");
   const nextCombobox = document.createElement("input");
   const source = createStore({
@@ -173,31 +173,32 @@ test("updates an inherited combobox fallback", () => {
   const store = createComboboxStore({ store: source });
   const stop = init(store);
 
-  store.setBaseElement(nextCombobox);
+  expect(store.getState().compositeElement).toBe(combobox);
+  store.setCompositeElement(nextCombobox);
 
   expect(store.getState().anchorElement).toBe(nextCombobox);
   stop();
 });
 
-test("uses the select as the base and anchor fallback", () => {
+test("uses the select as the composite and anchor fallback", () => {
   const store = createComboboxStore();
   const stop = init(store);
   const select = document.createElement("button");
   const input = document.createElement("input");
 
   store.setSelectElement(select);
-  expect(store.getState().baseElement).toBe(select);
+  expect(store.getState().compositeElement).toBe(select);
   expect(store.getState().anchorElement).toBe(select);
 
-  store.setBaseElement(input);
-  expect(store.getState().baseElement).toBe(input);
+  store.setCompositeElement(input);
+  expect(store.getState().compositeElement).toBe(input);
   expect(store.getState().anchorElement).toBe(select);
 
-  store.setBaseElement(null);
-  expect(store.getState().baseElement).toBe(select);
+  store.setCompositeElement(null);
+  expect(store.getState().compositeElement).toBe(select);
 
   store.setSelectElement(null);
-  expect(store.getState().baseElement).toBeNull();
+  expect(store.getState().compositeElement).toBeNull();
   expect(store.getState().anchorElement).toBeNull();
   stop();
 });
@@ -351,14 +352,14 @@ test("uses select defaults while a select is rendered", () => {
 
   expect(store.getState().focusLoop).toBe(false);
   expect(store.getState().focusWrap).toBe(false);
-  expect(store.getState().includesBaseElement).toBe(false);
+  expect(store.getState().compositeElementInFocusOrder).toBe(false);
   expect(store.getState().resetValueOnSelect).toBe(true);
 
   store.setSelectElement(null);
 
   expect(store.getState().focusLoop).toBe(true);
   expect(store.getState().focusWrap).toBe(true);
-  expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().compositeElementInFocusOrder).toBe(true);
   expect(store.getState().resetValueOnSelect).toBe(false);
   stop();
 });
@@ -367,7 +368,7 @@ test("preserves explicit options in select mode", () => {
   const store = createComboboxStore({
     focusLoop: true,
     focusWrap: true,
-    includesBaseElement: true,
+    compositeElementInFocusOrder: true,
     resetValueOnSelect: false,
   });
   const stop = init(store);
@@ -376,7 +377,7 @@ test("preserves explicit options in select mode", () => {
 
   expect(store.getState().focusLoop).toBe(true);
   expect(store.getState().focusWrap).toBe(true);
-  expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().compositeElementInFocusOrder).toBe(true);
   expect(store.getState().resetValueOnSelect).toBe(false);
   stop();
 });
@@ -387,19 +388,19 @@ test("preserves composite options changed while a select is rendered", () => {
 
   store.setState("focusLoop", false);
   store.setState("focusWrap", false);
-  store.setState("includesBaseElement", false);
+  store.setState("compositeElementInFocusOrder", false);
 
   store.setSelectElement(document.createElement("button"));
 
   store.setState("focusLoop", true);
   store.setState("focusWrap", true);
-  store.setState("includesBaseElement", true);
+  store.setState("compositeElementInFocusOrder", true);
 
   store.setSelectElement(null);
 
   expect(store.getState().focusLoop).toBe(true);
   expect(store.getState().focusWrap).toBe(true);
-  expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().compositeElementInFocusOrder).toBe(true);
   stop();
 });
 
@@ -411,32 +412,32 @@ test("preserves same-value composite options set in select mode", () => {
   store.setSelectElement(select);
   store.setState("focusLoop", false);
   store.setState("focusWrap", false);
-  store.setState("includesBaseElement", false);
+  store.setState("compositeElementInFocusOrder", false);
   store.setState("resetValueOnSelect", true);
   store.setSelectElement(null);
 
   expect(store.getState().focusLoop).toBe(false);
   expect(store.getState().focusWrap).toBe(false);
-  expect(store.getState().includesBaseElement).toBe(false);
+  expect(store.getState().compositeElementInFocusOrder).toBe(false);
   expect(store.getState().resetValueOnSelect).toBe(true);
 
   store.setSelectElement(select);
   store.setState("focusLoop", true);
   store.setState("focusWrap", true);
-  store.setState("includesBaseElement", true);
+  store.setState("compositeElementInFocusOrder", true);
   store.setState("resetValueOnSelect", false);
   store.setSelectElement(null);
 
   expect(store.getState().focusLoop).toBe(true);
   expect(store.getState().focusWrap).toBe(true);
-  expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().compositeElementInFocusOrder).toBe(true);
   expect(store.getState().resetValueOnSelect).toBe(false);
 
   store.setSelectElement(select);
 
   expect(store.getState().focusLoop).toBe(true);
   expect(store.getState().focusWrap).toBe(true);
-  expect(store.getState().includesBaseElement).toBe(true);
+  expect(store.getState().compositeElementInFocusOrder).toBe(true);
   expect(store.getState().resetValueOnSelect).toBe(false);
   stop();
 });

@@ -11,6 +11,7 @@ import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { toArray, defaultValue } from "@ariakit/utils";
 import type { PickRequired, SetState } from "@ariakit/utils";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
+import { createCompositeStoreSetters } from "../composite/__utils.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreItem,
@@ -48,6 +49,7 @@ export function createSelectStore({
       "value",
       "items",
       "renderedItems",
+      "compositeElement",
       "baseElement",
       "arrowElement",
       "anchorElement",
@@ -73,8 +75,10 @@ export function createSelectStore({
       syncState.virtualFocus,
       true,
     ),
-    includesBaseElement: defaultValue(
+    compositeElementInFocusOrder: defaultValue(
+      props.compositeElementInFocusOrder,
       props.includesBaseElement,
+      syncState.compositeElementInFocusOrder,
       syncState.includesBaseElement,
       false,
     ),
@@ -123,6 +127,7 @@ export function createSelectStore({
   };
 
   const select = createStore(initialState, composite, popover, store);
+  const compositeSetters = createCompositeStoreSetters(select);
 
   // Automatically sets the default value if it's not set.
   setup(select, () =>
@@ -187,6 +192,7 @@ export function createSelectStore({
     ...composite,
     ...popover,
     ...select,
+    ...compositeSetters,
     combobox,
     setValue: (value) => select.setState("value", value),
     setLabelElement: (element) => {

@@ -50,10 +50,10 @@ export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(function Menu(
   const contextValue = React.useMemo<MenuContextProps>(
     () => ({
       getWrapper: () => parent?.getWrapper() || menu.getState().popoverElement,
-      getMenu: () => menu.getState().baseElement,
+      getMenu: () => menu.getState().compositeElement,
       getOffsetRight: () =>
         (parent?.getOffsetRight() ?? 0) +
-        (menu.getState().baseElement?.offsetWidth ?? 0),
+        (menu.getState().compositeElement?.offsetWidth ?? 0),
     }),
     [menu, parent],
   );

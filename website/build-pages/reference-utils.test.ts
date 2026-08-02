@@ -8,6 +8,10 @@ const comboboxFilename = join(
   process.cwd(),
   "packages/ariakit-react/src/combobox.ts",
 );
+const compositeFilename = join(
+  process.cwd(),
+  "packages/ariakit-react/src/composite.ts",
+);
 const headingFilename = join(
   process.cwd(),
   "packages/ariakit-react/src/heading.ts",
@@ -31,6 +35,14 @@ function getProp(reference: Reference, name: string) {
   const prop = reference.props.find((prop) => prop.name === name);
   if (!prop) {
     throw new Error(`Missing ${name} prop on ${reference.name}`);
+  }
+  return prop;
+}
+
+function getReturnProp(reference: Reference, name: string) {
+  const prop = reference.returnProps?.find((prop) => prop.name === name);
+  if (!prop) {
+    throw new Error(`Missing ${name} return prop on ${reference.name}`);
   }
   return prop;
 }
@@ -124,6 +136,20 @@ test("loads Combobox input value metadata", () => {
   expect(value.description).toContain("Renders the current");
   expect(value.deprecated).toEqual(
     expect.stringContaining("ComboboxInputValue"),
+  );
+});
+
+test("loads Composite element alias metadata", () => {
+  const provider = getReference(compositeFilename, "CompositeProvider");
+  const includesBaseElement = getProp(provider, "includesBaseElement");
+  expect(includesBaseElement.deprecated).toEqual(
+    expect.stringContaining("compositeElementInFocusOrder"),
+  );
+
+  const store = getReference(compositeFilename, "useCompositeStore");
+  const setBaseElement = getReturnProp(store, "setBaseElement");
+  expect(setBaseElement.deprecated).toEqual(
+    expect.stringContaining("setCompositeElement"),
   );
 });
 
