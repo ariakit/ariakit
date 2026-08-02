@@ -1,6 +1,7 @@
 import * as Ariakit from "@ariakit/react";
 import type { ComponentProps, CSSProperties } from "react";
 import { useCallback, useRef, useState } from "react";
+import { useCompositeFocusWorkaround } from "./composite-focus-workaround.react.ts";
 
 const branches = [
   "main",
@@ -52,6 +53,7 @@ function BranchSelect({
   searchLabel = "Search branches",
 }: BranchSelectProps = {}) {
   const [searchValue, setSearchValue] = useState("");
+  const focusWorkaround = useCompositeFocusWorkaround();
   const matches = branches.filter((branch) =>
     branch.toLowerCase().includes(searchValue.toLowerCase()),
   );
@@ -63,9 +65,15 @@ function BranchSelect({
       setValue={setSearchValue}
     >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
-      <Ariakit.ComboboxSelect style={{ display: "block", width: 260 }} />
+      <Ariakit.ComboboxSelect
+        ref={focusWorkaround.selectRef}
+        style={{ display: "block", width: 260 }}
+      />
       <Ariakit.ComboboxPopover
+        ref={focusWorkaround.popoverRef}
+        autoFocusOnShow={focusWorkaround.autoFocusOnShow}
         gutter={4}
+        onFocusCapture={focusWorkaround.onFocusCapture}
         sameWidth
         unmountOnHide
         style={popoverStyle}
@@ -76,6 +84,7 @@ function BranchSelect({
           style={{ margin: 8 }}
         />
         <Ariakit.ComboboxList
+          ref={focusWorkaround.scrollportRef}
           style={{ flex: 1, minHeight: 0, overflow: "auto" }}
         >
           {matches.map((branch) => (
@@ -96,6 +105,7 @@ type UpdatePosition = NonNullable<ComboboxPopoverProps["updatePosition"]>;
 
 function DelayedBranchSelect() {
   const [positioning, setPositioning] = useState(false);
+  const focusWorkaround = useCompositeFocusWorkaround();
   const delayPositioningRef = useRef(true);
   const positioningPromiseRef = useRef<Promise<void> | null>(null);
   const releasePositioningRef = useRef<() => void>(() => {});
@@ -129,10 +139,16 @@ function DelayedBranchSelect() {
         <Ariakit.ComboboxSelectLabel>
           Delayed branch
         </Ariakit.ComboboxSelectLabel>
-        <Ariakit.ComboboxSelect style={{ display: "block", width: 260 }} />
+        <Ariakit.ComboboxSelect
+          ref={focusWorkaround.selectRef}
+          style={{ display: "block", width: 260 }}
+        />
         <Ariakit.ComboboxPopover
+          ref={focusWorkaround.popoverRef}
+          autoFocusOnShow={focusWorkaround.autoFocusOnShow}
           gutter={4}
           hideOnInteractOutside={false}
+          onFocusCapture={focusWorkaround.onFocusCapture}
           sameWidth
           unmountOnHide
           updatePosition={updatePosition}
@@ -144,6 +160,7 @@ function DelayedBranchSelect() {
             style={{ margin: 8 }}
           />
           <Ariakit.ComboboxList
+            ref={focusWorkaround.scrollportRef}
             style={{ flex: 1, minHeight: 0, overflow: "auto" }}
           >
             {branches.map((branch) => (

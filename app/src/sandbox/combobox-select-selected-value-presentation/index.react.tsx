@@ -1,5 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import { useRef } from "react";
+import { useCompositeFocusWorkaround } from "../combobox-select-open-page-scroll/composite-focus-workaround.react.ts";
 
 const fruits = [
   "Apple",
@@ -42,6 +43,7 @@ const fruits = [
 
 interface FixtureProps {
   defaultSelectedValue: string | string[];
+  focusPresentationWorkaround?: boolean;
   focusTarget?: boolean;
   input?: boolean;
   label: string;
@@ -52,6 +54,7 @@ interface FixtureProps {
 
 function Fixture({
   defaultSelectedValue,
+  focusPresentationWorkaround,
   focusTarget,
   input,
   label,
@@ -60,16 +63,37 @@ function Fixture({
   virtualFocus,
 }: FixtureProps) {
   const focusTargetRef = useRef<HTMLDivElement>(null);
+  const focusWorkaround = useCompositeFocusWorkaround({
+    popoverIsScrollport: true,
+  });
   return (
     <Ariakit.ComboboxProvider
       defaultSelectedValue={defaultSelectedValue}
       virtualFocus={virtualFocus}
     >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
-      <Ariakit.ComboboxSelect style={{ display: "block" }} />
+      <Ariakit.ComboboxSelect
+        ref={
+          focusPresentationWorkaround ? focusWorkaround.selectRef : undefined
+        }
+        style={{ display: "block" }}
+      />
       <Ariakit.ComboboxPopover
+        ref={
+          focusPresentationWorkaround ? focusWorkaround.popoverRef : undefined
+        }
+        autoFocusOnShow={
+          focusPresentationWorkaround
+            ? focusWorkaround.autoFocusOnShow
+            : undefined
+        }
         unmountOnHide={unmountOnHide}
         gutter={4}
+        onFocusCapture={
+          focusPresentationWorkaround
+            ? focusWorkaround.onFocusCapture
+            : undefined
+        }
         sameWidth
         style={{
           background: "white",
@@ -121,7 +145,11 @@ export default function Example() {
         style={{ height: 240, overflow: "auto" }}
       >
         <div style={{ height: 160 }} />
-        <Fixture defaultSelectedValue="Cherry" label="Centered fruit" />
+        <Fixture
+          defaultSelectedValue="Cherry"
+          focusPresentationWorkaround
+          label="Centered fruit"
+        />
         <div style={{ height: 320 }} />
       </div>
       <div style={{ marginTop: 200 }}>
