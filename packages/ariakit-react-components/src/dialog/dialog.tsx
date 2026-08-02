@@ -464,7 +464,11 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // virtual focus does. Scroll explicitly instead, so every engine behaves
       // the same whether or not focus stayed put. It happens before the focus
       // so a focus handler that presents something else scrolls last and wins.
-      if (isElementFocusable) {
+      // Re-read focusability here rather than trusting the snapshot taken in
+      // the effect body: the scroll is conditional on it while the focus below
+      // is not, so a stale `true` would scroll to an element that can no
+      // longer be focused.
+      if (isFocusable(element)) {
         element.scrollIntoView({ block: "nearest", inline: "nearest" });
       }
       element.focus({ preventScroll: true });
