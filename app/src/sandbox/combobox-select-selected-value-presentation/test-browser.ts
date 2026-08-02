@@ -1,4 +1,5 @@
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
+import { recordScrollEvents } from "#app/test-utils/scroll.ts";
 
 withFramework(import.meta.dirname, async ({ test }) => {
   // https://github.com/ariakit/ariakit/pull/6832
@@ -63,6 +64,34 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await flushFrames(page);
     await test.expect(q.option("Focus target")).toBeInViewport();
     await test.expect(q.option("Watermelon")).not.toBeInViewport();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/6986
+  test("cancels presentation when virtual focus leaves the popup", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Escaping fruit");
+    const escapeTarget = q.button("Escaping fruit focus target");
+
+    await page.evaluate(() => window.scrollTo({ top: 100 }));
+    await test.expect.poll(() => page.evaluate(() => window.scrollY)).toBe(100);
+    // Clicking a select that isn't fully visible would scroll the page to reach
+    // it, and that scroll would land inside the measurement below.
+    await test.expect(select).toBeInViewport({ ratio: 1 });
+    const scroll = await recordScrollEvents(page);
+
+    await select.click();
+
+    // Focus left the popup while it was still being positioned, so nothing may
+    // pull it back and nothing may move the page on the way out. There is no
+    // positive state for the pending presentation being abandoned, so wait
+    // through its checkpoint before confirming focus stayed put.
+    await test.expect(escapeTarget).toBeFocused();
+    await flushFrames(page);
+    await test.expect(escapeTarget).toBeFocused();
+    test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
+    test.expect(await scroll.events()).not.toContain("document");
   });
 
   // This case originated in the unmerged PR below. It covers the same

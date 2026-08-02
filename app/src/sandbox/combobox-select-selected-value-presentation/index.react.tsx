@@ -46,6 +46,8 @@ interface FixtureProps {
   input?: boolean;
   label: string;
   moveFocusOnOpen?: boolean;
+  /** Puts the element focus moves to outside the popup instead of inside it. */
+  outsideFocusTarget?: boolean;
   unmountOnHide?: boolean;
   virtualFocus?: boolean;
 }
@@ -56,10 +58,14 @@ function Fixture({
   input,
   label,
   moveFocusOnOpen,
+  outsideFocusTarget,
   unmountOnHide,
   virtualFocus,
 }: FixtureProps) {
-  const focusTargetRef = useRef<HTMLDivElement>(null);
+  const focusTargetRef = useRef<HTMLElement | null>(null);
+  const setFocusTarget = (element: HTMLElement | null) => {
+    focusTargetRef.current = element;
+  };
   return (
     <Ariakit.ComboboxProvider
       defaultSelectedValue={defaultSelectedValue}
@@ -83,13 +89,21 @@ function Fixture({
             aria-label={`Search ${label}`}
             onFocus={() => {
               if (!moveFocusOnOpen) return;
-              queueMicrotask(() => focusTargetRef.current?.focus());
+              queueMicrotask(() => {
+                // An in-popup target is meant to be scrolled into its popup by
+                // this focus. A page-level one is not: letting the browser
+                // scroll to it would put the fixture's own movement in the way
+                // of what the test measures.
+                focusTargetRef.current?.focus({
+                  preventScroll: outsideFocusTarget,
+                });
+              });
             }}
           />
         )}
-        {focusTarget && (
+        {focusTarget && !outsideFocusTarget && (
           <Ariakit.ComboboxItem
-            ref={focusTargetRef}
+            ref={setFocusTarget}
             style={{ display: "block", padding: "4px 8px" }}
             value="Focus target"
           />
@@ -107,6 +121,11 @@ function Fixture({
           {`No ${label.toLowerCase()}`}
         </Ariakit.ComboboxItem>
       </Ariakit.ComboboxPopover>
+      {focusTarget && outsideFocusTarget && (
+        <button type="button" tabIndex={0} ref={setFocusTarget}>
+          {`${label} focus target`}
+        </button>
+      )}
     </Ariakit.ComboboxProvider>
   );
 }
@@ -152,6 +171,21 @@ export default function Example() {
           defaultSelectedValue="Watermelon"
           input
           label="Touch filterable fruit"
+        />
+      </div>
+      {/* Virtual focus, and focus leaves the popup entirely while it is still
+      being positioned. The presentation the open scheduled must be abandoned
+      rather than pulling focus back, and it must not move the page on its way
+      out. */}
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          focusTarget
+          input
+          label="Escaping fruit"
+          moveFocusOnOpen
+          outsideFocusTarget
+          unmountOnHide
         />
       </div>
     </>
