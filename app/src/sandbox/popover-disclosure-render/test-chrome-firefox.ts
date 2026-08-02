@@ -26,10 +26,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
       await q.button(`Toggle ${label} popover`).click();
       await test.expect(q.dialog()).toBeVisible();
 
-      // The first click also moves focus into the button, which updates
-      // one-time focus state, so sample the render counts only after that
-      // settles.
       await q.button(`Set ${label} disclosure element`).click();
+      // The first click also moves focus into the button, which updates
+      // one-time focus state. Its final render has no separate observable
+      // completion state, so wait before sampling the counts.
       await flushFrames(page);
 
       const popoverRenders = q.status(`${label} popover renders`);
@@ -65,6 +65,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog()).toBeVisible();
 
     await q.button("Set Fallback disclosure element").click();
+    // The first click also moves focus into the button, which updates
+    // one-time focus state. Its final render has no separate observable
+    // completion state, so wait before sampling the count.
     await flushFrames(page);
 
     const popoverRenders = q.status("Fallback popover renders");

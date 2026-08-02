@@ -49,9 +49,6 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
 
     await test.expect(q.combobox("Search Filterable fruit")).toBeFocused();
-    // Three frames cross Composite's after-paint presentation callback plus
-    // WebKit's scroll step before checking the viewport.
-    await flushFrames(page, 3);
     await test.expect(watermelon).toBeInViewport();
     test.expect(await page.evaluate(() => window.scrollY)).toBe(100);
   });
