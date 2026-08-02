@@ -111,8 +111,8 @@ importers:
         specifier: 7.0.2001
         version: 7.0.2001
       pkg-pr-new:
-        specifier: 0.0.84
-        version: 0.0.84
+        specifier: 0.0.86
+        version: 0.0.86
       react:
         specifier: 19.2.8
         version: 19.2.8
@@ -8741,8 +8741,8 @@ packages:
     resolution: {integrity: sha512-xhcb4yHu9sM/G7foGzoLtXYcC0zHEaOXXjRKhGup0fw78Nf2Tkiapv4EQyMzrbcmQPsllAI7DbFY2UT7PlI9Pg==}
     hasBin: true
 
-  pkg-pr-new@0.0.84:
-    resolution: {integrity: sha512-B3eosMPUDjmTSoo6leCmAeFs3hm/D0PiqvuplMT6XByjNO9HQ9ST4ScPcUDjkjwjjN8TLGJkh9IAyeuaqQfaww==}
+  pkg-pr-new@0.0.86:
+    resolution: {integrity: sha512-BwPsw/e1Be7F0SfpxhNc2VSxX7uHgCy46Ck+2Z/vqCwXoePhUBrX/VbcawpAlZgMvQe2iwGbZIQ6HSj9bmCk8A==}
     hasBin: true
 
   pkg-types@1.3.1:
@@ -19246,7 +19246,7 @@ snapshots:
     dependencies:
       pngjs: 7.0.0
 
-  pkg-pr-new@0.0.84: {}
+  pkg-pr-new@0.0.86: {}
 
   pkg-types@1.3.1:
     dependencies:
