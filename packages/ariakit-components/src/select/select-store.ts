@@ -48,6 +48,7 @@ export function createSelectStore({
       "value",
       "items",
       "renderedItems",
+      "compositeElement",
       "baseElement",
       "arrowElement",
       "anchorElement",
@@ -73,8 +74,10 @@ export function createSelectStore({
       syncState.virtualFocus,
       true,
     ),
-    includesBaseElement: defaultValue(
+    compositeElementInFocusOrder: defaultValue(
+      props.compositeElementInFocusOrder,
       props.includesBaseElement,
+      syncState.compositeElementInFocusOrder,
       syncState.includesBaseElement,
       false,
     ),

@@ -91,7 +91,7 @@ export const HeaderMenu = forwardRef<HTMLButtonElement, HeaderMenuProps>(
     const popoverRef = useRef<HTMLDivElement>(null);
     const parent = useContext(ParentContext);
     const combobox = Ariakit.useComboboxStore({
-      includesBaseElement: false,
+      compositeElementInFocusOrder: false,
       focusLoop: false,
       open,
       setOpen: onToggle,

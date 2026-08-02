@@ -35,7 +35,7 @@ export const CompositeContextProvider = ctx.ContextProvider;
 export const CompositeScopedContextProvider = ctx.ScopedContextProvider;
 
 interface ItemContext {
-  baseElement?: HTMLElement;
+  compositeElement?: HTMLElement;
   id?: string;
 }
 

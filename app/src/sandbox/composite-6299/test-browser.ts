@@ -2,7 +2,7 @@ import { withFramework } from "#app/test-utils/preview.ts";
 
 // https://github.com/ariakit/ariakit/issues/6299
 withFramework(import.meta.dirname, async ({ test }) => {
-  test("enters an RTL composite from the base element with ArrowLeft", async ({
+  test("enters an RTL composite from the composite element with ArrowLeft", async ({
     page,
     q,
   }) => {
@@ -20,7 +20,7 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // Use a fresh render so the toolbar has no active item when focused.
-  test("enters an RTL composite from the base element with ArrowRight", async ({
+  test("enters an RTL composite from the composite element with ArrowRight", async ({
     page,
     q,
   }) => {

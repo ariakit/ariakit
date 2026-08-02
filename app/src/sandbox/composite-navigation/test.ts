@@ -1,4 +1,4 @@
-import { click, press, q } from "@ariakit/test";
+import { click, focus, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 test("navigates a non-looping composite", async () => {
@@ -77,4 +77,14 @@ test("navigates a grid with focus shifting", async () => {
     await press(key);
     expect(q.gridcell(name)).toHaveFocus();
   }
+});
+
+test("updates focus order through the deprecated prop", async () => {
+  await click(q.checkbox("Include composite element in focus order"));
+  expect(q.checkbox("Include composite element in focus order")).toBeChecked();
+
+  await focus(q.button("Legacy two"));
+  await press.ArrowRight();
+
+  expect(q.toolbar("Legacy focus order")).toHaveFocus();
 });

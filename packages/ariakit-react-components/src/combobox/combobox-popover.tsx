@@ -79,7 +79,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         "ComboboxPopover must receive a `store` prop or be wrapped in a ComboboxProvider component.",
     );
 
-    const baseElement = useStoreState(store, "baseElement");
+    const compositeElement = useStoreState(store, "compositeElement");
     const inputElement = useStoreState(store, "inputElement");
     const selectElement = useStoreState(store, "selectElement");
     const hiddenByClickOutsideRef = useRef(false);
@@ -224,7 +224,7 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       // Without an input, only take focus when the select initiated the open.
       autoFocusOnShow: hasSelect && (!!inputElement || selectOwnsFocus),
       initialFocus: hasSelect ? inputElement : undefined,
-      finalFocus: selectElement || baseElement,
+      finalFocus: selectElement || compositeElement,
       preserveTabOrderAnchor: null,
       unstable_treeSnapshotKey: treeSnapshotKey,
       ...props,
@@ -238,10 +238,15 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
         const elements = getPersistentElementsProp?.() || [];
         if (!modal) return elements;
         if (!store) return elements;
-        const { baseElement, contentElement, inputElement, selectElement } =
-          store.getState();
-        const controls = [baseElement, inputElement, selectElement];
-        const persistentElement = selectElement || inputElement || baseElement;
+        const {
+          compositeElement,
+          contentElement,
+          inputElement,
+          selectElement,
+        } = store.getState();
+        const controls = [compositeElement, inputElement, selectElement];
+        const persistentElement =
+          selectElement || inputElement || compositeElement;
         if (!persistentElement) return elements;
         const persistentElements = new Set(elements);
         // Elements inside the popup are already part of the modal context.
@@ -284,8 +289,8 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       hideOnInteractOutside(event: Event) {
         const state = store?.getState();
         const contentId = state?.contentElement?.id;
-        const baseId = state?.baseElement?.id;
-        if (isController(event.target, contentId, baseId)) return false;
+        const compositeId = state?.compositeElement?.id;
+        if (isController(event.target, contentId, compositeId)) return false;
         const result =
           typeof hideOnInteractOutside === "function"
             ? hideOnInteractOutside(event)

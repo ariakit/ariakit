@@ -3,7 +3,7 @@ import * as Ariakit from "@ariakit/react";
 const seededItems = [{ id: "seeded-drafts" }, { id: "seeded-sent" }];
 
 // The items are not wrapped in a composite element, so this store never
-// publishes baseElement, and its items must still use roving tabindex.
+// publishes compositeElement, and its items must still use roving tabindex.
 function ContainerlessListbox() {
   return (
     <Ariakit.CompositeProvider>

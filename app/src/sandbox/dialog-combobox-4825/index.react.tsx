@@ -41,7 +41,7 @@ export default function Example() {
         <Ariakit.ComboboxProvider
           disclosure={dialog}
           focusLoop={false}
-          includesBaseElement={false}
+          compositeElementInFocusOrder={false}
           resetValueOnHide
           setValue={(value) => {
             startTransition(() => {

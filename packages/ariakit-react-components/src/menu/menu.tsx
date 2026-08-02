@@ -93,7 +93,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
   // auto focus on show is disabled.
   const initialFocusElement = useStoreState(
     store,
-    ["autoFocusOnShow", "initialFocus", "renderedItems", "baseElement"],
+    ["autoFocusOnShow", "initialFocus", "renderedItems", "compositeElement"],
     (state) => {
       if (!state.autoFocusOnShow) return;
       const isEnabled = (item: (typeof state.renderedItems)[number]) =>
@@ -110,7 +110,7 @@ export const useMenu = createHook<TagName, MenuOptions>(function useMenu({
           }
           return null;
         default:
-          return state.baseElement;
+          return state.compositeElement;
       }
     },
   );
