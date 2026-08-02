@@ -58,7 +58,7 @@
     "@types/node": "24.13.3",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
-    "@vitejs/plugin-react": "6.0.4",
+    "@vitejs/plugin-react": "6.0.5",
     "@vitest/coverage-v8": "4.1.10",
     "chalk": "6.0.0",
     "chokidar": "5.0.0",
@@ -84,7 +84,7 @@
     "tsup": "8.5.1",
     "typescript": "npm:@typescript/typescript6@6.0.2",
     "typescript-7": "npm:typescript@7.0.2",
-    "vite": "8.1.5",
+    "vite": "8.2.0",
     "vite-plugin-solid": "2.11.14",
     "vitest": "4.1.10",
     "vitest-fail-on-console": "0.10.1"
