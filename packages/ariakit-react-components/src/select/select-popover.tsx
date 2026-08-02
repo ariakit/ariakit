@@ -1,3 +1,4 @@
+import { useStoreState } from "@ariakit/react-store";
 import {
   useMergeRefs,
   createElement,
@@ -6,6 +7,7 @@ import {
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
 import type { ElementType } from "react";
+import { useComboboxPopoverFocus } from "../combobox/combobox-popover-focus.ts";
 import { useSelectPopoverPresentation } from "../combobox/combobox-popover-presentation.ts";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
@@ -36,12 +38,24 @@ export const useSelectPopover = createHook<TagName, SelectPopoverOptions>(
     const context = useSelectProviderContext();
     store = store || context;
     const openingPresentationRef = useSelectPopoverPresentation(store);
+    const selectElement = useStoreState(store, "selectElement");
+    const contentElement = useStoreState(store, "contentElement");
+    const { popoverFocusProps } = useComboboxPopoverFocus(store?.combobox, {
+      selectElement,
+      contentElement,
+    });
+    const comboboxPopoverFocusProps = store?.combobox ? popoverFocusProps : {};
     props = useSelectList({ store, alwaysVisible, ...props });
     props = {
       ...props,
       ref: useMergeRefs(openingPresentationRef, props.ref),
     };
-    props = usePopover({ store, alwaysVisible, ...props });
+    props = usePopover({
+      store,
+      alwaysVisible,
+      ...comboboxPopoverFocusProps,
+      ...props,
+    });
     return props;
   },
 );

@@ -5,9 +5,6 @@ import { useDeferredValue, useEffect, useState } from "react";
 
 export default function Example() {
   const [open, setOpen] = useState(false);
-  const [inputElement, setInputElement] = useState<HTMLInputElement | null>(
-    null,
-  );
   const deferredOpen = useDeferredValue(open);
   const combobox = Ariakit.useComboboxStore({
     includesBaseElement: false,
@@ -48,11 +45,7 @@ export default function Example() {
     <Ariakit.Role {...props}>
       {deferredOpen && (
         <>
-          <Ariakit.Combobox
-            ref={setInputElement}
-            store={combobox}
-            placeholder="Search pages"
-          />
+          <Ariakit.Combobox store={combobox} placeholder="Search pages" />
           <Ariakit.ComboboxList store={combobox}>
             <Ariakit.ComboboxItem store={combobox} value="Components" />
             <Ariakit.ComboboxItem store={combobox} value="Examples" />
@@ -72,7 +65,6 @@ export default function Example() {
         typeahead={false}
         composite={false}
         unmountOnHide
-        initialFocus={inputElement}
         render={
           <Ariakit.MenuList
             store={menu}
