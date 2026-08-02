@@ -231,6 +231,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     const items = useStoreState(store, "renderedItems");
     const open = useStoreState(store, "open");
     const contentElement = useStoreState(store, "contentElement");
+    const placing = useStoreState(store, "placing");
     // Depend on this boolean in the highlighting effect so equivalent item
     // updates don't re-highlight a user-adjusted caret.
     const firstItemAutoSelected = isFirstItemAutoSelected(
@@ -415,24 +416,15 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       if (composingRef.current) return;
       if (!canAutoSelect && (!resetValueOnSelect || userScrolledRef.current))
         return;
-      const {
-        baseElement,
-        contentElement,
-        activeId,
-        selectElement,
-        selectedValue,
-      } = store.getState();
+      const state = store.getState();
+      const { baseElement, activeId, selectElement, selectedValue } = state;
       if (baseElement && !hasFocus(baseElement)) return;
-      // The data-placing attribute is an internal state added by the Popover
-      // component. We can observe it to know when the popover is done placing
-      // itself. This is to prevent the focus from moving to the first item
-      // while the popover is still calculating its position, which could cause
-      // a scroll jump. See combobox-group test-browser file.
-      if (contentElement?.hasAttribute("data-placing")) {
-        const observer = new MutationObserver(forceValueUpdate);
-        observer.observe(contentElement, { attributeFilter: ["data-placing"] });
-        return () => observer.disconnect();
-      }
+      // Wait for the popover to finish placing itself before moving to an item,
+      // so the move doesn't present an item inside a popup that is still at its
+      // pre-placement origin. Read live, because the render snapshot in the
+      // dependencies below still holds the previous commit's value on the
+      // commit that opens the popup. See combobox-group test-browser file.
+      if (state.placing) return;
       const activeValue = store.item(activeId)?.value;
       const activeValueSelected =
         activeValue != null &&
@@ -503,6 +495,7 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
     }, [
       store,
       open,
+      placing,
       valueUpdated,
       storeInputValue,
       autoSelect,

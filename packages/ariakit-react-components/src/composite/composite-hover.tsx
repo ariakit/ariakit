@@ -95,7 +95,9 @@ export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
       if (!hasFocusWithin(event.currentTarget)) {
         const baseElement = store?.getState().baseElement;
         if (baseElement && !hasFocus(baseElement)) {
-          baseElement.focus();
+          // Hovering an item is not a request to move the page; the pointer is
+          // already on what the user cares about.
+          baseElement.focus({ preventScroll: true });
         }
       }
       store?.setActiveId(event.currentTarget.id);
@@ -114,7 +116,7 @@ export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
       if (!blurOnHoverEndProp(event)) return;
       store?.setActiveId(null);
       // Move focus to the composite element.
-      store?.getState().baseElement?.focus();
+      store?.getState().baseElement?.focus({ preventScroll: true });
     });
 
     const ref = useCallback((element: ElementWithSymbol | null) => {

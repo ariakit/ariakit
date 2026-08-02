@@ -25,7 +25,6 @@ import {
   isSelfTarget,
   disabledFromProps,
   removeUndefinedValues,
-  isSafari,
   warnOnce,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
@@ -51,8 +50,8 @@ import {
   focusSilently,
   getEnabledItem,
   isItem,
+  presentItem,
   selectTextField,
-  withDocumentScrollPreserved,
 } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -278,6 +277,9 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     // update by unregistering it, even when the base element never arrives.
     // Redirects are only scheduled for such items.
     const cancelScheduledFocusRedirectRef = useRef<(() => void) | null>(null);
+    // Holds the canceller of the presentation scheduled when this item hands
+    // focus back to the composite element, so a later one supersedes it.
+    const cancelPresentationRef = useRef<(() => void) | null>(null);
 
     const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusProp?.(event);
@@ -309,7 +311,6 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       if (isEditableElement(event.currentTarget)) return;
 
       const redirectFocusToBaseElement = (
-        currentTarget: HTMLType,
         relatedTarget: Element | null,
         baseElement: HTMLElement,
       ) => {
@@ -326,24 +327,21 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         }
         const fromComposite =
           relatedTarget === baseElement || isItem(store, relatedTarget);
-        // Safari doesn't scroll the element into view when another element is
-        // immediately focused. So we have to do it manually here.
-        if (isSafari() && currentTarget.hasAttribute("data-autofocus")) {
-          // Virtual focus immediately returns to an already focused composite.
-          // Keep the fallback scoped to nested scrollers in that case.
-          if (fromComposite) {
-            withDocumentScrollPreserved(currentTarget, () => {
-              currentTarget.scrollIntoView({
-                block: "nearest",
-                inline: "nearest",
-              });
-            });
-          } else {
-            currentTarget.scrollIntoView({
-              block: "nearest",
-              inline: "nearest",
-            });
-          }
+        // This item is about to hand DOM focus back to the composite element,
+        // so the browser will not bring it into view. Present it explicitly,
+        // once its popup, if it's in one, has been positioned. Only if it's
+        // marked as a presentation target: an item that merely happened to
+        // receive focus, such as one under a resting pointer, should stay
+        // where it is.
+        // An item that opts out of registering itself can't be resolved from
+        // the store, so there would be nothing to wait for.
+        if (store.item(id)) {
+          cancelPresentationRef.current?.();
+          cancelPresentationRef.current = presentItem({
+            store,
+            id,
+            markedOnly: true,
+          });
         }
         hasFocusedComposite.current = true;
         // If the previously focused element is a composite or composite item
@@ -357,18 +355,16 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 
         // Otherwise, the composite element is likely not focused, so we need
         // this focus event to propagate so consumers can use the onFocus prop
-        // on <Composite>.
+        // on <Composite>. Scrolling is left to whoever is presenting this item:
+        // the composite element can be inside a popup that hasn't been
+        // positioned yet, and letting the browser scroll to it moves the page.
         else {
-          baseElement.focus();
+          baseElement.focus({ preventScroll: true });
         }
       };
 
       if (baseElement?.isConnected) {
-        redirectFocusToBaseElement(
-          event.currentTarget,
-          event.relatedTarget,
-          baseElement,
-        );
+        redirectFocusToBaseElement(event.relatedTarget, baseElement);
         return;
       }
 
@@ -409,11 +405,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         if (!nextBaseElement?.isConnected) return;
         cancelScheduledFocusRedirect();
         if (!state.virtualFocus) return;
-        redirectFocusToBaseElement(
-          currentTarget,
-          relatedTarget,
-          nextBaseElement,
-        );
+        redirectFocusToBaseElement(relatedTarget, nextBaseElement);
       });
     });
 

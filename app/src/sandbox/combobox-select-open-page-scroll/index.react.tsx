@@ -97,8 +97,10 @@ function RecommendedItem(props: Ariakit.ComboboxItemProps) {
     ref.current?.focus({ preventScroll: true });
   }, []);
   // The explicit tabIndex makes the option focusable on its first render, which
-  // the mount-time focus above depends on.
-  return <Ariakit.ComboboxItem {...props} ref={ref} tabIndex={-1} />;
+  // the mount-time focus above depends on. autoFocus marks it as the widget's
+  // presentation target; it doesn't focus it, because the popup below opts out
+  // of initial focus.
+  return <Ariakit.ComboboxItem {...props} ref={ref} tabIndex={-1} autoFocus />;
 }
 
 interface SelfFocusingBranchSelectProps {

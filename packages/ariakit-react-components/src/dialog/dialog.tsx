@@ -459,14 +459,16 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // element could steal focus from the disclosure that focusOnHide already
       // restored.
       if (!store.getState().open) return;
-      element.focus();
-      // Safari doesn't scroll to the element on focus, so we have to do it
-      // manually here.
-      if (!isSafariBrowser) return;
-      if (!isElementFocusable) return;
-      // A focus handler may have synchronously redirected virtual focus.
-      if (getActiveElement(element) !== element) return;
-      element.scrollIntoView({ block: "nearest", inline: "nearest" });
+      // The browser's own focus scroll is unreliable here: Safari drops it
+      // when a focus handler immediately moves focus elsewhere, which is what
+      // virtual focus does. Scroll explicitly instead, so every engine behaves
+      // the same whether or not focus stayed put. It happens before the focus
+      // so that a focus handler presenting something else still wins, which is
+      // the order the browser's own scroll would have had.
+      if (isElementFocusable) {
+        element.scrollIntoView({ block: "nearest", inline: "nearest" });
+      }
+      element.focus({ preventScroll: true });
     });
   }, [
     open,

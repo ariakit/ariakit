@@ -9,6 +9,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
+import { sync } from "@ariakit/store";
 import { invariant } from "@ariakit/utils";
 import {
   arrow,
@@ -278,6 +279,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       (state) => (shouldPreserveTabOrder ? state.disclosureElement : null),
     );
     const popoverElement = useStoreState(store, "popoverElement");
+    const placing = useStoreState(store, "placing");
     const contentElement = useStoreState(store, "contentElement");
     const placement = useStoreState(store, "placement");
     const mounted = useStoreState(store, "mounted");
@@ -415,6 +417,11 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           transform: `translate3d(${x}px,${y}px,0)`,
         });
 
+        // The popover is placed once its position has been written, not when
+        // computePosition resolves, so anything waiting to move focus or scroll
+        // into it never acts on the pre-placement origin.
+        store?.setState("placing", false);
+
         // https://floating-ui.com/docs/arrow#usage
         if (arrow && pos.middlewareData.arrow) {
           const { x: arrowX, y: arrowY } = pos.middlewareData.arrow;
@@ -462,6 +469,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           // make sure this effect is still current before marking it ready.
           if (shouldCancelUpdate()) return;
           setPositioned(true);
+          store?.setState("placing", false);
         } else {
           await updatePosition();
         }
@@ -526,6 +534,25 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       return () => cancelAnimationFrame(raf);
     }, [mounted, domReady, popoverElement, contentElement]);
 
+    // Showing a popover makes it unplaced by definition, and that has to land
+    // before anything can read it. A layout effect can't publish it, because
+    // effects run children before parents, so the popover's own descendants
+    // would observe the previous value. Subscribing to the store instead means
+    // the transition is seen synchronously, wherever it comes from. Only a
+    // mounted Popover asserts this, so a popup with nothing to position, such
+    // as a combobox inside a plain dialog, is never left waiting.
+    // The subscription deliberately doesn't reset on teardown. Under React
+    // StrictMode effects are set up, torn down and set up again, and a reset
+    // would publish "placed" in between, which descendants remounting in that
+    // window would believe. Re-registering republishes the current value
+    // immediately, so nothing needs clearing.
+    useSafeLayoutEffect(() => {
+      if (!store) return;
+      return sync(store, ["mounted"], (state) => {
+        store.setState("placing", state.mounted);
+      });
+    }, [store]);
+
     const position = fixed ? "fixed" : "absolute";
 
     // Wrap our element in a div that will be used to position the popover.
@@ -563,11 +590,9 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     );
 
     props = {
-      // data-placing is not part of the public API. We're setting this here so
-      // we can wait for the popover to be positioned before other components
-      // move focus into it. For example, this attribute is observed by the
-      // Combobox component with the autoSelect behavior.
-      "data-placing": !positioned || undefined,
+      // data-placing is not part of the public API. It mirrors the store state
+      // of the same name so the two can't disagree.
+      "data-placing": placing || undefined,
       ...props,
       style: {
         position: "relative",
