@@ -53,6 +53,8 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         const asyncOptions = query(scroller);
 
         await q.button("Connect scroll element").click();
+        // The empty renderer connects the explicit ref in passive effects, but
+        // exposes no rendered item that can signal when those effects finish.
         await flushFrames(page);
         await q.button("Load async items").click();
         await test.expect(asyncOptions.option("Async item 1")).toBeVisible();
@@ -61,7 +63,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           element.scrollTop = 2000;
           element.dispatchEvent(new Event("scroll"));
         });
-        await flushFrames(page);
 
         await test
           .expect(q.status("Async scroll status"))
@@ -78,16 +79,20 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         const asyncOptions = query(scroller);
 
         await q.button("Connect scroll element").click();
+        // The empty renderer connects the explicit ref in passive effects, but
+        // exposes no rendered item that can signal when those effects finish.
         await flushFrames(page);
         await q.button("Load async items").click();
         await scroller.evaluate((element) => {
           element.scrollTop = 2000;
           element.dispatchEvent(new Event("scroll"));
         });
-        await flushFrames(page);
         await test.expect(asyncOptions.option("Async item 51")).toBeVisible();
 
         await q.button("Disable scroll element and double item size").click();
+        // Disabling viewport updates intentionally leaves the rendered window
+        // unchanged, so wait through the passive update before asserting that
+        // absence of change.
         await flushFrames(page);
 
         await test.expect(asyncOptions.option("Async item 51")).toHaveCount(1);
@@ -103,18 +108,22 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         const asyncOptions = query(scroller);
 
         await q.button("Connect scroll element").click();
+        // The empty renderer connects the explicit ref in passive effects, but
+        // exposes no rendered item that can signal when those effects finish.
         await flushFrames(page);
         await q.button("Load async items").click();
         await scroller.evaluate((element) => {
           element.scrollTop = 2000;
           element.dispatchEvent(new Event("scroll"));
         });
-        await flushFrames(page);
         await test.expect(asyncOptions.option("Async item 51")).toBeVisible();
 
         await q
           .button("Disconnect scroll element and double item size")
           .click();
+        // Disconnecting viewport updates intentionally leaves the rendered
+        // window unchanged, so wait through the passive update before asserting
+        // that absence of change.
         await flushFrames(page);
 
         await test.expect(asyncOptions.option("Async item 51")).toHaveCount(1);
@@ -123,7 +132,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
       // https://github.com/ariakit/ariakit/pull/6806#discussion_r3633347050
       test("auto-detects the scroller for omitted nested renderers", async ({
-        page,
         q,
       }) => {
         const scroller = q.listbox("Nested auto items");
@@ -134,7 +142,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           element.scrollTop = 2000;
           element.dispatchEvent(new Event("scroll"));
         });
-        await flushFrames(page);
 
         await test.expect(nestedOptions.option("Async item 51")).toBeVisible();
       });
@@ -149,19 +156,19 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
         await test.expect(directOptions.option("Async item 1")).toBeVisible();
         await q.button("Use direct scroll element").click();
+        // The renderer accepts the direct element in passive effects, but the
+        // rendered window stays unchanged until the subsequent scroll.
         await flushFrames(page);
         await scroller.evaluate((element) => {
           element.scrollTop = 2000;
           element.dispatchEvent(new Event("scroll"));
         });
-        await flushFrames(page);
 
         await test.expect(directOptions.option("Async item 51")).toBeVisible();
       });
 
       // https://github.com/ariakit/ariakit/pull/6806#discussion_r3633901198
       test("resolves an ancestor ref after the initial commit", async ({
-        page,
         q,
       }) => {
         const scroller = q.listbox("Initial ref items");
@@ -174,7 +181,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           element.scrollTop = 2000;
           element.dispatchEvent(new Event("scroll"));
         });
-        await flushFrames(page);
 
         await test
           .expect(initialRefOptions.option("Async item 51"))
@@ -183,7 +189,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
 
       // https://github.com/ariakit/ariakit/pull/6806#discussion_r3635028432
       test("revalidates an inherited scroll target before passive updates", async ({
-        page,
         q,
       }) => {
         const scroller = q.listbox("Inherited target items");
@@ -197,7 +202,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
           element.scrollTop = 2000;
           element.dispatchEvent(new Event("scroll"));
         });
-        await flushFrames(page);
         await test
           .expect(inheritedOptions.option("Async item 51"))
           .toBeVisible();
@@ -207,7 +211,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await q
           .button("Use inner scroll element and update child class")
           .click();
-        await flushFrames(page);
 
         await test.expect(mountedItems).toContainText(/Async item 2(?:,|$)/);
         await test
@@ -219,7 +222,6 @@ withFramework(import.meta.dirname, async ({ test, query }) => {
         await q
           .button("Use outer scroll element and increase overscan")
           .click();
-        await flushFrames(page);
 
         await test.expect(mountedItems).toContainText(/Async item 51(?:,|$)/);
         await test
