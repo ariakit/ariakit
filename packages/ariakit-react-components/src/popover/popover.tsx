@@ -541,16 +541,39 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     // the transition is seen synchronously, wherever it comes from. Only a
     // mounted Popover asserts this, so a popup with nothing to position, such
     // as a combobox inside a plain dialog, is never left waiting.
-    // The subscription deliberately doesn't reset on teardown. Under React
+    // This state must never outlive its writer: it's asserted here and cleared
+    // by the positioning effect, both owned by this component, while the store
+    // it lives on can be owned by an ancestor. A Popover that unmounts, or that
+    // is pointed at another store, while its popup is mounted and not yet
+    // placed would otherwise leave "placing" set with nobody left to clear it,
+    // and everything waiting on it waits forever.
+    // Resetting straight from the teardown isn't enough either. Under React
     // StrictMode effects are set up, torn down and set up again, and a reset
     // would publish "placed" in between, which descendants remounting in that
-    // window would believe. Re-registering republishes the current value
-    // immediately, so nothing needs clearing.
+    // window would believe. Teardown and setup run in the same task, so
+    // deferring the reset by a microtask and letting the next setup cancel it
+    // covers both: a real unmount releases the state, and a StrictMode pair or
+    // an ordinary remount never publishes anything.
+    const releasePlacingRef = useRef<(() => void) | null>(null);
+
     useSafeLayoutEffect(() => {
       if (!store) return;
-      return sync(store, ["mounted"], (state) => {
+      releasePlacingRef.current?.();
+      releasePlacingRef.current = null;
+      const desync = sync(store, ["mounted"], (state) => {
         store.setState("unstable_placing", state.mounted);
       });
+      return () => {
+        desync();
+        let canceled = false;
+        releasePlacingRef.current = () => {
+          canceled = true;
+        };
+        queueMicrotask(() => {
+          if (canceled) return;
+          store.setState("unstable_placing", false);
+        });
+      };
     }, [store]);
 
     const position = fixed ? "fixed" : "absolute";
