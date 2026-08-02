@@ -142,13 +142,16 @@ function usePresentItem(store: CompositeStore) {
     },
     [store, cancel],
   );
+  // `store` is a dependency so a swap releases the request held against the
+  // previous store. React runs the teardown and the setup in the same commit,
+  // so the mounted flag stays correct across it.
   useEffect(() => {
     mountedRef.current = true;
     return () => {
       mountedRef.current = false;
       cancel();
     };
-  }, [cancel]);
+  }, [cancel, store]);
   return present;
 }
 
