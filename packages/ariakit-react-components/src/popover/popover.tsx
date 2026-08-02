@@ -37,6 +37,14 @@ import type { PopoverStore } from "./popover-store.ts";
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 
+/**
+ * How many mounted popovers are currently asserting `unstable_placing` on each
+ * store. The state belongs to the store, so a StrictMode pair, a remount, a
+ * keyed replacement and a store swap are all answered by the same question:
+ * does anyone still own it once the deferred reset runs?
+ */
+const placingWriters = new WeakMap<PopoverStore, number>();
+
 interface AnchorRect {
   x?: number;
   y?: number;
@@ -550,28 +558,33 @@ export const usePopover = createHook<TagName, PopoverOptions>(
     // Resetting straight from the teardown isn't enough either. Under React
     // StrictMode effects are set up, torn down and set up again, and a reset
     // would publish "placed" in between, which descendants remounting in that
-    // window would believe. Teardown and setup run in the same task, so
-    // deferring the reset by a microtask and letting the next setup cancel it
-    // covers both: a real unmount releases the state, and a StrictMode pair or
-    // an ordinary remount never publishes anything.
-    const releasePlacingRef = useRef<(() => void) | null>(null);
-
+    // window would believe. Teardown and setup run in the same commit, so the
+    // reset is deferred by a microtask and skipped if anyone is still writing
+    // by the time it runs.
+    // Ownership is counted per store rather than per component, because the
+    // state is the store's. Tracking it on the instance gets both directions
+    // wrong: a keyed replacement can't cancel the outgoing instance's reset,
+    // and an instance whose `store` prop changes would cancel the reset queued
+    // for the store it just left, stranding that one forever.
     useSafeLayoutEffect(() => {
       if (!store) return;
-      releasePlacingRef.current?.();
-      releasePlacingRef.current = null;
-      const desync = sync(store, ["mounted"], (state) => {
-        store.setState("unstable_placing", state.mounted);
+      const currentStore = store;
+      placingWriters.set(
+        currentStore,
+        (placingWriters.get(currentStore) ?? 0) + 1,
+      );
+      const desync = sync(currentStore, ["mounted"], (state) => {
+        currentStore.setState("unstable_placing", state.mounted);
       });
       return () => {
         desync();
-        let canceled = false;
-        releasePlacingRef.current = () => {
-          canceled = true;
-        };
+        placingWriters.set(
+          currentStore,
+          (placingWriters.get(currentStore) ?? 1) - 1,
+        );
         queueMicrotask(() => {
-          if (canceled) return;
-          store.setState("unstable_placing", false);
+          if (placingWriters.get(currentStore)) return;
+          currentStore.setState("unstable_placing", false);
         });
       };
     }, [store]);
