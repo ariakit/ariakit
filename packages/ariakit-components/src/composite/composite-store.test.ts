@@ -242,28 +242,6 @@ test("syncs deprecated aliases with connected stores", () => {
   stopStore();
 });
 
-test("preserves legacy connected store updates before initialization", () => {
-  const compositeElement = document.createElement("div");
-  const nextCompositeElement = document.createElement("div");
-  const source = createStore({
-    baseElement: compositeElement,
-    includesBaseElement: true,
-  });
-  const store = createCompositeStore({ store: source });
-
-  source.setState("baseElement", nextCompositeElement);
-  source.setState("includesBaseElement", false);
-  const stopStore = init(store);
-
-  expect(store.getState().compositeElement).toBe(nextCompositeElement);
-  expect(store.getState().baseElement).toBe(nextCompositeElement);
-  expect(store.getState().compositeElementInFocusOrder).toBe(false);
-  expect(store.getState().includesBaseElement).toBe(false);
-  expect(source.getState().baseElement).toBe(nextCompositeElement);
-  expect(source.getState().includesBaseElement).toBe(false);
-  stopStore();
-});
-
 test("syncs deprecated aliases on initialized derived stores", () => {
   const store = createComboboxStore();
   const stopStore = init(store);

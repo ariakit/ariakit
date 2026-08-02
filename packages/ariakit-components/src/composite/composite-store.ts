@@ -323,45 +323,30 @@ export function createCompositeStore<
 
   const composite = createStore(initialState, collection, props.store);
 
-  let syncedCompositeElement = compositeElement;
-  let syncedCompositeElementInFocusOrder = compositeElementInFocusOrder;
-
-  setup(composite, () => {
-    const state = composite.getState();
-    if (state.baseElement !== syncedCompositeElement) {
-      composite.setState("compositeElement", state.baseElement);
-    }
-    if (state.includesBaseElement !== syncedCompositeElementInFocusOrder) {
-      composite.setState(
-        "compositeElementInFocusOrder",
-        state.includesBaseElement,
-      );
-    }
-    return chain(
+  // Alias synchronization starts at initialization. Writes made before then by
+  // connected stores with only deprecated keys are intentionally unsupported.
+  setup(composite, () =>
+    chain(
       sync(composite, ["compositeElement"], (state) => {
-        syncedCompositeElement = state.compositeElement;
         composite.setState("baseElement", state.compositeElement);
       }),
       sync(composite, ["baseElement"], (state) => {
-        syncedCompositeElement = state.baseElement;
         composite.setState("compositeElement", state.baseElement);
       }),
       sync(composite, ["compositeElementInFocusOrder"], (state) => {
-        syncedCompositeElementInFocusOrder = state.compositeElementInFocusOrder;
         composite.setState(
           "includesBaseElement",
           state.compositeElementInFocusOrder,
         );
       }),
       sync(composite, ["includesBaseElement"], (state) => {
-        syncedCompositeElementInFocusOrder = state.includesBaseElement;
         composite.setState(
           "compositeElementInFocusOrder",
           state.includesBaseElement,
         );
       }),
-    );
-  });
+    ),
+  );
 
   // When the activeId is undefined, we need to find the first enabled item and
   // set it as the activeId.
