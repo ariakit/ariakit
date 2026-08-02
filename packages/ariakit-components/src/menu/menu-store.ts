@@ -16,7 +16,6 @@ import type {
   SetStateAction,
 } from "@ariakit/utils";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
-import { createCompositeStoreSetters } from "../composite/__utils.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreOptions,
@@ -100,7 +99,6 @@ export function createMenuStore({
   };
 
   const menu = createStore(initialState, composite, hovercard, store);
-  const compositeSetters = createCompositeStoreSetters(menu);
 
   setup(menu, () =>
     sync(menu, ["mounted"], (state) => {
@@ -122,7 +120,6 @@ export function createMenuStore({
     ...composite,
     ...hovercard,
     ...menu,
-    ...compositeSetters,
     combobox,
     parent,
     menubar,

@@ -14,8 +14,6 @@ import type {
   CollectionStoreState,
 } from "../collection/collection-store.ts";
 import { createCollectionStore } from "../collection/collection-store.ts";
-import { createCompositeStoreSetters } from "./__utils.ts";
-
 type Orientation = "horizontal" | "vertical" | "both";
 type CompositeStoreDirection = "next" | "previous" | "up" | "down";
 
@@ -324,7 +322,43 @@ export function createCompositeStore<
   };
 
   const composite = createStore(initialState, collection, props.store);
-  const setters = createCompositeStoreSetters(composite);
+
+  const setState: CompositeStore<T>["setState"] = (key, value) => {
+    if (key === "compositeElement" || key === "baseElement") {
+      composite.setState(key, value);
+      if (key === "compositeElement") {
+        composite.setState(
+          "baseElement",
+          composite.getState().compositeElement,
+        );
+      } else {
+        composite.setState(
+          "compositeElement",
+          composite.getState().baseElement,
+        );
+      }
+      return;
+    }
+    if (
+      key === "compositeElementInFocusOrder" ||
+      key === "includesBaseElement"
+    ) {
+      composite.setState(key, value);
+      if (key === "compositeElementInFocusOrder") {
+        composite.setState(
+          "includesBaseElement",
+          composite.getState().compositeElementInFocusOrder,
+        );
+      } else {
+        composite.setState(
+          "compositeElementInFocusOrder",
+          composite.getState().includesBaseElement,
+        );
+      }
+      return;
+    }
+    composite.setState(key, value);
+  };
 
   setup(composite, () =>
     chain(
@@ -557,7 +591,9 @@ export function createCompositeStore<
   return {
     ...collection,
     ...composite,
-    ...setters,
+    setState,
+    setCompositeElement: (element) => setState("compositeElement", element),
+    setBaseElement: (element) => setState("baseElement", element),
     setActiveId: (id) => composite.setState("activeId", id),
 
     move: (id) => {

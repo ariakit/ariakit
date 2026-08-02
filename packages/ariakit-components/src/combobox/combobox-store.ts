@@ -10,7 +10,6 @@ import {
 import type { Store, StoreOptions, StoreProps } from "@ariakit/store";
 import { chain, defaultValue, isSafari, isTouchDevice } from "@ariakit/utils";
 import type { PickRequired, SetState } from "@ariakit/utils";
-import { createCompositeStoreSetters } from "../composite/__utils.ts";
 import type {
   CompositeStoreFunctions,
   CompositeStoreItem,
@@ -158,7 +157,6 @@ export function createComboboxStore({
   };
 
   const combobox = createStore(initialState, composite, popover, store);
-  const compositeSetters = createCompositeStoreSetters(combobox);
   setup(combobox, () =>
     chain(
       sync(combobox, ["inputValue"], (state) => {
@@ -484,14 +482,13 @@ export function createComboboxStore({
     if (key === "selectedValue") {
       shouldSetDefaultSelectedValue = false;
     }
-    compositeSetters.setState(key, value);
+    combobox.setState(key, value);
   };
 
   return {
     ...popover,
     ...composite,
     ...combobox,
-    ...compositeSetters,
     setState,
     tag,
     setInputValue,

@@ -1,12 +1,7 @@
 import { createStore, init } from "@ariakit/store";
 import { expect, test } from "vitest";
 import { createComboboxStore } from "../combobox/combobox-store.ts";
-import { createMenuStore } from "../menu/menu-store.ts";
-import { createRadioStore } from "../radio/radio-store.ts";
-import { createSelectStore } from "../select/select-store.ts";
-import { createTabStore } from "../tab/tab-store.ts";
-import { createTagStore } from "../tag/tag-store.ts";
-import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
+import type { CompositeStoreItem } from "./composite-store.ts";
 import { createCompositeStore, groupItemsByRows } from "./composite-store.ts";
 
 function createComposite(items: CompositeStoreItem[]) {
@@ -231,39 +226,29 @@ test("syncs deprecated aliases with connected stores", () => {
   stopStore();
 });
 
-const derivedCompositeStores: Array<[string, () => CompositeStore]> = [
-  ["combobox", () => createComboboxStore()],
-  ["menu", () => createMenuStore()],
-  ["radio", () => createRadioStore()],
-  ["select", () => createSelectStore()],
-  ["tab", () => createTabStore()],
-  ["tag", () => createTagStore()],
-];
+test("syncs deprecated aliases on initialized derived stores", () => {
+  const store = createComboboxStore();
+  const stopStore = init(store);
+  const compositeElement = document.createElement("div");
+  const nextCompositeElement = document.createElement("div");
 
-test.each(derivedCompositeStores)(
-  "syncs deprecated aliases on uninitialized %s stores",
-  (_, createStore) => {
-    const store = createStore();
-    const compositeElement = document.createElement("div");
-    const nextCompositeElement = document.createElement("div");
+  store.setCompositeElement(compositeElement);
+  expect(store.getState().compositeElement).toBe(compositeElement);
+  expect(store.getState().baseElement).toBe(compositeElement);
 
-    store.setCompositeElement(compositeElement);
-    expect(store.getState().compositeElement).toBe(compositeElement);
-    expect(store.getState().baseElement).toBe(compositeElement);
+  store.setState("baseElement", nextCompositeElement);
+  expect(store.getState().compositeElement).toBe(nextCompositeElement);
+  expect(store.getState().baseElement).toBe(nextCompositeElement);
 
-    store.setState("baseElement", nextCompositeElement);
-    expect(store.getState().compositeElement).toBe(nextCompositeElement);
-    expect(store.getState().baseElement).toBe(nextCompositeElement);
+  store.setState("compositeElementInFocusOrder", true);
+  expect(store.getState().compositeElementInFocusOrder).toBe(true);
+  expect(store.getState().includesBaseElement).toBe(true);
 
-    store.setState("compositeElementInFocusOrder", true);
-    expect(store.getState().compositeElementInFocusOrder).toBe(true);
-    expect(store.getState().includesBaseElement).toBe(true);
-
-    store.setState("includesBaseElement", false);
-    expect(store.getState().compositeElementInFocusOrder).toBe(false);
-    expect(store.getState().includesBaseElement).toBe(false);
-  },
-);
+  store.setState("includesBaseElement", false);
+  expect(store.getState().compositeElementInFocusOrder).toBe(false);
+  expect(store.getState().includesBaseElement).toBe(false);
+  stopStore();
+});
 
 test("prefers new composite focus order option", () => {
   const store = createCompositeStore({

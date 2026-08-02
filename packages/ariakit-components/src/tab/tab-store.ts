@@ -15,7 +15,6 @@ import type {
 } from "../collection/collection-store.ts";
 import { createCollectionStore } from "../collection/collection-store.ts";
 import type { ComboboxStore } from "../combobox/combobox-store.ts";
-import { createCompositeStoreSetters } from "../composite/__utils.ts";
 import type {
   CompositeStore,
   CompositeStoreFunctions,
@@ -136,7 +135,6 @@ export function createTabStore({
     ),
   };
   const tab = createStore(initialState, composite, store);
-  const compositeSetters = createCompositeStoreSetters(tab);
 
   // Selects the active tab when selectOnMove is true. Since we're listening to
   // the moves state, but not the activeId state, this callback will run only
@@ -277,7 +275,6 @@ export function createTabStore({
   return {
     ...composite,
     ...tab,
-    ...compositeSetters,
     panels,
     panel,
     setSelectedId: (id) => tab.setState("selectedId", id),
