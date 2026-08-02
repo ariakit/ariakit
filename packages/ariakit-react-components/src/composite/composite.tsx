@@ -22,6 +22,7 @@ import {
   isSelfTarget,
   hasFocus,
   invariant,
+  noop,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type {
@@ -122,12 +123,18 @@ function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
  */
 function usePresentItem(store: CompositeStore) {
   const cancelRef = useRef<(() => void) | null>(null);
+  const mountedRef = useRef(true);
   const cancel = useCallback(() => {
     cancelRef.current?.();
     cancelRef.current = null;
   }, []);
   const present = useCallback(
     (params: Omit<PresentItemParams, "store">) => {
+      // Requests can be queued from an event handler rather than an effect, so
+      // one can arrive after this component is gone. Subscribing then would
+      // outlive the cleanup that's supposed to cancel it, on a store that
+      // usually belongs to an ancestor and keeps living.
+      if (!mountedRef.current) return noop;
       cancel();
       const cancelCurrent = presentItem({ store, ...params });
       cancelRef.current = cancelCurrent;
@@ -135,7 +142,13 @@ function usePresentItem(store: CompositeStore) {
     },
     [store, cancel],
   );
-  useEffect(() => cancel, [cancel]);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      cancel();
+    };
+  }, [cancel]);
   return present;
 }
 
