@@ -83,6 +83,8 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await trigger.click();
 
+    // There is no positive state for a scroll that never happened, so wait
+    // through the checkpoint where it would have landed before asserting.
     await flushFrames(page);
     test.expect(await page.evaluate(() => window.scrollY)).toBe(0);
     test.expect(await scroll.events()).not.toContain("document");
