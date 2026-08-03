@@ -135,6 +135,7 @@ function presentItem({
   let wasOpen = false;
   let focusOutCleanup: (() => void) | undefined;
   let focusOutDocument: Document | undefined;
+  let pendingFocusChecks = 0;
   const owner = requireFocus
     ? getActiveElement(store.getState().compositeElement)
     : null;
@@ -173,7 +174,23 @@ function presentItem({
       if (isElement(event.relatedTarget)) {
         lastFocusedElement = event.relatedTarget;
         if (isFocusWithinComposite(store, event.relatedTarget)) return;
-        focusLeftComposite = true;
+        // An item can focus itself before its collection registration, active
+        // id, and popup element are published. Classify that destination after
+        // the current commit instead of mistaking the handoff for an escape.
+        const relatedTarget = event.relatedTarget;
+        pendingFocusChecks += 1;
+        queueMicrotask(() => {
+          if (done) return;
+          pendingFocusChecks -= 1;
+          const state = store.getState();
+          const targetId =
+            resolvedId ?? (id === undefined ? state.activeId : id);
+          const isTarget = !!targetId && relatedTarget.id === targetId;
+          if (!isTarget && !isFocusWithinComposite(store, relatedTarget)) {
+            focusLeftComposite = true;
+          }
+          if (!pendingFocusChecks) present();
+        });
         return;
       }
       // A focused item being removed can emit focusout with no destination.
@@ -253,6 +270,7 @@ function presentItem({
   };
   const present = () => {
     if (done) return;
+    if (pendingFocusChecks) return;
     const state = store.getState();
     if (abandonedByState(state)) return cancel();
     let replaced = false;
