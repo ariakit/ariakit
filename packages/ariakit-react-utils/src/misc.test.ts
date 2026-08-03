@@ -18,6 +18,13 @@ test("mergeProps preserves base values for undefined overrides", () => {
   });
 });
 
+test("mergeProps allows an undefined id override", () => {
+  const base: HTMLAttributes<HTMLDivElement> = { id: "base" };
+  const overrides: HTMLAttributes<HTMLDivElement> = { id: undefined };
+
+  expect(mergeProps(base, overrides)).toEqual({ id: undefined });
+});
+
 test("setRef returns function ref cleanup", () => {
   const element = document.createElement("div");
   const cleanup = () => {};
