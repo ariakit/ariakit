@@ -98,6 +98,20 @@ test("removeUndefinedValues copies own properties only", () => {
   expect(Object.hasOwn(result, "aria-hidden")).toBe(false);
 });
 
+test("removeUndefinedValues drops a __proto__ key", () => {
+  // An own enumerable `__proto__` is what `JSON.parse` produces, and assigning
+  // it would run the `Object.prototype` setter and swap the result's prototype
+  // instead of adding a property.
+  const payload = JSON.parse('{"__proto__":{"id":"injected"},"name":"real"}');
+  // Pin the fixture: an object literal would set the prototype instead of
+  // creating the own key this test needs to exercise.
+  expect(Object.hasOwn(payload, "__proto__")).toBe(true);
+  const result = removeUndefinedValues(payload);
+  expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+  expect(result.id).toBeUndefined();
+  expect(Object.keys(result)).toEqual(["name"]);
+});
+
 test("defaultValue returns the first defined value", () => {
   expect(defaultValue(undefined, null, "fallback")).toBeNull();
   expect(defaultValue(undefined, false, true)).toBe(false);

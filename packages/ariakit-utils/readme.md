@@ -1554,7 +1554,7 @@ Checks whether something is disabled or not based on its DOM attributes.
 function removeUndefinedValues<T extends AnyObject>(obj: T): T;
 ```
 
-Removes undefined values from an object. Only own properties are copied, so an inherited enumerable property never becomes an own property of the result.
+Removes undefined values from an object. Only own properties are copied, so an inherited enumerable property never becomes an own property of the result. A `__proto__` key is dropped because assigning it would replace the prototype of the result instead of adding a property to it.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
