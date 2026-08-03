@@ -103,6 +103,7 @@ export function presentItem({
   requireFocus,
 }: PresentItemParams) {
   let element: HTMLElement | null = null;
+  let resolvedId: string | undefined;
   let focused = false;
   let done = false;
   let wasMounted = false;
@@ -167,10 +168,19 @@ export function presentItem({
    * The element the request's item is currently rendered as, or `null` when it
    * isn't rendered. Resolved from the store every time, because the element an
    * id points at is not stable.
+   *
+   * The id itself is pinned once an element is found. A request without an `id`
+   * follows the active item only while it is still looking for one, which is
+   * what lets an item that hasn't registered yet resolve later. After that it
+   * has adopted a logical item, and `abandonedByState` deliberately doesn't end
+   * it when the active item changes, so re-reading the active id here would let
+   * it silently present a different item instead.
    */
   const resolveElement = (state: ReturnType<typeof store.getState>) => {
-    const item = getEnabledItem(store, id === undefined ? state.activeId : id);
+    const targetId = resolvedId ?? (id === undefined ? state.activeId : id);
+    const item = getEnabledItem(store, targetId);
     if (!item?.element?.isConnected) return null;
+    resolvedId = item.id;
     return item.element;
   };
   let unsubscribe: (() => void) | undefined;
