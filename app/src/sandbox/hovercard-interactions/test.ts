@@ -8,6 +8,7 @@ const hoverOutside = async () => {
   await hover(document.body, { clientX: 10, clientY: 10 });
 };
 
+// https://github.com/ariakit/ariakit/issues/7043
 test("shows after hovering and hides after hovering outside", async () => {
   expect(hovercard()).not.toBeInTheDocument();
 
