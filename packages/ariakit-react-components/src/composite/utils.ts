@@ -128,6 +128,7 @@ function presentItem({
   let resolvedId: string | undefined;
   let focused = false;
   let focusLeftComposite = false;
+  let lastFocusedElement: Element | null = null;
   let elementWasReplaced = false;
   let done = false;
   let wasMounted = false;
@@ -170,6 +171,7 @@ function presentItem({
       if (done) return;
       if (!isElement(event.target)) return;
       if (isElement(event.relatedTarget)) {
+        lastFocusedElement = event.relatedTarget;
         if (isFocusWithinComposite(store, event.relatedTarget)) return;
         focusLeftComposite = true;
         return;
@@ -177,8 +179,10 @@ function presentItem({
       // A focused item being removed can emit focusout with no destination.
       // Ref cleanup runs before React removes the node, so it distinguishes
       // that event from an explicit blur immediately followed by replacement.
-      if (!event.target.isConnected) return;
-      if (unmountingItems.has(event.target)) return;
+      if (event.target === element) {
+        if (!event.target.isConnected) return;
+        if (unmountingItems.has(event.target)) return;
+      }
       focusLeftComposite = true;
     };
     doc.addEventListener("focusout", onFocusOut, true);
@@ -186,9 +190,7 @@ function presentItem({
       doc.removeEventListener("focusout", onFocusOut, true);
     };
   };
-  const focusWasLostToReplacement = (target: HTMLElement) => {
-    if (!focused) return false;
-    if (focusLeftComposite) return false;
+  const focusIsOnBody = (target: HTMLElement) => {
     return getActiveElement(target) === getDocument(target).body;
   };
   /**
@@ -254,6 +256,7 @@ function presentItem({
     const state = store.getState();
     if (abandonedByState(state)) return cancel();
     let replaced = false;
+    const previousElement = element;
     if (!element) {
       // The item may not have rendered yet, so keep waiting for it.
       element = resolveElement(state);
@@ -279,8 +282,12 @@ function presentItem({
       elementWasReplaced = true;
     }
     if (focus || requireFocus) trackFocusEscape(element);
-    if (elementWasReplaced && focusLeftComposite) return cancel();
-    const restoreFocus = replaced && focusWasLostToReplacement(element);
+    if ((requireFocus || elementWasReplaced) && focusLeftComposite) {
+      return cancel();
+    }
+    const focusWasLost = replaced && focused && focusIsOnBody(element);
+    const restoreFocus = focusWasLost && lastFocusedElement === previousElement;
+    if (focusWasLost && !restoreFocus) return cancel();
     if (restoreFocus) {
       focused = false;
     } else if (!stillOwnsFocus(element)) {
@@ -290,6 +297,7 @@ function presentItem({
       focused = true;
       focusLeftComposite = false;
       const itemElement = element;
+      lastFocusedElement = itemElement;
       withCompositeScrollPreserved(store, () => {
         itemElement.focus({ preventScroll: true });
       });
@@ -325,6 +333,7 @@ function presentItem({
     "open",
     "unstable_placing",
   ] as Array<keyof CompositeStoreState>;
+  if (owner) trackFocusEscape(owner);
   unsubscribe = subscribe(store, keys, present);
   present();
   return cancel;

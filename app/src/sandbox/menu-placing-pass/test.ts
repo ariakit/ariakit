@@ -82,6 +82,43 @@ test("restores focus after a move from outside replaces its item", async () => {
   expect(replacement).toHaveFocus();
 });
 
+// https://github.com/ariakit/ariakit/pull/7050
+test("cancels an unresolved presentation after focus leaves and returns", async () => {
+  await click(q.button("Show Replacement actions"));
+  const withinMenu = q.within(q.menu("Replacement actions"));
+  await focus(withinMenu.menuitem("Action 1"));
+  await dispatch.click(q.button("Move to pending Replacement actions action"));
+
+  await focus(q.button("Actions"));
+  const popupFocusTarget = q.button("Replacement actions popup focus target");
+  await focus(popupFocusTarget);
+  await dispatch.click(q.button("Show pending Replacement actions item"));
+
+  expect(withinMenu.menuitem("Pending action")).toHaveAttribute(
+    "data-active-item",
+  );
+  expect(popupFocusTarget).toHaveFocus();
+
+  await dispatch.click(q.button("Finish Replacement actions positioning"));
+  expect(popupFocusTarget).toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/pull/7050
+test("does not revive a target after another focused item is removed", async () => {
+  const { lastItem, withinMenu } = await prepareReplacementFromOutside();
+  const transientItem = withinMenu.menuitem("Transient action");
+  await focus(transientItem);
+  expect(lastItem).toHaveAttribute("data-active-item");
+
+  await dispatch.click(q.button("Remove transient Replacement actions item"));
+  expect(document.body).toHaveFocus();
+
+  await dispatch.click(q.button("Replace Replacement actions items"));
+  const replacement = withinMenu.menuitem("Action 30");
+  expect(replacement).toHaveAttribute("data-active-item");
+  expect(document.body).toHaveFocus();
+});
+
 // https://github.com/ariakit/ariakit/issues/7042
 test("does not restore focus when an outside move is blurred", async () => {
   const { lastItem, withinMenu } = await prepareReplacementFromOutside();

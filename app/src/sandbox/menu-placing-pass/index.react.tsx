@@ -80,6 +80,8 @@ function ReplacementMenu() {
   const menu = Ariakit.useMenuStore();
   const releaseRef = useRef<(() => void) | null>(null);
   const [generation, setGeneration] = useState(0);
+  const [pendingItem, setPendingItem] = useState(false);
+  const [transientItem, setTransientItem] = useState(true);
 
   const updatePosition: UpdatePosition = async ({ updatePosition }) => {
     await updatePosition();
@@ -117,6 +119,23 @@ function ReplacementMenu() {
       <button
         type="button"
         tabIndex={0}
+        onClick={() => menu.move("replacement-action-pending")}
+      >
+        Move to pending Replacement actions action
+      </button>
+      <button type="button" tabIndex={0} onClick={() => setPendingItem(true)}>
+        Show pending Replacement actions item
+      </button>
+      <button
+        type="button"
+        tabIndex={0}
+        onClick={() => setTransientItem(false)}
+      >
+        Remove transient Replacement actions item
+      </button>
+      <button
+        type="button"
+        tabIndex={0}
         onClick={() => {
           releaseRef.current?.();
           releaseRef.current = null;
@@ -137,6 +156,15 @@ function ReplacementMenu() {
           overflow: "auto",
         }}
       >
+        {transientItem && (
+          <Ariakit.MenuItem
+            id="replacement-action-transient"
+            onFocus={(event) => event.preventDefault()}
+            style={{ display: "block", height: 32 }}
+          >
+            Transient action
+          </Ariakit.MenuItem>
+        )}
         <Fragment key={generation}>
           {actions.map((action, index) => (
             <Ariakit.MenuItem
@@ -160,6 +188,14 @@ function ReplacementMenu() {
               {action}
             </Ariakit.MenuItem>
           ))}
+          {pendingItem && (
+            <Ariakit.MenuItem
+              id="replacement-action-pending"
+              style={{ display: "block", height: 32 }}
+            >
+              Pending action
+            </Ariakit.MenuItem>
+          )}
         </Fragment>
         <button id="replacement-actions-popup-focus-target" type="button">
           Replacement actions popup focus target

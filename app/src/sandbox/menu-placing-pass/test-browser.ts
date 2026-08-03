@@ -283,6 +283,84 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toBeGreaterThan(0);
   });
 
+  // https://github.com/ariakit/ariakit/pull/7050
+  test("cancels an unresolved presentation after focus leaves and returns", async ({
+    q,
+  }) => {
+    const menu = q.menu("Replacement actions");
+    const withinMenu = query(menu);
+    await q.button("Show Replacement actions").click();
+    await test.expect(menu).toHaveAttribute("data-placing");
+
+    const firstItem = withinMenu.menuitem("Action 1");
+    await firstItem.focus();
+    await test.expect(firstItem).toBeFocused();
+    await q
+      .button("Move to pending Replacement actions action")
+      .evaluate((element) => {
+        if (element instanceof HTMLElement) element.click();
+      });
+
+    const escapeTarget = q.button("Actions");
+    await escapeTarget.focus();
+    await test.expect(escapeTarget).toBeFocused();
+    const popupFocusTarget = q.button("Replacement actions popup focus target");
+    await popupFocusTarget.evaluate((element) => {
+      if (element instanceof HTMLElement) {
+        element.focus({ preventScroll: true });
+      }
+    });
+    await test.expect(popupFocusTarget).toBeFocused();
+
+    await q
+      .button("Show pending Replacement actions item")
+      .evaluate((element) => {
+        if (element instanceof HTMLElement) element.click();
+      });
+    const pendingItem = withinMenu.menuitem("Pending action");
+    await test.expect(pendingItem).toHaveAttribute("data-active-item");
+    await test.expect(popupFocusTarget).toBeFocused();
+
+    await finishReplacementWithoutMovingFocus(q);
+    await test.expect(menu).not.toHaveAttribute("data-placing");
+    await test.expect(popupFocusTarget).toBeFocused();
+    test.expect(await menu.evaluate((element) => element.scrollTop)).toBe(0);
+  });
+
+  // https://github.com/ariakit/ariakit/pull/7050
+  test("does not revive a target after another focused item is removed", async ({
+    page,
+    q,
+  }) => {
+    const { menu, lastItem, withinMenu } =
+      await prepareReplacementFromOutside(q);
+    const transientItem = withinMenu.menuitem("Transient action");
+    await transientItem.evaluate((element) => {
+      if (element instanceof HTMLElement) {
+        element.focus({ preventScroll: true });
+      }
+    });
+    await test.expect(transientItem).toBeFocused();
+    await test.expect(lastItem).toHaveAttribute("data-active-item");
+
+    await q
+      .button("Remove transient Replacement actions item")
+      .evaluate((element) => {
+        if (element instanceof HTMLElement) element.click();
+      });
+    await test.expect(page.locator("body")).toBeFocused();
+
+    await replaceItemsWithoutMovingFocus(q);
+    const replacement = withinMenu.menuitem(replacementLastAction);
+    await test.expect(replacement).toHaveAttribute("data-active-item");
+    await test.expect(page.locator("body")).toBeFocused();
+
+    await finishReplacementWithoutMovingFocus(q);
+    await test.expect(menu).not.toHaveAttribute("data-placing");
+    await test.expect(page.locator("body")).toBeFocused();
+    test.expect(await menu.evaluate((element) => element.scrollTop)).toBe(0);
+  });
+
   // https://github.com/ariakit/ariakit/issues/7042
   test("does not scroll when a stopped blur leaves an outside replacement", async ({
     q,
