@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 const inheritedProperties = [
   ["aria-hidden", "true"],
+  ["aria-label", "Inherited label"],
   ["role", "presentation"],
 ] as const;
 
@@ -21,6 +22,7 @@ export default function Example() {
     );
 
     for (const [key, value] of inheritedProperties) {
+      // oxlint-disable-next-line no-extend-native
       Object.defineProperty(Object.prototype, key, {
         configurable: true,
         enumerable: true,
@@ -29,19 +31,12 @@ export default function Example() {
       });
     }
 
-    for (const [key] of inheritedProperties) {
-      const descriptor = Object.getOwnPropertyDescriptor(Object.prototype, key);
-      if (!descriptor?.configurable) continue;
-      Object.defineProperty(Object.prototype, key, {
-        ...descriptor,
-        enumerable: false,
-      });
-    }
     setReady(true);
 
     return () => {
       for (const [key, descriptor] of descriptors) {
         if (descriptor) {
+          // oxlint-disable-next-line no-extend-native
           Object.defineProperty(Object.prototype, key, descriptor);
         } else {
           Reflect.deleteProperty(Object.prototype, key);

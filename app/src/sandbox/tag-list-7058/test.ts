@@ -14,3 +14,8 @@ test("does not copy an inherited role", async () => {
 
   expect(q.status("Listbox role")).toHaveTextContent("listbox");
 });
+
+// Reproduces https://github.com/ariakit/ariakit/issues/7058
+test("does not use an inherited aria-label", () => {
+  expect(q.listbox("Tags")).toBeInTheDocument();
+});

@@ -251,6 +251,7 @@ function getStoreStateObjectKeys(
   let hasSelector = false;
 
   for (const prop in object) {
+    if (!hasOwnProperty(object, prop)) continue;
     const keyOrSelector = object[prop];
     if (keyOrSelector === undefined) continue;
     if (typeof keyOrSelector === "function") {
@@ -354,6 +355,7 @@ export function useStoreStateObject(
     const obj = objRef.current;
 
     for (const prop in stateObject) {
+      if (!hasOwnProperty(stateObject, prop)) continue;
       const keyOrSelector = stateObject[prop];
       if (keyOrSelector === undefined) continue;
 
@@ -364,7 +366,7 @@ export function useStoreStateObject(
         // which would break the getSnapshot idempotency contract and make
         // React loop until it throws "Maximum update depth exceeded". See
         // https://github.com/ariakit/ariakit/issues/6335
-        if (!Object.is(value, obj[prop])) {
+        if (!hasOwnProperty(obj, prop) || !Object.is(value, obj[prop])) {
           obj[prop] = value;
           updated = true;
         }
@@ -375,7 +377,7 @@ export function useStoreStateObject(
         state && hasOwnProperty(state, keyOrSelector)
           ? state[keyOrSelector]
           : undefined;
-      if (!Object.is(value, obj[prop])) {
+      if (!hasOwnProperty(obj, prop) || !Object.is(value, obj[prop])) {
         obj[prop] = value;
         updated = true;
       }

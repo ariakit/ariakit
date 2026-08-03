@@ -198,7 +198,9 @@ test("updates dynamic selector dependencies", async () => {
 
 // Reproduces https://github.com/ariakit/ariakit/issues/7058
 test("ignores inherited object selector properties", async () => {
-  expect(q.status.ensure("Inherited selector keys").textContent).toBe("own");
+  expect(q.status.ensure("Inherited selector keys").textContent).toBe(
+    "own,toString,valueOf",
+  );
 });
 
 // Reproduces https://github.com/ariakit/ariakit/issues/7058

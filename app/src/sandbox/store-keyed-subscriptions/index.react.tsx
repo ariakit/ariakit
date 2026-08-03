@@ -8,9 +8,13 @@ import type { Store } from "@ariakit/store";
 import type { SetState } from "@ariakit/utils";
 import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 
+const objectToString = Reflect.get(Object.prototype, "toString");
+const objectValueOf = Reflect.get(Object.prototype, "valueOf");
+
 interface TestState {
   foo: number;
   bar: number;
+  prototypeMethod: typeof Object.prototype.toString;
 }
 
 interface SelectorCalls {
@@ -253,7 +257,7 @@ function DirectValues({ store }: StoreProps) {
 }
 
 function DynamicSelectors({ store }: StoreProps) {
-  const [key, setKey] = useState<keyof TestState>("foo");
+  const [key, setKey] = useState<"foo" | "bar">("foo");
   const value = useStoreState(store, [key], (state) => state[key]);
   const object = useStoreStateObject(store, [key], {
     value: (state) => state[key],
@@ -292,6 +296,8 @@ function InheritedObjectSelectors({ store }: StoreProps) {
             selectorCalls.current += 1;
             return state.foo;
           },
+          toString: "prototypeMethod" as const,
+          valueOf: () => objectValueOf,
         },
         {
           inheritedDirect: "bar" as const,
@@ -303,15 +309,7 @@ function InheritedObjectSelectors({ store }: StoreProps) {
       ),
     [],
   );
-  const safeSelectorObject = useMemo(
-    () => Object.assign(Object.create(null), selectorObject),
-    [selectorObject],
-  );
-  const selectorValues = useStoreStateObject(
-    store,
-    ["foo"],
-    safeSelectorObject,
-  );
+  const selectorValues = useStoreStateObject(store, ["foo"], selectorObject);
 
   const updateInheritedKey = () => {
     const calls = selectorCalls.current;
@@ -435,7 +433,7 @@ function Controls({ store, calls }: SelectorProps) {
   const getCallCount = (key: keyof SelectorCalls) =>
     hydrated ? calls[key] : 0;
 
-  const update = (key: keyof TestState) => {
+  const update = (key: "foo" | "bar") => {
     store.setState(key, (value) => value + 1);
     forceUpdate();
   };
@@ -489,7 +487,13 @@ function Controls({ store, calls }: SelectorProps) {
 }
 
 export default function Example() {
-  const [store] = useState(() => createStore<TestState>({ foo: 0, bar: 0 }));
+  const [store] = useState(() =>
+    createStore<TestState>({
+      foo: 0,
+      bar: 0,
+      prototypeMethod: objectToString,
+    }),
+  );
   const calls = useRef<SelectorCalls>({
     state: 0,
     object: 0,

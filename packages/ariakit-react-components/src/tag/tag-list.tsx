@@ -11,6 +11,7 @@ import type { Props } from "@ariakit/react-utils";
 import {
   queueBeforeEvent,
   getClosestFocusable,
+  hasOwnProperty,
   invariant,
   isApple,
   UndoManager,
@@ -119,12 +120,16 @@ export const useTagList = createHook<TagName, TagListOptions>(
     // separate div that will serve as the accessible listbox element.
     const listboxProps: typeof props = {};
     for (const key in props) {
+      if (!hasOwnProperty(props, key)) continue;
       if (key === "role" || key.startsWith("aria-")) {
-        const prop = key as keyof typeof props;
+        const prop = key;
         listboxProps[prop] = props[prop];
         delete props[prop];
       }
     }
+    const ariaLabel = hasOwnProperty(listboxProps, "aria-label")
+      ? listboxProps["aria-label"]
+      : undefined;
 
     const touchDevice = useTouchDevice();
 
@@ -139,9 +144,7 @@ export const useTagList = createHook<TagName, TagListOptions>(
           aria-live="polite"
           aria-relevant="all"
           aria-atomic
-          aria-labelledby={
-            listboxProps["aria-label"] != null ? undefined : labelId
-          }
+          aria-labelledby={ariaLabel != null ? undefined : labelId}
           aria-orientation={orientation}
           aria-owns={itemIds.join(" ")}
           {...listboxProps}

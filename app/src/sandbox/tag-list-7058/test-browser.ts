@@ -14,4 +14,9 @@ withFramework(import.meta.dirname, async ({ test }) => {
 
     await test.expect(q.status("Listbox role")).toHaveText("listbox");
   });
+
+  // Reproduces https://github.com/ariakit/ariakit/issues/7058
+  test("does not use an inherited aria-label", async ({ q }) => {
+    await test.expect(q.listbox("Tags")).toBeAttached();
+  });
 });

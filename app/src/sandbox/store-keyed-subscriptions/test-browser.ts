@@ -3,7 +3,9 @@ import { withFramework } from "#app/test-utils/preview.ts";
 withFramework(import.meta.dirname, async ({ test }) => {
   // Reproduces https://github.com/ariakit/ariakit/issues/7058
   test("ignores inherited object selector properties", async ({ q }) => {
-    await test.expect(q.status("Inherited selector keys")).toHaveText("own");
+    await test
+      .expect(q.status("Inherited selector keys"))
+      .toHaveText("own,toString,valueOf");
   });
 
   // Reproduces https://github.com/ariakit/ariakit/issues/7058
