@@ -305,11 +305,13 @@ export function disabledFromElement(element: Element) {
 }
 
 /**
- * Removes undefined values from an object.
+ * Removes undefined values from an object. Only own properties are copied, so
+ * an inherited enumerable property never becomes an own property of the result.
  */
 export function removeUndefinedValues<T extends AnyObject>(obj: T) {
   const result = {} as T;
   for (const key in obj) {
+    if (!hasOwnProperty(obj, key)) continue;
     if (obj[key] !== undefined) {
       result[key] = obj[key];
     }

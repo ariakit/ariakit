@@ -4,9 +4,30 @@ import {
   defaultValue,
   isEmpty,
   isInteger,
+  removeUndefinedValues,
   shallowEqual,
   warnOnce,
 } from "./misc.ts";
+
+/**
+ * Defines an enumerable property on `Object.prototype`, the way prototype
+ * pollution does, and removes it again on disposal. Lets a test prove that an
+ * inherited key never becomes an own property of the result.
+ */
+function polluteObjectPrototype(key: string, value: unknown) {
+  // oxlint-disable-next-line no-extend-native
+  Object.defineProperty(Object.prototype, key, {
+    value,
+    configurable: true,
+    enumerable: true,
+    writable: true,
+  });
+  return {
+    [Symbol.dispose]() {
+      Reflect.deleteProperty(Object.prototype, key);
+    },
+  };
+}
 
 test("isInteger preserves its loose numeric coercion behavior", () => {
   expect(isInteger(0)).toBe(true);
@@ -55,6 +76,26 @@ test("shallowEqual compares own enumerable values", () => {
   expect(shallowEqual({ a: 1 }, { a: 2 })).toBe(false);
   expect(shallowEqual({ a: 1 }, { a: 1, b: 2 })).toBe(false);
   expect(shallowEqual(undefined, { a: 1 })).toBe(false);
+});
+
+test("removeUndefinedValues drops only the undefined values", () => {
+  const result = removeUndefinedValues({
+    a: 1,
+    b: undefined,
+    c: null,
+    d: false,
+  });
+  // `toEqual` ignores keys holding `undefined`, so the dropped key has to be
+  // asserted through the resulting key list.
+  expect(Object.keys(result)).toEqual(["a", "c", "d"]);
+  expect(result).toEqual({ a: 1, c: null, d: false });
+});
+
+test("removeUndefinedValues copies own properties only", () => {
+  using _pollution = polluteObjectPrototype("aria-hidden", "true");
+  const result = removeUndefinedValues({ id: "button" });
+  expect(Object.keys(result)).toEqual(["id"]);
+  expect(Object.hasOwn(result, "aria-hidden")).toBe(false);
 });
 
 test("defaultValue returns the first defined value", () => {

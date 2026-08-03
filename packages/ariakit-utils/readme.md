@@ -1554,7 +1554,7 @@ Checks whether something is disabled or not based on its DOM attributes.
 function removeUndefinedValues<T extends AnyObject>(obj: T): T;
 ```
 
-Removes undefined values from an object.
+Removes undefined values from an object. Only own properties are copied, so an inherited enumerable property never becomes an own property of the result.
 
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
