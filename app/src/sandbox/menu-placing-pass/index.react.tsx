@@ -129,6 +129,11 @@ export default function Example() {
 
   return (
     <main style={{ display: "grid", gap: 8, justifyItems: "start" }}>
+      {/* Its own scenario, above everything the Actions menu uses. Each menu
+      opens into the spacer that follows its own controls, so neither one can
+      cover the buttons that drive the other and both stay drivable in any
+      order. */}
+      <LateMountedMenu />
       {/* Puts the controls below the fold so the page is scrolled while the
       menu is open, which is the only way a page jump is observable. */}
       <div style={{ height: 900 }} />
@@ -177,8 +182,8 @@ export default function Example() {
       >
         Skip Actions positioning
       </button>
-      {/* Last of the controls, so the open menu covers only the spacer below
-      instead of the buttons that drive it. */}
+      {/* Last of the buttons that drive it, and the spacer below is taller than
+      the open menu, so opening it covers no control. */}
       <Ariakit.MenuButton store={menu} tabIndex={0} onClick={holdNextPass}>
         Actions
       </Ariakit.MenuButton>
@@ -204,7 +209,6 @@ export default function Example() {
           </Ariakit.MenuItem>
         ))}
       </Ariakit.Menu>
-      <LateMountedMenu />
       <div style={{ height: 1500 }} />
     </main>
   );
