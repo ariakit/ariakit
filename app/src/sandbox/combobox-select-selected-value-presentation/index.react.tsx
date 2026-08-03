@@ -214,6 +214,25 @@ function Fixture({
       virtualFocus={virtualFocus}
     >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+      {showFocusHistory && (
+        <p
+          style={{
+            background: "white",
+            border: "1px solid gray",
+            padding: 8,
+            position: "fixed",
+            right: 8,
+            top: 8,
+            zIndex: 1,
+          }}
+        >
+          Open the select. Expected focus history: input → focus target. An
+          extra input means the popup pulled focus back. Current focus history:{" "}
+          <output aria-label={`${label} focus history`}>
+            {focusHistory.length ? focusHistory.join(" → ") : "none"}
+          </output>
+        </p>
+      )}
       <Ariakit.ComboboxSelect style={{ display: "block" }} />
       <Ariakit.ComboboxPopover
         autoFocusOnShow={autoFocusOnShow}
@@ -296,15 +315,6 @@ function Fixture({
         >
           {`Finish ${label} positioning`}
         </button>
-      )}
-      {showFocusHistory && (
-        <p>
-          Open the select. Expected focus history: input → focus target. An
-          extra input means the popup pulled focus back. Current focus history:{" "}
-          <output aria-label={`${label} focus history`}>
-            {focusHistory.length ? focusHistory.join(" → ") : "none"}
-          </output>
-        </p>
       )}
     </Ariakit.ComboboxProvider>
   );
