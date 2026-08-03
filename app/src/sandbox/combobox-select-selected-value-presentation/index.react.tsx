@@ -170,6 +170,7 @@ interface FixtureProps {
   refreshListActiveId?: string;
   /** Replaces every item node under a stable id while the popup opens. */
   remountItemsOnOpen?: boolean;
+  showFocusHistory?: boolean;
   unmountOnHide?: boolean;
   virtualFocus?: boolean;
 }
@@ -188,10 +189,16 @@ function Fixture({
   pageScrollport,
   refreshListActiveId,
   remountItemsOnOpen,
+  showFocusHistory,
   unmountOnHide,
   virtualFocus,
 }: FixtureProps) {
   const focusTargetRef = useRef<HTMLElement | null>(null);
+  const [focusHistory, setFocusHistory] = useState<string[]>([]);
+  const recordFocus = (target: string) => {
+    if (!showFocusHistory) return;
+    setFocusHistory((history) => [...history, target]);
+  };
   const setFocusTarget = (element: HTMLElement | null) => {
     focusTargetRef.current = element;
   };
@@ -228,6 +235,7 @@ function Fixture({
           <Ariakit.ComboboxInput
             aria-label={`Search ${label}`}
             onFocus={() => {
+              recordFocus("input");
               if (!moveFocusOnOpen) return;
               queueMicrotask(() => {
                 // An in-popup target is meant to be scrolled into its popup by
@@ -260,7 +268,12 @@ function Fixture({
         </Ariakit.ComboboxItem>
       </Ariakit.ComboboxPopover>
       {focusTarget && outsideFocusTarget && (
-        <button type="button" tabIndex={0} ref={setFocusTarget}>
+        <button
+          type="button"
+          tabIndex={0}
+          ref={setFocusTarget}
+          onFocus={() => recordFocus("focus target")}
+        >
           {`${label} focus target`}
         </button>
       )}
@@ -283,6 +296,15 @@ function Fixture({
         >
           {`Finish ${label} positioning`}
         </button>
+      )}
+      {showFocusHistory && (
+        <p>
+          Open the select. Expected focus history: input → focus target. An
+          extra input means the popup pulled focus back. Current focus history:{" "}
+          <output aria-label={`${label} focus history`}>
+            {focusHistory.length ? focusHistory.join(" → ") : "none"}
+          </output>
+        </p>
       )}
     </Ariakit.ComboboxProvider>
   );
@@ -398,6 +420,22 @@ export default function Example() {
           keepOpen
           label="Parked fruit"
           refreshListActiveId="parked-apple"
+        />
+      </div>
+      {/* The popup stays open after focus leaves, so Dialog's delayed
+          auto-focus must not pull focus back into it. */}
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          focusTarget
+          input
+          keepOpen
+          label="Focus escaping fruit"
+          moveFocusOnOpen
+          outsideFocusTarget
+          pageScrollport
+          showFocusHistory
+          unmountOnHide
         />
       </div>
     </>

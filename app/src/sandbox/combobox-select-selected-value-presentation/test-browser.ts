@@ -132,6 +132,29 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.option("Watermelon")).not.toBeInViewport();
   });
 
+  // https://github.com/ariakit/ariakit/issues/7033
+  test("does not refocus after focus leaves an open popup", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Focus escaping fruit");
+    const escapeTarget = q.button("Focus escaping fruit focus target");
+    const focusHistory = q.status("Focus escaping fruit focus history");
+
+    await test.expect(focusHistory).toHaveText("none");
+
+    await select.click();
+
+    // The app moved focus out of the popup while it was opening.
+    await test.expect(escapeTarget).toBeFocused();
+    await test.expect(q.listbox()).not.toHaveAttribute("data-placing");
+    // Dialog queues auto-focus after placement, and there is no positive state
+    // for focus not being stolen once that microtask has run.
+    await flushFrames(page);
+    await test.expect(escapeTarget).toBeFocused();
+    await test.expect(focusHistory).toHaveText("input → focus target");
+  });
+
   // This case originated in the unmerged PR below. It covers the same
   // focus-move cancellation invariant when the popup remounts on open and the
   // select element briefly becomes the composite again.
