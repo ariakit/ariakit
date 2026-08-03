@@ -84,6 +84,20 @@ function RemountingFruitItems({ idPrefix }: FruitItemsProps) {
     setGeneration((value) => value + 1);
   }, [mounted]);
 
+  // TODO: Remove once https://github.com/ariakit/ariakit/issues/7021 is fixed.
+  // The presentation the open scheduled was dropped along with the item node it
+  // had already resolved, and nothing schedules another one on its own, so ask
+  // for it again now that the replacements have rendered.
+  useEffect(() => {
+    if (!combobox) return;
+    const { activeId, open } = combobox.getState();
+    // There is nothing to present while the popup is closed, and a move there
+    // would commit the active item as the selected value.
+    if (!open) return;
+    if (activeId == null) return;
+    combobox.move(activeId);
+  }, [combobox, generation]);
+
   return <FruitItems key={generation} idPrefix={idPrefix} />;
 }
 
