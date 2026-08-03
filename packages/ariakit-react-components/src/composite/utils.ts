@@ -218,6 +218,21 @@ export function presentItem({
     // item. This can only be answered once the item exists: before that there
     // is nothing to compare focus against, and an option that has just focused
     // itself isn't even recognizable as an item yet.
+    //
+    // A request whose item still holds DOM focus when that item is replaced
+    // ends here, because the browser parks focus on the body when it removes
+    // the focused node. It only gets that far with an owner to compare against,
+    // and only where the item keeps DOM focus: a virtual-focus item that hands
+    // focus straight back to the composite element moves no focus at all when
+    // its node is replaced. A `Menu` moved while focus is already inside it
+    // therefore keeps the behavior a replaced item had before this, while the
+    // same menu moved from outside has no owner and presents the replacement.
+    //
+    // Telling a removed focused node apart from focus escaping is deliberately
+    // not attempted here: the signal would have to be carried down from the
+    // re-resolution above, into an ordering that just gained a focus-escape
+    // guarantee.
+    // See https://github.com/ariakit/ariakit/issues/7042
     if (!stillOwnsFocus(element)) return cancel();
     if (focus && !focused) {
       focused = true;
