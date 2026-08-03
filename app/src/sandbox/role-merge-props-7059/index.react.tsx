@@ -42,12 +42,11 @@ const StatefulInput = React.forwardRef<HTMLInputElement, StatefulInputProps>(
 export default function Example() {
   const [revision, setRevision] = React.useState(0);
   const payload = parsePayload(revision);
-  const { __proto__: _prototypeValue, ...safePayload } = payload;
 
   return (
     <div>
       <Ariakit.Role
-        render={<StatefulInput {...safePayload} aria-label="Profile name" />}
+        render={<StatefulInput {...payload} aria-label="Profile name" />}
       />
       <button type="button" onClick={() => setRevision((value) => value + 1)}>
         Refresh payload

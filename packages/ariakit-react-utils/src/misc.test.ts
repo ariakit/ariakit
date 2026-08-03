@@ -21,6 +21,20 @@ test("mergeProps preserves base values for undefined overrides", () => {
   });
 });
 
+test("mergeProps ignores own __proto__ overrides", () => {
+  const base: HTMLAttributes<HTMLDivElement> = {};
+  const overrides = JSON.parse(
+    '{"__proto__":{"id":"HIJACKED"},"constructor":"preserved"}',
+  );
+
+  const props = mergeProps(base, overrides);
+
+  expect(Object.getPrototypeOf(props)).toBe(Object.prototype);
+  expect(props.id).toBeUndefined();
+  expect(Object.hasOwn(props, "constructor")).toBe(true);
+  expect(Reflect.get(props, "constructor")).toBe("preserved");
+});
+
 test("setRef returns function ref cleanup", () => {
   const element = document.createElement("div");
   const cleanup = () => {};
