@@ -80,6 +80,7 @@ test("deselecting a tag should not highlight the input text if it is not the fir
   expect(q.combobox()).toHaveValue("");
   expect(q.option(/Aiden Freeman /)).toHaveAttribute("data-active-item");
   expect(q.option(/Aiden Freeman /)).toHaveAttribute("aria-selected", "false");
+  await q.option.wait(/Abigail Rivera /);
   await press.ArrowUp();
   expect(q.combobox()).toHaveValue("abigailrivera35@email.com");
   expect(q.option(/Abigail Rivera /)).toHaveAttribute("data-active-item");
