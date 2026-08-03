@@ -59,9 +59,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     });
     const replacement = withinMenu.menuitem("Rename");
     await test.expect(replacement).toHaveAttribute("data-active-item");
-    await test.expect
-      .poll(() => page.evaluate(() => document.activeElement?.tagName))
-      .toBe("BODY");
 
     await finishPositioningWithoutMovingFocus("Replaced actions", q);
     await test.expect(replacement).toBeFocused();

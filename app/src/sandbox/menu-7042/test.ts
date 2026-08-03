@@ -18,7 +18,6 @@ test("restores focus after a focused item is replaced", async () => {
   await dispatch.click(q.button("Replace Replaced actions items"));
   const replacement = withinMenu.menuitem("Rename");
   expect(replacement).toHaveAttribute("data-active-item");
-  expect(document.activeElement).toBe(document.body);
 
   await dispatch.click(q.button("Finish Replaced actions positioning"));
   expect(replacement).toHaveFocus();

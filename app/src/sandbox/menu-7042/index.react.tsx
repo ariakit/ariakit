@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 const actions = [
   "New",
@@ -27,6 +27,7 @@ const actions = [
 interface MenuVariantProps {
   label: string;
   replaceItems?: boolean;
+  workaround?: boolean;
 }
 
 function slugify(value: string) {
@@ -37,7 +38,11 @@ function slugify(value: string) {
  * Holds menu positioning open while a focused item is replaced. The
  * replacement keeps the item's id, so it remains the same logical item.
  */
-function MenuVariant({ label, replaceItems = false }: MenuVariantProps) {
+function MenuVariant({
+  label,
+  replaceItems = false,
+  workaround = false,
+}: MenuVariantProps) {
   const menu = Ariakit.useMenuStore();
   const releaseRef = useRef<(() => void) | null>(null);
   const [generation, setGeneration] = useState(0);
@@ -46,6 +51,14 @@ function MenuVariant({ label, replaceItems = false }: MenuVariantProps) {
     new Promise<void>((resolve) => {
       releaseRef.current = resolve;
     });
+
+  // TODO: Remove once https://github.com/ariakit/ariakit/issues/7042 is fixed.
+  useEffect(() => {
+    if (!replaceItems || !workaround) return;
+    const { activeId, open } = menu.getState();
+    if (!open || activeId == null) return;
+    menu.move(activeId);
+  }, [generation, menu, replaceItems, workaround]);
 
   return (
     <section style={{ display: "grid", gap: 8, justifyItems: "start" }}>
@@ -107,7 +120,7 @@ export default function Example() {
   return (
     <main style={{ display: "grid", gap: 32 }}>
       <MenuVariant label="Stable actions" />
-      <MenuVariant label="Replaced actions" replaceItems />
+      <MenuVariant label="Replaced actions" replaceItems workaround />
     </main>
   );
 }
