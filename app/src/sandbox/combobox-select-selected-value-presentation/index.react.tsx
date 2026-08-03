@@ -436,6 +436,7 @@ export default function Example() {
           auto-focus must not pull focus back into it. */}
       <div style={{ marginTop: 200 }}>
         <Fixture
+          autoFocusOnShow={false}
           defaultSelectedValue="Watermelon"
           focusTarget
           input
