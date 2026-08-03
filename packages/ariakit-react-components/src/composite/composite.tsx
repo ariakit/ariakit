@@ -32,7 +32,7 @@ import type {
   KeyboardEvent as ReactKeyboardEvent,
   RefObject,
 } from "react";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { FocusableOptions } from "../focusable/focusable.tsx";
 import { useFocusable } from "../focusable/focusable.tsx";
 import {
@@ -40,15 +40,14 @@ import {
   useCompositeProviderContext,
 } from "./composite-context.tsx";
 import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
-import type { PresentItemParams } from "./utils.ts";
 import {
   findFirstEnabledItem,
   getEnabledItem,
   groupItemsByRows,
   isItem,
   ownsFocus,
-  presentItem,
   silentlyFocused,
+  usePresentItem,
 } from "./utils.ts";
 
 const TagName = "div" satisfies ElementType;
@@ -113,41 +112,6 @@ function findFirstEnabledItemInTheLastRow(items: CompositeStoreItem[]) {
   return findFirstEnabledItem(
     flatten2DArray(reverseArray(groupItemsByRows(items))),
   );
-}
-
-/**
- * Keeps at most one pending presentation per composite, so the newest request
- * wins. That's what lets a later move take over from the presentation an open
- * scheduled, while an activity that only changes the active item without asking
- * for a new presentation, such as hover, leaves the pending one alone.
- */
-function usePresentItem(store: CompositeStore) {
-  const cancelRef = useRef<(() => void) | null>(null);
-  const cancel = useCallback(() => {
-    cancelRef.current?.();
-    cancelRef.current = null;
-  }, []);
-  const present = useCallback(
-    (params: Omit<PresentItemParams, "store">) => {
-      cancel();
-      const cancelCurrent = presentItem({ store, ...params });
-      cancelRef.current = cancelCurrent;
-      return cancelCurrent;
-    },
-    [store, cancel],
-  );
-  // Deliberately not scoped to the store, and deliberately without a mounted
-  // flag. The effect-driven request is created by a child of this component,
-  // and React runs a child's passive setup before its parent's, so anything
-  // reset here is still reset when the child asks again: a remount would drop
-  // that request rather than protect it.
-  // A request that has already resolved its item terminates on its own when
-  // that item leaves the DOM. One queued from an event handler after this
-  // cleanup never resolves an item, so it can still outlive the component;
-  // giving the request a single owner is tracked in
-  // https://github.com/ariakit/ariakit/issues/7024.
-  useEffect(() => cancel, [cancel]);
-  return present;
 }
 
 type PresentItem = ReturnType<typeof usePresentItem>;

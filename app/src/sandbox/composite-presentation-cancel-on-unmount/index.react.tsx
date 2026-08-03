@@ -1,5 +1,4 @@
 import * as Ariakit from "@ariakit/react";
-import type { FocusEvent } from "react";
 import { useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
@@ -28,32 +27,6 @@ export default function Example() {
   const [open, setOpen] = useState(true);
   const [loaded, setLoaded] = useState(false);
   const [dismissOnFocus, setDismissOnFocus] = useState(false);
-  // TODO: Remove along with its uses once
-  // https://github.com/ariakit/ariakit/issues/7024 is fixed. Marks the focus
-  // events this panel is about to discard, so the handler below can tell the
-  // composite not to schedule a presentation for them.
-  const dismissingRef = useRef(false);
-
-  // TODO: Reduce to the `dismissOnFocus` branch once
-  // https://github.com/ariakit/ariakit/issues/7024 is fixed. A presentation
-  // scheduled for a focus that is discarded in the same task can be created
-  // after the panel's cleanup, and it then parks on the store for good.
-  // Preventing the event is the composite's own opt-out, so nothing is
-  // scheduled in the first place.
-  const onFocus = (event: FocusEvent) => {
-    if (dismissingRef.current || dismissOnFocus) {
-      event.preventDefault();
-    }
-    if (!dismissOnFocus) return;
-    setDismissOnFocus(false);
-    flushSync(() => setOpen(false));
-  };
-
-  const focusPanelBeforeDismissing = () => {
-    dismissingRef.current = true;
-    panelRef.current?.focus();
-    dismissingRef.current = false;
-  };
 
   return (
     <>
@@ -68,7 +41,7 @@ export default function Example() {
           type="button"
           tabIndex={0}
           onClick={() => {
-            focusPanelBeforeDismissing();
+            panelRef.current?.focus();
             setOpen(false);
           }}
         >
@@ -78,7 +51,7 @@ export default function Example() {
           type="button"
           tabIndex={0}
           onClick={() => {
-            focusPanelBeforeDismissing();
+            panelRef.current?.focus();
             flushSync(() => setOpen(false));
           }}
         >
@@ -109,7 +82,11 @@ export default function Example() {
           aria-label="Shortcuts"
           tabIndex={0}
           style={{ height: 60, overflow: "auto" }}
-          onFocus={onFocus}
+          onFocus={() => {
+            if (!dismissOnFocus) return;
+            setDismissOnFocus(false);
+            flushSync(() => setOpen(false));
+          }}
         >
           <button type="button" tabIndex={0}>
             Edit shortcuts
