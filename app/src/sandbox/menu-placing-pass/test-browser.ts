@@ -165,4 +165,24 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(menu).not.toHaveAttribute("data-placing");
     await test.expect(lastItem).toBeInViewport();
   });
+
+  // A popup that mounts only once its store is already open has no `Popover`
+  // mounted to publish the show transition, so it starts out looking placed.
+  // Focus must still stay out until its pass finishes.
+  // https://github.com/ariakit/ariakit/pull/7032#discussion_r3703769238
+  test("keeps focus out of a popup that mounts after its store is open", async ({
+    q,
+  }) => {
+    const menu = q.menu("Late actions");
+    const trigger = q.button("Late actions");
+
+    await trigger.click();
+    await test.expect(menu).toBeVisible();
+    await test.expect(menu).toHaveAttribute("data-placing");
+    await test.expect(trigger).toBeFocused();
+
+    await q.button("Finish Late actions positioning").click();
+    await test.expect(menu).not.toHaveAttribute("data-placing");
+    await test.expect(menu).toBeFocused();
+  });
 });

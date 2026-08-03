@@ -20,6 +20,59 @@ const lastAction = `Action ${actionCount}`;
 const measureError = "Could not measure the Actions menu";
 
 /**
+ * The same held pass, in a menu that mounts only once its store is already
+ * open. No `Popover` is mounted when the popup shows, so nothing publishes the
+ * show transition and the popup starts out looking placed until its own layout
+ * effect says otherwise. What keeps focus out in the meantime is that no commit
+ * carries a connected content element while the popup still looks placed, and
+ * nothing else covers that flow.
+ */
+function LateMountedMenu() {
+  const menu = Ariakit.useMenuStore();
+  const open = Ariakit.useStoreState(menu, "open");
+  const releaseRef = useRef<(() => void) | null>(null);
+
+  const updatePosition: UpdatePosition = async ({ updatePosition }) => {
+    await updatePosition();
+    await new Promise<void>((resolve) => {
+      releaseRef.current = resolve;
+    });
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        tabIndex={0}
+        onClick={() => {
+          const release = releaseRef.current;
+          releaseRef.current = null;
+          release?.();
+        }}
+      >
+        Finish Late actions positioning
+      </button>
+      <Ariakit.MenuButton store={menu} tabIndex={0}>
+        Late actions
+      </Ariakit.MenuButton>
+      {open && (
+        <Ariakit.Menu
+          store={menu}
+          updatePosition={updatePosition}
+          hideOnInteractOutside={false}
+          portal={false}
+          style={{ background: "white", border: "1px solid gray" }}
+        >
+          <Ariakit.MenuItem style={{ display: "block" }}>
+            Rename
+          </Ariakit.MenuItem>
+        </Ariakit.Menu>
+      )}
+    </>
+  );
+}
+
+/**
  * A menu whose positioning finishes in two steps: it places itself with what it
  * knows, waits for asynchronous work that can change where it belongs, then
  * places itself again. `updatePosition` is the public way to express that, and
@@ -151,6 +204,7 @@ export default function Example() {
           </Ariakit.MenuItem>
         ))}
       </Ariakit.Menu>
+      <LateMountedMenu />
       <div style={{ height: 1500 }} />
     </main>
   );
