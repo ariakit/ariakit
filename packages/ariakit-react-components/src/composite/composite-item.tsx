@@ -50,8 +50,8 @@ import {
   focusSilently,
   getEnabledItem,
   isItem,
-  presentItem,
   selectTextField,
+  usePresentItem,
 } from "./utils.ts";
 
 const TagName = "button" satisfies ElementType;
@@ -287,9 +287,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
     // update by unregistering it, even when the composite element never
     // arrives. Redirects are only scheduled for such items.
     const cancelScheduledFocusRedirectRef = useRef<(() => void) | null>(null);
-    // Holds the canceller of the presentation scheduled when this item hands
-    // focus back to the composite element, so a later one supersedes it.
-    const cancelPresentationRef = useRef<(() => void) | null>(null);
+    const present = usePresentItem(store);
 
     const onFocus = useEvent((event: FocusEvent<HTMLType>) => {
       onFocusProp?.(event);
@@ -349,13 +347,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         // composite element, but both are inside the composite, so the request
         // survives it and only focus leaving the composite abandons it.
         if (store.item(id)) {
-          cancelPresentationRef.current?.();
-          cancelPresentationRef.current = presentItem({
-            store,
-            id,
-            markedOnly: true,
-            requireFocus: true,
-          });
+          present({ id, markedOnly: true, requireFocus: true });
         }
         hasFocusedComposite.current = true;
         // If the previously focused element is a composite or composite item
