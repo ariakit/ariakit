@@ -44,10 +44,18 @@ interface FixtureProps {
   defaultSelectedValue: string | string[];
   focusTarget?: boolean;
   input?: boolean;
+  /** Keeps the popup open while focus leaves it. */
+  keepOpen?: boolean;
   label: string;
   moveFocusOnOpen?: boolean;
   /** Puts the element focus moves to outside the popup instead of inside it. */
   outsideFocusTarget?: boolean;
+  /**
+   * Drops the popup's own scrollport so the nearest scrollport for its items is
+   * the page, which is what makes a stale presentation move the page rather
+   * than the popup's list.
+   */
+  pageScrollport?: boolean;
   unmountOnHide?: boolean;
   virtualFocus?: boolean;
 }
@@ -56,9 +64,11 @@ function Fixture({
   defaultSelectedValue,
   focusTarget,
   input,
+  keepOpen,
   label,
   moveFocusOnOpen,
   outsideFocusTarget,
+  pageScrollport,
   unmountOnHide,
   virtualFocus,
 }: FixtureProps) {
@@ -75,13 +85,16 @@ function Fixture({
       <Ariakit.ComboboxSelect style={{ display: "block" }} />
       <Ariakit.ComboboxPopover
         unmountOnHide={unmountOnHide}
+        hideOnInteractOutside={!keepOpen}
+        // A popup that is taller than the viewport would otherwise be flipped
+        // above the select, which puts the last items back in view.
+        flip={!pageScrollport}
         gutter={4}
         sameWidth
         style={{
           background: "white",
           border: "1px solid gray",
-          maxHeight: 120,
-          overflow: "auto",
+          ...(pageScrollport ? null : { maxHeight: 120, overflow: "auto" }),
         }}
       >
         {input && (
@@ -185,6 +198,22 @@ export default function Example() {
           label="Escaping fruit"
           moveFocusOnOpen
           outsideFocusTarget
+          unmountOnHide
+        />
+      </div>
+      {/* The same escape, against a popup that keeps itself open and has no
+      scrollport of its own. Nothing left to scroll but the page, so a
+      presentation that outlives the escape is visible as a page jump. */}
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          focusTarget
+          input
+          keepOpen
+          label="Page escaping fruit"
+          moveFocusOnOpen
+          outsideFocusTarget
+          pageScrollport
           unmountOnHide
         />
       </div>
