@@ -152,7 +152,71 @@ withFramework(import.meta.dirname, async ({ test }) => {
     // for focus not being stolen once that microtask has run.
     await flushFrames(page);
     await test.expect(escapeTarget).toBeFocused();
+    await test.expect(q.listbox()).toBeVisible();
     await test.expect(focusHistory).toHaveText("input → focus target");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7033
+  test("does not refocus after native auto-focus moves focus into a shadow root", async ({
+    page,
+    q,
+  }) => {
+    const disclosure = q.button("Native auto-focus dialog");
+    const escapeTarget = q.textbox("Native auto-focus shadow target");
+    const focusHistory = q.status("Native auto-focus history");
+
+    await test.expect(focusHistory).toHaveText("none");
+
+    await disclosure.click();
+
+    // React runs native auto-focus before layout effects. The input's focus
+    // handler moves focus out synchronously, before Dialog can install a DOM
+    // listener to observe that the dialog had already received focus.
+    await test.expect(escapeTarget).toBeFocused();
+    // Dialog's queued auto-focus has no observable completion marker, so cross
+    // its frame checkpoint before asserting that focus remained outside.
+    await flushFrames(page);
+    await test.expect(escapeTarget).toBeFocused();
+    await test.expect(focusHistory).toHaveText("input → shadow target");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7033
+  test("focuses a dialog after its store changes", async ({ q }) => {
+    const focusHistory = q.status("Store swap focus history");
+
+    await test.expect(focusHistory).toHaveText("none");
+
+    await q.button("Open store A").click();
+    await test.expect(q.textbox("Store A initial focus")).toBeFocused();
+
+    await q.button("Open store B").click();
+
+    await test.expect(q.textbox("Store B initial focus")).toBeFocused();
+    await test
+      .expect(focusHistory)
+      .toHaveText(
+        "open store A → store A input → open store B → store B input",
+      );
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7033
+  test("uses the current disclosure in delayed auto-focus", async ({
+    page,
+    q,
+  }) => {
+    const previousDisclosure = q.button("Open disclosure swap dialog");
+    const focusHistory = q.status("Disclosure swap focus history");
+
+    await test.expect(focusHistory).toHaveText("none");
+
+    await previousDisclosure.click();
+
+    await test.expect(previousDisclosure).toBeFocused();
+    // Dialog's queued auto-focus has no observable completion marker, so cross
+    // its frame checkpoint before asserting that focus remained outside.
+    await flushFrames(page);
+    await test.expect(previousDisclosure).toBeFocused();
+    await test.expect(focusHistory).toHaveText("input → previous disclosure");
   });
 
   // This case originated in the unmerged PR below. It covers the same

@@ -48,6 +48,7 @@ function ComboboxPersistentElement() {
 export default function Example() {
   const [open, setOpen] = useState(false);
   const [asSection, setAsSection] = useState(false);
+  const [showLateOutside, setShowLateOutside] = useState(false);
   const [showShadowDialog, setShowShadowDialog] = useState(false);
   const [shadowDialogPortal, setShadowDialogPortal] =
     useState<HTMLElement | null>(null);
@@ -206,6 +207,13 @@ export default function Example() {
         >
           Dismiss notification
         </button>
+        <button
+          type="button"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => setShowLateOutside(true)}
+        >
+          Add late outside field
+        </button>
       </div>
 
       {/* happy-dom proxies forms for named access. Their descendants must still
@@ -225,6 +233,13 @@ export default function Example() {
         placeholder="Outside field"
         className="rounded border border-gray-300 px-3 py-1"
       />
+      {showLateOutside && (
+        <input
+          aria-label="Late outside field"
+          placeholder="Late outside field"
+          className="rounded border border-gray-300 px-3 py-1"
+        />
+      )}
 
       <div ref={setShadowHost} data-testid="shadow-host" />
 

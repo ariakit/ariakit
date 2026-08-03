@@ -31,6 +31,7 @@ import type {
   ComponentPropsWithRef,
   ElementType,
   FC,
+  FocusEvent as ReactFocusEvent,
   ReactElement,
   KeyboardEvent as ReactKeyboardEvent,
   RefObject,
@@ -87,6 +88,16 @@ function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   if (dialog && contains(dialog, activeElement)) return false;
   if (isFocusable(activeElement)) return true;
   return false;
+}
+
+function getDeepestActiveElement(element: Element) {
+  let activeElement = element;
+  while (activeElement.shadowRoot) {
+    const nextElement = activeElement.shadowRoot.activeElement;
+    if (!isElement(nextElement)) break;
+    activeElement = nextElement;
+  }
+  return activeElement;
 }
 
 function isElementInDialog(
@@ -222,18 +233,28 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // (e.g., onClose calling event.preventDefault), async closes with
   // animations, or when autoFocusOnHide is disabled.
   const interactedOutsideRef = useRef(false);
+  const focusedStoreRef = useRef<DialogStore | null>(null);
   useSafeLayoutEffect(() => {
     return sync(store, ["open"], (state) => {
-      if (!state.open) return;
+      if (!state.open) {
+        focusedStoreRef.current = null;
+        return;
+      }
       interactedOutsideRef.current = false;
+      // Native auto-focus may run before layout effects on the initial open
+      // render, so preserve focus captured during that commit. Focus history
+      // from another store doesn't belong to this open cycle.
+      if (focusedStoreRef.current === store) return;
+      focusedStoreRef.current = null;
     });
   }, [store]);
-  useHideOnInteractOutside(
+  useHideOnInteractOutside({
     store,
     hideOnInteractOutside,
     domReady,
     interactedOutsideRef,
-  );
+    focusedStoreRef,
+  });
 
   const { wrapElement, nestedDialogs } = useNestedDialogs(store);
   props = useWrapElement(props, wrapElement, [wrapElement]);
@@ -264,6 +285,10 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
   // dialog is opened.
   useSafeLayoutEffect(() => {
     if (!open) return;
+    // Native auto-focus can focus the dialog and synchronously move focus
+    // outside before layout effects run. In that case, the current element is
+    // an escape target rather than the element that disclosed the dialog.
+    if (focusedStoreRef.current === store) return;
     const dialog = ref.current;
     const activeElement = getActiveElement(dialog, true);
     if (!activeElement) return;
@@ -463,21 +488,26 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       contentElement;
     const isElementFocusable = isFocusable(element);
     if (!autoFocusOnShowProp(isElementFocusable ? element : null)) return;
-    const { disclosureElement } = store.getState();
     setAutoFocusEnabled(true);
     queueMicrotask(() => {
+      const { open, disclosureElement } = store.getState();
       // If the dialog was closed between scheduling and executing this
       // microtask, skip the focus call. Otherwise, focusing a now-hidden
       // element could steal focus from the disclosure that focusOnHide already
       // restored.
-      if (!store.getState().open) return;
-      // Focus may have moved to another focusable element outside the dialog
-      // while it was waiting to be positioned. Preserve that user choice, but
-      // allow focus to remain on the disclosure or another owned element.
+      if (!open) return;
+      // Once the dialog has received focus, focus may move to another
+      // focusable element outside while the dialog is waiting to be
+      // positioned. Preserve that user choice, but allow a dialog that hasn't
+      // received focus yet to perform its initial focus move.
       const activeElement = getActiveElement(element);
+      const deepestActiveElement =
+        activeElement && getDeepestActiveElement(activeElement);
       if (
+        focusedStoreRef.current === store &&
         activeElement &&
-        isFocusable(activeElement) &&
+        deepestActiveElement &&
+        isFocusable(deepestActiveElement) &&
         !isElementInDialog(activeElement, contentElement, disclosureElement)
       ) {
         return;
@@ -506,6 +536,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     preserveTabOrder,
     store,
     autoFocusOnShowProp,
+    focusedStoreRef,
   ]);
 
   const mayAutoFocusOnHide = !!autoFocusOnHide;
@@ -612,6 +643,16 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
 
   const onKeyDownProp = props.onKeyDown;
   const onKeyDownCaptureProp = props.onKeyDownCapture;
+  const onFocusCaptureProp = props.onFocusCapture;
+
+  const onFocusCapture = useEvent((event: ReactFocusEvent<HTMLType>) => {
+    onFocusCaptureProp?.(event);
+    if (!store.getState().open) return;
+    const target = event.target;
+    if (!isNode(target)) return;
+    if (!contains(event.currentTarget, target)) return;
+    focusedStoreRef.current = store;
+  });
 
   const acceptEscape = useEvent((event: KeyboardEvent) => {
     if (event.key !== "Escape") return false;
@@ -795,6 +836,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
     "data-dialog-portal": hasDefaultModalPortal ? portalNode?.id : undefined,
     id,
     ref: useMergeRefs(ref, props.ref),
+    onFocusCapture,
     onKeyDown,
     onKeyDownCapture,
   };
