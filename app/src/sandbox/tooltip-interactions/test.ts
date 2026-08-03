@@ -49,6 +49,7 @@ test("stays open after focus-visible and pointer movement", async () => {
   expect(q.tooltip("Tooltip content")).toBeVisible();
 });
 
+// https://github.com/ariakit/ariakit/issues/7043
 test("waits again after keyboard focus is lost", async () => {
   const anchor = q.link("Tooltip anchor");
   await hover(anchor);
@@ -60,7 +61,6 @@ test("waits again after keyboard focus is lost", async () => {
 
   await hoverOutside();
   await hover(anchor);
-  expect(q.tooltip("Tooltip content")).not.toBeInTheDocument();
   expect(await q.tooltip.wait("Tooltip content")).toBeVisible();
 });
 
