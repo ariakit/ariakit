@@ -349,7 +349,9 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         // focus escaping: it exists to finish a handoff that moves focus twice
         // on its own, so a focus check would abandon it every time. The other
         // three abandon reasons still apply, and the handoff is short, but a
-        // focus escape during it does leave the request running.
+        // focus escape during it does leave the request running. Its item
+        // leaving the DOM only ends it once the item stops coming back, so a
+        // replaced node extends that window by a commit.
         // See https://github.com/ariakit/ariakit/issues/7020
         if (store.item(id)) {
           cancelPresentationRef.current?.();

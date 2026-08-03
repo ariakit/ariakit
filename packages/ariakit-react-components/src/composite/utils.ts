@@ -158,14 +158,14 @@ export function presentItem({
   };
 
   /**
-   * The same question for the resolved item. Kept separate because it can only
-   * be answered once the item exists: before that there is nothing to compare
-   * focus against, and an option that has just focused itself isn't even
-   * recognizable as an item yet.
+   * The element the request's item is currently rendered as, or `null` when it
+   * isn't rendered. Resolved from the store every time, because the element an
+   * id points at is not stable.
    */
-  const abandonedByItem = (target: HTMLElement) => {
-    if (!target.isConnected) return true;
-    return !stillOwnsFocus(target);
+  const resolveElement = (state: ReturnType<typeof store.getState>) => {
+    const item = getEnabledItem(store, id === undefined ? state.activeId : id);
+    if (!item?.element?.isConnected) return null;
+    return item.element;
   };
   let unsubscribe: (() => void) | undefined;
   const cancel = () => {
@@ -177,15 +177,27 @@ export function presentItem({
     const state = store.getState();
     if (abandonedByState(state)) return cancel();
     if (!element) {
-      const item = getEnabledItem(
-        store,
-        id === undefined ? state.activeId : id,
-      );
       // The item may not have rendered yet, so keep waiting for it.
-      if (!item?.element?.isConnected) return;
-      element = item.element;
+      element = resolveElement(state);
+      if (!element) return;
+    } else if (!element.isConnected) {
+      // The element left the DOM, but React can replace an item's node while
+      // keeping its id, so the logical item can still be there and still be
+      // worth presenting. Resolve it again here rather than going back to
+      // waiting: React replaces a node within one commit, and the store
+      // propagates that commit's unregister and register together, so a
+      // replacement is already registered by the time this runs. Requiring it
+      // now is what keeps the request terminal without counting retries, at the
+      // cost of giving up on a replacement that arrives in a later commit,
+      // which is what already happened to every replacement before this.
+      element = resolveElement(state);
+      if (!element) return cancel();
     }
-    if (abandonedByItem(element)) return cancel();
+    // Whether the request has stopped being relevant, judged from the resolved
+    // item. This can only be answered once the item exists: before that there
+    // is nothing to compare focus against, and an option that has just focused
+    // itself isn't even recognizable as an item yet.
+    if (!stillOwnsFocus(element)) return cancel();
     if (focus && !focused) {
       focused = true;
       const itemElement = element;

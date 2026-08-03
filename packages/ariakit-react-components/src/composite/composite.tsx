@@ -141,9 +141,9 @@ function usePresentItem(store: CompositeStore) {
   // and React runs a child's passive setup before its parent's, so anything
   // reset here is still reset when the child asks again: a remount would drop
   // that request rather than protect it.
-  // A request that has already resolved its item terminates on its own when
-  // that item leaves the DOM. One queued from an event handler after this
-  // cleanup never resolves an item, so it can still outlive the component;
+  // A request that has already resolved its item terminates on its own once
+  // that item leaves the DOM for good. One queued from an event handler after
+  // this cleanup never resolves an item, so it can still outlive the component;
   // giving the request a single owner is tracked in
   // https://github.com/ariakit/ariakit/issues/7024.
   useEffect(() => cancel, [cancel]);
