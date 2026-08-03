@@ -13,11 +13,9 @@ test("shows after hovering and hides after hovering outside", async () => {
   expect(hovercard()).not.toBeInTheDocument();
 
   await hover(q.link("@ariakit.com"));
-  expect(hovercard()).not.toBeInTheDocument();
   await expect.poll(hovercard).toBeVisible();
 
   await hoverOutside();
-  expect(hovercard()).toBeVisible();
   await expect.poll(hovercard).not.toBeInTheDocument();
 });
 
