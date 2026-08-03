@@ -22,7 +22,7 @@ import {
   size,
 } from "@floating-ui/dom";
 import type { ElementType, HTMLAttributes } from "react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import type { DialogOptions } from "../dialog/dialog.tsx";
 import { createDialogComponent, useDialog } from "../dialog/dialog.tsx";
 import { isHidden } from "../disclosure/disclosure-content.tsx";
@@ -295,10 +295,11 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
     const defaultArrowElementRef = useRef<HTMLElement | null>(null);
 
-    // We have to wait for the popover to be positioned for the first time
-    // before we can move focus, otherwise there may be scroll jumps. See
-    // popover-standalone example test-browser file.
-    const [positioned, setPositioned] = useState(false);
+    // Focus can only move into the popover once it has been positioned,
+    // otherwise there may be scroll jumps. See the menu-placing-pass sandbox.
+    // That's the question `unstable_placing` already answers, so it's read from
+    // there rather than tracked a second time.
+    const positioned = !placing;
 
     const { portalRef, domReady } = usePortalRef(portal, props.portalRef);
 
@@ -330,6 +331,16 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       !mounted && isHidden(mounted, props.hidden, props.alwaysVisible);
 
     useSafeLayoutEffect(() => {
+      // Every pass starts unplaced, not just the one that follows the popup
+      // being shown, so a popup that is re-anchored while open stops counting
+      // as placed until the new position has been written. Asserted before the
+      // guards below, because a pass that can't start hasn't placed anything
+      // either. Only while mounted: a popup with nothing to position, such as
+      // an `alwaysVisible` menu that is closed, must never be left waiting.
+      if (mounted) {
+        store?.setState("unstable_placing", true);
+      }
+
       if (!popoverElement?.isConnected) return;
 
       const positioningPadding = {
@@ -360,6 +371,9 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       // Each effect run owns this flag. Cleanup marks stale runs so in-flight
       // async positioning work can skip state and style writes.
       let canceled = false;
+      // Whether this effect run has written a position, which is what makes the
+      // popover somewhere real rather than at its pre-placement origin.
+      let placed = false;
 
       const shouldCancelUpdate = () => {
         if (canceled) return true;
@@ -413,7 +427,6 @@ export const usePopover = createHook<TagName, PopoverOptions>(
         if (shouldCancelUpdate()) return;
 
         store?.setState("currentPlacement", pos.placement);
-        setPositioned(true);
 
         const x = roundByDPR(pos.x);
         const y = roundByDPR(pos.y);
@@ -425,10 +438,7 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           transform: `translate3d(${x}px,${y}px,0)`,
         });
 
-        // The popover is placed once its position has been written, not when
-        // computePosition resolves, so anything waiting to move focus or scroll
-        // into it never acts on the pre-placement origin.
-        store?.setState("unstable_placing", false);
+        placed = true;
 
         // https://floating-ui.com/docs/arrow#usage
         if (arrow && pos.middlewareData.arrow) {
@@ -471,16 +481,34 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       const update = async () => {
         if (shouldCancelUpdate()) return;
 
-        if (hasCustomUpdatePosition) {
-          await updatePositionProp({ updatePosition });
-          // User callbacks may keep awaiting after updatePosition has run, so
-          // make sure this effect is still current before marking it ready.
-          if (shouldCancelUpdate()) return;
-          setPositioned(true);
-          store?.setState("unstable_placing", false);
-        } else {
-          await updatePosition();
+        try {
+          if (hasCustomUpdatePosition) {
+            await updatePositionProp({ updatePosition });
+          } else {
+            await updatePosition();
+          }
+        } catch (error) {
+          // A pass that throws has still ended. Publish the popover as placed
+          // if this run wrote a position before failing, so a custom
+          // updatePosition that positions the popover and then fails doesn't
+          // strand everything waiting on it. A pass that failed before writing
+          // anything keeps waiting, because there's still nothing to move focus
+          // or scroll to. Rethrowing keeps the failure visible to the app.
+          if (placed && !shouldCancelUpdate()) {
+            store?.setState("unstable_placing", false);
+          }
+          throw error;
         }
+
+        // The pass owns the popover until it returns, so this is the only place
+        // that publishes it as placed on the success path. A custom
+        // updatePosition that calls the supplied default and then keeps working
+        // would otherwise hand readiness over as soon as that inner pass wrote
+        // its transform, and anything waiting to move focus or scroll into the
+        // popover would act on a position the callback is still about to
+        // change.
+        if (shouldCancelUpdate()) return;
+        store?.setState("unstable_placing", false);
       };
 
       // https://floating-ui.com/docs/autoUpdate
@@ -491,7 +519,6 @@ export const usePopover = createHook<TagName, PopoverOptions>(
 
       return () => {
         canceled = true;
-        setPositioned(false);
         cancelAutoUpdate();
       };
     }, [
@@ -542,13 +569,14 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       return () => cancelAnimationFrame(raf);
     }, [mounted, domReady, popoverElement, contentElement]);
 
-    // Showing a popover makes it unplaced by definition, and that has to land
-    // before anything can read it. A layout effect can't publish it, because
-    // effects run children before parents, so the popover's own descendants
-    // would observe the previous value. Subscribing to the store instead means
-    // the transition is seen synchronously, wherever it comes from. Only a
-    // mounted Popover asserts this, so a popup with nothing to position, such
-    // as a combobox inside a plain dialog, is never left waiting.
+    // The positioning effect above asserts this at the start of every pass, but
+    // it can't be what publishes the show transition. Layout effects run
+    // children before parents, so the popover's own descendants would observe
+    // the previous value on the commit that opens the popup. Subscribing to the
+    // store instead means the transition is seen synchronously, wherever it
+    // comes from. Only a mounted Popover asserts this, so a popup with nothing
+    // to position, such as a combobox inside a plain dialog, is never left
+    // waiting.
     // This state must never outlive its writer: it's asserted here and cleared
     // by the positioning effect, both owned by this component, while the store
     // it lives on can be owned by an ancestor. A Popover that unmounts, or that
