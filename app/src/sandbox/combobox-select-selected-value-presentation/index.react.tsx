@@ -130,12 +130,7 @@ function RefreshListButton({
 interface FixtureProps {
   /**
    * Whether the popup takes focus once it is placed. Turning it off leaves the
-   * presentation as the only thing that can bring an item into view, and keeps
-   * a focus escape from being undone by the popup pulling focus back in, which
-   * is a separate defect. Once that one is fixed, the fixture that turns this
-   * off to hold a focus escape can go back to the default and cover the same
-   * escape there.
-   * See https://github.com/ariakit/ariakit/issues/7033
+   * presentation as the only thing that can bring an item into view.
    */
   autoFocusOnShow?: boolean;
   defaultSelectedValue: string | string[];
@@ -383,7 +378,6 @@ export default function Example() {
       presentation that outlives the escape is visible as a page jump. */}
       <div style={{ marginTop: 200 }}>
         <Fixture
-          autoFocusOnShow={false}
           defaultSelectedValue="Watermelon"
           focusTarget
           input
@@ -436,7 +430,6 @@ export default function Example() {
           auto-focus must not pull focus back into it. */}
       <div style={{ marginTop: 200 }}>
         <Fixture
-          autoFocusOnShow={false}
           defaultSelectedValue="Watermelon"
           focusTarget
           input

@@ -62,6 +62,7 @@ import {
   markAndDisableTreeOutside,
 } from "./utils/disable-tree.ts";
 import {
+  isElementInside,
   isElementMarked,
   markTreeInside,
   markTreeOutside,
@@ -86,6 +87,16 @@ function isAlreadyFocusingAnotherElement(dialog?: HTMLElement | null) {
   if (dialog && contains(dialog, activeElement)) return false;
   if (isFocusable(activeElement)) return true;
   return false;
+}
+
+function isElementInDialog(
+  element: Element,
+  dialog: Element,
+  disclosureElement: Element | null,
+) {
+  if (contains(dialog, element)) return true;
+  if (disclosureElement && contains(disclosureElement, element)) return true;
+  return isElementInside(element, dialog);
 }
 
 function getElementFromProp(
@@ -452,6 +463,7 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       contentElement;
     const isElementFocusable = isFocusable(element);
     if (!autoFocusOnShowProp(isElementFocusable ? element : null)) return;
+    const { disclosureElement } = store.getState();
     setAutoFocusEnabled(true);
     queueMicrotask(() => {
       // If the dialog was closed between scheduling and executing this
@@ -459,6 +471,17 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // element could steal focus from the disclosure that focusOnHide already
       // restored.
       if (!store.getState().open) return;
+      // Focus may have moved to another focusable element outside the dialog
+      // while it was waiting to be positioned. Preserve that user choice, but
+      // allow focus to remain on the disclosure or another owned element.
+      const activeElement = getActiveElement(element);
+      if (
+        activeElement &&
+        isFocusable(activeElement) &&
+        !isElementInDialog(activeElement, contentElement, disclosureElement)
+      ) {
+        return;
+      }
       // The browser's own focus scroll is unreliable here: Safari drops it
       // when a focus handler immediately moves focus elsewhere, which is what
       // virtual focus does. Scroll explicitly instead, so every engine behaves
