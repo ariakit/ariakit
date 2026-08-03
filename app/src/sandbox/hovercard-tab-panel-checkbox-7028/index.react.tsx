@@ -1,21 +1,36 @@
 import * as ak from "@ariakit/react";
 
 // Design systems usually wrap Ariakit components and forward optional props
-// positionally. Consumers of these wrappers never set the forwarded prop, so
-// the wrapper hands Ariakit an own key holding `undefined`, which should behave
-// the same as not passing the prop at all.
-// https://github.com/ariakit/ariakit/issues/7028
+// positionally. Consumers of these wrappers never set the forwarded prop, so a
+// positional forward would hand Ariakit an own key holding `undefined`, which
+// should behave the same as not passing the prop at all.
+//
+// TODO: Remove this workaround from all three wrappers once
+// https://github.com/ariakit/ariakit/issues/7028 is fixed, and forward each
+// prop positionally again.
 
 function Hovercard({ autoFocusOnShow, ...props }: ak.HovercardProps) {
-  return <ak.Hovercard autoFocusOnShow={autoFocusOnShow} {...props} />;
+  return (
+    <ak.Hovercard
+      {...props}
+      {...(autoFocusOnShow !== undefined && { autoFocusOnShow })}
+    />
+  );
 }
 
 function TabPanel({ focusable, ...props }: ak.TabPanelProps) {
-  return <ak.TabPanel focusable={focusable} {...props} />;
+  return (
+    <ak.TabPanel {...props} {...(focusable !== undefined && { focusable })} />
+  );
 }
 
 function Checkbox({ clickOnEnter, ...props }: ak.CheckboxProps) {
-  return <ak.Checkbox clickOnEnter={clickOnEnter} {...props} />;
+  return (
+    <ak.Checkbox
+      {...props}
+      {...(clickOnEnter !== undefined && { clickOnEnter })}
+    />
+  );
 }
 
 export default function Example() {
