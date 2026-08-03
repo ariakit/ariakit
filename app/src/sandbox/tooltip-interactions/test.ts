@@ -1,4 +1,4 @@
-import { click, focus, hover, press, q } from "@ariakit/test";
+import { click, dispatch, focus, hover, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 const hoverOutside = async () => {
@@ -49,6 +49,7 @@ test("stays open after focus-visible and pointer movement", async () => {
   expect(q.tooltip("Tooltip content")).toBeVisible();
 });
 
+// https://github.com/ariakit/ariakit/issues/7043
 test("waits again after keyboard focus is lost", async () => {
   const anchor = q.link("Tooltip anchor");
   await hover(anchor);
@@ -59,7 +60,11 @@ test("waits again after keyboard focus is lost", async () => {
   expect(q.tooltip("Tooltip content")).not.toBeInTheDocument();
 
   await hoverOutside();
-  await hover(anchor);
+  // Dispatch directly so the assertion runs before the timeout can expire
+  // when the full suite delays the interaction helper.
+  await dispatch.mouseOver(anchor);
+  await dispatch.mouseEnter(anchor);
+  await dispatch.mouseMove(anchor);
   expect(q.tooltip("Tooltip content")).not.toBeInTheDocument();
   expect(await q.tooltip.wait("Tooltip content")).toBeVisible();
 });
