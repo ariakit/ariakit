@@ -41,6 +41,14 @@ const fruits = [
 ];
 
 interface FixtureProps {
+  /**
+   * Whether the popup takes focus once it is placed. Turning it off keeps a
+   * focus escape from being undone by the popup pulling focus back in, which is
+   * a separate defect. Once that one is fixed, the fixture that turns this off
+   * can go back to the default and cover the same escape there.
+   * See https://github.com/ariakit/ariakit/issues/7033
+   */
+  autoFocusOnShow?: boolean;
   defaultSelectedValue: string | string[];
   focusTarget?: boolean;
   input?: boolean;
@@ -53,8 +61,7 @@ interface FixtureProps {
   /**
    * Drops the popup's own scrollport so the nearest scrollport for its items is
    * the page, which is what makes a stale presentation move the page rather
-   * than the popup's list. It also turns on the temporary workaround below,
-   * which takes the page back out of that request's reach.
+   * than the popup's list.
    */
   pageScrollport?: boolean;
   unmountOnHide?: boolean;
@@ -62,6 +69,7 @@ interface FixtureProps {
 }
 
 function Fixture({
+  autoFocusOnShow,
   defaultSelectedValue,
   focusTarget,
   input,
@@ -85,21 +93,16 @@ function Fixture({
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect style={{ display: "block" }} />
       <Ariakit.ComboboxPopover
+        // Spread rather than passed, because an explicitly undefined prop wins
+        // over the default `ComboboxPopover` computes for itself, which would
+        // retune every fixture that leaves this alone.
+        // See https://github.com/ariakit/ariakit/issues/7028
+        {...(autoFocusOnShow === undefined ? null : { autoFocusOnShow })}
         unmountOnHide={unmountOnHide}
         hideOnInteractOutside={!keepOpen}
         // A popup that is taller than the viewport would otherwise be flipped
         // above the select, which puts the last items back in view.
         flip={!pageScrollport}
-        // TODO: Remove once https://github.com/ariakit/ariakit/issues/7020 is
-        // fixed. With no transformed or contained ancestor to capture it, a
-        // fixed popup is outside the document's scroll flow, so a presentation
-        // that outlives a focus escape can no longer move the page on its way
-        // out.
-        // The mitigation to recommend to users is an internally scrolling
-        // popup, but that is the very precondition this fixture removes, so
-        // it takes the page out of reach instead. The cost is that options
-        // past the fold lose the page scroll that used to reach them.
-        fixed={pageScrollport}
         gutter={4}
         sameWidth
         style={{
@@ -217,6 +220,7 @@ export default function Example() {
       presentation that outlives the escape is visible as a page jump. */}
       <div style={{ marginTop: 200 }}>
         <Fixture
+          autoFocusOnShow={false}
           defaultSelectedValue="Watermelon"
           focusTarget
           input
