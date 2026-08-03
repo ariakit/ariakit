@@ -105,6 +105,7 @@ function presentItem({
   requireFocus,
 }: PresentItemParams) {
   let element: HTMLElement | null = null;
+  let resolvedId: string | undefined;
   let focused = false;
   let done = false;
   let wasMounted = false;
@@ -131,6 +132,24 @@ function presentItem({
     // See https://github.com/ariakit/ariakit/issues/7018
     if (activeElement === target) return true;
     return ownsFocus(store);
+  };
+  /**
+   * Resolves the current element for the logical item. The element can change
+   * while a presentation is pending, but a request without an explicit id
+   * must not follow a different active item after it has resolved once.
+   */
+  const resolveElement = (state: ReturnType<typeof store.getState>) => {
+    const targetId = resolvedId ?? (id === undefined ? state.activeId : id);
+    const item = getEnabledItem(store, targetId);
+    if (!item?.element?.isConnected) return null;
+    resolvedId = item.id;
+    return item.element;
+  };
+  const focusWasLostToReplacement = () => {
+    if (!focused || !owner) return false;
+    // Removing the focused element parks focus on the document body. A focus
+    // escape to another element remains distinguishable and still abandons.
+    return getActiveElement(owner) === getDocument(owner).body;
   };
   /**
    * Whether the request has stopped being relevant, judged from state alone.
@@ -184,16 +203,24 @@ function presentItem({
     if (done) return;
     const state = store.getState();
     if (abandonedByState(state)) return cancel();
+    let replaced = false;
     if (!element) {
-      const item = getEnabledItem(
-        store,
-        id === undefined ? state.activeId : id,
-      );
       // The item may not have rendered yet, so keep waiting for it.
-      if (!item?.element?.isConnected) return;
-      element = item.element;
+      element = resolveElement(state);
+      if (!element) return;
+    } else if (!element.isConnected) {
+      // React can replace an item's node while keeping its logical id. Resolve
+      // the replacement in the same pass so the presentation remains alive.
+      element = resolveElement(state);
+      if (!element) return cancel();
+      replaced = true;
     }
-    if (abandonedByItem(element)) return cancel();
+    const restoreFocus = replaced && focusWasLostToReplacement();
+    if (restoreFocus) {
+      focused = false;
+    } else if (abandonedByItem(element)) {
+      return cancel();
+    }
     if (focus && !focused) {
       focused = true;
       const itemElement = element;
