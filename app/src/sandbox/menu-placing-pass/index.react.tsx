@@ -17,6 +17,8 @@ const actions = Array.from(
 
 const lastAction = `Action ${actionCount}`;
 
+const measureError = "Could not measure the Actions menu";
+
 /**
  * A menu whose positioning finishes in two steps: it places itself with what it
  * knows, waits for asynchronous work that can change where it belongs, then
@@ -52,7 +54,7 @@ export default function Example() {
       };
       failRef.current = () => {
         settle();
-        reject(new Error("Could not measure the Actions menu"));
+        reject(new Error(measureError));
       };
     });
   };
@@ -62,6 +64,11 @@ export default function Example() {
       await updatePosition();
     }
     const held = holdRef.current;
+    // Once the supplied default is held back, every later pass fails the same
+    // way. Resolving here instead would report a finished pass that positioned
+    // nothing, which is not a state a real callback sits in, and the popup
+    // would count itself as placed on the next `autoUpdate` run.
+    if (!held && skipRef.current) throw new Error(measureError);
     if (!held) return;
     await held;
     await updatePosition();
