@@ -93,11 +93,7 @@ function Fixture({
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect style={{ display: "block" }} />
       <Ariakit.ComboboxPopover
-        // Spread rather than passed, because an explicitly undefined prop wins
-        // over the default `ComboboxPopover` computes for itself, which would
-        // retune every fixture that leaves this alone.
-        // See https://github.com/ariakit/ariakit/issues/7028
-        {...(autoFocusOnShow === undefined ? null : { autoFocusOnShow })}
+        autoFocusOnShow={autoFocusOnShow}
         unmountOnHide={unmountOnHide}
         hideOnInteractOutside={!keepOpen}
         // A popup that is taller than the viewport would otherwise be flipped
