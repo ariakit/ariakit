@@ -371,6 +371,9 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       // Each effect run owns this flag. Cleanup marks stale runs so in-flight
       // async positioning work can skip state and style writes.
       let canceled = false;
+      // Whether this effect run has written a position, which is what makes the
+      // popover somewhere real rather than at its pre-placement origin.
+      let placed = false;
 
       const shouldCancelUpdate = () => {
         if (canceled) return true;
@@ -435,6 +438,8 @@ export const usePopover = createHook<TagName, PopoverOptions>(
           transform: `translate3d(${x}px,${y}px,0)`,
         });
 
+        placed = true;
+
         // https://floating-ui.com/docs/arrow#usage
         if (arrow && pos.middlewareData.arrow) {
           const { x: arrowX, y: arrowY } = pos.middlewareData.arrow;
@@ -476,18 +481,32 @@ export const usePopover = createHook<TagName, PopoverOptions>(
       const update = async () => {
         if (shouldCancelUpdate()) return;
 
-        if (hasCustomUpdatePosition) {
-          await updatePositionProp({ updatePosition });
-        } else {
-          await updatePosition();
+        try {
+          if (hasCustomUpdatePosition) {
+            await updatePositionProp({ updatePosition });
+          } else {
+            await updatePosition();
+          }
+        } catch (error) {
+          // A pass that throws has still ended. Publish the popover as placed
+          // if this run wrote a position before failing, so a custom
+          // updatePosition that positions the popover and then fails doesn't
+          // strand everything waiting on it. A pass that failed before writing
+          // anything keeps waiting, because there's still nothing to move focus
+          // or scroll to. Rethrowing keeps the failure visible to the app.
+          if (placed && !shouldCancelUpdate()) {
+            store?.setState("unstable_placing", false);
+          }
+          throw error;
         }
 
         // The pass owns the popover until it returns, so this is the only place
-        // that publishes it as placed. A custom updatePosition that calls the
-        // supplied default and then keeps working would otherwise hand
-        // readiness over as soon as that inner pass wrote its transform, and
-        // anything waiting to move focus or scroll into the popup would act on
-        // a position the callback is still about to change.
+        // that publishes it as placed on the success path. A custom
+        // updatePosition that calls the supplied default and then keeps working
+        // would otherwise hand readiness over as soon as that inner pass wrote
+        // its transform, and anything waiting to move focus or scroll into the
+        // popover would act on a position the callback is still about to
+        // change.
         if (shouldCancelUpdate()) return;
         store?.setState("unstable_placing", false);
       };

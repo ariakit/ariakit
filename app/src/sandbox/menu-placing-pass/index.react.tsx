@@ -33,22 +33,34 @@ export default function Example() {
   const menu = Ariakit.useMenuStore();
   const holdRef = useRef<Promise<void> | null>(null);
   const releaseRef = useRef<(() => void) | null>(null);
+  const failRef = useRef<(() => void) | null>(null);
+  const skipRef = useRef(false);
 
   // Armed before the pass starts, so every run `autoUpdate` makes for that pass
   // waits on the same promise instead of each creating its own and settling on
   // its own.
   const holdNextPass = () => {
-    holdRef.current ??= new Promise<void>((resolve) => {
-      releaseRef.current = () => {
+    holdRef.current ??= new Promise<void>((resolve, reject) => {
+      const settle = () => {
         holdRef.current = null;
         releaseRef.current = null;
+        failRef.current = null;
+      };
+      releaseRef.current = () => {
+        settle();
         resolve();
+      };
+      failRef.current = () => {
+        settle();
+        reject(new Error("Could not measure the Actions menu"));
       };
     });
   };
 
   const updatePosition: UpdatePosition = async ({ updatePosition }) => {
-    await updatePosition();
+    if (!skipRef.current) {
+      await updatePosition();
+    }
     const held = holdRef.current;
     if (!held) return;
     await held;
@@ -86,6 +98,24 @@ export default function Example() {
       </button>
       <button type="button" tabIndex={0} onClick={() => releaseRef.current?.()}>
         Finish Actions positioning
+      </button>
+      {/* The asynchronous work a real callback awaits can fail. The pass is
+      over either way, and the popup already carries the position the supplied
+      default wrote before the failure. */}
+      <button type="button" tabIndex={0} onClick={() => failRef.current?.()}>
+        Fail Actions positioning
+      </button>
+      {/* Holds the supplied default back, so the next pass fails without ever
+      positioning the popup. That one has nothing to show, so it has to stay
+      unplaced. */}
+      <button
+        type="button"
+        tabIndex={0}
+        onClick={() => {
+          skipRef.current = true;
+        }}
+      >
+        Skip Actions positioning
       </button>
       {/* Last of the controls, so the open menu covers only the spacer below
       instead of the buttons that drive it. */}
