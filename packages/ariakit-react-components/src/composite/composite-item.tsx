@@ -343,14 +343,11 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
         // where it is.
         // An item that opts out of registering itself can't be resolved from
         // the store, so there would be nothing to wait for.
-        // This is the one presentation that deliberately doesn't watch for
-        // focus escaping: it exists to finish a handoff that moves focus twice
-        // on its own, so a focus check would abandon it every time. The other
-        // three abandon reasons still apply, and the handoff is short, but a
-        // focus escape during it does leave the request running.
-        // See https://github.com/ariakit/ariakit/issues/7020
+        // The handoff below moves focus a second time, from this item to the
+        // composite element, but both are inside the composite, so the request
+        // survives it and only focus leaving the composite abandons it.
         if (store.item(id)) {
-          present({ id, markedOnly: true });
+          present({ id, markedOnly: true, requireFocus: true });
         }
         hasFocusedComposite.current = true;
         // If the previously focused element is a composite or composite item

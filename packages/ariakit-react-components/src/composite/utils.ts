@@ -117,12 +117,18 @@ function presentItem({
     const activeElement = getActiveElement(owner);
     // Whoever asked for this still has focus.
     if (activeElement === owner) return true;
-    // A presentation that only scrolls has no reason to see focus move, so
-    // anything else taking it abandons the presentation. One that moves focus
-    // does: it hands focus to the item and the item hands it back, and the
-    // composite element it comes back to isn't always the one that asked,
-    // because that element can change identity while a popup opens.
-    if (!focus) return false;
+    // Focus moving inside the composite is the presentation's own doing, not
+    // the user moving on. A request that moves focus hands it to the item and
+    // the item hands it back, and the composite element it comes back to isn't
+    // always the one that asked, because that element can change identity while
+    // a popup opens. The item's handoff request is the same shape seen from the
+    // other side: it doesn't move focus itself, but it's created midway through
+    // a handoff that does. So the question is whether the composite still has
+    // focus, not whether the element that asked still does.
+    // How wide "the composite" should be is still open: `ownsFocus` counts any
+    // popup descendant, which can't tell a mid-flight handoff apart from the
+    // user moving to another control in the popup.
+    // See https://github.com/ariakit/ariakit/issues/7018
     if (activeElement === target) return true;
     return ownsFocus(store);
   };
