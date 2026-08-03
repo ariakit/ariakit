@@ -6,7 +6,7 @@ import {
 import { createStore } from "@ariakit/store";
 import type { Store } from "@ariakit/store";
 import type { SetState } from "@ariakit/utils";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef, useState } from "react";
 
 interface TestState {
   foo: number;
@@ -280,6 +280,64 @@ function DynamicSelectors({ store }: StoreProps) {
   );
 }
 
+function InheritedObjectSelectors({ store }: StoreProps) {
+  const selectorCalls = useRef(0);
+  const inheritedSelectorCalls = useRef(0);
+  const [unexpectedSelectorCalls, setUnexpectedSelectorCalls] = useState(0);
+  const selectorObject = useMemo(
+    () =>
+      Object.setPrototypeOf(
+        {
+          own: (state: TestState) => {
+            selectorCalls.current += 1;
+            return state.foo;
+          },
+        },
+        {
+          inheritedDirect: "bar" as const,
+          inheritedSelector: (state: TestState) => {
+            inheritedSelectorCalls.current += 1;
+            return state.bar;
+          },
+        },
+      ),
+    [],
+  );
+  const selectorValues = useStoreStateObject(store, ["foo"], selectorObject);
+
+  const updateInheritedKey = () => {
+    const calls = selectorCalls.current;
+    store.setState("bar", (value) => value + 1);
+    setUnexpectedSelectorCalls(selectorCalls.current - calls);
+  };
+
+  return (
+    <>
+      <p>
+        Inherited selector keys:{" "}
+        <output aria-label="Inherited selector keys">
+          {Object.keys(selectorValues).sort().join(",")}
+        </output>
+      </p>
+      <button type="button" onClick={updateInheritedKey}>
+        Update inherited selector key
+      </button>
+      <p>
+        Inherited selector calls:{" "}
+        <output aria-label="Inherited selector calls">
+          {Number(inheritedSelectorCalls.current > 0)}
+        </output>
+      </p>
+      <p>
+        Unexpected selector calls:{" "}
+        <output aria-label="Unexpected selector calls">
+          {unexpectedSelectorCalls}
+        </output>
+      </p>
+    </>
+  );
+}
+
 function StorePropsSetter({ store }: StoreProps) {
   const [activeSetter, setActiveSetter] = useState<"first" | "second">();
   const [[observedStore, getActiveSubscriptions]] = useState(() =>
@@ -443,6 +501,7 @@ export default function Example() {
       <DirectValues store={store} />
       <MixedValues store={store} />
       <DynamicSelectors store={store} />
+      <InheritedObjectSelectors store={store} />
       <OptionalSelector store={store} />
       <StorePropsSetter store={store} />
       <Controls store={store} calls={calls.current} />

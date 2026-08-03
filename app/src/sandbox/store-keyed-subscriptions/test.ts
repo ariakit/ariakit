@@ -196,6 +196,23 @@ test("updates dynamic selector dependencies", async () => {
   expect(objectValue).toHaveTextContent("bar:2");
 });
 
+// Reproduces https://github.com/ariakit/ariakit/issues/7058
+test("ignores inherited object selector properties", async () => {
+  expect(q.status.ensure("Inherited selector keys").textContent).toBe("own");
+});
+
+// Reproduces https://github.com/ariakit/ariakit/issues/7058
+test("does not run inherited object selectors", () => {
+  expect(q.status("Inherited selector calls")).toHaveTextContent("0");
+});
+
+// Reproduces https://github.com/ariakit/ariakit/issues/7058
+test("does not subscribe to inherited object selector properties", async () => {
+  await click(q.button("Update inherited selector key"));
+
+  expect(q.status("Unexpected selector calls")).toHaveTextContent("0");
+});
+
 test("attaches and detaches conditional selector dependencies", async () => {
   const selectorValue = q.status("Conditional selector value");
   const calls = q.status.ensure("Conditional selector calls");
