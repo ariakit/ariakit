@@ -1,4 +1,5 @@
 import * as Core from "@ariakit/components/composite/composite-store";
+import { useSafeLayoutEffect } from "@ariakit/react-utils";
 import { subscribe } from "@ariakit/store";
 import {
   getActiveElement,
@@ -6,6 +7,7 @@ import {
   isTextField,
   isVisible,
 } from "@ariakit/utils";
+import { useCallback, useRef } from "react";
 import type { CompositeStore, CompositeStoreState } from "./composite-store.ts";
 
 export const flipItems = Core.flipItems;
@@ -95,7 +97,7 @@ export interface PresentItemParams {
  * view is the only part that can move the page, so it's the only part that has
  * to wait for the popup to be placed.
  */
-export function presentItem({
+function presentItem({
   store,
   id,
   focus,
@@ -275,6 +277,58 @@ export function presentItem({
   unsubscribe = subscribe(store, keys, present);
   present();
   return cancel;
+}
+
+/**
+ * Gives a component a single owner for the presentations it asks for, so no
+ * call site has to track them itself. Keeps at most one pending presentation
+ * per component, so the newest request wins: that's what lets a later move take
+ * over from the presentation an open scheduled, while an activity that only
+ * changes the active item without asking for a new presentation, such as hover,
+ * leaves the pending one alone.
+ *
+ * The owner is the store the component is currently rendering with, recorded in
+ * a layout effect. Two things follow from that. Cancellation is scoped to the
+ * store the request was made against, so a component that swaps its `store`
+ * prop can't cancel the incoming store's request or strand the outgoing one.
+ * And a request asked for once the owner is gone is refused rather than
+ * created, which for some requests is the only thing that can stop them.
+ * `presentItem` retires a parked request through the popup state it watches or
+ * the item id it was given, so one with neither, on a store that outlives the
+ * component, would stay there for good.
+ *
+ * Layout is what makes the second part work in both directions. Its cleanup
+ * runs while the unmount is still being committed, before any event handler or
+ * microtask that follows it, and its setup runs before every passive setup in
+ * the commit, including those of children that ask for a presentation of their
+ * own. The initial value covers the render before the first setup.
+ */
+export function usePresentItem(store?: CompositeStore) {
+  const cancelRef = useRef<(() => void) | null>(null);
+  const ownerRef = useRef(store);
+  const cancel = useCallback(() => {
+    cancelRef.current?.();
+    cancelRef.current = null;
+  }, []);
+  const present = useCallback(
+    (params: Omit<PresentItemParams, "store">) => {
+      if (!store) return;
+      if (ownerRef.current !== store) return;
+      cancel();
+      const cancelCurrent = presentItem({ store, ...params });
+      cancelRef.current = cancelCurrent;
+      return cancelCurrent;
+    },
+    [store, cancel],
+  );
+  useSafeLayoutEffect(() => {
+    ownerRef.current = store;
+    return () => {
+      ownerRef.current = undefined;
+      cancel();
+    };
+  }, [store, cancel]);
+  return present;
 }
 
 /**
