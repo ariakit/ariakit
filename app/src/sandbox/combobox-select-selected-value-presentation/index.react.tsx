@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const fruits = [
   "Apple",
@@ -40,25 +40,81 @@ const fruits = [
   "Watermelon",
 ];
 
+function slugify(value: string) {
+  return value.toLowerCase().replace(/\s+/g, "-");
+}
+
+interface FruitItemsProps {
+  /**
+   * Renders explicit item ids, so an item that is replaced comes back under the
+   * id the store already points at. React generates a new id per mount, which
+   * would make the replacement a different logical item.
+   */
+  idPrefix?: string;
+}
+
+function FruitItems({ idPrefix }: FruitItemsProps) {
+  return (
+    <>
+      {fruits.map((fruit) => (
+        <Ariakit.ComboboxItem
+          key={fruit}
+          id={idPrefix ? `${idPrefix}-${slugify(fruit)}` : undefined}
+          value={fruit}
+          style={{ display: "block", padding: "4px 8px" }}
+        />
+      ))}
+    </>
+  );
+}
+
+/**
+ * Renders the fruit list under a fresh React key every time the popup opens,
+ * the way an app that swaps in a freshly loaded list does. Every item node is
+ * replaced while the popup is still being positioned, but their ids keep
+ * pointing at the same logical items.
+ */
+function RemountingFruitItems({ idPrefix }: FruitItemsProps) {
+  const combobox = Ariakit.useComboboxContext();
+  const mounted = Ariakit.useStoreState(combobox, "mounted");
+  const [generation, setGeneration] = useState(0);
+
+  useEffect(() => {
+    if (!mounted) return;
+    setGeneration((value) => value + 1);
+  }, [mounted]);
+
+  return <FruitItems key={generation} idPrefix={idPrefix} />;
+}
+
 interface FixtureProps {
+  /** Lets a variant turn off the popup's own initial focus. */
+  autoFocusOnShow?: boolean;
   defaultSelectedValue: string | string[];
   focusTarget?: boolean;
   input?: boolean;
+  /** Renders explicit item ids under this prefix. */
+  itemIdPrefix?: string;
   label: string;
   moveFocusOnOpen?: boolean;
   /** Puts the element focus moves to outside the popup instead of inside it. */
   outsideFocusTarget?: boolean;
+  /** Replaces every item node under a stable id while the popup opens. */
+  remountItemsOnOpen?: boolean;
   unmountOnHide?: boolean;
   virtualFocus?: boolean;
 }
 
 function Fixture({
+  autoFocusOnShow,
   defaultSelectedValue,
   focusTarget,
   input,
+  itemIdPrefix,
   label,
   moveFocusOnOpen,
   outsideFocusTarget,
+  remountItemsOnOpen,
   unmountOnHide,
   virtualFocus,
 }: FixtureProps) {
@@ -74,6 +130,10 @@ function Fixture({
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect style={{ display: "block" }} />
       <Ariakit.ComboboxPopover
+        // Spread conditionally: the popover reads this prop off the rest, so an
+        // explicit `undefined` would still take precedence over the default it
+        // computes for itself, which the other variants are meant to exercise.
+        {...(autoFocusOnShow != null && { autoFocusOnShow })}
         unmountOnHide={unmountOnHide}
         gutter={4}
         sameWidth
@@ -108,13 +168,11 @@ function Fixture({
             value="Focus target"
           />
         )}
-        {fruits.map((fruit) => (
-          <Ariakit.ComboboxItem
-            key={fruit}
-            value={fruit}
-            style={{ display: "block", padding: "4px 8px" }}
-          />
-        ))}
+        {remountItemsOnOpen ? (
+          <RemountingFruitItems idPrefix={itemIdPrefix} />
+        ) : (
+          <FruitItems idPrefix={itemIdPrefix} />
+        )}
         {/* An item rendered without a value, at the end of the list so it's
         always out of view. */}
         <Ariakit.ComboboxItem style={{ display: "block", padding: "4px 8px" }}>
@@ -186,6 +244,28 @@ export default function Example() {
           moveFocusOnOpen
           outsideFocusTarget
           unmountOnHide
+        />
+      </div>
+      {/* Both variants below turn off the popup's own initial focus, so the
+      presentation the open scheduled is the only thing left that can bring the
+      selected item into view. They differ only in whether the item nodes are
+      replaced while the popup is still being positioned: "Persisting fruit"
+      keeps them, "Remounting fruit" replaces every one of them. */}
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          autoFocusOnShow={false}
+          defaultSelectedValue="Watermelon"
+          itemIdPrefix="persisting"
+          label="Persisting fruit"
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          autoFocusOnShow={false}
+          defaultSelectedValue="Watermelon"
+          itemIdPrefix="remounting"
+          label="Remounting fruit"
+          remountItemsOnOpen
         />
       </div>
     </>

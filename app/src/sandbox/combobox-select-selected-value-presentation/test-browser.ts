@@ -111,4 +111,41 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.option("Focus target")).toBeInViewport();
     await test.expect(q.option("Watermelon")).not.toBeInViewport();
   });
+
+  // The control for the remounting case below: with the popup's own initial
+  // focus off, the presentation is the only thing that brings the item into
+  // view, so this fails for any reason that stops the presentation at all.
+  // https://github.com/ariakit/ariakit/issues/7021
+  test("presents a far selected item without the popup's initial focus", async ({
+    q,
+  }) => {
+    const select = q.combobox("Persisting fruit");
+    const watermelon = q.option("Watermelon");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    await test.expect(watermelon).toBeInViewport();
+    await test.expect(select).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7021
+  test("presents a far selected item replaced under a stable id", async ({
+    q,
+  }) => {
+    const select = q.combobox("Remounting fruit");
+    const watermelon = q.option("Watermelon");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+
+    // The explicit id is the premise: a replaced item that came back under a
+    // generated one would be a different logical item, which is a different
+    // reason to drop the presentation and not the one this covers.
+    await test
+      .expect(watermelon)
+      .toHaveAttribute("id", "remounting-watermelon");
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    await test.expect(watermelon).toBeInViewport();
+    await test.expect(select).toBeFocused();
+  });
 });
