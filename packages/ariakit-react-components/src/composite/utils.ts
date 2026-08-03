@@ -105,6 +105,7 @@ function presentItem({
   requireFocus,
 }: PresentItemParams) {
   let element: HTMLElement | null = null;
+  let resolvedId: string | undefined;
   let focused = false;
   let done = false;
   let wasMounted = false;
@@ -166,14 +167,23 @@ function presentItem({
   };
 
   /**
-   * The same question for the resolved item. Kept separate because it can only
-   * be answered once the item exists: before that there is nothing to compare
-   * focus against, and an option that has just focused itself isn't even
-   * recognizable as an item yet.
+   * The element the request's item is currently rendered as, or `null` when it
+   * isn't rendered. Resolved from the store every time, because the element an
+   * id points at is not stable.
+   *
+   * The id itself is pinned once an element is found. A request without an `id`
+   * follows the active item only while it is still looking for one, which is
+   * what lets an item that hasn't registered yet resolve later. After that it
+   * has adopted a logical item, and `abandonedByState` deliberately doesn't end
+   * it when the active item changes, so re-reading the active id here would let
+   * it silently present a different item instead.
    */
-  const abandonedByItem = (target: HTMLElement) => {
-    if (!target.isConnected) return true;
-    return !stillOwnsFocus(target);
+  const resolveElement = (state: ReturnType<typeof store.getState>) => {
+    const targetId = resolvedId ?? (id === undefined ? state.activeId : id);
+    const item = getEnabledItem(store, targetId);
+    if (!item?.element?.isConnected) return null;
+    resolvedId = item.id;
+    return item.element;
   };
   let unsubscribe: (() => void) | undefined;
   const cancel = () => {
@@ -185,15 +195,50 @@ function presentItem({
     const state = store.getState();
     if (abandonedByState(state)) return cancel();
     if (!element) {
-      const item = getEnabledItem(
-        store,
-        id === undefined ? state.activeId : id,
-      );
       // The item may not have rendered yet, so keep waiting for it.
-      if (!item?.element?.isConnected) return;
-      element = item.element;
+      element = resolveElement(state);
+      if (!element) return;
+    } else if (!element.isConnected) {
+      // The element left the DOM, but React can replace an item's node while
+      // keeping its id, so the logical item can still be there and still be
+      // worth presenting. Resolve it again here rather than going back to
+      // waiting, which is what keeps the request terminal without counting
+      // retries.
+      //
+      // The replacement is only guaranteed to be there when this pass was woken
+      // by the collection's own batched `items` propagation, which carries a
+      // commit's unregister and register together. A pass woken earlier in that
+      // same commit still sees the old element, because items register from a
+      // passive effect while a controlled `items` or `activeId` prop is
+      // published from a layout effect. Such a pass gives up on the
+      // replacement, which is what already happened to every replacement before
+      // this.
+      element = resolveElement(state);
+      if (!element) return cancel();
     }
-    if (abandonedByItem(element)) return cancel();
+    // Whether the request has stopped being relevant, judged from the resolved
+    // item. This can only be answered once the item exists: before that there
+    // is nothing to compare focus against, and an option that has just focused
+    // itself isn't even recognizable as an item yet.
+    //
+    // A request whose item still holds DOM focus when that item is replaced
+    // ends here, because the browser parks focus on the body when it removes
+    // the focused node. It only gets that far with an owner to compare against,
+    // and only where the item keeps DOM focus: a virtual-focus item that hands
+    // focus straight back to the composite element moves no focus at all when
+    // its node is replaced. A `Menu` moved while focus is already inside it
+    // therefore keeps the behavior a replaced item had before this, while the
+    // same menu moved from outside has no owner and gets this far. Only as far
+    // as the scroll, though: the focus step below is latched to the element the
+    // request first resolved, so a replacement is brought into view without
+    // being focused in its place.
+    //
+    // Telling a removed focused node apart from focus escaping is deliberately
+    // not attempted here: the signal would have to be carried down from the
+    // re-resolution above, into an ordering that just gained a focus-escape
+    // guarantee.
+    // See https://github.com/ariakit/ariakit/issues/7042
+    if (!stillOwnsFocus(element)) return cancel();
     if (focus && !focused) {
       focused = true;
       const itemElement = element;

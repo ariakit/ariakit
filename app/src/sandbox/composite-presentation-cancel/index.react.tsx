@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 const actions = [
   "Save",
@@ -16,6 +16,10 @@ const actions = [
 
 const lastAction = "Rename";
 
+function slugify(value: string) {
+  return value.toLowerCase().replace(/\s+/g, "-");
+}
+
 interface HeldMenuProps {
   label: string;
   /**
@@ -23,6 +27,12 @@ interface HeldMenuProps {
    * is the window in which `mounted` alone cannot tell that it is going away.
    */
   animated?: boolean;
+  /**
+   * Adds a control that unmounts the last action and brings it back. Its id is
+   * explicit so the restored item is the same logical item, which is what makes
+   * a request that failed to end when it left observable at all.
+   */
+  removableLastAction?: boolean;
 }
 
 /**
@@ -38,7 +48,7 @@ interface HeldMenuProps {
  * focus starts outside the composite, and that is the arrangement where the
  * popup going away is the only thing left that can abandon it.
  */
-function HeldMenu({ label, animated }: HeldMenuProps) {
+function HeldMenu({ label, animated, removableLastAction }: HeldMenuProps) {
   // Long enough that the exit transition cannot end while the test is still
   // driving it, so "still mounted while closing" stays a state rather than a
   // race the guard could stop being measured by.
@@ -46,6 +56,7 @@ function HeldMenu({ label, animated }: HeldMenuProps) {
     animated: animated ? 10_000 : undefined,
   });
   const releaseRef = useRef<(() => void) | null>(null);
+  const [lastActionMounted, setLastActionMounted] = useState(true);
 
   const updatePosition = () =>
     new Promise<void>((resolve) => {
@@ -84,6 +95,15 @@ function HeldMenu({ label, animated }: HeldMenuProps) {
       >
         Finish {label} positioning
       </button>
+      {removableLastAction && (
+        <button
+          type="button"
+          tabIndex={0}
+          onClick={() => setLastActionMounted((mounted) => !mounted)}
+        >
+          Toggle last {label} action
+        </button>
+      )}
       {/* hideOnInteractOutside is off so the buttons above can drive the menu
       without closing it. */}
       <Ariakit.Menu
@@ -94,11 +114,21 @@ function HeldMenu({ label, animated }: HeldMenuProps) {
         portal={false}
         style={{ background: "white", border: "1px solid gray" }}
       >
-        {actions.map((action) => (
-          <Ariakit.MenuItem key={action} style={{ display: "block" }}>
-            {action}
-          </Ariakit.MenuItem>
-        ))}
+        {actions.map((action) => {
+          const removable = removableLastAction && action === lastAction;
+          if (removable && !lastActionMounted) return null;
+          return (
+            <Ariakit.MenuItem
+              key={action}
+              id={
+                removable ? `${slugify(label)}-${slugify(action)}` : undefined
+              }
+              style={{ display: "block" }}
+            >
+              {action}
+            </Ariakit.MenuItem>
+          );
+        })}
       </Ariakit.Menu>
     </>
   );
@@ -112,6 +142,7 @@ export default function Example() {
       <div style={{ height: 900 }} />
       <HeldMenu label="Actions" />
       <HeldMenu label="Animated actions" animated />
+      <HeldMenu label="Removable actions" removableLastAction />
       <div style={{ height: 900 }} />
     </main>
   );
