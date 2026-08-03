@@ -1,6 +1,7 @@
 import * as Ariakit from "@ariakit/react";
+import { sync } from "@ariakit/store";
 import type { ComponentProps } from "react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 type MenuProps = ComponentProps<typeof Ariakit.Menu>;
 type UpdatePosition = NonNullable<MenuProps["updatePosition"]>;
@@ -33,11 +34,39 @@ export default function Example() {
   const menu = Ariakit.useMenuStore();
   const holdRef = useRef<Promise<void> | null>(null);
   const releaseRef = useRef<(() => void) | null>(null);
+  const placing = Ariakit.useStoreState(menu, "unstable_placing");
+
+  // TODO: remove once https://github.com/ariakit/ariakit/issues/7019 is fixed.
+  // Holds the state asserted for the rest of a pass the popup has already
+  // published as finished. A listener rather than a write after the awaited
+  // pass, because the popup notifies its subscribers synchronously, and
+  // registered at mount, so it runs ahead of the subscription a presentation
+  // makes for itself later.
+  useEffect(
+    () =>
+      sync(menu, ["unstable_placing"], (state) => {
+        if (!holdRef.current) return;
+        // Read rather than subscribed: a popup that closed mid-pass is not
+        // placing, and re-asserting here would strand the state with nobody
+        // left to clear it.
+        if (!menu.getState().mounted) return;
+        if (state.unstable_placing) return;
+        menu.setState("unstable_placing", true);
+      }),
+    [menu],
+  );
 
   // Armed before the pass starts, so every run `autoUpdate` makes for that pass
   // waits on the same promise instead of each creating its own and settling on
   // its own.
   const holdNextPass = () => {
+    // TODO: remove once https://github.com/ariakit/ariakit/issues/7019 is
+    // fixed. The popup asserts this only when it is shown, so a pass this app
+    // starts on an already open popup has to say so by hand. A closed popup
+    // starts no pass, and nothing would clear the state again.
+    if (menu.getState().mounted) {
+      menu.setState("unstable_placing", true);
+    }
     holdRef.current ??= new Promise<void>((resolve) => {
       releaseRef.current = () => {
         holdRef.current = null;
@@ -99,6 +128,10 @@ export default function Example() {
       <Ariakit.Menu
         store={menu}
         updatePosition={updatePosition}
+        // TODO: remove once https://github.com/ariakit/ariakit/issues/7019 is
+        // fixed. The popup gates its initial focus on placement state it keeps
+        // to itself, which no store write can reach, so gate it here too.
+        autoFocusOnShow={!placing}
         hideOnInteractOutside={false}
         portal={false}
         flip={false}
