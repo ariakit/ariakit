@@ -75,4 +75,42 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(await page.evaluate(() => window.scrollY)).toBe(700);
     test.expect(await scroll.events()).not.toContain("document");
   });
+
+  // A parked presentation resolves its item again when that item's node is
+  // replaced, so an item that leaves for good has to end the request instead of
+  // sending it back to waiting. Otherwise the same item returning later, long
+  // after the move that asked for it, would revive the request and scroll the
+  // page to it.
+  // https://github.com/ariakit/ariakit/issues/7021
+  test("abandons a parked presentation when its item leaves for good", async ({
+    page,
+    q,
+  }) => {
+    const menu = q.menu("Removable actions");
+    const rename = q.menuitem("Rename");
+    await page.evaluate(() => window.scrollTo({ top: 700 }));
+    await test.expect.poll(() => page.evaluate(() => window.scrollY)).toBe(700);
+
+    await q.button("Show Removable actions").click();
+    await test.expect(menu).toBeVisible();
+    await test.expect(menu).toHaveAttribute("data-placing");
+
+    await q.button("Move to last Removable actions action").click();
+    await test.expect(rename).toHaveAttribute("data-active-item");
+
+    const scroll = await recordScrollEvents(page);
+    const toggle = q.button("Toggle last Removable actions action");
+    await toggle.click();
+    await test.expect(rename).toHaveCount(0);
+    // The item comes back under the same id, so a request that went back to
+    // waiting instead of ending would resolve this one and scroll to it when
+    // positioning completes below.
+    await toggle.click();
+    await test.expect(rename).toHaveAttribute("data-active-item");
+
+    await q.button("Finish Removable actions positioning").click();
+    await flushFrames(page);
+    test.expect(await page.evaluate(() => window.scrollY)).toBe(700);
+    test.expect(await scroll.events()).not.toContain("document");
+  });
 });
