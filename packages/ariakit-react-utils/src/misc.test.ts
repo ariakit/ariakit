@@ -4,25 +4,21 @@ import { mergeProps, setRef } from "./misc.ts";
 
 test("mergeProps preserves base values for undefined overrides", () => {
   const base: HTMLAttributes<HTMLDivElement> = {
+    id: "base",
     role: "checkbox",
     children: "base",
   };
   const overrides: HTMLAttributes<HTMLDivElement> = {
+    id: undefined,
     role: undefined,
     children: null,
   };
 
   expect(mergeProps(base, overrides)).toEqual({
+    id: "base",
     role: "checkbox",
     children: null,
   });
-});
-
-test("mergeProps allows an undefined id override", () => {
-  const base: HTMLAttributes<HTMLDivElement> = { id: "base" };
-  const overrides: HTMLAttributes<HTMLDivElement> = { id: undefined };
-
-  expect(mergeProps(base, overrides)).toEqual({ id: undefined });
 });
 
 test("setRef returns function ref cleanup", () => {

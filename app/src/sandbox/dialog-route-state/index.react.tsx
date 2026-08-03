@@ -73,7 +73,7 @@ export default function Example() {
             hideOnInteractOutside={false}
             unmountOnHide
             updatePosition={() => {}}
-            render={<Ariakit.Role.div id={undefined} />}
+            render={(props) => <Ariakit.Role.div {...props} id={undefined} />}
             getPersistentElements={() => document.getElementsByTagName("body")}
           >
             Feature preview

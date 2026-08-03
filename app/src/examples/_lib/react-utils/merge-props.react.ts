@@ -34,7 +34,7 @@ export function mergeProps<T extends React.HTMLAttributes<any>>(
     }
 
     const overrideValue = overrides[key];
-    if (overrideValue === undefined && key !== "id") continue;
+    if (overrideValue === undefined) continue;
 
     if (key.startsWith("on")) {
       if (typeof overrideValue !== "function") {

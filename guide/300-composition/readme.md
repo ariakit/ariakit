@@ -56,7 +56,7 @@ The [Tab with Next.js App Router](/examples/tab-next-router) example uses the `r
 
 ## Merging the rendered element props
 
-When passing an HTML element to the `render` prop, all the HTML props returned by the original component will be passed to the rendered element. The `style`, `className`, `ref` and event props will be automatically merged. In all other cases, the rendered element props will override the original component props.
+When passing an HTML element to the `render` prop, all the HTML props returned by the original component will be passed to the rendered element. The `style`, `className`, `ref` and event props will be automatically merged. In all other cases, defined rendered element props, including `null`, will override the original component props. Props set to `undefined` will be ignored.
 
 - Props coming from the original component will be passed to the rendered element:
 
@@ -76,6 +76,16 @@ When passing an HTML element to the `render` prop, all the HTML props returned b
 
   ```html "id"
   <a id="link">...</a>
+  ```
+
+- To intentionally remove a prop, use a render function and apply `undefined` after spreading the original component props:
+
+  ```jsx "id"
+  <ComboboxItem id="item" render={(props) => <a {...props} id={undefined} />} />
+  ```
+
+  ```html
+  <a>...</a>
   ```
 
 This also applies to the `children` prop. You don't need to nest children within the `render` prop. But if you do, the children passed to the rendered element will override the original component children.
