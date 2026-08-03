@@ -65,14 +65,21 @@ function ButtonCheckbox() {
 
 function ForwardedUndefinedCheckbox(props: Ariakit.CheckboxProps) {
   const { role, ...rest } = props;
-  return <Ariakit.Checkbox {...rest} render={<div role={role} />} />;
+  return (
+    <Ariakit.Checkbox
+      {...rest}
+      render={<div {...(role !== undefined && { role })} />}
+    />
+  );
 }
 
 function RenderPropCheckbox() {
   return (
     <section>
       <h2>Render prop checkbox</h2>
-      <ForwardedUndefinedCheckbox aria-label="Forwarded undefined" />
+      <ForwardedUndefinedCheckbox aria-label="Forwarded undefined">
+        Forwarded undefined
+      </ForwardedUndefinedCheckbox>
     </section>
   );
 }
