@@ -200,12 +200,17 @@ export function presentItem({
       // The element left the DOM, but React can replace an item's node while
       // keeping its id, so the logical item can still be there and still be
       // worth presenting. Resolve it again here rather than going back to
-      // waiting: React replaces a node within one commit, and the store
-      // propagates that commit's unregister and register together, so a
-      // replacement is already registered by the time this runs. Requiring it
-      // now is what keeps the request terminal without counting retries, at the
-      // cost of giving up on a replacement that arrives in a later commit,
-      // which is what already happened to every replacement before this.
+      // waiting, which is what keeps the request terminal without counting
+      // retries.
+      //
+      // The replacement is only guaranteed to be there when this pass was woken
+      // by the collection's own batched `items` propagation, which carries a
+      // commit's unregister and register together. A pass woken earlier in that
+      // same commit still sees the old element, because items register from a
+      // passive effect while a controlled `items` or `activeId` prop is
+      // published from a layout effect. Such a pass gives up on the
+      // replacement, which is what already happened to every replacement before
+      // this.
       element = resolveElement(state);
       if (!element) return cancel();
     }
