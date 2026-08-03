@@ -53,7 +53,8 @@ interface FixtureProps {
   /**
    * Drops the popup's own scrollport so the nearest scrollport for its items is
    * the page, which is what makes a stale presentation move the page rather
-   * than the popup's list.
+   * than the popup's list. It also turns on the temporary workaround below,
+   * which takes the page back out of that request's reach.
    */
   pageScrollport?: boolean;
   unmountOnHide?: boolean;
@@ -89,6 +90,16 @@ function Fixture({
         // A popup that is taller than the viewport would otherwise be flipped
         // above the select, which puts the last items back in view.
         flip={!pageScrollport}
+        // TODO: Remove once https://github.com/ariakit/ariakit/issues/7020 is
+        // fixed. With no transformed or contained ancestor to capture it, a
+        // fixed popup is outside the document's scroll flow, so a presentation
+        // that outlives a focus escape can no longer move the page on its way
+        // out.
+        // The mitigation to recommend to users is an internally scrolling
+        // popup, but that is the very precondition this fixture removes, so
+        // it takes the page out of reach instead. The cost is that options
+        // past the fold lose the page scroll that used to reach them.
+        fixed={pageScrollport}
         gutter={4}
         sameWidth
         style={{
