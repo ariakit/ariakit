@@ -303,7 +303,15 @@ function InheritedObjectSelectors({ store }: StoreProps) {
       ),
     [],
   );
-  const selectorValues = useStoreStateObject(store, ["foo"], selectorObject);
+  const safeSelectorObject = useMemo(
+    () => Object.assign(Object.create(null), selectorObject),
+    [selectorObject],
+  );
+  const selectorValues = useStoreStateObject(
+    store,
+    ["foo"],
+    safeSelectorObject,
+  );
 
   const updateInheritedKey = () => {
     const calls = selectorCalls.current;

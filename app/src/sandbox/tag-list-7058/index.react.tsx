@@ -28,6 +28,15 @@ export default function Example() {
         writable: true,
       });
     }
+
+    for (const [key] of inheritedProperties) {
+      const descriptor = Object.getOwnPropertyDescriptor(Object.prototype, key);
+      if (!descriptor?.configurable) continue;
+      Object.defineProperty(Object.prototype, key, {
+        ...descriptor,
+        enumerable: false,
+      });
+    }
     setReady(true);
 
     return () => {
