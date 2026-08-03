@@ -228,7 +228,10 @@ function presentItem({
     // focus straight back to the composite element moves no focus at all when
     // its node is replaced. A `Menu` moved while focus is already inside it
     // therefore keeps the behavior a replaced item had before this, while the
-    // same menu moved from outside has no owner and presents the replacement.
+    // same menu moved from outside has no owner and gets this far. Only as far
+    // as the scroll, though: the focus step below is latched to the element the
+    // request first resolved, so a replacement is brought into view without
+    // being focused in its place.
     //
     // Telling a removed focused node apart from focus escaping is deliberately
     // not attempted here: the signal would have to be carried down from the
