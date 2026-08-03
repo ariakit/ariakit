@@ -186,4 +186,42 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(watermelon).toBeInViewport();
     await test.expect(select).toBeFocused();
   });
+
+  // A request that resolved an item keeps presenting that one, even when the
+  // active item moves on before the replacement lands. Highlighting sets the
+  // active id without bumping `moves`, so nothing abandons the request, and the
+  // newly highlighted item is not a presentation target.
+  // https://github.com/ariakit/ariakit/pull/7030
+  test("keeps presenting the item it resolved when the active item moves on", async ({
+    q,
+  }) => {
+    const select = q.combobox("Parked fruit");
+    const watermelon = q.option("Watermelon");
+    const apple = q.option("Apple");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+
+    // Positioning is held, so the presentation the open scheduled is parked and
+    // has already resolved `Watermelon`.
+    await test.expect(q.listbox()).toHaveAttribute("data-placing");
+    await test.expect(watermelon).toHaveAttribute("id", "parked-watermelon");
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    // Marks the node the request resolved, so the replacement below is
+    // observable: a node that comes back without the mark is a different one.
+    await watermelon.evaluate((node) => node.setAttribute("data-resolved", ""));
+
+    // One action highlights another item and replaces every item node under the
+    // same ids, which is the state the request has to resolve again from.
+    await q.button("Refresh Parked fruit list").click();
+    await test.expect(apple).toHaveAttribute("data-active-item");
+    await test.expect(watermelon).not.toHaveAttribute("data-active-item");
+    // The replacement is the premise: the request only resolves again once the
+    // node it cached has left the DOM.
+    await test.expect(watermelon).not.toHaveAttribute("data-resolved");
+    await test.expect(watermelon).toHaveAttribute("id", "parked-watermelon");
+
+    await q.button("Finish Parked fruit positioning").click();
+
+    await test.expect(watermelon).toBeInViewport();
+  });
 });

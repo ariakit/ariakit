@@ -87,6 +87,46 @@ function RemountingFruitItems({ idPrefix }: FruitItemsProps) {
   return <FruitItems key={generation} idPrefix={idPrefix} />;
 }
 
+interface RefreshListButtonProps {
+  /** The item the refreshed list highlights. */
+  activeId: string;
+  label: string;
+  onRefresh: () => void;
+}
+
+/**
+ * Refreshes the list and highlights a different item in one action, the way an
+ * app that re-runs its query and points at the new best match does. Neither
+ * half moves, so neither supersedes the request this fixture parks, and that
+ * request carries no `id`, so a changed active item doesn't end it either.
+ *
+ * The highlight is a synchronous store write and the replacement only lands on
+ * the commit after it, which is what puts the new active item in place before
+ * anything resolves again. Deferring the highlight would remove that ordering,
+ * and with it the only thing a re-resolution could get wrong.
+ */
+function RefreshListButton({
+  activeId,
+  label,
+  onRefresh,
+}: RefreshListButtonProps) {
+  const combobox = Ariakit.useComboboxContext();
+  return (
+    // Refuses the focus a click would take, because moving focus out of the
+    // composite abandons the request this exists to exercise.
+    <button
+      type="button"
+      onMouseDown={(event) => event.preventDefault()}
+      onClick={() => {
+        combobox?.setActiveId(activeId);
+        onRefresh();
+      }}
+    >
+      {`Refresh ${label} list`}
+    </button>
+  );
+}
+
 interface FixtureProps {
   /**
    * Whether the popup takes focus once it is placed. Turning it off leaves the
@@ -100,6 +140,13 @@ interface FixtureProps {
   autoFocusOnShow?: boolean;
   defaultSelectedValue: string | string[];
   focusTarget?: boolean;
+  /**
+   * Holds the popup in its positioning window until a control releases it, so a
+   * presentation stays parked while something else acts on the popup. Releasing
+   * only ends the wait: this never calls the positioning it is handed, so the
+   * popup stays at its pre-placement origin, away from its select.
+   */
+  holdPlacement?: boolean;
   input?: boolean;
   /** Renders explicit item ids under this prefix. */
   itemIdPrefix?: string;
@@ -115,6 +162,12 @@ interface FixtureProps {
    * than the popup's list.
    */
   pageScrollport?: boolean;
+  /**
+   * Adds a control that highlights this item and replaces every item node under
+   * a stable id. Its replacement half is ignored alongside
+   * `remountItemsOnOpen`, which owns the item keys.
+   */
+  refreshListActiveId?: string;
   /** Replaces every item node under a stable id while the popup opens. */
   remountItemsOnOpen?: boolean;
   unmountOnHide?: boolean;
@@ -125,6 +178,7 @@ function Fixture({
   autoFocusOnShow,
   defaultSelectedValue,
   focusTarget,
+  holdPlacement,
   input,
   itemIdPrefix,
   keepOpen,
@@ -132,6 +186,7 @@ function Fixture({
   moveFocusOnOpen,
   outsideFocusTarget,
   pageScrollport,
+  refreshListActiveId,
   remountItemsOnOpen,
   unmountOnHide,
   virtualFocus,
@@ -140,6 +195,12 @@ function Fixture({
   const setFocusTarget = (element: HTMLElement | null) => {
     focusTargetRef.current = element;
   };
+  const releaseRef = useRef<(() => void) | null>(null);
+  const [generation, setGeneration] = useState(0);
+  const updatePosition = () =>
+    new Promise<void>((resolve) => {
+      releaseRef.current = resolve;
+    });
   return (
     <Ariakit.ComboboxProvider
       defaultSelectedValue={defaultSelectedValue}
@@ -153,6 +214,7 @@ function Fixture({
         // retune every fixture that leaves this alone.
         // See https://github.com/ariakit/ariakit/issues/7028
         {...(autoFocusOnShow === undefined ? null : { autoFocusOnShow })}
+        {...(holdPlacement ? { updatePosition } : null)}
         unmountOnHide={unmountOnHide}
         hideOnInteractOutside={!keepOpen}
         // A popup that is taller than the viewport would otherwise be flipped
@@ -193,7 +255,7 @@ function Fixture({
         {remountItemsOnOpen ? (
           <RemountingFruitItems idPrefix={itemIdPrefix} />
         ) : (
-          <FruitItems idPrefix={itemIdPrefix} />
+          <FruitItems key={generation} idPrefix={itemIdPrefix} />
         )}
         {/* An item rendered without a value, at the end of the list so it's
         always out of view. */}
@@ -204,6 +266,26 @@ function Fixture({
       {focusTarget && outsideFocusTarget && (
         <button type="button" tabIndex={0} ref={setFocusTarget}>
           {`${label} focus target`}
+        </button>
+      )}
+      {refreshListActiveId && (
+        <RefreshListButton
+          activeId={refreshListActiveId}
+          label={label}
+          onRefresh={() => setGeneration((value) => value + 1)}
+        />
+      )}
+      {holdPlacement && (
+        // Refuses focus for the same reason as `RefreshListButton`.
+        <button
+          type="button"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => {
+            releaseRef.current?.();
+            releaseRef.current = null;
+          }}
+        >
+          {`Finish ${label} positioning`}
         </button>
       )}
     </Ariakit.ComboboxProvider>
@@ -305,6 +387,21 @@ export default function Example() {
           itemIdPrefix="remounting"
           label="Remounting fruit"
           remountItemsOnOpen
+        />
+      </div>
+      {/* The replacement is driven by a control rather than the open, so it can
+      land once the active item has already moved on. The request adopted the
+      selected item and nothing abandoned it, so it stays on that one: the newly
+      highlighted item is not a presentation target and was never asked for. */}
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          autoFocusOnShow={false}
+          defaultSelectedValue="Watermelon"
+          holdPlacement
+          itemIdPrefix="parked"
+          keepOpen
+          label="Parked fruit"
+          refreshListActiveId="parked-apple"
         />
       </div>
     </>
