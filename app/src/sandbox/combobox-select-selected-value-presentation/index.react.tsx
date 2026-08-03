@@ -88,17 +88,33 @@ function RemountingFruitItems({ idPrefix }: FruitItemsProps) {
 }
 
 interface FixtureProps {
-  /** Lets a variant turn off the popup's own initial focus. */
+  /**
+   * Whether the popup takes focus once it is placed. Turning it off leaves the
+   * presentation as the only thing that can bring an item into view, and keeps
+   * a focus escape from being undone by the popup pulling focus back in, which
+   * is a separate defect. Once that one is fixed, the fixture that turns this
+   * off to hold a focus escape can go back to the default and cover the same
+   * escape there.
+   * See https://github.com/ariakit/ariakit/issues/7033
+   */
   autoFocusOnShow?: boolean;
   defaultSelectedValue: string | string[];
   focusTarget?: boolean;
   input?: boolean;
   /** Renders explicit item ids under this prefix. */
   itemIdPrefix?: string;
+  /** Keeps the popup open while focus leaves it. */
+  keepOpen?: boolean;
   label: string;
   moveFocusOnOpen?: boolean;
   /** Puts the element focus moves to outside the popup instead of inside it. */
   outsideFocusTarget?: boolean;
+  /**
+   * Drops the popup's own scrollport so the nearest scrollport for its items is
+   * the page, which is what makes a stale presentation move the page rather
+   * than the popup's list.
+   */
+  pageScrollport?: boolean;
   /** Replaces every item node under a stable id while the popup opens. */
   remountItemsOnOpen?: boolean;
   unmountOnHide?: boolean;
@@ -111,9 +127,11 @@ function Fixture({
   focusTarget,
   input,
   itemIdPrefix,
+  keepOpen,
   label,
   moveFocusOnOpen,
   outsideFocusTarget,
+  pageScrollport,
   remountItemsOnOpen,
   unmountOnHide,
   virtualFocus,
@@ -130,18 +148,22 @@ function Fixture({
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
       <Ariakit.ComboboxSelect style={{ display: "block" }} />
       <Ariakit.ComboboxPopover
-        // Spread conditionally: the popover reads this prop off the rest, so an
-        // explicit `undefined` would still take precedence over the default it
-        // computes for itself, which the other variants are meant to exercise.
-        {...(autoFocusOnShow != null && { autoFocusOnShow })}
+        // Spread rather than passed, because an explicitly undefined prop wins
+        // over the default `ComboboxPopover` computes for itself, which would
+        // retune every fixture that leaves this alone.
+        // See https://github.com/ariakit/ariakit/issues/7028
+        {...(autoFocusOnShow === undefined ? null : { autoFocusOnShow })}
         unmountOnHide={unmountOnHide}
+        hideOnInteractOutside={!keepOpen}
+        // A popup that is taller than the viewport would otherwise be flipped
+        // above the select, which puts the last items back in view.
+        flip={!pageScrollport}
         gutter={4}
         sameWidth
         style={{
           background: "white",
           border: "1px solid gray",
-          maxHeight: 120,
-          overflow: "auto",
+          ...(pageScrollport ? null : { maxHeight: 120, overflow: "auto" }),
         }}
       >
         {input && (
@@ -243,6 +265,23 @@ export default function Example() {
           label="Escaping fruit"
           moveFocusOnOpen
           outsideFocusTarget
+          unmountOnHide
+        />
+      </div>
+      {/* The same escape, against a popup that keeps itself open and has no
+      scrollport of its own. Nothing left to scroll but the page, so a
+      presentation that outlives the escape is visible as a page jump. */}
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          autoFocusOnShow={false}
+          defaultSelectedValue="Watermelon"
+          focusTarget
+          input
+          keepOpen
+          label="Page escaping fruit"
+          moveFocusOnOpen
+          outsideFocusTarget
+          pageScrollport
           unmountOnHide
         />
       </div>

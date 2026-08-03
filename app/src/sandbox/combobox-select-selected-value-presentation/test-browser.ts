@@ -94,6 +94,44 @@ withFramework(import.meta.dirname, async ({ test }) => {
     test.expect(await scroll.events()).not.toContain("document");
   });
 
+  // https://github.com/ariakit/ariakit/issues/7020
+  test("cancels the item handoff presentation when focus leaves an open popup", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Page escaping fruit");
+    const escapeTarget = q.button("Page escaping fruit focus target");
+
+    // Clicking a select that isn't fully visible would scroll the page to reach
+    // it, and that scroll would land inside the measurement below.
+    await select.scrollIntoViewIfNeeded();
+    await test.expect(select).toBeInViewport({ ratio: 1 });
+    const scrollY = await page.evaluate(() => window.scrollY);
+    const scroll = await recordScrollEvents(page);
+
+    await select.click();
+
+    // The popup stays open, so the presentation the item handoff scheduled is
+    // only abandoned if it sees the escape.
+    await test.expect(escapeTarget).toBeFocused();
+    // Placement is the gate a surviving request parks behind, so pin it rather
+    // than trusting a frame flush to have covered it.
+    await test.expect(q.listbox()).not.toHaveAttribute("data-placing");
+    await test.expect(escapeTarget).toBeFocused();
+    // The popup is still open and the marked item is still the active one, so
+    // none of the three abandon reasons the request already honours can be what
+    // stopped it.
+    await test.expect(q.listbox()).toBeVisible();
+    await test
+      .expect(q.option("Watermelon"))
+      .toHaveAttribute("data-active-item");
+    test.expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
+    test.expect(await scroll.events()).not.toContain("document");
+    // And the marked item is still out of view, so the page really was the only
+    // thing a surviving presentation could have scrolled.
+    await test.expect(q.option("Watermelon")).not.toBeInViewport();
+  });
+
   // This case originated in the unmerged PR below. It covers the same
   // focus-move cancellation invariant when the popup remounts on open and the
   // select element briefly becomes the composite again.
