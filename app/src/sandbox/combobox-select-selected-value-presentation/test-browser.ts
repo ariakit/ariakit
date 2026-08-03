@@ -149,4 +149,125 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.option("Focus target")).toBeInViewport();
     await test.expect(q.option("Watermelon")).not.toBeInViewport();
   });
+
+  // The control for the remounting case below: with the popup's own initial
+  // focus off, the presentation is the only thing that brings the item into
+  // view, so this fails for any reason that stops the presentation at all.
+  // https://github.com/ariakit/ariakit/issues/7021
+  test("presents a far selected item without the popup's initial focus", async ({
+    q,
+  }) => {
+    const select = q.combobox("Persisting fruit");
+    const watermelon = q.option("Watermelon");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    await test.expect(watermelon).toBeInViewport();
+    await test.expect(select).toBeFocused();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7021
+  test("presents a far selected item replaced under a stable id", async ({
+    q,
+  }) => {
+    const select = q.combobox("Remounting fruit");
+    const watermelon = q.option("Watermelon");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+
+    // The explicit id is the premise: a replaced item that came back under a
+    // generated one would be a different logical item, which is a different
+    // reason to drop the presentation and not the one this covers.
+    await test
+      .expect(watermelon)
+      .toHaveAttribute("id", "remounting-watermelon");
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    await test.expect(watermelon).toBeInViewport();
+    await test.expect(select).toBeFocused();
+  });
+
+  // A request that resolved an item keeps presenting that one, even when the
+  // active item moves on before the replacement lands. Highlighting sets the
+  // active id without bumping `moves`, so nothing abandons the request, and the
+  // newly highlighted item is not a presentation target.
+  // https://github.com/ariakit/ariakit/pull/7030
+  test("keeps presenting the item it resolved when the active item moves on", async ({
+    q,
+  }) => {
+    const select = q.combobox("Parked fruit");
+    const watermelon = q.option("Watermelon");
+    const apple = q.option("Apple");
+    await select.click();
+    await test.expect(select).toHaveAttribute("aria-expanded", "true");
+
+    // Positioning is held, so the presentation the open scheduled is parked and
+    // has already resolved `Watermelon`.
+    await test.expect(q.listbox()).toHaveAttribute("data-placing");
+    await test.expect(watermelon).toHaveAttribute("id", "parked-watermelon");
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    // Marks the node the request resolved, so the replacement below is
+    // observable: a node that comes back without the mark is a different one.
+    await watermelon.evaluate((node) => node.setAttribute("data-resolved", ""));
+
+    // One action highlights another item and replaces every item node under the
+    // same ids, which is the state the request has to resolve again from.
+    await q.button("Refresh Parked fruit list").click();
+    await test.expect(apple).toHaveAttribute("data-active-item");
+    await test.expect(watermelon).not.toHaveAttribute("data-active-item");
+    // The replacement is the premise: the request only resolves again once the
+    // node it cached has left the DOM.
+    await test.expect(watermelon).not.toHaveAttribute("data-resolved");
+    await test.expect(watermelon).toHaveAttribute("id", "parked-watermelon");
+
+    await q.button("Finish Parked fruit positioning").click();
+
+    await test.expect(watermelon).toBeInViewport();
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7042
+  test("cancels a replaced virtual-focus handoff after focus escapes", async ({
+    q,
+  }) => {
+    const select = q.combobox("Virtual replacing fruit");
+    const listbox = q.listbox();
+    const watermelon = q.option("Watermelon");
+    await select.click();
+    await test.expect(listbox).toHaveAttribute("data-placing");
+    await test
+      .expect(watermelon)
+      .toHaveAttribute("id", "virtual-replacing-watermelon");
+    await test.expect(select).toBeFocused();
+    await watermelon.evaluate((element) =>
+      element.setAttribute("data-resolved", ""),
+    );
+
+    // Replace the item after its virtual-focus handoff has returned DOM focus
+    // to the select. The replacement is the same logical item, but not the node
+    // that briefly held focus.
+    await q.button("Refresh Virtual replacing fruit list").click();
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    await test.expect(watermelon).not.toHaveAttribute("data-resolved");
+
+    // Leaving the composite is terminal for the parked presentation even if
+    // focus later returns before placement finishes.
+    await q.button("Virtual replacing fruit focus target").focus();
+    await test
+      .expect(q.button("Virtual replacing fruit focus target"))
+      .toBeFocused();
+    // A plain popup control returns focus to the composite boundary without
+    // starting a fresh item presentation of its own.
+    const popupFocusTarget = q.button(
+      "Virtual replacing fruit popup focus target",
+    );
+    await popupFocusTarget.evaluate((element) =>
+      element.focus({ preventScroll: true }),
+    );
+    await test.expect(popupFocusTarget).toBeFocused();
+
+    await q.button("Finish Virtual replacing fruit positioning").click();
+
+    test.expect(await listbox.evaluate((element) => element.scrollTop)).toBe(0);
+    await test.expect(watermelon).not.toBeInViewport();
+  });
 });

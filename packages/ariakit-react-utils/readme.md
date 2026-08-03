@@ -448,6 +448,8 @@ function forwardRef<T extends React.FC<any>>(render: T): T;
 
 The same as `React.forwardRef` but passes the `ref` as a prop and returns a component with the same generic type.
 
+Props holding `undefined` are dropped, so passing one behaves the same as omitting it and the component keeps the value it computes for itself.
+
 <div align="right">
   <a href="#api-reference">&uarr; back to top</a>
 </div>

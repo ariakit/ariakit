@@ -4,6 +4,7 @@ import { subscribe } from "@ariakit/store";
 import {
   getActiveElement,
   getDocument,
+  isElement,
   isTextField,
   isVisible,
 } from "@ariakit/utils";
@@ -13,6 +14,19 @@ import type { CompositeStore, CompositeStoreState } from "./composite-store.ts";
 export const flipItems = Core.flipItems;
 export const findFirstEnabledItem = Core.findFirstEnabledItem;
 export const groupItemsByRows = Core.groupItemsByRows;
+
+const unmountingItems = new WeakSet<Element>();
+
+/** Marks the brief window between a composite item's ref cleanup and removal. */
+export function markItemUnmounting(element: Element) {
+  unmountingItems.add(element);
+  queueMicrotask(() => unmountingItems.delete(element));
+}
+
+/** Clears a transient ref cleanup when React keeps the same node mounted. */
+export function markItemMounted(element: Element) {
+  unmountingItems.delete(element);
+}
 
 /**
  * Runs a callback while preserving the composite element's own scroll position.
@@ -50,6 +64,17 @@ function getPopupElement(store: CompositeStore) {
   return state.contentElement as HTMLElement | null;
 }
 
+/** Whether an element sits inside the composite's DOM focus boundary. */
+function isFocusWithinComposite(store: CompositeStore, element: Element) {
+  const { compositeElement } = store.getState();
+  if (compositeElement?.contains(element)) return true;
+  if (isItem(store, element)) return true;
+  // Items are only recognizable once they register, which is a commit after
+  // they mount, and the composite element can sit outside the popup, so
+  // neither check above covers an option that has just focused itself.
+  return !!getPopupElement(store)?.contains(element);
+}
+
 /**
  * Whether DOM focus is currently inside the composite: on the composite element
  * itself, on one of its items, or anywhere in its popup.
@@ -58,12 +83,7 @@ export function ownsFocus(store: CompositeStore) {
   const { compositeElement } = store.getState();
   const activeElement = getActiveElement(compositeElement);
   if (!activeElement) return false;
-  if (compositeElement?.contains(activeElement)) return true;
-  if (isItem(store, activeElement)) return true;
-  // Items are only recognizable once they register, which is a commit after
-  // they mount, and the composite element can sit outside the popup, so
-  // neither check above covers an option that has just focused itself.
-  return !!getPopupElement(store)?.contains(activeElement);
+  return isFocusWithinComposite(store, activeElement);
 }
 
 export interface PresentItemParams {
@@ -107,9 +127,13 @@ function presentItem({
   let element: HTMLElement | null = null;
   let resolvedId: string | undefined;
   let focused = false;
+  let focusLeftComposite = false;
+  let elementWasReplaced = false;
   let done = false;
   let wasMounted = false;
   let wasOpen = false;
+  let focusOutCleanup: (() => void) | undefined;
+  let focusOutDocument: Document | undefined;
   const owner = requireFocus
     ? getActiveElement(store.getState().compositeElement)
     : null;
@@ -133,23 +157,39 @@ function presentItem({
     if (activeElement === target) return true;
     return ownsFocus(store);
   };
-  /**
-   * Resolves the current element for the logical item. The element can change
-   * while a presentation is pending, but a request without an explicit id
-   * must not follow a different active item after it has resolved once.
-   */
-  const resolveElement = (state: ReturnType<typeof store.getState>) => {
-    const targetId = resolvedId ?? (id === undefined ? state.activeId : id);
-    const item = getEnabledItem(store, targetId);
-    if (!item?.element?.isConnected) return null;
-    resolvedId = item.id;
-    return item.element;
+  const trackFocusEscape = (target: HTMLElement) => {
+    // Keep this observer for the request's lifetime. A virtual-focus request
+    // can hand DOM focus from the item back to the composite before it waits
+    // for placement, and a focus-less handoff request never focuses the item
+    // itself, so an item-bound one-shot listener misses later departures.
+    const doc = getDocument(target);
+    if (focusOutDocument === doc) return;
+    focusOutCleanup?.();
+    focusOutDocument = doc;
+    const onFocusOut = (event: FocusEvent) => {
+      if (done) return;
+      if (!isElement(event.target)) return;
+      if (isElement(event.relatedTarget)) {
+        if (isFocusWithinComposite(store, event.relatedTarget)) return;
+        focusLeftComposite = true;
+        return;
+      }
+      // A focused item being removed can emit focusout with no destination.
+      // Ref cleanup runs before React removes the node, so it distinguishes
+      // that event from an explicit blur immediately followed by replacement.
+      if (!event.target.isConnected) return;
+      if (unmountingItems.has(event.target)) return;
+      focusLeftComposite = true;
+    };
+    doc.addEventListener("focusout", onFocusOut, true);
+    focusOutCleanup = () => {
+      doc.removeEventListener("focusout", onFocusOut, true);
+    };
   };
-  const focusWasLostToReplacement = () => {
-    if (!focused || !owner) return false;
-    // Removing the focused element parks focus on the document body. A focus
-    // escape to another element remains distinguishable and still abandons.
-    return getActiveElement(owner) === getDocument(owner).body;
+  const focusWasLostToReplacement = (target: HTMLElement) => {
+    if (!focused) return false;
+    if (focusLeftComposite) return false;
+    return getActiveElement(target) === getDocument(target).body;
   };
   /**
    * Whether the request has stopped being relevant, judged from state alone.
@@ -185,19 +225,29 @@ function presentItem({
   };
 
   /**
-   * The same question for the resolved item. Kept separate because it can only
-   * be answered once the item exists: before that there is nothing to compare
-   * focus against, and an option that has just focused itself isn't even
-   * recognizable as an item yet.
+   * The element the request's item is currently rendered as, or `null` when it
+   * isn't rendered. Resolved from the store every time, because the element an
+   * id points at is not stable.
+   *
+   * The id itself is pinned once an element is found. A request without an `id`
+   * follows the active item only while it is still looking for one, which is
+   * what lets an item that hasn't registered yet resolve later. After that it
+   * has adopted a logical item, and `abandonedByState` deliberately doesn't end
+   * it when the active item changes, so re-reading the active id here would let
+   * it silently present a different item instead.
    */
-  const abandonedByItem = (target: HTMLElement) => {
-    if (!target.isConnected) return true;
-    return !stillOwnsFocus(target);
+  const resolveElement = (state: ReturnType<typeof store.getState>) => {
+    const targetId = resolvedId ?? (id === undefined ? state.activeId : id);
+    const item = getEnabledItem(store, targetId);
+    if (!item?.element?.isConnected) return null;
+    resolvedId = item.id;
+    return item.element;
   };
   let unsubscribe: (() => void) | undefined;
   const cancel = () => {
     done = true;
     unsubscribe?.();
+    focusOutCleanup?.();
   };
   const present = () => {
     if (done) return;
@@ -209,20 +259,36 @@ function presentItem({
       element = resolveElement(state);
       if (!element) return;
     } else if (!element.isConnected) {
-      // React can replace an item's node while keeping its logical id. Resolve
-      // the replacement in the same pass so the presentation remains alive.
+      // The element left the DOM, but React can replace an item's node while
+      // keeping its id, so the logical item can still be there and still be
+      // worth presenting. Resolve it again here rather than going back to
+      // waiting, which is what keeps the request terminal without counting
+      // retries.
+      //
+      // The replacement is only guaranteed to be there when this pass was woken
+      // by the collection's own batched `items` propagation, which carries a
+      // commit's unregister and register together. A pass woken earlier in that
+      // same commit still sees the old element, because items register from a
+      // passive effect while a controlled `items` or `activeId` prop is
+      // published from a layout effect. Such a pass gives up on the
+      // replacement, which is what already happened to every replacement before
+      // this.
       element = resolveElement(state);
       if (!element) return cancel();
       replaced = true;
+      elementWasReplaced = true;
     }
-    const restoreFocus = replaced && focusWasLostToReplacement();
+    if (focus || requireFocus) trackFocusEscape(element);
+    if (elementWasReplaced && focusLeftComposite) return cancel();
+    const restoreFocus = replaced && focusWasLostToReplacement(element);
     if (restoreFocus) {
       focused = false;
-    } else if (abandonedByItem(element)) {
+    } else if (!stillOwnsFocus(element)) {
       return cancel();
     }
     if (focus && !focused) {
       focused = true;
+      focusLeftComposite = false;
       const itemElement = element;
       withCompositeScrollPreserved(store, () => {
         itemElement.focus({ preventScroll: true });

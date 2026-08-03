@@ -1,4 +1,4 @@
-import { click, hover, press, q, sleep } from "@ariakit/test";
+import { click, dispatch, hover, press, q, sleep } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 const hovercard = () => q.dialog("Ariakit profile");
@@ -8,14 +8,17 @@ const hoverOutside = async () => {
   await hover(document.body, { clientX: 10, clientY: 10 });
 };
 
+// https://github.com/ariakit/ariakit/issues/7043
 test("shows after hovering and hides after hovering outside", async () => {
   expect(hovercard()).not.toBeInTheDocument();
 
-  await hover(q.link("@ariakit.com"));
+  // Dispatch directly so the assertions run before the timeout can expire
+  // when the full suite delays the interaction helper.
+  await dispatch.mouseMove(q.link("@ariakit.com"));
   expect(hovercard()).not.toBeInTheDocument();
   await expect.poll(hovercard).toBeVisible();
 
-  await hoverOutside();
+  await dispatch.mouseMove(document.body);
   expect(hovercard()).toBeVisible();
   await expect.poll(hovercard).not.toBeInTheDocument();
 });
