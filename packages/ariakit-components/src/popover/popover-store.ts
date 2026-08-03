@@ -144,11 +144,14 @@ export interface PopoverStoreState extends DialogStoreState {
    */
   rendered: symbol;
   /**
-   * Whether the popover is showing but hasn't been positioned yet.
+   * Whether the popover is showing and its current positioning pass hasn't
+   * written a position yet. Every pass asserts it, not just the one that
+   * follows the popover being shown.
    *
    * Components that move focus or scroll into the popup wait for this to become
    * `false`, otherwise they act on an element that's still at its
-   * pre-placement origin and drag the page along with it.
+   * pre-placement origin, or at a position it's about to leave, and drag the
+   * page along with it.
    * @private
    */
   unstable_placing: boolean;
