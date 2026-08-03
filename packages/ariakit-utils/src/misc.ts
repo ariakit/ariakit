@@ -305,11 +305,16 @@ export function disabledFromElement(element: Element) {
 }
 
 /**
- * Removes undefined values from an object.
+ * Removes undefined values from an object. Only own properties are copied, so
+ * an inherited enumerable property never becomes an own property of the result.
+ * A `__proto__` key is dropped because assigning it would replace the
+ * prototype of the result instead of adding a property to it.
  */
 export function removeUndefinedValues<T extends AnyObject>(obj: T) {
   const result = {} as T;
   for (const key in obj) {
+    if (!hasOwnProperty(obj, key)) continue;
+    if (key === "__proto__") continue;
     if (obj[key] !== undefined) {
       result[key] = obj[key];
     }

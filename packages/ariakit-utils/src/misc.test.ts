@@ -4,9 +4,30 @@ import {
   defaultValue,
   isEmpty,
   isInteger,
+  removeUndefinedValues,
   shallowEqual,
   warnOnce,
 } from "./misc.ts";
+
+/**
+ * Defines an enumerable property on `Object.prototype`, the way prototype
+ * pollution does, and removes it again on disposal. Lets a test prove that an
+ * inherited key never becomes an own property of the result.
+ */
+function polluteObjectPrototype(key: string, value: unknown) {
+  // oxlint-disable-next-line no-extend-native
+  Object.defineProperty(Object.prototype, key, {
+    value,
+    configurable: true,
+    enumerable: true,
+    writable: true,
+  });
+  return {
+    [Symbol.dispose]() {
+      Reflect.deleteProperty(Object.prototype, key);
+    },
+  };
+}
 
 test("isInteger preserves its loose numeric coercion behavior", () => {
   expect(isInteger(0)).toBe(true);
@@ -55,6 +76,40 @@ test("shallowEqual compares own enumerable values", () => {
   expect(shallowEqual({ a: 1 }, { a: 2 })).toBe(false);
   expect(shallowEqual({ a: 1 }, { a: 1, b: 2 })).toBe(false);
   expect(shallowEqual(undefined, { a: 1 })).toBe(false);
+});
+
+test("removeUndefinedValues drops only the undefined values", () => {
+  const result = removeUndefinedValues({
+    a: 1,
+    b: undefined,
+    c: null,
+    d: false,
+  });
+  // `toEqual` ignores keys holding `undefined`, so the dropped key has to be
+  // asserted through the resulting key list.
+  expect(Object.keys(result)).toEqual(["a", "c", "d"]);
+  expect(result).toEqual({ a: 1, c: null, d: false });
+});
+
+test("removeUndefinedValues copies own properties only", () => {
+  using _pollution = polluteObjectPrototype("aria-hidden", "true");
+  const result = removeUndefinedValues({ id: "button" });
+  expect(Object.keys(result)).toEqual(["id"]);
+  expect(Object.hasOwn(result, "aria-hidden")).toBe(false);
+});
+
+test("removeUndefinedValues drops a __proto__ key", () => {
+  // An own enumerable `__proto__` is what `JSON.parse` produces, and assigning
+  // it would run the `Object.prototype` setter and swap the result's prototype
+  // instead of adding a property.
+  const payload = JSON.parse('{"__proto__":{"id":"injected"},"name":"real"}');
+  // Pin the fixture: an object literal would set the prototype instead of
+  // creating the own key this test needs to exercise.
+  expect(Object.hasOwn(payload, "__proto__")).toBe(true);
+  const result = removeUndefinedValues(payload);
+  expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+  expect(result.id).toBeUndefined();
+  expect(Object.keys(result)).toEqual(["name"]);
 });
 
 test("defaultValue returns the first defined value", () => {
