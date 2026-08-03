@@ -4,19 +4,32 @@ import { useState } from "react";
 
 export default function Example() {
   const [open, setOpen] = useState(false);
+  const [includePreview, setIncludePreview] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   const close = (event?: Event | SyntheticEvent) => {
     event?.preventDefault();
     setOpen(false);
+    setPreviewOpen(false);
   };
 
   return (
     <>
+      <label>
+        <input
+          type="checkbox"
+          tabIndex={0}
+          checked={includePreview}
+          onChange={(event) => setIncludePreview(event.currentTarget.checked)}
+        />
+        Include preview
+      </label>
       <a
         href="/post"
         className="button"
         onClick={(event) => {
           event.preventDefault();
+          setPreviewOpen(includePreview);
           setOpen(true);
         }}
       >
@@ -49,6 +62,23 @@ export default function Example() {
             Post
           </Ariakit.Button>
         </form>
+        <Ariakit.HovercardProvider open={previewOpen} setOpen={setPreviewOpen}>
+          <Ariakit.HovercardAnchor render={<Ariakit.Role.div />}>
+            Preview anchor
+          </Ariakit.HovercardAnchor>
+          <Ariakit.Hovercard
+            role="presentation"
+            focusable={false}
+            hideOnEscape={false}
+            hideOnInteractOutside={false}
+            unmountOnHide
+            updatePosition={() => {}}
+            render={(props) => <Ariakit.Role.div {...props} id={undefined} />}
+            getPersistentElements={() => document.getElementsByTagName("body")}
+          >
+            Feature preview
+          </Ariakit.Hovercard>
+        </Ariakit.HovercardProvider>
       </Ariakit.Dialog>
     </>
   );
