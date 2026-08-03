@@ -43,6 +43,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(lastItem).not.toBeInViewport();
     test.expect(await scroll.events()).not.toContain("document");
 
+    // The scroll the presentation held back lands once the pass is over. This
+    // proves that half was deferred rather than dropped; it does not tell the
+    // two worlds apart, because the unfixed one reaches the same offset
+    // earlier, which is what the assertions before the release cover.
     await q.button("Finish Actions positioning").click();
     await test.expect(menu).not.toHaveAttribute("data-placing");
     await test.expect(lastItem).toBeInViewport();
@@ -71,6 +75,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(menu).toBeVisible();
     await q.button("Finish Actions positioning").click();
     await test.expect(menu).not.toHaveAttribute("data-placing");
+    // Focus is on the button that finished the pass, so the popup taking its
+    // show autofocus here is the one place in the suite that separates holding
+    // that half back from removing it.
+    await test.expect(menu).toBeFocused();
     await test.expect(firstItem).toBeInViewport();
     await test.expect(lastItem).not.toBeInViewport();
 
@@ -87,6 +95,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(lastItem).not.toBeInViewport();
     test.expect(await scroll.events()).not.toContain("document");
 
+    // The scroll the presentation held back lands once the pass is over. This
+    // proves that half was deferred rather than dropped; it does not tell the
+    // two worlds apart, because the unfixed one reaches the same offset
+    // earlier, which is what the assertions before the release cover.
     await q.button("Finish Actions positioning").click();
     await test.expect(menu).not.toHaveAttribute("data-placing");
     await test.expect(lastItem).toBeInViewport();
