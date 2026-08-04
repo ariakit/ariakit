@@ -245,8 +245,9 @@ function presentItem({
     //
     // Removing the focused node parks focus on the document body. Restore
     // focus only when the item's ref cleanup marked that blur as removal. An
-    // explicit blur is latched below, so replacing the item afterward does not
-    // turn a real focus escape into a new focus request.
+    // explicit blur is latched below until the same item takes focus again, so
+    // replacing an item the user left does not turn a real focus escape into a
+    // new focus request, while an item they came back to is still restored.
     if (restoreFocus) {
       focused = false;
     } else if (!stillOwnsFocus(element)) {

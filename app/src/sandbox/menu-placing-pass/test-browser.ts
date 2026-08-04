@@ -74,8 +74,14 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await withinMenu.menuitem("Action 1").focus();
     await page.keyboard.press("End");
     const item = withinMenu.menuitem("Action 30");
+    await test.expect(item).toBeFocused();
+    await test.expect(menu).toHaveAttribute("data-placing");
     await item.blur();
+    await test.expect
+      .poll(() => page.evaluate(() => document.activeElement?.tagName))
+      .toBe("BODY");
     await item.focus();
+    await test.expect(item).toBeFocused();
 
     await q.button("Replace focused action").dispatchEvent("click");
     const replacement = withinMenu.menuitem("Action 30");
@@ -84,6 +90,9 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .button("Finish replacement actions positioning")
       .dispatchEvent("click");
     await test.expect(replacement).toBeFocused();
+    await test.expect
+      .poll(() => menu.evaluate((element) => element.scrollTop))
+      .toBeGreaterThan(0);
   });
 
   // A custom `updatePosition` that calls the supplied default and then keeps
