@@ -6,12 +6,6 @@ const itemStyle = {
   padding: "12px 16px",
 } as const;
 
-function preventScrollOnFocus(element: HTMLElement | null) {
-  if (!element) return;
-  const focus = element.focus.bind(element);
-  element.focus = (options) => focus({ ...options, preventScroll: true });
-}
-
 function MenuContent({ label }: { label: string }) {
   return (
     <Ariakit.Menu gutter={4} portal>
@@ -30,7 +24,6 @@ function MenubarExample() {
           {["File", "Edit", "View"].map((label) => (
             <Ariakit.MenuProvider key={label}>
               <Ariakit.MenuItem
-                ref={preventScrollOnFocus}
                 render={<Ariakit.MenuButton />}
                 style={itemStyle}
               >
@@ -58,11 +51,7 @@ function ScrollableMenuExample() {
             </Ariakit.MenuItem>
           ))}
           <Ariakit.MenuProvider>
-            <Ariakit.MenuItem
-              ref={preventScrollOnFocus}
-              render={<Ariakit.MenuButton />}
-              style={itemStyle}
-            >
+            <Ariakit.MenuItem render={<Ariakit.MenuButton />} style={itemStyle}>
               Share
             </Ariakit.MenuItem>
             <MenuContent label="Share" />

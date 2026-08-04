@@ -159,7 +159,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
         // the cursor back to the menu button.
         if (isWithinMenu) {
           if (event.currentTarget.hasAttribute("aria-expanded")) {
-            event.currentTarget.focus();
+            event.currentTarget.focus({ preventScroll: true });
           }
           return true;
         }
@@ -167,7 +167,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
         // the menu item if focus is somewhere on the widget. Without this, the
         // open menus in the menu bar wouldn't close.
         if (menuHasFocus(compositeElement, items, event.currentTarget)) {
-          event.currentTarget.focus();
+          event.currentTarget.focus({ preventScroll: true });
           return true;
         }
         return false;
