@@ -39,7 +39,11 @@ import {
   CompositeScopedContextProvider,
   useCompositeProviderContext,
 } from "./composite-context.tsx";
-import type { CompositeStore, CompositeStoreItem } from "./composite-store.ts";
+import type {
+  CompositeStore,
+  CompositeStoreItem,
+  CompositeStoreState,
+} from "./composite-store.ts";
 import {
   findFirstEnabledItem,
   getEnabledItem,
@@ -53,6 +57,12 @@ import {
 const TagName = "div" satisfies ElementType;
 type TagName = typeof TagName;
 type HTMLType = HTMLElementTagNameMap[TagName];
+
+function popupStateKeys(...keys: string[]) {
+  return keys as Array<keyof CompositeStoreState>;
+}
+
+const openKeys = popupStateKeys("open");
 
 function isGrid(items: CompositeStoreItem[]) {
   return items.some((item) => !!item.rowId);
@@ -140,7 +150,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   scrollIntoView,
 }: CompositeFocusOnMoveProps) {
   const moves = useStoreState(store, "moves");
-  const open = useStoreState(store, (state) =>
+  const open = useStoreState(store, openKeys, (state) =>
     "open" in state ? !!state.open : false,
   );
   // The composite element is also tracked so the move-to-container effect

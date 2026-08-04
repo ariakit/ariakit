@@ -1,8 +1,12 @@
-import { useEvent, useSafeLayoutEffect } from "@ariakit/react-utils";
+import { useSafeLayoutEffect } from "@ariakit/react-utils";
 import { sync } from "@ariakit/store";
 import type { ComboboxStore } from "./combobox-store.ts";
 
 const openingMovesByStore = new WeakMap<ComboboxStore, number>();
+const scrollItemIntoViewByStore = new WeakMap<
+  ComboboxStore,
+  (element: HTMLElement) => void
+>();
 
 function scrollIntoViewNearest(element: HTMLElement) {
   element.scrollIntoView({ block: "nearest", inline: "nearest" });
@@ -94,9 +98,15 @@ export function useTrackComboboxSelectPresentation(store?: ComboboxStore) {
   }, [store]);
 }
 
-export function useScrollItemIntoView(store?: ComboboxStore) {
-  return useEvent((element: HTMLElement) => {
-    if (!store) return scrollIntoViewNearest(element);
+/**
+ * Returns the store's item-scrolling callback. It reads current store state
+ * when called, so every item can share one stable callback per store.
+ */
+export function getScrollItemIntoView(store?: ComboboxStore) {
+  if (!store) return scrollIntoViewNearest;
+  const cached = scrollItemIntoViewByStore.get(store);
+  if (cached) return cached;
+  const scrollItemIntoView = (element: HTMLElement) => {
     const { contentElement, moves, selectElement } = store.getState();
     if (!selectElement) return scrollIntoViewNearest(element);
     if (moves !== openingMovesByStore.get(store)) {
@@ -108,5 +118,7 @@ export function useScrollItemIntoView(store?: ComboboxStore) {
     const scrollport = getSingleVerticalScrollport(element, contentElement);
     if (!scrollport) return scrollIntoViewNearest(element);
     centerItemInScrollport(element, scrollport);
-  });
+  };
+  scrollItemIntoViewByStore.set(store, scrollItemIntoView);
+  return scrollItemIntoView;
 }

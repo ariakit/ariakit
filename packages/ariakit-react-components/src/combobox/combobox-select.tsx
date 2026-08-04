@@ -30,7 +30,7 @@ import type { PopoverDisclosureOptions } from "../popover/popover-disclosure.tsx
 import { usePopoverDisclosure } from "../popover/popover-disclosure.tsx";
 import { getVisuallyHiddenStyle } from "../visually-hidden/visually-hidden.tsx";
 import {
-  useScrollItemIntoView,
+  getScrollItemIntoView,
   useTrackComboboxSelectPresentation,
 } from "./__utils.ts";
 import {
@@ -306,7 +306,7 @@ export const useComboboxSelect = createHook<TagName, ComboboxSelectOptions>(
       focusable,
       ...props,
     });
-    const scrollItemIntoView = useScrollItemIntoView(store);
+    const scrollItemIntoView = getScrollItemIntoView(store);
     props = useCompositeTypeahead<TagName>({ store, ...props });
     const onKeyDownCaptureProp = props.onKeyDownCapture;
     const onKeyUpCaptureProp = props.onKeyUpCapture;
