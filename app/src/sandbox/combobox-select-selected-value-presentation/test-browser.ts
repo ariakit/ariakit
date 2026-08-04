@@ -52,6 +52,51 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toPass();
   };
 
+  const expectHorizontallyVisible = async (
+    scrollport: Locator,
+    item: Locator,
+  ) => {
+    await test
+      .expect(async () => {
+        const itemBox = await item.boundingBox();
+        test.expect(itemBox).not.toBeNull();
+        const edges = await scrollport.evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          return {
+            left: rect.left + element.clientLeft,
+            right: rect.left + element.clientLeft + element.clientWidth,
+          };
+        });
+        test.expect(itemBox!.x).toBeGreaterThanOrEqual(edges.left);
+        test
+          .expect(itemBox!.x + itemBox!.width)
+          .toBeLessThanOrEqual(edges.right);
+      })
+      .toPass();
+  };
+
+  const expectAtInlineStart = async (scrollport: Locator, item: Locator) => {
+    await test
+      .expect(async () => {
+        const itemBox = await item.boundingBox();
+        test.expect(itemBox).not.toBeNull();
+        const edges = await scrollport.evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          return {
+            direction: getComputedStyle(element).direction,
+            left: rect.left + element.clientLeft,
+            right: rect.left + element.clientLeft + element.clientWidth,
+          };
+        });
+        if (edges.direction === "rtl") {
+          test.expect(itemBox!.x + itemBox!.width).toBeCloseTo(edges.right, 0);
+        } else {
+          test.expect(itemBox!.x).toBeCloseTo(edges.left, 0);
+        }
+      })
+      .toPass();
+  };
+
   // https://github.com/ariakit/ariakit/pull/6832
   test("focuses a far item reached through typeahead", async ({ page, q }) => {
     const select = q.combobox("Selected fruit");
@@ -189,6 +234,31 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await flushFrames(page);
     await test.expect(open).toBeFocused();
   });
+
+  test("keeps the centered item visible across both axes", async ({ q }) => {
+    await q.combobox("Two-axis fruit").click();
+
+    const listbox = q.listbox("Two-axis fruit");
+    const mango = q.option("Mango");
+    await test.expect(mango).toHaveAttribute("data-active-item");
+    await expectVerticallyCentered(listbox, mango);
+    await expectHorizontallyVisible(listbox, mango);
+  });
+
+  for (const direction of ["LTR", "RTL"] as const) {
+    test(`keeps the start of an oversized ${direction} item visible`, async ({
+      q,
+    }) => {
+      const label = `Oversized ${direction} fruit`;
+      await q.combobox(label).click();
+
+      const listbox = q.listbox(label);
+      const mango = q.option("Mango");
+      await test.expect(mango).toHaveAttribute("data-active-item");
+      await expectVerticallyCentered(listbox, mango);
+      await expectAtInlineStart(listbox, mango);
+    });
+  }
 
   // https://github.com/ariakit/ariakit/issues/7011
   test("centers the selected item in a nested list scrollport", async ({

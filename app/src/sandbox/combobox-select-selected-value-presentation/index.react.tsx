@@ -553,6 +553,89 @@ function ProgrammaticOpenAfterMoveFixture() {
   );
 }
 
+function TwoAxisOverflowFixture() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Mango",
+  });
+  return (
+    <>
+      <Ariakit.ComboboxSelectLabel store={combobox}>
+        Two-axis fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={combobox} />
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        autoFocusOnShow={false}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          maxHeight: 120,
+          overflow: "auto",
+          scrollBehavior: "smooth",
+          width: 120,
+        }}
+      >
+        {fruits.map((fruit) => (
+          <Ariakit.ComboboxItem
+            key={fruit}
+            value={fruit}
+            style={{
+              display: "block",
+              marginLeft: 200,
+              padding: "4px 8px",
+              width: 100,
+            }}
+          />
+        ))}
+      </Ariakit.ComboboxPopover>
+    </>
+  );
+}
+
+function OversizedInlineOverflowFixture({
+  direction,
+}: {
+  direction: "ltr" | "rtl";
+}) {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Mango",
+  });
+  const label = `Oversized ${direction.toUpperCase()} fruit`;
+  return (
+    <>
+      <Ariakit.ComboboxSelectLabel store={combobox}>
+        {label}
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={combobox} />
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        autoFocusOnShow={false}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          direction,
+          maxHeight: 120,
+          overflow: "auto",
+          width: 120,
+        }}
+      >
+        {fruits.map((fruit) => (
+          <Ariakit.ComboboxItem
+            key={fruit}
+            value={fruit}
+            style={{
+              display: "block",
+              marginInlineStart: 60,
+              padding: "4px 8px",
+              width: 200,
+            }}
+          />
+        ))}
+      </Ariakit.ComboboxPopover>
+    </>
+  );
+}
+
 function NativeAutoFocusFixture() {
   const dialog = Ariakit.useDialogStore();
   const shadowHostRef = useRef<HTMLDivElement>(null);
@@ -1102,6 +1185,15 @@ export default function Example() {
       </div>
       <div style={{ marginTop: 200 }}>
         <ProgrammaticOpenAfterMoveFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <TwoAxisOverflowFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <OversizedInlineOverflowFixture direction="ltr" />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <OversizedInlineOverflowFixture direction="rtl" />
       </div>
     </>
   );

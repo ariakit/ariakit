@@ -33,12 +33,42 @@ function getSingleVerticalScrollport(element: HTMLElement, popup: HTMLElement) {
 function centerItemInScrollport(element: HTMLElement, scrollport: HTMLElement) {
   const elementRect = element.getBoundingClientRect();
   const scrollportRect = scrollport.getBoundingClientRect();
-  const scale = scrollportRect.height / scrollport.offsetHeight || 1;
+  const scaleX = scrollportRect.width / scrollport.offsetWidth || 1;
+  const scrollportLeft = scrollportRect.left + scrollport.clientLeft * scaleX;
+  const scrollportRight = scrollportLeft + scrollport.clientWidth * scaleX;
+  const scrollportWidth = scrollport.clientWidth * scaleX;
+  const elementLeftOutside = elementRect.left < scrollportLeft;
+  const elementRightOutside = elementRect.right > scrollportRight;
+  const alignLeft =
+    (elementLeftOutside &&
+      !elementRightOutside &&
+      elementRect.width < scrollportWidth) ||
+    (elementRightOutside &&
+      !elementLeftOutside &&
+      elementRect.width > scrollportWidth);
+  const alignRight =
+    (elementLeftOutside &&
+      !elementRightOutside &&
+      elementRect.width > scrollportWidth) ||
+    (elementRightOutside &&
+      !elementLeftOutside &&
+      elementRect.width < scrollportWidth);
+  // Preserve native inline-nearest behavior without scrolling ancestors
+  // outside the popup.
+  let left = 0;
+  if (alignLeft) {
+    left = (elementRect.left - scrollportLeft) / scaleX;
+  } else if (alignRight) {
+    left = (elementRect.right - scrollportRight) / scaleX;
+  }
+
+  const scaleY = scrollportRect.height / scrollport.offsetHeight || 1;
   const elementCenter = elementRect.top + elementRect.height / 2;
   const scrollportCenter =
     scrollportRect.top +
-    (scrollport.clientTop + scrollport.clientHeight / 2) * scale;
-  scrollport.scrollTop += (elementCenter - scrollportCenter) / scale;
+    (scrollport.clientTop + scrollport.clientHeight / 2) * scaleY;
+  const top = (elementCenter - scrollportCenter) / scaleY;
+  scrollport.scrollBy({ left, top });
 }
 
 export function useTrackComboboxSelectPresentation(store?: ComboboxStore) {
