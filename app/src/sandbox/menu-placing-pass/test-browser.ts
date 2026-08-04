@@ -62,6 +62,30 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toBe(0);
   });
 
+  // https://github.com/ariakit/ariakit/pull/7065#discussion_r3711847856
+  test("restores focus when a refocused item is replaced", async ({
+    page,
+    q,
+  }) => {
+    const menu = q.menu("Replacement actions");
+    const withinMenu = query(menu);
+
+    await q.button("Show replacement actions").click();
+    await withinMenu.menuitem("Action 1").focus();
+    await page.keyboard.press("End");
+    const item = withinMenu.menuitem("Action 30");
+    await item.blur();
+    await item.focus();
+
+    await q.button("Replace focused action").dispatchEvent("click");
+    const replacement = withinMenu.menuitem("Action 30");
+
+    await q
+      .button("Finish replacement actions positioning")
+      .dispatchEvent("click");
+    await test.expect(replacement).toBeFocused();
+  });
+
   // A custom `updatePosition` that calls the supplied default and then keeps
   // working owns the whole pass: the popup is only where it belongs once that
   // callback returns. Publishing readiness when the inner default pass resolves

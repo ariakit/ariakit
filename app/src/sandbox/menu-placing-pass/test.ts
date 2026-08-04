@@ -37,6 +37,23 @@ test("leaves focus outside after a focused item is replaced", async () => {
   expect(replacement).not.toHaveFocus();
 });
 
+// https://github.com/ariakit/ariakit/pull/7065#discussion_r3711847856
+test("restores focus when a refocused item is replaced", async () => {
+  await click(q.button("Show replacement actions"));
+  const withinMenu = q.within(q.menu("Replacement actions"));
+  await focus(withinMenu.menuitem("Action 1"));
+  await press.End();
+  const item = withinMenu.menuitem.ensure("Action 30");
+  await blur(item);
+  await focus(item);
+
+  await dispatch.click(q.button("Replace focused action"));
+  const replacement = withinMenu.menuitem("Action 30");
+
+  await dispatch.click(q.button("Finish replacement actions positioning"));
+  expect(replacement).toHaveFocus();
+});
+
 // The sandbox's other scenario, re-anchoring an already open popup, is covered
 // only by the browser test: an already open popup has no initial focus left to
 // take, and the focus half of a presentation never waits on placement, so its

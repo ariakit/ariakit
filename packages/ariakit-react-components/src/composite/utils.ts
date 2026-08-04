@@ -200,11 +200,11 @@ function presentItem({
     resolvedId = item.id;
     return item.element;
   };
-  let removeBlurListener: (() => void) | undefined;
+  let removeFocusListeners: (() => void) | undefined;
   let unsubscribe: (() => void) | undefined;
   const cancel = () => {
     done = true;
-    removeBlurListener?.();
+    removeFocusListeners?.();
     unsubscribe?.();
   };
   const present = () => {
@@ -256,13 +256,18 @@ function presentItem({
       focused = true;
       focusLeftElement = false;
       const itemElement = element;
-      removeBlurListener?.();
+      removeFocusListeners?.();
       const onBlur = () => {
         focusLeftElement = !unmountingItems.has(itemElement);
       };
-      itemElement.addEventListener("blur", onBlur, { once: true });
-      removeBlurListener = () => {
+      const onFocus = () => {
+        focusLeftElement = false;
+      };
+      itemElement.addEventListener("blur", onBlur);
+      itemElement.addEventListener("focus", onFocus);
+      removeFocusListeners = () => {
         itemElement.removeEventListener("blur", onBlur);
+        itemElement.removeEventListener("focus", onFocus);
       };
       withCompositeScrollPreserved(store, () => {
         itemElement.focus({ preventScroll: true });
