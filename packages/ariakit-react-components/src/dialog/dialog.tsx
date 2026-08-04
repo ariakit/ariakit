@@ -508,7 +508,12 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
         activeElement &&
         deepestActiveElement &&
         isFocusable(deepestActiveElement) &&
-        !isElementInDialog(activeElement, contentElement, disclosureElement)
+        !isElementInDialog(activeElement, contentElement, disclosureElement) &&
+        !isElementInDialog(
+          deepestActiveElement,
+          contentElement,
+          disclosureElement,
+        )
       ) {
         return;
       }

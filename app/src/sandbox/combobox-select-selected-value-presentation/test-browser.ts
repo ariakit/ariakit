@@ -157,6 +157,26 @@ withFramework(import.meta.dirname, async ({ test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7033
+  test("does not refocus an external focus trap", async ({ page, q }) => {
+    const select = q.combobox("Focus trap escaping fruit");
+    const escapeTarget = q.button("Focus trap escaping fruit focus target");
+    const focusHistory = q.status("Focus trap escaping fruit focus history");
+
+    await test.expect(focusHistory).toHaveText("none");
+
+    await select.click();
+
+    await test.expect(escapeTarget).toBeFocused();
+    await test.expect(q.listbox()).not.toHaveAttribute("data-placing");
+    // Dialog queues auto-focus after placement, and there is no positive state
+    // for focus not being stolen once that microtask has run.
+    await flushFrames(page);
+    await test.expect(escapeTarget).toBeFocused();
+    await test.expect(q.listbox()).toBeVisible();
+    await test.expect(focusHistory).toHaveText("input → focus target");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7033
   test("does not refocus after native auto-focus moves focus into a shadow root", async ({
     page,
     q,
@@ -178,6 +198,23 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await flushFrames(page);
     await test.expect(escapeTarget).toBeFocused();
     await test.expect(focusHistory).toHaveText("input → shadow target");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7033
+  test("honors initial focus when the dialog is inside a shadow root", async ({
+    q,
+  }) => {
+    const focusHistory = q.status("Shadow-root dialog focus history");
+
+    await test.expect(focusHistory).toHaveText("none");
+
+    await q.button("Open shadow-root focus dialog").click();
+
+    await test
+      .expect(q.textbox("Shadow-root initial focus field"))
+      .toBeFocused();
+    await test.expect(q.dialog("Shadow-root focus dialog")).toBeVisible();
+    await test.expect(focusHistory).toHaveText("app focus → initial focus");
   });
 
   // https://github.com/ariakit/ariakit/issues/7033

@@ -135,6 +135,7 @@ interface FixtureProps {
   autoFocusOnShow?: boolean;
   defaultSelectedValue: string | string[];
   focusTarget?: boolean;
+  focusTrapTarget?: boolean;
   /**
    * Holds the popup in its positioning window until a control releases it, so a
    * presentation stays parked while something else acts on the popup. Releasing
@@ -174,6 +175,7 @@ function Fixture({
   autoFocusOnShow,
   defaultSelectedValue,
   focusTarget,
+  focusTrapTarget,
   holdPlacement,
   input,
   itemIdPrefix,
@@ -283,6 +285,7 @@ function Fixture({
       </Ariakit.ComboboxPopover>
       {focusTarget && outsideFocusTarget && (
         <button
+          data-focus-trap={focusTrapTarget ? "" : undefined}
           type="button"
           tabIndex={0}
           ref={setFocusTarget}
@@ -373,6 +376,73 @@ function NativeAutoFocusFixture() {
           }}
         />
       </Ariakit.Dialog>
+    </>
+  );
+}
+
+function ShadowRootDialogFixture() {
+  const shadowHostRef = useRef<HTMLDivElement>(null);
+  const initialFocusRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+  const [focusHistory, setFocusHistory] = useState<string[]>([]);
+  const recordFocus = (target: string) => {
+    setFocusHistory((history) => [...history, target]);
+  };
+  useEffect(() => {
+    const host = shadowHostRef.current;
+    if (!host) return;
+    const root = host.shadowRoot || host.attachShadow({ mode: "open" });
+    const portal = host.ownerDocument.createElement("div");
+    root.append(portal);
+    setPortalElement(portal);
+    return () => portal.remove();
+  }, []);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          setFocusHistory([]);
+          setOpen(true);
+        }}
+      >
+        Open shadow-root focus dialog
+      </button>
+      <div ref={shadowHostRef} data-shadow-root-dialog-host />
+      <p>
+        Open the dialog. Expected focus history: app focus → initial focus. If
+        the history stops at app focus, the shadow host hid that focus was still
+        inside the dialog. Current focus history:{" "}
+        <output aria-label="Shadow-root dialog focus history">
+          {focusHistory.length ? focusHistory.join(" → ") : "none"}
+        </output>
+      </p>
+      {portalElement && (
+        <Ariakit.Portal portalElement={portalElement}>
+          <Ariakit.Dialog
+            aria-label="Shadow-root focus dialog"
+            hideOnInteractOutside={false}
+            initialFocus={initialFocusRef}
+            modal={false}
+            onClose={() => setOpen(false)}
+            open={open}
+            portal={false}
+            unmountOnHide
+          >
+            <input
+              aria-label="Shadow-root app focus field"
+              autoFocus
+              onFocus={() => recordFocus("app focus")}
+            />
+            <input
+              ref={initialFocusRef}
+              aria-label="Shadow-root initial focus field"
+              onFocus={() => recordFocus("initial focus")}
+            />
+          </Ariakit.Dialog>
+        </Ariakit.Portal>
+      )}
     </>
   );
 }
@@ -622,7 +692,25 @@ export default function Example() {
         />
       </div>
       <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          focusTarget
+          focusTrapTarget
+          input
+          keepOpen
+          label="Focus trap escaping fruit"
+          moveFocusOnOpen
+          outsideFocusTarget
+          pageScrollport
+          showFocusHistory
+          unmountOnHide
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
         <NativeAutoFocusFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <ShadowRootDialogFixture />
       </div>
       <div style={{ marginTop: 200 }}>
         <StoreSwapFixture />

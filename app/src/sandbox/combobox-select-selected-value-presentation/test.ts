@@ -12,6 +12,21 @@ test("activates a far item reached through typeahead", async () => {
 });
 
 // https://github.com/ariakit/ariakit/issues/7033
+test("honors initial focus when the dialog is inside a shadow root", async () => {
+  await click(q.button("Open shadow-root focus dialog"));
+
+  const shadowRoot = document.querySelector<HTMLElement>(
+    "[data-shadow-root-dialog-host]",
+  )?.shadowRoot;
+  await expect
+    .poll(() => shadowRoot?.activeElement?.getAttribute("aria-label"))
+    .toBe("Shadow-root initial focus field");
+  expect(q.status("Shadow-root dialog focus history")).toHaveTextContent(
+    "app focus → initial focus",
+  );
+});
+
+// https://github.com/ariakit/ariakit/issues/7033
 test("focuses a dialog after its store changes", async () => {
   await click(q.button("Open store A"));
   expect(q.textbox("Store A initial focus")).toHaveFocus();
