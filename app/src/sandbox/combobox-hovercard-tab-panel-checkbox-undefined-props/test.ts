@@ -58,6 +58,29 @@ test("a composed hook preserves a later computed default", async () => {
   expect(combobox).toHaveFocus();
 });
 
+// https://github.com/ariakit/ariakit/issues/7037
+test("a dialog hook preserves its computed disabled state", () => {
+  expect(q.dialog("Hook dialog")).toHaveAttribute("aria-disabled", "true");
+});
+
+// https://github.com/ariakit/ariakit/issues/7037
+test("a toolbar container hook preserves its computed disabled state", () => {
+  expect(q.group("Hook toolbar container")).toHaveAttribute(
+    "aria-disabled",
+    "true",
+  );
+});
+
+// https://github.com/ariakit/ariakit/issues/7037
+test("a form checkbox preserves its field name and external label", () => {
+  expect(q.checkbox("Newsletter")).toHaveAttribute("name", "newsletter");
+});
+
+// https://github.com/ariakit/ariakit/issues/7037
+test("a composed form radio preserves its field name", () => {
+  expect(q.radio("Basic plan")).toHaveAttribute("name", "plan");
+});
+
 // https://github.com/ariakit/ariakit/issues/7028
 test("a hook's own undefined sentinel still suppresses a later computed value", () => {
   expect(q.checkbox("Accept terms")).not.toHaveAttribute("aria-labelledby");

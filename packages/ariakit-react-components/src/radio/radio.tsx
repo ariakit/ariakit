@@ -11,7 +11,7 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { disabledFromProps } from "@ariakit/utils";
+import { disabledFromProps, removeUndefinedValues } from "@ariakit/utils";
 import type { BivariantCallback } from "@ariakit/utils";
 import type { ChangeEvent, ElementType, FocusEvent, MouseEvent } from "react";
 import { useContext, useEffect, useRef } from "react";
@@ -186,12 +186,14 @@ export const useRadio = createHook<TagName, RadioOptions>(function useRadio({
     ...props,
   });
 
-  return {
+  // useFormRadio computes the field name after this hook. Remove the
+  // native-only sentinels before they can overwrite that later default.
+  return removeUndefinedValues({
     name: nativeRadio ? name : undefined,
     value: nativeRadio ? value : undefined,
     checked: isChecked,
     ...props,
-  };
+  });
 });
 
 /**

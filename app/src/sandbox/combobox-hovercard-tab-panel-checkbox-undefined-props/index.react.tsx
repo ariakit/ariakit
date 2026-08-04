@@ -1,6 +1,10 @@
 import * as ak from "@ariakit/react";
 import { useComboboxPopover } from "@ariakit/react-components/combobox/combobox-popover";
 import type { ComboboxPopoverProps } from "@ariakit/react-components/combobox/combobox-popover";
+import { useDialog } from "@ariakit/react-components/dialog/dialog";
+import type { DialogProps } from "@ariakit/react-components/dialog/dialog";
+import { useToolbarContainer } from "@ariakit/react-components/toolbar/toolbar-container";
+import type { ToolbarContainerProps } from "@ariakit/react-components/toolbar/toolbar-container";
 
 // Design systems usually wrap Ariakit components and forward optional props
 // positionally. When a consumer of such a wrapper leaves the prop unset, the
@@ -24,6 +28,16 @@ function Checkbox({ clickOnEnter, ...props }: ak.CheckboxProps) {
 
 function HookComboboxPopover(props: ComboboxPopoverProps) {
   const htmlProps = useComboboxPopover(props);
+  return <ak.Role {...htmlProps} />;
+}
+
+function HookDialog(props: DialogProps) {
+  const htmlProps = useDialog(props);
+  return <ak.Role {...htmlProps} />;
+}
+
+function HookToolbarContainer(props: ToolbarContainerProps) {
+  const htmlProps = useToolbarContainer(props);
   return <ak.Role {...htmlProps} />;
 }
 
@@ -77,6 +91,53 @@ export default function Example() {
           <button>Combobox action</button>
         </HookComboboxPopover>
       </ak.ComboboxProvider>
+
+      <h2>Dialog hook</h2>
+      <ak.DialogProvider open>
+        <HookDialog
+          aria-label="Hook dialog"
+          aria-disabled={undefined}
+          disabled
+          modal={false}
+          portal={false}
+        >
+          Dialog content
+        </HookDialog>
+      </ak.DialogProvider>
+
+      <h2>Toolbar container hook</h2>
+      <ak.Toolbar aria-label="Hook toolbar">
+        <HookToolbarContainer
+          role="group"
+          aria-label="Hook toolbar container"
+          aria-disabled={undefined}
+          disabled
+        >
+          <input aria-label="Inner input" />
+        </HookToolbarContainer>
+      </ak.Toolbar>
+
+      <h2>Form checkbox with an external label</h2>
+      <ak.FormProvider defaultValues={{ newsletter: false }}>
+        <ak.Form>
+          <ak.FormLabel name="newsletter">Newsletter</ak.FormLabel>
+          <ak.FormCheckbox name="newsletter" />
+        </ak.Form>
+      </ak.FormProvider>
+
+      <h2>Composed form radio</h2>
+      <ak.FormProvider defaultValues={{ plan: "" }}>
+        <ak.Form>
+          <ak.FormRadioGroup>
+            <ak.FormRadio
+              name="plan"
+              value="basic"
+              aria-label="Basic plan"
+              render={<div />}
+            />
+          </ak.FormRadioGroup>
+        </ak.Form>
+      </ak.FormProvider>
 
       {/*
         A form control that carries its own label suppresses the field level one
