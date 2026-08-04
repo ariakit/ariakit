@@ -64,6 +64,123 @@ function getPopupElement(store: CompositeStore) {
   return state.contentElement as HTMLElement | null;
 }
 
+function getPixelValue(value: string, fallback: string, percentageBasis = 0) {
+  const resolvedValue = value || fallback;
+  const number = Number.parseFloat(resolvedValue) || 0;
+  if (resolvedValue.endsWith("%")) {
+    return (number / 100) * percentageBasis;
+  }
+  return number;
+}
+
+function getScale(rectSize: number, layoutSize: number) {
+  if (!layoutSize) return 1;
+  return rectSize / layoutSize || 1;
+}
+
+function getItemScrollContainer(element: HTMLElement, popup: HTMLElement) {
+  let current = element.parentElement;
+  while (current && popup.contains(current)) {
+    const style = current.ownerDocument.defaultView?.getComputedStyle(current);
+    if (!style) break;
+    const horizontalWritingMode = style.writingMode.startsWith("horizontal");
+    const overflow = horizontalWritingMode ? style.overflowY : style.overflowX;
+    const scrollableOverflow = overflow !== "visible" && overflow !== "clip";
+    const overflows = horizontalWritingMode
+      ? current.scrollHeight > current.clientHeight
+      : current.scrollWidth > current.clientWidth;
+    if (scrollableOverflow && overflows) return current;
+    if (current === popup) break;
+    current = current.parentElement;
+  }
+  return popup;
+}
+
+function centerItemInPopup(element: HTMLElement, popup: HTMLElement) {
+  const getComputedStyle = element.ownerDocument.defaultView?.getComputedStyle;
+  if (!getComputedStyle) return;
+  const elementStyle = getComputedStyle(element);
+  const popupStyle = getComputedStyle(popup);
+  const elementRect = element.getBoundingClientRect();
+  const popupRect = popup.getBoundingClientRect();
+  const horizontalWritingMode = popupStyle.writingMode.startsWith("horizontal");
+  const rightToLeft = popupStyle.writingMode.endsWith("-rl");
+  const scrollportSize = horizontalWritingMode
+    ? popup.clientHeight
+    : popup.clientWidth;
+  const marginStart = getPixelValue(
+    elementStyle.scrollMarginBlockStart,
+    horizontalWritingMode
+      ? elementStyle.scrollMarginTop
+      : rightToLeft
+        ? elementStyle.scrollMarginRight
+        : elementStyle.scrollMarginLeft,
+  );
+  const marginEnd = getPixelValue(
+    elementStyle.scrollMarginBlockEnd,
+    horizontalWritingMode
+      ? elementStyle.scrollMarginBottom
+      : rightToLeft
+        ? elementStyle.scrollMarginLeft
+        : elementStyle.scrollMarginRight,
+  );
+  const paddingStart = getPixelValue(
+    popupStyle.scrollPaddingBlockStart,
+    horizontalWritingMode
+      ? popupStyle.scrollPaddingTop
+      : rightToLeft
+        ? popupStyle.scrollPaddingRight
+        : popupStyle.scrollPaddingLeft,
+    scrollportSize,
+  );
+  const paddingEnd = getPixelValue(
+    popupStyle.scrollPaddingBlockEnd,
+    horizontalWritingMode
+      ? popupStyle.scrollPaddingBottom
+      : rightToLeft
+        ? popupStyle.scrollPaddingLeft
+        : popupStyle.scrollPaddingRight,
+    scrollportSize,
+  );
+  if (horizontalWritingMode) {
+    const scale = getScale(popupRect.height, popup.offsetHeight);
+    const elementCenter =
+      (elementRect.top -
+        marginStart * scale +
+        elementRect.bottom +
+        marginEnd * scale) /
+      2;
+    const popupTop = popupRect.top + (popup.clientTop + paddingStart) * scale;
+    const popupBottom =
+      popupRect.top +
+      (popup.clientTop + popup.clientHeight - paddingEnd) * scale;
+    popup.scrollTop += (elementCenter - (popupTop + popupBottom) / 2) / scale;
+    return;
+  }
+  const scale = getScale(popupRect.width, popup.offsetWidth);
+  const elementCenter = rightToLeft
+    ? (elementRect.right +
+        marginStart * scale +
+        elementRect.left -
+        marginEnd * scale) /
+      2
+    : (elementRect.left -
+        marginStart * scale +
+        elementRect.right +
+        marginEnd * scale) /
+      2;
+  const popupLeft =
+    popupRect.left +
+    (popup.clientLeft + (rightToLeft ? paddingEnd : paddingStart)) * scale;
+  const popupRight =
+    popupRect.left +
+    (popup.clientLeft +
+      popup.clientWidth -
+      (rightToLeft ? paddingStart : paddingEnd)) *
+      scale;
+  popup.scrollLeft += (elementCenter - (popupLeft + popupRight) / 2) / scale;
+}
+
 /**
  * Whether DOM focus is currently inside the composite: on the composite element
  * itself, on one of its items, or anywhere in its popup.
@@ -292,7 +409,14 @@ function presentItem({
     if (!isVisible(element)) return;
     if ("unstable_placing" in state && state.unstable_placing) return;
     cancel();
-    element.scrollIntoView({ block: "nearest", inline: "nearest" });
+    const select =
+      markedOnly && "selectElement" in state && state.selectElement;
+    const popup = getPopupElement(store);
+    if (select && popup?.contains(element)) {
+      centerItemInPopup(element, getItemScrollContainer(element, popup));
+    } else {
+      element.scrollIntoView({ block: "nearest", inline: "nearest" });
+    }
   };
   // `mounted` and `unstable_placing` live on the merged popup store, which the
   // store type doesn't declare. Naming them keeps the store's keyed listener

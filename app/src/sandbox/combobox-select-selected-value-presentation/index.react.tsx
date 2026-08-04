@@ -1,11 +1,6 @@
 import * as Ariakit from "@ariakit/react";
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
+import type { CSSProperties } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const fruits = [
   "Apple",
@@ -57,9 +52,10 @@ interface FruitItemsProps {
    * would make the replacement a different logical item.
    */
   idPrefix?: string;
+  mangoStyle?: CSSProperties;
 }
 
-function FruitItems({ idPrefix }: FruitItemsProps) {
+function FruitItems({ idPrefix, mangoStyle }: FruitItemsProps) {
   return (
     <>
       {fruits.map((fruit) => (
@@ -67,7 +63,11 @@ function FruitItems({ idPrefix }: FruitItemsProps) {
           key={fruit}
           id={idPrefix ? `${idPrefix}-${slugify(fruit)}` : undefined}
           value={fruit}
-          style={{ display: "block", padding: "4px 8px" }}
+          style={{
+            display: "block",
+            padding: "4px 8px",
+            ...(fruit === "Mango" ? mangoStyle : null),
+          }}
         />
       ))}
     </>
@@ -80,7 +80,7 @@ function FruitItems({ idPrefix }: FruitItemsProps) {
  * replaced while the popup is still being positioned, but their ids keep
  * pointing at the same logical items.
  */
-function RemountingFruitItems({ idPrefix }: FruitItemsProps) {
+function RemountingFruitItems({ idPrefix, mangoStyle }: FruitItemsProps) {
   const combobox = Ariakit.useComboboxContext();
   const mounted = Ariakit.useStoreState(combobox, "mounted");
   const [generation, setGeneration] = useState(0);
@@ -90,7 +90,9 @@ function RemountingFruitItems({ idPrefix }: FruitItemsProps) {
     setGeneration((value) => value + 1);
   }, [mounted]);
 
-  return <FruitItems key={generation} idPrefix={idPrefix} />;
+  return (
+    <FruitItems key={generation} idPrefix={idPrefix} mangoStyle={mangoStyle} />
+  );
 }
 
 interface RefreshListButtonProps {
@@ -139,7 +141,7 @@ interface FixtureProps {
    * presentation as the only thing that can bring an item into view.
    */
   autoFocusOnShow?: boolean;
-  centerSelectedOnOpen?: boolean;
+  defaultOpen?: boolean;
   defaultSelectedValue: string | string[];
   focusTarget?: boolean;
   focusTrapTarget?: boolean;
@@ -156,6 +158,8 @@ interface FixtureProps {
   /** Keeps the popup open while focus leaves it. */
   keepOpen?: boolean;
   label: string;
+  listScrollport?: boolean;
+  mangoStyle?: CSSProperties;
   moveFocusOnOpen?: boolean;
   /** Puts the element focus moves to outside the popup instead of inside it. */
   outsideFocusTarget?: boolean;
@@ -165,6 +169,7 @@ interface FixtureProps {
    * than the popup's list.
    */
   pageScrollport?: boolean;
+  popupStyle?: CSSProperties;
   /**
    * Adds a control that highlights this item and replaces every item node under
    * a stable id. Its replacement half is ignored alongside
@@ -176,11 +181,12 @@ interface FixtureProps {
   showFocusHistory?: boolean;
   unmountOnHide?: boolean;
   virtualFocus?: boolean;
+  writingMode?: "vertical-rl";
 }
 
 function Fixture({
   autoFocusOnShow,
-  centerSelectedOnOpen,
+  defaultOpen,
   defaultSelectedValue,
   focusTarget,
   focusTrapTarget,
@@ -189,14 +195,18 @@ function Fixture({
   itemIdPrefix,
   keepOpen,
   label,
+  listScrollport,
+  mangoStyle,
   moveFocusOnOpen,
   outsideFocusTarget,
   pageScrollport,
+  popupStyle,
   refreshListActiveId,
   remountItemsOnOpen,
   showFocusHistory,
   unmountOnHide,
   virtualFocus,
+  writingMode,
 }: FixtureProps) {
   const focusTargetRef = useRef<HTMLElement | null>(null);
   const [focusHistory, setFocusHistory] = useState<string[]>([]);
@@ -213,8 +223,34 @@ function Fixture({
     new Promise<void>((resolve) => {
       releaseRef.current = resolve;
     });
+  const items = (
+    <>
+      {focusTarget && !outsideFocusTarget && (
+        <Ariakit.ComboboxItem
+          ref={setFocusTarget}
+          style={{ display: "block", padding: "4px 8px" }}
+          value="Focus target"
+        />
+      )}
+      {remountItemsOnOpen ? (
+        <RemountingFruitItems idPrefix={itemIdPrefix} mangoStyle={mangoStyle} />
+      ) : (
+        <FruitItems
+          key={generation}
+          idPrefix={itemIdPrefix}
+          mangoStyle={mangoStyle}
+        />
+      )}
+      {/* An item rendered without a value, at the end of the list so it's
+      always out of view. */}
+      <Ariakit.ComboboxItem style={{ display: "block", padding: "4px 8px" }}>
+        {`No ${label.toLowerCase()}`}
+      </Ariakit.ComboboxItem>
+    </>
+  );
   return (
     <Ariakit.ComboboxProvider
+      defaultOpen={defaultOpen}
       defaultSelectedValue={defaultSelectedValue}
       virtualFocus={virtualFocus}
     >
@@ -250,10 +286,20 @@ function Fixture({
         style={{
           background: "white",
           border: "1px solid gray",
-          ...(pageScrollport ? null : { maxHeight: 120, overflow: "auto" }),
+          ...(pageScrollport || listScrollport
+            ? null
+            : writingMode
+              ? {
+                  height: 120,
+                  maxWidth: 120,
+                  overflow: "auto",
+                  scrollPaddingBlockEnd: "10%",
+                  writingMode,
+                }
+              : { maxHeight: 120, overflow: "auto" }),
+          ...popupStyle,
         }}
       >
-        {centerSelectedOnOpen && <CenterSelectedItemOnOpen />}
         {input && (
           <Ariakit.ComboboxInput
             aria-label={`Search ${label}`}
@@ -272,23 +318,13 @@ function Fixture({
             }}
           />
         )}
-        {focusTarget && !outsideFocusTarget && (
-          <Ariakit.ComboboxItem
-            ref={setFocusTarget}
-            style={{ display: "block", padding: "4px 8px" }}
-            value="Focus target"
-          />
-        )}
-        {remountItemsOnOpen ? (
-          <RemountingFruitItems idPrefix={itemIdPrefix} />
+        {listScrollport ? (
+          <Ariakit.ComboboxList style={{ maxHeight: 120, overflow: "auto" }}>
+            {items}
+          </Ariakit.ComboboxList>
         ) : (
-          <FruitItems key={generation} idPrefix={itemIdPrefix} />
+          items
         )}
-        {/* An item rendered without a value, at the end of the list so it's
-        always out of view. */}
-        <Ariakit.ComboboxItem style={{ display: "block", padding: "4px 8px" }}>
-          {`No ${label.toLowerCase()}`}
-        </Ariakit.ComboboxItem>
       </Ariakit.ComboboxPopover>
       {focusTarget && outsideFocusTarget && (
         <button
@@ -325,53 +361,22 @@ function Fixture({
   );
 }
 
-function CenterSelectedItemOnOpen() {
-  const store = Ariakit.useComboboxContext();
-  const open = Ariakit.useStoreState(store, "open");
-  const popup = Ariakit.useStoreState(store, "contentElement");
-  const activeId = Ariakit.useStoreState(store, "activeId");
-  const cancelledRef = useRef(false);
-
-  useLayoutEffect(() => {
-    if (!open) {
-      cancelledRef.current = false;
-      return;
-    }
-    if (!popup) return;
-    const Observer = popup.ownerDocument.defaultView?.MutationObserver;
-    if (!Observer) return;
-    const centerSelectedItem = () => {
-      const item = popup.querySelector<HTMLElement>("[data-autofocus]");
-      if (!item) return;
-      const currentActiveId = store?.getState().activeId;
-      if (currentActiveId && currentActiveId !== item.id) {
-        cancelledRef.current = true;
-        observer.disconnect();
-        return;
-      }
-      if (cancelledRef.current) return;
-      if (popup.hasAttribute("data-placing")) return;
-      const popupRect = popup.getBoundingClientRect();
-      const itemRect = item.getBoundingClientRect();
-      popup.scrollTop +=
-        itemRect.top -
-        popupRect.top -
-        popup.clientTop -
-        (popup.clientHeight - itemRect.height) / 2;
-      observer.disconnect();
-    };
-    const observer = new Observer(centerSelectedItem);
-    observer.observe(popup, {
-      attributes: true,
-      attributeFilter: ["data-placing", "data-autofocus"],
-      childList: true,
-      subtree: true,
-    });
-    centerSelectedItem();
-    return () => observer.disconnect();
-  }, [store, open, popup, activeId]);
-
-  return null;
+function MountingDefaultOpenFixture() {
+  const [mounted, setMounted] = useState(false);
+  if (mounted) {
+    return (
+      <Fixture
+        defaultOpen
+        defaultSelectedValue="Mango"
+        label="Default-open centered fruit"
+      />
+    );
+  }
+  return (
+    <button type="button" onClick={() => setMounted(true)}>
+      Mount default-open centered fruit
+    </button>
+  );
 }
 
 function NativeAutoFocusFixture() {
@@ -700,19 +705,48 @@ export default function Example() {
       <Fixture defaultSelectedValue={["Apple"]} label="Selected fruit" />
       <Fixture defaultSelectedValue="Apple" label="Single selected fruit" />
       <div style={{ marginTop: 200 }}>
+        <Fixture defaultSelectedValue="Mango" label="Centered fruit" />
+      </div>
+      <div style={{ marginTop: 200 }}>
         <Fixture
-          centerSelectedOnOpen
           defaultSelectedValue="Mango"
-          label="Centered fruit"
+          label="Nested-list centered fruit"
+          listScrollport
         />
       </div>
       <div style={{ marginTop: 200 }}>
         <Fixture
-          centerSelectedOnOpen
           defaultSelectedValue="Mango"
-          holdPlacement
-          keepOpen
-          label="Centered delayed fruit"
+          input
+          label="Centered filterable fruit"
+          virtualFocus={false}
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Mango"
+          label="Centered unmounted fruit"
+          unmountOnHide
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <MountingDefaultOpenFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Mango"
+          label="Scaled centered fruit"
+          mangoStyle={{ scrollMarginBlockStart: 12 }}
+          popupStyle={{ scale: "0.8", scrollPaddingBlockStart: "20%" }}
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Mango"
+          label="Vertical centered fruit"
+          mangoStyle={{ scrollMarginBlockStart: 20 }}
+          popupStyle={{ scale: "0.8" }}
+          writingMode="vertical-rl"
         />
       </div>
       <div style={{ marginTop: 200 }}>

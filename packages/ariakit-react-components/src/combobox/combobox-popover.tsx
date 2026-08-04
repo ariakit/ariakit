@@ -19,6 +19,7 @@ import type { ElementType, KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useEffect, useRef } from "react";
 import type { CompositeTypeaheadOptions } from "../composite/composite-typeahead.tsx";
 import { useCompositeTypeahead } from "../composite/composite-typeahead.tsx";
+import { usePresentItem } from "../composite/utils.ts";
 import { createDialogComponent } from "../dialog/dialog.tsx";
 import type { PopoverOptions } from "../popover/popover.tsx";
 import { usePopover } from "../popover/popover.tsx";
@@ -86,6 +87,19 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
     const hasSelect = !!selectElement;
     const selectOwnsFocus =
       !!selectElement && getActiveElement(selectElement) === selectElement;
+
+    const presentInitialItem = usePresentItem(store);
+    const autoFocusOnShow = useEvent((element: HTMLElement | null) => {
+      const { inputElement, selectElement } = store.getState();
+      if (inputElement) return true;
+      if (selectElement && getActiveElement(selectElement) === selectElement) {
+        return true;
+      }
+      if (element?.hasAttribute("data-autofocus") && element.id) {
+        presentInitialItem({ id: element.id, markedOnly: true });
+      }
+      return false;
+    });
 
     const selectOnMove = useStoreState(store, "selectOnMove");
     const acceptedEscapeRef = useRef<{
@@ -219,10 +233,11 @@ export const useComboboxPopover = createHook<TagName, ComboboxPopoverOptions>(
       modal,
       alwaysVisible,
       backdrop: false,
-      // A callback would always be truthy, defeating the dialog's early-out and
-      // forcing a tabbable scan of the whole popup on every open.
       // Without an input, only take focus when the select initiated the open.
-      autoFocusOnShow: hasSelect && (!!inputElement || selectOwnsFocus),
+      // The callback still runs for an already-open or programmatically opened
+      // select so its selected item can be presented without moving focus.
+      autoFocusOnShow:
+        hasSelect && (!!inputElement || selectOwnsFocus || autoFocusOnShow),
       initialFocus: hasSelect ? inputElement : undefined,
       finalFocus: selectElement || compositeElement,
       preserveTabOrderAnchor: null,
