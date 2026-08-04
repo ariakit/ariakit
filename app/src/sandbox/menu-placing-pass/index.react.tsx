@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import type { ComponentProps } from "react";
-import { Fragment, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 
 type MenuProps = ComponentProps<typeof Ariakit.Menu>;
 type UpdatePosition = NonNullable<MenuProps["updatePosition"]>;
@@ -27,6 +27,14 @@ function FocusedReplacementMenu() {
   const menu = Ariakit.useMenuStore();
   const releaseRef = useRef<(() => void) | null>(null);
   const [generation, setGeneration] = useState(0);
+
+  // TODO: Remove once https://github.com/ariakit/ariakit/issues/7042 is fixed.
+  useEffect(() => {
+    const { activeId, open } = menu.getState();
+    if (!open) return;
+    if (activeId == null) return;
+    menu.move(activeId);
+  }, [menu, generation]);
 
   const updatePosition: UpdatePosition = () =>
     new Promise<void>((resolve) => {

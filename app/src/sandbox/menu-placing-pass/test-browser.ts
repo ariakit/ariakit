@@ -23,9 +23,6 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await q.button("Replace focused action").dispatchEvent("click");
     const replacement = withinMenu.menuitem("Action 30");
     await test.expect(replacement).toHaveAttribute("data-active-item");
-    await test.expect
-      .poll(() => page.evaluate(() => document.activeElement?.tagName))
-      .toBe("BODY");
 
     await q
       .button("Finish replacement actions positioning")
