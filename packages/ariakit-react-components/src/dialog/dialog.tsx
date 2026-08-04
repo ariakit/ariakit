@@ -500,6 +500,9 @@ export const useDialog = createHook<TagName, DialogOptions>(function useDialog({
       // focusable element outside while the dialog is waiting to be
       // positioned. Preserve that user choice, but allow a dialog that hasn't
       // received focus yet to perform its initial focus move.
+      // `getActiveElement` follows same-origin frames into another document.
+      // Ownership must stay in the dialog's document, where focus in a frame is
+      // represented by the frame element inside the dialog.
       const documentActiveElement = getDocument(contentElement).activeElement;
       const activeElement = isElement(documentActiveElement)
         ? documentActiveElement
