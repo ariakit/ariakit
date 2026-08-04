@@ -642,6 +642,9 @@ export default function Example() {
       <Fixture defaultSelectedValue={["Apple"]} label="Selected fruit" />
       <Fixture defaultSelectedValue="Apple" label="Single selected fruit" />
       <div style={{ marginTop: 200 }}>
+        <Fixture defaultSelectedValue="Mango" label="Centered fruit" />
+      </div>
+      <div style={{ marginTop: 200 }}>
         <Fixture
           defaultSelectedValue="Watermelon"
           input

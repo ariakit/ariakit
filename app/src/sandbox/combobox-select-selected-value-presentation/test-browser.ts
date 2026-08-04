@@ -34,6 +34,54 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(select).toBeFocused();
   });
 
+  // https://github.com/ariakit/ariakit/issues/7011
+  test("centers the selected item only on open", async ({ page, q }) => {
+    const select = q.combobox("Centered fruit");
+    const mango = q.option("Mango");
+    const watermelon = q.option("Watermelon");
+    await select.scrollIntoViewIfNeeded();
+    await test.expect(select).toBeInViewport({ ratio: 1 });
+    const scrollY = await page.evaluate(() => window.scrollY);
+    const scroll = await recordScrollEvents(page);
+
+    await select.click();
+
+    const listbox = q.listbox();
+    await test.expect(mango).toHaveAttribute("data-active-item");
+    await test.expect(listbox).not.toHaveAttribute("data-placing");
+    await test
+      .expect(async () => {
+        const listboxBox = await listbox.boundingBox();
+        const mangoBox = await mango.boundingBox();
+        test.expect(listboxBox).not.toBeNull();
+        test.expect(mangoBox).not.toBeNull();
+        const listboxCenter = listboxBox!.y + listboxBox!.height / 2;
+        const mangoCenter = mangoBox!.y + mangoBox!.height / 2;
+        test.expect(mangoCenter).toBeCloseTo(listboxCenter, 0);
+      })
+      .toPass();
+    test.expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
+    test.expect(await scroll.events()).not.toContain("document");
+
+    await page.keyboard.press("w");
+
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    await test
+      .expect(async () => {
+        const listboxBox = await listbox.boundingBox();
+        const watermelonBox = await watermelon.boundingBox();
+        test.expect(listboxBox).not.toBeNull();
+        test.expect(watermelonBox).not.toBeNull();
+        const listboxBottom = await listbox.evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          return rect.top + element.clientTop + element.clientHeight;
+        });
+        const watermelonBottom = watermelonBox!.y + watermelonBox!.height;
+        test.expect(watermelonBottom).toBeCloseTo(listboxBottom, 0);
+      })
+      .toPass();
+  });
+
   // https://github.com/ariakit/ariakit/pull/6832
   test("presents a far selected item with real focus", async ({ page, q }) => {
     const select = q.combobox("Filterable fruit");
