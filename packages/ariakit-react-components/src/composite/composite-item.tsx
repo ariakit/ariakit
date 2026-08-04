@@ -49,6 +49,8 @@ import {
   focusSilently,
   getEnabledItem,
   isItem,
+  markItemMounted,
+  markItemUnmounting,
   selectTextField,
   usePresentItem,
 } from "./utils.ts";
@@ -165,6 +167,13 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
 
     const id = useId(props.id);
     const ref = useRef<HTMLType>(null);
+    const mountedElementRef = useRef<HTMLType>(null);
+    const markUnmountingRef = useCallback((element: HTMLType | null) => {
+      const mountedElement = mountedElementRef.current;
+      if (!element && mountedElement) markItemUnmounting(mountedElement);
+      if (element) markItemMounted(element);
+      mountedElementRef.current = element;
+    }, []);
     const row = useContext(CompositeRowContext);
     const disabled = disabledFromProps(props);
     const trulyDisabled = disabled && !props.accessibleWhenDisabled;
@@ -526,7 +535,7 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       "data-active-item": isActiveItem || undefined,
       ...props,
       id,
-      ref: useMergeRefs(ref, props.ref),
+      ref: useMergeRefs(ref, markUnmountingRef, props.ref),
       tabIndex: isTabbable ? props.tabIndex : -1,
       onFocus,
       onBlurCapture,

@@ -14,6 +14,20 @@ export const flipItems = Core.flipItems;
 export const findFirstEnabledItem = Core.findFirstEnabledItem;
 export const groupItemsByRows = Core.groupItemsByRows;
 
+const unmountingItems = new WeakSet<Element>();
+
+/** Marks the brief window between a focused item's ref cleanup and removal. */
+export function markItemUnmounting(element: Element) {
+  if (getActiveElement(element) !== element) return;
+  unmountingItems.add(element);
+  queueMicrotask(() => unmountingItems.delete(element));
+}
+
+/** Clears a transient ref cleanup when React keeps the same node mounted. */
+export function markItemMounted(element: Element) {
+  unmountingItems.delete(element);
+}
+
 /**
  * Runs a callback while preserving the composite element's own scroll position.
  *
@@ -107,6 +121,7 @@ function presentItem({
   let element: HTMLElement | null = null;
   let resolvedId: string | undefined;
   let focused = false;
+  let focusLeftElement = false;
   let done = false;
   let wasMounted = false;
   let wasOpen = false;
@@ -185,20 +200,27 @@ function presentItem({
     resolvedId = item.id;
     return item.element;
   };
+  let removeFocusListeners: (() => void) | undefined;
   let unsubscribe: (() => void) | undefined;
   const cancel = () => {
     done = true;
+    removeFocusListeners?.();
     unsubscribe?.();
   };
   const present = () => {
     if (done) return;
     const state = store.getState();
     if (abandonedByState(state)) return cancel();
+    let restoreFocus = false;
     if (!element) {
       // The item may not have rendered yet, so keep waiting for it.
       element = resolveElement(state);
       if (!element) return;
     } else if (!element.isConnected) {
+      restoreFocus =
+        focused &&
+        !focusLeftElement &&
+        getActiveElement(element) === getDocument(element).body;
       // The element left the DOM, but React can replace an item's node while
       // keeping its id, so the logical item can still be there and still be
       // worth presenting. Resolve it again here rather than going back to
@@ -221,27 +243,33 @@ function presentItem({
     // is nothing to compare focus against, and an option that has just focused
     // itself isn't even recognizable as an item yet.
     //
-    // A request whose item still holds DOM focus when that item is replaced
-    // ends here, because the browser parks focus on the body when it removes
-    // the focused node. It only gets that far with an owner to compare against,
-    // and only where the item keeps DOM focus: a virtual-focus item that hands
-    // focus straight back to the composite element moves no focus at all when
-    // its node is replaced. A `Menu` moved while focus is already inside it
-    // therefore keeps the behavior a replaced item had before this, while the
-    // same menu moved from outside has no owner and gets this far. Only as far
-    // as the scroll, though: the focus step below is latched to the element the
-    // request first resolved, so a replacement is brought into view without
-    // being focused in its place.
-    //
-    // Telling a removed focused node apart from focus escaping is deliberately
-    // not attempted here: the signal would have to be carried down from the
-    // re-resolution above, into an ordering that just gained a focus-escape
-    // guarantee.
-    // See https://github.com/ariakit/ariakit/issues/7042
-    if (!stillOwnsFocus(element)) return cancel();
+    // Removing the focused node parks focus on the document body. Restore
+    // focus only when the item's ref cleanup marked that blur as removal. An
+    // explicit blur is latched below until the same item takes focus again, so
+    // replacing an item the user left does not turn a real focus escape into a
+    // new focus request, while an item they came back to is still restored.
+    if (restoreFocus) {
+      focused = false;
+    } else if (!stillOwnsFocus(element)) {
+      return cancel();
+    }
     if (focus && !focused) {
       focused = true;
+      focusLeftElement = false;
       const itemElement = element;
+      removeFocusListeners?.();
+      const onBlur = () => {
+        focusLeftElement = !unmountingItems.has(itemElement);
+      };
+      const onFocus = () => {
+        focusLeftElement = false;
+      };
+      itemElement.addEventListener("blur", onBlur);
+      itemElement.addEventListener("focus", onFocus);
+      removeFocusListeners = () => {
+        itemElement.removeEventListener("blur", onBlur);
+        itemElement.removeEventListener("focus", onFocus);
+      };
       withCompositeScrollPreserved(store, () => {
         itemElement.focus({ preventScroll: true });
       });

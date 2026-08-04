@@ -1,5 +1,63 @@
-import { click, q } from "@ariakit/test";
+import { blur, click, dispatch, focus, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
+
+// https://github.com/ariakit/ariakit/issues/7042
+test("restores focus after a focused item is replaced", async () => {
+  await click(q.button("Show replacement actions"));
+  const withinMenu = q.within(q.menu("Replacement actions"));
+  await focus(withinMenu.menuitem("Action 1"));
+  await press.End();
+  expect(withinMenu.menuitem("Action 30")).toHaveFocus();
+
+  await dispatch.click(q.button("Replace focused action"));
+  const replacement = withinMenu.menuitem("Action 30");
+  expect(replacement).toHaveAttribute("data-active-item");
+  expect(replacement).toHaveFocus();
+
+  await dispatch.click(q.button("Finish replacement actions positioning"));
+  expect(replacement).toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/issues/7042
+test("leaves focus outside after a focused item is replaced", async () => {
+  await click(q.button("Show replacement actions"));
+  const withinMenu = q.within(q.menu("Replacement actions"));
+  await focus(withinMenu.menuitem("Action 1"));
+  await press.End();
+  const item = withinMenu.menuitem.ensure("Action 30");
+  expect(item).toHaveFocus();
+
+  await blur(item);
+  expect(document.activeElement).toBe(document.body);
+  await dispatch.click(q.button("Replace focused action"));
+  const replacement = withinMenu.menuitem("Action 30");
+  expect(replacement).toHaveAttribute("data-active-item");
+
+  await dispatch.click(q.button("Finish replacement actions positioning"));
+  expect(replacement).not.toHaveFocus();
+});
+
+// https://github.com/ariakit/ariakit/pull/7065#discussion_r3711847856
+test("restores focus when a refocused item is replaced", async () => {
+  await click(q.button("Show replacement actions"));
+  const menu = q.menu("Replacement actions");
+  const withinMenu = q.within(menu);
+  await focus(withinMenu.menuitem("Action 1"));
+  await press.End();
+  const item = withinMenu.menuitem.ensure("Action 30");
+  expect(item).toHaveFocus();
+  expect(menu).toHaveAttribute("data-placing");
+  await blur(item);
+  expect(document.activeElement).toBe(document.body);
+  await focus(item);
+  expect(item).toHaveFocus();
+
+  await dispatch.click(q.button("Replace focused action"));
+  const replacement = withinMenu.menuitem("Action 30");
+
+  await dispatch.click(q.button("Finish replacement actions positioning"));
+  expect(replacement).toHaveFocus();
+});
 
 // The sandbox's other scenario, re-anchoring an already open popup, is covered
 // only by the browser test: an already open popup has no initial focus left to
