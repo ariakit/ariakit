@@ -29,10 +29,10 @@ withFramework(import.meta.dirname, async ({ test }) => {
     if (!shareBox) {
       throw new Error("Share menu item is not visible");
     }
-    await page.mouse.move(
-      shareBox.x + shareBox.width / 2,
-      menuBox.y + menuBox.height - 8,
-    );
+    const menuBottom = menuBox.y + menuBox.height;
+    test.expect(shareBox.y).toBeLessThan(menuBottom);
+    test.expect(shareBox.y + shareBox.height).toBeGreaterThan(menuBottom);
+    await page.mouse.move(shareBox.x + shareBox.width / 2, menuBottom - 8);
 
     await test.expect(share).toBeFocused();
     await test.expect

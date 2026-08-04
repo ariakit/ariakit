@@ -154,6 +154,9 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
         if (!store) return false;
         if (!getFocusOnHover()) return false;
         const { compositeElement, items } = store.getState();
+        // Hovering is not a request to move the page or menu; the pointer is
+        // already on what the user cares about. Keyboard navigation presents
+        // items through the composite's own scroll step.
         // If the menu item is also a submenu button, we should move actual DOM
         // focus to it so that the submenu will not close when the user moves
         // the cursor back to the menu button.

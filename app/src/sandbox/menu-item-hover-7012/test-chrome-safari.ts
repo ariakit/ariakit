@@ -13,11 +13,12 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect.poll(() => page.evaluate(() => scrollY)).toBe(50);
 
     const edit = q.menuitem("Edit");
+    await test.expect(edit).not.toBeInViewport({ ratio: 1 });
     const box = await edit.boundingBox();
     if (!box) {
       throw new Error("Edit menu item is not visible");
     }
-    await page.mouse.move(box.x + box.width / 2, 8);
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height - 8);
 
     await test.expect(edit).toBeFocused();
     await test.expect(q.menu("Edit")).toBeVisible();
