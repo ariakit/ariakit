@@ -3,4 +3,4 @@
 "@ariakit/react-components": patch
 ---
 
-Centered the initially selected item when a [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) popup opened while keeping later keyboard, typeahead, and pointer navigation nearest-edge aligned.
+Changed [`ComboboxSelect`](https://ariakit.com/reference/combobox-select) to center the initially selected item when its popup opens, including default-open popups and asynchronously rendered options, while preserving nearest-edge scrolling during later navigation.

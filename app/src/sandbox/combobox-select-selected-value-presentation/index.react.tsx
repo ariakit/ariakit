@@ -1,4 +1,6 @@
 import * as Ariakit from "@ariakit/react";
+import { useComboboxItem } from "@ariakit/react-components/combobox/combobox-item";
+import { ComboboxRenderer } from "@ariakit/react-components/combobox/combobox-renderer";
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -41,6 +43,11 @@ const fruits = [
   "Watermelon",
 ];
 
+const rendererItems = fruits.map((value) => ({
+  id: `renderer-${value.toLowerCase().replace(/\s+/g, "-")}`,
+  value,
+}));
+
 function slugify(value: string) {
   return value.toLowerCase().replace(/\s+/g, "-");
 }
@@ -52,10 +59,9 @@ interface FruitItemsProps {
    * would make the replacement a different logical item.
    */
   idPrefix?: string;
-  mangoStyle?: CSSProperties;
 }
 
-function FruitItems({ idPrefix, mangoStyle }: FruitItemsProps) {
+function FruitItems({ idPrefix }: FruitItemsProps) {
   return (
     <>
       {fruits.map((fruit) => (
@@ -66,7 +72,6 @@ function FruitItems({ idPrefix, mangoStyle }: FruitItemsProps) {
           style={{
             display: "block",
             padding: "4px 8px",
-            ...(fruit === "Mango" ? mangoStyle : null),
           }}
         />
       ))}
@@ -80,7 +85,7 @@ function FruitItems({ idPrefix, mangoStyle }: FruitItemsProps) {
  * replaced while the popup is still being positioned, but their ids keep
  * pointing at the same logical items.
  */
-function RemountingFruitItems({ idPrefix, mangoStyle }: FruitItemsProps) {
+function RemountingFruitItems({ idPrefix }: FruitItemsProps) {
   const combobox = Ariakit.useComboboxContext();
   const mounted = Ariakit.useStoreState(combobox, "mounted");
   const [generation, setGeneration] = useState(0);
@@ -90,9 +95,17 @@ function RemountingFruitItems({ idPrefix, mangoStyle }: FruitItemsProps) {
     setGeneration((value) => value + 1);
   }, [mounted]);
 
-  return (
-    <FruitItems key={generation} idPrefix={idPrefix} mangoStyle={mangoStyle} />
-  );
+  return <FruitItems key={generation} idPrefix={idPrefix} />;
+}
+
+function DelayedFruitItems() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const timeout = setTimeout(() => setMounted(true), 100);
+    return () => clearTimeout(timeout);
+  }, []);
+  if (!mounted) return null;
+  return <FruitItems />;
 }
 
 interface RefreshListButtonProps {
@@ -141,8 +154,11 @@ interface FixtureProps {
    * presentation as the only thing that can bring an item into view.
    */
   autoFocusOnShow?: boolean;
+  /** Holds the fruit options until an external control renders them. */
+  controlledItems?: boolean;
   defaultOpen?: boolean;
   defaultSelectedValue: string | string[];
+  delayedItems?: boolean;
   focusTarget?: boolean;
   focusTrapTarget?: boolean;
   /**
@@ -159,7 +175,7 @@ interface FixtureProps {
   keepOpen?: boolean;
   label: string;
   listScrollport?: boolean;
-  mangoStyle?: CSSProperties;
+  nestedScrollports?: boolean;
   moveFocusOnOpen?: boolean;
   /** Puts the element focus moves to outside the popup instead of inside it. */
   outsideFocusTarget?: boolean;
@@ -181,13 +197,14 @@ interface FixtureProps {
   showFocusHistory?: boolean;
   unmountOnHide?: boolean;
   virtualFocus?: boolean;
-  writingMode?: "vertical-rl";
 }
 
 function Fixture({
   autoFocusOnShow,
+  controlledItems,
   defaultOpen,
   defaultSelectedValue,
+  delayedItems,
   focusTarget,
   focusTrapTarget,
   holdPlacement,
@@ -196,7 +213,7 @@ function Fixture({
   keepOpen,
   label,
   listScrollport,
-  mangoStyle,
+  nestedScrollports,
   moveFocusOnOpen,
   outsideFocusTarget,
   pageScrollport,
@@ -206,7 +223,6 @@ function Fixture({
   showFocusHistory,
   unmountOnHide,
   virtualFocus,
-  writingMode,
 }: FixtureProps) {
   const focusTargetRef = useRef<HTMLElement | null>(null);
   const [focusHistory, setFocusHistory] = useState<string[]>([]);
@@ -219,6 +235,7 @@ function Fixture({
   };
   const releaseRef = useRef<(() => void) | null>(null);
   const [generation, setGeneration] = useState(0);
+  const [showControlledItems, setShowControlledItems] = useState(false);
   const updatePosition = () =>
     new Promise<void>((resolve) => {
       releaseRef.current = resolve;
@@ -233,13 +250,11 @@ function Fixture({
         />
       )}
       {remountItemsOnOpen ? (
-        <RemountingFruitItems idPrefix={itemIdPrefix} mangoStyle={mangoStyle} />
-      ) : (
-        <FruitItems
-          key={generation}
-          idPrefix={itemIdPrefix}
-          mangoStyle={mangoStyle}
-        />
+        <RemountingFruitItems idPrefix={itemIdPrefix} />
+      ) : delayedItems ? (
+        <DelayedFruitItems />
+      ) : controlledItems && !showControlledItems ? null : (
+        <FruitItems key={generation} idPrefix={itemIdPrefix} />
       )}
       {/* An item rendered without a value, at the end of the list so it's
       always out of view. */}
@@ -288,15 +303,10 @@ function Fixture({
           border: "1px solid gray",
           ...(pageScrollport || listScrollport
             ? null
-            : writingMode
-              ? {
-                  height: 120,
-                  maxWidth: 120,
-                  overflow: "auto",
-                  scrollPaddingBlockEnd: "10%",
-                  writingMode,
-                }
-              : { maxHeight: 120, overflow: "auto" }),
+            : {
+                maxHeight: nestedScrollports ? 160 : 120,
+                overflow: "auto",
+              }),
           ...popupStyle,
         }}
       >
@@ -318,10 +328,15 @@ function Fixture({
             }}
           />
         )}
-        {listScrollport ? (
-          <Ariakit.ComboboxList style={{ maxHeight: 120, overflow: "auto" }}>
-            {items}
-          </Ariakit.ComboboxList>
+        {listScrollport || nestedScrollports ? (
+          <>
+            {nestedScrollports && (
+              <p style={{ height: 200, margin: 0 }}>Available fruit</p>
+            )}
+            <Ariakit.ComboboxList style={{ maxHeight: 120, overflow: "auto" }}>
+              {items}
+            </Ariakit.ComboboxList>
+          </>
         ) : (
           items
         )}
@@ -335,6 +350,11 @@ function Fixture({
           onFocus={() => recordFocus("focus target")}
         >
           {`${label} focus target`}
+        </button>
+      )}
+      {controlledItems && (
+        <button type="button" onClick={() => setShowControlledItems(true)}>
+          {`Render ${label.toLowerCase()} items`}
         </button>
       )}
       {refreshListActiveId && (
@@ -366,6 +386,7 @@ function MountingDefaultOpenFixture() {
   if (mounted) {
     return (
       <Fixture
+        autoFocusOnShow={false}
         defaultOpen
         defaultSelectedValue="Mango"
         label="Default-open centered fruit"
@@ -376,6 +397,122 @@ function MountingDefaultOpenFixture() {
     <button type="button" onClick={() => setMounted(true)}>
       Mount default-open centered fruit
     </button>
+  );
+}
+
+function MountingDelayedDefaultOpenFixture() {
+  const [mounted, setMounted] = useState(false);
+  if (mounted) {
+    return (
+      <Fixture
+        autoFocusOnShow={false}
+        defaultOpen
+        defaultSelectedValue="Watermelon"
+        delayedItems
+        label="Delayed default-open centered fruit"
+      />
+    );
+  }
+  return (
+    <button type="button" onClick={() => setMounted(true)}>
+      Mount delayed default-open centered fruit
+    </button>
+  );
+}
+
+function MountingDelayedDefaultOpenFocusEscapeFixture() {
+  const [mounted, setMounted] = useState(false);
+  if (mounted) {
+    return (
+      <Fixture
+        autoFocusOnShow={false}
+        controlledItems
+        defaultOpen
+        defaultSelectedValue="Watermelon"
+        focusTarget
+        keepOpen
+        label="Delayed default-open focus escape fruit"
+        outsideFocusTarget
+      />
+    );
+  }
+  return (
+    <button type="button" onClick={() => setMounted(true)}>
+      Mount delayed default-open focus escape fruit
+    </button>
+  );
+}
+
+function RenderCountedComboboxItem() {
+  const renderCount = useRef(0);
+  renderCount.current += 1;
+  const props = useComboboxItem({
+    value: "Apple",
+    children: "Apple",
+    style: { display: "block", padding: "4px 8px" },
+  });
+  return <Ariakit.Role {...props} data-render-count={renderCount.current} />;
+}
+
+function ItemRenderCountFixture() {
+  return (
+    <Ariakit.ComboboxProvider defaultSelectedValue="Mango">
+      <Ariakit.ComboboxSelectLabel>
+        Render-counted fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect />
+      <Ariakit.ComboboxPopover autoFocusOnShow={false} unmountOnHide={false}>
+        <RenderCountedComboboxItem />
+        <Ariakit.ComboboxItem value="Mango">Mango</Ariakit.ComboboxItem>
+      </Ariakit.ComboboxPopover>
+    </Ariakit.ComboboxProvider>
+  );
+}
+
+function VirtualizedSelectFixture() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultItems: rendererItems,
+    defaultSelectedValue: "Apple",
+    selectOnMove: true,
+  });
+  return (
+    <>
+      <Ariakit.ComboboxSelectLabel store={combobox}>
+        Virtualized fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={combobox} />
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          maxHeight: 120,
+          overflow: "auto",
+        }}
+      >
+        <ComboboxRenderer
+          store={combobox}
+          items={rendererItems}
+          itemSize={32}
+          overscan={0}
+        >
+          {({ value, ...item }) => (
+            <Ariakit.ComboboxItem
+              key={item.id}
+              {...item}
+              value={value}
+              style={{
+                ...item.style,
+                boxSizing: "border-box",
+                display: "block",
+                height: 32,
+                padding: "4px 8px",
+              }}
+            />
+          )}
+        </ComboboxRenderer>
+      </Ariakit.ComboboxPopover>
+    </>
   );
 }
 
@@ -736,17 +873,7 @@ export default function Example() {
         <Fixture
           defaultSelectedValue="Mango"
           label="Scaled centered fruit"
-          mangoStyle={{ scrollMarginBlockStart: 12 }}
-          popupStyle={{ scale: "0.8", scrollPaddingBlockStart: "20%" }}
-        />
-      </div>
-      <div style={{ marginTop: 200 }}>
-        <Fixture
-          defaultSelectedValue="Mango"
-          label="Vertical centered fruit"
-          mangoStyle={{ scrollMarginBlockStart: 20 }}
           popupStyle={{ scale: "0.8" }}
-          writingMode="vertical-rl"
         />
       </div>
       <div style={{ marginTop: 200 }}>
@@ -900,6 +1027,41 @@ export default function Example() {
       </div>
       <div style={{ marginTop: 200 }}>
         <DisclosureSwapFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          autoFocusOnShow={false}
+          defaultSelectedValue="Mango"
+          label="Nested-scrollports fruit"
+          nestedScrollports
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          autoFocusOnShow={false}
+          defaultSelectedValue="Watermelon"
+          label="Page-scroll fruit"
+          pageScrollport
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Mango"
+          label="Roving centered fruit"
+          virtualFocus={false}
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <MountingDelayedDefaultOpenFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <MountingDelayedDefaultOpenFocusEscapeFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <ItemRenderCountFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <VirtualizedSelectFixture />
       </div>
     </>
   );

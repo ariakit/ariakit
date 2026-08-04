@@ -27,6 +27,7 @@ import type { CompositeHoverOptions } from "../composite/composite-hover.tsx";
 import { useCompositeHover } from "../composite/composite-hover.tsx";
 import type { CompositeItemOptions } from "../composite/composite-item.tsx";
 import { useCompositeItem } from "../composite/composite-item.tsx";
+import { useScrollItemIntoView } from "./__utils.ts";
 import {
   ComboboxItemCheckedContext,
   ComboboxItemValueContext,
@@ -262,9 +263,11 @@ export const useComboboxItem = createHook<TagName, ComboboxItemOptions>(
     }
 
     const moveOnKeyPressProp = useBooleanEvent(moveOnKeyPress);
+    const scrollItemIntoView = useScrollItemIntoView(store);
 
     props = useCompositeItem<TagName>({
       store,
+      unstable_scrollIntoView: scrollItemIntoView,
       ...props,
       getItem,
       preventScrollOnKeyDown,

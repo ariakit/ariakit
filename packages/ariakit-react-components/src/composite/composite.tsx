@@ -121,6 +121,7 @@ interface CompositeFocusOnMoveProps {
   focusOnMove?: boolean;
   previousElementRef: RefObject<HTMLElement | null>;
   present: PresentItem;
+  scrollIntoView?: (element: HTMLElement) => void;
 }
 
 /**
@@ -136,8 +137,12 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
   focusOnMove,
   previousElementRef,
   present,
+  scrollIntoView,
 }: CompositeFocusOnMoveProps) {
   const moves = useStoreState(store, "moves");
+  const open = useStoreState(store, (state) =>
+    "open" in state ? !!state.open : false,
+  );
   // The composite element is also tracked so the move-to-container effect
   // below can run once it becomes available. It's published to the store
   // through a ref callback and a transaction effect on the parent composite
@@ -150,7 +155,24 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
 
   // Present the active item.
   useEffect(() => {
-    if (!moves) return;
+    if (!moves) {
+      // Focus handlers present the item on interactive opens. A default-open
+      // composite can mount without moving focus, so start an unpinned request
+      // here while no external element owns focus. It can wait for async items.
+      if (!scrollIntoView) return;
+      if (!open) return;
+      if (!compositeElement) return;
+      if (ownsFocus(store)) return;
+      const activeElement = getActiveElement(compositeElement);
+      if (activeElement && activeElement !== activeElement.ownerDocument.body) {
+        return;
+      }
+      return present({
+        markedOnly: true,
+        requireFocus: true,
+        scrollIntoView,
+      });
+    }
     if (!focusOnMove) return;
     const { activeId } = store.getState();
     if (activeId == null) return;
@@ -161,8 +183,17 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
       id: activeId,
       requireFocus: ownsFocus(store),
       focus: true,
+      scrollIntoView,
     });
-  }, [store, moves, focusOnMove, compositeElement, present]);
+  }, [
+    store,
+    moves,
+    open,
+    focusOnMove,
+    compositeElement,
+    present,
+    scrollIntoView,
+  ]);
 
   // If composite.move(null) has been called, the composite container should
   // receive focus.
@@ -221,6 +252,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
     composite = true,
     focusOnMove = composite,
     moveOnKeyPress = true,
+    unstable_scrollIntoView: scrollIntoView,
     ...props
   }) {
     const context = useCompositeProviderContext();
@@ -327,7 +359,12 @@ export const useComposite = createHook<TagName, CompositeOptions>(
           // mounted (for example, in a dialog), in which case state.items will
           // not be populated yet.
           queueMicrotask(() =>
-            present({ focus: true, markedOnly: true, requireFocus: true }),
+            present({
+              focus: true,
+              markedOnly: true,
+              requireFocus: true,
+              scrollIntoView,
+            }),
           );
         }
       } else if (isSelfTarget(event)) {
@@ -339,7 +376,12 @@ export const useComposite = createHook<TagName, CompositeOptions>(
           // The id is pinned because the active item is cleared right below.
           const { activeId } = store.getState();
           if (activeId != null) {
-            present({ id: activeId, markedOnly: true, requireFocus: true });
+            present({
+              id: activeId,
+              markedOnly: true,
+              requireFocus: true,
+              scrollIntoView,
+            });
           }
         }
         // When the roving tabindex composite gets intentionally focused (for
@@ -516,6 +558,7 @@ export const useComposite = createHook<TagName, CompositeOptions>(
               focusOnMove={focusOnMove}
               previousElementRef={previousElementRef}
               present={present}
+              scrollIntoView={scrollIntoView}
             />
           )}
         </CompositeScopedContextProvider>
@@ -586,6 +629,11 @@ export interface CompositeOptions<
    * component's context will be used.
    */
   store?: CompositeStore;
+  /**
+   * Determines how an item is scrolled into view when it's presented.
+   * @private
+   */
+  unstable_scrollIntoView?: (element: HTMLElement) => void;
   /**
    * Determines if the component should act as a composite widget. This prop
    * needs to be set to `false` when merging various composite widgets where

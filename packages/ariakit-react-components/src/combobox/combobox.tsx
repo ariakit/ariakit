@@ -45,6 +45,7 @@ import type {
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { CompositeOptions } from "../composite/composite.tsx";
 import { useComposite } from "../composite/composite.tsx";
+import { useScrollItemIntoView } from "./__utils.ts";
 import {
   useComboboxProviderContext,
   useComboboxScopedContext,
@@ -779,9 +780,11 @@ export const useCombobox = createHook<TagName, ComboboxOptions>(
       onBlur,
     };
     props = htmlProps;
+    const scrollItemIntoView = useScrollItemIntoView(store);
 
     props = useComposite<TagName>({
       store,
+      unstable_scrollIntoView: scrollItemIntoView,
       focusable,
       ...props,
       // Enable inline autocomplete when the user moves from the combobox input

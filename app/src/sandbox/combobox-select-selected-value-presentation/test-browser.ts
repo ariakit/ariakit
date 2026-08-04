@@ -37,6 +37,21 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .toPass();
   };
 
+  const expectAtScrollportBottom = async (listbox: Locator, item: Locator) => {
+    await test
+      .expect(async () => {
+        const itemBox = await item.boundingBox();
+        test.expect(itemBox).not.toBeNull();
+        const listboxBottom = await listbox.evaluate((element) => {
+          const rect = element.getBoundingClientRect();
+          return rect.top + element.clientTop + element.clientHeight;
+        });
+        const itemBottom = itemBox!.y + itemBox!.height;
+        test.expect(itemBottom).toBeCloseTo(listboxBottom, 0);
+      })
+      .toPass();
+  };
+
   // https://github.com/ariakit/ariakit/pull/6832
   test("focuses a far item reached through typeahead", async ({ page, q }) => {
     const select = q.combobox("Selected fruit");
@@ -88,23 +103,22 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     test.expect(await page.evaluate(() => window.scrollY)).toBe(scrollY);
     test.expect(await scroll.events()).not.toContain("document");
 
+    for (let i = 0; i < 6; i += 1) {
+      await page.keyboard.press("ArrowUp");
+    }
+    await test
+      .expect(q.option("Jackfruit"))
+      .toHaveAttribute("data-active-item");
+    for (let i = 0; i < 6; i += 1) {
+      await page.keyboard.press("ArrowDown");
+    }
+    await test.expect(mango).toHaveAttribute("data-active-item");
+    await expectAtScrollportBottom(listbox, mango);
+
     await page.keyboard.press("w");
 
     await test.expect(watermelon).toHaveAttribute("data-active-item");
-    await test
-      .expect(async () => {
-        const listboxBox = await listbox.boundingBox();
-        const watermelonBox = await watermelon.boundingBox();
-        test.expect(listboxBox).not.toBeNull();
-        test.expect(watermelonBox).not.toBeNull();
-        const listboxBottom = await listbox.evaluate((element) => {
-          const rect = element.getBoundingClientRect();
-          return rect.top + element.clientTop + element.clientHeight;
-        });
-        const watermelonBottom = watermelonBox!.y + watermelonBox!.height;
-        test.expect(watermelonBottom).toBeCloseTo(listboxBottom, 0);
-      })
-      .toPass();
+    await expectAtScrollportBottom(listbox, watermelon);
 
     await page.keyboard.press("Escape");
     await test.expect(listbox).not.toBeVisible();
@@ -112,6 +126,53 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect(select).toHaveAttribute("aria-expanded", "true");
     await test.expect(mango).toHaveAttribute("data-active-item");
     await expectVerticallyCentered(listbox, mango);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7011
+  test("centers the selected item when an arrow key opens the popup", async ({
+    q,
+  }) => {
+    const select = q.combobox("Centered fruit");
+    await select.focus();
+    await select.press("ArrowDown");
+
+    const mango = q.option("Mango");
+    await test.expect(mango).toHaveAttribute("data-active-item");
+    await expectVerticallyCentered(q.listbox(), mango);
+  });
+
+  test("does not re-render inactive items when the popup opens", async ({
+    page,
+    q,
+  }) => {
+    const item = page.locator("[data-render-count]");
+    // Item registration has no separate completion marker, so cross its frame
+    // checkpoint before sampling the stable render count.
+    await flushFrames(page);
+    const renderCount = await item.getAttribute("data-render-count");
+    if (renderCount == null) {
+      throw new Error("Combobox item render count was not found");
+    }
+
+    await q.combobox("Render-counted fruit").click();
+    await test.expect(q.listbox("Render-counted fruit")).toBeVisible();
+    // Opening can finish focus work on the next frames, and the absence of an
+    // item render has no positive state to await.
+    await flushFrames(page);
+
+    await test.expect(item).toHaveAttribute("data-render-count", renderCount);
+  });
+
+  test("keeps a late-mounted selected item nearest-edge aligned", async ({
+    page,
+    q,
+  }) => {
+    await q.combobox("Virtualized fruit").click();
+    const listbox = q.listbox("Virtualized fruit");
+    await page.keyboard.press("End");
+    const watermelon = q.option("Watermelon");
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    await expectAtScrollportBottom(listbox, watermelon);
   });
 
   // https://github.com/ariakit/ariakit/issues/7011
@@ -135,6 +196,39 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7011
+  test("keeps the selected item visible through nested scrollports", async ({
+    q,
+  }) => {
+    await q.combobox("Nested-scrollports fruit").click();
+
+    const listbox = q.listbox("Nested-scrollports fruit");
+    const popover = listbox.locator("..");
+    const mango = q.option("Mango");
+    await test.expect(mango).toHaveAttribute("data-active-item");
+    await expectInScrollport(listbox, mango);
+    await expectInScrollport(popover, mango);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7011
+  test("falls back to the page scrollport when the popup cannot scroll", async ({
+    page,
+    q,
+  }) => {
+    const select = q.combobox("Page-scroll fruit");
+    await select.scrollIntoViewIfNeeded();
+    const scrollY = await page.evaluate(() => window.scrollY);
+
+    await select.click();
+
+    const watermelon = q.option("Watermelon");
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    await test.expect(watermelon).toBeInViewport();
+    test
+      .expect(await page.evaluate(() => window.scrollY))
+      .toBeGreaterThan(scrollY);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7011
   test("centers the selected item with input-backed real focus", async ({
     q,
   }) => {
@@ -146,6 +240,15 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
       .expect(q.combobox("Search Centered filterable fruit"))
       .toBeFocused();
     await expectVerticallyCentered(listbox, mango);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7011
+  test("centers the selected item with roving tabindex", async ({ q }) => {
+    await q.combobox("Roving centered fruit").click();
+
+    const mango = q.option("Mango");
+    await test.expect(mango).toBeFocused();
+    await expectVerticallyCentered(q.listbox(), mango);
   });
 
   // https://github.com/ariakit/ariakit/issues/7011
@@ -173,75 +276,53 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
   });
 
   // https://github.com/ariakit/ariakit/issues/7011
-  test("centers logical areas in a scaled popup", async ({ q }) => {
+  test("waits for selected items rendered after a default-open popup", async ({
+    q,
+  }) => {
+    await q.button("Mount delayed default-open centered fruit").click();
+
+    const watermelon = q.option("Watermelon");
+    await test.expect(watermelon).toHaveAttribute("data-active-item");
+    await expectVerticallyCentered(q.listbox(), watermelon);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7011
+  test("abandons a delayed default-open presentation when focus leaves", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Mount delayed default-open focus escape fruit").click();
+
+    const focusTarget = q.button(
+      "Delayed default-open focus escape fruit focus target",
+    );
+    await focusTarget.focus();
+    await q
+      .button("Render delayed default-open focus escape fruit items")
+      .dispatchEvent("click");
+    await test.expect(q.option("Watermelon")).toBeAttached();
+    // The pending presentation has no completion marker, so cross its frame
+    // checkpoint before asserting that focus and scroll remained unchanged.
+    await flushFrames(page);
+
+    await test.expect(focusTarget).toBeFocused();
+    test
+      .expect(
+        await q
+          .listbox("Delayed default-open focus escape fruit")
+          .evaluate((element) => element.scrollTop),
+      )
+      .toBe(0);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7011
+  test("centers the selected item in a scaled popup", async ({ q }) => {
     await q.combobox("Scaled centered fruit").click();
 
     const listbox = q.listbox();
     const mango = q.option("Mango");
     await test.expect(mango).toHaveAttribute("data-active-item");
-    await test
-      .expect(async () => {
-        const listboxBox = await listbox.boundingBox();
-        const mangoBox = await mango.boundingBox();
-        test.expect(listboxBox).not.toBeNull();
-        test.expect(mangoBox).not.toBeNull();
-        const metrics = await listbox.evaluate((element) => {
-          return {
-            clientHeight: element.clientHeight,
-            clientTop: element.clientTop,
-          };
-        });
-        const scale = 0.8;
-        const paddingStart = metrics.clientHeight * 0.2;
-        const itemAreaCenter =
-          mangoBox!.y + mangoBox!.height / 2 - (12 * scale) / 2;
-        const scrollportTop =
-          listboxBox!.y + (metrics.clientTop + paddingStart) * scale;
-        const scrollportBottom =
-          listboxBox!.y + (metrics.clientTop + metrics.clientHeight) * scale;
-        const scrollportCenter = (scrollportTop + scrollportBottom) / 2;
-        test
-          .expect(Math.abs(itemAreaCenter - scrollportCenter))
-          .toBeLessThanOrEqual(1);
-      })
-      .toPass();
-  });
-
-  // https://github.com/ariakit/ariakit/issues/7011
-  test("centers the selected scroll-margin area in vertical writing mode", async ({
-    q,
-  }) => {
-    await q.combobox("Vertical centered fruit").click();
-
-    const listbox = q.listbox();
-    const mango = q.option("Mango");
-    await test.expect(mango).toHaveAttribute("data-active-item");
-    await test
-      .expect(async () => {
-        const listboxBox = await listbox.boundingBox();
-        const mangoBox = await mango.boundingBox();
-        test.expect(listboxBox).not.toBeNull();
-        test.expect(mangoBox).not.toBeNull();
-        const metrics = await listbox.evaluate((element) => {
-          return {
-            clientLeft: element.clientLeft,
-            clientWidth: element.clientWidth,
-          };
-        });
-        const scale = 0.8;
-        const paddingEnd = metrics.clientWidth * 0.1;
-        const itemAreaCenter =
-          mangoBox!.x + mangoBox!.width / 2 + (20 * scale) / 2;
-        const scrollportLeft =
-          listboxBox!.x + (metrics.clientLeft + paddingEnd) * scale;
-        const scrollportRight =
-          listboxBox!.x + (metrics.clientLeft + metrics.clientWidth) * scale;
-        const scrollportCenter = (scrollportLeft + scrollportRight) / 2;
-        test
-          .expect(Math.abs(itemAreaCenter - scrollportCenter))
-          .toBeLessThanOrEqual(1);
-      })
-      .toPass();
+    await expectVerticallyCentered(listbox, mango);
   });
 
   // https://github.com/ariakit/ariakit/pull/6832
