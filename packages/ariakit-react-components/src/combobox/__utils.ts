@@ -9,15 +9,15 @@ function scrollIntoViewNearest(element: HTMLElement) {
 }
 
 function getSingleVerticalScrollport(element: HTMLElement, popup: HTMLElement) {
-  const getComputedStyle = element.ownerDocument.defaultView?.getComputedStyle;
-  if (!getComputedStyle) return null;
-  if (!getComputedStyle(popup).writingMode.startsWith("horizontal")) {
+  const view = element.ownerDocument.defaultView;
+  if (!view) return null;
+  if (!view.getComputedStyle(popup).writingMode.startsWith("horizontal")) {
     return null;
   }
   let scrollport: HTMLElement | null = null;
   let current = element.parentElement;
   while (current && popup.contains(current)) {
-    const style = getComputedStyle(current);
+    const style = view.getComputedStyle(current);
     const scrollableOverflow =
       style.overflowY !== "visible" && style.overflowY !== "clip";
     if (scrollableOverflow && current.scrollHeight > current.clientHeight) {

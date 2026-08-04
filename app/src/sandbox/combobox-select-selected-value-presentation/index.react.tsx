@@ -516,6 +516,43 @@ function VirtualizedSelectFixture() {
   );
 }
 
+function ProgrammaticOpenAfterMoveFixture() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Mango",
+  });
+  return (
+    <>
+      <Ariakit.ComboboxSelectLabel store={combobox}>
+        Programmatic fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={combobox} />
+      <button
+        type="button"
+        tabIndex={0}
+        onClick={() => combobox.move("programmatic-mango")}
+      >
+        Move programmatic fruit
+      </button>
+      <button type="button" tabIndex={0} onClick={combobox.show}>
+        Open programmatic fruit
+      </button>
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        autoFocusOnShow={false}
+        hideOnInteractOutside={false}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          maxHeight: 120,
+          overflow: "auto",
+        }}
+      >
+        <FruitItems idPrefix="programmatic" />
+      </Ariakit.ComboboxPopover>
+    </>
+  );
+}
+
 function NativeAutoFocusFixture() {
   const dialog = Ariakit.useDialogStore();
   const shadowHostRef = useRef<HTMLDivElement>(null);
@@ -1062,6 +1099,9 @@ export default function Example() {
       </div>
       <div style={{ marginTop: 200 }}>
         <VirtualizedSelectFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <ProgrammaticOpenAfterMoveFixture />
       </div>
     </>
   );

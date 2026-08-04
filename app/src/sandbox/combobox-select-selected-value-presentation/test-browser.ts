@@ -175,6 +175,21 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await expectAtScrollportBottom(listbox, watermelon);
   });
 
+  test("keeps external focus when opening after a closed move", async ({
+    page,
+    q,
+  }) => {
+    await q.button("Move programmatic fruit").click();
+    const open = q.button("Open programmatic fruit");
+    await open.click();
+
+    await test.expect(q.listbox("Programmatic fruit")).toBeVisible();
+    // The presentation created by the open has no positive completion marker,
+    // so cross its frame checkpoint before confirming focus stayed outside.
+    await flushFrames(page);
+    await test.expect(open).toBeFocused();
+  });
+
   // https://github.com/ariakit/ariakit/issues/7011
   test("centers the selected item in a nested list scrollport", async ({
     page,

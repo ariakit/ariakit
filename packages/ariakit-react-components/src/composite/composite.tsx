@@ -155,24 +155,29 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
 
   // Present the active item.
   useEffect(() => {
-    if (!moves) {
-      // Focus handlers present the item on interactive opens. A default-open
-      // composite can mount without moving focus, so start an unpinned request
-      // here while no external element owns focus. It can wait for async items.
-      if (!scrollIntoView) return;
-      if (!open) return;
-      if (!compositeElement) return;
-      if (ownsFocus(store)) return;
-      const activeElement = getActiveElement(compositeElement);
-      if (activeElement && activeElement !== activeElement.ownerDocument.body) {
-        return;
-      }
-      return present({
-        markedOnly: true,
-        requireFocus: true,
-        scrollIntoView,
-      });
+    if (moves) return;
+    // Focus handlers present the item on interactive opens. A default-open
+    // composite can mount without moving focus, so start an unpinned request
+    // here while no external element owns focus. It can wait for async items.
+    if (!scrollIntoView) return;
+    if (!open) return;
+    if (!compositeElement) return;
+    if (ownsFocus(store)) return;
+    const activeElement = getActiveElement(compositeElement);
+    if (activeElement && activeElement !== activeElement.ownerDocument.body) {
+      return;
     }
+    return present({
+      markedOnly: true,
+      requireFocus: true,
+      scrollIntoView,
+    });
+  }, [store, moves, open, compositeElement, present, scrollIntoView]);
+
+  // Opening and closing an open-capable composite must not replay an earlier
+  // move: that could focus or scroll an item after the user has moved on.
+  useEffect(() => {
+    if (!moves) return;
     if (!focusOnMove) return;
     const { activeId } = store.getState();
     if (activeId == null) return;
@@ -185,15 +190,7 @@ const CompositeFocusOnMove = memo(function CompositeFocusOnMove({
       focus: true,
       scrollIntoView,
     });
-  }, [
-    store,
-    moves,
-    open,
-    focusOnMove,
-    compositeElement,
-    present,
-    scrollIntoView,
-  ]);
+  }, [store, moves, focusOnMove, present, scrollIntoView]);
 
   // If composite.move(null) has been called, the composite container should
   // receive focus.
