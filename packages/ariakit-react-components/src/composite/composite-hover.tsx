@@ -16,7 +16,6 @@ import {
   hasOwnProperty,
   invariant,
   isElement,
-  removeUndefinedValues,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
 import type { ElementType, MouseEvent as ReactMouseEvent } from "react";
@@ -131,7 +130,7 @@ export const useCompositeHover = createHook<TagName, CompositeHoverOptions>(
       onMouseLeave,
     };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 

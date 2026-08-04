@@ -9,7 +9,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { afterPaint, invariant, removeUndefinedValues } from "@ariakit/utils";
+import { afterPaint, invariant } from "@ariakit/utils";
 import type { ElementType, RefObject } from "react";
 import { useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
@@ -292,7 +292,7 @@ export const useDisclosureContent = createHook<
     style,
   };
 
-  return removeUndefinedValues(props);
+  return props;
 });
 
 const DisclosureContentImpl = forwardRef(function DisclosureContentImpl(

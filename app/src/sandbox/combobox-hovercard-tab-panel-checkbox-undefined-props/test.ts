@@ -1,4 +1,4 @@
-import { click, hover, press, q, sleep } from "@ariakit/test";
+import { click, hover, press, q, sleep, type } from "@ariakit/test";
 import { expect, test } from "vitest";
 
 // https://github.com/ariakit/ariakit/issues/7028
@@ -45,6 +45,17 @@ test("explicit clickOnEnter still overrides the computed default", async () => {
   expect(checkbox).toBeChecked();
   await press.Enter(checkbox);
   expect(checkbox).not.toBeChecked();
+});
+
+// https://github.com/ariakit/ariakit/issues/7037
+test("a composed hook preserves a later computed default", async () => {
+  const combobox = q.combobox.ensure("Direct hook");
+  await type("a", combobox);
+  await expect.poll(q.listbox.lazy()).toBeVisible();
+  // The assertion is about focus not moving, so wait for the popover's
+  // auto-focus effect before checking the steady state.
+  await sleep();
+  expect(combobox).toHaveFocus();
 });
 
 // https://github.com/ariakit/ariakit/issues/7028

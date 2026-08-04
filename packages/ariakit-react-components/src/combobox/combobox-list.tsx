@@ -16,7 +16,6 @@ import {
   invariant,
   isFocusable,
   isSelfTarget,
-  removeUndefinedValues,
 } from "@ariakit/utils";
 import type { ElementType, FocusEvent } from "react";
 import { useContext, useMemo, useRef, useState } from "react";
@@ -190,7 +189,7 @@ export const useComboboxList = createHook<TagName, ComboboxListOptions>(
       tabIndex: -1,
     };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 

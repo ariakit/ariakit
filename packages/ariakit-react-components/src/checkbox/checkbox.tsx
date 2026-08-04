@@ -10,7 +10,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Props } from "@ariakit/react-utils";
-import { disabledFromProps, removeUndefinedValues } from "@ariakit/utils";
+import { disabledFromProps } from "@ariakit/utils";
 import type {
   ChangeEvent,
   ComponentPropsWithoutRef,
@@ -176,12 +176,12 @@ export const useCheckbox = createHook<TagName, CheckboxOptions>(
 
     props = useCommand<TagName>({ clickOnEnter: !nativeCheckbox, ...props });
 
-    return removeUndefinedValues({
+    return {
       name: nativeCheckbox ? name : undefined,
       value: nativeCheckbox ? valueProp : undefined,
       checked: isChecked,
       ...props,
-    });
+    };
   },
 );
 

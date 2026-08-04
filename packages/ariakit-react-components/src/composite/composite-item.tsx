@@ -24,7 +24,6 @@ import {
   isPortalEvent,
   isSelfTarget,
   disabledFromProps,
-  removeUndefinedValues,
   warnOnce,
 } from "@ariakit/utils";
 import type { BooleanOrCallback } from "@ariakit/utils";
@@ -542,11 +541,11 @@ export const useCompositeItem = createHook<TagName, CompositeItemOptions>(
       shouldRegisterItem: id ? shouldRegisterItem : false,
     });
 
-    return removeUndefinedValues({
+    return {
       ...props,
       "aria-setsize": ariaSetSize,
       "aria-posinset": ariaPosInSet,
-    });
+    };
   },
 );
 

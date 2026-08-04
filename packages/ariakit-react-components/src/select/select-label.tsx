@@ -8,7 +8,7 @@ import {
   memo,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType, MouseEvent } from "react";
 import { useSelectProviderContext } from "./select-context.tsx";
 import type { SelectStore } from "./select-store.ts";
@@ -70,7 +70,7 @@ export const useSelectLabel = createHook<TagName, SelectLabelOptions>(
       },
     };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 

@@ -476,6 +476,8 @@ export const useFocusable = createHook<TagName, FocusableOptions>(
       onBlur,
     };
 
+    // Higher-level hooks such as useMenu compute defaults after useDialog has
+    // called this hook. Keep direct hook composition protected too.
     return removeUndefinedValues(props);
   },
 );

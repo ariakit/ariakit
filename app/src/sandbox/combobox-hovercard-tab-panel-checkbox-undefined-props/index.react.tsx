@@ -1,4 +1,6 @@
 import * as ak from "@ariakit/react";
+import { useComboboxPopover } from "@ariakit/react-components/combobox/combobox-popover";
+import type { ComboboxPopoverProps } from "@ariakit/react-components/combobox/combobox-popover";
 
 // Design systems usually wrap Ariakit components and forward optional props
 // positionally. When a consumer of such a wrapper leaves the prop unset, the
@@ -18,6 +20,11 @@ function TabPanel({ focusable, ...props }: ak.TabPanelProps) {
 
 function Checkbox({ clickOnEnter, ...props }: ak.CheckboxProps) {
   return <ak.Checkbox clickOnEnter={clickOnEnter} {...props} />;
+}
+
+function HookComboboxPopover(props: ComboboxPopoverProps) {
+  const htmlProps = useComboboxPopover(props);
+  return <ak.Role {...htmlProps} />;
 }
 
 export default function Example() {
@@ -62,6 +69,14 @@ export default function Example() {
       <h2>Checkbox with an explicit value</h2>
       <Checkbox id="notify" clickOnEnter />
       <label htmlFor="notify">Notify</label>
+
+      <h2>Combobox hook</h2>
+      <ak.ComboboxProvider>
+        <ak.Combobox aria-label="Direct hook" />
+        <HookComboboxPopover autoFocusOnShow={undefined}>
+          <button>Combobox action</button>
+        </HookComboboxPopover>
+      </ak.ComboboxProvider>
 
       {/*
         A form control that carries its own label suppresses the field level one

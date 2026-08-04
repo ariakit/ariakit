@@ -6,7 +6,6 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useContext } from "react";
 import { DialogDescriptionContext } from "./dialog-context.tsx";
@@ -44,7 +43,7 @@ export const useDialogDescription = createHook<
     id,
   };
 
-  return removeUndefinedValues(props);
+  return props;
 });
 
 /**

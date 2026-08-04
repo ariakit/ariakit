@@ -5,7 +5,6 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { removeUndefinedValues } from "@ariakit/utils";
 import type { ElementType } from "react";
 import {
   CollectionScopedContextProvider,
@@ -47,7 +46,7 @@ export const useCollection = createHook<TagName, CollectionOptions>(
       [store],
     );
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 

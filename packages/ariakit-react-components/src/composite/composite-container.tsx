@@ -16,7 +16,6 @@ import {
   disableFocusIn,
   getFirstTabbableIn,
   restoreFocusIn,
-  removeUndefinedValues,
 } from "@ariakit/utils";
 import type { ElementType, FocusEvent, KeyboardEvent, MouseEvent } from "react";
 import { useEffect, useRef } from "react";
@@ -250,7 +249,7 @@ export const useCompositeContainer = createHook<
     onClick,
   };
 
-  return removeUndefinedValues(props);
+  return props;
 });
 
 /**

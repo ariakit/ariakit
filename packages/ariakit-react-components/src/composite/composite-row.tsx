@@ -7,7 +7,7 @@ import {
   forwardRef,
 } from "@ariakit/react-utils";
 import type { Options, Props } from "@ariakit/react-utils";
-import { invariant, removeUndefinedValues } from "@ariakit/utils";
+import { invariant } from "@ariakit/utils";
 import type { ElementType } from "react";
 import { useMemo } from "react";
 import {
@@ -75,7 +75,7 @@ export const useCompositeRow = createHook<TagName, CompositeRowOptions>(
 
     props = { ...props, id };
 
-    return removeUndefinedValues(props);
+    return props;
   },
 );
 
