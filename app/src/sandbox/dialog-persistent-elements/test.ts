@@ -71,6 +71,18 @@ test("keeps persistent elements after replacing an open dialog node", async () =
   expect(q.dialog("Dialog")).toBeVisible();
 });
 
+// https://github.com/ariakit/ariakit/issues/7033
+test("closes on a newly inserted outside element after replacing the dialog", async () => {
+  await click(q.button("Open dialog"));
+  await click(q.button("Replace dialog element"));
+  expect(q.dialog("Dialog")?.tagName).toBe("SECTION");
+
+  await click(q.button("Add late outside field"));
+  await click(q.textbox("Late outside field"));
+
+  await expect.poll(q.dialog.hidden.lazy("Dialog")).not.toBeVisible();
+});
+
 test("stays open when interacting with a persistent shadow element", async () => {
   await click(q.button("Open dialog"));
   expect(q.dialog("Dialog")).toBeVisible();

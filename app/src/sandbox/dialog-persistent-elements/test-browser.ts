@@ -106,6 +106,17 @@ withFramework(import.meta.dirname, async ({ test }) => {
     await test.expect(q.dialog("Dialog")).toBeVisible();
   });
 
+  // https://github.com/ariakit/ariakit/issues/7033
+  test("closes on a newly inserted outside element after replacing the dialog", async ({
+    q,
+  }) => {
+    await q.button("Open dialog").click();
+    await q.button("Replace dialog element").click();
+    await q.button("Add late outside field").click();
+    await q.textbox("Late outside field").click();
+    await test.expect(q.dialog("Dialog")).not.toBeVisible();
+  });
+
   test("stays open when interacting with a persistent shadow element", async ({
     page,
     q,

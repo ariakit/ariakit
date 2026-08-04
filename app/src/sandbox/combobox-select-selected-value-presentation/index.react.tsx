@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const fruits = [
   "Apple",
@@ -130,16 +130,12 @@ function RefreshListButton({
 interface FixtureProps {
   /**
    * Whether the popup takes focus once it is placed. Turning it off leaves the
-   * presentation as the only thing that can bring an item into view, and keeps
-   * a focus escape from being undone by the popup pulling focus back in, which
-   * is a separate defect. Once that one is fixed, the fixture that turns this
-   * off to hold a focus escape can go back to the default and cover the same
-   * escape there.
-   * See https://github.com/ariakit/ariakit/issues/7033
+   * presentation as the only thing that can bring an item into view.
    */
   autoFocusOnShow?: boolean;
   defaultSelectedValue: string | string[];
   focusTarget?: boolean;
+  focusTrapTarget?: boolean;
   /**
    * Holds the popup in its positioning window until a control releases it, so a
    * presentation stays parked while something else acts on the popup. Releasing
@@ -170,6 +166,7 @@ interface FixtureProps {
   refreshListActiveId?: string;
   /** Replaces every item node under a stable id while the popup opens. */
   remountItemsOnOpen?: boolean;
+  showFocusHistory?: boolean;
   unmountOnHide?: boolean;
   virtualFocus?: boolean;
 }
@@ -178,6 +175,7 @@ function Fixture({
   autoFocusOnShow,
   defaultSelectedValue,
   focusTarget,
+  focusTrapTarget,
   holdPlacement,
   input,
   itemIdPrefix,
@@ -188,10 +186,16 @@ function Fixture({
   pageScrollport,
   refreshListActiveId,
   remountItemsOnOpen,
+  showFocusHistory,
   unmountOnHide,
   virtualFocus,
 }: FixtureProps) {
   const focusTargetRef = useRef<HTMLElement | null>(null);
+  const [focusHistory, setFocusHistory] = useState<string[]>([]);
+  const recordFocus = (target: string) => {
+    if (!showFocusHistory) return;
+    setFocusHistory((history) => [...history, target]);
+  };
   const setFocusTarget = (element: HTMLElement | null) => {
     focusTargetRef.current = element;
   };
@@ -207,6 +211,23 @@ function Fixture({
       virtualFocus={virtualFocus}
     >
       <Ariakit.ComboboxSelectLabel>{label}</Ariakit.ComboboxSelectLabel>
+      {showFocusHistory && (
+        <p
+          style={{
+            background: "white",
+            border: "1px solid gray",
+            boxSizing: "border-box",
+            padding: 8,
+            width: 320,
+          }}
+        >
+          Open the select. Expected focus history: input → focus target. An
+          extra input means the popup pulled focus back. Current focus history:{" "}
+          <output aria-label={`${label} focus history`}>
+            {focusHistory.length ? focusHistory.join(" → ") : "none"}
+          </output>
+        </p>
+      )}
       <Ariakit.ComboboxSelect style={{ display: "block" }} />
       <Ariakit.ComboboxPopover
         autoFocusOnShow={autoFocusOnShow}
@@ -228,6 +249,7 @@ function Fixture({
           <Ariakit.ComboboxInput
             aria-label={`Search ${label}`}
             onFocus={() => {
+              recordFocus("input");
               if (!moveFocusOnOpen) return;
               queueMicrotask(() => {
                 // An in-popup target is meant to be scrolled into its popup by
@@ -260,7 +282,13 @@ function Fixture({
         </Ariakit.ComboboxItem>
       </Ariakit.ComboboxPopover>
       {focusTarget && outsideFocusTarget && (
-        <button type="button" tabIndex={0} ref={setFocusTarget}>
+        <button
+          data-focus-trap={focusTrapTarget ? "" : undefined}
+          type="button"
+          tabIndex={0}
+          ref={setFocusTarget}
+          onFocus={() => recordFocus("focus target")}
+        >
           {`${label} focus target`}
         </button>
       )}
@@ -285,6 +313,326 @@ function Fixture({
         </button>
       )}
     </Ariakit.ComboboxProvider>
+  );
+}
+
+function NativeAutoFocusFixture() {
+  const dialog = Ariakit.useDialogStore();
+  const shadowHostRef = useRef<HTMLDivElement>(null);
+  const focusTargetRef = useRef<HTMLInputElement>(null);
+  const [focusHistory, setFocusHistory] = useState<string[]>([]);
+  const recordFocus = (target: string) => {
+    setFocusHistory((history) => [...history, target]);
+  };
+  useEffect(() => {
+    const host = shadowHostRef.current;
+    if (!host) return;
+    const root = host.shadowRoot || host.attachShadow({ mode: "open" });
+    const nestedHost = host.ownerDocument.createElement("div");
+    const nestedRoot = nestedHost.attachShadow({ mode: "open" });
+    const input = host.ownerDocument.createElement("input");
+    input.setAttribute("aria-label", "Native auto-focus shadow target");
+    const onFocus = () => {
+      setFocusHistory((history) => [...history, "shadow target"]);
+    };
+    input.addEventListener("focus", onFocus);
+    nestedRoot.append(input);
+    root.append(nestedHost);
+    focusTargetRef.current = input;
+    return () => {
+      focusTargetRef.current = null;
+      input.removeEventListener("focus", onFocus);
+      nestedHost.remove();
+    };
+  }, []);
+  return (
+    <>
+      <Ariakit.DialogDisclosure store={dialog}>
+        Native auto-focus dialog
+      </Ariakit.DialogDisclosure>
+      <div ref={shadowHostRef} />
+      <p>
+        Open the dialog. Expected focus history: input → shadow target. An extra
+        input means the dialog pulled focus back. Current focus history:{" "}
+        <output aria-label="Native auto-focus history">
+          {focusHistory.length ? focusHistory.join(" → ") : "none"}
+        </output>
+      </p>
+      <Ariakit.Dialog
+        store={dialog}
+        hideOnInteractOutside={false}
+        modal={false}
+        portal={false}
+        unmountOnHide
+      >
+        <input
+          aria-label="Native auto-focus input"
+          autoFocus
+          onFocus={() => {
+            recordFocus("input");
+            focusTargetRef.current?.focus();
+          }}
+        />
+      </Ariakit.Dialog>
+    </>
+  );
+}
+
+function ShadowRootDialogFixture() {
+  const shadowHostRef = useRef<HTMLDivElement>(null);
+  const initialFocusRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+  const [focusHistory, setFocusHistory] = useState<string[]>([]);
+  const recordFocus = (target: string) => {
+    setFocusHistory((history) => [...history, target]);
+  };
+  useEffect(() => {
+    const host = shadowHostRef.current;
+    if (!host) return;
+    const root = host.shadowRoot || host.attachShadow({ mode: "open" });
+    const portal = host.ownerDocument.createElement("div");
+    root.append(portal);
+    setPortalElement(portal);
+    return () => portal.remove();
+  }, []);
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          setFocusHistory([]);
+          setOpen(true);
+        }}
+      >
+        Open shadow-root focus dialog
+      </button>
+      <div ref={shadowHostRef} data-shadow-root-dialog-host />
+      <p>
+        Open the dialog. Expected focus history: app focus → initial focus. If
+        the history stops at app focus, the shadow host hid that focus was still
+        inside the dialog. Current focus history:{" "}
+        <output aria-label="Shadow-root dialog focus history">
+          {focusHistory.length ? focusHistory.join(" → ") : "none"}
+        </output>
+      </p>
+      {portalElement && (
+        <Ariakit.Portal portalElement={portalElement}>
+          <Ariakit.Dialog
+            aria-label="Shadow-root focus dialog"
+            hideOnInteractOutside={false}
+            initialFocus={initialFocusRef}
+            modal={false}
+            onClose={() => setOpen(false)}
+            open={open}
+            portal={false}
+            unmountOnHide
+          >
+            <input
+              aria-label="Shadow-root app focus field"
+              autoFocus
+              onFocus={() => recordFocus("app focus")}
+            />
+            <input
+              ref={initialFocusRef}
+              aria-label="Shadow-root initial focus field"
+              onFocus={() => recordFocus("initial focus")}
+            />
+          </Ariakit.Dialog>
+        </Ariakit.Portal>
+      )}
+    </>
+  );
+}
+
+function IframeDialogFixture() {
+  const dialog = Ariakit.useDialogStore();
+  const initialFocusRef = useRef<HTMLInputElement>(null);
+  const dialogFocusRef = useRef<HTMLInputElement>(null);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  const iframeFocusRef = useRef<HTMLInputElement>(null);
+  const [frameBody, setFrameBody] = useState<HTMLElement | null>(null);
+  const [focusHistory, setFocusHistory] = useState<string[]>([]);
+  const setFrame = useCallback((element: HTMLIFrameElement | null) => {
+    frameRef.current = element;
+    setFrameBody(element?.contentDocument?.body ?? null);
+  }, []);
+  const recordFocus = (target: string) => {
+    setFocusHistory((history) => [...history, target]);
+  };
+  return (
+    <>
+      <Ariakit.DialogDisclosure
+        store={dialog}
+        onClick={() => setFocusHistory([])}
+      >
+        Open iframe focus dialog
+      </Ariakit.DialogDisclosure>
+      <p>
+        Open the dialog. Expected focus history: dialog focus → iframe focus →
+        initial focus. If the history stops at iframe focus, the frame hid that
+        focus was still inside the dialog. Current focus history:{" "}
+        <output aria-label="Iframe dialog focus history">
+          {focusHistory.length ? focusHistory.join(" → ") : "none"}
+        </output>
+      </p>
+      <Ariakit.Dialog
+        store={dialog}
+        aria-label="Iframe focus dialog"
+        autoFocusOnShow={() => {
+          // Stage an app-owned handoff before Dialog queues initial focus.
+          dialogFocusRef.current?.focus();
+          // Firefox needs the browsing context activated before its field can
+          // receive focus from the parent document.
+          frameRef.current?.contentWindow?.focus();
+          iframeFocusRef.current?.focus();
+          return true;
+        }}
+        hideOnInteractOutside={false}
+        initialFocus={initialFocusRef}
+        modal={false}
+        portal={false}
+        unmountOnHide={false}
+      >
+        <iframe ref={setFrame} title="Initial focus frame" tabIndex={0} />
+        {frameBody && (
+          <Ariakit.Portal portalElement={frameBody}>
+            <input
+              ref={iframeFocusRef}
+              aria-label="Iframe app focus field"
+              onFocus={() => recordFocus("iframe focus")}
+            />
+          </Ariakit.Portal>
+        )}
+        <input
+          ref={dialogFocusRef}
+          aria-label="Iframe dialog focus field"
+          onFocus={() => recordFocus("dialog focus")}
+        />
+        <input
+          ref={initialFocusRef}
+          aria-label="Iframe initial focus field"
+          onFocus={() => recordFocus("initial focus")}
+        />
+      </Ariakit.Dialog>
+    </>
+  );
+}
+
+function StoreSwapFixture() {
+  const dialogA = Ariakit.useDialogStore();
+  const dialogB = Ariakit.useDialogStore();
+  const [dialog, setDialog] = useState(dialogA);
+  const [dialogName, setDialogName] = useState("A");
+  const [focusHistory, setFocusHistory] = useState<string[]>([]);
+  const initialFocusRef = useRef<HTMLInputElement>(null);
+  const recordFocus = (target: string) => {
+    setFocusHistory((history) => [...history, target]);
+  };
+  const showDialog = (name: string, nextDialog: typeof dialogA) => {
+    setDialogName(name);
+    setDialog(nextDialog);
+    nextDialog.show();
+  };
+  return (
+    <>
+      <button
+        type="button"
+        tabIndex={0}
+        onFocus={() => recordFocus("open store A")}
+        onClick={() => showDialog("A", dialogA)}
+      >
+        Open store A
+      </button>
+      <button
+        type="button"
+        tabIndex={0}
+        onFocus={() => recordFocus("open store B")}
+        onClick={() => showDialog("B", dialogB)}
+      >
+        Open store B
+      </button>
+      <p>
+        Open store A, then store B. Expected focus history: open store A → store
+        A input → open store B → store B input. Current focus history:{" "}
+        <output aria-label="Store swap focus history">
+          {focusHistory.length ? focusHistory.join(" → ") : "none"}
+        </output>
+      </p>
+      <Ariakit.Dialog
+        store={dialog}
+        hideOnInteractOutside={false}
+        initialFocus={initialFocusRef}
+        modal={false}
+        portal={false}
+      >
+        <input
+          ref={initialFocusRef}
+          aria-label={`Store ${dialogName} initial focus`}
+          onFocus={() => recordFocus(`store ${dialogName} input`)}
+        />
+      </Ariakit.Dialog>
+    </>
+  );
+}
+
+function DisclosureSwapFixture() {
+  const dialog = Ariakit.useDialogStore();
+  const previousDisclosureRef = useRef<HTMLButtonElement>(null);
+  const replacementDisclosureRef = useRef<HTMLButtonElement>(null);
+  const initialFocusRef = useRef<HTMLInputElement>(null);
+  const [focusHistory, setFocusHistory] = useState<string[]>([]);
+  const recordFocus = (target: string) => {
+    setFocusHistory((history) => [...history, target]);
+  };
+  return (
+    <>
+      <button
+        ref={previousDisclosureRef}
+        type="button"
+        onFocus={() => recordFocus("previous disclosure")}
+        onClick={(event) => {
+          setFocusHistory([]);
+          dialog.setDisclosureElement(event.currentTarget);
+          dialog.show();
+        }}
+      >
+        Open disclosure swap dialog
+      </button>
+      <button ref={replacementDisclosureRef} type="button">
+        Replacement disclosure
+      </button>
+      <p>
+        Open the dialog. Expected focus history: input → previous disclosure. An
+        extra input means delayed auto-focus used the stale disclosure. Current
+        focus history:{" "}
+        <output aria-label="Disclosure swap focus history">
+          {focusHistory.length ? focusHistory.join(" → ") : "none"}
+        </output>
+      </p>
+      <Ariakit.Dialog
+        store={dialog}
+        autoFocusOnShow={() => {
+          queueMicrotask(() => {
+            dialog.setDisclosureElement(replacementDisclosureRef.current);
+            previousDisclosureRef.current?.focus();
+          });
+          return true;
+        }}
+        hideOnInteractOutside={false}
+        initialFocus={initialFocusRef}
+        modal={false}
+        portal={false}
+        unmountOnHide
+      >
+        <input
+          ref={initialFocusRef}
+          aria-label="Disclosure swap input"
+          autoFocus
+          onFocus={() => recordFocus("input")}
+        />
+      </Ariakit.Dialog>
+    </>
   );
 }
 
@@ -351,7 +699,6 @@ export default function Example() {
       presentation that outlives the escape is visible as a page jump. */}
       <div style={{ marginTop: 200 }}>
         <Fixture
-          autoFocusOnShow={false}
           defaultSelectedValue="Watermelon"
           focusTarget
           input
@@ -399,6 +746,52 @@ export default function Example() {
           label="Parked fruit"
           refreshListActiveId="parked-apple"
         />
+      </div>
+      {/* The popup stays open after focus leaves, so Dialog's delayed
+          auto-focus must not pull focus back into it. */}
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          focusTarget
+          input
+          keepOpen
+          label="Focus escaping fruit"
+          moveFocusOnOpen
+          outsideFocusTarget
+          pageScrollport
+          showFocusHistory
+          unmountOnHide
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <Fixture
+          defaultSelectedValue="Watermelon"
+          focusTarget
+          focusTrapTarget
+          input
+          keepOpen
+          label="Focus trap escaping fruit"
+          moveFocusOnOpen
+          outsideFocusTarget
+          pageScrollport
+          showFocusHistory
+          unmountOnHide
+        />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <NativeAutoFocusFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <ShadowRootDialogFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <IframeDialogFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <StoreSwapFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <DisclosureSwapFixture />
       </div>
     </>
   );
