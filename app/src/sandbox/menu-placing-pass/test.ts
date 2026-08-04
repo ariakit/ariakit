@@ -1,5 +1,22 @@
-import { click, q } from "@ariakit/test";
+import { click, dispatch, focus, press, q } from "@ariakit/test";
 import { expect, test } from "vitest";
+
+// https://github.com/ariakit/ariakit/issues/7042
+test("restores focus after a focused item is replaced", async () => {
+  await click(q.button("Show replacement actions"));
+  const withinMenu = q.within(q.menu("Replacement actions"));
+  await focus(withinMenu.menuitem("Action 1"));
+  await press.End();
+  expect(withinMenu.menuitem("Action 30")).toHaveFocus();
+
+  await dispatch.click(q.button("Replace focused action"));
+  const replacement = withinMenu.menuitem("Action 30");
+  expect(replacement).toHaveAttribute("data-active-item");
+  expect(document.activeElement).toBe(document.body);
+
+  await dispatch.click(q.button("Finish replacement actions positioning"));
+  expect(replacement).toHaveFocus();
+});
 
 // The sandbox's other scenario, re-anchoring an already open popup, is covered
 // only by the browser test: an already open popup has no initial focus left to

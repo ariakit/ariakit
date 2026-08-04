@@ -1,7 +1,41 @@
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 import { recordScrollEvents } from "#app/test-utils/scroll.ts";
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFramework(import.meta.dirname, async ({ query, test }) => {
+  // https://github.com/ariakit/ariakit/issues/7042
+  test("presents a focused item after its node is replaced", async ({
+    page,
+    q,
+  }) => {
+    const menu = q.menu("Replacement actions");
+    const withinMenu = query(menu);
+
+    await q.button("Show replacement actions").click();
+    await test.expect(menu).toBeVisible();
+    await test.expect(menu).toHaveAttribute("data-placing");
+
+    await withinMenu.menuitem("Action 1").focus();
+    await page.keyboard.press("End");
+    await test.expect(withinMenu.menuitem("Action 30")).toBeFocused();
+
+    // Dispatching without a native click preserves the removed item as the
+    // browser's focus provenance while React commits its replacement.
+    await q.button("Replace focused action").dispatchEvent("click");
+    const replacement = withinMenu.menuitem("Action 30");
+    await test.expect(replacement).toHaveAttribute("data-active-item");
+    await test.expect
+      .poll(() => page.evaluate(() => document.activeElement?.tagName))
+      .toBe("BODY");
+
+    await q
+      .button("Finish replacement actions positioning")
+      .dispatchEvent("click");
+    await test.expect(replacement).toBeFocused();
+    await test.expect
+      .poll(() => menu.evaluate((element) => element.scrollTop))
+      .toBeGreaterThan(0);
+  });
+
   // A custom `updatePosition` that calls the supplied default and then keeps
   // working owns the whole pass: the popup is only where it belongs once that
   // callback returns. Publishing readiness when the inner default pass resolves

@@ -1,6 +1,6 @@
 import * as Ariakit from "@ariakit/react";
 import type { ComponentProps } from "react";
-import { useRef } from "react";
+import { Fragment, useRef, useState } from "react";
 
 type MenuProps = ComponentProps<typeof Ariakit.Menu>;
 type UpdatePosition = NonNullable<MenuProps["updatePosition"]>;
@@ -18,6 +18,71 @@ const actions = Array.from(
 const lastAction = `Action ${actionCount}`;
 
 const measureError = "Could not measure the Actions menu";
+
+/**
+ * Holds menu positioning open while replacing the focused item's DOM node.
+ * The replacement keeps the same id, so it remains the same logical item.
+ */
+function FocusedReplacementMenu() {
+  const menu = Ariakit.useMenuStore();
+  const releaseRef = useRef<(() => void) | null>(null);
+  const [generation, setGeneration] = useState(0);
+
+  const updatePosition: UpdatePosition = () =>
+    new Promise<void>((resolve) => {
+      releaseRef.current = resolve;
+    });
+
+  return (
+    <section style={{ display: "grid", gap: 8, justifyItems: "start" }}>
+      <button type="button" tabIndex={0} onClick={menu.show}>
+        Show replacement actions
+      </button>
+      <button
+        type="button"
+        tabIndex={0}
+        onClick={() => setGeneration((value) => value + 1)}
+      >
+        Replace focused action
+      </button>
+      <button
+        type="button"
+        tabIndex={0}
+        onClick={() => {
+          releaseRef.current?.();
+          releaseRef.current = null;
+        }}
+      >
+        Finish replacement actions positioning
+      </button>
+      <Ariakit.Menu
+        store={menu}
+        aria-label="Replacement actions"
+        hideOnInteractOutside={false}
+        portal={false}
+        updatePosition={updatePosition}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          height: 100,
+          overflow: "auto",
+        }}
+      >
+        <Fragment key={generation}>
+          {actions.map((action, index) => (
+            <Ariakit.MenuItem
+              key={action}
+              id={`replacement-action-${index + 1}`}
+              style={{ display: "block", height: 32 }}
+            >
+              {action}
+            </Ariakit.MenuItem>
+          ))}
+        </Fragment>
+      </Ariakit.Menu>
+    </section>
+  );
+}
 
 /**
  * The same held pass, in a menu that mounts only once its store is already
@@ -129,6 +194,7 @@ export default function Example() {
 
   return (
     <main style={{ display: "grid", gap: 8, justifyItems: "start" }}>
+      <FocusedReplacementMenu />
       {/* Its own scenario, above everything the Actions menu uses. Each menu
       opens into the spacer that follows its own controls, so neither one can
       cover the buttons that drive the other and both stay drivable in any
