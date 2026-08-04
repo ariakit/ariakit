@@ -1,5 +1,5 @@
 import * as Ariakit from "@ariakit/react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const fruits = [
   "Apple",
@@ -216,11 +216,9 @@ function Fixture({
           style={{
             background: "white",
             border: "1px solid gray",
+            boxSizing: "border-box",
             padding: 8,
-            position: "fixed",
-            right: 8,
-            top: 8,
-            zIndex: 1,
+            width: 320,
           }}
         >
           Open the select. Expected focus history: input → focus target. An
@@ -443,6 +441,80 @@ function ShadowRootDialogFixture() {
           </Ariakit.Dialog>
         </Ariakit.Portal>
       )}
+    </>
+  );
+}
+
+function IframeDialogFixture() {
+  const dialog = Ariakit.useDialogStore();
+  const initialFocusRef = useRef<HTMLInputElement>(null);
+  const dialogFocusRef = useRef<HTMLInputElement>(null);
+  const frameRef = useRef<HTMLIFrameElement>(null);
+  const iframeFocusRef = useRef<HTMLInputElement>(null);
+  const [frameBody, setFrameBody] = useState<HTMLElement | null>(null);
+  const [focusHistory, setFocusHistory] = useState<string[]>([]);
+  const setFrame = useCallback((element: HTMLIFrameElement | null) => {
+    frameRef.current = element;
+    setFrameBody(element?.contentDocument?.body ?? null);
+  }, []);
+  const recordFocus = (target: string) => {
+    setFocusHistory((history) => [...history, target]);
+  };
+  return (
+    <>
+      <Ariakit.DialogDisclosure
+        store={dialog}
+        onClick={() => setFocusHistory([])}
+      >
+        Open iframe focus dialog
+      </Ariakit.DialogDisclosure>
+      <p>
+        Open the dialog. Expected focus history: dialog focus → iframe focus →
+        initial focus. If the history stops at iframe focus, the frame hid that
+        focus was still inside the dialog. Current focus history:{" "}
+        <output aria-label="Iframe dialog focus history">
+          {focusHistory.length ? focusHistory.join(" → ") : "none"}
+        </output>
+      </p>
+      <Ariakit.Dialog
+        store={dialog}
+        aria-label="Iframe focus dialog"
+        autoFocusOnShow={() => {
+          // Stage an app-owned handoff before Dialog queues initial focus.
+          dialogFocusRef.current?.focus();
+          // Firefox needs the browsing context activated before its field can
+          // receive focus from the parent document.
+          frameRef.current?.contentWindow?.focus();
+          iframeFocusRef.current?.focus();
+          return true;
+        }}
+        hideOnInteractOutside={false}
+        initialFocus={initialFocusRef}
+        modal={false}
+        portal={false}
+        unmountOnHide={false}
+      >
+        <iframe ref={setFrame} title="Initial focus frame" tabIndex={0} />
+        {frameBody && (
+          <Ariakit.Portal portalElement={frameBody}>
+            <input
+              ref={iframeFocusRef}
+              aria-label="Iframe app focus field"
+              onFocus={() => recordFocus("iframe focus")}
+            />
+          </Ariakit.Portal>
+        )}
+        <input
+          ref={dialogFocusRef}
+          aria-label="Iframe dialog focus field"
+          onFocus={() => recordFocus("dialog focus")}
+        />
+        <input
+          ref={initialFocusRef}
+          aria-label="Iframe initial focus field"
+          onFocus={() => recordFocus("initial focus")}
+        />
+      </Ariakit.Dialog>
     </>
   );
 }
@@ -711,6 +783,9 @@ export default function Example() {
       </div>
       <div style={{ marginTop: 200 }}>
         <ShadowRootDialogFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <IframeDialogFixture />
       </div>
       <div style={{ marginTop: 200 }}>
         <StoreSwapFixture />

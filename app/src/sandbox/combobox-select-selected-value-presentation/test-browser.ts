@@ -1,7 +1,7 @@
 import { flushFrames, withFramework } from "#app/test-utils/preview.ts";
 import { recordScrollEvents } from "#app/test-utils/scroll.ts";
 
-withFramework(import.meta.dirname, async ({ test }) => {
+withFramework(import.meta.dirname, async ({ query, test }) => {
   // https://github.com/ariakit/ariakit/pull/6832
   test("focuses a far item reached through typeahead", async ({ page, q }) => {
     const select = q.combobox("Selected fruit");
@@ -215,6 +215,28 @@ withFramework(import.meta.dirname, async ({ test }) => {
       .toBeFocused();
     await test.expect(q.dialog("Shadow-root focus dialog")).toBeVisible();
     await test.expect(focusHistory).toHaveText("app focus → initial focus");
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7033
+  test("honors initial focus after focus enters a contained iframe", async ({
+    page,
+    q,
+  }) => {
+    const frame = query(
+      page.frameLocator("iframe[title='Initial focus frame']"),
+    );
+    const focusHistory = q.status("Iframe dialog focus history");
+
+    await test.expect(focusHistory).toHaveText("none");
+
+    await q.button("Open iframe focus dialog").click();
+
+    await test.expect(q.textbox("Iframe initial focus field")).toBeFocused();
+    await test.expect(q.dialog("Iframe focus dialog")).toBeVisible();
+    await test.expect(frame.textbox("Iframe app focus field")).toBeVisible();
+    await test
+      .expect(focusHistory)
+      .toHaveText("dialog focus → iframe focus → initial focus");
   });
 
   // https://github.com/ariakit/ariakit/issues/7033
