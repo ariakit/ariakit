@@ -592,6 +592,47 @@ function TwoAxisOverflowFixture() {
   );
 }
 
+function NestedInlineScrollportFixture() {
+  const combobox = Ariakit.useComboboxStore({
+    defaultSelectedValue: "Mango",
+  });
+  return (
+    <>
+      <Ariakit.ComboboxSelectLabel store={combobox}>
+        Nested-inline fruit
+      </Ariakit.ComboboxSelectLabel>
+      <Ariakit.ComboboxSelect store={combobox} />
+      <Ariakit.ComboboxPopover
+        store={combobox}
+        autoFocusOnShow={false}
+        style={{
+          background: "white",
+          border: "1px solid gray",
+          overflow: "auto",
+          width: 120,
+        }}
+      >
+        <Ariakit.ComboboxList
+          style={{ maxHeight: 120, overflowY: "auto", width: 300 }}
+        >
+          {fruits.map((fruit) => (
+            <Ariakit.ComboboxItem
+              key={fruit}
+              value={fruit}
+              style={{
+                display: "block",
+                marginLeft: 200,
+                padding: "4px 8px",
+                width: 100,
+              }}
+            />
+          ))}
+        </Ariakit.ComboboxList>
+      </Ariakit.ComboboxPopover>
+    </>
+  );
+}
+
 function OversizedInlineOverflowFixture({
   direction,
 }: {
@@ -1188,6 +1229,9 @@ export default function Example() {
       </div>
       <div style={{ marginTop: 200 }}>
         <TwoAxisOverflowFixture />
+      </div>
+      <div style={{ marginTop: 200 }}>
+        <NestedInlineScrollportFixture />
       </div>
       <div style={{ marginTop: 200 }}>
         <OversizedInlineOverflowFixture direction="ltr" />

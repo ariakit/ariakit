@@ -245,6 +245,18 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await expectHorizontallyVisible(listbox, mango);
   });
 
+  test("keeps the selected item visible through an inline scrollport", async ({
+    q,
+  }) => {
+    await q.combobox("Nested-inline fruit").click();
+
+    const listbox = q.listbox("Nested-inline fruit");
+    const popover = listbox.locator("..");
+    const mango = q.option("Mango");
+    await test.expect(mango).toHaveAttribute("data-active-item");
+    await expectHorizontallyVisible(popover, mango);
+  });
+
   for (const direction of ["LTR", "RTL"] as const) {
     test(`keeps the start of an oversized ${direction} item visible`, async ({
       q,

@@ -19,18 +19,28 @@ function getSingleVerticalScrollport(element: HTMLElement, popup: HTMLElement) {
     return null;
   }
   let scrollport: HTMLElement | null = null;
+  let inlineScrollport: HTMLElement | null = null;
   let current = element.parentElement;
   while (current && popup.contains(current)) {
     const style = view.getComputedStyle(current);
-    const scrollableOverflow =
+    const scrollsVertically =
       style.overflowY !== "visible" && style.overflowY !== "clip";
-    if (scrollableOverflow && current.scrollHeight > current.clientHeight) {
+    if (scrollsVertically && current.scrollHeight > current.clientHeight) {
       if (scrollport) return null;
       scrollport = current;
+    }
+    const scrollsInline =
+      style.overflowX !== "visible" && style.overflowX !== "clip";
+    if (scrollsInline && current.scrollWidth > current.clientWidth) {
+      if (inlineScrollport) return null;
+      inlineScrollport = current;
     }
     if (current === popup) break;
     current = current.parentElement;
   }
+  // Centering one element cannot keep an item visible through a different
+  // inline scrollport. Native nearest scrolling handles every ancestor.
+  if (inlineScrollport && inlineScrollport !== scrollport) return null;
   return scrollport;
 }
 
