@@ -23,6 +23,7 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await q.button("Replace focused action").dispatchEvent("click");
     const replacement = withinMenu.menuitem("Action 30");
     await test.expect(replacement).toHaveAttribute("data-active-item");
+    await test.expect(replacement).toBeFocused();
 
     await q
       .button("Finish replacement actions positioning")
@@ -31,6 +32,34 @@ withFramework(import.meta.dirname, async ({ query, test }) => {
     await test.expect
       .poll(() => menu.evaluate((element) => element.scrollTop))
       .toBeGreaterThan(0);
+  });
+
+  // https://github.com/ariakit/ariakit/issues/7042
+  test("abandons a replaced item after focus leaves", async ({ page, q }) => {
+    const menu = q.menu("Replacement actions");
+    const withinMenu = query(menu);
+
+    await q.button("Show replacement actions").click();
+    await withinMenu.menuitem("Action 1").focus();
+    await page.keyboard.press("End");
+    const item = withinMenu.menuitem("Action 30");
+    await test.expect(item).toBeFocused();
+
+    await item.blur();
+    await test.expect
+      .poll(() => page.evaluate(() => document.activeElement?.tagName))
+      .toBe("BODY");
+    await q.button("Replace focused action").dispatchEvent("click");
+    const replacement = withinMenu.menuitem("Action 30");
+    await test.expect(replacement).toHaveAttribute("data-active-item");
+
+    await q
+      .button("Finish replacement actions positioning")
+      .dispatchEvent("click");
+    await test.expect(replacement).not.toBeFocused();
+    await test.expect
+      .poll(() => menu.evaluate((element) => element.scrollTop))
+      .toBe(0);
   });
 
   // A custom `updatePosition` that calls the supplied default and then keeps
