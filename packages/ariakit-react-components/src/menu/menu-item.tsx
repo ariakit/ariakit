@@ -154,12 +154,15 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
         if (!store) return false;
         if (!getFocusOnHover()) return false;
         const { compositeElement, items } = store.getState();
+        // Hovering is not a request to move the page or menu; the pointer is
+        // already on what the user cares about. Keyboard navigation presents
+        // items through the composite's own scroll step.
         // If the menu item is also a submenu button, we should move actual DOM
         // focus to it so that the submenu will not close when the user moves
         // the cursor back to the menu button.
         if (isWithinMenu) {
           if (event.currentTarget.hasAttribute("aria-expanded")) {
-            event.currentTarget.focus();
+            event.currentTarget.focus({ preventScroll: true });
           }
           return true;
         }
@@ -167,7 +170,7 @@ export const useMenuItem = createHook<TagName, MenuItemOptions>(
         // the menu item if focus is somewhere on the widget. Without this, the
         // open menus in the menu bar wouldn't close.
         if (menuHasFocus(compositeElement, items, event.currentTarget)) {
-          event.currentTarget.focus();
+          event.currentTarget.focus({ preventScroll: true });
           return true;
         }
         return false;
