@@ -16,8 +16,9 @@ export const groupItemsByRows = Core.groupItemsByRows;
 
 const unmountingItems = new WeakSet<Element>();
 
-/** Marks the brief window between a composite item's ref cleanup and removal. */
+/** Marks the brief window between a focused item's ref cleanup and removal. */
 export function markItemUnmounting(element: Element) {
+  if (getActiveElement(element) !== element) return;
   unmountingItems.add(element);
   queueMicrotask(() => unmountingItems.delete(element));
 }
